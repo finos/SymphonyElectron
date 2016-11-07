@@ -1,28 +1,44 @@
 {
   "name": "Symphony",
+  "productName": "Symphony",
   "version": "1.0.0",
-  "description": "Symphony",
+  "description": "Symphony desktop app",
+  "author": "Symphony",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "dist-mac": "build --mac",
+    "dist-win": "build --win --x64"
+  },
+  "build": {
+    "appId": "symphony-electron-desktop",
+    "mac": {
+        "target": "dmg",
+        "category": "public.app-category.business"
+    },
+    "win": {
+        "target": "squirrel"
+    }
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/electron/electron-quick-start.git"
+    "url": "git+https://github.com/SymphonyOSF/SymphonyElectron.git"
   },
   "keywords": [
     "Symphony",
-    "quick",
-    "start",
-    "tutorial"
+    "start"
   ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
+  "license": "tbd",
   "bugs": {
-    "url": "https://github.com/electron/electron-quick-start/issues"
+    "url": "https://support.symphony.com"
   },
   "homepage": "https://corporate.symphony.com",
   "devDependencies": {
-    "electron": "^1.3.4"
+    "electron": "1.4.5",
+    "electron-builder": "^7.23.2",
+    "electron-packager": "^8.2.0"
+  },
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.0"
   }
 }
