@@ -38,14 +38,18 @@ const template = [
         label: 'Reload',
         accelerator: 'CmdOrCtrl+R',
         click (item, focusedWindow) {
-          if (focusedWindow) focusedWindow.reload()
+          if (focusedWindow) {
+            focusedWindow.reload();
+          }
         }
       },
       {
         label: 'Toggle Developer Tools',
         accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
         click (item, focusedWindow) {
-          if (focusedWindow) focusedWindow.webContents.toggleDevTools()
+          if (focusedWindow) {
+            focusedWindow.webContents.toggleDevTools();
+          }
         }
       },
       {
@@ -84,14 +88,14 @@ const template = [
     submenu: [
       {
         label: 'Learn More',
-        click () { require('electron').shell.openExternal('http://electron.atom.io') }
+        click () { require('electron').shell.openExternal('https://www.symphony.com') }
       }
     ]
   }
 ];
 
 function getTemplate(app) {
-    if (process.platform === 'darwin') {
+    if (process.platform === 'darwin' && template[0].label !== app.getName()) {
       template.unshift({
         label: app.getName(),
         submenu: [
@@ -124,7 +128,7 @@ function getTemplate(app) {
             role: 'quit'
           }
         ]
-      })
+    });
       // Edit menu.
       template[1].submenu.push(
         {

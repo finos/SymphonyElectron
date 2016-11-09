@@ -3,13 +3,26 @@ const packageJSON = require('./package.json');
 const menuTemplate = require('./menuTemplate.js');
 
 const app = electron.app
-const BrowserWindow = electron.BrowserWindow
+const BrowserWindow = electron.BrowserWindow;
+
+let willQuitApp = false;
 
 if (require('electron-squirrel-startup')) return;
+
+if (isDevEnv()) {
+    // needed for development env because local server doesn't have cert
+    app.commandLine.appendSwitch('--ignore-certificate-errors');
+}
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
+
+function isDevEnv() {
+    var isDev = process.env.ELECTRON_DEV ?
+        process.env.ELECTRON_DEV.trim().toLowerCase() === "true" : false;
+    return isDev;
+}
 
 function createWindow () {
   // note: for now, turning off node integration as this is causing failure with
@@ -24,36 +37,53 @@ function createWindow () {
       }
   });
 
-  const menu = electron.Menu.buildFromTemplate(menuTemplate(app));
-  electron.Menu.setApplicationMenu(menu)
-
   mainWindow.loadURL(packageJSON.homepage);
 
+  const menu = electron.Menu.buildFromTemplate(menuTemplate(app));
+  electron.Menu.setApplicationMenu(menu);
+
+  mainWindow.on('close', function(e) {
+    if (willQuitApp) {
+        mainWindow = null;
+        return;
+    }
+    // mac should hide window when hitting x close
+    if (process.platform === 'darwin') {
+      mainWindow.hide();
+      e.preventDefault();
+    }
+  });
   mainWindow.on('closed', function () {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null;
-  })
+  });
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+app.on('ready', function() {
+    createWindow();
+});
+
+app.on('before-quit', function() {
+    willQuitApp = true;
+});
 
 app.on('window-all-closed', function () {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
-    app.quit()
+    app.quit();
   }
 })
 
 app.on('activate', function () {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {
-    createWindow()
+      createWindow();
+  } else {
+      mainWindow.show();
   }
 });
