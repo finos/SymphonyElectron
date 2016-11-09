@@ -59,6 +59,12 @@ function createWindow () {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
+
+  // open external links in default browser
+  mainWindow.webContents.on('new-window', function(event, url) {
+     event.preventDefault();
+     electron.shell.openExternal(url);
+  });
 }
 
 // This method will be called when Electron has finished
