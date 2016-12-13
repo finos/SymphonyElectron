@@ -25,17 +25,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SymphonyOSF/SymphonyElectron.git"
+    "url": "git+https://github.com/SymphonyOSS/SymphonyElectron.git"
   },
   "keywords": [
     "Symphony",
     "start"
   ],
-  "license": "tbd",
+  "license": "Apache License, Version 2.0",
   "bugs": {
     "url": "https://support.symphony.com"
   },
-  "homepage": "https://corporate.symphony.com",
+  "homepage": "https://foundation-dev.symphony.com",
   "devDependencies": {
     "electron": "1.4.5",
     "electron-builder": "^7.23.2",
