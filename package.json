@@ -1,8 +1,8 @@
 {
   "name": "Symphony",
-  "productName": "Symphony",
+  "productName": "Symphony - ODP",
   "version": "1.0.0",
-  "description": "Symphony desktop app",
+  "description": "Symphony desktop app (Foundation ODP)",
   "author": "Symphony",
   "main": "main.js",
   "scripts": {
@@ -31,15 +31,15 @@
     "Symphony",
     "start"
   ],
-  "license": "Apache License, Version 2.0",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://support.symphony.com"
   },
   "homepage": "https://foundation-dev.symphony.com",
   "devDependencies": {
-    "electron": "1.4.5",
-    "electron-builder": "^7.23.2",
-    "electron-packager": "^8.2.0"
+    "electron": "1.4.12",
+    "electron-builder": "^10.7.0",
+    "electron-packager": "^8.4.0"
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0"
