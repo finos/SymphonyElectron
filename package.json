@@ -1,7 +1,7 @@
 {
   "name": "Symphony",
   "productName": "Symphony",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Symphony desktop app",
   "author": "Symphony",
   "main": "main.js",
@@ -37,9 +37,9 @@
   },
   "homepage": "https://corporate.symphony.com",
   "devDependencies": {
-    "electron": "1.4.5",
-    "electron-builder": "^7.23.2",
-    "electron-packager": "^8.2.0"
+    "electron": "1.5.1",
+    "electron-builder": "^12.3.1",
+    "electron-packager": "^8.5.1"
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0"
