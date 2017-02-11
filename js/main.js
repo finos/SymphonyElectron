@@ -1,6 +1,7 @@
 const electron = require('electron');
-const packageJSON = require('./package.json');
+const packageJSON = require('../package.json');
 const menuTemplate = require('./menuTemplate.js');
+const path = require('path');
 
 const app = electron.app
 const BrowserWindow = electron.BrowserWindow;
@@ -17,6 +18,7 @@ if (isDevEnv()) {
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
+let childWindows = [];
 
 function isDevEnv() {
     var isDev = process.env.ELECTRON_DEV ?
@@ -24,7 +26,7 @@ function isDevEnv() {
     return isDev;
 }
 
-function createWindow () {
+function createMainWindow () {
   // note: for now, turning off node integration as this is causing failure with
   // onelogin, jquery can not get initialized. electron's node integration
   // conflicts on the window object.
@@ -33,12 +35,13 @@ function createWindow () {
       width: 1024, height: 768,
       webPreferences: {
           sandbox: false,
-          nodeIntegration: false
+          nodeIntegration: false,
+          preload: path.join(__dirname, '/main-preload.js')
       }
   });
 
   mainWindow.loadURL(packageJSON.homepage);
-
+  
   const menu = electron.Menu.buildFromTemplate(menuTemplate(app));
   electron.Menu.setApplicationMenu(menu);
 
@@ -60,18 +63,41 @@ function createWindow () {
     mainWindow = null;
   });
 
-  // open external links in default browser
+  // open external links in default browser - window.open
   mainWindow.webContents.on('new-window', function(event, url) {
      event.preventDefault();
      electron.shell.openExternal(url);
   });
 }
 
+electron.ipcMain.on('symphony-msg', (event, arg) => {
+    if (arg && arg.cmd === 'open' && arg.url) {
+        var width = arg.width || 1024;
+        var height = arg.height || 768;
+        var title = arg.title || 'Symphony';
+
+        let childWindow = new BrowserWindow({
+            title: title,
+            width: width,
+            height: height,
+            webPreferences: {
+                sandbox: false,
+                nodeIntegration: false,
+                preload: path.join(__dirname, '/child-preload.js')
+            }
+        });
+
+        childWindows.push(childWindow);
+        childWindow.loadURL(arg.url);
+        return;
+    }
+});
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', function() {
-    createWindow();
+    createMainWindow();
 });
 
 app.on('before-quit', function() {
@@ -88,7 +114,7 @@ app.on('window-all-closed', function () {
 
 app.on('activate', function () {
   if (mainWindow === null) {
-      createWindow();
+      createMainWindow();
   } else {
       mainWindow.show();
   }

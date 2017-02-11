@@ -4,7 +4,7 @@
   "version": "1.0.1",
   "description": "Symphony desktop app",
   "author": "Symphony",
-  "main": "main.js",
+  "main": "js/main.js",
   "scripts": {
     "dev:mac": "ELECTRON_DEV=true npm run start",
     "dev:win": "SET ELECTRON_DEV=true && npm run start",
