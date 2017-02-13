@@ -17,8 +17,9 @@ const local = {
     ipcRenderer: ipcRenderer
 }
 
-// JS can detect if in wrapper mode by looking for window.ELECTRON_API obj
-window.ELECTRON_API = {
+// JS can detect if in wrapper mode by looking for window.SYM_API obj
+// API exposes by Symphony to a child window:
+window.SYM_API = {
 };
 
-Object.freeze(window.ELECTRON_API);
+Object.freeze(window.SYM_API);
