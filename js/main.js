@@ -2,92 +2,142 @@ const electron = require('electron');
 const packageJSON = require('../package.json');
 const menuTemplate = require('./menuTemplate.js');
 const path = require('path');
-
 const app = electron.app
-const BrowserWindow = electron.BrowserWindow;
+
+// Keep a global reference of the window object, if you don't, the window will
+// be closed automatically when the JavaScript object is garbage collected.
+let mainWindow;
+let windows = {};
 
 let willQuitApp = false;
 
-if (require('electron-squirrel-startup')) return;
+if (require('electron-squirrel-startup')) {
+    return;
+}
 
 if (isDevEnv()) {
     // needed for development env because local server doesn't have cert
     app.commandLine.appendSwitch('--ignore-certificate-errors');
 }
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let mainWindow;
-let childWindows = [];
-
 function isDevEnv() {
-    var isDev = process.env.ELECTRON_DEV ?
+    let isDev = process.env.ELECTRON_DEV ?
         process.env.ELECTRON_DEV.trim().toLowerCase() === "true" : false;
     return isDev;
 }
 
 function createMainWindow () {
-  // note: for now, turning off node integration as this is causing failure with
-  // onelogin, jquery can not get initialized. electron's node integration
-  // conflicts on the window object.
-  mainWindow = new BrowserWindow({
-      title: 'Symphony',
-      width: 1024, height: 768,
-      webPreferences: {
-          sandbox: false,
-          nodeIntegration: false,
-          preload: path.join(__dirname, '/main-preload.js')
-      }
-  });
+    let key = getWindowKey();
 
-  mainWindow.loadURL(packageJSON.homepage);
-  
-  const menu = electron.Menu.buildFromTemplate(menuTemplate(app));
-  electron.Menu.setApplicationMenu(menu);
+    // note: for now, turning off node integration as this is causing failure with
+    // onelogin, jquery can not get initialized. electron's node integration
+    // conflicts on the window object.
+    mainWindow = new electron.BrowserWindow({
+        title: 'Symphony',
+        width: 1024, height: 768,
+        webPreferences: {
+            sandbox: false,
+            nodeIntegration: false,
+            preload: path.join(__dirname, '/main-preload.js'),
+            winKey: key
+        }
+    });
 
-  mainWindow.on('close', function(e) {
-    if (willQuitApp) {
+    storeWindowKey(key, mainWindow)
+
+    mainWindow.loadURL(packageJSON.homepage);
+    
+    const menu = electron.Menu.buildFromTemplate(menuTemplate(app));
+    electron.Menu.setApplicationMenu(menu);
+
+    mainWindow.on('close', function(e) {
+        if (willQuitApp) {
+            mainWindow = null;
+            return;
+        }
+        // mac should hide window when hitting x close
+        if (process.platform === 'darwin') {
+            mainWindow.hide();
+            e.preventDefault();
+        }
+    });
+
+    mainWindow.on('closed', function () {
+        // Dereference the window object, usually you would store windows
+        // in an array if your app supports multi windows, this is the time
+        // when you should delete the corresponding element.
         mainWindow = null;
-        return;
-    }
-    // mac should hide window when hitting x close
-    if (process.platform === 'darwin') {
-      mainWindow.hide();
-      e.preventDefault();
-    }
-  });
-  mainWindow.on('closed', function () {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    mainWindow = null;
-  });
+    });
 
-  // open external links in default browser - window.open
-  mainWindow.webContents.on('new-window', function(event, url) {
-     event.preventDefault();
-     electron.shell.openExternal(url);
-  });
+    // open external links in default browser - window.open
+    mainWindow.webContents.on('new-window', function(event, url) {
+        event.preventDefault();
+        electron.shell.openExternal(url);
+    });
+}
+
+function getWindowKey() {
+    // generate guid:
+    // http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000).toString(16)
+        .substring(1);
+    }
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+    s4() + '-' + s4() + s4() + s4();
+}
+
+function storeWindowKey(key, browserWin) {
+    windows[key] = browserWin;
+}
+
+/**
+ * Ensure events comes from a window that we have created.
+ * @param  {EventEmitter} event  node emitter event to be tested
+ * @return {Boolean} returns true if exists otherwise false
+ */
+function isValidWindow(event) {
+    if (event && event.sender) {
+        // validate that event sender is from window we created
+        let browserWin = electron.BrowserWindow.fromWebContents(event.sender)
+        let winKey = event.sender.browserWindowOptions &&
+            event.sender.browserWindowOptions.webPreferences &&
+            event.sender.browserWindowOptions.webPreferences.winKey;
+
+        if (browserWin instanceof electron.BrowserWindow) {
+            let win = windows[winKey];
+            return win && win === browserWin;
+        }
+    }
+
+    return false;
 }
 
 electron.ipcMain.on('symphony-msg', (event, arg) => {
-    if (arg && arg.cmd === 'open' && arg.url) {
-        var width = arg.width || 1024;
-        var height = arg.height || 768;
-        var title = arg.title || 'Symphony';
+    if (!isValidWindow(event)) {
+        console.log('invalid window try to perform action, ignoring action.');
+        return;
+    }
 
-        let childWindow = new BrowserWindow({
+    if (arg && arg.cmd === 'open' && arg.url) {
+        let width = arg.width || 1024;
+        let height = arg.height || 768;
+        let title = arg.title || 'Symphony';
+        let winKey = getWindowKey();
+
+        let childWindow = new electron.BrowserWindow({
             title: title,
             width: width,
             height: height,
             webPreferences: {
                 sandbox: false,
                 nodeIntegration: false,
-                preload: path.join(__dirname, '/child-preload.js')
+                preload: path.join(__dirname, '/child-preload.js'),
+                winKey: winKey
             }
         });
 
-        childWindows.push(childWindow);
+        storeWindowKey(winKey, childWindow);
         childWindow.loadURL(arg.url);
         return;
     }
@@ -105,17 +155,17 @@ app.on('before-quit', function() {
 });
 
 app.on('window-all-closed', function () {
-  // On OS X it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-})
+    // On OS X it is common for applications and their menu bar
+    // to stay active until the user quits explicitly with Cmd + Q
+    if (process.platform !== 'darwin') {
+        app.quit();
+    }
+});
 
 app.on('activate', function () {
-  if (mainWindow === null) {
-      createMainWindow();
-  } else {
-      mainWindow.show();
-  }
+    if (mainWindow === null) {
+        createMainWindow();
+    } else {
+        mainWindow.show();
+    }
 });
