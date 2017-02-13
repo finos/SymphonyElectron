@@ -36,7 +36,7 @@ function createMainWindow () {
         title: 'Symphony',
         width: 1024, height: 768,
         webPreferences: {
-            sandbox: false,
+            sandbox: true,
             nodeIntegration: false,
             preload: path.join(__dirname, '/main-preload.js'),
             winKey: key
@@ -46,7 +46,7 @@ function createMainWindow () {
     storeWindowKey(key, mainWindow)
 
     mainWindow.loadURL(packageJSON.homepage);
-    
+
     const menu = electron.Menu.buildFromTemplate(menuTemplate(app));
     electron.Menu.setApplicationMenu(menu);
 
@@ -130,7 +130,7 @@ electron.ipcMain.on('symphony-msg', (event, arg) => {
             width: width,
             height: height,
             webPreferences: {
-                sandbox: false,
+                sandbox: true,
                 nodeIntegration: false,
                 preload: path.join(__dirname, '/child-preload.js'),
                 winKey: winKey
