@@ -76,6 +76,10 @@ function createMainWindow () {
     });
 }
 
+/**
+ * Generate a key (guid).
+ * @return {string} guid
+ */
 function getWindowKey() {
     // generate guid:
     // http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
@@ -113,6 +117,10 @@ function isValidWindow(event) {
     return false;
 }
 
+/**
+ * Handle ipc messages from renderers. Only messages from windows we have
+ * created are allowed.
+ */
 electron.ipcMain.on('symphony-msg', (event, arg) => {
     if (!isValidWindow(event)) {
         console.log('invalid window try to perform action, ignoring action.');
@@ -143,9 +151,11 @@ electron.ipcMain.on('symphony-msg', (event, arg) => {
     }
 });
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
+/**
+ * This method will be called when Electron has finished
+ * initialization and is ready to create browser windows.
+ * Some APIs can only be used after this event occurs.
+ */
 app.on('ready', function() {
     createMainWindow();
 });
