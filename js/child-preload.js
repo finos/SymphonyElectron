@@ -1,5 +1,5 @@
 // script run before others and still has access to node integration, even
-// when turned off - also us to leak only what want into window object.
+// when turned off - allows us to leak only what want into window object.
 // see: http://electron.atom.io/docs/api/browser-window/
 //
 // to leak some node module into:
@@ -15,10 +15,9 @@ const { ipcRenderer } = require('electron');
 // hold ref so doesn't get GC'ed
 const local = {
     ipcRenderer: ipcRenderer
-}
+};
 
-// JS can detect if in wrapper mode by looking for window.SYM_API obj
-// API exposes by Symphony to a child window:
+// API exposed by Symphony to a child window:
 window.SYM_API = {
 };
 

@@ -19,6 +19,12 @@
         "target": "dmg",
         "category": "public.app-category.business"
     },
+    "dmg": {
+        "contents": [
+            { "x": 140, "y": 184 },
+            { "x": 412, "y": 184, "type": "link", "path": "/Applications" }
+        ]
+    },
     "win": {
         "target": "squirrel"
     }
