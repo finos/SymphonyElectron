@@ -11,7 +11,9 @@
     "start": "electron .",
     "dist-mac": "build --mac",
     "dist-win": "build --win --x64",
-    "dist-win-x86": "build --win --ia32"
+    "dist-win-x86": "build --win --ia32",
+    "win-unpacked": "build --win --x64 --dir",
+    "win-x86-unpacked": "build --win --ia32 --dir"
   },
   "build": {
     "appId": "symphony-electron-desktop",
