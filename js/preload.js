@@ -1,3 +1,5 @@
+'use strict';
+
 // script run before others and still has access to node integration, even
 // when turned off - allows us to leak only what want into window object.
 // see: http://electron.atom.io/docs/api/browser-window/
@@ -17,8 +19,19 @@ const local = {
     ipcRenderer: ipcRenderer
 };
 
-// API exposed by Symphony to a child window:
+// API exposed by Symphony to renderer processes:
+// Note: certain cmds are only allowed on some windows, this is checked by
+// main process.
 window.SYM_API = {
+    version: '1.0.0', // api version
+
+    // only allowed by main window - enforced by main process.
+    openWindow: function(url) {
+        local.ipcRenderer.send('symphony-msg', {
+            cmd: 'open',
+            url: url
+        });
+    }
 };
 
 Object.freeze(window.SYM_API);
