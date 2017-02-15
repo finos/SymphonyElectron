@@ -1,3 +1,5 @@
+'use strict';
+
 const template = [
   {
     label: 'Edit',

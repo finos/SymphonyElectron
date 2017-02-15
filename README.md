@@ -18,8 +18,8 @@ Build Instructions:
 - to locally run mac version: npm run dev:mac
 - to locally run windows (64 bit) version: npm run dev:win
 - to build mac dmg: npm run dist-mac
-- to build win exe installer (64 bit): npm run dist-win
-- to build win exe installer (32 bit): npm run dist-win-x86
+- to build win squirrel msi exe installer (64 bit): npm run dist-win
+- to build win squirrel msi exe installer (32 bit): npm run dist-win-x86
 
 to change the url start location, edit package.json and change 'homepage' variable.
 

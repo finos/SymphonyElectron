@@ -1,3 +1,5 @@
+'use strict';
+
 const electron = require('electron');
 const packageJSON = require('../package.json');
 const menuTemplate = require('./menuTemplate.js');
@@ -38,7 +40,7 @@ function createMainWindow () {
         webPreferences: {
             sandbox: true,
             nodeIntegration: false,
-            preload: path.join(__dirname, '/main-preload.js'),
+            preload: path.join(__dirname, '/preload.js'),
             winKey: key
         }
     });
@@ -103,7 +105,7 @@ function storeWindowKey(key, browserWin) {
 function isValidWindow(event) {
     if (event && event.sender) {
         // validate that event sender is from window we created
-        let browserWin = electron.BrowserWindow.fromWebContents(event.sender)
+        let browserWin = electron.BrowserWindow.fromWebContents(event.sender);
         let winKey = event.sender.browserWindowOptions &&
             event.sender.browserWindowOptions.webPreferences &&
             event.sender.browserWindowOptions.webPreferences.winKey;
@@ -111,6 +113,30 @@ function isValidWindow(event) {
         if (browserWin instanceof electron.BrowserWindow) {
             let win = windows[winKey];
             return win && win === browserWin;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * Only permit certain cmds for some windows
+ * @param  {EventEmitter} event  node emitter event to be tested
+ * @param  {String}  cmd   cmd name
+ * @return {Boolean}       true if cmd is allowed for window, otherwise false
+ */
+function isCmdAllowed(event, cmd) {
+    if (event && event.sender && cmd) {
+        // validate that event sender is from window we created
+        let browserWin = electron.BrowserWindow.fromWebContents(event.sender);
+
+        if (browserWin === mainWindow) {
+            // allow all commands for main window
+            return true;
+        } else {
+            // allow only certain cmds for child windows
+            // e.g., open cmd not allowed for child windows
+            return (arg.cmd !== 'open');
         }
     }
 
@@ -127,6 +153,11 @@ electron.ipcMain.on('symphony-msg', (event, arg) => {
         return;
     }
 
+    if (!isCmdAllowed(event, arg && arg.cmd)) {
+        console.log('cmd is not allowed for this window: ' + arg.cmd);
+        return;
+    }
+
     if (arg && arg.cmd === 'open' && arg.url) {
         let width = arg.width || 1024;
         let height = arg.height || 768;
@@ -140,7 +171,7 @@ electron.ipcMain.on('symphony-msg', (event, arg) => {
             webPreferences: {
                 sandbox: true,
                 nodeIntegration: false,
-                preload: path.join(__dirname, '/child-preload.js'),
+                preload: path.join(__dirname, '/preload.js'),
                 winKey: winKey
             }
         });
