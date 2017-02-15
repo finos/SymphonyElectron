@@ -4,7 +4,7 @@
   "version": "1.0.1",
   "description": "Symphony desktop app (Foundation ODP)",
   "author": "Symphony",
-  "main": "main.js",
+  "main": "js/main.js",
   "scripts": {
     "dev:mac": "ELECTRON_DEV=true npm run start",
     "dev:win": "SET ELECTRON_DEV=true && npm run start",
@@ -18,6 +18,12 @@
     "mac": {
         "target": "dmg",
         "category": "public.app-category.business"
+    },
+    "dmg": {
+        "contents": [
+            { "x": 140, "y": 184 },
+            { "x": 412, "y": 184, "type": "link", "path": "/Applications" }
+        ]
     },
     "win": {
         "target": "squirrel"
