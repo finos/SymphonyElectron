@@ -20,6 +20,7 @@
     <ROW Property="CTRLS" Value="2"/>
     <ROW Property="DialogBitmap" Value="dialog" MultiBuildValue="DefaultBuild:Tabloid.jpg" Type="1" MsiKey="DialogBitmap"/>
     <ROW Property="Manufacturer" Value="Symphony"/>
+    <ROW Property="POD_URL" Value="corporate.symphony.com" Type="4"/>
     <ROW Property="ProductCode" Value="1033:{5A6B1900-CC74-480C-9E93-BA698D58F07E} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="Symphony-Electron"/>
@@ -69,6 +70,7 @@
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
     <ROW File="LICENSE.electron.txt" Component_="blink_image_resources_200_percent.pak" FileName="LICENS~1.TXT|LICENSE.electron.txt" Attributes="0" SourcePath="..\dist\win-unpacked\LICENSE.electron.txt" SelfReg="false" NextFile="LICENSES.chromium.html"/>
     <ROW File="LICENSES.chromium.html" Component_="blink_image_resources_200_percent.pak" FileName="LICENS~1.HTM|LICENSES.chromium.html" Attributes="0" SourcePath="..\dist\win-unpacked\LICENSES.chromium.html" SelfReg="false" NextFile="natives_blob.bin"/>
+    <ROW File="Symphony.config" Component_="blink_image_resources_200_percent.pak" FileName="SYMPHO~1.CON|Symphony.config" Attributes="0" SourcePath="..\config\Symphony.config" SelfReg="false"/>
     <ROW File="Symphony.exe" Component_="Symphony.exe" FileName="Symphony.exe" Attributes="0" SourcePath="..\dist\win-unpacked\Symphony.exe" SelfReg="false" NextFile="ui_resources_200_percent.pak" DigSign="true"/>
     <ROW File="am.pak" Component_="am.pak" FileName="am.pak" Attributes="0" SourcePath="..\dist\win-unpacked\locales\am.pak" SelfReg="false" NextFile="ar.pak"/>
     <ROW File="app.asar" Component_="appupdate.yml" FileName="APP~1.ASA|app.asar" Attributes="0" SourcePath="..\dist\win-unpacked\resources\app.asar" SelfReg="false" NextFile="electron.asar"/>
@@ -85,7 +87,7 @@
     <ROW File="da.pak" Component_="am.pak" FileName="da.pak" Attributes="0" SourcePath="..\dist\win-unpacked\locales\da.pak" SelfReg="false" NextFile="de.pak"/>
     <ROW File="de.pak" Component_="am.pak" FileName="de.pak" Attributes="0" SourcePath="..\dist\win-unpacked\locales\de.pak" SelfReg="false" NextFile="el.pak"/>
     <ROW File="el.pak" Component_="am.pak" FileName="el.pak" Attributes="0" SourcePath="..\dist\win-unpacked\locales\el.pak" SelfReg="false" NextFile="enGB.pak"/>
-    <ROW File="electron.asar" Component_="appupdate.yml" FileName="ELECTR~1.ASA|electron.asar" Attributes="0" SourcePath="..\dist\win-unpacked\resources\electron.asar" SelfReg="false"/>
+    <ROW File="electron.asar" Component_="appupdate.yml" FileName="ELECTR~1.ASA|electron.asar" Attributes="0" SourcePath="..\dist\win-unpacked\resources\electron.asar" SelfReg="false" NextFile="Symphony.config"/>
     <ROW File="enGB.pak" Component_="am.pak" FileName="en-GB.pak" Attributes="0" SourcePath="..\dist\win-unpacked\locales\en-GB.pak" SelfReg="false" NextFile="enUS.pak"/>
     <ROW File="enUS.pak" Component_="am.pak" FileName="en-US.pak" Attributes="0" SourcePath="..\dist\win-unpacked\locales\en-US.pak" SelfReg="false" NextFile="es.pak"/>
     <ROW File="es.pak" Component_="am.pak" FileName="es.pak" Attributes="0" SourcePath="..\dist\win-unpacked\locales\es.pak" SelfReg="false" NextFile="es419.pak"/>
@@ -151,7 +153,7 @@
     <ROW Path="&lt;AI_DICTS&gt;ui_en.ail"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.DigCertStoreComponent">
-    <ROW DigitalCertificate="Wrapper.Windows.Product.RSA.pkcs12.pfx" TimeStampUrl="http://timestamp.comodoca.com/authenticode" SignerDescription="[|ProductName]" DescriptionUrl="https://www.symphony.com" SignOptions="7" SignTool="0" UseSha256="1" Password="4A99BAA4D493EE030480AF53BA42EA11CCFB627AB1800400DA9692073D68C522A10A4FD0B5F78525294E51AC7194D55B5EE1D31F"/>
+    <ROW DigitalCertificate="Wrapper.Windows.Product.RSA.pkcs12.pfx" TimeStampUrl="http://timestamp.comodoca.com/authenticode" SignerDescription="[|ProductName]" DescriptionUrl="https://www.symphony.com" SignOptions="0" SignTool="0" UseSha256="1" Password="4A99BAA4D493EE030480AF53BA42EA11CCFB627AB1800400DA9692073D68C522A10A4FD0B5F78525294E51AC7194D55B5EE1D31F"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.FragmentComponent">
     <ROW Fragment="CommonUI.aip" Path="&lt;AI_FRAGS&gt;CommonUI.aip"/>
@@ -167,9 +169,16 @@
     <ROW Fragment="VerifyRemoveDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\VerifyRemoveDlg.aip"/>
     <ROW Fragment="VerifyRepairDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\VerifyRepairDlg.aip"/>
   </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiActionTextComponent">
+    <ROW Action="AI_TxtUpdaterCommit" Description="Commit text file changes. " Template="Commit text file changes." DescriptionLocId="ActionText.Description.AI_TxtUpdaterCommit" TemplateLocId="ActionText.Template.AI_TxtUpdaterCommit"/>
+    <ROW Action="AI_TxtUpdaterConfig" Description="Executing text file updates" Template="Updating text file: &quot;[1]&quot;" DescriptionLocId="ActionText.Description.AI_TxtUpdaterConfig" TemplateLocId="ActionText.Template.AI_TxtUpdaterConfig"/>
+    <ROW Action="AI_TxtUpdaterInstall" Description="Generating actions to configure text files updates" DescriptionLocId="ActionText.Description.AI_TxtUpdaterInstall"/>
+    <ROW Action="AI_TxtUpdaterRollback" Description="Rolling back text file changes. " Template="Rolling back text file changes." DescriptionLocId="ActionText.Description.AI_TxtUpdaterRollback" TemplateLocId="ActionText.Template.AI_TxtUpdaterRollback"/>
+  </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiBinaryComponent">
     <ROW Name="Banner.jpg" SourcePath="Assets\Banner.jpg"/>
     <ROW Name="Tabloid.jpg" SourcePath="Assets\Tabloid.jpg"/>
+    <ROW Name="TxtUpdater.dll" SourcePath="&lt;AI_CUSTACTS&gt;TxtUpdater.dll"/>
     <ROW Name="aicustact.dll" SourcePath="&lt;AI_CUSTACTS&gt;aicustact.dll"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlComponent">
@@ -201,10 +210,12 @@
     <ROW Dialog_="FolderDlg" Control="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Cancel]" Order="600" TextLocId="-" MsiKey="FolderDlg#Cancel" Options="1"/>
     <ROW Dialog_="FolderDlg" Control="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Back]" Order="700" TextLocId="-" MsiKey="FolderDlg#Back" Options="1"/>
     <ROW Dialog_="FolderDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Help="|" Order="800" HelpLocId="Control.Help.FolderDlg#BannerBitmap" MsiKey="FolderDlg#BannerBitmap"/>
-    <ROW Dialog_="FolderDlg" Control="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Attributes="196611" Text="Select Installation Folder" TextStyle="[DlgTitleFont]" Order="900" TextLocId="Control.Text.FolderDlg#Title" MsiKey="FolderDlg#Title"/>
+    <ROW Dialog_="FolderDlg" Control="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Attributes="196611" Text="Select Installation Folder and POD URL" TextStyle="[DlgTitleFont]" Order="900" TextLocId="Control.Text.FolderDlg#Title" MsiKey="FolderDlg#Title"/>
     <ROW Dialog_="FolderDlg" Control="Text" Type="Text" X="25" Y="70" Width="320" Height="40" Attributes="3" Text="To install in this folder, click &quot;[Text_Next]&quot;. To install to a different folder, enter it below or click &quot;Browse&quot;." Order="1000" TextLocId="Control.Text.FolderDlg#Text" MsiKey="FolderDlg#Text"/>
     <ROW Dialog_="FolderDlg" Control="Description" Type="Text" X="17" Y="21" Width="272" Height="14" Attributes="196611" Text="This is the folder where [ProductName] will be installed." Order="1100" TextLocId="Control.Text.FolderDlg#Description" MsiKey="FolderDlg#Description"/>
     <ROW Dialog_="FolderDlg" Control="BannerLine" Type="Line" X="0" Y="44" Width="372" Height="0" Attributes="1" Order="1200" MsiKey="FolderDlg#BannerLine"/>
+    <ROW Dialog_="FolderDlg" Control="Edit_POD_URL" Type="Edit" X="20" Y="191" Width="251" Height="18" Attributes="3" Property="POD_URL" Text="{260}" Order="1300"/>
+    <ROW Dialog_="FolderDlg" Control="Text_1" Type="Text" X="20" Y="179" Width="251" Height="12" Attributes="3" Text="Enter Symphony POD URL (optional):" Help="|" Order="1400" TextLocId="Control.Text.FolderDlg#FolderLabel" HelpLocId="Control.Help.FolderDlg#FolderLabel"/>
     <ROW Dialog_="InstallTypeDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048576" Text="[DialogBitmap]" Order="100" MsiKey="InstallTypeDlg#BannerBitmap"/>
     <ROW Dialog_="InstallTypeDlg" Control="Bitmap_background" Type="Bitmap" X="0" Y="0" Width="370" Height="234" Attributes="1" Text="[DialogBitmap]" Order="200"/>
     <ROW Dialog_="InstallTypeDlg" Control="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Next]" Order="300" TextLocId="-" MsiKey="InstallTypeDlg#Next" Options="1"/>
@@ -305,10 +316,8 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCustActComponent">
     <ROW Action="AI_AuthorSinglePackage" Type="1" Source="aicustact.dll" Target="AI_AuthorSinglePackage" WithoutSeq="true"/>
-    <ROW Action="AI_DATA_SETTER" Type="51" Source="CustomActionData" Target="Paragon.Renderer.exe"/>
-    <ROW Action="AI_DATA_SETTER_1" Type="51" Source="CustomActionData" Target="Paragon.Renderer.exe"/>
-    <ROW Action="AI_DATA_SETTER_2" Type="51" Source="CustomActionData" Target="paragon.exe"/>
-    <ROW Action="AI_DATA_SETTER_3" Type="51" Source="CustomActionData" Target="paragon.exe"/>
+    <ROW Action="AI_DATA_SETTER" Type="51" Source="CustomActionData" Target="Symphony.exe"/>
+    <ROW Action="AI_DATA_SETTER_2" Type="51" Source="CustomActionData" Target="Symphony.exe"/>
     <ROW Action="AI_DOWNGRADE" Type="19" Target="4010"/>
     <ROW Action="AI_DpiContentScale" Type="1" Source="aicustact.dll" Target="DpiContentScale"/>
     <ROW Action="AI_GetArpIconPath" Type="1" Source="aicustact.dll" Target="GetArpIconPath"/>
@@ -319,10 +328,12 @@
     <ROW Action="AI_SETMIXINSTLOCATION" Type="1" Source="aicustact.dll" Target="MixedAllUsersInstallLocation"/>
     <ROW Action="AI_SHOW_LOG" Type="65" Source="aicustact.dll" Target="LaunchLogFile" WithoutSeq="true"/>
     <ROW Action="AI_STORE_LOCATION" Type="51" Source="ARPINSTALLLOCATION" Target="[APPDIR]"/>
+    <ROW Action="AI_TxtUpdaterCommit" Type="11777" Source="TxtUpdater.dll" Target="OnTxtUpdaterCommit" WithoutSeq="true"/>
+    <ROW Action="AI_TxtUpdaterConfig" Type="11265" Source="TxtUpdater.dll" Target="OnTxtUpdaterConfig" WithoutSeq="true"/>
+    <ROW Action="AI_TxtUpdaterInstall" Type="1" Source="TxtUpdater.dll" Target="OnTxtUpdaterInstall"/>
+    <ROW Action="AI_TxtUpdaterRollback" Type="11521" Source="TxtUpdater.dll" Target="OnTxtUpdaterRollback" WithoutSeq="true"/>
     <ROW Action="KillParagon" Type="1" Source="aicustact.dll" Target="StopProcess" Options="1" AdditionalSeq="AI_DATA_SETTER_2"/>
-    <ROW Action="KillParagon_1" Type="1" Source="aicustact.dll" Target="StopProcess" AdditionalSeq="AI_DATA_SETTER_3"/>
     <ROW Action="KillRenderer" Type="1" Source="aicustact.dll" Target="StopProcess" Options="1" AdditionalSeq="AI_DATA_SETTER"/>
-    <ROW Action="KillRenderer_1" Type="1" Source="aicustact.dll" Target="StopProcess" AdditionalSeq="AI_DATA_SETTER_1"/>
     <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:[AI_UserProgramFiles][Manufacturer]\[ProductName]"/>
     <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
     <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
@@ -341,15 +352,12 @@
     <ROW Action="KillRenderer" Sequence="55"/>
     <ROW Action="AI_DATA_SETTER" Sequence="54"/>
     <ROW Action="AI_SETMIXINSTLOCATION" Sequence="749"/>
+    <ROW Action="AI_TxtUpdaterInstall" Sequence="5101"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
-    <ROW Action="AI_ResolveKnownFolders" Sequence="56"/>
-    <ROW Action="AI_DpiContentScale" Sequence="55"/>
+    <ROW Action="AI_ResolveKnownFolders" Sequence="52"/>
+    <ROW Action="AI_DpiContentScale" Sequence="51"/>
     <ROW Action="ExecuteAction" Sequence="1299" SeqType="0" MsiKey="ExecuteAction"/>
-    <ROW Action="KillRenderer_1" Sequence="54"/>
-    <ROW Action="AI_DATA_SETTER_1" Sequence="53"/>
-    <ROW Action="KillParagon_1" Sequence="52"/>
-    <ROW Action="AI_DATA_SETTER_3" Sequence="51"/>
     <ROW Action="AI_SETMIXINSTLOCATION" Sequence="749"/>
     <ROW Action="InstallTypeDlg" Condition="AI_INSTALL" Sequence="1230" SeqType="3" MsiKey="WelcomeDlg"/>
   </COMPONENT>
@@ -395,5 +403,11 @@
   <COMPONENT cid="caphyon.advinst.msicomp.MsiUpgradeComponent">
     <ROW UpgradeCode="[|UpgradeCode]" VersionMin="0.0.1" VersionMax="[|ProductVersion]" Attributes="257" ActionProperty="OLDPRODUCTS"/>
     <ROW UpgradeCode="[|UpgradeCode]" VersionMin="[|ProductVersion]" Attributes="2" ActionProperty="AI_NEWERPRODUCTFOUND"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.TxtUpdateComponent">
+    <ROW Name="Replace" TxtUpdateSet="Symphony.config" FindPattern="&quot;url&quot;\s*:\s*&quot;.*&quot;" ReplacePattern="&quot;url&quot;: &quot;[POD_URL]&quot;" Options="19" Order="0" FileEncoding="-1"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.TxtUpdateSetComponent">
+    <ROW Key="Symphony.config" Component="am.pak" FileName="Symphony.config" Directory="APPDIR" Options="17"/>
   </COMPONENT>
 </DOCUMENT>
