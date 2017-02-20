@@ -44,7 +44,6 @@
   "bugs": {
     "url": "https://support.symphony.com"
   },
-  "homepage": "https://foundation-dev.symphony.com",
   "devDependencies": {
     "electron": "1.5.1",
     "electron-builder": "^12.3.1",
