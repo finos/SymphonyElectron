@@ -4,7 +4,10 @@ const electron = require('electron');
 const packageJSON = require('../package.json');
 const menuTemplate = require('./menuTemplate.js');
 const path = require('path');
-const app = electron.app
+const app = electron.app;
+const nodeURL = require('url');
+const getConfig = require('./getConfig.js');
+const { isMac, isDevEnv, getGuid } = require('./utils.js');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -17,23 +20,14 @@ if (require('electron-squirrel-startup')) {
     return;
 }
 
-if (isDevEnv()) {
+if (isDevEnv) {
     // needed for development env because local server doesn't have cert
     app.commandLine.appendSwitch('--ignore-certificate-errors');
 }
 
-function isDevEnv() {
-    let isDev = process.env.ELECTRON_DEV ?
-        process.env.ELECTRON_DEV.trim().toLowerCase() === "true" : false;
-    return isDev;
-}
+function createMainWindow (url) {
+    let key = getGuid();
 
-function createMainWindow () {
-    let key = getWindowKey();
-
-    // note: for now, turning off node integration as this is causing failure with
-    // onelogin, jquery can not get initialized. electron's node integration
-    // conflicts on the window object.
     mainWindow = new electron.BrowserWindow({
         title: 'Symphony',
         width: 1024, height: 768,
@@ -45,9 +39,14 @@ function createMainWindow () {
         }
     });
 
-    storeWindowKey(key, mainWindow)
+    mainWindow.webContents.once('did-fail-load', function() {
+        // ToDo: show ui when failure occurs
+        console.error('failed to load window');
+    });
 
-    mainWindow.loadURL(packageJSON.homepage);
+    storeWindowKey(key, mainWindow);
+
+    mainWindow.loadURL(url);
 
     const menu = electron.Menu.buildFromTemplate(menuTemplate(app));
     electron.Menu.setApplicationMenu(menu);
@@ -58,7 +57,7 @@ function createMainWindow () {
             return;
         }
         // mac should hide window when hitting x close
-        if (process.platform === 'darwin') {
+        if (isMac) {
             mainWindow.hide();
             e.preventDefault();
         }
@@ -76,21 +75,6 @@ function createMainWindow () {
         event.preventDefault();
         electron.shell.openExternal(url);
     });
-}
-
-/**
- * Generate a key (guid).
- * @return {string} guid
- */
-function getWindowKey() {
-    // generate guid:
-    // http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
-    function s4() {
-        return Math.floor((1 + Math.random()) * 0x10000).toString(16)
-        .substring(1);
-    }
-    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-    s4() + '-' + s4() + s4() + s4();
 }
 
 function storeWindowKey(key, browserWin) {
@@ -162,7 +146,7 @@ electron.ipcMain.on('symphony-msg', (event, arg) => {
         let width = arg.width || 1024;
         let height = arg.height || 768;
         let title = arg.title || 'Symphony';
-        let winKey = getWindowKey();
+        let winKey = getGuid();
 
         let childWindow = new electron.BrowserWindow({
             title: title,
@@ -187,9 +171,27 @@ electron.ipcMain.on('symphony-msg', (event, arg) => {
  * initialization and is ready to create browser windows.
  * Some APIs can only be used after this event occurs.
  */
-app.on('ready', function() {
-    createMainWindow();
-});
+app.on('ready', getUrlAndOpenMainWindow);
+
+function getUrlAndOpenMainWindow() {
+    getConfig().then(function(config) {
+        let protocol = '';
+        // add https protocol if none found.
+        let parsedUrl = nodeURL.parse(config.url);
+        if (!parsedUrl.protocol) {
+            protocol = 'https';
+        }
+        var url = nodeURL.format({
+            protocol: protocol,
+            slahes: true,
+            pathname: parsedUrl.href
+        });
+        createMainWindow(url);
+    }).catch(function(err) {
+        // ToDo: show ui when failure occurs
+        console.error(err);
+    });
+}
 
 app.on('before-quit', function() {
     willQuitApp = true;
@@ -198,14 +200,14 @@ app.on('before-quit', function() {
 app.on('window-all-closed', function () {
     // On OS X it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
-    if (process.platform !== 'darwin') {
+    if (!isMac) {
         app.quit();
     }
 });
 
 app.on('activate', function () {
     if (mainWindow === null) {
-        createMainWindow();
+        getUrlAndOpenMainWindow();
     } else {
         mainWindow.show();
     }
