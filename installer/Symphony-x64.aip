@@ -72,7 +72,7 @@
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
     <ROW File="LICENSE.electron.txt" Component_="blink_image_resources_200_percent.pak" FileName="LICENS~1.TXT|LICENSE.electron.txt" Attributes="0" SourcePath="..\dist\win-unpacked\LICENSE.electron.txt" SelfReg="false" NextFile="LICENSES.chromium.html"/>
     <ROW File="LICENSES.chromium.html" Component_="blink_image_resources_200_percent.pak" FileName="LICENS~1.HTM|LICENSES.chromium.html" Attributes="0" SourcePath="..\dist\win-unpacked\LICENSES.chromium.html" SelfReg="false" NextFile="natives_blob.bin"/>
-    <ROW File="Symphony.config_1" Component_="Symphony.config" FileName="SYMPHO~1.CON|Symphony.config" Attributes="0" SourcePath="..\config\Symphony.config" SelfReg="false"/>
+    <ROW File="Symphony.config_1" Component_="Symphony.config" FileName="SYMPHO~1.CON|Symphony.config" Attributes="0" SourcePath="..\dist\win-unpacked\config\Symphony.config" SelfReg="false"/>
     <ROW File="Symphony.exe" Component_="Symphony.exe" FileName="Symphony.exe" Attributes="0" SourcePath="..\dist\win-unpacked\Symphony.exe" SelfReg="false" NextFile="ui_resources_200_percent.pak" DigSign="true"/>
     <ROW File="am.pak" Component_="am.pak" FileName="am.pak" Attributes="0" SourcePath="..\dist\win-unpacked\locales\am.pak" SelfReg="false" NextFile="ar.pak"/>
     <ROW File="app.asar" Component_="appupdate.yml" FileName="APP~1.ASA|app.asar" Attributes="0" SourcePath="..\dist\win-unpacked\resources\app.asar" SelfReg="false" NextFile="electron.asar"/>
