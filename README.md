@@ -2,7 +2,7 @@
 
 # SymphonyElectron
 
-Project Goals:
+## Project Goals:
 
 Our goal is to improve the performance and development agility of Symphony's desktop wrapper and build a path to support other wrappers by:
 
@@ -13,9 +13,7 @@ Our goal is to improve the performance and development agility of Symphony's des
 In order to achieve those goals Symphony is participating and working in close collaboration with the [Foundation Desktop Wrapper Working Group](https://symphonyoss.atlassian.net/wiki/display/WGDWAPI/Working+Group+-+Desktop+Wrapper+API)
 
 
-
-Build Instructions:
-
+## Build Instructions:
 - to pick up dependencies: npm install
 - to locally run mac version: npm run dev:mac
 - to locally run windows (64 bit) version: npm run dev:win
@@ -24,8 +22,14 @@ Build Instructions:
 - to build win squirrel installer exe (32 bit): npm run dist-win-x86
 - to build win msi, use 'advanced installer' .aip file in installer/ dir
 
-to change the url start location, edit package.json and change 'homepage' variable.
+## msi command line options:
+- to install for all users (admin required): msiexec.exe /i Symphony-x64.msi ALLUSERS=1
+- to install per user: msiexec.exe /i Symphony-x64.msi ALLUSERS=""
+- to change default pod url: msiexe.exe /i Symphony-x64.msi POD_URL=my.symphony.com
 
-if desiring to run against server without proper cert use cmd line option: --ignore-certificate-errors
+## Start URL
+- To change the start url (i.e., pod url), edit config/Symphony.config and change 'url' variable. if no protocol provided, then https will be added.
+- The installer will include file config/Symphony.config next to executable. Changes in this file will effect all users.  
 
-if you want to build windows version on mac then need to install few items, see: https://github.com/electron-userland/electron-builder/wiki/Multi-Platform-Build
+## Misc notes
+If desiring to run against server without proper cert use cmd line option: --ignore-certificate-errors
