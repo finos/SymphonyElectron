@@ -10,6 +10,6 @@ jest.mock('../js/utils', function() {
 
 test('getConfig should have proper url', function() {
     return getConfig(false).then(function(result) {
-        expect(result.url).toBe('https://foundation-dev.symphony.com');
+        expect(result.url).toBe('https://my.symphony.com');
     });
 });

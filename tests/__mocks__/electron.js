@@ -1,11 +1,17 @@
 const path = require('path');
 
+// use config provided by test framework
 function pathToConfigDir() {
-    return path.join(__dirname, '..');
+    return path.join(__dirname, '/../fixtures');
 }
 const app = {
     getAppPath: pathToConfigDir,
-    getPath: pathToConfigDir
+    getPath: function(type) {
+        if (type === 'exe') {
+            return path.join(pathToConfigDir(), '/Symphony.exe');
+        }
+        return pathToConfigDir();
+    }
 }
 
 module.exports = {
