@@ -31,5 +31,11 @@ In order to achieve those goals Symphony is participating and working in close c
 - To change the start url (i.e., pod url), edit config/Symphony.config and change 'url' variable. if no protocol provided, then https will be added.
 - The installer will include file config/Symphony.config next to executable. Changes in this file will effect all users.  
 
+## Tests and Code Coverage
+- jest framework is used to run tests: http://facebook.github.io/jest/
+- to run tests and get code coverage report: npm test
+- code coverage reports are placed in dir: converage
+- tests are located in dir: tests
+
 ## Misc notes
 If desiring to run against server without proper cert use cmd line option: --ignore-certificate-errors

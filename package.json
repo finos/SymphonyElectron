@@ -13,24 +13,33 @@
     "dist-win": "build --win --x64",
     "dist-win-x86": "build --win --ia32",
     "unpacked-win": "build --win --x64 --dir",
-    "unpacked-win-x86": "build --win --ia32 --dir"
+    "unpacked-win-x86": "build --win --ia32 --dir",
+    "test": "jest --coverage"
   },
   "build": {
-	"files" : "!installer/*",
+    "files": [ "!installer/*", "!tests/*" ],
     "extraFiles": "config/Symphony.config",
     "appId": "symphony-electron-desktop",
     "mac": {
-        "target": "dmg",
-        "category": "public.app-category.business"
+      "target": "dmg",
+      "category": "public.app-category.business"
     },
     "dmg": {
-        "contents": [
-            { "x": 140, "y": 184 },
-            { "x": 412, "y": 184, "type": "link", "path": "/Applications" }
-        ]
+      "contents": [
+        {
+          "x": 140,
+          "y": 184
+        },
+        {
+          "x": 412,
+          "y": 184,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
     },
     "win": {
-        "target": "squirrel"
+      "target": "squirrel"
     }
   },
   "repository": {
@@ -48,8 +57,9 @@
   "devDependencies": {
     "electron": "1.5.1",
     "electron-builder": "^13.9.0",
+    "electron-builder-squirrel-windows": "^12.3.0",
     "electron-packager": "^8.5.2",
-    "electron-builder-squirrel-windows": "^12.3.0"
+    "jest": "^19.0.2"
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0"
