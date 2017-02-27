@@ -4,7 +4,8 @@ const electron = require('electron');
 const app = electron.app;
 const path = require('path');
 const fs = require('fs');
-const { isDevEnv, isMac } = require('./utils.js');
+const isDevEnv = require('./utils.js').isDevEnv;
+const isMac = require('./utils.js').isMac;
 
 /**
  * reads global configuration file: config/Symphony.config. this file is
@@ -13,7 +14,7 @@ const { isDevEnv, isMac } = require('./utils.js');
  * this file is located relative to the executable - it is placed there by
  * the installer. this makes the file easily modifable by admin (or person who
  * installed app). for dev env, the file is read directly from packed asar file.
- * 
+ *
  * @return {Object} configuration parameters (e.g., url)
  */
 function getConfig() {
@@ -30,7 +31,7 @@ function getConfig() {
             let execPath = path.dirname(app.getPath('exe'));
             // for mac exec is stored in subdir, for linux/windows config
             // dir is in the same location.
-            configPath = path.join(execPath, isMac ? '..' : '', configFile)
+            configPath = path.join(execPath, isMac ? '..' : '', configFile);
         }
 
         fs.readFile(configPath, 'utf8', function (err, data) {
