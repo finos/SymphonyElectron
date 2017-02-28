@@ -8,21 +8,20 @@ const app = electron.app;
 const nodeURL = require('url');
 const getConfig = require('./getConfig.js');
 const { isMac, isDevEnv, getGuid } = require('./utils.js');
+const loadErrors = require('./dialogs/showLoadError.js');
+
+// show dialog when certificate errors occur
+require('./dialogs/showCertError.js');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 let windows = {};
-
 let willQuitApp = false;
+let isOnline = true;
 
 if (require('electron-squirrel-startup')) {
     return;
-}
-
-if (isDevEnv) {
-    // needed for development env because local server doesn't have cert
-    app.commandLine.appendSwitch('--ignore-certificate-errors');
 }
 
 function createMainWindow (url) {
@@ -31,6 +30,7 @@ function createMainWindow (url) {
     mainWindow = new electron.BrowserWindow({
         title: 'Symphony',
         width: 1024, height: 768,
+        show: true,
         webPreferences: {
             sandbox: true,
             nodeIntegration: false,
@@ -39,13 +39,28 @@ function createMainWindow (url) {
         }
     });
 
-    mainWindow.webContents.once('did-fail-load', function() {
-        // ToDo: show ui when failure occurs
-        console.error('failed to load window');
+    function retry() {
+        if (isOnline) {
+            mainWindow.webContents && mainWindow.webContents.reload();
+        } else {
+            loadErrors.showNetworkConnectivityError(mainWindow, url, retry);
+        }
+    }
+
+    // content can be cached and will still finish load but
+    // we might not have netowrk connectivity, so warn the user.
+    mainWindow.webContents.once('did-finish-load', function() {
+        if (!isOnline) {
+            loadErrors.showNetworkConnectivityError(mainWindow, url, retry);
+        }
+    });
+
+    mainWindow.webContents.once('did-fail-load', function(event, errorCode,
+        errorDesc, validatedURL, isMainFrame) {
+        loadErrors.showLoadFailure(mainWindow, url, errorDesc, errorCode, retry);
     });
 
     storeWindowKey(key, mainWindow);
-
     mainWindow.loadURL(url);
 
     const menu = electron.Menu.buildFromTemplate(menuTemplate(app));
@@ -138,7 +153,12 @@ electron.ipcMain.on('symphony-msg', (event, arg) => {
     }
 
     if (!isCmdAllowed(event, arg && arg.cmd)) {
-        console.log('cmd is not allowed for this window: ' + arg.cmd);
+        console.log('cmd not allowed for this window: ' + arg.cmd);
+        return;
+    }
+
+    if (arg && arg.cmd === 'isOnline') {
+        isOnline = arg.isOnline;
         return;
     }
 
@@ -188,8 +208,8 @@ function getUrlAndOpenMainWindow() {
         });
         createMainWindow(url);
     }).catch(function(err) {
-        // ToDo: show ui when failure occurs
-        console.error(err);
+        let title = 'Error loading configuration';
+        electron.dialog.showErrorBox(title, title + ': ' + err);
     });
 }
 
