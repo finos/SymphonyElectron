@@ -31,7 +31,22 @@ window.SYM_API = {
             cmd: 'open',
             url: url
         });
+    },
+    networkStatusChange: function(isOnline) {
+        local.ipcRenderer.send('symphony-msg', {
+            cmd: 'isOnline',
+            isOnline: isOnline
+        });
     }
 };
+
+function updateOnlineStatus() {
+    window.SYM_API.networkStatusChange(navigator.onLine);
+}
+
+window.addEventListener('offline', updateOnlineStatus, false);
+window.addEventListener('online', updateOnlineStatus, false);
+
+updateOnlineStatus();
 
 Object.freeze(window.SYM_API);
