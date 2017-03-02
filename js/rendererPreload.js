@@ -19,6 +19,8 @@ const local = {
     ipcRenderer: ipcRenderer
 };
 
+const api = 'symphony-api';
+
 // API exposed by Symphony to renderer processes:
 // Note: certain cmds are only allowed on some windows, this is checked by
 // main process.
@@ -27,21 +29,51 @@ window.SYM_API = {
 
     // only allowed by main window - enforced by main process.
     openWindow: function(url) {
-        local.ipcRenderer.send('symphony-msg', {
+        local.ipcRenderer.send(api, {
             cmd: 'open',
             url: url
         });
     },
-    networkStatusChange: function(isOnline) {
-        local.ipcRenderer.send('symphony-msg', {
-            cmd: 'isOnline',
-            isOnline: isOnline
-        });
+
+    /**
+     * allows JS to register a logger that can be used by electron main process.
+     * @param  {Object} logger  function that can be called accepting
+     * object: {
+     *  logLevel: 'ERROR'|'CONFLICT'|'WARN'|'ACTION'|'INFO'|'DEBUG',
+     *  logDetails: String
+     *  }
+     *
+     *  note: only main window is allowed to register a logger, others are
+     *  ignored.
+     */
+    registerLogger: function(logger) {
+        if (typeof logger === 'function') {
+            local.logger = logger;
+
+            // only main window can register
+            local.ipcRenderer.send(api, {
+                cmd: 'registerLogger'
+            });
+        }
     }
 };
 
+// listen for log message from main process
+local.ipcRenderer.on('log', (event, arg) => {
+    console.log('got msg:' + arg)
+    if (local.logger && arg && arg.level && arg.msg) {
+        local.logger({
+            logLevel: arg.level,
+            logDetails: arg.msg
+        });
+    }
+});
+
 function updateOnlineStatus() {
-    window.SYM_API.networkStatusChange(navigator.onLine);
+    local.ipcRenderer.send(api, {
+        cmd: 'isOnline',
+        isOnline: navigator.onLine
+    });
 }
 
 window.addEventListener('offline', updateOnlineStatus, false);
