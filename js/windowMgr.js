@@ -22,14 +22,14 @@ let isOnline = true;
 const preloadScript = path.join(__dirname, '/RendererPreload.js');
 
 function addWindowKey(key, browserWin) {
-    windows[key] = browserWin;
+    windows[ key ] = browserWin;
 }
 
 function removeWindowKey(key) {
-    delete windows[key];
+    delete windows[ key ];
 }
 
-function createMainWindow (url) {
+function createMainWindow(url) {
     let key = getGuid();
 
     mainWindow = new electron.BrowserWindow({
@@ -45,10 +45,13 @@ function createMainWindow (url) {
     });
 
     function retry() {
-        if (isOnline) {
-            mainWindow.webContents && mainWindow.webContents.reload();
-        } else {
+        if (!isOnline) {
             loadErrors.showNetworkConnectivityError(mainWindow, url, retry);
+            return;
+        }
+
+        if (mainWindow.webContents) {
+            mainWindow.webContents.reload();
         }
     }
 
@@ -63,7 +66,7 @@ function createMainWindow (url) {
     });
 
     mainWindow.webContents.on('did-fail-load', function(event, errorCode,
-        errorDesc, validatedURL, isMainFrame) {
+        errorDesc) {
         loadErrors.showLoadFailure(mainWindow, url, errorDesc, errorCode, retry);
     });
 
@@ -75,7 +78,7 @@ function createMainWindow (url) {
 
     mainWindow.on('close', function(e) {
         if (willQuitApp) {
-            mainWindow = null;
+            destroyMainWindow();
             return;
         }
         // mac should hide window when hitting x close
@@ -85,19 +88,23 @@ function createMainWindow (url) {
         }
     });
 
-    mainWindow.on('closed', function () {
+    function destroyMainWindow() {
         removeWindowKey(key);
-        mainWindow.removeAllEventListeners();
-        // Dereference the window object, usually you would store windows
-        // in an array if your app supports multi windows, this is the time
-        // when you should delete the corresponding element.
-        mainWindow = null;
-    });
+        if (mainWindow) {
+            mainWindow.removeAllListeners();
+            if (mainWindow.webContents) {
+                mainWindow.webContents.removeAllListeners();
+            }
+            mainWindow = null;
+        }
+    }
+
+    mainWindow.on('closed', destroyMainWindow);
 
     // open external links in default browser - window.open
-    mainWindow.webContents.on('new-window', function(event, url) {
+    mainWindow.webContents.on('new-window', function(event, newWinUrl) {
         event.preventDefault();
-        electron.shell.openExternal(url);
+        electron.shell.openExternal(newWinUrl);
     });
 }
 
@@ -115,7 +122,7 @@ function isMainWindow(win) {
 
 function hasWindow(win, winKey) {
     if (win instanceof electron.BrowserWindow) {
-        let browserWin = windows[winKey];
+        let browserWin = windows[ winKey ];
         return browserWin && win === browserWin;
     }
 
@@ -141,8 +148,13 @@ function createChildWindow(url, title, width, height) {
     childWindow.loadURL(url);
 
     childWindow.on('closed', function() {
-        childWindow.removeAllEventListeners();
         removeWindowKey(winKey);
+        if (childWindow) {
+            childWindow.removeAllListeners();
+            if (childWindow.webContents) {
+                childWindow.webContents.removeAllListeners();
+            }
+        }
     });
 }
 

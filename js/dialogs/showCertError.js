@@ -21,8 +21,8 @@ electron.app.on('certificate-error', function(event, webContents, url, error,
         return;
     }
 
-    let browserWin = electron.BrowserWindow.fromWebContents(webContents);
-    var buttonId = electron.dialog.showMessageBox(browserWin, {
+    const browserWin = electron.BrowserWindow.fromWebContents(webContents);
+    const buttonId = electron.dialog.showMessageBox(browserWin, {
         type: 'warning',
         buttons: [ 'Allow', 'Deny', 'Ignore All' ],
         defaultId: 1,

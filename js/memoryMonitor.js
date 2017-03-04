@@ -1,6 +1,5 @@
 'use strict';
 
-const electron = require('electron');
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js')
 

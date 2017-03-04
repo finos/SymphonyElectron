@@ -25,7 +25,8 @@ const api = 'symphony-api';
 // Note: certain cmds are only allowed on some windows, this is checked by
 // main process.
 window.SYM_API = {
-    version: '1.0.0', // api version
+    // api version
+    version: '1.0.0',
 
     // only allowed by main window - enforced by main process.
     openWindow: function(url) {
@@ -60,7 +61,6 @@ window.SYM_API = {
 
 // listen for log message from main process
 local.ipcRenderer.on('log', (event, arg) => {
-    console.log('got msg:' + arg)
     if (local.logger && arg && arg.level && arg.msg) {
         local.logger({
             logLevel: arg.level,
@@ -72,7 +72,7 @@ local.ipcRenderer.on('log', (event, arg) => {
 function updateOnlineStatus() {
     local.ipcRenderer.send(api, {
         cmd: 'isOnline',
-        isOnline: navigator.onLine
+        isOnline: window.navigator.onLine
     });
 }
 
