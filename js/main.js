@@ -3,11 +3,13 @@
 const electron = require('electron');
 const app = electron.app;
 const nodeURL = require('url');
+const squirrelStartup = require('electron-squirrel-startup');
+
 const getConfig = require('./getConfig.js');
 const { isMac } = require('./utils.js');
 
 // exit early for squirrel installer
-if (require('electron-squirrel-startup')) {
+if (squirrelStartup) {
     return;
 }
 
@@ -45,7 +47,7 @@ function getUrlAndOpenMainWindow() {
     });
 }
 
-app.on('window-all-closed', function () {
+app.on('window-all-closed', function() {
     // On OS X it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
     if (!isMac) {
@@ -53,7 +55,7 @@ app.on('window-all-closed', function () {
     }
 });
 
-app.on('activate', function () {
+app.on('activate', function() {
     if (windowMgr.isMainWindow(null)) {
         getUrlAndOpenMainWindow();
     } else {

@@ -34,7 +34,7 @@ function getConfig() {
             configPath = path.join(execPath, isMac ? '..' : '', configFile);
         }
 
-        fs.readFile(configPath, 'utf8', function (err, data) {
+        fs.readFile(configPath, 'utf8', function(err, data) {
             if (err) {
                 reject('cannot open config file: ' + configPath + ', error: ' + err);
             } else {
@@ -42,7 +42,7 @@ function getConfig() {
                     // data is the contents of the text file we just read
                     let config = JSON.parse(data);
                     resolve(config);
-                } catch(e) {
+                } catch (e) {
                     reject('can not parse config file data: ' + data + ', error: ' + err);
                 }
             }

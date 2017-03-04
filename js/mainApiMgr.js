@@ -5,7 +5,6 @@
  * from the renderer process.
  */
 const electron = require('electron');
-const path = require('path');
 
 const windowMgr = require('./windowMgr.js');
 const log = require('./log.js');
@@ -18,8 +17,8 @@ const log = require('./log.js');
 function isValidWindow(event) {
     if (event && event.sender) {
         // validate that event sender is from window we created
-        let browserWin = electron.BrowserWindow.fromWebContents(event.sender);
-        let winKey = event.sender.browserWindowOptions &&
+        const browserWin = electron.BrowserWindow.fromWebContents(event.sender);
+        const winKey = event.sender.browserWindowOptions &&
             event.sender.browserWindowOptions.webPreferences &&
             event.sender.browserWindowOptions.webPreferences.winKey;
 
@@ -43,14 +42,14 @@ function isCmdAllowed(event, cmd) {
         // validate that event sender is from window we created
         let browserWin = electron.BrowserWindow.fromWebContents(event.sender);
 
-        if (windowMgr.isMainWindow(browserWin)) {
+        if (!windowMgr.isMainWindow(browserWin)) {
             // allow all commands for main window
             return true;
-        } else {
-            // allow only certain cmds for child windows
-            // e.g., open cmd not allowed for child windows
-            return (cmdBlackList.indexOf(cmd) === -1)
         }
+
+        // allow only certain cmds for child windows
+        // e.g., open cmd not allowed for child windows
+        return (cmdBlackList.indexOf(cmd) === -1)
     }
 
     return false;
@@ -62,12 +61,16 @@ function isCmdAllowed(event, cmd) {
  */
 electron.ipcMain.on('symphony-api', (event, arg) => {
     if (!isValidWindow(event)) {
+        /* eslint-disable no-console */
         console.log('invalid window try to perform action, ignoring action.');
+        /* eslint-enable no-console */
         return;
     }
 
     if (!isCmdAllowed(event, arg && arg.cmd)) {
+        /* eslint-disable no-console */
         console.log('cmd not allowed for this window: ' + arg.cmd);
+        /* eslint-enable no-console */
         return;
     }
 
@@ -91,6 +94,5 @@ electron.ipcMain.on('symphony-api', (event, arg) => {
         let width = arg.width || 1024;
         let height = arg.height || 768;
         windowMgr.createChildWindow(arg.url, title, width, height);
-        return;
     }
 });
