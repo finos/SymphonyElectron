@@ -112,6 +112,10 @@ app.on('before-quit', function() {
     willQuitApp = true;
 });
 
+function getMainWindow() {
+    return mainWindow;
+}
+
 function showMainWindow() {
     mainWindow.show();
 }
@@ -164,6 +168,7 @@ function setIsOnline(status) {
 
 module.exports = {
     createMainWindow: createMainWindow,
+    getMainWindow: getMainWindow,
     showMainWindow: showMainWindow,
     isMainWindow: isMainWindow,
     hasWindow: hasWindow,

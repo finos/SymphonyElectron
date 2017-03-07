@@ -8,6 +8,7 @@ const electron = require('electron');
 
 const windowMgr = require('./windowMgr.js');
 const log = require('./log.js');
+const badgeCount = require('./badgeCount.js');
 
 /**
  * Ensure events comes from a window that we have created.
@@ -78,8 +79,19 @@ electron.ipcMain.on('symphony-api', (event, arg) => {
         return;
     }
 
-    if (arg.cmd === 'isOnline') {
+    if (arg.cmd === 'isOnline' && typeof arg.isOnline === 'boolean') {
         windowMgr.setIsOnline(arg.isOnline);
+        return;
+    }
+
+    if (arg.cmd === 'setBadgeCount' && typeof arg.count === 'number') {
+        badgeCount.show(arg.count);
+        return;
+    }
+
+    if (arg.cmd === 'badgeDataUrl' && typeof arg.dataUrl === 'string' &&
+        typeof arg.count === 'number') {
+        badgeCount.setDataUrl(arg.dataUrl, arg.count);
         return;
     }
 
@@ -89,7 +101,7 @@ electron.ipcMain.on('symphony-api', (event, arg) => {
         return;
     }
 
-    if (arg.cmd === 'open' && arg.url) {
+    if (arg.cmd === 'open' && typeof arg.url === 'string') {
         let title = arg.title || 'Symphony';
         let width = arg.width || 1024;
         let height = arg.height || 768;
