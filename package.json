@@ -8,19 +8,22 @@
   "scripts": {
     "dev:mac": "ELECTRON_DEV=true npm run start",
     "dev:win": "SET ELECTRON_DEV=true && npm run start",
-    "start": "electron .",
-    "dist-mac": "npm run test && npm run lint && build --mac",
-    "dist-win": "npm run test && npm run lint && build --win --x64",
-    "dist-win-x86": "npm run test && npm run lint && build --win --ia32",
-    "unpacked-win": "npm run test && npm run lint && build --win --x64 --dir",
-    "unpacked-win-x86": "npm run test && npm run lint && build --win --ia32 --dir",
-    "test": "jest --coverage",
-    "lint": "eslint js/**"
+    "start": "npm run browserify-preload && electron .",
+    "dist-mac": "npm run prebuild && build --mac",
+    "dist-win": "npm run prebuild && build --win --x64",
+    "dist-win-x86": "npm run prebuild && build --win --ia32",
+    "unpacked-win": "npm run prebuild && build --win --x64 --dir",
+    "unpacked-win-x86": "npm run prebuild && build --win --ia32 --dir",
+    "prebuild": "npm run lint && npm run test && npm run browserify-preload",
+    "lint": "eslint js/**",
+    "test": "jest --coverage tests/*.test.js",
+    "browserify-preload": "browserify -o js/preload/_preloadMain.js -x electron js/preload/preloadMain.js && browserify -o js/preload/_preloadChild.js -x electron js/preload/preloadChild.js"
   },
   "build": {
     "files": [
-      "!installer/*",
-      "!tests/*"
+        "!coverage/*",
+        "!installer/*",
+        "!tests/*"
     ],
     "extraFiles": "config/Symphony.config",
     "appId": "symphony-electron-desktop",
@@ -68,7 +71,8 @@
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-react": "^6.10.0",
-    "jest": "^19.0.2"
+    "jest": "^19.0.2",
+    "browserify": "^14.1.0"
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0",

@@ -10,6 +10,10 @@ const windowMgr = require('./windowMgr.js');
 const log = require('./log.js');
 const badgeCount = require('./badgeCount.js');
 
+const apiEnums = require('./enums/api.js');
+const apiCmds = apiEnums.cmds;
+const apiName = apiEnums.apiName;
+
 /**
  * Ensure events comes from a window that we have created.
  * @param  {EventEmitter} event  node emitter event to be tested
@@ -29,48 +33,14 @@ function isValidWindow(event) {
     return false;
 }
 
-// only these cmds are allowed by main window
-let cmdBlackList = [ 'open', 'registerLogger' ];
-
-/**
- * Only permit certain cmds for some windows
- * @param  {EventEmitter} event  node emitter event to be tested
- * @param  {String}  cmd   cmd name
- * @return {Boolean}       true if cmd is allowed for window, otherwise false
- */
-function isCmdAllowed(event, cmd) {
-    if (event && event.sender && cmd) {
-        // validate that event sender is from window we created
-        let browserWin = electron.BrowserWindow.fromWebContents(event.sender);
-
-        if (!windowMgr.isMainWindow(browserWin)) {
-            // allow all commands for main window
-            return true;
-        }
-
-        // allow only certain cmds for child windows
-        // e.g., open cmd not allowed for child windows
-        return (cmdBlackList.indexOf(cmd) === -1)
-    }
-
-    return false;
-}
-
 /**
  * Handle API related ipc messages from renderers. Only messages from windows
  * we have created are allowed.
  */
-electron.ipcMain.on('symphony-api', (event, arg) => {
+electron.ipcMain.on(apiName, (event, arg) => {
     if (!isValidWindow(event)) {
         /* eslint-disable no-console */
         console.log('invalid window try to perform action, ignoring action.');
-        /* eslint-enable no-console */
-        return;
-    }
-
-    if (!isCmdAllowed(event, arg && arg.cmd)) {
-        /* eslint-disable no-console */
-        console.log('cmd not allowed for this window: ' + arg.cmd);
         /* eslint-enable no-console */
         return;
     }
@@ -79,29 +49,29 @@ electron.ipcMain.on('symphony-api', (event, arg) => {
         return;
     }
 
-    if (arg.cmd === 'isOnline' && typeof arg.isOnline === 'boolean') {
+    if (arg.cmd === apiCmds.isOnline && typeof arg.isOnline === 'boolean') {
         windowMgr.setIsOnline(arg.isOnline);
         return;
     }
 
-    if (arg.cmd === 'setBadgeCount' && typeof arg.count === 'number') {
+    if (arg.cmd === apiCmds.setBadgeCount && typeof arg.count === 'number') {
         badgeCount.show(arg.count);
         return;
     }
 
-    if (arg.cmd === 'badgeDataUrl' && typeof arg.dataUrl === 'string' &&
+    if (arg.cmd === apiCmds.badgeDataUrl && typeof arg.dataUrl === 'string' &&
         typeof arg.count === 'number') {
         badgeCount.setDataUrl(arg.dataUrl, arg.count);
         return;
     }
 
-    if (arg.cmd === 'registerLogger') {
+    if (arg.cmd === apiCmds.registerLogger) {
         // renderer window that has a registered logger from JS.
         log.setLogWindow(event.sender);
         return;
     }
 
-    if (arg.cmd === 'open' && typeof arg.url === 'string') {
+    if (arg.cmd === apiCmds.open && typeof arg.url === 'string') {
         let title = arg.title || 'Symphony';
         let width = arg.width || 1024;
         let height = arg.height || 768;
