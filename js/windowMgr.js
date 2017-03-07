@@ -96,7 +96,7 @@ function createMainWindow(url) {
         removeWindowKey(key);
         if (mainWindow) {
             mainWindow.removeAllListeners();
-            if (mainWindow.webContents) {
+            if (!mainWindow.isDestroyed() && mainWindow.webContents) {
                 mainWindow.webContents.removeAllListeners();
             }
             mainWindow = null;
@@ -159,7 +159,7 @@ function createChildWindow(url, title, width, height) {
         removeWindowKey(winKey);
         if (childWindow) {
             childWindow.removeAllListeners();
-            if (childWindow.webContents) {
+            if (!childWindow.isDestroyed() && childWindow.webContents) {
                 childWindow.webContents.removeAllListeners();
             }
         }
