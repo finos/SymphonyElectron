@@ -14,24 +14,25 @@
 
 const { ipcRenderer } = require('electron');
 
+const apiEnums = require('../enums/api.js');
+const apiCmds = apiEnums.cmds;
+const apiName = apiEnums.apiName;
+
 // hold ref so doesn't get GC'ed
 const local = {
     ipcRenderer: ipcRenderer
 };
 
-const api = 'symphony-api';
-
-// API exposed by Symphony to renderer processes:
-// Note: certain cmds are only allowed on some windows, this is checked by
-// main process.
+//
+// API exposed to renderer main window process.
+//
 window.SYM_API = {
     // api version
     version: '1.0.0',
 
-    // only allowed by main window - enforced by main process.
     openWindow: function(url) {
-        local.ipcRenderer.send(api, {
-            cmd: 'open',
+        local.ipcRenderer.send(apiName, {
+            cmd: apiCmds.open,
             url: url
         });
     },
@@ -45,8 +46,8 @@ window.SYM_API = {
      * are used here).
      */
     setBadgeCount: function(count) {
-        local.ipcRenderer.send(api, {
-            cmd: 'setBadgeCount',
+        local.ipcRenderer.send(apiName, {
+            cmd: apiCmds.setBadgeCount,
             count: count
         });
     },
@@ -67,8 +68,8 @@ window.SYM_API = {
             local.logger = logger;
 
             // only main window can register
-            local.ipcRenderer.send(api, {
-                cmd: 'registerLogger'
+            local.ipcRenderer.send(apiName, {
+                cmd: apiCmds.registerLogger
             });
         }
     }
@@ -127,16 +128,16 @@ local.ipcRenderer.on('createBadgeDataUrl', (arg) => {
 
     let dataUrl = canvas.toDataURL('image/png', 1.0);
 
-    local.ipcRenderer.send(api, {
-        cmd: 'badgeDataUrl',
+    local.ipcRenderer.send(apiName, {
+        cmd: apiCmds.badgeDataUrl,
         dataUrl: dataUrl,
         count: count
     });
 });
 
 function updateOnlineStatus() {
-    local.ipcRenderer.send(api, {
-        cmd: 'isOnline',
+    local.ipcRenderer.send(apiName, {
+        cmd: apiCmds.isOnline,
         isOnline: window.navigator.onLine
     });
 }
