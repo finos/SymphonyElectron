@@ -1,10 +1,5 @@
 'use strict';
 
-const isDevEnv = process.env.ELECTRON_DEV ?
-        process.env.ELECTRON_DEV.trim().toLowerCase() === 'true' : false;
-
-const isMac = (process.platform === 'darwin');
-
 /**
  * Generates a guid,
  * http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
@@ -20,8 +15,4 @@ function getGuid() {
     return guid;
 }
 
-module.exports = {
-    isDevEnv: isDevEnv,
-    isMac: isMac,
-    getGuid: getGuid
-};
+module.exports = getGuid;

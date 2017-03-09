@@ -4,7 +4,7 @@ const electron = require('electron');
 const app = electron.app;
 const nativeImage = electron.nativeImage;
 
-const { isMac } = require('./utils.js');
+const { isMac } = require('./utils/misc.js');
 const windowMgr = require('./windowMgr.js');
 const maxCount = 1e8;
 

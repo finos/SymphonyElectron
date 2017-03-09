@@ -1,7 +1,7 @@
 const getConfig = require('../js/getconfig');
 
 // mock required so getConfig reads config from correct path
-jest.mock('../js/utils', function() {
+jest.mock('../js/utils/misc.js', function() {
     return {
         isDevEnv: false,
         isMac: false
