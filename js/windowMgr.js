@@ -6,7 +6,8 @@ const path = require('path');
 
 const menuTemplate = require('./menuTemplate.js');
 const loadErrors = require('./dialogs/showLoadError.js');
-const { isMac, getGuid } = require('./utils.js');
+const { isMac } = require('./utils/misc.js');
+const getGuid = require('./utils/getGuid.js');
 const log = require('./log.js')
 const logLevels = require('./enums/logLevels.js');
 
@@ -70,8 +71,8 @@ function createMainWindow(url) {
     });
 
     mainWindow.webContents.on('did-fail-load', function(event, errorCode,
-        errorDesc) {
-        loadErrors.showLoadFailure(mainWindow, url, errorDesc, errorCode, retry);
+        errorDesc, validatedURL) {
+        loadErrors.showLoadFailure(mainWindow, validatedURL, errorDesc, errorCode, retry);
     });
 
     addWindowKey(key, mainWindow);

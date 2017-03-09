@@ -4,8 +4,8 @@ const electron = require('electron');
 const app = electron.app;
 const path = require('path');
 const fs = require('fs');
-const isDevEnv = require('./utils.js').isDevEnv;
-const isMac = require('./utils.js').isMac;
+const isDevEnv = require('./utils/misc.js').isDevEnv;
+const isMac = require('./utils/misc.js').isMac;
 
 /**
  * reads global configuration file: config/Symphony.config. this file is

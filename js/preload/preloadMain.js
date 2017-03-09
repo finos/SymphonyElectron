@@ -14,6 +14,7 @@
 
 const { ipcRenderer } = require('electron');
 
+const throttle = require('../utils/throttle.js');
 const apiEnums = require('../enums/api.js');
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
@@ -22,6 +23,14 @@ const apiName = apiEnums.apiName;
 const local = {
     ipcRenderer: ipcRenderer
 };
+
+// throttle calls to this func to at most once per sec, called on leading edge.
+const throttledSetBadgeCount = throttle(1000, function(count) {
+    local.ipcRenderer.send(apiName, {
+        cmd: apiCmds.setBadgeCount,
+        count: count
+    });
+});
 
 //
 // API exposed to renderer main window process.
@@ -41,15 +50,11 @@ window.SYM_API = {
      * sets the count on the tray icon to the given number.
      * @param {number} count  count to be displayed
      * note: count of 0 will remove the displayed count.
-     * note: for mac the number displayed will be 0 to 49 and 50+
-     * note: for windws the number displayed will be 0 to 9 and 10+ (since imgs
-     * are used here).
+     * note: for mac the number displayed will be 1 to infinity
+     * note: for windws the number displayed will be 1 to 99 and 99+
      */
     setBadgeCount: function(count) {
-        local.ipcRenderer.send(apiName, {
-            cmd: apiCmds.setBadgeCount,
-            count: count
-        });
+        throttledSetBadgeCount(count);
     },
 
     /**
