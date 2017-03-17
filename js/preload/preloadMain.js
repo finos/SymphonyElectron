@@ -19,9 +19,13 @@ const apiEnums = require('../enums/api.js');
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 
+const notifyInterface = require('../notify/notifyInterface.js');
+const createProxy = require('./createProxy.js');
+
 // hold ref so doesn't get GC'ed
 const local = {
-    ipcRenderer: ipcRenderer
+    ipcRenderer: ipcRenderer,
+
 };
 
 // throttle calls to this func to at most once per sec, called on leading edge.
@@ -56,6 +60,36 @@ window.SYM_API = {
     setBadgeCount: function(count) {
         throttledSetBadgeCount(count);
     },
+
+    // /**
+    //  * opts {
+    //  *  title
+    //  *  text
+    //  *  icon
+    //  *  color
+    //  *  shouldFlash
+    //  *  clickCallback
+    //  *  closeCallback
+    //  * }
+    //  */
+    // showNotification: function(title, text) {
+    //     // let handle = uniqueId();
+    //
+    //     local.ipcRenderer.send(apiName, {
+    //         cmd: apiCmds.showNotification,
+    //         title: title,
+    //         text: text
+    //         // opts,
+    //         // callbackHandle: handle
+    //     });
+    //
+    //     // registerCallback(handle, {
+    //     //     click: opts.clickCallback,
+    //     //     close: opts.closeCallback
+    //     // });
+    // },
+
+    Notification: createProxy.bind(null, notifyInterface),
 
     /**
      * allows JS to register a logger that can be used by electron main process.
