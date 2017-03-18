@@ -8,6 +8,10 @@ class Notify {
         return 10;
     }
 
+    get permission() {
+        return 'granted';
+    }
+
     close() {
         this.destroy();
     }

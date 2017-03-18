@@ -13,6 +13,8 @@ class Notify {
 
     close() {}
 
+    get permission() {}
+
     destroy() {}
 
     requirePermissions() {}

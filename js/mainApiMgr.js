@@ -54,31 +54,6 @@ electron.ipcMain.on(apiName, (event, arg) => {
         return;
     }
 
-    // if (arg.cmd === apiCmds.showNotification) {
-    //     const rendererNotfId = arg.rendererNotfId;
-    //     const notify = require('./notify/notify.js');
-    //     var id = notify.notify({
-    //         title: arg.title,
-    //         text: arg.text,
-    //         flash: true,
-    //         color: 'blue',
-    //         image: 'https://qa4.symphony.com//avatars/qa4/50/206158433167/-DzfqZcAt4pzted_1mhlC5ZPh4GKRVnrp6XYm2RqnLI.png'
-    //     });
-    //
-    //     event.sender.send('notification-id', {
-    //         rendererNotfId: rendererNotfId,
-    //         mainNotfId: id
-    //      });
-    // }
-    //
-    // if (arg.cmd === apiCmds.subscribeNotification) {
-    //     let notifId = arg.id
-    //     let eventName = arg.eventName
-    //     notify.subscribe(notifId, eventName, function() {
-    //         event.sender.send('notification-event', { id:notifId, eventName: eventName })
-    //     });
-    // }
-
     if (arg.cmd === apiCmds.isOnline && typeof arg.isOnline === 'boolean') {
         windowMgr.setIsOnline(arg.isOnline);
         return;
@@ -124,14 +99,25 @@ function uniqueId() {
     return id++;
 }
 
+/**
+ * Creates instance of given class for proxy in renderer process.
+ *
+ *  @param  {Object} args {
+ *   className {String}: name of class to create.
+ *  }
+ *
+ * @return {Number} unique id for class intance created.
+ */
 electron.ipcMain.on(apiProxyCmds.createObject, function(event, args) {
     if (!isValidWindow(event)) {
+        /* eslint-disable no-param-reassign */
         event.returnValue = null;
+        /* eslint-enable no-param-reassign */
         return;
     }
 
-    if (args.objectName && api[args.objectName]) {
-        var obj = new api[args.objectName];
+    if (args.className && api[args.className]) {
+        var obj = new api[args.className];
         obj._callbacks = {};
 
         let objId = uniqueId();
@@ -144,12 +130,30 @@ electron.ipcMain.on(apiProxyCmds.createObject, function(event, args) {
             }
         });
 
+        /* eslint-disable no-param-reassign */
         event.returnValue = objId;
+        /* eslint-enable no-param-reassign */
     } else {
+        /* eslint-disable no-param-reassign */
         event.returnValue = null;
+        /* eslint-enable no-param-reassign */
     }
 });
 
+/**
+ * Invokes a method for the proxy.
+ *
+ *  @param  {Object} args {
+ *   objId {Number}: id of object previously created
+ *   invokeId {Number}: id used by proxy to uniquely identify this method call
+ *   methodName {String}: name of method to call
+ *  }
+ *
+ * @return {Object} {
+ *    returnValue {Object}: result of calling method
+ *    invokeId {Number}: id so proxy can identify method call
+ *  }
+ */
 electron.ipcMain.on(apiProxyCmds.invokeMethod, function(event, args) {
     if (!isValidWindow(event) || !args.invokeId) {
         return;
@@ -175,7 +179,6 @@ electron.ipcMain.on(apiProxyCmds.invokeMethod, function(event, args) {
 
     // special method to lose ref to obj
     if (args.methodName === 'destroy') {
-        console.log('destroying object');
         delete liveObjs[args.objId];
     }
 
@@ -189,24 +192,92 @@ electron.ipcMain.on(apiProxyCmds.invokeMethod, function(event, args) {
     });
 });
 
+/**
+ * Getter implementation.  Allows proxy to retrieve value from implementation
+ * object.
+ *
+ * @param  {Object} args {
+ *   objId {Number}: id of object previously created.
+ *   getterId {Number}: id used by proxy to uniquely identify this getter call.
+ *   getterProperty {String}: name of getter property to retrieve.
+ *  }
+ *
+ * @return {Object} {
+ *    returnValue {Object}: result of calling method
+ *    getterId {Number}: id so proxy can identify getter call
+ *  }
+ */
 electron.ipcMain.on(apiProxyCmds.get, function(event, args) {
-    if (!isValidWindow(event)) {
+    if (!isValidWindow(event) || !args.getterId) {
         return;
     }
-    // ToDo
-});
 
-electron.ipcMain.on(apiProxyCmds.set, function(event, args) {
-    if (!isValidWindow(event)) {
+    if (!args.objId || !liveObjs[args.objId]) {
+        event.sender.send(apiProxyCmds.getResult, {
+            error: 'calling obj is not present',
+            getterId: args.getterId
+        });
         return;
     }
-    // ToDo
+
+    if (!args.getterProperty) {
+        event.sender.send(apiProxyCmds.getResult, {
+            error: 'property name not provided',
+            getterId: args.getterId
+        });
+        return;
+    }
+
+    let obj = liveObjs[args.objId];
+    var result = obj[args.getterProperty];
+
+    event.sender.send(apiProxyCmds.getResult, {
+        returnValue: result,
+        getterId: args.getterId
+    });
 });
 
+/**
+ * Setter implementation.  Allows proxy to set value on implementation object.
+ */
+// electron.ipcMain.on(apiProxyCmds.set, function(event, args) {
+//     if (!isValidWindow(event)) {
+//         return;
+//     }
+//
+//     if (!args.objId || !liveObjs[args.objId]) {
+//         // ignore - object is dead
+//         return;
+//     }
+//
+//     if (!args.setterName) {
+//         // ignore - no name provided
+//         return;
+//     }
+//
+//     let obj = liveObjs[args.objId];
+//     obj[setterName] = args.setterValue;
+// });
+
+/**
+ * Listens to an event and calls back to renderer proxy when given event occurs.
+ *
+ *  @param  {Object} args {
+ *   objId {Number}: id of object previously created.
+ *   callbackId {Number}: id used by proxy to uniquely identify this event.
+ *   eventName {String}: name of event to listen for.
+ *  }
+ *
+ * @return {Object} {
+ *    result {Object}: result from invoking callback.
+ *    callbackId {Number}: id so proxy can identify event that occurred.
+ *  }
+ */
 electron.ipcMain.on(apiProxyCmds.addEvent, function(event, args) {
     if (!isValidWindow(event)) {
         return;
     }
+    /* eslint-disable no-console */
     if (!args.objId || !liveObjs[args.objId]) {
         console.log('calling obj is not present');
         return;
@@ -221,10 +292,11 @@ electron.ipcMain.on(apiProxyCmds.addEvent, function(event, args) {
         console.log('no eventName provided');
         return;
     }
+    /* eslint-enable no-console */
+
 
     let obj = liveObjs[args.objId];
     let callbackFunc = function(result) {
-        console.log('event listener in main process invoked');
         event.sender.send(apiProxyCmds.eventCallback, {
             callbackId: args.callbackId,
             result: result
@@ -234,11 +306,21 @@ electron.ipcMain.on(apiProxyCmds.addEvent, function(event, args) {
     obj.addEventListener(args.eventName, callbackFunc);
 });
 
+/**
+ * Stops listening to given event.
+ *
+ *  @param  {Object} args {
+ *   objId {Number}: id of object previously created.
+ *   callbackId {Number}: id used by proxy to uniquely identify this event.
+ *   eventName {String}: name of event to listen for.
+ *  }
+ */
 electron.ipcMain.on(apiProxyCmds.removeEvent, function(event, args) {
     if (!isValidWindow(event)) {
         return;
     }
 
+    /* eslint-disable no-console */
     if (!args.objId || !liveObjs[args.objId]) {
         console.log('calling obj is not present');
         return;
@@ -253,6 +335,7 @@ electron.ipcMain.on(apiProxyCmds.removeEvent, function(event, args) {
         console.log('no eventName provided');
         return;
     }
+    /* eslint-enable no-console */
 
     let obj = liveObjs[args.objId];
     let callbackFunc = obj._callbacks[args.callbackId];

@@ -13,7 +13,7 @@ function uniqueId() {
 let constructorHandler = {
     construct: function(target, argumentsList, newTarget) {
         var arg = {
-            objectName: target.name,
+            className: target.name,
             constructorArgs: argumentsList
         };
 
@@ -118,10 +118,64 @@ function handleMethod(target, methodName) {
     }
 }
 
+function getHandler(target, property) {
+    return new Promise(function(resolve, reject) {
+        var getterId = name + uniqueId();
+        var args = {
+            getterId: getterId,
+            objId: target._objId,
+            getterProperty: property
+        }
+
+        ipcRenderer.on(proxyCmds.getResult, resultCallback);
+        ipcRenderer.send(proxyCmds.get, args);
+
+        function removeEventListener() {
+            ipcRenderer.removeListener(proxyCmds.getResult,
+                resultCallback);
+        }
+        function resultCallback(arg) {
+            if (arg.getterId === getterId) {
+                window.clearTimeout(timer);
+                removeEventListener();
+                if (arg.error) {
+                    reject('getter called failed: ' + arg.error);
+                } else {
+                    resolve(arg.returnValue);
+                }
+            }
+        }
+
+        // timeout in case we never hear anything back from main process
+        let timer = setTimeout(function() {
+            removeEventListener();
+            reject('timeout_no_reponse');
+        }, 5000);
+    });
+}
+
+// function setHandler(target, property, value, receiver) {
+//     var args = {
+//         objId: target._objId,
+//         setterName: property,
+//         setterValue: value
+//     }
+//
+//     ipcRenderer.sendSync(proxyCmds.get, args);
+// }
+
 let instanceHandler = {
     get: function(target, name, receiver) {
-        // is it a method call?
-        if (name in target.__proto__) {
+        // all methods and getters we support should be on the prototype
+        let prototype = Reflect.getPrototypeOf(target);
+        let desc = Object.getOwnPropertyDescriptor(prototype, name);
+
+        // does this have a "getter"
+        if (desc && desc.get) {
+            return getHandler(target, name);
+        }
+        // does this have a method
+        if (desc && typeof desc.value === 'function') {
             if (name === 'addEventListener') {
                 return handleAddEvent(target);
             }
@@ -133,19 +187,9 @@ let instanceHandler = {
             return handleMethod(target, name);
         }
 
-        // getter:
-        // return Reflect.get(target, name, receiver);
-
-        // ToDo:
-        return new Promise(function(resolve, reject) {
-            resolve(5);
-        });
-    },
-    set: function(target, property, value, receiver) {
-        // ToDo:
-        console.log('called: ' + property + ' = ' + value);
-        return true;
+        return null;
     }
+    // set: setHandler
 }
 
 /**
@@ -158,7 +202,7 @@ let instanceHandler = {
  * All method calls will be sent over IPC to main process, evaulated and
  * result returned back to main process.  Method calls return a promise.
  *
- * Special method calls: "AddEventListener" and "RemoveEventListener" allow
+ * Special method calls: "addEventListener" and "removeEventListener" allow
  * attaching/detaching to events.
  *
  * Getters (e.g., x.y) will return a promise that gets fullfilled
