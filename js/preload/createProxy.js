@@ -154,18 +154,23 @@ function getHandler(target, property) {
     });
 }
 
-// function setHandler(target, property, value, receiver) {
-//     var args = {
-//         objId: target._objId,
-//         setterName: property,
-//         setterValue: value
-//     }
-//
-//     ipcRenderer.sendSync(proxyCmds.get, args);
-// }
+function setHandler(target, property, value) {
+    let prototype = Reflect.getPrototypeOf(target);
+    let desc = Object.getOwnPropertyDescriptor(prototype, property);
+
+    if (desc && desc.set) {
+        var args = {
+            objId: target._objId,
+            setterProperty: property,
+            setterValue: value
+        }
+
+        ipcRenderer.sendSync(proxyCmds.set, args);
+    }
+}
 
 let instanceHandler = {
-    get: function(target, name, receiver) {
+    get: function(target, name) {
         // all methods and getters we support should be on the prototype
         let prototype = Reflect.getPrototypeOf(target);
         let desc = Object.getOwnPropertyDescriptor(prototype, name);
@@ -188,8 +193,8 @@ let instanceHandler = {
         }
 
         return null;
-    }
-    // set: setHandler
+    },
+    set: setHandler
 }
 
 /**

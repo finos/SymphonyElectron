@@ -110,10 +110,14 @@ function uniqueId() {
  */
 electron.ipcMain.on(apiProxyCmds.createObject, function(event, args) {
     if (!isValidWindow(event)) {
-        /* eslint-disable no-param-reassign */
-        event.returnValue = null;
-        /* eslint-enable no-param-reassign */
+        setResult(null);
         return;
+    }
+
+    function setResult(value) {
+        /* eslint-disable no-param-reassign */
+        event.returnValue = value;
+        /* eslint-enable no-param-reassign */
     }
 
     if (args.className && api[args.className]) {
@@ -130,13 +134,9 @@ electron.ipcMain.on(apiProxyCmds.createObject, function(event, args) {
             }
         });
 
-        /* eslint-disable no-param-reassign */
-        event.returnValue = objId;
-        /* eslint-enable no-param-reassign */
+        setResult(objId);
     } else {
-        /* eslint-disable no-param-reassign */
-        event.returnValue = null;
-        /* eslint-enable no-param-reassign */
+        fail(null);
     }
 });
 
@@ -239,25 +239,41 @@ electron.ipcMain.on(apiProxyCmds.get, function(event, args) {
 
 /**
  * Setter implementation.  Allows proxy to set value on implementation object.
- */
-// electron.ipcMain.on(apiProxyCmds.set, function(event, args) {
-//     if (!isValidWindow(event)) {
-//         return;
-//     }
-//
-//     if (!args.objId || !liveObjs[args.objId]) {
-//         // ignore - object is dead
-//         return;
-//     }
-//
-//     if (!args.setterName) {
-//         // ignore - no name provided
-//         return;
-//     }
-//
-//     let obj = liveObjs[args.objId];
-//     obj[setterName] = args.setterValue;
-// });
+*
+* @param  {Object} args {
+*   objId {Number}: id of object previously created.
+*   setterProperty {String}: name of setter property.
+*   setterValue {object}: new value to set.
+*  }
+*
+* @return {Object} input setter value
+*/
+electron.ipcMain.on(apiProxyCmds.set, function(event, args) {
+    if (!isValidWindow(event)) {
+        setResult(null);
+        return;
+    }
+
+    if (!args.objId || !liveObjs[args.objId]) {
+        setResult(null);
+        return;
+    }
+
+    if (!args.setterProperty) {
+        setResult(null);
+        return;
+    }
+
+    function setResult(value) {
+        /* eslint-disable no-param-reassign */
+        event.returnValue = value;
+        /* eslint-enable no-param-reassign */
+    }
+
+    let obj = liveObjs[args.objId];
+    obj[args.setterProperty] = args.setterValue;
+    setResult(args.setterValue);
+});
 
 /**
  * Listens to an event and calls back to renderer proxy when given event occurs.
