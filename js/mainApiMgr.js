@@ -84,7 +84,7 @@ electron.ipcMain.on(apiName, (event, arg) => {
     }
 });
 
-const Notify = require('./notify/notifyImplementation.js');
+const Notify = require('./notify/notifyImpl.js');
 
 // holds all project classes that can be created.
 const api = {
@@ -103,7 +103,7 @@ function uniqueId() {
  * Creates instance of given class for proxy in renderer process.
  *
  *  @param  {Object} args {
- *   className {String}: name of class to create.
+ *   className {String} name of class to create.
  *  }
  *
  * @return {Number} unique id for class intance created.
@@ -121,7 +121,7 @@ electron.ipcMain.on(apiProxyCmds.createObject, function(event, args) {
     }
 
     if (args.className && api[args.className]) {
-        var obj = new api[args.className];
+        var obj = new api[args.className](...args.constructorArgsArray);
         obj._callbacks = {};
 
         let objId = uniqueId();
@@ -136,7 +136,7 @@ electron.ipcMain.on(apiProxyCmds.createObject, function(event, args) {
 
         setResult(objId);
     } else {
-        fail(null);
+        setResult(null);
     }
 });
 
@@ -144,14 +144,17 @@ electron.ipcMain.on(apiProxyCmds.createObject, function(event, args) {
  * Invokes a method for the proxy.
  *
  *  @param  {Object} args {
- *   objId {Number}: id of object previously created
- *   invokeId {Number}: id used by proxy to uniquely identify this method call
- *   methodName {String}: name of method to call
+ *   objId {Number} id of object previously created, not needed for static call.
+ *   invokeId {Number} id used by proxy to uniquely identify this method call
+ *   methodName {String} name of method to call
+ *   arguments: {Array} arguments to invoke method with.
+ *   isStatic: {bool} true is this is a static method.
+ *   className {String} name of class on which func is invoked.
  *  }
  *
  * @return {Object} {
- *    returnValue {Object}: result of calling method
- *    invokeId {Number}: id so proxy can identify method call
+ *    returnValue {Object} result of calling method
+ *    invokeId {Number} id so proxy can identify method call
  *  }
  */
 electron.ipcMain.on(apiProxyCmds.invokeMethod, function(event, args) {
@@ -159,7 +162,7 @@ electron.ipcMain.on(apiProxyCmds.invokeMethod, function(event, args) {
         return;
     }
 
-    if (!args.objId || !liveObjs[args.objId]) {
+    if (!args.isStatic && (!args.objId || !liveObjs[args.objId])) {
         event.sender.send(apiProxyCmds.invokeResult, {
             error: 'calling obj is not present',
             invokeId: args.invokeId
@@ -167,24 +170,60 @@ electron.ipcMain.on(apiProxyCmds.invokeMethod, function(event, args) {
         return;
     }
 
-    let obj = liveObjs[args.objId];
+    // static method call must have className and class must exist in api
+    if (args.isStatic) {
+        if (!args.className) {
+            event.sender.send(apiProxyCmds.invokeResult, {
+                error: 'for static method must provide class name',
+                invokeId: args.invokeId
+            });
+            return;
+        }
 
-    if (!args.methodName || !obj[args.methodName]) {
-        event.sender.send(apiProxyCmds.invokeResult, {
-            error: 'no such method',
-            invokeId: args.invokeId
-        });
-        return;
+        if (!api[args.className]) {
+            event.sender.send(apiProxyCmds.invokeResult, {
+                error: 'no class exists: ' + args.className,
+                invokeId: args.invokeId
+            });
+            return;
+        }
     }
 
-    // special method to lose ref to obj
-    if (args.methodName === 'destroy') {
-        delete liveObjs[args.objId];
+    let result;
+    let funcArgs = args.arguments || [];
+
+    if (args.isStatic) {
+        let classType = api[args.className];
+
+        if (!args.methodName || !classType[args.methodName]) {
+            event.sender.send(apiProxyCmds.invokeResult, {
+                error: 'no such static method',
+                invokeId: args.invokeId
+            });
+            return;
+        }
+
+        result = classType[args.methodName](...funcArgs);
+    } else {
+        let obj = liveObjs[args.objId];
+
+        if (!args.methodName || !obj[args.methodName]) {
+            event.sender.send(apiProxyCmds.invokeResult, {
+                error: 'no such method',
+                invokeId: args.invokeId
+            });
+            return;
+        }
+
+        // special method to lose ref to obj
+        if (args.methodName === 'destroy') {
+            delete liveObjs[args.objId];
+        }
+
+        console.log('func args=', funcArgs);
+
+        result = obj[args.methodName](...funcArgs);
     }
-
-    var funcArgs = args.arguments || [];
-
-    var result = obj[args.methodName](funcArgs);
 
     event.sender.send(apiProxyCmds.invokeResult, {
         returnValue: result,
@@ -197,14 +236,16 @@ electron.ipcMain.on(apiProxyCmds.invokeMethod, function(event, args) {
  * object.
  *
  * @param  {Object} args {
- *   objId {Number}: id of object previously created.
- *   getterId {Number}: id used by proxy to uniquely identify this getter call.
- *   getterProperty {String}: name of getter property to retrieve.
+ *   objId {Number} id of object previously created (not needed for static get)
+ *   getterId {Number} id used by proxy to uniquely identify this getter call.
+ *   getterProperty {String} name of getter property to retrieve.
+ *   isStatic {boo} true if this if getter is for static property.
+ *   className {String} name of class we are operating on here.
  *  }
  *
  * @return {Object} {
- *    returnValue {Object}: result of calling method
- *    getterId {Number}: id so proxy can identify getter call
+ *    returnValue {Object} result of calling method
+ *    getterId {Number} id so proxy can identify getter call
  *  }
  */
 electron.ipcMain.on(apiProxyCmds.get, function(event, args) {
@@ -212,12 +253,32 @@ electron.ipcMain.on(apiProxyCmds.get, function(event, args) {
         return;
     }
 
-    if (!args.objId || !liveObjs[args.objId]) {
+    // non-static calls must have an live instance available
+    if (!args.isStatic && (!args.objId || !liveObjs[args.objId])) {
         event.sender.send(apiProxyCmds.getResult, {
             error: 'calling obj is not present',
             getterId: args.getterId
         });
         return;
+    }
+
+    // static get must have className and class must exist in api
+    if (args.isStatic) {
+        if (!args.className) {
+            event.sender.send(apiProxyCmds.getResult, {
+                error: 'for static getter must provide class name',
+                getterId: args.getterId
+            });
+            return;
+        }
+
+        if (!api[args.className]) {
+            event.sender.send(apiProxyCmds.getResult, {
+                error: 'no class exists: ' + args.className,
+                getterId: args.getterId
+            });
+            return;
+        }
     }
 
     if (!args.getterProperty) {
@@ -228,8 +289,14 @@ electron.ipcMain.on(apiProxyCmds.get, function(event, args) {
         return;
     }
 
-    let obj = liveObjs[args.objId];
-    var result = obj[args.getterProperty];
+    let result;
+    if (args.isStatic) {
+        let classType = api[args.className]
+        result = classType[args.getterProperty];
+    } else {
+        let obj = liveObjs[args.objId];
+        result = obj[args.getterProperty];
+    }
 
     event.sender.send(apiProxyCmds.getResult, {
         returnValue: result,
@@ -241,9 +308,9 @@ electron.ipcMain.on(apiProxyCmds.get, function(event, args) {
  * Setter implementation.  Allows proxy to set value on implementation object.
 *
 * @param  {Object} args {
-*   objId {Number}: id of object previously created.
-*   setterProperty {String}: name of setter property.
-*   setterValue {object}: new value to set.
+*   objId {Number} id of object previously created.
+*   setterProperty {String} name of setter property.
+*   setterValue {object} new value to set.
 *  }
 *
 * @return {Object} input setter value
@@ -279,14 +346,14 @@ electron.ipcMain.on(apiProxyCmds.set, function(event, args) {
  * Listens to an event and calls back to renderer proxy when given event occurs.
  *
  *  @param  {Object} args {
- *   objId {Number}: id of object previously created.
- *   callbackId {Number}: id used by proxy to uniquely identify this event.
- *   eventName {String}: name of event to listen for.
+ *   objId {Number} id of object previously created.
+ *   callbackId {Number} id used by proxy to uniquely identify this event.
+ *   eventName {String} name of event to listen for.
  *  }
  *
  * @return {Object} {
- *    result {Object}: result from invoking callback.
- *    callbackId {Number}: id so proxy can identify event that occurred.
+ *    result {Object} result from invoking callback.
+ *    callbackId {Number} id so proxy can identify event that occurred.
  *  }
  */
 electron.ipcMain.on(apiProxyCmds.addEvent, function(event, args) {
@@ -326,9 +393,9 @@ electron.ipcMain.on(apiProxyCmds.addEvent, function(event, args) {
  * Stops listening to given event.
  *
  *  @param  {Object} args {
- *   objId {Number}: id of object previously created.
- *   callbackId {Number}: id used by proxy to uniquely identify this event.
- *   eventName {String}: name of event to listen for.
+ *   objId {Number} id of object previously created.
+ *   callbackId {Number} id used by proxy to uniquely identify this event.
+ *   eventName {String} name of event to listen for.
  *  }
  */
 electron.ipcMain.on(apiProxyCmds.removeEvent, function(event, args) {

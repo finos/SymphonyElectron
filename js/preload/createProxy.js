@@ -11,10 +11,10 @@ function uniqueId() {
 }
 
 let constructorHandler = {
-    construct: function(target, argumentsList, newTarget) {
+    construct: function(target, argumentsList) {
         var arg = {
             className: target.name,
-            constructorArgs: argumentsList
+            constructorArgsArray: argumentsList
         };
 
         var objId = ipcRenderer.sendSync(proxyCmds.createObject, arg);
@@ -23,15 +23,48 @@ let constructorHandler = {
             throw new Error('can not create obj: ' + target.name);
         }
 
-        var n = new target();
-        n._objId = objId;
-        n._callbacks = new WeakMap();
+        var ProxyClass = new target();
+        ProxyClass._objId = objId;
+        ProxyClass._callbacks = new WeakMap();
 
-        return n;
-    }
+        let instanceHandler = {
+            get: instanceGetHandler,
+            set: instanceSetHandler
+        }
+
+        return new Proxy(ProxyClass, instanceHandler);
+    },
+
+    // static getter and method handler
+    get: staticGetHandler
 }
 
-function handleAddEvent(target) {
+function instanceGetHandler(target, name) {
+    // all methods and getters we support should be on the prototype
+    let prototype = Reflect.getPrototypeOf(target);
+    let desc = Object.getOwnPropertyDescriptor(prototype, name);
+
+    // does this have a "getter"
+    if (desc && desc.get) {
+        return getHandler(target, name, false);
+    }
+    // does this have a method
+    if (desc && typeof desc.value === 'function') {
+        if (name === 'addEventListener') {
+            return addEventHandler(target);
+        }
+
+        if (name === 'removeEventListener') {
+            return removeEventHandler(target);
+        }
+
+        return methodHandler(target, name, false);
+    }
+
+    return null;
+}
+
+function addEventHandler(target) {
     return function(eventName, callback) {
         var callbackId = eventName + uniqueId();
         var args = {
@@ -57,7 +90,7 @@ function handleAddEvent(target) {
     }
 }
 
-function handleRemoveEvent(target) {
+function removeEventHandler(target) {
     return function(eventName, callback) {
         if (target._callbacks && target._callback.has(callback)) {
             let callbackObj = target._callback.get(callback);
@@ -78,16 +111,21 @@ function handleRemoveEvent(target) {
     }
 }
 
-function handleMethod(target, methodName) {
-    return function() {
-        var argPassedIn = arguments;
+function methodHandler(target, methodName, isStatic) {
+    return function(...argPassedToMethod) {
         return new Promise(function(resolve, reject) {
             var invokeId = methodName + uniqueId();
             var args = {
                 invokeId: invokeId,
                 objId: target._objId,
                 methodName: methodName,
-                arguments: argPassedIn
+                arguments: argPassedToMethod,
+                isStatic: isStatic,
+                className: target.name
+            }
+
+            if (!isStatic) {
+                args.objId = target._objId;
             }
 
             ipcRenderer.on(proxyCmds.invokeResult, resultCallback);
@@ -118,13 +156,18 @@ function handleMethod(target, methodName) {
     }
 }
 
-function getHandler(target, property) {
+function getHandler(target, property, isStatic) {
     return new Promise(function(resolve, reject) {
-        var getterId = name + uniqueId();
+        var getterId = property + uniqueId();
         var args = {
             getterId: getterId,
-            objId: target._objId,
-            getterProperty: property
+            getterProperty: property,
+            isStatic: isStatic,
+            className: target.name
+        }
+
+        if (!isStatic) {
+            args.objId = target._objId;
         }
 
         ipcRenderer.on(proxyCmds.getResult, resultCallback);
@@ -154,7 +197,7 @@ function getHandler(target, property) {
     });
 }
 
-function setHandler(target, property, value) {
+function instanceSetHandler(target, property, value) {
     let prototype = Reflect.getPrototypeOf(target);
     let desc = Object.getOwnPropertyDescriptor(prototype, property);
 
@@ -169,36 +212,24 @@ function setHandler(target, property, value) {
     }
 }
 
-let instanceHandler = {
-    get: function(target, name) {
-        // all methods and getters we support should be on the prototype
-        let prototype = Reflect.getPrototypeOf(target);
-        let desc = Object.getOwnPropertyDescriptor(prototype, name);
+function staticGetHandler(target, name) {
+    // all methods and getters we support should be on the prototype
+    let desc = Object.getOwnPropertyDescriptor(target, name);
 
-        // does this have a "getter"
-        if (desc && desc.get) {
-            return getHandler(target, name);
-        }
-        // does this have a method
-        if (desc && typeof desc.value === 'function') {
-            if (name === 'addEventListener') {
-                return handleAddEvent(target);
-            }
+    // does this have a static "getter"
+    if (desc && desc.get) {
+        return getHandler(target, name, true);
+    }
+    // does this have a static method
+    if (desc && typeof desc.value === 'function') {
+        return methodHandler(target, name, true);
+    }
 
-            if (name === 'removeEventListener') {
-                return handleRemoveEvent(target);
-            }
-
-            return handleMethod(target, name);
-        }
-
-        return null;
-    },
-    set: setHandler
+    return null;
 }
 
 /**
- * Creates and returns a proxy instance in render process that will use IPC
+ * Creates and returns a proxy in render process that will use IPC
  * with main process where "real" instance is created.
  *
  * The constructor is executed synchronously, so take care to not block
@@ -221,11 +252,10 @@ let instanceHandler = {
  * used.
  *
  * @param  {Class}  ApiClass  reference to prototype/class constructor.
- * @return {object}           instance of ApiClass that serves as proxy.
+ * @return {object}           proxy for ApiClass.
  */
 function createProxy(ApiClass) {
-    var ProxyClass = new Proxy(ApiClass, constructorHandler);
-    return new Proxy(new ProxyClass(), instanceHandler);
+    return new Proxy(ApiClass, constructorHandler);
 }
 
-module.exports = createProxy;
+module.exports = createProxy

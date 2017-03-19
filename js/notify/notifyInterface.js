@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * interface defn for notifications. no implementation here.
  *
@@ -7,17 +9,13 @@
  * to expose methods/props to renderer.
  */
 class Notify {
-    constructor() {}
-
-    show() {}
+    constructor(title, options) {}
 
     close() {}
 
-    get permission() {}
-
     destroy() {}
 
-    requirePermissions() {}
+    static get permission() {}
 
     addEventListener(event, cb) {}
 

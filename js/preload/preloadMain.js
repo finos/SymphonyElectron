@@ -61,35 +61,7 @@ window.SYM_API = {
         throttledSetBadgeCount(count);
     },
 
-    // /**
-    //  * opts {
-    //  *  title
-    //  *  text
-    //  *  icon
-    //  *  color
-    //  *  shouldFlash
-    //  *  clickCallback
-    //  *  closeCallback
-    //  * }
-    //  */
-    // showNotification: function(title, text) {
-    //     // let handle = uniqueId();
-    //
-    //     local.ipcRenderer.send(apiName, {
-    //         cmd: apiCmds.showNotification,
-    //         title: title,
-    //         text: text
-    //         // opts,
-    //         // callbackHandle: handle
-    //     });
-    //
-    //     // registerCallback(handle, {
-    //     //     click: opts.clickCallback,
-    //     //     close: opts.closeCallback
-    //     // });
-    // },
-
-    Notification: createProxy.bind(null, notifyInterface),
+    Notification: createProxy(notifyInterface),
 
     /**
      * allows JS to register a logger that can be used by electron main process.

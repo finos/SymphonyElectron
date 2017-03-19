@@ -1,5 +1,7 @@
 'use strict'
-
+//
+// code here adapted from https://www.npmjs.com/package/electron-notify
+//
 const path = require('path');
 const async = require('async');
 const electron = require('electron');
@@ -37,7 +39,7 @@ let config = {
     height: 80,
     padding: 4,
     borderRadius: 5,
-    displayTime: 50000000,
+    displayTime: 5000,
     animationSteps: 5,
     animationStepMs: 5,
     animateInParallel: true,
@@ -112,11 +114,11 @@ let config = {
     }
 }
 
-function setConfig(customConfig) {
-    Object.assign(customConfig, config);
-
-    calcDimensions();
-}
+// function setConfig(customConfig) {
+//     Object.assign(customConfig, config);
+//
+//     calcDimensions();
+// }
 
 function getTemplatePath() {
     let templatePath = path.join(__dirname, 'notify.html');
@@ -224,8 +226,6 @@ function notify(notification) {
         })
         return notf.id
     }
-    // Since 1.0.0 all notification parameters need to be passed
-    // as object.
     log('electron-notify: ERROR notify() only accepts a single object with notification parameters.')
     return null;
 }
@@ -527,5 +527,5 @@ function log() {
 }
 
 module.exports.notify = notify
-module.exports.setConfig = setConfig
+// module.exports.setConfig = setConfig
 module.exports.closeAll = closeAll
