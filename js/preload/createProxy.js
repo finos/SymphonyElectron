@@ -5,7 +5,37 @@ const { ipcRenderer } = require('electron');
 const apiEnums = require('../enums/api.js');
 const proxyCmds = apiEnums.proxyCmds;
 
-let id = 0;
+/**
+ * Creates and returns a proxy (in renderer process) that will use IPC
+ * with main process where "real" instance is created.
+ *
+ * The constructor is executed synchronously, so take care to not block
+ * processes.
+ *
+ * All method calls will be sent over IPC to main process, evaulated and
+ * result returned back to main process.  Method calls return a promise.
+ *
+ * Special method calls: "addEventListener" and "removeEventListener" allow
+ * attaching/detaching to events.
+ *
+ * Getters (e.g., x.y) will return a promise that gets fullfilled
+ * when ipc returns value.
+ *
+ * Setters are synchronously executed (so take care).
+ *
+ * Note: The "real" instance should implement a destroy method (e.g., close) that
+ * should be used to destroy the instance held in main process, otherwise a
+ * memory leak will occur - as renderer can not know when instance is no longer
+ * used.
+ *
+ * @param  {Class}  ApiClass  reference to prototype/class constructor.
+ * @return {object}           proxy for ApiClass.
+ */
+function createProxy(ApiClass) {
+    return new Proxy(ApiClass, constructorHandler);
+}
+
+let id = 1;
 function uniqueId() {
     return id++;
 }
@@ -228,34 +258,5 @@ function staticGetHandler(target, name) {
     return null;
 }
 
-/**
- * Creates and returns a proxy in render process that will use IPC
- * with main process where "real" instance is created.
- *
- * The constructor is executed synchronously, so take care to not block
- * processes.
- *
- * All method calls will be sent over IPC to main process, evaulated and
- * result returned back to main process.  Method calls return a promise.
- *
- * Special method calls: "addEventListener" and "removeEventListener" allow
- * attaching/detaching to events.
- *
- * Getters (e.g., x.y) will return a promise that gets fullfilled
- * when ipc returns value.
- *
- * Setters are synchronously executed (so take care).
- *
- * Note: The "real" instance should implement a destroy method (e.g., close) that
- * should be used to destroy the instance held in main process, otherwise a
- * memory leak will occur - as renderer can not know when instance is no longer
- * used.
- *
- * @param  {Class}  ApiClass  reference to prototype/class constructor.
- * @return {object}           proxy for ApiClass.
- */
-function createProxy(ApiClass) {
-    return new Proxy(ApiClass, constructorHandler);
-}
 
 module.exports = createProxy

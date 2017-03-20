@@ -9,11 +9,12 @@
 // - if screen added/removed or size change then close all notifications
 //
 const path = require('path');
+const fs = require('fs');
 const async = require('async');
 const electron = require('electron');
+const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const ipc = electron.ipcMain;
-const fs = require('fs');
 
 let AnimationQueue = require('./AnimationQueue.js');
 
@@ -113,7 +114,7 @@ let config = {
         transparent: true,
         acceptFirstMouse: true,
         webPreferences: {
-            preload: path.join(__dirname, 'notify-preload.js'),
+            preload: path.join(__dirname, 'electron-notify-preload.js'),
             sandbox: true,
             nodeIntegration: false
         }
@@ -126,8 +127,19 @@ let config = {
 //     calcDimensions();
 // }
 
+app.on('ready', function() {
+    setupConfig();
+
+    // if display added/removed/changed then re-run setup and remove all existing
+    // notifications.  ToDo: should reposition notifications rather than closing.
+    electron.screen.on('display-added', setupConfig);
+    electron.screen.on('display-removed', setupConfig);
+    electron.screen.on('display-metrics-changed', setupConfig);
+});
+
+
 function getTemplatePath() {
-    let templatePath = path.join(__dirname, 'notify.html');
+    let templatePath = path.join(__dirname, 'electron-notify.html');
     try {
         fs.statSync(templatePath).isFile();
     } catch (err) {
@@ -211,13 +223,6 @@ function setupConfig() {
     config.maxVisibleNotifications = config.maxVisibleNotifications > 5 ? 5 : config.maxVisibleNotifications;
 }
 
-setupConfig();
-
-// if display added/removed/changed then re-run setup and remove all existing
-// notifications.  ToDo: should reposition notifications rather than closing.
-electron.screen.on('display-added', setupConfig);
-electron.screen.on('display-removed', setupConfig);
-electron.screen.on('display-metrics-changed', setupConfig);
 
 function notify(notification) {
     // Is it an object and only one argument?

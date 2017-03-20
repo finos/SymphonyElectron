@@ -1,5 +1,11 @@
 'use strict'
 
+//
+// BrowserWindow preload script use to create notifications window for
+// elctron-notify project.
+//
+// code here adapted from: https://www.npmjs.com/package/electron-notify
+//
 const electron = require('electron');
 const ipc = electron.ipcRenderer;
 

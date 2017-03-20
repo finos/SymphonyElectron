@@ -61,6 +61,10 @@ window.SYM_API = {
         throttledSetBadgeCount(count);
     },
 
+    /**
+     * provides api similar to html5 Notification, see details
+     * in notify/notifyInterface.js
+     */
     Notification: createProxy(notifyInterface),
 
     /**

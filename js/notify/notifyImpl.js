@@ -1,16 +1,16 @@
 'use strict';
 
 const EventEmitter = require('events');
+const { notify } = require('./electron-notify.js');
 
 /**
- * implementation for notifications,
+ * implementation for notifications interface,
  * wrapper around electron-notify.
  */
 class Notify {
     constructor(title, options) {
         this.emitter = new EventEmitter();
 
-        const { notify } = require('./electron-notify.js');
         this._id = notify({
             title: title,
             text: options.body,

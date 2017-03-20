@@ -220,8 +220,6 @@ electron.ipcMain.on(apiProxyCmds.invokeMethod, function(event, args) {
             delete liveObjs[args.objId];
         }
 
-        console.log('func args=', funcArgs);
-
         result = obj[args.methodName](...funcArgs);
     }
 
