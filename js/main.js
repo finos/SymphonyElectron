@@ -43,20 +43,25 @@ function getUrlAndOpenMainWindow() {
         }
     }
 
-    getRegistry('PodUrl')
-    .then(createWin).catch(function (){
-        getConfig()
-        .then(createWin).catch(function (err){
-            let title = 'Error loading configuration';
-            electron.dialog.showErrorBox(title, title + ': ' + err);            
-        });
+    getConfig()
+    .then(createWin).catch(function (err){
+        let title = 'Error loading configuration';
+        electron.dialog.showErrorBox(title, title + ': ' + err);            
     });
 }
 
 function createWin(podurl){
     let protocol = '';
     // add https protocol if none found.
-    let parsedUrl = nodeURL.parse(podurl);
+    let strurl = '';
+    
+    if (podurl !== null && typeof podurl === 'object'){
+        strurl = podurl.url;
+    } else{
+        strurl = podurl;
+    }
+    
+    let parsedUrl = nodeURL.parse(strurl);
     if (!parsedUrl.protocol) {
         protocol = 'https';
     }
