@@ -46,7 +46,7 @@ var getConfig = function () {
             }
         });
     });
-	return promise;
+    return promise;
 }
 
 module.exports = getConfig

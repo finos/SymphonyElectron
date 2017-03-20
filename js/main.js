@@ -30,28 +30,28 @@ app.on('ready', getUrlAndOpenMainWindow);
 
 function getUrlAndOpenMainWindow() {
     getRegistry('PodUrl')
-	.then(createWin).catch(function (err){
-		getConfig()
-		.then(createWin).catch(function (err){
-			let title = 'Error loading configuration';
-			electron.dialog.showErrorBox(title, title + ': ' + err);			
-		});
-	});
+    .then(createWin).catch(function (){
+        getConfig()
+        .then(createWin).catch(function (err){
+            let title = 'Error loading configuration';
+            electron.dialog.showErrorBox(title, title + ': ' + err);            
+        });
+    });
 }
 
 function createWin(podurl){
-	let protocol = '';
-	// add https protocol if none found.
-	let parsedUrl = nodeURL.parse(podurl);
-	if (!parsedUrl.protocol) {
-		protocol = 'https';
-	}
-	var url = nodeURL.format({
-		protocol: protocol,
-		slahes: true,
-		pathname: parsedUrl.href
-	});
-	windowMgr.createMainWindow(url);
+    let protocol = '';
+    // add https protocol if none found.
+    let parsedUrl = nodeURL.parse(podurl);
+    if (!parsedUrl.protocol) {
+        protocol = 'https';
+    }
+    var url = nodeURL.format({
+        protocol: protocol,
+        slahes: true,
+        pathname: parsedUrl.href
+    });
+    windowMgr.createMainWindow(url);
 }
 
 app.on('window-all-closed', function() {

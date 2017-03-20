@@ -30,7 +30,7 @@ var getRegistry = function (name) {
             //Try to get registry on HKEY_CURRENT_USER    
             symphonyRegistryHKCU.get( name, function( err1, reg1 ) {
                 if ( !err1 && reg1!==null && reg1.value) {
-					resolve(reg1.value);
+                    resolve(reg1.value);
                 } else{
                     //Try to get registry on HKEY_LOCAL_MACHINE                    
                     symphonyRegistryHKLM.get( name, function( err2, reg2 ) {
@@ -41,7 +41,7 @@ var getRegistry = function (name) {
                             //winreg does not merge keys as normally windows does.
                             symphonyRegistryHKLM6432.get( name, function( err3, reg3 ) {
                                 if ( !err3 && reg3!==null && reg3.value) {
-									resolve(reg3.value);
+                                    resolve(reg3.value);
                                 } else{
                                     reject('Cannot find PodUrl Registry. Using default url.');
                                 }
@@ -52,7 +52,7 @@ var getRegistry = function (name) {
             });
         }
     });
-	return promise;
+    return promise;
 }
 
 module.exports = getRegistry
