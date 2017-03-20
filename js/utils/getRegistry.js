@@ -1,7 +1,7 @@
 'use strict';
 
 const symphonyRegistry = '\\Software\\Symphony\\Symphony\\';
-const { isMac } = require('./utils/misc.js');
+const { isMac } = require('./misc.js');
 
 var Registry = require('winreg');
 var symphonyRegistryHKCU = new Registry({
