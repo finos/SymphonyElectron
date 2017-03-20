@@ -75,7 +75,7 @@ function addEventHandler(target) {
         ipcRenderer.send(proxyCmds.addEvent, args);
 
         let callbackFunc = function(arg) {
-            if (arg.callbackId === arg.callbackId) {
+            if (arg.callbackId === callbackId) {
                 callback(args.result);
             }
         }

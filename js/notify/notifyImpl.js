@@ -1,23 +1,44 @@
 'use strict';
 
+const EventEmitter = require('events');
+
 /**
- * implementation for notifications
+ * implementation for notifications,
+ * wrapper around electron-notify.
  */
 class Notify {
     constructor(title, options) {
-        const { notify } = require('./notify.js');
+        this.emitter = new EventEmitter();
+
+        const { notify } = require('./electron-notify.js');
         this._id = notify({
             title: title,
             text: options.body,
             image: options.image,
             flash: options.flash,
             color: options.color,
-            onShowFunc: onShow.bind(this)
+            onShowFunc: onShow.bind(this),
+            onClickFunc: onClick.bind(this),
+            onCloseFunc: onClose.bind(this)
         });
 
         function onShow(arg) {
             if (arg.id === this._id) {
+                this.emitter.emit('show');
                 this._closeNotification = arg.closeNotification;
+            }
+        }
+
+        function onClick(arg) {
+            if (arg.id === this._id) {
+                this.emitter.emit('click');
+            }
+        }
+
+        function onClose(arg) {
+            if (arg.id === this._id || arg.event === 'close-all') {
+                this.emitter.emit('close');
+                this.destroy();
             }
         }
     }
@@ -30,7 +51,7 @@ class Notify {
     }
 
     destroy() {
-
+        this.emitter.removeAllListeners();
     }
 
     static get permission() {
@@ -38,9 +59,15 @@ class Notify {
     }
 
     addEventListener(event, cb) {
+        if (event && typeof cb === 'function') {
+            this.emitter.on(event, cb);
+        }
     }
 
     removeEventListener(event, cb) {
+        if (event && typeof cb === 'function') {
+            this.emitter.removeEventListener(event, cb);
+        }
     }
 
     //

@@ -1,6 +1,12 @@
 'use strict'
 //
 // code here adapted from https://www.npmjs.com/package/electron-notify
+// made following changes:
+// - place notification in corner of screen
+// - notification color
+// - notification flash/blink
+// - custom design for symphony notification style
+// - if screen added/removed or size change then close all notifications
 //
 const path = require('path');
 const async = require('async');
@@ -363,7 +369,7 @@ ipc.on('electron-notify-click', function (event, winId, notificationObj) {
             event: 'click',
             id: notificationObj.id,
             closeNotification: buildCloseNotificationSafely(closeFunc)
-        })
+        });
         delete notificationWindow.electronNotifyOnClickFunc;
     }
 });
@@ -505,16 +511,34 @@ function closeAll() {
     animationQueue.clear();
 
     activeNotifications.forEach(function(window) {
+        if (window.electronNotifyOnCloseFunc) {
+            window.electronNotifyOnCloseFunc({
+                event: 'close-all'
+            });
+            // ToDo: fix this: shouldn't delete method on arg
+            /* eslint-disable */
+            delete window.electronNotifyOnCloseFunc;
+            /* eslint-enable */
+        }
         window.close();
     });
 
-    inactiveWindows.forEach(function(window) {
-        window.close();
-    });
+    cleanUpInactiveWindow();
 
     // Reset certain vars
     nextInsertPos = {};
     activeNotifications = [];
+}
+
+/**
+/* once a minute, remove inactive windows to free up memory used.
+ */
+setInterval(cleanUpInactiveWindow, 60000);
+
+function cleanUpInactiveWindow() {
+    inactiveWindows.forEach(function(window) {
+        window.close();
+    });
     inactiveWindows = [];
 }
 

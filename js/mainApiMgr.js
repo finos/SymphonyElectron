@@ -377,7 +377,6 @@ electron.ipcMain.on(apiProxyCmds.addEvent, function(event, args) {
     }
     /* eslint-enable no-console */
 
-
     let obj = liveObjs[args.objId];
     let callbackFunc = function(result) {
         event.sender.send(apiProxyCmds.eventCallback, {
