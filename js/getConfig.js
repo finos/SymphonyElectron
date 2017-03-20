@@ -6,6 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const isDevEnv = require('./utils/misc.js').isDevEnv;
 const isMac = require('./utils/misc.js').isMac;
+const getRegistry = require('./utils/getRegistry.js');
 
 /**
  * reads global configuration file: config/Symphony.config. this file is
@@ -19,7 +20,6 @@ var getConfig = function () {
     var promise = new Promise(function(resolve, reject) {
         let configPath;
         const configFile = 'config/Symphony.config';
-
         if (isDevEnv) {
             // for dev env, get config file from asar
             configPath = path.join(app.getAppPath(), configFile);
@@ -36,13 +36,20 @@ var getConfig = function () {
             if (err) {
                 reject('cannot open config file: ' + configPath + ', error: ' + err);
             } else {
+                let config = '';
                 try {
                     // data is the contents of the text file we just read
-                    let config = JSON.parse(data);
-                    resolve(config.url);
+                    config = JSON.parse(data);
                 } catch (e) {
                     reject('can not parse config file data: ' + data + ', error: ' + err);
                 }
+                getRegistry('PodUrl')
+                .then(function(url){
+                    config.url = url;
+                    resolve(config);
+                }).catch(function (){
+                    resolve(config);
+                });
             }
         });
     });
