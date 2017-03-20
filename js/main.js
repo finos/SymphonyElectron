@@ -6,7 +6,7 @@ const nodeURL = require('url');
 const squirrelStartup = require('electron-squirrel-startup');
 
 const getConfig = require('./getConfig.js');
-const getRegistry = require('./getRegistry.js');
+const getRegistry = require('./utils/getRegistry.js');
 const { isMac } = require('./utils/misc.js');
 
 // exit early for squirrel installer
