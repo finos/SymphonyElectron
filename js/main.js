@@ -6,7 +6,7 @@ const nodeURL = require('url');
 const squirrelStartup = require('electron-squirrel-startup');
 
 const getConfig = require('./getConfig.js');
-const { isMac } = require('./utils/misc.js');
+const { isMac, isDevEnv } = require('./utils/misc.js');
 
 // exit early for squirrel installer
 if (squirrelStartup) {
@@ -28,6 +28,20 @@ const windowMgr = require('./windowMgr.js');
 app.on('ready', getUrlAndOpenMainWindow);
 
 function getUrlAndOpenMainWindow() {
+    // for dev env allow passing url argument
+    if (isDevEnv) {
+        let url;
+        process.argv.forEach((val) => {
+            if (val.startsWith('--url=')) {
+                url = val.substr(6);
+            }
+        });
+        if (url) {
+            windowMgr.createMainWindow(url);
+            return;
+        }
+    }
+
     getConfig().then(function(config) {
         let protocol = '';
         // add https protocol if none found.
