@@ -12,6 +12,10 @@ Our goal is to improve the performance and development agility of Symphony's des
 
 In order to achieve those goals Symphony is participating and working in close collaboration with the [Foundation Desktop Wrapper Working Group](https://symphonyoss.atlassian.net/wiki/display/WGDWAPI/Working+Group+-+Desktop+Wrapper+API)
 
+## Run demo:
+- npm install
+- on mac: npm run demo:mac
+- on windows: npm run demo:win
 
 ## Build Instructions:
 - to pick up dependencies: npm install

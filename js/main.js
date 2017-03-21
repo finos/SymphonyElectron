@@ -6,8 +6,7 @@ const nodeURL = require('url');
 const squirrelStartup = require('electron-squirrel-startup');
 
 const getConfig = require('./getConfig.js');
-const getRegistry = require('./getRegistry.js');
-const { isMac } = require('./utils/misc.js');
+const { isMac, isDevEnv } = require('./utils/misc.js');
 
 // exit early for squirrel installer
 if (squirrelStartup) {
@@ -29,22 +28,31 @@ const windowMgr = require('./windowMgr.js');
 app.on('ready', getUrlAndOpenMainWindow);
 
 function getUrlAndOpenMainWindow() {
-    getConfig().then(function(config) {
-        getRegistry("PodUrl").then(function(podUrl){
-            createWin(podUrl)
-        }, function(){
-            createWin(config.url)
+    // for dev env allow passing url argument
+    if (isDevEnv) {
+        let url;
+        process.argv.forEach((val) => {
+            if (val.startsWith('--url=')) {
+                url = val.substr(6);
+            }
         });
-    }).catch(function(err) {
+        if (url) {
+            windowMgr.createMainWindow(url);
+            return;
+        }
+    }
+
+    getConfig()
+    .then(createWin).catch(function (err){
         let title = 'Error loading configuration';
         electron.dialog.showErrorBox(title, title + ': ' + err);
     });
 }
 
-function createWin(podurl){
+function createWin(config){
     let protocol = '';
     // add https protocol if none found.
-    let parsedUrl = nodeURL.parse(podurl);
+    let parsedUrl = nodeURL.parse(config.url);
     if (!parsedUrl.protocol) {
         protocol = 'https';
     }
