@@ -35,18 +35,11 @@ function getUrlAndOpenMainWindow() {
     });
 }
 
-function createWin(podurl){
+function createWin(config){
     let protocol = '';
     // add https protocol if none found.
-    let strurl = '';
     
-    if (podurl !== null && typeof podurl === 'object'){
-        strurl = podurl.url;
-    } else{
-        strurl = podurl;
-    }
-    
-    let parsedUrl = nodeURL.parse(strurl);
+    let parsedUrl = nodeURL.parse(config.url);
     if (!parsedUrl.protocol) {
         protocol = 'https';
     }
