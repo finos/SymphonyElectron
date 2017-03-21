@@ -7,6 +7,7 @@ const squirrelStartup = require('electron-squirrel-startup');
 
 const getConfig = require('./getConfig.js');
 const { isMac, isDevEnv } = require('./utils/misc.js');
+const getRegistry = require('./utils/getRegistry.js');
 
 // exit early for squirrel installer
 if (squirrelStartup) {
@@ -45,8 +46,23 @@ function getUrlAndOpenMainWindow() {
     getConfig()
     .then(createWin).catch(function (err){
         let title = 'Error loading configuration';
-        electron.dialog.showErrorBox(title, title + ': ' + err);
+        electron.dialog.showErrorBox(title, title + ': ' + err);            
     });
+}
+
+function createWin(config){
+    let protocol = '';
+    // add https protocol if none found.
+    let parsedUrl = nodeURL.parse(config.url);
+    if (!parsedUrl.protocol) {
+        protocol = 'https';
+    }
+    var url = nodeURL.format({
+        protocol: protocol,
+        slahes: true,
+        pathname: parsedUrl.href
+    });
+    windowMgr.createMainWindow(url);
 }
 
 function createWin(config){
