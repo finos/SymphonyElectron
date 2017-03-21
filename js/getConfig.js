@@ -36,7 +36,7 @@ var getConfig = function () {
             if (err) {
                 reject('cannot open config file: ' + configPath + ', error: ' + err);
             } else {
-                let config = '';
+                let config = {};
                 try {
                     // data is the contents of the text file we just read
                     config = JSON.parse(data);
