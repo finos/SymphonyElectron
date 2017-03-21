@@ -8,16 +8,13 @@
   "scripts": {
     "dev": "npm run browserify-preload && cross-env ELECTRON_DEV=true electron .",
     "demo": "npm run browserify-preload && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/demo/index.html",
-
     "dist-mac": "npm run prebuild && build --mac",
     "dist-win": "npm run prebuild && build --win --x64",
     "dist-win-x86": "npm run prebuild && build --win --ia32",
-
     "unpacked-win": "npm run prebuild && build --win --x64 --dir",
     "unpacked-win-x86": "npm run prebuild && build --win --ia32 --dir",
-
     "prebuild": "npm run lint && npm run test && npm run browserify-preload",
-    "lint": "eslint js/**",
+    "lint": "eslint --ext .js js/",
     "test": "jest --coverage --testPathPattern tests",
     "browserify-preload": "browserify -o js/preload/_preloadMain.js -x electron js/preload/preloadMain.js && browserify -o js/preload/_preloadChild.js -x electron js/preload/preloadChild.js"
   },
@@ -78,6 +75,7 @@
     "jest": "^19.0.2"
   },
   "dependencies": {
+    "async": "^2.1.5",
     "electron-squirrel-startup": "^1.0.0",
     "keymirror": "0.1.1"
   }
