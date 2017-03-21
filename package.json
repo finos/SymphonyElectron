@@ -6,17 +6,16 @@
   "author": "Symphony",
   "main": "js/main.js",
   "scripts": {
-    "dev:mac": "ELECTRON_DEV=true npm run start",
-    "dev:win": "SET ELECTRON_DEV=true && npm run start",
-    "start": "npm run browserify-preload && electron .",
-    "demo:mac": "ELECTRON_DEV=true npm run start:demo",
-    "demo:win": "SET ELECTRON_DEV=true && npm run start:demo",
-    "start:demo": "npm run browserify-preload && electron . --url=file://$(pwd)/demo/index.html",
+    "dev": "npm run browserify-preload && cross-env ELECTRON_DEV=true electron .",
+    "demo": "npm run browserify-preload && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/demo/index.html",
+
     "dist-mac": "npm run prebuild && build --mac",
     "dist-win": "npm run prebuild && build --win --x64",
     "dist-win-x86": "npm run prebuild && build --win --ia32",
+
     "unpacked-win": "npm run prebuild && build --win --x64 --dir",
     "unpacked-win-x86": "npm run prebuild && build --win --ia32 --dir",
+
     "prebuild": "npm run lint && npm run test && npm run browserify-preload",
     "lint": "eslint js/**",
     "test": "jest --coverage --testPathPattern tests",
@@ -24,9 +23,9 @@
   },
   "build": {
     "files": [
-        "!coverage/*",
-        "!installer/*",
-        "!tests/*"
+      "!coverage/*",
+      "!installer/*",
+      "!tests/*"
     ],
     "extraFiles": "config/Symphony.config",
     "appId": "symphony-electron-desktop",
@@ -65,6 +64,8 @@
     "url": "https://support.symphony.com"
   },
   "devDependencies": {
+    "browserify": "^14.1.0",
+    "cross-env": "^3.2.4",
     "electron": "1.5.1",
     "electron-builder": "^13.9.0",
     "electron-builder-squirrel-windows": "^12.3.0",
@@ -74,8 +75,7 @@
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-react": "^6.10.0",
-    "jest": "^19.0.2",
-    "browserify": "^14.1.0"
+    "jest": "^19.0.2"
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0",
