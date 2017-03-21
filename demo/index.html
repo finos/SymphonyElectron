@@ -1,0 +1,75 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <h1>Symphony Electron API Demo</h1>
+        <hr>
+        <p>Notifications:<p>
+        <button id='notf'>show notification</button>
+        <p>
+            <label for='title'>title:</label>
+            <input type='text' id='title' value='Notification Demo'/>
+        </p>
+        <p>
+            <label for='body'>body:</label>
+            <input type='text' id='body' value='Some message'/>
+        </p>
+        <p>
+            <label for='image'>image url:</label>
+            <input type='text' id='image' value='https://lh3.googleusercontent.com/-s2PXL6wWMCc/AAAAAAAAAAI/AAAAAAAAAAA/AAomvV2gUNMMeFsOijwVVpihfg_anpKWQA/s32-c-mo/photo.jpg'/>
+        </p>
+        <p>
+            <label for='flash'>flash:</label>
+            <input type='checkbox' id='flash'/>
+        </p>
+        <p>
+            <label for='color'>color:</label>
+            <input type='text' id='color' value='white'/>
+        <br>
+        <hr>
+        <p>Badge Count:<p>
+        <button id='inc-badge'>increment badge count</button>
+        <br>
+        <button id='clear-badge'>clear badge count</button>
+    </body>
+    <script>
+        var notfEl = document.getElementById('notf');
+        notfEl.addEventListener('click', function() {
+            var title = document.getElementById('title').value;
+            var body = document.getElementById('body').value;
+            var imageUrl = document.getElementById('image').value;
+            var shouldFlash = document.getElementById('flash').checked;
+            var color = document.getElementById('color').value;
+
+            var notf = new SYM_API.Notification(title, {
+                body: body,
+                image: imageUrl,
+                flash: shouldFlash,
+                color: color || 'white'
+            });
+
+            notf.addEventListener('click', function() {
+                alert('notification clicked');
+            });
+
+            notf.addEventListener('close', function() {
+                alert('notification closed');
+            });
+        });
+
+        var badgeCount = 0;
+
+        var incBadgeEl = document.getElementById('inc-badge');
+        incBadgeEl.addEventListener('click', function() {
+            badgeCount++;
+            SYM_API.setBadgeCount(badgeCount);
+        });
+
+        var incBadgeEl = document.getElementById('clear-badge');
+        incBadgeEl.addEventListener('click', function() {
+            badgeCount = 0;
+            SYM_API.setBadgeCount(0);
+        });
+
+    </script>
+</html>

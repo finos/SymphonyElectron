@@ -19,9 +19,13 @@ const apiEnums = require('../enums/api.js');
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 
+const notifyInterface = require('../notify/notifyInterface.js');
+const createProxy = require('./createProxy.js');
+
 // hold ref so doesn't get GC'ed
 const local = {
-    ipcRenderer: ipcRenderer
+    ipcRenderer: ipcRenderer,
+
 };
 
 // throttle calls to this func to at most once per sec, called on leading edge.
@@ -56,6 +60,12 @@ window.SYM_API = {
     setBadgeCount: function(count) {
         throttledSetBadgeCount(count);
     },
+
+    /**
+     * provides api similar to html5 Notification, see details
+     * in notify/notifyInterface.js
+     */
+    Notification: createProxy(notifyInterface),
 
     /**
      * allows JS to register a logger that can be used by electron main process.
