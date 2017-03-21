@@ -42,23 +42,26 @@ function getUrlAndOpenMainWindow() {
         }
     }
 
-    getConfig().then(function(config) {
-        let protocol = '';
-        // add https protocol if none found.
-        let parsedUrl = nodeURL.parse(config.url);
-        if (!parsedUrl.protocol) {
-            protocol = 'https';
-        }
-        var url = nodeURL.format({
-            protocol: protocol,
-            slahes: true,
-            pathname: parsedUrl.href
-        });
-        windowMgr.createMainWindow(url);
-    }).catch(function(err) {
+    getConfig()
+    .then(createWin).catch(function (err){
         let title = 'Error loading configuration';
-        electron.dialog.showErrorBox(title, title + ': ' + err);
+        electron.dialog.showErrorBox(title, title + ': ' + err);            
     });
+}
+
+function createWin(config){
+    let protocol = '';
+    // add https protocol if none found.
+    let parsedUrl = nodeURL.parse(config.url);
+    if (!parsedUrl.protocol) {
+        protocol = 'https';
+    }
+    var url = nodeURL.format({
+        protocol: protocol,
+        slahes: true,
+        pathname: parsedUrl.href
+    });
+    windowMgr.createMainWindow(url);
 }
 
 app.on('window-all-closed', function() {
