@@ -53,7 +53,6 @@ function getUrlAndOpenMainWindow() {
 function createWin(config){
     let protocol = '';
     // add https protocol if none found.
-    
     let parsedUrl = nodeURL.parse(config.url);
     if (!parsedUrl.protocol) {
         protocol = 'https';
