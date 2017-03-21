@@ -14,7 +14,8 @@ In order to achieve those goals Symphony is participating and working in close c
 
 ## Run demo:
 - npm install
-- npm run demo
+- on mac: npm run demo:mac
+- on windows: npm run demo:win
 
 ## Build Instructions:
 - npm install

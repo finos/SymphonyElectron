@@ -6,3 +6,4 @@ installer
 node_modules
 js/preload/_*.js
 tests/**
+js/notify/*.html
