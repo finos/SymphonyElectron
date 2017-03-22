@@ -6,6 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const isDevEnv = require('./utils/misc.js').isDevEnv;
 const isMac = require('./utils/misc.js').isMac;
+const getRegistry = require('./utils/getRegistry.js');
 
 /**
  * reads global configuration file: config/Symphony.config. this file is
@@ -14,14 +15,11 @@ const isMac = require('./utils/misc.js').isMac;
  * this file is located relative to the executable - it is placed there by
  * the installer. this makes the file easily modifable by admin (or person who
  * installed app). for dev env, the file is read directly from packed asar file.
- *
- * @return {Object} configuration parameters (e.g., url)
  */
-function getConfig() {
-    return new Promise(function(resolve, reject) {
+var getConfig = function () {
+    var promise = new Promise(function(resolve, reject) {
         let configPath;
         const configFile = 'config/Symphony.config';
-
         if (isDevEnv) {
             // for dev env, get config file from asar
             configPath = path.join(app.getAppPath(), configFile);
@@ -38,16 +36,24 @@ function getConfig() {
             if (err) {
                 reject('cannot open config file: ' + configPath + ', error: ' + err);
             } else {
+                let config = {};
                 try {
                     // data is the contents of the text file we just read
-                    let config = JSON.parse(data);
-                    resolve(config);
+                    config = JSON.parse(data);
                 } catch (e) {
                     reject('can not parse config file data: ' + data + ', error: ' + err);
                 }
+                getRegistry('PodUrl')
+                .then(function(url){
+                    config.url = url;
+                    resolve(config);
+                }).catch(function (){
+                    resolve(config);
+                });
             }
         });
     });
+    return promise;
 }
 
 module.exports = getConfig
