@@ -26,7 +26,7 @@ const proxyCmds = apiEnums.proxyCmds;
  * Note: The "real" instance should implement a destroy method (e.g., close) that
  * should be used to destroy the instance held in main process, otherwise a
  * memory leak will occur - as renderer can not know when instance is no longer
- * used.
+ * used.  Would like to incorporate: https://github.com/EvolveLabs/electron-weak
  *
  * @param  {Class}  ApiClass  reference to prototype/class constructor.
  * @return {object}           proxy for ApiClass.
@@ -61,6 +61,11 @@ let constructorHandler = {
             get: instanceGetHandler,
             set: instanceSetHandler
         }
+
+
+        // work like to incorporate something like https://github.com/EvolveLabs/electron-weak
+        // here to tell when object is destroyed so we can ipc main process to
+        // loss ref to liveObj.
 
         return new Proxy(ProxyClass, instanceHandler);
     },
