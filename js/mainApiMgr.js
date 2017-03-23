@@ -15,12 +15,18 @@ const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 const apiProxyCmds = apiEnums.proxyCmds
 
+// can be overridden for testing
+let checkValidWindow = true;
+
 /**
  * Ensure events comes from a window that we have created.
  * @param  {EventEmitter} event  node emitter event to be tested
  * @return {Boolean} returns true if exists otherwise false
  */
 function isValidWindow(event) {
+    if (!checkValidWindow) {
+        return true;
+    }
     var result = false;
     if (event && event.sender) {
         // validate that event sender is from window we created
@@ -87,7 +93,7 @@ electron.ipcMain.on(apiName, (event, arg) => {
 const Notify = require('./notify/notifyImpl.js');
 
 // holds all project classes that can be created.
-const api = {
+let api = {
     Notify: Notify
 }
 
@@ -127,12 +133,14 @@ electron.ipcMain.on(apiProxyCmds.createObject, function(event, args) {
         let objId = uniqueId();
         liveObjs[objId] = obj;
 
-        obj.addEventListener('destroy', function() {
-            var liveObj = liveObjs[objId];
-            if (liveObj) {
-                delete liveObjs[objId];
-            }
-        });
+        if (typeof obj.addEventListener === 'function') {
+            obj.addEventListener('destroy', function() {
+                var liveObj = liveObjs[objId];
+                if (liveObj) {
+                    delete liveObjs[objId];
+                }
+            });
+        }
 
         setResult(objId);
     } else {
@@ -206,7 +214,6 @@ electron.ipcMain.on(apiProxyCmds.invokeMethod, function(event, args) {
         result = classType[args.methodName](...funcArgs);
     } else {
         let obj = liveObjs[args.objId];
-
         if (!args.methodName || !obj[args.methodName]) {
             event.sender.send(apiProxyCmds.invokeResult, {
                 error: 'no such method',
@@ -423,3 +430,14 @@ electron.ipcMain.on(apiProxyCmds.removeEvent, function(event, args) {
         obj.removeEventListener(args.eventName, callbackFunc);
     }
 });
+
+function addNewInterface(name, interfaceClass) {
+    api[name] = interfaceClass;
+}
+
+module.exports = {
+    addNewInterface: addNewInterface,
+    shouldCheckValidWindow: function(shouldCheck) {
+        checkValidWindow = shouldCheck;
+    }
+}
