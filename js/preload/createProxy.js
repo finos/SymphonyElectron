@@ -62,7 +62,6 @@ let constructorHandler = {
             set: instanceSetHandler
         }
 
-
         // work like to incorporate something like https://github.com/EvolveLabs/electron-weak
         // here to tell when object is destroyed so we can ipc main process to
         // loss ref to liveObj.
@@ -76,7 +75,7 @@ let constructorHandler = {
 
 function instanceGetHandler(target, name) {
     // all methods and getters we support should be on the prototype
-    let prototype = Reflect.getPrototypeOf(target);
+    let prototype = Object.getPrototypeOf(target);
     let desc = Object.getOwnPropertyDescriptor(prototype, name);
 
     // does this have a "getter"
@@ -127,8 +126,8 @@ function addEventHandler(target) {
 
 function removeEventHandler(target) {
     return function(eventName, callback) {
-        if (target._callbacks && target._callback.has(callback)) {
-            let callbackObj = target._callback.get(callback);
+        if (target._callbacks && target._callbacks.has(callback)) {
+            let callbackObj = target._callbacks.get(callback);
 
             let args = {
                 eventName: eventName,
@@ -233,7 +232,7 @@ function getHandler(target, property, isStatic) {
 }
 
 function instanceSetHandler(target, property, value) {
-    let prototype = Reflect.getPrototypeOf(target);
+    let prototype = Object.getPrototypeOf(target);
     let desc = Object.getOwnPropertyDescriptor(prototype, property);
 
     if (desc && desc.set) {

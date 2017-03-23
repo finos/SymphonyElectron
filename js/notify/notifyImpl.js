@@ -50,10 +50,6 @@ class Notify {
         this.destroy();
     }
 
-    destroy() {
-        this.emitter.removeAllListeners();
-    }
-
     static get permission() {
         return 'granted';
     }
@@ -73,6 +69,13 @@ class Notify {
     //
     // private stuff below here
     //
+
+    destroy() {
+        this.emitter.removeAllListeners();
+        // allow live instance to be destroyed
+        this.emitter.emit('destroy');
+    }
+
 }
 
 module.exports = Notify;
