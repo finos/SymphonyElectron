@@ -7,6 +7,9 @@ const squirrelStartup = require('electron-squirrel-startup');
 
 const getConfig = require('./getConfig.js');
 const { isMac, isDevEnv } = require('./utils/misc.js');
+//context menu
+const applyContextMenu = require('./contextMenu.js');
+
 
 // exit early for squirrel installer
 if (squirrelStartup) {
@@ -17,6 +20,7 @@ require('./mainApiMgr.js');
 
 // monitor memory of main process
 require('./memoryMonitor.js');
+
 
 const windowMgr = require('./windowMgr.js');
 
@@ -47,6 +51,8 @@ function getUrlAndOpenMainWindow() {
         let title = 'Error loading configuration';
         electron.dialog.showErrorBox(title, title + ': ' + err);            
     });
+
+    applyContextMenu();
 }
 
 function createWin(config){
