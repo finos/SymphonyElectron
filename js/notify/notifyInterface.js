@@ -33,12 +33,6 @@ class Notify {
     close() {}
 
     /**
-     * call to clean up ref held by main process to notification.
-     * note: calling close will also invoke destroy.
-     */
-    destroy() {}
-
-    /**
      * This returns a promise and is always 'granted'
      * @return {promise} promise fullfilled with 'granted'
      */

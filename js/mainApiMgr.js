@@ -435,6 +435,7 @@ function addNewInterface(name, interfaceClass) {
     api[name] = interfaceClass;
 }
 
+// expose these methods primarily for testing...
 module.exports = {
     addNewInterface: addNewInterface,
     shouldCheckValidWindow: function(shouldCheck) {

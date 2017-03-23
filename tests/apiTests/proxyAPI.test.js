@@ -28,6 +28,10 @@ class testInterface {
     removeEventListener(event,cb) {}
 
     emitEvent(event) {}
+
+    close() {}
+
+    destroy() {}
 }
 
 class testImpl {
@@ -72,6 +76,12 @@ class testImpl {
     emitEvent(event) {
         this.emitter.emit(event);
     }
+
+    close() {
+        this.emitter.emit('destroy');
+    }
+
+    destroy() {}
 }
 
 mainApiMgr.addNewInterface('testInterface', testImpl);
@@ -135,6 +145,19 @@ describe('proxy tests...', function() {
             done();
         });
 
+        inst.emitEvent('click');
+    });
+
+    test('should call click handler twice', function(done) {
+        var timesCalled = 0;
+        inst.addEventListener('click', function() {
+            timesCalled++;
+            if (timesCalled === 2) {
+                done();
+            }
+        });
+
+        inst.emitEvent('click');
         inst.emitEvent('click');
     });
 
@@ -207,7 +230,7 @@ describe('proxy test with multiple instances...', function() {
         });
     });
 
-    test('should have indepdendent events', function(done) {
+    test('should only call event handler for inst2', function(done) {
         inst1.addEventListener('click', function() {
             // shouldn't hit here
             expect(true).toBe(false);
@@ -219,15 +242,17 @@ describe('proxy test with multiple instances...', function() {
         inst2.emitEvent('click');
     });
 
-    test('should both get called...', function(done) {
+    test('should call event handler for inst1 and inst2', function(done) {
         let isInst1Clicked = false;
         let isInst2Clicked = false;
         inst1.addEventListener('click', function() {
-            isInst1Clicked = !isInst1Clicked;
+            if (isInst1Clicked) { return; }
+            isInst1Clicked = true;
             clicked();
         });
         inst2.addEventListener('click', function() {
-            isInst2Clicked = !isInst2Clicked;
+            if (isInst2Clicked) { return; }
+            isInst2Clicked = true;
             clicked();
         });
 
@@ -239,5 +264,41 @@ describe('proxy test with multiple instances...', function() {
 
         inst1.emitEvent('click');
         inst2.emitEvent('click');
+    });
+});
+
+describe('proxy destroy tests...', function() {
+    var inst, arg1 = 5, arg2 = 4;
+    var TestInterfaceProxy;
+
+    beforeEach(function() {
+        TestInterfaceProxy = createProxy(testInterface);
+        inst = new TestInterfaceProxy(arg1, arg2);
+    });
+
+    test('can not use inst after destroy is invoked', function(done) {
+        inst.destroy();
+
+        inst.getArg1()
+        .then(function() {
+            // shouldn't get here
+        })
+        .catch(function(err) {
+            expect(err).toBe('method called failed: calling obj is not present')
+            done();
+        });
+    });
+
+    test('destroy from implementation side', function() {
+        inst.close();
+
+        inst.getArg1()
+        .then(function() {
+            // shouldn't get here
+        })
+        .catch(function(err) {
+            expect(err).toBe('method called failed: calling obj is not present')
+            done();
+        });
     });
 });
