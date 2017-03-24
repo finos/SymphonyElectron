@@ -114,7 +114,7 @@ function createMainWindow(url) {
         event.preventDefault();
         electron.shell.openExternal(newWinUrl);
     });
-    contextMenu();
+    contextMenu(mainWindow);
 }
 
 app.on('before-quit', function() {
@@ -169,6 +169,7 @@ function createChildWindow(url, title, width, height) {
             }
         }
     });
+    contextMenu(childWindow);
 }
 
 function setIsOnline(status) {

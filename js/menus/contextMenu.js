@@ -10,8 +10,10 @@ var cm = require('electron-context-menu');
  * Enabled Copy Link on href Link
  * Inspect Element is not enabled.
  */
-function contextMenu(){
+function contextMenu(browserWindow){
     cm({
+        browserWindow,
+        
         prepend: (params) => [
             {
                 role: 'reload',
