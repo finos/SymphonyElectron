@@ -15,8 +15,12 @@
     "unpacked-win-x86": "npm run prebuild && build --win --ia32 --dir",
     "prebuild": "npm run lint && npm run test && npm run browserify-preload",
     "lint": "eslint --ext .js js/",
-    "test": "jest --coverage --testPathPattern tests",
+    "test": "jest --testPathPattern test",
     "browserify-preload": "browserify -o js/preload/_preloadMain.js -x electron js/preload/preloadMain.js && browserify -o js/preload/_preloadChild.js -x electron js/preload/preloadChild.js"
+  },
+  "jest": {
+      "collectCoverage": true,
+      "transformIgnorePatterns": []
   },
   "build": {
     "files": [
