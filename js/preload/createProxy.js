@@ -234,7 +234,6 @@ function getHandler(target, property, isStatic) {
 function instanceSetHandler(target, property, value) {
     let prototype = Object.getPrototypeOf(target);
     let desc = Object.getOwnPropertyDescriptor(prototype, property);
-
     if (desc && desc.set) {
         var args = {
             objId: target._objId,
@@ -243,7 +242,10 @@ function instanceSetHandler(target, property, value) {
         }
 
         ipcRenderer.sendSync(proxyCmds.set, args);
+        return true;
     }
+
+    return false;
 }
 
 function staticGetHandler(target, name) {

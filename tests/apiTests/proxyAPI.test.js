@@ -289,7 +289,7 @@ describe('proxy destroy tests...', function() {
         });
     });
 
-    test('destroy from implementation side', function() {
+    test('destroy from implementation side', function(done) {
         inst.close();
 
         inst.getArg1()

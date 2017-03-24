@@ -19,6 +19,8 @@
  * the License.
  */
 
+// note: polyfill here can be removed when everyone is using node >= 6.4.0
+
 'use strict';
 
 (function(scope) {
