@@ -1,16 +1,17 @@
 'use strict';
-var contextMenu = require('electron-context-menu');
+var cm = require('electron-context-menu');
+
 /**
  * Creates & applies Right Click Context Menu based on 
- * electron-context-menu library.
+ * electron-context-menu library o all windows.
  * Unless activated on edittable field, Reload option is shown.
  * Enabled Cut/Copy/Paste/Delete/Select all on text.
  * Enabled Save Image on images
  * Enabled Copy Link on href Link
  * Inspect Element is not enabled.
  */
-function applyContextMenu(){
-    contextMenu({
+function contextMenu(){
+    cm({
         prepend: (params) => [
             {
                 role: 'reload',
@@ -45,4 +46,4 @@ function applyContextMenu(){
     });
 }
 
-module.exports = applyContextMenu;
+module.exports = contextMenu;

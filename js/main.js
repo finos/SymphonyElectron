@@ -7,8 +7,6 @@ const squirrelStartup = require('electron-squirrel-startup');
 
 const getConfig = require('./getConfig.js');
 const { isMac, isDevEnv } = require('./utils/misc.js');
-//context menu
-const applyContextMenu = require('./contextMenu.js');
 
 
 // exit early for squirrel installer
@@ -51,8 +49,6 @@ function getUrlAndOpenMainWindow() {
         let title = 'Error loading configuration';
         electron.dialog.showErrorBox(title, title + ': ' + err);            
     });
-
-    applyContextMenu();
 }
 
 function createWin(config){
