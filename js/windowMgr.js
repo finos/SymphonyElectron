@@ -4,13 +4,15 @@ const electron = require('electron');
 const app = electron.app;
 const path = require('path');
 
-const menuTemplate = require('./menuTemplate.js');
+const menuTemplate = require('./menus/menuTemplate.js');
 const loadErrors = require('./dialogs/showLoadError.js');
 const { isMac } = require('./utils/misc.js');
 const getGuid = require('./utils/getGuid.js');
 const log = require('./log.js')
 const logLevels = require('./enums/logLevels.js');
 
+//context menu
+const contextMenu = require('./menus/contextMenu.js');
 
 // show dialog when certificate errors occur
 require('./dialogs/showCertError.js');
@@ -112,6 +114,7 @@ function createMainWindow(url) {
         event.preventDefault();
         electron.shell.openExternal(newWinUrl);
     });
+    contextMenu(mainWindow);
 }
 
 app.on('before-quit', function() {
@@ -166,6 +169,7 @@ function createChildWindow(url, title, width, height) {
             }
         }
     });
+    contextMenu(childWindow);
 }
 
 function setIsOnline(status) {

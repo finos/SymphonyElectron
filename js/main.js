@@ -8,6 +8,7 @@ const squirrelStartup = require('electron-squirrel-startup');
 const getConfig = require('./getConfig.js');
 const { isMac, isDevEnv } = require('./utils/misc.js');
 
+
 // exit early for squirrel installer
 if (squirrelStartup) {
     return;
@@ -17,6 +18,7 @@ require('./mainApiMgr.js');
 
 // monitor memory of main process
 require('./memoryMonitor.js');
+
 
 const windowMgr = require('./windowMgr.js');
 

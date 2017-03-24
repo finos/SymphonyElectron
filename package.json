@@ -80,6 +80,7 @@
     "async": "^2.1.5",
     "electron-squirrel-startup": "^1.0.0",
     "keymirror": "0.1.1",
+    "electron-context-menu": "^0.8.0",
     "winreg": "^1.2.3"
   }
 }
