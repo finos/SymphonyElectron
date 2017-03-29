@@ -19,7 +19,8 @@ class Notify {
             color: options.color,
             onShowFunc: onShow.bind(this),
             onClickFunc: onClick.bind(this),
-            onCloseFunc: onClose.bind(this)
+            onCloseFunc: onClose.bind(this),
+            onErrorFunc: onError.bind(this)
         });
 
         this._data = options.data || null;
@@ -40,6 +41,17 @@ class Notify {
         function onClose(arg) {
             if (arg.id === this._id || arg.event === 'close-all') {
                 this.emitter.emit('close');
+                this.destroy();
+            }
+        }
+
+        function onError(arg) {
+            if (arg.id === this._id) {
+                // don't raise error event if handler doesn't exist, node
+                // will throw an exception
+                if (this.emitter.eventNames().includes('error')) {
+                    this.emitter.emit('error', arg.error || 'notification error');
+                }
                 this.destroy();
             }
         }
