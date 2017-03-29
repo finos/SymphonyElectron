@@ -14,13 +14,15 @@ class Notify {
         this._id = notify({
             title: title,
             text: options.body,
-            image: options.image,
+            image: options.image || options.icon,
             flash: options.flash,
             color: options.color,
             onShowFunc: onShow.bind(this),
             onClickFunc: onClick.bind(this),
             onCloseFunc: onClose.bind(this)
         });
+
+        this._data = options.data || null;
 
         function onShow(arg) {
             if (arg.id === this._id) {
@@ -52,6 +54,10 @@ class Notify {
 
     static get permission() {
         return 'granted';
+    }
+
+    get data() {
+        return this._data;
     }
 
     addEventListener(event, cb) {

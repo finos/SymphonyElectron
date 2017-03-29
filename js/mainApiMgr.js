@@ -383,10 +383,9 @@ electron.ipcMain.on(apiProxyCmds.addEvent, function(event, args) {
     /* eslint-enable no-console */
 
     let obj = liveObjs[args.objId];
-    let callbackFunc = function(result) {
+    let callbackFunc = function() {
         event.sender.send(apiProxyCmds.eventCallback, {
-            callbackId: args.callbackId,
-            result: result
+            callbackId: args.callbackId
         });
     }
     obj._callbacks[args.callbackId] = callbackFunc;

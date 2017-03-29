@@ -20,9 +20,11 @@ class Notify {
      * @param {String} title  Title of notification
      * @param {Object} options {
      *  body {string} main text to display in notifications
-     *  image {string} url of image to show in notifications
+     *  image {string} url of image to show in notification
+     *  icon {string} url of image to show in notification
      *  flash {bool} true if notification should flash (default false)
      *  color {string} background color for notification
+     *  data {object} arbitrary object to be stored with notification
      * }
      */
     constructor(title, options) {}
@@ -37,6 +39,11 @@ class Notify {
      * @return {promise} promise fullfilled with 'granted'
      */
     static get permission() {}
+
+    /**
+     * returns data object passed in via constructor options
+     */
+    get data() {}
 
     /**
      * add event listeners for 'click' and 'close' events

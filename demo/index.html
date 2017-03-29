@@ -45,16 +45,22 @@
                 body: body,
                 image: imageUrl,
                 flash: shouldFlash,
-                color: color || 'white'
+                color: color || 'white',
+                data: {
+                    hello: 'hello word'
+                }
             });
 
-            notf.addEventListener('click', function() {
-                alert('notification clicked');
+            notf.addEventListener('click', function(event) {
+                event.target.data.then(function(value) {
+                    alert('notification clicked: ' + value.hello);
+                })
             });
 
             notf.addEventListener('close', function() {
                 alert('notification closed');
             });
+
         });
 
         var badgeCount = 0;
