@@ -110,9 +110,12 @@ function addEventHandler(target) {
 
         let callbackFunc = function(arg) {
             if (arg.callbackId === callbackId) {
-                callback(args.result);
+                callback({
+                    target: this,
+                    type: eventName
+                });
             }
-        }
+        }.bind(this);
 
         ipcRenderer.on(proxyCmds.eventCallback, callbackFunc);
 
