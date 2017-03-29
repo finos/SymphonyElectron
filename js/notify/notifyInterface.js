@@ -46,7 +46,7 @@ class Notify {
     get data() {}
 
     /**
-     * add event listeners for 'click' and 'close' events
+     * add event listeners for 'click', 'close', 'show', 'error' events
      *
      * @param {String} event  event to listen for
      * @param {func}   cb     callback invoked when event occurs
@@ -54,7 +54,7 @@ class Notify {
     addEventListener(event, cb) {}
 
     /**
-     * remove event listeners for 'click' and 'close' events
+     * remove event listeners for 'click', 'close', 'show', 'error' events
      *
      * @param {String} event  event to stop listening for.
      * @param {func}   cb     callback associated with original addEventListener

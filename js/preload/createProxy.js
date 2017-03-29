@@ -112,7 +112,8 @@ function addEventHandler(target) {
             if (arg.callbackId === callbackId) {
                 callback({
                     target: this,
-                    type: eventName
+                    type: eventName,
+                    result: arg.result
                 });
             }
         }.bind(this);

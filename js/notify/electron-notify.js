@@ -16,6 +16,10 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const ipc = electron.ipcMain;
 
+// maximum number of notifications that can be queued, after limit is
+// reached then error func callback will be invoked.
+const MAX_QUEUE_SIZE = 30;
+
 let AnimationQueue = require('./AnimationQueue.js');
 
 // Array of windows with currently showing notifications
@@ -225,12 +229,26 @@ function setupConfig() {
 
 
 function notify(notification) {
+    if (notificationQueue.length >= MAX_QUEUE_SIZE) {
+        var id = latestID;
+        incrementId();
+        if (typeof notification.onErrorFunc === 'function') {
+            setTimeout(function() {
+                notification.onErrorFunc({
+                    id: id,
+                    error: 'max notification queue size reached: ' + MAX_QUEUE_SIZE
+                });
+            }, 0);
+        }
+        return id;
+    }
+
     // Is it an object and only one argument?
     if (arguments.length === 1 && typeof notification === 'object') {
         let notf = Object.assign({}, notification);
         // Use object instead of supplied parameters
-        notf.id = latestID
-        latestID++
+        notf.id = latestID;
+        incrementId();
         animationQueue.push({
             func: showNotification,
             args: [ notf ]
@@ -239,6 +257,10 @@ function notify(notification) {
     }
     log('electron-notify: ERROR notify() only accepts a single object with notification parameters.')
     return null;
+}
+
+function incrementId() {
+    latestID++;
 }
 
 function showNotification(notificationObj) {
