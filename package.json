@@ -6,8 +6,8 @@
   "author": "Symphony",
   "main": "js/main.js",
   "scripts": {
-    "dev": "npm run browserify-preload && cross-env ELECTRON_DEV=true electron .",
-    "demo": "npm run browserify-preload && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/demo/index.html",
+    "dev": "npm run browserify-preload && cross-env ELECTRON_DEV=true electron . --enable-sandbox",
+    "demo": "npm run browserify-preload && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/demo/index.html --enable-sandbox",
     "dist-mac": "npm run prebuild && build --mac",
     "dist-win": "npm run prebuild && build --win --x64",
     "dist-win-x86": "npm run prebuild && build --win --ia32",
