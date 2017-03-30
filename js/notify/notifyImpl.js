@@ -37,7 +37,6 @@ class Notify {
         function onClick(arg) {
             if (arg.id === this._id) {
                 this.emitter.emit('click');
-                arg.closeNotification();
             }
         }
 
@@ -92,9 +91,9 @@ class Notify {
     //
 
     destroy() {
-        this.emitter.removeAllListeners();
         // allow live instance to be destroyed
         this.emitter.emit('destroy');
+        this.emitter.removeAllListeners();
     }
 
 }
