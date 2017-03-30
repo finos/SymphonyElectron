@@ -301,4 +301,19 @@ describe('proxy destroy tests...', function() {
             done();
         });
     });
+
+    test('after destroy should not raise events', function(done) {
+        inst.destroy();
+
+        var clickedCalled = false;
+        inst.addEventListener('click', function() {
+            clickedCalled = true;
+        });
+        inst.emitEvent('click');
+        setTimeout(function() {
+            if (!clickedCalled) {
+                done();
+            }
+        }, 200);
+    })
 });

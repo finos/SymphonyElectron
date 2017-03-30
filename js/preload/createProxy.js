@@ -110,6 +110,13 @@ function addEventHandler(target) {
 
         let callbackFunc = function(arg) {
             if (arg.callbackId === callbackId) {
+                // special destroy callback so we can clean up event listeners.
+                if (arg.type === 'destroy') {
+                    ipcRenderer.removeListener(proxyCmds.eventCallback,
+                        callbackFunc);
+                    target._callbacks.delete(callbackFunc);
+                    return;
+                }
                 callback({
                     target: this,
                     type: eventName,
@@ -122,7 +129,7 @@ function addEventHandler(target) {
 
         target._callbacks.set(callback, {
             callbackId: callbackId,
-            callbackbackFunc: callbackFunc
+            callbackFunc: callbackFunc
         });
 
     }
@@ -140,7 +147,7 @@ function removeEventHandler(target) {
             }
 
             ipcRenderer.removeListener(proxyCmds.eventCallback,
-                callbackObj.callbackbackFunc);
+                callbackObj.callbackFunc);
 
             ipcRenderer.send(proxyCmds.removeEvent, args);
 

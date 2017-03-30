@@ -133,13 +133,34 @@ electron.ipcMain.on(apiProxyCmds.createObject, function(event, args) {
         let objId = uniqueId();
         liveObjs[objId] = obj;
 
-        if (typeof obj.addEventListener === 'function') {
-            obj.addEventListener('destroy', function() {
+        // special destroy event listener so implementation can raise event to
+        // clean up everything.
+        if (typeof obj.addEventListener === 'function' &&
+            typeof obj.removeEventListener === 'function') {
+            let destroy = function() {
+                var callbackIds = Object.keys(obj._callbacks);
+                callbackIds.forEach(function(callbackId) {
+                    let callback = obj._callbacks[ callbackId ];
+                    if (typeof callback === 'function') {
+                        // invoke callback to proxy so it clean up itself.
+                        callback(null, 'destroy');
+
+                        if (callback.eventName) {
+                            obj.removeEventListener(callback.eventName, callback);
+                        }
+                    }
+                });
+
+                obj.removeEventListener('destroy', destroy);
+                obj._callbacks = null;
+
                 var liveObj = liveObjs[objId];
                 if (liveObj) {
                     delete liveObjs[objId];
                 }
-            });
+            }
+
+            obj.addEventListener('destroy', destroy);
         }
 
         setResult(objId);
@@ -383,12 +404,17 @@ electron.ipcMain.on(apiProxyCmds.addEvent, function(event, args) {
     /* eslint-enable no-console */
 
     let obj = liveObjs[args.objId];
-    let callbackFunc = function(result) {
+
+    // callback invoked from implementation or locally in destroy to
+    // clean up event handlers.
+    let callbackFunc = function(result, type) {
         event.sender.send(apiProxyCmds.eventCallback, {
             callbackId: args.callbackId,
-            result: result
+            result: result,
+            type: type
         });
     }
+    callbackFunc.eventName = args.eventName;
     obj._callbacks[args.callbackId] = callbackFunc;
     obj.addEventListener(args.eventName, callbackFunc);
 });

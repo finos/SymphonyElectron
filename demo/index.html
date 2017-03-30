@@ -73,27 +73,19 @@
             function onclick(event) {
                 event.target.data.then(function(value) {
                     alert('notification clicked: ' + value.hello);
+                    event.target.close();
                 })
             }
 
             notf.addEventListener('close', onclose);
             function onclose() {
                 alert('notification closed');
-                removeEvents();
             };
 
             notf.addEventListener('error', onerror);
             function onerror(event) {
                 alert('error=' + event.result);
             };
-
-            // be sure to remove all events when closed, otherwise leaks
-            // will occur.
-            function removeEvents() {
-                notf.removeEventListener('click', onclick)
-                notf.removeEventListener('close', onclose)
-                notf.removeEventListener('error', onerror)
-            }
         });
 
         var badgeCount = 0;
