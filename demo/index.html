@@ -23,8 +23,17 @@
             <input type='checkbox' id='flash'/>
         </p>
         <p>
+            <label for='sticky'>sticky:</label>
+            <input type='checkbox' id='sticky'/>
+        </p>
+        <p>
             <label for='color'>color:</label>
             <input type='text' id='color' value='white'/>
+        </p>
+        <p>
+            <label for='tag'>tag:</label>
+            <input type='text' id='tag' value=''/>
+        </p>
         <br>
         <hr>
         <p>Badge Count:<p>
@@ -42,21 +51,22 @@
             var body = document.getElementById('body').value;
             var imageUrl = document.getElementById('image').value;
             var shouldFlash = document.getElementById('flash').checked;
+            var shouldStick = document.getElementById('sticky').checked;
             var color = document.getElementById('color').value;
+            var tag = document.getElementById('tag').value;
 
             num++;
 
-            // notfs with same groupId will replace existing notf.
-            var groupId = (num % 2).toString();
             var notf = new SYM_API.Notification(title, {
-                body: (body + ' num=' + num + ' groupId=' + groupId),
+                body: (body + ' num=' + num + ' tag=' + tag),
                 image: imageUrl,
                 flash: shouldFlash,
                 color: color || 'white',
+                sticky: shouldStick,
                 data: {
                     hello: 'hello word'
                 },
-                groupId: groupId
+                tag: tag
             });
 
             notf.addEventListener('click', onclick);

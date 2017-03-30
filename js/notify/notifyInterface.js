@@ -24,9 +24,11 @@ class Notify {
      *  icon {string} url of image to show in notification
      *  flash {bool} true if notification should flash (default false)
      *  color {string} background color for notification
-     *  groupId {string} non-empty string to unique identify notf, if another
-     *    notification arrives with same groupId then it's content will
+     *  tag {string} non-empty string to unique identify notf, if another
+     *    notification arrives with same tag then it's content will
      *    replace existing notification.
+     *  sticky {bool} if true notification will stay until user closes. default
+     *     is false.
      *  data {object} arbitrary object to be stored with notification
      * }
      */
