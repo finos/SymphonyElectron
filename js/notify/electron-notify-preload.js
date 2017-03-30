@@ -54,11 +54,11 @@ function setContents(notificationObj) {
                 audio.play()
             }
         } catch (e) {
-            log('electron-notify: ERROR could not find sound file: ' + notificationObj.sound.replace('file://', ''), e, e.stack)
+            log('electron-notify: ERROR could not find sound file: ' + notificationObj.sound.replace('file://', ''), e, e.stack);
         }
     }
 
-    let notiDoc = window.document
+    let notiDoc = window.document;
 
     let container = notiDoc.getElementById('container');
 
@@ -78,34 +78,35 @@ function setContents(notificationObj) {
     }
 
     // Title
-    let titleDoc = notiDoc.getElementById('title')
-    titleDoc.innerHTML = notificationObj.title || ''
+    let titleDoc = notiDoc.getElementById('title');
+    titleDoc.innerHTML = notificationObj.title || '';
 
     // message
-    let messageDoc = notiDoc.getElementById('message')
-    messageDoc.innerHTML = notificationObj.text || ''
+    let messageDoc = notiDoc.getElementById('message');
+    messageDoc.innerHTML = notificationObj.text || '';
 
     // Image
-    let imageDoc = notiDoc.getElementById('image')
+    let imageDoc = notiDoc.getElementById('image');
     if (notificationObj.image) {
-        imageDoc.src = notificationObj.image
+        imageDoc.src = notificationObj.image;
     } else {
-        setStyleOnDomElement({ display: 'none'}, imageDoc)
+        setStyleOnDomElement({ display: 'none'}, imageDoc);
     }
 
     const winId = notificationObj.windowId;
 
-    // Close button
-    let closeButton = notiDoc.getElementById('close')
-    closeButton.addEventListener('click', function(clickEvent) {
+    let closeButton = notiDoc.getElementById('close');
+
+    // note: use onclick because we only want one handler, for case
+    // when content gets overwritten by notf with same groupId
+    closeButton.onclick = function(clickEvent) {
         clickEvent.stopPropagation()
         ipc.send('electron-notify-close', winId, notificationObj)
-    })
+    }
 
-    // URL
-    container.addEventListener('click', function() {
-        ipc.send('electron-notify-click', winId, notificationObj)
-    })
+    container.onclick = function() {
+        ipc.send('electron-notify-click', winId, notificationObj);
+    }
 }
 
 function setStyleOnDomElement(styleObj, domElement) {
