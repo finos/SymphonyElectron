@@ -229,20 +229,6 @@ function setupConfig() {
 
 
 function notify(notification) {
-    if (notificationQueue.length >= MAX_QUEUE_SIZE) {
-        var id = latestID;
-        incrementId();
-        if (typeof notification.onErrorFunc === 'function') {
-            setTimeout(function() {
-                notification.onErrorFunc({
-                    id: id,
-                    error: 'max notification queue size reached: ' + MAX_QUEUE_SIZE
-                });
-            }, 0);
-        }
-        return id;
-    }
-
     // Is it an object and only one argument?
     if (arguments.length === 1 && typeof notification === 'object') {
         let notf = Object.assign({}, notification);
@@ -265,6 +251,54 @@ function incrementId() {
 
 function showNotification(notificationObj) {
     return new Promise(function(resolve) {
+
+        if (notificationQueue.length >= MAX_QUEUE_SIZE) {
+            if (typeof notificationObj.onErrorFunc === 'function') {
+                setTimeout(function() {
+                    notificationObj.onErrorFunc({
+                        id: notificationObj.id,
+                        error: 'max notification queue size reached: ' + MAX_QUEUE_SIZE
+                    });
+                }, 0);
+            }
+            resolve();
+            return;
+        }
+
+        // check if group id provided.  should replace existing notification
+        // if has same grouping id.
+        let groupId = notificationObj.groupId;
+        if (groupId) {
+            // first check waiting items
+            for(let i = 0; i < notificationQueue.length; i++) {
+                if (groupId === notificationQueue[ i ].groupId) {
+                    notificationQueue[ i ] = notificationObj;
+                    resolve();
+                    return;
+                }
+            }
+
+            // next check items being shown
+            for(let i = 0; i < activeNotifications.length; i++) {
+                if (groupId === activeNotifications[ i ].groupId) {
+                    let notificationWindow = activeNotifications[ i ];
+
+                    // be sure to call close event for existing, so it gets
+                    // cleaned up.
+                    if (notificationWindow.electronNotifyOnCloseFunc) {
+                        notificationWindow.electronNotifyOnCloseFunc({
+                            event: 'close',
+                            id: notificationObj.id
+                        });
+                        delete notificationWindow.electronNotifyOnCloseFunc;
+                    }
+                    setNotificationContents(notificationWindow, notificationObj)
+                    resolve();
+                    return;
+                }
+            }
+        }
+
         // Can we show it?
         if (activeNotifications.length < config.maxVisibleNotifications) {
             // Get inactiveWindow or create new:
@@ -273,60 +307,74 @@ function showNotification(notificationObj) {
                 calcInsertPos()
                 setWindowPosition(notificationWindow, nextInsertPos.x, nextInsertPos.y)
 
-                // Add to activeNotifications
-                activeNotifications.push(notificationWindow)
+                let updatedNotfWindow = setNotificationContents(notificationWindow, notificationObj);
 
-                // Display time per notification basis.
-                let displayTime = notificationObj.displayTime ? notificationObj.displayTime : config.displayTime
+                activeNotifications.push(updatedNotfWindow);
 
-                // Set timeout to hide notification
-                let timeoutId
-                let closeFunc = buildCloseNotification(notificationWindow, notificationObj, function() {
-                    return timeoutId
-                })
-                let closeNotificationSafely = buildCloseNotificationSafely(closeFunc)
-                timeoutId = setTimeout(function() {
-                    closeNotificationSafely('timeout')
-                }, displayTime)
-
-                // Trigger onShowFunc if existent
-                if (notificationObj.onShowFunc) {
-                    notificationObj.onShowFunc({
-                        event: 'show',
-                        id: notificationObj.id,
-                        closeNotification: closeNotificationSafely
-                    })
-                }
-
-                var updatedNotificationWindow = notificationWindow;
-
-                // Save onClickFunc in notification window
-                if (notificationObj.onClickFunc) {
-                    updatedNotificationWindow.electronNotifyOnClickFunc = notificationObj.onClickFunc
-                } else {
-                    delete updatedNotificationWindow.electronNotifyOnClickFunc
-                }
-
-                if (notificationObj.onCloseFunc) {
-                    updatedNotificationWindow.electronNotifyOnCloseFunc = notificationObj.onCloseFunc
-                } else {
-                    delete updatedNotificationWindow.electronNotifyOnCloseFunc
-                }
-
-                const windowId = notificationWindow.id;
-                // Set contents, ...
-                updatedNotificationWindow.webContents.send('electron-notify-set-contents',
-                    Object.assign({ windowId: windowId}, notificationObj));
-                // Show window
-                updatedNotificationWindow.showInactive();
-                resolve(updatedNotificationWindow)
+                resolve(updatedNotfWindow);
             })
         } else {
             // Add to notificationQueue
-            notificationQueue.push(notificationObj)
-            resolve()
+            notificationQueue.push(notificationObj);
+            resolve();
         }
     })
+}
+
+function setNotificationContents(notfWindow, notfObj) {
+    // Display time per notification basis.
+    let displayTime = notfObj.displayTime ? notfObj.displayTime : config.displayTime;
+
+    if (notfWindow.displayTimer) {
+        clearTimeout(notfWindow.displayTimer);
+    }
+
+    // Set timeout to hide notification
+    let timeoutId;
+    let closeFunc = buildCloseNotification(notfWindow, notfObj, function() {
+        return timeoutId
+    });
+    let closeNotificationSafely = buildCloseNotificationSafely(closeFunc);
+    timeoutId = setTimeout(function() {
+        closeNotificationSafely('timeout');
+    }, displayTime);
+
+    var updatedNotificationWindow = notfWindow;
+
+    updatedNotificationWindow.displayTimer = timeoutId;
+
+    updatedNotificationWindow.groupId = notfObj.groupId;
+
+    // Trigger onShowFunc if existent
+    if (notfObj.onShowFunc) {
+        notfObj.onShowFunc({
+            event: 'show',
+            id: notfObj.id,
+            closeNotification: closeNotificationSafely
+        })
+    }
+
+    // Save onClickFunc in notification window
+    if (notfObj.onClickFunc) {
+        updatedNotificationWindow.electronNotifyOnClickFunc = notfObj.onClickFunc
+    } else {
+        delete updatedNotificationWindow.electronNotifyOnClickFunc;
+    }
+
+    if (notfObj.onCloseFunc) {
+        updatedNotificationWindow.electronNotifyOnCloseFunc = notfObj.onCloseFunc
+    } else {
+        delete updatedNotificationWindow.electronNotifyOnCloseFunc;
+    }
+
+    const windowId = notfWindow.id;
+    // Set contents, ...
+    updatedNotificationWindow.webContents.send('electron-notify-set-contents',
+        Object.assign({ windowId: windowId}, notfObj));
+    // Show window
+    updatedNotificationWindow.showInactive();
+
+    return updatedNotificationWindow;
 }
 
 // Close notification function

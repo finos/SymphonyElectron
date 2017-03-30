@@ -17,6 +17,7 @@ class Notify {
             image: options.image || options.icon,
             flash: options.flash,
             color: options.color,
+            groupId: options.groupId,
             onShowFunc: onShow.bind(this),
             onClickFunc: onClick.bind(this),
             onCloseFunc: onClose.bind(this),
@@ -35,6 +36,7 @@ class Notify {
         function onClick(arg) {
             if (arg.id === this._id) {
                 this.emitter.emit('click');
+                arg.closeNotification();
             }
         }
 
@@ -80,7 +82,7 @@ class Notify {
 
     removeEventListener(event, cb) {
         if (event && typeof cb === 'function') {
-            this.emitter.removeEventListener(event, cb);
+            this.emitter.removeListener(event, cb);
         }
     }
 
