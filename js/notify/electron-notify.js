@@ -265,13 +265,13 @@ function showNotification(notificationObj) {
             return;
         }
 
-        // check if group id provided.  should replace existing notification
+        // check if tag id provided.  should replace existing notification
         // if has same grouping id.
-        let groupId = notificationObj.groupId;
-        if (groupId) {
+        let tag = notificationObj.tag;
+        if (tag) {
             // first check waiting items
             for(let i = 0; i < notificationQueue.length; i++) {
-                if (groupId === notificationQueue[ i ].groupId) {
+                if (tag === notificationQueue[ i ].tag) {
                     notificationQueue[ i ] = notificationObj;
                     resolve();
                     return;
@@ -280,7 +280,7 @@ function showNotification(notificationObj) {
 
             // next check items being shown
             for(let i = 0; i < activeNotifications.length; i++) {
-                if (groupId === activeNotifications[ i ].groupId) {
+                if (tag === activeNotifications[ i ].tag) {
                     let notificationWindow = activeNotifications[ i ];
 
                     // be sure to call close event for existing, so it gets
@@ -322,6 +322,7 @@ function showNotification(notificationObj) {
 }
 
 function setNotificationContents(notfWindow, notfObj) {
+
     // Display time per notification basis.
     let displayTime = notfObj.displayTime ? notfObj.displayTime : config.displayTime;
 
@@ -329,21 +330,23 @@ function setNotificationContents(notfWindow, notfObj) {
         clearTimeout(notfWindow.displayTimer);
     }
 
-    // Set timeout to hide notification
+    var updatedNotificationWindow = notfWindow;
+
+    updatedNotificationWindow.tag = notfObj.tag;
+
     let timeoutId;
     let closeFunc = buildCloseNotification(notfWindow, notfObj, function() {
         return timeoutId
     });
     let closeNotificationSafely = buildCloseNotificationSafely(closeFunc);
-    timeoutId = setTimeout(function() {
-        closeNotificationSafely('timeout');
-    }, displayTime);
 
-    var updatedNotificationWindow = notfWindow;
-
-    updatedNotificationWindow.displayTimer = timeoutId;
-
-    updatedNotificationWindow.groupId = notfObj.groupId;
+    // don't start timer to close if we aren't sticky
+    if (!notfObj.sticky) {
+        timeoutId = setTimeout(function() {
+            closeNotificationSafely('timeout');
+        }, displayTime);
+        updatedNotificationWindow.displayTimer = timeoutId;
+    }
 
     // Trigger onShowFunc if existent
     if (notfObj.onShowFunc) {

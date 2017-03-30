@@ -98,7 +98,7 @@ function setContents(notificationObj) {
     let closeButton = notiDoc.getElementById('close');
 
     // note: use onclick because we only want one handler, for case
-    // when content gets overwritten by notf with same groupId
+    // when content gets overwritten by notf with same tag
     closeButton.onclick = function(clickEvent) {
         clickEvent.stopPropagation()
         ipc.send('electron-notify-close', winId, notificationObj)
