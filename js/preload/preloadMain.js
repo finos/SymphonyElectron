@@ -12,21 +12,19 @@
 // https://github.com/electron/electron/issues/2984
 //
 
-const { ipcRenderer } = require('electron');
+const { ipcRenderer, remote } = require('electron');
 
 const throttle = require('../utils/throttle.js');
 const apiEnums = require('../enums/api.js');
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 
-const notifyInterface = require('../notify/notifyInterface.js');
-const createProxy = require('./createProxy.js');
-
 // hold ref so doesn't get GC'ed
 const local = {
     ipcRenderer: ipcRenderer,
-
 };
+
+var notify = remote.require('./notify/notifyImpl.js');
 
 // throttle calls to this func to at most once per sec, called on leading edge.
 const throttledSetBadgeCount = throttle(1000, function(count) {
@@ -63,9 +61,9 @@ window.SYM_API = {
 
     /**
      * provides api similar to html5 Notification, see details
-     * in notify/notifyInterface.js
+     * in notify/notifyImpl.js
      */
-    Notification: createProxy(notifyInterface),
+    Notification: notify,
 
     /**
      * allows JS to register a logger that can be used by electron main process.
@@ -93,7 +91,7 @@ window.SYM_API = {
 Object.freeze(window.SYM_API);
 
 // listen for log message from main process
-local.ipcRenderer.on('log', (arg) => {
+local.ipcRenderer.on('log', (event, arg) => {
     if (local.logger && arg && arg.level && arg.msg) {
         local.logger({
             logLevel: arg.level,
@@ -109,7 +107,7 @@ local.ipcRenderer.on('log', (arg) => {
  * need to use ipcRenderer to callback to main process.
  * @type {object}  arg.count - number: count to be displayed
  */
-local.ipcRenderer.on('createBadgeDataUrl', (arg) => {
+local.ipcRenderer.on('createBadgeDataUrl', (event, arg) => {
     const count = arg && arg.count || 0;
 
     // create 32 x 32 img
