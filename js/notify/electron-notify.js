@@ -131,7 +131,13 @@ let config = {
 //     calcDimensions();
 // }
 
-app.on('ready', function() {
+if (app.isReady) {
+    setup();
+} else {
+    app.on('ready', setup);
+}
+
+function setup() {
     setupConfig();
 
     // if display added/removed/changed then re-run setup and remove all existing
@@ -139,8 +145,7 @@ app.on('ready', function() {
     electron.screen.on('display-added', setupConfig);
     electron.screen.on('display-removed', setupConfig);
     electron.screen.on('display-metrics-changed', setupConfig);
-});
-
+}
 
 function getTemplatePath() {
     let templatePath = path.join(__dirname, 'electron-notify.html');

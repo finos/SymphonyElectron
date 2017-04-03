@@ -71,10 +71,8 @@
 
             notf.addEventListener('click', onclick);
             function onclick(event) {
-                event.target.data.then(function(value) {
-                    alert('notification clicked: ' + value.hello);
-                    event.target.close();
-                })
+                event.target.close();
+                alert('notification clicked: ' + event.target.data.hello);
             }
 
             notf.addEventListener('close', onclose);

@@ -41,7 +41,7 @@ function setStyle(config) {
     setStyleOnDomElement(config.defaultStyleClose, close);
 }
 
-function setContents(notificationObj) {
+function setContents(event, notificationObj) {
     // sound
     if (notificationObj.sound) {
         // Check if file is accessible
@@ -122,7 +122,7 @@ function setStyleOnDomElement(styleObj, domElement) {
     }
 }
 
-function loadConfig(conf) {
+function loadConfig(event, conf) {
     setStyle(conf || {})
 }
 

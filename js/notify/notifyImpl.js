@@ -8,6 +8,24 @@ const { notify } = require('./electron-notify.js');
  * wrapper around electron-notify.
  */
 class Notify {
+    /**
+     * Dislays a notifications
+     *
+     * @param {String} title  Title of notification
+     * @param {Object} options {
+     *  body {string} main text to display in notifications
+     *  image {string} url of image to show in notification
+     *  icon {string} url of image to show in notification
+     *  flash {bool} true if notification should flash (default false)
+     *  color {string} background color for notification
+     *  tag {string} non-empty string to unique identify notf, if another
+     *    notification arrives with same tag then it's content will
+     *    replace existing notification.
+     *  sticky {bool} if true notification will stay until user closes. default
+     *     is false.
+     *  data {object} arbitrary object to be stored with notification
+     * }
+     */
     constructor(title, options) {
         this.emitter = new EventEmitter();
 
@@ -36,13 +54,17 @@ class Notify {
 
         function onClick(arg) {
             if (arg.id === this._id) {
-                this.emitter.emit('click');
+                this.emitter.emit('click', {
+                    target: this
+                });
             }
         }
 
         function onClose(arg) {
             if (arg.id === this._id || arg.event === 'close-all') {
-                this.emitter.emit('close');
+                this.emitter.emit('close', {
+                    target: this
+                });
                 this.destroy();
             }
         }
@@ -59,6 +81,9 @@ class Notify {
         }
     }
 
+    /**
+     * close notification
+     */
     close() {
         if (typeof this._closeNotification === 'function') {
             this._closeNotification('close');
@@ -66,20 +91,39 @@ class Notify {
         this.destroy();
     }
 
+    /**
+     * always allow showing notifications.
+     * @return {string} 'granted'
+     */
     static get permission() {
         return 'granted';
     }
 
+    /**
+     * returns data object passed in via constructor options
+     */
     get data() {
         return this._data;
     }
 
+    /**
+     * add event listeners for 'click', 'close', 'show', 'error' events
+     *
+     * @param {String} event  event to listen for
+     * @param {func}   cb     callback invoked when event occurs
+     */
     addEventListener(event, cb) {
         if (event && typeof cb === 'function') {
             this.emitter.on(event, cb);
         }
     }
 
+    /**
+     * remove event listeners for 'click', 'close', 'show', 'error' events
+     *
+     * @param {String} event  event to stop listening for.
+     * @param {func}   cb     callback associated with original addEventListener
+     */
     removeEventListener(event, cb) {
         if (event && typeof cb === 'function') {
             this.emitter.removeListener(event, cb);
@@ -89,10 +133,7 @@ class Notify {
     //
     // private stuff below here
     //
-
     destroy() {
-        // allow live instance to be destroyed
-        this.emitter.emit('destroy');
         this.emitter.removeAllListeners();
     }
 
