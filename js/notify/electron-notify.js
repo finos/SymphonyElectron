@@ -274,18 +274,29 @@ function showNotification(notificationObj) {
         // if has same grouping id.
         let tag = notificationObj.tag;
         if (tag) {
-            // first check waiting items
+            // first check queued notifications
             for(let i = 0; i < notificationQueue.length; i++) {
                 if (tag === notificationQueue[ i ].tag) {
+                    let existingNotfObj = notificationQueue[ i ];
+                    // be sure to call close event for existing, so it gets
+                    // cleaned up.
+                    if (typeof existingNotfObj.onCloseFunc === 'function') {
+                        existingNotfObj.onCloseFunc({
+                            event: 'close',
+                            id: notificationObj.id
+                        });
+                    }
+                    // update with new notf
                     notificationQueue[ i ] = notificationObj;
                     resolve();
                     return;
                 }
             }
 
-            // next check items being shown
+            // next check notfs being shown
             for(let i = 0; i < activeNotifications.length; i++) {
-                if (tag === activeNotifications[ i ].tag) {
+                let existingNotfyObj = activeNotifications[ i ].notfyObj;
+                if (existingNotfyObj && tag === existingNotfyObj.tag) {
                     let notificationWindow = activeNotifications[ i ];
 
                     // be sure to call close event for existing, so it gets
@@ -293,7 +304,7 @@ function showNotification(notificationObj) {
                     if (notificationWindow.electronNotifyOnCloseFunc) {
                         notificationWindow.electronNotifyOnCloseFunc({
                             event: 'close',
-                            id: notificationObj.id
+                            id: existingNotfyObj.id
                         });
                         delete notificationWindow.electronNotifyOnCloseFunc;
                     }
@@ -337,7 +348,7 @@ function setNotificationContents(notfWindow, notfObj) {
 
     var updatedNotificationWindow = notfWindow;
 
-    updatedNotificationWindow.tag = notfObj.tag;
+    updatedNotificationWindow.notfyObj = notfObj;
 
     let timeoutId;
     let closeFunc = buildCloseNotification(notfWindow, notfObj, function() {
