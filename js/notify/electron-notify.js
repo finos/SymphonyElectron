@@ -285,7 +285,8 @@ function showNotification(notificationObj) {
 
             // next check items being shown
             for(let i = 0; i < activeNotifications.length; i++) {
-                if (tag === activeNotifications[ i ].tag) {
+                let existingNotfyObj = activeNotifications[ i ].notfyObj;
+                if (existingNotfyObj && tag === existingNotfyObj.tag) {
                     let notificationWindow = activeNotifications[ i ];
 
                     // be sure to call close event for existing, so it gets
@@ -293,7 +294,7 @@ function showNotification(notificationObj) {
                     if (notificationWindow.electronNotifyOnCloseFunc) {
                         notificationWindow.electronNotifyOnCloseFunc({
                             event: 'close',
-                            id: notificationObj.id
+                            id: existingNotfyObj.id
                         });
                         delete notificationWindow.electronNotifyOnCloseFunc;
                     }
@@ -337,7 +338,7 @@ function setNotificationContents(notfWindow, notfObj) {
 
     var updatedNotificationWindow = notfWindow;
 
-    updatedNotificationWindow.tag = notfObj.tag;
+    updatedNotificationWindow.notfyObj = notfObj;
 
     let timeoutId;
     let closeFunc = buildCloseNotification(notfWindow, notfObj, function() {
