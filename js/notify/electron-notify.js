@@ -131,7 +131,7 @@ let config = {
 //     calcDimensions();
 // }
 
-if (app.isReady) {
+if (app.isReady()) {
     setup();
 } else {
     app.on('ready', setup);
@@ -548,7 +548,9 @@ function moveNotificationAnimation(i, done) {
 }
 
 function setWindowPosition(browserWin, posX, posY) {
-    browserWin.setPosition(parseInt(posX, 10), parseInt(posY, 10))
+    if (!browserWin.isDestroyed()) {
+        browserWin.setPosition(parseInt(posX, 10), parseInt(posY, 10))
+    }
 }
 
 /*
@@ -605,10 +607,10 @@ function closeAll() {
     animationQueue.clear();
 
     activeNotifications.forEach(function(window) {
+        if (window.displayTimer) {
+            clearTimeout(window.displayTimer);
+        }
         if (window.electronNotifyOnCloseFunc) {
-            window.electronNotifyOnCloseFunc({
-                event: 'close-all'
-            });
             // ToDo: fix this: shouldn't delete method on arg
             /* eslint-disable */
             delete window.electronNotifyOnCloseFunc;
@@ -645,5 +647,4 @@ function log() {
 }
 
 module.exports.notify = notify
-// module.exports.setConfig = setConfig
-module.exports.closeAll = closeAll
+module.exports.reset = setupConfig

@@ -10,6 +10,7 @@ const { isMac } = require('./utils/misc.js');
 const getGuid = require('./utils/getGuid.js');
 const log = require('./log.js')
 const logLevels = require('./enums/logLevels.js');
+const notify = require('./notify/electron-notify.js');
 
 //context menu
 const contextMenu = require('./menus/contextMenu.js');
@@ -69,6 +70,8 @@ function createMainWindow(url) {
         if (!isOnline) {
             loadErrors.showNetworkConnectivityError(mainWindow, url, retry);
         } else {
+            // removes all existing notifications when main window reloads
+            notify.reset();
             log.send(logLevels.INFO, 'main window loaded');
         }
     });
