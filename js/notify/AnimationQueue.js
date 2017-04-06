@@ -12,7 +12,7 @@ AnimationQueue.prototype.push = function(object) {
         this.queue.push(object);
     } else {
         this.running = true;
-        this.animate(object);
+        setTimeout(this.animate.bind(this, object), 0);
     }
 }
 
