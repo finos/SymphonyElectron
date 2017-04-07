@@ -12,8 +12,8 @@ let logWindow;
 function send(level, details) {
     if (logWindow && level && details) {
         logWindow.send('log', {
-            logLevel: level,
-            logDetails: details
+            level: level,
+            details: details
         });
     }
 }
