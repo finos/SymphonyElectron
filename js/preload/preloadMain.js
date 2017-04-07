@@ -92,11 +92,8 @@ Object.freeze(window.SYM_API);
 
 // listen for log message from main process
 local.ipcRenderer.on('log', (event, arg) => {
-    if (local.logger && arg && arg.level && arg.msg) {
-        local.logger({
-            logLevel: arg.level,
-            logDetails: arg.msg
-        });
+    if (local.logger && arg && arg.level && arg.details) {
+        local.logger(arg.level, arg.details);
     }
 });
 
