@@ -4,6 +4,8 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 
+const { isMac } = require('../js/utils/misc.js')
+
 const snippetBase64 = require('./fixtures/snippet/snippet-base64.js');
 
 // mock child_process used in ScreenSnippet
@@ -52,16 +54,20 @@ function createTestFile(done) {
 
 describe('Tests for ScreenSnippet', function() {
     describe('when reading a valid jpeg file', function() {
-        it('should match base64 output', function(done) {
-            let s = new ScreenSnippet();
-            s.capture().then(gotImage);
 
-            function gotImage(rsp) {
-                expect(rsp.type).toEqual('image/jpg;base64');
-                expect(rsp.data).toEqual(snippetBase64);
-                done();
-            };
-        });
+        // skip test for windows - until feature is supported
+        if (isMac) {
+            it('should match base64 output', function(done) {
+                let s = new ScreenSnippet();
+                s.capture().then(gotImage);
+
+                function gotImage(rsp) {
+                    expect(rsp.type).toEqual('image/jpg;base64');
+                    expect(rsp.data).toEqual(snippetBase64);
+                    done();
+                };
+            });
+        }
 
         it('should remove output file after completed', function(done) {
             createTestFile(function(testfileName) {
@@ -97,32 +103,35 @@ describe('Tests for ScreenSnippet', function() {
         }
     });
 
-    it('should fail if read file fails', function(done) {
-        var origFsReadFile = fs.readFile;
+    // skip test for windows - until feature is supported
+    if (isMac) {
+        it('should fail if read file fails', function(done) {
+            var origFsReadFile = fs.readFile;
 
-        fs.readFile = jest.fn(mockedReadFile);
+            fs.readFile = jest.fn(mockedReadFile);
 
-        function mockedReadFile(filename, callback) {
-            callback(new Error('failed'));
-        }
+            function mockedReadFile(filename, callback) {
+                callback(new Error('failed'));
+            }
 
-        let s = new ScreenSnippet();
-        s.capture().then(resolved).catch(rejected);
+            let s = new ScreenSnippet();
+            s.capture().then(resolved).catch(rejected);
 
-        function resolved(err) {
-            cleanup();
-            // shouldn't get here
-            expect(true).toBe(false);
-        }
+            function resolved(err) {
+                cleanup();
+                // shouldn't get here
+                expect(true).toBe(false);
+            }
 
-        function rejected(err) {
-            expect(err).toBeTruthy();
-            cleanup();
-            done();
-        }
+            function rejected(err) {
+                expect(err).toBeTruthy();
+                cleanup();
+                done();
+            }
 
-        function cleanup() {
-            fs.readFile = origFsReadFile;
-        }
-    });
+            function cleanup() {
+                fs.readFile = origFsReadFile;
+            }
+        });
+    }
 });
