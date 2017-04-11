@@ -48,8 +48,7 @@ let config = {
     startCorner: 'upper-right',
     width: 300,
     height: 80,
-    padding: 4,
-    borderRadius: 5,
+    borderRadius: 2,
     displayTime: 5000,
     animationSteps: 5,
     animationStepMs: 5,
@@ -62,10 +61,10 @@ let config = {
         flexDirection: 'column',
         backgroundColor: '#f0f0f0',
         overflow: 'hidden',
-        padding: 4,
-        border: '1px solid #CCC',
+        padding: 10,
         position: 'relative',
-        lineHeight: '15px'
+        lineHeight: '15px',
+        boxSizing: 'border-box'
     },
     defaultStyleHeader: {
         flex: '0 0 auto',
@@ -82,14 +81,19 @@ let config = {
     },
     defaultStyleClose: {
         position: 'absolute',
-        top: 12,
-        right: 12,
+        top: 8,
+        right: 8,
+        width: 16,
+        height: 16,
+        opacity: 0.54,
         fontSize: 12,
         color: '#CCC'
     },
     defaultStyleTitle: {
         fontFamily: 'Arial',
-        fontSize: 13,
+        fontSize: 14,
+        fontWeight: 700,
+        opacity: 0.87,
         marginRight: 10,
         alignSelf: 'center',
         overflow: 'hidden',
@@ -100,9 +104,11 @@ let config = {
     defaultStyleText: {
         flex: '0 0 auto',
         fontFamily: 'Calibri',
-        fontSize: 12,
+        fontSize: 14,
+        fontWeight: 400,
+        opacity: 0.87,
         margin: 0,
-        marginTop: 3,
+        marginTop: 4,
         overflow: 'hidden',
         display: '-webkit-box',
         webkitLineClamp: 2,
@@ -159,9 +165,11 @@ function getTemplatePath() {
 }
 
 function calcDimensions() {
+    const vertSpaceBetweenNotf = 8;
+    
     // Calc totalHeight & totalWidth
-    config.totalHeight = config.height + config.padding
-    config.totalWidth = config.width + config.padding
+    config.totalHeight = config.height + vertSpaceBetweenNotf;
+    config.totalWidth = config.width
 
     let firstPosX, firstPosY;
     switch (config.startCorner) {
