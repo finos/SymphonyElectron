@@ -17,8 +17,15 @@ let child;
  */
 class ScreenSnippet {
     /**
-     * Returns promise. If successful will resolve with jpeg image encoded in
-     * base64 format. Otherwise if not successful will reject with object
+     * Returns promise.
+     *
+     * If successful will resolves with jpeg image encoded in base64 format:
+     * {
+     *     type: 'image/jpg;base64',
+     *     data: base64-data
+     * }
+     *
+     * Otherwise if not successful will reject with object
      * containing: { type: ['WARN','ERROR'], message: String }
      */
     capture() {
@@ -91,7 +98,10 @@ class ScreenSnippet {
             try {
                 // convert binary data to base64 encoded string
                 let output = Buffer(data).toString('base64');
-                resolve(output);
+                resolve({
+                    type: 'image/jpg;base64',
+                    data: output
+                });
             } catch (error) {
                 reject(this._createError(error));
             }

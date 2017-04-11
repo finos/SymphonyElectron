@@ -115,9 +115,9 @@
             .then(gotSnippet)
             .catch(snippetError);
 
-            function gotSnippet(base64JegImage) {
-                if (base64JegImage) {
-                    var dataUrl = 'data:image/jpg;base64,' + base64JegImage;
+            function gotSnippet(rsp) {
+                if (rsp && rsp.data && rsp.type) {
+                    var dataUrl = 'data:' + rsp.type + ',' + rsp.data;
                     var img = document.getElementById('snippet-img');
                     img.src = dataUrl;
                 }
