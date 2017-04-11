@@ -40,6 +40,12 @@
         <button id='inc-badge'>increment badge count</button>
         <br>
         <button id='clear-badge'>clear badge count</button>
+        <br>
+        <hr>
+        <p>Screen Snippet (note: currently only works on mac):</p>
+        <button id='snippet'>get snippet</button>
+        <p>snippet output:</p>
+        <image id='snippet-img'/>
     </body>
     <script>
         var notfEl = document.getElementById('notf');
@@ -98,6 +104,28 @@
         incBadgeEl.addEventListener('click', function() {
             badgeCount = 0;
             SYM_API.setBadgeCount(0);
+        });
+
+        var snippetButton = document.getElementById('snippet');
+        snippetButton.addEventListener('click', function() {
+            let snippet = new SYM_API.ScreenSnippet();
+
+            snippet
+            .capture()
+            .then(gotSnippet)
+            .catch(snippetError);
+
+            function gotSnippet(base64JegImage) {
+                if (base64JegImage) {
+                    var dataUrl = 'data:image/jpg;base64,' + base64JegImage;
+                    var img = document.getElementById('snippet-img');
+                    img.src = dataUrl;
+                }
+            }
+
+            function snippetError(err) {
+                alert('error getting snippet', err);
+            }
         });
 
     </script>
