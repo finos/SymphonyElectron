@@ -56,8 +56,9 @@ describe('Tests for ScreenSnippet', function() {
             let s = new ScreenSnippet();
             s.capture().then(gotImage);
 
-            function gotImage(base64Image) {
-                expect(base64Image).toEqual(snippetBase64);
+            function gotImage(rsp) {
+                expect(rsp.type).toEqual('image/jpg;base64');
+                expect(rsp.data).toEqual(snippetBase64);
                 done();
             };
         });
