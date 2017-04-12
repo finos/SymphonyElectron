@@ -26,6 +26,7 @@ const local = {
 
 var notify = remote.require('./notify/notifyImpl.js');
 var ScreenSnippet = remote.require('./screenSnippet/ScreenSnippet.js');
+var Search = remote.require('./search/Search.js');
 
 // throttle calls to this func to at most once per sec, called on leading edge.
 const throttledSetBadgeCount = throttle(1000, function(count) {
@@ -71,6 +72,8 @@ window.SYM_API = {
      * details in screenSnipper/ScreenSnippet.js
      */
     ScreenSnippet: ScreenSnippet,
+
+    Search: Search,
 
     /**
      * allows JS to register a logger that can be used by electron main process.

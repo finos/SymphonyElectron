@@ -3,129 +3,18 @@
     </head>
     <body>
         <h1>Symphony Electron API Demo</h1>
-        <hr>
-        <p>Notifications:<p>
-        <button id='notf'>show notification</button>
-        <p>
-            <label for='title'>title:</label>
-            <input type='text' id='title' value='Notification Demo'/>
-        </p>
-        <p>
-            <label for='body'>body:</label>
-            <input type='text' id='body' value='Some message'/>
-        </p>
-        <p>
-            <label for='image'>image url:</label>
-            <input type='text' id='image' value='https://lh3.googleusercontent.com/-s2PXL6wWMCc/AAAAAAAAAAI/AAAAAAAAAAA/AAomvV2gUNMMeFsOijwVVpihfg_anpKWQA/s32-c-mo/photo.jpg'/>
-        </p>
-        <p>
-            <label for='flash'>flash:</label>
-            <input type='checkbox' id='flash'/>
-        </p>
-        <p>
-            <label for='sticky'>sticky:</label>
-            <input type='checkbox' id='sticky'/>
-        </p>
-        <p>
-            <label for='color'>color:</label>
-            <input type='text' id='color' value='white'/>
-        </p>
-        <p>
-            <label for='tag'>tag:</label>
-            <input type='text' id='tag' value=''/>
-        </p>
-        <br>
-        <hr>
-        <p>Badge Count:<p>
-        <button id='inc-badge'>increment badge count</button>
-        <br>
-        <button id='clear-badge'>clear badge count</button>
-        <br>
-        <hr>
-        <p>Screen Snippet (note: currently only works on mac):</p>
-        <button id='snippet'>get snippet</button>
-        <p>snippet output:</p>
-        <image id='snippet-img'/>
+        <p>Search</p>
+        <button id='search'>search</button>
     </body>
     <script>
-        var notfEl = document.getElementById('notf');
-        var num = 0;
+        var search = new SYM_API.Search();
 
-        // note: notification will close when clicked
-        notfEl.addEventListener('click', function() {
-            var title = document.getElementById('title').value;
-            var body = document.getElementById('body').value;
-            var imageUrl = document.getElementById('image').value;
-            var shouldFlash = document.getElementById('flash').checked;
-            var shouldStick = document.getElementById('sticky').checked;
-            var color = document.getElementById('color').value;
-            var tag = document.getElementById('tag').value;
+        var buttonEl = document.getElementById('search');
 
-            num++;
-
-            var notf = new SYM_API.Notification(title, {
-                body: (body + ' num=' + num + ' tag=' + tag),
-                image: imageUrl,
-                flash: shouldFlash,
-                color: color || 'white',
-                sticky: shouldStick,
-                data: {
-                    hello: 'hello word'
-                },
-                tag: tag
+        buttonEl.addEventListener('click', function() {
+            search.query().then(function(result) {
+                alert(result.text);
             });
-
-            notf.addEventListener('click', onclick);
-            function onclick(event) {
-                event.target.close();
-                alert('notification clicked: ' + event.target.data.hello);
-            }
-
-            notf.addEventListener('close', onclose);
-            function onclose() {
-                alert('notification closed');
-            };
-
-            notf.addEventListener('error', onerror);
-            function onerror(event) {
-                alert('error=' + event.result);
-            };
-        });
-
-        var badgeCount = 0;
-
-        var incBadgeEl = document.getElementById('inc-badge');
-        incBadgeEl.addEventListener('click', function() {
-            badgeCount++;
-            SYM_API.setBadgeCount(badgeCount);
-        });
-
-        var incBadgeEl = document.getElementById('clear-badge');
-        incBadgeEl.addEventListener('click', function() {
-            badgeCount = 0;
-            SYM_API.setBadgeCount(0);
-        });
-
-        var snippetButton = document.getElementById('snippet');
-        snippetButton.addEventListener('click', function() {
-            let snippet = new SYM_API.ScreenSnippet();
-
-            snippet
-            .capture()
-            .then(gotSnippet)
-            .catch(snippetError);
-
-            function gotSnippet(rsp) {
-                if (rsp && rsp.data && rsp.type) {
-                    var dataUrl = 'data:' + rsp.type + ',' + rsp.data;
-                    var img = document.getElementById('snippet-img');
-                    img.src = dataUrl;
-                }
-            }
-
-            function snippetError(err) {
-                alert('error getting snippet', err);
-            }
         });
 
     </script>
