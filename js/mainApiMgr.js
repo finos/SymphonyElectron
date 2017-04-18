@@ -31,15 +31,14 @@ function isValidWindow(event) {
         // validate that event sender is from window we created
         const browserWin = electron.BrowserWindow.fromWebContents(event.sender);
         const winKey = event.sender.browserWindowOptions &&
-            event.sender.browserWindowOptions.webPreferences &&
-            event.sender.browserWindowOptions.webPreferences.winKey;
+            event.sender.browserWindowOptions.winKey;
 
         result = windowMgr.hasWindow(browserWin, winKey);
     }
 
     if (!result) {
         /* eslint-disable no-console */
-        console.log('invalid window try to perform action, ignoring action.');
+        console.log('invalid window try to perform action, ignoring action');
         /* eslint-enable no-console */
     }
 
@@ -75,17 +74,14 @@ electron.ipcMain.on(apiName, (event, arg) => {
         return;
     }
 
-    if (arg.cmd === apiCmds.registerLogger) {
-        // renderer window that has a registered logger from JS.
-        log.setLogWindow(event.sender);
+    if (arg.cmd === apiCmds.activate && typeof arg.windowName === 'string') {
+        windowMgr.activate(arg.windowName);
         return;
     }
 
-    if (arg.cmd === apiCmds.open && typeof arg.url === 'string') {
-        let title = arg.title || 'Symphony';
-        let width = arg.width || 1024;
-        let height = arg.height || 768;
-        windowMgr.createChildWindow(arg.url, title, width, height);
+    if (arg.cmd === apiCmds.registerLogger) {
+        // renderer window that has a registered logger from JS.
+        log.setLogWindow(event.sender);
     }
 });
 

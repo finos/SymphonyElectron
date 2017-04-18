@@ -46,6 +46,12 @@
         <button id='snippet'>get snippet</button>
         <p>snippet output:</p>
         <image id='snippet-img'/>
+
+        <hr>
+        <p>Window activate:</p>
+        <button id='open-win'>open window</button>
+
+        <button id='bring-to-front'>bring open window to front</button>
     </body>
     <script>
         var notfEl = document.getElementById('notf');
@@ -126,6 +132,18 @@
             function snippetError(err) {
                 alert('error getting snippet', err);
             }
+        });
+
+        var win;
+        var openWinButton = document.getElementById('open-win');
+        openWinButton.addEventListener('click', function() {
+            console.log('win=', win)
+            win = window.open('win.html', 'test-window', 'height=100,width=100');
+        });
+
+        var front = document.getElementById('bring-to-front');
+        front.addEventListener('click', function() {
+            window.SYM_API.activate(win.name);
         });
 
     </script>
