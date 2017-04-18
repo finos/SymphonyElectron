@@ -114,7 +114,7 @@ function createMainWindow(initialUrl) {
     });
 
     function destroyAllWindows() {
-        var keys = Object.keys(windows);
+        let keys = Object.keys(windows);
         for(var i = 0, len = keys.length; i < len; i++) {
             let winKey = keys[i];
             removeWindowKey(winKey);
@@ -143,8 +143,9 @@ function createMainWindow(initialUrl) {
                 // abort - no frame name provided.
                 return;
             }
+
             // reposition new window
-            var mainWinPos = mainWindow.getPosition();
+            let mainWinPos = mainWindow.getPosition();
             if (mainWinPos && mainWinPos.length === 2) {
                 let newWinKey = getGuid();
 
@@ -155,18 +156,20 @@ function createMainWindow(initialUrl) {
                 newWinOptions.winKey = newWinKey;
                 /* eslint-enable no-param-reassign */
 
-                // note: will use code below later for saved layout impl.
-                var webContents = newWinOptions.webContents;
+                let webContents = newWinOptions.webContents;
+
                 webContents.once('did-finish-load', function() {
+                    let browserWin = electron.BrowserWindow.fromWebContents(webContents);
 
-                    var browserWin = electron.BrowserWindow.fromWebContents(webContents);
-                    browserWin.winName = frameName;
+                    if (browserWin) {
+                        browserWin.winName = frameName;
 
-                    addWindowKey(newWinKey, browserWin);
+                        browserWin.once('closed', function() {
+                            removeWindowKey(newWinKey);
+                        });
 
-                    browserWin.once('close', function() {
-                        removeWindowKey(newWinKey);
-                    });
+                        addWindowKey(newWinKey, browserWin);
+                    }
 
                     // note: will use later for save-layout feature
                     // browserWin.on('move', function() {
@@ -215,10 +218,11 @@ function setIsOnline(status) {
 }
 
 function activate(windowName) {
-    var keys = Object.keys(windows);
-    for(var i = 0, len = keys.length; i < len; i++) {
-        var window = windows[keys[i]];
-        if (window.winName === windowName) {
+    let keys = Object.keys(windows);
+    for(let i = 0, len = keys.length; i < len; i++) {
+        let window = windows[keys[i]];
+        if (window && !window.isDestroyed() &&
+            window.winName === windowName) {
             window.show();
             return;
         }
