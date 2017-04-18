@@ -4,10 +4,10 @@ var keyMirror = require('keymirror');
 
 const cmds = keyMirror({
     isOnline: null,
-    open: null,
     registerLogger: null,
     setBadgeCount: null,
-    badgeDataUrl: null
+    badgeDataUrl: null,
+    activate: null
 });
 
 module.exports = {
