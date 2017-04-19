@@ -19,8 +19,8 @@
     "browserify-preload": "browserify -o js/preload/_preloadMain.js -x electron --insert-global-vars=__filename,__dirname js/preload/preloadMain.js"
   },
   "jest": {
-      "collectCoverage": true,
-      "transformIgnorePatterns": []
+    "collectCoverage": true,
+    "transformIgnorePatterns": []
   },
   "build": {
     "files": [
@@ -82,9 +82,10 @@
   },
   "dependencies": {
     "async": "^2.1.5",
+    "electron-context-menu": "^0.8.0",
     "electron-squirrel-startup": "^1.0.0",
     "keymirror": "0.1.1",
-    "electron-context-menu": "^0.8.0",
+    "windows-shortcuts": "^0.1.4",
     "winreg": "^1.2.3"
   }
 }
