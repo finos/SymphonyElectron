@@ -21,7 +21,7 @@ In order to achieve those goals Symphony is participating and working in close c
 - npm install
 - to run locally: npm run dev
 - to build mac dmg: npm run dist-mac
-- to build win msi, use 'advanced installer' .aip file in installer/ dir
+- to build win msi: npm run unpacked-win (for 64 bit) and use 'advanced installer' .aip file in installer/ dir
 
 ## msi command line options:
 - to install for all users (admin required): msiexec.exe /i Symphony-x64.msi ALLUSERS=1
