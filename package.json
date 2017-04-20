@@ -86,7 +86,7 @@
     "electron-squirrel-startup": "^1.0.0",
     "keymirror": "0.1.1",
     "electron-context-menu": "^0.8.0",
-    "windows-shortcuts": "^0.1.4",    
-	"winreg": "^1.2.3"
+    "windows-shortcuts": "^0.1.4",
+    "winreg": "^1.2.3"
   }
 }
