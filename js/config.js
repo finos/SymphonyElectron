@@ -35,7 +35,7 @@ function getConfigField(fieldName) {
 
 function getUserConfigField(fieldName) {
     return readUserConfig().then(function(config) {
-        if (config[fieldName]) {
+        if (typeof fieldName === 'string' && fieldName in config) {
             return config[fieldName];
         }
 
@@ -67,7 +67,7 @@ function readUserConfig() {
 
 function getGlobalConfigField(fieldName) {
     return readGlobalConfig().then(function(config) {
-        if (config[fieldName]) {
+        if (typeof fieldName === 'string' && fieldName in config) {
             return config[fieldName];
         }
 
