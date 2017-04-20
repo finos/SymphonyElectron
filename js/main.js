@@ -5,7 +5,7 @@ const app = electron.app;
 const nodeURL = require('url');
 const squirrelStartup = require('electron-squirrel-startup');
 
-const getConfig = require('./getConfig.js');
+const { getConfigField } = require('./config.js');
 const { isMac, isDevEnv } = require('./utils/misc.js');
 
 
@@ -44,17 +44,17 @@ function getUrlAndOpenMainWindow() {
         }
     }
 
-    getConfig()
+    getConfigField('url')
     .then(createWin).catch(function (err){
         let title = 'Error loading configuration';
         electron.dialog.showErrorBox(title, title + ': ' + err);
     });
 }
 
-function createWin(config){
+function createWin(urlFromConfig){
     let protocol = '';
     // add https protocol if none found.
-    let parsedUrl = nodeURL.parse(config.url);
+    let parsedUrl = nodeURL.parse(urlFromConfig);
     if (!parsedUrl.protocol) {
         protocol = 'https';
     }

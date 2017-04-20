@@ -135,16 +135,23 @@
         });
 
         var win;
+
         var openWinButton = document.getElementById('open-win');
         openWinButton.addEventListener('click', function() {
-            console.log('win=', win)
-            win = window.open('win.html', 'test-window', 'height=100,width=100');
+            win = window.open('win.html?x=100&y=100', 'test-window', 'height=100,width=100');
         });
 
         var front = document.getElementById('bring-to-front');
         front.addEventListener('click', function() {
             window.SYM_API.activate(win.name);
         });
+
+        // register callback to be notified when size/position changes for win.
+        SYM_API.registerBoundsChange(onBoundsChange);
+
+        function onBoundsChange(arg) {
+            console.log('bounds changed for=', arg)
+        }
 
     </script>
 </html>

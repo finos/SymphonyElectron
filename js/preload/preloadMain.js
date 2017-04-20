@@ -88,15 +88,28 @@ function createAPI() {
         },
 
         /**
+         * Allows JS to register a callback to be invoked when size/positions
+         * changes for any pop-out window (i.e., window.open). The main
+         * process will emit IPC event 'boundsChange' (see below). Currently
+         * only one window can register for bounds change.
+         * @param  {Function} callback Function invoked when bounds changes.
+         */
+        registerBoundsChange: function(callback) {
+            if (typeof callback === 'function') {
+                local.boundsChangeCallback = callback;
+                local.ipcRenderer.send(apiName, {
+                    cmd: apiCmds.registerBoundsChange
+                });
+            }
+        },
+
+        /**
          * allows JS to register a logger that can be used by electron main process.
          * @param  {Object} logger  function that can be called accepting
          * object: {
          *  logLevel: 'ERROR'|'CONFLICT'|'WARN'|'ACTION'|'INFO'|'DEBUG',
          *  logDetails: String
          *  }
-         *
-         *  note: only main window is allowed to register a logger, others are
-         *  ignored.
          */
         registerLogger: function(logger) {
             if (typeof logger === 'function') {
@@ -116,6 +129,20 @@ function createAPI() {
     local.ipcRenderer.on('log', (event, arg) => {
         if (local.logger && arg && arg.level && arg.details) {
             local.logger(arg.level, arg.details);
+        }
+    });
+
+    // listen for notifications that some window size/position has changed
+    local.ipcRenderer.on('boundsChange', (event, arg) => {
+        if (local.boundsChangeCallback && arg.windowName &&
+            arg.x && arg.y && arg.width && arg.height) {
+            local.boundsChangeCallback({
+                x: arg.x,
+                y: arg.y,
+                width: arg.width,
+                height: arg.height,
+                windowName: arg.windowName
+            });
         }
     });
 

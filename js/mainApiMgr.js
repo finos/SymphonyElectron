@@ -79,6 +79,10 @@ electron.ipcMain.on(apiName, (event, arg) => {
         return;
     }
 
+    if (arg.cmd === apiCmds.registerBoundsChange) {
+        windowMgr.setBoundsChangeWindow(event.sender);
+    }
+
     if (arg.cmd === apiCmds.registerLogger) {
         // renderer window that has a registered logger from JS.
         log.setLogWindow(event.sender);
