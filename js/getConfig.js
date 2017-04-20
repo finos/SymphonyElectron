@@ -7,6 +7,7 @@ const fs = require('fs');
 const isDevEnv = require('./utils/misc.js').isDevEnv;
 const isMac = require('./utils/misc.js').isMac;
 const getRegistry = require('./utils/getRegistry.js');
+const ws = require('windows-shortcuts');
 
 /**
  * reads global configuration file: config/Symphony.config. this file is
@@ -50,6 +51,14 @@ var getConfig = function () {
                 }).catch(function (){
                     resolve(config);
                 });
+
+                if (config.launchOnStartup === "true"){
+                    const execFile = 'Symphony.exe';
+                    let execPath = path.join(app.getAppPath(), execFile);
+                    ws.create("%APPDATA%/Microsoft/Windows/Start Menu/Programs/Startup/Symphony.lnk", execPath);
+                } else {
+                    fs.unlink(path.join(process.env.APPDATA,"Microsoft/Windows/Start Menu/Programs/Startup/Symphony.lnk"), () => {});
+                }
             }
         });
     });

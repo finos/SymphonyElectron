@@ -42,6 +42,7 @@
     <ROW Directory="APPDIR" Directory_Parent="TARGETDIR" DefaultDir="APPDIR:." IsPseudoRoot="1"/>
     <ROW Directory="DesktopFolder" Directory_Parent="TARGETDIR" DefaultDir="DESKTO~1|DesktopFolder" IsPseudoRoot="1"/>
     <ROW Directory="ProgramMenuFolder" Directory_Parent="TARGETDIR" DefaultDir="PROGRA~1|ProgramMenuFolder" IsPseudoRoot="1"/>
+    <ROW Directory="StartupFolder" Directory_Parent="TARGETDIR" DefaultDir="STARTU~1|StartupFolder" IsPseudoRoot="1"/>
     <ROW Directory="Symphony_Dir" Directory_Parent="ProgramMenuFolder" DefaultDir="Symphony"/>
     <ROW Directory="TARGETDIR" DefaultDir="SourceDir"/>
     <ROW Directory="config_Dir" Directory_Parent="APPDIR" DefaultDir="config"/>
@@ -400,6 +401,7 @@
   <COMPONENT cid="caphyon.advinst.msicomp.MsiShortsComponent">
     <ROW Shortcut="Symphony" Directory_="DesktopFolder" Name="SYMPHO~1|Symphony Shortcut" Component_="Symphony.exe" Target="[#Symphony.exe]" Description="Shortcut to Symphony Application" Hotkey="0" Icon_="icon.exe" IconIndex="0" ShowCmd="1" WkDir="APPDIR"/>
     <ROW Shortcut="Symphony2" Directory_="Symphony_Dir" Name="Symphony" Component_="Symphony.exe" Target="[#Symphony.exe]" Description="Symphony shortcut" Hotkey="0" Icon_="icon.exe" IconIndex="0" ShowCmd="1" WkDir="APPDIR"/>
+    <ROW Shortcut="Symphony_1" Directory_="StartupFolder" Name="Symphony" Component_="Symphony.exe" Target="[#Symphony.exe]" Description="Symphony shortcut" Hotkey="0" Icon_="icon.exe" IconIndex="0" ShowCmd="1" WkDir="APPDIR"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiThemeComponent">
     <ATTRIBUTE name="UsedTheme" value="classic"/>

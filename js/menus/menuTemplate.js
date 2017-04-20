@@ -1,6 +1,19 @@
 'use strict';
 
 const electron = require('electron');
+const getConfig = require('../getConfig.js');
+const ws = require('windows-shortcuts');
+const fs = require('fs');
+const path = require('path');
+const appl = electron.app;
+var minimizeOnClose = false;
+var launchOnStartup = false;
+
+getConfig()
+.then(setCheckboxValues).catch(function (err){
+    let title = 'Error setting checkboxes.';
+    electron.dialog.showErrorBox(title, title + ': ' + err);
+});
 
 const template = [
     {
@@ -81,6 +94,7 @@ const template = [
 ];
 
 function getTemplate(app) {
+    
     if (process.platform === 'darwin' && template[0].label !== app.getName()) {
         template.unshift({
             label: app.getName(),
@@ -156,9 +170,68 @@ function getTemplate(app) {
                 role: 'front'
             }
         ]
+    } else
+    {
+      // Window menu when Windows.
+        template[2].submenu.push(
+            {
+                label: 'Auto Launch on Windows Startup', 
+                type: 'checkbox', 
+                checked: launchOnStartup,
+                click: function (item) {
+                    if (item.checked){
+                        const execFile = 'Symphony.exe';
+                        let execPath = path.join(app.getAppPath(), execFile);
+                        ws.create("%APPDATA%/Microsoft/Windows/Start Menu/Programs/Startup/Symphony.lnk", execPath);
+                    } else {
+                        fs.unlink(path.join(process.env.APPDATA,"Microsoft/Windows/Start Menu/Programs/Startup/Symphony.lnk"), () => {});
+                    }
+                    launchOnStartup = item.checked;
+                    getConfig().then(saveConfigFile);
+                }
+            }
+        )
     }
 
+    // Window menu -> minimizeOnClose.
+    // ToDo: Add behavior on Close.
+    var index = 2;
+    if (process.platform === 'darwin' && template[0].label !== app.getName()){
+        index = 3;
+    }
+    template[index].submenu.push(
+        {
+            label: 'Minimize on Close', 
+            type: 'checkbox', 
+            checked: minimizeOnClose,
+            click: function (item) {
+                minimizeOnClose = item.checked;
+                getConfig().then(saveConfigFile);
+            }
+        }
+    )
+
     return template;
+}
+
+function setCheckboxValues(config){
+    minimizeOnClose = config.minimizeOnClose === "true" ? true : false;
+    launchOnStartup = config.launchOnStartup === "true" ? true : false;
+}
+
+function saveConfigFile(config){
+    let configPath;
+    const configFile = 'config/Symphony.config';
+    configPath = path.join(appl.getAppPath(), configFile);
+    let conf = config;
+    conf.minimizeOnClose = minimizeOnClose;
+    conf.launchOnStartup = launchOnStartup;
+    fs.writeFile(configPath, JSON.stringify(config, null, 4),(err) => {
+        if (err){
+            let title = 'Error saving config file.';
+            electron.dialog.showErrorBox(title, title + ': ' + err);
+        }
+    });
 }
 
 module.exports = getTemplate;
