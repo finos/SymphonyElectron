@@ -18,7 +18,7 @@ function throttle(throttleTime, func) {
 
         function cancel() {
             if (timer) {
-                window.clearTimeout(timer);
+                clearTimeout(timer);
             }
         }
 

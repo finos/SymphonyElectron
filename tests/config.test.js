@@ -1,4 +1,4 @@
-const getConfig = require('../js/getconfig');
+const { getConfigField } = require('../js/config');
 
 // mock required so getConfig reads config from correct path
 jest.mock('../js/utils/misc.js', function() {
@@ -9,7 +9,7 @@ jest.mock('../js/utils/misc.js', function() {
 });
 
 test('getConfig should have proper url', function() {
-    return getConfig(false).then(function(result) {
-        expect(result.url).toBe('https://my.symphony.com');
+    return getConfigField('url').then(function(url) {
+        expect(url).toBe('https://my.symphony.com');
     });
 });
