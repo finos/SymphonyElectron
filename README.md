@@ -14,14 +14,13 @@ In order to achieve those goals Symphony is participating and working in close c
 
 ## Run demo:
 - npm install
-- npm run demo
+- npm run demo-win (for windows)
+- npm run demo-mac (for mac osx)
 
 ## Build Instructions:
 - npm install
 - to run locally: npm run dev
 - to build mac dmg: npm run dist-mac
-- to build win squirrel installer exe (64 bit): npm run dist-win
-- to build win squirrel installer exe (32 bit): npm run dist-win-x86
 - to build win msi, use 'advanced installer' .aip file in installer/ dir
 
 ## msi command line options:
