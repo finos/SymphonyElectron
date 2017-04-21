@@ -348,6 +348,7 @@ function sendChildWinBoundsChange(window) {
     let newBounds = getWindowSizeAndPosition(window);
     if (newBounds && boundsChangeWindow) {
         newBounds.windowName = window.winName;
+        // ipc msg back to renderer to inform bounds has changed.
         boundsChangeWindow.send('boundsChange', newBounds);
     }
 }
