@@ -42,7 +42,7 @@
         <button id='clear-badge'>clear badge count</button>
         <br>
         <hr>
-        <p>Screen Snippet (note: currently only works on mac):</p>
+        <p>Screen Snippet:</p>
         <button id='snippet'>get snippet</button>
         <p>snippet output:</p>
         <image id='snippet-img'/>
@@ -130,7 +130,7 @@
             }
 
             function snippetError(err) {
-                alert('error getting snippet', err);
+                alert('error getting snippet' + err);
             }
         });
 
