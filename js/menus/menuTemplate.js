@@ -2,14 +2,20 @@
 
 const electron = require('electron');
 const { getConfigField, updateConfigField } = require('../config.js');
-const ws = require('windows-shortcuts');
-const fs = require('fs');
-const path = require('path');
+const AutoLaunch = require('auto-launch');
 
 var minimizeOnClose = false;
 var launchOnStartup = false;
 
 setCheckboxValues();
+console.log(process.execPath);
+
+var symphonyAutoLauncher = new AutoLaunch({
+    name: 'Symphony',
+    path: process.execPath,
+});
+
+
 
 const template = [
     {
@@ -174,11 +180,21 @@ function getTemplate(app) {
                 checked: launchOnStartup,
                 click: function (item) {
                     if (item.checked){
-                        const execFile = 'Symphony.exe';
-                        let execPath = path.join(app.getAppPath(), execFile);
-                        ws.create("%APPDATA%/Microsoft/Windows/Start Menu/Programs/Startup/Symphony.lnk", execPath);
+
+                        symphonyAutoLauncher.isEnabled()
+                        .then(function(isEnabled){
+                            if(isEnabled){
+                                return;
+                            }
+                            symphonyAutoLauncher.enable();
+                        })
+                        .catch(function(err){
+                            let title = 'Error setting Symphony Auto Launch';
+                            electron.dialog.showErrorBox(title, title + ': ' + err);
+                        });
+
                     } else {
-                        fs.unlink(path.join(process.env.APPDATA,"Microsoft/Windows/Start Menu/Programs/Startup/Symphony.lnk"), () => {});
+                        symphonyAutoLauncher.disable();
                     }
                     launchOnStartup = item.checked;
                     updateConfigField('launchOnStartup', launchOnStartup);
