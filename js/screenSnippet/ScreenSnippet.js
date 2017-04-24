@@ -1,11 +1,13 @@
 'use strict';
 
+const electron = require('electron');
+const app = electron.app;
 const childProcess = require('child_process');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-const { isMac } = require('../utils/misc.js');
+const { isMac, isDevEnv } = require('../utils/misc.js');
 
 // static ref to child process, only allow one screen snippet at time, so
 // hold ref to prev, so can kill before starting next snippet.
@@ -43,13 +45,19 @@ class ScreenSnippet {
                 captureUtil = '/usr/sbin/screencapture';
                 captureUtilArgs = [ '-i', '-s', '-t', 'jpg', outputFileName ];
             } else {
-                // for now screen snippet on windows is not supported,
-                // waiting on open sourcing for custom screen snippter util.
-                reject(this._createWarn('windows not supported'));
-                // custom built windows screen capture tool, that is
-                // located in same directory as running exec.
-                //captureUtil = './ScreenSnippet.exe';
-                //captureUtilArgs = [ outputFileName ];
+                // use custom built windows screen capture tool
+                if (isDevEnv) {
+                    // for dev env pick up tool from node nodules
+                    captureUtil =
+                        path.join(__dirname,
+                        '../../node_modules/screen-snippet/bin/Release/ScreenSnippet.exe');
+                } else {
+                    // for production gets installed next to exec.
+                    let execPath = path.dirname(app.getPath('exe'));
+                    captureUtil = path.join(execPath, 'ScreenSnippet.exe');
+                }
+
+                captureUtilArgs = [ outputFileName ];
             }
 
             // only allow one screen capture at a time.

@@ -12,6 +12,16 @@ Our goal is to improve the performance and development agility of Symphony's des
 
 In order to achieve those goals Symphony is participating and working in close collaboration with the [Foundation Desktop Wrapper Working Group](https://symphonyoss.atlassian.net/wiki/display/WGDWAPI/Working+Group+-+Desktop+Wrapper+API)
 
+## Windows Dev Env
+- For screen-snippet to work:
+  * MSBuild.exe must be in path.  MSBuild.exe is available by installing Visual Studio 2017 Community. 
+  * .NET3.5 SP1 must be installed.
+  * Note: screen-snippet is an optional dependency so if MSBuild.exe (Visual Studio) is not installed, then the install will still succeed, BUT the screen snippet functionality will not work on Windows.
+- NodeJS version >= 7.4.0 (corresponds to electron 1.6.7) - needed to run tests locally
+
+## Mac Dev Env
+- NodeJS version >= 7.4.0 (corresponds to electron 1.6.7) - needed to run tests locally
+
 ## Run demo:
 - npm install
 - npm run demo-win (for windows)
