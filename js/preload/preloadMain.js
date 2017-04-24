@@ -120,6 +120,24 @@ function createAPI() {
                     cmd: apiCmds.registerLogger
                 });
             }
+        },
+
+        /**
+         * allows JS to register a logger that can be used by electron main process.
+         * @param  {Object} activityDetection - function that can be called accepting
+         * object: {
+         *  systemIdleTime: Number
+         *  }
+         */
+        registerActivityDetection: function(activityDetection) {
+            if (typeof activityDetection === 'function') {
+                local.activityDetection = activityDetection;
+
+                // only main window can register
+                local.ipcRenderer.send(apiName, {
+                    cmd: apiCmds.registerActivityDetection
+                });
+            }
         }
     };
 
@@ -143,6 +161,13 @@ function createAPI() {
                 height: arg.height,
                 windowName: arg.windowName
             });
+        }
+    });
+
+    // listen for user activity from main process
+    local.ipcRenderer.on('activity', (event, arg) => {
+        if (local.activityDetection && arg && arg.systemIdleTime) {
+            local.activityDetection(arg.systemIdleTime);
         }
     });
 

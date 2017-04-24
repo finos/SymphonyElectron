@@ -8,6 +8,7 @@ const electron = require('electron');
 
 const windowMgr = require('./windowMgr.js');
 const log = require('./log.js');
+const activityDetection = require('./activityDetection/activity');
 const badgeCount = require('./badgeCount.js');
 
 const apiEnums = require('./enums/api.js');
@@ -87,11 +88,16 @@ electron.ipcMain.on(apiName, (event, arg) => {
         // renderer window that has a registered logger from JS.
         log.setLogWindow(event.sender);
     }
+
+    if (arg.cmd === apiCmds.registerActivityDetection) {
+        // renderer window that has a registered activity detection from JS.
+        activityDetection.setActivityWindow(event.sender);
+    }
 });
 
 // expose these methods primarily for testing...
 module.exports = {
-    shouldCheckValidWindow: function(shouldCheck) {
+    shouldCheckValidWindow: function (shouldCheck) {
         checkValidWindow = shouldCheck;
     }
 }
