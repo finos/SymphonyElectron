@@ -123,7 +123,7 @@ function createAPI() {
         },
 
         /**
-         * allows JS to register a logger that can be used by electron main process.
+         * allows JS to register a activity detector that can be used by electron main process.
          * @param  {Object} activityDetection - function that can be called accepting
          * object: {
          *  systemIdleTime: Number
