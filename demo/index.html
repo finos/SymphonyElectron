@@ -1,157 +1,176 @@
 <html>
-    <head>
-    </head>
-    <body>
-        <h1>Symphony Electron API Demo</h1>
-        <hr>
-        <p>Notifications:<p>
-        <button id='notf'>show notification</button>
-        <p>
-            <label for='title'>title:</label>
-            <input type='text' id='title' value='Notification Demo'/>
-        </p>
-        <p>
-            <label for='body'>body:</label>
-            <input type='text' id='body' value='Some message'/>
-        </p>
-        <p>
-            <label for='image'>image url:</label>
-            <input type='text' id='image' value='https://lh3.googleusercontent.com/-s2PXL6wWMCc/AAAAAAAAAAI/AAAAAAAAAAA/AAomvV2gUNMMeFsOijwVVpihfg_anpKWQA/s32-c-mo/photo.jpg'/>
-        </p>
-        <p>
-            <label for='flash'>flash:</label>
-            <input type='checkbox' id='flash'/>
-        </p>
-        <p>
-            <label for='sticky'>sticky:</label>
-            <input type='checkbox' id='sticky'/>
-        </p>
-        <p>
-            <label for='color'>color:</label>
-            <input type='text' id='color' value='white'/>
-        </p>
-        <p>
-            <label for='tag'>tag:</label>
-            <input type='text' id='tag' value=''/>
-        </p>
-        <br>
-        <hr>
-        <p>Badge Count:<p>
-        <button id='inc-badge'>increment badge count</button>
-        <br>
-        <button id='clear-badge'>clear badge count</button>
-        <br>
-        <hr>
-        <p>Screen Snippet:</p>
-        <button id='snippet'>get snippet</button>
-        <p>snippet output:</p>
-        <image id='snippet-img'/>
 
-        <hr>
-        <p>Window activate:</p>
-        <button id='open-win'>open window</button>
+<head>
+</head>
 
-        <button id='bring-to-front'>bring open window to front</button>
-    </body>
-    <script>
-        var notfEl = document.getElementById('notf');
-        var num = 0;
+<body>
+<h1>Symphony Electron API Demo</h1>
+<hr>
+<p>Notifications:
+<p>
+    <button id='notf'>show notification</button>
+<p>
+    <label for='title'>title:</label>
+    <input type='text' id='title' value='Notification Demo'/>
+</p>
+<p>
+    <label for='body'>body:</label>
+    <input type='text' id='body' value='Some message'/>
+</p>
+<p>
+    <label for='image'>image url:</label>
+    <input type='text' id='image'
+           value='https://lh3.googleusercontent.com/-s2PXL6wWMCc/AAAAAAAAAAI/AAAAAAAAAAA/AAomvV2gUNMMeFsOijwVVpihfg_anpKWQA/s32-c-mo/photo.jpg'
+    />
+</p>
+<p>
+    <label for='flash'>flash:</label>
+    <input type='checkbox' id='flash'/>
+</p>
+<p>
+    <label for='sticky'>sticky:</label>
+    <input type='checkbox' id='sticky'/>
+</p>
+<p>
+    <label for='color'>color:</label>
+    <input type='text' id='color' value='white'/>
+</p>
+<p>
+    <label for='tag'>tag:</label>
+    <input type='text' id='tag' value=''/>
+</p>
+<br>
+<hr>
+<p>
+    Crash Process:
+<p>
+    <button id='crash'>Crash Renderer</button>
+</p>
+<br>
+<hr>
+<p>Badge Count:
+<p>
+    <button id='inc-badge'>increment badge count</button>
+    <br>
+    <button id='clear-badge'>clear badge count</button>
+    <br>
+<hr>
+<p>Screen Snippet:</p>
+<button id='snippet'>get snippet</button>
+<p>snippet output:</p>
+<image id='snippet-img'/>
 
-        // note: notification will close when clicked
-        notfEl.addEventListener('click', function() {
-            var title = document.getElementById('title').value;
-            var body = document.getElementById('body').value;
-            var imageUrl = document.getElementById('image').value;
-            var shouldFlash = document.getElementById('flash').checked;
-            var shouldStick = document.getElementById('sticky').checked;
-            var color = document.getElementById('color').value;
-            var tag = document.getElementById('tag').value;
+<hr>
+<p>Window activate:</p>
+<button id='open-win'>open window</button>
 
-            num++;
+<button id='bring-to-front'>bring open window to front</button>
+</body>
+<script>
+    var notfEl = document.getElementById('notf');
+    var num = 0;
 
-            var notf = new SYM_API.Notification(title, {
-                body: (body + ' num=' + num + ' tag=' + tag),
-                image: imageUrl,
-                flash: shouldFlash,
-                color: color || 'white',
-                sticky: shouldStick,
-                data: {
-                    hello: 'hello word'
-                },
-                tag: tag
-            });
+    // note: notification will close when clicked
+    notfEl.addEventListener('click', function () {
+        var title = document.getElementById('title').value;
+        var body = document.getElementById('body').value;
+        var imageUrl = document.getElementById('image').value;
+        var shouldFlash = document.getElementById('flash').checked;
+        var shouldStick = document.getElementById('sticky').checked;
+        var color = document.getElementById('color').value;
+        var tag = document.getElementById('tag').value;
 
-            notf.addEventListener('click', onclick);
-            function onclick(event) {
-                event.target.close();
-                alert('notification clicked: ' + event.target.data.hello);
-            }
+        num++;
 
-            notf.addEventListener('close', onclose);
-            function onclose() {
-                alert('notification closed');
-            };
-
-            notf.addEventListener('error', onerror);
-            function onerror(event) {
-                alert('error=' + event.result);
-            };
+        var notf = new SYM_API.Notification(title, {
+            body: (body + ' num=' + num + ' tag=' + tag),
+            image: imageUrl,
+            flash: shouldFlash,
+            color: color || 'white',
+            sticky: shouldStick,
+            data: {
+                hello: 'hello word'
+            },
+            tag: tag
         });
 
-        var badgeCount = 0;
+        notf.addEventListener('click', onclick);
+        function onclick(event) {
+            event.target.close();
+            alert('notification clicked: ' + event.target.data.hello);
+        }
 
-        var incBadgeEl = document.getElementById('inc-badge');
-        incBadgeEl.addEventListener('click', function() {
-            badgeCount++;
-            SYM_API.setBadgeCount(badgeCount);
-        });
+        notf.addEventListener('close', onclose);
+        function onclose() {
+            alert('notification closed');
+        }
 
-        var incBadgeEl = document.getElementById('clear-badge');
-        incBadgeEl.addEventListener('click', function() {
-            badgeCount = 0;
-            SYM_API.setBadgeCount(0);
-        });
+        notf.addEventListener('error', onerror);
+        function onerror(event) {
+            alert('error=' + event.result);
+        }
+    });
 
-        var snippetButton = document.getElementById('snippet');
-        snippetButton.addEventListener('click', function() {
-            let snippet = new SYM_API.ScreenSnippet();
+    var badgeCount = 0;
 
-            snippet
+    var incBadgeEl = document.getElementById('inc-badge');
+    incBadgeEl.addEventListener('click', function () {
+        badgeCount++;
+        SYM_API.setBadgeCount(badgeCount);
+    });
+
+    var incBadgeEl = document.getElementById('clear-badge');
+    incBadgeEl.addEventListener('click', function () {
+        badgeCount = 0;
+        SYM_API.setBadgeCount(0);
+    });
+
+    var snippetButton = document.getElementById('snippet');
+    snippetButton.addEventListener('click', function () {
+        let snippet = new SYM_API.ScreenSnippet();
+
+        snippet
             .capture()
             .then(gotSnippet)
             .catch(snippetError);
 
-            function gotSnippet(rsp) {
-                if (rsp && rsp.data && rsp.type) {
-                    var dataUrl = 'data:' + rsp.type + ',' + rsp.data;
-                    var img = document.getElementById('snippet-img');
-                    img.src = dataUrl;
-                }
+        function gotSnippet(rsp) {
+            if (rsp && rsp.data && rsp.type) {
+                var dataUrl = 'data:' + rsp.type + ',' + rsp.data;
+                var img = document.getElementById('snippet-img');
+                img.src = dataUrl;
             }
-
-            function snippetError(err) {
-                alert('error getting snippet' + err);
-            }
-        });
-
-        var win;
-
-        var openWinButton = document.getElementById('open-win');
-        openWinButton.addEventListener('click', function() {
-            win = window.open('win.html?x=100&y=100', 'test-window', 'height=100,width=100');
-        });
-
-        var front = document.getElementById('bring-to-front');
-        front.addEventListener('click', function() {
-            window.SYM_API.activate(win.name);
-        });
-
-        // register callback to be notified when size/position changes for win.
-        SYM_API.registerBoundsChange(onBoundsChange);
-
-        function onBoundsChange(arg) {
-            console.log('bounds changed for=', arg)
         }
 
-    </script>
+        function snippetError(err) {
+            alert('error getting snippet' + err);
+        }
+    });
+
+    var win;
+
+    var openWinButton = document.getElementById('open-win');
+    openWinButton.addEventListener('click', function () {
+        win = window.open('win.html?x=100&y=100', 'test-window', 'height=100,width=100');
+    });
+
+    var front = document.getElementById('bring-to-front');
+    front.addEventListener('click', function () {
+        window.SYM_API.activate(win.name);
+    });
+
+    // register callback to be notified when size/position changes for win.
+    SYM_API.registerBoundsChange(onBoundsChange);
+
+    function onBoundsChange(arg) {
+        console.log('bounds changed for=', arg)
+    }
+
+    const crash = document.getElementById('crash');
+    crash.addEventListener('click', function () {
+        window.SYM_API.CrashProcess();
+    });
+
+</script>
+
 </html>

@@ -15,6 +15,9 @@ const { ipcRenderer, remote } = require('electron');
 
 const throttle = require('../utils/throttle.js');
 const apiEnums = require('../enums/api.js');
+
+const crashReporter = require('../crashReporter/crashReporter');
+
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 
@@ -30,6 +33,9 @@ const throttledSetBadgeCount = throttle(1000, function(count) {
         count: count
     });
 });
+
+// Setup the crash reporter
+crashReporter.setup({'window': 'preloadMain'});
 
 createAPI();
 
@@ -75,6 +81,13 @@ function createAPI() {
          * details in screenSnipper/ScreenSnippet.js
          */
         ScreenSnippet: remote.require('./screenSnippet/ScreenSnippet.js'),
+
+        /**
+         * provides api to crash the renderer process that calls this function
+         */
+        CrashProcess: function () {
+            process.crash();
+        },
 
         /**
          * Brings window forward and gives focus.
