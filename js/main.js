@@ -8,6 +8,7 @@ const squirrelStartup = require('electron-squirrel-startup');
 const { getConfigField } = require('./config.js');
 const { isMac, isDevEnv } = require('./utils/misc.js');
 
+const crashReporter = require('./crashReporter/crashReporter');
 
 // exit early for squirrel installer
 if (squirrelStartup) {
@@ -28,6 +29,12 @@ const windowMgr = require('./windowMgr.js');
  * Some APIs can only be used after this event occurs.
  */
 app.on('ready', getUrlAndOpenMainWindow);
+
+/**
+ * This method will initialize the crash reporter for
+ * the main process.
+ */
+crashReporter.setup({'window': 'main'});
 
 function getUrlAndOpenMainWindow() {
     // for dev env allow passing url argument
