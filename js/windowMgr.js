@@ -132,7 +132,9 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             // removes all existing notifications when main window reloads
             notify.reset();
             log.send(logLevels.INFO, 'main window loaded url: ' + url);
-            activityDetection.initiateActivateDetection();
+
+            // Initiate activity detection to monitor user activity status
+            activityDetection.initiateActivityDetection();
         }
     });
 

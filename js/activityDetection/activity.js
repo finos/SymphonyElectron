@@ -3,7 +3,7 @@
 let activityWindow;
 
 /**
- * Sends user activity from main process to activity detection hosted by
+ * Sends user activity status from main process to activity detection hosted by
  * renderer process. Allows main process to use activity detection
  * provided by JS.
  * @param  {number} systemIdleTime - systemIdleTime in millisecond
