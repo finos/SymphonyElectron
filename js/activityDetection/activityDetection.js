@@ -5,6 +5,7 @@ const throttle = require('../utils/throttle');
 
 const activity = require('./activity.js');
 const maxIdleTime = 4 * 60 * 1000;
+let intervalId;
 
 /**
  * @return {{isUserIdle: boolean, systemIdleTime: *}}
@@ -17,7 +18,7 @@ function activityDetection() {
     }
 
     // If idle for more than 4 mins, monitor system idle status every second
-    monitorUserActivity();
+    if (!intervalId) monitorUserActivity();
 }
 
 /**
@@ -35,16 +36,17 @@ function initiateActivityDetection() {
  * Monitor system idle status every second
  */
 function monitorUserActivity() {
+    let throttleMonitor = throttle(1000, monitor);
+    intervalId = setInterval(throttleMonitor, 1000);
+
     function monitor() {
         if (systemIdleTime.getIdleTime() < maxIdleTime) {
             // If system is active, send an update to the app bridge and clear the timer
             sendActivity();
             clearInterval(intervalId);
+            intervalId = undefined;
         }
     }
-
-    let throttleMonitor = throttle(1000, monitor);
-    let intervalId = setInterval(throttleMonitor, 1000);
 
 }
 
