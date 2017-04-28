@@ -45,7 +45,7 @@ In order to achieve those goals Symphony is participating and working in close c
 ## Tests and Code Coverage
 - jest framework is used to run tests: http://facebook.github.io/jest/
 - to run tests and get code coverage report: npm test
-- code coverage reports are placed in dir: converage
+- code coverage reports are placed in dir: coverage
 - tests are located in dir: tests
 
 ## Misc notes
