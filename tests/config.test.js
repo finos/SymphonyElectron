@@ -1,6 +1,7 @@
 const { getConfigField, updateConfigField, configFileName } = require('../js/config');
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 
 // mock required so getConfig reads config from correct path
 jest.mock('../js/utils/misc.js', function() {
@@ -58,12 +59,14 @@ describe('getConfigField tests', function() {
     }
 
     function createTempUserConfig(config) {
-        userConfigDir = fs.mkdtempSync('/tmp/config-');
+        var tmpDir = os.tmpdir();
+        userConfigDir = fs.mkdtempSync(path.join(tmpDir, 'config-'));
         return createTempConfigFile(path.join(userConfigDir, configFileName), config);
     }
 
     function createTempGlobalConfig(config) {
-        globalConfigDir = path.join(fs.mkdtempSync('/tmp/config-'), 'config');
+        var tmpDir = os.tmpdir();
+        globalConfigDir = path.join(fs.mkdtempSync(path.join(tmpDir, 'config-')), 'config');
         fs.mkdirSync(globalConfigDir);
         return createTempConfigFile(path.join(globalConfigDir, configFileName), config);
     }
