@@ -6,6 +6,7 @@ const throttle = require('../utils/throttle');
 const activity = require('./activity.js');
 const maxIdleTime = 4 * 60 * 1000;
 let intervalId;
+let throttleActivity;
 
 /**
  * @return {{isUserIdle: boolean, systemIdleTime: *}}
@@ -26,10 +27,14 @@ function activityDetection() {
  * Run every 4 mins to check user idle status
  */
 function initiateActivityDetection() {
-    let activityCheckInterval = 4 * 60 * 1000;
 
-    let throttleActivity = throttle(activityCheckInterval, sendActivity);
-    setInterval(throttleActivity, 5000);
+    if (!throttleActivity) {
+        throttleActivity = throttle(maxIdleTime, sendActivity);
+        setInterval(throttleActivity, maxIdleTime);
+    }
+
+    setTimeout(sendActivity(), 5000);
+
 }
 
 /**
