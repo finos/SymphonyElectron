@@ -67,7 +67,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     let key = getGuid();
 
     // Setup the crash reporter
-    crashReporter.setup({'window': 'windowMgr'});
+    crashReporter.setupCrashReporter({'window': 'windowMgr'});
 
     let newWinOpts = {
         title: 'Symphony',

@@ -35,7 +35,7 @@ const throttledSetBadgeCount = throttle(1000, function(count) {
 });
 
 // Setup the crash reporter
-crashReporter.setup({'window': 'preloadMain'});
+crashReporter.setupCrashReporter({'window': 'preloadMain'});
 
 createAPI();
 

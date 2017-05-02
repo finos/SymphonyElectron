@@ -9,14 +9,9 @@ const path = require('path');
 
 const { isMac, isDevEnv } = require('../utils/misc.js');
 
-const crashReporter = require('../crashReporter/crashReporter');
-
 // static ref to child process, only allow one screen snippet at time, so
 // hold ref to prev, so can kill before starting next snippet.
 let child;
-
-// Setup the crash reporter
-crashReporter.setup({'window': 'screenSnippet'});
 
 /**
  * Captures a user selected portion of the monitor and returns jpeg image

@@ -34,7 +34,7 @@ app.on('ready', getUrlAndOpenMainWindow);
  * This method will initialize the crash reporter for
  * the main process.
  */
-crashReporter.setup({'window': 'main'});
+crashReporter.setupCrashReporter({'window': 'main'});
 
 function getUrlAndOpenMainWindow() {
     // for dev env allow passing url argument
