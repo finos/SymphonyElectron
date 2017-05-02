@@ -9,7 +9,6 @@ let intervalId;
 let throttleActivity;
 
 /**
- * @return {{isUserIdle: boolean, systemIdleTime: *}}
  * Check if the user is idle
  */
 function activityDetection() {
@@ -20,6 +19,7 @@ function activityDetection() {
 
     // If idle for more than 4 mins, monitor system idle status every second
     if (!intervalId) monitorUserActivity();
+    return null;
 }
 
 /**
