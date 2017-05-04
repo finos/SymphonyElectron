@@ -9,6 +9,7 @@ const electron = require('electron');
 const windowMgr = require('./windowMgr.js');
 const log = require('./log.js');
 const badgeCount = require('./badgeCount.js');
+const protocolHandler = require('./protocolHandler');
 
 const apiEnums = require('./enums/api.js');
 const apiCmds = apiEnums.cmds;
@@ -84,9 +85,14 @@ electron.ipcMain.on(apiName, (event, arg) => {
     }
 
     if (arg.cmd === apiCmds.registerLogger) {
-        // renderer window that has a registered logger from JS.
+        // renderer window that has a registered logger from JS.        
         log.setLogWindow(event.sender);
     }
+
+    if (arg.cmd === apiCmds.registerProtocolHandler) {        
+        protocolHandler.setProtocolWindow(event.sender);
+    }
+
 });
 
 // expose these methods primarily for testing...
@@ -94,4 +100,4 @@ module.exports = {
     shouldCheckValidWindow: function(shouldCheck) {
         checkValidWindow = shouldCheck;
     }
-}
+};

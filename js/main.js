@@ -7,6 +7,7 @@ const squirrelStartup = require('electron-squirrel-startup');
 
 const { getConfigField } = require('./config.js');
 const { isMac, isDevEnv } = require('./utils/misc.js');
+const protocolHandler = require('./protocolHandler');
 
 
 // exit early for squirrel installer
@@ -80,4 +81,10 @@ app.on('activate', function() {
     } else {
         windowMgr.showMainWindow();
     }
+});
+
+app.setAsDefaultProtocolClient('symphony');
+
+app.on('open-url', function (event, url) {
+    protocolHandler.processProtocolAction(url);
 });

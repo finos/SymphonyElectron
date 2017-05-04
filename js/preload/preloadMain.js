@@ -120,7 +120,22 @@ function createAPI() {
                     cmd: apiCmds.registerLogger
                 });
             }
+        },
+
+        registerProtocolHandler: function (protocolHandler) {            
+
+            if (typeof protocolHandler === 'function') {                
+
+                local.processProtocolAction = protocolHandler;
+
+                local.ipcRenderer.send(apiName, {
+                    cmd: apiCmds.registerProtocolHandler
+                });
+
+            }
+
         }
+
     };
 
     Object.freeze(window.SYM_API);
@@ -192,6 +207,14 @@ function createAPI() {
             dataUrl: dataUrl,
             count: count
         });
+    });
+
+    local.ipcRenderer.on('protocol-action', (event, arg) => {        
+
+        if (local.processProtocolAction && arg && arg.uri) {
+            local.processProtocolAction(arg);
+        }
+
     });
 
     function updateOnlineStatus() {
