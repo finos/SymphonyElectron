@@ -167,7 +167,7 @@ function createAPI() {
     // listen for user activity from main process
     local.ipcRenderer.on('activity', (event, arg) => {
         if (local.activityDetection && arg && arg.systemIdleTime) {
-            local.activityDetection(arg.systemIdleTime);
+            local.activityDetection(arg.systemIdleTime, arg.isUserActive);
         }
     });
 

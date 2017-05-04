@@ -18,7 +18,9 @@ function activityDetection() {
     }
 
     // If idle for more than 4 mins, monitor system idle status every second
-    if (!intervalId) monitorUserActivity();
+    if (!intervalId) {
+        monitorUserActivity();
+    }
     return null;
 }
 
@@ -33,7 +35,7 @@ function initiateActivityDetection() {
         setInterval(throttleActivity, maxIdleTime);
     }
 
-    setTimeout(sendActivity(), 5000);
+    setTimeout(sendActivity, 5000);
 
 }
 
@@ -41,8 +43,7 @@ function initiateActivityDetection() {
  * Monitor system idle status every second
  */
 function monitorUserActivity() {
-    let throttleMonitor = throttle(1000, monitor);
-    intervalId = setInterval(throttleMonitor, 1000);
+    intervalId = setInterval(monitor, 1000);
 
     function monitor() {
         if (systemIdleTime.getIdleTime() < maxIdleTime) {
@@ -62,7 +63,7 @@ function monitorUserActivity() {
 function sendActivity() {
     let systemActivity = activityDetection();
     if (systemActivity && !systemActivity.isUserIdle && systemActivity.systemIdleTime) {
-        activity.send(systemActivity.systemIdleTime);
+        activity.send({systemIdleTime: systemActivity.systemIdleTime, isUserActive: true});
     }
 }
 
