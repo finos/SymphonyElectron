@@ -8,7 +8,6 @@ const squirrelStartup = require('electron-squirrel-startup');
 const { getConfigField } = require('./config.js');
 const { isMac, isDevEnv } = require('./utils/misc.js');
 
-
 // exit early for squirrel installer
 if (squirrelStartup) {
     return;
@@ -19,8 +18,24 @@ require('./mainApiMgr.js');
 // monitor memory of main process
 require('./memoryMonitor.js');
 
-
 const windowMgr = require('./windowMgr.js');
+
+// only allow a single instance of app.
+const shouldQuit = app.makeSingleInstance(() => {
+    // Someone tried to run a second instance, we should focus our window.
+    let mainWin = windowMgr.getMainWindow();
+    if (mainWin) {
+        if (mainWin.isMinimized()) {
+            mainWin.restore();
+        }
+        mainWin.focus();
+    }
+});
+
+// quit if another instance is already running
+if (shouldQuit) {
+    app.quit();
+}
 
 /**
  * This method will be called when Electron has finished
