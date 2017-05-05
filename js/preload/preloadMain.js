@@ -17,6 +17,7 @@ const throttle = require('../utils/throttle.js');
 const apiEnums = require('../enums/api.js');
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
+const getMediaSources = require('../desktopCapturer/getSources');
 
 // hold ref so doesn't get GC'ed
 const local = {
@@ -120,7 +121,15 @@ function createAPI() {
                     cmd: apiCmds.registerLogger
                 });
             }
-        }
+        },
+
+        /**
+         * Implements equivalent of desktopCapturer.getSources - that works in
+         * a sandboxed renderer process.
+         * see: https://electron.atom.io/docs/api/desktop-capturer/
+         * for interface: see documentation in desktopCapturer/getSources.js
+         */
+        getMediaSources: getMediaSources
     };
 
     Object.freeze(window.SYM_API);
