@@ -1,6 +1,21 @@
 'use strict';
 
 const electron = require('electron');
+const { getConfigField, updateConfigField } = require('../config.js');
+const AutoLaunch = require('auto-launch');
+
+var minimizeOnClose = false;
+var launchOnStartup = false;
+
+setCheckboxValues();
+console.log(process.execPath);
+
+var symphonyAutoLauncher = new AutoLaunch({
+    name: 'Symphony',
+    path: process.execPath,
+});
+
+
 
 const template = [
     {
@@ -156,9 +171,73 @@ function getTemplate(app) {
                 role: 'front'
             }
         ]
+    } else {
+      // Window menu when Windows.
+        template[2].submenu.push(
+            {
+                label: 'Auto Launch on Windows Startup', 
+                type: 'checkbox', 
+                checked: launchOnStartup,
+                click: function (item) {
+                    if (item.checked){
+
+                        symphonyAutoLauncher.isEnabled()
+                        .then(function(isEnabled){
+                            if(isEnabled){
+                                return;
+                            }
+                            symphonyAutoLauncher.enable();
+                        })
+                        .catch(function(err){
+                            let title = 'Error setting Symphony Auto Launch';
+                            electron.dialog.showErrorBox(title, title + ': ' + err);
+                        });
+
+                    } else {
+                        symphonyAutoLauncher.disable();
+                    }
+                    launchOnStartup = item.checked;
+                    updateConfigField('launchOnStartup', launchOnStartup);
+                }
+            }
+        )
     }
 
+    // Window menu -> minimizeOnClose.
+    // ToDo: Add behavior on Close.
+    var index = 2;
+    if (process.platform === 'darwin' && template[0].label !== app.getName()){
+        index = 3;
+    }
+    template[index].submenu.push(
+        {
+            label: 'Minimize on Close', 
+            type: 'checkbox', 
+            checked: minimizeOnClose,
+            click: function (item) {
+                minimizeOnClose = item.checked;
+                updateConfigField('minimizeOnClose', minimizeOnClose);
+            }
+        }
+    )
+
     return template;
+}
+
+function setCheckboxValues(){
+    getConfigField('minimizeOnClose').then(function(mClose) {
+        minimizeOnClose = mClose;
+    }).catch(function (err){
+        let title = 'Error loading configuration';
+        electron.dialog.showErrorBox(title, title + ': ' + err);
+    });
+    
+    getConfigField('launchOnStartup').then(function(lStartup) {
+        launchOnStartup = lStartup;
+    }).catch(function (err){
+        let title = 'Error loading configuration';
+        electron.dialog.showErrorBox(title, title + ': ' + err);
+    });
 }
 
 module.exports = getTemplate;
