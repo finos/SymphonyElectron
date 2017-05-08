@@ -16,7 +16,7 @@ const { ipcRenderer, remote } = require('electron');
 const throttle = require('../utils/throttle.js');
 const apiEnums = require('../enums/api.js');
 
-const crashReporter = require('../crashReporter/crashReporter');
+const crashReporter = require('../crashReporter');
 
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;

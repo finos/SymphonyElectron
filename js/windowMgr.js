@@ -6,6 +6,7 @@ const path = require('path');
 const nodeURL = require('url');
 const querystring = require('querystring');
 const {dialog} = require('electron');
+const {shell} = require('electron');
 
 const menuTemplate = require('./menus/menuTemplate.js');
 const loadErrors = require('./dialogs/showLoadError.js');
@@ -18,7 +19,7 @@ const notify = require('./notify/electron-notify.js');
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField } = require('./config.js');
 
-const crashReporter = require('./crashReporter/crashReporter');
+const crashReporter = require('./crashReporter');
 
 //context menu
 const contextMenu = require('./menus/contextMenu.js');
@@ -152,7 +153,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             type: 'info',
             title: 'Renderer Process Crashed',
             message: 'This process has crashed.',
-            buttons: ['Reload', 'Close']
+            buttons: ['Reload', 'Close', 'View Report']
         };
 
         dialog.showMessageBox(options, function (index) {

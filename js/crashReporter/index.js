@@ -9,6 +9,8 @@ const {crashReporter} = require('electron');
  */
 function setupCrashReporter(detailObj) {
 
+    let sendCrashReport = true;
+
     // App store builds cannot use crash reporter, so, return if that's the case
     if (process.platform === 'darwin' && process.mas) {
         return
@@ -22,8 +24,9 @@ function setupCrashReporter(detailObj) {
         companyName: 'Symphony Communication',
         submitURL: 'http://localhost:1127/post',
         autoSubmit: true,
-        uploadToServer: true,
-        extra: detailObj
+        uploadToServer: sendCrashReport,
+        extra: detailObj,
+        crashesDirectory: '/Users/vishwas/Desktop'
     };
 
     crashReporter.start(crashReport);

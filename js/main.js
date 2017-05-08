@@ -8,7 +8,7 @@ const squirrelStartup = require('electron-squirrel-startup');
 const { getConfigField } = require('./config.js');
 const { isMac, isDevEnv } = require('./utils/misc.js');
 
-const crashReporter = require('./crashReporter/crashReporter');
+const crashReporter = require('./crashReporter');
 
 // exit early for squirrel installer
 if (squirrelStartup) {
@@ -58,7 +58,7 @@ function getUrlAndOpenMainWindow() {
     });
 }
 
-function createWin(urlFromConfig){
+function createWin(urlFromConfig) {
     let protocol = '';
     // add https protocol if none found.
     let parsedUrl = nodeURL.parse(urlFromConfig);
