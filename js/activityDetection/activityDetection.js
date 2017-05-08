@@ -3,8 +3,8 @@
 const systemIdleTime = require('@paulcbetts/system-idle-time');
 const throttle = require('../utils/throttle');
 
-const activity = require('./activity.js');
-const maxIdleTime = 4 * 60 * 1000;
+let maxIdleTime;
+let activityWindow;
 let intervalId;
 let throttleActivity;
 
@@ -35,7 +35,7 @@ function initiateActivityDetection() {
         setInterval(throttleActivity, maxIdleTime);
     }
 
-    setTimeout(sendActivity, 5000);
+    sendActivity();
 
 }
 
@@ -63,8 +63,31 @@ function monitorUserActivity() {
 function sendActivity() {
     let systemActivity = activityDetection();
     if (systemActivity && !systemActivity.isUserIdle && systemActivity.systemIdleTime) {
-        activity.send({systemIdleTime: systemActivity.systemIdleTime, isUserActive: true});
+        send({systemIdleTime: systemActivity.systemIdleTime});
     }
 }
 
-module.exports.initiateActivityDetection = initiateActivityDetection;
+/**
+ * Sends user activity status from main process to activity detection hosted by
+ * renderer process. Allows main process to use activity detection
+ * provided by JS.
+ * @param  {object} data - data as object
+ */
+function send(data) {
+    if (activityWindow && data) {
+        activityWindow.send('activity', {
+            systemIdleTime: data.systemIdleTime
+        });
+    }
+}
+
+function setActivityWindow(period, win) {
+    maxIdleTime = period;
+    activityWindow = win;
+}
+
+module.exports = {
+    send: send,
+    setActivityWindow: setActivityWindow,
+    initiateActivityDetection: initiateActivityDetection
+};
