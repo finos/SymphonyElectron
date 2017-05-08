@@ -50,7 +50,7 @@ function createAPI() {
     //
     // API exposed to renderer process.
     //
-    window.SYM_API = {
+    window.ssf = {
         // api version
         version: '1.0.0',
 
@@ -132,6 +132,9 @@ function createAPI() {
         getMediaSources: getMediaSources
     };
 
+    // add support for both ssf and SYM_API name-space.
+    window.SYM_API = window.ssf;
+    Object.freeze(window.ssf);
     Object.freeze(window.SYM_API);
 
     // listen for log message from main process
