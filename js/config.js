@@ -158,10 +158,10 @@ function saveUserConfig(fieldName, newValue, oldConfig) {
             if (err) {
                 reject(err);
             } else {
-                resolve();
+                resolve(newConfig);
             }
         });
     });
 }
 
-module.exports = { getConfigField, updateConfigField };
+module.exports = { getConfigField, updateConfigField, configFileName };
