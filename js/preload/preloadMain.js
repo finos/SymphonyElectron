@@ -124,12 +124,34 @@ function createAPI() {
         },
 
         /**
+         * allows JS to register a activity detector that can be used by electron main process.
+         * @param  {Object} activityDetection - function that can be called accepting
+         * @param  {Object} period - minimum user idle time in millisecond
+         * object: {
+         *  period: Number
+         *  systemIdleTime: Number
+         *  }
+         */
+        registerActivityDetection: function(period, activityDetection) {
+            if (typeof activityDetection === 'function') {
+                local.activityDetection = activityDetection;
+
+                // only main window can register
+                local.ipcRenderer.send(apiName, {
+                    cmd: apiCmds.registerActivityDetection,
+                    period: period
+                });
+            }
+        },
+
+        /**
          * Implements equivalent of desktopCapturer.getSources - that works in
          * a sandboxed renderer process.
          * see: https://electron.atom.io/docs/api/desktop-capturer/
          * for interface: see documentation in desktopCapturer/getSources.js
          */
         getMediaSources: getMediaSources
+
     };
 
     // add support for both ssf and SYM_API name-space.
@@ -155,6 +177,13 @@ function createAPI() {
                 height: arg.height,
                 windowName: arg.windowName
             });
+        }
+    });
+
+    // listen for user activity from main process
+    local.ipcRenderer.on('activity', (event, arg) => {
+        if (local.activityDetection && arg && arg.systemIdleTime) {
+            local.activityDetection(arg.systemIdleTime);
         }
     });
 

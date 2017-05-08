@@ -8,14 +8,17 @@ const querystring = require('querystring');
 
 const menuTemplate = require('./menus/menuTemplate.js');
 const loadErrors = require('./dialogs/showLoadError.js');
-const { isMac } = require('./utils/misc.js');
+const {isMac} = require('./utils/misc.js');
 const isInDisplayBounds = require('./utils/isInDisplayBounds.js');
 const getGuid = require('./utils/getGuid.js');
-const log = require('./log.js')
+const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
 const notify = require('./notify/electron-notify.js');
+
+const activityDetection = require('./activityDetection/activityDetection.js');
+
 const throttle = require('./utils/throttle.js');
-const { getConfigField, updateConfigField } = require('./config.js');
+const {getConfigField, updateConfigField} = require('./config.js');
 
 //context menu
 const contextMenu = require('./menus/contextMenu.js');
@@ -35,11 +38,11 @@ let boundsChangeWindow;
 const preloadMainScript = path.join(__dirname, 'preload/_preloadMain.js');
 
 function addWindowKey(key, browserWin) {
-    windows[ key ] = browserWin;
+    windows[key] = browserWin;
 }
 
 function removeWindowKey(key) {
-    delete windows[ key ];
+    delete windows[key];
 }
 
 function getParsedUrl(url) {
@@ -49,10 +52,10 @@ function getParsedUrl(url) {
 
 function createMainWindow(initialUrl) {
     getConfigField('mainWinPos').then(
-        function(bounds) {
+        function (bounds) {
             doCreateMainWindow(initialUrl, bounds);
         },
-        function() {
+        function () {
             // failed, use default bounds
             doCreateMainWindow(initialUrl, null);
         }
@@ -105,7 +108,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
 
     let throttledMainWinBoundsChange = throttle(5000, saveMainWinBounds);
     mainWindow.on('move', throttledMainWinBoundsChange);
-    mainWindow.on('resize',throttledMainWinBoundsChange);
+    mainWindow.on('resize', throttledMainWinBoundsChange);
 
     function retry() {
         if (!isOnline) {
@@ -120,7 +123,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
 
     // content can be cached and will still finish load but
     // we might not have netowrk connectivity, so warn the user.
-    mainWindow.webContents.on('did-finish-load', function() {
+    mainWindow.webContents.on('did-finish-load', function () {
         url = mainWindow.webContents.getURL();
 
         if (!isOnline) {
@@ -129,11 +132,14 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             // removes all existing notifications when main window reloads
             notify.reset();
             log.send(logLevels.INFO, 'main window loaded url: ' + url);
+
+            // Initiate activity detection to monitor user activity status
+            activityDetection.initiateActivityDetection();
         }
     });
 
-    mainWindow.webContents.on('did-fail-load', function(event, errorCode,
-        errorDesc, validatedURL) {
+    mainWindow.webContents.on('did-fail-load', function (event, errorCode,
+                                                         errorDesc, validatedURL) {
         loadErrors.showLoadFailure(mainWindow, validatedURL, errorDesc, errorCode, retry);
     });
 
@@ -143,7 +149,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     const menu = electron.Menu.buildFromTemplate(menuTemplate(app));
     electron.Menu.setApplicationMenu(menu);
 
-    mainWindow.on('close', function(e) {
+    mainWindow.on('close', function (e) {
         if (willQuitApp) {
             destroyAllWindows();
             return;
@@ -157,7 +163,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
 
     function destroyAllWindows() {
         let keys = Object.keys(windows);
-        for(var i = 0, len = keys.length; i < len; i++) {
+        for (var i = 0, len = keys.length; i < len; i++) {
             let winKey = keys[i];
             removeWindowKey(winKey);
         }
@@ -168,8 +174,8 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     mainWindow.on('closed', destroyAllWindows);
 
     // open external links in default browser - a tag, window.open
-    mainWindow.webContents.on('new-window', function(event, newWinUrl,
-        frameName, disposition, newWinOptions) {
+    mainWindow.webContents.on('new-window', function (event, newWinUrl,
+                                                      frameName, disposition, newWinOptions) {
         let newWinParsedUrl = getParsedUrl(newWinUrl);
         let mainWinParsedUrl = getParsedUrl(url);
 
@@ -201,7 +207,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                 let newX = Number.parseInt(query.x, 10);
                 let newY = Number.parseInt(query.y, 10);
 
-                let newWinRect = { x: newX, y: newY, width, height };
+                let newWinRect = {x: newX, y: newY, width, height};
 
                 // only accept if both are successfully parsed.
                 if (Number.isInteger(newX) && Number.isInteger(newY) &&
@@ -214,9 +220,9 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                 }
             } else {
                 // create new window at slight offset from main window.
-                ({ x, y } = getWindowSizeAndPosition(mainWindow));
-                x+=50;
-                y+=50;
+                ({x, y} = getWindowSizeAndPosition(mainWindow));
+                x += 50;
+                y += 50;
             }
 
             /* eslint-disable no-param-reassign */
@@ -232,13 +238,13 @@ function doCreateMainWindow(initialUrl, initialBounds) {
 
             let webContents = newWinOptions.webContents;
 
-            webContents.once('did-finish-load', function() {
+            webContents.once('did-finish-load', function () {
                 let browserWin = electron.BrowserWindow.fromWebContents(webContents);
 
                 if (browserWin) {
                     browserWin.winName = frameName;
 
-                    browserWin.once('closed', function() {
+                    browserWin.once('closed', function () {
                         removeWindowKey(newWinKey);
                         browserWin.removeListener('move', throttledBoundsChange);
                         browserWin.removeListener('resize', throttledBoundsChange);
@@ -250,7 +256,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                     let throttledBoundsChange = throttle(1000,
                         sendChildWinBoundsChange.bind(null, browserWin));
                     browserWin.on('move', throttledBoundsChange);
-                    browserWin.on('resize',throttledBoundsChange);
+                    browserWin.on('resize', throttledBoundsChange);
                 }
             });
         }
@@ -259,7 +265,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     contextMenu(mainWindow);
 }
 
-app.on('before-quit', function() {
+app.on('before-quit', function () {
     willQuitApp = true;
 });
 
@@ -280,7 +286,7 @@ function getWindowSizeAndPosition(window) {
     let newSize = window.getSize();
 
     if (newPos && newPos.length === 2 &&
-        newSize && newSize.length === 2 ) {
+        newSize && newSize.length === 2) {
         return {
             x: newPos[0],
             y: newPos[1],
@@ -302,7 +308,7 @@ function isMainWindow(win) {
 
 function hasWindow(win, winKey) {
     if (win instanceof electron.BrowserWindow) {
-        let browserWin = windows[ winKey ];
+        let browserWin = windows[winKey];
         return browserWin && win === browserWin;
     }
 
@@ -321,7 +327,7 @@ function setIsOnline(status) {
  */
 function activate(windowName) {
     let keys = Object.keys(windows);
-    for(let i = 0, len = keys.length; i < len; i++) {
+    for (let i = 0, len = keys.length; i < len; i++) {
         let window = windows[keys[i]];
         if (window && !window.isDestroyed() && window.winName === windowName) {
             if (window.isMinimized()) {
