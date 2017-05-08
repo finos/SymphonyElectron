@@ -52,6 +52,12 @@
         <button id='open-win'>open window</button>
 
         <button id='bring-to-front'>bring open window to front</button>
+
+        <hr>
+        <p>Get Media Sources:</p>
+        <button id='get-sources'>get entire desktop</button>
+        <br>
+        <video id='video'/>
     </body>
     <script>
         var notfEl = document.getElementById('notf');
@@ -152,6 +158,35 @@
         function onBoundsChange(arg) {
             console.log('bounds changed for=', arg)
         }
+
+        var getSources = document.getElementById('get-sources');
+        getSources.addEventListener('click', function() {
+            SYM_API.getMediaSources({types: ['window', 'screen']}, function(error, sources) {
+                if (error) throw error
+                  navigator.webkitGetUserMedia({
+                    audio: false,
+                    video: {
+                      mandatory: {
+                        chromeMediaSource: 'desktop',
+                        chromeMediaSourceId: sources[0].id,
+                        minWidth: 1280,
+                        maxWidth: 1280,
+                        minHeight: 720,
+                        maxHeight: 720
+                      }
+                    }
+                  }, handleStream, handleError)
+            });
+        });
+
+        function handleStream (stream) {
+          document.querySelector('video').src = URL.createObjectURL(stream)
+        }
+
+        function handleError (e) {
+          console.log(e)
+        }
+
 
     </script>
 </html>

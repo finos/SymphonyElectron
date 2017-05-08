@@ -8,20 +8,6 @@ function pathToConfigDir() {
     return path.join(__dirname, '/../fixtures');
 }
 
-// electron app mock...
-const app = {
-    getAppPath: pathToConfigDir,
-    getPath: function(type) {
-        if (type === 'exe') {
-            return path.join(pathToConfigDir(), '/Symphony.exe');
-        }
-        return pathToConfigDir();
-    },
-    on: function() {
-        // no-op
-    }
-}
-
 // simple ipc mocks for render and main process ipc using
 // nodes' EventEmitter
 const ipcMain = {
@@ -62,7 +48,7 @@ const ipcRenderer = {
 module.exports = {
   require: jest.genMockFunction(),
   match: jest.genMockFunction(),
-  app: app,
+  app: jest.genMockFunction(),
   ipcMain: ipcMain,
   ipcRenderer: ipcRenderer,
   remote: jest.genMockFunction(),
