@@ -16,7 +16,6 @@ const logLevels = require('./enums/logLevels.js');
 const notify = require('./notify/electron-notify.js');
 
 const activityDetection = require('./activityDetection/activityDetection.js');
-const activity = require('./activityDetection/activity.js');
 
 const throttle = require('./utils/throttle.js');
 const {getConfigField, updateConfigField} = require('./config.js');
@@ -134,16 +133,8 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             notify.reset();
             log.send(logLevels.INFO, 'main window loaded url: ' + url);
 
-            let activityCheckInterval = 4 * 60 * 1000;
-
-            // runs every 4 min to check user activity
-            setInterval(function () {
-                let systemActivity = activityDetection.getIdleTime();
-                if (systemActivity && systemActivity.isUserIdle && systemActivity.systemIdleTime) {
-                    activity.send(systemActivity.systemIdleTime);
-                }
-            }, activityCheckInterval);
-
+            // Initiate activity detection to monitor user activity status
+            activityDetection.initiateActivityDetection();
         }
     });
 

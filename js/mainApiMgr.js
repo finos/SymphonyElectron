@@ -8,7 +8,7 @@ const electron = require('electron');
 
 const windowMgr = require('./windowMgr.js');
 const log = require('./log.js');
-const activityDetection = require('./activityDetection/activity');
+const activityDetection = require('./activityDetection/activityDetection');
 const badgeCount = require('./badgeCount.js');
 
 const apiEnums = require('./enums/api.js');
@@ -91,7 +91,7 @@ electron.ipcMain.on(apiName, (event, arg) => {
 
     if (arg.cmd === apiCmds.registerActivityDetection) {
         // renderer window that has a registered activity detection from JS.
-        activityDetection.setActivityWindow(event.sender);
+        activityDetection.setActivityWindow(arg.period, event.sender);
     }
 });
 

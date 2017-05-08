@@ -1,18 +1,93 @@
 'use strict';
 
 const systemIdleTime = require('@paulcbetts/system-idle-time');
+const throttle = require('../utils/throttle');
+
+let maxIdleTime;
+let activityWindow;
+let intervalId;
+let throttleActivity;
 
 /**
- * @return {{isUserIdle: boolean, systemIdleTime: *}}
+ * Check if the user is idle
  */
 function activityDetection() {
-
-    const maxIdleTime = 4 * 60 * 1000;
-
+    // Get system idle status and idle time from PaulCBetts package
     if (systemIdleTime.getIdleTime() < maxIdleTime) {
-        return {isUserIdle: true, systemIdleTime: systemIdleTime.getIdleTime()};
+        return {isUserIdle: false, systemIdleTime: systemIdleTime.getIdleTime()};
+    }
+
+    // If idle for more than 4 mins, monitor system idle status every second
+    if (!intervalId) {
+        monitorUserActivity();
+    }
+    return null;
+}
+
+/**
+ * Start monitoring user activity status.
+ * Run every 4 mins to check user idle status
+ */
+function initiateActivityDetection() {
+
+    if (!throttleActivity) {
+        throttleActivity = throttle(maxIdleTime, sendActivity);
+        setInterval(throttleActivity, maxIdleTime);
+    }
+
+    sendActivity();
+
+}
+
+/**
+ * Monitor system idle status every second
+ */
+function monitorUserActivity() {
+    intervalId = setInterval(monitor, 1000);
+
+    function monitor() {
+        if (systemIdleTime.getIdleTime() < maxIdleTime) {
+            // If system is active, send an update to the app bridge and clear the timer
+            sendActivity();
+            clearInterval(intervalId);
+            intervalId = undefined;
+        }
     }
 
 }
 
-module.exports.getIdleTime = activityDetection;
+/**
+ * Send user activity status to the app bridge
+ * to be updated across all clients
+ */
+function sendActivity() {
+    let systemActivity = activityDetection();
+    if (systemActivity && !systemActivity.isUserIdle && systemActivity.systemIdleTime) {
+        send({systemIdleTime: systemActivity.systemIdleTime});
+    }
+}
+
+/**
+ * Sends user activity status from main process to activity detection hosted by
+ * renderer process. Allows main process to use activity detection
+ * provided by JS.
+ * @param  {object} data - data as object
+ */
+function send(data) {
+    if (activityWindow && data) {
+        activityWindow.send('activity', {
+            systemIdleTime: data.systemIdleTime
+        });
+    }
+}
+
+function setActivityWindow(period, win) {
+    maxIdleTime = period;
+    activityWindow = win;
+}
+
+module.exports = {
+    send: send,
+    setActivityWindow: setActivityWindow,
+    initiateActivityDetection: initiateActivityDetection
+};

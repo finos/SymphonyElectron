@@ -124,19 +124,22 @@ function createAPI() {
         },
 
         /**
-         * allows JS to register a logger that can be used by electron main process.
+         * allows JS to register a activity detector that can be used by electron main process.
          * @param  {Object} activityDetection - function that can be called accepting
+         * @param  {Object} period - minimum user idle time in millisecond
          * object: {
+         *  period: Number
          *  systemIdleTime: Number
          *  }
          */
-        registerActivityDetection: function(activityDetection) {
+        registerActivityDetection: function(period, activityDetection) {
             if (typeof activityDetection === 'function') {
                 local.activityDetection = activityDetection;
 
                 // only main window can register
                 local.ipcRenderer.send(apiName, {
-                    cmd: apiCmds.registerActivityDetection
+                    cmd: apiCmds.registerActivityDetection,
+                    period: period
                 });
             }
         },
