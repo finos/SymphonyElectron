@@ -338,9 +338,12 @@ function activate(windowName) {
     let keys = Object.keys(windows);
     for (let i = 0, len = keys.length; i < len; i++) {
         let window = windows[keys[i]];
-        if (window && !window.isDestroyed() &&
-            window.winName === windowName) {
-            window.show();
+        if (window && !window.isDestroyed() && window.winName === windowName) {
+            if (window.isMinimized()) {
+                window.restore();
+            } else {
+                window.show();
+            }
             return;
         }
     }
