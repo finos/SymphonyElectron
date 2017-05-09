@@ -1,157 +1,207 @@
 <html>
-    <head>
-    </head>
-    <body>
-        <h1>Symphony Electron API Demo</h1>
-        <hr>
-        <p>Notifications:<p>
-        <button id='notf'>show notification</button>
-        <p>
-            <label for='title'>title:</label>
-            <input type='text' id='title' value='Notification Demo'/>
-        </p>
-        <p>
-            <label for='body'>body:</label>
-            <input type='text' id='body' value='Some message'/>
-        </p>
-        <p>
-            <label for='image'>image url:</label>
-            <input type='text' id='image' value='https://lh3.googleusercontent.com/-s2PXL6wWMCc/AAAAAAAAAAI/AAAAAAAAAAA/AAomvV2gUNMMeFsOijwVVpihfg_anpKWQA/s32-c-mo/photo.jpg'/>
-        </p>
-        <p>
-            <label for='flash'>flash:</label>
-            <input type='checkbox' id='flash'/>
-        </p>
-        <p>
-            <label for='sticky'>sticky:</label>
-            <input type='checkbox' id='sticky'/>
-        </p>
-        <p>
-            <label for='color'>color:</label>
-            <input type='text' id='color' value='white'/>
-        </p>
-        <p>
-            <label for='tag'>tag:</label>
-            <input type='text' id='tag' value=''/>
-        </p>
-        <br>
-        <hr>
-        <p>Badge Count:<p>
-        <button id='inc-badge'>increment badge count</button>
-        <br>
-        <button id='clear-badge'>clear badge count</button>
-        <br>
-        <hr>
-        <p>Screen Snippet:</p>
-        <button id='snippet'>get snippet</button>
-        <p>snippet output:</p>
-        <image id='snippet-img'/>
+<head>
+</head>
+<body>
+<h1>Symphony Electron API Demo</h1>
+<hr>
+<p>Notifications:
+<p>
+    <button id='notf'>show notification</button>
+<p>
+    <label for='title'>title:</label>
+    <input type='text' id='title' value='Notification Demo'/>
+</p>
+<p>
+    <label for='body'>body:</label>
+    <input type='text' id='body' value='Some message'/>
+</p>
+<p>
+    <label for='image'>image url:</label>
+    <input type='text' id='image'
+           value='https://lh3.googleusercontent.com/-s2PXL6wWMCc/AAAAAAAAAAI/AAAAAAAAAAA/AAomvV2gUNMMeFsOijwVVpihfg_anpKWQA/s32-c-mo/photo.jpg'/>
+</p>
+<p>
+    <label for='flash'>flash:</label>
+    <input type='checkbox' id='flash'/>
+</p>
+<p>
+    <label for='sticky'>sticky:</label>
+    <input type='checkbox' id='sticky'/>
+</p>
+<p>
+    <label for='color'>color:</label>
+    <input type='text' id='color' value='white'/>
+</p>
+<p>
+    <label for='tag'>tag:</label>
+    <input type='text' id='tag' value=''/>
+</p>
+<br>
+<hr>
+<p>
+    Crash Process:
+<p>
+    <button id='crash'>Crash Renderer</button>
+</p>
+<br>
+<hr>
+<p>Badge Count:
+<p>
+    <button id='inc-badge'>increment badge count</button>
+    <br>
+    <button id='clear-badge'>clear badge count</button>
+    <br>
+<hr>
+<p>Screen Snippet:</p>
+<button id='snippet'>get snippet</button>
+<p>snippet output:</p>
+<image id='snippet-img'/>
 
-        <hr>
-        <p>Window activate:</p>
-        <button id='open-win'>open window</button>
+<hr>
+<p>Window activate:</p>
+<button id='open-win'>open window</button>
 
-        <button id='bring-to-front'>bring open window to front</button>
-    </body>
-    <script>
-        var notfEl = document.getElementById('notf');
-        var num = 0;
+<button id='bring-to-front'>bring open window to front</button>
 
-        // note: notification will close when clicked
-        notfEl.addEventListener('click', function() {
-            var title = document.getElementById('title').value;
-            var body = document.getElementById('body').value;
-            var imageUrl = document.getElementById('image').value;
-            var shouldFlash = document.getElementById('flash').checked;
-            var shouldStick = document.getElementById('sticky').checked;
-            var color = document.getElementById('color').value;
-            var tag = document.getElementById('tag').value;
+<hr>
+<p>Get Media Sources:</p>
+<button id='get-sources'>get entire desktop</button>
+<br>
+<video id='video'/>
+</body>
+<script>
+  var notfEl = document.getElementById('notf')
+  var num = 0
 
-            num++;
+  // note: notification will close when clicked
+  notfEl.addEventListener('click', function () {
+    var title = document.getElementById('title').value
+    var body = document.getElementById('body').value
+    var imageUrl = document.getElementById('image').value
+    var shouldFlash = document.getElementById('flash').checked
+    var shouldStick = document.getElementById('sticky').checked
+    var color = document.getElementById('color').value
+    var tag = document.getElementById('tag').value
 
-            var notf = new SYM_API.Notification(title, {
-                body: (body + ' num=' + num + ' tag=' + tag),
-                image: imageUrl,
-                flash: shouldFlash,
-                color: color || 'white',
-                sticky: shouldStick,
-                data: {
-                    hello: 'hello word'
-                },
-                tag: tag
-            });
+    num++
 
-            notf.addEventListener('click', onclick);
-            function onclick(event) {
-                event.target.close();
-                alert('notification clicked: ' + event.target.data.hello);
-            }
+    var notf = new ssf.Notification(title, {
+      body: (body + ' num=' + num + ' tag=' + tag),
+      image: imageUrl,
+      flash: shouldFlash,
+      color: color || 'white',
+      sticky: shouldStick,
+      data: {
+        hello: 'hello word'
+      },
+      tag: tag
+    })
 
-            notf.addEventListener('close', onclose);
-            function onclose() {
-                alert('notification closed');
-            };
+    notf.addEventListener('click', onclick)
+    function onclick (event) {
+      event.target.close()
+      alert('notification clicked: ' + event.target.data.hello)
+    }
 
-            notf.addEventListener('error', onerror);
-            function onerror(event) {
-                alert('error=' + event.result);
-            };
-        });
+    notf.addEventListener('close', onclose)
+    function onclose () {
+      alert('notification closed')
+    }
 
-        var badgeCount = 0;
+    notf.addEventListener('error', onerror)
+    function onerror (event) {
+      alert('error=' + event.result)
+    }
+  })
 
-        var incBadgeEl = document.getElementById('inc-badge');
-        incBadgeEl.addEventListener('click', function() {
-            badgeCount++;
-            SYM_API.setBadgeCount(badgeCount);
-        });
+  var badgeCount = 0
 
-        var incBadgeEl = document.getElementById('clear-badge');
-        incBadgeEl.addEventListener('click', function() {
-            badgeCount = 0;
-            SYM_API.setBadgeCount(0);
-        });
+  var incBadgeEl = document.getElementById('inc-badge')
+  incBadgeEl.addEventListener('click', function () {
+    badgeCount++
+    ssf.setBadgeCount(badgeCount)
+  })
 
-        var snippetButton = document.getElementById('snippet');
-        snippetButton.addEventListener('click', function() {
-            let snippet = new SYM_API.ScreenSnippet();
+  var clearBadgeEl = document.getElementById('clear-badge')
+  clearBadgeEl.addEventListener('click', function () {
+    badgeCount = 0
+    ssf.setBadgeCount(0)
+  })
 
-            snippet
-            .capture()
-            .then(gotSnippet)
-            .catch(snippetError);
+  var snippetButton = document.getElementById('snippet')
+  snippetButton.addEventListener('click', function () {
+    let snippet = new ssf.ScreenSnippet()
 
-            function gotSnippet(rsp) {
-                if (rsp && rsp.data && rsp.type) {
-                    var dataUrl = 'data:' + rsp.type + ',' + rsp.data;
-                    var img = document.getElementById('snippet-img');
-                    img.src = dataUrl;
-                }
-            }
+    snippet
+      .capture()
+      .then(gotSnippet)
+      .catch(snippetError)
 
-            function snippetError(err) {
-                alert('error getting snippet' + err);
-            }
-        });
+    function gotSnippet (rsp) {
+      if (rsp && rsp.data && rsp.type) {
+        var dataUrl = 'data:' + rsp.type + ',' + rsp.data
+        var img = document.getElementById('snippet-img')
+        img.src = dataUrl
+      }
+    }
 
-        var win;
+    function snippetError (err) {
+      alert('error getting snippet' + err)
+    }
+  })
 
-        var openWinButton = document.getElementById('open-win');
-        openWinButton.addEventListener('click', function() {
-            win = window.open('win.html?x=100&y=100', 'test-window', 'height=100,width=100');
-        });
+  var win
 
-        var front = document.getElementById('bring-to-front');
-        front.addEventListener('click', function() {
-            window.SYM_API.activate(win.name);
-        });
+  var openWinButton = document.getElementById('open-win')
+  openWinButton.addEventListener('click', function () {
+    win = window.open('win.html?x=100&y=100', 'test-window', 'height=100,width=100')
+  })
 
-        // register callback to be notified when size/position changes for win.
-        SYM_API.registerBoundsChange(onBoundsChange);
+  var front = document.getElementById('bring-to-front')
+  front.addEventListener('click', function () {
+    window.ssf.activate(win.name)
+  })
 
-        function onBoundsChange(arg) {
-            console.log('bounds changed for=', arg)
+  // register callback to be notified when size/position changes for win.
+  ssf.registerBoundsChange(onBoundsChange)
+
+  function onBoundsChange (arg) {
+    console.log('bounds changed for=', arg)
+  }
+
+  var getSources = document.getElementById('get-sources')
+  getSources.addEventListener('click', function () {
+    ssf.getMediaSources({types: ['window', 'screen']}, function (error, sources) {
+      if (error) throw error
+      navigator.webkitGetUserMedia({
+        audio: false,
+        video: {
+          mandatory: {
+            chromeMediaSource: 'desktop',
+            chromeMediaSourceId: sources[0].id,
+            minWidth: 1280,
+            maxWidth: 1280,
+            minHeight: 720,
+            maxHeight: 720
+          }
         }
+      }, handleStream, handleError)
+    })
+  })
 
-    </script>
+  function handleStream (stream) {
+    document.querySelector('video').src = URL.createObjectURL(stream)
+  }
+
+  function handleError (e) {
+    console.log(e)
+  }
+
+  // crash the renderer process
+  const crash = document.getElementById('crash')
+  crash.addEventListener('click', function () {
+    ssf.crashRendererProcess()
+  })
+
+</script>
 </html>
