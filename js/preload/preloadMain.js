@@ -31,6 +31,7 @@ const throttledSetBadgeCount = throttle(1000, function(count) {
     });
 });
 
+// check to see if the app was opened via a url
 const checkProtocolAction = function () {
     local.ipcRenderer.send(apiName, {
         cmd: apiCmds.checkProtocolAction
@@ -70,6 +71,9 @@ function createAPI() {
             throttledSetBadgeCount(count);
         },
 
+        /**
+         * checks to see if the app was opened from a url.
+         */
         checkProtocolAction: function () {
             checkProtocolAction();
         },
@@ -132,6 +136,10 @@ function createAPI() {
             }
         },
 
+        /**
+         * allws JS to register a protocol handler that can be used by the electron main process.
+         * @param protocolHandler {Object} protocolHandler a callback to register the protocol handler
+         */
         registerProtocolHandler: function (protocolHandler) {            
 
             if (typeof protocolHandler === 'function') {                
@@ -219,6 +227,10 @@ function createAPI() {
         });
     });
 
+    /**
+     * an event triggered by the main process for processing protocol urls
+     * @type {String} arg - the protocol url
+     */
     local.ipcRenderer.on('protocol-action', (event, arg) => {
 
         if (local.processProtocolAction && arg) {

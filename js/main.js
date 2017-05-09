@@ -9,6 +9,7 @@ const { getConfigField } = require('./config.js');
 const { isMac, isDevEnv } = require('./utils/misc.js');
 const protocolHandler = require('./protocolHandler');
 
+// used to check if a url was opened when the app was already open
 let isAppAlreadyOpen = false;
 
 // exit early for squirrel installer
@@ -89,8 +90,10 @@ app.setAsDefaultProtocolClient('symphony');
 
 app.on('open-url', function (event, url) {
     if (!isAppAlreadyOpen) {
+        // app is opened by the protocol url, cache the protocol url to be used later
         protocolHandler.setProtocolUrl(url);
     } else {
+        // app is already open, so, just trigger the protocol action method
         protocolHandler.processProtocolAction(url);
     }
 });

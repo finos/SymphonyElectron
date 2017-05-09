@@ -6,6 +6,10 @@
 let protocolWindow;
 var protocolUrl;
 
+/**
+ * processes a protocol uri
+ * @param {String} uri - the uri opened in the format 'symphony://...'
+ */
 function processProtocolAction(uri) {
 
     if (uri && protocolWindow) {
@@ -14,10 +18,17 @@ function processProtocolAction(uri) {
 
 }
 
+/**
+ * sets the protocol window
+ * @param {Object} win - the renderer window
+ */
 function setProtocolWindow(win) {
     protocolWindow = win;
 }
 
+/**
+ * checks to see if the app was opened by a uri
+ */
 function checkProtocolAction() {
     if (protocolUrl && protocolWindow) {
         protocolWindow.send('protocol-action', protocolUrl);
@@ -25,8 +36,12 @@ function checkProtocolAction() {
     }
 }
 
-function setProtocolUrl(url) {
-    protocolUrl = url;
+/**
+ * caches the protocol uri
+ * @param {String} uri - the uri opened in the format 'symphony://...'
+ */
+function setProtocolUrl(uri) {
+    protocolUrl = uri;
 }
 
 module.exports = {
