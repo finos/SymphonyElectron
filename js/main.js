@@ -31,10 +31,18 @@ const windowMgr = require('./windowMgr.js');
 app.on('ready', getUrlAndOpenMainWindow);
 
 /**
- * This method will initialize the crash reporter for
- * the main process.
+ * Get crash info from global config and setup crash reporter for Main Process.
  */
-crashReporter.setupCrashReporter({'window': 'main'});
+function initializeCrashReporter () {
+    getConfigField('crashInfo').then(
+      function (data) {
+          crashReporter.setupCrashReporter({'window': 'main'}, data);
+      }
+    ).catch(function (err) {
+        let title = 'Error loading configuration';
+        electron.dialog.showErrorBox(title, title + ': ' + err);
+    })
+}
 
 function getUrlAndOpenMainWindow() {
     // for dev env allow passing url argument
@@ -88,3 +96,6 @@ app.on('activate', function() {
         windowMgr.showMainWindow();
     }
 });
+
+// Initialize the crash reporter
+initializeCrashReporter();

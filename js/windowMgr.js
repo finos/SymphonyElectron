@@ -67,8 +67,17 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     let url = initialUrl;
     let key = getGuid();
 
-    // Setup the crash reporter
-    crashReporter.setupCrashReporter({'window': 'windowMgr'});
+    /**
+     * Get crash info from global config and setup crash reporter.
+     */
+    getConfigField('crashInfo').then(
+        function (data) {
+            crashReporter.setupCrashReporter({'window': 'main'}, data);
+        }
+    ).catch(function (err) {
+        let title = 'Error loading configuration';
+        electron.dialog.showErrorBox(title, title + ': ' + err);
+    });
 
     let newWinOpts = {
         title: 'Symphony',
@@ -144,20 +153,21 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         loadErrors.showLoadFailure(mainWindow, validatedURL, errorDesc, errorCode, retry);
     });
 
-    // In case a renderer process crashes, we provide an
-    // option for the user to either reload the process
-    // or close the window
+    // In case a renderer process crashes, provide an
+    // option for the user to either reload or close the window
     mainWindow.webContents.on('crashed', function () {
 
         const options = {
-            type: 'info',
+            type: 'error',
             title: 'Renderer Process Crashed',
-            message: 'This process has crashed.',
-            buttons: ['Reload', 'Close', 'View Report']
+            message: 'Uh oh! Looks like we have had a crash. Please reload or close this window.',
+            buttons: ['Reload', 'Close']
         };
 
         dialog.showMessageBox(options, function (index) {
-            if (index === 0) mainWindow.reload();
+            if (index === 0) {
+                mainWindow.reload();
+            }
             else mainWindow.close()
         })
     });

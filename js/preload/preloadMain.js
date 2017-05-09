@@ -83,9 +83,9 @@ function createAPI() {
         ScreenSnippet: remote.require('./screenSnippet/ScreenSnippet.js'),
 
         /**
-         * provides api to crash the renderer process that calls this function
+         * Provides API to crash the renderer process that calls this function
          */
-        CrashProcess: function () {
+        crashRendererProcess: function () {
             process.crash();
         },
 
