@@ -28,7 +28,7 @@ function showLoadFailure(win, url, errorDesc, errorCode, retryCallback) {
         type: 'error',
         buttons: [ 'Reload', 'Ignore' ],
         defaultId: 0,
-        cancelId: 0,
+        cancelId: 1,
         noLink: true,
         title: 'Loading Error',
         message: msg
@@ -36,12 +36,8 @@ function showLoadFailure(win, url, errorDesc, errorCode, retryCallback) {
 
     // async handle of user input
     function response(buttonId) {
-        // ignore button hit, do nothing
-        if (buttonId === 1) {
-            return;
-        }
-
-        if (typeof retryCallback === 'function') {
+        // retry if hitting butotn index 0 (i.e., reload)
+        if (buttonId === 0 && typeof retryCallback === 'function') {
             retryCallback();
         }
     }
