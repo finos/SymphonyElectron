@@ -57,151 +57,150 @@
 <p>snippet output:</p>
 <image id='snippet-img'/>
 
-<hr>
-<p>Window activate:</p>
-<button id='open-win'>open window</button>
+        <hr>
+        <p>Window activate:</p>
+        <button id='open-win'>open window</button>
 
-<button id='bring-to-front'>bring open window to front</button>
+        <button id='bring-to-front'>bring open window to front</button>
 
-<hr>
-<p>Get Media Sources:</p>
-<button id='get-sources'>get entire desktop</button>
-<br>
-<video id='video'/>
-</body>
-<script>
-  var notfEl = document.getElementById('notf')
-  var num = 0
+        <hr>
+        <p>Get Media Sources:</p>
+        <button id='get-sources'>get entire desktop</button>
+        <br>
+        <video id='video'/>
+    </body>
+    <script>
+        var notfEl = document.getElementById('notf');
+        var num = 0;
 
-  // note: notification will close when clicked
-  notfEl.addEventListener('click', function () {
-    var title = document.getElementById('title').value
-    var body = document.getElementById('body').value
-    var imageUrl = document.getElementById('image').value
-    var shouldFlash = document.getElementById('flash').checked
-    var shouldStick = document.getElementById('sticky').checked
-    var color = document.getElementById('color').value
-    var tag = document.getElementById('tag').value
+        // note: notification will close when clicked
+        notfEl.addEventListener('click', function() {
+            var title = document.getElementById('title').value;
+            var body = document.getElementById('body').value;
+            var imageUrl = document.getElementById('image').value;
+            var shouldFlash = document.getElementById('flash').checked;
+            var shouldStick = document.getElementById('sticky').checked;
+            var color = document.getElementById('color').value;
+            var tag = document.getElementById('tag').value;
 
-    num++
+            num++;
 
-    var notf = new ssf.Notification(title, {
-      body: (body + ' num=' + num + ' tag=' + tag),
-      image: imageUrl,
-      flash: shouldFlash,
-      color: color || 'white',
-      sticky: shouldStick,
-      data: {
-        hello: 'hello word'
-      },
-      tag: tag
-    })
+            var notf = new ssf.Notification(title, {
+                body: (body + ' num=' + num + ' tag=' + tag),
+                image: imageUrl,
+                flash: shouldFlash,
+                color: color || 'white',
+                sticky: shouldStick,
+                data: {
+                    hello: 'hello word'
+                },
+                tag: tag
+            });
 
-    notf.addEventListener('click', onclick)
-    function onclick (event) {
-      event.target.close()
-      alert('notification clicked: ' + event.target.data.hello)
-    }
+            notf.addEventListener('click', onclick);
+            function onclick(event) {
+                event.target.close();
+                alert('notification clicked: ' + event.target.data.hello);
+            }
 
-    notf.addEventListener('close', onclose)
-    function onclose () {
-      alert('notification closed')
-    }
+            notf.addEventListener('close', onclose);
+            function onclose() {
+                alert('notification closed');
+            };
 
-    notf.addEventListener('error', onerror)
-    function onerror (event) {
-      alert('error=' + event.result)
-    }
-  })
+            notf.addEventListener('error', onerror);
+            function onerror(event) {
+                alert('error=' + event.result);
+            };
+        });
 
-  var badgeCount = 0
+        var badgeCount = 0;
 
-  var incBadgeEl = document.getElementById('inc-badge')
-  incBadgeEl.addEventListener('click', function () {
-    badgeCount++
-    ssf.setBadgeCount(badgeCount)
-  })
+        var incBadgeEl = document.getElementById('inc-badge');
+        incBadgeEl.addEventListener('click', function() {
+            badgeCount++;
+            ssf.setBadgeCount(badgeCount);
+        });
 
-  var clearBadgeEl = document.getElementById('clear-badge')
-  clearBadgeEl.addEventListener('click', function () {
-    badgeCount = 0
-    ssf.setBadgeCount(0)
-  })
+        var incBadgeEl = document.getElementById('clear-badge');
+        incBadgeEl.addEventListener('click', function() {
+            badgeCount = 0;
+            ssf.setBadgeCount(0);
+        });
 
-  var snippetButton = document.getElementById('snippet')
-  snippetButton.addEventListener('click', function () {
-    let snippet = new ssf.ScreenSnippet()
+        var snippetButton = document.getElementById('snippet');
+        snippetButton.addEventListener('click', function() {
+            let snippet = new ssf.ScreenSnippet();
 
-    snippet
-      .capture()
-      .then(gotSnippet)
-      .catch(snippetError)
+            snippet
+            .capture()
+            .then(gotSnippet)
+            .catch(snippetError);
 
-    function gotSnippet (rsp) {
-      if (rsp && rsp.data && rsp.type) {
-        var dataUrl = 'data:' + rsp.type + ',' + rsp.data
-        var img = document.getElementById('snippet-img')
-        img.src = dataUrl
-      }
-    }
+            function gotSnippet(rsp) {
+                if (rsp && rsp.data && rsp.type) {
+                    var dataUrl = 'data:' + rsp.type + ',' + rsp.data;
+                    var img = document.getElementById('snippet-img');
+                    img.src = dataUrl;
+                }
+            }
 
-    function snippetError (err) {
-      alert('error getting snippet' + err)
-    }
-  })
+            function snippetError(err) {
+                alert('error getting snippet' + err);
+            }
+        });
 
-  var win
+        var win;
 
-  var openWinButton = document.getElementById('open-win')
-  openWinButton.addEventListener('click', function () {
-    win = window.open('win.html?x=100&y=100', 'test-window', 'height=100,width=100')
-  })
+        var openWinButton = document.getElementById('open-win');
+        openWinButton.addEventListener('click', function() {
+            win = window.open('win.html?x=100&y=100', 'test-window', 'height=100,width=100');
+        });
 
-  var front = document.getElementById('bring-to-front')
-  front.addEventListener('click', function () {
-    window.ssf.activate(win.name)
-  })
+        var front = document.getElementById('bring-to-front');
+        front.addEventListener('click', function() {
+            window.ssf.activate(win.name);
+        });
 
-  // register callback to be notified when size/position changes for win.
-  ssf.registerBoundsChange(onBoundsChange)
+        // register callback to be notified when size/position changes for win.
+        ssf.registerBoundsChange(onBoundsChange);
 
-  function onBoundsChange (arg) {
-    console.log('bounds changed for=', arg)
-  }
-
-  var getSources = document.getElementById('get-sources')
-  getSources.addEventListener('click', function () {
-    ssf.getMediaSources({types: ['window', 'screen']}, function (error, sources) {
-      if (error) throw error
-      navigator.webkitGetUserMedia({
-        audio: false,
-        video: {
-          mandatory: {
-            chromeMediaSource: 'desktop',
-            chromeMediaSourceId: sources[0].id,
-            minWidth: 1280,
-            maxWidth: 1280,
-            minHeight: 720,
-            maxHeight: 720
-          }
+        function onBoundsChange(arg) {
+            console.log('bounds changed for=', arg)
         }
-      }, handleStream, handleError)
-    })
-  })
 
-  function handleStream (stream) {
-    document.querySelector('video').src = URL.createObjectURL(stream)
-  }
+        var getSources = document.getElementById('get-sources');
+        getSources.addEventListener('click', function() {
+            ssf.getMediaSources({types: ['window', 'screen']}, function(error, sources) {
+                if (error) throw error
+                  navigator.webkitGetUserMedia({
+                    audio: false,
+                    video: {
+                      mandatory: {
+                        chromeMediaSource: 'desktop',
+                        chromeMediaSourceId: sources[0].id,
+                        minWidth: 1280,
+                        maxWidth: 1280,
+                        minHeight: 720,
+                        maxHeight: 720
+                      }
+                    }
+                  }, handleStream, handleError)
+            });
+        });
 
-  function handleError (e) {
-    console.log(e)
-  }
+        function handleStream (stream) {
+          document.querySelector('video').src = URL.createObjectURL(stream)
+        }
 
-  // crash the renderer process
-  const crash = document.getElementById('crash')
-  crash.addEventListener('click', function () {
-    ssf.crashRendererProcess()
-  })
+        function handleError (e) {
+          console.log(e)
+        }
 
-</script>
+        // crash the renderer process
+        const crash = document.getElementById('crash')
+        crash.addEventListener('click', function () {
+          ssf.crashRendererProcess()
+        })
+    </script>
 </html>

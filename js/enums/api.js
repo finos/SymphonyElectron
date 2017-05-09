@@ -8,7 +8,8 @@ const cmds = keyMirror({
     setBadgeCount: null,
     badgeDataUrl: null,
     activate: null,
-    registerBoundsChange: null
+    registerBoundsChange: null,
+    registerActivityDetection: null,
 });
 
 module.exports = {
