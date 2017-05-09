@@ -4,15 +4,12 @@
 'use strict';
 
 let protocolWindow;
+var protocolUrl;
 
 function processProtocolAction(uri) {
 
-    const resultJson = {
-        uri: uri
-    };
-
-    if (resultJson && protocolWindow) {
-        protocolWindow.send('protocol-action', resultJson);
+    if (uri && protocolWindow) {
+        protocolWindow.send('protocol-action', uri);
     }
 
 }
@@ -21,7 +18,20 @@ function setProtocolWindow(win) {
     protocolWindow = win;
 }
 
+function checkProtocolAction() {
+    if (protocolUrl && protocolWindow) {
+        protocolWindow.send('protocol-action', protocolUrl);
+        protocolUrl = undefined;
+    }
+}
+
+function setProtocolUrl(url) {
+    protocolUrl = url;
+}
+
 module.exports = {
     processProtocolAction: processProtocolAction,
-    setProtocolWindow: setProtocolWindow
+    setProtocolWindow: setProtocolWindow,
+    checkProtocolAction: checkProtocolAction,
+    setProtocolUrl: setProtocolUrl
 };

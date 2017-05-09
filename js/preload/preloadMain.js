@@ -31,6 +31,12 @@ const throttledSetBadgeCount = throttle(1000, function(count) {
     });
 });
 
+const checkProtocolAction = function () {
+    local.ipcRenderer.send(apiName, {
+        cmd: apiCmds.checkProtocolAction
+    });
+};
+
 createAPI();
 
 // creates API exposed from electron.
@@ -62,6 +68,10 @@ function createAPI() {
          */
         setBadgeCount: function(count) {
             throttledSetBadgeCount(count);
+        },
+
+        checkProtocolAction: function () {
+            checkProtocolAction();
         },
 
         /**
@@ -209,9 +219,9 @@ function createAPI() {
         });
     });
 
-    local.ipcRenderer.on('protocol-action', (event, arg) => {        
+    local.ipcRenderer.on('protocol-action', (event, arg) => {
 
-        if (local.processProtocolAction && arg && arg.uri) {
+        if (local.processProtocolAction && arg) {
             local.processProtocolAction(arg);
         }
 

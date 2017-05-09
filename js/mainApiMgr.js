@@ -69,6 +69,11 @@ electron.ipcMain.on(apiName, (event, arg) => {
         return;
     }
 
+    if (arg.cmd === apiCmds.checkProtocolAction) {
+        protocolHandler.checkProtocolAction();
+        return;
+    }
+
     if (arg.cmd === apiCmds.badgeDataUrl && typeof arg.dataUrl === 'string' &&
         typeof arg.count === 'number') {
         badgeCount.setDataUrl(arg.dataUrl, arg.count);

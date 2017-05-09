@@ -9,6 +9,7 @@ const { getConfigField } = require('./config.js');
 const { isMac, isDevEnv } = require('./utils/misc.js');
 const protocolHandler = require('./protocolHandler');
 
+let isAppAlreadyOpen = false;
 
 // exit early for squirrel installer
 if (squirrelStartup) {
@@ -31,6 +32,7 @@ const windowMgr = require('./windowMgr.js');
 app.on('ready', getUrlAndOpenMainWindow);
 
 function getUrlAndOpenMainWindow() {
+    isAppAlreadyOpen = true;
     // for dev env allow passing url argument
     if (isDevEnv) {
         let url;
@@ -86,5 +88,9 @@ app.on('activate', function() {
 app.setAsDefaultProtocolClient('symphony');
 
 app.on('open-url', function (event, url) {
-    protocolHandler.processProtocolAction(url);
+    if (!isAppAlreadyOpen) {
+        protocolHandler.setProtocolUrl(url);
+    } else {
+        protocolHandler.processProtocolAction(url);
+    }
 });
