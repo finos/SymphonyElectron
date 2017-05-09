@@ -20,6 +20,23 @@ require('./memoryMonitor.js');
 
 const windowMgr = require('./windowMgr.js');
 
+// only allow a single instance of app.
+const shouldQuit = app.makeSingleInstance(() => {
+    // Someone tried to run a second instance, we should focus our window.
+    let mainWin = windowMgr.getMainWindow();
+    if (mainWin) {
+        if (mainWin.isMinimized()) {
+            mainWin.restore();
+        }
+        mainWin.focus();
+    }
+});
+
+// quit if another instance is already running
+if (shouldQuit) {
+    app.quit();
+}
+
 var symphonyAutoLauncher = new AutoLaunch({
     name: 'Symphony',
     path: process.execPath,
@@ -59,7 +76,7 @@ function setStartup(lStartup){
                 return;
             }
             symphonyAutoLauncher.enable()
-            .then(function(){
+            .then(function (){
                 app.quit();
             });
         })
@@ -68,7 +85,7 @@ function setStartup(lStartup){
         .then(function(isEnabled){
             if(!isEnabled){
                 symphonyAutoLauncher.disable()
-                .then(function(){
+                .then(function (){
                     app.quit();
                 });
             }

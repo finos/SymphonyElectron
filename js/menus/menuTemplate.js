@@ -184,21 +184,17 @@ function getTemplate(app) {
             checked: launchOnStartup,
             click: function (item) {
                 if (item.checked){
-
-                    symphonyAutoLauncher.isEnabled()
-                    .then(function(isEnabled){
-                        if(isEnabled){
-                            return;
-                        }
-                        symphonyAutoLauncher.enable();
-                    })
-                    .catch(function(err){
-                        let title = 'Error setting Symphony Auto Launch';
+                    symphonyAutoLauncher.enable()
+                    .catch(function (err) {
+                        let title = 'Error setting AutoLaunch configuration';
                         electron.dialog.showErrorBox(title, title + ': ' + err);
                     });
-
                 } else {
-                    symphonyAutoLauncher.disable();
+                    symphonyAutoLauncher.disable()
+                    .catch(function (err) {
+                        let title = 'Error setting AutoLaunch configuration';
+                        electron.dialog.showErrorBox(title, title + ': ' + err);
+                    });
                 }
                 launchOnStartup = item.checked;
                 updateConfigField('launchOnStartup', launchOnStartup);
