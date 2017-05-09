@@ -75,7 +75,7 @@
 
             num++;
 
-            var notf = new SYM_API.Notification(title, {
+            var notf = new ssf.Notification(title, {
                 body: (body + ' num=' + num + ' tag=' + tag),
                 image: imageUrl,
                 flash: shouldFlash,
@@ -109,18 +109,18 @@
         var incBadgeEl = document.getElementById('inc-badge');
         incBadgeEl.addEventListener('click', function() {
             badgeCount++;
-            SYM_API.setBadgeCount(badgeCount);
+            ssf.setBadgeCount(badgeCount);
         });
 
         var incBadgeEl = document.getElementById('clear-badge');
         incBadgeEl.addEventListener('click', function() {
             badgeCount = 0;
-            SYM_API.setBadgeCount(0);
+            ssf.setBadgeCount(0);
         });
 
         var snippetButton = document.getElementById('snippet');
         snippetButton.addEventListener('click', function() {
-            let snippet = new SYM_API.ScreenSnippet();
+            let snippet = new ssf.ScreenSnippet();
 
             snippet
             .capture()
@@ -149,11 +149,11 @@
 
         var front = document.getElementById('bring-to-front');
         front.addEventListener('click', function() {
-            window.SYM_API.activate(win.name);
+            window.ssf.activate(win.name);
         });
 
         // register callback to be notified when size/position changes for win.
-        SYM_API.registerBoundsChange(onBoundsChange);
+        ssf.registerBoundsChange(onBoundsChange);
 
         function onBoundsChange(arg) {
             console.log('bounds changed for=', arg)
@@ -161,7 +161,7 @@
 
         var getSources = document.getElementById('get-sources');
         getSources.addEventListener('click', function() {
-            SYM_API.getMediaSources({types: ['window', 'screen']}, function(error, sources) {
+            ssf.getMediaSources({types: ['window', 'screen']}, function(error, sources) {
                 if (error) throw error
                   navigator.webkitGetUserMedia({
                     audio: false,
