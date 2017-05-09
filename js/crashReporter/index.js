@@ -4,15 +4,18 @@ const {crashReporter} = require('electron');
 
 /**
  * Setup the crash reporter with appropriate information
+ * @param sendCrashReports: An object to get crash information
+ * from the global config file
  * @param detailObj: An object to send extra parameters
  * via the crash reporter
  */
-function setupCrashReporter(detailObj, crashInfo) {
+function setupCrashReporter(detailObj, sendCrashReports) {
+    // Will eventually have to fetch all these from the config file. Hardcoding is bad!
     let crashReportInfo = {
-        companyName: crashInfo.companyName,
-        submitURL: crashInfo.submitURL,
-        autoSubmit: crashInfo.autoSubmit,
-        uploadToServer: crashInfo.sendCrashReports,
+        companyName: "Symphony Communication Services, LLC",
+        submitURL: "http://crash.symphony.com",
+        autoSubmit: true,
+        uploadToServer: sendCrashReports,
         extra: detailObj
     }
 

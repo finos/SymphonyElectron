@@ -160,7 +160,7 @@
     });
 
     // register callback to be notified when size/position changes for win.
-    SYM_API.registerBoundsChange(onBoundsChange);
+    window.SYM_API.registerBoundsChange(onBoundsChange);
 
     function onBoundsChange(arg) {
         console.log('bounds changed for=', arg)

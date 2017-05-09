@@ -34,7 +34,7 @@ app.on('ready', getUrlAndOpenMainWindow);
  * Get crash info from global config and setup crash reporter for Main Process.
  */
 function initializeCrashReporter () {
-    getConfigField('crashInfo').then(
+    getConfigField('sendCrashReports').then(
       function (data) {
           crashReporter.setupCrashReporter({'window': 'main'}, data);
       }
