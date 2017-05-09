@@ -340,6 +340,7 @@
     <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:[AI_UserProgramFiles][Manufacturer]\[ProductName]"/>
     <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
     <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
+    <ROW Action="Symphony.exe" Type="1042" Source="Symphony.exe" Target="--install"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiIconsComponent">
     <ROW Name="icon.exe" SourcePath="..\build\icon.ico" Index="0"/>
@@ -356,6 +357,7 @@
     <ROW Action="AI_DATA_SETTER" Sequence="54"/>
     <ROW Action="AI_SETMIXINSTLOCATION" Sequence="749"/>
     <ROW Action="AI_TxtUpdaterInstall" Sequence="5101"/>
+    <ROW Action="Symphony.exe" Condition="( NOT Installed )" Sequence="5935"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
     <ROW Action="AI_ResolveKnownFolders" Sequence="52"/>
