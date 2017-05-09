@@ -73,7 +73,7 @@ function setStartup(lStartup){
         symphonyAutoLauncher.isEnabled()
         .then(function(isEnabled){
             if(isEnabled){
-                return;
+                app.quit();
             }
             symphonyAutoLauncher.enable()
             .then(function (){
@@ -83,11 +83,13 @@ function setStartup(lStartup){
     } else{
         symphonyAutoLauncher.isEnabled()
         .then(function(isEnabled){
-            if(!isEnabled){
+            if(isEnabled){
                 symphonyAutoLauncher.disable()
                 .then(function (){
                     app.quit();
                 });
+            } else{
+                app.quit();
             }
         })
     }
