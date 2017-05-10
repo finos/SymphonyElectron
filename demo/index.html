@@ -52,6 +52,12 @@
         <button id='open-win'>open window</button>
 
         <button id='bring-to-front'>bring open window to front</button>
+
+        <hr>
+        <p>Get Media Sources:</p>
+        <button id='get-sources'>get entire desktop</button>
+        <br>
+        <video id='video'/>
     </body>
     <script>
         var notfEl = document.getElementById('notf');
@@ -69,7 +75,7 @@
 
             num++;
 
-            var notf = new SYM_API.Notification(title, {
+            var notf = new ssf.Notification(title, {
                 body: (body + ' num=' + num + ' tag=' + tag),
                 image: imageUrl,
                 flash: shouldFlash,
@@ -103,18 +109,18 @@
         var incBadgeEl = document.getElementById('inc-badge');
         incBadgeEl.addEventListener('click', function() {
             badgeCount++;
-            SYM_API.setBadgeCount(badgeCount);
+            ssf.setBadgeCount(badgeCount);
         });
 
         var incBadgeEl = document.getElementById('clear-badge');
         incBadgeEl.addEventListener('click', function() {
             badgeCount = 0;
-            SYM_API.setBadgeCount(0);
+            ssf.setBadgeCount(0);
         });
 
         var snippetButton = document.getElementById('snippet');
         snippetButton.addEventListener('click', function() {
-            let snippet = new SYM_API.ScreenSnippet();
+            let snippet = new ssf.ScreenSnippet();
 
             snippet
             .capture()
@@ -143,15 +149,44 @@
 
         var front = document.getElementById('bring-to-front');
         front.addEventListener('click', function() {
-            window.SYM_API.activate(win.name);
+            window.ssf.activate(win.name);
         });
 
         // register callback to be notified when size/position changes for win.
-        SYM_API.registerBoundsChange(onBoundsChange);
+        ssf.registerBoundsChange(onBoundsChange);
 
         function onBoundsChange(arg) {
             console.log('bounds changed for=', arg)
         }
+
+        var getSources = document.getElementById('get-sources');
+        getSources.addEventListener('click', function() {
+            ssf.getMediaSources({types: ['window', 'screen']}, function(error, sources) {
+                if (error) throw error
+                  navigator.webkitGetUserMedia({
+                    audio: false,
+                    video: {
+                      mandatory: {
+                        chromeMediaSource: 'desktop',
+                        chromeMediaSourceId: sources[0].id,
+                        minWidth: 1280,
+                        maxWidth: 1280,
+                        minHeight: 720,
+                        maxHeight: 720
+                      }
+                    }
+                  }, handleStream, handleError)
+            });
+        });
+
+        function handleStream (stream) {
+          document.querySelector('video').src = URL.createObjectURL(stream)
+        }
+
+        function handleError (e) {
+          console.log(e)
+        }
+
 
     </script>
 </html>

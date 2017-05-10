@@ -15,13 +15,14 @@
     "unpacked-win": "npm run prebuild && build --win --x64 --dir",
     "unpacked-win-x86": "npm run prebuild && build --win --ia32 --dir",
     "prebuild": "npm run lint && npm run test && npm run browserify-preload",
+    "rebuild": "npm install electron-rebuild && ./node_modules/.bin/electron-rebuild",
     "lint": "eslint --ext .js js/",
     "test": "jest --testPathPattern test",
     "browserify-preload": "browserify -o js/preload/_preloadMain.js -x electron --insert-global-vars=__filename,__dirname js/preload/preloadMain.js"
   },
   "jest": {
-      "collectCoverage": true,
-      "transformIgnorePatterns": []
+    "collectCoverage": true,
+    "transformIgnorePatterns": []
   },
   "build": {
     "files": [
@@ -82,13 +83,16 @@
     "jest": "^19.0.2"
   },
   "dependencies": {
+    "@paulcbetts/system-idle-time": "^1.0.4",
     "async": "^2.1.5",
+    "auto-launch": "^5.0.1",
+    "electron-context-menu": "^0.8.0",
+    "electron-rebuild": "^1.5.7",
     "electron-squirrel-startup": "^1.0.0",
     "keymirror": "0.1.1",
-    "electron-context-menu": "^0.8.0",
     "winreg": "^1.2.3"
   },
   "optionalDependencies": {
-      "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.1"
+    "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.1"
   }
 }

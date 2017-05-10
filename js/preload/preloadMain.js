@@ -17,6 +17,7 @@ const throttle = require('../utils/throttle.js');
 const apiEnums = require('../enums/api.js');
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
+const getMediaSources = require('../desktopCapturer/getSources');
 
 // hold ref so doesn't get GC'ed
 const local = {
@@ -56,7 +57,7 @@ function createAPI() {
     //
     // API exposed to renderer process.
     //
-    window.SYM_API = {
+    window.ssf = {
         // api version
         version: '1.0.0',
 
@@ -137,12 +138,12 @@ function createAPI() {
         },
 
         /**
-         * allws JS to register a protocol handler that can be used by the electron main process.
+         * allows JS to register a protocol handler that can be used by the electron main process.
          * @param protocolHandler {Object} protocolHandler a callback to register the protocol handler
          */
-        registerProtocolHandler: function (protocolHandler) {            
+        registerProtocolHandler: function (protocolHandler) {
 
-            if (typeof protocolHandler === 'function') {                
+            if (typeof protocolHandler === 'function') {
 
                 local.processProtocolAction = protocolHandler;
 
@@ -152,10 +153,42 @@ function createAPI() {
 
             }
 
-        }
+        },
+
+        /**
+         * allows JS to register a activity detector that can be used by electron main process.
+         * @param  {Object} activityDetection - function that can be called accepting
+         * @param  {Object} period - minimum user idle time in millisecond
+         * object: {
+         *  period: Number
+         *  systemIdleTime: Number
+         *  }
+         */
+        registerActivityDetection: function(period, activityDetection) {
+            if (typeof activityDetection === 'function') {
+                local.activityDetection = activityDetection;
+
+                // only main window can register
+                local.ipcRenderer.send(apiName, {
+                    cmd: apiCmds.registerActivityDetection,
+                    period: period
+                });
+            }
+        },
+
+        /**
+         * Implements equivalent of desktopCapturer.getSources - that works in
+         * a sandboxed renderer process.
+         * see: https://electron.atom.io/docs/api/desktop-capturer/
+         * for interface: see documentation in desktopCapturer/getSources.js
+         */
+        getMediaSources: getMediaSources
 
     };
 
+    // add support for both ssf and SYM_API name-space.
+    window.SYM_API = window.ssf;
+    Object.freeze(window.ssf);
     Object.freeze(window.SYM_API);
 
     // listen for log message from main process
@@ -176,6 +209,13 @@ function createAPI() {
                 height: arg.height,
                 windowName: arg.windowName
             });
+        }
+    });
+
+    // listen for user activity from main process
+    local.ipcRenderer.on('activity', (event, arg) => {
+        if (local.activityDetection && arg && arg.systemIdleTime) {
+            local.activityDetection(arg.systemIdleTime);
         }
     });
 

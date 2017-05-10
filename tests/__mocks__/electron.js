@@ -72,7 +72,7 @@ const ipcRenderer = {
 module.exports = {
   require: jest.genMockFunction(),
   match: jest.genMockFunction(),
-  app: app,
+  app: jest.genMockFunction(),
   ipcMain: ipcMain,
   ipcRenderer: ipcRenderer,
   remote: jest.genMockFunction(),

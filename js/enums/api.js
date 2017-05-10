@@ -10,7 +10,8 @@ const cmds = keyMirror({
     activate: null,
     registerBoundsChange: null,
     registerProtocolHandler: null,
-    checkProtocolAction: null
+    checkProtocolAction: null,
+    registerActivityDetection: null,
 });
 
 module.exports = {
