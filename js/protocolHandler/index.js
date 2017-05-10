@@ -44,9 +44,14 @@ function setProtocolUrl(uri) {
     protocolUrl = uri;
 }
 
+function getProtocolUrl() {
+    return protocolUrl;
+}
+
 module.exports = {
     processProtocolAction: processProtocolAction,
     setProtocolWindow: setProtocolWindow,
     checkProtocolAction: checkProtocolAction,
-    setProtocolUrl: setProtocolUrl
+    setProtocolUrl: setProtocolUrl,
+    getProtocolUrl: getProtocolUrl
 };
