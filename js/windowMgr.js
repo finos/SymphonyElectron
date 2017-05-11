@@ -37,6 +37,9 @@ let boundsChangeWindow;
 // note: this file is built using browserify in prebuild step.
 const preloadMainScript = path.join(__dirname, 'preload/_preloadMain.js');
 
+const MIN_WIDTH = 300;
+const MIN_HEIGHT = 600;
+
 function addWindowKey(key, browserWin) {
     windows[key] = browserWin;
 }
@@ -69,6 +72,8 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     let newWinOpts = {
         title: 'Symphony',
         show: true,
+        minWidth: MIN_WIDTH,
+        minHeight: MIN_HEIGHT,
         webPreferences: {
             sandbox: true,
             nodeIntegration: false,
@@ -198,8 +203,8 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             let x = 0;
             let y = 0;
 
-            let width = newWinOptions.width || 300;
-            let height = newWinOptions.height || 600;
+            let width = newWinOptions.width || MIN_WIDTH;
+            let height = newWinOptions.height || MIN_HEIGHT;
 
             // try getting x and y position from query parameters
             var query = newWinParsedUrl && querystring.parse(newWinParsedUrl.query);
@@ -228,8 +233,10 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             /* eslint-disable no-param-reassign */
             newWinOptions.x = x;
             newWinOptions.y = y;
-            newWinOptions.width = width;
-            newWinOptions.height = height;
+            newWinOptions.width = Math.max(width, MIN_WIDTH);
+            newWinOptions.height = Math.max(height, MIN_HEIGHT);
+            newWinOptions.minWidth = MIN_WIDTH;
+            newWinOptions.minHeight = MIN_HEIGHT;
 
             let newWinKey = getGuid();
 
