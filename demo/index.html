@@ -1,51 +1,61 @@
 <html>
-    <head>
-    </head>
-    <body>
-        <h1>Symphony Electron API Demo</h1>
-        <hr>
-        <p>Notifications:<p>
-        <button id='notf'>show notification</button>
-        <p>
-            <label for='title'>title:</label>
-            <input type='text' id='title' value='Notification Demo'/>
-        </p>
-        <p>
-            <label for='body'>body:</label>
-            <input type='text' id='body' value='Some message'/>
-        </p>
-        <p>
-            <label for='image'>image url:</label>
-            <input type='text' id='image' value='https://lh3.googleusercontent.com/-s2PXL6wWMCc/AAAAAAAAAAI/AAAAAAAAAAA/AAomvV2gUNMMeFsOijwVVpihfg_anpKWQA/s32-c-mo/photo.jpg'/>
-        </p>
-        <p>
-            <label for='flash'>flash:</label>
-            <input type='checkbox' id='flash'/>
-        </p>
-        <p>
-            <label for='sticky'>sticky:</label>
-            <input type='checkbox' id='sticky'/>
-        </p>
-        <p>
-            <label for='color'>color:</label>
-            <input type='text' id='color' value='white'/>
-        </p>
-        <p>
-            <label for='tag'>tag:</label>
-            <input type='text' id='tag' value=''/>
-        </p>
-        <br>
-        <hr>
-        <p>Badge Count:<p>
-        <button id='inc-badge'>increment badge count</button>
-        <br>
-        <button id='clear-badge'>clear badge count</button>
-        <br>
-        <hr>
-        <p>Screen Snippet:</p>
-        <button id='snippet'>get snippet</button>
-        <p>snippet output:</p>
-        <image id='snippet-img'/>
+<head>
+</head>
+<body>
+<h1>Symphony Electron API Demo</h1>
+<hr>
+<p>Notifications:
+<p>
+    <button id='notf'>show notification</button>
+<p>
+    <label for='title'>title:</label>
+    <input type='text' id='title' value='Notification Demo'/>
+</p>
+<p>
+    <label for='body'>body:</label>
+    <input type='text' id='body' value='Some message'/>
+</p>
+<p>
+    <label for='image'>image url:</label>
+    <input type='text' id='image'
+           value='https://lh3.googleusercontent.com/-s2PXL6wWMCc/AAAAAAAAAAI/AAAAAAAAAAA/AAomvV2gUNMMeFsOijwVVpihfg_anpKWQA/s32-c-mo/photo.jpg'/>
+</p>
+<p>
+    <label for='flash'>flash:</label>
+    <input type='checkbox' id='flash'/>
+</p>
+<p>
+    <label for='sticky'>sticky:</label>
+    <input type='checkbox' id='sticky'/>
+</p>
+<p>
+    <label for='color'>color:</label>
+    <input type='text' id='color' value='white'/>
+</p>
+<p>
+    <label for='tag'>tag:</label>
+    <input type='text' id='tag' value=''/>
+</p>
+<br>
+<hr>
+<p>
+    Crash Process:
+<p>
+    <button id='crash'>Crash Renderer</button>
+</p>
+<br>
+<hr>
+<p>Badge Count:
+<p>
+    <button id='inc-badge'>increment badge count</button>
+    <br>
+    <button id='clear-badge'>clear badge count</button>
+    <br>
+<hr>
+<p>Screen Snippet:</p>
+<button id='snippet'>get snippet</button>
+<p>snippet output:</p>
+<image id='snippet-img'/>
 
         <hr>
         <p>Window activate:</p>
@@ -187,6 +197,10 @@
           console.log(e)
         }
 
-
+        // crash the renderer process
+        const crash = document.getElementById('crash')
+        crash.addEventListener('click', function () {
+          ssf.crashRendererProcess();
+        })
     </script>
 </html>

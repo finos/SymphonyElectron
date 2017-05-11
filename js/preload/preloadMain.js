@@ -18,6 +18,7 @@ const apiEnums = require('../enums/api.js');
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 const getMediaSources = require('../desktopCapturer/getSources');
+const crashReporter = require('../crashReporter');
 
 // hold ref so doesn't get GC'ed
 const local = {
@@ -31,6 +32,9 @@ const throttledSetBadgeCount = throttle(1000, function(count) {
         count: count
     });
 });
+
+// Setup the crash reporter
+crashReporter.setupCrashReporter({'window': 'preloadMain'});
 
 createAPI();
 
@@ -63,6 +67,13 @@ function createAPI() {
          */
         setBadgeCount: function(count) {
             throttledSetBadgeCount(count);
+        },
+
+        /**
+         * Provides API to crash the renderer process that calls this function
+         */
+        crashRendererProcess: function () {
+            process.crash();
         },
 
         /**

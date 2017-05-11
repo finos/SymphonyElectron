@@ -8,6 +8,8 @@ const AutoLaunch = require('auto-launch');
 const { getConfigField } = require('./config.js');
 const { isMac, isDevEnv } = require('./utils/misc.js');
 
+const crashReporter = require('./crashReporter');
+
 // exit early for squirrel installer
 if (squirrelStartup) {
     return;
@@ -48,6 +50,20 @@ var symphonyAutoLauncher = new AutoLaunch({
  * Some APIs can only be used after this event occurs.
  */
 app.on('ready', getUrlAndOpenMainWindow);
+
+/**
+ * Get crash info from global config and setup crash reporter for Main Process.
+ */
+function initializeCrashReporter () {
+    getConfigField('sendCrashReports').then(
+      function (data) {
+          crashReporter.setupCrashReporter({'window': 'main'}, data);
+      }
+    ).catch(function (err) {
+        let title = 'Error loading configuration';
+        electron.dialog.showErrorBox(title, title + ': ' + err);
+    })
+}
 
 function getUrlAndOpenMainWindow() {
     let installMode = false;
@@ -146,3 +162,6 @@ app.on('activate', function () {
         windowMgr.showMainWindow();
     }
 });
+
+// Initialize the crash reporter
+initializeCrashReporter();
