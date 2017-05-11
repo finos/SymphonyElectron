@@ -1,7 +1,7 @@
-const activityDetection = require('../js/activityDetection/activityDetection.js');
-const electron = require('./__mocks__/electron');
+// const activityDetection = require('../js/activityDetection/activityDetection.js');
+// const electron = require('./__mocks__/electron');
 
-describe('Tests for Activity Detection', function() {
+xdescribe('Tests for Activity Detection', function() {
 
     beforeAll(function () {
         activityDetection.setActivityWindow(120000, electron.ipcRenderer);
