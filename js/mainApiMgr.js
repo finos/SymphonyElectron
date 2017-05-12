@@ -75,6 +75,10 @@ electron.ipcMain.on(apiName, (event, arg) => {
         return;
     }
 
+    if (arg.cmd === apiCmds.registerProtocolHandler) {
+        protocolHandler.setProtocolWindow(event.sender);
+    }
+
     if (arg.cmd === apiCmds.badgeDataUrl && typeof arg.dataUrl === 'string' &&
         typeof arg.count === 'number') {
         badgeCount.setDataUrl(arg.dataUrl, arg.count);
@@ -94,11 +98,6 @@ electron.ipcMain.on(apiName, (event, arg) => {
         // renderer window that has a registered logger from JS.
         log.setLogWindow(event.sender);
     }
-
-    if (arg.cmd === apiCmds.registerProtocolHandler) {
-        protocolHandler.setProtocolWindow(event.sender);
-    }
-
 
     if (arg.cmd === apiCmds.registerActivityDetection) {
         // renderer window that has a registered activity detection from JS.

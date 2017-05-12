@@ -36,7 +36,6 @@ const shouldQuit = app.makeSingleInstance((argv) => {
         }
         mainWin.focus();
     }
-    // Handle protocol action if necessary
     processProtocolAction(argv);
 });
 
@@ -59,9 +58,7 @@ app.on('ready', getUrlAndOpenMainWindow);
 
 function getUrlAndOpenMainWindow() {
 
-    if (process.platform === 'win32') {
-        processProtocolAction(process.argv);
-    }
+    processProtocolAction(process.argv);
 
     isAppAlreadyOpen = true;
 
@@ -150,6 +147,13 @@ function createWin(urlFromConfig) {
 
 function processProtocolAction(argv) {
 
+    // In case of windows, we need to handle protocol handler
+    // manually because electron doesn't emit
+    // 'open-url' event on windows
+    if (!(process.platform === 'win32')) {
+        return;
+    }
+
     let protocolUri;
 
     for (let i = 0; i < argv.length; i++) {
@@ -169,12 +173,18 @@ function processProtocolAction(argv) {
             return;
         }
 
-        if (isAppAlreadyOpen) {
-            protocolHandler.processProtocolAction(protocolUri);
-        } else {
-            protocolHandler.setProtocolUrl(protocolUri);
-        }
+        handleProtocolAction(protocolUri);
 
+    }
+}
+
+function handleProtocolAction(uri) {
+    if (!isAppAlreadyOpen) {
+        // app is opened by the protocol url, cache the protocol url to be used later
+        protocolHandler.setProtocolUrl(uri);
+    } else {
+        // app is already open, so, just trigger the protocol action method
+        protocolHandler.processProtocolAction(uri);
     }
 }
 
@@ -197,11 +207,5 @@ app.on('activate', function () {
 app.setAsDefaultProtocolClient('symphony');
 
 app.on('open-url', function (event, url) {
-    if (!isAppAlreadyOpen) {
-        // app is opened by the protocol url, cache the protocol url to be used later
-        protocolHandler.setProtocolUrl(url);
-    } else {
-        // app is already open, so, just trigger the protocol action method
-        protocolHandler.processProtocolAction(url);
-    }
+    handleProtocolAction(url);
 });

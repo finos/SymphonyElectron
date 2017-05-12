@@ -1,10 +1,7 @@
-/**
- * Created by vishwas on 04/05/17.
- */
 'use strict';
 
 let protocolWindow;
-var protocolUrl;
+let protocolUrl;
 
 /**
  * processes a protocol uri
