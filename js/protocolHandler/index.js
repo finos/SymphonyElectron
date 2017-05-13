@@ -8,11 +8,9 @@ let protocolUrl;
  * @param {String} uri - the uri opened in the format 'symphony://...'
  */
 function processProtocolAction(uri) {
-
-    if (uri && protocolWindow) {
+    if (protocolWindow && uri && uri.startsWith("symphony://")) {
         protocolWindow.send('protocol-action', uri);
     }
-
 }
 
 /**
@@ -27,8 +25,8 @@ function setProtocolWindow(win) {
  * checks to see if the app was opened by a uri
  */
 function checkProtocolAction() {
-    if (protocolUrl && protocolWindow) {
-        protocolWindow.send('protocol-action', protocolUrl);
+    if (protocolUrl) {
+        processProtocolAction(protocolUrl);
         protocolUrl = undefined;
     }
 }

@@ -145,6 +145,10 @@ function createWin(urlFromConfig) {
     windowMgr.createMainWindow(url);
 }
 
+/**
+ * processes protocol action for windows clients
+ * @param argv {Array} an array of command line arguments
+ */
 function processProtocolAction(argv) {
 
     // In case of windows, we need to handle protocol handler
@@ -204,8 +208,14 @@ app.on('activate', function () {
     }
 });
 
+// adds 'symphony' as a protocol
+// in the system. plist file in macOS
+// and registry keys in windows
 app.setAsDefaultProtocolClient('symphony');
 
+// This event is emitted only on macOS
+// at this moment, support for windows
+// is in pipeline (https://github.com/electron/electron/pull/8052)
 app.on('open-url', function (event, url) {
     handleProtocolAction(url);
 });
