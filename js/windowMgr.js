@@ -37,6 +37,9 @@ let boundsChangeWindow;
 // note: this file is built using browserify in prebuild step.
 const preloadMainScript = path.join(__dirname, 'preload/_preloadMain.js');
 
+const MIN_WIDTH = 300;
+const MIN_HEIGHT = 600;
+
 function addWindowKey(key, browserWin) {
     windows[key] = browserWin;
 }
@@ -46,8 +49,7 @@ function removeWindowKey(key) {
 }
 
 function getParsedUrl(url) {
-    let parsedUrl = nodeURL.parse(url);
-    return parsedUrl;
+    return nodeURL.parse(url);
 }
 
 function createMainWindow(initialUrl) {
@@ -69,6 +71,8 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     let newWinOpts = {
         title: 'Symphony',
         show: true,
+        minWidth: MIN_WIDTH,
+        minHeight: MIN_HEIGHT,
         webPreferences: {
             sandbox: true,
             nodeIntegration: false,
@@ -77,7 +81,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         }
     };
 
-    // set size and postion
+    // set size and position
     let bounds = initialBounds;
 
     // if bounds if not fully contained in some display then use default size
@@ -122,7 +126,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     }
 
     // content can be cached and will still finish load but
-    // we might not have netowrk connectivity, so warn the user.
+    // we might not have network connectivity, so warn the user.
     mainWindow.webContents.on('did-finish-load', function () {
         url = mainWindow.webContents.getURL();
 
@@ -198,8 +202,8 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             let x = 0;
             let y = 0;
 
-            let width = newWinOptions.width || 300;
-            let height = newWinOptions.height || 600;
+            let width = newWinOptions.width || MIN_WIDTH;
+            let height = newWinOptions.height || MIN_HEIGHT;
 
             // try getting x and y position from query parameters
             var query = newWinParsedUrl && querystring.parse(newWinParsedUrl.query);
@@ -228,8 +232,10 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             /* eslint-disable no-param-reassign */
             newWinOptions.x = x;
             newWinOptions.y = y;
-            newWinOptions.width = width;
-            newWinOptions.height = height;
+            newWinOptions.width = Math.max(width, MIN_WIDTH);
+            newWinOptions.height = Math.max(height, MIN_HEIGHT);
+            newWinOptions.minWidth = MIN_WIDTH;
+            newWinOptions.minHeight = MIN_HEIGHT;
 
             let newWinKey = getGuid();
 

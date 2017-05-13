@@ -89,5 +89,6 @@ function setActivityWindow(period, win) {
 module.exports = {
     send: send,
     setActivityWindow: setActivityWindow,
+    activityDetection: activityDetection,
     initiateActivityDetection: initiateActivityDetection
 };

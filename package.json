@@ -6,6 +6,7 @@
   "author": "Symphony",
   "main": "js/main.js",
   "scripts": {
+    "postinstall": "npm run rebuild",
     "dev": "npm run browserify-preload && cross-env ELECTRON_DEV=true electron .",
     "demo-win": "npm run browserify-preload && cross-env ELECTRON_DEV=true electron . --url=file:///demo/index.html",
     "demo-mac": "npm run browserify-preload && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/demo/index.html",
@@ -15,7 +16,7 @@
     "unpacked-win": "npm run prebuild && build --win --x64 --dir",
     "unpacked-win-x86": "npm run prebuild && build --win --ia32 --dir",
     "prebuild": "npm run lint && npm run test && npm run browserify-preload",
-    "rebuild": "npm install electron-rebuild && ./node_modules/.bin/electron-rebuild",
+    "rebuild": "electron-rebuild -f",
     "lint": "eslint --ext .js js/",
     "test": "jest --testPathPattern test",
     "browserify-preload": "browserify -o js/preload/_preloadMain.js -x electron --insert-global-vars=__filename,__dirname js/preload/preloadMain.js"

@@ -32,6 +32,13 @@ const throttledSetBadgeCount = throttle(1000, function(count) {
     });
 });
 
+// check to see if the app was opened via a url
+const checkProtocolAction = function () {
+    local.ipcRenderer.send(apiName, {
+        cmd: apiCmds.checkProtocolAction
+    });
+};
+
 createAPI();
 
 // creates API exposed from electron.
@@ -63,6 +70,13 @@ function createAPI() {
          */
         setBadgeCount: function(count) {
             throttledSetBadgeCount(count);
+        },
+
+        /**
+         * checks to see if the app was opened from a url.
+         */
+        checkProtocolAction: function () {
+            checkProtocolAction();
         },
 
         /**
@@ -121,6 +135,24 @@ function createAPI() {
                     cmd: apiCmds.registerLogger
                 });
             }
+        },
+
+        /**
+         * allows JS to register a protocol handler that can be used by the electron main process.
+         * @param protocolHandler {Object} protocolHandler a callback to register the protocol handler
+         */
+        registerProtocolHandler: function (protocolHandler) {
+
+            if (typeof protocolHandler === 'function') {
+
+                local.processProtocolAction = protocolHandler;
+
+                local.ipcRenderer.send(apiName, {
+                    cmd: apiCmds.registerProtocolHandler
+                });
+
+            }
+
         },
 
         /**
@@ -233,6 +265,18 @@ function createAPI() {
             dataUrl: dataUrl,
             count: count
         });
+    });
+
+    /**
+     * an event triggered by the main process for processing protocol urls
+     * @type {String} arg - the protocol url
+     */
+    local.ipcRenderer.on('protocol-action', (event, arg) => {
+
+        if (local.processProtocolAction && arg) {
+            local.processProtocolAction(arg);
+        }
+
     });
 
     function updateOnlineStatus() {

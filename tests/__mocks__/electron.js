@@ -8,20 +8,44 @@ function pathToConfigDir() {
     return path.join(__dirname, '/../fixtures');
 }
 
+// electron app mock...
+const app = {
+    getAppPath: pathToConfigDir,
+    getPath: function(type) {
+        if (type === 'exe') {
+            return path.join(pathToConfigDir(), '/Symphony.exe');
+        }
+        return pathToConfigDir();
+    },
+    on: function() {
+        // no-op
+    }
+};
+
 // simple ipc mocks for render and main process ipc using
 // nodes' EventEmitter
 const ipcMain = {
     on: function(event, cb) {
         ipcEmitter.on(event, cb);
-    }
-}
+    },
+    send: function (event, args) {
+        var senderEvent = {
+            sender: {
+                send: function (event, arg) {
+                    ipcEmitter.emit(event, arg);
+                }
+            }
+        };
+        ipcEmitter.emit(event, senderEvent, args);
+    },
+};
 
 const ipcRenderer = {
     sendSync: function(event, args) {
         let listeners = ipcEmitter.listeners(event);
         if (listeners.length > 0) {
             let listener = listeners[0];
-            var eventArg = {}
+            var eventArg = {};
             listener(eventArg, args);
             return eventArg.returnValue;
         }
@@ -34,7 +58,7 @@ const ipcRenderer = {
                     ipcEmitter.emit(event, arg);
                 }
             }
-        }
+        };
         ipcEmitter.emit(event, senderEvent, args);
     },
     on: function(eventName, cb) {
@@ -43,7 +67,7 @@ const ipcRenderer = {
     removeListener: function(eventName, cb) {
         ipcEmitter.removeListener(eventName, cb);
     }
-}
+};
 
 module.exports = {
   require: jest.genMockFunction(),

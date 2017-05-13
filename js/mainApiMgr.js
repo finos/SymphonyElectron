@@ -10,6 +10,7 @@ const windowMgr = require('./windowMgr.js');
 const log = require('./log.js');
 const activityDetection = require('./activityDetection/activityDetection');
 const badgeCount = require('./badgeCount.js');
+const protocolHandler = require('./protocolHandler');
 
 const apiEnums = require('./enums/api.js');
 const apiCmds = apiEnums.cmds;
@@ -69,6 +70,15 @@ electron.ipcMain.on(apiName, (event, arg) => {
         return;
     }
 
+    if (arg.cmd === apiCmds.checkProtocolAction) {
+        protocolHandler.checkProtocolAction();
+        return;
+    }
+
+    if (arg.cmd === apiCmds.registerProtocolHandler) {
+        protocolHandler.setProtocolWindow(event.sender);
+    }
+
     if (arg.cmd === apiCmds.badgeDataUrl && typeof arg.dataUrl === 'string' &&
         typeof arg.count === 'number') {
         badgeCount.setDataUrl(arg.dataUrl, arg.count);
@@ -100,4 +110,4 @@ module.exports = {
     shouldCheckValidWindow: function (shouldCheck) {
         checkValidWindow = shouldCheck;
     }
-}
+};
