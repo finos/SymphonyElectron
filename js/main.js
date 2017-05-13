@@ -71,7 +71,9 @@ function getUrlAndOpenMainWindow() {
         if (val === flag) {
             installMode = true;
             getConfigField('launchOnStartup')
-                .then(setStartup);
+            .then(setStartup)
+            .then(app.quit)
+            .catch(app.quit);
         }
 
         return false;
@@ -82,31 +84,19 @@ function getUrlAndOpenMainWindow() {
     }
 }
 
-function setStartup(lStartup) {
-    if (lStartup === true) {
-        symphonyAutoLauncher.isEnabled()
-            .then(function (isEnabled) {
-                if (isEnabled) {
-                    app.quit();
-                }
-                symphonyAutoLauncher.enable()
-                    .then(function () {
-                        app.quit();
-                    });
-            })
-    } else {
-        symphonyAutoLauncher.isEnabled()
-            .then(function (isEnabled) {
-                if (isEnabled) {
-                    symphonyAutoLauncher.disable()
-                        .then(function () {
-                            app.quit();
-                        });
-                } else {
-                    app.quit();
-                }
-            })
-    }
+function setStartup(lStartup){
+    return symphonyAutoLauncher.isEnabled()
+    .then(function(isEnabled){
+        if (!isEnabled && lStartup) {
+            return symphonyAutoLauncher.enable();
+        }
+
+        if (isEnabled && !lStartup) {
+            return symphonyAutoLauncher.disable();
+        }
+
+        return true;
+    });
 }
 
 function openMainWindow() {
