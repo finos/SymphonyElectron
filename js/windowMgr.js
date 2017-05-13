@@ -49,8 +49,7 @@ function removeWindowKey(key) {
 }
 
 function getParsedUrl(url) {
-    let parsedUrl = nodeURL.parse(url);
-    return parsedUrl;
+    return nodeURL.parse(url);
 }
 
 function createMainWindow(initialUrl) {
@@ -82,7 +81,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         }
     };
 
-    // set size and postion
+    // set size and position
     let bounds = initialBounds;
 
     // if bounds if not fully contained in some display then use default size
@@ -127,7 +126,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     }
 
     // content can be cached and will still finish load but
-    // we might not have netowrk connectivity, so warn the user.
+    // we might not have network connectivity, so warn the user.
     mainWindow.webContents.on('did-finish-load', function () {
         url = mainWindow.webContents.getURL();
 
