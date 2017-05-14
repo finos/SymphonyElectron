@@ -1,7 +1,7 @@
 'use strict';
 
 const electron = require('electron');
-const { getConfigField, updateConfigField } = require('../config.js');
+const {getConfigField, updateConfigField} = require('../config.js');
 const AutoLaunch = require('auto-launch');
 const isMac = require('../utils/misc.js').isMac;
 
@@ -144,7 +144,7 @@ function getTemplate(app) {
                     }
                 ]
             }
-      )
+        );
       // Window menu.
         template[3].submenu = [
             {
@@ -172,64 +172,64 @@ function getTemplate(app) {
     }
 
     var index = 2;
-    if (isMac && template[0].label !== app.getName()){
+    if (isMac && template[0].label !== app.getName()) {
         index = 3;
     }
 
     // Window menu -> launchOnStartup.
     template[index].submenu.push(
         {
-            label: 'Auto Launch On Startup', 
-            type: 'checkbox', 
+            label: 'Auto Launch On Startup',
+            type: 'checkbox',
             checked: launchOnStartup,
             click: function (item) {
-                if (item.checked){
+                if (item.checked) {
                     symphonyAutoLauncher.enable()
-                    .catch(function (err) {
-                        let title = 'Error setting AutoLaunch configuration';
-                        electron.dialog.showErrorBox(title, title + ': ' + err);
-                    });
+                        .catch(function (err) {
+                            let title = 'Error setting AutoLaunch configuration';
+                            electron.dialog.showErrorBox(title, title + ': ' + err);
+                        });
                 } else {
                     symphonyAutoLauncher.disable()
-                    .catch(function (err) {
-                        let title = 'Error setting AutoLaunch configuration';
-                        electron.dialog.showErrorBox(title, title + ': ' + err);
-                    });
+                        .catch(function (err) {
+                            let title = 'Error setting AutoLaunch configuration';
+                            electron.dialog.showErrorBox(title, title + ': ' + err);
+                        });
                 }
                 launchOnStartup = item.checked;
                 updateConfigField('launchOnStartup', launchOnStartup);
             }
         }
-    )
+    );
 
     // Window menu -> minimizeOnClose.
     // ToDo: Add behavior on Close.
     template[index].submenu.push(
         {
-            label: 'Minimize on Close', 
-            type: 'checkbox', 
+            label: 'Minimize on Close',
+            type: 'checkbox',
             checked: minimizeOnClose,
             click: function (item) {
                 minimizeOnClose = item.checked;
                 updateConfigField('minimizeOnClose', minimizeOnClose);
             }
         }
-    )
+    );
 
     return template;
 }
 
-function setCheckboxValues(){
-    getConfigField('minimizeOnClose').then(function(mClose) {
+function setCheckboxValues() {
+    getConfigField('minimizeOnClose').then(function (mClose) {
         minimizeOnClose = mClose;
-    }).catch(function (err){
+    }).catch(function (err) {
         let title = 'Error loading configuration';
         electron.dialog.showErrorBox(title, title + ': ' + err);
     });
-    
-    getConfigField('launchOnStartup').then(function(lStartup) {
+
+    getConfigField('launchOnStartup').then(function (lStartup) {
         launchOnStartup = lStartup;
-    }).catch(function (err){
+    }).catch(function (err) {
         let title = 'Error loading configuration';
         electron.dialog.showErrorBox(title, title + ': ' + err);
     });

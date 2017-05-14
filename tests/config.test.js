@@ -1,4 +1,4 @@
-const { getConfigField, updateConfigField, configFileName } = require('../js/config');
+const {getConfigField, updateConfigField, configFileName} = require('../js/config');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
@@ -14,7 +14,7 @@ jest.mock('../js/utils/misc.js', function() {
 let globalConfigDir;
 let userConfigDir;
 
-jest.mock('electron', function() {
+jest.mock('electron', function () {
     return {
         app: {
             getPath: mockedGetPath
@@ -33,15 +33,15 @@ function mockedGetPath(type) {
     return '';
 }
 
-describe('getConfigField tests', function() {
+describe('getConfigField tests', function () {
 
-    beforeEach(function() {
+    beforeEach(function () {
         /// reset module vars between running tests.
         globalConfigDir = null;
         userConfigDir = null;
     });
 
-    afterEach(function() {
+    afterEach(function () {
         // clean up temp files creating during tests
         if (globalConfigDir) {
             fs.unlinkSync(path.join(globalConfigDir, configFileName));
@@ -75,94 +75,94 @@ describe('getConfigField tests', function() {
         fs.unlinkSync(filePath);
     }
 
-    describe('getConfigField tests', function() {
-        it('should fail when field not present in either user or global config', function() {
+    describe('getConfigField tests', function () {
+        it('should fail when field not present in either user or global config', function () {
             var userConfig = {
                 url: 'something'
-            }
+            };
 
             createTempUserConfig(userConfig);
 
             var globalConfig = {
                 url: 'something-else'
-            }
+            };
 
             createTempGlobalConfig(globalConfig);
 
-            return getConfigField('noturl').catch(function(err) {
+            return getConfigField('noturl').catch(function (err) {
                 expect(err).toBeTruthy();
             });
         });
 
-        it('should succeed when field only present in user config', function() {
+        it('should succeed when field only present in user config', function () {
             var userConfig = {
                 url: 'something'
-            }
+            };
 
             createTempUserConfig(userConfig);
 
-            return getConfigField('url').then(function(url) {
+            return getConfigField('url').then(function (url) {
                 expect(url).toBe('something');
             });
         });
 
-        it('should succeed when field only present in global config', function() {
+        it('should succeed when field only present in global config', function () {
             var globalConfig = {
                 url: 'something-else'
-            }
+            };
 
             createTempGlobalConfig(globalConfig);
 
-            return getConfigField('url').then(function(url) {
+            return getConfigField('url').then(function (url) {
                 expect(url).toBe('something-else');
             });
         });
 
-        it('should succeed and return user config field when value is in both', function() {
+        it('should succeed and return user config field when value is in both', function () {
             var userConfig = {
                 url: 'something'
-            }
+            };
 
             createTempUserConfig(userConfig);
 
             var globalConfig = {
                 url: 'something-else'
-            }
+            };
 
             createTempGlobalConfig(globalConfig);
 
-            return getConfigField('url').then(function(url) {
+            return getConfigField('url').then(function (url) {
                 expect(url).toBe('something');
             });
         });
     });
 
-    describe('updateConfigField tests', function() {
+    describe('updateConfigField tests', function () {
 
-        it('should succeed and overwrite existing field', function() {
+        it('should succeed and overwrite existing field', function () {
             var userConfig = {
                 url: 'something'
-            }
+            };
 
             createTempUserConfig(userConfig);
 
             return updateConfigField('url', 'hello world')
-                .then(function(newConfig) {
+                .then(function (newConfig) {
                     expect(newConfig).toEqual({
                         url: 'hello world'
                     });
                 });
         });
 
-        it('should succeed and add new field', function() {
+        it('should succeed and add new field', function () {
             var userConfig = {
                 url: 'something'
-            }
+            };
 
             createTempUserConfig(userConfig);
 
             return updateConfigField('url2', 'hello world')
-                .then(function(newConfig) {
+                .then(function (newConfig) {
                     expect(newConfig).toEqual({
                         url: 'something',
                         url2: 'hello world'

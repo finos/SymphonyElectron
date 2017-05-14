@@ -12,7 +12,7 @@
 // renderer process, this will have to do.  See github issue posted here to
 // electron: https://github.com/electron/electron/issues/9312
 
-var { ipcRenderer } = require('electron');
+var {ipcRenderer} = require('electron');
 
 var nextId = 0;
 var includes = [].includes;
@@ -48,10 +48,10 @@ function getSources(options, callback) {
     return ipcRenderer.once('ELECTRON_RENDERER_DESKTOP_CAPTURER_RESULT_' + id, function (event, sources) {
         var source;
         callback(null, (function () {
-            var i, len, results
+            var i, len, results;
             results = [];
             for (i = 0, len = sources.length; i < len; i++) {
-                source = sources[i]
+                source = sources[i];
                 results.push({
                     id: source.id,
                     name: source.name,

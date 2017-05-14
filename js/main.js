@@ -125,9 +125,9 @@ function openMainWindow() {
 
     getConfigField('url')
         .then(createWin).catch(function (err) {
-            let title = 'Error loading configuration';
-            electron.dialog.showErrorBox(title, title + ': ' + err);
-        });
+        let title = 'Error loading configuration';
+        electron.dialog.showErrorBox(title, title + ': ' + err);
+    });
 }
 
 function createWin(urlFromConfig) {
