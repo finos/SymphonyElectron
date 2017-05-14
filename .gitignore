@@ -4,3 +4,4 @@ dist
 js/preload/_*.js
 .idea/
 coverage/
+npm-debug.log
