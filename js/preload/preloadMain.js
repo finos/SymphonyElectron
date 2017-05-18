@@ -60,8 +60,8 @@ function createAPI() {
     window.ssf = {
         getVersionInfo: function() {
             return new Promise(function(resolve) {
-                var appName = remote.app.getVersion();
-                var appVer = remote.app.getName();
+                var appName = remote.app.getName();
+                var appVer = remote.app.getVersion();
 
                 const verInfo = {
                     containerIdentifier: appName,
