@@ -57,7 +57,13 @@
         <p>Get Media Sources:</p>
         <button id='get-sources'>get entire desktop</button>
         <br>
-        <video id='video'/>
+        <video id='video'></video>
+
+        <hr>
+        <p>Get Version Info:</p>
+        <button id='get-version'>get version info</button>
+        <br>
+        Version Info:<span id='info'></span>
     </body>
     <script>
         var notfEl = document.getElementById('notf');
@@ -187,6 +193,15 @@
           console.log(e)
         }
 
+        var getSources = document.getElementById('get-version');
+        getSources.addEventListener('click', function() {
+            ssf.getVersionInfo().then(function(verInfo) {
+                var verEl = document.getElementById('info');
+                verEl.innerText = '\napi ver=' + verInfo.apiVer +
+                '\ncontainer identifier=' + verInfo.containerIdentifier +
+                '\ncontainer ver=' + verInfo.containerVer
+            })
+        });
 
     </script>
 </html>
