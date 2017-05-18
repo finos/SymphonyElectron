@@ -6,7 +6,7 @@ const path = require('path');
 const nodeURL = require('url');
 const querystring = require('querystring');
 
-const menuTemplate = require('./menus/menuTemplate.js');
+const {getTemplate : menuTemplate} = require('./menus/menuTemplate.js');
 const loadErrors = require('./dialogs/showLoadError.js');
 const {isMac} = require('./utils/misc.js');
 const isInDisplayBounds = require('./utils/isInDisplayBounds.js');
@@ -19,6 +19,8 @@ const activityDetection = require('./activityDetection/activityDetection.js');
 
 const throttle = require('./utils/throttle.js');
 const {getConfigField, updateConfigField} = require('./config.js');
+
+const BrowserWindow = electron.BrowserWindow;
 
 //context menu
 const contextMenu = require('./menus/contextMenu.js');
@@ -77,7 +79,6 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             sandbox: true,
             nodeIntegration: false,
             preload: preloadMainScript,
-
         }
     };
 
@@ -107,7 +108,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     // note: augmenting with some custom values
     newWinOpts.winKey = key;
 
-    mainWindow = new electron.BrowserWindow(newWinOpts);
+    mainWindow = new BrowserWindow(newWinOpts);
     mainWindow.winName = 'main';
 
     let throttledMainWinBoundsChange = throttle(5000, saveMainWinBounds);
@@ -153,17 +154,40 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     const menu = electron.Menu.buildFromTemplate(menuTemplate(app));
     electron.Menu.setApplicationMenu(menu);
 
-    mainWindow.on('close', function (e) {
-        if (willQuitApp) {
-            destroyAllWindows();
-            return;
-        }
-        // mac should hide window when hitting x close
-        if (isMac) {
-            mainWindow.hide();
+    mainWindow.on('close', function(e) {
+        if (getMinimizeOnClose() && !willQuitApp){
+            minimizeAllWindows();
             e.preventDefault();
-        }
+        } else{
+            if (willQuitApp) {
+                destroyAllWindows();
+                return;
+            }
+            // mac should hide window when hitting x close
+            if (isMac) {
+                mainWindow.hide();
+                e.preventDefault();
+            }            
+        }     
     });
+
+    //get minimize on close current state from mainwindow menu.
+    function getMinimizeOnClose(){
+        let minimizeOnClose = false;
+        menu.items.some(function(item){
+            if (item.label === 'Window'){
+                item.submenu.items.some(function(sub){
+                    if (sub.label === 'Minimize on Close'){
+                        minimizeOnClose = sub.checked;
+                        return true;
+                    }
+                    return false;
+                });
+            }
+            return false;
+        });
+        return minimizeOnClose;
+    }
 
     function destroyAllWindows() {
         let keys = Object.keys(windows);
@@ -174,6 +198,12 @@ function doCreateMainWindow(initialUrl, initialBounds) {
 
         mainWindow = null;
     }
+
+    function minimizeAllWindows() {
+        BrowserWindow.getAllWindows().forEach((window) => {
+            window.minimize();
+        });
+    }    
 
     mainWindow.on('closed', destroyAllWindows);
 
@@ -313,7 +343,7 @@ function isMainWindow(win) {
 }
 
 function hasWindow(win, winKey) {
-    if (win instanceof electron.BrowserWindow) {
+    if (win instanceof BrowserWindow) {
         let browserWin = windows[winKey];
         return browserWin && win === browserWin;
     }
