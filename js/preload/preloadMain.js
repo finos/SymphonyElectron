@@ -58,8 +58,19 @@ function createAPI() {
     // API exposed to renderer process.
     //
     window.ssf = {
-        // api version
-        version: '1.0.0',
+        getVersionInfo: function() {
+            return new Promise(function(resolve) {
+                var appName = remote.app.getVersion();
+                var appVer = remote.app.getName();
+
+                const verInfo = {
+                    containerIdentifier: appName,
+                    containerVer: appVer,
+                    apiVer: '1.0.0'
+                }
+                resolve(verInfo);
+            });
+        },
 
         /**
          * sets the count on the tray icon to the given number.
