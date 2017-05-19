@@ -10,6 +10,10 @@ const {getConfigField} = require('./config.js');
 const {isMac, isDevEnv} = require('./utils/misc.js');
 const protocolHandler = require('./protocolHandler');
 
+const { getConfigField } = require('./config.js');
+const { isMac, isDevEnv } = require('./utils/misc.js');
+
+const crashReporter = require('./crashReporter');
 // used to check if a url was opened when the app was already open
 let isAppAlreadyOpen = false;
 
@@ -55,6 +59,20 @@ var symphonyAutoLauncher = new AutoLaunch({
  * Some APIs can only be used after this event occurs.
  */
 app.on('ready', getUrlAndOpenMainWindow);
+
+/**
+ * Get crash info from global config and setup crash reporter for Main Process.
+ */
+function initializeCrashReporter () {
+    getConfigField('sendCrashReports').then(
+      function (data) {
+          crashReporter.setupCrashReporter({'window': 'main'}, data);
+      }
+    ).catch(function (err) {
+        let title = 'Error loading configuration';
+        electron.dialog.showErrorBox(title, title + ': ' + err);
+    })
+}
 
 function getUrlAndOpenMainWindow() {
 
@@ -194,6 +212,8 @@ app.on('activate', function () {
     }
 });
 
+// Initialize the crash reporter
+initializeCrashReporter();
 // adds 'symphony' as a protocol
 // in the system. plist file in macOS
 // and registry keys in windows

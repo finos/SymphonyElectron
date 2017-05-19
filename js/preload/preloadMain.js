@@ -15,6 +15,9 @@ const { ipcRenderer, remote } = require('electron');
 
 const throttle = require('../utils/throttle.js');
 const apiEnums = require('../enums/api.js');
+
+const crashReporter = require('../crashReporter');
+
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 const getMediaSources = require('../desktopCapturer/getSources');
@@ -31,6 +34,9 @@ const throttledSetBadgeCount = throttle(1000, function(count) {
         count: count
     });
 });
+
+// Setup the crash reporter
+crashReporter.setupCrashReporter({'window': 'preloadMain'});
 
 // check to see if the app was opened via a url
 const checkProtocolAction = function () {
@@ -101,6 +107,13 @@ function createAPI() {
          * details in screenSnipper/ScreenSnippet.js
          */
         ScreenSnippet: remote.require('./screenSnippet/ScreenSnippet.js'),
+
+        /**
+         * Provides API to crash the renderer process that calls this function
+         */
+        crashRendererProcess: function () {
+            process.crash();
+        },
 
         /**
          * Brings window forward and gives focus.
