@@ -2,13 +2,13 @@
 
 const electron = require('electron');
 const app = electron.app;
+const BrowserWindow = electron.BrowserWindow;
 const path = require('path');
 const nodeURL = require('url');
 const querystring = require('querystring');
 
-const {getTemplate : menuTemplate} = require('./menus/menuTemplate.js');
+const { getTemplate, getMinimizeOnClose } = require('./menus/menuTemplate.js');
 const loadErrors = require('./dialogs/showLoadError.js');
-const {isMac} = require('./utils/misc.js');
 const isInDisplayBounds = require('./utils/isInDisplayBounds.js');
 const getGuid = require('./utils/getGuid.js');
 const log = require('./log.js');
@@ -18,9 +18,7 @@ const notify = require('./notify/electron-notify.js');
 const activityDetection = require('./activityDetection/activityDetection.js');
 
 const throttle = require('./utils/throttle.js');
-const {getConfigField, updateConfigField} = require('./config.js');
-
-const BrowserWindow = electron.BrowserWindow;
+const { getConfigField, updateConfigField } = require('./config.js');
 
 //context menu
 const contextMenu = require('./menus/contextMenu.js');
@@ -151,43 +149,22 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     addWindowKey(key, mainWindow);
     mainWindow.loadURL(url);
 
-    const menu = electron.Menu.buildFromTemplate(menuTemplate(app));
+    const menu = electron.Menu.buildFromTemplate(getTemplate(app));
     electron.Menu.setApplicationMenu(menu);
 
     mainWindow.on('close', function(e) {
-        if (getMinimizeOnClose() && !willQuitApp){
-            minimizeAllWindows();
-            e.preventDefault();
-        } else{
-            if (willQuitApp) {
-                destroyAllWindows();
-                return;
-            }
-            // mac should hide window when hitting x close
-            if (isMac) {
-                mainWindow.hide();
-                e.preventDefault();
-            }            
-        }     
-    });
+        if (willQuitApp) {
+            destroyAllWindows();
+            return;
+        }
 
-    //get minimize on close current state from mainwindow menu.
-    function getMinimizeOnClose(){
-        let minimizeOnClose = false;
-        menu.items.some(function(item){
-            if (item.label === 'Window'){
-                item.submenu.items.some(function(sub){
-                    if (sub.label === 'Minimize on Close'){
-                        minimizeOnClose = sub.checked;
-                        return true;
-                    }
-                    return false;
-                });
-            }
-            return false;
-        });
-        return minimizeOnClose;
-    }
+        if (getMinimizeOnClose()) {
+            e.preventDefault();
+            mainWindow.minimize();
+        } else {
+            app.quit();
+        }
+    });
 
     function destroyAllWindows() {
         let keys = Object.keys(windows);
@@ -198,12 +175,6 @@ function doCreateMainWindow(initialUrl, initialBounds) {
 
         mainWindow = null;
     }
-
-    function minimizeAllWindows() {
-        BrowserWindow.getAllWindows().forEach((window) => {
-            window.minimize();
-        });
-    }    
 
     mainWindow.on('closed', destroyAllWindows);
 
@@ -275,7 +246,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             let webContents = newWinOptions.webContents;
 
             webContents.once('did-finish-load', function () {
-                let browserWin = electron.BrowserWindow.fromWebContents(webContents);
+                let browserWin = BrowserWindow.fromWebContents(webContents);
 
                 if (browserWin) {
                     browserWin.winName = frameName;
