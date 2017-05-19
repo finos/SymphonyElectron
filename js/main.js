@@ -9,6 +9,7 @@ const { getConfigField } = require('./config.js');
 const { isMac, isDevEnv } = require('./utils/misc.js');
 
 const crashReporter = require('./crashReporter');
+require('electron-dl')();
 
 // exit early for squirrel installer
 if (squirrelStartup) {

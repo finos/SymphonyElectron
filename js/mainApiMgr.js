@@ -93,6 +93,10 @@ electron.ipcMain.on(apiName, (event, arg) => {
         // renderer window that has a registered activity detection from JS.
         activityDetection.setActivityWindow(arg.period, event.sender);
     }
+
+    if (arg.cmd === apiCmds.download) {
+        windowMgr.downloadManager(arg.url, event.sender);
+    }
 });
 
 // expose these methods primarily for testing...
@@ -100,4 +104,4 @@ module.exports = {
     shouldCheckValidWindow: function (shouldCheck) {
         checkValidWindow = shouldCheck;
     }
-}
+};

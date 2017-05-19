@@ -77,6 +77,16 @@ function createAPI() {
         },
 
         /**
+         * Provides API for the download manager to initiate file downloads
+         */
+        initiateDownload: function (url) {
+            local.ipcRenderer.send(apiName, {
+                cmd: apiCmds.download,
+                url: url
+            })
+        },
+
+        /**
          * provides api similar to html5 Notification, see details
          * in notify/notifyImpl.js
          */
@@ -174,6 +184,19 @@ function createAPI() {
     local.ipcRenderer.on('log', (event, arg) => {
         if (local.logger && arg && arg.level && arg.details) {
             local.logger(arg.level, arg.details);
+        }
+    });
+
+    local.ipcRenderer.on('downloadProgress', (event, arg) => {
+        var percentage = arg.progress / arg.total * 100;
+        let val = Math.round(percentage);
+        document.getElementById('downloader').classList.remove('hidden')
+        document.getElementById('downloading-progress-bar').value = val;
+        document.getElementById('percentage').innerText = val;
+        document.getElementById('downloading-progress-bar').style.width = val + '%';
+
+        if (val > 99){
+            document.getElementById('downloader').classList.add('hidden');
         }
     });
 

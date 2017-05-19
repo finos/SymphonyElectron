@@ -1,5 +1,47 @@
 <html>
 <head>
+    <style>
+        .hidden{
+            display: none;
+        }
+        .downloader {
+            width: 450px;
+        }
+
+        .downloading-progress {
+            position: relative;
+            float: left;
+            width: 200px;
+            height: 15px;
+            background-color: rgba(0,0,0,0.15);
+            padding: 5px;
+            box-sizing: border-box;
+            border-radius: 10px;
+        }
+
+        .downloading-progress-bar {
+            position: relative;
+            width: 0%;
+            height: 5px;
+            border-radius: 8px;
+            background-color: white;
+        }
+
+        .percentage {
+            background-color: #D9290B;
+            border-radius: 15px;
+            height: 15px;
+            box-sizing: border-box;
+            width: 50px;
+            font-family: Arial, Helvetica, sans-serif;
+            color: white;
+            font-size: 0.6rem;
+            text-align: center;
+            float:left;
+            line-height: 15px !important;
+            margin: 0 0 0 10px;
+        }
+    </style>
 </head>
 <body>
 <h1>Symphony Electron API Demo</h1>
@@ -43,6 +85,29 @@
 <p>
     <button id='crash'>Crash Renderer</button>
 </p>
+<hr>
+<p>
+    Download:
+<p>
+    <div style="float: left; margin-right: 15px; text-align: center;">
+    <img style="width: 60px; height: 60px;" src="http://www.ricoh-imaging.co.jp/english/r_dc/caplio/r7/img/sample_04.jpg" alt="test">
+    <br>
+    <button value="http://www.homeschoolingprimagama-pusat.com/joimg/testimoni/985687sample_04.jpg" id='download'>Download Img</button>
+    </div>
+    <div style="float: left; text-align: center;">
+        <img style="width: 60px; height: 60px;" src="https://lh3.googleusercontent.com/8VF8Oom0BIT89x24dFfhjexnQ2EQy_vNx5Qxob9rWxzPDyuc55IzB5POJ1Vcm2Xve4o2=w300" alt="test">
+        <br>
+        <button value="https://www.iso.org/files/live/sites/isoorg/files/archive/pdf/en/annual_report_2009.pdf" id='download2'>Download Pdf</button>
+    </div>
+    <div style="clear: both"></div>
+</p>
+
+<div id="downloader" class="downloader hidden">
+    <div class="downloading-progress" id="downloading-progress">
+        <div class="downloading-progress-bar" id="downloading-progress-bar" value="0" max="100"></div>
+    </div>
+    <div class="percentage" id="percentage"></div>
+</div>
 <br>
 <hr>
 <p>Badge Count:
@@ -198,9 +263,23 @@
         }
 
         // crash the renderer process
-        const crash = document.getElementById('crash')
+        const crash = document.getElementById('crash');
         crash.addEventListener('click', function () {
           ssf.crashRendererProcess();
-        })
+        });
+
+        // Download File 1
+        var downloadEl = document.getElementById('download');
+        const url = downloadEl.value;
+        downloadEl.addEventListener('click', function() {
+            ssf.initiateDownload(url);
+        });
+
+        // Download File 2
+        var downloadEl2 = document.getElementById('download2');
+        const url2 = downloadEl2.value;
+        downloadEl2.addEventListener('click', function() {
+            ssf.initiateDownload(url2);
+        });
     </script>
 </html>

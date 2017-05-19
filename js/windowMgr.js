@@ -21,6 +21,8 @@ const activityDetection = require('./activityDetection/activityDetection.js');
 const throttle = require('./utils/throttle.js');
 const {getConfigField, updateConfigField} = require('./config.js');
 
+const electronDl = require('electron-dl');
+
 const crashReporter = require('./crashReporter');
 
 //context menu
@@ -36,6 +38,7 @@ let windows = {};
 let willQuitApp = false;
 let isOnline = true;
 let boundsChangeWindow;
+let downloadWindow;
 
 // note: this file is built using browserify in prebuild step.
 const preloadMainScript = path.join(__dirname, 'preload/_preloadMain.js');
@@ -210,6 +213,49 @@ function doCreateMainWindow(initialUrl, initialBounds) {
 
     mainWindow.on('closed', destroyAllWindows);
 
+    mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
+        item.on('updated', (event, state) => {
+            if (state === 'interrupted') {
+                console.log('Download is interrupted but can be resumed')
+            } else if (state === 'progressing') {
+                if (item.isPaused()) {
+                    console.log('Download is paused')
+                } else {
+                    var val = {
+                        progress: item.getReceivedBytes(),
+                        total: item.getTotalBytes()
+                    };
+                    downloadWindow.send('downloadProgress', val)
+                }
+            }
+        });
+
+        // When download is complete
+        item.once('done', (event, state) => {
+            var filePath = item.getSavePath();
+            if (state === 'completed') {
+                const options = {
+                    type: 'info',
+                    title: 'Download completed',
+                    message: 'Download completed',
+                    buttons: ['Open', 'Close', 'Show in finder']
+                };
+                dialog.showMessageBox(options, function (index) {
+                    if (index === 0) {
+                        // Open file in default app
+                        electron.shell.openExternal(`file:///${filePath}`)
+                    }
+                    if (index === 2) {
+                        // Open file in finder/explorer
+                        electron.shell.showItemInFolder(filePath)
+                    }
+                })
+            } else {
+                console.log(`Download failed: ${state}`)
+            }
+        });
+    });
+
     // open external links in default browser - a tag, window.open
     mainWindow.webContents.on('new-window', function (event, newWinUrl,
                                                       frameName, disposition, newWinOptions) {
@@ -378,6 +424,21 @@ function activate(windowName) {
 }
 
 /**
+ * Executes file downloads when a URL is passed and saves it to the default
+ * downloads folder on Windows and Mac
+ * @param  {String} window Name of target window.
+ * @param  {String} url URL of file to download.
+ */
+function downloadManager(url, window) {
+    downloadWindow = window;
+
+    // Send file URL for download
+    electronDl.download(electron.BrowserWindow.getFocusedWindow(), url)
+        .then(dl => console.log(dl.getSavePath()))
+        .catch(console.error);
+}
+
+/**
  * name of renderer window to notify when bounds of child window changes.
  * @param {object} window Renderer window to use IPC with to inform about size/
  * position change.
@@ -407,5 +468,6 @@ module.exports = {
     hasWindow: hasWindow,
     setIsOnline: setIsOnline,
     activate: activate,
+    downloadManager: downloadManager,
     setBoundsChangeWindow: setBoundsChangeWindow
 };
