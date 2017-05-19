@@ -2,20 +2,23 @@
 
 const electron = require('electron');
 const app = electron.app;
+const BrowserWindow = electron.BrowserWindow;
 const path = require('path');
 const nodeURL = require('url');
 const querystring = require('querystring');
 const {dialog} = require('electron');
 const {shell} = require('electron');
 
-const menuTemplate = require('./menus/menuTemplate.js');
+const { getTemplate, getMinimizeOnClose } = require('./menus/menuTemplate.js');
 const loadErrors = require('./dialogs/showLoadError.js');
-const { isMac } = require('./utils/misc.js');
 const isInDisplayBounds = require('./utils/isInDisplayBounds.js');
 const getGuid = require('./utils/getGuid.js');
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
 const notify = require('./notify/electron-notify.js');
+
+const activityDetection = require('./activityDetection/activityDetection.js');
+
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField } = require('./config.js');
 
@@ -38,6 +41,9 @@ let boundsChangeWindow;
 // note: this file is built using browserify in prebuild step.
 const preloadMainScript = path.join(__dirname, 'preload/_preloadMain.js');
 
+const MIN_WIDTH = 300;
+const MIN_HEIGHT = 600;
+
 function addWindowKey(key, browserWin) {
     windows[key] = browserWin;
 }
@@ -47,8 +53,7 @@ function removeWindowKey(key) {
 }
 
 function getParsedUrl(url) {
-    let parsedUrl = nodeURL.parse(url);
-    return parsedUrl;
+    return nodeURL.parse(url);
 }
 
 function createMainWindow(initialUrl) {
@@ -82,15 +87,16 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     let newWinOpts = {
         title: 'Symphony',
         show: true,
+        minWidth: MIN_WIDTH,
+        minHeight: MIN_HEIGHT,
         webPreferences: {
             sandbox: true,
             nodeIntegration: false,
             preload: preloadMainScript,
-
         }
     };
 
-    // set size and postion
+    // set size and position
     let bounds = initialBounds;
 
     // if bounds if not fully contained in some display then use default size
@@ -116,7 +122,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     // note: augmenting with some custom values
     newWinOpts.winKey = key;
 
-    mainWindow = new electron.BrowserWindow(newWinOpts);
+    mainWindow = new BrowserWindow(newWinOpts);
     mainWindow.winName = 'main';
 
     let throttledMainWinBoundsChange = throttle(5000, saveMainWinBounds);
@@ -145,6 +151,9 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             // removes all existing notifications when main window reloads
             notify.reset();
             log.send(logLevels.INFO, 'main window loaded url: ' + url);
+
+            // Initiate activity detection to monitor user activity status
+            activityDetection.initiateActivityDetection();
         }
     });
 
@@ -175,7 +184,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     addWindowKey(key, mainWindow);
     mainWindow.loadURL(url);
 
-    const menu = electron.Menu.buildFromTemplate(menuTemplate(app));
+    const menu = electron.Menu.buildFromTemplate(getTemplate(app));
     electron.Menu.setApplicationMenu(menu);
 
     mainWindow.on('close', function (e) {
@@ -183,10 +192,12 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             destroyAllWindows();
             return;
         }
-        // mac should hide window when hitting x close
-        if (isMac) {
-            mainWindow.hide();
+
+        if (getMinimizeOnClose()) {
             e.preventDefault();
+            mainWindow.minimize();
+        } else {
+            app.quit();
         }
     });
 
@@ -227,8 +238,8 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             let x = 0;
             let y = 0;
 
-            let width = newWinOptions.width || 300;
-            let height = newWinOptions.height || 600;
+            let width = newWinOptions.width || MIN_WIDTH;
+            let height = newWinOptions.height || MIN_HEIGHT;
 
             // try getting x and y position from query parameters
             var query = newWinParsedUrl && querystring.parse(newWinParsedUrl.query);
@@ -236,7 +247,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                 let newX = Number.parseInt(query.x, 10);
                 let newY = Number.parseInt(query.y, 10);
 
-                let newWinRect = { x: newX, y: newY, width, height };
+                let newWinRect = {x: newX, y: newY, width, height};
 
                 // only accept if both are successfully parsed.
                 if (Number.isInteger(newX) && Number.isInteger(newY) &&
@@ -249,7 +260,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                 }
             } else {
                 // create new window at slight offset from main window.
-                ({ x, y } = getWindowSizeAndPosition(mainWindow));
+                ({x, y} = getWindowSizeAndPosition(mainWindow));
                 x += 50;
                 y += 50;
             }
@@ -257,8 +268,10 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             /* eslint-disable no-param-reassign */
             newWinOptions.x = x;
             newWinOptions.y = y;
-            newWinOptions.width = width;
-            newWinOptions.height = height;
+            newWinOptions.width = Math.max(width, MIN_WIDTH);
+            newWinOptions.height = Math.max(height, MIN_HEIGHT);
+            newWinOptions.minWidth = MIN_WIDTH;
+            newWinOptions.minHeight = MIN_HEIGHT;
 
             let newWinKey = getGuid();
 
@@ -268,7 +281,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             let webContents = newWinOptions.webContents;
 
             webContents.once('did-finish-load', function () {
-                let browserWin = electron.BrowserWindow.fromWebContents(webContents);
+                let browserWin = BrowserWindow.fromWebContents(webContents);
 
                 if (browserWin) {
                     browserWin.winName = frameName;
@@ -336,7 +349,7 @@ function isMainWindow(win) {
 }
 
 function hasWindow(win, winKey) {
-    if (win instanceof electron.BrowserWindow) {
+    if (win instanceof BrowserWindow) {
         let browserWin = windows[winKey];
         return browserWin && win === browserWin;
     }
@@ -358,9 +371,12 @@ function activate(windowName) {
     let keys = Object.keys(windows);
     for (let i = 0, len = keys.length; i < len; i++) {
         let window = windows[keys[i]];
-        if (window && !window.isDestroyed() &&
-            window.winName === windowName) {
-            window.show();
+        if (window && !window.isDestroyed() && window.winName === windowName) {
+            if (window.isMinimized()) {
+                window.restore();
+            } else {
+                window.show();
+            }
             return;
         }
     }
@@ -383,6 +399,7 @@ function sendChildWinBoundsChange(window) {
     let newBounds = getWindowSizeAndPosition(window);
     if (newBounds && boundsChangeWindow) {
         newBounds.windowName = window.winName;
+        // ipc msg back to renderer to inform bounds has changed.
         boundsChangeWindow.send('boundsChange', newBounds);
     }
 }

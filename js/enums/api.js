@@ -8,10 +8,13 @@ const cmds = keyMirror({
     setBadgeCount: null,
     badgeDataUrl: null,
     activate: null,
-    registerBoundsChange: null
+    registerBoundsChange: null,
+    registerProtocolHandler: null,
+    checkProtocolAction: null,
+    registerActivityDetection: null,
 });
 
 module.exports = {
     cmds: cmds,
     apiName: 'symphony-api'
-}
+};

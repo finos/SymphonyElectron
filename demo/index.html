@@ -1,5 +1,4 @@
 <html>
-
 <head>
 </head>
 
@@ -65,6 +64,18 @@
 <button id='open-win'>open window</button>
 
 <button id='bring-to-front'>bring open window to front</button>
+          
+<hr>
+<p>Get Media Sources:</p>
+<button id='get-sources'>get entire desktop</button>
+<br>
+<video id='video'></video>
+
+<hr>
+<p>Get Version Info:</p>
+<button id='get-version'>get version info</button>
+<br>
+Version Info:<span id='info'></span>
 </body>
 <script>
     var notfEl = document.getElementById('notf');
@@ -99,35 +110,21 @@
             event.target.close();
             alert('notification clicked: ' + event.target.data.hello);
         }
+        var incBadgeEl = document.getElementById('inc-badge');
+        incBadgeEl.addEventListener('click', function() {
+            badgeCount++;
+            ssf.setBadgeCount(badgeCount);
+        });
 
-        notf.addEventListener('close', onclose);
-        function onclose() {
-            alert('notification closed');
-        }
+        var incBadgeEl = document.getElementById('clear-badge');
+        incBadgeEl.addEventListener('click', function() {
+            badgeCount = 0;
+            ssf.setBadgeCount(0);
+        });
 
-        notf.addEventListener('error', onerror);
-        function onerror(event) {
-            alert('error=' + event.result);
-        }
-    });
-
-    var badgeCount = 0;
-
-    var incBadgeEl = document.getElementById('inc-badge');
-    incBadgeEl.addEventListener('click', function () {
-        badgeCount++;
-        SYM_API.setBadgeCount(badgeCount);
-    });
-
-    var incBadgeEl = document.getElementById('clear-badge');
-    incBadgeEl.addEventListener('click', function () {
-        badgeCount = 0;
-        SYM_API.setBadgeCount(0);
-    });
-
-    var snippetButton = document.getElementById('snippet');
-    snippetButton.addEventListener('click', function () {
-        let snippet = new SYM_API.ScreenSnippet();
+        var snippetButton = document.getElementById('snippet');
+        snippetButton.addEventListener('click', function() {
+            let snippet = new ssf.ScreenSnippet();
 
         snippet
             .capture()
@@ -148,19 +145,18 @@
     });
 
     var win;
+        var openWinButton = document.getElementById('open-win');
+        openWinButton.addEventListener('click', function() {
+            win = window.open('win.html?x=100&y=100', 'test-window', 'height=800,width=400');
+        });
 
-    var openWinButton = document.getElementById('open-win');
-    openWinButton.addEventListener('click', function () {
-        win = window.open('win.html?x=100&y=100', 'test-window', 'height=100,width=100');
-    });
+        var front = document.getElementById('bring-to-front');
+        front.addEventListener('click', function() {
+            window.ssf.activate(win.name);
+        });
 
-    var front = document.getElementById('bring-to-front');
-    front.addEventListener('click', function () {
-        window.SYM_API.activate(win.name);
-    });
-
-    // register callback to be notified when size/position changes for win.
-    window.SYM_API.registerBoundsChange(onBoundsChange);
+        // register callback to be notified when size/position changes for win.
+        ssf.registerBoundsChange(onBoundsChange);
 
     function onBoundsChange(arg) {
         console.log('bounds changed for=', arg)
@@ -169,9 +165,46 @@
     // crash the renderer process
     const crash = document.getElementById('crash');
     crash.addEventListener('click', function () {
-        window.SYM_API.crashRendererProcess();
+        ssf.crashRendererProcess();
     });
+      
+    var getSources = document.getElementById('get-sources');
+        getSources.addEventListener('click', function() {
+            ssf.getMediaSources({types: ['window', 'screen']}, function(error, sources) {
+                if (error) throw error
+                  navigator.webkitGetUserMedia({
+                    audio: false,
+                    video: {
+                      mandatory: {
+                        chromeMediaSource: 'desktop',
+                        chromeMediaSourceId: sources[0].id,
+                        minWidth: 1280,
+                        maxWidth: 1280,
+                        minHeight: 720,
+                        maxHeight: 720
+                      }
+                    }
+                  }, handleStream, handleError)
+            });
+        });
+
+        function handleStream (stream) {
+          document.querySelector('video').src = URL.createObjectURL(stream)
+        }
+
+        function handleError (e) {
+          console.log(e)
+        }
+
+        var getSources = document.getElementById('get-version');
+        getSources.addEventListener('click', function() {
+            ssf.getVersionInfo().then(function(verInfo) {
+                var verEl = document.getElementById('info');
+                verEl.innerText = '\napi ver=' + verInfo.apiVer +
+                '\ncontainer identifier=' + verInfo.containerIdentifier +
+                '\ncontainer ver=' + verInfo.containerVer
+            })
+        });
 
 </script>
-
 </html>

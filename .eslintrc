@@ -25,6 +25,7 @@
     "es6": true
   },
   "globals": {
-    "SYM_API": true
+    "SYM_API": true,
+    "ssf": true
   }
 }

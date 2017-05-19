@@ -2,6 +2,7 @@
 
 const electron = require('electron');
 
+
 /**
  * Returns true if given rectangle is contained within the workArea of at
  * least one of the screens.
