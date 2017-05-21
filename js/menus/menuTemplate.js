@@ -216,6 +216,17 @@ function getTemplate(app) {
         }
     );
 
+    if (!isMac){
+        template[index].submenu.push(
+            {
+                label: 'Quit Symphony', 
+                click: function () {
+                    app.quit();
+                }
+            }
+        )
+    }
+
     return template;
 }
 
@@ -235,4 +246,11 @@ function setCheckboxValues() {
     });
 }
 
-module.exports = getTemplate;
+function getMinimizeOnClose(){
+    return minimizeOnClose;
+}
+
+module.exports = {
+    getTemplate : getTemplate,
+    getMinimizeOnClose : getMinimizeOnClose
+};
