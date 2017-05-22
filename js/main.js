@@ -6,7 +6,7 @@ const nodeURL = require('url');
 const squirrelStartup = require('electron-squirrel-startup');
 const AutoLaunch = require('auto-launch');
 const urlParser = require('url');
-const {getConfigField} = require('./config.js');
+const { getConfigField } = require('./config.js');
 const { isDevEnv} = require('./utils/misc.js');
 const protocolHandler = require('./protocolHandler');
 
@@ -54,17 +54,42 @@ var symphonyAutoLauncher = new AutoLaunch({
  * initialization and is ready to create browser windows.
  * Some APIs can only be used after this event occurs.
  */
-app.on('ready', getUrlAndOpenMainWindow);
+app.on('ready', setupThenOpenMainWindow);
 
-function getUrlAndOpenMainWindow() {
+app.on('window-all-closed', function () {
+    app.quit();
+});
+
+app.on('activate', function () {
+    if (windowMgr.isMainWindow(null)) {
+        setupThenOpenMainWindow();
+    } else {
+        windowMgr.showMainWindow();
+    }
+});
+
+// adds 'symphony' as a protocol
+// in the system. plist file in macOS
+// and registry keys in windows
+app.setAsDefaultProtocolClient('symphony');
+
+// This event is emitted only on macOS
+// at this moment, support for windows
+// is in pipeline (https://github.com/electron/electron/pull/8052)
+app.on('open-url', function (event, url) {
+    handleProtocolAction(url);
+});
+
+function setupThenOpenMainWindow() {
 
     processProtocolAction(process.argv);
 
     isAppAlreadyOpen = true;
 
-    // for dev env allow passing url argument
     let installMode = false;
 
+    // allows installer to launch app and set auto startup mode then
+    // immediately quit.
     process.argv.some((val) => {
 
         let flag = '--install';
@@ -80,7 +105,7 @@ function getUrlAndOpenMainWindow() {
     });
 
     if (installMode === false) {
-        openMainWindow();
+        getUrlAndCreateMainWindow();
     }
 }
 
@@ -99,7 +124,8 @@ function setStartup(lStartup){
     });
 }
 
-function openMainWindow() {
+function getUrlAndCreateMainWindow() {
+    // for dev env allow passing url argument
     if (isDevEnv) {
         let url;
         process.argv.forEach((val) => {
@@ -181,27 +207,3 @@ function handleProtocolAction(uri) {
         protocolHandler.processProtocolAction(uri);
     }
 }
-
-app.on('window-all-closed', function () {
-    app.quit();
-});
-
-app.on('activate', function () {
-    if (windowMgr.isMainWindow(null)) {
-        getUrlAndOpenMainWindow();
-    } else {
-        windowMgr.showMainWindow();
-    }
-});
-
-// adds 'symphony' as a protocol
-// in the system. plist file in macOS
-// and registry keys in windows
-app.setAsDefaultProtocolClient('symphony');
-
-// This event is emitted only on macOS
-// at this moment, support for windows
-// is in pipeline (https://github.com/electron/electron/pull/8052)
-app.on('open-url', function (event, url) {
-    handleProtocolAction(url);
-});
