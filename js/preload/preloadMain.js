@@ -135,8 +135,16 @@ function createAPI() {
         },
 
         /**
-         * allows JS to register a protocol handler that can be used by the electron main process.
-         * @param protocolHandler {Object} protocolHandler a callback to register the protocol handler
+         * allows JS to register a protocol handler that can be used by the
+         * electron main process.
+         * @param protocolHandler {Object} protocolHandler a callback to
+         * register the protocol handler.
+         *
+         * Note: this function should only be called after client app is fully
+         * able for protocolHandler callback to be invoked.  It is possible
+         * the app was started using protocol handler, in this case as soon as
+         * this registration func is invoked then the protocolHandler callback
+         * will be immediately called.
          */
         registerProtocolHandler: function (protocolHandler) {
             if (typeof protocolHandler === 'function') {
