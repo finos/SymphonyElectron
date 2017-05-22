@@ -137,8 +137,11 @@ function createAPI() {
         /**
          * allows JS to register a protocol handler that can be used by the
          * electron main process.
-         * @param protocolHandler {Object} protocolHandler a callback to
-         * register the protocol handler.
+         *
+         * @param protocolHandler {Function} callback will be called when app is
+         * invoked with registered protocol (e.g., symphony). The callback
+         * receives a single string argument: full uri that the app was
+         * invoked with e.g., symphony://?streamId=xyz123&streamType=chatroom
          *
          * Note: this function should only be called after client app is fully
          * able for protocolHandler callback to be invoked.  It is possible
