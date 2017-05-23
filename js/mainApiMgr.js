@@ -70,13 +70,9 @@ electron.ipcMain.on(apiName, (event, arg) => {
         return;
     }
 
-    if (arg.cmd === apiCmds.checkProtocolAction) {
-        protocolHandler.checkProtocolAction();
-        return;
-    }
-
     if (arg.cmd === apiCmds.registerProtocolHandler) {
         protocolHandler.setProtocolWindow(event.sender);
+        protocolHandler.checkProtocolAction();
     }
 
     if (arg.cmd === apiCmds.badgeDataUrl && typeof arg.dataUrl === 'string' &&
