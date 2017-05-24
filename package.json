@@ -13,6 +13,7 @@
     "dist-mac": "npm run prebuild && build --mac",
     "dist-win": "npm run prebuild && build --win --x64",
     "dist-win-x86": "npm run prebuild && build --win --ia32",
+    "unpacked-mac": "npm run prebuild && build --mac --dir",
     "unpacked-win": "npm run prebuild && build --win --x64 --dir",
     "unpacked-win-x86": "npm run prebuild && build --win --ia32 --dir",
     "prebuild": "npm run lint && npm run test && npm run browserify-preload",
