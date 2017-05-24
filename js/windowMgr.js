@@ -178,7 +178,15 @@ function doCreateMainWindow(initialUrl, initialBounds) {
 
     mainWindow.on('closed', destroyAllWindows);
 
-    // open external links in default browser - a tag, window.open
+    // bug in electron is preventing this from working...
+    // https://github.com/electron/electron/issues/8841
+    mainWindow.webContents.on('will-navigate', function(event, willNavUrl) {
+        console.log('will nav url=' + willNavUrl)
+        event.preventDefault();
+        openUrlInDefaultBrower(willNavUrl);
+    });
+
+    // open external links in default browser - a tag with href='_blank' or window.open
     mainWindow.webContents.on('new-window', function (event, newWinUrl,
                                                       frameName, disposition, newWinOptions) {
         let newWinParsedUrl = getParsedUrl(newWinUrl);
@@ -187,12 +195,9 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         let newWinHost = newWinParsedUrl && newWinParsedUrl.host;
         let mainWinHost = mainWinParsedUrl && mainWinParsedUrl.host;
 
-        // if host url doesn't match then open in external browser
-        if (newWinHost !== mainWinHost) {
-            event.preventDefault();
-            electron.shell.openExternal(newWinUrl);
-        } else if (disposition === 'foreground-tab' ||
-            disposition === 'new-window') {
+        // only allow window.open to succeed is if coming from same hsot,
+        // otherwise open in default browser.
+        if (disposition === 'new-window' && newWinHost === mainWinHost) {
             // handle: window.open
 
             if (!frameName) {
@@ -266,6 +271,9 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                     browserWin.on('resize', throttledBoundsChange);
                 }
             });
+        } else {
+            event.preventDefault();
+            openUrlInDefaultBrower(newWinUrl)
         }
     });
 
@@ -289,17 +297,19 @@ function getMainWindow() {
 }
 
 function getWindowSizeAndPosition(window) {
-    let newPos = window.getPosition();
-    let newSize = window.getSize();
+    if (window) {
+        let newPos = window.getPosition();
+        let newSize = window.getSize();
 
-    if (newPos && newPos.length === 2 &&
-        newSize && newSize.length === 2) {
-        return {
-            x: newPos[0],
-            y: newPos[1],
-            width: newSize[0],
-            height: newSize[1],
-        };
+        if (newPos && newPos.length === 2 &&
+            newSize && newSize.length === 2) {
+            return {
+                x: newPos[0],
+                y: newPos[1],
+                width: newSize[0],
+                height: newSize[1],
+            };
+        }
     }
 
     return null;
@@ -366,6 +376,12 @@ function sendChildWinBoundsChange(window) {
         newBounds.windowName = window.winName;
         // ipc msg back to renderer to inform bounds has changed.
         boundsChangeWindow.send('boundsChange', newBounds);
+    }
+}
+
+function openUrlInDefaultBrower(urlToOpen) {
+    if (urlToOpen) {
+        electron.shell.openExternal(urlToOpen);
     }
 }
 
