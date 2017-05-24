@@ -75,7 +75,7 @@
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
     <ROW File="LICENSE.electron.txt" Component_="blink_image_resources_200_percent.pak" FileName="LICENS~1.TXT|LICENSE.electron.txt" Attributes="0" SourcePath="..\..\dist\win-unpacked\LICENSE.electron.txt" SelfReg="false" NextFile="LICENSES.chromium.html"/>
     <ROW File="LICENSES.chromium.html" Component_="blink_image_resources_200_percent.pak" FileName="LICENS~1.HTM|LICENSES.chromium.html" Attributes="0" SourcePath="..\..\dist\win-unpacked\LICENSES.chromium.html" SelfReg="false" NextFile="natives_blob.bin"/>
-    <ROW File="ScreenSnippet.exe" Component_="ScreenSnippet.exe" FileName="SCREEN~1.EXE|ScreenSnippet.exe" Attributes="0" SourcePath="..\node_modules\screen-snippet\bin\Release\ScreenSnippet.exe" SelfReg="false" DigSign="true"/>
+    <ROW File="ScreenSnippet.exe" Component_="ScreenSnippet.exe" FileName="SCREEN~1.EXE|ScreenSnippet.exe" Attributes="0" SourcePath="..\..\node_modules\screen-snippet\bin\Release\ScreenSnippet.exe" SelfReg="false" DigSign="true"/>
     <ROW File="Symphony.config_1" Component_="Symphony.config" FileName="SYMPHO~1.CON|Symphony.config" Attributes="0" SourcePath="..\..\dist\win-unpacked\config\Symphony.config" SelfReg="false" NextFile="ScreenSnippet.exe"/>
     <ROW File="Symphony.exe" Component_="Symphony.exe" FileName="Symphony.exe" Attributes="0" SourcePath="..\..\dist\win-unpacked\Symphony.exe" SelfReg="false" NextFile="ui_resources_200_percent.pak" DigSign="true"/>
     <ROW File="am.pak" Component_="am.pak" FileName="am.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\am.pak" SelfReg="false" NextFile="ar.pak"/>
@@ -361,7 +361,7 @@
     <ROW Action="Symphony.exe" Type="1042" Source="Symphony.exe" Target="--install"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiIconsComponent">
-    <ROW Name="icon.exe" SourcePath="..\build\icon.ico" Index="0"/>
+    <ROW Name="icon.exe" SourcePath="..\..\build\icon.ico" Index="0"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstExSeqComponent">
     <ROW Action="AI_DOWNGRADE" Condition="AI_NEWERPRODUCTFOUND AND (UILevel &lt;&gt; 5)" Sequence="210"/>
