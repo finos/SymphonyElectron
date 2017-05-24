@@ -178,10 +178,9 @@ function doCreateMainWindow(initialUrl, initialBounds) {
 
     mainWindow.on('closed', destroyAllWindows);
 
-    // bug in electron is preventing this from working...
+    // bug in electron is preventing this from working in sandboxed evt...
     // https://github.com/electron/electron/issues/8841
     mainWindow.webContents.on('will-navigate', function(event, willNavUrl) {
-        console.log('will nav url=' + willNavUrl)
         event.preventDefault();
         openUrlInDefaultBrower(willNavUrl);
     });
