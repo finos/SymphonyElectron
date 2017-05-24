@@ -170,7 +170,7 @@ function createAPI() {
          *  systemIdleTime: Number
          *  }
          */
-        registerActivityDetection: function(period, activityDetection) {
+        registerActivityDetection: function (period, activityDetection) {
             if (typeof activityDetection === 'function') {
                 local.activityDetection = activityDetection;
 
