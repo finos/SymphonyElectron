@@ -22,9 +22,9 @@
 									<key>GID</key>
 									<integer>80</integer>
 									<key>PATH</key>
-									<string>/Users/vishwas/Projects/symphony/SymphonyElectron/dist/mac/Symphony.app</string>
+									<string>../../dist/mac/Symphony.app</string>
 									<key>PATH_TYPE</key>
-									<integer>0</integer>
+									<integer>3</integer>
 									<key>PERMISSIONS</key>
 									<integer>493</integer>
 									<key>TYPE</key>
@@ -490,18 +490,18 @@
 			<key>BACKGROUND</key>
 			<dict>
 				<key>ALIGNMENT</key>
-				<integer>4</integer>
+				<integer>0</integer>
 				<key>BACKGROUND_PATH</key>
 				<dict>
 					<key>PATH</key>
-					<string>/Users/vishwas/Desktop/background.jpg</string>
+					<string>background.jpg</string>
 					<key>PATH_TYPE</key>
-					<integer>0</integer>
+					<integer>1</integer>
 				</dict>
 				<key>CUSTOM</key>
-				<integer>0</integer>
-				<key>SCALING</key>
 				<integer>1</integer>
+				<key>SCALING</key>
+				<integer>2</integer>
 			</dict>
 			<key>INSTALLATION TYPE</key>
 			<dict>
