@@ -73,6 +73,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         show: true,
         minWidth: MIN_WIDTH,
         minHeight: MIN_HEIGHT,
+        titleBarStyle: 'hidden',
         webPreferences: {
             sandbox: true,
             nodeIntegration: false,
