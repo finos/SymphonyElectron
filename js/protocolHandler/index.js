@@ -1,5 +1,8 @@
 'use strict';
 
+const log = require('../log.js');
+const logLevels = require('../enums/logLevels.js');
+
 let protocolWindow;
 let protocolUrl;
 
@@ -8,7 +11,8 @@ let protocolUrl;
  * @param {String} uri - the uri opened in the format 'symphony://...'
  */
 function processProtocolAction(uri) {
-    if (protocolWindow && uri && uri.startsWith("symphony://")) {
+    log.send(logLevels.INFO, 'protocol action, uri=' + uri);
+    if (protocolWindow && uri && uri.startsWith('symphony://')) {
         protocolWindow.send('protocol-action', uri);
     }
 }
