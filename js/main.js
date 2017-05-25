@@ -7,7 +7,7 @@ const squirrelStartup = require('electron-squirrel-startup');
 const AutoLaunch = require('auto-launch');
 const urlParser = require('url');
 const { getConfigField } = require('./config.js');
-const { isDevEnv} = require('./utils/misc.js');
+const { isMac, isDevEnv } = require('./utils/misc.js');
 const protocolHandler = require('./protocolHandler');
 
 // used to check if a url was opened when the app was already open
@@ -46,7 +46,7 @@ if (shouldQuit) {
 
 var symphonyAutoLauncher = new AutoLaunch({
     name: 'Symphony',
-    path: process.execPath,
+    path: isMac ? '/Applications/' + app.getName() + '.app' : process.execPath,
 });
 
 /**
