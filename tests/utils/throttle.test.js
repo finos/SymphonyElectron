@@ -55,6 +55,35 @@ describe('throttle tests', function() {
         expect(callback.mock.calls.length).toBe(2);
     });
 
+    describe('expect to throw exception', function() {
+        it('when calling throttle with time equal to zero', function(done) {
+            try {
+                throttle(0, function() {});
+            } catch(error) {
+                expect(error.message).toBeDefined();
+                done();
+            }
+        });
+
+        it('when calling throttle with time less than zero', function(done) {
+            try {
+                throttle(-1, function() {});
+            } catch(error) {
+                expect(error.message).toBeDefined();
+                done();
+            }
+        });
+
+        it('when calling throttle without a function callback', function(done) {
+            try {
+                throttle(1, 'not a func');
+            } catch(error) {
+                expect(error.message).toBeDefined();
+                done();
+            }
+        });
+    });
+
     afterEach(function() {
         // restore orig
         Date.now = origNow;
