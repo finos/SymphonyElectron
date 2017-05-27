@@ -6,6 +6,12 @@
  * @param  {function} func        function to invoke
  */
 function throttle(throttleTime, func) {
+    if (typeof throttleTime !== 'number' || throttleTime <= 0) {
+        throw Error('throttle: invalid throttleTime arg, must be a number: ' + throttleTime);
+    }
+    if (typeof func !== 'function') {
+        throw Error('throttle: invalid func arg, must be a function: ' + func);
+    }
     let timer, lastInvoke = 0;
     return function() {
         let args = arguments;
