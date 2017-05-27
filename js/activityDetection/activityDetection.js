@@ -84,6 +84,8 @@ function send(data) {
 function setActivityWindow(period, win) {
     maxIdleTime = period;
     activityWindow = win;
+    // Initiate activity detection to monitor user activity status
+    initiateActivityDetection();
 }
 
 module.exports = {

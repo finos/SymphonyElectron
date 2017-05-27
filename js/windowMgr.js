@@ -15,8 +15,6 @@ const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
 const notify = require('./notify/electron-notify.js');
 
-const activityDetection = require('./activityDetection/activityDetection.js');
-
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField } = require('./config.js');
 
@@ -136,8 +134,6 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             notify.reset();
             log.send(logLevels.INFO, 'main window loaded url: ' + url);
 
-            // Initiate activity detection to monitor user activity status
-            activityDetection.initiateActivityDetection();
         }
     });
 
