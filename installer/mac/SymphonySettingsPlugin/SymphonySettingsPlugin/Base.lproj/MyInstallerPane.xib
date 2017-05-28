@@ -19,6 +19,7 @@
                 <outlet property="contentView" destination="TUK-W2-vig" id="gTd-A7-dof"/>
                 <outlet property="minimizeOnCloseCheckBox" destination="XPe-yO-v9Y" id="ewr-3C-eNJ"/>
                 <outlet property="parentSection" destination="-2" id="FB7-UV-e8k"/>
+                <outlet property="podUrlTextBox" destination="uwa-xi-M5X" id="iSo-GD-n5j"/>
             </connections>
         </customObject>
         <customView id="TUK-W2-vig" userLabel="View">
@@ -76,9 +77,6 @@
                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
-                    <connections>
-                        <action selector="capturePodUrl:" target="Qsn-FY-4qK" id="Fr4-tm-ORc"/>
-                    </connections>
                 </textField>
             </subviews>
         </customView>
