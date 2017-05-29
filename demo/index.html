@@ -102,12 +102,11 @@
             notf.addEventListener('close', onclose);
             function onclose() {
                 alert('notification closed');
-            };
-
+            }
             notf.addEventListener('error', onerror);
             function onerror(event) {
                 alert('error=' + event.result);
-            };
+            }
         });
 
         var badgeCount = 0;
@@ -166,31 +165,31 @@
         }
 
         var getSources = document.getElementById('get-sources');
-        getSources.addEventListener('click', function() {
-            ssf.getMediaSources({types: ['window', 'screen']}, function(error, sources) {
-                if (error) throw error
-                  navigator.webkitGetUserMedia({
+        getSources.addEventListener('click', function () {
+            ssf.getMediaSources({types: ['window', 'screen']}, function (error, sources) {
+                if (error) throw error;
+                navigator.webkitGetUserMedia({
                     audio: false,
                     video: {
-                      mandatory: {
-                        chromeMediaSource: 'desktop',
-                        chromeMediaSourceId: sources[0].id,
-                        minWidth: 1280,
-                        maxWidth: 1280,
-                        minHeight: 720,
-                        maxHeight: 720
-                      }
+                        mandatory: {
+                            chromeMediaSource: 'desktop',
+                            chromeMediaSourceId: sources[0].id,
+                            minWidth: 1280,
+                            maxWidth: 1280,
+                            minHeight: 720,
+                            maxHeight: 720
+                        }
                     }
-                  }, handleStream, handleError)
+                }, handleStream, handleError)
             });
         });
 
-        function handleStream (stream) {
-          document.querySelector('video').src = URL.createObjectURL(stream)
+        function handleStream(stream) {
+            document.querySelector('video').src = URL.createObjectURL(stream)
         }
 
-        function handleError (e) {
-          console.log(e)
+        function handleError(e) {
+            console.log(e)
         }
 
         var getSources = document.getElementById('get-version');
