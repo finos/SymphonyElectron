@@ -14,13 +14,12 @@
     return [[NSBundle bundleForClass:[self class]] localizedStringForKey:@"PaneTitle" value:nil table:nil];
 }
 
-- (IBAction)capturePodUrl:(NSTextField *)sender {
+- (void)willExitPane:(InstallerSectionDirection)dir {
     
     // Set the default protocol to https
     NSString *protocol = @"https://";
     
-    // Capture the pod url entered by the user
-    NSString *podUrl = sender.stringValue;
+    NSString *podUrl = [_podUrlTextBox stringValue];
     
     // If the pod url is empty, by default, set it to my.symphony.com
     if ([podUrl length] == 0) {
