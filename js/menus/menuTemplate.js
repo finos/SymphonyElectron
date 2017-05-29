@@ -4,6 +4,7 @@ const electron = require('electron');
 const { getConfigField, updateConfigField } = require('../config.js');
 const AutoLaunch = require('auto-launch');
 const isMac = require('../utils/misc.js').isMac;
+const childProcess = require('child_process');
 
 var minimizeOnClose = false;
 var launchOnStartup = false;
@@ -14,6 +15,7 @@ var symphonyAutoLauncher = new AutoLaunch({
     name: 'Symphony',
     path: process.execPath,
 });
+let launchAgentPath = '~/Library/LaunchAgents/com.symphony.symphony-desktop.agent.plist';
 
 const template = [
     {
@@ -184,17 +186,35 @@ function getTemplate(app) {
             checked: launchOnStartup,
             click: function (item) {
                 if (item.checked){
-                    symphonyAutoLauncher.enable()
-                    .catch(function (err) {
-                        let title = 'Error setting AutoLaunch configuration';
-                        electron.dialog.showErrorBox(title, title + ': ' + err);
-                    });
+                    if (isMac){
+                        childProcess.exec(`launchctl load ${launchAgentPath}`, (err) => {
+                            if (err){
+                                let title = 'Error setting AutoLaunch configuration';
+                                electron.dialog.showErrorBox(title, 'Please try reinstalling the application');
+                            }
+                        });
+                    } else {
+                        symphonyAutoLauncher.enable()
+                            .catch(function (err) {
+                                let title = 'Error setting AutoLaunch configuration';
+                                electron.dialog.showErrorBox(title, title + ': ' + err);
+                            });
+                    }
                 } else {
-                    symphonyAutoLauncher.disable()
-                    .catch(function (err) {
-                        let title = 'Error setting AutoLaunch configuration';
-                        electron.dialog.showErrorBox(title, title + ': ' + err);
-                    });
+                    if (isMac){
+                        childProcess.exec(`launchctl unload ${launchAgentPath}`, (err) => {
+                            if (err){
+                                let title = 'Error disabling AutoLaunch configuration';
+                                electron.dialog.showErrorBox(title, 'Please try reinstalling the application');
+                            }
+                        });
+                    } else {
+                        symphonyAutoLauncher.disable()
+                            .catch(function (err) {
+                                let title = 'Error setting AutoLaunch configuration';
+                                electron.dialog.showErrorBox(title, title + ': ' + err);
+                            });
+                    }
                 }
                 launchOnStartup = item.checked;
                 updateConfigField('launchOnStartup', launchOnStartup);

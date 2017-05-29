@@ -46,7 +46,7 @@ if (shouldQuit) {
 
 var symphonyAutoLauncher = new AutoLaunch({
     name: 'Symphony',
-    path: isMac ? '/Applications/' + app.getName() + '.app' : process.execPath,
+    path: process.execPath,
 });
 
 /**
@@ -93,7 +93,7 @@ function setupThenOpenMainWindow() {
     process.argv.some((val) => {
 
         let flag = '--install';
-        if (val === flag) {
+        if (val === flag && !isMac) {
             installMode = true;
             getConfigField('launchOnStartup')
             .then(setStartup)
