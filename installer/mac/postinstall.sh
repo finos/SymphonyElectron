@@ -29,12 +29,6 @@ cat > ~/Library/LaunchAgents/com.symphony.symphony-desktop.agent.plist << EOT
     <array>
         <string>$installPath/Symphony.app/Contents/MacOS/Symphony</string>
     </array>
-    <key>WatchPaths</key>
-	<array>
-	  <string>/etc/resolv.conf</string>
-	  <string>/Library/Preferences/SystemConfiguration/NetworkInterfaces.plist</string>
-	  <string>/Library/Preferences/SystemConfiguration/com.apple.airport.preferences.plist</string>
-	</array>
     <key>RunAtLoad</key>
     <true/>
 </dict>
