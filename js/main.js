@@ -10,6 +10,8 @@ const { getConfigField } = require('./config.js');
 const { isDevEnv} = require('./utils/misc.js');
 const protocolHandler = require('./protocolHandler');
 
+require('electron-dl')();
+
 // used to check if a url was opened when the app was already open
 let isAppAlreadyOpen = false;
 

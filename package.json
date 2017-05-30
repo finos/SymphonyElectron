@@ -92,7 +92,10 @@
     "electron-rebuild": "^1.5.7",
     "electron-squirrel-startup": "^1.0.0",
     "keymirror": "0.1.1",
-    "winreg": "^1.2.3"
+    "winreg": "^1.2.3",
+    "electron-dl": "^1.9.0",
+    "filesize": "^3.5.10",
+    "underscore": "^1.8.3"
   },
   "optionalDependencies": {
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.1"

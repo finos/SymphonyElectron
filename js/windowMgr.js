@@ -6,6 +6,7 @@ const BrowserWindow = electron.BrowserWindow;
 const path = require('path');
 const nodeURL = require('url');
 const querystring = require('querystring');
+const filesize = require('filesize');
 
 const { getTemplate, getMinimizeOnClose } = require('./menus/menuTemplate.js');
 const loadErrors = require('./dialogs/showLoadError.js');
@@ -173,6 +174,28 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     }
 
     mainWindow.on('closed', destroyAllWindows);
+
+    // Manage File Downloads
+    mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
+        // When download is in progress, send necessary data to indicate the same
+        mainWindow.send('downloadProgress');
+
+        // Send file path when download is complete
+        item.once('done', (event, state) => {
+            if (state === 'completed') {
+                let data = {
+                    _id: getGuid(),
+                    filePath: item.getSavePath(),
+                    total: filesize(item.getTotalBytes()),
+                    fileName: item.getFilename(),
+                    mimeType: item.getMimeType()
+                };
+                mainWindow.send('download-completed', data);
+            } else {
+                console.log(`Download failed: ${state}`);
+            }
+        });
+    });
 
     // bug in electron is preventing this from working in sandboxed evt...
     // https://github.com/electron/electron/issues/8841
