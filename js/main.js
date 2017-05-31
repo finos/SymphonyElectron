@@ -39,8 +39,8 @@ const shouldQuit = app.makeSingleInstance((argv) => {
     processProtocolAction(argv);
 });
 
-// quit if another instance is already running
-if (shouldQuit) {
+// quit if another instance is already running, ignore for dev env
+if (!isDevEnv && shouldQuit) {
     app.quit();
 }
 
