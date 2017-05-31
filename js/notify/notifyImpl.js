@@ -28,7 +28,7 @@ class Notify {
      * }
      */
     constructor(title, options) {
-        log.send(logLevels.INFO, 'creating notf, text=' + options.body);
+        log.send(logLevels.INFO, 'creating notification, text=' + options.body);
 
         let emitter = new EventEmitter();
         this.emitter = Queue(emitter);
@@ -47,13 +47,13 @@ class Notify {
             onErrorFunc: onError.bind(this)
         });
 
-        log.send(logLevels.INFO, 'created notf, id=' + this._id + ', text=' + options.body);
+        log.send(logLevels.INFO, 'created notification, id=' + this._id + ', text=' + options.body);
 
         this._data = options.data || null;
 
         function onShow(arg) {
             if (arg.id === this._id) {
-                log.send(logLevels.INFO, 'showing notf, id=' + this._id);
+                log.send(logLevels.INFO, 'showing notification, id=' + this._id);
                 this.emitter.queue('show', {
                     target: this
                 });
@@ -63,7 +63,7 @@ class Notify {
 
         function onClick(arg) {
             if (arg.id === this._id) {
-                log.send(logLevels.INFO, 'clicking notf, id=' + this._id);
+                log.send(logLevels.INFO, 'clicking notification, id=' + this._id);
                 this.emitter.queue('click', {
                     target: this
                 });
@@ -72,7 +72,7 @@ class Notify {
 
         function onClose(arg) {
             if (arg.id === this._id || arg.event === 'close-all') {
-                log.send(logLevels.INFO, 'closing notf, id=' + this._id);
+                log.send(logLevels.INFO, 'closing notification, id=' + this._id);
                 this.emitter.queue('close', {
                     target: this
                 });
@@ -84,7 +84,7 @@ class Notify {
             if (arg.id === this._id) {
                 // don't raise error event if handler doesn't exist, node
                 // will throw an exception
-                log.send(logLevels.ERROR, 'error for notf, id=' + this._id +
+                log.send(logLevels.ERROR, 'error for notification, id=' + this._id +
                     ' error=' + (arg && arg.error));
                 if (this.emitter.eventNames().includes('error')) {
                     this.emitter.queue('error', arg.error || 'notification error');
