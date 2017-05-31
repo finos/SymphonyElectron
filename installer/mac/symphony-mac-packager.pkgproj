@@ -570,14 +570,6 @@
 				</dict>
 				<dict>
 					<key>ICPRESENTATION_CHAPTER_VIEW_CONTROLLER_CLASS</key>
-					<string>ICPresentationViewDestinationSelectController</string>
-					<key>INSTALLER_PLUGIN</key>
-					<string>TargetSelect</string>
-					<key>LIST_TITLE_KEY</key>
-					<string>InstallerSectionTitle</string>
-				</dict>
-				<dict>
-					<key>ICPRESENTATION_CHAPTER_VIEW_CONTROLLER_CLASS</key>
 					<string>ICPresentationViewInstallerPluginController</string>
 					<key>ICPRESENTATION_CHAPTER_VIEW_CONTROLLER_INSTALLERPLUGIN_PATH</key>
 					<dict>
@@ -586,6 +578,14 @@
 						<key>PATH_TYPE</key>
 						<integer>1</integer>
 					</dict>
+				</dict>
+				<dict>
+					<key>ICPRESENTATION_CHAPTER_VIEW_CONTROLLER_CLASS</key>
+					<string>ICPresentationViewDestinationSelectController</string>
+					<key>INSTALLER_PLUGIN</key>
+					<string>TargetSelect</string>
+					<key>LIST_TITLE_KEY</key>
+					<string>InstallerSectionTitle</string>
 				</dict>
 				<dict>
 					<key>ICPRESENTATION_CHAPTER_VIEW_CONTROLLER_CLASS</key>
