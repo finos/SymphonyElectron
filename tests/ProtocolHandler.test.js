@@ -7,6 +7,7 @@ const electron = require('./__mocks__/electron');
 describe('protocol handler', function () {
 
     const url = 'symphony://?userId=100001';
+    const nonProtocolUrl = 'sy://abc=123';
 
     const mainProcess = electron.ipcMain;
     const protocolWindow = electron.ipcRenderer;
@@ -41,6 +42,17 @@ describe('protocol handler', function () {
 
     });
 
+    it('protocol handler open url should be called', function(done) {
+        
+        const spy = jest.spyOn(mainProcess, 'send');
+        mainProcess.send('open-url', nonProtocolUrl);
+
+        expect(spy).toHaveBeenCalled();
+        
+        done();
+
+    });
+
     it('check protocol action should be called', function (done) {
 
         const spy = jest.spyOn(protocolHandler, 'checkProtocolAction');
@@ -48,6 +60,40 @@ describe('protocol handler', function () {
 
         protocolHandler.setProtocolUrl(url);
         expect(setSpy).toHaveBeenCalledWith(url);
+
+        protocolHandler.checkProtocolAction();
+        expect(spy).toHaveBeenCalled();
+
+        expect(protocolHandler.getProtocolUrl()).toBeUndefined();
+
+        done();
+
+    });
+
+    it('check protocol action should be called when we have an incorrect protocol url', function (done) {
+
+        const spy = jest.spyOn(protocolHandler, 'checkProtocolAction');
+        const setSpy = jest.spyOn(protocolHandler, 'setProtocolUrl');
+
+        protocolHandler.setProtocolUrl(nonProtocolUrl);
+        expect(setSpy).toHaveBeenCalledWith(nonProtocolUrl);
+
+        protocolHandler.checkProtocolAction();
+        expect(spy).toHaveBeenCalled();
+
+        expect(protocolHandler.getProtocolUrl()).toBeUndefined();
+
+        done();
+
+    });
+
+    it('check protocol action should be called when the protocol url is undefined', function(done) {
+        
+        const spy = jest.spyOn(protocolHandler, 'checkProtocolAction');
+        const setSpy = jest.spyOn(protocolHandler, 'setProtocolUrl');
+
+        protocolHandler.setProtocolUrl(undefined);
+        expect(setSpy).toHaveBeenCalledWith(undefined);
 
         protocolHandler.checkProtocolAction();
         expect(spy).toHaveBeenCalled();
