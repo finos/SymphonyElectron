@@ -12,7 +12,6 @@
 // https://github.com/electron/electron/issues/2984
 //
 const { ipcRenderer, remote } = require('electron');
-const _ = require('underscore');
 
 const throttle = require('../utils/throttle.js');
 const apiEnums = require('../enums/api.js');
@@ -123,28 +122,6 @@ function createAPI() {
         },
 
         /**
-         * Open file in default app.
-         */
-        openFile: function (id) {
-            let fileIndex = _.findIndex(local.downloadItems, {_id: id});
-            let openResponse = remote.shell.openExternal(`file:///${local.downloadItems[fileIndex].filePath}`);
-            if (!openResponse) {
-                remote.dialog.showErrorBox("File not found", 'The file you are trying to open cannot be found in the specified path');
-            }
-        },
-
-        /**
-         * Show downloaded file in explorer or finder.
-         */
-        showInFinder: function (id) {
-            let showFileIndex = _.findIndex(local.downloadItems, {_id: id});
-            let showResponse = remote.shell.showItemInFolder(local.downloadItems[showFileIndex].filePath);
-            if (!showResponse){
-                remote.dialog.showErrorBox("File not found", 'The file you are trying to access cannot be found in the specified path');
-            }
-        },
-
-        /**
          * Allows JS to register a callback to be invoked when size/positions
          * changes for any pop-out window (i.e., window.open). The main
          * process will emit IPC event 'boundsChange' (see below). Currently
@@ -237,6 +214,36 @@ function createAPI() {
 
     };
 
+    /**
+     * Open file in default app.
+     */
+    function openFile(id) {
+        let fileIndex = local.downloadItems.findIndex((item) => {
+            return item._id === id
+        });
+        if (fileIndex !== -1){
+            let openResponse = remote.shell.openExternal(`file:///${local.downloadItems[fileIndex].savedPath}`);
+            if (!openResponse) {
+                remote.dialog.showErrorBox("File not found", 'The file you are trying to open cannot be found in the specified path');
+            }
+        }
+    }
+
+    /**
+     * Show downloaded file in explorer or finder.
+     */
+    function showInFinder(id) {
+        let showFileIndex = local.downloadItems.findIndex((item) => {
+            return item._id === id
+        });
+        if (showFileIndex !== -1) {
+            let showResponse = remote.shell.showItemInFolder(local.downloadItems[showFileIndex].savedPath);
+            if (!showResponse) {
+                remote.dialog.showErrorBox("File not found", 'The file you are trying to access cannot be found in the specified path');
+            }
+        }
+    }
+
     // add support for both ssf and SYM_API name-space.
     window.SYM_API = window.ssf;
     Object.freeze(window.ssf);
@@ -273,116 +280,142 @@ function createAPI() {
     // listen for file download complete event
     local.ipcRenderer.on('download-completed', (event, arg) => {
 
-        local.downloadItems.push(arg);
-        let downloadItemKey = arg._id;
+        if (arg && arg._id) {
 
-        let ul = document.getElementById('download-main');
+            local.downloadItems.push(arg);
+            let downloadItemKey = arg._id;
 
-        let li = document.createElement('li');
-        li.id = downloadItemKey;
-        li.classList.add('download-element');
-        ul.insertBefore(li, ul.childNodes[0]);
+            let ul = document.getElementById('download-main');
+            if (ul) {
 
-        let itemDiv = document.createElement('div');
-        itemDiv.classList.add('download-item');
-        itemDiv.id = 'dl-item';
-        li.appendChild(itemDiv);
-        let openMainFile = document.getElementById('dl-item');
-        openMainFile.addEventListener('click', () => {
-            let id = openMainFile.parentNode.id;
-            ssf.openFile(id);
-        });
+                let li = document.createElement('li');
+                li.id = downloadItemKey;
+                li.classList.add('download-element');
+                ul.insertBefore(li, ul.childNodes[0]);
 
-        let fileDetails = document.createElement('div');
-        fileDetails.classList.add('file');
-        itemDiv.appendChild(fileDetails);
+                let itemDiv = document.createElement('div');
+                itemDiv.classList.add('download-item');
+                itemDiv.id = 'dl-item';
+                li.appendChild(itemDiv);
+                let openMainFile = document.getElementById('dl-item');
+                openMainFile.addEventListener('click', () => {
+                    let id = openMainFile.parentNode.id;
+                    openFile(id);
+                });
 
-        let downProgress = document.createElement('div');
-        downProgress.id = 'download-progress';
-        downProgress.classList.add('download-complete');
-        downProgress.classList.add('flash');
-        setTimeout(() => {
-            downProgress.classList.remove('flash');
-        }, 4000);
-        fileDetails.appendChild(downProgress);
+                let fileDetails = document.createElement('div');
+                fileDetails.classList.add('file');
+                itemDiv.appendChild(fileDetails);
 
-        let fileIcon = document.createElement('span');
-        fileIcon.classList.add('tempo-icon');
-        fileIcon.classList.add('tempo-icon--download');
-        fileIcon.classList.add('download-complete-color');
-        setTimeout(() => {
-            fileIcon.classList.remove('download-complete-color');
-            fileIcon.classList.remove('tempo-icon--download');
-            fileIcon.classList.add('tempo-icon--document');
-        }, 4000);
-        downProgress.appendChild(fileIcon);
+                let downProgress = document.createElement('div');
+                downProgress.id = 'download-progress';
+                downProgress.classList.add('download-complete');
+                downProgress.classList.add('flash');
+                setTimeout(() => {
+                    downProgress.classList.remove('flash');
+                }, 4000);
+                fileDetails.appendChild(downProgress);
 
-        let fileNameDiv = document.createElement('div');
-        fileNameDiv.classList.add('downloaded-filename');
-        itemDiv.appendChild(fileNameDiv);
+                let fileIcon = document.createElement('span');
+                fileIcon.classList.add('tempo-icon');
+                fileIcon.classList.add('tempo-icon--download');
+                fileIcon.classList.add('download-complete-color');
+                setTimeout(() => {
+                    fileIcon.classList.remove('download-complete-color');
+                    fileIcon.classList.remove('tempo-icon--download');
+                    fileIcon.classList.add('tempo-icon--document');
+                }, 4000);
+                downProgress.appendChild(fileIcon);
 
-        let h2FileName = document.createElement('h2');
-        h2FileName.classList.add('text-cutoff');
-        h2FileName.innerHTML = arg.fileName;
-        fileNameDiv.appendChild(h2FileName);
+                let fileNameDiv = document.createElement('div');
+                fileNameDiv.classList.add('downloaded-filename');
+                itemDiv.appendChild(fileNameDiv);
 
-        let fileProgressTitle = document.createElement('span');
-        fileProgressTitle.id = 'per';
-        fileProgressTitle.innerHTML = arg.total + ' Downloaded';
-        fileNameDiv.appendChild(fileProgressTitle);
+                let h2FileName = document.createElement('h2');
+                h2FileName.classList.add('text-cutoff');
+                h2FileName.innerHTML = arg.fileName;
+                fileNameDiv.appendChild(h2FileName);
 
-        let caret = document.createElement('div');
-        caret.id = 'menu';
-        caret.classList.add('caret');
-        caret.classList.add('tempo-icon');
-        caret.classList.add('tempo-icon--dropdown');
-        li.appendChild(caret);
+                let fileProgressTitle = document.createElement('span');
+                fileProgressTitle.id = 'per';
+                fileProgressTitle.innerHTML = arg.total + ' Downloaded';
+                fileNameDiv.appendChild(fileProgressTitle);
 
-        let actionMenu = document.createElement('div');
-        actionMenu.id = 'download-action-menu';
-        actionMenu.classList.add('download-action-menu');
-        caret.appendChild(actionMenu);
+                let caret = document.createElement('div');
+                caret.id = 'menu';
+                caret.classList.add('caret');
+                caret.classList.add('tempo-icon');
+                caret.classList.add('tempo-icon--dropdown');
+                li.appendChild(caret);
 
-        let caretUL = document.createElement('ul');
-        caretUL.id = downloadItemKey;
-        actionMenu.appendChild(caretUL);
+                let actionMenu = document.createElement('div');
+                actionMenu.id = 'download-action-menu';
+                actionMenu.classList.add('download-action-menu');
+                caret.appendChild(actionMenu);
 
-        let caretLiOpen = document.createElement('li');
-        caretLiOpen.id = 'download-open';
-        caretLiOpen.innerHTML = 'Open';
-        caretUL.appendChild(caretLiOpen);
-        let openFile = document.getElementById('download-open');
-        openFile.addEventListener('click', function () {
-            let id = openFile.parentNode.id;
-            ssf.openFile(id);
-        });
+                let caretUL = document.createElement('ul');
+                caretUL.id = downloadItemKey;
+                actionMenu.appendChild(caretUL);
 
-        let caretLiShow = document.createElement('li');
-        caretLiShow.id = 'download-show-in-folder';
-        caretLiShow.innerHTML = 'Show in Folder';
-        caretUL.appendChild(caretLiShow);
-        let showInFinder = document.getElementById('download-show-in-folder');
-        showInFinder.addEventListener('click', function () {
-            let id = showInFinder.parentNode.id;
-            ssf.showInFinder(id);
-        });
+                let caretLiOpen = document.createElement('li');
+                caretLiOpen.id = 'download-open';
+                caretLiOpen.innerHTML = 'Open';
+                caretUL.appendChild(caretLiOpen);
+                let openFileDocument = document.getElementById('download-open');
+                openFileDocument.addEventListener('click', () => {
+                    let id = openFileDocument.parentNode.id;
+                    openFile(id);
+                });
 
-    });
+                let caretLiShow = document.createElement('li');
+                caretLiShow.id = 'download-show-in-folder';
+                caretLiShow.innerHTML = 'Show in Folder';
+                caretUL.appendChild(caretLiShow);
+                let showInFinderDocument = document.getElementById('download-show-in-folder');
+                showInFinderDocument.addEventListener('click', () => {
+                    let id = showInFinderDocument.parentNode.id;
+                    showInFinder(id);
+                });
+            }
+        }
 
-    // Close Download Bar
-    document.addEventListener("DOMContentLoaded", function(event) {
-        let closeDownloadManager = document.getElementById('close-download-bar');
-        closeDownloadManager.addEventListener('click', () => {
-            local.downloadItems = [];
-            document.getElementById('download-manager-footer').classList.add('hidden');
-            document.getElementById('download-main').innerHTML = '';
-        });
     });
 
     // listen for file download progress event
     local.ipcRenderer.on('downloadProgress', (event, arg) => {
         let mainDownloadDiv = document.getElementById('download-manager-footer');
-        mainDownloadDiv.classList.remove('hidden');
+        if (mainDownloadDiv) {
+
+            mainDownloadDiv.classList.remove('hidden');
+
+            let ulFind = document.getElementById('download-main');
+
+            if (!ulFind){
+                let uList = document.createElement('ul');
+                uList.id = 'download-main';
+                mainDownloadDiv.appendChild(uList);
+            }
+
+            let closeSpanFind = document.getElementById('close-download-bar');
+
+            if (!closeSpanFind){
+                let closeSpan = document.createElement('span');
+                closeSpan.id = 'close-download-bar';
+                closeSpan.classList.add('close-download-bar');
+                closeSpan.classList.add('tempo-icon');
+                closeSpan.classList.add('tempo-icon--close');
+                mainDownloadDiv.appendChild(closeSpan);
+            }
+
+            let closeDownloadManager = document.getElementById('close-download-bar');
+            if (closeDownloadManager) {
+                closeDownloadManager.addEventListener('click', () => {
+                    local.downloadItems = [];
+                    document.getElementById('download-manager-footer').classList.add('hidden');
+                    document.getElementById('download-main').innerHTML = '';
+                });
+            }
+        }
     });
 
     /**

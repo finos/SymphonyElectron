@@ -178,21 +178,18 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     // Manage File Downloads
     mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
         // When download is in progress, send necessary data to indicate the same
-        mainWindow.send('downloadProgress');
+        webContents.send('downloadProgress');
 
         // Send file path when download is complete
         item.once('done', (event, state) => {
             if (state === 'completed') {
                 let data = {
                     _id: getGuid(),
-                    filePath: item.getSavePath(),
-                    total: filesize(item.getTotalBytes()),
-                    fileName: item.getFilename(),
-                    mimeType: item.getMimeType()
+                    savedPath: item.getSavePath() ? item.getSavePath() : '', // if getSavePath is undefined setting it to '' and its as been handled while opening
+                    total: filesize(item.getTotalBytes() ? item.getTotalBytes() : 0),
+                    fileName: item.getFilename() ? item.getFilename() : 'No name'
                 };
-                mainWindow.send('download-completed', data);
-            } else {
-                console.log(`Download failed: ${state}`);
+                webContents.send('download-completed', data);
             }
         });
     });
