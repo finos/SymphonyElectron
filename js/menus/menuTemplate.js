@@ -187,6 +187,8 @@ function getTemplate(app) {
             click: function (item) {
                 if (item.checked){
                     if (isMac){
+                        // TODO: Need to change this implementation to AutoLaunch once they fix this issue ->
+                        // https://github.com/Teamwork/node-auto-launch/issues/28
                         childProcess.exec(`launchctl load ${launchAgentPath}`, (err) => {
                             if (err){
                                 let title = 'Error setting AutoLaunch configuration';
@@ -202,6 +204,8 @@ function getTemplate(app) {
                     }
                 } else {
                     if (isMac){
+                        // TODO: Need to change this implementation to AutoLaunch once they fix this issue ->
+                        // https://github.com/Teamwork/node-auto-launch/issues/28
                         childProcess.exec(`launchctl unload ${launchAgentPath}`, (err) => {
                             if (err){
                                 let title = 'Error disabling AutoLaunch configuration';
