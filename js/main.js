@@ -7,7 +7,7 @@ const squirrelStartup = require('electron-squirrel-startup');
 const AutoLaunch = require('auto-launch');
 const urlParser = require('url');
 const { getConfigField } = require('./config.js');
-const { isDevEnv} = require('./utils/misc.js');
+const { isMac, isDevEnv } = require('./utils/misc.js');
 const protocolHandler = require('./protocolHandler');
 
 // used to check if a url was opened when the app was already open
@@ -93,7 +93,7 @@ function setupThenOpenMainWindow() {
     process.argv.some((val) => {
 
         let flag = '--install';
-        if (val === flag) {
+        if (val === flag && !isMac) {
             installMode = true;
             getConfigField('launchOnStartup')
             .then(setStartup)
