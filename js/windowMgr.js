@@ -185,11 +185,11 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             if (state === 'completed') {
                 let data = {
                     _id: getGuid(),
-                    savedPath: item.getSavePath() ? item.getSavePath() : '', // if getSavePath is undefined setting it to '' and its as been handled while opening
+                    savedPath: item.getSavePath() ? item.getSavePath() : '',
                     total: filesize(item.getTotalBytes() ? item.getTotalBytes() : 0),
                     fileName: item.getFilename() ? item.getFilename() : 'No name'
                 };
-                webContents.send('download-completed', data);
+                webContents.send('downloadCompleted', data);
             }
         });
     });
