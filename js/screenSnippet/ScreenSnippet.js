@@ -8,6 +8,8 @@ const os = require('os');
 const path = require('path');
 
 const { isMac, isDevEnv } = require('../utils/misc.js');
+const log = require('../log.js');
+const logLevels = require('../enums/logLevels.js');
 
 // static ref to child process, only allow one screen snippet at time, so
 // hold ref to prev, so can kill before starting next snippet.
@@ -34,6 +36,8 @@ class ScreenSnippet {
         return new Promise((resolve, reject) => {
             let captureUtil, captureUtilArgs;
 
+            log.send(logLevels.INFO, 'starting screen capture');
+
             let tmpFilename = 'symphonyImage-' + Date.now() + '.jpg';
             let tmpDir = os.tmpdir();
 
@@ -59,6 +63,8 @@ class ScreenSnippet {
 
                 captureUtilArgs = [ outputFileName ];
             }
+
+            log.send(logLevels.INFO, 'starting screen capture util: ' + captureUtil + ' with args=' + captureUtilArgs);
 
             // only allow one screen capture at a time.
             if (child) {

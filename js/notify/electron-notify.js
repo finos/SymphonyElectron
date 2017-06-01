@@ -158,7 +158,7 @@ function getTemplatePath() {
     try {
         fs.statSync(templatePath).isFile();
     } catch (err) {
-        log('electron-notify: Could not find template ("' + templatePath + '").');
+        log.send('electron-notify: Could not find template ("' + templatePath + '").');
     }
     config.templatePath = 'file://' + templatePath;
     return config.templatePath;
@@ -166,7 +166,7 @@ function getTemplatePath() {
 
 function calcDimensions() {
     const vertSpaceBetweenNotf = 8;
-    
+
     // Calc totalHeight & totalWidth
     config.totalHeight = config.height + vertSpaceBetweenNotf;
     config.totalWidth = config.width
@@ -254,7 +254,7 @@ function notify(notification) {
         })
         return notf.id
     }
-    log('electron-notify: ERROR notify() only accepts a single object with notification parameters.')
+    log.send('electron-notify: ERROR notify() only accepts a single object with notification parameters.')
     return null;
 }
 

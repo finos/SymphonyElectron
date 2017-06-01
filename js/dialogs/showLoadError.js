@@ -2,6 +2,9 @@
 
 const electron = require('electron');
 
+const log = require('../log.js');
+const logLevels = require('../enums/logLevels.js');
+
 /**
  * Show dialog pinned to given window when loading error occurs
  * @param  {BrowserWindow} win       Window to host dialog
@@ -33,6 +36,9 @@ function showLoadFailure(win, url, errorDesc, errorCode, retryCallback) {
         title: 'Loading Error',
         message: msg
     }, response);
+
+    log.send(logLevels.WARNING, 'Load failure msg: ' + errorDesc +
+    ' errorCode: ' + errorCode + ' for url:' + url);
 
     // async handle of user input
     function response(buttonId) {
