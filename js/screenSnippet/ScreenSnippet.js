@@ -36,7 +36,7 @@ class ScreenSnippet {
         return new Promise((resolve, reject) => {
             let captureUtil, captureUtilArgs;
 
-            log.send(logLevels.INFO, 'starting screen capture');
+            log.send(logLevels.INFO, 'ScreenSnippet: starting screen capture');
 
             let tmpFilename = 'symphonyImage-' + Date.now() + '.jpg';
             let tmpDir = os.tmpdir();
@@ -64,7 +64,7 @@ class ScreenSnippet {
                 captureUtilArgs = [ outputFileName ];
             }
 
-            log.send(logLevels.INFO, 'starting screen capture util: ' + captureUtil + ' with args=' + captureUtilArgs);
+            log.send(logLevels.INFO, 'ScreenSnippet: starting screen capture util: ' + captureUtil + ' with args=' + captureUtilArgs);
 
             // only allow one screen capture at a time.
             if (child) {
@@ -74,6 +74,7 @@ class ScreenSnippet {
             child = childProcess.execFile(captureUtil, captureUtilArgs, (error) => {
                 // will be called when child process exits.
                 if (error && error.killed) {
+                    log.send(logLevels.ERROR, 'ScreenSnippet: ERROR executing command: '+ error);
                     // processs was killed, just resolve with no data.
                     resolve();
                 } else {
@@ -93,9 +94,11 @@ class ScreenSnippet {
                     // no such file exists, user likely aborted
                     // creating snippet. also include any error when
                     // creating child process.
+                    log.send(logLevels.ERROR, 'ScreenSnippet: ENOENT file does not exist: '+ childProcessErr);
                     returnErr = this._createWarn('file does not exist ' +
                         childProcessErr);
                 } else {
+                    log.send(logLevels.ERROR, 'ScreenSnippet: ERROR: ' + readErr + ',' + childProcessErr);
                     returnErr = this._createError(readErr + ',' +
                         childProcessErr);
                 }
@@ -105,6 +108,7 @@ class ScreenSnippet {
             }
 
             if (!data) {
+                log.send(logLevels.ERROR, 'ScreenSnippet: no file data provided');
                 reject(this._createWarn('no file data provided'));
                 return;
             }
@@ -117,6 +121,7 @@ class ScreenSnippet {
                     data: output
                 });
             } catch (error) {
+                log.send(logLevels.ERROR, 'ScreenSnippet: Buffer Error: '+ error);
                 reject(this._createError(error));
             }
             finally {
@@ -124,13 +129,10 @@ class ScreenSnippet {
                 fs.unlink(outputFileName, function(removeErr) {
                     // note: node complains if calling async
                     // func without callback.
-                    /* eslint-disable no-console */
                     if (removeErr) {
-                        console.error(
-                            'error removing temp snippet file: ' +
+                        log.send(logLevels.ERROR, 'ScreenSnippet: error removing temp snippet file: ' +
                             outputFileName + ', err:' + removeErr);
                     }
-                    /* eslint-enable no-console */
                 });
             }
         });

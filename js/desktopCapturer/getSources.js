@@ -14,6 +14,9 @@
 
 var { ipcRenderer } = require('electron');
 
+const log = require('../log.js');
+const logLevels = require('../enums/logLevels.js');
+
 var nextId = 0;
 var includes = [].includes;
 
@@ -29,6 +32,9 @@ function isValid(options) {
 function getSources(options, callback) {
     var captureScreen, captureWindow, id;
     if (!isValid(options)) {
+        log.send(logLevels.ERROR, 'getSources: Error getSource() ' +
+            'can not be empty and has to include window or screen,' +
+            ' Invalid options: '+ options);
         return callback(new Error('Invalid options'));
     }
     captureWindow = includes.call(options.types, 'window');

@@ -8,6 +8,8 @@
 //
 const electron = require('electron');
 const ipc = electron.ipcRenderer;
+const log = require('../log.js');
+const logLevels = require('../enums/logLevels.js');
 
 function setStyle(config) {
     // Style it
@@ -53,7 +55,8 @@ function setContents(event, notificationObj) {
                 audio.play()
             }
         } catch (e) {
-            log.send('electron-notify: ERROR could not find sound file: ' + notificationObj.sound.replace('file://', ''), e, e.stack);
+            log.send(logLevels.ERROR, 'electron-notify: ERROR could not find sound file: '
+                + notificationObj.sound.replace('file://', ''), e, e.stack);
         }
     }
 
@@ -117,6 +120,7 @@ function setStyleOnDomElement(styleObj, domElement) {
             /* eslint-enable */
         });
     } catch (e) {
+        log.send(logLevels.ERROR, 'electron-notify-preload: Could not set style: ' + styleObj + ' on domElement: ' + domElement);
         throw new Error('electron-notify: Could not set style on domElement', styleObj, domElement)
     }
 }
@@ -140,9 +144,3 @@ function reset() {
 ipc.on('electron-notify-set-contents', setContents)
 ipc.on('electron-notify-load-config', loadConfig)
 ipc.on('electron-notify-reset', reset)
-
-function log() {
-    /* eslint-disable no-console */
-    console.log.apply(console, arguments)
-    /* eslint-enable no-console */
-}
