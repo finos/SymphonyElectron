@@ -135,6 +135,40 @@ describe('getConfigField tests', function() {
                 expect(url).toBe('something');
             });
         });
+
+        it('should fail when global config path is invalid', function() {
+
+            var globalConfig = {
+                url: 'something-else'
+            };
+            createTempGlobalConfig(globalConfig);
+
+            let correctConfigDir = globalConfigDir;
+            globalConfigDir = '//';
+
+            return getConfigField('url').catch(function(err) {
+                globalConfigDir = correctConfigDir;
+                expect(err).toBeTruthy();
+            });
+
+        });
+
+        it('should fail when user config path is invalid', function() {
+
+            var userConfig = {
+                url: 'something'
+            };
+            createTempUserConfig(userConfig);
+
+            let correctConfigDir = userConfigDir;
+            userConfigDir = '//';
+
+            return getConfigField('url').catch(function(err) {
+                userConfigDir = correctConfigDir;
+                expect(err).toBeTruthy();
+            });
+
+        });
     });
 
     describe('updateConfigField tests', function() {
@@ -169,5 +203,31 @@ describe('getConfigField tests', function() {
                     });
                 });
         });
+
+        it('should fail to update if invalid field name', function() {
+
+            var userConfig = {
+                url: 'something'
+            }
+
+            createTempUserConfig(userConfig);
+
+            return updateConfigField('', 'hello word').catch(function (err) {
+                expect(err).toBe('can not save config, invalid input');
+            });
+
+        });
+
+        it('should throw error if path is not defined', function() {
+
+            userConfigDir = null;
+
+            return updateConfigField('url2', 'hello world')
+                .catch(function (err) {
+                    expect(err).toThrow(err);
+                });
+
+        });
+
     });
 });
