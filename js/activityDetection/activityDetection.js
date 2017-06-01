@@ -2,6 +2,8 @@
 
 const systemIdleTime = require('@paulcbetts/system-idle-time');
 const throttle = require('../utils/throttle');
+const log = require('../log.js');
+const logLevels = require('../enums/logLevels.js');
 
 let maxIdleTime;
 let activityWindow;
@@ -75,6 +77,7 @@ function sendActivity() {
  */
 function send(data) {
     if (activityWindow && data) {
+        log.send(logLevels.INFO, 'activity occurred at time= ' + new Date().toUTCString());
         activityWindow.send('activity', {
             systemIdleTime: data.systemIdleTime
         });

@@ -53,7 +53,7 @@ function setContents(event, notificationObj) {
                 audio.play()
             }
         } catch (e) {
-            log('electron-notify: ERROR could not find sound file: ' + notificationObj.sound.replace('file://', ''), e, e.stack);
+            log.send('electron-notify: ERROR could not find sound file: ' + notificationObj.sound.replace('file://', ''), e, e.stack);
         }
     }
 

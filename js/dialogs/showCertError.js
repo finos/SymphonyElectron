@@ -2,6 +2,9 @@
 
 const electron = require('electron');
 
+const log = require('../log.js');
+const logLevels = require('../enums/logLevels.js');
+
 let ignoreAllCertErrors = false;
 
 /**
@@ -20,6 +23,8 @@ electron.app.on('certificate-error', function(event, webContents, url, error,
         callback(true);
         return;
     }
+
+    log.send(logLevels.WARNING, 'Certificate error: ' + error + ' for url: ' + url);
 
     const browserWin = electron.BrowserWindow.fromWebContents(webContents);
     const buttonId = electron.dialog.showMessageBox(browserWin, {
