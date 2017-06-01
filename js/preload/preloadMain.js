@@ -213,7 +213,6 @@ function createAPI() {
          * for interface: see documentation in desktopCapturer/getSources.js
          */
         getMediaSources: getMediaSources
-
     };
 
     // add support for both ssf and SYM_API name-space.
@@ -223,8 +222,8 @@ function createAPI() {
 
     // listen for log message from main process
     local.ipcRenderer.on('log', (event, arg) => {
-        if (local.logger && arg && arg.level && arg.details) {
-            local.logger(arg.level, arg.details);
+        if (arg && local.logger) {
+            local.logger(arg.msgs || [], arg.logLevel, arg.showInConsole);
         }
     });
 
@@ -302,7 +301,6 @@ function createAPI() {
      * @type {String} arg - the protocol url
      */
     local.ipcRenderer.on('protocol-action', (event, arg) => {
-
         if (local.processProtocolAction && arg) {
             local.processProtocolAction(arg);
         }

@@ -67,6 +67,8 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     let url = initialUrl;
     let key = getGuid();
 
+    log.send(logLevels.INFO, 'creating main window url: ' + url);
+
     let newWinOpts = {
         title: 'Symphony',
         show: true,
@@ -133,7 +135,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         } else {
             // removes all existing notifications when main window reloads
             notify.reset();
-            log.send(logLevels.INFO, 'main window loaded url: ' + url);
+            log.send(logLevels.INFO, 'loaded main window url: ' + url);
 
         }
     });
@@ -220,6 +222,8 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                 return;
             }
 
+            log.send(logLevels.INFO, 'creating pop-out window url: ' + newWinParsedUrl);
+
             let x = 0;
             let y = 0;
 
@@ -269,6 +273,8 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                 let browserWin = BrowserWindow.fromWebContents(webContents);
 
                 if (browserWin) {
+                    log.send(logLevels.INFO, 'loaded pop-out window url: ' + newWinParsedUrl);
+
                     browserWin.winName = frameName;
 
                     browserWin.once('closed', function () {
