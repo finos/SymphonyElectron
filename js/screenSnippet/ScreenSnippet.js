@@ -74,7 +74,6 @@ class ScreenSnippet {
             child = childProcess.execFile(captureUtil, captureUtilArgs, (error) => {
                 // will be called when child process exits.
                 if (error && error.killed) {
-                    log.send(logLevels.ERROR, 'ScreenSnippet: ERROR executing command: '+ error);
                     // processs was killed, just resolve with no data.
                     resolve();
                 } else {
@@ -94,11 +93,9 @@ class ScreenSnippet {
                     // no such file exists, user likely aborted
                     // creating snippet. also include any error when
                     // creating child process.
-                    log.send(logLevels.ERROR, 'ScreenSnippet: ENOENT file does not exist: '+ childProcessErr);
                     returnErr = this._createWarn('file does not exist ' +
                         childProcessErr);
                 } else {
-                    log.send(logLevels.ERROR, 'ScreenSnippet: ERROR: ' + readErr + ',' + childProcessErr);
                     returnErr = this._createError(readErr + ',' +
                         childProcessErr);
                 }
@@ -108,7 +105,6 @@ class ScreenSnippet {
             }
 
             if (!data) {
-                log.send(logLevels.ERROR, 'ScreenSnippet: no file data provided');
                 reject(this._createWarn('no file data provided'));
                 return;
             }
@@ -121,7 +117,6 @@ class ScreenSnippet {
                     data: output
                 });
             } catch (error) {
-                log.send(logLevels.ERROR, 'ScreenSnippet: Buffer Error: '+ error);
                 reject(this._createError(error));
             }
             finally {

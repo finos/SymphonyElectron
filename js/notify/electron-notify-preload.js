@@ -120,7 +120,6 @@ function setStyleOnDomElement(styleObj, domElement) {
             /* eslint-enable */
         });
     } catch (e) {
-        log.send(logLevels.ERROR, 'electron-notify-preload: Could not set style: ' + styleObj + ' on domElement: ' + domElement);
         throw new Error('electron-notify: Could not set style on domElement', styleObj, domElement)
     }
 }

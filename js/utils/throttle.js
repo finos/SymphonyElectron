@@ -9,11 +9,9 @@ const logLevels = require('../enums/logLevels.js');
  */
 function throttle(throttleTime, func) {
     if (typeof throttleTime !== 'number' || throttleTime <= 0) {
-        log.send(logLevels.ERROR, 'throttle: invalid throttleTime arg, must be a number: ' + throttleTime);
         throw Error('throttle: invalid throttleTime arg, must be a number: ' + throttleTime);
     }
     if (typeof func !== 'function') {
-        log.send(logLevels.ERROR, 'throttle: invalid func arg, must be a function: ' + func);
         throw Error('throttle: invalid func arg, must be a function: ' + func);
     }
     let timer, lastInvoke = 0;

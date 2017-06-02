@@ -27,7 +27,6 @@ var symphonyRegistryHKLM6432 = new Registry({
 var getRegistry = function (name) {
     var promise = new Promise(function(resolve, reject) {
         if (isMac) {
-            log.send(logLevels.ERROR, 'getRegistry: Registry is not supported for mac osx.');
             reject('registry is not supported for mac osx.');
             return;
         }
@@ -54,8 +53,6 @@ var getRegistry = function (name) {
                     if ( !err3 && reg3!==null && reg3.value) {
                         resolve(reg3.value);
                     } else{
-                        log.send(logLevels.ERROR, 'getRegistry: Cannot find ' + name + ' ' +
-                            'Registry. Using default HKLM for 64 & 32. bit system');
                         reject('Cannot find PodUrl Registry. Using default url.');
                     }
                 });

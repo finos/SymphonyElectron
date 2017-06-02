@@ -8,8 +8,6 @@ const isDevEnv = require('./utils/misc.js').isDevEnv;
 const isMac = require('./utils/misc.js').isMac;
 const getRegistry = require('./utils/getRegistry.js');
 const configFileName = 'Symphony.config';
-const log = require('./log.js');
-const logLevels = require('./enums/logLevels.js');
 
 /**
  * Tries to read given field from user config file, if field doesn't exist
@@ -41,7 +39,6 @@ function getUserConfigField(fieldName) {
             return config[fieldName];
         }
 
-        log.send(logLevels.ERROR, 'config: field does not exist in user config: ' + fieldName);
         throw new Error('field does not exist in user config: ' + fieldName);
     });
 }
@@ -52,7 +49,6 @@ function readUserConfig() {
 
         fs.readFile(configPath, 'utf8', function(err, data) {
             if (err) {
-                log.send(logLevels.ERROR, 'config: cannot open user config file: ' + configPath + ', error: ' + err);
                 reject('cannot open user config file: ' + configPath + ', error: ' + err);
             } else {
                 let config = {};
@@ -60,7 +56,6 @@ function readUserConfig() {
                     // data is the contents of the text file we just read
                     config = JSON.parse(data);
                 } catch (e) {
-                    log.send(logLevels.ERROR, 'config: can not parse user config file data: ' + data + ', error: ' + err);
                     reject('can not parse user config file data: ' + data + ', error: ' + err);
                 }
 
@@ -76,7 +71,6 @@ function getGlobalConfigField(fieldName) {
             return config[fieldName];
         }
 
-        log.send(logLevels.ERROR, 'config: field does not exist in global config: ' + fieldName);
         throw new Error('field does not exist in global config: ' + fieldName);
     });
 }
@@ -107,7 +101,6 @@ function readGlobalConfig() {
 
         fs.readFile(configPath, 'utf8', function(err, data) {
             if (err) {
-                log.send(logLevels.ERROR, 'config: cannot open global config file: ' + configPath + ', error: ' + err);
                 reject('cannot open global config file: ' + configPath + ', error: ' + err);
             } else {
                 let config = {};
@@ -115,7 +108,6 @@ function readGlobalConfig() {
                     // data is the contents of the text file we just read
                     config = JSON.parse(data);
                 } catch (e) {
-                    log.send(logLevels.ERROR, 'config: can not parse config file data: ' + data + ', error: ' + err);
                     reject('can not parse config file data: ' + data + ', error: ' + err);
                 }
                 getRegistry('PodUrl')
@@ -152,7 +144,6 @@ function saveUserConfig(fieldName, newValue, oldConfig) {
         let configPath = path.join(app.getPath('userData'), configFileName);
 
         if (!oldConfig || !fieldName) {
-            log.send(logLevels.ERROR, 'config: can not save config, invalid input');
             reject('can not save config, invalid input');
             return;
         }
@@ -165,7 +156,6 @@ function saveUserConfig(fieldName, newValue, oldConfig) {
 
         fs.writeFile(configPath, jsonNewConfig, 'utf8', (err) => {
             if (err) {
-                log.send(logLevels.ERROR, 'config: error saving to user config file: ' + configPath + ', error:' + err);
                 reject(err);
             } else {
                 resolve(newConfig);
