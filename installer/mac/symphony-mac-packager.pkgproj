@@ -490,7 +490,7 @@
 			<key>BACKGROUND</key>
 			<dict>
 				<key>ALIGNMENT</key>
-				<integer>0</integer>
+				<integer>4</integer>
 				<key>BACKGROUND_PATH</key>
 				<dict>
 					<key>PATH</key>
@@ -501,7 +501,7 @@
 				<key>CUSTOM</key>
 				<integer>1</integer>
 				<key>SCALING</key>
-				<integer>0</integer>
+				<integer>1</integer>
 			</dict>
 			<key>INSTALLATION TYPE</key>
 			<dict>
@@ -576,7 +576,7 @@
 						<key>PATH</key>
 						<string>SymphonySettingsPlugin.bundle</string>
 						<key>PATH_TYPE</key>
-						<integer>1</integer>
+						<integer>3</integer>
 					</dict>
 				</dict>
 				<dict>
@@ -615,7 +615,19 @@
 			<key>INTRODUCTION</key>
 			<dict>
 				<key>LOCALIZATIONS</key>
-				<array/>
+				<array>
+					<dict>
+						<key>LANGUAGE</key>
+						<string>English</string>
+						<key>VALUE</key>
+						<dict>
+							<key>PATH</key>
+							<string>intro.html</string>
+							<key>PATH_TYPE</key>
+							<integer>3</integer>
+						</dict>
+					</dict>
+				</array>
 			</dict>
 			<key>LICENSE</key>
 			<dict>
