@@ -1,6 +1,4 @@
 'use strict';
-const log = require('../log.js');
-const logLevels = require('../enums/logLevels.js');
 
 /**
  * throttles calls to given function at most once a second.
