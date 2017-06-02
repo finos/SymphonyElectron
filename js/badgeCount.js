@@ -7,9 +7,12 @@ const nativeImage = electron.nativeImage;
 const { isMac } = require('./utils/misc.js');
 const windowMgr = require('./windowMgr.js');
 const maxCount = 1e8;
+const log = require('./log.js');
+const logLevels = require('./enums/logLevels.js');
 
 function show(count) {
     if (typeof count !== 'number') {
+        log.send(logLevels.WARN, 'badgeCount: invalid func arg, must be a number: ' + count);
         return;
     }
 
