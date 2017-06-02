@@ -1,4 +1,4 @@
-const { getConfigField, updateConfigField, configFileName } = require('../js/config');
+const { getConfigField, updateConfigField, configFileName, saveUserConfig } = require('../js/config');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
@@ -176,7 +176,7 @@ describe('getConfigField tests', function() {
         it('should succeed and overwrite existing field', function() {
             var userConfig = {
                 url: 'something'
-            }
+            };
 
             createTempUserConfig(userConfig);
 
@@ -191,7 +191,7 @@ describe('getConfigField tests', function() {
         it('should succeed and add new field', function() {
             var userConfig = {
                 url: 'something'
-            }
+            };
 
             createTempUserConfig(userConfig);
 
@@ -208,7 +208,7 @@ describe('getConfigField tests', function() {
 
             var userConfig = {
                 url: 'something'
-            }
+            };
 
             createTempUserConfig(userConfig);
 
@@ -227,6 +227,62 @@ describe('getConfigField tests', function() {
                     expect(err).toThrow(err);
                 });
 
+        });
+
+        it('should throw error if fieldName is not defined', function() {
+
+            var userConfig = {
+                url: 'something'
+            };
+
+            createTempUserConfig(userConfig);
+
+            return saveUserConfig(undefined, 'something', 'oldConfig')
+                .catch(function (reject) {
+                    expect(reject).toBe('can not save config, invalid input');
+                });
+        });
+
+        it('should throw error if config is not defined', function() {
+
+            var userConfig = {
+                url: 'something'
+            };
+
+            createTempUserConfig(userConfig);
+
+            return saveUserConfig('url2', 'something', undefined)
+                .catch(function (reject) {
+                    expect(reject).toBe('can not save config, invalid input');
+                });
+        });
+
+        it('should throw error if config file is not correct', function() {
+
+            var userConfig = {
+                url: 'something'
+            };
+            createTempUserConfig(userConfig);
+
+            let correctConfigDir = userConfigDir;
+            userConfigDir = '//';
+
+            return saveUserConfig('url2', 'hello world', 'url')
+                .catch(function(err) {
+                    userConfigDir = correctConfigDir;
+                    expect(err).toBeTruthy();
+            });
+
+        });
+
+        it('should throw error if path is not defined for saveUserConfig()', function() {
+
+            userConfigDir = null;
+
+            return saveUserConfig('url2', 'hello world')
+                .catch(function (err) {
+                    expect(err).toThrow(err);
+                });
         });
 
     });

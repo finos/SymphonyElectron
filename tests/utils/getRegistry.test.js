@@ -6,20 +6,24 @@ describe('Tests for getRegistry', function() {
 
     describe('Should not get registry for mac', function() {
 
-        it('should fail to get path for mac', function(done) {
+        if (isMac){
 
-            getRegistry('PodUrl').then(resolve).catch(reject);
+            it('should fail to get path for mac', function(done) {
 
-            function resolve() {
-                // shouldn't get here
-                expect(true).toBe(false);
-            }
+                getRegistry('PodUrl').then(resolve).catch(reject);
 
-            function reject(err) {
-                expect(err).toBeTruthy();
-                done();
-            }
-        });
+                function resolve() {
+                    // shouldn't get here
+                    expect(true).toBe(false);
+                }
+
+                function reject(err) {
+                    expect(err).toBeTruthy();
+                    done();
+                }
+            });
+
+        }
 
     });
 

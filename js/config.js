@@ -167,4 +167,9 @@ function saveUserConfig(fieldName, newValue, oldConfig) {
     });
 }
 
-module.exports = { getConfigField, updateConfigField, configFileName };
+module.exports = {
+    getConfigField,
+    updateConfigField,
+    configFileName,
+    saveUserConfig // Exporting this for unit tests
+};
