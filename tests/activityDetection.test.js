@@ -28,6 +28,7 @@ describe('Tests for Activity Detection', function() {
     });
 
     it('should get user activity where user is not idle', function() {
+        activityDetection.setActivityWindow(120000, electron.ipcRenderer);
         const data = activityDetection.activityDetection();
 
         expect(data.isUserIdle).toBe(false);
