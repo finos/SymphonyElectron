@@ -15,6 +15,8 @@ const electron = require('electron');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const ipc = electron.ipcMain;
+const log = require('../log.js');
+const logLevels = require('../enums/logLevels.js');
 
 // maximum number of notifications that can be queued, after limit is
 // reached then error func callback will be invoked.
@@ -158,7 +160,7 @@ function getTemplatePath() {
     try {
         fs.statSync(templatePath).isFile();
     } catch (err) {
-        log('electron-notify: Could not find template ("' + templatePath + '").');
+        log.send(logLevels.ERROR, 'electron-notify: Could not find template ("' + templatePath + '").');
     }
     config.templatePath = 'file://' + templatePath;
     return config.templatePath;
@@ -166,7 +168,7 @@ function getTemplatePath() {
 
 function calcDimensions() {
     const vertSpaceBetweenNotf = 8;
-    
+
     // Calc totalHeight & totalWidth
     config.totalHeight = config.height + vertSpaceBetweenNotf;
     config.totalWidth = config.width
@@ -254,7 +256,7 @@ function notify(notification) {
         })
         return notf.id
     }
-    log('electron-notify: ERROR notify() only accepts a single object with notification parameters.')
+    log.send(logLevels.ERROR, 'electron-notify: ERROR notify() only accepts a single object with notification parameters.');
     return null;
 }
 
@@ -272,6 +274,7 @@ function showNotification(notificationObj) {
                         id: notificationObj.id,
                         error: 'max notification queue size reached: ' + MAX_QUEUE_SIZE
                     });
+                    log.send(logLevels.INFO, 'showNotification: max notification queue size reached: ' + MAX_QUEUE_SIZE);
                 }, 0);
             }
             resolve();
@@ -644,14 +647,6 @@ function cleanUpInactiveWindow() {
         window.close();
     });
     inactiveWindows = [];
-}
-
-function log() {
-    if (config.logging === true) {
-        /* eslint-disable no-console */
-        console.log.apply(console, arguments);
-        /* eslint-enable no-console */
-    }
 }
 
 module.exports.notify = notify

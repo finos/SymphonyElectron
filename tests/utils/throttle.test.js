@@ -55,6 +55,55 @@ describe('throttle tests', function() {
         expect(callback.mock.calls.length).toBe(2);
     });
 
+    it('expect clearTimeout to be invoked', function() {
+        const callback = jest.fn();
+        const throttledCB = throttle(1000, callback);
+
+        expect(callback).not.toBeCalled();
+
+        throttledCB();
+        expect(callback.mock.calls.length).toBe(1);
+        expect(clearTimeout.mock.calls.length).toBe(0);
+
+        now -= 1000;
+        throttledCB();
+        expect(callback.mock.calls.length).toBe(1);
+
+        now += 1000;
+        throttledCB();
+        expect(callback.mock.calls.length).toBe(1);
+        expect(clearTimeout.mock.calls.length).toBe(1);
+    });
+
+    describe('expect to throw exception', function() {
+        it('when calling throttle with time equal to zero', function(done) {
+            try {
+                throttle(0, function() {});
+            } catch(error) {
+                expect(error.message).toBeDefined();
+                done();
+            }
+        });
+
+        it('when calling throttle with time less than zero', function(done) {
+            try {
+                throttle(-1, function() {});
+            } catch(error) {
+                expect(error.message).toBeDefined();
+                done();
+            }
+        });
+
+        it('when calling throttle without a function callback', function(done) {
+            try {
+                throttle(1, 'not a func');
+            } catch(error) {
+                expect(error.message).toBeDefined();
+                done();
+            }
+        });
+    });
+
     afterEach(function() {
         // restore orig
         Date.now = origNow;

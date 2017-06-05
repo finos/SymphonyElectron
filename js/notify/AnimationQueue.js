@@ -1,5 +1,8 @@
 'use strict';
 
+const log = require('../log.js');
+const logLevels = require('../enums/logLevels.js');
+
 // One animation at a time
 const AnimationQueue = function(options) {
     this.options = options;
@@ -27,6 +30,8 @@ AnimationQueue.prototype.animate = function(object) {
         }
     }.bind(this))
     .catch(function(err) {
+        log.send(logLevels.ERROR, 'animationQueue: encountered an error: ' + err +
+            ' with stack trace:' + err.stack);
         /* eslint-disable no-console */
         console.error('animation queue encountered an error: ' + err +
         ' with stack trace:' + err.stack);

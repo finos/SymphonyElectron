@@ -7,8 +7,9 @@ const squirrelStartup = require('electron-squirrel-startup');
 const AutoLaunch = require('auto-launch');
 const urlParser = require('url');
 const { getConfigField } = require('./config.js');
-const { isDevEnv } = require('./utils/misc.js');
+const { isMac, isDevEnv } = require('./utils/misc.js');
 const protocolHandler = require('./protocolHandler');
+const getCmdLineArg = require('./utils/getCmdLineArg.js')
 
 const crashReporter = require('./crashReporter');
 
@@ -41,8 +42,8 @@ const shouldQuit = app.makeSingleInstance((argv) => {
     processProtocolAction(argv);
 });
 
-// quit if another instance is already running
-if (shouldQuit) {
+// quit if another instance is already running, ignore for dev env
+if (!isDevEnv && shouldQuit) {
     app.quit();
 }
 
@@ -88,27 +89,18 @@ function setupThenOpenMainWindow() {
 
     isAppAlreadyOpen = true;
 
-    let installMode = false;
-
     // allows installer to launch app and set auto startup mode then
     // immediately quit.
-    process.argv.some((val) => {
-
-        let flag = '--install';
-        if (val === flag) {
-            installMode = true;
-            getConfigField('launchOnStartup')
-            .then(setStartup)
-            .then(app.quit)
-            .catch(app.quit);
-        }
-
-        return false;
-    });
-
-    if (installMode === false) {
-        getUrlAndCreateMainWindow();
+    let hasInstallFlag = getCmdLineArg(process.argv, '--install', true);
+    if (!isMac && hasInstallFlag) {
+        getConfigField('launchOnStartup')
+        .then(setStartup)
+        .then(app.quit)
+        .catch(app.quit);
+        return;
     }
+
+    getUrlAndCreateMainWindow();
 }
 
 function setStartup(lStartup){
@@ -129,14 +121,9 @@ function setStartup(lStartup){
 function getUrlAndCreateMainWindow() {
     // for dev env allow passing url argument
     if (isDevEnv) {
-        let url;
-        process.argv.forEach((val) => {
-            if (val.startsWith('--url=')) {
-                url = val.substr(6);
-            }
-        });
+        let url = getCmdLineArg(process.argv, '--url=')
         if (url) {
-            windowMgr.createMainWindow(url);
+            windowMgr.createMainWindow(url.substr(6));
             return;
         }
     }
@@ -160,6 +147,7 @@ function createWin(urlFromConfig) {
         slahes: true,
         pathname: parsedUrl.href
     });
+
     windowMgr.createMainWindow(url);
 }
 
@@ -190,16 +178,7 @@ function processProtocolAction(argv) {
         return;
     }
 
-    let protocolUri;
-
-    for (let i = 0; i < argv.length; i++) {
-
-        if (argv[i].startsWith("symphony://")) {
-            protocolUri = argv[i];
-            break;
-        }
-
-    }
+    let protocolUri = getCmdLineArg(argv, 'symphony://');
 
     if (protocolUri) {
 

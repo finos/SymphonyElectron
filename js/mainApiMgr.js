@@ -8,6 +8,7 @@ const electron = require('electron');
 
 const windowMgr = require('./windowMgr.js');
 const log = require('./log.js');
+const logLevels = require('./enums/logLevels');
 const activityDetection = require('./activityDetection/activityDetection');
 const badgeCount = require('./badgeCount.js');
 const protocolHandler = require('./protocolHandler');
@@ -39,9 +40,7 @@ function isValidWindow(event) {
     }
 
     if (!result) {
-        /* eslint-disable no-console */
-        console.log('invalid window try to perform action, ignoring action');
-        /* eslint-enable no-console */
+        log.send(logLevels.WARN, 'invalid window try to perform action, ignoring action');
     }
 
     return result;

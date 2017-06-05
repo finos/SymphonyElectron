@@ -16,5 +16,27 @@ sed -i "" -E "s#\"url\" ?: ?\".*\"#\"url\"\: \"$pod_url\"#g" $newPath
 sed -i "" -E "s#\"minimizeOnClose\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"minimizeOnClose\":\ $minimize_on_close#g" $newPath
 sed -i "" -E "s#\"launchOnStartup\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"launchOnStartup\":\ $launch_on_startup#g" $newPath
 
+## Add app to login items
+if [ $launch_on_startup == true ]; then
+cat > ~/Library/LaunchAgents/com.symphony.symphony-desktop.agent.plist << EOT
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.symphony.symphony-desktop.agent</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>$installPath/Symphony.app/Contents/MacOS/Symphony</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+</dict>
+</plist>
+EOT
+else
+launchctl unload ~/Library/LaunchAgents/com.symphony.symphony-desktop.agent.plist
+fi
+
 ## Remove the temp settings file created ##
 rm -f $tempFilePath

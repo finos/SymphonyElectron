@@ -20,6 +20,8 @@ const apiName = apiEnums.apiName;
 const getMediaSources = require('../desktopCapturer/getSources');
 const crashReporter = require('../crashReporter');
 
+const nodeURL = require('url');
+
 // hold ref so doesn't get GC'ed
 const local = {
     ipcRenderer: ipcRenderer
@@ -51,6 +53,25 @@ function createAPI() {
     if (window.self !== window.top) {
         return;
     }
+
+    // bug in electron is preventing using event 'will-navigate' from working
+    // in sandboxed environment. https://github.com/electron/electron/issues/8841
+    // so in the mean time using this code below to block clicking on A tags.
+    // A tags are allowed if they include href='_blank', this cause 'new-window'
+    // event to be received which is handled properly in windowMgr.js
+    window.addEventListener('beforeunload', function(event) {
+        var newUrl = document.activeElement && document.activeElement.href;
+        if (newUrl) {
+            var currHostName = window.location.hostname;
+            var parsedNewUrl = nodeURL.parse(newUrl);
+            var parsedNewUrlHostName = parsedNewUrl && parsedNewUrl.hostname;
+            if (currHostName !== parsedNewUrlHostName) {
+                /* eslint-disable no-param-reassign */
+                event.returnValue = 'false';
+                /* eslint-enable no-param-reassign */
+            }
+        }
+    });
 
     // note: window.open from main window (if in the same domain) will get
     // api access.  window.open in another domain will be opened in the default
@@ -205,7 +226,6 @@ function createAPI() {
          * for interface: see documentation in desktopCapturer/getSources.js
          */
         getMediaSources: getMediaSources
-
     };
 
     // add support for both ssf and SYM_API name-space.
@@ -215,8 +235,8 @@ function createAPI() {
 
     // listen for log message from main process
     local.ipcRenderer.on('log', (event, arg) => {
-        if (local.logger && arg && arg.level && arg.details) {
-            local.logger(arg.level, arg.details);
+        if (arg && local.logger) {
+            local.logger(arg.msgs || [], arg.logLevel, arg.showInConsole);
         }
     });
 
@@ -294,7 +314,6 @@ function createAPI() {
      * @type {String} arg - the protocol url
      */
     local.ipcRenderer.on('protocol-action', (event, arg) => {
-
         if (local.processProtocolAction && arg) {
             local.processProtocolAction(arg);
         }

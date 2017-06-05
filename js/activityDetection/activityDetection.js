@@ -2,6 +2,8 @@
 
 const systemIdleTime = require('@paulcbetts/system-idle-time');
 const throttle = require('../utils/throttle');
+const log = require('../log.js');
+const logLevels = require('../enums/logLevels.js');
 
 let maxIdleTime;
 let activityWindow;
@@ -75,6 +77,7 @@ function sendActivity() {
  */
 function send(data) {
     if (activityWindow && data) {
+        log.send(logLevels.INFO, 'activity occurred at time= ' + new Date().toUTCString());
         activityWindow.send('activity', {
             systemIdleTime: data.systemIdleTime
         });
@@ -84,11 +87,14 @@ function send(data) {
 function setActivityWindow(period, win) {
     maxIdleTime = period;
     activityWindow = win;
+    // Initiate activity detection to monitor user activity status
+    initiateActivityDetection();
 }
 
 module.exports = {
     send: send,
     setActivityWindow: setActivityWindow,
     activityDetection: activityDetection,
+    monitorUserActivity: monitorUserActivity, // Exporting this for unit test
     initiateActivityDetection: initiateActivityDetection
 };

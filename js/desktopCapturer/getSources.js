@@ -14,6 +14,7 @@
 
 var { ipcRenderer } = require('electron');
 
+
 var nextId = 0;
 var includes = [].includes;
 
