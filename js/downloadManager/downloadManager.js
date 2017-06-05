@@ -181,7 +181,17 @@ function initiate() {
                 local.downloadItems = [];
                 document.getElementById('download-manager-footer').classList.add('hidden');
                 document.getElementById('download-main').innerHTML = '';
+
+                let body = document.body;
+                if (body) {
+                    body.classList.remove('pushed-up');
+                }
             });
+        }
+
+        let body = document.body;
+        if (body){
+            body.classList.add('pushed-up');
         }
     }
 }
