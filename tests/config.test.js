@@ -257,24 +257,6 @@ describe('getConfigField tests', function() {
                 });
         });
 
-        it('should throw error if config file is not correct', function() {
-
-            var userConfig = {
-                url: 'something'
-            };
-            createTempUserConfig(userConfig);
-
-            let correctConfigDir = userConfigDir;
-            userConfigDir = '//';
-
-            return saveUserConfig('url2', 'hello world', 'url')
-                .catch(function(err) {
-                    userConfigDir = correctConfigDir;
-                    expect(err).toBeTruthy();
-            });
-
-        });
-
         it('should throw error if path is not defined for saveUserConfig()', function() {
 
             userConfigDir = null;

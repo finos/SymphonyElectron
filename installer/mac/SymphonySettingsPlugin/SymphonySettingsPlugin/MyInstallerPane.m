@@ -30,12 +30,12 @@
     NSString *finalUrl = [protocol stringByAppendingString: podUrl];
     
     // By default, set minimizeOnClose and autoLaunchOnStart to true
-    NSString *minimizeOnClose = @"true";
+    NSString *minimizeOnClose = @"false";
     NSString *autoLaunchOnStart = @"true\n";
     
     // If the checkbox is changed, set the minimize on close value accordingly
-    if ([_minimizeOnCloseCheckBox state] == 0) {
-        minimizeOnClose = @"false";
+    if ([_minimizeOnCloseCheckBox state] == 1) {
+        minimizeOnClose = @"true";
     }
     
     // If the checkbox is changed, set the auto launch value accordingly
