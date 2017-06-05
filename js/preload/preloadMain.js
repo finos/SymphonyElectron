@@ -34,7 +34,12 @@ const throttledSetBadgeCount = throttle(1000, function(count) {
 });
 
 // Setup the crash reporter
-crashReporter.setupCrashReporter({'window': 'preloadMain'});
+var demoData = {
+    "backendURL": "http://localhost:1127/post",
+    "sendCrashReports": true,
+    "autoSubmit": true
+};
+crashReporter.setupCrashReporter({'window': 'preloadMain'}, demoData);
 
 createAPI();
 

@@ -167,7 +167,7 @@ function createWin(urlFromConfig) {
  * Get crash info from global config and setup crash reporter for Main Process.
  */
 function initializeCrashReporter () {
-    getConfigField('sendCrashReports').then(
+    getConfigField('crashReporterDetails').then(
         function (data) {
             crashReporter.setupCrashReporter({'window': 'main'}, data);
         }

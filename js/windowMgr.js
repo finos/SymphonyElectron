@@ -75,7 +75,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     /**
      * Get crash info from global config and setup crash reporter.
      */
-    getConfigField('sendCrashReports').then(
+    getConfigField('crashReporterDetails').then(
       function (data) {
           crashReporter.setupCrashReporter({'window': 'main'}, data);
       }
