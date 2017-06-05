@@ -9,7 +9,7 @@ describe('Tests for Activity Detection', function() {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
 
     beforeAll(function (done) {
-        childProcess.exec('npm rebuild --runtime=electron --target=1.5.0 --disturl=https://atom.io/download/atom-shell --build-from-source', function (err) {
+        childProcess.exec('npm rebuild --runtime=electron --disturl=https://atom.io/download/atom-shell --build-from-source', function (err) {
             activityDetection = require('../js/activityDetection/activityDetection.js');
             activityDetection.setActivityWindow(120000, electron.ipcRenderer);
             done();
