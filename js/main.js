@@ -11,6 +11,8 @@ const { isMac, isDevEnv } = require('./utils/misc.js');
 const protocolHandler = require('./protocolHandler');
 const getCmdLineArg = require('./utils/getCmdLineArg.js')
 
+const crashReporter = require('./crashReporter');
+
 // used to check if a url was opened when the app was already open
 let isAppAlreadyOpen = false;
 
@@ -150,6 +152,20 @@ function createWin(urlFromConfig) {
 }
 
 /**
+ * Get crash info from global config and setup crash reporter for Main Process.
+ */
+function initializeCrashReporter () {
+    getConfigField('crashReporterDetails').then(
+        function (data) {
+            crashReporter.setupCrashReporter({'window': 'main'}, data);
+        }
+    ).catch(function (err) {
+        let title = 'Error loading configuration';
+        electron.dialog.showErrorBox(title, title + ': ' + err);
+    })
+}
+
+/**
  * processes protocol action for windows clients
  * @param argv {Array} an array of command line arguments
  */
@@ -186,3 +202,6 @@ function handleProtocolAction(uri) {
         protocolHandler.processProtocolAction(uri);
     }
 }
+
+// Initialize the crash reporter
+initializeCrashReporter();

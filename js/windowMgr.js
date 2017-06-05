@@ -6,6 +6,8 @@ const BrowserWindow = electron.BrowserWindow;
 const path = require('path');
 const nodeURL = require('url');
 const querystring = require('querystring');
+const {dialog} = require('electron');
+const {shell} = require('electron');
 
 const { getTemplate, getMinimizeOnClose } = require('./menus/menuTemplate.js');
 const loadErrors = require('./dialogs/showLoadError.js');
@@ -17,6 +19,8 @@ const notify = require('./notify/electron-notify.js');
 
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField } = require('./config.js');
+
+const crashReporter = require('./crashReporter');
 
 //context menu
 const contextMenu = require('./menus/contextMenu.js');
@@ -66,6 +70,18 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     let url = initialUrl;
     let key = getGuid();
 
+    /**
+     * Get crash info from global config and setup crash reporter.
+     */
+    getConfigField('crashReporterDetails').then(
+      function (data) {
+          crashReporter.setupCrashReporter({'window': 'main'}, data);
+      }
+    ).catch(function (err) {
+        let title = 'Error loading configuration';
+        electron.dialog.showErrorBox(title, title + ': ' + err);
+    });
+  
     log.send(logLevels.INFO, 'creating main window url: ' + url);
 
     let newWinOpts = {
@@ -142,6 +158,24 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     mainWindow.webContents.on('did-fail-load', function (event, errorCode,
                                                          errorDesc, validatedURL) {
         loadErrors.showLoadFailure(mainWindow, validatedURL, errorDesc, errorCode, retry);
+    });
+
+    // In case a renderer process crashes, provide an
+    // option for the user to either reload or close the window
+    mainWindow.webContents.on('crashed', function () {
+        const options = {
+            type: 'error',
+            title: 'Renderer Process Crashed',
+            message: 'Uh oh! Looks like we have had a crash. Please reload or close this window.',
+            buttons: ['Reload', 'Close']
+        };
+
+        dialog.showMessageBox(options, function (index) {
+            if (index === 0) {
+                mainWindow.reload();
+            }
+            else mainWindow.close();
+        });
     });
 
     addWindowKey(key, mainWindow);
