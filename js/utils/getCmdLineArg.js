@@ -1,5 +1,8 @@
 'use strict';
 
+const log = require('../log.js');
+const logLevels = require('../enums/logLevels.js');
+
 /**
  * Search given argv for argName using exact match or starts with.
  * @param  {Array} argv       Array of strings
@@ -10,6 +13,7 @@
  */
 function getCmdLineArg(argv, argName, exactMatch) {
     if (!Array.isArray(argv)) {
+        log.send(logLevels.WARN, 'getCmdLineArg: TypeError invalid func arg, must be an array: '+ argv);
         return null;
     }
 

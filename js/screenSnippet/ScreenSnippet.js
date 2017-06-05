@@ -36,7 +36,7 @@ class ScreenSnippet {
         return new Promise((resolve, reject) => {
             let captureUtil, captureUtilArgs;
 
-            log.send(logLevels.INFO, 'starting screen capture');
+            log.send(logLevels.INFO, 'ScreenSnippet: starting screen capture');
 
             let tmpFilename = 'symphonyImage-' + Date.now() + '.jpg';
             let tmpDir = os.tmpdir();
@@ -64,7 +64,7 @@ class ScreenSnippet {
                 captureUtilArgs = [ outputFileName ];
             }
 
-            log.send(logLevels.INFO, 'starting screen capture util: ' + captureUtil + ' with args=' + captureUtilArgs);
+            log.send(logLevels.INFO, 'ScreenSnippet: starting screen capture util: ' + captureUtil + ' with args=' + captureUtilArgs);
 
             // only allow one screen capture at a time.
             if (child) {
@@ -124,13 +124,10 @@ class ScreenSnippet {
                 fs.unlink(outputFileName, function(removeErr) {
                     // note: node complains if calling async
                     // func without callback.
-                    /* eslint-disable no-console */
                     if (removeErr) {
-                        console.error(
-                            'error removing temp snippet file: ' +
+                        log.send(logLevels.ERROR, 'ScreenSnippet: error removing temp snippet file: ' +
                             outputFileName + ', err:' + removeErr);
                     }
-                    /* eslint-enable no-console */
                 });
             }
         });

@@ -8,8 +8,6 @@ const isDevEnv = require('./utils/misc.js').isDevEnv;
 const isMac = require('./utils/misc.js').isMac;
 const getRegistry = require('./utils/getRegistry.js');
 const configFileName = 'Symphony.config';
-const log = require('./log.js');
-const logLevels = require('./enums/logLevels.js');
 
 /**
  * Tries to read given field from user config file, if field doesn't exist
@@ -158,7 +156,6 @@ function saveUserConfig(fieldName, newValue, oldConfig) {
 
         fs.writeFile(configPath, jsonNewConfig, 'utf8', (err) => {
             if (err) {
-                log.send(logLevels.ERROR, 'error saving to user config file: ' + configPath + ',error:' + err);
                 reject(err);
             } else {
                 resolve(newConfig);
@@ -167,4 +164,9 @@ function saveUserConfig(fieldName, newValue, oldConfig) {
     });
 }
 
-module.exports = { getConfigField, updateConfigField, configFileName };
+module.exports = {
+    getConfigField,
+    updateConfigField,
+    configFileName,
+    saveUserConfig // Exporting this for unit tests
+};

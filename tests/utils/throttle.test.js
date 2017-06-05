@@ -55,6 +55,26 @@ describe('throttle tests', function() {
         expect(callback.mock.calls.length).toBe(2);
     });
 
+    it('expect clearTimeout to be invoked', function() {
+        const callback = jest.fn();
+        const throttledCB = throttle(1000, callback);
+
+        expect(callback).not.toBeCalled();
+
+        throttledCB();
+        expect(callback.mock.calls.length).toBe(1);
+        expect(clearTimeout.mock.calls.length).toBe(0);
+
+        now -= 1000;
+        throttledCB();
+        expect(callback.mock.calls.length).toBe(1);
+
+        now += 1000;
+        throttledCB();
+        expect(callback.mock.calls.length).toBe(1);
+        expect(clearTimeout.mock.calls.length).toBe(1);
+    });
+
     describe('expect to throw exception', function() {
         it('when calling throttle with time equal to zero', function(done) {
             try {

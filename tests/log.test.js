@@ -52,5 +52,19 @@ describe('logger tests', function() {
 
         let queue = log.logQueue;
         expect(queue.length).toBe(100);
-    })
+    });
+
+    it('should not send the logs', function() {
+        let mockWin = {
+            send: jest.fn()
+        };
+
+        log.setLogWindow(mockWin);
+        log.send();
+
+        let queue = log.logQueue;
+
+        expect(mockWin.send).toHaveBeenCalledWith("log", {"msgs": []});
+        expect(queue.length).toBe(0);
+    });
 });

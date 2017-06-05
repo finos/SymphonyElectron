@@ -5,6 +5,8 @@ const { getConfigField, updateConfigField } = require('../config.js');
 const AutoLaunch = require('auto-launch');
 const isMac = require('../utils/misc.js').isMac;
 const childProcess = require('child_process');
+const log = require('../log.js');
+const logLevels = require('../enums/logLevels.js');
 
 var minimizeOnClose = false;
 var launchOnStartup = false;
@@ -192,6 +194,7 @@ function getTemplate(app) {
                         childProcess.exec(`launchctl load ${launchAgentPath}`, (err) => {
                             if (err){
                                 let title = 'Error setting AutoLaunch configuration';
+                                log.send(logLevels.ERROR, 'MenuTemplate: ' + title + ': process error ' + err);
                                 electron.dialog.showErrorBox(title, 'Please try reinstalling the application');
                             }
                         });
@@ -199,6 +202,7 @@ function getTemplate(app) {
                         symphonyAutoLauncher.enable()
                             .catch(function (err) {
                                 let title = 'Error setting AutoLaunch configuration';
+                                log.send(logLevels.ERROR, 'MenuTemplate: ' + title + ': auto launch error ' + err);
                                 electron.dialog.showErrorBox(title, title + ': ' + err);
                             });
                     }
@@ -209,6 +213,7 @@ function getTemplate(app) {
                         childProcess.exec(`launchctl unload ${launchAgentPath}`, (err) => {
                             if (err){
                                 let title = 'Error disabling AutoLaunch configuration';
+                                log.send(logLevels.ERROR, 'MenuTemplate: ' + title + ': process error ' + err);
                                 electron.dialog.showErrorBox(title, 'Please try reinstalling the application');
                             }
                         });
@@ -216,6 +221,7 @@ function getTemplate(app) {
                         symphonyAutoLauncher.disable()
                             .catch(function (err) {
                                 let title = 'Error setting AutoLaunch configuration';
+                                log.send(logLevels.ERROR, 'MenuTemplate: ' + title + ': auto launch error ' + err);
                                 electron.dialog.showErrorBox(title, title + ': ' + err);
                             });
                     }
@@ -259,6 +265,7 @@ function setCheckboxValues(){
         minimizeOnClose = mClose;
     }).catch(function (err){
         let title = 'Error loading configuration';
+        log.send(logLevels.ERROR, 'MenuTemplate: error getting config field minimizeOnClose, error: ' + err);
         electron.dialog.showErrorBox(title, title + ': ' + err);
     });
     
@@ -266,6 +273,7 @@ function setCheckboxValues(){
         launchOnStartup = lStartup;
     }).catch(function (err){
         let title = 'Error loading configuration';
+        log.send(logLevels.ERROR, 'MenuTemplate: error getting config field launchOnStartup, error: ' + err);
         electron.dialog.showErrorBox(title, title + ': ' + err);
     });
 }
