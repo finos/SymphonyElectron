@@ -10,6 +10,7 @@ const logLevels = require('../enums/logLevels.js');
 
 var minimizeOnClose = false;
 var launchOnStartup = false;
+var alwaysOnTop = false;
 
 setCheckboxValues();
 
@@ -183,8 +184,8 @@ function getTemplate(app) {
     // Window menu -> launchOnStartup.
     template[index].submenu.push(
         {
-            label: 'Auto Launch On Startup', 
-            type: 'checkbox', 
+            label: 'Auto Launch On Startup',
+            type: 'checkbox',
             checked: launchOnStartup,
             click: function (item) {
                 if (item.checked){
@@ -232,12 +233,29 @@ function getTemplate(app) {
         }
     )
 
-    // Window menu -> minimizeOnClose.
+    // Window menu -> alwaysOnTop.
+    template[index].submenu.push(
+        {
+            label: 'Always on top',
+            type: 'checkbox',
+            checked: alwaysOnTop,
+            click: (item) => {
+                alwaysOnTop = item.checked;
+                let browserWin = electron.BrowserWindow.getAllWindows();
+                browserWin.forEach(function (browser) {
+                    browser.setAlwaysOnTop(alwaysOnTop);
+                });
+                updateConfigField('alwaysOnTop', alwaysOnTop);
+            }
+        }
+    )
+
+        // Window menu -> minimizeOnClose.
     // ToDo: Add behavior on Close.
     template[index].submenu.push(
         {
-            label: 'Minimize on Close', 
-            type: 'checkbox', 
+            label: 'Minimize on Close',
+            type: 'checkbox',
             checked: minimizeOnClose,
             click: function (item) {
                 minimizeOnClose = item.checked;
@@ -249,7 +267,7 @@ function getTemplate(app) {
     if (!isMac){
         template[index].submenu.push(
             {
-                label: 'Quit Symphony', 
+                label: 'Quit Symphony',
                 click: function () {
                     app.quit();
                 }
@@ -268,12 +286,20 @@ function setCheckboxValues(){
         log.send(logLevels.ERROR, 'MenuTemplate: error getting config field minimizeOnClose, error: ' + err);
         electron.dialog.showErrorBox(title, title + ': ' + err);
     });
-    
+
     getConfigField('launchOnStartup').then(function(lStartup) {
         launchOnStartup = lStartup;
     }).catch(function (err){
         let title = 'Error loading configuration';
         log.send(logLevels.ERROR, 'MenuTemplate: error getting config field launchOnStartup, error: ' + err);
+        electron.dialog.showErrorBox(title, title + ': ' + err);
+    });
+
+    getConfigField('alwaysOnTop').then(function(mAlwaysOnTop) {
+        alwaysOnTop = mAlwaysOnTop;
+    }).catch(function (err){
+        let title = 'Error loading configuration';
+        log.send(logLevels.ERROR, 'MenuTemplate: error getting config field alwaysOnTop, error: ' + err);
         electron.dialog.showErrorBox(title, title + ': ' + err);
     });
 }
