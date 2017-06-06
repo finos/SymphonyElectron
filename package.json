@@ -80,7 +80,8 @@
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-react": "^6.10.0",
-    "jest": "^19.0.2"
+    "jest": "^19.0.2",
+    "node-abi": "^2.0.3"
   },
   "dependencies": {
     "@paulcbetts/system-idle-time": "^1.0.4",
