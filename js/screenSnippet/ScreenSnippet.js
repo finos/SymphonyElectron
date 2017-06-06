@@ -77,76 +77,80 @@ class ScreenSnippet {
                     // processs was killed, just resolve with no data.
                     resolve();
                 } else {
-                    this._readResult(outputFileName, resolve, reject, error);
+                    readResult.call(this, outputFileName, resolve, reject, error);
                 }
             });
         });
     }
-
-    // private methods below here
-
-    _readResult(outputFileName, resolve, reject, childProcessErr) {
-        fs.readFile(outputFileName, (readErr, data) => {
-            if (readErr) {
-                let returnErr;
-                if (readErr.code === 'ENOENT') {
-                    // no such file exists, user likely aborted
-                    // creating snippet. also include any error when
-                    // creating child process.
-                    returnErr = this._createWarn('file does not exist ' +
-                        childProcessErr);
-                } else {
-                    returnErr = this._createError(readErr + ',' +
-                        childProcessErr);
-                }
-
-                reject(returnErr);
-                return;
-            }
-
-            if (!data) {
-                reject(this._createWarn('no file data provided'));
-                return;
-            }
-
-            try {
-                // convert binary data to base64 encoded string
-                let output = Buffer(data).toString('base64');
-                resolve({
-                    type: 'image/jpg;base64',
-                    data: output
-                });
-            } catch (error) {
-                reject(this._createError(error));
-            }
-            finally {
-                // remove tmp file (async)
-                fs.unlink(outputFileName, function(removeErr) {
-                    // note: node complains if calling async
-                    // func without callback.
-                    if (removeErr) {
-                        log.send(logLevels.ERROR, 'ScreenSnippet: error removing temp snippet file: ' +
-                            outputFileName + ', err:' + removeErr);
-                    }
-                });
-            }
-        });
-
-    }
-
-    /* eslint-disable class-methods-use-this */
-    _createError(msg) {
-        var err = new Error(msg);
-        err.type = 'ERROR';
-        return err;
-    }
-
-    _createWarn(msg) {
-        var err = new Error(msg);
-        err.type = 'WARN';
-        return err;
-    }
-    /* eslint-enable class-methods-use-this */
 }
 
-module.exports = ScreenSnippet;
+// this function was moved outside of class since class is exposed to web
+// client via preload API, we do NOT want web client to be able to call this
+// method - then they could read any file on the disk!
+function readResult(outputFileName, resolve, reject, childProcessErr) {
+    fs.readFile(outputFileName, (readErr, data) => {
+        if (readErr) {
+            let returnErr;
+            if (readErr.code === 'ENOENT') {
+                // no such file exists, user likely aborted
+                // creating snippet. also include any error when
+                // creating child process.
+                returnErr = createWarn('file does not exist ' +
+                    childProcessErr);
+            } else {
+                returnErr = createError(readErr + ',' +
+                    childProcessErr);
+            }
+
+            reject(returnErr);
+            return;
+        }
+
+        if (!data) {
+            reject(createWarn('no file data provided'));
+            return;
+        }
+
+        try {
+            // convert binary data to base64 encoded string
+            let output = Buffer(data).toString('base64');
+            resolve({
+                type: 'image/jpg;base64',
+                data: output
+            });
+        } catch (error) {
+            reject(createError(error));
+        }
+        finally {
+            // remove tmp file (async)
+            fs.unlink(outputFileName, function(removeErr) {
+                // note: node complains if calling async
+                // func without callback.
+                if (removeErr) {
+                    log.send(logLevels.ERROR, 'ScreenSnippet: error removing temp snippet file: ' +
+                        outputFileName + ', err:' + removeErr);
+                }
+            });
+        }
+    });
+}
+
+/* eslint-disable class-methods-use-this */
+function createError(msg) {
+    var err = new Error(msg);
+    err.type = 'ERROR';
+    return err;
+}
+
+function createWarn(msg) {
+    var err = new Error(msg);
+    err.type = 'WARN';
+    return err;
+}
+/* eslint-enable class-methods-use-this */
+
+module.exports = {
+    ScreenSnippet: ScreenSnippet,
+    // note: readResult only exposed for testing purposes
+    readResult: readResult
+}
