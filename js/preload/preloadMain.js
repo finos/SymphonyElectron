@@ -25,8 +25,7 @@ const nodeURL = require('url');
 
 // hold ref so doesn't get GC'ed
 const local = {
-    ipcRenderer: ipcRenderer,
-    downloadItems: []
+    ipcRenderer: ipcRenderer
 };
 
 // throttle calls to this func to at most once per sec, called on leading edge.
