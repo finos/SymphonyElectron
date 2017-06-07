@@ -8,8 +8,6 @@
 //
 const electron = require('electron');
 const ipc = electron.ipcRenderer;
-const log = require('../log.js');
-const logLevels = require('../enums/logLevels.js');
 
 function setStyle(config) {
     // Style it
@@ -55,8 +53,10 @@ function setContents(event, notificationObj) {
                 audio.play()
             }
         } catch (e) {
-            log.send(logLevels.ERROR, 'electron-notify: ERROR could not find sound file: '
-                + notificationObj.sound.replace('file://', ''), e, e.stack);
+            /* eslint-disable no-console */
+            console.error('electron-notify: ERROR could not find sound file: '
+            + notificationObj.sound.replace('file://', ''), e, e.stack);
+            /* eslint-enable no-console */
         }
     }
 
