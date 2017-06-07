@@ -107,7 +107,7 @@ function createAPI() {
          * provides api to allow user to capture portion of screen, see api
          * details in screenSnipper/ScreenSnippet.js
          */
-        ScreenSnippet: remote.require('./screenSnippet/ScreenSnippet.js'),
+        ScreenSnippet: remote.require('./screenSnippet/ScreenSnippet.js').ScreenSnippet,
 
         /**
          * Brings window forward and gives focus.

@@ -1,5 +1,5 @@
 
-const ScreenSnippet = require('../js/screenSnippet/ScreenSnippet.js');
+const { ScreenSnippet, readResult } = require('../js/screenSnippet/ScreenSnippet.js');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
@@ -71,8 +71,7 @@ describe('Tests for ScreenSnippet', function() {
 
         it('should remove output file after completed', function(done) {
             createTestFile(function(testfileName) {
-                let s = new ScreenSnippet();
-                s._readResult(testfileName, resolve);
+                readResult(testfileName, resolve);
 
                 function resolve() {
                     // should be long enough before file
@@ -88,9 +87,8 @@ describe('Tests for ScreenSnippet', function() {
     });
 
     it('should fail if output file does not exist', function(done) {
-        let s = new ScreenSnippet();
-        let nonExistentFile = 'bogus.jpeg'
-        s._readResult(nonExistentFile, resolve, reject);
+        let nonExistentFile = 'bogus.jpeg';
+        readResult(nonExistentFile, resolve, reject);
 
         function resolve() {
             // shouldn't get here
