@@ -30,19 +30,7 @@ describe('Tests for Activity Detection', function() {
         });
     });
 
-    it('should get user activity where user is not idle', function() {
-        const data = activityDetection.activityDetection();
-
-        expect(data.isUserIdle).toBe(false);
-        expect(data.systemIdleTime).toBeLessThan(900000);
-    });
-
     it('should return null', function() {
-        const spy = jest.spyOn(activityDetection, 'activityDetection');
-        const data = activityDetection.activityDetection();
-
-        expect(spy).toHaveBeenCalled();
-        expect(data.isUserIdle).toBe(false);
 
         activityDetection.setActivityWindow(0, electron.ipcRenderer);
         const noData = activityDetection.activityDetection();
