@@ -1,10 +1,7 @@
 const electron = require('./__mocks__/electron');
 const childProcess = require('child_process');
-const nodeAbi = require('node-abi');
 
 let activityDetection;
-let nodeVersion = nodeAbi.getAbi(process.version, 'node');
-let targetElectronVersion = nodeAbi.getTarget(nodeVersion, 'electron');
 
 describe('Tests for Activity Detection', function() {
 
@@ -12,7 +9,7 @@ describe('Tests for Activity Detection', function() {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
 
     beforeAll(function (done) {
-        childProcess.exec(`npm rebuild --runtime=electron --target=${targetElectronVersion} --disturl=https://atom.io/download/atom-shell --build-from-source`, function (err) {
+        childProcess.exec(`npm rebuild --target=${process.version} --build-from-source`, function (err) {
             activityDetection = require('../js/activityDetection/activityDetection.js');
             activityDetection.setActivityWindow(900000, electron.ipcRenderer);
             done();

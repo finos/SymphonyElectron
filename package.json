@@ -6,21 +6,17 @@
   "author": "Symphony",
   "main": "js/main.js",
   "scripts": {
-    "postinstall": "npm run rebuild",
-    "dev": "npm run browserify-preload && cross-env ELECTRON_DEV=true electron .",
-    "demo-win": "npm run browserify-preload && cross-env ELECTRON_DEV=true electron . --url=file:///demo/index.html",
-    "demo-mac": "npm run browserify-preload && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/demo/index.html",
-    "dist-mac": "npm run prebuild && build --mac",
-    "dist-win": "npm run prebuild && build --win --x64",
-    "dist-win-x86": "npm run prebuild && build --win --ia32",
-    "unpacked-mac": "npm run prebuild && build --mac --dir",
-    "unpacked-win": "npm run prebuild && build --win --x64 --dir",
-    "unpacked-win-x86": "npm run prebuild && build --win --ia32 --dir",
-    "prebuild": "npm run lint && npm run test && npm run browserify-preload",
+    "dev": "npm run prebuild && cross-env ELECTRON_DEV=true electron .",
+    "demo-win": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file:///demo/index.html",
+    "demo-mac": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/demo/index.html",
+    "unpacked-mac": "npm run prebuild && npm run test && build --mac --dir",
+    "unpacked-win": "npm run prebuild && npm run test && build --win --x64 --dir",
+    "unpacked-win-x86": "npm run prebuild && npm run test && build --win --ia32 --dir",
+    "prebuild": "npm run rebuild && npm run browserify-preload",
+    "browserify-preload": "browserify -o js/preload/_preloadMain.js -x electron --insert-global-vars=__filename,__dirname js/preload/preloadMain.js",
     "rebuild": "electron-rebuild -f",
-    "lint": "eslint --ext .js js/",
-    "test": "jest --verbose --testPathPattern test",
-    "browserify-preload": "browserify -o js/preload/_preloadMain.js -x electron --insert-global-vars=__filename,__dirname js/preload/preloadMain.js"
+    "test": "npm run lint && jest --verbose --testPathPattern test",
+    "lint": "eslint --ext .js js/"
   },
   "jest": {
     "collectCoverage": true,
@@ -80,8 +76,7 @@
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-react": "^6.10.0",
-    "jest": "^19.0.2",
-    "node-abi": "^2.0.3"
+    "jest": "^19.0.2"
   },
   "dependencies": {
     "@paulcbetts/system-idle-time": "^1.0.4",
