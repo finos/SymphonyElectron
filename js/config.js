@@ -9,6 +9,11 @@ const isMac = require('./utils/misc.js').isMac;
 const getRegistry = require('./utils/getRegistry.js');
 const configFileName = 'Symphony.config';
 
+// cached config when first reading files. initially undefined and will be
+// updated when read from disk.
+let userConfig;
+let globalConfig;
+
 /**
  * Tries to read given field from user config file, if field doesn't exist
  * then tries reading from global config. User config is stord in directory:
@@ -45,6 +50,11 @@ function getUserConfigField(fieldName) {
 
 function readUserConfig() {
     return new Promise(function(resolve, reject) {
+        if (userConfig) {
+            resolve(userConfig);
+            return;
+        }
+
         let configPath = path.join(app.getPath('userData'), configFileName);
 
         fs.readFile(configPath, 'utf8', function(err, data) {
@@ -57,8 +67,10 @@ function readUserConfig() {
                     config = JSON.parse(data);
                 } catch (e) {
                     reject('can not parse user config file data: ' + data + ', error: ' + err);
+                    return;
                 }
 
+                userConfig = config;
                 resolve(config);
             }
         });
@@ -85,6 +97,11 @@ function getGlobalConfigField(fieldName) {
  */
 function readGlobalConfig() {
     return new Promise(function(resolve, reject) {
+        if (globalConfig) {
+            resolve(globalConfig);
+            return;
+        }
+
         let configPath;
         let globalConfigFileName = path.join('config', configFileName);
         if (isDevEnv) {
@@ -111,10 +128,12 @@ function readGlobalConfig() {
                     reject('can not parse config file data: ' + data + ', error: ' + err);
                 }
                 getRegistry('PodUrl')
-                .then(function(url){
+                .then(function(url) {
                     config.url = url;
+                    globalConfig = config;
                     resolve(config);
-                }).catch(function (){
+                }).catch(function () {
+                    globalConfig = config;
                     resolve(config);
                 });
             }
@@ -124,9 +143,9 @@ function readGlobalConfig() {
 
 /**
  * Updates user config with given field with new value
- * @param  {String} fieldName [description]
- * @param  {Object} newValue  object to replace given value
- * @return {[type]}           [description]
+ * @param  {String} fieldName  Name of field in config to be added/changed.
+ * @param  {Object} newValue   Object to replace given value
+ * @return {Promise}           Promise that resolves/rejects when file write is complete.
  */
 function updateConfigField(fieldName, newValue) {
     return readUserConfig()
@@ -135,7 +154,11 @@ function updateConfigField(fieldName, newValue) {
     },
     function() {
         // in case config doesn't exist, can't read or is corrupted.
-        return saveUserConfig(fieldName, newValue, {});
+        // add configVersion - just in case in future we need to provide
+        // upgrade capabilities.
+        return saveUserConfig(fieldName, newValue, {
+            configVersion: '1.0.0'
+        });
     });
 }
 
@@ -158,15 +181,24 @@ function saveUserConfig(fieldName, newValue, oldConfig) {
             if (err) {
                 reject(err);
             } else {
+                userConfig = newConfig;
                 resolve(newConfig);
             }
         });
     });
 }
 
+function clearCachedConfigs() {
+    userConfig = null;
+    globalConfig = null;
+}
+
 module.exports = {
     getConfigField,
     updateConfigField,
     configFileName,
-    saveUserConfig // Exporting this for unit tests
+
+    // items below here are only exported for testing, do NOT use!
+    saveUserConfig,
+    clearCachedConfigs
 };
