@@ -6,7 +6,7 @@
 	<dict>
 		<key>Resources/Base.lproj/MyInstallerPane.nib</key>
 		<data>
-		7SgpVMmKQhxWmP+UrnUO+Nmg6K8=
+		93+nbidqdulTAjRXAuOuZM0pFvA=
 		</data>
 		<key>Resources/InstallerSections.plist</key>
 		<data>
@@ -35,13 +35,21 @@
 	<dict>
 		<key>Resources/Base.lproj/MyInstallerPane.nib</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			93+nbidqdulTAjRXAuOuZM0pFvA=
+			</data>
 			<key>hash2</key>
 			<data>
-			hgK4NHwNXmzAlIsMGCQn3u4dSjn0/pnJfVT+v31D3iA=
+			2+SBG0Tj8EhV1JzFngJKFZv94RhkPBt7gIhs7h9vWgo=
 			</data>
 		</dict>
 		<key>Resources/InstallerSections.plist</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			htLpJqbvPLRCEJWl7tW5JtJh57U=
+			</data>
 			<key>hash2</key>
 			<data>
 			s4rwjWW7Gd+XrsmL4BJfMLfOoaUnr8TRXs1Fc6Ieb24=
@@ -49,6 +57,10 @@
 		</dict>
 		<key>Resources/en.lproj/InfoPlist.strings</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			MKMIqMmrq5wHe2WIb39Zx7uopYM=
+			</data>
 			<key>hash2</key>
 			<data>
 			6fmnl10zA3TcGk73XQtxuW2uRXRq0TLb3Oiprz+uW1M=
@@ -58,6 +70,10 @@
 		</dict>
 		<key>Resources/en.lproj/Localizable.strings</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			BNnst4BtRwVgmY7KjJHnv/Gi9bA=
+			</data>
 			<key>hash2</key>
 			<data>
 			N91Gfh6N6xvbnmDSlWU/PARxExcPoyutwL88q2opqak=
