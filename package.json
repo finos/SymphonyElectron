@@ -75,6 +75,7 @@
     "electron-builder": "^13.9.0",
     "electron-builder-squirrel-windows": "^12.3.0",
     "electron-packager": "^8.5.2",
+    "electron-rebuild": "^1.5.7",
     "eslint": "^3.16.1",
     "eslint-config-airbnb": "^14.1.0",
     "eslint-plugin-import": "^2.2.0",
@@ -87,7 +88,6 @@
     "async": "^2.1.5",
     "auto-launch": "^5.0.1",
     "electron-context-menu": "^0.8.0",
-    "electron-rebuild": "^1.5.7",
     "electron-squirrel-startup": "^1.0.0",
     "keymirror": "0.1.1",
     "winreg": "^1.2.3"
