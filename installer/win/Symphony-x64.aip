@@ -20,7 +20,6 @@
     <ROW Property="BannerBitmap" Value="banner" MultiBuildValue="DefaultBuild:Banner.jpg" Type="1" MsiKey="BannerBitmap"/>
     <ROW Property="CTRLS" Value="2"/>
     <ROW Property="DialogBitmap" Value="dialog" MultiBuildValue="DefaultBuild:Tabloid.jpg" Type="1" MsiKey="DialogBitmap"/>
-    <ROW Property="MINIMIZE_ON_CLOSE" Value="CheckBox"/>
     <ROW Property="Manufacturer" Value="Symphony"/>
     <ROW Property="POD_URL" Value="corporate.symphony.com" Type="4"/>
     <ROW Property="ProductCode" Value="1033:{F17EDEB4-A15F-46B9-83E9-8652CBC886B2} " Type="16"/>
