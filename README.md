@@ -32,7 +32,11 @@ In order to achieve those goals Symphony is participating and working in close c
 ## Build Instructions:
 - npm install
 - to run locally: npm run dev
-- to build mac pkg: npm run unpacked-mac, then run: /usr/local/bin/packagesbuild -v installer/mac/symphony-mac-packager.pkgproj.  You'll need to have packages installed: http://s.sudre.free.fr/Software/Packages/resources.html
+- to build mac pkg: 
+  * npm run unpacked-mac
+  * install software to build .pkg: http://s.sudre.free.fr/Software/Packages/about.html
+  * /usr/local/bin/packagesbuild -v installer/mac/symphony-mac-packager.pkgproj
+  * The .pkg file will output in directory: installer/mac/build
 - to build win msi: npm run unpacked-win (for 64 bit) and use 'advanced installer' .aip file in installer/ dir
 
 ## msi command line options:
