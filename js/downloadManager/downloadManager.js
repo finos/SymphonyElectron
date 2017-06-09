@@ -27,7 +27,7 @@ function openFile(id) {
     if (fileIndex !== -1){
         let openResponse = remote.shell.openExternal(`file:///${local.downloadItems[fileIndex].savedPath}`);
         if (!openResponse) {
-            remote.dialog.showErrorBox("File not found", 'The file you are trying to open cannot be found in the specified path');
+            remote.dialog.showErrorBox("File not found", 'The file you are trying to open cannot be found in the specified path.');
         }
     }
 }
@@ -42,7 +42,7 @@ function showInFinder(id) {
     if (showFileIndex !== -1) {
         let showResponse = remote.shell.showItemInFolder(local.downloadItems[showFileIndex].savedPath);
         if (!showResponse) {
-            remote.dialog.showErrorBox("File not found", 'The file you are trying to access cannot be found in the specified path');
+            remote.dialog.showErrorBox("File not found", 'The file you are trying to access cannot be found in the specified path.');
         }
     }
 }
@@ -150,11 +150,17 @@ function createDOM(arg) {
 }
 
 function initiate() {
-
+    let body = document.body;
+    let mainFooter = document.getElementById('footer');
     let mainDownloadDiv = document.getElementById('download-manager-footer');
+
+    if(body && !body.getAttribute('data-dm-status')) {
+        body.setAttribute('data-dm-status', 'false');
+    }
+    
     if (mainDownloadDiv) {
 
-        mainDownloadDiv.classList.remove('hidden');
+        mainFooter.classList.remove('hidden');
 
         let ulFind = document.getElementById('download-main');
 
@@ -179,19 +185,18 @@ function initiate() {
         if (closeDownloadManager) {
             closeDownloadManager.addEventListener('click', () => {
                 local.downloadItems = [];
-                document.getElementById('download-manager-footer').classList.add('hidden');
+                document.getElementById('footer').classList.add('hidden');
                 document.getElementById('download-main').innerHTML = '';
 
-                let body = document.body;
                 if (body) {
-                    body.classList.remove('pushed-up');
+                    body.setAttribute('data-dm-status', 'false');
                 }
             });
         }
 
-        let body = document.body;
-        if (body){
-            body.classList.add('pushed-up');
+        if (body) {
+            body.setAttribute('data-dm-status', 'true');
+            console.log("this is happening");
         }
     }
 }
