@@ -145,6 +145,11 @@ if (app.isReady()) {
     app.on('ready', setup);
 }
 
+function updateConfig(customConfig) {
+    config = Object.assign(config, customConfig);
+    calcDimensions();
+}
+
 function setup() {
     setupConfig();
 
@@ -650,4 +655,5 @@ function cleanUpInactiveWindow() {
 }
 
 module.exports.notify = notify
+module.exports.updateConfig = updateConfig
 module.exports.reset = setupConfig

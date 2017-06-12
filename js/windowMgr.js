@@ -15,6 +15,7 @@ const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
 const notify = require('./notify/electron-notify.js');
 
+
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField } = require('./config.js');
 
@@ -31,6 +32,10 @@ let windows = {};
 let willQuitApp = false;
 let isOnline = true;
 let boundsChangeWindow;
+let notfPosition = 'lower-right';
+
+// Get user preference for always on top
+getUserPreference();
 
 // note: this file is built using browserify in prebuild step.
 const preloadMainScript = path.join(__dirname, 'preload/_preloadMain.js');
@@ -132,6 +137,8 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         if (!isOnline) {
             loadErrors.showNetworkConnectivityError(mainWindow, url, retry);
         } else {
+            // updates the notify config with user preference
+            notify.updateConfig({startCorner: notfPosition});
             // removes all existing notifications when main window reloads
             notify.reset();
             log.send(logLevels.INFO, 'loaded main window url: ' + url);
@@ -385,6 +392,17 @@ function openUrlInDefaultBrower(urlToOpen) {
         electron.shell.openExternal(urlToOpen);
     }
 }
+
+function getUserPreference() {
+    getConfigField('notfPosition').then(function(mNotfPosition) {
+        notfPosition = mNotfPosition;
+    }).catch(function (err){
+        let title = 'Error loading configuration';
+        log.send(logLevels.ERROR, 'WindowMgr: error getting config field notfPosition, error: ' + err);
+        electron.dialog.showErrorBox(title, title + ': ' + err);
+    });
+}
+
 
 module.exports = {
     createMainWindow: createMainWindow,

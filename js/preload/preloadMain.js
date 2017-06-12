@@ -209,7 +209,13 @@ function createAPI() {
          * see: https://electron.atom.io/docs/api/desktop-capturer/
          * for interface: see documentation in desktopCapturer/getSources.js
          */
-        getMediaSources: getMediaSources
+        getMediaSources: getMediaSources,
+
+        showAlertSettings: function() {
+            local.ipcRenderer.send(apiName, {
+                cmd: apiCmds.showAlertSettings
+            });
+        }
     };
 
     // add support for both ssf and SYM_API name-space.

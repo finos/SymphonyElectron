@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        html, body {
+            background: #F9F9FA;
+            margin: 0;
+            height: 100%;
+        }
+        .content {
+            border-radius: 2px;
+            width: 100%;
+            flex: 0 0 auto;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            line-height: 1.3;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(0, 0, 0, .1);
+            margin-bottom: 20px;
+            padding: 16px;
+        }
+
+        .header__title {
+            font-weight: 500;
+            font-style: normal;
+            margin: 0 0 0 4px;
+            font-size: 1.4rem;
+            min-height: 13px;
+            text-overflow: ellipsis;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            width: 100%;
+            color: rgba(0, 0, 0, .8);
+        }
+
+        .label {
+            padding-left: 10px;
+        }
+
+        .main {
+            display: flex;
+            flex-direction: row;
+            margin-bottom: 20px;
+            width: 89%;
+            margin-left: 10px;
+            height: 100%;
+            border: 1px solid #ccc !important;
+            padding: 10px;
+        }
+
+        .main .first-set {
+            flex-grow: 1;
+        }
+
+        .main .second-set {
+            flex-grow: 1;
+            text-align: right;
+        }
+
+        .radio {
+            line-height: 1.7;
+        }
+
+        .footer {
+            padding: 8px 16px;
+            border-top: 1px solid rgba(0, 0, 0, .1);
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-align-items: center;
+            -ms-flex-align: center;
+            align-items: center;
+        }
+
+        .buttonLayout {
+            margin-left: auto;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-align-items: center;
+            -ms-flex-align: center;
+            align-items: center;
+        }
+
+        .button {
+            font-weight: 500;
+            color: #FFF;
+            background-color: #3DA2FD;
+            cursor: pointer;
+            box-shadow: none;
+            border: none;
+            border-radius: 20px;
+            font-size: 12px;
+            text-align: center;
+            padding: 8px 32px;
+            margin: 8px 8px 8px 0;
+            outline: 0;
+            display: inline-block;
+            line-height: 1;
+            -webkit-user-select: none;
+            user-select: none;
+            overflow: hidden;
+            position: relative;
+            transition: all 250ms ease-in-out;
+            z-index: 1;
+            text-transform: uppercase;
+        }
+
+        .buttonDismiss {
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: none;
+            border: none;
+            border-radius: 20px;
+            font-size: 12px;
+            text-align: center;
+            padding: 8px 32px;
+            margin: 8px 8px 8px 0;
+            outline: 0;
+            display: inline-block;
+            line-height: 1;
+            -webkit-user-select: none;
+            user-select: none;
+            overflow: hidden;
+            position: relative;
+            color: rgba(0,0,0,.38);
+            background-color: transparent;
+            z-index: 1;
+            text-transform: uppercase;
+        }
+
+        .buttonDismiss:hover {
+            transition: all 250ms ease-in-out;
+            background-color: rgba(255, 255, 255, 0);
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+<div class="content">
+    <header class="header">
+        <span class="header__title">Alert Settings</span>
+    </header>
+    <form>
+        <label class="label">Position</label>
+        <div id="screens" class="main">
+            <label>Alert shown on Monitor: </label>
+            <select id="screen-selector">
+            </select>
+        </div>
+        <label class="label">Position</label>
+        <div class="main">
+            <div class="first-set">
+                <div class="radio">
+                    <label class="radio__label"><input id="upper-left" type="radio" name="position" value="upper-left">
+                        Top Left
+                    </label>
+                </div>
+                <div class="radio">
+                    <label class="radio__label">
+                        <input id="lower-left" type="radio" name="position" value="lower-left">
+                        Bottom Left
+                    </label>
+                </div>
+            </div>
+            <div class="second-set">
+                <div class="radio">
+                    <label class="radio__label">Top Right
+                        <input id="upper-right" type="radio" name="position" value="upper-right">
+                    </label>
+                </div>
+                <div class="radio">
+                    <label class="radio__label">Bottom Right
+                        <input id="lower-right" type="radio" name="position" value="lower-right">
+                    </label>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<footer class="footer">
+    <div class="buttonLayout">
+        <button id="cancel" class="buttonDismiss">cancel</button>
+        <button id="ok-button" class="button">Ok</button>
+    </div>
+</footer>
+</body>
+</html>
