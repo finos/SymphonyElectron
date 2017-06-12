@@ -3,9 +3,11 @@
 const electron = require('electron');
 const app = electron.app;
 const nodeURL = require('url');
-const squirrelStartup = require('electron-squirrel-startup');
 const AutoLaunch = require('auto-launch');
 const urlParser = require('url');
+const log = require('electron-log');
+const {autoUpdater} = require('electron-updater');
+
 const { getConfigField } = require('./config.js');
 const { isMac, isDevEnv } = require('./utils/misc.js');
 const protocolHandler = require('./protocolHandler');
@@ -13,11 +15,6 @@ const getCmdLineArg = require('./utils/getCmdLineArg.js')
 
 // used to check if a url was opened when the app was already open
 let isAppAlreadyOpen = false;
-
-// exit early for squirrel installer
-if (squirrelStartup) {
-    return;
-}
 
 require('./mainApiMgr.js');
 
@@ -82,6 +79,12 @@ app.on('open-url', function (event, url) {
 });
 
 function setupThenOpenMainWindow() {
+
+    autoUpdater.logger = log;
+    autoUpdater.logger.transports.file.level = 'info';
+    log.info('App Starting...');
+
+    autoUpdater.checkForUpdates();
 
     processProtocolAction(process.argv);
 
@@ -186,3 +189,23 @@ function handleProtocolAction(uri) {
         protocolHandler.processProtocolAction(uri);
     }
 }
+
+autoUpdater.on('checking-for-update', () => {
+    log.info('Checking for update...');
+})
+autoUpdater.on('update-available', (ev, info) => {
+    log.info('Update available... ' + info);
+})
+autoUpdater.on('update-not-available', (ev, info) => {
+    log.info('Update not available... ' + info);
+})
+autoUpdater.on('error', (ev, err) => {
+    log.error('Error in auto-updater... ' + err);
+})
+autoUpdater.on('download-progress', (ev, progressObj) => {
+    log.info('Download is in progress... ' + progressObj);
+})
+autoUpdater.on('update-downloaded', (ev, info) => {
+    log.info('Update downloaded; will install now... ' + info);
+    autoUpdater.quitAndInstall();
+});

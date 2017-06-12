@@ -28,28 +28,20 @@
       "!installer/*",
       "!tests/*"
     ],
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "http://127.0.0.1:8080/"
+      }
+    ],
     "extraFiles": "config/Symphony.config",
     "appId": "symphony-electron-desktop",
     "mac": {
-      "target": "dmg",
+      "target": "zip",
       "category": "public.app-category.business"
     },
-    "dmg": {
-      "contents": [
-        {
-          "x": 140,
-          "y": 184
-        },
-        {
-          "x": 412,
-          "y": 184,
-          "type": "link",
-          "path": "/Applications"
-        }
-      ]
-    },
-    "win": {
-      "target": "squirrel"
+    "nsis": {
+      "perMachine": true
     }
   },
   "repository": {
@@ -68,8 +60,7 @@
     "browserify": "^14.1.0",
     "cross-env": "^3.2.4",
     "electron": "1.6.11",
-    "electron-builder": "^13.9.0",
-    "electron-builder-squirrel-windows": "^12.3.0",
+    "electron-builder": "^18.6.2",
     "electron-packager": "^8.5.2",
     "electron-rebuild": "^1.5.7",
     "eslint": "^3.16.1",
@@ -77,6 +68,7 @@
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-react": "^6.10.0",
+    "http-server": "^0.10.0",
     "jest": "^19.0.2"
   },
   "dependencies": {
@@ -84,7 +76,8 @@
     "async": "^2.1.5",
     "auto-launch": "^5.0.1",
     "electron-context-menu": "^0.8.0",
-    "electron-squirrel-startup": "^1.0.0",
+    "electron-log": "^2.2.6",    
+    "electron-updater": "^2.1.2",
     "keymirror": "0.1.1",
     "winreg": "^1.2.3"
   },
