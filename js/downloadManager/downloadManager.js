@@ -150,14 +150,9 @@ function createDOM(arg) {
 }
 
 function initiate() {
-    let body = document.body;
     let mainFooter = document.getElementById('footer');
     let mainDownloadDiv = document.getElementById('download-manager-footer');
 
-    if(body && !body.getAttribute('data-dm-status')) {
-        body.setAttribute('data-dm-status', 'false');
-    }
-    
     if (mainDownloadDiv) {
 
         mainFooter.classList.remove('hidden');
@@ -187,16 +182,7 @@ function initiate() {
                 local.downloadItems = [];
                 document.getElementById('footer').classList.add('hidden');
                 document.getElementById('download-main').innerHTML = '';
-
-                if (body) {
-                    body.setAttribute('data-dm-status', 'false');
-                }
             });
-        }
-
-        if (body) {
-            body.setAttribute('data-dm-status', 'true');
-            console.log("this is happening");
         }
     }
 }
