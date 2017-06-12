@@ -33,6 +33,7 @@ Currently, both the plugin source code and the plugin bundle are in the `install
 ## Known Issues
 
 - During installation, there is a section called "Destination Select" which is skipped based on the OS and it's settings. This is a [known bug](https://stackoverflow.com/questions/4647416/mac-packagemaker-destination-select-step-a-skipping-boption-permanently-disa). 
+- Only macOS 10.7+ versions are supported with the installer plugin
 
 ## Related links
 
