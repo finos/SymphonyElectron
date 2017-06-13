@@ -7,6 +7,7 @@ const isMac = require('../utils/misc.js').isMac;
 const childProcess = require('child_process');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
+const eventEmitter = require('../eventEmitter');
 
 var minimizeOnClose = false;
 var launchOnStartup = false;
@@ -241,10 +242,7 @@ function getTemplate(app) {
             checked: alwaysOnTop,
             click: (item) => {
                 alwaysOnTop = item.checked;
-                let browserWin = electron.BrowserWindow.getAllWindows();
-                browserWin.forEach(function (browser) {
-                    browser.setAlwaysOnTop(alwaysOnTop);
-                });
+                eventEmitter.emit('alwaysOnTop', alwaysOnTop);
                 updateConfigField('alwaysOnTop', alwaysOnTop);
             }
         }

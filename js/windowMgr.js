@@ -14,6 +14,7 @@ const getGuid = require('./utils/getGuid.js');
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
 const notify = require('./notify/electron-notify.js');
+const eventEmitter = require('./eventEmitter');
 
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField } = require('./config.js');
@@ -32,8 +33,6 @@ let willQuitApp = false;
 let isOnline = true;
 let boundsChangeWindow;
 let alwaysOnTop = false;
-// Get user preference for always on top
-getUserPreference();
 
 // note: this file is built using browserify in prebuild step.
 const preloadMainScript = path.join(__dirname, 'preload/_preloadMain.js');
@@ -56,11 +55,23 @@ function getParsedUrl(url) {
 function createMainWindow(initialUrl) {
     getConfigField('mainWinPos').then(
         function (bounds) {
-            doCreateMainWindow(initialUrl, bounds);
+            getConfigField('alwaysOnTop').then(function (mAlwaysOnTop) {
+                alwaysOnTop = mAlwaysOnTop;
+                doCreateMainWindow(initialUrl, bounds);
+            }, function () {
+                alwaysOnTop = false;
+                doCreateMainWindow(initialUrl, bounds);
+            });
         },
         function () {
             // failed, use default bounds
-            doCreateMainWindow(initialUrl, null);
+            getConfigField('alwaysOnTop').then(function (mAlwaysOnTop) {
+                alwaysOnTop = mAlwaysOnTop;
+                doCreateMainWindow(initialUrl, null);
+            }, function () {
+                alwaysOnTop = false;
+                doCreateMainWindow(initialUrl, null);
+            });
         }
     )
 }
@@ -196,8 +207,6 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     mainWindow.webContents.on('new-window', function (event, newWinUrl,
                                                       frameName, disposition, newWinOptions) {
 
-        // Get user preference for always on top
-        getUserPreference();
         let newWinParsedUrl = getParsedUrl(newWinUrl);
         let mainWinParsedUrl = getParsedUrl(url);
 
@@ -269,7 +278,17 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                     log.send(logLevels.INFO, 'loaded pop-out window url: ' + newWinParsedUrl);
 
                     browserWin.winName = frameName;
-                    browserWin.setAlwaysOnTop(alwaysOnTop);
+
+                    getConfigField('alwaysOnTop').then(
+                        function (mAlwaysOnTop) {
+                            alwaysOnTop = mAlwaysOnTop;
+                            browserWin.setAlwaysOnTop(alwaysOnTop);
+                        },
+                        function () {
+                            alwaysOnTop = false;
+                            browserWin.setAlwaysOnTop(alwaysOnTop);
+                        }
+                    );
 
                     browserWin.once('closed', function () {
                         removeWindowKey(newWinKey);
@@ -400,16 +419,23 @@ function openUrlInDefaultBrower(urlToOpen) {
     }
 }
 
-function getUserPreference() {
-    getConfigField('alwaysOnTop').then(function(mAlwaysOnTop) {
-        alwaysOnTop = mAlwaysOnTop;
-    }).catch(function (err){
-        alwaysOnTop = false;
-        let title = 'Error loading configuration';
-        log.send(logLevels.ERROR, 'WindowMgr: error getting config field alwaysOnTop, error: ' + err);
-        electron.dialog.showErrorBox(title, title + ': ' + err);
-    });
+/**
+ * Called when an event is received from menu
+ * @param boolean weather to enable or disable alwaysOnTop.
+ */
+function setAlwaysOnTop(boolean) {
+    let browserWins = BrowserWindow.getAllWindows();
+    if (browserWins.length > 0) {
+        browserWins.forEach(function (browser) {
+            browser.setAlwaysOnTop(boolean);
+        });
+    }
 }
+
+// node event emitter to update always on top
+eventEmitter.on('alwaysOnTop', (boolean) => {
+    setAlwaysOnTop(boolean);
+});
 
 module.exports = {
     createMainWindow: createMainWindow,
