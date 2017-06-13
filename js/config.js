@@ -61,17 +61,14 @@ function readUserConfig() {
             if (err) {
                 reject('cannot open user config file: ' + configPath + ', error: ' + err);
             } else {
-                let config = {};
                 try {
                     // data is the contents of the text file we just read
-                    config = JSON.parse(data);
+                    userConfig = JSON.parse(data);
                 } catch (e) {
                     reject('can not parse user config file data: ' + data + ', error: ' + err);
                     return;
                 }
-
-                userConfig = config;
-                resolve(config);
+                resolve(userConfig);
             }
         });
     });
@@ -120,21 +117,18 @@ function readGlobalConfig() {
             if (err) {
                 reject('cannot open global config file: ' + configPath + ', error: ' + err);
             } else {
-                let config = {};
                 try {
                     // data is the contents of the text file we just read
-                    config = JSON.parse(data);
+                    globalConfig = JSON.parse(data);
                 } catch (e) {
                     reject('can not parse config file data: ' + data + ', error: ' + err);
                 }
                 getRegistry('PodUrl')
                 .then(function(url) {
-                    config.url = url;
-                    globalConfig = config;
-                    resolve(config);
+                    globalConfig.url = url;
+                    resolve(globalConfig);
                 }).catch(function () {
-                    globalConfig = config;
-                    resolve(config);
+                    resolve(globalConfig);
                 });
             }
         });
