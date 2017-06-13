@@ -6,12 +6,12 @@ let activityDetection;
 describe('Tests for Activity Detection', function() {
 
     var originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
 
     beforeAll(function (done) {
-        childProcess.exec('npm rebuild --runtime=electron --target=1.5.0 --disturl=https://atom.io/download/atom-shell --build-from-source', function (err) {
+        childProcess.exec(`npm rebuild --target=${process.version} --build-from-source`, function (err) {
             activityDetection = require('../js/activityDetection/activityDetection.js');
-            activityDetection.setActivityWindow(120000, electron.ipcRenderer);
+            activityDetection.setActivityWindow(900000, electron.ipcRenderer);
             done();
         });
     });
@@ -27,20 +27,7 @@ describe('Tests for Activity Detection', function() {
         });
     });
 
-    it('should get user activity where user is not idle', function() {
-        activityDetection.setActivityWindow(120000, electron.ipcRenderer);
-        const data = activityDetection.activityDetection();
-
-        expect(data.isUserIdle).toBe(false);
-        expect(data.systemIdleTime).toBeLessThan(120000);
-    });
-
     it('should return null', function() {
-        const spy = jest.spyOn(activityDetection, 'activityDetection');
-        const data = activityDetection.activityDetection();
-
-        expect(spy).toHaveBeenCalled();
-        expect(data.isUserIdle).toBe(false);
 
         activityDetection.setActivityWindow(0, electron.ipcRenderer);
         const noData = activityDetection.activityDetection();
