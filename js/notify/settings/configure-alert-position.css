@@ -1,0 +1,143 @@
+html, body {
+    background: #F9F9FA;
+    margin: 0;
+    height: 100%;
+    font-family: SymphonyLato, Lato, serif;
+}
+.content {
+    border-radius: 2px;
+    width: 100%;
+    flex: 0 0 auto;
+}
+.header {
+    display: flex;
+    align-items: center;
+    line-height: 1.3;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
+    margin-bottom: 20px;
+    padding: 16px;
+}
+
+.header__title {
+    font-weight: 500;
+    font-style: normal;
+    margin: 0 0 0 4px;
+    font-size: 1.4rem;
+    min-height: 13px;
+    text-overflow: ellipsis;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 100%;
+    color: rgba(0, 0, 0, .8);
+}
+
+.form {
+    width: 95%;
+    margin: 0 auto;
+}
+
+.selector {
+    padding: 0 9px 0 16px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.main {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 20px;
+    height: 100%;
+    border: 1px solid #ccc !important;
+    padding: 10px;
+}
+
+.main .first-set {
+    flex-grow: 1;
+}
+
+.main .second-set {
+    flex-grow: 1;
+    text-align: right;
+}
+
+.radio {
+    line-height: 1.7;
+}
+
+.radio__label {
+    cursor: pointer;
+}
+
+.footer {
+    padding: 8px 16px;
+    border-top: 1px solid rgba(0, 0, 0, .1);
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+.buttonLayout {
+    margin-left: auto;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+.button {
+    font-weight: 500;
+    color: #FFF;
+    background-color: #3DA2FD;
+    cursor: pointer;
+    box-shadow: none;
+    border: none;
+    border-radius: 20px;
+    font-size: 12px;
+    text-align: center;
+    padding: 8px 32px;
+    margin: 8px 8px 8px 0;
+    outline: 0;
+    display: inline-block;
+    line-height: 1;
+    user-select: none;
+    overflow: hidden;
+    position: relative;
+    transition: all 250ms ease-in-out;
+    z-index: 1;
+    text-transform: uppercase;
+}
+
+.buttonDismiss {
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: none;
+    border: none;
+    border-radius: 20px;
+    font-size: 12px;
+    text-align: center;
+    padding: 8px 32px;
+    margin: 8px 8px 8px 0;
+    outline: 0;
+    display: inline-block;
+    line-height: 1;
+    user-select: none;
+    overflow: hidden;
+    position: relative;
+    color: rgba(0,0,0,.38);
+    background-color: transparent;
+    z-index: 1;
+    text-transform: uppercase;
+}
+
+.buttonDismiss:hover {
+    transition: all 250ms ease-in-out;
+    background-color: rgba(255, 255, 255, 0);
+    color: #000;
+}

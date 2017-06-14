@@ -14,6 +14,8 @@ const { getConfigField, updateConfigField } = require('../../config');
 
 let configurationWindow;
 let screens;
+let notfPosition;
+let notfScreen;
 
 let windowConfig = {
     width: 460,
@@ -24,7 +26,6 @@ let windowConfig = {
     show: false,
     frame: true,
     transparent: false,
-    titleBarStyle: 'hidden',
     acceptFirstMouse: true,
     webPreferences: {
         preload: path.join(__dirname, 'configure-alert-position-preload.js'),
@@ -48,7 +49,6 @@ function getTemplatePath() {
 }
 
 function openConfigurationWindow() {
-
     let mainWin = configurationWindow;
     if (mainWin && !mainWin.isDestroyed()) {
         if (mainWin.isMinimized()) {
@@ -67,14 +67,8 @@ function createWindow() {
     configurationWindow.show();
 
     configurationWindow.webContents.on('did-finish-load', function () {
-        getConfigField('notfPosition')
-            .then(loadConfig)
-            .catch(function (err) {
-                let title = 'Error loading configuration';
-                electron.dialog.showErrorBox(title, title + ': ' + err);
-            });
-
         configurationWindow.webContents.send('screens', screens);
+        loadConfig();
     });
 
     configurationWindow.on('close', function () {
@@ -90,21 +84,54 @@ function destroyWindow() {
     configurationWindow = null;
 }
 
-function updateConfig(event, configObj) {
-    updateConfigField(configObj.fieldName, configObj.value)
-        .then(updateNotification(configObj.value))
-        .catch(function (err){
-            let title = 'Error updating configuration';
+/**
+ * Method to save 'notfPosition' & 'notfScreen' to the config file
+ */
+function updateConfig() {
+    updateConfigField('notfPosition', notfPosition)
+        .then(function () {
+            updateConfigField('notfScreen', notfScreen);
+        },
+        function () {
+            updateConfigField('notfScreen', notfScreen)
+        });
+    updateNotification(notfPosition, notfScreen);
+}
+
+/**
+ * Method to read 'notfPosition' & 'notfScreen' from config and
+ * updated the configuration view
+ */
+function loadConfig() {
+    getConfigField('notfPosition')
+        .then(function (value) {
+            notfPosition = value;
+            configurationWindow.webContents.send('notfPosition', {position: value})
+        })
+        .catch(function (err) {
+            let title = 'Error loading configuration';
+            electron.dialog.showErrorBox(title, title + ': ' + err);
+        });
+
+    getConfigField('notfScreen')
+        .then(function (value) {
+            notfScreen = value;
+            configurationWindow.webContents.send('notfScreen', {screen: value})
+        })
+        .catch(function (err) {
+            let title = 'Error loading configuration';
             electron.dialog.showErrorBox(title, title + ': ' + err);
         });
 }
 
-function loadConfig(position) {
-    configurationWindow.webContents.send('notfConfig', {position: position})
-}
-
-function updateNotification(position) {
-    notify.updateConfig({startCorner: position});
+/**
+ * Method to update the Notification class with the new 'position' & 'screen'
+ * @param position - position to display the notifications
+ * ('upper-right, upper-left, lower-right, lower-left')
+ * @param screen - id of the selected screen
+ */
+function updateNotification(position, screen) {
+    notify.updateConfig({notfPosition: position, notfScreen: screen});
     notify.reset();
 }
 
@@ -112,7 +139,20 @@ ipc.on('close-alert', function () {
     configurationWindow.close();
 });
 
-ipc.on('update-config', updateConfig);
+ipc.on('update-config', (event, config) => {
+
+    if (config) {
+        if (config.notfPosition) {
+            notfPosition = config.notfPosition;
+        }
+        if (config.notfScreen) {
+            notfScreen = config.notfScreen;
+        }
+    }
+
+    updateConfig();
+});
+
 
 module.exports = {
     openConfigurationWindow: openConfigurationWindow

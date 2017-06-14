@@ -7,6 +7,7 @@ const isMac = require('../utils/misc.js').isMac;
 const childProcess = require('child_process');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
+const eventEmitter = require('../eventEmitter');
 
 var minimizeOnClose = false;
 var launchOnStartup = false;
@@ -274,6 +275,22 @@ function setCheckboxValues(){
     }).catch(function (err){
         let title = 'Error loading configuration';
         log.send(logLevels.ERROR, 'MenuTemplate: error getting config field launchOnStartup, error: ' + err);
+        electron.dialog.showErrorBox(title, title + ': ' + err);
+    });
+
+    getConfigField('notfPosition').then(function(position) {
+        eventEmitter.emit('notfPosition', position);
+    }).catch(function (err){
+        let title = 'Error loading configuration';
+        log.send(logLevels.ERROR, 'MenuTemplate: error getting config field notfPosition, error: ' + err);
+        electron.dialog.showErrorBox(title, title + ': ' + err);
+    });
+
+    getConfigField('notfScreen').then(function(screen) {
+        eventEmitter.emit('notfScreen', screen);
+    }).catch(function (err){
+        let title = 'Error loading configuration';
+        log.send(logLevels.ERROR, 'MenuTemplate: error getting config field notfScreen, error: ' + err);
         electron.dialog.showErrorBox(title, title + ': ' + err);
     });
 }

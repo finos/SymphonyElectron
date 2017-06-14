@@ -14,7 +14,7 @@ const getGuid = require('./utils/getGuid.js');
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
 const notify = require('./notify/electron-notify.js');
-
+const eventEmitter = require('./eventEmitter');
 
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField } = require('./config.js');
@@ -33,9 +33,7 @@ let willQuitApp = false;
 let isOnline = true;
 let boundsChangeWindow;
 let notfPosition = 'lower-right';
-
-// Get user preference for always on top
-getUserPreference();
+let notfScreen;
 
 // note: this file is built using browserify in prebuild step.
 const preloadMainScript = path.join(__dirname, 'preload/_preloadMain.js');
@@ -138,7 +136,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             loadErrors.showNetworkConnectivityError(mainWindow, url, retry);
         } else {
             // updates the notify config with user preference
-            notify.updateConfig({startCorner: notfPosition});
+            notify.updateConfig({notfPosition: notfPosition, notfScreen: notfScreen});
             // removes all existing notifications when main window reloads
             notify.reset();
             log.send(logLevels.INFO, 'loaded main window url: ' + url);
@@ -393,15 +391,15 @@ function openUrlInDefaultBrower(urlToOpen) {
     }
 }
 
-function getUserPreference() {
-    getConfigField('notfPosition').then(function(mNotfPosition) {
-        notfPosition = mNotfPosition;
-    }).catch(function (err){
-        let title = 'Error loading configuration';
-        log.send(logLevels.ERROR, 'WindowMgr: error getting config field notfPosition, error: ' + err);
-        electron.dialog.showErrorBox(title, title + ': ' + err);
-    });
-}
+// node event emitter for notfPosition
+eventEmitter.on('notfPosition', (position) => {
+    notfPosition = position;
+});
+
+// node event emitter for notfScreen
+eventEmitter.on('notfScreen', (screen) => {
+    notfScreen = screen;
+});
 
 
 module.exports = {

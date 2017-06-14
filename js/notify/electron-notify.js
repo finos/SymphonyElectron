@@ -15,6 +15,7 @@ const electron = require('electron');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const ipc = electron.ipcMain;
+const { isMac } = require('../utils/misc');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 
@@ -43,6 +44,8 @@ let closedNotifications = {};
 let latestID = 0;
 
 let nextInsertPos = {};
+let externalDisplay;
+let notfScreen;
 
 let config = {
     // corner to put notifications
@@ -145,9 +148,34 @@ if (app.isReady()) {
     app.on('ready', setup);
 }
 
+// Method to update notification config
 function updateConfig(customConfig) {
-    config = Object.assign(config, customConfig);
-    calcDimensions();
+    // Fetching user preferred notification position from config
+    if (customConfig.notfPosition) {
+        config = Object.assign(config, {startCorner: customConfig.notfPosition});
+
+        calcDimensions();
+    }
+
+    // Fetching user preferred notification screen from config
+    if (customConfig.notfScreen) {
+        notfScreen = customConfig.notfScreen;
+        // This feature only applies to windows
+        if (isMac) {
+            let screens = electron.screen.getAllDisplays();
+            if (screens && screens.length >= 0) {
+                externalDisplay = screens.find((screen) => {
+                    let screenId = screen.id.toString();
+                    return ((screen.bounds.x !== 0 || screen.bounds.y !== 0) && screenId === notfScreen);
+                });
+            }
+
+            // Update the notification to display on the user selected screen
+            if (externalDisplay) {
+                setupNotfScreen(externalDisplay);
+            }
+        }
+    }
 }
 
 function setup() {
@@ -215,6 +243,44 @@ function setupConfig() {
 
     // Use primary display only
     let display = electron.screen.getPrimaryDisplay();
+
+    config.corner = {};
+    config.corner.x = display.bounds.x + display.workArea.x;
+    config.corner.y = display.bounds.y + display.workArea.y;
+
+    // update corner x/y based on corner of screen where notf should appear
+    const workAreaWidth = display.workAreaSize.width;
+    const workAreaHeight = display.workAreaSize.height;
+    switch (config.startCorner) {
+        case 'upper-right':
+            config.corner.x += workAreaWidth;
+            break;
+        case 'lower-right':
+            config.corner.x += workAreaWidth;
+            config.corner.y += workAreaHeight;
+            break;
+        case 'lower-left':
+            config.corner.y += workAreaHeight;
+            break;
+        case 'upper-left':
+        default:
+            // no change needed
+            break;
+    }
+
+    calcDimensions();
+
+    // Maximum amount of Notifications we can show:
+    config.maxVisibleNotifications = Math.floor(display.workAreaSize.height / config.totalHeight);
+    config.maxVisibleNotifications = config.maxVisibleNotifications > 5 ? 5 : config.maxVisibleNotifications;
+}
+
+/**
+ * Method that sets the notification to display in a specific screen
+ * @param  {object} display an instance of Electron.screen.
+ */
+function setupNotfScreen(display) {
+    closeAll();
 
     config.corner = {};
     config.corner.x = display.bounds.x + display.workArea.x;

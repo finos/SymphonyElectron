@@ -3,8 +3,13 @@
 const electron = require('electron');
 const ipc = electron.ipcRenderer;
 
+let availableScreens;
+let selectedPosition;
+let selectedScreen;
+
 renderSettings();
 
+// Method that renders the data from user config
 function renderSettings() {
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -12,14 +17,12 @@ function renderSettings() {
         let cancel = document.getElementById('cancel');
 
         okButton.addEventListener('click', function () {
-            let value = document.querySelector('input[name="position"]:checked').value;
+            selectedPosition = document.querySelector('input[name="position"]:checked').value;
+            let selector = document.getElementById('screen-selector');
+            selectedScreen = selector.options[selector.selectedIndex].value;
 
-            let config = {
-                fieldName: 'notfPosition',
-                value: value
-            };
-            ipc.send('update-config', config);
-            ipc.send('close-alert');
+            // update the user selected data and close the window
+            updateAndClose();
         });
 
         cancel.addEventListener('click', function () {
@@ -30,7 +33,12 @@ function renderSettings() {
 
 }
 
-ipc.on('notfConfig', (event, args) => {
+function updateAndClose() {
+    ipc.send('update-config', {notfPosition: selectedPosition, notfScreen: selectedScreen});
+    ipc.send('close-alert');
+}
+
+ipc.on('notfPosition', (event, args) => {
     if (args && args.position){
         switch (args.position) {
             case 'upper-right':
@@ -46,21 +54,39 @@ ipc.on('notfConfig', (event, args) => {
                 document.getElementById('upper-left').checked = true;
                 break;
             default:
-                document.getElementById('upper-left').checked = true;
+                document.getElementById('upper-right').checked = true;
                 break;
         }
     }
 });
 
+ipc.on('notfScreen', (event, args) => {
+    if (args && args.screen) {
+        if (availableScreens) {
+            let index = availableScreens.findIndex((item) => {
+                return item.id === args.screen;
+            });
+            if (index !== -1){
+                let option = document.getElementById(availableScreens[index].id);
+
+                if (option){
+                    option.selected = true;
+                }
+            }
+        }
+    }
+});
+
 ipc.on('screens', (event, screens) => {
-    console.log(screens);
+    availableScreens = screens;
     let screenSelector = document.getElementById('screen-selector');
 
-    if (screenSelector){
-        screens.forEach((s, index) => {
+    if (screenSelector && screens){
+        screens.forEach((scr, index) => {
             let option = document.createElement('option');
-            option.value = index;
-            option.innerHTML = index;
+            option.value = scr.id;
+            option.id = scr.id;
+            option.innerHTML = index + 1;
             screenSelector.appendChild(option);
         });
     }
