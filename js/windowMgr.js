@@ -401,7 +401,7 @@ function openUrlInDefaultBrower(urlToOpen) {
  * Called when an event is received from menu
  * @param boolean weather to enable or disable alwaysOnTop.
  */
-function setAlwaysOnTop(boolean) {
+function isAlwaysOnTop(boolean) {
     alwaysOnTop = boolean;
     let browserWins = BrowserWindow.getAllWindows();
     if (browserWins.length > 0) {
@@ -412,8 +412,8 @@ function setAlwaysOnTop(boolean) {
 }
 
 // node event emitter to update always on top
-eventEmitter.on('alwaysOnTop', (boolean) => {
-    setAlwaysOnTop(boolean);
+eventEmitter.on('isAlwaysOnTop', (boolean) => {
+    isAlwaysOnTop(boolean);
 });
 
 module.exports = {

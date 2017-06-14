@@ -11,7 +11,7 @@ const eventEmitter = require('../eventEmitter');
 
 var minimizeOnClose = false;
 var launchOnStartup = false;
-var alwaysOnTop = false;
+var isAlwaysOnTop = false;
 
 setCheckboxValues();
 
@@ -239,11 +239,11 @@ function getTemplate(app) {
         {
             label: 'Always on top',
             type: 'checkbox',
-            checked: alwaysOnTop,
+            checked: isAlwaysOnTop,
             click: (item) => {
-                alwaysOnTop = item.checked;
-                eventEmitter.emit('alwaysOnTop', alwaysOnTop);
-                updateConfigField('alwaysOnTop', alwaysOnTop);
+                isAlwaysOnTop = item.checked;
+                eventEmitter.emit('isAlwaysOnTop', isAlwaysOnTop);
+                updateConfigField('alwaysOnTop', isAlwaysOnTop);
             }
         }
     )
@@ -294,8 +294,8 @@ function setCheckboxValues(){
     });
 
     getConfigField('alwaysOnTop').then(function(mAlwaysOnTop) {
-        alwaysOnTop = mAlwaysOnTop;
-        eventEmitter.emit('alwaysOnTop', alwaysOnTop);
+        isAlwaysOnTop = mAlwaysOnTop;
+        eventEmitter.emit('isAlwaysOnTop', isAlwaysOnTop);
     }).catch(function (err){
         let title = 'Error loading configuration';
         log.send(logLevels.ERROR, 'MenuTemplate: error getting config field alwaysOnTop, error: ' + err);
