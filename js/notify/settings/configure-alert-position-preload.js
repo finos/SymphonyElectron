@@ -5,7 +5,7 @@ const ipc = electron.ipcRenderer;
 
 let availableScreens;
 let selectedPosition;
-let selectedScreen;
+let selectedDisplay;
 
 renderSettings();
 
@@ -19,7 +19,7 @@ function renderSettings() {
         okButton.addEventListener('click', function () {
             selectedPosition = document.querySelector('input[name="position"]:checked').value;
             let selector = document.getElementById('screen-selector');
-            selectedScreen = selector.options[selector.selectedIndex].value;
+            selectedDisplay = selector.options[selector.selectedIndex].value;
 
             // update the user selected data and close the window
             updateAndClose();
@@ -34,37 +34,22 @@ function renderSettings() {
 }
 
 function updateAndClose() {
-    ipc.send('update-config', {notfPosition: selectedPosition, notfScreen: selectedScreen});
+    ipc.send('update-config', {notfPosition: selectedPosition, notfDisplay: selectedDisplay});
     ipc.send('close-alert');
 }
 
-ipc.on('notfPosition', (event, args) => {
-    if (args && args.position){
-        switch (args.position) {
-            case 'upper-right':
-                document.getElementById('upper-right').checked = true;
-                break;
-            case 'lower-right':
-                document.getElementById('lower-right').checked = true;
-                break;
-            case 'lower-left':
-                document.getElementById('lower-left').checked = true;
-                break;
-            case 'upper-left':
-                document.getElementById('upper-left').checked = true;
-                break;
-            default:
-                document.getElementById('upper-right').checked = true;
-                break;
-        }
+ipc.on('notfSettings', (event, args) => {
+    // update position from user config
+    if (args && args.notfPosition) {
+        document.getElementById(args.notfPosition).checked = true;
     }
-});
 
-ipc.on('notfScreen', (event, args) => {
-    if (args && args.screen) {
+    // update selected display from user config
+    if (args && args.notfDisplay) {
         if (availableScreens) {
             let index = availableScreens.findIndex((item) => {
-                return item.id === args.screen;
+                let id = item.id.toString();
+                return id === args.notfDisplay;
             });
             if (index !== -1){
                 let option = document.getElementById(availableScreens[index].id);

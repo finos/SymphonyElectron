@@ -45,7 +45,8 @@ let latestID = 0;
 
 let nextInsertPos = {};
 let externalDisplay;
-let notfScreen;
+// user selected display for notification
+let notfDisplay;
 
 let config = {
     // corner to put notifications
@@ -158,23 +159,8 @@ function updateConfig(customConfig) {
     }
 
     // Fetching user preferred notification screen from config
-    if (customConfig.notfScreen) {
-        notfScreen = customConfig.notfScreen;
-        // This feature only applies to windows
-        if (isMac) {
-            let screens = electron.screen.getAllDisplays();
-            if (screens && screens.length >= 0) {
-                externalDisplay = screens.find((screen) => {
-                    let screenId = screen.id.toString();
-                    return ((screen.bounds.x !== 0 || screen.bounds.y !== 0) && screenId === notfScreen);
-                });
-            }
-
-            // Update the notification to display on the user selected screen
-            if (externalDisplay) {
-                setupNotfScreen(externalDisplay);
-            }
-        }
+    if (customConfig.notfDisplay) {
+        notfDisplay = customConfig.notfDisplay;
     }
 }
 
@@ -241,12 +227,32 @@ function calcDimensions() {
 function setupConfig() {
     closeAll();
 
-    // Use primary display only
-    let display = electron.screen.getPrimaryDisplay();
+    // This feature only applies to windows
+    if (!isMac) {
+        let screens = electron.screen.getAllDisplays();
+        if (screens && screens.length >= 0) {
+            externalDisplay = screens.find((screen) => {
+                let screenId = screen.id.toString();
+                return ((screen.bounds.x !== 0 || screen.bounds.y !== 0) && screenId === notfDisplay);
+            });
+        }
+    }
 
-    config.corner = {};
-    config.corner.x = display.bounds.x + display.workArea.x;
-    config.corner.y = display.bounds.y + display.workArea.y;
+    let display;
+    // Update the notification to display on the user selected screen
+    if (externalDisplay) {
+        // use user selected display
+        display = externalDisplay;
+        config.corner = {};
+        config.corner.x = display.bounds.x;
+        config.corner.y = display.bounds.y;
+    } else {
+        // Use primary display
+        display = electron.screen.getPrimaryDisplay();
+        config.corner = {};
+        config.corner.x = display.bounds.x + display.workArea.x;
+        config.corner.y = display.bounds.y + display.workArea.y;
+    }
 
     // update corner x/y based on corner of screen where notf should appear
     const workAreaWidth = display.workAreaSize.width;
@@ -274,45 +280,6 @@ function setupConfig() {
     config.maxVisibleNotifications = Math.floor(display.workAreaSize.height / config.totalHeight);
     config.maxVisibleNotifications = config.maxVisibleNotifications > 5 ? 5 : config.maxVisibleNotifications;
 }
-
-/**
- * Method that sets the notification to display in a specific screen
- * @param  {object} display an instance of Electron.screen.
- */
-function setupNotfScreen(display) {
-    closeAll();
-
-    config.corner = {};
-    config.corner.x = display.bounds.x + display.workArea.x;
-    config.corner.y = display.bounds.y + display.workArea.y;
-
-    // update corner x/y based on corner of screen where notf should appear
-    const workAreaWidth = display.workAreaSize.width;
-    const workAreaHeight = display.workAreaSize.height;
-    switch (config.startCorner) {
-        case 'upper-right':
-            config.corner.x += workAreaWidth;
-            break;
-        case 'lower-right':
-            config.corner.x += workAreaWidth;
-            config.corner.y += workAreaHeight;
-            break;
-        case 'lower-left':
-            config.corner.y += workAreaHeight;
-            break;
-        case 'upper-left':
-        default:
-            // no change needed
-            break;
-    }
-
-    calcDimensions();
-
-    // Maximum amount of Notifications we can show:
-    config.maxVisibleNotifications = Math.floor(display.workAreaSize.height / config.totalHeight);
-    config.maxVisibleNotifications = config.maxVisibleNotifications > 5 ? 5 : config.maxVisibleNotifications;
-}
-
 
 function notify(notification) {
     // Is it an object and only one argument?

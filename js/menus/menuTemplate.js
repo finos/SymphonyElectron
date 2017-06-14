@@ -278,21 +278,14 @@ function setCheckboxValues(){
         electron.dialog.showErrorBox(title, title + ': ' + err);
     });
 
-    getConfigField('notfPosition').then(function(position) {
-        eventEmitter.emit('notfPosition', position);
+    getConfigField('notfSettings').then(function(notfObject) {
+        eventEmitter.emit('notfSettings', notfObject);
     }).catch(function (err){
         let title = 'Error loading configuration';
         log.send(logLevels.ERROR, 'MenuTemplate: error getting config field notfPosition, error: ' + err);
         electron.dialog.showErrorBox(title, title + ': ' + err);
     });
 
-    getConfigField('notfScreen').then(function(screen) {
-        eventEmitter.emit('notfScreen', screen);
-    }).catch(function (err){
-        let title = 'Error loading configuration';
-        log.send(logLevels.ERROR, 'MenuTemplate: error getting config field notfScreen, error: ' + err);
-        electron.dialog.showErrorBox(title, title + ': ' + err);
-    });
 }
 
 function getMinimizeOnClose(){

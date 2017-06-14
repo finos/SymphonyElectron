@@ -15,7 +15,7 @@ const { getConfigField, updateConfigField } = require('../../config');
 let configurationWindow;
 let screens;
 let notfPosition;
-let notfScreen;
+let notfDisplay;
 
 let windowConfig = {
     width: 460,
@@ -85,38 +85,27 @@ function destroyWindow() {
 }
 
 /**
- * Method to save 'notfPosition' & 'notfScreen' to the config file
+ * Method to save 'notfPosition' & 'notfDisplay' to the config file
  */
 function updateConfig() {
-    updateConfigField('notfPosition', notfPosition)
-        .then(function () {
-            updateConfigField('notfScreen', notfScreen);
-        },
-        function () {
-            updateConfigField('notfScreen', notfScreen)
-        });
-    updateNotification(notfPosition, notfScreen);
+    let notfSettings = {
+        notfPosition: notfPosition,
+        notfDisplay: notfDisplay
+    };
+    updateConfigField('notfSettings', notfSettings);
+    updateNotification(notfPosition, notfDisplay);
 }
 
 /**
- * Method to read 'notfPosition' & 'notfScreen' from config and
+ * Method to read 'notfPosition' & 'notfDisplay' from config and
  * updated the configuration view
  */
 function loadConfig() {
-    getConfigField('notfPosition')
-        .then(function (value) {
-            notfPosition = value;
-            configurationWindow.webContents.send('notfPosition', {position: value})
-        })
-        .catch(function (err) {
-            let title = 'Error loading configuration';
-            electron.dialog.showErrorBox(title, title + ': ' + err);
-        });
-
-    getConfigField('notfScreen')
-        .then(function (value) {
-            notfScreen = value;
-            configurationWindow.webContents.send('notfScreen', {screen: value})
+    getConfigField('notfSettings')
+        .then(function (notfObj) {
+            notfPosition = notfObj.notfPosition;
+            notfDisplay = notfObj.notfDisplay;
+            configurationWindow.webContents.send('notfSettings', {notfPosition: notfPosition, notfDisplay: notfDisplay});
         })
         .catch(function (err) {
             let title = 'Error loading configuration';
@@ -128,10 +117,10 @@ function loadConfig() {
  * Method to update the Notification class with the new 'position' & 'screen'
  * @param position - position to display the notifications
  * ('upper-right, upper-left, lower-right, lower-left')
- * @param screen - id of the selected screen
+ * @param display - id of the selected display
  */
-function updateNotification(position, screen) {
-    notify.updateConfig({notfPosition: position, notfScreen: screen});
+function updateNotification(position, display) {
+    notify.updateConfig({notfPosition: position, notfDisplay: display});
     notify.reset();
 }
 
@@ -145,8 +134,8 @@ ipc.on('update-config', (event, config) => {
         if (config.notfPosition) {
             notfPosition = config.notfPosition;
         }
-        if (config.notfScreen) {
-            notfScreen = config.notfScreen;
+        if (config.notfDisplay) {
+            notfDisplay = config.notfDisplay;
         }
     }
 
