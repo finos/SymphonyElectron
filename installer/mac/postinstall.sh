@@ -18,6 +18,7 @@ sed -i "" -E "s#\"launchOnStartup\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#
 
 ## Add app to login items
 if [ $launch_on_startup == true ]; then
+mkdir ~/Library/LaunchAgents/
 cat > ~/Library/LaunchAgents/com.symphony.symphony-desktop.agent.plist << EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">

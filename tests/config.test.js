@@ -1,4 +1,4 @@
-const { getConfigField, updateConfigField, configFileName, saveUserConfig } = require('../js/config');
+const { clearCachedConfigs, getConfigField, updateConfigField, configFileName, saveUserConfig } = require('../js/config');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
@@ -33,12 +33,15 @@ function mockedGetPath(type) {
     return '';
 }
 
-describe('getConfigField tests', function() {
+describe('read/write config tests', function() {
 
     beforeEach(function() {
         /// reset module vars between running tests.
         globalConfigDir = null;
         userConfigDir = null;
+
+        // reset module values so each test starts clean.
+        clearCachedConfigs();
     });
 
     afterEach(function() {
@@ -137,7 +140,6 @@ describe('getConfigField tests', function() {
         });
 
         it('should fail when global config path is invalid', function() {
-
             var globalConfig = {
                 url: 'something-else'
             };
@@ -150,11 +152,9 @@ describe('getConfigField tests', function() {
                 globalConfigDir = correctConfigDir;
                 expect(err).toBeTruthy();
             });
-
         });
 
         it('should fail when user config path is invalid', function() {
-
             var userConfig = {
                 url: 'something'
             };
@@ -167,8 +167,54 @@ describe('getConfigField tests', function() {
                 userConfigDir = correctConfigDir;
                 expect(err).toBeTruthy();
             });
-
         });
+
+        it('should read cached user config value rather than reading file from disk again', function(done) {
+            var userConfig = {
+                url: 'qa4.symphony.com'
+            };
+            createTempUserConfig(userConfig);
+
+            var userConfig2 = {
+                url: 'qa5.symphony.com'
+            };
+
+            return getConfigField('url')
+                .then(function() {
+                    createTempUserConfig(userConfig2);
+                })
+                .then(function() {
+                    return getConfigField('url')
+                })
+                .then(function(url) {
+                    expect(url).toBe('qa4.symphony.com');
+                    done();
+                });
+        });
+
+        it('should read cache global config value rather than reading file from disk again', function(done) {
+            var globalConfig = {
+                url: 'qa8.symphony.com'
+            };
+            createTempGlobalConfig(globalConfig);
+
+            var globalConfig2 = {
+                url: 'qa9.symphony.com'
+            };
+
+            return getConfigField('url')
+                .then(function() {
+                    createTempGlobalConfig(globalConfig2);
+                })
+                .then(function() {
+                    return getConfigField('url')
+                })
+                .then(function(url) {
+                    expect(url).toBe('qa8.symphony.com');
+                    done();
+                });
+        });
+
     });
 
     describe('updateConfigField tests', function() {
