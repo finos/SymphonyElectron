@@ -295,6 +295,7 @@ function setCheckboxValues(){
 
     getConfigField('alwaysOnTop').then(function(mAlwaysOnTop) {
         alwaysOnTop = mAlwaysOnTop;
+        eventEmitter.emit('alwaysOnTop', alwaysOnTop);
     }).catch(function (err){
         let title = 'Error loading configuration';
         log.send(logLevels.ERROR, 'MenuTemplate: error getting config field alwaysOnTop, error: ' + err);

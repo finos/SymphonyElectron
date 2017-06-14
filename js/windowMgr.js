@@ -55,23 +55,11 @@ function getParsedUrl(url) {
 function createMainWindow(initialUrl) {
     getConfigField('mainWinPos').then(
         function (bounds) {
-            getConfigField('alwaysOnTop').then(function (mAlwaysOnTop) {
-                alwaysOnTop = mAlwaysOnTop;
-                doCreateMainWindow(initialUrl, bounds);
-            }, function () {
-                alwaysOnTop = false;
-                doCreateMainWindow(initialUrl, bounds);
-            });
+            doCreateMainWindow(initialUrl, bounds);
         },
         function () {
             // failed, use default bounds
-            getConfigField('alwaysOnTop').then(function (mAlwaysOnTop) {
-                alwaysOnTop = mAlwaysOnTop;
-                doCreateMainWindow(initialUrl, null);
-            }, function () {
-                alwaysOnTop = false;
-                doCreateMainWindow(initialUrl, null);
-            });
+            doCreateMainWindow(initialUrl, null);
         }
     )
 }
@@ -278,17 +266,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                     log.send(logLevels.INFO, 'loaded pop-out window url: ' + newWinParsedUrl);
 
                     browserWin.winName = frameName;
-
-                    getConfigField('alwaysOnTop').then(
-                        function (mAlwaysOnTop) {
-                            alwaysOnTop = mAlwaysOnTop;
-                            browserWin.setAlwaysOnTop(alwaysOnTop);
-                        },
-                        function () {
-                            alwaysOnTop = false;
-                            browserWin.setAlwaysOnTop(alwaysOnTop);
-                        }
-                    );
+                    browserWin.setAlwaysOnTop(alwaysOnTop);
 
                     browserWin.once('closed', function () {
                         removeWindowKey(newWinKey);
@@ -424,6 +402,7 @@ function openUrlInDefaultBrower(urlToOpen) {
  * @param boolean weather to enable or disable alwaysOnTop.
  */
 function setAlwaysOnTop(boolean) {
+    alwaysOnTop = boolean;
     let browserWins = BrowserWindow.getAllWindows();
     if (browserWins.length > 0) {
         browserWins.forEach(function (browser) {
