@@ -212,8 +212,10 @@ function createAPI() {
         getMediaSources: getMediaSources,
 
         showAlertSettings: function() {
+            let windowName = remote.getCurrentWindow().winName;
             local.ipcRenderer.send(apiName, {
-                cmd: apiCmds.showAlertSettings
+                cmd: apiCmds.showNotificationSettings,
+                windowName: windowName
             });
         }
     };

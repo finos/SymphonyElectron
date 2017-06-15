@@ -45,8 +45,8 @@ let latestID = 0;
 
 let nextInsertPos = {};
 let externalDisplay;
-// user selected display for notification
-let notfDisplay;
+// user selected display id for notification
+let displayId;
 
 let config = {
     // corner to put notifications
@@ -152,15 +152,15 @@ if (app.isReady()) {
 // Method to update notification config
 function updateConfig(customConfig) {
     // Fetching user preferred notification position from config
-    if (customConfig.notfPosition) {
-        config = Object.assign(config, {startCorner: customConfig.notfPosition});
+    if (customConfig.position) {
+        config = Object.assign(config, {startCorner: customConfig.position});
 
         calcDimensions();
     }
 
     // Fetching user preferred notification screen from config
-    if (customConfig.notfDisplay) {
-        notfDisplay = customConfig.notfDisplay;
+    if (customConfig.display) {
+        displayId = customConfig.display;
     }
 }
 
@@ -233,7 +233,7 @@ function setupConfig() {
         if (screens && screens.length >= 0) {
             externalDisplay = screens.find((screen) => {
                 let screenId = screen.id.toString();
-                return ((screen.bounds.x !== 0 || screen.bounds.y !== 0) && screenId === notfDisplay);
+                return ((screen.bounds.x !== 0 || screen.bounds.y !== 0) && screenId === displayId);
             });
         }
     }

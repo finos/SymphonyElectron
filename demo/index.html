@@ -34,6 +34,7 @@
             <label for='tag'>tag:</label>
             <input type='text' id='tag' value=''/>
         </p>
+        <button id='open-config-win'>Open configure window</button>
         <br>
         <hr>
         <p>Badge Count:<p>
@@ -66,6 +67,12 @@
         Version Info:<span id='info'></span>
     </body>
     <script>
+        var openConfigWin = document.getElementById('open-config-win');
+
+        openConfigWin.addEventListener('click', function() {
+            ssf.showAlertSettings();
+        });
+
         var notfEl = document.getElementById('notf');
         var num = 0;
 

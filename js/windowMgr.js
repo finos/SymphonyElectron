@@ -32,8 +32,8 @@ let windows = {};
 let willQuitApp = false;
 let isOnline = true;
 let boundsChangeWindow;
-let notfPosition = 'lower-right';
-let notfDisplay;
+let position = 'lower-right';
+let display;
 
 // note: this file is built using browserify in prebuild step.
 const preloadMainScript = path.join(__dirname, 'preload/_preloadMain.js');
@@ -136,7 +136,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             loadErrors.showNetworkConnectivityError(mainWindow, url, retry);
         } else {
             // updates the notify config with user preference
-            notify.updateConfig({notfPosition: notfPosition, notfDisplay: notfDisplay});
+            notify.updateConfig({position: position, display: display});
             // removes all existing notifications when main window reloads
             notify.reset();
             log.send(logLevels.INFO, 'loaded main window url: ' + url);
@@ -391,10 +391,10 @@ function openUrlInDefaultBrower(urlToOpen) {
     }
 }
 
-// node event emitter for notfPosition
-eventEmitter.on('notfSettings', (notfObj) => {
-    notfPosition = notfObj.notfPosition;
-    notfDisplay = notfObj.notfDisplay;
+// node event emitter for notification settings
+eventEmitter.on('notificationSettings', (notificationSettings) => {
+    position = notificationSettings.position;
+    display = notificationSettings.display;
 });
 
 module.exports = {

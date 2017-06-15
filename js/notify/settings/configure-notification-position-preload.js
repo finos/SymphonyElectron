@@ -34,22 +34,22 @@ function renderSettings() {
 }
 
 function updateAndClose() {
-    ipc.send('update-config', {notfPosition: selectedPosition, notfDisplay: selectedDisplay});
+    ipc.send('update-config', {position: selectedPosition, display: selectedDisplay});
     ipc.send('close-alert');
 }
 
-ipc.on('notfSettings', (event, args) => {
+ipc.on('notificationSettings', (event, args) => {
     // update position from user config
-    if (args && args.notfPosition) {
-        document.getElementById(args.notfPosition).checked = true;
+    if (args && args.position) {
+        document.getElementById(args.position).checked = true;
     }
 
     // update selected display from user config
-    if (args && args.notfDisplay) {
+    if (args && args.display) {
         if (availableScreens) {
             let index = availableScreens.findIndex((item) => {
                 let id = item.id.toString();
-                return id === args.notfDisplay;
+                return id === args.display;
             });
             if (index !== -1){
                 let option = document.getElementById(availableScreens[index].id);
@@ -67,6 +67,11 @@ ipc.on('screens', (event, screens) => {
     let screenSelector = document.getElementById('screen-selector');
 
     if (screenSelector && screens){
+
+        // clearing the previously added content to
+        // make sure the content is not repeated
+        screenSelector.innerHTML = '';
+
         screens.forEach((scr, index) => {
             let option = document.createElement('option');
             option.value = scr.id;

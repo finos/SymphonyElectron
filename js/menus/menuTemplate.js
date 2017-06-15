@@ -278,11 +278,11 @@ function setCheckboxValues(){
         electron.dialog.showErrorBox(title, title + ': ' + err);
     });
 
-    getConfigField('notfSettings').then(function(notfObject) {
-        eventEmitter.emit('notfSettings', notfObject);
+    getConfigField('notificationSettings').then(function(notfObject) {
+        eventEmitter.emit('notificationSettings', notfObject);
     }).catch(function (err){
         let title = 'Error loading configuration';
-        log.send(logLevels.ERROR, 'MenuTemplate: error getting config field notfPosition, error: ' + err);
+        log.send(logLevels.ERROR, 'MenuTemplate: error getting config field notificationSettings, error: ' + err);
         electron.dialog.showErrorBox(title, title + ': ' + err);
     });
 
