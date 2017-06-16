@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Symphony - Configure Notification Position</title>
+    <link rel="stylesheet" type="text/css" href="./configure-notification-position.css">
+</head>
+<body>
+<div class="content">
+    <header class="header">
+        <span class="header__title">Notification Settings</span>
+    </header>
+    <div class="form">
+        <form>
+            <label class="label">Monitor</label>
+            <div id="screens" class="main">
+                <label>Notification shown on Monitor:  </label>
+                <select class="selector" id="screen-selector">
+                </select>
+            </div>
+            <label class="label">Position</label>
+            <div class="main">
+                <div class="first-set">
+                    <div class="radio">
+                        <label class="radio__label"><input id="upper-left" type="radio" name="position" value="upper-left">
+                            Top Left
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label class="radio__label">
+                            <input id="lower-left" type="radio" name="position" value="lower-left">
+                            Bottom Left
+                        </label>
+                    </div>
+                </div>
+                <div class="second-set">
+                    <div class="radio">
+                        <label class="radio__label">Top Right
+                            <input id="upper-right" type="radio" name="position" value="upper-right">
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label class="radio__label">Bottom Right
+                            <input id="lower-right" type="radio" name="position" value="lower-right">
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="buttonLayout">
+        <button id="cancel" class="buttonDismiss">CANCEL</button>
+        <button id="ok-button" class="button">OK</button>
+    </div>
+</footer>
+</body>
+</html>

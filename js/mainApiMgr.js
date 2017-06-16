@@ -12,6 +12,7 @@ const logLevels = require('./enums/logLevels');
 const activityDetection = require('./activityDetection/activityDetection');
 const badgeCount = require('./badgeCount.js');
 const protocolHandler = require('./protocolHandler');
+const configureNotification = require('./notify/settings/configure-notification-position');
 
 const apiEnums = require('./enums/api.js');
 const apiCmds = apiEnums.cmds;
@@ -97,6 +98,10 @@ electron.ipcMain.on(apiName, (event, arg) => {
     if (arg.cmd === apiCmds.registerActivityDetection) {
         // renderer window that has a registered activity detection from JS.
         activityDetection.setActivityWindow(arg.period, event.sender);
+    }
+
+    if (arg.cmd === apiCmds.showNotificationSettings && typeof arg.windowName === 'string') {
+        configureNotification.openConfigurationWindow(arg.windowName);
     }
 });
 
