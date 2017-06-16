@@ -233,26 +233,15 @@ function setupConfig() {
         if (screens && screens.length >= 0) {
             externalDisplay = screens.find((screen) => {
                 let screenId = screen.id.toString();
-                return ((screen.bounds.x !== 0 || screen.bounds.y !== 0) && screenId === displayId);
+                return screenId === displayId;
             });
         }
     }
 
-    let display;
-    // Update the notification to display on the user selected screen
-    if (externalDisplay) {
-        // use user selected display
-        display = externalDisplay;
-        config.corner = {};
-        config.corner.x = display.bounds.x;
-        config.corner.y = display.bounds.y;
-    } else {
-        // Use primary display
-        display = electron.screen.getPrimaryDisplay();
-        config.corner = {};
-        config.corner.x = display.bounds.x + display.workArea.x;
-        config.corner.y = display.bounds.y + display.workArea.y;
-    }
+    let display = externalDisplay ? externalDisplay : electron.screen.getPrimaryDisplay();
+    config.corner = {};
+    config.corner.x = display.workArea.x;
+    config.corner.y = display.workArea.y;
 
     // update corner x/y based on corner of screen where notf should appear
     const workAreaWidth = display.workAreaSize.width;

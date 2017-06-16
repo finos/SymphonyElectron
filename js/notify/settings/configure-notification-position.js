@@ -11,7 +11,7 @@ const logLevels = require('../../enums/logLevels.js');
 const notify = require('./../electron-notify');
 const eventEmitter = require('./../../eventEmitter');
 
-const { getConfigField, updateConfigField } = require('../../config');
+const { updateConfigField } = require('../../config');
 
 let configurationWindow;
 let screens;
@@ -44,7 +44,7 @@ function updateScreens() {
     screens = electron.screen.getAllDisplays();
 
     // Notifying renderer when a display is added/removed
-    if (screens && screens.length >= 0) {
+    if (configurationWindow && screens && screens.length >= 0) {
         configurationWindow.webContents.send('screens', screens);
     }
 }

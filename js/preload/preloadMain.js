@@ -211,7 +211,10 @@ function createAPI() {
          */
         getMediaSources: getMediaSources,
 
-        showAlertSettings: function() {
+        /**
+         * Opens a modal window to configure notification preference.
+         */
+        showNotificationSettings: function() {
             let windowName = remote.getCurrentWindow().winName;
             local.ipcRenderer.send(apiName, {
                 cmd: apiCmds.showNotificationSettings,
