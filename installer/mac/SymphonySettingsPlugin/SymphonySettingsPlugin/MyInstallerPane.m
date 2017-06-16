@@ -29,27 +29,37 @@
     // Create the final url
     NSString *finalUrl = [protocol stringByAppendingString: podUrl];
     
-    // By default, set minimizeOnClose and autoLaunchOnStart to true
+    // By default, set autoLaunchOnStart to true
+    NSString *autoLaunchOnStart = @"true";
+    
+    // If the checkbox is changed, set the auto launch value accordingly
+    if ([_autoLaunchCheckBox state] == 0) {
+        autoLaunchOnStart = @"false";
+    }
+    
+    // By default, set minimizeOnClose and alwaysOnTop to false
     NSString *minimizeOnClose = @"false";
-    NSString *autoLaunchOnStart = @"true\n";
+    NSString *alwaysOnTop = @"false\n";
     
     // If the checkbox is changed, set the minimize on close value accordingly
     if ([_minimizeOnCloseCheckBox state] == 1) {
         minimizeOnClose = @"true";
     }
     
-    // If the checkbox is changed, set the auto launch value accordingly
-    if ([_autoLaunchCheckBox state] == 0) {
-        autoLaunchOnStart = @"false\n";
+    // If the checkbox is changed, set the always on top value accordingly
+    if ([_alwaysOnTopCheckBox state] == 1) {
+        alwaysOnTop = @"true\n";
     }
     
-    NSArray *symSettings = [[NSArray alloc] initWithObjects:finalUrl, minimizeOnClose, autoLaunchOnStart, nil];
+    // Create an array with the selected options
+    NSArray *symSettings = [[NSArray alloc] initWithObjects:finalUrl, minimizeOnClose, autoLaunchOnStart, alwaysOnTop, nil];
+    
+    // Create a string from the array with new-line as the separator
     NSString *symSettingsString = [symSettings componentsJoinedByString:@"\n"];
     
     // Write all the above settings to file
     [symSettingsString writeToFile:@"/tmp/sym_settings.txt" atomically:YES encoding:NSUTF8StringEncoding error:nil];
     
 }
-
 
 @end
