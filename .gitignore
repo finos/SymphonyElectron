@@ -3,6 +3,7 @@ dist
 .DS_Store
 js/preload/_*.js
 .idea/
+.vscode/
 coverage/
 npm-debug.log
 DerivedData/
