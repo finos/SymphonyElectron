@@ -32,6 +32,7 @@ let windows = {};
 let willQuitApp = false;
 let isOnline = true;
 let boundsChangeWindow;
+let alwaysOnTop = false;
 let position = 'lower-right';
 let display;
 
@@ -76,6 +77,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         show: true,
         minWidth: MIN_WIDTH,
         minHeight: MIN_HEIGHT,
+        alwaysOnTop: false,
         webPreferences: {
             sandbox: true,
             nodeIntegration: false,
@@ -104,6 +106,11 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     if (bounds && bounds.x && bounds.y) {
         newWinOpts.x = bounds.x;
         newWinOpts.y = bounds.y;
+    }
+
+    // will set the main window on top as per the user prefs
+    if (alwaysOnTop){
+        newWinOpts.alwaysOnTop = alwaysOnTop;
     }
 
     // note: augmenting with some custom values
@@ -191,6 +198,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     // open external links in default browser - a tag with href='_blank' or window.open
     mainWindow.webContents.on('new-window', function (event, newWinUrl,
                                                       frameName, disposition, newWinOptions) {
+
         let newWinParsedUrl = getParsedUrl(newWinUrl);
         let mainWinParsedUrl = getParsedUrl(url);
 
@@ -246,6 +254,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             newWinOptions.height = Math.max(height, MIN_HEIGHT);
             newWinOptions.minWidth = MIN_WIDTH;
             newWinOptions.minHeight = MIN_HEIGHT;
+            newWinOptions.alwaysOnTop = alwaysOnTop;
 
             let newWinKey = getGuid();
 
@@ -261,6 +270,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                     log.send(logLevels.INFO, 'loaded pop-out window url: ' + newWinParsedUrl);
 
                     browserWin.winName = frameName;
+                    browserWin.setAlwaysOnTop(alwaysOnTop);
 
                     browserWin.once('closed', function () {
                         removeWindowKey(newWinKey);
@@ -390,6 +400,25 @@ function openUrlInDefaultBrower(urlToOpen) {
         electron.shell.openExternal(urlToOpen);
     }
 }
+
+/**
+ * Called when an event is received from menu
+ * @param boolean weather to enable or disable alwaysOnTop.
+ */
+function isAlwaysOnTop(boolean) {
+    alwaysOnTop = boolean;
+    let browserWins = BrowserWindow.getAllWindows();
+    if (browserWins.length > 0) {
+        browserWins.forEach(function (browser) {
+            browser.setAlwaysOnTop(boolean);
+        });
+    }
+}
+
+// node event emitter to update always on top
+eventEmitter.on('isAlwaysOnTop', (boolean) => {
+    isAlwaysOnTop(boolean);
+});
 
 // node event emitter for notification settings
 eventEmitter.on('notificationSettings', (notificationSettings) => {
