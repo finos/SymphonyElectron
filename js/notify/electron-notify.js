@@ -15,6 +15,7 @@ const electron = require('electron');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const ipc = electron.ipcMain;
+const { isMac } = require('../utils/misc');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 
@@ -43,6 +44,9 @@ let closedNotifications = {};
 let latestID = 0;
 
 let nextInsertPos = {};
+let externalDisplay;
+// user selected display id for notification
+let displayId;
 
 let config = {
     // corner to put notifications
@@ -145,6 +149,21 @@ if (app.isReady()) {
     app.on('ready', setup);
 }
 
+// Method to update notification config
+function updateConfig(customConfig) {
+    // Fetching user preferred notification position from config
+    if (customConfig.position) {
+        config = Object.assign(config, {startCorner: customConfig.position});
+
+        calcDimensions();
+    }
+
+    // Fetching user preferred notification screen from config
+    if (customConfig.display) {
+        displayId = customConfig.display;
+    }
+}
+
 function setup() {
     setupConfig();
 
@@ -208,12 +227,21 @@ function calcDimensions() {
 function setupConfig() {
     closeAll();
 
-    // Use primary display only
-    let display = electron.screen.getPrimaryDisplay();
+    // This feature only applies to windows
+    if (!isMac) {
+        let screens = electron.screen.getAllDisplays();
+        if (screens && screens.length >= 0) {
+            externalDisplay = screens.find((screen) => {
+                let screenId = screen.id.toString();
+                return screenId === displayId;
+            });
+        }
+    }
 
+    let display = externalDisplay ? externalDisplay : electron.screen.getPrimaryDisplay();
     config.corner = {};
-    config.corner.x = display.bounds.x + display.workArea.x;
-    config.corner.y = display.bounds.y + display.workArea.y;
+    config.corner.x = display.workArea.x;
+    config.corner.y = display.workArea.y;
 
     // update corner x/y based on corner of screen where notf should appear
     const workAreaWidth = display.workAreaSize.width;
@@ -241,7 +269,6 @@ function setupConfig() {
     config.maxVisibleNotifications = Math.floor(display.workAreaSize.height / config.totalHeight);
     config.maxVisibleNotifications = config.maxVisibleNotifications > 5 ? 5 : config.maxVisibleNotifications;
 }
-
 
 function notify(notification) {
     // Is it an object and only one argument?
@@ -650,4 +677,5 @@ function cleanUpInactiveWindow() {
 }
 
 module.exports.notify = notify
+module.exports.updateConfig = updateConfig
 module.exports.reset = setupConfig

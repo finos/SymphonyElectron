@@ -33,6 +33,8 @@ let willQuitApp = false;
 let isOnline = true;
 let boundsChangeWindow;
 let alwaysOnTop = false;
+let position = 'lower-right';
+let display;
 
 // note: this file is built using browserify in prebuild step.
 const preloadMainScript = path.join(__dirname, 'preload/_preloadMain.js');
@@ -140,6 +142,8 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         if (!isOnline) {
             loadErrors.showNetworkConnectivityError(mainWindow, url, retry);
         } else {
+            // updates the notify config with user preference
+            notify.updateConfig({position: position, display: display});
             // removes all existing notifications when main window reloads
             notify.reset();
             log.send(logLevels.INFO, 'loaded main window url: ' + url);
@@ -414,6 +418,12 @@ function isAlwaysOnTop(boolean) {
 // node event emitter to update always on top
 eventEmitter.on('isAlwaysOnTop', (boolean) => {
     isAlwaysOnTop(boolean);
+});
+
+// node event emitter for notification settings
+eventEmitter.on('notificationSettings', (notificationSettings) => {
+    position = notificationSettings.position;
+    display = notificationSettings.display;
 });
 
 module.exports = {
