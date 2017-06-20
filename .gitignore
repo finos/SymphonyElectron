@@ -25,3 +25,5 @@ DerivedData/
 installer/mac/build/
 installer/mac/SymphonySettingsPlugin/SymphonySettingsPlugin.xcodeproj/xcuserdata
 installer/mac/SymphonySettingsPlugin/SymphonySettingsPlugin.xcodeproj/project.xcworkspace/xcuserdata
+installer/win/Symphony-x64-cache
+installer/win/Symphony-x64-SetupFiles
