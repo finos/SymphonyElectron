@@ -301,6 +301,15 @@ function setCheckboxValues(){
         log.send(logLevels.ERROR, 'MenuTemplate: error getting config field alwaysOnTop, error: ' + err);
         electron.dialog.showErrorBox(title, title + ': ' + err);
     });
+
+    getConfigField('notificationSettings').then(function(notfObject) {
+        eventEmitter.emit('notificationSettings', notfObject);
+    }).catch(function (err){
+        let title = 'Error loading configuration';
+        log.send(logLevels.ERROR, 'MenuTemplate: error getting config field notificationSettings, error: ' + err);
+        electron.dialog.showErrorBox(title, title + ': ' + err);
+    });
+
 }
 
 function getMinimizeOnClose(){
