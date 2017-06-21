@@ -207,5 +207,19 @@ autoUpdater.on('download-progress', (ev, progressObj) => {
 })
 autoUpdater.on('update-downloaded', (ev, info) => {
     log.info('Update downloaded; will install now... ' + info);
-    autoUpdater.quitAndInstall();
+    var messageBoxOptions = {type: "info", 
+        buttons: ["Install on quit!", "Install now!"], 
+        title: "Update available", 
+        message: "A new version of symphony is available! Do you want to update it?"};
+    electron.dialog.showMessageBox(messageBoxOptions, (response) => {
+
+        if (response === 1) {
+            log.info("User asked to update the app, let's do that now...");
+            autoUpdater.quitAndInstall();
+            return;
+        }
+
+        log.info("User asked to update the app later, skipping for now...");
+
+    });
 });
