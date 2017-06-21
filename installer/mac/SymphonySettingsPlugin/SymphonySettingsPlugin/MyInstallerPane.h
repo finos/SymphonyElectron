@@ -12,5 +12,6 @@
 @property (weak) IBOutlet NSButton *minimizeOnCloseCheckBox;
 @property (weak) IBOutlet NSButton *autoLaunchCheckBox;
 @property (weak) IBOutlet NSTextField *podUrlTextBox;
+@property (weak) IBOutlet NSButton *alwaysOnTopCheckBox;
 
 @end
