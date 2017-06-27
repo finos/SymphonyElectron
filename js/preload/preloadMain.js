@@ -19,6 +19,8 @@ const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 const getMediaSources = require('../desktopCapturer/getSources');
 
+require('../downloadManager/downloadManager');
+
 const nodeURL = require('url');
 
 // hold ref so doesn't get GC'ed

@@ -11,6 +11,8 @@ const { isMac, isDevEnv } = require('./utils/misc.js');
 const protocolHandler = require('./protocolHandler');
 const getCmdLineArg = require('./utils/getCmdLineArg.js')
 
+require('electron-dl')();
+
 // used to check if a url was opened when the app was already open
 let isAppAlreadyOpen = false;
 
