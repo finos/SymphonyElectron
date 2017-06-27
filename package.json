@@ -1,6 +1,6 @@
 {
   "name": "Symphony",
-  "productName": "Symphony-Electron",
+  "productName": "Symphony",
   "version": "1.0.1",
   "description": "Symphony desktop app (Foundation ODP)",
   "author": "Symphony",
@@ -10,13 +10,14 @@
     "demo-win": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file:///demo/index.html",
     "demo-mac": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/demo/index.html",
     "unpacked-mac": "npm run prebuild && npm run test && build --mac --dir",
-    "unpacked-win": "npm run prebuild && npm run test && build --win --x64 --dir",
-    "unpacked-win-x86": "npm run prebuild && npm run test && build --win --ia32 --dir",
+    "unpacked-win": "npm run prebuild && npm run test && build --win --x64 --dir && npm run rename-exe",
+    "unpacked-win-x86": "npm run prebuild && npm run test && build --win --ia32 --dir && npm run rename-exe",
     "prebuild": "npm run rebuild && npm run browserify-preload",
     "browserify-preload": "browserify -o js/preload/_preloadMain.js -x electron --insert-global-vars=__filename,__dirname js/preload/preloadMain.js",
     "rebuild": "electron-rebuild -f",
     "test": "npm run lint && jest --verbose --testPathPattern test",
-    "lint": "eslint --ext .js js/"
+    "lint": "eslint --ext .js js/",
+    "rename-exe": "cd dist/win-unpacked && ren Symphony.exe Symphony-Electron.exe"
   },
   "jest": {
     "collectCoverage": true,
