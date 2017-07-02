@@ -109,7 +109,7 @@ describe('Tests for Notification position', () => {
             .windowByIndex(0)
     });
 
-    it('should open notification', () => {
+    it('should open notification and close', () => {
         return app.client
             .windowByIndex(0)
             .click('#notf')
