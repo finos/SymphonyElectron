@@ -195,7 +195,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         webContents.send('downloadProgress');
 
         // Send file path when download is complete
-        item.once('done', (event, state) => {
+        item.once('done', (e, state) => {
             if (state === 'completed') {
                 let data = {
                     _id: getGuid(),
