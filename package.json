@@ -78,7 +78,11 @@
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-react": "^6.10.0",
-    "jest": "^19.0.2"
+    "jest": "^19.0.2",
+    "chai-roughly": "^1.0.0",
+    "chai-as-promised": "^7.0.0",
+    "chai": "^4.0.2",
+    "spectron": "^3.7.2"
   },
   "dependencies": {
     "@paulcbetts/system-idle-time": "^1.0.4",
