@@ -22,7 +22,7 @@ describe('Tests for Bring to front', () => {
         });
     });
 
-    it('should quit the app', () => {
+    it('should minimize the app', () => {
         return app.browserWindow.minimize();
     });
 
