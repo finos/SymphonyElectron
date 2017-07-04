@@ -46,7 +46,7 @@ describe('Tests for clipboard', () => {
             });
     });
 
-    it('should verify electron clipboard', (done) => {
+    it('should verify electron clipboard copy', (done) => {
         app.electron.clipboard.writeText('Testing copy')
             .electron.clipboard.readText().then(function (clipboardText) {
                 app.client
