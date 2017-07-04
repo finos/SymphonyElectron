@@ -59,7 +59,9 @@ describe('Tests for Notification position', () => {
     });
 
     it('should change the window', () => {
-        return app.client.windowByIndex(0);
+        return app.client.windowByIndex(0).then(() => {
+            return app.browserWindow.getTitle().should.eventually.equal('Symphony | Secure Seamless Communication')
+        });
     });
 
     it('should change notification position to lower-right', () => {
@@ -70,7 +72,9 @@ describe('Tests for Notification position', () => {
             .click('#ok-button')
             .windowByIndex(0)
             .click('#notf')
-            .windowByIndex(1)
+            .windowByIndex(1).then(() => {
+                return app.browserWindow.getTitle().should.eventually.equal('Electron')
+            });
     });
 
     it('should check notification position and equal to lower-right', () => {
@@ -82,7 +86,10 @@ describe('Tests for Notification position', () => {
     });
 
     it('should change the window', () => {
-        return app.client.windowByIndex(0);
+        return app.client
+            .windowByIndex(0).then(() => {
+                return app.browserWindow.getTitle().should.eventually.equal('Symphony | Secure Seamless Communication')
+            });
     });
 
     it('should change notification position to upper-right', () => {
@@ -93,7 +100,9 @@ describe('Tests for Notification position', () => {
             .click('#ok-button')
             .windowByIndex(0)
             .click('#notf')
-            .windowByIndex(1)
+            .windowByIndex(1).then(() => {
+                return app.browserWindow.getTitle().should.eventually.equal('Electron')
+            });
     });
 
     it('should check notification position and equal to upper-right', () => {
@@ -104,9 +113,11 @@ describe('Tests for Notification position', () => {
             });
     });
 
-    it('should close the notification', () => {
+    it('should change the window to main', () => {
         return app.client
-            .windowByIndex(0)
+            .windowByIndex(0).then(() => {
+                return app.browserWindow.getTitle().should.eventually.equal('Symphony | Secure Seamless Communication')
+            });
     });
 
     it('should open notification and close', () => {
@@ -114,10 +125,9 @@ describe('Tests for Notification position', () => {
             .windowByIndex(0)
             .click('#notf')
             .getWindowCount().should.eventually.equal(3)
-            .windowByIndex(1)
-            .click('#close')
-            .getWindowCount().should.eventually.equal(3)
-            .windowByIndex(0)
+            .windowByIndex(1).then(() => {
+                return app.browserWindow.getTitle().should.eventually.equal('Electron')
+            });
     });
 
 });
