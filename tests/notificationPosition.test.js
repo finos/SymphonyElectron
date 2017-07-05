@@ -46,7 +46,7 @@ describe('Tests for Notification position', () => {
         });
     });
 
-    it('should notification configure window', () => {
+    it('should open notification configure window', () => {
         return app.client
             .click('#open-config-win')
             .windowByIndex(1)
