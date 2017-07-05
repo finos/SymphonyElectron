@@ -37,6 +37,13 @@
         <button id='open-config-win'>Open configure window</button>
         <br>
         <hr>
+        <p>
+            Crash Process:
+        <p>
+            <button id='crash'>Crash Renderer</button>
+        </p>
+        <br>
+        <hr>
         <p>Badge Count:<p>
         <button id='inc-badge'>increment badge count</button>
         <br>
@@ -171,6 +178,12 @@
         function onBoundsChange(arg) {
             console.log('bounds changed for=', arg)
         }
+
+        // crash the renderer process
+        const crash = document.getElementById('crash');
+        crash.addEventListener('click', function () {
+            ssf.crashRendererProcess();
+        });
 
         var getSources = document.getElementById('get-sources');
         getSources.addEventListener('click', function() {

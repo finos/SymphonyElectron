@@ -18,6 +18,7 @@ const apiEnums = require('../enums/api.js');
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 const getMediaSources = require('../desktopCapturer/getSources');
+const crashReporter = require('../crashReporter');
 
 require('../downloadManager/downloadManager');
 
@@ -35,6 +36,14 @@ const throttledSetBadgeCount = throttle(1000, function(count) {
         count: count
     });
 });
+
+// Setup the crash reporter
+var demoData = {
+    "backendURL": "http://localhost:1127/post",
+    "sendCrashReports": true,
+    "autoSubmit": true
+};
+crashReporter.setupCrashReporter({'window': 'preloadMain'}, demoData);
 
 createAPI();
 
@@ -110,6 +119,13 @@ function createAPI() {
          * details in screenSnipper/ScreenSnippet.js
          */
         ScreenSnippet: remote.require('./screenSnippet/ScreenSnippet.js').ScreenSnippet,
+
+        /**
+         * Provides API to crash the renderer process that calls this function
+         */
+        crashRendererProcess: function () {
+            process.crash();
+        },
 
         /**
          * Brings window forward and gives focus.
