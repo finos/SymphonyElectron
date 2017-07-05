@@ -1,14 +1,5 @@
 const Application = require('spectron').Application;
 const path = require('path');
-const chai = require('chai');
-const chaiAsPromised = require('chai-as-promised');
-const chaiRoughly = require('chai-roughly');
-
-global.before(function () {
-    chai.should();
-    chai.use(chaiAsPromised);
-    chai.use(chaiRoughly);
-});
 
 class App {
 
@@ -26,7 +17,6 @@ class App {
 
     startApplication() {
         return this.app.start().then(() => {
-            chaiAsPromised.transferPromiseness = this.app.transferPromiseness;
             return this.app
         });
     }
