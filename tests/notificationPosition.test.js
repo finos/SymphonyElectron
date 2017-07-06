@@ -1,15 +1,13 @@
-const Application = require('./utils/spectronSetup');
+const Application = require('./spectron/spectronSetup');
 const path = require('path');
+let app = new Application({});
 
 describe('Tests for Notification position', () => {
 
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 90000;
-
-    let app;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
 
     beforeAll((done) => {
-        app = new Application({});
         return app.startApplication().then((startedApp) => {
             app = startedApp;
             done();

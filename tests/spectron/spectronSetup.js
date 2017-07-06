@@ -7,7 +7,7 @@ class App {
 
         this.options = options;
 
-        if (!this.options.path){
+        if (!this.options.path) {
             this.options.path = App.getAppPath();
             this.options.args = [path.join(__dirname, '..', '..', 'js/main.js')];
         }
@@ -16,7 +16,7 @@ class App {
     }
 
     startApplication() {
-        return this.app.start().then((app) =>{
+        return this.app.start().then((app) => {
             return app;
         }).catch((err) => {
             console.log(err);
@@ -29,6 +29,10 @@ class App {
             electronPath += '.cmd';
         }
         return electronPath
+    }
+
+    static getTimeOut() {
+        return 90000
     }
 
 }

@@ -1,13 +1,12 @@
+const Application = require('./spectron/spectronSetup');
+let app = new Application({});
+
 describe('Tests for Always on top', () => {
 
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 90000;
-
-    let app;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
 
     beforeAll((done) => {
-        const Application = require('./utils/spectronSetup');
-        app = new Application({});
         return app.startApplication().then((startedApp) => {
             app = startedApp;
             done();

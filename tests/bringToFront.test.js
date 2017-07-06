@@ -1,18 +1,17 @@
+const Application = require('./spectron/spectronSetup');
+let app = new Application({});
+
 describe('Tests for Bring to front', () => {
 
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 90000;
-
-    let app;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
 
     beforeAll((done) => {
-        const Application = require('./utils/spectronSetup');
-        app = new Application({});
         return app.startApplication().then((startedApp) => {
             app = startedApp;
             done();
-        }).catch(() => {
-            expect(true).toBe(false);
+        }).catch((err) => {
+            expect(err).toBeNull();
         });
     });
 
@@ -33,11 +32,11 @@ describe('Tests for Bring to front', () => {
             return app.client.getWindowCount().then((count) => {
                 expect(count === 1).toBeTruthy();
                 done();
-            }).catch(() => {
-                expect(true).toBe(false);
+            }).catch((err) => {
+                expect(err).toBeNull();
             });
-        }).catch(() => {
-            expect(true).toBe(false);
+        }).catch((err) => {
+            expect(err).toBeNull();
         });
     });
 
@@ -45,19 +44,19 @@ describe('Tests for Bring to front', () => {
         return app.browserWindow.minimize().then(() => {
             return app.browserWindow.isMinimized().then((isMinimized) => {
                 expect(isMinimized).toBeTruthy();
-            }).catch(() => {
-                expect(true).toBe(false);
+            }).catch((err) => {
+                expect(err).toBeNull();
             });
-        }).catch(() => {
-            expect(true).toBe(false);
+        }).catch((err) => {
+            expect(err).toBeNull();
         });
     });
 
     it('should not be focused', () => {
         return app.browserWindow.isFocused().then((isFocused) => {
             expect(isFocused).toBeFalsy();
-        }).catch(() => {
-            expect(true).toBe(false);
+        }).catch((err) => {
+            expect(err).toBeNull();
         });
     });
 
@@ -65,19 +64,19 @@ describe('Tests for Bring to front', () => {
         return app.browserWindow.restore().then(async () => {
             return app.browserWindow.isMinimized().then((isMinimized) => {
                 expect(isMinimized).toBeFalsy();
-            }).catch(() => {
-                expect(true).toBe(false);
+            }).catch((err) => {
+                expect(err).toBeNull();
             });
-        }).catch(() => {
-            expect(true).toBe(false);
+        }).catch((err) => {
+            expect(err).toBeNull();
         });
     });
 
     it('should be focused', () => {
         return app.browserWindow.isFocused().then((isFocused) => {
             expect(isFocused).toBeTruthy();
-        }).catch(() => {
-            expect(true).toBe(false);
+        }).catch((err) => {
+            expect(err).toBeNull();
         });
     });
 
