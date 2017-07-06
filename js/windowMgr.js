@@ -80,8 +80,8 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         minHeight: MIN_HEIGHT,
         alwaysOnTop: false,
         webPreferences: {
-            sandbox: true,
-            nodeIntegration: false,
+            sandbox: !process.env.NODE_ENV,
+            nodeIntegration: process.env.NODE_ENV,
             preload: preloadMainScript,
         }
     };

@@ -131,8 +131,8 @@ let config = {
         acceptFirstMouse: true,
         webPreferences: {
             preload: path.join(__dirname, 'electron-notify-preload.js'),
-            sandbox: true,
-            nodeIntegration: false
+            sandbox: !process.env.NODE_ENV,
+            nodeIntegration: process.env.NODE_ENV
         }
     }
 }
