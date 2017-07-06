@@ -61,7 +61,7 @@ describe('Tests for Bring to front', () => {
     });
 
     it('should maximize browser window', () => {
-        return app.browserWindow.restore().then(async () => {
+        return app.browserWindow.restore().then(() => {
             return app.browserWindow.isMinimized().then((isMinimized) => {
                 expect(isMinimized).toBeFalsy();
             }).catch((err) => {

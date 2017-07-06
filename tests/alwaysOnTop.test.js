@@ -56,7 +56,7 @@ describe('Tests for Always on top', () => {
         });
     });
 
-    it('should check is always on top', async () => {
+    it('should check is always on top', () => {
         return app.browserWindow.isAlwaysOnTop().then((isAlwaysOnTop) => {
             expect(isAlwaysOnTop).toBeFalsy();
         }).catch((err) => {
