@@ -1,56 +1,79 @@
-const Application = require('./spectronSetup');
-const path = require('path');
+const Application = require('./spectron/spectronSetup');
+let app = new Application({});
 
 describe('Tests for Always on top', () => {
 
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
 
-    let app;
-
-    beforeAll(() => {
-        app = new Application({});
-    });
-
-    afterAll(() => {
-        if (app && app.isRunning()) {
-            jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
-            return app.stop();
-        }
-    });
-
-    it('should launch the app', () => {
+    beforeAll((done) => {
         return app.startApplication().then((startedApp) => {
             app = startedApp;
-            return app.client.waitUntilWindowLoaded().then(async () => {
-                const count = await app.client.getWindowCount();
-                expect(count === 1).toBeTruthy();
-            })
+            done();
+        }).catch((err) => {
+            expect(err).toBeNull();
         });
     });
 
-    it('should check window count', async () => {
-        const count = await app.client.getWindowCount();
-        expect(count === 1).toBeTruthy();
+    afterAll((done) => {
+        if (app && app.isRunning()) {
+            jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+            app.stop().then(() => {
+                done();
+            }).catch((err) => {
+                console.log(err);
+                done();
+            });
+        }
     });
 
-    it('should check browser window visibility', async () => {
-        const isVisible = await app.browserWindow.isVisible();
-        expect(isVisible).toBeTruthy();
+    it('should launch the app', (done) => {
+        return app.client.waitUntilWindowLoaded().then(() => {
+            return app.client.getWindowCount().then((count) => {
+                expect(count === 1).toBeTruthy();
+                done();
+            }).catch((err) => {
+                expect(err).toBeNull();
+            });
+        }).catch((err) => {
+            expect(err).toBeNull();
+        });
+    });
+
+    it('should check window count', () => {
+        return app.client.getWindowCount().then((count) => {
+            expect(count === 1).toBeTruthy();
+        }).catch((err) => {
+            expect(err).toBeNull();
+        });
+    });
+
+    it('should check browser window visibility', () => {
+        return app.browserWindow.isVisible().then((isVisible) => {
+            expect(isVisible).toBeTruthy();
+        }).catch((err) => {
+            expect(err).toBeNull();
+        });
     });
 
     it('should check is always on top', async () => {
-        const isAlwaysOnTop = await app.browserWindow.isAlwaysOnTop();
-        expect(isAlwaysOnTop).toBeFalsy();
+        return app.browserWindow.isAlwaysOnTop().then((isAlwaysOnTop) => {
+            expect(isAlwaysOnTop).toBeFalsy();
+        }).catch((err) => {
+            expect(err).toBeNull();
+        });
     });
 
     it('should change the always on top property', () => {
         return app.browserWindow.setAlwaysOnTop(true);
     });
 
-    it('should check is always on top to be true', async () => {
-        const isAlwaysOnTop = await app.browserWindow.isAlwaysOnTop();
-        expect(isAlwaysOnTop).toBeTruthy();
+    it('should check is always on top to be true', () => {
+        return app.browserWindow.isAlwaysOnTop().then((isAlwaysOnTop) => {
+            expect(isAlwaysOnTop).toBeTruthy();
+        }).catch((err) => {
+            expect(err).toBeNull();
+        });
     });
 
 });
