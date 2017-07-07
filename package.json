@@ -81,6 +81,7 @@
     "eslint-plugin-react": "^6.10.0",
     "jest": "^19.0.2",
     "ncp": "^2.0.0",
+    "robotjs": "^0.4.7",
     "spectron": "^3.7.2"
   },
   "dependencies": {

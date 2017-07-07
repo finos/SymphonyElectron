@@ -1,5 +1,6 @@
 const Application = require('spectron').Application;
 const path = require('path');
+const fs = require('fs');
 
 class App {
 
@@ -33,6 +34,17 @@ class App {
 
     static getTimeOut() {
         return 90000
+    }
+
+    static readConfig(configPath) {
+        return new Promise(function (resolve, reject) {
+            fs.readFile(configPath, function (err, data) {
+                if (err) {
+                    reject(err);
+                }
+                resolve(JSON.parse(data));
+            });
+        });
     }
 
 }
