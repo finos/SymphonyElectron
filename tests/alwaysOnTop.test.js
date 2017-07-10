@@ -110,6 +110,21 @@ describe('Tests for Always on top', () => {
             setTimeout(() => {
                 done();
             }, 5000)
+        } else {
+            app.browserWindow.getBounds().then((bounds) => {
+                robot.setMouseDelay(200);
+                let x = bounds.x + 95;
+                let y = bounds.x + 95;
+                robot.moveMouse(x, y);
+                robot.mouseClick();
+                for (let i = 0; i < 4; i++) {
+                    robot.keyTap('down');
+                }
+                robot.keyTap('enter');
+                setTimeout(() => {
+                    done();
+                }, 5000)
+            });
         }
     });
 
@@ -143,6 +158,21 @@ describe('Tests for Always on top', () => {
             setTimeout(() => {
                 done();
             }, 5000);
+        } else {
+            app.browserWindow.getBounds().then((bounds) => {
+                robot.setMouseDelay(200);
+                let x = bounds.x + 95;
+                let y = bounds.x + 95;
+                robot.moveMouse(x, y);
+                robot.mouseClick();
+                for (let i = 0; i < 4; i++) {
+                    robot.keyTap('down');
+                }
+                robot.keyTap('enter');
+                setTimeout(() => {
+                    done();
+                }, 5000)
+            });
         }
     });
 

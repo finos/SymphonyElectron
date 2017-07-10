@@ -1,6 +1,8 @@
 const Application = require('spectron').Application;
 const path = require('path');
 const fs = require('fs');
+const childProcess = require('child_process');
+const { isMac } = require('../../js/utils/misc');
 
 class App {
 
@@ -12,6 +14,8 @@ class App {
             this.options.path = App.getAppPath();
             this.options.args = [path.join(__dirname, '..', '..', 'js/main.js')];
         }
+
+        App.copyConfigPath();
 
         this.app = new Application(this.options);
     }
@@ -45,6 +49,22 @@ class App {
                 resolve(JSON.parse(data));
             });
         });
+    }
+
+    static copyConfigPath(){
+        if (isMac) {
+            childProcess.exec(`ncp 'config' 'node_modules/electron/dist/Electron.app/Contents/config'`, function (err) {
+                if (err){
+                    throw(err);
+                }
+            });
+        } else {
+            childProcess.exec(`ncp config node_modules/electron/dist/config`, function (err) {
+                if (err){
+                    throw(err);
+                }
+            });
+        }
     }
 
 }
