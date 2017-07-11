@@ -15,7 +15,7 @@ const electron = require('electron');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const ipc = electron.ipcMain;
-const { isMac } = require('../utils/misc');
+const { isMac, isNodeEnv } = require('../utils/misc');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 
@@ -131,8 +131,8 @@ let config = {
         acceptFirstMouse: true,
         webPreferences: {
             preload: path.join(__dirname, 'electron-notify-preload.js'),
-            sandbox: true,
-            nodeIntegration: false
+            sandbox: !isNodeEnv,
+            nodeIntegration: isNodeEnv
         }
     }
 }

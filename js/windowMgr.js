@@ -19,6 +19,7 @@ const eventEmitter = require('./eventEmitter');
 
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField } = require('./config.js');
+const { isNodeEnv } = require('./utils/misc');
 
 //context menu
 const contextMenu = require('./menus/contextMenu.js');
@@ -80,8 +81,8 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         minHeight: MIN_HEIGHT,
         alwaysOnTop: false,
         webPreferences: {
-            sandbox: true,
-            nodeIntegration: false,
+            sandbox: !isNodeEnv,
+            nodeIntegration: isNodeEnv,
             preload: preloadMainScript,
         }
     };

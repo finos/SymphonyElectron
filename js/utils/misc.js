@@ -5,7 +5,10 @@ const isDevEnv = process.env.ELECTRON_DEV ?
 
 const isMac = (process.platform === 'darwin');
 
+const isNodeEnv = !!process.env.NODE_ENV;
+
 module.exports = {
     isDevEnv: isDevEnv,
-    isMac: isMac
+    isMac: isMac,
+    isNodeEnv: isNodeEnv
 };
