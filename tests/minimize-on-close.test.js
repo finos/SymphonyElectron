@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const childProcess = require('child_process');
 const Application = require('./spectron/spectronSetup');
+const {isMac} = require('../js/utils/misc');
 let robot;
 let configPath;
 
@@ -94,44 +95,97 @@ describe('Tests for Minimize on Close', () => {
         });
     });
 
+    it('should bring the app to top', () => {
+        app.browserWindow.focus();
+        return app.browserWindow.setAlwaysOnTop(true).then(() => {
+            return app.browserWindow.isAlwaysOnTop().then((isOnTop) => {
+                console.log(isOnTop);
+                expect(isOnTop).toBeTruthy();
+            });
+        });
+    });
+
     it('should check whether the app is minimized', (done) => {
-        return Application.readConfig(configPath).then((userConfig) => {
-            if (userConfig.minimizeOnClose) {
-                robot.setKeyboardDelay(200);
-                robot.keyToggle('w', 'down', ['command']);
-                robot.keyToggle('w', 'up');
-                return app.browserWindow.isMinimized().then(function (minimized) {
-                    expect(minimized).toBeTruthy();
-                    done();
-                }).catch((err) => {
-                    expect(err).toBeNull();
-                });
+        Application.readConfig(configPath).then((userConfig) => {
+            if (isMac) {
+                if (userConfig.minimizeOnClose) {
+                    robot.setKeyboardDelay(100);
+                    robot.keyToggle('w', 'down', ['command']);
+                    robot.keyToggle('w', 'up');
+                    robot.keyToggle('command', 'up');
+                    app.browserWindow.isMinimized().then(function (minimized) {
+                        expect(minimized).toBeTruthy();
+                        done();
+                    }).catch((err) => {
+                        expect(err).toBeNull();
+                        done();
+                    });
+                } else {
+
+                    robot.setMouseDelay(100);
+                    robot.moveMouseSmooth(200, 10);
+                    robot.mouseClick();
+                    robot.setKeyboardDelay(100);
+
+                    for (let i = 0; i < 9; i++) {
+                        robot.keyTap('down');
+                    }
+                    robot.keyTap('enter');
+
+                    robot.keyToggle('w', 'down', ['command']);
+                    robot.keyToggle('w', 'up');
+                    robot.keyToggle('command', 'up');
+                    app.browserWindow.isMinimized().then(function (minimized) {
+                        expect(minimized).toBeTruthy();
+                        done();
+                    }).catch((err) => {
+                        expect(err).toBeNull();
+                        done();
+                    });
+                }
             } else {
+                if (!userConfig.minimizeOnClose) {
+                    app.browserWindow.getBounds().then((bounds) => {
+                        robot.setMouseDelay(100);
+                        let x = bounds.x + 95;
+                        let y = bounds.y + 35;
+                        robot.moveMouse(x, y);
+                        robot.mouseClick();
+                        for (let i = 0; i < 5; i++) {
+                            robot.keyTap('down');
+                        }
+                        robot.keyTap('enter');
 
-                robot.setMouseDelay(200);
-                robot.moveMouseSmooth(205, 10);
-                robot.mouseClick();
-                robot.setKeyboardDelay(200);
-                robot.keyTap('down');
-                robot.keyTap('down');
-                robot.keyTap('down');
-                robot.keyTap('down');
-                robot.keyTap('down');
-                robot.keyTap('down');
-                robot.keyTap('down');
-                robot.keyTap('down');
-                robot.keyTap('down');
-                robot.keyTap('enter');
-
-                robot.keyToggle('w', 'down', ['command']);
-                robot.keyToggle('w', 'up');
-                return app.browserWindow.isMinimized().then(function (minimized) {
-                    expect(minimized).toBeTruthy();
-                    done();
-                }).catch((err) => {
-                    expect(err).toBeNull();
-                    done();
-                });
+                        robot.keyToggle('w', 'down', ['control']);
+                        robot.keyToggle('w', 'up');
+                        robot.keyToggle('control', 'up');
+                        app.browserWindow.isMinimized().then(function (minimized) {
+                            expect(minimized).toBeTruthy();
+                            done();
+                        }).catch((err) => {
+                            expect(err).toBeNull();
+                            done();
+                        });
+                    });
+                } else {
+                    app.browserWindow.getBounds().then((bounds) => {
+                        robot.setMouseDelay(100);
+                        let x = bounds.x + 200;
+                        let y = bounds.y + 200;
+                        robot.moveMouseSmooth(x, y);
+                        robot.mouseClick();
+                        robot.keyToggle('w', 'down', ['control']);
+                        robot.keyToggle('w', 'up');
+                        robot.keyToggle('control', 'up');
+                        app.browserWindow.isMinimized().then(function (minimized) {
+                            expect(minimized).toBeTruthy();
+                            done();
+                        }).catch((err) => {
+                            expect(err).toBeNull();
+                            done();
+                        });
+                    });
+                }
             }
         }).catch((err) => {
             expect(err).toBeNull();
