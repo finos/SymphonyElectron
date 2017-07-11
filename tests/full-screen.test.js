@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const childProcess = require('child_process');
 const Application = require('./spectron/spectronSetup');
+const {isMac} = require('../js/utils/misc');
 let robot;
 let configPath;
 
@@ -17,13 +18,33 @@ describe('Tests for Full screen', () => {
             robot = require('robotjs');
             return app.startApplication().then((startedApp) => {
                 app = startedApp;
-                app.browserWindow.setFullScreen(false);
-                done();
+                getConfigPath().then((config) => {
+                    console.log(config);
+                    configPath = config;
+                    done();
+                }).catch((err) => {
+                    expect(err).toBeNull();
+                });
             }).catch((err) => {
                 expect(err).toBeNull();
             });
         });
     });
+
+    function getConfigPath() {
+        return new Promise(function (resolve, reject) {
+            app.client.addCommand('getUserDataPath', function () {
+                return this.execute(function () {
+                    return require('electron').remote.app.getPath('userData');
+                })
+            });
+            app.client.getUserDataPath().then((path) => {
+                resolve(path.value + '/Symphony.config')
+            }).catch((err) => {
+                reject(err);
+            });
+        });
+    }
 
     afterAll((done) => {
         if (app && app.isRunning()) {
@@ -74,23 +95,48 @@ describe('Tests for Full screen', () => {
         });
     });
 
-    it('should set the app full screen and check whether it is in full screen', () => {
-        robot.setMouseDelay(200);
-        robot.moveMouseSmooth(205, 10);
-        robot.mouseClick();
-        robot.setKeyboardDelay(200);
-        robot.keyTap('down');
-        robot.keyTap('down');
-        robot.keyTap('down');
-        robot.keyTap('down');
-        robot.keyTap('down');
-        robot.keyTap('down');
-        robot.keyTap('enter');
+    it('should bring the app to top', () => {
+        app.browserWindow.focus();
+        return app.browserWindow.setAlwaysOnTop(true).then(() => {
+            return app.browserWindow.isAlwaysOnTop().then((isOnTop) => {
+                console.log(isOnTop);
+                expect(isOnTop).toBeTruthy();
+            });
+        });
+    });
 
-        return app.browserWindow.isFullScreen().then((fullscreen) => {
-            expect(fullscreen).toBeTruthy();
-        }).catch((err) => {
-            expect(err).toBeNull();
-        })
+    it('should set the app full screen and check whether it is in full screen', () => {
+        if (isMac) {
+            robot.setMouseDelay(100);
+            robot.moveMouseSmooth(205, 10);
+            robot.mouseClick();
+            robot.setKeyboardDelay(100);
+            for (let i = 0; i < 6; i++) {
+                robot.keyTap('down');
+            }
+            robot.keyTap('enter');
+
+            return app.browserWindow.isFullScreen().then((fullscreen) => {
+                expect(fullscreen).toBeTruthy();
+            }).catch((err) => {
+                expect(err).toBeNull();
+            })
+        } else {
+            return app.browserWindow.getBounds().then((bounds) => {
+                robot.setMouseDelay(100);
+                let x = bounds.x + 200;
+                let y = bounds.y + 200;
+                robot.moveMouseSmooth(x, y);
+                robot.mouseClick();
+
+                robot.keyTap('f11');
+
+                return app.browserWindow.isFullScreen().then((fullscreen) => {
+                    expect(fullscreen).toBeTruthy();
+                }).catch((err) => {
+                    expect(err).toBeNull();
+                })
+            });
+        }
     });
 });
