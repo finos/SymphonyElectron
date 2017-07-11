@@ -5,6 +5,7 @@ const childProcess = require('child_process');
 let app = new Application({});
 let robot;
 let configPath;
+let mIsAlwaysOnTop;
 
 describe('Tests for Always on top', () => {
 
@@ -19,8 +20,6 @@ describe('Tests for Always on top', () => {
                 getConfigPath().then((config) => {
                     configPath = config;
                     done();
-                }).catch((err) => {
-                    expect(err).toBeNull();
                 });
             }).catch((err) => {
                 expect(err).toBeNull();
@@ -66,8 +65,6 @@ describe('Tests for Always on top', () => {
             return app.client.getWindowCount().then((count) => {
                 expect(count === 1).toBeTruthy();
                 done();
-            }).catch((err) => {
-                expect(err).toBeNull();
             });
         }).catch((err) => {
             expect(err).toBeNull();
@@ -90,9 +87,49 @@ describe('Tests for Always on top', () => {
         });
     });
 
+    it('should bring the app to front in windows', (done) => {
+        if (!isMac) {
+            app.browserWindow.focus();
+            app.browserWindow.restore();
+            app.browserWindow.setAlwaysOnTop(true).then(() => {
+                app.browserWindow.isAlwaysOnTop().then((isOnTop) => {
+                    app.browserWindow.getBounds().then((bounds) => {
+                        robot.setMouseDelay(200);
+                        app.browserWindow.restore().then(() => {
+                            let x = bounds.x + 95;
+                            let y = bounds.y + 35;
+
+                            robot.moveMouseSmooth(x, y);
+                            robot.mouseClick();
+                            robot.setKeyboardDelay(200);
+                            for (let i = 0; i < 4
+                                ; i++) {
+                                robot.keyTap('down');
+                            }
+                            robot.keyTap('enter');
+                            expect(isOnTop).toBeTruthy();
+                            done();
+                        })
+                    });
+                });
+            }).catch((err) => {
+                expect(err).toBeNull();
+            });
+        } else {
+            done();
+        }
+    });
+
     it('should check is always on top', () => {
-        return app.browserWindow.isAlwaysOnTop().then((isAlwaysOnTop) => {
-            expect(isAlwaysOnTop).toBeFalsy();
+        return Application.readConfig(configPath).then((userData) => {
+            return app.browserWindow.isAlwaysOnTop().then((isAlwaysOnTop) => {
+                mIsAlwaysOnTop = isAlwaysOnTop;
+                if (userData.alwaysOnTop) {
+                    expect(isAlwaysOnTop).toBeTruthy();
+                } else {
+                    expect(isAlwaysOnTop).toBeFalsy();
+                }
+            });
         }).catch((err) => {
             expect(err).toBeNull();
         });
@@ -107,93 +144,43 @@ describe('Tests for Always on top', () => {
                 robot.keyTap('down');
             }
             robot.keyTap('enter');
-            setTimeout(() => {
-                done();
-            }, 5000)
+            done();
         } else {
             app.browserWindow.getBounds().then((bounds) => {
+                app.browserWindow.focus();
                 robot.setMouseDelay(200);
-                let x = bounds.x + 95;
-                let y = bounds.x + 95;
-                robot.moveMouse(x, y);
-                robot.mouseClick();
-                for (let i = 0; i < 4; i++) {
-                    robot.keyTap('down');
-                }
-                robot.keyTap('enter');
-                setTimeout(() => {
+                app.browserWindow.restore().then(() => {
+                    let x = bounds.x + 95;
+                    let y = bounds.y + 35;
+
+                    robot.moveMouseSmooth(x, y);
+                    robot.mouseClick();
+                    for (let i = 0; i < 4; i++) {
+                        robot.keyTap('down');
+                    }
+                    robot.keyTap('enter');
                     done();
-                }, 5000)
+                });
+            }).catch((err) => {
+                expect(err).toBeNull();
             });
         }
     });
 
     it('should check is always on top to be true', () => {
-        return Application.readConfig(configPath).then((userData) => {
-            if (userData.alwaysOnTop) {
-                return app.browserWindow.isAlwaysOnTop().then((isAlwaysOnTop) => {
-                    expect(isAlwaysOnTop).toBeTruthy();
-                }).catch((err) => {
-                    expect(err).toBeNull();
-                });
-            } else {
-                return app.browserWindow.isAlwaysOnTop().then((isAlwaysOnTop) => {
-                    expect(isAlwaysOnTop).toBeFalsy();
-                }).catch((err) => {
-                    expect(err).toBeNull();
-                });
-            }
-        });
-    });
-
-    it('should toggle the always on top property to false', (done) => {
-        if (isMac) {
-            robot.setMouseDelay(200);
-            robot.moveMouse(190, 0);
-            robot.mouseClick();
-            for (let i = 0; i < 8; i++) {
-                robot.keyTap('down');
-            }
-            robot.keyTap('enter');
-            setTimeout(() => {
-                done();
-            }, 5000);
+        if (!mIsAlwaysOnTop) {
+            return app.browserWindow.isAlwaysOnTop().then((isAlwaysOnTop) => {
+                expect(isAlwaysOnTop).toBeTruthy();
+            }).catch((err) => {
+                expect(err).toBeNull();
+            });
         } else {
-            app.browserWindow.getBounds().then((bounds) => {
-                robot.setMouseDelay(200);
-                let x = bounds.x + 95;
-                let y = bounds.x + 95;
-                robot.moveMouse(x, y);
-                robot.mouseClick();
-                for (let i = 0; i < 4; i++) {
-                    robot.keyTap('down');
-                }
-                robot.keyTap('enter');
-                setTimeout(() => {
-                    done();
-                }, 5000)
+            return app.browserWindow.isAlwaysOnTop().then((isAlwaysOnTop) => {
+                expect(isAlwaysOnTop).toBeFalsy();
+            }).catch((err) => {
+                expect(err).toBeNull();
             });
         }
-    });
-
-    it('should check is always on top to be true', () => {
-        return Application.readConfig(configPath).then((userData) => {
-            if (userData.alwaysOnTop) {
-                return app.browserWindow.isAlwaysOnTop().then((isAlwaysOnTop) => {
-                    expect(isAlwaysOnTop).toBeTruthy();
-                }).catch((err) => {
-                    expect(err).toBeNull();
-                });
-            } else {
-                return app.browserWindow.isAlwaysOnTop().then((isAlwaysOnTop) => {
-                    expect(isAlwaysOnTop).toBeFalsy();
-                }).catch((err) => {
-                    expect(err).toBeNull();
-                });
-            }
-        }).catch((err) => {
-            expect(err).toBeNull();
-        });
     });
 
 });
