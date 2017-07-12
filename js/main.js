@@ -9,7 +9,11 @@ const urlParser = require('url');
 const { getConfigField } = require('./config.js');
 const { isMac, isDevEnv } = require('./utils/misc.js');
 const protocolHandler = require('./protocolHandler');
-const getCmdLineArg = require('./utils/getCmdLineArg.js')
+const getCmdLineArg = require('./utils/getCmdLineArg.js');
+const childProcess = require('child_process');
+const path = require('path');
+const AppDirectory = require('appdirectory');
+const dirs = new AppDirectory('Symphony');
 
 require('electron-dl')();
 
@@ -94,9 +98,18 @@ function setupThenOpenMainWindow() {
     let hasInstallFlag = getCmdLineArg(process.argv, '--install', true);
     if (!isMac && hasInstallFlag) {
         getConfigField('launchOnStartup')
-        .then(setStartup)
-        .then(app.quit)
-        .catch(app.quit);
+            .then(setStartup)
+            .then(updateUserConfigWin)
+            .then(app.quit)
+            .catch(app.quit);
+        return;
+    }
+
+    // allows mac installer to overwrite user config
+    if (isMac && hasInstallFlag) {
+        updateUserConfigMac()
+            .then(app.quit)
+            .catch(app.quit);
         return;
     }
 
@@ -115,6 +128,37 @@ function setStartup(lStartup){
         }
 
         return true;
+    });
+}
+
+// Method to overwrite user config on mac installer
+function updateUserConfigMac() {
+    return new Promise((resolve, reject) => {
+        let userConfigPath = process.env.HOME + '/Library/Application Support/Symphony/';
+        let globalConfigPath = process.argv[2];
+        let userName = process.env.USER;
+
+        childProcess.exec(`rsync -r "${globalConfigPath}" "${userConfigPath}" && chown -R "${userName}" "${userConfigPath}"`, (error, stdout) => {
+            if (error) {
+                reject(error);
+            }
+            resolve();
+        });
+    });
+}
+
+// Method to overwrite user config on windows installer
+function updateUserConfigWin() {
+    return new Promise((resolve, reject) => {
+        let userConfigPath = app.getPath('userData');
+        let globalConfigPath = path.join(__dirname, '..', '..', '..', 'config/Symphony.config');
+
+        childProcess.exec(`echo D|xcopy /y /e /s /c "${globalConfigPath}" "${userConfigPath}"`, (err) => {
+            if (err) {
+                reject(err);
+            }
+            resolve();
+        });
     });
 }
 

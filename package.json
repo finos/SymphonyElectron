@@ -92,7 +92,8 @@
     "keymirror": "0.1.1",
     "winreg": "^1.2.3",
     "electron-dl": "^1.9.0",
-    "filesize": "^3.5.10"
+    "filesize": "^3.5.10",
+    "appdirectory": "^0.1.0"
   },
   "optionalDependencies": {
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.1"
