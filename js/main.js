@@ -138,7 +138,7 @@ function updateUserConfigMac() {
         let globalConfigPath = process.argv[2];
         let userName = process.env.USER;
 
-        childProcess.exec(`rsync -r "${globalConfigPath}" "${userConfigPath}" && chown -R "${userName}" "${userConfigPath}"`, (err) => {
+        childProcess.exec(`rsync -r "${globalConfigPath}" "${userConfigPath}" && chown -R "${userName}" "${userConfigPath}"`, {timeout: 60000}, (err) => {
             if (err) {
                 reject(err);
             }
@@ -153,7 +153,7 @@ function updateUserConfigWin() {
         let userConfigPath = app.getPath('userData');
         let globalConfigPath = path.join(__dirname, '..', '..', '..', 'config/Symphony.config');
 
-        childProcess.exec(`echo D|xcopy /y /e /s /c "${globalConfigPath}" "${userConfigPath}"`, (err) => {
+        childProcess.exec(`echo D|xcopy /y /e /s /c "${globalConfigPath}" "${userConfigPath}"`, {timeout: 60000}, (err) => {
             if (err) {
                 reject(err);
             }
