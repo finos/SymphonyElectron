@@ -15,9 +15,8 @@
     "prebuild": "npm run rebuild && npm run browserify-preload",
     "browserify-preload": "browserify -o js/preload/_preloadMain.js -x electron --insert-global-vars=__filename,__dirname js/preload/preloadMain.js",
     "rebuild": "electron-rebuild -f",
-    "test": "npm run lint && npm run copy-config && jest --verbose --testPathPattern test --runInBand",
+    "test": "npm run lint && jest --verbose --testPathPattern test --runInBand",
     "lint": "eslint --ext .js js/",
-    "copy-config": "ncp 'config' 'node_modules/electron/dist/Electron.app/Contents/config'",
     "rename-exe": "cd dist/win-unpacked && ren Symphony.exe Symphony-Electron.exe"
   },
   "jest": {
@@ -81,6 +80,7 @@
     "eslint-plugin-react": "^6.10.0",
     "jest": "^19.0.2",
     "ncp": "^2.0.0",
+    "robotjs": "^0.4.7",
     "spectron": "^3.7.2"
   },
   "dependencies": {
