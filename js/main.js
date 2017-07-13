@@ -134,13 +134,13 @@ function setStartup(lStartup){
 // Method to overwrite user config on mac installer
 function updateUserConfigMac() {
     return new Promise((resolve, reject) => {
-        let userConfigPath = process.env.HOME + '/Library/Application Support/Symphony/';
+        let userConfigPath = dirs.userConfig() + '/';
         let globalConfigPath = process.argv[2];
         let userName = process.env.USER;
 
-        childProcess.exec(`rsync -r "${globalConfigPath}" "${userConfigPath}" && chown -R "${userName}" "${userConfigPath}"`, (error, stdout) => {
-            if (error) {
-                reject(error);
+        childProcess.exec(`rsync -r "${globalConfigPath}" "${userConfigPath}" && chown -R "${userName}" "${userConfigPath}"`, (err) => {
+            if (err) {
+                reject(err);
             }
             resolve();
         });
