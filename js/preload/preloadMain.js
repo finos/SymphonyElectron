@@ -39,7 +39,7 @@ const throttledSetBadgeCount = throttle(1000, function(count) {
 
 // Setup the crash reporter
 var demoData = {
-    "backendURL": "http://localhost:1127/post",
+    "backendURL": "https://crash.symphony.com/",
     "sendCrashReports": true,
     "autoSubmit": true
 };
