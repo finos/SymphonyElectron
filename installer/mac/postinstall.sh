@@ -45,10 +45,10 @@ fi
 rm -f $tempFilePath
 
 ## For launching symphony with sandbox enabled, create a shell script that is used as the launch point for the app
-EXEC_PATH=$installPath/Symphony.app/Contents/MacOS
-mv $EXEC_PATH/Symphony $EXEC_PATH/Symphony-bin
-cat > $EXEC_PATH/Symphony << EOT
-#!/bin/sh
-exec "\${0%/*}/Symphony-bin" --enable-sandbox \$@
-EOT
-chmod 755 $EXEC_PATH/Symphony
+# EXEC_PATH=$installPath/Symphony.app/Contents/MacOS
+# mv $EXEC_PATH/Symphony $EXEC_PATH/Symphony-bin
+# cat > $EXEC_PATH/Symphony << EOT
+# #!/bin/sh
+# exec "\${0%/*}/Symphony-bin" --enable-sandbox \$@
+# EOT
+# chmod 755 $EXEC_PATH/Symphony

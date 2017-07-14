@@ -37,6 +37,7 @@ let boundsChangeWindow;
 let alwaysOnTop = false;
 let position = 'lower-right';
 let display;
+let sandboxed = false;
 
 // note: this file is built using browserify in prebuild step.
 const preloadMainScript = path.join(__dirname, 'preload/_preloadMain.js');
@@ -81,7 +82,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         minHeight: MIN_HEIGHT,
         alwaysOnTop: false,
         webPreferences: {
-            sandbox: !isNodeEnv,
+            sandbox: sandboxed,
             nodeIntegration: isNodeEnv,
             preload: preloadMainScript,
         }
@@ -212,6 +213,9 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     // bug in electron is preventing this from working in sandboxed evt...
     // https://github.com/electron/electron/issues/8841
     mainWindow.webContents.on('will-navigate', function(event, willNavUrl) {
+        if (!sandboxed) {
+            return;
+        }
         event.preventDefault();
         openUrlInDefaultBrower(willNavUrl);
     });
