@@ -22,6 +22,9 @@ describe('Tests for Activity Detection', function() {
 
     afterAll(function (done) {
         childProcess.exec('npm run rebuild', function (err, stdout) {
+            if (err){
+                throw(err);
+            }
             jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
             done();
         });
