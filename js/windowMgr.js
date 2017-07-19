@@ -85,6 +85,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             sandbox: sandboxed,
             nodeIntegration: isNodeEnv,
             preload: preloadMainScript,
+            nativeWindowOpen: true
         }
     };
 
