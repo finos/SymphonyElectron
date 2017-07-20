@@ -43,13 +43,7 @@ describe('Tests for Notification position', () => {
     });
 
     it('should load demo html page', () => {
-        let filePath;
-        if (process.platform === 'win32') {
-            filePath = 'file:///' + path.join(__dirname, '..', '..', 'demo/index.html');
-        } else {
-            filePath = 'file://$(pwd)/' + path.join(__dirname, '..', '..', 'demo/index.html')
-        }
-        return app.client.url(filePath);
+        return app.client.url('file:///' + path.join(__dirname, '..', '..', 'demo/index.html'));
     });
 
     it('should load demo html', () => {
