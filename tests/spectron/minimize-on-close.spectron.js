@@ -1,8 +1,8 @@
 const path = require('path');
 const fs = require('fs');
 const childProcess = require('child_process');
-const Application = require('./spectron/spectronSetup');
-const {isMac} = require('../js/utils/misc');
+const Application = require('./spectronSetup');
+const {isMac} = require('../../js/utils/misc');
 let robot;
 let configPath;
 

@@ -1,4 +1,4 @@
-const Application = require('./spectron/spectronSetup');
+const Application = require('./spectronSetup');
 const path = require('path');
 let app = new Application({});
 
@@ -40,7 +40,7 @@ describe('Tests for clipboard', () => {
     });
 
     it('should check window count', () => {
-        return app.client.url('file:///' + path.join(__dirname, '..', 'demo/index.html'));
+        return app.client.url('file:///' + path.join(__dirname, '..', '..', 'demo/index.html'));
     });
 
     it('should set the username field', () => {

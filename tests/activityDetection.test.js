@@ -3,10 +3,10 @@ const childProcess = require('child_process');
 
 let activityDetection;
 
-describe('Tests for Activity Detection', function() {
+describe('Tests for Activity Detection', function () {
 
     var originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 90000;
 
     beforeAll(function (done) {
         childProcess.exec(`npm rebuild --target=${process.version} --build-from-source`, function (err) {
@@ -21,16 +21,11 @@ describe('Tests for Activity Detection', function() {
     });
 
     afterAll(function (done) {
-        childProcess.exec('npm run rebuild', function (err, stdout) {
-            if (err){
-                throw(err);
-            }
-            jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
-            done();
-        });
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+        done();
     });
 
-    it('should return null', function() {
+    it('should return null', function () {
 
         activityDetection.setActivityWindow(0, electron.ipcRenderer);
         const noData = activityDetection.activityDetection();

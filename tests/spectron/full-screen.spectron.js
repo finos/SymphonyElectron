@@ -1,14 +1,14 @@
 const path = require('path');
 const fs = require('fs');
 const childProcess = require('child_process');
-const Application = require('./spectron/spectronSetup');
-const {isMac} = require('../js/utils/misc');
+const Application = require('./spectronSetup');
+const {isMac} = require('../../js/utils/misc');
 let robot;
 let configPath;
 
 let app = new Application({});
 
-describe('Tests for Zoom in and Zoom out', () => {
+describe('Tests for Full screen', () => {
 
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 90000;
@@ -19,6 +19,7 @@ describe('Tests for Zoom in and Zoom out', () => {
             return app.startApplication().then((startedApp) => {
                 app = startedApp;
                 getConfigPath().then((config) => {
+                    console.log(config);
                     configPath = config;
                     done();
                 }).catch((err) => {
@@ -98,27 +99,25 @@ describe('Tests for Zoom in and Zoom out', () => {
         app.browserWindow.focus();
         return app.browserWindow.setAlwaysOnTop(true).then(() => {
             return app.browserWindow.isAlwaysOnTop().then((isOnTop) => {
+                console.log(isOnTop);
                 expect(isOnTop).toBeTruthy();
             });
         });
     });
 
-    it('should zoom in the app and check whether it is zoomed in', () => {
-        robot.setKeyboardDelay(500);
+    it('should set the app full screen and check whether it is in full screen', () => {
         if (isMac) {
-
-            robot.keyToggle('0', 'down', ['command']);
-            robot.keyToggle('0', 'up');
-            robot.keyToggle('command', 'up');
-
-            for (var i = 0; i < 4; i++) {
-                robot.keyToggle('+', 'down', ['command']);
+            robot.setMouseDelay(100);
+            robot.moveMouseSmooth(205, 10);
+            robot.mouseClick();
+            robot.setKeyboardDelay(100);
+            for (let i = 0; i < 6; i++) {
+                robot.keyTap('down');
             }
-            robot.keyToggle('+', 'up');
-            robot.keyToggle('command', 'up');
+            robot.keyTap('enter');
 
-            return app.electron.webFrame.getZoomFactor().then((zoomFactor) => {
-                expect(zoomFactor > 1).toBeTruthy();
+            return app.browserWindow.isFullScreen().then((fullscreen) => {
+                expect(fullscreen).toBeTruthy();
             }).catch((err) => {
                 expect(err).toBeNull();
             })
@@ -130,67 +129,10 @@ describe('Tests for Zoom in and Zoom out', () => {
                 robot.moveMouseSmooth(x, y);
                 robot.mouseClick();
 
-                robot.keyToggle('0', 'down', ['control']);
-                robot.keyToggle('0', 'up');
-                robot.keyToggle('control', 'up');
+                robot.keyTap('f11');
 
-                for (var i = 0; i < 4; i++) {
-                    robot.keyToggle('+', 'down', ['control', 'shift']);
-                }
-                robot.keyToggle('+', 'up');
-                robot.keyToggle('control', 'up');
-                robot.keyToggle('shift', 'up');
-
-                return app.electron.webFrame.getZoomFactor().then((zoomFactor) => {
-                    expect(zoomFactor > 1).toBeTruthy();
-                }).catch((err) => {
-                    expect(err).toBeNull();
-                })
-            });
-        }
-    });
-
-
-    it('should zoom out the app and check whether it is zoomed out', () => {
-        robot.setKeyboardDelay(500);
-        if (isMac) {
-
-            robot.keyToggle('0', 'down', ['command']);
-            robot.keyToggle('0', 'up');
-            robot.keyToggle('command', 'up');
-
-            for (var i = 0; i < 4; i++) {
-                robot.keyToggle('-', 'down', ['command']);
-            }
-            robot.keyToggle('-', 'up');
-            robot.keyToggle('command', 'up');
-
-            return app.electron.webFrame.getZoomFactor().then((zoomFactor) => {
-
-                expect(zoomFactor < 1).toBeTruthy();
-            }).catch((err) => {
-                expect(err).toBeNull();
-            })
-        } else {
-            return app.browserWindow.getBounds().then((bounds) => {
-                robot.setMouseDelay(100);
-                let x = bounds.x + 200;
-                let y = bounds.y + 200;
-                robot.moveMouseSmooth(x, y);
-                robot.mouseClick();
-
-                robot.keyToggle('0', 'down', ['control']);
-                robot.keyToggle('0', 'up');
-                robot.keyToggle('control', 'up');
-
-                for (var i = 0; i < 4; i++) {
-                    robot.keyToggle('-', 'down', ['control']);
-                }
-                robot.keyToggle('-', 'up');
-                robot.keyToggle('control', 'up');
-
-                return app.electron.webFrame.getZoomFactor().then((zoomFactor) => {
-                    expect(zoomFactor < 1).toBeTruthy();
+                return app.browserWindow.isFullScreen().then((fullscreen) => {
+                    expect(fullscreen).toBeTruthy();
                 }).catch((err) => {
                     expect(err).toBeNull();
                 })

@@ -6,7 +6,7 @@ describe('Tests for Close', () => {
     let app;
 
     beforeAll((done) => {
-        const Application = require('./spectron/spectronSetup');
+        const Application = require('./spectronSetup');
         app = new Application({});
         return app.startApplication().then((startedApp) => {
             app = startedApp;

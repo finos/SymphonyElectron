@@ -1,6 +1,6 @@
-const Application = require('./spectron/spectronSetup');
+const Application = require('./spectronSetup');
 const path = require('path');
-const {isMac} = require('../js/utils/misc');
+const {isMac} = require('../../js/utils/misc');
 let app = new Application({});
 
 describe('Tests for Notification position', () => {
@@ -45,9 +45,9 @@ describe('Tests for Notification position', () => {
     it('should load demo html page', () => {
         let filePath;
         if (process.platform === 'win32') {
-            filePath = 'file:///' + path.join(__dirname, '..', 'demo/index.html');
+            filePath = 'file:///' + path.join(__dirname, '..', '..', 'demo/index.html');
         } else {
-            filePath = 'file://$(pwd)/' + path.join(__dirname, '..', 'demo/index.html')
+            filePath = 'file://$(pwd)/' + path.join(__dirname, '..', '..', 'demo/index.html')
         }
         return app.client.url(filePath);
     });
