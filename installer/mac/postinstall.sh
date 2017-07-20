@@ -48,8 +48,3 @@ rm -f $tempFilePath
 EXEC_PATH=$installPath/Symphony.app/Contents/MacOS
 exec $EXEC_PATH/Symphony --install $newPath
 chmod 755 $EXEC_PATH/Symphony
-# mv $EXEC_PATH/Symphony $EXEC_PATH/Symphony-bin
-# cat > $EXEC_PATH/Symphony << EOT
-# #!/bin/sh
-# exec "\${0%/*}/Symphony-bin" --enable-sandbox \$@
-# EOT
