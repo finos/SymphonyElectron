@@ -17,6 +17,7 @@ let configurationWindow;
 let screens;
 let position;
 let display;
+let sandboxed = false;
 
 let windowConfig = {
     width: 460,
@@ -27,7 +28,7 @@ let windowConfig = {
     resizable: false,
     webPreferences: {
         preload: path.join(__dirname, 'configure-notification-position-preload.js'),
-        sandbox: true,
+        sandbox: sandboxed,
         nodeIntegration: false
     }
 };

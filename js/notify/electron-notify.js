@@ -48,6 +48,8 @@ let externalDisplay;
 // user selected display id for notification
 let displayId;
 
+let sandboxed = false;
+
 let config = {
     // corner to put notifications
     // upper-right, upper-left, lower-right, lower-left
@@ -131,7 +133,7 @@ let config = {
         acceptFirstMouse: true,
         webPreferences: {
             preload: path.join(__dirname, 'electron-notify-preload.js'),
-            sandbox: !isNodeEnv,
+            sandbox: sandboxed,
             nodeIntegration: isNodeEnv
         }
     }
