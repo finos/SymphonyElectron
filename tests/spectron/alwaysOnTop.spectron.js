@@ -1,5 +1,5 @@
-const Application = require('./spectron/spectronSetup');
-const {isMac} = require('../js/utils/misc.js');
+const Application = require('./spectronSetup');
+const {isMac} = require('../../js/utils/misc.js');
 const childProcess = require('child_process');
 
 let app = new Application({});
@@ -46,16 +46,12 @@ describe('Tests for Always on top', () => {
         if (app && app.isRunning()) {
             jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
             app.stop().then(() => {
-                childProcess.exec('npm run rebuild', function (err, stdout) {
-                    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
-                    done();
-                });
+                jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+                done();
             }).catch((err) => {
-                childProcess.exec('npm run rebuild', function () {
-                    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
-                    expect(err).toBeNull();
-                    done();
-                });
+                jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+                expect(err).toBeNull();
+                done();
             });
         }
     });

@@ -1,0 +1,4 @@
+{
+  "testMatch": ["**/*.spectron.js"],
+  "verbose": true
+}
