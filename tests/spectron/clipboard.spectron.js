@@ -33,9 +33,11 @@ describe('Tests for clipboard', () => {
                 done();
             }).catch((err) => {
                 expect(err).toBeFalsy();
+                done();
             });
         }).catch((err) => {
             expect(err).toBeFalsy();
+            done();
         });
     });
 

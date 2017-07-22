@@ -13,6 +13,7 @@ describe('Tests for Close', () => {
             done();
         }).catch((err) => {
             expect(err).toBeNull();
+            done();
         });
     });
 
@@ -37,9 +38,11 @@ describe('Tests for Close', () => {
                 done();
             }).catch((err) => {
                 expect(err).toBeNull();
+                done();
             });
         }).catch((err) => {
             expect(err).toBeNull();
+            done();
         });
     });
 

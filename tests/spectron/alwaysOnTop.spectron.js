@@ -15,7 +15,7 @@ describe('Tests for Always on top', () => {
     beforeAll((done) => {
         childProcess.exec(`npm rebuild robotjs --target=${process.version} --build-from-source`, function () {
             robot = require('robotjs');
-            return app.startApplication().then((startedApp) => {
+            app.startApplication().then((startedApp) => {
                 app = startedApp;
                 getConfigPath().then((config) => {
                     configPath = config;
@@ -23,6 +23,7 @@ describe('Tests for Always on top', () => {
                 });
             }).catch((err) => {
                 expect(err).toBeNull();
+                done();
             });
         });
     });
@@ -64,6 +65,7 @@ describe('Tests for Always on top', () => {
             });
         }).catch((err) => {
             expect(err).toBeNull();
+            done();
         });
     });
 
@@ -110,6 +112,7 @@ describe('Tests for Always on top', () => {
                 });
             }).catch((err) => {
                 expect(err).toBeNull();
+                done();
             });
         } else {
             done();
@@ -159,6 +162,7 @@ describe('Tests for Always on top', () => {
                 });
             }).catch((err) => {
                 expect(err).toBeNull();
+                done();
             });
         }
     });

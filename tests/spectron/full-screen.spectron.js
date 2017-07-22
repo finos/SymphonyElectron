@@ -24,9 +24,11 @@ describe('Tests for Full screen', () => {
                     done();
                 }).catch((err) => {
                     expect(err).toBeNull();
+                    done();
                 });
             }).catch((err) => {
                 expect(err).toBeNull();
+                done();
             });
         });
     });
@@ -73,9 +75,11 @@ describe('Tests for Full screen', () => {
                 done();
             }).catch((err) => {
                 expect(err).toBeNull();
+                done();
             });
         }).catch((err) => {
             expect(err).toBeNull();
+            done();
         });
     });
 

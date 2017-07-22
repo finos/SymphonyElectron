@@ -12,6 +12,7 @@ describe('Tests for Bring to front', () => {
             done();
         }).catch((err) => {
             expect(err).toBeNull();
+            done();
         });
     });
 
@@ -34,9 +35,11 @@ describe('Tests for Bring to front', () => {
                 done();
             }).catch((err) => {
                 expect(err).toBeNull();
+                done();
             });
         }).catch((err) => {
             expect(err).toBeNull();
+            done();
         });
     });
 
