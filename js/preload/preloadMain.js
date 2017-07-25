@@ -18,6 +18,7 @@ const apiEnums = require('../enums/api.js');
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 const getMediaSources = require('../desktopCapturer/getSources');
+const SpellCheckerHelper = require('../spellChecker/spellChecker').SpellCheckHelper;
 
 require('../downloadManager/downloadManager');
 
@@ -328,4 +329,8 @@ function createAPI() {
     window.addEventListener('online', updateOnlineStatus, false);
 
     updateOnlineStatus();
+
+    // Method to initialize spell checker
+    const spellChecker = new SpellCheckerHelper();
+    spellChecker.initializeSpellChecker();
 }
