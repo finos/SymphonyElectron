@@ -16,7 +16,7 @@
     "prebuild": "npm run rebuild && npm run browserify-preload",
     "browserify-preload": "browserify -o js/preload/_preloadMain.js -x electron --insert-global-vars=__filename,__dirname js/preload/preloadMain.js  --external electron-spellchecker js/preload/preloadMain.js > js/preload/_preloadMain.js",
     "rebuild": "electron-rebuild -f",
-    "test": "npm run lint && jest --verbose --testPathPattern test && npm run rebuild && npm run spectron-test",
+    "test": "npm run lint && jest --verbose --testPathPattern test && npm run rebuild",
     "spectron-test": "jest --config tests/spectron/jest_spectron.json --runInBand && npm run rebuild",
     "lint": "eslint --ext .js js/",
     "rename-exe": "cd dist/win-unpacked && ren Symphony.exe Symphony-Electron.exe"
