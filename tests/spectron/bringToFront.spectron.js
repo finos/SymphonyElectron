@@ -1,4 +1,4 @@
-const Application = require('./spectron/spectronSetup');
+const Application = require('./spectronSetup');
 let app = new Application({});
 
 describe('Tests for Bring to front', () => {

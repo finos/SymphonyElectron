@@ -1,5 +1,6 @@
-const Application = require('./spectron/spectronSetup');
+const Application = require('./spectronSetup');
 const path = require('path');
+const {isMac} = require('../../js/utils/misc');
 let app = new Application({});
 
 describe('Tests for Notification position', () => {
@@ -42,13 +43,7 @@ describe('Tests for Notification position', () => {
     });
 
     it('should load demo html page', () => {
-        let filePath;
-        if (process.platform === 'win32') {
-            filePath = 'file:///' + path.join(__dirname, '..', 'demo/index.html');
-        } else {
-            filePath = 'file://$(pwd)/' + path.join(__dirname, '..', 'demo/index.html')
-        }
-        return app.client.url(filePath);
+        return app.client.url('file:///' + path.join(__dirname, '..', '..', 'demo/index.html'));
     });
 
     it('should load demo html', () => {
@@ -77,7 +72,11 @@ describe('Tests for Notification position', () => {
     it('should check notification position', () => {
         return app.browserWindow.getBounds().then((bounds) => {
             expect(bounds.x === 0).toBeTruthy();
-            expect(bounds.y > 0).toBeTruthy();
+            if (isMac) {
+                expect(bounds.y > 0).toBeTruthy();
+            } else {
+                expect(bounds.y === 0).toBeTruthy();
+            }
         }).catch((err) => {
             expect(err).toBeNull();
         });
@@ -157,7 +156,11 @@ describe('Tests for Notification position', () => {
     it('should check notification position and equal to upper-right', () => {
         return app.browserWindow.getBounds().then((bounds) => {
             expect(bounds.x > 0).toBeTruthy();
-            expect(bounds.y > 0).toBeTruthy();
+            if (isMac) {
+                expect(bounds.y > 0).toBeTruthy();
+            } else {
+                expect(bounds.y === 0).toBeTruthy();
+            }
         }).catch((err) => {
             expect(err).toBeNull();
         });
