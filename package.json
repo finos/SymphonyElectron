@@ -89,15 +89,17 @@
   },
   "dependencies": {
     "@paulcbetts/system-idle-time": "^1.0.4",
+    "appdirectory": "^0.1.0",
     "async": "^2.1.5",
     "auto-launch": "^5.0.1",
     "electron-context-menu": "^0.8.0",
-    "electron-squirrel-startup": "^1.0.0",
-    "keymirror": "0.1.1",
     "electron-dl": "^1.9.0",
+    "electron-squirrel-startup": "^1.0.0",
+    "ffi": "^2.2.0",
     "filesize": "^3.5.10",
-    "appdirectory": "^0.1.0",
+    "keymirror": "0.1.1",
     "randomstring": "^1.1.5",
+    "ref": "^1.3.4",
     "winreg": "^1.2.3"
   },
   "optionalDependencies": {

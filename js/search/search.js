@@ -135,6 +135,10 @@ class Search {
         });
     }
 
+    /*freeResults(res) {
+        libSymphonySearch.symSEFreeResult(ret);
+    }*/
+
     static constructQuery(query, senderIds, threadIds, attachments) {
         return query;
     }
