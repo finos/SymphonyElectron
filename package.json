@@ -7,8 +7,8 @@
   "main": "js/main.js",
   "scripts": {
     "dev": "npm run prebuild && cross-env ELECTRON_DEV=true electron .",
-    "demo-win": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file:///demo/index.html",
-    "demo-mac": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/demo/index.html",
+    "demo-win": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file:///demo/search.html",
+    "demo-mac": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/demo/search.html",
     "unpacked-mac": "npm run prebuild && npm run test && build --mac --dir",
     "unpacked-win": "npm run prebuild && npm run test && build --win --x64 --dir && npm run rename-exe",
     "unpacked-win-x86": "npm run prebuild && npm run test && build --win --ia32 --dir && npm run rename-exe",
@@ -88,11 +88,12 @@
     "async": "^2.1.5",
     "auto-launch": "^5.0.1",
     "electron-context-menu": "^0.8.0",
-    "electron-squirrel-startup": "^1.0.0",
-    "keymirror": "0.1.1",
-    "winreg": "^1.2.3",
     "electron-dl": "^1.9.0",
-    "filesize": "^3.5.10"
+    "electron-squirrel-startup": "^1.0.0",
+    "filesize": "^3.5.10",
+    "keymirror": "0.1.1",
+    "randomstring": "^1.1.5",
+    "winreg": "^1.2.3"
   },
   "optionalDependencies": {
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.1"
