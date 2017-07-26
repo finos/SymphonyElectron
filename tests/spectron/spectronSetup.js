@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const {isMac} = require('../../js/utils/misc');
 const ncp = require('ncp').ncp;
+const configFileName = 'Symphony.config';
 
 class App {
 
@@ -41,13 +42,36 @@ class App {
     }
 
     static readConfig(configPath) {
-        return new Promise(function (resolve, reject) {
-            fs.readFile(configPath, function (err, data) {
-                if (err) {
-                    reject(err);
-                }
-                resolve(JSON.parse(data));
+        return this.copyConfigToUserDir(configPath).then(() => {
+            return new Promise(function (resolve, reject) {
+                fs.readFile(configPath, function (err, data) {
+                    if (err) {
+                        reject(err);
+                    }
+                    let configData;
+                    try {
+                        configData = JSON.parse(data)
+                    } catch (err) {
+                        reject(err);
+                    }
+                    resolve(configData);
+                });
             });
+        });
+    }
+
+    static copyConfigToUserDir(configPath) {
+        return new Promise(function (resolve, reject) {
+            if (!fs.existsSync(configPath + '/' + configFileName)) {
+                ncp('config' + '/' + configFileName, configPath, function (err) {
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve();
+                });
+            } else {
+                resolve();
+            }
         });
     }
 
