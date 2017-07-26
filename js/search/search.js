@@ -21,6 +21,7 @@ class Search {
 
     constructor(userId) {
         this.isInitialized = false;
+        this.messageData = [];
         this.userId = userId;
         this.startIndexingFromDate = (new Date().getTime() - SEARCH_PERIOD_SUBTRACTOR).toString();
         this.indexFolderName = INDEX_PREFIX + '_' + userId + '_' + INDEX_VERSION;
@@ -28,7 +29,7 @@ class Search {
     }
 
     initLib() {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             if (!this.isInitialized) {
                 this.isInitialized = true;
             }
@@ -68,7 +69,7 @@ class Search {
     }
 
     mergeIndexBatches() {
-        libSymphonySearch.symSEMergePartialIndexAsync(this.indexFolderName, TEMP_BATCH_INDEX_FOLDER, function (err, res) {
+        libSymphonySearch.symSEMergePartialIndexAsync(this.indexFolderName, TEMP_BATCH_INDEX_FOLDER, function (err) {
             if (err) throw err;
 
             libSymphonySearch.symSERemoveFolder(TEMP_BATCH_INDEX_FOLDER);
@@ -78,12 +79,12 @@ class Search {
     readJson() {
         return new Promise((resolve, reject) => {
             var files = fs.readdirSync('./msgsjson');
-            let messageData = [];
+            this.messageData = [];
             files.forEach(function (file) {
                 let data = fs.readFileSync('./msgsjson/' + file, "utf8");
                 if (data) {
-                    messageData.push(JSON.parse(data));
-                    resolve(messageData);
+                    this.messageData.push(JSON.parse(data));
+                    resolve(this.messageData);
                 } else {
                     reject("err on reading files")
                 }
@@ -116,7 +117,7 @@ class Search {
             if (!isNaN(endDate)) {
                 ed_str = endDate.toString();
             }
-
+            /*eslint-disable no-param-reassign */
             if (isNaN(limit)) {
                 limit = 25;
             }
@@ -135,11 +136,7 @@ class Search {
         });
     }
 
-    /*freeResults(res) {
-        libSymphonySearch.symSEFreeResult(ret);
-    }*/
-
-    static constructQuery(query, senderIds, threadIds, attachments) {
+    static constructQuery(query) {
         return query;
     }
 
