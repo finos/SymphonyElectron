@@ -21,10 +21,6 @@ const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField } = require('./config.js');
 const { isNodeEnv } = require('./utils/misc');
 
-//context menu
-// TODO: remove this once spell checker is ready
-//const contextMenu = require('./menus/contextMenu.js');
-
 // show dialog when certificate errors occur
 require('./dialogs/showCertError.js');
 
@@ -320,7 +316,6 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         }
     });
 
-    //contextMenu(mainWindow);
 }
 
 app.on('before-quit', function () {
