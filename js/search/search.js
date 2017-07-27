@@ -3,18 +3,20 @@
 const fs = require('fs');
 const randomString = require('randomstring');
 
-
 const electron = require('electron');
 const app = electron.app;
 const path = require('path');
 const isDevEnv = require('../utils/misc.js').isDevEnv;
 const isMac = require('../utils/misc.js').isMac;
 
+let userData = path.join(app.getPath('userData'));
+let execPath = path.dirname(app.getPath('exe'));
+
 const libSymphonySearch = require('./searchLibrary');
-const TEMP_BATCH_INDEX_FOLDER = './data/temp_batch_indexes';
-const TEMP_REALTIME_INDEX = './data/temp_realtime_index';
-const INDEX_PREFIX = './data/search_index';
-const INDEX_DATA_FOLDER = './data';
+const TEMP_BATCH_INDEX_FOLDER = path.join(userData, '/data/temp_batch_indexes');
+const TEMP_REALTIME_INDEX = path.join(userData, '/data/temp_realtime_index');
+const INDEX_PREFIX = path.join(userData, '/data/search_index');
+const INDEX_DATA_FOLDER = path.join(userData, '/data');
 const SEARCH_PERIOD_SUBTRACTOR = 3 * 31 * 24 * 60 * 60 * 1000;//3 months
 const MINIMUM_DATE = '0000000000000';
 const MAXIMUM_DATE = '9999999999999';
@@ -24,9 +26,8 @@ const SORT_BY_SCORE = 0;
 
 const BATCH_RANDOM_INDEX_PATH_LENGTH = 20;
 
-let execPath = path.dirname(app.getPath('exe'));
-
 class Search {
+    /*eslint-disable class-methods-use-this */
 
     constructor(userId) {
         this.isInitialized = false;
@@ -71,7 +72,7 @@ class Search {
             let indexId = randomString.generate(BATCH_RANDOM_INDEX_PATH_LENGTH);
             libSymphonySearch.symSECreatePartialIndexAsync(TEMP_BATCH_INDEX_FOLDER, indexId, JSON.stringify(messages), function (err, res) {
                 if (err) reject(err);
-                resolve(res)
+                resolve(res);
             });
         });
     }
@@ -84,15 +85,19 @@ class Search {
         });
     }
 
-    /*eslint-disable class-methods-use-this */
-    readJson() {
+    realTimeIndexing(message) {
+        libSymphonySearch.symSEIndexRealTime(TEMP_REALTIME_INDEX, JSON.stringify(message));
+    }
+
+    readJson(batch) {
         return new Promise((resolve, reject) => {
-            let dirPath = path.join(execPath, isMac ? '..' : '', 'Resources/msgsjson');
-            let messageFolderPath = isDevEnv ? './msgsjson/' : dirPath;
+            let dirPath = path.join(execPath, isMac ? '..' : '', 'Resources/msgsjson', batch);
+            let messageFolderPath = isDevEnv ? path.join('./msgsjson', batch ): dirPath;
             let files = fs.readdirSync(messageFolderPath);
             let messageData = [];
             files.forEach(function (file) {
-                let data = fs.readFileSync(messageFolderPath + file, "utf8");
+                let tempPath = path.join(messageFolderPath, file);
+                let data = fs.readFileSync(tempPath, "utf8");
                 if (data) {
                     messageData.push(JSON.parse(data));
                     resolve(messageData);
@@ -145,7 +150,7 @@ class Search {
             let ret = JSON.parse(returnedResult);
             resolve(ret);
             if (ret.messages.length > 0) {
-                libSymphonySearch.symSEFreeResultAsync(returnedResult);
+                libSymphonySearch.symSEFreeResult(returnedResult);
             }
         });
     }

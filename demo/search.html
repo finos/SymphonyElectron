@@ -34,7 +34,7 @@
 </head>
 <body>
 <div style="padding: 20px;">
-    <h1>Symphony Electron API Demo</h1>
+    <h1>Symphony Electron Search API Demo</h1>
     <div>
         <p>Search</p>
     </div>
@@ -67,9 +67,14 @@
     <div>
         <label for="var1">var1:</label><input id="var1" value="0" size=5>
     </div>
+    <div>
+        <label for="realTimeIndexing">Real Time Indexing:</label><input placeholder="Pass array of messages:" id="realTimeIndexing">
+        <button id='sendMessage'>Send</button>
+    </div>
     <br>
     <div>
-        <button id='index'>IndexMessages</button>
+        <label for="batchNumber">Batch Number: </label><input placeholder="Ex: batch1, batch2" id="batchNumber">
+        <button id='index'>Index Messages</button>
         <button id='merge'>Merge</button>
     </div>
     <br>
@@ -102,10 +107,14 @@
     var threadIdEl = document.getElementById('threadId');
     var var1El = document.getElementById('var1');
     var table = document.getElementById('table');
+    var sendMessage = document.getElementById('sendMessage');
+    var realTimeIndexing = document.getElementById('realTimeIndexing');
+    var batchNumber = document.getElementById('batchNumber');
 
 
     buttonIndex.addEventListener('click', function () {
-        search.readJson().then(function (res) {
+        let batchIndex = batchNumber.value;
+        search.readJson(batchIndex).then(function (res) {
             search.indexBatch(res).then(function () {
                 resultsEl.innerHTML = "Index created";
             });
@@ -149,6 +158,11 @@
                 table.appendChild(tr);
             });
         });
+    });
+
+    sendMessage.addEventListener('click', function () {
+        let message = JSON.parse(realTimeIndexing.value);
+        search.realTimeIndexing(message);
     });
 
     merge.addEventListener('click', function () {

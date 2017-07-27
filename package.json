@@ -33,7 +33,11 @@
       "!installer/*",
       "!tests/*"
     ],
-    "extraResources": ["msgsjson", "libsymphonysearch.dylib", "libsymphonysearchwin64.dll"],
+    "extraResources": [
+      "msgsjson",
+      "libsymphonysearch.dylib",
+      "libsymphonysearchwin64.dll"
+    ],
     "extraFiles": "config/Symphony.config",
     "appId": "symphony-electron-desktop",
     "mac": {

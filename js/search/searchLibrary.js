@@ -11,8 +11,13 @@ const isMac = require('../utils/misc.js').isMac;
 
 var symLucyIndexer = ref.types.void;
 var symLucyIndexerPtr = ref.refType(symLucyIndexer);
+
+
+let messageData = ref.types.void;
+let messagePtr = ref.refType(messageData);
+
 let execPath = path.dirname(app.getPath('exe'));
-let libraryPath = isMac ? 'Resources/libsymphonysearch' : 'Resources/libsymphonysearchwin64';
+let libraryPath = isMac ? 'Resources/libsymphonysearch' : 'resources/libsymphonysearchwin64';
 let fullPath = path.join(execPath, isMac ? '..' : '', libraryPath);
 let libPath = isDevEnv ? 'libsymphonysearch.dylib' : fullPath;
 
@@ -37,7 +42,7 @@ var libSymphonySearch = ffi.Library(libPath, {
     //Index commit/optimize
     'symSE_commit_index': ['int', [symLucyIndexerPtr, 'int']], //will be removed
     //freePointer
-    'symSE_free_results': ['int', ['string']]
+    'symSE_free_results': ['int', [messagePtr]]
 });
 
 module.exports = {
