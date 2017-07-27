@@ -3,6 +3,13 @@
 const fs = require('fs');
 const randomString = require('randomstring');
 
+
+const electron = require('electron');
+const app = electron.app;
+const path = require('path');
+const isDevEnv = require('../utils/misc.js').isDevEnv;
+const isMac = require('../utils/misc.js').isMac;
+
 const libSymphonySearch = require('./searchLibrary');
 const TEMP_BATCH_INDEX_FOLDER = './data/temp_batch_indexes';
 const TEMP_REALTIME_INDEX = './data/temp_realtime_index';
@@ -17,11 +24,12 @@ const SORT_BY_SCORE = 0;
 
 const BATCH_RANDOM_INDEX_PATH_LENGTH = 20;
 
+let execPath = path.dirname(app.getPath('exe'));
+
 class Search {
 
     constructor(userId) {
         this.isInitialized = false;
-        this.messageData = [];
         this.userId = userId;
         this.startIndexingFromDate = (new Date().getTime() - SEARCH_PERIOD_SUBTRACTOR).toString();
         this.indexFolderName = INDEX_PREFIX + '_' + userId + '_' + INDEX_VERSION;
@@ -76,15 +84,18 @@ class Search {
         });
     }
 
+    /*eslint-disable class-methods-use-this */
     readJson() {
         return new Promise((resolve, reject) => {
-            var files = fs.readdirSync('./msgsjson');
-            this.messageData = [];
+            let dirPath = path.join(execPath, isMac ? '..' : '', 'Resources/msgsjson');
+            let messageFolderPath = isDevEnv ? './msgsjson/' : dirPath;
+            let files = fs.readdirSync(messageFolderPath);
+            let messageData = [];
             files.forEach(function (file) {
-                let data = fs.readFileSync('./msgsjson/' + file, "utf8");
+                let data = fs.readFileSync(messageFolderPath + file, "utf8");
                 if (data) {
-                    this.messageData.push(JSON.parse(data));
-                    resolve(this.messageData);
+                    messageData.push(JSON.parse(data));
+                    resolve(messageData);
                 } else {
                     reject("err on reading files")
                 }
@@ -133,6 +144,9 @@ class Search {
             let returnedResult = libSymphonySearch.symSESearch(this.indexFolderName, TEMP_REALTIME_INDEX, q, sd_str, ed_str, offset, limit, sortOrder);
             let ret = JSON.parse(returnedResult);
             resolve(ret);
+            if (ret.messages.length > 0) {
+                libSymphonySearch.symSEFreeResultAsync(returnedResult);
+            }
         });
     }
 

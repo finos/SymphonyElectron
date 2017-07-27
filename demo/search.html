@@ -10,21 +10,24 @@
             padding: 5px;
             text-align: center;
         }
+
         .hidden {
             display: none;
         }
+
         input {
             padding: 5px;
             margin: 2px 0;
             border: 1px solid #ccc;
         }
+
         label {
             padding-right: 10px;
         }
 
         button {
             padding: 10px;
-            background-color: rgba(0,64,98,0.7);
+            background-color: rgba(0, 64, 98, 0.7);
             color: white;
         }
     </style>
@@ -85,7 +88,7 @@
 </div>
 </body>
 <script>
-    var search = new ssf.Search("akon");
+    var search = new ssf.Search("testUser1");
     var buttonEl = document.getElementById('search');
     var merge = document.getElementById('merge');
     var buttonIndex = document.getElementById('index')
@@ -145,7 +148,6 @@
                 tr.appendChild(t3);
                 table.appendChild(tr);
             });
-            /*search.freeResults(JSON.stringify(out));*/
         });
     });
 

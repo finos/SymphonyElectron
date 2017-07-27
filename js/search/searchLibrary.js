@@ -3,10 +3,20 @@
 const ffi = require('ffi');
 const ref = require('ref');
 
+const electron = require('electron');
+const app = electron.app;
+const path = require('path');
+const isDevEnv = require('../utils/misc.js').isDevEnv;
+const isMac = require('../utils/misc.js').isMac;
+
 var symLucyIndexer = ref.types.void;
 var symLucyIndexerPtr = ref.refType(symLucyIndexer);
+let execPath = path.dirname(app.getPath('exe'));
+let libraryPath = isMac ? 'Resources/libsymphonysearch' : 'Resources/libsymphonysearchwin64';
+let fullPath = path.join(execPath, isMac ? '..' : '', libraryPath);
+let libPath = isDevEnv ? 'libsymphonysearch.dylib' : fullPath;
 
-var libSymphonySearch = ffi.Library('libsymphonysearch', {
+var libSymphonySearch = ffi.Library(libPath, {
     //init
     'symSE_init': ['void', []],
     'symSE_remove_folder': ['int', ['string']],
