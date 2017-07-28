@@ -62,7 +62,7 @@ class App {
 
     static copyConfigToUserDir(configPath) {
         return new Promise(function (resolve, reject) {
-            if (!fs.existsSync(configPath + '/' + configFileName)) {
+            if (!fs.existsSync(configPath)) {
                 ncp('config' + '/' + configFileName, configPath, function (err) {
                     if (err) {
                         reject(err);
@@ -71,6 +71,7 @@ class App {
                 });
             } else {
                 resolve();
+
             }
         });
     }
