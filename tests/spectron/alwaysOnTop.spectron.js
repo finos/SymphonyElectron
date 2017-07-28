@@ -87,27 +87,29 @@ describe('Tests for Always on top', () => {
 
     it('should bring the app to front in windows', (done) => {
         if (!isMac) {
-            app.browserWindow.focus();
-            app.browserWindow.restore();
-            app.browserWindow.setAlwaysOnTop(true).then(() => {
-                app.browserWindow.isAlwaysOnTop().then((isOnTop) => {
-                    app.browserWindow.getBounds().then((bounds) => {
-                        robot.setMouseDelay(200);
-                        app.browserWindow.restore().then(() => {
-                            let x = bounds.x + 95;
-                            let y = bounds.y + 35;
+            app.browserWindow.focus().then(() => {
+                app.browserWindow.restore().then(() => {
+                    app.browserWindow.setAlwaysOnTop(true).then(() => {
+                        app.browserWindow.isAlwaysOnTop().then((isOnTop) => {
+                            app.browserWindow.getBounds().then((bounds) => {
+                                robot.setMouseDelay(200);
+                                app.browserWindow.restore().then(() => {
+                                    let x = bounds.x + 95;
+                                    let y = bounds.y + 35;
 
-                            robot.moveMouseSmooth(x, y);
-                            robot.mouseClick();
-                            robot.setKeyboardDelay(200);
-                            for (let i = 0; i < 4
-                                ; i++) {
-                                robot.keyTap('down');
-                            }
-                            robot.keyTap('enter');
-                            expect(isOnTop).toBeTruthy();
-                            done();
-                        })
+                                    robot.moveMouseSmooth(x, y);
+                                    robot.mouseClick();
+                                    robot.setKeyboardDelay(200);
+                                    for (let i = 0; i < 4
+                                        ; i++) {
+                                        robot.keyTap('down');
+                                    }
+                                    robot.keyTap('enter');
+                                    expect(isOnTop).toBeTruthy();
+                                    done();
+                                });
+                            });
+                        });
                     });
                 });
             }).catch((err) => {
