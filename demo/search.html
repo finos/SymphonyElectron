@@ -123,11 +123,14 @@
         });
     });
 
+    let a = 1;
     buttonEl.addEventListener('click', function () {
         if (!search.isLibInit()) {
             alert('Library is not initiated. Init first...');
             return;
-        }
+        }/*
+        while (a < 100000){
+            a++*/
         let out;
         table.innerHTML = '';
         table.classList.remove('hidden');
@@ -158,6 +161,7 @@
                 table.appendChild(tr);
             });
         });
+        /*}*/
     });
 
     sendMessage.addEventListener('click', function () {

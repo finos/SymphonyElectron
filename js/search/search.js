@@ -4,6 +4,7 @@ const fs = require('fs');
 const randomString = require('randomstring');
 
 const electron = require('electron');
+const childProcess = require('child_process');
 const app = electron.app;
 const path = require('path');
 const isDevEnv = require('../utils/misc.js').isDevEnv;
@@ -13,14 +14,15 @@ let userData = path.join(app.getPath('userData'));
 let execPath = path.dirname(app.getPath('exe'));
 
 const libSymphonySearch = require('./searchLibrary');
-const TEMP_BATCH_INDEX_FOLDER = path.join(userData, '/data/temp_batch_indexes');
-const TEMP_REALTIME_INDEX = path.join(userData, '/data/temp_realtime_index');
-const INDEX_PREFIX = path.join(userData, '/data/search_index');
-const INDEX_DATA_FOLDER = path.join(userData, '/data');
+const TEMP_BATCH_INDEX_FOLDER = isDevEnv ? './data/temp_batch_indexes' : path.join(userData, '/data/temp_batch_indexes');
+const TEMP_REALTIME_INDEX = isDevEnv ? './data/temp_realtime_index' : path.join(userData, '/data/temp_realtime_index');
+const INDEX_PREFIX = isDevEnv ? './data/search_index' : path.join(userData, '/data/search_index');
+const INDEX_DATA_FOLDER = isDevEnv ? './data' : path.join(userData, '/data');
 const SEARCH_PERIOD_SUBTRACTOR = 3 * 31 * 24 * 60 * 60 * 1000;//3 months
 const MINIMUM_DATE = '0000000000000';
 const MAXIMUM_DATE = '9999999999999';
 const INDEX_VERSION = 'v1';
+let INDEX_VALIDATOR = __dirname + '/indexvalidator.exec';
 
 const SORT_BY_SCORE = 0;
 
@@ -52,12 +54,11 @@ class Search {
 
     init() {
         libSymphonySearch.symSEInit();
-        libSymphonySearch.symSEEnsureFolderExists(INDEX_DATA_FOLDER);
+        childProcess.execFileSync(INDEX_VALIDATOR, [INDEX_DATA_FOLDER]);
         libSymphonySearch.symSERemoveFolder(TEMP_REALTIME_INDEX);
         libSymphonySearch.symSERemoveFolder(TEMP_BATCH_INDEX_FOLDER);
-
-        libSymphonySearch.symSEEnsureIndexExists(this.indexFolderName);
-        libSymphonySearch.symSEEnsureIndexExists(TEMP_REALTIME_INDEX);
+        childProcess.execFileSync(INDEX_VALIDATOR, [this.indexFolderName]);
+        childProcess.execFileSync(INDEX_VALIDATOR, [TEMP_REALTIME_INDEX]);
         let indexDateStartFrom = new Date().getTime() - SEARCH_PERIOD_SUBTRACTOR;
         libSymphonySearch.symSEDeleteMessages(this.indexFolderName, null,
             MINIMUM_DATE, indexDateStartFrom.toString());
