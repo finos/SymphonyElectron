@@ -175,12 +175,11 @@ class Search {
         try {
             data = JSON.parse(result);
             if (data.status === 'OK') {
-                console.log('Successful')
-            } else {
-                console.log("Failed to validate index data folder");
+                return data;
             }
+            return new Error('Unable validate index folder')
         } catch (err) {
-            throw err;
+            throw (err)
         }
     }
 }
