@@ -17,11 +17,13 @@ let messageData = ref.types.void;
 let messagePtr = ref.refType(messageData);
 
 let execPath = path.dirname(app.getPath('exe'));
-let libraryPath = isMac ? 'Resources/libsymphonysearch' : 'resources/libsymphonysearchwin64';
-let fullPath = path.join(execPath, isMac ? '..' : '', libraryPath);
-let libPath = isDevEnv ? 'libsymphonysearch.dylib' : fullPath;
 
-var libSymphonySearch = ffi.Library(libPath, {
+const rootPath = isMac ? 'libsymphonysearch.dylib' : 'libsymphonysearch.dll';
+let productionPath = path.join(execPath, isMac ? '..' : '', rootPath);
+let devPath = path.join(__dirname, '..', '..', rootPath);
+let libraryPath = isDevEnv ? devPath : productionPath;
+
+var libSymphonySearch = ffi.Library(libraryPath, {
     //init
     'symSE_init': ['void', []],
     'symSE_remove_folder': ['int', ['string']],

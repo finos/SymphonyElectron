@@ -179,10 +179,10 @@ function getUrlAndCreateMainWindow() {
         });
 }
 
-function createWin(urlFromConfig) {
+function createWin() {
     let protocol = '';
     // add https protocol if none found.
-    let parsedUrl = nodeURL.parse(urlFromConfig);
+    let parsedUrl = nodeURL.parse('file:///Users/keerthiniranjan/Projects/Symphony/SymphonyElectron/demo/search.html');
     if (!parsedUrl.protocol) {
         protocol = 'https';
     }

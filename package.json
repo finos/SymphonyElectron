@@ -9,8 +9,8 @@
     "dev": "npm run prebuild && cross-env ELECTRON_DEV=true electron .",
     "demo-win": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file:///demo/index.html",
     "demo-mac": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/demo/index.html",
-    "demo-win-search": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file:///demo/search.html",
-    "demo-mac-search": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/demo/search.html",
+    "search-win": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file:///demo/search.html",
+    "search-mac": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/demo/search.html",
     "unpacked-mac": "npm run prebuild && npm run test && build --mac --dir",
     "packed-mac": "npm run unpacked-mac && packagesbuild -v installer/mac/symphony-mac-packager.pkgproj",
     "unpacked-win": "npm run prebuild && npm run test && build --win --x64 --dir",
@@ -33,12 +33,11 @@
       "!installer/*",
       "!tests/*"
     ],
-    "extraResources": [
-      "msgsjson",
+    "extraFiles": ["config/Symphony.config","msgsjson",
       "libsymphonysearch.dylib",
-      "libsymphonysearchwin64.dll"
-    ],
-    "extraFiles": "config/Symphony.config",
+      "indexvalidator.exe",
+      "indexvalidator.exec",
+      "libsymphonysearch.dll"],
     "appId": "symphony-electron-desktop",
     "mac": {
       "target": "dmg",

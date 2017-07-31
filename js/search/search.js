@@ -10,19 +10,29 @@ const path = require('path');
 const isDevEnv = require('../utils/misc.js').isDevEnv;
 const isMac = require('../utils/misc.js').isMac;
 
+// Search library
+const libSymphonySearch = require('./searchLibrary');
+
+// Path for the exec file and the user data folder
 let userData = path.join(app.getPath('userData'));
 let execPath = path.dirname(app.getPath('exe'));
 
-const libSymphonySearch = require('./searchLibrary');
-const TEMP_BATCH_INDEX_FOLDER = isDevEnv ? './data/temp_batch_indexes' : path.join(userData, '/data/temp_batch_indexes');
-const TEMP_REALTIME_INDEX = isDevEnv ? './data/temp_realtime_index' : path.join(userData, '/data/temp_realtime_index');
-const INDEX_PREFIX = isDevEnv ? './data/search_index' : path.join(userData, '/data/search_index');
-const INDEX_DATA_FOLDER = isDevEnv ? './data' : path.join(userData, '/data');
+// Constants paths for temp indexing folders
+const TEMP_BATCH_INDEX_FOLDER = isDevEnv ? './data/temp_batch_indexes' : path.join(userData, 'data/temp_batch_indexes');
+const TEMP_REALTIME_INDEX = isDevEnv ? './data/temp_realtime_index' : path.join(userData, 'data/temp_realtime_index');
+const INDEX_PREFIX = isDevEnv ? './data/search_index' : path.join(userData, 'data/search_index');
+const INDEX_DATA_FOLDER = isDevEnv ? './data' : path.join(userData, 'data');
 const SEARCH_PERIOD_SUBTRACTOR = 3 * 31 * 24 * 60 * 60 * 1000;//3 months
 const MINIMUM_DATE = '0000000000000';
 const MAXIMUM_DATE = '9999999999999';
 const INDEX_VERSION = 'v1';
-let INDEX_VALIDATOR = __dirname + '/indexvalidator.exec';
+
+const rootPath = isMac ? 'indexvalidator.exec' : 'indexvalidator.exe';
+let productionPath = path.join(execPath, isMac ? '..' : '', rootPath);
+let devPath = path.join(__dirname, '..', '..', rootPath);
+let libraryPath = isDevEnv ? devPath : productionPath;
+
+let INDEX_VALIDATOR = libraryPath;
 
 const SORT_BY_SCORE = 0;
 
@@ -54,11 +64,11 @@ class Search {
 
     init() {
         libSymphonySearch.symSEInit();
-        childProcess.execFileSync(INDEX_VALIDATOR, [INDEX_DATA_FOLDER]);
+        Search.indexValidator(INDEX_DATA_FOLDER);
         libSymphonySearch.symSERemoveFolder(TEMP_REALTIME_INDEX);
         libSymphonySearch.symSERemoveFolder(TEMP_BATCH_INDEX_FOLDER);
-        childProcess.execFileSync(INDEX_VALIDATOR, [this.indexFolderName]);
-        childProcess.execFileSync(INDEX_VALIDATOR, [TEMP_REALTIME_INDEX]);
+        Search.indexValidator(this.indexFolderName);
+        Search.indexValidator(TEMP_REALTIME_INDEX);
         let indexDateStartFrom = new Date().getTime() - SEARCH_PERIOD_SUBTRACTOR;
         libSymphonySearch.symSEDeleteMessages(this.indexFolderName, null,
             MINIMUM_DATE, indexDateStartFrom.toString());
@@ -81,8 +91,7 @@ class Search {
     mergeIndexBatches() {
         libSymphonySearch.symSEMergePartialIndexAsync(this.indexFolderName, TEMP_BATCH_INDEX_FOLDER, function (err) {
             if (err) throw err;
-
-            libSymphonySearch.symSERemoveFolder(TEMP_BATCH_INDEX_FOLDER);
+            libSymphonySearch.symSERemoveFolder(TEMP_BATCH_INDEX_FOLDER)
         });
     }
 
@@ -93,7 +102,7 @@ class Search {
     readJson(batch) {
         return new Promise((resolve, reject) => {
             let dirPath = path.join(execPath, isMac ? '..' : '', 'Resources/msgsjson', batch);
-            let messageFolderPath = isDevEnv ? path.join('./msgsjson', batch ): dirPath;
+            let messageFolderPath = isDevEnv ? path.join('./msgsjson', batch) : dirPath;
             let files = fs.readdirSync(messageFolderPath);
             let messageData = [];
             files.forEach(function (file) {
@@ -160,6 +169,20 @@ class Search {
         return query;
     }
 
+    static indexValidator(file) {
+        let data;
+        let result = childProcess.execFileSync(INDEX_VALIDATOR, [file]).toString();
+        try {
+            data = JSON.parse(result);
+            if (data.status === 'OK') {
+                console.log('Successful')
+            } else {
+                console.log("Failed to validate index data folder");
+            }
+        } catch (err) {
+            throw err;
+        }
+    }
 }
 
 module.exports = {
