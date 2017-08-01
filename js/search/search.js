@@ -133,7 +133,7 @@ class Search {
 
             let sd = new Date().getTime() - SEARCH_PERIOD_SUBTRACTOR;
             let sd_time = MINIMUM_DATE;
-            if (startDate && startDate !== "" && typeof startDate === 'object'){
+            if (startDate && startDate !== "" && typeof startDate === 'object') {
                 sd_time = new Date(startDate).getTime();
                 if (sd_time >= sd) {
                     sd_time = sd;
@@ -141,7 +141,7 @@ class Search {
             }
 
             let ed_time = MAXIMUM_DATE;
-            if (endDate && endDate !== "" && typeof endDate === 'object'){
+            if (endDate && endDate !== "" && typeof endDate === 'object') {
                 ed_time = new Date(endDate).getTime();
             }
 
@@ -170,10 +170,10 @@ class Search {
 
     static constructQuery(query, senderId, threadId) {
         let q = query;
-        if(senderId && senderId !== "") {
+        if (senderId && senderId !== "") {
             q += ` AND (senderId: ${senderId})`;
         }
-        if(threadId && threadId !== "") {
+        if (threadId && threadId !== "") {
             q += ` AND (threadId: ${threadId})`;
         }
         console.log(q)
