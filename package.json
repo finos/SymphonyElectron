@@ -14,7 +14,7 @@
     "unpacked-win": "npm run prebuild && npm run test && build --win --x64 --dir",
     "unpacked-win-x86": "npm run prebuild && npm run test && build --win --ia32",
     "prebuild": "npm run rebuild && npm run browserify-preload",
-    "browserify-preload": "browserify -o js/preload/_preloadMain.js -x electron --insert-global-vars=__filename,__dirname js/preload/preloadMain.js  --external electron-spellchecker js/preload/preloadMain.js > js/preload/_preloadMain.js",
+    "browserify-preload": "browserify -o js/preload/_preloadMain.js -x electron --insert-global-vars=__filename,__dirname js/preload/preloadMain.js  --exclude electron-spellchecker",
     "rebuild": "electron-rebuild -f",
     "test": "npm run lint && jest --verbose --testPathPattern test && npm run rebuild",
     "spectron-test": "jest --config tests/spectron/jest_spectron.json --runInBand && npm run rebuild",

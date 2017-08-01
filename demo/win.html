@@ -6,4 +6,19 @@ Test Window has been opened
     <label for='tag'>tag:</label>
     <input type='text' id='tag' value=''/>
 </p>
+
+<hr>
+<p>Badge Count:<p>
+    <button id='inc-badge'>increment badge count</button>
+    <br>
+
+    <script>
+        var badgeCount = 0;
+
+        var incBadgeEl = document.getElementById('inc-badge');
+        incBadgeEl.addEventListener('click', function() {
+            badgeCount++;
+            ssf.setBadgeCount(badgeCount);
+        });
+    </script>
 </html>

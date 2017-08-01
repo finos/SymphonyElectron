@@ -17,7 +17,7 @@ class SpellCheckHelper {
         const contextMenuBuilder = new ContextMenuBuilder(this.spellCheckHandler, null, false, SpellCheckHelper.processMenu);
         this.contextMenuListener = new ContextMenuListener((info) => {
             contextMenuBuilder.showPopupMenu(info);
-        }, null, null);
+        });
     }
 
     /**
