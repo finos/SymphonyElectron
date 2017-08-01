@@ -9,12 +9,9 @@ const path = require('path');
 const isDevEnv = require('../utils/misc.js').isDevEnv;
 const isMac = require('../utils/misc.js').isMac;
 
-var symLucyIndexer = ref.types.void;
-var symLucyIndexerPtr = ref.refType(symLucyIndexer);
+let symLucyIndexer = ref.types.void;
+let symLucyIndexerPtr = ref.refType(symLucyIndexer);
 
-
-let messageData = ref.types.void;
-let messagePtr = ref.refType(messageData);
 
 let execPath = path.dirname(app.getPath('exe'));
 
@@ -23,7 +20,7 @@ let productionPath = path.join(execPath, isMac ? '..' : '', rootPath);
 let devPath = path.join(__dirname, '..', '..', rootPath);
 let libraryPath = isDevEnv ? devPath : productionPath;
 
-var libSymphonySearch = ffi.Library(libraryPath, {
+let libSymphonySearch = ffi.Library(libraryPath, {
     //init
     'symSE_init': ['void', []],
     'symSE_remove_folder': ['int', ['string']],
@@ -38,13 +35,13 @@ var libSymphonySearch = ffi.Library(libraryPath, {
     'symSE_merge_temp_index': ['int', ['string', 'string']],
     'symSE_clear_temp_index': ['int', ['string']],
     //Search,
-    'symSE_search': ['string', ['string', 'string', 'string', 'string', 'string', 'int', 'int', 'int']],
+    'symSE_search': ['char *', ['string', 'string', 'string', 'string', 'string', 'int', 'int', 'int']],
     //Deletion
     'symSE_delete_messages': ['int', ['string', 'string', 'string', 'string']],
     //Index commit/optimize
     'symSE_commit_index': ['int', [symLucyIndexerPtr, 'int']], //will be removed
     //freePointer
-    'symSE_free_results': ['int', [messagePtr]]
+    'symSE_free_results': ['int', ['char *']]
 });
 
 module.exports = {

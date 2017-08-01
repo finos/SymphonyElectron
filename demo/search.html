@@ -43,13 +43,13 @@
     </div>
     <br>
     <div>
-        <label for="offset">Offset:</label><input id="offset" value="0" size=5>
-        <label for="limit">Limit:</label><input id="limit" value="25" size=5>
+        <label for="offset">Offset:</label><input id="offset" type="number" value="0" size=5>
+        <label for="limit">Limit:</label><input id="limit" type="number" value="25" size=5>
     </div>
     <br>
     <div>
-        <label for="start">Start:</label><input id="start" value="000" size=20>
-        <label for="end">End:</label><input id="end" value="999" size=20>
+        <label for="start">Start:</label><input id="start" type="date">
+        <label for="end">End:</label><input id="end" type="date">
     </div>
     <br>
     <div>
@@ -65,10 +65,11 @@
     </div>
     <br>
     <div>
-        <label for="var1">var1:</label><input id="var1" value="0" size=5>
+        <label for="var1">var1:</label><input id="var1" type="number" value="0" size=5>
     </div>
     <div>
-        <label for="realTimeIndexing">Real Time Indexing:</label><input placeholder="Pass array of messages:" id="realTimeIndexing">
+        <label for="realTimeIndexing">Real Time Indexing:</label><input placeholder="Pass array of messages:"
+                                                                        id="realTimeIndexing">
         <button id='sendMessage'>Send</button>
     </div>
     <br>
@@ -96,7 +97,7 @@
     var search = new ssf.Search("testUser1");
     var buttonEl = document.getElementById('search');
     var merge = document.getElementById('merge');
-    var buttonIndex = document.getElementById('index')
+    var buttonIndex = document.getElementById('index');
     var queryEl = document.getElementById('query');
     var offsetEl = document.getElementById('offset');
     var limitEl = document.getElementById('limit');
@@ -128,13 +129,13 @@
         if (!search.isLibInit()) {
             alert('Library is not initiated. Init first...');
             return;
-        }/*
-        while (a < 100000){
-            a++*/
+        }
+        //while (a < 100000){
+        //    a++;
         let out;
         table.innerHTML = '';
         table.classList.remove('hidden');
-        search.query(queryEl.value, offsetEl.value, limitEl.value, startEl.value, endEl.value, senderIdEl.value, threadIdEl.value).then(function (result) {
+        search.query(queryEl.value, senderIdEl.value, threadIdEl.value, null, startEl.value, endEl.value, limitEl.value, offsetEl.value, 0).then(function (result) {
             out = result;
             var th = document.createElement('tr');
             var th1 = document.createElement('td');
@@ -160,8 +161,10 @@
                 tr.appendChild(t3);
                 table.appendChild(tr);
             });
+        }).catch(function (err) {
+            resultsEl.innerHTML = err;
         });
-        /*}*/
+        //}
     });
 
     sendMessage.addEventListener('click', function () {

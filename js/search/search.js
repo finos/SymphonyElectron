@@ -132,41 +132,52 @@ class Search {
             }
 
             let sd = new Date().getTime() - SEARCH_PERIOD_SUBTRACTOR;
-            if (!isNaN(startDate)) {
-                if (startDate >= sd) {
-                    sd = startDate;
+            let sd_time = MINIMUM_DATE;
+            if (startDate && startDate !== "" && typeof startDate === 'object'){
+                sd_time = new Date(startDate).getTime();
+                if (sd_time >= sd) {
+                    sd_time = sd;
                 }
             }
 
-            let sd_str = sd.toString();
-            let ed_str = MAXIMUM_DATE;
-            if (!isNaN(endDate)) {
-                ed_str = endDate.toString();
+            let ed_time = MAXIMUM_DATE;
+            if (endDate && endDate !== "" && typeof endDate === 'object'){
+                ed_time = new Date(endDate).getTime();
             }
+
             /*eslint-disable no-param-reassign */
-            if (isNaN(limit)) {
+            if (!limit && limit === "" && typeof limit !== 'number' && Math.round(limit) !== limit) {
                 limit = 25;
             }
 
-            if (isNaN(offset)) {
+            if (!offset && offset === "" && typeof offset !== 'number' && Math.round(offset) !== offset) {
                 offset = 0
             }
 
-            if (isNaN(sortOrder)) {
+            if (!sortOrder && sortOrder === "" && typeof sortOrder !== 'number' && Math.round(sortOrder) !== sortOrder) {
                 sortOrder = SORT_BY_SCORE;
             }
 
-            let returnedResult = libSymphonySearch.symSESearch(this.indexFolderName, TEMP_REALTIME_INDEX, q, sd_str, ed_str, offset, limit, sortOrder);
-            let ret = JSON.parse(returnedResult);
-            resolve(ret);
-            if (ret.messages.length > 0) {
+            const returnedResult = libSymphonySearch.symSESearch(this.indexFolderName, TEMP_REALTIME_INDEX, q, sd_time.toString(), ed_time.toString(), offset, limit, sortOrder);
+            try {
+                let ret = returnedResult.readCString();
+                resolve(JSON.parse(ret));
+            } finally {
                 libSymphonySearch.symSEFreeResult(returnedResult);
             }
         });
     }
 
-    static constructQuery(query) {
-        return query;
+    static constructQuery(query, senderId, threadId) {
+        let q = query;
+        if(senderId && senderId !== "") {
+            q += ` AND (senderId: ${senderId})`;
+        }
+        if(threadId && threadId !== "") {
+            q += ` AND (threadId: ${threadId})`;
+        }
+        console.log(q)
+        return q;
     }
 
     static indexValidator(file) {
@@ -179,7 +190,7 @@ class Search {
             }
             return new Error('Unable validate index folder')
         } catch (err) {
-            throw (err)
+            throw (err);
         }
     }
 }

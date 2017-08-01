@@ -33,11 +33,10 @@
       "!installer/*",
       "!tests/*"
     ],
-    "extraFiles": ["config/Symphony.config","msgsjson",
+    "extraFiles": ["config/Symphony.config",
+      "msgsjson",
       "libsymphonysearch.dylib",
-      "indexvalidator.exe",
-      "indexvalidator.exec",
-      "libsymphonysearch.dll"],
+      "indexvalidator.exec"],
     "appId": "symphony-electron-desktop",
     "mac": {
       "target": "dmg",
