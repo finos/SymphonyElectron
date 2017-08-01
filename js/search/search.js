@@ -102,7 +102,7 @@ class Search {
 
     readJson(batch) {
         return new Promise((resolve, reject) => {
-            let dirPath = path.join(execPath, isMac ? '..' : '', 'Resources/msgsjson', batch);
+            let dirPath = path.join(execPath, isMac ? '..' : '', 'msgsjson', batch);
             let messageFolderPath = isDevEnv ? path.join('./msgsjson', batch) : dirPath;
             let files = fs.readdirSync(messageFolderPath);
             let messageData = [];
