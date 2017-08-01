@@ -65,7 +65,7 @@ class Search {
 
     init() {
         libSymphonySearch.symSEInit();
-        Search.indexValidator(INDEX_DATA_FOLDER);
+        libSymphonySearch.symSEEnsureFolderExists(INDEX_DATA_FOLDER);
         libSymphonySearch.symSERemoveFolder(TEMP_REALTIME_INDEX);
         libSymphonySearch.symSERemoveFolder(TEMP_BATCH_INDEX_FOLDER);
         Search.indexValidator(this.indexFolderName);
