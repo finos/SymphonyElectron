@@ -1,5 +1,6 @@
 const { remote } = require('electron');
 const { MenuItem } = remote;
+const { isMac } = require('./../utils/misc');
 const { SpellCheckHandler, ContextMenuListener, ContextMenuBuilder } = require('electron-spellchecker');
 
 class SpellCheckHelper {
@@ -13,6 +14,15 @@ class SpellCheckHelper {
      */
     initializeSpellChecker() {
         this.spellCheckHandler.attachToInput();
+
+        // This is only for window as in mac the
+        // language is switched w.r.t to the current system language.
+        //
+        // In windows we need to implement RxJS observable
+        // in order to switch language dynamically
+        if (!isMac) {
+            this.spellCheckHandler.switchLanguage('en-US');
+        }
 
         const contextMenuBuilder = new ContextMenuBuilder(this.spellCheckHandler, null, false, SpellCheckHelper.processMenu);
         this.contextMenuListener = new ContextMenuListener((info) => {
