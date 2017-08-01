@@ -39,6 +39,7 @@ const SORT_BY_SCORE = 0;
 const BATCH_RANDOM_INDEX_PATH_LENGTH = 20;
 
 class Search {
+    //TODO: fix eslint class-methods-use-this
     /*eslint-disable class-methods-use-this */
 
     constructor(userId) {
@@ -145,6 +146,7 @@ class Search {
                 ed_time = new Date(endDate).getTime();
             }
 
+            //TODO: fix eslint no-param-reassign
             /*eslint-disable no-param-reassign */
             if (!limit && limit === "" && typeof limit !== 'number' && Math.round(limit) !== limit) {
                 limit = 25;
@@ -176,7 +178,6 @@ class Search {
         if (threadId && threadId !== "") {
             q += ` AND (threadId: ${threadId})`;
         }
-        console.log(q)
         return q;
     }
 
