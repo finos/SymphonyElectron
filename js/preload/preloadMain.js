@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         spellChecker.initializeSpellChecker();
     } catch (err) {
         /* eslint-disable no-console */
-        console.error('requiring spellchecker module: ' + err);
+        console.error('unable to load the spell checker module, hence, skipping the spell check feature ' + err);
         /* eslint-enable no-console */
     }
 });

@@ -39,9 +39,11 @@ describe('Tests for spellChecker', () => {
                 done();
             }).catch((err) => {
                 expect(err).toBeFalsy();
+                done();
             });
         }).catch((err) => {
             expect(err).toBeFalsy();
+            done();
         });
     });
 
