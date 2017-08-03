@@ -27,7 +27,8 @@ const MINIMUM_DATE = '0000000000000';
 const MAXIMUM_DATE = '9999999999999';
 const INDEX_VERSION = 'v1';
 
-const rootPath = isMac ? 'indexvalidator.exec' : (process.arch === 'ia32'? 'indexvalidator-x86.exe' : 'indexvalidator-x64.exe');
+const winArchPath = process.arch === 'ia32' ? 'indexvalidator-x86.exe' : 'indexvalidator-x64.exe';
+const rootPath = isMac ? 'indexvalidator.exec' : winArchPath;
 const productionPath = path.join(execPath, isMac ? '..' : '', rootPath);
 const devPath = path.join(__dirname, '..', '..', rootPath);
 const libraryPath = isDevEnv ? devPath : productionPath;
