@@ -14,7 +14,7 @@
     "unpacked-mac": "npm run prebuild && npm run test && build --mac --dir",
     "packed-mac": "npm run unpacked-mac && packagesbuild -v installer/mac/symphony-mac-packager.pkgproj",
     "unpacked-win": "npm run prebuild && npm run test && build --win --x64 --dir",
-    "unpacked-win-x86": "npm run prebuild && npm run test && build --win --ia32",
+    "unpacked-win-x86": "npm run prebuild && npm run test && build --win --ia32 --dir",
     "prebuild": "npm run rebuild && npm run browserify-preload",
     "browserify-preload": "browserify -o js/preload/_preloadMain.js -x electron --insert-global-vars=__filename,__dirname js/preload/preloadMain.js",
     "rebuild": "electron-rebuild -f",
