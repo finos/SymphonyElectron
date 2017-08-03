@@ -9,16 +9,16 @@ const path = require('path');
 const isDevEnv = require('../utils/misc.js').isDevEnv;
 const isMac = require('../utils/misc.js').isMac;
 
-let symLucyIndexer = ref.types.void;
-let symLucyIndexerPtr = ref.refType(symLucyIndexer);
+const symLucyIndexer = ref.types.void;
+const symLucyIndexerPtr = ref.refType(symLucyIndexer);
 
+const execPath = path.dirname(app.getPath('exe'));
 
-let execPath = path.dirname(app.getPath('exe'));
-
-const rootPath = isMac ? 'libsymphonysearch.dylib' : 'libsymphonysearch.dll';
-let productionPath = path.join(execPath, isMac ? '..' : '', rootPath);
-let devPath = path.join(__dirname, '..', '..', rootPath);
-let libraryPath = isDevEnv ? devPath : productionPath;
+const winArchPath = process.arch === 'ia32' ? 'libsymphonysearch-x86.dll' : 'libsymphonysearch-x64.dll';
+const rootPath = isMac ? 'libsymphonysearch.dylib' : winArchPath;
+const productionPath = path.join(execPath, isMac ? '..' : '', rootPath);
+const devPath = path.join(__dirname, '..', '..', rootPath);
+const libraryPath = isDevEnv ? devPath : productionPath;
 
 let libSymphonySearch = ffi.Library(libraryPath, {
     //init

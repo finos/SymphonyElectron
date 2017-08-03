@@ -14,8 +14,8 @@ const isMac = require('../utils/misc.js').isMac;
 const libSymphonySearch = require('./searchLibrary');
 
 // Path for the exec file and the user data folder
-let userData = path.join(app.getPath('userData'));
-let execPath = path.dirname(app.getPath('exe'));
+const userData = path.join(app.getPath('userData'));
+const execPath = path.dirname(app.getPath('exe'));
 
 // Constants paths for temp indexing folders
 const TEMP_BATCH_INDEX_FOLDER = isDevEnv ? './data/temp_batch_indexes' : path.join(userData, 'data/temp_batch_indexes');
@@ -28,13 +28,9 @@ const MAXIMUM_DATE = '9999999999999';
 const INDEX_VERSION = 'v1';
 
 const rootPath = isMac ? 'indexvalidator.exec' : (process.arch === 'ia32'? 'indexvalidator-x86.exe' : 'indexvalidator-x64.exe');
-let productionPath = path.join(execPath, isMac ? '..' : '', rootPath);
-let devPath = path.join(__dirname, '..', '..', rootPath);
-let libraryPath = isDevEnv ? devPath : productionPath;
-
-if (rootPath === 'indexvalidator-x86.exe'){
-    electron.dialog.showErrorBox('tt', rootPath);
-}
+const productionPath = path.join(execPath, isMac ? '..' : '', rootPath);
+const devPath = path.join(__dirname, '..', '..', rootPath);
+const libraryPath = isDevEnv ? devPath : productionPath;
 
 let INDEX_VALIDATOR = libraryPath;
 
