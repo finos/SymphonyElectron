@@ -14,8 +14,8 @@ const symLucyIndexerPtr = ref.refType(symLucyIndexer);
 
 const execPath = path.dirname(app.getPath('exe'));
 
-const winArchPath = process.arch === 'ia32' ? 'libsymphonysearch-x86.dll' : 'libsymphonysearch-x64.dll';
-const rootPath = isMac ? 'libsymphonysearch.dylib' : winArchPath;
+const winArchPath = process.arch === 'ia32' ? 'library/libsymphonysearch-x86.dll' : 'library/libsymphonysearch-x64.dll';
+const rootPath = isMac ? 'library/libsymphonysearch.dylib' : winArchPath;
 const productionPath = path.join(execPath, isMac ? '..' : '', rootPath);
 const devPath = path.join(__dirname, '..', '..', rootPath);
 const libraryPath = isDevEnv ? devPath : productionPath;
