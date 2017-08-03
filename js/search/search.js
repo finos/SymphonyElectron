@@ -27,10 +27,14 @@ const MINIMUM_DATE = '0000000000000';
 const MAXIMUM_DATE = '9999999999999';
 const INDEX_VERSION = 'v1';
 
-const rootPath = isMac ? 'indexvalidator.exec' : 'indexvalidator.exe';
+const rootPath = isMac ? 'indexvalidator.exec' : (process.arch === 'ia32'? 'indexvalidator-x86.exe' : 'indexvalidator-x64.exe');
 let productionPath = path.join(execPath, isMac ? '..' : '', rootPath);
 let devPath = path.join(__dirname, '..', '..', rootPath);
 let libraryPath = isDevEnv ? devPath : productionPath;
+
+if (rootPath === 'indexvalidator-x86.exe'){
+    electron.dialog.showErrorBox('tt', rootPath);
+}
 
 let INDEX_VALIDATOR = libraryPath;
 
