@@ -176,6 +176,7 @@ class Search {
     static constructQuery(query, senderId, threadId) {
         let q = "";
         let tokens = query.toLowerCase()
+            .trim()
             .replace(INVALID_CHARACTERS_REGEX, ' ')
             .split(' ');
 
@@ -208,6 +209,7 @@ class Search {
         if (threadId && threadId !== "" && threadId.replace(/ /g, "").length > 0) {
             q += ` AND (threadId: ${threadId})`;
         }
+        console.log(q);
         return q;
     }
 
