@@ -10,8 +10,9 @@
 //
 const path = require('path');
 const fs = require('fs');
-const async = require('async');
 const electron = require('electron');
+const asyncMap = require('async.map');
+const asyncMapSeries = require('async.mapseries');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const ipc = electron.ipcMain;
@@ -541,9 +542,9 @@ function moveOneDown(startPos) {
             notificationPosArray.push(i)
         }
     // Start to animate all notifications at once or in parallel
-        let asyncFunc = async.map // Best performance
+        let asyncFunc = asyncMap // Best performance
         if (config.animateInParallel === false) {
-            asyncFunc = async.mapSeries // Sluggish
+            asyncFunc = asyncMapSeries // Sluggish
         }
         asyncFunc(notificationPosArray, moveNotificationAnimation, function() {
             resolve()
