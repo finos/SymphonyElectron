@@ -33,9 +33,11 @@
       "!installer/*",
       "!tests/*"
     ],
-    "extraFiles": ["config/Symphony.config",
+    "extraFiles": [
+      "config/Symphony.config",
       "library/libsymphonysearch.dylib",
-      "library/indexvalidator.exec"],
+      "library/indexvalidator.exec"
+    ],
     "appId": "symphony-electron-desktop",
     "mac": {
       "target": "dmg",
