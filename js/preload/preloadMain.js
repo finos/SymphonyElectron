@@ -111,6 +111,8 @@ function createAPI() {
          */
         ScreenSnippet: remote.require('./screenSnippet/ScreenSnippet.js').ScreenSnippet,
 
+        Search: remote.require('./search/search.js').Search,
+
         /**
          * Brings window forward and gives focus.
          * @param  {String} windowName Name of window. Note: main window name is 'main'

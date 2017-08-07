@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        input {
+            padding: 5px;
+            margin: 2px 0;
+            border: 1px solid #ccc;
+        }
+
+        label {
+            padding-right: 10px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: rgba(0, 64, 98, 0.7);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<div style="padding: 20px;">
+    <h1>Symphony Electron Search API Demo</h1>
+    <div>
+        <p>Search</p>
+    </div>
+    <div>
+        <label for="query">Query:</label><input id="query" size=60>
+    </div>
+    <br>
+    <div>
+        <label for="offset">Offset:</label><input id="offset" type="number" value="0" size=5>
+        <label for="limit">Limit:</label><input id="limit" type="number" value="25" size=5>
+    </div>
+    <br>
+    <div>
+        <label for="start">Start:</label><input id="start" type="date">
+        <label for="end">End:</label><input id="end" type="date">
+    </div>
+    <br>
+    <div>
+        <label for="senderId">SenderId:</label><input id="senderId" size=20>
+    </div>
+    <br>
+    <div>
+        <label for="threadId">ThreadId:</label><input id="threadId" size=20>
+    </div>
+    <br>
+    <div>
+        <button id='search'>Search</button>
+    </div>
+    <br>
+    <div>
+        <label for="var1">var1:</label><input id="var1" type="number" value="0" size=5>
+    </div>
+    <div>
+        <label for="realTimeIndexing">Real Time Indexing:</label><input placeholder="Pass array of messages:"
+                                                                        id="realTimeIndexing">
+        <button id='sendMessage'>Send</button>
+    </div>
+    <br>
+    <div>
+        <label for="batchNumber">Batch Number: </label><input placeholder="Ex: batch1, batch2" id="batchNumber">
+        <button id='index'>Index Messages</button>
+        <button id='merge'>Merge</button>
+    </div>
+    <br>
+    <div>
+        <p>Results:</p>
+        <p id="results"></p>
+        <table id="table" class="hidden" style="width:100%">
+            <tr>
+                <th>ThreadId</th>
+                <th>SenderId</th>
+                <th>Text</th>
+            </tr>
+        </table>
+        <br>
+    </div>
+</div>
+</body>
+<script>
+    var search = new ssf.Search("testUser1");
+    var buttonEl = document.getElementById('search');
+    var merge = document.getElementById('merge');
+    var buttonIndex = document.getElementById('index');
+    var queryEl = document.getElementById('query');
+    var offsetEl = document.getElementById('offset');
+    var limitEl = document.getElementById('limit');
+    var startEl = document.getElementById('start');
+    var endEl = document.getElementById('end');
+    var resultsEl = document.getElementById('results');
+    var senderIdEl = document.getElementById('senderId');
+    var threadIdEl = document.getElementById('threadId');
+    var var1El = document.getElementById('var1');
+    var table = document.getElementById('table');
+    var sendMessage = document.getElementById('sendMessage');
+    var realTimeIndexing = document.getElementById('realTimeIndexing');
+    var batchNumber = document.getElementById('batchNumber');
+
+
+    buttonIndex.addEventListener('click', function () {
+        let batchIndex = batchNumber.value;
+        search.readJson(batchIndex).then(function (res) {
+            search.indexBatch(res).then(function () {
+                resultsEl.innerHTML = "Index created";
+            });
+        }).catch(function (err) {
+            console.log(err);
+        });
+    });
+
+    buttonEl.addEventListener('click', function () {
+        if (!search.isLibInit()) {
+            alert('Library is not initiated. Init first...');
+            return;
+        }
+        let out;
+        table.innerHTML = '';
+        table.classList.remove('hidden');
+        let startDate = new Date(startEl.value);
+        let endDate = new Date(endEl.value);
+        search.query(queryEl.value, senderIdEl.value, threadIdEl.value, null, startDate, endDate, limitEl.value, offsetEl.value, 0).then(function (result) {
+            out = result;
+            var th = document.createElement('tr');
+            var th1 = document.createElement('td');
+            th1.innerText = "ThreadId";
+            var th2 = document.createElement('td');
+            th2.innerText = 'SenderId';
+            var th3 = document.createElement('td');
+            th3.innerText = 'Text';
+            th.appendChild(th1);
+            th.appendChild(th2);
+            th.appendChild(th3);
+            table.appendChild(th);
+            out.messages.forEach(function (msg) {
+                var tr = document.createElement('tr');
+                var t1 = document.createElement('td');
+                t1.innerText = msg.threadId;
+                var t2 = document.createElement('td');
+                t2.innerText = msg.senderId;
+                var t3 = document.createElement('td');
+                t3.innerText = msg.text;
+                tr.appendChild(t1);
+                tr.appendChild(t2);
+                tr.appendChild(t3);
+                table.appendChild(tr);
+            });
+        }).catch(function (err) {
+            resultsEl.innerHTML = err;
+        });
+    });
+
+    sendMessage.addEventListener('click', function () {
+        let message = JSON.parse(realTimeIndexing.value);
+        search.realTimeIndexing(message);
+    });
+
+    merge.addEventListener('click', function () {
+        search.mergeIndexBatches();
+    })
+</script>
+</html>
