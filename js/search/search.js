@@ -42,14 +42,16 @@ const SORT_BY_SCORE = 0;
 const BATCH_RANDOM_INDEX_PATH_LENGTH = 20;
 
 class Search {
-    //TODO: fix eslint class-methods-use-this
-    /*eslint-disable class-methods-use-this */
 
     constructor(userId) {
         this.isInitialized = false;
         this.userId = userId;
         this.startIndexingFromDate = (new Date().getTime() - SEARCH_PERIOD_SUBTRACTOR).toString();
         this.indexFolderName = INDEX_PREFIX + '_' + userId + '_' + INDEX_VERSION;
+        this.dataFolder = INDEX_DATA_FOLDER;
+        this.realTimeIndex = TEMP_REALTIME_INDEX;
+        this.batchIndex = TEMP_BATCH_INDEX_FOLDER;
+        this.messageData = [];
         this.init();
     }
 
@@ -68,11 +70,11 @@ class Search {
 
     init() {
         libSymphonySearch.symSEInit();
-        libSymphonySearch.symSEEnsureFolderExists(INDEX_DATA_FOLDER);
-        libSymphonySearch.symSERemoveFolder(TEMP_REALTIME_INDEX);
-        libSymphonySearch.symSERemoveFolder(TEMP_BATCH_INDEX_FOLDER);
+        libSymphonySearch.symSEEnsureFolderExists(this.dataFolder);
+        libSymphonySearch.symSERemoveFolder(this.realTimeIndex);
+        libSymphonySearch.symSERemoveFolder(this.batchIndex);
         Search.indexValidator(this.indexFolderName);
-        Search.indexValidator(TEMP_REALTIME_INDEX);
+        Search.indexValidator(this.realTimeIndex);
         let indexDateStartFrom = new Date().getTime() - SEARCH_PERIOD_SUBTRACTOR;
         libSymphonySearch.symSEDeleteMessages(this.indexFolderName, null,
             MINIMUM_DATE, indexDateStartFrom.toString());
@@ -85,7 +87,7 @@ class Search {
                 reject()
             }
             let indexId = randomString.generate(BATCH_RANDOM_INDEX_PATH_LENGTH);
-            libSymphonySearch.symSECreatePartialIndexAsync(TEMP_BATCH_INDEX_FOLDER, indexId, JSON.stringify(messages), function (err, res) {
+            libSymphonySearch.symSECreatePartialIndexAsync(this.batchIndex, indexId, JSON.stringify(messages), function (err, res) {
                 if (err) reject(err);
                 resolve(res);
             });
@@ -93,28 +95,30 @@ class Search {
     }
 
     mergeIndexBatches() {
-        libSymphonySearch.symSEMergePartialIndexAsync(this.indexFolderName, TEMP_BATCH_INDEX_FOLDER, function (err) {
+        let self = this;
+        libSymphonySearch.symSEMergePartialIndexAsync(this.indexFolderName, this.batchIndex, function (err) {
             if (err) throw err;
-            libSymphonySearch.symSERemoveFolder(TEMP_BATCH_INDEX_FOLDER)
+            libSymphonySearch.symSERemoveFolder(self.batchIndex)
         });
     }
 
     realTimeIndexing(message) {
-        libSymphonySearch.symSEIndexRealTime(TEMP_REALTIME_INDEX, JSON.stringify(message));
+        libSymphonySearch.symSEIndexRealTime(this.realTimeIndex, JSON.stringify(message));
     }
 
     readJson(batch) {
+        let self = this;
         return new Promise((resolve, reject) => {
             let dirPath = path.join(execPath, isMac ? '..' : '', 'msgsjson', batch);
             let messageFolderPath = isDevEnv ? path.join('./msgsjson', batch) : dirPath;
             let files = fs.readdirSync(messageFolderPath);
-            let messageData = [];
+            self.messageData = [];
             files.forEach(function (file) {
                 let tempPath = path.join(messageFolderPath, file);
                 let data = fs.readFileSync(tempPath, "utf8");
                 if (data) {
-                    messageData.push(JSON.parse(data));
-                    resolve(messageData);
+                    self.messageData.push(JSON.parse(data));
+                    resolve(self.messageData);
                 } else {
                     reject("err on reading files")
                 }
@@ -124,6 +128,10 @@ class Search {
 
     query(query, senderIds, threadIds, attachments, startDate,
           endDate, limit, offset, sortOrder) {
+
+        let _limit = limit;
+        let _offset = offset;
+        let _sortOrder = sortOrder;
 
         return new Promise((resolve, reject) => {
             if (!this.isInitialized) {
@@ -149,21 +157,19 @@ class Search {
                 ed_time = new Date(endDate).getTime();
             }
 
-            //TODO: fix eslint no-param-reassign
-            /*eslint-disable no-param-reassign */
-            if (!limit && limit === "" && typeof limit !== 'number' && Math.round(limit) !== limit) {
-                limit = 25;
+            if (!_limit && _limit === "" && typeof _limit !== 'number' && Math.round(_limit) !== _limit) {
+                _limit = 25;
             }
 
-            if (!offset && offset === "" && typeof offset !== 'number' && Math.round(offset) !== offset) {
-                offset = 0
+            if (!_offset && _offset === "" && typeof _offset !== 'number' && Math.round(_offset) !== _offset) {
+                _offset = 0
             }
 
-            if (!sortOrder && sortOrder === "" && typeof sortOrder !== 'number' && Math.round(sortOrder) !== sortOrder) {
-                sortOrder = SORT_BY_SCORE;
+            if (!_sortOrder && _sortOrder === "" && typeof _sortOrder !== 'number' && Math.round(_sortOrder) !== _sortOrder) {
+                _sortOrder = SORT_BY_SCORE;
             }
 
-            const returnedResult = libSymphonySearch.symSESearch(this.indexFolderName, TEMP_REALTIME_INDEX, q, sd_time.toString(), ed_time.toString(), offset, limit, sortOrder);
+            const returnedResult = libSymphonySearch.symSESearch(this.indexFolderName, this.realTimeIndex, q, sd_time.toString(), ed_time.toString(), _offset, _limit, _sortOrder);
             try {
                 let ret = returnedResult.readCString();
                 resolve(JSON.parse(ret));
@@ -209,7 +215,7 @@ class Search {
         if (threadId && threadId !== "" && threadId.replace(/ /g, "").length > 0) {
             q += ` AND (threadId: ${threadId})`;
         }
-        console.log(q);
+
         return q;
     }
 
