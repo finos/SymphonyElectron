@@ -9,17 +9,24 @@ const path = require('path');
 const isDevEnv = require('../utils/misc.js').isDevEnv;
 const isMac = require('../utils/misc.js').isMac;
 
+// ref types
 const symLucyIndexer = ref.types.void;
 const symLucyIndexerPtr = ref.refType(symLucyIndexer);
 
+// application execution path
 const execPath = path.dirname(app.getPath('exe'));
 
+// library path contractor
 const winArchPath = process.arch === 'ia32' ? 'library/libsymphonysearch-x86.dll' : 'library/libsymphonysearch-x64.dll';
 const rootPath = isMac ? 'library/libsymphonysearch.dylib' : winArchPath;
 const productionPath = path.join(execPath, isMac ? '..' : '', rootPath);
 const devPath = path.join(__dirname, '..', '..', rootPath);
 const libraryPath = isDevEnv ? devPath : productionPath;
 
+/**
+ * Initializing the C SymphonySearchEngine library
+ * using the node-ffi
+ */
 let libSymphonySearch = ffi.Library(libraryPath, {
     //init
     'symSE_init': ['void', []],
