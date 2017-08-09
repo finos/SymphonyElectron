@@ -19,7 +19,7 @@ const eventEmitter = require('./eventEmitter');
 
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField } = require('./config.js');
-const { isNodeEnv } = require('./utils/misc');
+const { isMac, isNodeEnv } = require('./utils/misc');
 
 // show dialog when certificate errors occur
 require('./dialogs/showCertError.js');
@@ -448,6 +448,122 @@ eventEmitter.on('notificationSettings', (notificationSettings) => {
     display = notificationSettings.display;
 });
 
+/**
+ * Method that gets invoked when an external display
+ * is removed using electron 'display-removed' event.
+ */
+function verifyDisplays() {
+
+    // This is only for Windows, macOS handles this by itself
+    if (!mainWindow || isMac){
+        return;
+    }
+
+    const bounds = mainWindow.getBounds();
+    if (bounds) {
+        let isXAxisValid = true;
+        let isYAxisValid = true;
+
+        // checks to make sure the x,y are valid pairs
+        if ((bounds.x === undefined && (bounds.y || bounds.y === 0))){
+            isXAxisValid = false;
+        }
+        if ((bounds.y === undefined && (bounds.x || bounds.x === 0))){
+            isYAxisValid = false;
+        }
+
+        if (!isXAxisValid && !isYAxisValid){
+            return;
+        }
+
+        let externalDisplay = checkExternalDisplay(bounds);
+
+        // If external window doesn't exists, reposition main window
+        if (!externalDisplay) {
+            repositionMainWindow();
+        }
+    }
+}
+
+/**
+ * Method that verifies if wrapper exists in any of the available
+ * external display by comparing the app bounds with the display bounds
+ * if not exists returns false otherwise true
+ * @param appBounds {Electron.Rectangle} - current electron wrapper bounds
+ * @returns {boolean}
+ */
+function checkExternalDisplay(appBounds) {
+    const x = appBounds.x;
+    const y = appBounds.y;
+    const width = appBounds.width;
+    const height = appBounds.height;
+    const factor = 0.2;
+    const screen = electron.screen;
+
+    // Loops through all the available displays and
+    // verifies if the wrapper exists within the display bounds
+    // returns false if not exists otherwise true
+    return !!screen.getAllDisplays().find(({bounds}) => {
+
+        const leftMost = x + (width * factor);
+        const topMost = y + (height * factor);
+        const rightMost = x + width - (width * factor);
+        const bottomMost = y + height - (height * factor);
+
+        if (leftMost < bounds.x || topMost < bounds.y) {
+            return false;
+        }
+
+        if (rightMost > bounds.x + bounds.width || bottomMost > bounds.y + bounds.height) {
+            return false;
+        }
+
+        return true;
+    });
+}
+
+/**
+ * Method that resets the main window bounds when an external display
+ * was removed and if the wrapper was contained within that bounds
+ */
+function repositionMainWindow() {
+    const screen = electron.screen;
+
+    const {workArea} = screen.getPrimaryDisplay();
+    const bounds = workArea;
+
+    if (!bounds) {
+        return;
+    }
+
+    const windowWidth = Math.round(bounds.width * 0.6);
+    const windowHeight = Math.round(bounds.height * 0.8);
+
+    // Calculating the center of the primary display
+    // to place the wrapper
+    const centerX = bounds.x + bounds.width / 2.0;
+    const centerY = bounds.y + bounds.height / 2.0;
+    const x = Math.round(centerX - (windowWidth / 2.0));
+    const y = Math.round(centerY - (windowHeight / 2.0));
+
+    let rectangle = {x, y, width: windowWidth, height: windowHeight};
+
+    // resetting the main window bounds
+    if (mainWindow){
+        if (!mainWindow.isVisible()) {
+            mainWindow.show();
+        }
+
+        if (mainWindow.isMinimized()) {
+            mainWindow.restore();
+        }
+
+        mainWindow.focus();
+        mainWindow.flashFrame(false);
+        mainWindow.setBounds(rectangle, true);
+    }
+}
+
 module.exports = {
     createMainWindow: createMainWindow,
     getMainWindow: getMainWindow,
@@ -456,5 +572,6 @@ module.exports = {
     hasWindow: hasWindow,
     setIsOnline: setIsOnline,
     activate: activate,
-    setBoundsChangeWindow: setBoundsChangeWindow
+    setBoundsChangeWindow: setBoundsChangeWindow,
+    verifyDisplays: verifyDisplays
 };
