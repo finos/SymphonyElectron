@@ -92,13 +92,12 @@
     "async.map": "^0.5.2",
     "async.mapseries": "^0.5.2",
     "auto-launch": "^5.0.1",
-    "electron-context-menu": "^0.8.0",
     "electron-dl": "^1.9.0",
+    "electron-spellchecker": "^1.2.0",
     "electron-squirrel-startup": "^1.0.0",
     "filesize": "^3.5.10",
     "keymirror": "0.1.1",
-    "winreg": "^1.2.3",
-    "electron-spellchecker": "^1.2.0"
+    "winreg": "^1.2.3"
   },
   "optionalDependencies": {
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.1"
