@@ -4,7 +4,6 @@ const electron = require('electron');
 const { getConfigField, updateConfigField } = require('../config.js');
 const AutoLaunch = require('auto-launch');
 const isMac = require('../utils/misc.js').isMac;
-const childProcess = require('child_process');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 const eventEmitter = require('../eventEmitter');
@@ -15,11 +14,22 @@ var isAlwaysOnTop = false;
 
 setCheckboxValues();
 
-var symphonyAutoLauncher = new AutoLaunch({
-    name: 'Symphony',
-    path: process.execPath,
-});
-let launchAgentPath = '~/Library/LaunchAgents/com.symphony.symphony-desktop.agent.plist';
+let symphonyAutoLauncher;
+
+if (isMac) {
+    symphonyAutoLauncher = new AutoLaunch({
+        name: 'Symphony',
+        mac: {
+            useLaunchAgent: true,
+        },
+        path: process.execPath,
+    });
+} else {
+    symphonyAutoLauncher = new AutoLaunch({
+        name: 'Symphony',
+        path: process.execPath,
+    });
+}
 
 const template = [
     {
@@ -190,43 +200,19 @@ function getTemplate(app) {
             checked: launchOnStartup,
             click: function (item) {
                 if (item.checked){
-                    if (isMac){
-                        // TODO: Need to change this implementation to AutoLaunch once they fix this issue ->
-                        // https://github.com/Teamwork/node-auto-launch/issues/28
-                        childProcess.exec(`launchctl load ${launchAgentPath}`, (err) => {
-                            if (err){
-                                let title = 'Error setting AutoLaunch configuration';
-                                log.send(logLevels.ERROR, 'MenuTemplate: ' + title + ': process error ' + err);
-                                electron.dialog.showErrorBox(title, 'Please try reinstalling the application');
-                            }
+                    symphonyAutoLauncher.enable()
+                        .catch(function (err) {
+                            let title = 'Error setting AutoLaunch configuration';
+                            log.send(logLevels.ERROR, 'MenuTemplate: ' + title + ': auto launch error ' + err);
+                            electron.dialog.showErrorBox(title, title + ': ' + err);
                         });
-                    } else {
-                        symphonyAutoLauncher.enable()
-                            .catch(function (err) {
-                                let title = 'Error setting AutoLaunch configuration';
-                                log.send(logLevels.ERROR, 'MenuTemplate: ' + title + ': auto launch error ' + err);
-                                electron.dialog.showErrorBox(title, title + ': ' + err);
-                            });
-                    }
                 } else {
-                    if (isMac){
-                        // TODO: Need to change this implementation to AutoLaunch once they fix this issue ->
-                        // https://github.com/Teamwork/node-auto-launch/issues/28
-                        childProcess.exec(`launchctl unload ${launchAgentPath}`, (err) => {
-                            if (err){
-                                let title = 'Error disabling AutoLaunch configuration';
-                                log.send(logLevels.ERROR, 'MenuTemplate: ' + title + ': process error ' + err);
-                                electron.dialog.showErrorBox(title, 'Please try reinstalling the application');
-                            }
+                    symphonyAutoLauncher.disable()
+                        .catch(function (err) {
+                            let title = 'Error setting AutoLaunch configuration';
+                            log.send(logLevels.ERROR, 'MenuTemplate: ' + title + ': auto launch error ' + err);
+                            electron.dialog.showErrorBox(title, title + ': ' + err);
                         });
-                    } else {
-                        symphonyAutoLauncher.disable()
-                            .catch(function (err) {
-                                let title = 'Error setting AutoLaunch configuration';
-                                log.send(logLevels.ERROR, 'MenuTemplate: ' + title + ': auto launch error ' + err);
-                                electron.dialog.showErrorBox(title, title + ': ' + err);
-                            });
-                    }
                 }
                 launchOnStartup = item.checked;
                 updateConfigField('launchOnStartup', launchOnStartup);

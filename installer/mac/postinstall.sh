@@ -18,33 +18,10 @@ sed -i "" -E "s#\"minimizeOnClose\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#
 sed -i "" -E "s#\"alwaysOnTop\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"alwaysOnTop\":\ $always_on_top#g" $newPath
 sed -i "" -E "s#\"launchOnStartup\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"launchOnStartup\":\ $launch_on_startup#g" $newPath
 
-## Add app to login items
-if [ $launch_on_startup == true ]; then
-mkdir ~/Library/LaunchAgents/
-cat > ~/Library/LaunchAgents/com.symphony.symphony-desktop.agent.plist << EOT
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>Label</key>
-    <string>com.symphony.symphony-desktop.agent</string>
-    <key>ProgramArguments</key>
-    <array>
-        <string>$installPath/Symphony.app/Contents/MacOS/Symphony</string>
-    </array>
-    <key>RunAtLoad</key>
-    <true/>
-</dict>
-</plist>
-EOT
-else
-launchctl unload ~/Library/LaunchAgents/com.symphony.symphony-desktop.agent.plist
-fi
-
 ## Remove the temp settings file created ##
 rm -f $tempFilePath
 
 ## For launching symphony with sandbox enabled, create a shell script that is used as the launch point for the app
 EXEC_PATH=$installPath/Symphony.app/Contents/MacOS
-exec $EXEC_PATH/Symphony --install $newPath
+exec $EXEC_PATH/Symphony --install $newPath $launch_on_startup
 chmod 755 $EXEC_PATH/Symphony
