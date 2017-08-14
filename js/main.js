@@ -15,6 +15,8 @@ const path = require('path');
 const AppDirectory = require('appdirectory');
 const dirs = new AppDirectory('Symphony');
 
+const Crypto = require('./cryptoLib/index');
+
 require('electron-dl')();
 
 // used to check if a url was opened when the app was already open
@@ -56,6 +58,16 @@ var symphonyAutoLauncher = new AutoLaunch({
     path: process.execPath,
 });
 
+let crypto = new Crypto();
+
+crypto.decryption()
+    .then(function () {
+        console.log('success')
+    })
+    .catch(function (err) {
+        console.log(err)
+    });
+
 /**
  * This method will be called when Electron has finished
  * initialization and is ready to create browser windows.
@@ -73,6 +85,20 @@ app.on('activate', function () {
     } else {
         windowMgr.showMainWindow();
     }
+});
+
+app.on('will-quit', function (e) {
+    e.preventDefault();
+    crypto.encryption()
+        .then(function (err, res) {
+            if (err) {
+                throw new Error(err);
+            }
+            app.exit();
+        })
+        .catch(function (err) {
+            electron.dialog.showErrorBox('error', err);
+        });
 });
 
 // adds 'symphony' as a protocol

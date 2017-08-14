@@ -97,7 +97,9 @@
     "electron-squirrel-startup": "^1.0.0",
     "filesize": "^3.5.10",
     "keymirror": "0.1.1",
-    "winreg": "^1.2.3"
+    "winreg": "^1.2.3",
+    "archiver": "latest",
+    "extract-zip": "latest"
   },
   "optionalDependencies": {
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.1"
