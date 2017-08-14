@@ -9,7 +9,7 @@ describe('Tests for Notification position', () => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
 
     beforeAll((done) => {
-        return app.startApplication().then((startedApp) => {
+        app.startApplication().then((startedApp) => {
             app = startedApp;
             done();
         }).catch((err) => {
@@ -31,8 +31,8 @@ describe('Tests for Notification position', () => {
     });
 
     it('should launch the app', (done) => {
-        return app.client.waitUntilWindowLoaded().then(() => {
-            return app.client.getWindowCount().then((count) => {
+        app.client.waitUntilWindowLoaded().then(() => {
+            app.client.getWindowCount().then((count) => {
                 expect(count === 1).toBeTruthy();
                 done();
             }).catch((err) => {
@@ -63,6 +63,7 @@ describe('Tests for Notification position', () => {
 
     it('should open notification configure window', () => {
         return app.client
+            .waitUntilTextExists('#notf', 'show notification', 5000)
             .click('#open-config-win')
             .windowByIndex(1)
             .click('#upper-left')
