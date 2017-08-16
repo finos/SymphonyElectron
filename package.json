@@ -30,7 +30,10 @@
     "files": [
       "!coverage/*",
       "!installer/*",
-      "!tests/*"
+      "!tests/*",
+      "!node_modules/@paulcbetts/cld/deps/cld${/*}",
+      "!node_modules/@paulcbetts/cld/build/deps${/*}",
+      "!node_modules/@paulcbetts/spellchecker/vendor${/*}"
     ],
     "extraFiles": "config/Symphony.config",
     "appId": "symphony-electron-desktop",
