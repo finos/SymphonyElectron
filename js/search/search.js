@@ -232,6 +232,24 @@ class Search {
         });
     }
 
+    getLatestMessageTimestamp() {
+        let self = this;
+        return new Promise(function (resolve, reject) {
+            libSymphonySearch.symSEGetLastMessageTimestampAsync(self.indexFolderName, function (err, res) {
+                if (err) {
+                    reject(new Error(err));
+                }
+                const returnedResult = res;
+                try {
+                    let ret = returnedResult.readCString();
+                    resolve(ret);
+                } finally {
+                    libSymphonySearch.symSEFreeResult(returnedResult);
+                }
+            })
+        })
+    }
+
     /**
      * This the query constructor
      * for the query search function

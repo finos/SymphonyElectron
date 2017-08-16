@@ -48,7 +48,10 @@ let libSymphonySearch = ffi.Library(libraryPath, {
     //Index commit/optimize
     'symSE_commit_index': ['int', [symLucyIndexerPtr, 'int']], //will be removed
     //freePointer
-    'symSE_free_results': ['int', ['char *']]
+    'symSE_free_results': ['int', ['char *']],
+
+    //Latest messages timestamp
+    'symSE_get_last_message_timestamp': ['char *', ['string']]
 });
 
 module.exports = {
@@ -66,6 +69,7 @@ module.exports = {
     symSEDeleteMessages: libSymphonySearch.symSE_delete_messages,
     symSECommitIndex: libSymphonySearch.symSE_commit_index,
     symSEFreeResult: libSymphonySearch.symSE_free_results,
+    symSEGetLastMessageTimestamp: libSymphonySearch.symSE_get_last_message_timestamp,
     symSEInitAsync: libSymphonySearch.symSE_init.async,
     symSERemoveFolderAsync: libSymphonySearch.symSE_remove_folder.async,
     symSEEnsureIndexExistsAsync: libSymphonySearch.symSE_ensure_index_exists.async,
@@ -79,5 +83,6 @@ module.exports = {
     symSESearchAsync: libSymphonySearch.symSE_search.async,
     symSEDeleteMessagesAsync: libSymphonySearch.symSE_delete_messages.async,
     symSECommitIndexAsync: libSymphonySearch.symSE_commit_index.async,
-    symSEFreeResultAsync: libSymphonySearch.symSE_free_results.async
+    symSEFreeResultAsync: libSymphonySearch.symSE_free_results.async,
+    symSEGetLastMessageTimestampAsync: libSymphonySearch.symSE_get_last_message_timestamp.async
 };
