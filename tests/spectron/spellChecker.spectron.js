@@ -63,14 +63,17 @@ describe('Tests for spellChecker', () => {
     it('should bring the app to front in windows', (done) => {
         if (!isMac) {
             app.browserWindow.focus();
-            app.browserWindow.restore();
-            app.browserWindow.getBounds().then((bounds) => {
-                robot.setMouseDelay(100);
-                let x = bounds.x + 200;
-                let y = bounds.y + 200;
-                robot.moveMouseSmooth(x, y);
-                robot.mouseClick();
-                done();
+            return app.browserWindow.setAlwaysOnTop(true).then(() => {
+                return app.browserWindow.isAlwaysOnTop().then((isOnTop) => {
+                    return app.browserWindow.getBounds().then((bounds) => {
+                        robot.setMouseDelay(100);
+                        let x = bounds.x + 200;
+                        let y = bounds.y + 200;
+                        robot.moveMouseSmooth(x, y);
+                        robot.mouseClick();
+                        done();
+                    });
+                });
             });
         } else {
             done();
