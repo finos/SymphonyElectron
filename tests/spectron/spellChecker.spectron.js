@@ -86,14 +86,11 @@ describe('Tests for spellChecker', () => {
                 let x = bounds.x + 45;
                 let y = bounds.y + 398;
 
-                robot.setMouseDelay(500);
                 robot.moveMouseSmooth(x, y);
-                robot.mouseClick('left');
-                robot.setKeyboardDelay(500);
-                robot.keyToggle('a', 'down', ['command']);
-                robot.keyToggle('a', 'up');
-                robot.keyToggle('command', 'up');
+                robot.setMouseDelay(200);
+                robot.mouseClick('left', true);
                 robot.mouseClick('right');
+                robot.setKeyboardDelay(500);
                 robot.keyTap('down');
                 robot.keyTap('down');
                 robot.keyTap('enter');
@@ -104,14 +101,11 @@ describe('Tests for spellChecker', () => {
                 let x = bounds.x + 55;
                 let y = bounds.y + 430;
 
-                robot.setMouseDelay(500);
                 robot.moveMouseSmooth(x, y);
-                robot.mouseClick('left');
-                robot.setKeyboardDelay(500);
-                robot.keyToggle('a', 'down', ['control']);
-                robot.keyToggle('a', 'up');
-                robot.keyToggle('control', 'up');
+                robot.setMouseDelay(200);
+                robot.mouseClick('left', true);
                 robot.mouseClick('right');
+                robot.setKeyboardDelay(500);
                 robot.keyTap('down');
                 robot.keyTap('down');
                 robot.keyTap('enter');
