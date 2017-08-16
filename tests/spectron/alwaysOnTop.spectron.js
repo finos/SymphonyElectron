@@ -132,6 +132,7 @@ describe('Tests for Always on top', () => {
                 }
             });
         }).catch((err) => {
+            console.log(configPath);
             expect(err).toBeNull();
         });
     });
