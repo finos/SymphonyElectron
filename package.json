@@ -16,7 +16,7 @@
     "unpacked-win": "npm run prebuild && npm run test && build --win --x64 --dir",
     "unpacked-win-x86": "npm run prebuild && npm run test && build --win --ia32 --dir",
     "prebuild": "npm run rebuild && npm run browserify-preload",
-    "browserify-preload": "browserify -o js/preload/_preloadMain.js -x electron --insert-global-vars=__filename,__dirname js/preload/preloadMain.js",
+    "browserify-preload": "browserify -o js/preload/_preloadMain.js -x electron --insert-global-vars=__filename,__dirname js/preload/preloadMain.js  --exclude electron-spellchecker",
     "rebuild": "electron-rebuild -f",
     "test": "npm run lint && jest --verbose --testPathPattern test && npm run rebuild",
     "spectron-test": "jest --config tests/spectron/jest_spectron.json --runInBand && npm run rebuild",
@@ -28,6 +28,7 @@
     "transformIgnorePatterns": []
   },
   "build": {
+    "asarUnpack": ["node_modules/@paulcbetts/cld/build/Release/cld.node"],
     "files": [
       "!coverage/*",
       "!installer/*",
@@ -97,8 +98,8 @@
     "async.map": "^0.5.2",
     "async.mapseries": "^0.5.2",
     "auto-launch": "^5.0.1",
-    "electron-context-menu": "^0.8.0",
     "electron-dl": "^1.9.0",
+    "electron-spellchecker": "^1.2.0",
     "electron-squirrel-startup": "^1.0.0",
     "ffi": "^2.2.0",
     "filesize": "^3.5.10",

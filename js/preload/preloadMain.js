@@ -21,6 +21,25 @@ const getMediaSources = require('../desktopCapturer/getSources');
 
 require('../downloadManager/downloadManager');
 
+// bug in electron preventing us from using spellchecker in pop outs
+// https://github.com/electron/electron/issues/4025
+// so loading the spellchecker in try catch so that we don't
+// block other method from loading
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        /* eslint-disable global-require */
+        const SpellCheckerHelper = require('../spellChecker/spellChecker').SpellCheckHelper;
+        /* eslint-enable global-require */
+        // Method to initialize spell checker
+        const spellChecker = new SpellCheckerHelper();
+        spellChecker.initializeSpellChecker();
+    } catch (err) {
+        /* eslint-disable no-console */
+        console.error('unable to load the spell checker module, hence, skipping the spell check feature ' + err);
+        /* eslint-enable no-console */
+    }
+});
+
 const nodeURL = require('url');
 
 // hold ref so doesn't get GC'ed

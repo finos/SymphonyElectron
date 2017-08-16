@@ -114,6 +114,10 @@ function setupThenOpenMainWindow() {
     }
 
     getUrlAndCreateMainWindow();
+
+    // Event that fixes the remote desktop issue in Windows
+    // by repositioning the browser window
+    electron.screen.on('display-removed', windowMgr.verifyDisplays);
 }
 
 function setStartup(lStartup){
