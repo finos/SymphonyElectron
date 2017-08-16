@@ -51,10 +51,22 @@ if (!isDevEnv && shouldQuit) {
     app.quit();
 }
 
-var symphonyAutoLauncher = new AutoLaunch({
-    name: 'Symphony',
-    path: process.execPath,
-});
+let symphonyAutoLauncher;
+
+if (isMac) {
+    symphonyAutoLauncher = new AutoLaunch({
+        name: 'Symphony',
+        mac: {
+            useLaunchAgent: true,
+        },
+        path: process.execPath,
+    });
+} else {
+    symphonyAutoLauncher = new AutoLaunch({
+        name: 'Symphony',
+        path: process.execPath,
+    });
+}
 
 /**
  * This method will be called when Electron has finished
@@ -107,7 +119,12 @@ function setupThenOpenMainWindow() {
 
     // allows mac installer to overwrite user config
     if (isMac && hasInstallFlag) {
+        // This value is being sent from post install script
+        // as the app is launched as a root user we don't get
+        // access to the config file
+        let launchOnStartup = process.argv[3];
         updateUserConfigMac()
+            .then(setStartup(launchOnStartup))
             .then(app.quit)
             .catch(app.quit);
         return;
