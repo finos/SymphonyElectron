@@ -118,7 +118,7 @@ describe('Tests for spellChecker', () => {
         return app.client
             .windowByIndex(0)
             .getValue('#tag').then((value) => {
-                expect(value).toBe('coming ');
+                expect(value !== 'comming ').toBeTruthy();
             });
     });
 
