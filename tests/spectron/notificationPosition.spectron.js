@@ -1,6 +1,6 @@
 const Application = require('./spectronSetup');
 const path = require('path');
-const {isMac} = require('../../js/utils/misc');
+const { isMac } = require('../../js/utils/misc');
 let app = new Application({});
 
 describe('Tests for Notification position', () => {
@@ -24,7 +24,6 @@ describe('Tests for Notification position', () => {
             app.stop().then(() => {
                 done();
             }).catch((err) => {
-                console.log(err);
                 done();
             });
         }
@@ -70,7 +69,7 @@ describe('Tests for Notification position', () => {
             .click('#ok-button')
             .windowByIndex(0)
             .click('#notf')
-            .windowByIndex(1)
+            .windowByIndex(1);
     });
 
     it('should check notification position', () => {

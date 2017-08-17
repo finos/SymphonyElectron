@@ -1,5 +1,5 @@
 const Application = require('./spectronSetup');
-const {isMac} = require('../../js/utils/misc.js');
+const { isMac } = require('../../js/utils/misc.js');
 const childProcess = require('child_process');
 
 let app = new Application({});
@@ -13,7 +13,7 @@ describe('Tests for Always on top', () => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
 
     beforeAll((done) => {
-        childProcess.exec(`npm rebuild robotjs --target=${process.version} --build-from-source`, function () {
+        childProcess.exec(`npm rebuild robotjs --target=${process.version} --build-from-source`, function() {
             robot = require('robotjs');
             app.startApplication().then((startedApp) => {
                 app = startedApp;
@@ -29,14 +29,14 @@ describe('Tests for Always on top', () => {
     });
 
     function getConfigPath() {
-        return new Promise(function (resolve, reject) {
-            app.client.addCommand('getUserDataPath', function () {
-                return this.execute(function () {
+        return new Promise(function(resolve, reject) {
+            app.client.addCommand('getUserDataPath', function() {
+                return this.execute(function() {
                     return require('electron').remote.app.getPath('userData');
-                })
+                });
             });
             app.client.getUserDataPath().then((path) => {
-                resolve(path.value + '/Symphony.config')
+                resolve(path.value + '/Symphony.config');
             }).catch((err) => {
                 reject(err);
             });
@@ -100,8 +100,7 @@ describe('Tests for Always on top', () => {
                                     robot.moveMouseSmooth(x, y);
                                     robot.mouseClick();
                                     robot.setKeyboardDelay(200);
-                                    for (let i = 0; i < 4
-                                        ; i++) {
+                                    for (let i = 0; i < 4; i++) {
                                         robot.keyTap('down');
                                     }
                                     robot.keyTap('enter');
@@ -132,7 +131,6 @@ describe('Tests for Always on top', () => {
                 }
             });
         }).catch((err) => {
-            console.log(configPath);
             expect(err).toBeNull();
         });
     });

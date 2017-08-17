@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const childProcess = require('child_process');
 const Application = require('./spectronSetup');
-const {isMac} = require('../../js/utils/misc');
+const { isMac } = require('../../js/utils/misc');
 let robot;
 let configPath;
 
@@ -14,12 +14,11 @@ describe('Tests for Minimize on Close', () => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 90000;
 
     beforeAll((done) => {
-        childProcess.exec(`npm rebuild robotjs --target=${process.version} --build-from-source`, function () {
+        childProcess.exec(`npm rebuild robotjs --target=${process.version} --build-from-source`, function() {
             robot = require('robotjs');
             return app.startApplication().then((startedApp) => {
                 app = startedApp;
                 getConfigPath().then((config) => {
-                    console.log(config);
                     configPath = config;
                     done();
                 }).catch((err) => {
@@ -34,14 +33,14 @@ describe('Tests for Minimize on Close', () => {
     });
 
     function getConfigPath() {
-        return new Promise(function (resolve, reject) {
-            app.client.addCommand('getUserDataPath', function () {
-                return this.execute(function () {
+        return new Promise(function(resolve, reject) {
+            app.client.addCommand('getUserDataPath', function() {
+                return this.execute(function() {
                     return require('electron').remote.app.getPath('userData');
-                })
+                });
             });
             app.client.getUserDataPath().then((path) => {
-                resolve(path.value + '/Symphony.config')
+                resolve(path.value + '/Symphony.config');
             }).catch((err) => {
                 reject(err);
             });
@@ -56,13 +55,12 @@ describe('Tests for Minimize on Close', () => {
                     app.stop().then(() => {
                         done();
                     }).catch((err) => {
-                        console.log(err);
                         done();
                     });
                 } else {
                     done();
                 }
-            })
+            });
         } else {
             done();
         }
@@ -103,7 +101,6 @@ describe('Tests for Minimize on Close', () => {
         app.browserWindow.focus();
         return app.browserWindow.setAlwaysOnTop(true).then(() => {
             return app.browserWindow.isAlwaysOnTop().then((isOnTop) => {
-                console.log(isOnTop);
                 expect(isOnTop).toBeTruthy();
             });
         });
@@ -117,7 +114,7 @@ describe('Tests for Minimize on Close', () => {
                     robot.keyToggle('w', 'down', ['command']);
                     robot.keyToggle('w', 'up');
                     robot.keyToggle('command', 'up');
-                    app.browserWindow.isMinimized().then(function (minimized) {
+                    app.browserWindow.isMinimized().then(function(minimized) {
                         expect(minimized).toBeTruthy();
                         done();
                     }).catch((err) => {
@@ -139,7 +136,7 @@ describe('Tests for Minimize on Close', () => {
                     robot.keyToggle('w', 'down', ['command']);
                     robot.keyToggle('w', 'up');
                     robot.keyToggle('command', 'up');
-                    app.browserWindow.isMinimized().then(function (minimized) {
+                    app.browserWindow.isMinimized().then(function(minimized) {
                         expect(minimized).toBeTruthy();
                         done();
                     }).catch((err) => {
@@ -163,7 +160,7 @@ describe('Tests for Minimize on Close', () => {
                         robot.keyToggle('w', 'down', ['control']);
                         robot.keyToggle('w', 'up');
                         robot.keyToggle('control', 'up');
-                        app.browserWindow.isMinimized().then(function (minimized) {
+                        app.browserWindow.isMinimized().then(function(minimized) {
                             expect(minimized).toBeTruthy();
                             done();
                         }).catch((err) => {
@@ -181,7 +178,7 @@ describe('Tests for Minimize on Close', () => {
                         robot.keyToggle('w', 'down', ['control']);
                         robot.keyToggle('w', 'up');
                         robot.keyToggle('control', 'up');
-                        app.browserWindow.isMinimized().then(function (minimized) {
+                        app.browserWindow.isMinimized().then(function(minimized) {
                             expect(minimized).toBeTruthy();
                             done();
                         }).catch((err) => {
@@ -194,7 +191,7 @@ describe('Tests for Minimize on Close', () => {
         }).catch((err) => {
             expect(err).toBeNull();
             done();
-        })
+        });
     });
 
 });

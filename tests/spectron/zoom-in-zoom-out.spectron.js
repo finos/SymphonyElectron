@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const childProcess = require('child_process');
 const Application = require('./spectronSetup');
-const {isMac} = require('../../js/utils/misc');
+const { isMac } = require('../../js/utils/misc');
 let robot;
 let configPath;
 
@@ -14,7 +14,7 @@ describe('Tests for Zoom in and Zoom out', () => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 90000;
 
     beforeAll((done) => {
-        childProcess.exec(`npm rebuild robotjs --target=${process.version} --build-from-source`, function () {
+        childProcess.exec(`npm rebuild robotjs --target=${process.version} --build-from-source`, function() {
             robot = require('robotjs');
             return app.startApplication().then((startedApp) => {
                 app = startedApp;
@@ -33,14 +33,14 @@ describe('Tests for Zoom in and Zoom out', () => {
     });
 
     function getConfigPath() {
-        return new Promise(function (resolve, reject) {
-            app.client.addCommand('getUserDataPath', function () {
-                return this.execute(function () {
+        return new Promise(function(resolve, reject) {
+            app.client.addCommand('getUserDataPath', function() {
+                return this.execute(function() {
                     return require('electron').remote.app.getPath('userData');
-                })
+                });
             });
             app.client.getUserDataPath().then((path) => {
-                resolve(path.value + '/Symphony.config')
+                resolve(path.value + '/Symphony.config');
             }).catch((err) => {
                 reject(err);
             });
@@ -55,13 +55,12 @@ describe('Tests for Zoom in and Zoom out', () => {
                     app.stop().then(() => {
                         done();
                     }).catch((err) => {
-                        console.log(err);
                         done();
                     });
                 } else {
                     done();
                 }
-            })
+            });
         } else {
             done();
         }
@@ -125,7 +124,7 @@ describe('Tests for Zoom in and Zoom out', () => {
                 expect(zoomFactor > 1).toBeTruthy();
             }).catch((err) => {
                 expect(err).toBeNull();
-            })
+            });
         } else {
             return app.browserWindow.getBounds().then((bounds) => {
                 robot.setMouseDelay(100);
@@ -149,7 +148,7 @@ describe('Tests for Zoom in and Zoom out', () => {
                     expect(zoomFactor > 1).toBeTruthy();
                 }).catch((err) => {
                     expect(err).toBeNull();
-                })
+                });
             });
         }
     });
@@ -174,7 +173,7 @@ describe('Tests for Zoom in and Zoom out', () => {
                 expect(zoomFactor < 1).toBeTruthy();
             }).catch((err) => {
                 expect(err).toBeNull();
-            })
+            });
         } else {
             return app.browserWindow.getBounds().then((bounds) => {
                 robot.setMouseDelay(100);
@@ -197,7 +196,7 @@ describe('Tests for Zoom in and Zoom out', () => {
                     expect(zoomFactor < 1).toBeTruthy();
                 }).catch((err) => {
                     expect(err).toBeNull();
-                })
+                });
             });
         }
     });

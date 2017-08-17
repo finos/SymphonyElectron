@@ -1,6 +1,6 @@
 const Application = require('./spectronSetup');
 const path = require('path');
-const {isMac} = require('../../js/utils/misc.js');
+const { isMac } = require('../../js/utils/misc.js');
 const childProcess = require('child_process');
 let app = new Application({});
 let robot;
@@ -11,7 +11,7 @@ describe('Tests for spellChecker', () => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
 
     beforeAll((done) => {
-        childProcess.exec(`npm rebuild robotjs --target=${process.version} --build-from-source`, function () {
+        childProcess.exec(`npm rebuild robotjs --target=${process.version} --build-from-source`, function() {
             robot = require('robotjs');
             app.startApplication().then((startedApp) => {
                 app = startedApp;
@@ -26,7 +26,6 @@ describe('Tests for spellChecker', () => {
             app.stop().then(() => {
                 done();
             }).catch((err) => {
-                console.log(err);
                 done();
             });
         }
