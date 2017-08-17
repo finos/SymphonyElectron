@@ -87,24 +87,26 @@ class Search {
     /**
      * An array of messages is passed for indexing
      * it will be indexed in a temporary index folder
-     * @param messages
+     * @param {Array} messages
      * @returns {Promise}
      */
     indexBatch(messages) {
         return new Promise((resolve, reject) => {
             if (!Array.isArray(messages)) {
-                reject(new Error('Messages should be an array'));
+                reject(new Error('Messages must be an array'));
                 return;
             }
 
             if (!this.isInitialized) {
-                reject(new Error("Library not initialized"));
+                reject(new Error('Library not initialized'));
                 return;
             }
 
-            let indexId = randomString.generate(BATCH_RANDOM_INDEX_PATH_LENGTH);
+            const indexId = randomString.generate(BATCH_RANDOM_INDEX_PATH_LENGTH);
             libSymphonySearch.symSECreatePartialIndexAsync(this.batchIndex, indexId, JSON.stringify(messages), (err, res) => {
-                if (err) reject(err);
+                if (err) {
+                    reject(new Error(err));
+                }
                 resolve(res);
             });
         });
@@ -116,7 +118,9 @@ class Search {
      */
     mergeIndexBatches() {
         libSymphonySearch.symSEMergePartialIndexAsync(this.indexFolderName, this.batchIndex, (err) => {
-            if (err) throw err;
+            if (err) {
+                throw new Error(err);
+            }
             libSymphonySearch.symSERemoveFolder(this.batchIndex)
         });
     }
@@ -132,7 +136,7 @@ class Search {
         }
 
         if (!this.isInitialized) {
-            return new Error("Library not initialized");
+            return new Error('Library not initialized');
         }
 
         let result = libSymphonySearch.symSEIndexRealTime(this.realTimeIndex, JSON.stringify(message));
@@ -142,7 +146,7 @@ class Search {
     /**
      * Reading a json file
      * for the demo search app only
-     * @param batch
+     * @param {String} batch
      * @returns {Promise}
      */
     readJson(batch) {
@@ -155,27 +159,31 @@ class Search {
                 let tempPath = path.join(messageFolderPath, file);
                 let data = fs.readFileSync(tempPath, "utf8");
                 if (data) {
-                    this.messageData.push(JSON.parse(data));
-                    resolve(this.messageData);
+                    try {
+                        this.messageData.push(JSON.parse(data));
+                    } catch (err) {
+                        reject(new Error(err))
+                    }
                 } else {
-                    reject("err on reading files")
+                    reject(new Error('Error reading batch'))
                 }
             });
+            resolve(this.messageData);
         });
     }
 
     /**
      * This returns the search results
      * which returns a char *
-     * @param query
-     * @param senderIds
-     * @param threadIds
-     * @param attachments
-     * @param startDate
-     * @param endDate
-     * @param limit
-     * @param offset
-     * @param sortOrder
+     * @param {String} query
+     * @param {Array} senderIds
+     * @param {Array} threadIds
+     * @param {String} attachments
+     * @param {String} startDate
+     * @param {String} endDate
+     * @param {Number} limit
+     * @param {Number} offset
+     * @param {Number} sortOrder
      * @returns {Promise}
      */
     searchQuery(query, senderIds, threadIds, attachments, startDate,
@@ -187,7 +195,7 @@ class Search {
 
         return new Promise((resolve, reject) => {
             if (!this.isInitialized) {
-                reject(new Error("Library not initialized"));
+                reject(new Error('Library not initialized'));
                 return;
             }
 
@@ -199,7 +207,7 @@ class Search {
             let q = Search.constructQuery(query, senderIds, threadIds);
 
             if (q === undefined) {
-                reject(new Error("Search query error"));
+                reject(new Error('Search query error'));
                 return;
             }
 
@@ -247,7 +255,7 @@ class Search {
     getLatestMessageTimestamp() {
         return new Promise((resolve, reject) => {
             if (!this.isInitialized) {
-                reject("Not initialized");
+                reject('Not initialized');
                 return;
             }
 
@@ -267,16 +275,16 @@ class Search {
                 } finally {
                     libSymphonySearch.symSEFreeResult(returnedResult);
                 }
-            })
-        })
+            });
+        });
     }
 
     /**
      * This the query constructor
      * for the search function
-     * @param searchQuery
-     * @param senderId
-     * @param threadId
+     * @param {String} searchQuery
+     * @param {Array} senderId
+     * @param {Array} threadId
      * @returns {string}
      */
     static constructQuery(searchQuery, senderId, threadId) {
@@ -311,11 +319,10 @@ class Search {
     }
 
     /**
-     * appending the senderId
-     * and threadId for the query
-     * @param query
-     * @param fieldName
-     * @param valueArray
+     * appending the senderId and threadId for the query
+     * @param {String} query
+     * @param {String} fieldName
+     * @param {Array} valueArray
      * @returns {string}
      */
     static appendFilterQuery(query, fieldName, valueArray) {
@@ -338,13 +345,13 @@ class Search {
         return q;
     }
 
-    //hashtags can have any characters(before the latest release it was
-    //not like this). So the only regex is splitting the search query based on
-    //whitespaces
+    // hashtags can have any characters(before the latest release it was
+    // not like this). So the only regex is splitting the search query based on
+    // whitespaces
     /**
      * return the hash cash
      * tags from the query
-     * @param query
+     * @param {String} query
      * @returns {Array}
      */
     static getHashTags(query) {
@@ -363,7 +370,7 @@ class Search {
 
     /**
      * Validate the index folder exist or not
-     * @param file
+     * @param {String} file
      * @returns {*}
      */
     static indexValidator(file) {
