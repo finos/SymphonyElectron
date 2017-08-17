@@ -59,21 +59,11 @@ class Search {
     }
 
     /**
-     * TO check whether SymphonySearchEngine library
-     * initialized or initialise it
-     * @returns {Promise}
+     * returns isInitialized boolean
+     * @returns {boolean}
      */
-    initLib() {
-        return new Promise((resolve) => {
-            if (!this.isInitialized) {
-                this.isInitialized = true;
-            }
-            resolve(libSymphonySearch.symSEInit());
-        });
-    }
-
     isLibInit() {
-        return this.initLib();
+        return this.isInitialized;
     }
 
     /**
@@ -103,12 +93,12 @@ class Search {
     indexBatch(messages) {
         return new Promise((resolve, reject) => {
             if (!Array.isArray(messages)) {
-                reject('Messages should be an array');
+                reject(new Error('Messages should be an array'));
                 return;
             }
 
             if (!this.isInitialized) {
-                reject("Not initialized");
+                reject(new Error("Library not initialized"));
                 return;
             }
 
@@ -140,6 +130,11 @@ class Search {
         if (!Array.isArray(message)) {
             return new Error('Messages should be an array');
         }
+
+        if (!this.isInitialized) {
+            return new Error("Library not initialized");
+        }
+
         let result = libSymphonySearch.symSEIndexRealTime(this.realTimeIndex, JSON.stringify(message));
         return result === 0 ? "Successful" : result
     }
@@ -191,20 +186,20 @@ class Search {
         let _sortOrder = sortOrder;
 
         return new Promise((resolve, reject) => {
-            if (!fs.existsSync(this.indexFolderName) && !fs.existsSync(this.realTimeIndex)) {
-                reject('Index folder does not exist.');
+            if (!this.isInitialized) {
+                reject(new Error("Library not initialized"));
                 return;
             }
 
-            if (!this.isInitialized) {
-                reject("Not initialized");
+            if (!fs.existsSync(this.indexFolderName) || !fs.existsSync(this.realTimeIndex)) {
+                reject('Index folder does not exist.');
                 return;
             }
 
             let q = Search.constructQuery(query, senderIds, threadIds);
 
             if (q === undefined) {
-                reject("Search query error");
+                reject(new Error("Search query error"));
                 return;
             }
 
@@ -251,6 +246,11 @@ class Search {
      */
     getLatestMessageTimestamp() {
         return new Promise((resolve, reject) => {
+            if (!this.isInitialized) {
+                reject("Not initialized");
+                return;
+            }
+
             if (!fs.existsSync(this.indexFolderName)) {
                 reject('Index folder does not exist.');
                 return;
