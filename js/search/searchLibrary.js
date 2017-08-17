@@ -2,7 +2,6 @@
 
 const ffi = require('ffi');
 const ref = require('ref');
-
 const electron = require('electron');
 const app = electron.app;
 const path = require('path');

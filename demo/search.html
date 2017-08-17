@@ -53,11 +53,11 @@
     </div>
     <br>
     <div>
-        <label for="senderId">SenderId:</label><input id="senderId" size=20>
+        <label for="senderId">SenderId:</label><input id="senderId" placeholder='["abc", "123"]'>
     </div>
     <br>
     <div>
-        <label for="threadId">ThreadId:</label><input id="threadId" size=20>
+        <label for="threadId">ThreadId:</label><input id="threadId" placeholder='["abc", "123"]'>
     </div>
     <br>
     <div>
@@ -67,6 +67,7 @@
     <div>
         <label for="var1">var1:</label><input id="var1" type="number" value="0" size=5>
     </div>
+    <br>
     <div>
         <label for="realTimeIndexing">Real Time Indexing:</label><input placeholder="Pass array of messages:"
                                                                         id="realTimeIndexing">
@@ -80,19 +81,23 @@
     </div>
     <br>
     <div>
-        <p>Results:</p>
-        <p id="results"></p>
-        <table id="table" class="hidden" style="width:100%">
-            <tr>
-                <th>ThreadId</th>
-                <th>SenderId</th>
-                <th>Text</th>
-            </tr>
-        </table>
-        <br>
+        <label for="batchNumber">Get Latest Message Timestamp</label>
+        <button id='getLatestMessageTimestamp'>Click</button>
+        <div>
+            <p>Results:</p>
+            <p id="results"></p>
+            <table id="table" class="hidden" style="width:100%">
+                <tr>
+                    <th>ThreadId</th>
+                    <th>SenderId</th>
+                    <th>Text</th>
+                </tr>
+            </table>
+            <br>
+        </div>
     </div>
 </div>
-</body>
+
 <script>
     var search = new ssf.Search("testUser1");
     var buttonEl = document.getElementById('search');
@@ -111,6 +116,7 @@
     var sendMessage = document.getElementById('sendMessage');
     var realTimeIndexing = document.getElementById('realTimeIndexing');
     var batchNumber = document.getElementById('batchNumber');
+    var timestamp = document.getElementById('getLatestMessageTimestamp');
 
 
     buttonIndex.addEventListener('click', function () {
@@ -134,45 +140,71 @@
         table.classList.remove('hidden');
         let startDate = new Date(startEl.value);
         let endDate = new Date(endEl.value);
-        search.searchQuery(queryEl.value, senderIdEl.value, threadIdEl.value, null, startDate, endDate, limitEl.value, offsetEl.value, 0).then(function (result) {
-            out = result;
-            var th = document.createElement('tr');
-            var th1 = document.createElement('td');
-            th1.innerText = "ThreadId";
-            var th2 = document.createElement('td');
-            th2.innerText = 'SenderId';
-            var th3 = document.createElement('td');
-            th3.innerText = 'Text';
-            th.appendChild(th1);
-            th.appendChild(th2);
-            th.appendChild(th3);
-            table.appendChild(th);
-            out.messages.forEach(function (msg) {
-                var tr = document.createElement('tr');
-                var t1 = document.createElement('td');
-                t1.innerText = msg.threadId;
-                var t2 = document.createElement('td');
-                t2.innerText = msg.senderId;
-                var t3 = document.createElement('td');
-                t3.innerText = msg.text;
-                tr.appendChild(t1);
-                tr.appendChild(t2);
-                tr.appendChild(t3);
-                table.appendChild(tr);
-            });
+        let threadIdObj, senderIdObj;
+        if (senderIdEl.value && senderIdEl.value !== "" && senderIdEl.value.replace(/ /g, "").length > 0) {
+            senderIdObj = JSON.parse(senderIdEl.value);
+        }
+        if (threadIdEl.value && threadIdEl.value !== "" && threadIdEl.value.replace(/ /g, "").length > 0) {
+            threadIdObj = JSON.parse(threadIdEl.value);
+        }
+        search.searchQuery(queryEl.value, senderIdObj, threadIdObj, null, startDate, endDate, limitEl.value, offsetEl.value, 0).then(function (result) {
+            if (result.messages.length < 1) {
+                resultsEl.innerHTML = "No results found"
+            }
+            if (result.messages.length > 0) {
+                out = result;
+                var th = document.createElement('tr');
+                var th1 = document.createElement('td');
+                th1.innerText = "ThreadId";
+                var th2 = document.createElement('td');
+                th2.innerText = 'SenderId';
+                var th3 = document.createElement('td');
+                th3.innerText = 'Text';
+                th.appendChild(th1);
+                th.appendChild(th2);
+                th.appendChild(th3);
+                table.appendChild(th);
+                out.messages.forEach(function (msg) {
+                    var tr = document.createElement('tr');
+                    var t1 = document.createElement('td');
+                    t1.innerText = msg.threadId;
+                    var t2 = document.createElement('td');
+                    t2.innerText = msg.senderId;
+                    var t3 = document.createElement('td');
+                    t3.innerText = msg.text;
+                    tr.appendChild(t1);
+                    tr.appendChild(t2);
+                    tr.appendChild(t3);
+                    table.appendChild(tr);
+                });
+            }
         }).catch(function (err) {
-            resultsEl.innerHTML = err;
+            resultsEl.innerHTML = 'Error: ' + err;
         });
+
     });
 
     sendMessage.addEventListener('click', function () {
-        let message = JSON.parse(realTimeIndexing.value);
-        search.realTimeIndexing(message);
+        if (realTimeIndexing.value !== "") {
+            let message = JSON.parse(realTimeIndexing.value);
+            resultsEl.innerHTML = search.realTimeIndexing(message);
+        } else {
+            resultsEl.innerHTML = "Please check the entered value"
+        }
     });
 
     merge.addEventListener('click', function () {
         search.mergeIndexBatches();
-        search.getLatestMessageTimestamp();
-    })
+        resultsEl.innerHTML = 'Merged';
+    });
+
+    timestamp.addEventListener('click', function () {
+        search.getLatestMessageTimestamp().then(function (res) {
+            resultsEl.innerHTML = res;
+        }).catch(function (err) {
+            resultsEl.innerHTML = 'Error: ' + err;
+        });
+    });
 </script>
+</body>
 </html>
