@@ -15,7 +15,7 @@ const TEMPORARY_PATH = isDevEnv ? path.join(__dirname, '..', '..') : userData;
 
 class Crypto {
 
-    // TODO: Need to pass key for encrypting and decrypting
+    // TODO: Need to pass key for encryption and decryption
     constructor() {
 
         // will be handling after implementing in client app
