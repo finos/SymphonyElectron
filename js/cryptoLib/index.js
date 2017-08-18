@@ -10,13 +10,20 @@ const isDevEnv = require('../utils/misc.js').isDevEnv;
 const crypto = require('./crypto');
 
 const userData = path.join(app.getPath('userData'));
-const INDEX_DATA_FOLDER = isDevEnv ? './data' : path.join(userData, 'data');
+const INDEX_DATA_FOLDER = isDevEnv ? './data/search_index' : path.join(userData, 'data/search_index');
 const TEMPORARY_PATH = isDevEnv ? path.join(__dirname, '..', '..') : userData;
 
 class Crypto {
 
+    // TODO: Need to pass key for encrypting and decrypting
     constructor() {
-        this.indexDataFolder = INDEX_DATA_FOLDER;
+
+        // will be handling after implementing in client app
+        let userId = 'user_data';
+        let INDEX_VERSION = 'v1';
+        // will be handling after implementing in client app
+
+        this.indexDataFolder = INDEX_DATA_FOLDER + '_' + userId + '_' + INDEX_VERSION;
         this.dump = TEMPORARY_PATH;
         this.key = "XrwVgWR4czB1a9scwvgRUNbXiN3W0oWq7oUBenyq7bo="; // temporary only
         this.encryptedIndex = 'encryptedIndex.enc';
@@ -31,9 +38,22 @@ class Crypto {
     encryption() {
         return new Promise((resolve, reject) => {
 
+            if (!fs.existsSync(this.indexDataFolder)){
+                // will be handling after implementing in client app
+                reject();
+                return;
+            }
+
             let output = fs.createWriteStream(`${this.dump}/content.zip`);
 
-            output.on('close', () => {
+
+            zipArchive.on('end', () => {
+
+                if (!fs.existsSync(`${this.dump}/content.zip`)){
+                    // will be handling after implementing in client app
+                    reject();
+                    return;
+                }
 
                 const input = fs.createReadStream(`${this.dump}/content.zip`);
                 const outputEncryption = fs.createWriteStream(this.encryptedIndex);
@@ -61,7 +81,7 @@ class Crypto {
 
             zipArchive.pipe(output);
 
-            zipArchive.directory(this.indexDataFolder, true);
+            zipArchive.directory(this.indexDataFolder);
 
             zipArchive.finalize((err) => {
                 if (err) {
@@ -79,6 +99,13 @@ class Crypto {
      */
     decryption() {
         return new Promise((resolve, reject) => {
+
+            if (!fs.existsSync(this.encryptedIndex)){
+                // will be handling after implementing in client app
+                reject();
+                return;
+            }
+
             const input = fs.createReadStream(this.encryptedIndex);
             const output = fs.createWriteStream(`${this.dump}/decrypted.zip`);
             let config = {
@@ -87,20 +114,27 @@ class Crypto {
             const decrypt = crypto.decrypt(config);
 
             input.pipe(decrypt).pipe(output).on('finish', () => {
+
+                if (!fs.existsSync(`${this.dump}/decrypted.zip`)){
+                    // will be handling after implementing in client app
+                    reject();
+                    return;
+                }
+
                 let readStream = fs.createReadStream(`${this.dump}/decrypted.zip`);
                 readStream
                     .on('data', (data) => {
                         if (!data) {
                             reject(new Error("error reading zip"));
                         }
-                        zip();
+                        extractZip();
                     })
                     .on('error', (error) => {
                         reject(new Error(error.message));
                     });
             });
 
-            let zip = () => {
+            let extractZip = () => {
                 extract(`${this.dump}/decrypted.zip`, {dir: TEMPORARY_PATH}, (err) => {
                     if (err) {
                         reject(new Error(err));

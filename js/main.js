@@ -14,10 +14,11 @@ const childProcess = require('child_process');
 const path = require('path');
 const AppDirectory = require('appdirectory');
 const dirs = new AppDirectory('Symphony');
-
-const Crypto = require('./cryptoLib/index');
+const Crypto = require('./cryptoLib');
+const crypto = new Crypto();
 
 require('electron-dl')();
+
 
 // used to check if a url was opened when the app was already open
 let isAppAlreadyOpen = false;
@@ -58,14 +59,17 @@ var symphonyAutoLauncher = new AutoLaunch({
     path: process.execPath,
 });
 
-let crypto = new Crypto();
-
+/**
+ * This is for demo purpose only
+ * will be removing this after implementing
+ * in the client-app
+ */
 crypto.decryption()
     .then(function () {
-        console.log('success')
+        // will be handling after implementing client app
     })
-    .catch(function (err) {
-        console.log(err)
+    .catch(function () {
+        // will be handling after implementing client app
     });
 
 /**
@@ -89,15 +93,20 @@ app.on('activate', function () {
 
 app.on('will-quit', function (e) {
     e.preventDefault();
+
+    /**
+     * This is for demo purpose only
+     * will be removing this after implementing
+     * in client-app
+     */
     crypto.encryption()
-        .then(function (err, res) {
-            if (err) {
-                throw new Error(err);
-            }
+        .then(function () {
+            // will be handling after implementing in client app
             app.exit();
         })
-        .catch(function (err) {
-            electron.dialog.showErrorBox('error', err);
+        .catch(function () {
+            // will be handling after implementing client app
+            app.exit();
         });
 });
 
