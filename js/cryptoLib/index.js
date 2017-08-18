@@ -11,41 +11,41 @@ const isDevEnv = require('../utils/misc.js').isDevEnv;
 
 const userData = path.join(app.getPath('userData'));
 const INDEX_DATA_FOLDER = isDevEnv ? './msgsjson' : path.join(userData, 'data');
+const MODE = 'aes-256-ctr';
 
 class Crypto {
 
     constructor() {
         this.indexDataFolder = INDEX_DATA_FOLDER;
-        this.decipher = crypto.createDecipher('aes256', 'temp');
-        this.cipher = crypto.createCipher('aes256', "temp");
+        this.key = '53796d70686f6e792074657374206b657920666f7220656e6372797074696f6e20';
         this.dump = path.join(__dirname, '..', '..');
         this.encryptedIndex = 'encryptedIndex.enc';
         this.zipErrored = false;
     }
 
     encryption() {
-        let self = this;
-        return new Promise(function (resolve, reject) {
+        return new Promise((resolve, reject) => {
 
-            let output = fs.createWriteStream(`${self.dump}/content.zip`);
+            let output = fs.createWriteStream(`${this.dump}/content.zip`);
 
-            output.on('close', function () {
+            output.on('close', () => {
 
-                const input = fs.createReadStream(`${self.dump}/content.zip`);
-                const outPutEncryption = fs.createWriteStream(self.encryptedIndex);
+                const input = fs.createReadStream(`${this.dump}/content.zip`);
+                const outputEncryption = fs.createWriteStream(this.encryptedIndex);
+                const cipher = crypto.createCipher(MODE, this.key);
 
-                input.pipe(self.cipher).pipe(outPutEncryption).on('finish', function (err, res) {
+                input.pipe(cipher).pipe(outputEncryption).on('finish', (err, res) => {
                     if (err) {
                         reject(new Error(err));
                     }
-                    if (!self.zipErrored) {
-                        fs.unlinkSync(`${self.dump}/content.zip`);
-                        Crypto.deleteFolderRecursive(self.indexDataFolder)
+                    if (!this.zipErrored) {
+                        fs.unlinkSync(`${this.dump}/content.zip`);
+                        Crypto.deleteFolderRecursive(this.indexDataFolder)
                             .then(function () {
                                 resolve(res);
                             })
                             .catch(function (error) {
-                                console.log(error)
+                                reject(new Error(error))
                             });
                     }
                 });
@@ -53,11 +53,11 @@ class Crypto {
 
             zipArchive.pipe(output);
 
-            zipArchive.directory(self.indexDataFolder, true);
+            zipArchive.directory(this.indexDataFolder, true);
 
-            zipArchive.finalize(function (err) {
+            zipArchive.finalize((err) => {
                 if (err) {
-                    self.zipErrored = true;
+                    this.zipErrored = true;
                     reject(new Error(err));
                 }
             });
@@ -65,41 +65,44 @@ class Crypto {
     }
 
     decryption() {
-        let self = this;
-        return new Promise(function (resolve, reject) {
+        return new Promise((resolve, reject) => {
+            const input = fs.createReadStream(this.encryptedIndex);
+            const output = fs.createWriteStream(`${this.dump}/decrypted.zip`);
+            const deCipher = crypto.createDecipher(MODE, this.key);
 
-            const input = fs.createReadStream(self.encryptedIndex);
-            const output = fs.createWriteStream(`${self.dump}/decrypted.zip`);
+            input.pipe(deCipher).pipe(output).on('finish', () => {
+                let readStream = fs.createReadStream(`${this.dump}/decrypted.zip`);
+                readStream
+                    .on('data', (data) => {
+                        if (!data) {
+                            reject(new Error("error reading zip"));
+                        }
+                        unzip();
+                    })
+                    .on('error', (error) => {
+                        reject(new Error(error.message));
+                    });
+            });
 
-            function unzip() {
+            let unzip = () => {
                 let temp = path.join(__dirname, '..', '..');
-                extract(`${self.dump}/decrypted.zip`, {dir: temp}, function (err) {
-                    if (err) reject(err);
-                    fs.unlink(`${self.dump}/decrypted.zip`, function () {
+                extract(`${this.dump}/decrypted.zip`, {dir: temp}, (err) => {
+                    if (err) {
+                        reject(new Error(err));
+                    }
+                    fs.unlink(`${this.dump}/decrypted.zip`, () => {
                         resolve('success')
                     });
                 })
-            }
-
-            input.pipe(self.decipher).pipe(output).on('finish', function () {
-                var readStream = fs.createReadStream(`${self.dump}/decrypted.zip`);
-                readStream
-                    .on('data', function (data) {
-                        if (!data) reject("error reading zip");
-                        unzip();
-                    })
-                    .on('error', function (error) {
-                        console.log('Error:', error.message);
-                    });
-            });
+            };
         });
     }
 
     static deleteFolderRecursive(pt) {
-        return new Promise(function (resolve, reject) {
+        return new Promise((resolve, reject) => {
             if (fs.existsSync(pt)) {
-                fs.readdirSync(pt).forEach(function (file) {
-                    var curPath = pt + "/" + file;
+                fs.readdirSync(pt).forEach((file) => {
+                    let curPath = pt + "/" + file;
                     if (fs.lstatSync(curPath).isDirectory()) {
                         Crypto.deleteFolderRecursive(curPath);
                     } else {
