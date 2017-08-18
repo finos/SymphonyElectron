@@ -3,26 +3,31 @@ const electron = require('electron');
 const app = electron.app;
 const path = require('path');
 const fs = require('fs');
-const crypto = require('crypto');
 const archiver = require('archiver');
 const zipArchive = archiver('zip');
 const extract = require('extract-zip');
 const isDevEnv = require('../utils/misc.js').isDevEnv;
+const crypto = require('./crypto');
 
 const userData = path.join(app.getPath('userData'));
-const INDEX_DATA_FOLDER = isDevEnv ? './msgsjson' : path.join(userData, 'data');
-const MODE = 'aes-256-ctr';
+const INDEX_DATA_FOLDER = isDevEnv ? './data' : path.join(userData, 'data');
+const TEMPORARY_PATH = isDevEnv ? path.join(__dirname, '..', '..') : userData;
 
 class Crypto {
 
     constructor() {
         this.indexDataFolder = INDEX_DATA_FOLDER;
-        this.key = '53796d70686f6e792074657374206b657920666f7220656e6372797074696f6e20';
-        this.dump = path.join(__dirname, '..', '..');
+        this.dump = TEMPORARY_PATH;
+        this.key = "XrwVgWR4czB1a9scwvgRUNbXiN3W0oWq7oUBenyq7bo="; // temporary only
         this.encryptedIndex = 'encryptedIndex.enc';
         this.zipErrored = false;
     }
 
+    /**
+     * Creates a zip of the data folder and encrypting
+     * removing the data folder and the dump files
+     * @returns {Promise}
+     */
     encryption() {
         return new Promise((resolve, reject) => {
 
@@ -32,9 +37,12 @@ class Crypto {
 
                 const input = fs.createReadStream(`${this.dump}/content.zip`);
                 const outputEncryption = fs.createWriteStream(this.encryptedIndex);
-                const cipher = crypto.createCipher(MODE, this.key);
+                let config = {
+                    key: this.key
+                };
+                const encrypt = crypto.encrypt(config);
 
-                input.pipe(cipher).pipe(outputEncryption).on('finish', (err, res) => {
+                input.pipe(encrypt).pipe(outputEncryption).on('finish', (err, res) => {
                     if (err) {
                         reject(new Error(err));
                     }
@@ -64,52 +72,66 @@ class Crypto {
         });
     }
 
+    /**
+     * Decrypting the .enc file and unzipping
+     * removing the .enc file and the dump files
+     * @returns {Promise}
+     */
     decryption() {
         return new Promise((resolve, reject) => {
             const input = fs.createReadStream(this.encryptedIndex);
             const output = fs.createWriteStream(`${this.dump}/decrypted.zip`);
-            const deCipher = crypto.createDecipher(MODE, this.key);
+            let config = {
+                key: this.key
+            };
+            const decrypt = crypto.decrypt(config);
 
-            input.pipe(deCipher).pipe(output).on('finish', () => {
+            input.pipe(decrypt).pipe(output).on('finish', () => {
                 let readStream = fs.createReadStream(`${this.dump}/decrypted.zip`);
                 readStream
                     .on('data', (data) => {
                         if (!data) {
                             reject(new Error("error reading zip"));
                         }
-                        unzip();
+                        zip();
                     })
                     .on('error', (error) => {
                         reject(new Error(error.message));
                     });
             });
 
-            let unzip = () => {
-                let temp = path.join(__dirname, '..', '..');
-                extract(`${this.dump}/decrypted.zip`, {dir: temp}, (err) => {
+            let zip = () => {
+                extract(`${this.dump}/decrypted.zip`, {dir: TEMPORARY_PATH}, (err) => {
                     if (err) {
                         reject(new Error(err));
                     }
                     fs.unlink(`${this.dump}/decrypted.zip`, () => {
-                        resolve('success')
+                        fs.unlink(this.encryptedIndex, () => {
+                            resolve('success');
+                        })
                     });
                 })
-            };
+            }
         });
     }
 
-    static deleteFolderRecursive(pt) {
+    /**
+     * Removing all the folders and files inside the data folder
+     * @param {String} location
+     * @returns {Promise}
+     */
+    static deleteFolderRecursive(location) {
         return new Promise((resolve, reject) => {
-            if (fs.existsSync(pt)) {
-                fs.readdirSync(pt).forEach((file) => {
-                    let curPath = pt + "/" + file;
+            if (fs.existsSync(location)) {
+                fs.readdirSync(location).forEach((file) => {
+                    let curPath = location + "/" + file;
                     if (fs.lstatSync(curPath).isDirectory()) {
                         Crypto.deleteFolderRecursive(curPath);
                     } else {
                         fs.unlinkSync(curPath);
                     }
                 });
-                resolve(fs.rmdirSync(pt));
+                resolve(fs.rmdirSync(location));
             } else {
                 reject('no file');
             }
