@@ -6,14 +6,10 @@ const nodeURL = require('url');
 const squirrelStartup = require('electron-squirrel-startup');
 const AutoLaunch = require('auto-launch');
 const urlParser = require('url');
-const { getConfigField } = require('./config.js');
+const { getConfigField, updateUserConfigWin, updateUserConfigMac } = require('./config.js');
 const { isMac, isDevEnv } = require('./utils/misc.js');
 const protocolHandler = require('./protocolHandler');
 const getCmdLineArg = require('./utils/getCmdLineArg.js');
-const childProcess = require('child_process');
-const path = require('path');
-const AppDirectory = require('appdirectory');
-const dirs = new AppDirectory('Symphony');
 
 require('electron-dl')();
 
@@ -75,11 +71,11 @@ if (isMac) {
  */
 app.on('ready', setupThenOpenMainWindow);
 
-app.on('window-all-closed', function () {
+app.on('window-all-closed', function() {
     app.quit();
 });
 
-app.on('activate', function () {
+app.on('activate', function() {
     if (windowMgr.isMainWindow(null)) {
         setupThenOpenMainWindow();
     } else {
@@ -95,7 +91,7 @@ app.setAsDefaultProtocolClient('symphony');
 // This event is emitted only on macOS
 // at this moment, support for windows
 // is in pipeline (https://github.com/electron/electron/pull/8052)
-app.on('open-url', function (event, url) {
+app.on('open-url', function(event, url) {
     handleProtocolAction(url);
 });
 
@@ -108,10 +104,11 @@ function setupThenOpenMainWindow() {
     // allows installer to launch app and set auto startup mode then
     // immediately quit.
     let hasInstallFlag = getCmdLineArg(process.argv, '--install', true);
+    let perUserInstall = getCmdLineArg(process.argv, '--peruser', true);
     if (!isMac && hasInstallFlag) {
         getConfigField('launchOnStartup')
             .then(setStartup)
-            .then(updateUserConfigWin)
+            .then(updateUserConfigWin(perUserInstall))
             .then(app.quit)
             .catch(app.quit);
         return;
@@ -123,8 +120,8 @@ function setupThenOpenMainWindow() {
         // as the app is launched as a root user we don't get
         // access to the config file
         let launchOnStartup = process.argv[3];
-        updateUserConfigMac()
-            .then(setStartup(launchOnStartup))
+        setStartup(launchOnStartup)
+            .then(updateUserConfigMac(process.argv[2]))
             .then(app.quit)
             .catch(app.quit);
         return;
@@ -137,50 +134,19 @@ function setupThenOpenMainWindow() {
     electron.screen.on('display-removed', windowMgr.verifyDisplays);
 }
 
-function setStartup(lStartup){
+function setStartup(lStartup) {
     return symphonyAutoLauncher.isEnabled()
-    .then(function(isEnabled){
-        if (!isEnabled && lStartup) {
-            return symphonyAutoLauncher.enable();
-        }
-
-        if (isEnabled && !lStartup) {
-            return symphonyAutoLauncher.disable();
-        }
-
-        return true;
-    });
-}
-
-// Method to overwrite user config on mac installer
-function updateUserConfigMac() {
-    return new Promise((resolve, reject) => {
-        let userConfigPath = dirs.userConfig() + '/';
-        let globalConfigPath = process.argv[2];
-        let userName = process.env.USER;
-
-        childProcess.exec(`rsync -r "${globalConfigPath}" "${userConfigPath}" && chown -R "${userName}" "${userConfigPath}"`, {timeout: 60000}, (err) => {
-            if (err) {
-                reject(err);
+        .then(function(isEnabled) {
+            if (!isEnabled && lStartup) {
+                return symphonyAutoLauncher.enable();
             }
-            resolve();
-        });
-    });
-}
 
-// Method to overwrite user config on windows installer
-function updateUserConfigWin() {
-    return new Promise((resolve, reject) => {
-        let userConfigPath = app.getPath('userData');
-        let globalConfigPath = path.join(__dirname, '..', '..', '..', 'config/Symphony.config');
-
-        childProcess.exec(`echo D|xcopy /y /e /s /c "${globalConfigPath}" "${userConfigPath}"`, {timeout: 60000}, (err) => {
-            if (err) {
-                reject(err);
+            if (isEnabled && !lStartup) {
+                return symphonyAutoLauncher.disable();
             }
-            resolve();
+
+            return true;
         });
-    });
 }
 
 function getUrlAndCreateMainWindow() {
@@ -194,7 +160,7 @@ function getUrlAndCreateMainWindow() {
     }
 
     getConfigField('url')
-        .then(createWin).catch(function (err) {
+        .then(createWin).catch(function(err) {
             let title = 'Error loading configuration';
             electron.dialog.showErrorBox(title, title + ': ' + err);
         });
