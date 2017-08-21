@@ -9,10 +9,12 @@
     "dev": "npm run prebuild && cross-env ELECTRON_DEV=true electron .",
     "demo-win": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file:///demo/index.html",
     "demo-mac": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/demo/index.html",
+    "search-win": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file:///demo/search.html",
+    "search-mac": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/demo/search.html",
     "unpacked-mac": "npm run prebuild && npm run test && build --mac --dir",
     "packed-mac": "npm run unpacked-mac && packagesbuild -v installer/mac/symphony-mac-packager.pkgproj",
     "unpacked-win": "npm run prebuild && npm run test && build --win --x64 --dir",
-    "unpacked-win-x86": "npm run prebuild && npm run test && build --win --ia32",
+    "unpacked-win-x86": "npm run prebuild && npm run test && build --win --ia32 --dir",
     "prebuild": "npm run rebuild && npm run browserify-preload",
     "browserify-preload": "browserify -o js/preload/_preloadMain.js -x electron --insert-global-vars=__filename,__dirname js/preload/preloadMain.js  --exclude electron-spellchecker",
     "rebuild": "electron-rebuild -f",
@@ -35,7 +37,11 @@
       "!node_modules/@paulcbetts/cld/build/deps${/*}",
       "!node_modules/@paulcbetts/spellchecker/vendor${/*}"
     ],
-    "extraFiles": "config/Symphony.config",
+    "extraFiles": [
+      "config/Symphony.config",
+      "library/libsymphonysearch.dylib",
+      "library/indexvalidator.exec"
+    ],
     "appId": "symphony-electron-desktop",
     "mac": {
       "target": "dmg",
@@ -98,8 +104,11 @@
     "electron-dl": "^1.9.0",
     "electron-spellchecker": "^1.2.0",
     "electron-squirrel-startup": "^1.0.0",
+    "ffi": "^2.2.0",
     "filesize": "^3.5.10",
     "keymirror": "0.1.1",
+    "randomstring": "^1.1.5",
+    "ref": "^1.3.4",
     "winreg": "^1.2.3"
   },
   "optionalDependencies": {
