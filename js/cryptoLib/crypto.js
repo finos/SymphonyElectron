@@ -2,9 +2,6 @@
  * AES GCM Stream
  * This module exports encrypt and decrypt stream constructors which can be
  * used to protect data with authenticated encryption.
- *
- * Helper methods are also provided to do things like generate secure keys
- * and salt.
  */
 'use strict';
 
@@ -12,11 +9,8 @@ let stream = require('stream');
 let Transform = stream.Transform;
 let util = require('util');
 let crypto = require('crypto');
+let forge = require('node-forge');
 
-let PBKDF2_PASS_LENGTH = 256;
-let PBKDF2_SALT_LENGTH = 32;
-let PBKDF2_ITERATIONS = 5000;
-let PBKDF2_DIGEST = 'sha256';
 let KEY_LENGTH = 32; // bytes
 let GCM_NONCE_LENGTH = 12; //bytes
 let GCM_MAC_LENGTH = 16; //bytes
@@ -34,44 +28,33 @@ let validateAndConvertKey = function(key) {
     if (key && key instanceof Buffer && key.length === KEY_LENGTH) {
         return key;
     } else if (key && typeof key === 'string') {
-        // Because we don't have a reliable way to test string encoding, we assume that a string type
-        // key was created by the createEncodedKey method and that it is using the keyEncoding which
-        // has been set on the module, whether that's the default or something explicitly set by the
-        // user via the setKeyEncoding method.
-        let bufKey = new Buffer(key, keyEncoding);
+        let md = forge.md.sha256.create();
+        md.update(key);
+        let bufKey = new Buffer(bits2b64(md.digest().getBytes()), keyEncoding);
         if (bufKey.length !== KEY_LENGTH) {
             let encodingErrorMessage = 'Provided key string is either of an unknown encoding (expected: ' +
                 keyEncoding + ') or the wrong length.';
             throw new Error(encodingErrorMessage);
         }
         return bufKey;
-    } else {
-        let message = 'The key options property is required! Expected ' +
-            keyEncoding + ' encoded string or a buffer.';
-        throw new Error(message);
     }
+    let message = 'The key options property is required! Expected ' +
+        keyEncoding + ' encoded string or a buffer.';
+    throw new Error(message);
+};
+
+/**
+ * encode bits to b64
+ * @param bits
+ * @returns {*}
+ */
+let bits2b64 = function (bits) {
+    return forge.util.encode64(bits);
 };
 
 exports.encrypt = EncryptionStream;
 exports.decrypt = DecryptionStream;
 
-/**
- * getEncoding
- * Helper which returns the current encoding being used for keys
- * @returns {string}
- */
-exports.getKeyEncoding = function() {
-    return keyEncoding;
-};
-
-/**
- * setEncoding
- * Helper to set the encoding being used for keys
- * @param enc
- */
-exports.setKeyEncoding = function(enc) {
-    keyEncoding = Buffer.isEncoding(enc) ? enc : keyEncoding;
-};
 
 /**
  * createSalt
@@ -86,32 +69,6 @@ exports.createSalt = function(length) {
         console.error('Problem reading random data and generating salt!');
         throw ex;
     }
-};
-
-/**
- * createKeyBuffer
- * Method which returns a buffer representing a secure key generated with PBKDF2
- * @returns Buffer
- */
-exports.createKeyBuffer = function() {
-    try {
-        let passphrase = crypto.randomBytes(PBKDF2_PASS_LENGTH);
-        let salt = this.createSalt(PBKDF2_SALT_LENGTH);
-        return crypto.pbkdf2Sync(passphrase, salt, PBKDF2_ITERATIONS, KEY_LENGTH, PBKDF2_DIGEST);
-    } catch (ex) {
-        console.error('Problem reading random data and generating a key!');
-        throw ex;
-    }
-};
-
-/**
- * createEncodedKey
- * Helper method that returns an encoded key
- * @returns string
- * @throws error
- */
-exports.createEncodedKey = function() {
-    return exports.createKeyBuffer().toString(keyEncoding);
 };
 
 /**
@@ -151,7 +108,6 @@ EncryptionStream.prototype._flush = function(cb) {
     cb();
 };
 
-
 /**
  * DecryptionStream
  * A constructor which returns a decryption stream
@@ -179,13 +135,14 @@ util.inherits(DecryptionStream, Transform);
 DecryptionStream.prototype._transform = function(chunk, enc, cb) {
     let chunkLength = chunk.length;
     let chunkOffset = 0;
+    let _chunk = chunk;
     if (!this._started) {
         if (this._nonceBytesRead < GCM_NONCE_LENGTH) {
             let nonceRemaining = GCM_NONCE_LENGTH - this._nonceBytesRead;
             chunkOffset = chunkLength <= nonceRemaining ? chunkLength : nonceRemaining;
-            chunk.copy(this._nonce, this._nonceBytesRead, 0, chunkOffset);
-            chunk = chunk.slice(chunkOffset);
-            chunkLength = chunk.length;
+            _chunk.copy(this._nonce, this._nonceBytesRead, 0, chunkOffset);
+            _chunk = _chunk.slice(chunkOffset);
+            chunkLength = _chunk.length;
             this._nonceBytesRead += chunkOffset;
         }
 
@@ -199,7 +156,7 @@ DecryptionStream.prototype._transform = function(chunk, enc, cb) {
     // We can't use an else because we have no idea how long our chunks will be
     // all we know is that once we've got a nonce we can start storing cipher text
     if (this._started) {
-        this._cipherTextChunks.push(chunk);
+        this._cipherTextChunks.push(_chunk);
     }
 
     cb();
@@ -222,7 +179,7 @@ DecryptionStream.prototype._flush = function(cb) {
     decrypted.forEach(function(item) {
         this.push(item);
     }, this);
-    cb();
+    return cb();
 };
 
 function pullOutMac(array) {
@@ -242,7 +199,7 @@ function pullOutMac(array) {
         }
     }
     if (macByteCount !== GCM_MAC_LENGTH) {
-        return;
+        return null;
     }
     macBits.reverse();
     return Buffer.concat(macBits, GCM_MAC_LENGTH);

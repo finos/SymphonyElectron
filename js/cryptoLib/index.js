@@ -24,6 +24,7 @@ class Crypto {
         // will be handling after implementing in client app
 
         this.indexDataFolder = INDEX_DATA_FOLDER + '_' + userId + '_' + INDEX_VERSION;
+        this.permanentIndexFolderName = 'search_index_' + userId + '_' + INDEX_VERSION;
         this.dump = TEMPORARY_PATH;
         this.key = "XrwVgWR4czB1a9scwvgRUNbXiN3W0oWq7oUBenyq7bo="; // temporary only
         this.encryptedIndex = 'encryptedIndex.enc';
@@ -44,18 +45,18 @@ class Crypto {
                 return;
             }
 
-            let output = fs.createWriteStream(`${this.dump}/content.zip`);
+            let output = fs.createWriteStream(`${this.dump}/${this.permanentIndexFolderName}.zip`);
 
 
             zipArchive.on('end', () => {
 
-                if (!fs.existsSync(`${this.dump}/content.zip`)){
+                if (!fs.existsSync(`${this.dump}/${this.permanentIndexFolderName}.zip`)){
                     // will be handling after implementing in client app
                     reject();
                     return;
                 }
 
-                const input = fs.createReadStream(`${this.dump}/content.zip`);
+                const input = fs.createReadStream(`${this.dump}/${this.permanentIndexFolderName}.zip`);
                 const outputEncryption = fs.createWriteStream(this.encryptedIndex);
                 let config = {
                     key: this.key
@@ -67,7 +68,7 @@ class Crypto {
                         reject(new Error(err));
                     }
                     if (!this.zipErrored) {
-                        fs.unlinkSync(`${this.dump}/content.zip`);
+                        fs.unlinkSync(`${this.dump}/${this.permanentIndexFolderName}.zip`);
                         Crypto.deleteFolderRecursive(this.indexDataFolder)
                             .then(function () {
                                 resolve(res);
