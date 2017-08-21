@@ -27,7 +27,7 @@ class Crypto {
         this.permanentIndexFolderName = 'search_index_' + userId + '_' + INDEX_VERSION;
         this.dump = TEMPORARY_PATH;
         this.key = "XrwVgWR4czB1a9scwvgRUNbXiN3W0oWq7oUBenyq7bo="; // temporary only
-        this.encryptedIndex = 'encryptedIndex.enc';
+        this.encryptedIndex = `${INDEX_DATA_FOLDER + '_' + userId + '_' + INDEX_VERSION}.enc`;
         this.zipErrored = false;
     }
 
