@@ -150,16 +150,15 @@ function readGlobalConfig() {
 function updateConfigField(fieldName, newValue) {
     return readUserConfig()
         .then(function(config) {
-                return saveUserConfig(fieldName, newValue, config);
-            },
-            function() {
-                // in case config doesn't exist, can't read or is corrupted.
-                // add configVersion - just in case in future we need to provide
-                // upgrade capabilities.
-                return saveUserConfig(fieldName, newValue, {
-                    configVersion: '1.0.0'
-                });
+            return saveUserConfig(fieldName, newValue, config);
+        }, function() {
+            // in case config doesn't exist, can't read or is corrupted.
+            // add configVersion - just in case in future we need to provide
+            // upgrade capabilities.
+            return saveUserConfig(fieldName, newValue, {
+                configVersion: '1.0.0'
             });
+        });
 }
 
 function saveUserConfig(fieldName, newValue, oldConfig) {
