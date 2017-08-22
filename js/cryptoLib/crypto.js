@@ -28,6 +28,8 @@ let validateAndConvertKey = function(key) {
     if (key && key instanceof Buffer && key.length === KEY_LENGTH) {
         return key;
     } else if (key && typeof key === 'string') {
+        // This is for temporary purpose only. Will be retrieving the key from the backend
+        // Todo: remove node-forge
         let md = forge.md.sha256.create();
         md.update(key);
         let bufKey = new Buffer(bits2b64(md.digest().getBytes()), keyEncoding);

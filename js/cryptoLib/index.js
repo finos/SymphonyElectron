@@ -26,6 +26,7 @@ class Crypto {
         this.indexDataFolder = INDEX_DATA_FOLDER + '_' + userId + '_' + INDEX_VERSION;
         this.permanentIndexFolderName = 'search_index_' + userId + '_' + INDEX_VERSION;
         this.dump = TEMPORARY_PATH;
+        this.extractToPath = `${TEMPORARY_PATH}/data/${this.permanentIndexFolderName}`;
         this.key = "XrwVgWR4czB1a9scwvgRUNbXiN3W0oWq7oUBenyq7bo="; // temporary only
         this.encryptedIndex = `${INDEX_DATA_FOLDER + '_' + userId + '_' + INDEX_VERSION}.enc`;
         this.zipErrored = false;
@@ -82,7 +83,7 @@ class Crypto {
 
             zipArchive.pipe(output);
 
-            zipArchive.directory(this.indexDataFolder);
+            zipArchive.directory(this.indexDataFolder + '/', false);
 
             zipArchive.finalize((err) => {
                 if (err) {
@@ -136,7 +137,7 @@ class Crypto {
             });
 
             let extractZip = () => {
-                extract(`${this.dump}/decrypted.zip`, {dir: TEMPORARY_PATH}, (err) => {
+                extract(`${this.dump}/decrypted.zip`, {dir: `${this.extractToPath}`}, (err) => {
                     if (err) {
                         reject(new Error(err));
                     }
