@@ -12,6 +12,10 @@ const isMac = require('../utils/misc.js').isMac;
 // Search library
 const libSymphonySearch = require('./searchLibrary');
 
+// Crypto Library
+const Cryotp = require('../cryptoLib');
+const crypto = new Cryotp();
+
 // Path for the exec file and the user data folder
 const userData = path.join(app.getPath('userData'));
 const execPath = path.dirname(app.getPath('exe'));
@@ -48,14 +52,24 @@ class Search {
      */
     constructor(userId) {
         this.isInitialized = false;
-        this.userId = userId;
+        this.userId = 'user_data';
+        // Will be handling this in SEARCH-206
+        this.key = "XrwVgWR4czB1a9scwvgRUNbXiN3W0oWq7oUBenyq7bo="; // temporary only
         this.startIndexingFromDate = (new Date().getTime() - SEARCH_PERIOD_SUBTRACTOR).toString();
         this.indexFolderName = INDEX_PREFIX + '_' + userId + '_' + INDEX_VERSION;
         this.dataFolder = INDEX_DATA_FOLDER;
         this.realTimeIndex = TEMP_REAL_TIME_INDEX;
         this.batchIndex = TEMP_BATCH_INDEX_FOLDER;
         this.messageData = [];
-        this.init();
+        this.decryptAndInit();
+    }
+
+    decryptAndInit() {
+        crypto.decryption(this.key).then(() => {
+            this.init();
+        }).catch(() => {
+            this.init();
+        });
     }
 
     /**

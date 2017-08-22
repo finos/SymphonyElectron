@@ -27,7 +27,6 @@ class Crypto {
         this.permanentIndexFolderName = 'search_index_' + userId + '_' + INDEX_VERSION;
         this.dump = TEMPORARY_PATH;
         this.extractToPath = `${TEMPORARY_PATH}/data/${this.permanentIndexFolderName}`;
-        this.key = "XrwVgWR4czB1a9scwvgRUNbXiN3W0oWq7oUBenyq7bo="; // temporary only
         this.encryptedIndex = `${INDEX_DATA_FOLDER + '_' + userId + '_' + INDEX_VERSION}.enc`;
         this.zipErrored = false;
     }
@@ -37,7 +36,7 @@ class Crypto {
      * removing the data folder and the dump files
      * @returns {Promise}
      */
-    encryption() {
+    encryption(key) {
         return new Promise((resolve, reject) => {
 
             if (!fs.existsSync(this.indexDataFolder)){
@@ -60,7 +59,7 @@ class Crypto {
                 const input = fs.createReadStream(`${this.dump}/${this.permanentIndexFolderName}.zip`);
                 const outputEncryption = fs.createWriteStream(this.encryptedIndex);
                 let config = {
-                    key: this.key
+                    key: key
                 };
                 const encrypt = crypto.encrypt(config);
 
@@ -99,7 +98,7 @@ class Crypto {
      * removing the .enc file and the dump files
      * @returns {Promise}
      */
-    decryption() {
+    decryption(key) {
         return new Promise((resolve, reject) => {
 
             if (!fs.existsSync(this.encryptedIndex)){
@@ -111,7 +110,7 @@ class Crypto {
             const input = fs.createReadStream(this.encryptedIndex);
             const output = fs.createWriteStream(`${this.dump}/decrypted.zip`);
             let config = {
-                key: this.key
+                key: key
             };
             const decrypt = crypto.decrypt(config);
 
