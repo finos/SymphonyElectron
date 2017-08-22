@@ -23,7 +23,9 @@
     },
     "jest": {
         "collectCoverage": true,
-        "transformIgnorePatterns": []
+        "transformIgnorePatterns": [
+
+        ]
     },
     "build": {
         "asarUnpack": [

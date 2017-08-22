@@ -108,7 +108,7 @@ function setupThenOpenMainWindow() {
     if (!isMac && hasInstallFlag) {
         getConfigField('launchOnStartup')
             .then(setStartup)
-            .then(updateUserConfigWin(perUserInstall))
+            .then(() => updateUserConfigWin(perUserInstall))
             .then(app.quit)
             .catch(app.quit);
         return;
@@ -121,7 +121,7 @@ function setupThenOpenMainWindow() {
         // access to the config file
         let launchOnStartup = process.argv[3];
         setStartup(launchOnStartup)
-            .then(updateUserConfigMac(process.argv[2]))
+            .then(() => updateUserConfigMac(process.argv[2]))
             .then(app.quit)
             .catch(app.quit);
         return;

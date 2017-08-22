@@ -200,9 +200,9 @@ function updateUserConfig(newGlobalConfig, oldUserConfig) {
         const configDataToUpdate = pick(newGlobalConfig, ['url', 'minimizeOnClose', 'launchOnStartup', 'alwaysOnTop']);
         const updatedUserConfigData = Object.assign(oldUserConfig, configDataToUpdate);
         const jsonNewConfig = JSON.stringify(updatedUserConfigData, null, ' ');
-
         // get user config path
         let userConfigFile;
+
         if (isMac) {
             userConfigFile = path.join(dirs.userConfig(), configFileName);
         } else {
@@ -220,6 +220,32 @@ function updateUserConfig(newGlobalConfig, oldUserConfig) {
 }
 
 /**
+ * Method to read user config data
+ * @param {String} userConfigFile - The user config file path
+ * @returns {Promise}
+ */
+function getUserConfigData(userConfigFile) {
+    return new Promise((resolve, reject) => {
+        fs.readFile(userConfigFile, 'utf8', (err, data) => {
+            if (err) {
+                reject('cannot open user config file: ' + userConfigFile + ', error: ' + err);
+                return;
+            }
+
+            let userConfigData;
+            try {
+                // data is the contents of the text file we just read
+                userConfigData = JSON.parse(data);
+            } catch (e) {
+                reject('can not parse config file data: ' + data + ', error: ' + err);
+                return;
+            }
+            resolve(userConfigData);
+        });
+    });
+}
+
+/**
  * Method to overwrite user config on windows installer
  * @param {String} perUserInstall - Is a flag to determine whether we are installing for per user
  * @returns {Promise}
@@ -227,7 +253,7 @@ function updateUserConfig(newGlobalConfig, oldUserConfig) {
 function updateUserConfigWin(perUserInstall) {
     return new Promise((resolve, reject) => {
         const userConfigFile = path.join(app.getPath('userData'), configFileName);
-
+        // flag to determine whether per user installation
         if (!perUserInstall) {
             reject();
             return;
@@ -235,41 +261,17 @@ function updateUserConfigWin(perUserInstall) {
 
         // if user config file does't exists just copy global config file
         if (!fs.existsSync(userConfigFile)) {
-            const globalConfigFileName = path.join('config', configFileName);
-            const execPath = path.dirname(app.getPath('exe'));
-            const globalConfigPath = path.join(execPath, '', globalConfigFileName);
-            const userConfigPath = app.getPath('userData');
-
-            childProcess.exec(`echo D|xcopy /y /e /s /c "${globalConfigPath}" "${userConfigPath}"`, { timeout: 60000 }, (err) => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-                resolve();
-            });
+            resolve(copyConfigWin());
+            return;
         }
-        readGlobalConfig().then((globalConfigData) => {
-            fs.readFile(userConfigFile, 'utf8', (err, userData) => {
-                if (err) {
-                    reject('cannot open user config file: ' + userConfigFile + ', error: ' + err);
-                    return;
-                }
-                let userConfigData;
-                try {
-                    // data is the contents of the text file we just read
-                    userConfigData = JSON.parse(userData);
-                } catch (e) {
-                    reject('can not parse config file data: ' + userData + ', error: ' + err);
-                }
-                updateUserConfig(globalConfigData, userConfigData).then((error) => {
-                    if (error) {
-                        reject(error);
-                        return;
-                    }
-                    resolve();
-                });
+
+        Promise.all([readGlobalConfig(), getUserConfigData(userConfigFile)])
+            .then((data) => {
+                resolve(updateUserConfig(data[0], data[1]));
+            })
+            .catch((err) => {
+                reject(err);
             });
-        });
     });
 }
 
@@ -284,36 +286,57 @@ function updateUserConfigMac(globalConfigPath) {
 
         // if user config file does't exists just copy global config file
         if (!fs.existsSync(userConfigFile)) {
-            let userConfigPath = dirs.userConfig() + '/';
-            let userName = process.env.USER;
-
-            childProcess.exec(`rsync -r "${globalConfigPath}" "${userConfigPath}" && chown -R "${userName}" "${userConfigPath}"`, { timeout: 60000 }, (err) => {
-                if (err) {
-                    reject(err);
-                }
-                resolve();
-            });
+            resolve(copyConfigMac(globalConfigPath));
+            return;
         }
-        return readGlobalConfig().then((globalConfigData) => {
-            fs.readFile(userConfigFile, 'utf8', (err, userData) => {
-                if (err) {
-                    reject('cannot open user config file: ' + userConfigFile + ', error: ' + err);
-                }
-                let userConfigData;
-                try {
-                    // data is the contents of the text file we just read
-                    userConfigData = JSON.parse(userData);
-                } catch (e) {
-                    reject('can not parse config file data: ' + userData + ', error: ' + err);
-                }
-                updateUserConfig(globalConfigData, userConfigData).then((error) => {
-                    if (error) {
-                        reject(error);
-                        return;
-                    }
-                    resolve();
-                });
-            });
+
+        Promise.all([readGlobalConfig(), getUserConfigData(userConfigFile)])
+            .then((data) => {
+                resolve(updateUserConfig(data[0], data[1]));
+            })
+            .catch((err) => {
+                reject(err);
+            })
+    });
+}
+
+/**
+ * Method to copy global config file to user config directory for Windows
+ * @returns {Promise}
+ */
+function copyConfigWin() {
+    return new Promise((resolve, reject) => {
+        const globalConfigFileName = path.join('config', configFileName);
+        const execPath = path.dirname(app.getPath('exe'));
+        const globalConfigPath = path.join(execPath, '', globalConfigFileName);
+        const userConfigPath = app.getPath('userData');
+
+        childProcess.exec(`echo D|xcopy /y /e /s /c "${globalConfigPath}" "${userConfigPath}"`, { timeout: 60000 }, (err) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            resolve();
+        });
+    });
+}
+
+/**
+ * Method which copies global config file to user config directory for mac
+ * @param {String} globalConfigPath - The global config path from installer
+ * @returns {Promise}
+ */
+function copyConfigMac(globalConfigPath) {
+    return new Promise((resolve, reject) => {
+        let userConfigPath = dirs.userConfig() + '/';
+        let userName = process.env.USER;
+
+        childProcess.exec(`rsync -r "${globalConfigPath}" "${userConfigPath}" && chown -R "${userName}" "${userConfigPath}"`, { timeout: 60000 }, (err) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            resolve();
         });
     });
 }
