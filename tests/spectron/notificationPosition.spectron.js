@@ -1,6 +1,6 @@
 const Application = require('./spectronSetup');
 const path = require('path');
-const {isMac} = require('../../js/utils/misc');
+const { isMac } = require('../../js/utils/misc');
 let app = new Application({});
 
 describe('Tests for Notification position', () => {
@@ -9,11 +9,12 @@ describe('Tests for Notification position', () => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
 
     beforeAll((done) => {
-        return app.startApplication().then((startedApp) => {
+        app.startApplication().then((startedApp) => {
             app = startedApp;
             done();
         }).catch((err) => {
             expect(err).toBeNull();
+            done();
         });
     });
 
@@ -23,22 +24,23 @@ describe('Tests for Notification position', () => {
             app.stop().then(() => {
                 done();
             }).catch((err) => {
-                console.log(err);
                 done();
             });
         }
     });
 
     it('should launch the app', (done) => {
-        return app.client.waitUntilWindowLoaded().then(() => {
-            return app.client.getWindowCount().then((count) => {
+        app.client.waitUntilWindowLoaded().then(() => {
+            app.client.getWindowCount().then((count) => {
                 expect(count === 1).toBeTruthy();
                 done();
             }).catch((err) => {
                 expect(err).toBeNull();
+                done();
             });
         }).catch((err) => {
             expect(err).toBeNull();
+            done();
         });
     });
 
@@ -60,13 +62,14 @@ describe('Tests for Notification position', () => {
 
     it('should open notification configure window', () => {
         return app.client
+            .waitUntilTextExists('#notf', 'show notification', 5000)
             .click('#open-config-win')
             .windowByIndex(1)
             .click('#upper-left')
             .click('#ok-button')
             .windowByIndex(0)
             .click('#notf')
-            .windowByIndex(1)
+            .windowByIndex(1);
     });
 
     it('should check notification position', () => {

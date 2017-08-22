@@ -12,6 +12,7 @@ describe('Tests for Bring to front', () => {
             done();
         }).catch((err) => {
             expect(err).toBeNull();
+            done();
         });
     });
 
@@ -21,7 +22,6 @@ describe('Tests for Bring to front', () => {
             app.stop().then(() => {
                 done();
             }).catch((err) => {
-                console.log(err);
                 done();
             });
         }
@@ -34,9 +34,11 @@ describe('Tests for Bring to front', () => {
                 done();
             }).catch((err) => {
                 expect(err).toBeNull();
+                done();
             });
         }).catch((err) => {
             expect(err).toBeNull();
+            done();
         });
     });
 

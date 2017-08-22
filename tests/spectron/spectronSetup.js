@@ -1,8 +1,9 @@
 const Application = require('spectron').Application;
 const path = require('path');
 const fs = require('fs');
-const {isMac} = require('../../js/utils/misc');
+const { isMac } = require('../../js/utils/misc');
 const ncp = require('ncp').ncp;
+const configFileName = 'Symphony.config';
 
 class App {
 
@@ -33,35 +34,59 @@ class App {
         if (process.platform === 'win32') {
             electronPath += '.cmd';
         }
-        return electronPath
+        return electronPath;
     }
 
     static getTimeOut() {
-        return 90000
+        return 90000;
     }
 
     static readConfig(configPath) {
-        return new Promise(function (resolve, reject) {
-            fs.readFile(configPath, function (err, data) {
-                if (err) {
-                    reject(err);
-                }
-                resolve(JSON.parse(data));
+        return this.copyConfigToUserDir(configPath).then(() => {
+            return new Promise(function(resolve, reject) {
+                fs.readFile(configPath, function(err, data) {
+                    if (err) {
+                        reject(err);
+                    }
+                    let configData;
+                    try {
+                        configData = JSON.parse(data);
+                    } catch (err) {
+                        reject(err);
+                    }
+                    resolve(configData);
+                });
             });
+        });
+    }
+
+    static copyConfigToUserDir(configPath) {
+        return new Promise(function(resolve, reject) {
+            if (!fs.existsSync(configPath)) {
+                ncp('config' + '/' + configFileName, configPath, function(err) {
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve();
+                });
+            } else {
+                resolve();
+
+            }
         });
     }
 
     static copyConfigPath() {
         if (isMac) {
-            ncp('config', 'node_modules/electron/dist/Electron.app/Contents/config', function (err) {
+            ncp('config', 'node_modules/electron/dist/Electron.app/Contents/config', function(err) {
                 if (err) {
-                    throw(err);
+                    throw (err);
                 }
             });
         } else {
-            ncp('config', 'node_modules/electron/dist/config', function (err) {
+            ncp('config', 'node_modules/electron/dist/config', function(err) {
                 if (err) {
-                    throw(err);
+                    throw (err);
                 }
             });
         }

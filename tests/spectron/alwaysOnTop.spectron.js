@@ -1,5 +1,5 @@
 const Application = require('./spectronSetup');
-const {isMac} = require('../../js/utils/misc.js');
+const { isMac } = require('../../js/utils/misc.js');
 const childProcess = require('child_process');
 
 let app = new Application({});
@@ -13,9 +13,9 @@ describe('Tests for Always on top', () => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
 
     beforeAll((done) => {
-        childProcess.exec(`npm rebuild robotjs --target=${process.version} --build-from-source`, function () {
+        childProcess.exec(`npm rebuild robotjs --target=${process.version} --build-from-source`, function() {
             robot = require('robotjs');
-            return app.startApplication().then((startedApp) => {
+            app.startApplication().then((startedApp) => {
                 app = startedApp;
                 getConfigPath().then((config) => {
                     configPath = config;
@@ -23,19 +23,20 @@ describe('Tests for Always on top', () => {
                 });
             }).catch((err) => {
                 expect(err).toBeNull();
+                done();
             });
         });
     });
 
     function getConfigPath() {
-        return new Promise(function (resolve, reject) {
-            app.client.addCommand('getUserDataPath', function () {
-                return this.execute(function () {
+        return new Promise(function(resolve, reject) {
+            app.client.addCommand('getUserDataPath', function() {
+                return this.execute(function() {
                     return require('electron').remote.app.getPath('userData');
-                })
+                });
             });
             app.client.getUserDataPath().then((path) => {
-                resolve(path.value + '/Symphony.config')
+                resolve(path.value + '/Symphony.config');
             }).catch((err) => {
                 reject(err);
             });
@@ -64,6 +65,7 @@ describe('Tests for Always on top', () => {
             });
         }).catch((err) => {
             expect(err).toBeNull();
+            done();
         });
     });
 
@@ -85,31 +87,33 @@ describe('Tests for Always on top', () => {
 
     it('should bring the app to front in windows', (done) => {
         if (!isMac) {
-            app.browserWindow.focus();
-            app.browserWindow.restore();
-            app.browserWindow.setAlwaysOnTop(true).then(() => {
-                app.browserWindow.isAlwaysOnTop().then((isOnTop) => {
-                    app.browserWindow.getBounds().then((bounds) => {
-                        robot.setMouseDelay(200);
-                        app.browserWindow.restore().then(() => {
-                            let x = bounds.x + 95;
-                            let y = bounds.y + 35;
+            app.browserWindow.focus().then(() => {
+                app.browserWindow.restore().then(() => {
+                    app.browserWindow.setAlwaysOnTop(true).then(() => {
+                        app.browserWindow.isAlwaysOnTop().then((isOnTop) => {
+                            app.browserWindow.getBounds().then((bounds) => {
+                                robot.setMouseDelay(200);
+                                app.browserWindow.restore().then(() => {
+                                    let x = bounds.x + 95;
+                                    let y = bounds.y + 35;
 
-                            robot.moveMouseSmooth(x, y);
-                            robot.mouseClick();
-                            robot.setKeyboardDelay(200);
-                            for (let i = 0; i < 4
-                                ; i++) {
-                                robot.keyTap('down');
-                            }
-                            robot.keyTap('enter');
-                            expect(isOnTop).toBeTruthy();
-                            done();
-                        })
+                                    robot.moveMouseSmooth(x, y);
+                                    robot.mouseClick();
+                                    robot.setKeyboardDelay(200);
+                                    for (let i = 0; i < 4; i++) {
+                                        robot.keyTap('down');
+                                    }
+                                    robot.keyTap('enter');
+                                    expect(isOnTop).toBeTruthy();
+                                    done();
+                                });
+                            });
+                        });
                     });
                 });
             }).catch((err) => {
                 expect(err).toBeNull();
+                done();
             });
         } else {
             done();
@@ -159,6 +163,7 @@ describe('Tests for Always on top', () => {
                 });
             }).catch((err) => {
                 expect(err).toBeNull();
+                done();
             });
         }
     });

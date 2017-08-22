@@ -13,6 +13,7 @@ describe('Tests for Close', () => {
             done();
         }).catch((err) => {
             expect(err).toBeNull();
+            done();
         });
     });
 
@@ -22,7 +23,6 @@ describe('Tests for Close', () => {
             app.stop().then(() => {
                 done();
             }).catch((err) => {
-                console.log(err);
                 done();
             });
         } else {
@@ -37,9 +37,11 @@ describe('Tests for Close', () => {
                 done();
             }).catch((err) => {
                 expect(err).toBeNull();
+                done();
             });
         }).catch((err) => {
             expect(err).toBeNull();
+            done();
         });
     });
 

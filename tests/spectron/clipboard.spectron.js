@@ -20,7 +20,6 @@ describe('Tests for clipboard', () => {
             app.stop().then(() => {
                 done();
             }).catch((err) => {
-                console.log(err);
                 done();
             });
         }
@@ -33,9 +32,11 @@ describe('Tests for clipboard', () => {
                 done();
             }).catch((err) => {
                 expect(err).toBeFalsy();
+                done();
             });
         }).catch((err) => {
             expect(err).toBeFalsy();
+            done();
         });
     });
 
