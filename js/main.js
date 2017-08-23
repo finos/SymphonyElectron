@@ -1,19 +1,22 @@
 'use strict';
 
+// Third Party Dependencies
 const electron = require('electron');
 const app = electron.app;
 const nodeURL = require('url');
 const squirrelStartup = require('electron-squirrel-startup');
 const AutoLaunch = require('auto-launch');
 const urlParser = require('url');
-const { getConfigField } = require('./config.js');
-const { isMac, isDevEnv } = require('./utils/misc.js');
-const protocolHandler = require('./protocolHandler');
-const getCmdLineArg = require('./utils/getCmdLineArg.js');
 const childProcess = require('child_process');
 const path = require('path');
 const AppDirectory = require('appdirectory');
 const dirs = new AppDirectory('Symphony');
+
+// Local Dependencies
+const { getConfigField } = require('./config.js');
+const { isMac, isDevEnv } = require('./utils/misc.js');
+const protocolHandler = require('./protocolHandler');
+const getCmdLineArg = require('./utils/getCmdLineArg.js');
 
 require('electron-dl')();
 
@@ -75,11 +78,11 @@ if (isMac) {
  */
 app.on('ready', setupThenOpenMainWindow);
 
-app.on('window-all-closed', function () {
+app.on('window-all-closed', function() {
     app.quit();
 });
 
-app.on('activate', function () {
+app.on('activate', function() {
     if (windowMgr.isMainWindow(null)) {
         setupThenOpenMainWindow();
     } else {
@@ -95,7 +98,7 @@ app.setAsDefaultProtocolClient('symphony');
 // This event is emitted only on macOS
 // at this moment, support for windows
 // is in pipeline (https://github.com/electron/electron/pull/8052)
-app.on('open-url', function (event, url) {
+app.on('open-url', function(event, url) {
     handleProtocolAction(url);
 });
 
@@ -137,19 +140,19 @@ function setupThenOpenMainWindow() {
     electron.screen.on('display-removed', windowMgr.verifyDisplays);
 }
 
-function setStartup(lStartup){
+function setStartup(lStartup) {
     return symphonyAutoLauncher.isEnabled()
-    .then(function(isEnabled){
-        if (!isEnabled && lStartup) {
-            return symphonyAutoLauncher.enable();
-        }
+        .then(function(isEnabled) {
+            if (!isEnabled && lStartup) {
+                return symphonyAutoLauncher.enable();
+            }
 
-        if (isEnabled && !lStartup) {
-            return symphonyAutoLauncher.disable();
-        }
+            if (isEnabled && !lStartup) {
+                return symphonyAutoLauncher.disable();
+            }
 
-        return true;
-    });
+            return true;
+        });
 }
 
 // Method to overwrite user config on mac installer
@@ -159,7 +162,7 @@ function updateUserConfigMac() {
         let globalConfigPath = process.argv[2];
         let userName = process.env.USER;
 
-        childProcess.exec(`rsync -r "${globalConfigPath}" "${userConfigPath}" && chown -R "${userName}" "${userConfigPath}"`, {timeout: 60000}, (err) => {
+        childProcess.exec(`rsync -r "${globalConfigPath}" "${userConfigPath}" && chown -R "${userName}" "${userConfigPath}"`, { timeout: 60000 }, (err) => {
             if (err) {
                 reject(err);
             }
@@ -174,7 +177,7 @@ function updateUserConfigWin() {
         let userConfigPath = app.getPath('userData');
         let globalConfigPath = path.join(__dirname, '..', '..', '..', 'config/Symphony.config');
 
-        childProcess.exec(`echo D|xcopy /y /e /s /c "${globalConfigPath}" "${userConfigPath}"`, {timeout: 60000}, (err) => {
+        childProcess.exec(`echo D|xcopy /y /e /s /c "${globalConfigPath}" "${userConfigPath}"`, { timeout: 60000 }, (err) => {
             if (err) {
                 reject(err);
             }
@@ -194,7 +197,7 @@ function getUrlAndCreateMainWindow() {
     }
 
     getConfigField('url')
-        .then(createWin).catch(function (err) {
+        .then(createWin).catch(function(err) {
             let title = 'Error loading configuration';
             electron.dialog.showErrorBox(title, title + ': ' + err);
         });

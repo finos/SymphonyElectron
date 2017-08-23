@@ -1,10 +1,9 @@
-
-const { ScreenSnippet, readResult } = require('../js/screenSnippet/ScreenSnippet.js');
+const { ScreenSnippet, readResult } = require('../js/screenSnippet');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
 
-const { isMac } = require('../js/utils/misc.js')
+const { isMac } = require('../js/utils/misc.js');
 
 const snippetBase64 = require('./fixtures/snippet/snippet-base64.js');
 
@@ -27,7 +26,7 @@ function mockedExecFile(util, args, doneCallback) {
 }
 
 function copyTestFile(destFile, done) {
-    const testfile = path.join(__dirname ,
+    const testfile = path.join(__dirname,
         'fixtures/snippet/ScreenSnippet.jpeg');
 
     let reader = fs.createReadStream(testfile);
@@ -43,7 +42,7 @@ function copyTestFile(destFile, done) {
 function createTestFile(done) {
     let tmpDir = os.tmpdir();
     const testFileName = path.join(tmpDir,
-        'ScreenSnippet-'  + Date.now() + '.jpeg');
+        'ScreenSnippet-' + Date.now() + '.jpeg');
 
     copyTestFile(testFileName, function() {
         done(testFileName)

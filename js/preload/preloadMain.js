@@ -19,7 +19,7 @@ const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 const getMediaSources = require('../desktopCapturer/getSources');
 
-require('../downloadManager/downloadManager');
+require('../downloadManager');
 
 // bug in electron preventing us from using spellchecker in pop outs
 // https://github.com/electron/electron/issues/4025
@@ -28,7 +28,7 @@ require('../downloadManager/downloadManager');
 document.addEventListener('DOMContentLoaded', () => {
     try {
         /* eslint-disable global-require */
-        const SpellCheckerHelper = require('../spellChecker/spellChecker').SpellCheckHelper;
+        const SpellCheckerHelper = require('../spellChecker').SpellCheckHelper;
         /* eslint-enable global-require */
         // Method to initialize spell checker
         const spellChecker = new SpellCheckerHelper();
@@ -102,7 +102,7 @@ function createAPI() {
                     containerIdentifier: appName,
                     containerVer: appVer,
                     apiVer: '1.0.0'
-                }
+                };
                 resolve(verInfo);
             });
         },
@@ -126,9 +126,9 @@ function createAPI() {
 
         /**
          * provides api to allow user to capture portion of screen, see api
-         * details in screenSnipper/ScreenSnippet.js
+         * details in screenSnipper/index.js
          */
-        ScreenSnippet: remote.require('./screenSnippet/ScreenSnippet.js').ScreenSnippet,
+        ScreenSnippet: remote.require('./screenSnippet/index.js').ScreenSnippet,
 
         /**
          * Brings window forward and gives focus.
@@ -191,7 +191,7 @@ function createAPI() {
          * this registration func is invoked then the protocolHandler callback
          * will be immediately called.
          */
-        registerProtocolHandler: function (protocolHandler) {
+        registerProtocolHandler: function(protocolHandler) {
             if (typeof protocolHandler === 'function') {
 
                 local.processProtocolAction = protocolHandler;

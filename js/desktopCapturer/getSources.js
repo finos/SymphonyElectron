@@ -46,9 +46,9 @@ function getSources(options, callback) {
     id = getNextId();
     ipcRenderer.send('ELECTRON_BROWSER_DESKTOP_CAPTURER_GET_SOURCES', captureWindow, captureScreen, updatedOptions.thumbnailSize, id);
 
-    return ipcRenderer.once('ELECTRON_RENDERER_DESKTOP_CAPTURER_RESULT_' + id, function (event, sources) {
+    return ipcRenderer.once('ELECTRON_RENDERER_DESKTOP_CAPTURER_RESULT_' + id, function(event, sources) {
         var source;
-        callback(null, (function () {
+        callback(null, (function() {
             var i, len, results
             results = [];
             for (i = 0, len = sources.length; i < len; i++) {

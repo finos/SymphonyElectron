@@ -24,7 +24,7 @@ function openFile(id) {
     let fileIndex = local.downloadItems.findIndex((item) => {
         return item._id === id
     });
-    if (fileIndex !== -1){
+    if (fileIndex !== -1) {
         let openResponse = remote.shell.openExternal(`file:///${local.downloadItems[fileIndex].savedPath}`);
         if (!openResponse) {
             remote.dialog.showErrorBox("File not found", 'The file you are trying to open cannot be found in the specified path.');
@@ -159,7 +159,7 @@ function initiate() {
 
         let ulFind = document.getElementById('download-main');
 
-        if (!ulFind){
+        if (!ulFind) {
             let uList = document.createElement('ul');
             uList.id = 'download-main';
             mainDownloadDiv.appendChild(uList);
@@ -167,7 +167,7 @@ function initiate() {
 
         let closeSpanFind = document.getElementById('close-download-bar');
 
-        if (!closeSpanFind){
+        if (!closeSpanFind) {
             let closeSpan = document.createElement('span');
             closeSpan.id = 'close-download-bar';
             closeSpan.classList.add('close-download-bar');

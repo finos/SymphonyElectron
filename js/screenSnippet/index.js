@@ -47,21 +47,21 @@ class ScreenSnippet {
                 // utilize Mac OSX built-in screencapture tool which has been
                 // available since OSX ver 10.2.
                 captureUtil = '/usr/sbin/screencapture';
-                captureUtilArgs = [ '-i', '-s', '-t', 'jpg', outputFileName ];
+                captureUtilArgs = ['-i', '-s', '-t', 'jpg', outputFileName];
             } else {
                 // use custom built windows screen capture tool
                 if (isDevEnv) {
                     // for dev env pick up tool from node nodules
                     captureUtil =
                         path.join(__dirname,
-                        '../../node_modules/screen-snippet/bin/Release/ScreenSnippet.exe');
+                            '../../node_modules/screen-snippet/bin/Release/ScreenSnippet.exe');
                 } else {
                     // for production gets installed next to exec.
                     let execPath = path.dirname(app.getPath('exe'));
                     captureUtil = path.join(execPath, 'ScreenSnippet.exe');
                 }
 
-                captureUtilArgs = [ outputFileName ];
+                captureUtilArgs = [outputFileName];
             }
 
             log.send(logLevels.INFO, 'ScreenSnippet: starting screen capture util: ' + captureUtil + ' with args=' + captureUtilArgs);
@@ -120,8 +120,7 @@ function readResult(outputFileName, resolve, reject, childProcessErr) {
             });
         } catch (error) {
             reject(createError(error));
-        }
-        finally {
+        } finally {
             // remove tmp file (async)
             fs.unlink(outputFileName, function(removeErr) {
                 // note: node complains if calling async
@@ -153,4 +152,4 @@ module.exports = {
     ScreenSnippet: ScreenSnippet,
     // note: readResult only exposed for testing purposes
     readResult: readResult
-}
+};
