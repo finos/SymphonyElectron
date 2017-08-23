@@ -54,14 +54,18 @@ function getUserConfigField(fieldName) {
     });
 }
 
-function readUserConfig() {
+function readUserConfig(customConfigPath) {
     return new Promise(function(resolve, reject) {
         if (userConfig) {
             resolve(userConfig);
             return;
         }
 
-        let configPath = path.join(app.getPath('userData'), configFileName);
+        let configPath = customConfigPath;
+
+        if (!configPath) {
+            configPath = path.join(app.getPath('userData'), configFileName);
+        }
 
         fs.readFile(configPath, 'utf8', function(err, data) {
             if (err) {
@@ -219,32 +223,6 @@ function updateUserConfig(newGlobalConfig, oldUserConfig) {
 }
 
 /**
- * Method to read user config data
- * @param {String} userConfigFile - The user config file path
- * @returns {Promise}
- */
-function getUserConfigData(userConfigFile) {
-    return new Promise((resolve, reject) => {
-        fs.readFile(userConfigFile, 'utf8', (err, data) => {
-            if (err) {
-                reject('cannot open user config file: ' + userConfigFile + ', error: ' + err);
-                return;
-            }
-
-            let userConfigData;
-            try {
-                // data is the contents of the text file we just read
-                userConfigData = JSON.parse(data);
-            } catch (e) {
-                reject('can not parse config file data: ' + data + ', error: ' + err);
-                return;
-            }
-            resolve(userConfigData);
-        });
-    });
-}
-
-/**
  * Method to overwrite user config on windows installer
  * @param {String} perUserInstall - Is a flag to determine whether we are installing for per user
  * @returns {Promise}
@@ -264,7 +242,7 @@ function updateUserConfigWin(perUserInstall) {
             return;
         }
 
-        Promise.all([readGlobalConfig(), getUserConfigData(userConfigFile)])
+        Promise.all([readGlobalConfig(), readUserConfig(userConfigFile)])
             .then((data) => {
                 resolve(updateUserConfig(data[0], data[1]));
             })
@@ -289,13 +267,13 @@ function updateUserConfigMac(globalConfigPath) {
             return;
         }
 
-        Promise.all([readGlobalConfig(), getUserConfigData(userConfigFile)])
+        Promise.all([readGlobalConfig(), readUserConfig(userConfigFile)])
             .then((data) => {
                 resolve(updateUserConfig(data[0], data[1]));
             })
             .catch((err) => {
                 reject(err);
-            })
+            });
     });
 }
 

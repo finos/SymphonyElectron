@@ -120,8 +120,11 @@ function setupThenOpenMainWindow() {
         // as the app is launched as a root user we don't get
         // access to the config file
         let launchOnStartup = process.argv[3];
+        // We wire this in via the post install script 
+        // to get the config file path where the app is installed        
+        let appGlobalConfigPath = process.argv[2];
         setStartup(launchOnStartup)
-            .then(() => updateUserConfigMac(process.argv[2]))
+            .then(() => updateUserConfigMac(appGlobalConfigPath))
             .then(app.quit)
             .catch(app.quit);
         return;
