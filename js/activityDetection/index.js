@@ -84,6 +84,11 @@ function send(data) {
     }
 }
 
+/**
+ * Set the activity's window
+ * @param period
+ * @param win
+ */
 function setActivityWindow(period, win) {
     maxIdleTime = period;
     activityWindow = win;

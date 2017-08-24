@@ -78,10 +78,17 @@ if (isMac) {
  */
 app.on('ready', setupThenOpenMainWindow);
 
+/**
+ * Is triggered when all the windows are closed
+ * In which case we quit the app
+ */
 app.on('window-all-closed', function() {
     app.quit();
 });
 
+/**
+ * Is triggered when the app is up & running
+ */
 app.on('activate', function() {
     if (windowMgr.isMainWindow(null)) {
         setupThenOpenMainWindow();
@@ -95,13 +102,19 @@ app.on('activate', function() {
 // and registry keys in windows
 app.setAsDefaultProtocolClient('symphony');
 
-// This event is emitted only on macOS
-// at this moment, support for windows
-// is in pipeline (https://github.com/electron/electron/pull/8052)
+/**
+ * This event is emitted only on macOS
+ * at this moment, support for windows
+ * is in pipeline (https://github.com/electron/electron/pull/8052)
+ */
 app.on('open-url', function(event, url) {
     handleProtocolAction(url);
 });
 
+/**
+ * Sets up the app (to handle various things like config changes, protocol handling etc.)
+ * and opens the main window
+ */
 function setupThenOpenMainWindow() {
 
     processProtocolAction(process.argv);
@@ -140,6 +153,11 @@ function setupThenOpenMainWindow() {
     electron.screen.on('display-removed', windowMgr.verifyDisplays);
 }
 
+/**
+ * Sets Symphony on startup
+ * @param lStartup
+ * @returns {Promise}
+ */
 function setStartup(lStartup) {
     return symphonyAutoLauncher.isEnabled()
         .then(function(isEnabled) {
@@ -155,7 +173,10 @@ function setStartup(lStartup) {
         });
 }
 
-// Method to overwrite user config on mac installer
+/**
+ * Method to overwrite user config on mac installer
+ * @returns {Promise}
+ */
 function updateUserConfigMac() {
     return new Promise((resolve, reject) => {
         let userConfigPath = dirs.userConfig() + '/';
@@ -171,7 +192,10 @@ function updateUserConfigMac() {
     });
 }
 
-// Method to overwrite user config on windows installer
+/**
+ * Method to overwrite user config on windows installer
+ * @returns {Promise}
+ */
 function updateUserConfigWin() {
     return new Promise((resolve, reject) => {
         let userConfigPath = app.getPath('userData');
@@ -186,6 +210,10 @@ function updateUserConfigWin() {
     });
 }
 
+/**
+ * Checks for the url argument, processes it
+ * and creates the main window
+ */
 function getUrlAndCreateMainWindow() {
     // for dev env allow passing url argument
     if (isDevEnv) {
@@ -203,6 +231,10 @@ function getUrlAndCreateMainWindow() {
         });
 }
 
+/**
+ * Creates a window
+ * @param urlFromConfig
+ */
 function createWin(urlFromConfig) {
     let protocol = '';
     // add https protocol if none found.
@@ -247,6 +279,10 @@ function processProtocolAction(argv) {
     }
 }
 
+/**
+ * Handles a protocol action based on the current state of the app
+ * @param uri
+ */
 function handleProtocolAction(uri) {
     if (!isAppAlreadyOpen) {
         // app is opened by the protocol url, cache the protocol url to be used later

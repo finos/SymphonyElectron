@@ -9,7 +9,9 @@ let selectedDisplay;
 
 renderSettings();
 
-// Method that renders the data from user config
+/**
+ * Method that renders the data from user config
+ */
 function renderSettings() {
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -33,6 +35,9 @@ function renderSettings() {
 
 }
 
+/**
+ * Updates the configuration and closes the alert
+ */
 function updateAndClose() {
     ipc.send('update-config', {position: selectedPosition, display: selectedDisplay});
     ipc.send('close-alert');

@@ -9,6 +9,10 @@
 const electron = require('electron');
 const ipc = electron.ipcRenderer;
 
+/**
+ * Sets style for a notification
+ * @param config
+ */
 function setStyle(config) {
     // Style it
     let notiDoc = window.document;
@@ -40,6 +44,11 @@ function setStyle(config) {
     setStyleOnDomElement(config.defaultStyleClose, close);
 }
 
+/**
+ * Sets contents for a notification
+ * @param event
+ * @param notificationObj
+ */
 function setContents(event, notificationObj) {
     // sound
     if (notificationObj.sound) {
@@ -111,6 +120,11 @@ function setContents(event, notificationObj) {
     }
 }
 
+/**
+ * Sets style on a notification for a DOM element
+ * @param styleObj
+ * @param domElement
+ */
 function setStyleOnDomElement(styleObj, domElement) {
     try {
         let styleAttr = Object.keys(styleObj);
@@ -124,10 +138,18 @@ function setStyleOnDomElement(styleObj, domElement) {
     }
 }
 
+/**
+ * Loads the config
+ * @param event
+ * @param conf
+ */
 function loadConfig(event, conf) {
     setStyle(conf || {})
 }
 
+/**
+ * Resets the notification window
+ */
 function reset() {
     let notiDoc = window.document;
     let container = notiDoc.getElementById('container');

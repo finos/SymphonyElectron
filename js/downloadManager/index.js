@@ -19,6 +19,7 @@ local.ipcRenderer.on('downloadProgress', () => {
 
 /**
  * Open file in default app.
+ * @param id
  */
 function openFile(id) {
     let fileIndex = local.downloadItems.findIndex((item) => {
@@ -34,6 +35,7 @@ function openFile(id) {
 
 /**
  * Show downloaded file in explorer or finder.
+ * @param id
  */
 function showInFinder(id) {
     let showFileIndex = local.downloadItems.findIndex((item) => {
@@ -47,6 +49,10 @@ function showInFinder(id) {
     }
 }
 
+/**
+ * Create the document object model
+ * @param arg
+ */
 function createDOM(arg) {
 
     if (arg && arg._id) {
@@ -149,6 +155,9 @@ function createDOM(arg) {
     }
 }
 
+/**
+ * Initiate the download manager
+ */
 function initiate() {
     let mainFooter = document.getElementById('footer');
     let mainDownloadDiv = document.getElementById('download-manager-footer');

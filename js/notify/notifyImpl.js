@@ -51,6 +51,10 @@ class Notify {
 
         this._data = options.data || null;
 
+        /**
+         * Handles on show event
+         * @param arg
+         */
         function onShow(arg) {
             if (arg.id === this._id) {
                 log.send(logLevels.INFO, 'showing notification, id=' + this._id);
@@ -61,6 +65,10 @@ class Notify {
             }
         }
 
+        /**
+         * Handles on click event
+         * @param arg
+         */
         function onClick(arg) {
             if (arg.id === this._id) {
                 log.send(logLevels.INFO, 'clicking notification, id=' + this._id);
@@ -70,6 +78,10 @@ class Notify {
             }
         }
 
+        /**
+         * Handles on close event
+         * @param arg
+         */
         function onClose(arg) {
             if (arg.id === this._id || arg.event === 'close-all') {
                 log.send(logLevels.INFO, 'closing notification, id=' + this._id);
@@ -80,6 +92,10 @@ class Notify {
             }
         }
 
+        /**
+         * Handles on error event
+         * @param arg
+         */
         function onError(arg) {
             if (arg.id === this._id) {
                 // don't raise error event if handler doesn't exist, node
@@ -95,7 +111,7 @@ class Notify {
     }
 
     /**
-     * close notification
+     * Closes notification
      */
     close() {
         if (typeof this._closeNotification === 'function') {
@@ -105,7 +121,7 @@ class Notify {
     }
 
     /**
-     * always allow showing notifications.
+     * Always allow showing notifications.
      * @return {string} 'granted'
      */
     static get permission() {
@@ -113,14 +129,14 @@ class Notify {
     }
 
     /**
-     * returns data object passed in via constructor options
+     * Returns data object passed in via constructor options
      */
     get data() {
         return this._data;
     }
 
     /**
-     * add event listeners for 'click', 'close', 'show', 'error' events
+     * Adds event listeners for 'click', 'close', 'show', 'error' events
      *
      * @param {String} event  event to listen for
      * @param {func}   cb     callback invoked when event occurs
@@ -132,7 +148,7 @@ class Notify {
     }
 
     /**
-     * remove event listeners for 'click', 'close', 'show', 'error' events
+     * Removes event listeners for 'click', 'close', 'show', 'error' events
      *
      * @param {String} event  event to stop listening for.
      * @param {func}   cb     callback associated with original addEventListener
@@ -144,7 +160,7 @@ class Notify {
     }
 
     /**
-     * removes all event listeners
+     * Removes all event listeners
      */
     removeAllEvents() {
         this.destroy();

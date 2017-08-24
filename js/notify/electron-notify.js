@@ -140,19 +140,16 @@ let config = {
     }
 };
 
-// function setConfig(customConfig) {
-//     Object.assign(customConfig, config);
-//
-//     calcDimensions();
-// }
-
 if (app.isReady()) {
     setup();
 } else {
     app.on('ready', setup);
 }
 
-// Method to update notification config
+/**
+ * Method to update notification config
+ * @param customConfig
+ */
 function updateConfig(customConfig) {
     // Fetching user preferred notification position from config
     if (customConfig.position) {
@@ -167,6 +164,9 @@ function updateConfig(customConfig) {
     }
 }
 
+/**
+ * Method to setup the notification configuration
+ */
 function setup() {
     setupConfig();
 
@@ -177,6 +177,10 @@ function setup() {
     electron.screen.on('display-metrics-changed', setupConfig);
 }
 
+/**
+ * Method to get the notification template path
+ * @returns {string|*}
+ */
 function getTemplatePath() {
     let templatePath = path.join(__dirname, 'electron-notify.html');
     try {
@@ -188,6 +192,9 @@ function getTemplatePath() {
     return config.templatePath;
 }
 
+/**
+ * Calculates the dimensions of the screen
+ */
 function calcDimensions() {
     const vertSpaceBetweenNotf = 8;
 
@@ -227,6 +234,9 @@ function calcDimensions() {
     nextInsertPos.y = config.firstPos.y
 }
 
+/**
+ * Setup the notification config
+ */
 function setupConfig() {
     closeAll();
 
@@ -273,6 +283,11 @@ function setupConfig() {
     config.maxVisibleNotifications = config.maxVisibleNotifications > 5 ? 5 : config.maxVisibleNotifications;
 }
 
+/**
+ * Notifies the user
+ * @param notification
+ * @returns {*}
+ */
 function notify(notification) {
     // Is it an object and only one argument?
     if (arguments.length === 1 && typeof notification === 'object') {
@@ -290,10 +305,18 @@ function notify(notification) {
     return null;
 }
 
+/**
+ * Increment the notification
+ */
 function incrementId() {
     latestID++;
 }
 
+/**
+ * Shows the notification to the user
+ * @param notificationObj
+ * @returns {Promise}
+ */
 function showNotification(notificationObj) {
     return new Promise(function(resolve) {
 
@@ -378,6 +401,12 @@ function showNotification(notificationObj) {
     })
 }
 
+/**
+ * Sets the HTML notification contents along with other options
+ * @param notfWindow
+ * @param notfObj
+ * @returns {*}
+ */
 function setNotificationContents(notfWindow, notfObj) {
 
     // Display time per notification basis.
@@ -437,7 +466,13 @@ function setNotificationContents(notfWindow, notfObj) {
     return updatedNotificationWindow;
 }
 
-// Close notification function
+/**
+ * Closes the notification
+ * @param notificationWindow
+ * @param notificationObj
+ * @param getTimeoutId
+ * @returns {Function}
+ */
 function buildCloseNotification(notificationWindow, notificationObj, getTimeoutId) {
     return function(event) {
         if (closedNotifications[notificationObj.id]) {
@@ -480,8 +515,13 @@ function buildCloseNotification(notificationWindow, notificationObj, getTimeoutI
     }
 }
 
-// Always add to animationQueue to prevent erros (e.g. notification
-// got closed while it was moving will produce an error)
+/**
+ * Adds an active notification the close notification queue
+ * Always add to animationQueue to prevent erros (e.g. notification
+ * got closed while it was moving will produce an error)
+ * @param closeFunc
+ * @returns {Function}
+ */
 function buildCloseNotificationSafely(closeFunc) {
     return function(reason) {
         animationQueue.push({
@@ -509,10 +549,10 @@ ipc.on('electron-notify-click', function (event, winId, notificationObj) {
     }
 });
 
-/*
-* Checks for queued notifications and add them
-* to AnimationQueue if possible
-*/
+/**
+ * Checks for queued notifications and add them
+ * to AnimationQueue if possible
+ */
 function checkForQueuedNotifications() {
     if (notificationQueue.length > 0 &&
     activeNotifications.length < config.maxVisibleNotifications) {
@@ -524,12 +564,12 @@ function checkForQueuedNotifications() {
     }
 }
 
-/*
-* Moves the notifications one position down,
-* starting with notification at startPos
-*
-* @param  {int} startPos
-*/
+/**
+ * Moves the notifications one position down,
+ * starting with notification at startPos
+ * @param startPos
+ * @returns {Promise}
+ */
 function moveOneDown(startPos) {
     return new Promise(function(resolve) {
         if (startPos >= activeNotifications || startPos === -1) {
@@ -552,6 +592,11 @@ function moveOneDown(startPos) {
     })
 }
 
+/**
+ * Moves the notification animation
+ * @param i
+ * @param done
+ */
 function moveNotificationAnimation(i, done) {
     // Get notification to move
     let notificationWindow = activeNotifications[i];
@@ -588,15 +633,21 @@ function moveNotificationAnimation(i, done) {
     }, config.animationStepMs)
 }
 
+/**
+ * Sets the window's position
+ * @param browserWin
+ * @param posX
+ * @param posY
+ */
 function setWindowPosition(browserWin, posX, posY) {
     if (!browserWin.isDestroyed()) {
         browserWin.setPosition(parseInt(posX, 10), parseInt(posY, 10))
     }
 }
 
-/*
-* Find next possible insert position (on top)
-*/
+/**
+ * Find next possible insert position (on top)
+ */
 function calcInsertPos() {
     if (activeNotifications.length < config.maxVisibleNotifications) {
         switch(config.startCorner) {
@@ -614,11 +665,11 @@ function calcInsertPos() {
     }
 }
 
-/*
-* Get a window to display a notification. Use inactiveWindows or
-* create a new window
-* @return {Window}
-*/
+/**
+ * Get a window to display a notification. Use inactiveWindows or
+ * create a new window
+ * @returns {Promise}
+ */
 function getWindow() {
     return new Promise(function(resolve) {
         let notificationWindow;
@@ -643,6 +694,9 @@ function getWindow() {
     })
 }
 
+/**
+ * Closes all the notifications and windows
+ */
 function closeAll() {
     // Clear out animation Queue and close windows
     animationQueue.clear();
@@ -668,10 +722,13 @@ function closeAll() {
 }
 
 /**
-/* once a minute, remove inactive windows to free up memory used.
+ * Once a minute, remove inactive windows to free up memory used.
  */
 setInterval(cleanUpInactiveWindow, 60000);
 
+/**
+ * Cleans up inactive windows
+ */
 function cleanUpInactiveWindow() {
     inactiveWindows.forEach(function(window) {
         window.close();

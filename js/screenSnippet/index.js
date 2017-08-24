@@ -84,9 +84,15 @@ class ScreenSnippet {
     }
 }
 
-// this function was moved outside of class since class is exposed to web
-// client via preload API, we do NOT want web client to be able to call this
-// method - then they could read any file on the disk!
+/**
+ * this function was moved outside of class since class is exposed to web
+ * client via preload API, we do NOT want web client to be able to call this
+ * method - then they could read any file on the disk!
+ * @param outputFileName
+ * @param resolve
+ * @param reject
+ * @param childProcessErr
+ */
 function readResult(outputFileName, resolve, reject, childProcessErr) {
     fs.readFile(outputFileName, (readErr, data) => {
         if (readErr) {
@@ -135,12 +141,22 @@ function readResult(outputFileName, resolve, reject, childProcessErr) {
 }
 
 /* eslint-disable class-methods-use-this */
+/**
+ * Create an error object with the ERROR level
+ * @param msg
+ * @returns {Error}
+ */
 function createError(msg) {
     let err = new Error(msg);
     err.type = 'ERROR';
     return err;
 }
 
+/**
+ * Create an error object with the WARN level
+ * @param msg
+ * @returns {Error}
+ */
 function createWarn(msg) {
     let err = new Error(msg);
     err.type = 'WARN';

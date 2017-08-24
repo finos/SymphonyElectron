@@ -2,6 +2,10 @@
 
 let keyMirror = require('keymirror');
 
+/**
+ * Set of APIs exposed to the remote object
+ * @type {Object}
+ */
 const cmds = keyMirror({
     isOnline: null,
     registerLogger: null,

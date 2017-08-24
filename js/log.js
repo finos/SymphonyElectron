@@ -5,6 +5,7 @@ const getCmdLineArg = require('./utils/getCmdLineArg.js');
 const MAX_LOG_QUEUE_LENGTH = 100;
 
 class Logger {
+
     constructor() {
         // browser window that has registered a logger
         this.logWindow = null;
@@ -45,6 +46,10 @@ class Logger {
         }
     }
 
+    /**
+     * Sets a window instance for the remote object
+     * @param win
+     */
     setLogWindow(win) {
         this.logWindow = win;
 

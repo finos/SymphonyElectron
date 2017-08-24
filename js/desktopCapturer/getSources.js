@@ -21,11 +21,21 @@ function getNextId() {
     return ++nextId;
 }
 
-// |options.type| can not be empty and has to include 'window' or 'screen'.
+/**
+ * Checks if the options and their types are valid
+ * @param options |options.type| can not be empty and has to include 'window' or 'screen'.
+ * @returns {boolean}
+ */
 function isValid(options) {
     return ((options !== null ? options.types : undefined) !== null) && Array.isArray(options.types);
 }
 
+/**
+ * Gets the sources for capturing screens / windows
+ * @param options
+ * @param callback
+ * @returns {*}
+ */
 function getSources(options, callback) {
     let captureScreen, captureWindow, id;
     if (!isValid(options)) {

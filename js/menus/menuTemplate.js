@@ -243,6 +243,10 @@ function getTemplate(app) {
     return template;
 }
 
+/**
+ * Sets the checkbox values for different menu items
+ * based on configuration
+ */
 function setCheckboxValues() {
     getConfigField('minimizeOnClose').then(function(mClose) {
         minimizeOnClose = mClose;

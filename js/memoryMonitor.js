@@ -6,6 +6,9 @@ const logLevels = require('./enums/logLevels.js');
 // once a minute
 setInterval(gatherMemory, 1000 * 60);
 
+/**
+ * Gathers system memory and logs it to the remote system
+ */
 function gatherMemory() {
     let memory = process.getProcessMemoryInfo();
     let details =
