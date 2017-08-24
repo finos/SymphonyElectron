@@ -5,7 +5,7 @@ let activityDetection;
 
 describe('Tests for Activity Detection', function() {
 
-    var originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    const originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 90000;
 
     beforeAll(function(done) {

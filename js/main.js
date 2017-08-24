@@ -189,7 +189,7 @@ function updateUserConfigWin() {
 function getUrlAndCreateMainWindow() {
     // for dev env allow passing url argument
     if (isDevEnv) {
-        let url = getCmdLineArg(process.argv, '--url=')
+        let url = getCmdLineArg(process.argv, '--url=', false);
         if (url) {
             windowMgr.createMainWindow(url.substr(6));
             return;
@@ -210,7 +210,7 @@ function createWin(urlFromConfig) {
     if (!parsedUrl.protocol) {
         protocol = 'https';
     }
-    var url = nodeURL.format({
+    let url = nodeURL.format({
         protocol: protocol,
         slahes: true,
         pathname: parsedUrl.href
@@ -232,7 +232,7 @@ function processProtocolAction(argv) {
         return;
     }
 
-    let protocolUri = getCmdLineArg(argv, 'symphony://');
+    let protocolUri = getCmdLineArg(argv, 'symphony://', false);
 
     if (protocolUri) {
 

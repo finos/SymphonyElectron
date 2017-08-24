@@ -30,7 +30,7 @@ function isValidWindow(event) {
     if (!checkValidWindow) {
         return true;
     }
-    var result = false;
+    let result = false;
     if (event && event.sender) {
         // validate that event sender is from window we created
         const browserWin = electron.BrowserWindow.fromWebContents(event.sender);

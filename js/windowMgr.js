@@ -179,7 +179,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
 
     function destroyAllWindows() {
         let keys = Object.keys(windows);
-        for (var i = 0, len = keys.length; i < len; i++) {
+        for (let i = 0, len = keys.length; i < len; i++) {
             let winKey = keys[i];
             removeWindowKey(winKey);
         }
@@ -247,7 +247,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             let height = newWinOptions.height || MIN_HEIGHT;
 
             // try getting x and y position from query parameters
-            var query = newWinParsedUrl && querystring.parse(newWinParsedUrl.query);
+            let query = newWinParsedUrl && querystring.parse(newWinParsedUrl.query);
             if (query && query.x && query.y) {
                 let newX = Number.parseInt(query.x, 10);
                 let newY = Number.parseInt(query.y, 10);
@@ -514,11 +514,8 @@ function checkExternalDisplay(appBounds) {
             return false;
         }
 
-        if (rightMost > bounds.x + bounds.width || bottomMost > bounds.y + bounds.height) {
-            return false;
-        }
+        return !(rightMost > bounds.x + bounds.width || bottomMost > bounds.y + bounds.height);
 
-        return true;
     });
 }
 

@@ -95,6 +95,5 @@ module.exports = {
     send: send,
     setActivityWindow: setActivityWindow,
     activityDetection: activityDetection,
-    monitorUserActivity: monitorUserActivity, // Exporting this for unit test
-    initiateActivityDetection: initiateActivityDetection
+    monitorUserActivity: monitorUserActivity, // Exporting this for unit tests
 };

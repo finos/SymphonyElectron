@@ -8,7 +8,7 @@ const AnimationQueue = function(options) {
     this.options = options;
     this.queue = [];
     this.running = false;
-}
+};
 
 AnimationQueue.prototype.push = function(object) {
     if (this.running) {
@@ -17,7 +17,7 @@ AnimationQueue.prototype.push = function(object) {
         this.running = true;
         setTimeout(this.animate.bind(this, object), 0);
     }
-}
+};
 
 AnimationQueue.prototype.animate = function(object) {
     object.func.apply(null, object.args)
@@ -37,10 +37,10 @@ AnimationQueue.prototype.animate = function(object) {
         ' with stack trace:' + err.stack);
         /* eslint-enable no-console */
     })
-}
+};
 
 AnimationQueue.prototype.clear = function() {
     this.queue = [];
-}
+};
 
 module.exports = AnimationQueue;

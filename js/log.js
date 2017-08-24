@@ -1,6 +1,6 @@
 'use strict';
 
-const getCmdLineArg = require('./utils/getCmdLineArg.js')
+const getCmdLineArg = require('./utils/getCmdLineArg.js');
 
 const MAX_LOG_QUEUE_LENGTH = 100;
 
@@ -49,14 +49,14 @@ class Logger {
         this.logWindow = win;
 
         if (this.logWindow) {
-            var logMsg = {};
+            let logMsg = {};
 
             if (Array.isArray(this.logQueue)) {
                 logMsg.msgs = this.logQueue;
             }
 
             // configure desired log level and send pending log msgs
-            let logLevel = getCmdLineArg(process.argv, '--logLevel=');
+            let logLevel = getCmdLineArg(process.argv, '--logLevel=', false);
             if (logLevel) {
                 let level = logLevel.split('=')[1];
                 if (level) {
@@ -64,7 +64,7 @@ class Logger {
                 }
             }
 
-            if (getCmdLineArg(process.argv, '--enableConsoleLogging')) {
+            if (getCmdLineArg(process.argv, '--enableConsoleLogging', false)) {
                 logMsg.showInConsole = true;
             }
 
@@ -77,11 +77,11 @@ class Logger {
     }
 }
 
-var loggerInstance = new Logger();
+let loggerInstance = new Logger();
 
 // Logger class is only exposed for testing purposes.
 module.exports = {
     Logger: Logger,
     send: loggerInstance.send.bind(loggerInstance),
     setLogWindow: loggerInstance.setLogWindow.bind(loggerInstance)
-}
+};

@@ -50,4 +50,4 @@ function setDataUrl(dataUrl, count) {
 module.exports = {
     show: show,
     setDataUrl: setDataUrl
-}
+};

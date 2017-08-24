@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 //
 // code here adapted from https://www.npmjs.com/package/electron-notify
 // made following changes:
@@ -138,7 +138,7 @@ let config = {
             nodeIntegration: isNodeEnv
         }
     }
-}
+};
 
 // function setConfig(customConfig) {
 //     Object.assign(customConfig, config);
@@ -193,7 +193,7 @@ function calcDimensions() {
 
     // Calc totalHeight & totalWidth
     config.totalHeight = config.height + vertSpaceBetweenNotf;
-    config.totalWidth = config.width
+    config.totalWidth = config.width;
 
     let firstPosX, firstPosY;
     switch (config.startCorner) {
@@ -220,10 +220,10 @@ function calcDimensions() {
     config.firstPos = {
         x: firstPosX,
         y: firstPosY
-    }
+    };
 
     // Set nextInsertPos
-    nextInsertPos.x = config.firstPos.x
+    nextInsertPos.x = config.firstPos.x;
     nextInsertPos.y = config.firstPos.y
 }
 
@@ -283,7 +283,7 @@ function notify(notification) {
         animationQueue.push({
             func: showNotification,
             args: [ notf ]
-        })
+        });
         return notf.id
     }
     log.send(logLevels.ERROR, 'electron-notify: ERROR notify() only accepts a single object with notification parameters.');
@@ -349,7 +349,7 @@ function showNotification(notificationObj) {
                         });
                         delete notificationWindow.electronNotifyOnCloseFunc;
                     }
-                    setNotificationContents(notificationWindow, notificationObj)
+                    setNotificationContents(notificationWindow, notificationObj);
                     resolve();
                     return;
                 }
@@ -361,8 +361,8 @@ function showNotification(notificationObj) {
             // Get inactiveWindow or create new:
             getWindow().then(function(notificationWindow) {
                 // Move window to position
-                calcInsertPos()
-                setWindowPosition(notificationWindow, nextInsertPos.x, nextInsertPos.y)
+                calcInsertPos();
+                setWindowPosition(notificationWindow, nextInsertPos.x, nextInsertPos.y);
 
                 let updatedNotfWindow = setNotificationContents(notificationWindow, notificationObj);
 
@@ -387,7 +387,7 @@ function setNotificationContents(notfWindow, notfObj) {
         clearTimeout(notfWindow.displayTimer);
     }
 
-    var updatedNotificationWindow = notfWindow;
+    const updatedNotificationWindow = notfWindow;
 
     updatedNotificationWindow.notfyObj = notfObj;
 
@@ -459,7 +459,7 @@ function buildCloseNotification(notificationWindow, notificationObj, getTimeoutI
         }
 
         // reset content
-        notificationWindow.webContents.send('electron-notify-reset')
+        notificationWindow.webContents.send('electron-notify-reset');
         if (getTimeoutId && typeof getTimeoutId === 'function') {
             let timeoutId = getTimeoutId();
             clearTimeout(timeoutId);
@@ -533,16 +533,16 @@ function checkForQueuedNotifications() {
 function moveOneDown(startPos) {
     return new Promise(function(resolve) {
         if (startPos >= activeNotifications || startPos === -1) {
-            resolve()
+            resolve();
             return
         }
     // Build array with index of affected notifications
-        let notificationPosArray = []
+        let notificationPosArray = [];
         for (let i = startPos; i < activeNotifications.length; i++) {
             notificationPosArray.push(i)
         }
     // Start to animate all notifications at once or in parallel
-        let asyncFunc = asyncMap // Best performance
+        let asyncFunc = asyncMap; // Best performance
         if (config.animateInParallel === false) {
             asyncFunc = asyncMapSeries // Sluggish
         }
@@ -571,19 +571,19 @@ function moveNotificationAnimation(i, done) {
     }
 
     // Get startPos, calc step size and start animationInterval
-    let startY = notificationWindow.getPosition()[1]
-    let step = (newY - startY) / config.animationSteps
-    let curStep = 1
+    let startY = notificationWindow.getPosition()[1];
+    let step = (newY - startY) / config.animationSteps;
+    let curStep = 1;
     let animationInterval = setInterval(function() {
         // Abort condition
         if (curStep === config.animationSteps) {
             setWindowPosition(notificationWindow, config.firstPos.x, newY);
-            clearInterval(animationInterval)
+            clearInterval(animationInterval);
             done(null, 'done');
             return;
         }
         // Move one step down
-        setWindowPosition(notificationWindow, config.firstPos.x, startY + curStep * step)
+        setWindowPosition(notificationWindow, config.firstPos.x, startY + curStep * step);
         curStep++
     }, config.animationStepMs)
 }
@@ -621,22 +621,22 @@ function calcInsertPos() {
 */
 function getWindow() {
     return new Promise(function(resolve) {
-        let notificationWindow
+        let notificationWindow;
         // Are there still inactiveWindows?
         if (inactiveWindows.length > 0) {
-            notificationWindow = inactiveWindows.pop()
+            notificationWindow = inactiveWindows.pop();
             resolve(notificationWindow)
         } else {
             // Or create a new window
-            let windowProperties = config.defaultWindow
-            windowProperties.width = config.width
-            windowProperties.height = config.height
-            notificationWindow = new BrowserWindow(windowProperties)
-            notificationWindow.setVisibleOnAllWorkspaces(true)
-            notificationWindow.loadURL(getTemplatePath())
+            let windowProperties = config.defaultWindow;
+            windowProperties.width = config.width;
+            windowProperties.height = config.height;
+            notificationWindow = new BrowserWindow(windowProperties);
+            notificationWindow.setVisibleOnAllWorkspaces(true);
+            notificationWindow.loadURL(getTemplatePath());
             notificationWindow.webContents.on('did-finish-load', function() {
                 // Done
-                notificationWindow.webContents.send('electron-notify-load-config', config)
+                notificationWindow.webContents.send('electron-notify-load-config', config);
                 resolve(notificationWindow)
             })
         }
@@ -679,6 +679,6 @@ function cleanUpInactiveWindow() {
     inactiveWindows = [];
 }
 
-module.exports.notify = notify
-module.exports.updateConfig = updateConfig
-module.exports.reset = setupConfig
+module.exports.notify = notify;
+module.exports.updateConfig = updateConfig;
+module.exports.reset = setupConfig;

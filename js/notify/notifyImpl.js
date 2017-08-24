@@ -168,10 +168,10 @@ class Notify {
  */
 function Queue(emitter) {
     /**
-    * Cache emitter on.
-    * @api private
-    */
-    var cache = emitter.on;
+     * Cache emitter on.
+     * @api private
+     */
+    const cache = emitter.on;
     let modifiedEmitter = emitter;
     /**
     * Emit event and store it if no
@@ -180,7 +180,7 @@ function Queue(emitter) {
     *
     *   .queue('message', 'hi');
     *
-    * @param {String} event
+    * @param {String} topic
     */
     modifiedEmitter.queue = function(topic) {
         this._queue = this._queue || {};
@@ -191,18 +191,18 @@ function Queue(emitter) {
             (this._queue[topic] = this._queue[topic] || [])
             .push([].slice.call(arguments, 1));
         }
-    }
+    };
 
     /**
     * Listen on the given `event` with `fn`.
     *
     * @param {String} event
     * @param {Function} fn
-    * @return {Emitter}
+    * @return {Event}
     */
     modifiedEmitter.on = modifiedEmitter.addEventListener = function(topic, fn) {
         this._queue = this._queue || {};
-        var topics = this._queue[topic];
+        const topics = this._queue[topic];
         cache.apply(this, arguments);
 
         if (!this._callbacks) {
@@ -211,7 +211,9 @@ function Queue(emitter) {
         this._callbacks[topic] = true;
 
         if (topics) {
-            for(var i = 0, l = topics.length; i < l; i++) {
+            let i = 0;
+            const l = topics.length;
+            for(; i < l; i++) {
                 fn.apply(this, topics[i]);
             }
             delete this._queue[topic];

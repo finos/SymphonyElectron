@@ -1,6 +1,6 @@
 'use strict';
 
-var keyMirror = require('keymirror');
+let keyMirror = require('keymirror');
 
 const cmds = keyMirror({
     isOnline: null,

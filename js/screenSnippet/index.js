@@ -136,13 +136,13 @@ function readResult(outputFileName, resolve, reject, childProcessErr) {
 
 /* eslint-disable class-methods-use-this */
 function createError(msg) {
-    var err = new Error(msg);
+    let err = new Error(msg);
     err.type = 'ERROR';
     return err;
 }
 
 function createWarn(msg) {
-    var err = new Error(msg);
+    let err = new Error(msg);
     err.type = 'WARN';
     return err;
 }

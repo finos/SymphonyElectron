@@ -22,7 +22,7 @@ local.ipcRenderer.on('downloadProgress', () => {
  */
 function openFile(id) {
     let fileIndex = local.downloadItems.findIndex((item) => {
-        return item._id === id
+        return item._id === id;
     });
     if (fileIndex !== -1) {
         let openResponse = remote.shell.openExternal(`file:///${local.downloadItems[fileIndex].savedPath}`);
@@ -37,7 +37,7 @@ function openFile(id) {
  */
 function showInFinder(id) {
     let showFileIndex = local.downloadItems.findIndex((item) => {
-        return item._id === id
+        return item._id === id;
     });
     if (showFileIndex !== -1) {
         let showResponse = remote.shell.showItemInFolder(local.downloadItems[showFileIndex].savedPath);

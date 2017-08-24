@@ -111,7 +111,7 @@ describe('Tests for Zoom in and Zoom out', () => {
             robot.keyToggle('0', 'up');
             robot.keyToggle('command', 'up');
 
-            for (var i = 0; i < 4; i++) {
+            for (let i = 0; i < 4; i++) {
                 robot.keyToggle('+', 'down', ['command']);
             }
             robot.keyToggle('+', 'up');
@@ -134,7 +134,7 @@ describe('Tests for Zoom in and Zoom out', () => {
                 robot.keyToggle('0', 'up');
                 robot.keyToggle('control', 'up');
 
-                for (var i = 0; i < 4; i++) {
+                for (let i = 0; i < 4; i++) {
                     robot.keyToggle('+', 'down', ['control', 'shift']);
                 }
                 robot.keyToggle('+', 'up');
@@ -159,7 +159,7 @@ describe('Tests for Zoom in and Zoom out', () => {
             robot.keyToggle('0', 'up');
             robot.keyToggle('command', 'up');
 
-            for (var i = 0; i < 4; i++) {
+            for (let i = 0; i < 4; i++) {
                 robot.keyToggle('-', 'down', ['command']);
             }
             robot.keyToggle('-', 'up');
@@ -183,7 +183,7 @@ describe('Tests for Zoom in and Zoom out', () => {
                 robot.keyToggle('0', 'up');
                 robot.keyToggle('control', 'up');
 
-                for (var i = 0; i < 4; i++) {
+                for (let i = 0; i < 4; i++) {
                     robot.keyToggle('-', 'down', ['control']);
                 }
                 robot.keyToggle('-', 'up');

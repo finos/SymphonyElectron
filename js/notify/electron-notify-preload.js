@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 //
 // BrowserWindow preload script use to create notifications window for
@@ -20,14 +20,14 @@ function setStyle(config) {
     let close = notiDoc.getElementById('close');
 
     // Default style
-    setStyleOnDomElement(config.defaultStyleContainer, container)
+    setStyleOnDomElement(config.defaultStyleContainer, container);
 
     let style = {
         height: config.height,
         width: config.width,
         borderRadius: config.borderRadius + 'px'
-    }
-    setStyleOnDomElement(style, container)
+    };
+    setStyleOnDomElement(style, container);
 
     setStyleOnDomElement(config.defaultStyleHeader, header);
 
@@ -49,7 +49,7 @@ function setContents(event, notificationObj) {
             // Won't check remote files e.g. http://
             if (notificationObj.sound.match(/^file:/) !== null
                 || notificationObj.sound.match(/^\//) !== null) {
-                let audio = new window.Audio(notificationObj.sound)
+                let audio = new window.Audio(notificationObj.sound);
                 audio.play()
             }
         } catch (e) {
@@ -102,9 +102,9 @@ function setContents(event, notificationObj) {
     // note: use onclick because we only want one handler, for case
     // when content gets overwritten by notf with same tag
     closeButton.onclick = function(clickEvent) {
-        clickEvent.stopPropagation()
+        clickEvent.stopPropagation();
         ipc.send('electron-notify-close', winId, notificationObj)
-    }
+    };
 
     container.onclick = function() {
         ipc.send('electron-notify-click', winId, notificationObj);
@@ -129,17 +129,17 @@ function loadConfig(event, conf) {
 }
 
 function reset() {
-    let notiDoc = window.document
-    let container = notiDoc.getElementById('container')
-    let closeButton = notiDoc.getElementById('close')
+    let notiDoc = window.document;
+    let container = notiDoc.getElementById('container');
+    let closeButton = notiDoc.getElementById('close');
 
     // Remove event listener
-    let newContainer = container.cloneNode(true)
-    container.parentNode.replaceChild(newContainer, container)
-    let newCloseButton = closeButton.cloneNode(true)
+    let newContainer = container.cloneNode(true);
+    container.parentNode.replaceChild(newContainer, container);
+    let newCloseButton = closeButton.cloneNode(true);
     closeButton.parentNode.replaceChild(newCloseButton, closeButton)
 }
 
-ipc.on('electron-notify-set-contents', setContents)
-ipc.on('electron-notify-load-config', loadConfig)
-ipc.on('electron-notify-reset', reset)
+ipc.on('electron-notify-set-contents', setContents);
+ipc.on('electron-notify-load-config', loadConfig);
+ipc.on('electron-notify-reset', reset);

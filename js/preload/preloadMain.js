@@ -72,11 +72,11 @@ function createAPI() {
     // A tags are allowed if they include href='_blank', this cause 'new-window'
     // event to be received which is handled properly in windowMgr.js
     window.addEventListener('beforeunload', function(event) {
-        var newUrl = document.activeElement && document.activeElement.href;
+        let newUrl = document.activeElement && document.activeElement.href;
         if (newUrl) {
-            var currHostName = window.location.hostname;
-            var parsedNewUrl = nodeURL.parse(newUrl);
-            var parsedNewUrlHostName = parsedNewUrl && parsedNewUrl.hostname;
+            let currHostName = window.location.hostname;
+            let parsedNewUrl = nodeURL.parse(newUrl);
+            let parsedNewUrlHostName = parsedNewUrl && parsedNewUrl.hostname;
             if (currHostName !== parsedNewUrlHostName) {
                 /* eslint-disable no-param-reassign */
                 event.returnValue = 'false';
@@ -95,8 +95,8 @@ function createAPI() {
     window.ssf = {
         getVersionInfo: function() {
             return new Promise(function(resolve) {
-                var appName = remote.app.getName();
-                var appVer = remote.app.getVersion();
+                let appName = remote.app.getName();
+                let appVer = remote.app.getVersion();
 
                 const verInfo = {
                     containerIdentifier: appName,

@@ -64,7 +64,7 @@ describe('Tests for ScreenSnippet', function() {
                     expect(rsp.type).toEqual('image/jpg;base64');
                     expect(rsp.data).toEqual(snippetBase64);
                     done();
-                };
+                }
             });
         }
 
@@ -103,7 +103,7 @@ describe('Tests for ScreenSnippet', function() {
     // skip test for windows - until feature is supported
     if (isMac) {
         it('should fail if read file fails', function(done) {
-            var origFsReadFile = fs.readFile;
+            const origFsReadFile = fs.readFile;
 
             fs.readFile = jest.fn(mockedReadFile);
 
