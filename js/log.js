@@ -1,6 +1,10 @@
 'use strict';
 
+const electronLog = require('electron-log');
+
 const getCmdLineArg = require('./utils/getCmdLineArg.js');
+const { isDevEnv } = require('./utils/misc');
+const logLevels = require('./enums/logLevels.js');
 
 const MAX_LOG_QUEUE_LENGTH = 100;
 
@@ -12,6 +16,9 @@ class Logger {
 
         // holds log messages received before logger has been registered.
         this.logQueue = [];
+
+        // Initializes the local logger
+        initializeLocalLogger();
     }
 
     /**
@@ -24,6 +31,10 @@ class Logger {
     send(level, details) {
         if (!level || !details) {
             return;
+        }
+
+        if (isDevEnv) {
+            logLocally(level, details);
         }
 
         let logMsg = {
@@ -83,6 +94,33 @@ class Logger {
 }
 
 let loggerInstance = new Logger();
+
+/**
+ * Initializes the electron logger for local logging
+ */
+function initializeLocalLogger() {
+    electronLog.transports.file.level = 'debug';
+    electronLog.transports.file.format = '{h}:{i}:{s}:{ms} {text}';
+    electronLog.transports.file.maxSize = 10 * 1024 * 1024;
+    electronLog.transports.file.appName = 'Symphony';
+}
+
+/**
+ * Logs locally using the electron-logger
+ * @param level
+ * @param message
+ */
+function logLocally(level, message) {
+    switch (level) {
+        case logLevels.ERROR: electronLog.error(message); break;
+        case logLevels.CONFLICT: electronLog.error(message); break;
+        case logLevels.WARN: electronLog.warn(message); break;
+        case logLevels.ACTION: electronLog.warn(message); break;
+        case logLevels.INFO: electronLog.info(message); break;
+        case logLevels.DEBUG: electronLog.debug(message); break;
+        default: electronLog.debug(message);
+    }
+}
 
 // Logger class is only exposed for testing purposes.
 module.exports = {
