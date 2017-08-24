@@ -53,7 +53,6 @@ describe('Tests for Zoom in and Zoom out', () => {
                     app.stop().then(() => {
                         done();
                     }).catch((err) => {
-                        console.log(err);
                         done();
                     });
                 } else {
