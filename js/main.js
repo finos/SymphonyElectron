@@ -92,23 +92,8 @@ app.on('activate', function () {
 
 app.on('will-quit', function (e) {
     e.preventDefault();
-
-    /**
-     * This is for demo purpose only
-     * will be removing this after implementing
-     * in client-app
-     */
-    // Will be handling this in SEARCH-206
-    let key = "XrwVgWR4czB1a9scwvgRUNbXiN3W0oWq7oUBenyq7bo="; // temporary only
-    crypto.encryption(key)
-        .then(function () {
-            // will be handling after implementing in client app
-            app.exit();
-        })
-        .catch(function () {
-            // will be handling after implementing client app
-            app.exit();
-        });
+    crypto.deleteFolders();
+    app.exit();
 });
 
 // adds 'symphony' as a protocol

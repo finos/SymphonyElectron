@@ -13,8 +13,7 @@ const isMac = require('../utils/misc.js').isMac;
 const libSymphonySearch = require('./searchLibrary');
 
 // Crypto Library
-const Cryotp = require('../cryptoLib');
-const crypto = new Cryotp();
+const Crypto = require('../cryptoLib');
 
 // Path for the exec file and the user data folder
 const userData = path.join(app.getPath('userData'));
@@ -23,9 +22,12 @@ const execPath = path.dirname(app.getPath('exe'));
 // Constants paths for temp indexing folders
 const TEMP_BATCH_INDEX_FOLDER = isDevEnv ? './data/temp_batch_indexes' : path.join(userData, 'data/temp_batch_indexes');
 const TEMP_REAL_TIME_INDEX = isDevEnv ? './data/temp_realtime_index' : path.join(userData, 'data/temp_realtime_index');
+// Main User Index path
 const INDEX_PREFIX = isDevEnv ? './data/search_index' : path.join(userData, 'data/search_index');
+// Folder contains real time, batch and user index
 const INDEX_DATA_FOLDER = isDevEnv ? './data' : path.join(userData, 'data');
-const SEARCH_PERIOD_SUBTRACTOR = 3 * 31 * 24 * 60 * 60 * 1000;//3 months
+//3 Months
+const SEARCH_PERIOD_SUBTRACTOR = 3 * 31 * 24 * 60 * 60 * 1000;
 const MINIMUM_DATE = '0000000000000';
 const MAXIMUM_DATE = '9999999999999';
 const INDEX_VERSION = 'v1';
@@ -49,23 +51,23 @@ class Search {
     /**
      * Constructor for the SymphonySearchEngine library
      * @param userId (for the index folder name)
+     * @param key
      */
-    constructor(userId) {
+    constructor(userId, key) {
         this.isInitialized = false;
-        this.userId = 'user_data';
-        // Will be handling this in SEARCH-206
-        this.key = "XrwVgWR4czB1a9scwvgRUNbXiN3W0oWq7oUBenyq7bo="; // temporary only
-        this.startIndexingFromDate = (new Date().getTime() - SEARCH_PERIOD_SUBTRACTOR).toString();
-        this.indexFolderName = INDEX_PREFIX + '_' + userId + '_' + INDEX_VERSION;
+        this.userId = userId;
+        this.key = key;
+        this.indexFolderName = INDEX_PREFIX + '_' + this.userId + '_' + INDEX_VERSION;
         this.dataFolder = INDEX_DATA_FOLDER;
         this.realTimeIndex = TEMP_REAL_TIME_INDEX;
         this.batchIndex = TEMP_BATCH_INDEX_FOLDER;
         this.messageData = [];
+        this.crypto = new Crypto(userId, key);
         this.decryptAndInit();
     }
 
     decryptAndInit() {
-        crypto.decryption(this.key).then(() => {
+        this.crypto.decryption().then(() => {
             this.init();
         }).catch(() => {
             this.init();
@@ -93,6 +95,7 @@ class Search {
         Search.indexValidator(this.indexFolderName);
         Search.indexValidator(this.realTimeIndex);
         let indexDateStartFrom = new Date().getTime() - SEARCH_PERIOD_SUBTRACTOR;
+        // Deleting all the messages except 3 Months from now
         libSymphonySearch.symSEDeleteMessages(this.indexFolderName, null,
             MINIMUM_DATE, indexDateStartFrom.toString());
         this.isInitialized = true;
@@ -131,11 +134,14 @@ class Search {
      * created from indexBatch()
      */
     mergeIndexBatches() {
-        libSymphonySearch.symSEMergePartialIndexAsync(this.indexFolderName, this.batchIndex, (err) => {
-            if (err) {
-                throw new Error(err);
-            }
-            libSymphonySearch.symSERemoveFolder(this.batchIndex)
+        return new Promise((resolve, reject) => {
+            libSymphonySearch.symSEMergePartialIndexAsync(this.indexFolderName, this.batchIndex, (err, res) => {
+                if (err) {
+                    reject(new Error(err));
+                }
+                libSymphonySearch.symSERemoveFolder(this.batchIndex);
+                resolve(res);
+            });
         });
     }
 
@@ -183,6 +189,18 @@ class Search {
                 }
             });
             resolve(this.messageData);
+        });
+    }
+
+    /**
+     * Encrypting the index after the merging the index
+     * to the main user index
+     */
+    encryptIndex() {
+        this.crypto.encryption().then(() => {
+            return 'Success'
+        }).catch((e) => {
+            throw new Error(e)
         });
     }
 

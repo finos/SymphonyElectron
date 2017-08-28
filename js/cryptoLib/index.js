@@ -4,30 +4,26 @@ const app = electron.app;
 const path = require('path');
 const fs = require('fs');
 const archiver = require('archiver');
-const zipArchive = archiver('zip');
 const extract = require('extract-zip');
 const isDevEnv = require('../utils/misc.js').isDevEnv;
 const crypto = require('./crypto');
 
 const userData = path.join(app.getPath('userData'));
+const DATA_FOLDER = isDevEnv ? './data' : path.join(userData, 'data');
 const INDEX_DATA_FOLDER = isDevEnv ? './data/search_index' : path.join(userData, 'data/search_index');
 const TEMPORARY_PATH = isDevEnv ? path.join(__dirname, '..', '..') : userData;
 
 class Crypto {
 
-    // TODO: Need to pass key for encryption and decryption
-    constructor() {
-
-        // will be handling after implementing in client app
-        let userId = 'user_data';
+    constructor(userId, key) {
         let INDEX_VERSION = 'v1';
-        // will be handling after implementing in client app
-
         this.indexDataFolder = INDEX_DATA_FOLDER + '_' + userId + '_' + INDEX_VERSION;
         this.permanentIndexFolderName = 'search_index_' + userId + '_' + INDEX_VERSION;
         this.dump = TEMPORARY_PATH;
+        this.key = key;
         this.extractToPath = `${TEMPORARY_PATH}/data/${this.permanentIndexFolderName}`;
-        this.encryptedIndex = `${INDEX_DATA_FOLDER + '_' + userId + '_' + INDEX_VERSION}.enc`;
+        this.encryptedIndex = `${TEMPORARY_PATH}/${this.permanentIndexFolderName}.enc`;
+        this.dataFolder = DATA_FOLDER;
         this.zipErrored = false;
     }
 
@@ -36,7 +32,7 @@ class Crypto {
      * removing the data folder and the dump files
      * @returns {Promise}
      */
-    encryption(key) {
+    encryption() {
         return new Promise((resolve, reject) => {
 
             if (!fs.existsSync(this.indexDataFolder)){
@@ -45,6 +41,7 @@ class Crypto {
                 return;
             }
 
+            const zipArchive = archiver('zip');
             let output = fs.createWriteStream(`${this.dump}/${this.permanentIndexFolderName}.zip`);
 
 
@@ -59,23 +56,17 @@ class Crypto {
                 const input = fs.createReadStream(`${this.dump}/${this.permanentIndexFolderName}.zip`);
                 const outputEncryption = fs.createWriteStream(this.encryptedIndex);
                 let config = {
-                    key: key
+                    key: this.key
                 };
                 const encrypt = crypto.encrypt(config);
 
-                input.pipe(encrypt).pipe(outputEncryption).on('finish', (err, res) => {
+                input.pipe(encrypt).pipe(outputEncryption).on('finish', (err) => {
                     if (err) {
                         reject(new Error(err));
                     }
                     if (!this.zipErrored) {
                         fs.unlinkSync(`${this.dump}/${this.permanentIndexFolderName}.zip`);
-                        Crypto.deleteFolderRecursive(this.indexDataFolder)
-                            .then(function () {
-                                resolve(res);
-                            })
-                            .catch(function (error) {
-                                reject(new Error(error))
-                            });
+                        resolve('Success');
                     }
                 });
             });
@@ -98,7 +89,7 @@ class Crypto {
      * removing the .enc file and the dump files
      * @returns {Promise}
      */
-    decryption(key) {
+    decryption() {
         return new Promise((resolve, reject) => {
 
             if (!fs.existsSync(this.encryptedIndex)){
@@ -110,7 +101,7 @@ class Crypto {
             const input = fs.createReadStream(this.encryptedIndex);
             const output = fs.createWriteStream(`${this.dump}/decrypted.zip`);
             let config = {
-                key: key
+                key: this.key
             };
             const decrypt = crypto.decrypt(config);
 
@@ -141,9 +132,7 @@ class Crypto {
                         reject(new Error(err));
                     }
                     fs.unlink(`${this.dump}/decrypted.zip`, () => {
-                        fs.unlink(this.encryptedIndex, () => {
-                            resolve('success');
-                        })
+                        resolve('success');
                     });
                 })
             }
@@ -151,26 +140,29 @@ class Crypto {
     }
 
     /**
+     * Deleting the data index folder
+     * when the app is closed
+     */
+    deleteFolders() {
+        Crypto.deleteFolderRecursive(this.dataFolder);
+    }
+
+    /**
      * Removing all the folders and files inside the data folder
-     * @param {String} location
-     * @returns {Promise}
+     * @param location
      */
     static deleteFolderRecursive(location) {
-        return new Promise((resolve, reject) => {
-            if (fs.existsSync(location)) {
-                fs.readdirSync(location).forEach((file) => {
-                    let curPath = location + "/" + file;
-                    if (fs.lstatSync(curPath).isDirectory()) {
-                        Crypto.deleteFolderRecursive(curPath);
-                    } else {
-                        fs.unlinkSync(curPath);
-                    }
-                });
-                resolve(fs.rmdirSync(location));
-            } else {
-                reject('no file');
-            }
-        });
+        if (fs.existsSync(location)) {
+            fs.readdirSync(location).forEach((file) => {
+                let curPath = location + "/" + file;
+                if (fs.lstatSync(curPath).isDirectory()) {
+                    Crypto.deleteFolderRecursive(curPath);
+                } else {
+                    fs.unlinkSync(curPath);
+                }
+            });
+            fs.rmdirSync(location);
+        }
     }
 }
 
