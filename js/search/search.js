@@ -109,7 +109,7 @@ class Search {
      */
     indexBatch(messages) {
         return new Promise((resolve, reject) => {
-            if (!Array.isArray(messages)) {
+            if (!messages && !(JSON.parse(messages) instanceof Array)) {
                 reject(new Error('Messages must be an array'));
                 return;
             }
@@ -120,7 +120,7 @@ class Search {
             }
 
             const indexId = randomString.generate(BATCH_RANDOM_INDEX_PATH_LENGTH);
-            libSymphonySearch.symSECreatePartialIndexAsync(this.batchIndex, indexId, JSON.stringify(messages), (err, res) => {
+            libSymphonySearch.symSECreatePartialIndexAsync(this.batchIndex, indexId, messages, (err, res) => {
                 if (err) {
                     reject(new Error(err));
                 }
