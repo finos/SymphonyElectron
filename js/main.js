@@ -72,19 +72,6 @@ if (isMac) {
 }
 
 /**
- * This is for demo purpose only
- * will be removing this after implementing
- * in the client-app
- */
-crypto.decryption()
-    .then(function () {
-        // will be handling after implementing client app
-    })
-    .catch(function () {
-        // will be handling after implementing client app
-    });
-
-/**
  * This method will be called when Electron has finished
  * initialization and is ready to create browser windows.
  * Some APIs can only be used after this event occurs.
@@ -105,21 +92,8 @@ app.on('activate', function () {
 
 app.on('will-quit', function (e) {
     e.preventDefault();
-
-    /**
-     * This is for demo purpose only
-     * will be removing this after implementing
-     * in client-app
-     */
-    crypto.encryption()
-        .then(function () {
-            // will be handling after implementing in client app
-            app.exit();
-        })
-        .catch(function () {
-            // will be handling after implementing client app
-            app.exit();
-        });
+    crypto.deleteFolders();
+    app.exit();
 });
 
 // adds 'symphony' as a protocol

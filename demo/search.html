@@ -99,7 +99,7 @@
 </div>
 
 <script>
-    var search = new ssf.Search("testUser1");
+    var search = new ssf.Search("7078106230763", "7078106230763");
     var buttonEl = document.getElementById('search');
     var merge = document.getElementById('merge');
     var buttonIndex = document.getElementById('index');
@@ -193,8 +193,11 @@
     });
 
     merge.addEventListener('click', function () {
-        search.mergeIndexBatches();
-        resultsEl.innerHTML = 'Merged';
+        search.mergeIndexBatches().then(function () {
+            search.encryptIndex();
+        }).catch(function (err) {
+            resultsEl.innerHTML = 'Error: ' + err;
+        });
     });
 
     timestamp.addEventListener('click', function () {
