@@ -1,19 +1,22 @@
 'use strict';
 
+// Third Party Dependencies
 const electron = require('electron');
 const app = electron.app;
 const nodeURL = require('url');
 const squirrelStartup = require('electron-squirrel-startup');
 const AutoLaunch = require('auto-launch');
 const urlParser = require('url');
-const { getConfigField } = require('./config.js');
-const { isMac, isDevEnv } = require('./utils/misc.js');
-const protocolHandler = require('./protocolHandler');
-const getCmdLineArg = require('./utils/getCmdLineArg.js');
 const childProcess = require('child_process');
 const path = require('path');
 const AppDirectory = require('appdirectory');
 const dirs = new AppDirectory('Symphony');
+
+// Local Dependencies
+const { getConfigField } = require('./config.js');
+const { isMac, isDevEnv } = require('./utils/misc.js');
+const protocolHandler = require('./protocolHandler');
+const getCmdLineArg = require('./utils/getCmdLineArg.js');
 
 require('electron-dl')();
 
@@ -75,11 +78,18 @@ if (isMac) {
  */
 app.on('ready', setupThenOpenMainWindow);
 
-app.on('window-all-closed', function () {
+/**
+ * Is triggered when all the windows are closed
+ * In which case we quit the app
+ */
+app.on('window-all-closed', function() {
     app.quit();
 });
 
-app.on('activate', function () {
+/**
+ * Is triggered when the app is up & running
+ */
+app.on('activate', function() {
     if (windowMgr.isMainWindow(null)) {
         setupThenOpenMainWindow();
     } else {
@@ -92,13 +102,19 @@ app.on('activate', function () {
 // and registry keys in windows
 app.setAsDefaultProtocolClient('symphony');
 
-// This event is emitted only on macOS
-// at this moment, support for windows
-// is in pipeline (https://github.com/electron/electron/pull/8052)
-app.on('open-url', function (event, url) {
+/**
+ * This event is emitted only on macOS
+ * at this moment, support for windows
+ * is in pipeline (https://github.com/electron/electron/pull/8052)
+ */
+app.on('open-url', function(event, url) {
     handleProtocolAction(url);
 });
 
+/**
+ * Sets up the app (to handle various things like config changes, protocol handling etc.)
+ * and opens the main window
+ */
 function setupThenOpenMainWindow() {
 
     processProtocolAction(process.argv);
@@ -137,29 +153,37 @@ function setupThenOpenMainWindow() {
     electron.screen.on('display-removed', windowMgr.verifyDisplays);
 }
 
-function setStartup(lStartup){
+/**
+ * Sets Symphony on startup
+ * @param lStartup
+ * @returns {Promise}
+ */
+function setStartup(lStartup) {
     return symphonyAutoLauncher.isEnabled()
-    .then(function(isEnabled){
-        if (!isEnabled && lStartup) {
-            return symphonyAutoLauncher.enable();
-        }
+        .then(function(isEnabled) {
+            if (!isEnabled && lStartup) {
+                return symphonyAutoLauncher.enable();
+            }
 
-        if (isEnabled && !lStartup) {
-            return symphonyAutoLauncher.disable();
-        }
+            if (isEnabled && !lStartup) {
+                return symphonyAutoLauncher.disable();
+            }
 
-        return true;
-    });
+            return true;
+        });
 }
 
-// Method to overwrite user config on mac installer
+/**
+ * Method to overwrite user config on mac installer
+ * @returns {Promise}
+ */
 function updateUserConfigMac() {
     return new Promise((resolve, reject) => {
         let userConfigPath = dirs.userConfig() + '/';
         let globalConfigPath = process.argv[2];
         let userName = process.env.USER;
 
-        childProcess.exec(`rsync -r "${globalConfigPath}" "${userConfigPath}" && chown -R "${userName}" "${userConfigPath}"`, {timeout: 60000}, (err) => {
+        childProcess.exec(`rsync -r "${globalConfigPath}" "${userConfigPath}" && chown -R "${userName}" "${userConfigPath}"`, { timeout: 60000 }, (err) => {
             if (err) {
                 reject(err);
             }
@@ -168,13 +192,16 @@ function updateUserConfigMac() {
     });
 }
 
-// Method to overwrite user config on windows installer
+/**
+ * Method to overwrite user config on windows installer
+ * @returns {Promise}
+ */
 function updateUserConfigWin() {
     return new Promise((resolve, reject) => {
         let userConfigPath = app.getPath('userData');
         let globalConfigPath = path.join(__dirname, '..', '..', '..', 'config/Symphony.config');
 
-        childProcess.exec(`echo D|xcopy /y /e /s /c "${globalConfigPath}" "${userConfigPath}"`, {timeout: 60000}, (err) => {
+        childProcess.exec(`echo D|xcopy /y /e /s /c "${globalConfigPath}" "${userConfigPath}"`, { timeout: 60000 }, (err) => {
             if (err) {
                 reject(err);
             }
@@ -183,10 +210,14 @@ function updateUserConfigWin() {
     });
 }
 
+/**
+ * Checks for the url argument, processes it
+ * and creates the main window
+ */
 function getUrlAndCreateMainWindow() {
     // for dev env allow passing url argument
     if (isDevEnv) {
-        let url = getCmdLineArg(process.argv, '--url=')
+        let url = getCmdLineArg(process.argv, '--url=', false);
         if (url) {
             windowMgr.createMainWindow(url.substr(6));
             return;
@@ -194,12 +225,16 @@ function getUrlAndCreateMainWindow() {
     }
 
     getConfigField('url')
-        .then(createWin).catch(function (err) {
+        .then(createWin).catch(function(err) {
             let title = 'Error loading configuration';
             electron.dialog.showErrorBox(title, title + ': ' + err);
         });
 }
 
+/**
+ * Creates a window
+ * @param urlFromConfig
+ */
 function createWin(urlFromConfig) {
     let protocol = '';
     // add https protocol if none found.
@@ -207,7 +242,7 @@ function createWin(urlFromConfig) {
     if (!parsedUrl.protocol) {
         protocol = 'https';
     }
-    var url = nodeURL.format({
+    let url = nodeURL.format({
         protocol: protocol,
         slahes: true,
         pathname: parsedUrl.href
@@ -229,7 +264,7 @@ function processProtocolAction(argv) {
         return;
     }
 
-    let protocolUri = getCmdLineArg(argv, 'symphony://');
+    let protocolUri = getCmdLineArg(argv, 'symphony://', false);
 
     if (protocolUri) {
 
@@ -244,6 +279,10 @@ function processProtocolAction(argv) {
     }
 }
 
+/**
+ * Handles a protocol action based on the current state of the app
+ * @param uri
+ */
 function handleProtocolAction(uri) {
     if (!isAppAlreadyOpen) {
         // app is opened by the protocol url, cache the protocol url to be used later

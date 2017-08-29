@@ -24,7 +24,6 @@ class App {
         return this.app.start().then((app) => {
             return app;
         }).catch((err) => {
-            console.log(err);
         });
     }
 

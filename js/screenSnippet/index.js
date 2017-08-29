@@ -47,21 +47,21 @@ class ScreenSnippet {
                 // utilize Mac OSX built-in screencapture tool which has been
                 // available since OSX ver 10.2.
                 captureUtil = '/usr/sbin/screencapture';
-                captureUtilArgs = [ '-i', '-s', '-t', 'jpg', outputFileName ];
+                captureUtilArgs = ['-i', '-s', '-t', 'jpg', outputFileName];
             } else {
                 // use custom built windows screen capture tool
                 if (isDevEnv) {
                     // for dev env pick up tool from node nodules
                     captureUtil =
                         path.join(__dirname,
-                        '../../node_modules/screen-snippet/bin/Release/ScreenSnippet.exe');
+                            '../../node_modules/screen-snippet/bin/Release/ScreenSnippet.exe');
                 } else {
                     // for production gets installed next to exec.
                     let execPath = path.dirname(app.getPath('exe'));
                     captureUtil = path.join(execPath, 'ScreenSnippet.exe');
                 }
 
-                captureUtilArgs = [ outputFileName ];
+                captureUtilArgs = [outputFileName];
             }
 
             log.send(logLevels.INFO, 'ScreenSnippet: starting screen capture util: ' + captureUtil + ' with args=' + captureUtilArgs);
@@ -84,9 +84,15 @@ class ScreenSnippet {
     }
 }
 
-// this function was moved outside of class since class is exposed to web
-// client via preload API, we do NOT want web client to be able to call this
-// method - then they could read any file on the disk!
+/**
+ * this function was moved outside of class since class is exposed to web
+ * client via preload API, we do NOT want web client to be able to call this
+ * method - then they could read any file on the disk!
+ * @param outputFileName
+ * @param resolve
+ * @param reject
+ * @param childProcessErr
+ */
 function readResult(outputFileName, resolve, reject, childProcessErr) {
     fs.readFile(outputFileName, (readErr, data) => {
         if (readErr) {
@@ -120,8 +126,7 @@ function readResult(outputFileName, resolve, reject, childProcessErr) {
             });
         } catch (error) {
             reject(createError(error));
-        }
-        finally {
+        } finally {
             // remove tmp file (async)
             fs.unlink(outputFileName, function(removeErr) {
                 // note: node complains if calling async
@@ -136,14 +141,24 @@ function readResult(outputFileName, resolve, reject, childProcessErr) {
 }
 
 /* eslint-disable class-methods-use-this */
+/**
+ * Create an error object with the ERROR level
+ * @param msg
+ * @returns {Error}
+ */
 function createError(msg) {
-    var err = new Error(msg);
+    let err = new Error(msg);
     err.type = 'ERROR';
     return err;
 }
 
+/**
+ * Create an error object with the WARN level
+ * @param msg
+ * @returns {Error}
+ */
 function createWarn(msg) {
-    var err = new Error(msg);
+    let err = new Error(msg);
     err.type = 'WARN';
     return err;
 }
@@ -153,4 +168,4 @@ module.exports = {
     ScreenSnippet: ScreenSnippet,
     // note: readResult only exposed for testing purposes
     readResult: readResult
-}
+};

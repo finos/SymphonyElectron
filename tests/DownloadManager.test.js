@@ -1,21 +1,21 @@
-const downloadManager = require('../js/downloadManager/downloadManager');
+const downloadManager = require('../js/downloadManager');
 const electron = require('./__mocks__/electron');
 
-describe('download manager', function () {
-    describe('Download Manager to create DOM once download is initiated', function () {
-        beforeEach(function () {
+describe('download manager', function() {
+    describe('Download Manager to create DOM once download is initiated', function() {
+        beforeEach(function() {
             global.document.body.innerHTML =
                 '<div id="download-main">' +
                 '</div>';
         });
 
-        it('should inject download bar element into DOM once download is initiated', function () {
+        it('should inject download bar element into DOM once download is initiated', function() {
             electron.ipcRenderer.send('downloadCompleted', { _id: '12345', fileName: 'test', total: 100 });
             expect(document.getElementsByClassName('text-cutoff')[0].innerHTML).toBe('test');
             expect(document.getElementById('per').innerHTML).toBe('100 Downloaded');
         });
 
-        it('should inject multiple download items during multiple downloads', function () {
+        it('should inject multiple download items during multiple downloads', function() {
             electron.ipcRenderer.send('downloadCompleted', { _id: '12345', fileName: 'test', total: 100 });
             electron.ipcRenderer.send('downloadCompleted', { _id: '67890', fileName: 'test1', total: 200 });
 
@@ -31,23 +31,23 @@ describe('download manager', function () {
 
     });
 
-    describe('Download Manager to initiate footer', function () {
-        beforeEach(function () {
+    describe('Download Manager to initiate footer', function() {
+        beforeEach(function() {
             global.document.body.innerHTML =
                 '<div id="footer" class="hidden">' +
-                    '<div id="download-manager-footer">' +
-                        '<div id="download-main">' +
-                        '</div>' +
-                    '</div>' +
+                '<div id="download-manager-footer">' +
+                '<div id="download-main">' +
+                '</div>' +
+                '</div>' +
                 '</div>';
         });
 
-        it('should inject dom element once download is completed', function () {
+        it('should inject dom element once download is completed', function() {
             electron.ipcRenderer.send('downloadProgress');
             expect(document.getElementById('footer').classList).not.toContain('hidden');
         });
 
-        it('should remove the download bar and clear up the download items', function () {
+        it('should remove the download bar and clear up the download items', function() {
 
             electron.ipcRenderer.send('downloadProgress');
             expect(document.getElementById('footer').classList).not.toContain('hidden');
@@ -59,19 +59,19 @@ describe('download manager', function () {
 
     });
 
-    describe('Download Manager to initiate footer', function () {
+    describe('Download Manager to initiate footer', function() {
 
-        beforeEach(function () {
+        beforeEach(function() {
             global.document.body.innerHTML =
                 '<div id="footer" class="hidden">' +
-                    '<div id="download-manager-footer">' +
-                        '<div id="download-main">' +
-                        '</div>' +
-                    '</div>' +
+                '<div id="download-manager-footer">' +
+                '<div id="download-main">' +
+                '</div>' +
+                '</div>' +
                 '</div>';
         });
 
-        it('should inject ul element if not found', function () {
+        it('should inject ul element if not found', function() {
 
             electron.ipcRenderer.send('downloadProgress');
 

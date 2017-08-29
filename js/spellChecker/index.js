@@ -5,6 +5,9 @@ const { SpellCheckHandler, ContextMenuListener, ContextMenuBuilder } = require('
 
 class SpellCheckHelper {
 
+    /**
+     * A constructor to create an instance of the spell checker
+     */
     constructor() {
         this.spellCheckHandler = new SpellCheckHandler();
     }

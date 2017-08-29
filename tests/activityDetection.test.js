@@ -3,29 +3,29 @@ const childProcess = require('child_process');
 
 let activityDetection;
 
-describe('Tests for Activity Detection', function () {
+describe('Tests for Activity Detection', function() {
 
-    var originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    const originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 90000;
 
-    beforeAll(function (done) {
-        childProcess.exec(`npm rebuild --target=${process.version} --build-from-source`, function (err) {
-            activityDetection = require('../js/activityDetection/activityDetection.js');
+    beforeAll(function(done) {
+        childProcess.exec(`npm rebuild --target=${process.version} --build-from-source`, function(err) {
+            activityDetection = require('../js/activityDetection');
             activityDetection.setActivityWindow(900000, electron.ipcRenderer);
             done();
         });
     });
 
-    beforeEach(function () {
+    beforeEach(function() {
         jest.clearAllMocks()
     });
 
-    afterAll(function (done) {
+    afterAll(function(done) {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
         done();
     });
 
-    it('should return null', function () {
+    it('should return null', function() {
 
         activityDetection.setActivityWindow(0, electron.ipcRenderer);
         const noData = activityDetection.activityDetection();
@@ -33,17 +33,17 @@ describe('Tests for Activity Detection', function () {
 
     });
 
-    it('should send activity event', function () {
+    it('should send activity event', function() {
         const spy = jest.spyOn(activityDetection, 'send');
 
         expect(spy).not.toBeCalled();
 
-        activityDetection.send({systemIdleTime: 120000});
-        expect(spy).toHaveBeenCalledWith({systemIdleTime: 120000});
+        activityDetection.send({ systemIdleTime: 120000 });
+        expect(spy).toHaveBeenCalledWith({ systemIdleTime: 120000 });
 
     });
 
-    it('should monitor user activity', function () {
+    it('should monitor user activity', function() {
         activityDetection.setActivityWindow(500000, electron.ipcRenderer);
         const spy = jest.spyOn(activityDetection, 'monitorUserActivity');
 
@@ -54,7 +54,7 @@ describe('Tests for Activity Detection', function () {
 
     });
 
-    it('should not send activity event as data is undefined', function () {
+    it('should not send activity event as data is undefined', function() {
         const spy = jest.spyOn(activityDetection, 'send');
 
         expect(spy).not.toBeCalled();

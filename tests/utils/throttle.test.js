@@ -1,7 +1,7 @@
 const throttle = require('../../js/utils/throttle.js');
 
 describe('throttle tests', function() {
-    var now, origNow;
+    let now, origNow;
     beforeEach(function() {
         origNow = Date.now;
         // mock date func

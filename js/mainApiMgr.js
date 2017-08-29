@@ -9,7 +9,7 @@ const electron = require('electron');
 const windowMgr = require('./windowMgr.js');
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels');
-const activityDetection = require('./activityDetection/activityDetection');
+const activityDetection = require('./activityDetection');
 const badgeCount = require('./badgeCount.js');
 const protocolHandler = require('./protocolHandler');
 const configureNotification = require('./notify/settings/configure-notification-position');
@@ -30,7 +30,7 @@ function isValidWindow(event) {
     if (!checkValidWindow) {
         return true;
     }
-    var result = false;
+    let result = false;
     if (event && event.sender) {
         // validate that event sender is from window we created
         const browserWin = electron.BrowserWindow.fromWebContents(event.sender);
@@ -107,7 +107,7 @@ electron.ipcMain.on(apiName, (event, arg) => {
 
 // expose these methods primarily for testing...
 module.exports = {
-    shouldCheckValidWindow: function (shouldCheck) {
+    shouldCheckValidWindow: function(shouldCheck) {
         checkValidWindow = shouldCheck;
     }
 };
