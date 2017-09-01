@@ -51,6 +51,10 @@ class Notify {
 
         this._data = options.data || null;
 
+        /**
+         * Handles on show event
+         * @param arg
+         */
         function onShow(arg) {
             if (arg.id === this._id) {
                 log.send(logLevels.INFO, 'showing notification, id=' + this._id);
@@ -61,6 +65,10 @@ class Notify {
             }
         }
 
+        /**
+         * Handles on click event
+         * @param arg
+         */
         function onClick(arg) {
             if (arg.id === this._id) {
                 log.send(logLevels.INFO, 'clicking notification, id=' + this._id);
@@ -70,6 +78,10 @@ class Notify {
             }
         }
 
+        /**
+         * Handles on close event
+         * @param arg
+         */
         function onClose(arg) {
             if (arg.id === this._id || arg.event === 'close-all') {
                 log.send(logLevels.INFO, 'closing notification, id=' + this._id);
@@ -80,6 +92,10 @@ class Notify {
             }
         }
 
+        /**
+         * Handles on error event
+         * @param arg
+         */
         function onError(arg) {
             if (arg.id === this._id) {
                 // don't raise error event if handler doesn't exist, node
@@ -95,7 +111,7 @@ class Notify {
     }
 
     /**
-     * close notification
+     * Closes notification
      */
     close() {
         if (typeof this._closeNotification === 'function') {
@@ -105,7 +121,7 @@ class Notify {
     }
 
     /**
-     * always allow showing notifications.
+     * Always allow showing notifications.
      * @return {string} 'granted'
      */
     static get permission() {
@@ -113,14 +129,14 @@ class Notify {
     }
 
     /**
-     * returns data object passed in via constructor options
+     * Returns data object passed in via constructor options
      */
     get data() {
         return this._data;
     }
 
     /**
-     * add event listeners for 'click', 'close', 'show', 'error' events
+     * Adds event listeners for 'click', 'close', 'show', 'error' events
      *
      * @param {String} event  event to listen for
      * @param {func}   cb     callback invoked when event occurs
@@ -132,7 +148,7 @@ class Notify {
     }
 
     /**
-     * remove event listeners for 'click', 'close', 'show', 'error' events
+     * Removes event listeners for 'click', 'close', 'show', 'error' events
      *
      * @param {String} event  event to stop listening for.
      * @param {func}   cb     callback associated with original addEventListener
@@ -144,7 +160,7 @@ class Notify {
     }
 
     /**
-     * removes all event listeners
+     * Removes all event listeners
      */
     removeAllEvents() {
         this.destroy();
@@ -168,10 +184,10 @@ class Notify {
  */
 function Queue(emitter) {
     /**
-    * Cache emitter on.
-    * @api private
-    */
-    var cache = emitter.on;
+     * Cache emitter on.
+     * @api private
+     */
+    const cache = emitter.on;
     let modifiedEmitter = emitter;
     /**
     * Emit event and store it if no
@@ -180,7 +196,7 @@ function Queue(emitter) {
     *
     *   .queue('message', 'hi');
     *
-    * @param {String} event
+    * @param {String} topic
     */
     modifiedEmitter.queue = function(topic) {
         this._queue = this._queue || {};
@@ -191,18 +207,18 @@ function Queue(emitter) {
             (this._queue[topic] = this._queue[topic] || [])
             .push([].slice.call(arguments, 1));
         }
-    }
+    };
 
     /**
     * Listen on the given `event` with `fn`.
     *
     * @param {String} event
     * @param {Function} fn
-    * @return {Emitter}
+    * @return {Event}
     */
     modifiedEmitter.on = modifiedEmitter.addEventListener = function(topic, fn) {
         this._queue = this._queue || {};
-        var topics = this._queue[topic];
+        const topics = this._queue[topic];
         cache.apply(this, arguments);
 
         if (!this._callbacks) {
@@ -211,7 +227,9 @@ function Queue(emitter) {
         this._callbacks[topic] = true;
 
         if (topics) {
-            for(var i = 0, l = topics.length; i < l; i++) {
+            let i = 0;
+            const l = topics.length;
+            for(; i < l; i++) {
                 fn.apply(this, topics[i]);
             }
             delete this._queue[topic];

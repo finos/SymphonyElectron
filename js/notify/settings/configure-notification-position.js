@@ -41,6 +41,9 @@ app.on('ready', () => {
     electron.screen.on('display-removed', updateScreens);
 });
 
+/**
+ * Update all the screens
+ */
 function updateScreens() {
     screens = electron.screen.getAllDisplays();
 
@@ -50,6 +53,10 @@ function updateScreens() {
     }
 }
 
+/**
+ * Gets the template path
+ * @returns {string}
+ */
 function getTemplatePath() {
     let templatePath = path.join(__dirname, 'configure-notification-position.html');
     try {
@@ -60,6 +67,10 @@ function getTemplatePath() {
     return 'file://' + templatePath;
 }
 
+/**
+ * Opens the configuration window for a specific window
+ * @param windowName
+ */
 function openConfigurationWindow(windowName) {
     let allWindows = BrowserWindow.getAllWindows();
     allWindows = allWindows.find((window) => { return window.winName === windowName });
@@ -94,6 +105,9 @@ function openConfigurationWindow(windowName) {
     });
 }
 
+/**
+ * Destroys a window
+ */
 function destroyWindow() {
     configurationWindow = null;
 }

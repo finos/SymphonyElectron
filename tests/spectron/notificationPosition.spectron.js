@@ -23,7 +23,6 @@ describe('Tests for Notification position', () => {
             app.stop().then(() => {
                 done();
             }).catch((err) => {
-                console.log(err);
                 done();
             });
         }

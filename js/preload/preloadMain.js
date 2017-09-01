@@ -19,7 +19,7 @@ const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 const getMediaSources = require('../desktopCapturer/getSources');
 
-require('../downloadManager/downloadManager');
+require('../downloadManager');
 
 // bug in electron preventing us from using spellchecker in pop outs
 // https://github.com/electron/electron/issues/4025
@@ -28,7 +28,7 @@ require('../downloadManager/downloadManager');
 document.addEventListener('DOMContentLoaded', () => {
     try {
         /* eslint-disable global-require */
-        const SpellCheckerHelper = require('../spellChecker/spellChecker').SpellCheckHelper;
+        const SpellCheckerHelper = require('../spellChecker').SpellCheckHelper;
         /* eslint-enable global-require */
         // Method to initialize spell checker
         const spellChecker = new SpellCheckerHelper();
@@ -72,11 +72,11 @@ function createAPI() {
     // A tags are allowed if they include href='_blank', this cause 'new-window'
     // event to be received which is handled properly in windowMgr.js
     window.addEventListener('beforeunload', function(event) {
-        var newUrl = document.activeElement && document.activeElement.href;
+        let newUrl = document.activeElement && document.activeElement.href;
         if (newUrl) {
-            var currHostName = window.location.hostname;
-            var parsedNewUrl = nodeURL.parse(newUrl);
-            var parsedNewUrlHostName = parsedNewUrl && parsedNewUrl.hostname;
+            let currHostName = window.location.hostname;
+            let parsedNewUrl = nodeURL.parse(newUrl);
+            let parsedNewUrlHostName = parsedNewUrl && parsedNewUrl.hostname;
             if (currHostName !== parsedNewUrlHostName) {
                 /* eslint-disable no-param-reassign */
                 event.returnValue = 'false';
@@ -95,14 +95,14 @@ function createAPI() {
     window.ssf = {
         getVersionInfo: function() {
             return new Promise(function(resolve) {
-                var appName = remote.app.getName();
-                var appVer = remote.app.getVersion();
+                let appName = remote.app.getName();
+                let appVer = remote.app.getVersion();
 
                 const verInfo = {
                     containerIdentifier: appName,
                     containerVer: appVer,
                     apiVer: '1.0.0'
-                }
+                };
                 resolve(verInfo);
             });
         },
@@ -126,9 +126,9 @@ function createAPI() {
 
         /**
          * provides api to allow user to capture portion of screen, see api
-         * details in screenSnipper/ScreenSnippet.js
+         * details in screenSnipper/index.js
          */
-        ScreenSnippet: remote.require('./screenSnippet/ScreenSnippet.js').ScreenSnippet,
+        ScreenSnippet: remote.require('./screenSnippet/index.js').ScreenSnippet,
 
         /**
          * Brings window forward and gives focus.
@@ -191,7 +191,7 @@ function createAPI() {
          * this registration func is invoked then the protocolHandler callback
          * will be immediately called.
          */
-        registerProtocolHandler: function (protocolHandler) {
+        registerProtocolHandler: function(protocolHandler) {
             if (typeof protocolHandler === 'function') {
 
                 local.processProtocolAction = protocolHandler;
