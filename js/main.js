@@ -7,6 +7,7 @@ const nodeURL = require('url');
 const squirrelStartup = require('electron-squirrel-startup');
 const AutoLaunch = require('auto-launch');
 const urlParser = require('url');
+
 const childProcess = require('child_process');
 const path = require('path');
 const AppDirectory = require('appdirectory');
@@ -124,10 +125,11 @@ function setupThenOpenMainWindow() {
     // allows installer to launch app and set auto startup mode then
     // immediately quit.
     let hasInstallFlag = getCmdLineArg(process.argv, '--install', true);
+    let perUserInstall = getCmdLineArg(process.argv, '--peruser', true);
     if (!isMac && hasInstallFlag) {
         getConfigField('launchOnStartup')
             .then(setStartup)
-            .then(updateUserConfigWin)
+            .then(() => updateUserConfigWin(perUserInstall))
             .then(app.quit)
             .catch(app.quit);
         return;
@@ -139,8 +141,11 @@ function setupThenOpenMainWindow() {
         // as the app is launched as a root user we don't get
         // access to the config file
         let launchOnStartup = process.argv[3];
-        updateUserConfigMac()
-            .then(setStartup(launchOnStartup))
+        // We wire this in via the post install script
+        // to get the config file path where the app is installed
+        let appGlobalConfigPath = process.argv[2];
+        setStartup(launchOnStartup)
+            .then(() => updateUserConfigMac(appGlobalConfigPath))
             .then(app.quit)
             .catch(app.quit);
         return;
@@ -183,7 +188,7 @@ function updateUserConfigMac() {
         let globalConfigPath = process.argv[2];
         let userName = process.env.USER;
 
-        childProcess.exec(`rsync -r "${globalConfigPath}" "${userConfigPath}" && chown -R "${userName}" "${userConfigPath}"`, { timeout: 60000 }, (err) => {
+        childProcess.exec(`rsync -r "${globalConfigPath}" "${userConfigPath}" && chown -R "${userName}" "${userConfigPath}"`, {timeout: 60000}, (err) => {
             if (err) {
                 reject(err);
             }
@@ -201,7 +206,7 @@ function updateUserConfigWin() {
         let userConfigPath = app.getPath('userData');
         let globalConfigPath = path.join(__dirname, '..', '..', '..', 'config/Symphony.config');
 
-        childProcess.exec(`echo D|xcopy /y /e /s /c "${globalConfigPath}" "${userConfigPath}"`, { timeout: 60000 }, (err) => {
+        childProcess.exec(`echo D|xcopy /y /e /s /c "${globalConfigPath}" "${userConfigPath}"`, {timeout: 60000}, (err) => {
             if (err) {
                 reject(err);
             }
