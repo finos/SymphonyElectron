@@ -44,6 +44,11 @@ function getConfigField(fieldName) {
         });
 }
 
+/**
+ * Gets a specific user config value for a field
+ * @param fieldName
+ * @returns {Promise}
+ */
 function getUserConfigField(fieldName) {
     return readUserConfig().then(function(config) {
         if (typeof fieldName === 'string' && fieldName in config) {
@@ -54,6 +59,11 @@ function getUserConfigField(fieldName) {
     });
 }
 
+/**
+ * Reads the user config file and returns all the attributes
+ * @param customConfigPath
+ * @returns {Promise}
+ */
 function readUserConfig(customConfigPath) {
     return new Promise(function(resolve, reject) {
         if (userConfig) {
@@ -84,6 +94,11 @@ function readUserConfig(customConfigPath) {
     });
 }
 
+/**
+ * Gets a specific user config value for a field
+ * @param fieldName
+ * @returns {Promise}
+ */
 function getGlobalConfigField(fieldName) {
     return readGlobalConfig().then(function(config) {
         if (typeof fieldName === 'string' && fieldName in config) {
@@ -165,6 +180,13 @@ function updateConfigField(fieldName, newValue) {
         });
 }
 
+/**
+ * Saves an updated value to the user config
+ * @param fieldName
+ * @param newValue
+ * @param oldConfig
+ * @returns {Promise}
+ */
 function saveUserConfig(fieldName, newValue, oldConfig) {
     return new Promise(function(resolve, reject) {
         let configPath = path.join(app.getPath('userData'), configFileName);
@@ -318,6 +340,9 @@ function copyConfigMac(globalConfigPath) {
     });
 }
 
+/**
+ * Clears the cached config
+ */
 function clearCachedConfigs() {
     userConfig = null;
     globalConfig = null;
