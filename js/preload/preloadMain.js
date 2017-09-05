@@ -66,25 +66,6 @@ function createAPI() {
         return;
     }
 
-    // bug in electron is preventing using event 'will-navigate' from working
-    // in sandboxed environment. https://github.com/electron/electron/issues/8841
-    // so in the mean time using this code below to block clicking on A tags.
-    // A tags are allowed if they include href='_blank', this cause 'new-window'
-    // event to be received which is handled properly in windowMgr.js
-    window.addEventListener('beforeunload', function(event) {
-        let newUrl = document.activeElement && document.activeElement.href;
-        if (newUrl) {
-            let currHostName = window.location.hostname;
-            let parsedNewUrl = nodeURL.parse(newUrl);
-            let parsedNewUrlHostName = parsedNewUrl && parsedNewUrl.hostname;
-            if (currHostName !== parsedNewUrlHostName) {
-                /* eslint-disable no-param-reassign */
-                event.returnValue = 'false';
-                /* eslint-enable no-param-reassign */
-            }
-        }
-    });
-
     // note: window.open from main window (if in the same domain) will get
     // api access.  window.open in another domain will be opened in the default
     // browser (see: handler for event 'new-window' in windowMgr.js)
