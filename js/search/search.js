@@ -6,6 +6,7 @@ const electron = require('electron');
 const childProcess = require('child_process');
 const app = electron.app;
 const path = require('path');
+const isObject = require('lodash.isplainobject');
 const isDevEnv = require('../utils/misc.js').isDevEnv;
 const isMac = require('../utils/misc.js').isMac;
 
@@ -151,15 +152,15 @@ class Search {
      * @param message
      */
     realTimeIndexing(message) {
-        if (!Array.isArray(message)) {
-            return new Error('Messages should be an array');
+        if (!message && !isObject(JSON.parse(message))) {
+            return new Error('Messages must be an object');
         }
 
         if (!this.isInitialized) {
             return new Error('Library not initialized');
         }
 
-        let result = libSymphonySearch.symSEIndexRealTime(this.realTimeIndex, JSON.stringify(message));
+        let result = libSymphonySearch.symSEIndexRealTime(this.realTimeIndex, [ message ]);
         return result === 0 ? "Successful" : result
     }
 
