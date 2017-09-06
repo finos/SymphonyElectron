@@ -15,6 +15,9 @@ const childProcess = require('child_process');
 const AppDirectory = require('appdirectory');
 const dirs = new AppDirectory('Symphony');
 
+const log = require('../log.js');
+const logLevels = require('./enums/logLevels.js');
+
 // cached config when first reading files. initially undefined and will be
 // updated when read from disk.
 let userConfig;
@@ -250,28 +253,31 @@ function updateUserConfig(newGlobalConfig, oldUserConfig) {
  * @returns {Promise}
  */
 function updateUserConfigWin(perUserInstall) {
+    
     return new Promise((resolve, reject) => {
+        
+        // we get the user config path using electron
         const userConfigFile = path.join(app.getPath('userData'), configFileName);
-        // flag to determine whether per user installation
-        if (!perUserInstall) {
+        
+        // if it's not a per user installation or if the
+        // user config file doesn't exist, we simple move on
+        if (!perUserInstall || !fs.existsSync(userConfigFile)) {
+            log.send(logLevels.WARN, 'config: Could not find the user config file!');
             reject();
             return;
         }
 
-        // if user config file does't exists just copy global config file
-        if (!fs.existsSync(userConfigFile)) {
-            resolve(copyConfigWin());
-            return;
-        }
+        fs.unlink(userConfigFile, (err) => {
+            if (err) {
+                log.send(logLevels.ERROR, 'config: Could not delete the user config file!');
+                reject();
+                return;
+            }
+            resolve();
+        });
 
-        Promise.all([readGlobalConfig(), readUserConfig(userConfigFile)])
-            .then((data) => {
-                resolve(updateUserConfig(data[0], data[1]));
-            })
-            .catch((err) => {
-                reject(err);
-            });
     });
+
 }
 
 /**
@@ -296,27 +302,6 @@ function updateUserConfigMac(globalConfigPath) {
             .catch((err) => {
                 reject(err);
             });
-    });
-}
-
-/**
- * Method to copy global config file to user config directory for Windows
- * @returns {Promise}
- */
-function copyConfigWin() {
-    return new Promise((resolve, reject) => {
-        const globalConfigFileName = path.join('config', configFileName);
-        const execPath = path.dirname(app.getPath('exe'));
-        const globalConfigPath = path.join(execPath, '', globalConfigFileName);
-        const userConfigPath = app.getPath('userData');
-
-        childProcess.exec(`echo D|xcopy /y /e /s /c "${globalConfigPath}" "${userConfigPath}"`, { timeout: 60000 }, (err) => {
-            if (err) {
-                reject(err);
-                return;
-            }
-            resolve();
-        });
     });
 }
 

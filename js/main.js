@@ -117,8 +117,7 @@ function setupThenOpenMainWindow() {
 
     isAppAlreadyOpen = true;
 
-    // allows installer to launch app and set auto startup mode then
-    // immediately quit.
+    // allows installer to launch app and set appropriate global / user config params.
     let hasInstallFlag = getCmdLineArg(process.argv, '--install', true);
     let perUserInstall = getCmdLineArg(process.argv, '--peruser', true);
     if (!isMac && hasInstallFlag) {
