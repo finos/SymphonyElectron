@@ -248,8 +248,8 @@ function updateUserConfig(newGlobalConfig, oldUserConfig) {
 }
 
 /**
- * Method to overwrite user config on windows installer
- * @param {String} perUserInstall - Is a flag to determine whether we are installing for per user
+ * Manipulates user config on windows
+ * @param {String} perUserInstall - Is a flag to determine if we are installing for an individual user
  * @returns {Promise}
  */
 function updateUserConfigWin(perUserInstall) {
@@ -267,12 +267,16 @@ function updateUserConfigWin(perUserInstall) {
             return;
         }
 
+        // In case the file exists, we remove it so that all the
+        // values are fetched from the global config
+        // https://perzoinc.atlassian.net/browse/ELECTRON-126
         fs.unlink(userConfigFile, (err) => {
             if (err) {
                 log.send(logLevels.ERROR, 'config: Could not delete the user config file!');
                 reject();
                 return;
             }
+            log.send(logLevels.ERROR, 'config: Deleted user config file!');
             resolve();
         });
 
@@ -281,7 +285,7 @@ function updateUserConfigWin(perUserInstall) {
 }
 
 /**
- * Method to overwrite user config on mac installer
+ * Manipulates user config on macOS
  * @param {String} globalConfigPath - The global config path from installer
  * @returns {Promise}
  */
