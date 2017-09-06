@@ -45,7 +45,7 @@ function getSources(options, callback) {
     captureScreen = includes.call(options.types, 'screen');
 
     let updatedOptions = options;
-    if (updatedOptions.thumbnailSize === null) {
+    if (!updatedOptions.thumbnailSize) {
         updatedOptions.thumbnailSize = {
             width: 150,
             height: 150
