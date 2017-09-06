@@ -349,13 +349,17 @@ function clearCachedConfigs() {
 }
 
 module.exports = {
-    getConfigField,
-    updateConfigField,
+
     configFileName,
+
+    getConfigField,
+
+    updateConfigField,
     updateUserConfigWin,
     updateUserConfigMac,
 
     // items below here are only exported for testing, do NOT use!
     saveUserConfig,
     clearCachedConfigs
+
 };
