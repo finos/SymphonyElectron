@@ -160,7 +160,7 @@ class Search {
             return new Error('Library not initialized');
         }
 
-        let result = libSymphonySearch.symSEIndexRealTime(this.realTimeIndex, [ message ]);
+        let result = libSymphonySearch.symSEIndexRealTime(this.realTimeIndex, message);
         return result === 0 ? "Successful" : result
     }
 
