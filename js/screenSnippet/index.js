@@ -10,10 +10,12 @@ const path = require('path');
 const { isMac, isDevEnv } = require('../utils/misc.js');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
+const eventEmitter = require('.././eventEmitter');
 
 // static ref to child process, only allow one screen snippet at time, so
 // hold ref to prev, so can kill before starting next snippet.
 let child;
+let isAlwaysOnTop;
 
 /**
  * Captures a user selected portion of the monitor and returns jpeg image
@@ -61,6 +63,17 @@ class ScreenSnippet {
                     captureUtil = path.join(execPath, 'ScreenSnippet.exe');
                 }
 
+                // Method to verify and disable always on top property
+                // as an issue with the ScreenSnippet.exe not being on top
+                // of the electron wrapper
+                const windows = electron.BrowserWindow.getAllWindows();
+                if (windows && windows.length > 0) {
+                    isAlwaysOnTop = windows[ 0 ].isAlwaysOnTop();
+                    if (isAlwaysOnTop) {
+                        eventEmitter.emit('isAlwaysOnTop', false);
+                    }
+                }
+
                 captureUtilArgs = [outputFileName];
             }
 
@@ -74,9 +87,17 @@ class ScreenSnippet {
             child = childProcess.execFile(captureUtil, captureUtilArgs, (error) => {
                 // will be called when child process exits.
                 if (error && error.killed) {
+                    // Method to reset always on top feature
+                    if (isAlwaysOnTop) {
+                        eventEmitter.emit('isAlwaysOnTop', true);
+                    }
                     // processs was killed, just resolve with no data.
                     resolve();
                 } else {
+                    // Method to reset always on top feature
+                    if (isAlwaysOnTop) {
+                        eventEmitter.emit('isAlwaysOnTop', true);
+                    }
                     readResult.call(this, outputFileName, resolve, reject, error);
                 }
             });
