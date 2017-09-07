@@ -15,7 +15,7 @@ const childProcess = require('child_process');
 const AppDirectory = require('appdirectory');
 const dirs = new AppDirectory('Symphony');
 
-const log = require('../log.js');
+const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
 
 // cached config when first reading files. initially undefined and will be
