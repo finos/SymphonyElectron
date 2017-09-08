@@ -85,19 +85,15 @@ class ScreenSnippet {
             }
 
             child = childProcess.execFile(captureUtil, captureUtilArgs, (error) => {
+                // Method to reset always on top feature
+                if (isAlwaysOnTop) {
+                    eventEmitter.emit('isAlwaysOnTop', true);
+                }
                 // will be called when child process exits.
                 if (error && error.killed) {
-                    // Method to reset always on top feature
-                    if (isAlwaysOnTop) {
-                        eventEmitter.emit('isAlwaysOnTop', true);
-                    }
                     // processs was killed, just resolve with no data.
                     resolve();
                 } else {
-                    // Method to reset always on top feature
-                    if (isAlwaysOnTop) {
-                        eventEmitter.emit('isAlwaysOnTop', true);
-                    }
                     readResult.call(this, outputFileName, resolve, reject, error);
                 }
             });
