@@ -6,7 +6,6 @@ const electron = require('electron');
 const childProcess = require('child_process');
 const app = electron.app;
 const path = require('path');
-const isObject = require('lodash.isplainobject');
 const isDevEnv = require('../utils/misc.js').isDevEnv;
 const isMac = require('../utils/misc.js').isMac;
 
@@ -110,7 +109,12 @@ class Search {
      */
     indexBatch(messages) {
         return new Promise((resolve, reject) => {
-            if (!messages && !(JSON.parse(messages) instanceof Array)) {
+            if (!messages) {
+                reject(new Error('Messages is required'));
+                return;
+            }
+
+            if (!(JSON.parse(messages) instanceof Array)) {
                 reject(new Error('Messages must be an array'));
                 return;
             }
@@ -152,8 +156,12 @@ class Search {
      * @param message
      */
     realTimeIndexing(message) {
-        if (!message && !isObject(JSON.parse(message))) {
-            return new Error('Messages must be an object');
+        if (!message) {
+            return new Error('Message is required');
+        }
+
+        if (!(JSON.parse(message) instanceof Array)){
+            return new Error('Message must be an array');
         }
 
         if (!this.isInitialized) {
