@@ -11,7 +11,6 @@ const configFileName = 'Symphony.config';
 
 // For modifying user config while installation
 const pick = require('lodash.pick');
-const childProcess = require('child_process');
 const AppDirectory = require('appdirectory');
 const dirs = new AppDirectory('Symphony');
 
@@ -223,11 +222,14 @@ function saveUserConfig(fieldName, newValue, oldConfig) {
  * @returns {Promise}
  */
 function updateUserConfig(newGlobalConfig, oldUserConfig) {
+    
     return new Promise((resolve, reject) => {
+        
         // Picking some values from global config to overwrite user config
-        const configDataToUpdate = pick(newGlobalConfig, ['url', 'minimizeOnClose', 'launchOnStartup', 'alwaysOnTop']);
+        const configDataToUpdate = pick(newGlobalConfig, ['minimizeOnClose', 'launchOnStartup', 'alwaysOnTop']);
         const updatedUserConfigData = Object.assign(oldUserConfig, configDataToUpdate);
         const jsonNewConfig = JSON.stringify(updatedUserConfigData, null, ' ');
+        
         // get user config path
         let userConfigFile;
 
@@ -270,15 +272,13 @@ function updateUserConfigWin(perUserInstall) {
         // In case the file exists, we remove it so that all the
         // values are fetched from the global config
         // https://perzoinc.atlassian.net/browse/ELECTRON-126
-        fs.unlink(userConfigFile, (err) => {
-            if (err) {
-                log.send(logLevels.ERROR, 'config: Could not delete the user config file!');
-                reject();
-                return;
-            }
-            log.send(logLevels.ERROR, 'config: Deleted user config file!');
-            resolve();
-        });
+        Promise.all([readGlobalConfig(), readUserConfig(userConfigFile)])
+            .then((data) => {
+                resolve(updateUserConfig(data[0], data[1]));
+            })
+            .catch((err) => {
+                reject(err);
+            });
 
     });
 
@@ -289,13 +289,14 @@ function updateUserConfigWin(perUserInstall) {
  * @param {String} globalConfigPath - The global config path from installer
  * @returns {Promise}
  */
-function updateUserConfigMac(globalConfigPath) {
+function updateUserConfigMac() {
     return new Promise((resolve, reject) => {
         const userConfigFile = path.join(dirs.userConfig(), configFileName);
 
         // if user config file does't exists just copy global config file
         if (!fs.existsSync(userConfigFile)) {
-            resolve(copyConfigMac(globalConfigPath));
+            log.send(logLevels.WARN, 'config: Could not find the user config file!');
+            reject();
             return;
         }
 
@@ -306,26 +307,6 @@ function updateUserConfigMac(globalConfigPath) {
             .catch((err) => {
                 reject(err);
             });
-    });
-}
-
-/**
- * Method which copies global config file to user config directory for mac
- * @param {String} globalConfigPath - The global config path from installer
- * @returns {Promise}
- */
-function copyConfigMac(globalConfigPath) {
-    return new Promise((resolve, reject) => {
-        let userConfigPath = dirs.userConfig() + '/';
-        let userName = process.env.USER;
-
-        childProcess.exec(`rsync -r "${globalConfigPath}" "${userConfigPath}" && chown -R "${userName}" "${userConfigPath}"`, { timeout: 60000 }, (err) => {
-            if (err) {
-                reject(err);
-                return;
-            }
-            resolve();
-        });
     });
 }
 
