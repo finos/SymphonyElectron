@@ -217,11 +217,11 @@ function saveUserConfig(fieldName, newValue, oldConfig) {
 }
 
 /**
- * Clears the existing user config settings including
+ * Updates the existing user config settings by removing
  * 'minimizeOnClose', 'launchOnStartup', 'url' and 'alwaysOnTop'
  * @param {Object} oldUserConfig the old user config object
  */
-function clearUserConfig(oldUserConfig) {
+function updateUserConfig(oldUserConfig) {
 
     return new Promise((resolve) => {
 
@@ -229,7 +229,7 @@ function clearUserConfig(oldUserConfig) {
         // by ommitting the user related settings from
         // the old user config
         let newUserConfig = omit(oldUserConfig, ignoreSettings);
-        let newUserConfigString = JSON.stringify(newUserConfig);
+        let newUserConfigString = JSON.stringify(newUserConfig, null, 4);
 
         // get the user config path
         let userConfigFile;
@@ -273,7 +273,7 @@ function updateUserConfigWin(perUserInstall) {
         // https://perzoinc.atlassian.net/browse/ELECTRON-126
         Promise.all([readUserConfig(userConfigFile)])
             .then((data) => {
-                resolve(clearUserConfig(data[0]));
+                resolve(updateUserConfig(data[0]));
             })
             .catch((err) => {
                 reject(err);
@@ -305,7 +305,7 @@ function updateUserConfigMac() {
         // https://perzoinc.atlassian.net/browse/ELECTRON-126
         Promise.all([readUserConfig(userConfigFile)])
         .then((data) => {
-            resolve(clearUserConfig(data[0]));
+            resolve(updateUserConfig(data[0]));
         })
         .catch((err) => {
             reject(err);
