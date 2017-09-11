@@ -40,8 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-const nodeURL = require('url');
-
 // hold ref so doesn't get GC'ed
 const local = {
     ipcRenderer: ipcRenderer

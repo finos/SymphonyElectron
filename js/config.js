@@ -4,23 +4,24 @@ const electron = require('electron');
 const app = electron.app;
 const path = require('path');
 const fs = require('fs');
+const AppDirectory = require('appdirectory');
+const omit = require('lodash.omit');
+
 const isDevEnv = require('./utils/misc.js').isDevEnv;
 const isMac = require('./utils/misc.js').isMac;
 const getRegistry = require('./utils/getRegistry.js');
-const configFileName = 'Symphony.config';
-
-// For modifying user config while installation
-const pick = require('lodash.pick');
-const AppDirectory = require('appdirectory');
-const dirs = new AppDirectory('Symphony');
-
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
+
+const configFileName = 'Symphony.config';
+const dirs = new AppDirectory('Symphony');
 
 // cached config when first reading files. initially undefined and will be
 // updated when read from disk.
 let userConfig;
 let globalConfig;
+
+let ignoreSettings = ['minimizeOnClose', 'launchOnStartup', 'alwaysOnTop', 'url'];
 
 /**
  * Tries to read given field from user config file, if field doesn't exist
@@ -216,37 +217,35 @@ function saveUserConfig(fieldName, newValue, oldConfig) {
 }
 
 /**
- * Method to update multiple user config field
- * @param {Object} newGlobalConfig - The latest config changes from installer
- * @param {Object} oldUserConfig - The old user config data
- * @returns {Promise}
+ * Clears the existing user config settings including
+ * 'minimizeOnClose', 'launchOnStartup', 'url' and 'alwaysOnTop'
+ * @param {Object} oldUserConfig the old user config object
  */
-function updateUserConfig(newGlobalConfig, oldUserConfig) {
-    
-    return new Promise((resolve, reject) => {
-        
-        // Picking some values from global config to overwrite user config
-        const configDataToUpdate = pick(newGlobalConfig, ['minimizeOnClose', 'launchOnStartup', 'alwaysOnTop']);
-        const updatedUserConfigData = Object.assign(oldUserConfig, configDataToUpdate);
-        const jsonNewConfig = JSON.stringify(updatedUserConfigData, null, ' ');
-        
-        // get user config path
-        let userConfigFile;
+function clearUserConfig(oldUserConfig) {
 
+    return new Promise((resolve) => {
+
+        // create a new object from the old user config
+        // by ommitting the user related settings from
+        // the old user config
+        let newUserConfig = omit(oldUserConfig, ignoreSettings);
+        let newUserConfigString = JSON.stringify(newUserConfig);
+
+        // get the user config path
+        let userConfigFile;
         if (isMac) {
             userConfigFile = path.join(dirs.userConfig(), configFileName);
         } else {
             userConfigFile = path.join(app.getPath('userData'), configFileName);
         }
 
-        fs.writeFile(userConfigFile, jsonNewConfig, 'utf8', (err) => {
-            if (err) {
-                reject(err);
-                return;
-            }
-            resolve();
-        });
+        // write the new user config changes to the user config file
+        fs.writeFileSync(userConfigFile, newUserConfigString, 'utf-8');
+
+        return resolve();
+
     });
+
 }
 
 /**
@@ -255,12 +254,12 @@ function updateUserConfig(newGlobalConfig, oldUserConfig) {
  * @returns {Promise}
  */
 function updateUserConfigWin(perUserInstall) {
-    
+
     return new Promise((resolve, reject) => {
-        
+
         // we get the user config path using electron
         const userConfigFile = path.join(app.getPath('userData'), configFileName);
-        
+
         // if it's not a per user installation or if the
         // user config file doesn't exist, we simple move on
         if (!perUserInstall || !fs.existsSync(userConfigFile)) {
@@ -272,9 +271,9 @@ function updateUserConfigWin(perUserInstall) {
         // In case the file exists, we remove it so that all the
         // values are fetched from the global config
         // https://perzoinc.atlassian.net/browse/ELECTRON-126
-        Promise.all([readGlobalConfig(), readUserConfig(userConfigFile)])
+        Promise.all([readUserConfig(userConfigFile)])
             .then((data) => {
-                resolve(updateUserConfig(data[0], data[1]));
+                resolve(clearUserConfig(data[0]));
             })
             .catch((err) => {
                 reject(err);
@@ -293,20 +292,24 @@ function updateUserConfigMac() {
     return new Promise((resolve, reject) => {
         const userConfigFile = path.join(dirs.userConfig(), configFileName);
 
-        // if user config file does't exists just copy global config file
+        // if user config file does't exist, just use the global config settings
+        // i.e. until an user makes changes manually using the menu items
         if (!fs.existsSync(userConfigFile)) {
             log.send(logLevels.WARN, 'config: Could not find the user config file!');
             reject();
             return;
         }
 
-        Promise.all([readGlobalConfig(), readUserConfig(userConfigFile)])
-            .then((data) => {
-                resolve(updateUserConfig(data[0], data[1]));
-            })
-            .catch((err) => {
-                reject(err);
-            });
+        // In case the file exists, we remove it so that all the
+        // values are fetched from the global config
+        // https://perzoinc.atlassian.net/browse/ELECTRON-126
+        Promise.all([readUserConfig(userConfigFile)])
+        .then((data) => {
+            resolve(clearUserConfig(data[0]));
+        })
+        .catch((err) => {
+            reject(err);
+        });
     });
 }
 
