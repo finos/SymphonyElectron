@@ -9,7 +9,6 @@ let stream = require('stream');
 let Transform = stream.Transform;
 let util = require('util');
 let crypto = require('crypto');
-let forge = require('node-forge');
 
 let KEY_LENGTH = 32; // bytes
 let GCM_NONCE_LENGTH = 12; //bytes
@@ -28,11 +27,7 @@ let validateAndConvertKey = function(key) {
     if (key && key instanceof Buffer && key.length === KEY_LENGTH) {
         return key;
     } else if (key && typeof key === 'string') {
-        // This is for temporary purpose only. Will be retrieving the key from the backend
-        // Todo: remove node-forge
-        let md = forge.md.sha256.create();
-        md.update(key);
-        let bufKey = new Buffer(bits2b64(md.digest().getBytes()), keyEncoding);
+        let bufKey = new Buffer(key, keyEncoding);
         if (bufKey.length !== KEY_LENGTH) {
             let encodingErrorMessage = 'Provided key string is either of an unknown encoding (expected: ' +
                 keyEncoding + ') or the wrong length.';
@@ -45,18 +40,8 @@ let validateAndConvertKey = function(key) {
     throw new Error(message);
 };
 
-/**
- * encode bits to b64
- * @param bits
- * @returns {*}
- */
-let bits2b64 = function (bits) {
-    return forge.util.encode64(bits);
-};
-
 exports.encrypt = EncryptionStream;
 exports.decrypt = DecryptionStream;
-
 
 /**
  * createSalt
