@@ -38,10 +38,10 @@ let ignoreSettings = ['minimizeOnClose', 'launchOnStartup', 'alwaysOnTop', 'url'
  */
 function getConfigField(fieldName) {
     return getUserConfigField(fieldName)
-        .then(function(value) {
+        .then((value) => {
             // got value from user config
             return value;
-        }, function() {
+        }, () => {
             // failed to get value from user config, so try global config
             return getGlobalConfigField(fieldName);
         });
@@ -53,7 +53,7 @@ function getConfigField(fieldName) {
  * @returns {Promise}
  */
 function getUserConfigField(fieldName) {
-    return readUserConfig().then(function(config) {
+    return readUserConfig().then((config) => {
         if (typeof fieldName === 'string' && fieldName in config) {
             return config[fieldName];
         }
@@ -68,7 +68,7 @@ function getUserConfigField(fieldName) {
  * @returns {Promise}
  */
 function readUserConfig(customConfigPath) {
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
         if (userConfig) {
             resolve(userConfig);
             return;
@@ -80,7 +80,7 @@ function readUserConfig(customConfigPath) {
             configPath = path.join(app.getPath('userData'), configFileName);
         }
 
-        fs.readFile(configPath, 'utf8', function(err, data) {
+        fs.readFile(configPath, 'utf8', (err, data) => {
             if (err) {
                 reject('cannot open user config file: ' + configPath + ', error: ' + err);
             } else {
@@ -103,7 +103,7 @@ function readUserConfig(customConfigPath) {
  * @returns {Promise}
  */
 function getGlobalConfigField(fieldName) {
-    return readGlobalConfig().then(function(config) {
+    return readGlobalConfig().then((config) => {
         if (typeof fieldName === 'string' && fieldName in config) {
             return config[fieldName];
         }
@@ -121,7 +121,7 @@ function getGlobalConfigField(fieldName) {
  * installed app). for dev env, the file is read directly from packed asar file.
  */
 function readGlobalConfig() {
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
         if (globalConfig) {
             resolve(globalConfig);
             return;
@@ -141,7 +141,7 @@ function readGlobalConfig() {
             configPath = path.join(execPath, isMac ? '..' : '', globalConfigFileName);
         }
 
-        fs.readFile(configPath, 'utf8', function(err, data) {
+        fs.readFile(configPath, 'utf8', (err, data) => {
             if (err) {
                 reject('cannot open global config file: ' + configPath + ', error: ' + err);
             } else {
@@ -152,10 +152,10 @@ function readGlobalConfig() {
                     reject('can not parse config file data: ' + data + ', error: ' + err);
                 }
                 getRegistry('PodUrl')
-                    .then(function(url) {
+                    .then((url) => {
                         globalConfig.url = url;
                         resolve(globalConfig);
-                    }).catch(function() {
+                    }).catch(() => {
                         resolve(globalConfig);
                     });
             }
@@ -171,9 +171,9 @@ function readGlobalConfig() {
  */
 function updateConfigField(fieldName, newValue) {
     return readUserConfig()
-        .then(function(config) {
+        .then((config) => {
             return saveUserConfig(fieldName, newValue, config);
-        }, function() {
+        }, () => {
             // in case config doesn't exist, can't read or is corrupted.
             // add configVersion - just in case in future we need to provide
             // upgrade capabilities.
@@ -191,7 +191,7 @@ function updateConfigField(fieldName, newValue) {
  * @returns {Promise}
  */
 function saveUserConfig(fieldName, newValue, oldConfig) {
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
         let configPath = path.join(app.getPath('userData'), configFileName);
 
         if (!oldConfig || !fieldName) {
@@ -223,13 +223,13 @@ function saveUserConfig(fieldName, newValue, oldConfig) {
  */
 function updateUserConfig(oldUserConfig) {
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
 
         // create a new object from the old user config
         // by ommitting the user related settings from
         // the old user config
         let newUserConfig = omit(oldUserConfig, ignoreSettings);
-        let newUserConfigString = JSON.stringify(newUserConfig, null, 4);
+        let newUserConfigString = JSON.stringify(newUserConfig, null, 2);
 
         // get the user config path
         let userConfigFile;
@@ -237,6 +237,10 @@ function updateUserConfig(oldUserConfig) {
             userConfigFile = path.join(dirs.userConfig(), configFileName);
         } else {
             userConfigFile = path.join(app.getPath('userData'), configFileName);
+        }
+
+        if (!userConfigFile) {
+            return reject('user config file doesn\'t exist');
         }
 
         // write the new user config changes to the user config file
@@ -271,13 +275,11 @@ function updateUserConfigWin(perUserInstall) {
         // In case the file exists, we remove it so that all the
         // values are fetched from the global config
         // https://perzoinc.atlassian.net/browse/ELECTRON-126
-        Promise.all([readUserConfig(userConfigFile)])
-            .then((data) => {
-                resolve(updateUserConfig(data[0]));
-            })
-            .catch((err) => {
-                reject(err);
-            });
+        readUserConfig(userConfigFile).then((data) => {
+            resolve(updateUserConfig(data));
+        }).catch((err) => {
+            reject(err);
+        });
 
     });
 
@@ -303,13 +305,12 @@ function updateUserConfigMac() {
         // In case the file exists, we remove it so that all the
         // values are fetched from the global config
         // https://perzoinc.atlassian.net/browse/ELECTRON-126
-        Promise.all([readUserConfig(userConfigFile)])
-        .then((data) => {
-            resolve(updateUserConfig(data[0]));
-        })
-        .catch((err) => {
+        readUserConfig(userConfigFile).then((data) => {            
+            resolve(updateUserConfig(data));
+        }).catch((err) => {
             reject(err);
         });
+        
     });
 }
 
