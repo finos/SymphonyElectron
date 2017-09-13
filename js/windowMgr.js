@@ -16,15 +16,10 @@ const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
 const notify = require('./notify/electron-notify.js');
 const eventEmitter = require('./eventEmitter');
-
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField } = require('./config.js');
 const { isMac, isNodeEnv } = require('./utils/misc');
-
 const crashReporter = require('./crashReporter');
-
-//context menu
-const contextMenu = require('./menus/contextMenu.js');
 
 // show dialog when certificate errors occur
 require('./dialogs/showCertError.js');
@@ -203,11 +198,11 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         const options = {
             type: 'error',
             title: 'Renderer Process Crashed',
-            message: 'Uh oh! Looks like we have had a crash. Please reload or close this window.',
+            message: 'Oops! Looks like we have had a crash. Please reload or close this window.',
             buttons: ['Reload', 'Close']
         };
 
-        dialog.showMessageBox(options, function (index) {
+        electron.dialog.showMessageBox(options, function (index) {
             if (index === 0) {
                 mainWindow.reload();
             }

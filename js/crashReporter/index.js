@@ -22,7 +22,7 @@ function setupCrashReporter(detailObj, crashReporterDetails) {
         companyName: app.getName(),
         submitURL: crashReporterDetails.backendURL,
         autoSubmit: crashReporterDetails.autoSubmit,
-        uploadToServer: crashReporterDetails.sendCrashReports,
+        uploadToServer: false,
         extra: detailObj
     };
 
