@@ -20,9 +20,26 @@ const apiName = apiEnums.apiName;
 const getMediaSources = require('../desktopCapturer/getSources');
 const crashReporter = require('../crashReporter');
 
-require('../downloadManager/downloadManager');
+require('../downloadManager');
 
-const nodeURL = require('url');
+// bug in electron preventing us from using spellchecker in pop outs
+// https://github.com/electron/electron/issues/4025
+// so loading the spellchecker in try catch so that we don't
+// block other method from loading
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        /* eslint-disable global-require */
+        const SpellCheckerHelper = require('../spellChecker').SpellCheckHelper;
+        /* eslint-enable global-require */
+        // Method to initialize spell checker
+        const spellChecker = new SpellCheckerHelper();
+        spellChecker.initializeSpellChecker();
+    } catch (err) {
+        /* eslint-disable no-console */
+        console.error('unable to load the spell checker module, hence, skipping the spell check feature ' + err);
+        /* eslint-enable no-console */
+    }
+});
 
 // hold ref so doesn't get GC'ed
 const local = {
@@ -56,25 +73,6 @@ function createAPI() {
         return;
     }
 
-    // bug in electron is preventing using event 'will-navigate' from working
-    // in sandboxed environment. https://github.com/electron/electron/issues/8841
-    // so in the mean time using this code below to block clicking on A tags.
-    // A tags are allowed if they include href='_blank', this cause 'new-window'
-    // event to be received which is handled properly in windowMgr.js
-    window.addEventListener('beforeunload', function(event) {
-        var newUrl = document.activeElement && document.activeElement.href;
-        if (newUrl) {
-            var currHostName = window.location.hostname;
-            var parsedNewUrl = nodeURL.parse(newUrl);
-            var parsedNewUrlHostName = parsedNewUrl && parsedNewUrl.hostname;
-            if (currHostName !== parsedNewUrlHostName) {
-                /* eslint-disable no-param-reassign */
-                event.returnValue = 'false';
-                /* eslint-enable no-param-reassign */
-            }
-        }
-    });
-
     // note: window.open from main window (if in the same domain) will get
     // api access.  window.open in another domain will be opened in the default
     // browser (see: handler for event 'new-window' in windowMgr.js)
@@ -85,14 +83,14 @@ function createAPI() {
     window.ssf = {
         getVersionInfo: function() {
             return new Promise(function(resolve) {
-                var appName = remote.app.getName();
-                var appVer = remote.app.getVersion();
+                let appName = remote.app.getName();
+                let appVer = remote.app.getVersion();
 
                 const verInfo = {
                     containerIdentifier: appName,
                     containerVer: appVer,
                     apiVer: '1.0.0'
-                }
+                };
                 resolve(verInfo);
             });
         },
@@ -116,9 +114,9 @@ function createAPI() {
 
         /**
          * provides api to allow user to capture portion of screen, see api
-         * details in screenSnipper/ScreenSnippet.js
+         * details in screenSnipper/index.js
          */
-        ScreenSnippet: remote.require('./screenSnippet/ScreenSnippet.js').ScreenSnippet,
+        ScreenSnippet: remote.require('./screenSnippet/index.js').ScreenSnippet,
 
         /**
          * Provides API to crash the renderer process that calls this function
@@ -188,7 +186,7 @@ function createAPI() {
          * this registration func is invoked then the protocolHandler callback
          * will be immediately called.
          */
-        registerProtocolHandler: function (protocolHandler) {
+        registerProtocolHandler: function(protocolHandler) {
             if (typeof protocolHandler === 'function') {
 
                 local.processProtocolAction = protocolHandler;

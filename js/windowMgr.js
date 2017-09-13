@@ -7,7 +7,6 @@ const path = require('path');
 const nodeURL = require('url');
 const querystring = require('querystring');
 const filesize = require('filesize');
-const {dialog} = require('electron');
 
 const { getTemplate, getMinimizeOnClose } = require('./menus/menuTemplate.js');
 const loadErrors = require('./dialogs/showLoadError.js');
@@ -20,6 +19,7 @@ const eventEmitter = require('./eventEmitter');
 
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField } = require('./config.js');
+const { isMac, isNodeEnv } = require('./utils/misc');
 
 const crashReporter = require('./crashReporter');
 
@@ -39,6 +39,7 @@ let boundsChangeWindow;
 let alwaysOnTop = false;
 let position = 'lower-right';
 let display;
+let sandboxed = false;
 
 // note: this file is built using browserify in prebuild step.
 const preloadMainScript = path.join(__dirname, 'preload/_preloadMain.js');
@@ -46,18 +47,36 @@ const preloadMainScript = path.join(__dirname, 'preload/_preloadMain.js');
 const MIN_WIDTH = 300;
 const MIN_HEIGHT = 600;
 
+/**
+ * Adds a window key
+ * @param key
+ * @param browserWin
+ */
 function addWindowKey(key, browserWin) {
     windows[key] = browserWin;
 }
 
+/**
+ * Removes a window key
+ * @param key
+ */
 function removeWindowKey(key) {
     delete windows[key];
 }
 
+/**
+ * Gets the parsed url
+ * @param url
+ * @returns {Url}
+ */
 function getParsedUrl(url) {
     return nodeURL.parse(url);
 }
 
+/**
+ * Creates the main window
+ * @param initialUrl
+ */
 function createMainWindow(initialUrl) {
     getConfigField('mainWinPos').then(
         function (bounds) {
@@ -70,6 +89,11 @@ function createMainWindow(initialUrl) {
     )
 }
 
+/**
+ * Creates the main window with bounds
+ * @param initialUrl
+ * @param initialBounds
+ */
 function doCreateMainWindow(initialUrl, initialBounds) {
     let url = initialUrl;
     let key = getGuid();
@@ -95,9 +119,10 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         minHeight: MIN_HEIGHT,
         alwaysOnTop: false,
         webPreferences: {
-            sandbox: true,
-            nodeIntegration: false,
+            sandbox: sandboxed,
+            nodeIntegration: isNodeEnv,
             preload: preloadMainScript,
+            nativeWindowOpen: true
         }
     };
 
@@ -212,7 +237,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
 
     function destroyAllWindows() {
         let keys = Object.keys(windows);
-        for (var i = 0, len = keys.length; i < len; i++) {
+        for (let i = 0, len = keys.length; i < len; i++) {
             let winKey = keys[i];
             removeWindowKey(winKey);
         }
@@ -244,6 +269,9 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     // bug in electron is preventing this from working in sandboxed evt...
     // https://github.com/electron/electron/issues/8841
     mainWindow.webContents.on('will-navigate', function(event, willNavUrl) {
+        if (!sandboxed) {
+            return;
+        }
         event.preventDefault();
         openUrlInDefaultBrower(willNavUrl);
     });
@@ -277,7 +305,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             let height = newWinOptions.height || MIN_HEIGHT;
 
             // try getting x and y position from query parameters
-            var query = newWinParsedUrl && querystring.parse(newWinParsedUrl.query);
+            let query = newWinParsedUrl && querystring.parse(newWinParsedUrl.query);
             if (query && query.x && query.y) {
                 let newX = Number.parseInt(query.x, 10);
                 let newY = Number.parseInt(query.y, 10);
@@ -346,13 +374,18 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         }
     });
 
-    contextMenu(mainWindow);
 }
 
+/**
+ * Handles the event before-quit emitted by electron
+ */
 app.on('before-quit', function () {
     willQuitApp = true;
 });
 
+/**
+ * Saves the main window bounds
+ */
 function saveMainWinBounds() {
     let newBounds = getWindowSizeAndPosition(mainWindow);
 
@@ -361,10 +394,19 @@ function saveMainWinBounds() {
     }
 }
 
+/**
+ * Gets the main window
+ * @returns {*}
+ */
 function getMainWindow() {
     return mainWindow;
 }
 
+/**
+ * Gets a window's size and position
+ * @param window
+ * @returns {*}
+ */
 function getWindowSizeAndPosition(window) {
     if (window) {
         let newPos = window.getPosition();
@@ -384,14 +426,28 @@ function getWindowSizeAndPosition(window) {
     return null;
 }
 
+/**
+ * Shows the main window
+ */
 function showMainWindow() {
     mainWindow.show();
 }
 
+/**
+ * Tells if a window is the main window
+ * @param win
+ * @returns {boolean}
+ */
 function isMainWindow(win) {
     return mainWindow === win;
 }
 
+/**
+ * Checks if the window and a key has a window
+ * @param win
+ * @param winKey
+ * @returns {*}
+ */
 function hasWindow(win, winKey) {
     if (win instanceof BrowserWindow) {
         let browserWin = windows[winKey];
@@ -401,6 +457,10 @@ function hasWindow(win, winKey) {
     return false;
 }
 
+/**
+ * Sets if a user is online
+ * @param status
+ */
 function setIsOnline(status) {
     isOnline = status;
 }
@@ -448,6 +508,10 @@ function sendChildWinBoundsChange(window) {
     }
 }
 
+/**
+ * Opens an external url in the system's default browser
+ * @param urlToOpen
+ */
 function openUrlInDefaultBrower(urlToOpen) {
     if (urlToOpen) {
         electron.shell.openExternal(urlToOpen);
@@ -479,6 +543,119 @@ eventEmitter.on('notificationSettings', (notificationSettings) => {
     display = notificationSettings.display;
 });
 
+/**
+ * Method that gets invoked when an external display
+ * is removed using electron 'display-removed' event.
+ */
+function verifyDisplays() {
+
+    // This is only for Windows, macOS handles this by itself
+    if (!mainWindow || isMac){
+        return;
+    }
+
+    const bounds = mainWindow.getBounds();
+    if (bounds) {
+        let isXAxisValid = true;
+        let isYAxisValid = true;
+
+        // checks to make sure the x,y are valid pairs
+        if ((bounds.x === undefined && (bounds.y || bounds.y === 0))){
+            isXAxisValid = false;
+        }
+        if ((bounds.y === undefined && (bounds.x || bounds.x === 0))){
+            isYAxisValid = false;
+        }
+
+        if (!isXAxisValid && !isYAxisValid){
+            return;
+        }
+
+        let externalDisplay = checkExternalDisplay(bounds);
+
+        // If external window doesn't exists, reposition main window
+        if (!externalDisplay) {
+            repositionMainWindow();
+        }
+    }
+}
+
+/**
+ * Method that verifies if wrapper exists in any of the available
+ * external display by comparing the app bounds with the display bounds
+ * if not exists returns false otherwise true
+ * @param appBounds {Electron.Rectangle} - current electron wrapper bounds
+ * @returns {boolean}
+ */
+function checkExternalDisplay(appBounds) {
+    const x = appBounds.x;
+    const y = appBounds.y;
+    const width = appBounds.width;
+    const height = appBounds.height;
+    const factor = 0.2;
+    const screen = electron.screen;
+
+    // Loops through all the available displays and
+    // verifies if the wrapper exists within the display bounds
+    // returns false if not exists otherwise true
+    return !!screen.getAllDisplays().find(({bounds}) => {
+
+        const leftMost = x + (width * factor);
+        const topMost = y + (height * factor);
+        const rightMost = x + width - (width * factor);
+        const bottomMost = y + height - (height * factor);
+
+        if (leftMost < bounds.x || topMost < bounds.y) {
+            return false;
+        }
+
+        return !(rightMost > bounds.x + bounds.width || bottomMost > bounds.y + bounds.height);
+
+    });
+}
+
+/**
+ * Method that resets the main window bounds when an external display
+ * was removed and if the wrapper was contained within that bounds
+ */
+function repositionMainWindow() {
+    const screen = electron.screen;
+
+    const {workArea} = screen.getPrimaryDisplay();
+    const bounds = workArea;
+
+    if (!bounds) {
+        return;
+    }
+
+    const windowWidth = Math.round(bounds.width * 0.6);
+    const windowHeight = Math.round(bounds.height * 0.8);
+
+    // Calculating the center of the primary display
+    // to place the wrapper
+    const centerX = bounds.x + bounds.width / 2.0;
+    const centerY = bounds.y + bounds.height / 2.0;
+    const x = Math.round(centerX - (windowWidth / 2.0));
+    const y = Math.round(centerY - (windowHeight / 2.0));
+
+    let rectangle = {x, y, width: windowWidth, height: windowHeight};
+
+    // resetting the main window bounds
+    if (mainWindow){
+        if (!mainWindow.isVisible()) {
+            mainWindow.show();
+        }
+
+        if (mainWindow.isMinimized()) {
+            mainWindow.restore();
+        }
+
+        mainWindow.focus();
+        mainWindow.flashFrame(false);
+        mainWindow.setBounds(rectangle, true);
+    }
+}
+
 module.exports = {
     createMainWindow: createMainWindow,
     getMainWindow: getMainWindow,
@@ -487,5 +664,6 @@ module.exports = {
     hasWindow: hasWindow,
     setIsOnline: setIsOnline,
     activate: activate,
-    setBoundsChangeWindow: setBoundsChangeWindow
+    setBoundsChangeWindow: setBoundsChangeWindow,
+    verifyDisplays: verifyDisplays
 };

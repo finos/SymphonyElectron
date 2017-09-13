@@ -4,15 +4,24 @@ const electron = require('electron');
 const app = electron.app;
 const path = require('path');
 const fs = require('fs');
+const AppDirectory = require('appdirectory');
+const omit = require('lodash.omit');
+
 const isDevEnv = require('./utils/misc.js').isDevEnv;
 const isMac = require('./utils/misc.js').isMac;
 const getRegistry = require('./utils/getRegistry.js');
+const log = require('./log.js');
+const logLevels = require('./enums/logLevels.js');
+
 const configFileName = 'Symphony.config';
+const dirs = new AppDirectory('Symphony');
 
 // cached config when first reading files. initially undefined and will be
 // updated when read from disk.
 let userConfig;
 let globalConfig;
+
+let ignoreSettings = ['minimizeOnClose', 'launchOnStartup', 'alwaysOnTop', 'url'];
 
 /**
  * Tries to read given field from user config file, if field doesn't exist
@@ -29,17 +38,22 @@ let globalConfig;
  */
 function getConfigField(fieldName) {
     return getUserConfigField(fieldName)
-    .then(function(value) {
-        // got value from user config
-        return value;
-    }, function () {
-        // failed to get value from user config, so try global config
-        return getGlobalConfigField(fieldName);
-    });
+        .then((value) => {
+            // got value from user config
+            return value;
+        }, () => {
+            // failed to get value from user config, so try global config
+            return getGlobalConfigField(fieldName);
+        });
 }
 
+/**
+ * Gets a specific user config value for a field
+ * @param fieldName
+ * @returns {Promise}
+ */
 function getUserConfigField(fieldName) {
-    return readUserConfig().then(function(config) {
+    return readUserConfig().then((config) => {
         if (typeof fieldName === 'string' && fieldName in config) {
             return config[fieldName];
         }
@@ -48,16 +62,25 @@ function getUserConfigField(fieldName) {
     });
 }
 
-function readUserConfig() {
-    return new Promise(function(resolve, reject) {
+/**
+ * Reads the user config file and returns all the attributes
+ * @param customConfigPath
+ * @returns {Promise}
+ */
+function readUserConfig(customConfigPath) {
+    return new Promise((resolve, reject) => {
         if (userConfig) {
             resolve(userConfig);
             return;
         }
 
-        let configPath = path.join(app.getPath('userData'), configFileName);
+        let configPath = customConfigPath;
 
-        fs.readFile(configPath, 'utf8', function(err, data) {
+        if (!configPath) {
+            configPath = path.join(app.getPath('userData'), configFileName);
+        }
+
+        fs.readFile(configPath, 'utf8', (err, data) => {
             if (err) {
                 reject('cannot open user config file: ' + configPath + ', error: ' + err);
             } else {
@@ -74,8 +97,13 @@ function readUserConfig() {
     });
 }
 
+/**
+ * Gets a specific user config value for a field
+ * @param fieldName
+ * @returns {Promise}
+ */
 function getGlobalConfigField(fieldName) {
-    return readGlobalConfig().then(function(config) {
+    return readGlobalConfig().then((config) => {
         if (typeof fieldName === 'string' && fieldName in config) {
             return config[fieldName];
         }
@@ -93,7 +121,7 @@ function getGlobalConfigField(fieldName) {
  * installed app). for dev env, the file is read directly from packed asar file.
  */
 function readGlobalConfig() {
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
         if (globalConfig) {
             resolve(globalConfig);
             return;
@@ -113,7 +141,7 @@ function readGlobalConfig() {
             configPath = path.join(execPath, isMac ? '..' : '', globalConfigFileName);
         }
 
-        fs.readFile(configPath, 'utf8', function(err, data) {
+        fs.readFile(configPath, 'utf8', (err, data) => {
             if (err) {
                 reject('cannot open global config file: ' + configPath + ', error: ' + err);
             } else {
@@ -124,12 +152,12 @@ function readGlobalConfig() {
                     reject('can not parse config file data: ' + data + ', error: ' + err);
                 }
                 getRegistry('PodUrl')
-                .then(function(url) {
-                    globalConfig.url = url;
-                    resolve(globalConfig);
-                }).catch(function () {
-                    resolve(globalConfig);
-                });
+                    .then((url) => {
+                        globalConfig.url = url;
+                        resolve(globalConfig);
+                    }).catch(() => {
+                        resolve(globalConfig);
+                    });
             }
         });
     });
@@ -143,21 +171,27 @@ function readGlobalConfig() {
  */
 function updateConfigField(fieldName, newValue) {
     return readUserConfig()
-    .then(function(config) {
-        return saveUserConfig(fieldName, newValue, config);
-    },
-    function() {
-        // in case config doesn't exist, can't read or is corrupted.
-        // add configVersion - just in case in future we need to provide
-        // upgrade capabilities.
-        return saveUserConfig(fieldName, newValue, {
-            configVersion: '1.0.0'
+        .then((config) => {
+            return saveUserConfig(fieldName, newValue, config);
+        }, () => {
+            // in case config doesn't exist, can't read or is corrupted.
+            // add configVersion - just in case in future we need to provide
+            // upgrade capabilities.
+            return saveUserConfig(fieldName, newValue, {
+                configVersion: '1.0.0'
+            });
         });
-    });
 }
 
+/**
+ * Saves an updated value to the user config
+ * @param fieldName
+ * @param newValue
+ * @param oldConfig
+ * @returns {Promise}
+ */
 function saveUserConfig(fieldName, newValue, oldConfig) {
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
         let configPath = path.join(app.getPath('userData'), configFileName);
 
         if (!oldConfig || !fieldName) {
@@ -182,17 +216,124 @@ function saveUserConfig(fieldName, newValue, oldConfig) {
     });
 }
 
+/**
+ * Updates the existing user config settings by removing
+ * 'minimizeOnClose', 'launchOnStartup', 'url' and 'alwaysOnTop'
+ * @param {Object} oldUserConfig the old user config object
+ */
+function updateUserConfig(oldUserConfig) {
+
+    return new Promise((resolve, reject) => {
+
+        // create a new object from the old user config
+        // by ommitting the user related settings from
+        // the old user config
+        let newUserConfig = omit(oldUserConfig, ignoreSettings);
+        let newUserConfigString = JSON.stringify(newUserConfig, null, 2);
+
+        // get the user config path
+        let userConfigFile;
+        if (isMac) {
+            userConfigFile = path.join(dirs.userConfig(), configFileName);
+        } else {
+            userConfigFile = path.join(app.getPath('userData'), configFileName);
+        }
+
+        if (!userConfigFile) {
+            return reject('user config file doesn\'t exist');
+        }
+
+        // write the new user config changes to the user config file
+        fs.writeFileSync(userConfigFile, newUserConfigString, 'utf-8');
+
+        return resolve();
+
+    });
+
+}
+
+/**
+ * Manipulates user config on windows
+ * @param {String} perUserInstall - Is a flag to determine if we are installing for an individual user
+ * @returns {Promise}
+ */
+function updateUserConfigWin(perUserInstall) {
+
+    return new Promise((resolve, reject) => {
+
+        // we get the user config path using electron
+        const userConfigFile = path.join(app.getPath('userData'), configFileName);
+
+        // if it's not a per user installation or if the
+        // user config file doesn't exist, we simple move on
+        if (!perUserInstall || !fs.existsSync(userConfigFile)) {
+            log.send(logLevels.WARN, 'config: Could not find the user config file!');
+            reject();
+            return;
+        }
+
+        // In case the file exists, we remove it so that all the
+        // values are fetched from the global config
+        // https://perzoinc.atlassian.net/browse/ELECTRON-126
+        readUserConfig(userConfigFile).then((data) => {
+            resolve(updateUserConfig(data));
+        }).catch((err) => {
+            reject(err);
+        });
+
+    });
+
+}
+
+/**
+ * Manipulates user config on macOS
+ * @param {String} globalConfigPath - The global config path from installer
+ * @returns {Promise}
+ */
+function updateUserConfigMac() {
+    return new Promise((resolve, reject) => {
+        const userConfigFile = path.join(dirs.userConfig(), configFileName);
+
+        // if user config file does't exist, just use the global config settings
+        // i.e. until an user makes changes manually using the menu items
+        if (!fs.existsSync(userConfigFile)) {
+            log.send(logLevels.WARN, 'config: Could not find the user config file!');
+            reject();
+            return;
+        }
+
+        // In case the file exists, we remove it so that all the
+        // values are fetched from the global config
+        // https://perzoinc.atlassian.net/browse/ELECTRON-126
+        readUserConfig(userConfigFile).then((data) => {            
+            resolve(updateUserConfig(data));
+        }).catch((err) => {
+            reject(err);
+        });
+        
+    });
+}
+
+/**
+ * Clears the cached config
+ */
 function clearCachedConfigs() {
     userConfig = null;
     globalConfig = null;
 }
 
 module.exports = {
-    getConfigField,
-    updateConfigField,
+
     configFileName,
+
+    getConfigField,
+
+    updateConfigField,
+    updateUserConfigWin,
+    updateUserConfigMac,
 
     // items below here are only exported for testing, do NOT use!
     saveUserConfig,
     clearCachedConfigs
+
 };

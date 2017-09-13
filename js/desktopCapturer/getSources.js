@@ -12,23 +12,32 @@
 // renderer process, this will have to do.  See github issue posted here to
 // electron: https://github.com/electron/electron/issues/9312
 
-var { ipcRenderer } = require('electron');
+const { ipcRenderer } = require('electron');
 
-
-var nextId = 0;
-var includes = [].includes;
+let nextId = 0;
+let includes = [].includes;
 
 function getNextId() {
     return ++nextId;
 }
 
-// |options.type| can not be empty and has to include 'window' or 'screen'.
+/**
+ * Checks if the options and their types are valid
+ * @param options |options.type| can not be empty and has to include 'window' or 'screen'.
+ * @returns {boolean}
+ */
 function isValid(options) {
-    return ((options != null ? options.types : undefined) != null) && Array.isArray(options.types);
+    return ((options !== null ? options.types : undefined) !== null) && Array.isArray(options.types);
 }
 
+/**
+ * Gets the sources for capturing screens / windows
+ * @param options
+ * @param callback
+ * @returns {*}
+ */
 function getSources(options, callback) {
-    var captureScreen, captureWindow, id;
+    let captureScreen, captureWindow, id;
     if (!isValid(options)) {
         return callback(new Error('Invalid options'));
     }
@@ -36,31 +45,32 @@ function getSources(options, callback) {
     captureScreen = includes.call(options.types, 'screen');
 
     let updatedOptions = options;
-    if (updatedOptions.thumbnailSize == null) {
+    if (!updatedOptions.thumbnailSize) {
         updatedOptions.thumbnailSize = {
             width: 150,
             height: 150
-        }
+        };
     }
 
     id = getNextId();
     ipcRenderer.send('ELECTRON_BROWSER_DESKTOP_CAPTURER_GET_SOURCES', captureWindow, captureScreen, updatedOptions.thumbnailSize, id);
 
-    return ipcRenderer.once('ELECTRON_RENDERER_DESKTOP_CAPTURER_RESULT_' + id, function (event, sources) {
-        var source;
-        callback(null, (function () {
-            var i, len, results
+    return ipcRenderer.once('ELECTRON_RENDERER_DESKTOP_CAPTURER_RESULT_' + id, function(event, sources) {
+        let source;
+        callback(null, (function() {
+            let i, len, results;
             results = [];
             for (i = 0, len = sources.length; i < len; i++) {
-                source = sources[i]
+                source = sources[i];
                 results.push({
                     id: source.id,
                     name: source.name,
                     thumbnail: source.thumbnail
-                })
+                });
             }
 
-            return results
+            return results;
+
         }()));
     });
 }

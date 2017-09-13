@@ -29,7 +29,7 @@ const ipcMain = {
         ipcEmitter.on(event, cb);
     },
     send: function (event, args) {
-        var senderEvent = {
+        const senderEvent = {
             sender: {
                 send: function (event, arg) {
                     ipcEmitter.emit(event, arg);
@@ -45,16 +45,16 @@ const ipcRenderer = {
         let listeners = ipcEmitter.listeners(event);
         if (listeners.length > 0) {
             let listener = listeners[0];
-            var eventArg = {};
+            const eventArg = {};
             listener(eventArg, args);
             return eventArg.returnValue;
         }
         return null;
     },
     send: function(event, args) {
-        var senderEvent = {
+        const senderEvent = {
             sender: {
-                send: function(event, arg) {
+                send: function (event, arg) {
                     ipcEmitter.emit(event, arg);
                 }
             }
