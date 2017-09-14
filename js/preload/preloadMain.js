@@ -54,14 +54,7 @@ const throttledSetBadgeCount = throttle(1000, function(count) {
     });
 });
 
-// Setup the crash reporter
-let demoData = {
-    "backendURL": "https://crash.symphony.com/",
-    "sendCrashReports": true,
-    "autoSubmit": true
-};
-crashReporter.setupCrashReporter({'window': 'preloadMain'}, demoData);
-
+crashReporter.setupCrashReporter({'window': 'preloadMain'});
 createAPI();
 
 // creates API exposed from electron.

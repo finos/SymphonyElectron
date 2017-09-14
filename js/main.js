@@ -220,12 +220,13 @@ function createWin(urlFromConfig) {
 function initializeCrashReporter () {
     getConfigField('crashReporterDetails').then(
         function (data) {
-            crashReporter.setupCrashReporter({'window': 'main'}, data);
+            crashReporter.setCrashReporterDetails(data);
+            crashReporter.setupCrashReporter({'window': 'main'});
         }
     ).catch(function (err) {
         let title = 'Error loading configuration';
         electron.dialog.showErrorBox(title, title + ': ' + err);
-    })
+    });
 }
 
 /**

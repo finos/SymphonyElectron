@@ -93,18 +93,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     let url = initialUrl;
     let key = getGuid();
 
-    /**
-     * Get crash info from global config and setup crash reporter.
-     */
-    getConfigField('crashReporterDetails').then(
-      function (data) {
-          crashReporter.setupCrashReporter({'window': 'main'}, data);
-      }
-    ).catch(function (err) {
-        let title = 'Error loading configuration';
-        electron.dialog.showErrorBox(title, title + ': ' + err);
-    });
-
+    crashReporter.setupCrashReporter({'window': 'windowMgr'});
     log.send(logLevels.INFO, 'creating main window url: ' + url);
 
     let newWinOpts = {

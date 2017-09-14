@@ -7,6 +7,7 @@ const isMac = require('../utils/misc.js').isMac;
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 const eventEmitter = require('../eventEmitter');
+const crashReporter = require('../crashReporter');
 
 let minimizeOnClose = false;
 let launchOnStartup = false;
@@ -97,10 +98,30 @@ const template = [{
 },
 {
     role: 'help',
-    submenu: [{
-        label: 'Learn More',
-        click() { electron.shell.openExternal('https://www.symphony.com'); }
-    }]
+    submenu: [
+        {
+            label: 'Learn More',
+            click() { electron.shell.openExternal('https://www.symphony.com'); }
+        },
+        {
+            label: 'Crash Directory Info',
+            click() {
+                electron.dialog.showMessageBox(null, {
+                    type: 'info',
+                    buttons: ['Copy', 'OK'],
+                    defaultId: 0,
+                    cancelId: 1,
+                    noLink: true,
+                    title: 'Crash Directory Path',
+                    message: crashReporter.getCrashDirectoryPath()
+                }, response);
+                function response(buttonId) {
+                    if (buttonId === 0) {
+                        electron.clipboard.writeText(crashReporter.getCrashDirectoryPath());
+                    }
+                }
+            }
+        }]
 }
 ];
 
