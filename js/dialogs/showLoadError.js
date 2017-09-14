@@ -12,8 +12,9 @@ const logLevels = require('../enums/logLevels.js');
  * @param  {String} errorDesc        Description of error
  * @param  {Number} errorCode        Error code
  * @param  {function} retryCallback  Callback when user clicks reload
+ * @param {Boolean} showDialog Indicates if a dialog need to be show to a user
  */
-function showLoadFailure(win, url, errorDesc, errorCode, retryCallback) {
+function showLoadFailure(win, url, errorDesc, errorCode, retryCallback, showDialog) {
     let msg;
     if (url) {
         msg = 'Error loading URL:\n' + url;
@@ -27,16 +28,18 @@ function showLoadFailure(win, url, errorDesc, errorCode, retryCallback) {
         msg += '\n\nError Code: ' + errorCode;
     }
 
-    electron.dialog.showMessageBox(win, {
-        type: 'error',
-        buttons: ['Reload', 'Ignore'],
-        defaultId: 0,
-        cancelId: 1,
-        noLink: true,
-        title: 'Loading Error',
-        message: msg
-    }, response);
-
+    if (showDialog) {
+        electron.dialog.showMessageBox(win, {
+            type: 'error',
+            buttons: ['Reload', 'Ignore'],
+            defaultId: 0,
+            cancelId: 1,
+            noLink: true,
+            title: 'Loading Error',
+            message: msg
+        }, response);
+    }
+    
     log.send(logLevels.WARNING, 'Load failure msg: ' + errorDesc +
         ' errorCode: ' + errorCode + ' for url:' + url);
 
@@ -57,7 +60,7 @@ function showLoadFailure(win, url, errorDesc, errorCode, retryCallback) {
  */
 function showNetworkConnectivityError(win, url, retryCallback) {
     let errorDesc = 'Network connectivity has been lost, check your internet connection.';
-    showLoadFailure(win, url, errorDesc, 0, retryCallback);
+    showLoadFailure(win, url, errorDesc, 0, retryCallback, true);
 }
 
 module.exports = { showLoadFailure, showNetworkConnectivityError };
