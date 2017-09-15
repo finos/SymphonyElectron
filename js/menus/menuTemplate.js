@@ -67,6 +67,10 @@ const template = [{
         }
     },
     {
+        label: 'Open Crashes Directory',
+        click() { electron.shell.showItemInFolder(crashReporter.getCrashDirectoryPath()); }
+    },
+    {
         type: 'separator'
     },
     {
@@ -102,25 +106,6 @@ const template = [{
         {
             label: 'Learn More',
             click() { electron.shell.openExternal('https://www.symphony.com'); }
-        },
-        {
-            label: 'Crash Directory Info',
-            click() {
-                electron.dialog.showMessageBox(null, {
-                    type: 'info',
-                    buttons: ['Copy', 'OK'],
-                    defaultId: 0,
-                    cancelId: 1,
-                    noLink: true,
-                    title: 'Crash Directory Path',
-                    message: crashReporter.getCrashDirectoryPath()
-                }, response);
-                function response(buttonId) {
-                    if (buttonId === 0) {
-                        electron.clipboard.writeText(crashReporter.getCrashDirectoryPath());
-                    }
-                }
-            }
         }]
 }
 ];
