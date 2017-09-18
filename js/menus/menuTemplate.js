@@ -68,7 +68,7 @@ const template = [{
     },
     {
         label: 'Open Crashes Directory',
-        click() { electron.shell.showItemInFolder(crashReporter.getCrashDirectoryPath()); }
+        click() { electron.shell.showItemInFolder(electron.crashReporter.getCrashesDirectory()); }
     },
     {
         type: 'separator'
