@@ -109,7 +109,12 @@ class Search {
      */
     indexBatch(messages) {
         return new Promise((resolve, reject) => {
-            if (!messages && !(JSON.parse(messages) instanceof Array)) {
+            if (!messages) {
+                reject(new Error('Messages is required'));
+                return;
+            }
+
+            if (!(JSON.parse(messages) instanceof Array)) {
                 reject(new Error('Messages must be an array'));
                 return;
             }
@@ -151,15 +156,19 @@ class Search {
      * @param message
      */
     realTimeIndexing(message) {
-        if (!Array.isArray(message)) {
-            return new Error('Messages should be an array');
+        if (!message) {
+            return new Error('Message is required');
+        }
+
+        if (!(JSON.parse(message) instanceof Array)){
+            return new Error('Message must be an array');
         }
 
         if (!this.isInitialized) {
             return new Error('Library not initialized');
         }
 
-        let result = libSymphonySearch.symSEIndexRealTime(this.realTimeIndex, JSON.stringify(message));
+        let result = libSymphonySearch.symSEIndexRealTime(this.realTimeIndex, message);
         return result === 0 ? "Successful" : result
     }
 

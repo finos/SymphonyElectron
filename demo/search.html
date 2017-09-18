@@ -122,7 +122,7 @@
     buttonIndex.addEventListener('click', function () {
         let batchIndex = batchNumber.value;
         search.readJson(batchIndex).then(function (res) {
-            search.indexBatch(res).then(function () {
+            search.indexBatch(JSON.stringify(res)).then(function () {
                 resultsEl.innerHTML = "Index created";
             });
         }).catch(function (err) {
@@ -185,7 +185,7 @@
 
     sendMessage.addEventListener('click', function () {
         if (realTimeIndexing.value !== "") {
-            let message = JSON.parse(realTimeIndexing.value);
+            let message = realTimeIndexing.value;
             resultsEl.innerHTML = search.realTimeIndexing(message);
         } else {
             resultsEl.innerHTML = "Please check the entered value"
