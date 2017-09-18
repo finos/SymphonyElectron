@@ -7,7 +7,6 @@ const isMac = require('../utils/misc.js').isMac;
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 const eventEmitter = require('../eventEmitter');
-const crashReporter = require('../crashReporter');
 
 let minimizeOnClose = false;
 let launchOnStartup = false;
