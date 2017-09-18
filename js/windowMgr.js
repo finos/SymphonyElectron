@@ -2,6 +2,7 @@
 
 const electron = require('electron');
 const app = electron.app;
+const crashReporter = electron.crashReporter;
 const BrowserWindow = electron.BrowserWindow;
 const path = require('path');
 const nodeURL = require('url');
@@ -19,7 +20,6 @@ const eventEmitter = require('./eventEmitter');
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField } = require('./config.js');
 const { isMac, isNodeEnv } = require('./utils/misc');
-const crashReporter = require('./crashReporter');
 
 // show dialog when certificate errors occur
 require('./dialogs/showCertError.js');
@@ -81,7 +81,7 @@ function createMainWindow(initialUrl) {
             // failed, use default bounds
             doCreateMainWindow(initialUrl, null);
         }
-    )
+    );
 }
 
 /**
@@ -93,7 +93,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     let url = initialUrl;
     let key = getGuid();
 
-    crashReporter.setupCrashReporter({'window': 'windowMgr'});
+    crashReporter.start({companyName: 'Symphony', uploadToServer: false, submitURL: 'http://localhost:3000/', extra: {'process': 'renderer / window manager'}});
     log.send(logLevels.INFO, 'creating main window url: ' + url);
 
     let newWinOpts = {

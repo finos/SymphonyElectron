@@ -3,6 +3,7 @@
 // Third Party Dependencies
 const electron = require('electron');
 const app = electron.app;
+const crashReporter = electron.crashReporter;
 const nodeURL = require('url');
 const squirrelStartup = require('electron-squirrel-startup');
 const AutoLaunch = require('auto-launch');
@@ -13,7 +14,6 @@ const {getConfigField, updateUserConfigWin, updateUserConfigMac} = require('./co
 const { isMac, isDevEnv } = require('./utils/misc.js');
 const protocolHandler = require('./protocolHandler');
 const getCmdLineArg = require('./utils/getCmdLineArg.js');
-const crashReporter = require('./crashReporter');
 
 require('electron-dl')();
 
@@ -31,6 +31,8 @@ require('./mainApiMgr.js');
 require('./memoryMonitor.js');
 
 const windowMgr = require('./windowMgr.js');
+
+crashReporter.start({companyName: 'Symphony', uploadToServer: false, submitURL: 'http://localhost:3000/', extra: {'process': 'main'}});
 
 // only allow a single instance of app.
 const shouldQuit = app.makeSingleInstance((argv) => {
@@ -215,21 +217,6 @@ function createWin(urlFromConfig) {
 }
 
 /**
- * Get crash info from global config and setup crash reporter for Main Process.
- */
-function initializeCrashReporter () {
-    getConfigField('crashReporterDetails').then(
-        function (data) {
-            crashReporter.setCrashReporterDetails(data);
-            crashReporter.setupCrashReporter({'window': 'main'});
-        }
-    ).catch(function (err) {
-        let title = 'Error loading configuration';
-        electron.dialog.showErrorBox(title, title + ': ' + err);
-    });
-}
-
-/**
  * processes protocol action for windows clients
  * @param argv {Array} an array of command line arguments
  */
@@ -270,6 +257,3 @@ function handleProtocolAction(uri) {
         protocolHandler.processProtocolAction(uri);
     }
 }
-
-// Initialize the crash reporter
-initializeCrashReporter();

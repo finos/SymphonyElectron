@@ -11,14 +11,13 @@
 // also to bring pieces of node.js:
 // https://github.com/electron/electron/issues/2984
 //
-const { ipcRenderer, remote } = require('electron');
+const { ipcRenderer, remote, crashReporter } = require('electron');
 
 const throttle = require('../utils/throttle.js');
 const apiEnums = require('../enums/api.js');
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 const getMediaSources = require('../desktopCapturer/getSources');
-const crashReporter = require('../crashReporter');
 
 require('../downloadManager');
 
@@ -54,7 +53,7 @@ const throttledSetBadgeCount = throttle(1000, function(count) {
     });
 });
 
-crashReporter.setupCrashReporter({'window': 'preloadMain'});
+crashReporter.start({companyName: 'Symphony', uploadToServer: false, submitURL: 'http://localhost:3000/', extra: {'process': 'preload script / renderer'}});
 createAPI();
 
 // creates API exposed from electron.
