@@ -32,7 +32,7 @@ require('./memoryMonitor.js');
 
 const windowMgr = require('./windowMgr.js');
 
-crashReporter.start({companyName: 'Symphony', uploadToServer: false, submitURL: 'http://localhost:3000/', extra: {'process': 'main'}});
+crashReporter.start({companyName: 'Symphony', uploadToServer: false, extra: {'process': 'main'}});
 
 // only allow a single instance of app.
 const shouldQuit = app.makeSingleInstance((argv) => {

@@ -93,7 +93,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     let url = initialUrl;
     let key = getGuid();
 
-    crashReporter.start({companyName: 'Symphony', uploadToServer: false, submitURL: 'http://localhost:3000/', extra: {'process': 'renderer / window manager'}});
+    crashReporter.start({companyName: 'Symphony', uploadToServer: false, extra: {'process': 'renderer / window manager'}});
     log.send(logLevels.INFO, 'creating main window url: ' + url);
 
     let newWinOpts = {
