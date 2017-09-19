@@ -178,7 +178,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
 
     mainWindow.webContents.on('did-fail-load', function (event, errorCode,
                                                          errorDesc, validatedURL) {
-        loadErrors.showLoadFailure(mainWindow, validatedURL, errorDesc, errorCode, retry);
+        loadErrors.showLoadFailure(mainWindow, validatedURL, errorDesc, errorCode, retry, false);
     });
 
     // In case a renderer process crashes, provide an
