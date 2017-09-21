@@ -55,8 +55,8 @@ let config = {
     // corner to put notifications
     // upper-right, upper-left, lower-right, lower-left
     startCorner: 'upper-right',
-    width: 300,
-    height: 80,
+    width: 370,
+    height: 70,
     borderRadius: 2,
     displayTime: 5000,
     animationSteps: 5,
@@ -76,17 +76,16 @@ let config = {
         boxSizing: 'border-box'
     },
     defaultStyleHeader: {
-        flex: '0 0 auto',
+        flex: '1 0 auto',
         display: 'flex',
-        flexDirection: 'row'
+        flexDirection: 'column'
     },
     defaultStyleImage: {
-        flex: '0 0 auto',
-        overflow: 'hidden',
-        height: 30,
-        width: 30,
-        marginLeft: 0,
-        marginRight: 8
+        height: 43,
+        position: 'absolute',
+        right: 13,
+        top: 13,
+        width: 43
     },
     defaultStyleClose: {
         position: 'absolute',
@@ -99,28 +98,36 @@ let config = {
         color: '#CCC'
     },
     defaultStyleTitle: {
-        fontFamily: 'Arial',
+        fontFamily: 'Lato-Bold',
         fontSize: 14,
         fontWeight: 700,
-        opacity: 0.87,
-        marginRight: 10,
-        alignSelf: 'center',
+        color: '#ffffff',
+        marginLeft: 52,
         overflow: 'hidden',
         display: '-webkit-box',
-        webkitLineClamp: 2,
+        webkitLineClamp: 1,
+        webkitBoxOrient: 'vertical',
+    },
+    defaultStylePod: {
+        fontFamily: 'Lato-Regular',
+        fontSize: 11,
+        color: '#397797',
+        marginLeft: 52,
+        overflow: 'hidden',
+        display: '-webkit-box',
+        webkitLineClamp: 1,
         webkitBoxOrient: 'vertical',
     },
     defaultStyleText: {
-        flex: '0 0 auto',
-        fontFamily: 'Calibri',
-        fontSize: 14,
-        fontWeight: 400,
-        opacity: 0.87,
-        margin: 0,
-        marginTop: 4,
+        fontFamily: 'Lato-Regular',
+        fontSize: 12,
+        color: '#ffffff',
+        marginTop: 6,
+        marginRight: 52,
+        marginLeft: 52,
         overflow: 'hidden',
         display: '-webkit-box',
-        webkitLineClamp: 2,
+        webkitLineClamp: 1,
         webkitBoxOrient: 'vertical',
         cursor: 'default'
     },

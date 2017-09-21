@@ -20,6 +20,7 @@ function setStyle(config) {
     let header = notiDoc.getElementById('header');
     let image = notiDoc.getElementById('image');
     let title = notiDoc.getElementById('title');
+    let pod = notiDoc.getElementById('pod');
     let message = notiDoc.getElementById('message');
     let close = notiDoc.getElementById('close');
 
@@ -38,6 +39,8 @@ function setStyle(config) {
     setStyleOnDomElement(config.defaultStyleImage, image);
 
     setStyleOnDomElement(config.defaultStyleTitle, title);
+
+    setStyleOnDomElement(config.defaultStylePod, pod);
 
     setStyleOnDomElement(config.defaultStyleText, message);
 
