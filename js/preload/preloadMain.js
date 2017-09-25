@@ -112,8 +112,14 @@ function createAPI() {
 
         /**
          * Provides API to crash the renderer process that calls this function
+         * Is only used for demos.
          */
         crashRendererProcess: function () {
+            // For practical purposes, we don't allow
+            // this method to work in non-dev environments
+            if (!process.env.ELECTRON_DEV) {
+                return;
+            }
             process.crash();
         },
 

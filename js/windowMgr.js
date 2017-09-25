@@ -195,7 +195,9 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             if (index === 0) {
                 mainWindow.reload();
             }
-            else mainWindow.close();
+            else {
+                mainWindow.close();
+            }
         });
     });
 
