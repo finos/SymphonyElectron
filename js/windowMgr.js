@@ -93,7 +93,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     let url = initialUrl;
     let key = getGuid();
 
-    crashReporter.start({companyName: 'Symphony', uploadToServer: false, extra: {'process': 'renderer / window manager'}});
+    crashReporter.start({companyName: 'Symphony', submitURL: 'http://localhost:3000', uploadToServer: false, extra: {'process': 'renderer / main window'}});
     log.send(logLevels.INFO, 'creating main window url: ' + url);
 
     let newWinOpts = {
@@ -336,6 +336,8 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                 if (browserWin) {
                     log.send(logLevels.INFO, 'loaded pop-out window url: ' + newWinParsedUrl);
 
+                    crashReporter.start({companyName: 'Symphony', submitURL: 'http://localhost:3000', uploadToServer: false, extra: {'process': 'renderer / pop out window - winKey -> ' + newWinKey}});
+
                     browserWin.winName = frameName;
                     browserWin.setAlwaysOnTop(alwaysOnTop);
 
@@ -343,6 +345,24 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                         removeWindowKey(newWinKey);
                         browserWin.removeListener('move', throttledBoundsChange);
                         browserWin.removeListener('resize', throttledBoundsChange);
+                    });
+
+                    browserWin.webContents.on('crashed', function () {
+                        const options = {
+                            type: 'error',
+                            title: 'Renderer Process Crashed',
+                            message: 'Oops! Looks like we have had a crash. Please reload or close this window.',
+                            buttons: ['Reload', 'Close']
+                        };
+
+                        electron.dialog.showMessageBox(options, function (index) {
+                            if (index === 0) {
+                                mainWindow.reload();
+                            }
+                            else {
+                                mainWindow.close();
+                            }
+                        });
                     });
 
                     addWindowKey(newWinKey, browserWin);
