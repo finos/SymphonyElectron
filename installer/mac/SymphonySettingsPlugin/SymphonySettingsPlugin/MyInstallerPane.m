@@ -32,20 +32,14 @@
 }
 
 - (void)willExitPane:(InstallerSectionDirection)dir {
-    
-    // Set the default protocol to https
-    NSString *protocol = @"https://";
-    
+        
     NSString *podUrl = [_podUrlTextBox stringValue];
     
     // If the pod url is empty, by default, set it to my.symphony.com
     if ([podUrl length] == 0) {
-        podUrl = @"corporate.symphony.com";
+        podUrl = @"https://corporate.symphony.com";
     }
-    
-    // Create the final url
-    NSString *finalUrl = [protocol stringByAppendingString: podUrl];
-    
+        
     // By default, set autoLaunchOnStart to true
     NSString *autoLaunchOnStart = @"true";
     
@@ -69,7 +63,7 @@
     }
     
     // Create an array with the selected options
-    NSArray *symSettings = [[NSArray alloc] initWithObjects:finalUrl, minimizeOnClose, autoLaunchOnStart, alwaysOnTop, nil];
+    NSArray *symSettings = [[NSArray alloc] initWithObjects:podUrl, minimizeOnClose, autoLaunchOnStart, alwaysOnTop, nil];
     
     // Create a string from the array with new-line as the separator
     NSString *symSettingsString = [symSettings componentsJoinedByString:@"\n"];
