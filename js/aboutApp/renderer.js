@@ -4,7 +4,7 @@ const { remote } = require('electron');
 renderDom();
 
 /**
- * Method that renders the data from user config
+ * Method that renders application data
  */
 function renderDom() {
     document.addEventListener('DOMContentLoaded', function () {
