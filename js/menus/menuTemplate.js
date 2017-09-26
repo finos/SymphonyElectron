@@ -7,6 +7,7 @@ const isMac = require('../utils/misc.js').isMac;
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 const eventEmitter = require('../eventEmitter');
+const aboutApp = require('../aboutApp');
 
 let minimizeOnClose = false;
 let launchOnStartup = false;
@@ -100,6 +101,13 @@ const template = [{
     submenu: [{
         label: 'Learn More',
         click() { electron.shell.openExternal('https://www.symphony.com'); }
+    },
+    {
+        label: 'App Version',
+        click(focusedWindow){
+            let windowName = focusedWindow ? focusedWindow.name : '';
+            aboutApp.openAboutWindow(windowName);
+        }
     }]
 }
 ];
