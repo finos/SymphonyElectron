@@ -66,6 +66,13 @@ const template = [{
         }
     },
     {
+        label: 'Open Crashes Directory',        
+        click() {
+            const crashesDirectory = electron.crashReporter.getCrashesDirectory() + '/completed';
+            electron.shell.showItemInFolder(crashesDirectory);
+        }
+    },
+    {
         type: 'separator'
     },
     {
@@ -97,10 +104,11 @@ const template = [{
 },
 {
     role: 'help',
-    submenu: [{
-        label: 'Learn More',
-        click() { electron.shell.openExternal('https://www.symphony.com'); }
-    }]
+    submenu: [
+        {
+            label: 'Learn More',
+            click() { electron.shell.openExternal('https://www.symphony.com'); }
+        }]
 }
 ];
 
