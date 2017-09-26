@@ -66,8 +66,11 @@ const template = [{
         }
     },
     {
-        label: 'Open Crashes Directory',
-        click() { electron.shell.showItemInFolder(electron.crashReporter.getCrashesDirectory()); }
+        label: 'Open Crashes Directory',        
+        click() {
+            const crashesDirectory = electron.crashReporter.getCrashesDirectory() + '/completed';
+            electron.shell.showItemInFolder(crashesDirectory);
+        }
     },
     {
         type: 'separator'
