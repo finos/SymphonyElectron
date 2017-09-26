@@ -13,5 +13,6 @@
 @property (weak) IBOutlet NSButton *autoLaunchCheckBox;
 @property (weak) IBOutlet NSTextField *podUrlTextBox;
 @property (weak) IBOutlet NSButton *alwaysOnTopCheckBox;
+@property (weak) IBOutlet NSTextField *podUrlAlertTextBox;
 
 @end

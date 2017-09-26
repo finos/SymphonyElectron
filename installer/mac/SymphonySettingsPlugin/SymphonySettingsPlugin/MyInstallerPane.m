@@ -14,6 +14,23 @@
     return [[NSBundle bundleForClass:[self class]] localizedStringForKey:@"PaneTitle" value:nil table:nil];
 }
 
+- (BOOL)shouldExitPane:(InstallerSectionDirection)dir {
+    
+    NSString *podUrl = [_podUrlTextBox stringValue];
+    NSURL *validUrl = [NSURL URLWithString:podUrl];
+    
+    if (!validUrl || !validUrl.host) {
+        
+        [_podUrlAlertTextBox setTitleWithMnemonic:@"Please enter a valid Pod url.\nIt should be in the format \"https://corporate.symphony.com\""];
+        
+        return NO;
+        
+    }
+    
+    return YES;
+    
+}
+
 - (void)willExitPane:(InstallerSectionDirection)dir {
     
     // Set the default protocol to https
@@ -23,7 +40,7 @@
     
     // If the pod url is empty, by default, set it to my.symphony.com
     if ([podUrl length] == 0) {
-        podUrl = @"my.symphony.com";
+        podUrl = @"corporate.symphony.com";
     }
     
     // Create the final url
