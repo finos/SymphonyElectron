@@ -240,6 +240,7 @@ function getTemplate(app) {
             }
         });
 
+        // This adds About Symphony under help menu for windows
         template[3].submenu.push({
             label: 'About Symphony',
             click(focusedWindow) {
