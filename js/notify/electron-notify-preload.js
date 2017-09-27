@@ -78,6 +78,45 @@ function setContents(event, notificationObj) {
 
     if (notificationObj.color) {
         container.style.backgroundColor = notificationObj.color;
+
+        if (notificationObj.color.match(/^(?:white|#fff(?:fff)?|rgba?\(\s*255\s*,\s*255\s*,\s*255\s*(?:,\s*1\s*)?\))$/i)) {
+            let logo = notiDoc.getElementById('symphony-logo');
+            logo.src = './assets/symphony-logo-black.png';
+        } else {
+
+            let logo = notiDoc.getElementById('symphony-logo');
+            let title = notiDoc.getElementById('title');
+            let pod = notiDoc.getElementById('pod');
+            let message = notiDoc.getElementById('message');
+
+            message.style.color = '#ffffff';
+            title.style.color = '#ffffff';
+            logo.src = './assets/symphony-logo-white.png';
+
+            switch (notificationObj.color){
+                case '#ecc96f':
+                    pod.style.color = '#917630';
+                    break;
+                case '#a2bf73':
+                    pod.style.color = '#5c6f3e';
+                    break;
+                case '#52c5ff':
+                    pod.style.color = '#397797';
+                    break;
+                case '#edac50':
+                    pod.style.color = '#8e6428';
+                    break;
+                case '#b76069':
+                    pod.style.color = '#6d2930';
+                    break;
+                case '#ac8dae':
+                    pod.style.color = '#553a57';
+                    break;
+                default:
+                    pod.style.color = '#adadad';
+                    break;
+            }
+        }
     }
 
     if (notificationObj.flash) {
