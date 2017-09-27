@@ -101,13 +101,6 @@ const template = [{
     submenu: [{
         label: 'Learn More',
         click() { electron.shell.openExternal('https://www.symphony.com'); }
-    },
-    {
-        label: 'App Version',
-        click(focusedWindow){
-            let windowName = focusedWindow ? focusedWindow.name : '';
-            aboutApp.openAboutWindow(windowName);
-        }
     }]
 }
 ];
@@ -244,6 +237,14 @@ function getTemplate(app) {
             label: 'Quit Symphony',
             click: function() {
                 app.quit();
+            }
+        });
+
+        template[3].submenu.push({
+            label: 'About Symphony',
+            click(focusedWindow) {
+                let windowName = focusedWindow ? focusedWindow.name : '';
+                aboutApp.openAboutWindow(windowName);
             }
         });
     }
