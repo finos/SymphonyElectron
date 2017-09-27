@@ -26,19 +26,26 @@ require('../downloadManager');
 // so loading the spellchecker in try catch so that we don't
 // block other method from loading
 document.addEventListener('DOMContentLoaded', () => {
-    try {
-        /* eslint-disable global-require */
-        const SpellCheckerHelper = require('../spellChecker').SpellCheckHelper;
-        /* eslint-enable global-require */
-        // Method to initialize spell checker
-        const spellChecker = new SpellCheckerHelper();
-        spellChecker.initializeSpellChecker();
-    } catch (err) {
-        /* eslint-disable no-console */
-        console.error('unable to load the spell checker module, hence, skipping the spell check feature ' + err);
-        /* eslint-enable no-console */
-    }
+    //loadSpellChecker();
 });
+
+/**
+ * Loads up the spell checker module
+ */
+// function loadSpellChecker() {
+//     try {
+//         /* eslint-disable global-require */
+//         const SpellCheckerHelper = require('../spellChecker').SpellCheckHelper;
+//         /* eslint-enable global-require */
+//         // Method to initialize spell checker
+//         const spellChecker = new SpellCheckerHelper();
+//         spellChecker.initializeSpellChecker();
+//     } catch (err) {
+//         /* eslint-disable no-console */
+//         console.error('unable to load the spell checker module, hence, skipping the spell check feature ' + err);
+//         /* eslint-enable no-console */
+//     }
+// }
 
 // hold ref so doesn't get GC'ed
 const local = {
