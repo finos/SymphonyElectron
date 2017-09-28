@@ -21,7 +21,7 @@
     
     if (!validUrl || !validUrl.host) {
         
-        [_podUrlAlertTextBox setTitleWithMnemonic:@"Please enter a valid Pod url.\nIt should be in the format \"https://corporate.symphony.com\""];
+        [_podUrlAlertTextBox setTitleWithMnemonic:@"Please enter a valid Pod url."];
         
         return NO;
         
