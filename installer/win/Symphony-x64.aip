@@ -10,6 +10,7 @@
     <ROW Property="AI_ThemeStyle" Value="default" MsiKey="AI_ThemeStyle"/>
     <ROW Property="AI_UNINSTALLER" Value="msiexec.exe"/>
     <ROW Property="ALLUSERS" Value="1" MultiBuildValue="DefaultBuild:2"/>
+    <ROW Property="ALWAYS_ON_TOP_LABEL" Value="false" Type="4"/>
     <ROW Property="ARPCOMMENTS" Value="This installer database contains the logic and data required to install [|ProductName]." ValueLocId="*"/>
     <ROW Property="ARPHELPLINK" Value="http://www.symphony.com"/>
     <ROW Property="ARPNOREPAIR" Value="1"/>
@@ -17,11 +18,14 @@
     <ROW Property="ARPSYSTEMCOMPONENT" Value="1"/>
     <ROW Property="ARPURLINFOABOUT" Value="http://www.symphony.com"/>
     <ROW Property="AUTO_START" Value="CheckBox"/>
+    <ROW Property="AUTO_START_LABEL" Value="true" Type="4"/>
     <ROW Property="BannerBitmap" Value="banner" MultiBuildValue="DefaultBuild:Banner.jpg" Type="1" MsiKey="BannerBitmap"/>
     <ROW Property="CTRLS" Value="2"/>
     <ROW Property="DialogBitmap" Value="dialog" MultiBuildValue="DefaultBuild:Tabloid.jpg" Type="1" MsiKey="DialogBitmap"/>
+    <ROW Property="INVALID_POD_URL" Value="valid" Type="4"/>
+    <ROW Property="MINIMIZE_ON_CLOSE_LABEL" Value="false" Type="4"/>
     <ROW Property="Manufacturer" Value="Symphony"/>
-    <ROW Property="POD_URL" Value="corporate.symphony.com" Type="4"/>
+    <ROW Property="POD_URL" Value="https://corporate.symphony.com" Type="4"/>
     <ROW Property="ProductCode" Value="1033:{F17EDEB4-A15F-46B9-83E9-8652CBC886B2} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="Symphony-Electron"/>
@@ -305,6 +309,7 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiBinaryComponent">
     <ROW Name="Banner.jpg" SourcePath="Assets\Banner.jpg"/>
+    <ROW Name="SymphonyWinInstallerValidatorAction.CA.dll" SourcePath="SymphonyWinInstallerValidatorAction.CA.dll"/>
     <ROW Name="Tabloid.jpg" SourcePath="Assets\Tabloid.jpg"/>
     <ROW Name="TxtUpdater.dll" SourcePath="&lt;AI_CUSTACTS&gt;TxtUpdater.dll"/>
     <ROW Name="aicustact.dll" SourcePath="&lt;AI_CUSTACTS&gt;aicustact.dll"/>
@@ -339,7 +344,6 @@
     <ROW Dialog_="FatalError" Control="Title" Type="Text" X="132" Y="10" Width="220" Height="47" Attributes="196611" Text="The [ProductName] [Wizard] ended prematurely" TextStyle="VerdanaBold13" Order="800" TextLocId="Control.Text.FatalError#Title" MsiKey="FatalError#Title"/>
     <ROW Dialog_="FilesInUse" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="400" MsiKey="FilesInUse#BannerBitmap"/>
     <ROW Dialog_="FilesInUse" Control="Logo" Type="Text" X="4" Y="228" Width="37" Height="12" Attributes="1" Text="Symphony" Order="600" TextLocId="Control.Text.FilesInUse#Logo" MsiKey="FilesInUse#Logo"/>
-    <ROW Dialog_="FolderDlg" Control="FolderDlgDialogInitializer" Type="DialogInitializer" X="0" Y="0" Width="0" Height="0" Attributes="0" Order="-1" TextLocId="-" HelpLocId="-" ExtDataLocId="-"/>
     <ROW Dialog_="FolderDlg" Control="FolderLabel" Type="Text" X="20" Y="92" Width="348" Height="12" Attributes="3" Text="&amp;Folder:" Help="|" Order="200" TextLocId="Control.Text.FolderDlg#FolderLabel" HelpLocId="Control.Help.FolderDlg#FolderLabel" MsiKey="FolderDlg#FolderLabel"/>
     <ROW Dialog_="FolderDlg" Control="FolderEdit" Type="PathEdit" X="18" Y="104" Width="252" Height="18" Attributes="7" Property="APPDIR" Help="|" Order="300" HelpLocId="Control.Help.FolderDlg#FolderEdit" MsiKey="FolderDlg#FolderEdit"/>
     <ROW Dialog_="FolderDlg" Control="Browse" Type="PushButton" X="276" Y="104" Width="90" Height="18" Attributes="3" Text="[ButtonText_Browse]" Help="|" Order="400" TextLocId="-" HelpLocId="Control.Help.FolderDlg#Browse" MsiKey="FolderDlg#Browse"/>
@@ -355,6 +359,7 @@
     <ROW Dialog_="FolderDlg" Control="MinimizeOnCloseCheckBox" Type="CheckBox" X="20" Y="199" Width="98" Height="13" Attributes="3" Property="MINIMIZE_ON_CLOSE" Text="Minimize On Close" Order="1500"/>
     <ROW Dialog_="FolderDlg" Control="LaunchOnStartupCheckBox" Type="CheckBox" X="172" Y="174" Width="98" Height="13" Attributes="3" Property="AUTO_START" Text="Launch On Startup" Order="1600"/>
     <ROW Dialog_="FolderDlg" Control="AlwaysOnTopCheckBox" Type="CheckBox" X="20" Y="174" Width="98" Height="13" Attributes="3" Property="ALWAYS_ON_TOP" Text="Always On Top" Order="1700"/>
+    <ROW Dialog_="FolderDlg" Control="Edit_1" Type="Edit" X="360" Y="143" Width="2" Height="9" Attributes="2" Property="INVALID_POD_URL" Text="{260}" Order="1800"/>
     <ROW Dialog_="InstallTypeDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048576" Text="[DialogBitmap]" Order="100" MsiKey="InstallTypeDlg#BannerBitmap"/>
     <ROW Dialog_="InstallTypeDlg" Control="Bitmap_background" Type="Bitmap" X="0" Y="0" Width="370" Height="234" Attributes="1" Text="[DialogBitmap]" Order="200"/>
     <ROW Dialog_="InstallTypeDlg" Control="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Next]" Order="300" TextLocId="-" MsiKey="InstallTypeDlg#Next" Options="1"/>
@@ -405,7 +410,30 @@
     <ROW Dialog_="ProgressDlg" Control="ProgressBar" Type="ProgressBar" X="35" Y="115" Width="300" Height="10" Attributes="65537" Text="Progress done" Order="1100" TextLocId="Control.Text.ProgressDlg#ProgressBar" MsiKey="ProgressDlg#ProgressBar"/>
     <ROW Dialog_="ResumeDlg" Control="Title" Type="Text" X="132" Y="10" Width="220" Height="47" Attributes="196611" Text="Resuming the [ProductName] [Wizard]" TextStyle="VerdanaBold13" Order="500" TextLocId="Control.Text.ResumeDlg#Title" MsiKey="ResumeDlg#Title"/>
     <ROW Dialog_="ResumeDlg" Control="Description" Type="Text" X="132" Y="61" Width="220" Height="40" Attributes="196611" Text="The [Wizard] will complete the installation of [ProductName] on your computer.  Click &quot;Install&quot; to continue or &quot;Cancel&quot; to exit the [Wizard]." Order="600" TextLocId="Control.Text.ResumeDlg#Description" MsiKey="ResumeDlg#Description"/>
+    <ROW Dialog_="SpawnWaitDialog" Control="Yes" Type="PushButton" X="72" Y="57" Width="56" Height="17" Attributes="3" Text="[ButtonText_Yes]" Order="100" TextLocId="-"/>
+    <ROW Dialog_="SpawnWaitDialog" Control="Icon" Type="Icon" X="15" Y="15" Width="24" Height="24" Attributes="5242881" Text="[InfoIcon]" Order="200"/>
+    <ROW Dialog_="SpawnWaitDialog" Control="Text" Type="Text" X="48" Y="15" Width="194" Height="30" Attributes="3" Text="New Spawn(Wait) Dialog" Order="300"/>
+    <ROW Dialog_="SpawnWaitDialog" Control="No" Type="PushButton" X="132" Y="57" Width="56" Height="17" Attributes="3" Text="[ButtonText_No]" Order="400" TextLocId="-"/>
     <ROW Dialog_="UserExit" Control="Title" Type="Text" X="132" Y="10" Width="220" Height="47" Attributes="196611" Text="The [ProductName] [Wizard] was interrupted" TextStyle="VerdanaBold13" Order="500" TextLocId="Control.Text.UserExit#Title" MsiKey="UserExit#Title"/>
+    <ROW Dialog_="VerifyDlg" Control="TemplateDlgDialogInitializer" Type="DialogInitializer" X="0" Y="0" Width="0" Height="0" Attributes="0" Order="-1" TextLocId="-" HelpLocId="-" ExtDataLocId="-"/>
+    <ROW Dialog_="VerifyDlg" Control="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Next]" Order="100" TextLocId="-" Options="1"/>
+    <ROW Dialog_="VerifyDlg" Control="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Cancel]" Order="200" TextLocId="-" Options="1"/>
+    <ROW Dialog_="VerifyDlg" Control="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Back]" Order="300" TextLocId="-" Options="1"/>
+    <ROW Dialog_="VerifyDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="400"/>
+    <ROW Dialog_="VerifyDlg" Control="BannerLine" Type="Line" X="0" Y="44" Width="372" Height="0" Attributes="1" Order="500"/>
+    <ROW Dialog_="VerifyDlg" Control="BottomLine" Type="Line" X="5" Y="234" Width="368" Height="0" Attributes="1" Order="600"/>
+    <ROW Dialog_="VerifyDlg" Control="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Attributes="196611" Text="Veriy the information entered" Order="700"/>
+    <ROW Dialog_="VerifyDlg" Control="Logo" Type="Text" X="4" Y="228" Width="70" Height="12" Attributes="1" Text="Advanced Installer" Order="800"/>
+    <ROW Dialog_="VerifyDlg" Control="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Attributes="196611" Text="Verify" TextStyle="[DlgTitleFont]" Order="900"/>
+    <ROW Dialog_="VerifyDlg" Control="Text_1" Type="Text" X="25" Y="88" Width="76" Height="17" Attributes="65539" Property="TEXT_1_PROP" Text="Symphony POD Url : " Order="1000"/>
+    <ROW Dialog_="VerifyDlg" Control="Text_2" Type="Text" X="110" Y="88" Width="145" Height="17" Attributes="65539" Property="TEXT_2_PROP" Text="[POD_URL]" Order="1100"/>
+    <ROW Dialog_="VerifyDlg" Control="Text_3" Type="Text" X="25" Y="114" Width="76" Height="13" Attributes="65539" Property="TEXT_3_PROP" Text="Always on Top : " Order="1200"/>
+    <ROW Dialog_="VerifyDlg" Control="Text_4" Type="Text" X="110" Y="114" Width="145" Height="10" Attributes="65539" Property="ALWAYS_ON_TOP_LABEL" Text="[ALWAYS_ON_TOP_LABEL]" Order="1300"/>
+    <ROW Dialog_="VerifyDlg" Control="Text_5" Type="Text" X="25" Y="139" Width="76" Height="13" Attributes="65539" Property="TEXT_3_PROP_1" Text="Launch on Startup : " Order="1400"/>
+    <ROW Dialog_="VerifyDlg" Control="Text_6" Type="Text" X="110" Y="139" Width="145" Height="10" Attributes="65539" Property="AUTO_START_LABEL" Text="[AUTO_START_LABEL]" Order="1500"/>
+    <ROW Dialog_="VerifyDlg" Control="Text_7" Type="Text" X="25" Y="164" Width="76" Height="13" Attributes="65539" Property="TEXT_3_PROP_1_1" Text="Minimize on Close : " Order="1600"/>
+    <ROW Dialog_="VerifyDlg" Control="Text_8" Type="Text" X="110" Y="164" Width="145" Height="10" Attributes="65539" Property="MINIMIZE_ON_CLOSE_LABEL" Text="[MINIMIZE_ON_CLOSE_LABEL]" Order="1700"/>
+    <ROW Dialog_="VerifyDlg" Control="Text_9" Type="Text" X="25" Y="60" Width="321" Height="25" Attributes="65539" Property="TEXT_9_PROP" Text="You seem to have entered an invalid pod url. Please go back and correct it." Order="1800"/>
     <ROW Dialog_="VerifyReadyDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="300" MsiKey="VerifyReadyDlg#BannerBitmap"/>
     <ROW Dialog_="VerifyReadyDlg" Control="Logo" Type="Text" X="5" Y="228" Width="39" Height="12" Attributes="1" Text="Symphony" Order="500" TextLocId="Control.Text.VerifyReadyDlg#Logo" MsiKey="VerifyReadyDlg#Logo"/>
     <ROW Dialog_="VerifyReadyDlg" Control="Text" Type="Text" X="25" Y="70" Width="320" Height="21" Attributes="196611" Text="Click &quot;Install&quot; to begin the installation.  If you want to review or change any of your installation settings, click &quot;Back&quot;.  Click &quot;Cancel&quot; to exit the wizard." Order="700" TextLocId="Control.Text.VerifyReadyDlg#Text" MsiKey="VerifyReadyDlg#Text"/>
@@ -418,6 +446,16 @@
     <ATTRIBUTE name="DeletedRows" value="ExitDialog#ViewReadmeText@FolderDlg#Logo@InstallTypeDlg#BannerLine@InstallTypeDlg#InstallTypeText@InstallTypeDlg#Logo@InstallTypeDlg#Title@ProgressDlg#Logo@InstallTypeDlg#Description"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlConditionComponent">
+    <ROW Dialog_="VerifyDlg" Control_="Next" Action="Disable" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
+    <ROW Dialog_="VerifyDlg" Control_="Text_1" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
+    <ROW Dialog_="VerifyDlg" Control_="Text_2" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
+    <ROW Dialog_="VerifyDlg" Control_="Text_3" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
+    <ROW Dialog_="VerifyDlg" Control_="Text_4" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
+    <ROW Dialog_="VerifyDlg" Control_="Text_5" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
+    <ROW Dialog_="VerifyDlg" Control_="Text_6" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
+    <ROW Dialog_="VerifyDlg" Control_="Text_7" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
+    <ROW Dialog_="VerifyDlg" Control_="Text_8" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
+    <ROW Dialog_="VerifyDlg" Control_="Text_9" Action="Hide" Condition="INVALID_POD_URL = &quot;valid&quot;"/>
     <ATTRIBUTE name="DeletedRows" value="ExitDialog#ViewReadmeText#Hide#((NOT AI_INSTALL) AND (NOT AI_PATCH)) OR ((CTRLS &lt;&gt; 1) AND (CTRLS &lt;&gt; 3))"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlEventComponent">
@@ -439,18 +477,24 @@
     <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_PATCH" Ordering="199"/>
     <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="PatchWelcomeDlg" Condition="AI_PATCH" Ordering="203"/>
     <ROW Dialog_="InstallTypeDlg" Control_="Next" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="101"/>
-    <ROW Dialog_="FolderDlg" Control_="Next" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="201"/>
+    <ROW Dialog_="FolderDlg" Control_="Next" Event="NewDialog" Argument="VerifyDlg" Condition="AI_INSTALL" Ordering="201"/>
     <ROW Dialog_="FolderDlg" Control_="Back" Event="NewDialog" Argument="InstallTypeDlg" Condition="AI_INSTALL" Ordering="1"/>
-    <ROW Dialog_="FolderDlg" Control_="Next" Event="SpawnDialog" Argument="OutOfRbDiskDlg" Condition="AI_INSTALL AND OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST=&quot;P&quot; OR NOT PROMPTROLLBACKCOST)" Ordering="202" Options="2"/>
-    <ROW Dialog_="FolderDlg" Control_="Next" Event="EnableRollback" Argument="False" Condition="AI_INSTALL AND OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST=&quot;D&quot;" Ordering="203" Options="2"/>
-    <ROW Dialog_="FolderDlg" Control_="Next" Event="SpawnDialog" Argument="OutOfDiskDlg" Condition="AI_INSTALL AND ( (OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST=&quot;F&quot;) )" Ordering="204" Options="2"/>
-    <ROW Dialog_="FolderDlg" Control_="FolderDlgDialogInitializer" Event="[AI_ButtonText_Next_Orig]" Argument="[ButtonText_Next]" Condition="AI_INSTALL" Ordering="0" Options="2"/>
-    <ROW Dialog_="FolderDlg" Control_="FolderDlgDialogInitializer" Event="[ButtonText_Next]" Argument="[[AI_CommitButton]]" Condition="AI_INSTALL" Ordering="1" Options="2"/>
-    <ROW Dialog_="FolderDlg" Control_="FolderDlgDialogInitializer" Event="[AI_Text_Next_Orig]" Argument="[Text_Next]" Condition="AI_INSTALL" Ordering="2" Options="2"/>
-    <ROW Dialog_="FolderDlg" Control_="FolderDlgDialogInitializer" Event="[Text_Next]" Argument="[Text_Install]" Condition="AI_INSTALL" Ordering="3" Options="2"/>
-    <ROW Dialog_="FolderDlg" Control_="Back" Event="[ButtonText_Next]" Argument="[AI_ButtonText_Next_Orig]" Condition="AI_INSTALL" Ordering="2" Options="2"/>
-    <ROW Dialog_="FolderDlg" Control_="Back" Event="[Text_Next]" Argument="[AI_Text_Next_Orig]" Condition="AI_INSTALL" Ordering="3" Options="2"/>
-    <ROW Dialog_="FolderDlg" Control_="Next" Event="DoAction" Argument="CheckBoxesScript" Condition="AI_INSTALL" Ordering="205"/>
+    <ROW Dialog_="FolderDlg" Control_="Next" Event="DoAction" Argument="PodUrlValidation" Condition="AI_INSTALL" Ordering="215"/>
+    <ROW Dialog_="SpawnWaitDialog" Control_="No" Event="EndDialog" Argument="Return" Condition="1" Ordering="100"/>
+    <ROW Dialog_="SpawnWaitDialog" Control_="Yes" Event="EndDialog" Argument="Return" Condition="1" Ordering="100"/>
+    <ROW Dialog_="VerifyDlg" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="100"/>
+    <ROW Dialog_="VerifyDlg" Control_="Next" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="VerifyDlg" Control_="Back" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="VerifyDlg" Control_="Next" Event="SpawnDialog" Argument="OutOfRbDiskDlg" Condition="AI_INSTALL AND OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST=&quot;P&quot; OR NOT PROMPTROLLBACKCOST)" Ordering="2" Options="2"/>
+    <ROW Dialog_="VerifyDlg" Control_="Next" Event="EnableRollback" Argument="False" Condition="AI_INSTALL AND OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST=&quot;D&quot;" Ordering="3" Options="2"/>
+    <ROW Dialog_="VerifyDlg" Control_="Next" Event="SpawnDialog" Argument="OutOfDiskDlg" Condition="AI_INSTALL AND ( (OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST=&quot;F&quot;) )" Ordering="4" Options="2"/>
+    <ROW Dialog_="VerifyDlg" Control_="TemplateDlgDialogInitializer" Event="[AI_ButtonText_Next_Orig]" Argument="[ButtonText_Next]" Condition="AI_INSTALL" Ordering="0" Options="2"/>
+    <ROW Dialog_="VerifyDlg" Control_="TemplateDlgDialogInitializer" Event="[ButtonText_Next]" Argument="[[AI_CommitButton]]" Condition="AI_INSTALL" Ordering="1" Options="2"/>
+    <ROW Dialog_="VerifyDlg" Control_="TemplateDlgDialogInitializer" Event="[AI_Text_Next_Orig]" Argument="[Text_Next]" Condition="AI_INSTALL" Ordering="2" Options="2"/>
+    <ROW Dialog_="VerifyDlg" Control_="TemplateDlgDialogInitializer" Event="[Text_Next]" Argument="[Text_Install]" Condition="AI_INSTALL" Ordering="3" Options="2"/>
+    <ROW Dialog_="VerifyDlg" Control_="Back" Event="[ButtonText_Next]" Argument="[AI_ButtonText_Next_Orig]" Condition="AI_INSTALL" Ordering="2" Options="2"/>
+    <ROW Dialog_="VerifyDlg" Control_="Back" Event="[Text_Next]" Argument="[AI_Text_Next_Orig]" Condition="AI_INSTALL" Ordering="3" Options="2"/>
+    <ROW Dialog_="VerifyDlg" Control_="Next" Event="DoAction" Argument="SetCheckBoxesValues" Condition="AI_INSTALL" Ordering="5"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCreateFolderComponent">
     <ROW Directory_="Symphony_Dir" Component_="Symphony" ManualDelete="false"/>
@@ -473,15 +517,20 @@
     <ROW Action="AI_TxtUpdaterConfig" Type="11265" Source="TxtUpdater.dll" Target="OnTxtUpdaterConfig" WithoutSeq="true"/>
     <ROW Action="AI_TxtUpdaterInstall" Type="1" Source="TxtUpdater.dll" Target="OnTxtUpdaterInstall"/>
     <ROW Action="AI_TxtUpdaterRollback" Type="11521" Source="TxtUpdater.dll" Target="OnTxtUpdaterRollback" WithoutSeq="true"/>
-    <ROW Action="CheckBoxesScript" Type="37" Target="Session.Property(&quot;MIN_ON_CLOSE_PROP&quot;) = (Session.Property(&quot;MIN_ON_CLOSE&quot;) === &quot;Checkbox&quot; ? &quot;true&quot; : &quot;false&quot;);" TargetUnformatted="Session.Property(&quot;AUTO_START&quot;) = (Session.Property(&quot;AUTO_START&quot;) === &quot;true&quot; ? &quot;true&quot; : &quot;false&quot;);&#13;&#10;Session.Property(&quot;MINIMIZE_ON_CLOSE&quot;) = (Session.Property(&quot;MINIMIZE_ON_CLOSE&quot;) === &quot;true&quot; ? &quot;true&quot; : &quot;false&quot;);&#13;&#10;Session.Property(&quot;ALWAYS_ON_TOP&quot;) = (Session.Property(&quot;ALWAYS_ON_TOP&quot;) === &quot;true&quot; ? &quot;true&quot; : &quot;false&quot;);" WithoutSeq="true"/>
     <ROW Action="KillParagon" Type="1" Source="aicustact.dll" Target="StopProcess" Options="1" AdditionalSeq="AI_DATA_SETTER_2"/>
     <ROW Action="KillRenderer" Type="1" Source="aicustact.dll" Target="StopProcess" Options="1" AdditionalSeq="AI_DATA_SETTER"/>
+    <ROW Action="PodUrlValidation" Type="1" Source="SymphonyWinInstallerValidatorAction.CA.dll" Target="ValidatePodUrl" WithoutSeq="true"/>
     <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:[AI_UserProgramFiles][Manufacturer]\[ProductName]"/>
     <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
     <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
+    <ROW Action="SetCheckBoxesValues" Type="1" Source="SymphonyWinInstallerValidatorAction.CA.dll" Target="SetCheckBoxValues" WithoutSeq="true"/>
     <ROW Action="Symphony.exe" Type="1042" Source="Symphony.exe" Target="--install --peruser"/>
     <ROW Action="Symphony.exe_All_User" Type="1042" Source="Symphony.exe" Target="--install"/>
     <ROW Action="UninstallPreviousVersions" Type="1" Source="aicustact.dll" Target="UninstallPreviousVersions" Options="1"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiDialogComponent">
+    <ROW Dialog="SpawnWaitDialog" HCentering="50" VCentering="50" Width="260" Height="85" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Yes" Control_Cancel="No"/>
+    <ROW Dialog="VerifyDlg" HCentering="50" VCentering="50" Width="370" Height="270" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiIconsComponent">
     <ROW Name="icon.exe" SourcePath="..\..\build\icon.ico" Index="0"/>
