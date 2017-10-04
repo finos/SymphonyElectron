@@ -114,6 +114,7 @@ let config = {
         color: '#adadad',
         marginLeft: 52,
         overflow: 'hidden',
+        filter: 'brightness(70%)',
         display: '-webkit-box',
         webkitLineClamp: 1,
         webkitBoxOrient: 'vertical',

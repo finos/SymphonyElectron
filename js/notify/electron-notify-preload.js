@@ -91,31 +91,8 @@ function setContents(event, notificationObj) {
 
             message.style.color = '#ffffff';
             title.style.color = '#ffffff';
+            pod.style.color = notificationObj.color;
             logo.src = './assets/symphony-logo-white.png';
-
-            switch (notificationObj.color){
-                case '#ecc96f':
-                    pod.style.color = '#917630';
-                    break;
-                case '#a2bf73':
-                    pod.style.color = '#5c6f3e';
-                    break;
-                case '#52c5ff':
-                    pod.style.color = '#397797';
-                    break;
-                case '#edac50':
-                    pod.style.color = '#8e6428';
-                    break;
-                case '#b76069':
-                    pod.style.color = '#6d2930';
-                    break;
-                case '#ac8dae':
-                    pod.style.color = '#553a57';
-                    break;
-                default:
-                    pod.style.color = '#adadad';
-                    break;
-            }
         }
     }
 
