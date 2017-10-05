@@ -93,7 +93,6 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     let url = initialUrl;
     let key = getGuid();
 
-    crashReporter.start({companyName: 'Symphony', submitURL: 'http://localhost:3000', uploadToServer: false, extra: {'process': 'renderer / main window'}});
     log.send(logLevels.INFO, 'creating main window url: ' + url);
 
     let newWinOpts = {
@@ -252,6 +251,23 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         });
     });
 
+    getConfigField('url')
+    .then(initializeCrashReporter)
+    .catch(app.quit);
+    
+    function initializeCrashReporter(podUrl) {        
+        getConfigField('crashReporter')
+        .then((crashReporterConfig) => {
+            log.send(logLevels.INFO, 'Initializing crash reporter on the main window!');
+            crashReporter.start({companyName: crashReporterConfig.companyName, submitURL: crashReporterConfig.submitURL, uploadToServer: crashReporterConfig.uploadToServer, extra: {'process': 'renderer / main window', podUrl: podUrl}});
+            log.send(logLevels.INFO, 'initialized crash reporter on the main window!');
+            mainWindow.webContents.send('register-crash-reporter', {companyName: crashReporterConfig.companyName, submitURL: crashReporterConfig.submitURL, uploadToServer: crashReporterConfig.uploadToServer, process: 'preload script / main window renderer'});
+        })
+        .catch((err) => {                        
+            log.send(logLevels.ERROR, 'Unable to initialize crash reporter in the main window. Error is -> ' + err);
+        });
+    }
+
     // bug in electron is preventing this from working in sandboxed evt...
     // https://github.com/electron/electron/issues/8841
     mainWindow.webContents.on('will-navigate', function(event, willNavUrl) {
@@ -336,7 +352,19 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                 if (browserWin) {
                     log.send(logLevels.INFO, 'loaded pop-out window url: ' + newWinParsedUrl);
 
-                    crashReporter.start({companyName: 'Symphony', submitURL: 'http://localhost:3000', uploadToServer: false, extra: {'process': 'renderer / pop out window - winKey -> ' + newWinKey}});
+                    getConfigField('url')
+                    .then((podUrl) => {
+                        getConfigField('crashReporter')
+                        .then((crashReporterConfig) => {                            
+                            crashReporter.start({companyName: crashReporterConfig.companyName, submitURL: crashReporterConfig.submitURL, uploadToServer: crashReporterConfig.uploadToServer, extra: {'process': 'renderer / child window', podUrl: podUrl}});
+                            log.send(logLevels.INFO, 'initialized crash reporter on a child window!');
+                            browserWin.webContents.send('register-crash-reporter', {companyName: crashReporterConfig.companyName, submitURL: crashReporterConfig.submitURL, uploadToServer: crashReporterConfig.uploadToServer, process: 'preload script / child window renderer'});
+                        })
+                        .catch((err) => {
+                            log.send(logLevels.ERROR, 'Unable to initialize crash reporter in the child window. Error is -> ' + err);
+                        });
+                    })
+                    .catch(app.quit);
 
                     browserWin.winName = frameName;
                     browserWin.setAlwaysOnTop(alwaysOnTop);
@@ -363,7 +391,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                                 mainWindow.close();
                             }
                         });
-                    });
+                    });                    
 
                     addWindowKey(newWinKey, browserWin);
 
@@ -371,12 +399,12 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                     let throttledBoundsChange = throttle(1000,
                         sendChildWinBoundsChange.bind(null, browserWin));
                     browserWin.on('move', throttledBoundsChange);
-                    browserWin.on('resize', throttledBoundsChange);
+                    browserWin.on('resize', throttledBoundsChange);                    
                 }
             });
         } else {
             event.preventDefault();
-            openUrlInDefaultBrower(newWinUrl)
+            openUrlInDefaultBrower(newWinUrl);
         }
     });
 
