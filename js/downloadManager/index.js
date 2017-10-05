@@ -110,6 +110,7 @@ function createDOM(arg) {
             let h2FileName = document.createElement('h2');
             h2FileName.classList.add('text-cutoff');
             h2FileName.innerHTML = fileDisplayName;
+            h2FileName.title = fileDisplayName;
             fileNameDiv.appendChild(h2FileName);
 
             let fileProgressTitle = document.createElement('span');

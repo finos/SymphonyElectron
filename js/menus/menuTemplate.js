@@ -7,6 +7,7 @@ const isMac = require('../utils/misc.js').isMac;
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 const eventEmitter = require('../eventEmitter');
+const aboutApp = require('../aboutApp');
 
 let minimizeOnClose = false;
 let launchOnStartup = false;
@@ -66,6 +67,13 @@ const template = [{
         }
     },
     {
+        label: 'Open Crashes Directory',        
+        click() {
+            const crashesDirectory = electron.crashReporter.getCrashesDirectory() + '/completed';
+            electron.shell.showItemInFolder(crashesDirectory);
+        }
+    },
+    {
         type: 'separator'
     },
     {
@@ -97,10 +105,11 @@ const template = [{
 },
 {
     role: 'help',
-    submenu: [{
-        label: 'Learn More',
-        click() { electron.shell.openExternal('https://www.symphony.com'); }
-    }]
+    submenu: [
+        {
+            label: 'Learn More',
+            click() { electron.shell.openExternal('https://www.symphony.com'); }
+        }]
 }
 ];
 
@@ -236,6 +245,15 @@ function getTemplate(app) {
             label: 'Quit Symphony',
             click: function() {
                 app.quit();
+            }
+        });
+
+        // This adds About Symphony under help menu for windows
+        template[3].submenu.push({
+            label: 'About Symphony',
+            click(focusedWindow) {
+                let windowName = focusedWindow ? focusedWindow.name : '';
+                aboutApp.openAboutWindow(windowName);
             }
         });
     }
