@@ -7,6 +7,7 @@ const isMac = require('../utils/misc.js').isMac;
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 const eventEmitter = require('../eventEmitter');
+const aboutApp = require('../aboutApp');
 
 let minimizeOnClose = false;
 let launchOnStartup = false;
@@ -244,6 +245,15 @@ function getTemplate(app) {
             label: 'Quit Symphony',
             click: function() {
                 app.quit();
+            }
+        });
+
+        // This adds About Symphony under help menu for windows
+        template[3].submenu.push({
+            label: 'About Symphony',
+            click(focusedWindow) {
+                let windowName = focusedWindow ? focusedWindow.name : '';
+                aboutApp.openAboutWindow(windowName);
             }
         });
     }
