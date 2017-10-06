@@ -87,7 +87,7 @@ function openConfigurationWindow(windowName) {
         const windowWidth = Math.round(width * 0.5);
         const windowHeight = Math.round(height * 0.5);
 
-        // Calculating the center of the window
+        // Calculating the center of the parent window
         // to place the configuration window
         const centerX = x + width / 2.0;
         const centerY = y + height / 2.0;
