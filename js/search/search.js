@@ -282,7 +282,6 @@ class Search {
             try {
                 let ret = returnedResult.readCString();
                 resolve(JSON.parse(ret));
-                console.log(JSON.parse(ret));
             } finally {
                 libSymphonySearch.symSEFreeResult(returnedResult);
             }
@@ -382,7 +381,6 @@ class Search {
                 q = q + " AND " + additionalAttachmentQuery
             }
         }
-        console.log(q);
         return q;
     }
 
