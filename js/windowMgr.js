@@ -395,6 +395,11 @@ function doCreateMainWindow(initialUrl, initialBounds) {
 
                     addWindowKey(newWinKey, browserWin);
 
+                    // Method that sends bound changes as soon
+                    // as a new window is created
+                    // issue https://perzoinc.atlassian.net/browse/ELECTRON-172
+                    sendChildWinBoundsChange(browserWin);
+
                     // throttle changes so we don't flood client.
                     let throttledBoundsChange = throttle(1000,
                         sendChildWinBoundsChange.bind(null, browserWin));
