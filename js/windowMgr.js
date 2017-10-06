@@ -347,10 +347,10 @@ function doCreateMainWindow(initialUrl, initialBounds) {
 
                         electron.dialog.showMessageBox(options, function (index) {
                             if (index === 0) {
-                                mainWindow.reload();
+                                browserWin.reload();
                             }
                             else {
-                                mainWindow.close();
+                                browserWin.close();
                             }
                         });
                     });
@@ -361,6 +361,12 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                     browserWin.webContents.on('new-window', (childEvent, childWinUrl) => {
                         childEvent.preventDefault();
                         openUrlInDefaultBrowser(childWinUrl);
+                    });
+
+                    // Clear up the browser window once the window is closed
+                    // to avoid leakage
+                    browserWin.on('closed', () => {
+                        browserWin = null;
                     });
 
                     addWindowKey(newWinKey, browserWin);
