@@ -360,7 +360,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                     // a new window
                     browserWin.webContents.on('new-window', (childEvent, childWinUrl) => {
                         childEvent.preventDefault();
-                        openUrlInDefaultBrower(childWinUrl);
+                        openUrlInDefaultBrowser(childWinUrl);
                     });
 
                     addWindowKey(newWinKey, browserWin);
@@ -379,7 +379,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             });
         } else {
             event.preventDefault();
-            openUrlInDefaultBrower(newWinUrl);
+            openUrlInDefaultBrowser(newWinUrl);
         }
     });
 
@@ -521,7 +521,7 @@ function sendChildWinBoundsChange(window) {
  * Opens an external url in the system's default browser
  * @param urlToOpen
  */
-function openUrlInDefaultBrower(urlToOpen) {
+function openUrlInDefaultBrowser(urlToOpen) {
     if (urlToOpen) {        
         electron.shell.openExternal(urlToOpen);
     }
