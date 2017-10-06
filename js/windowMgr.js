@@ -250,17 +250,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                 webContents.send('downloadCompleted', data);
             }
         });
-    });
-
-    // bug in electron is preventing this from working in sandboxed evt...
-    // https://github.com/electron/electron/issues/8841
-    mainWindow.webContents.on('will-navigate', function(event, willNavUrl) {
-        if (!sandboxed) {
-            return;
-        }
-        event.preventDefault();
-        openUrlInDefaultBrower(willNavUrl);
-    });
+    });    
 
     // open external links in default browser - a tag with href='_blank' or window.open
     mainWindow.webContents.on('new-window', function (event, newWinUrl,
@@ -365,6 +355,11 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                         });
                     });
 
+                    browserWin.webContents.on('new-window', (childEvent, childWinUrl) => {
+                        childEvent.preventDefault();
+                        openUrlInDefaultBrower(childWinUrl);
+                    });
+
                     addWindowKey(newWinKey, browserWin);
 
                     // Method that sends bound changes as soon
@@ -381,7 +376,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             });
         } else {
             event.preventDefault();
-            openUrlInDefaultBrower(newWinUrl)
+            openUrlInDefaultBrower(newWinUrl);
         }
     });
 
@@ -524,7 +519,7 @@ function sendChildWinBoundsChange(window) {
  * @param urlToOpen
  */
 function openUrlInDefaultBrower(urlToOpen) {
-    if (urlToOpen) {
+    if (urlToOpen) {        
         electron.shell.openExternal(urlToOpen);
     }
 }
