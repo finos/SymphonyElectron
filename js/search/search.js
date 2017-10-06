@@ -219,7 +219,7 @@ class Search {
      * @param {String} query
      * @param {Array} senderIds
      * @param {Array} threadIds
-     * @param {String} attachments
+     * @param {String} fileType
      * @param {String} startDate
      * @param {String} endDate
      * @param {Number} limit
@@ -227,7 +227,7 @@ class Search {
      * @param {Number} sortOrder
      * @returns {Promise}
      */
-    searchQuery(query, senderIds, threadIds, attachments, startDate,
+    searchQuery(query, senderIds, threadIds, fileType, startDate,
                 endDate, limit, offset, sortOrder) {
 
         let _limit = limit;
@@ -245,7 +245,7 @@ class Search {
                 return;
             }
 
-            let q = Search.constructQuery(query, senderIds, threadIds);
+            let q = Search.constructQuery(query, senderIds, threadIds, fileType);
 
             if (q === undefined) {
                 reject(new Error('Search query error'));
@@ -282,6 +282,7 @@ class Search {
             try {
                 let ret = returnedResult.readCString();
                 resolve(JSON.parse(ret));
+                console.log(JSON.parse(ret));
             } finally {
                 libSymphonySearch.symSEFreeResult(returnedResult);
             }
@@ -326,9 +327,10 @@ class Search {
      * @param {String} searchQuery
      * @param {Array} senderId
      * @param {Array} threadId
+     * @param fileType
      * @returns {string}
      */
-    static constructQuery(searchQuery, senderId, threadId) {
+    static constructQuery(searchQuery, senderId, threadId, fileType) {
 
         let query = "";
         if(searchQuery !== undefined) {
@@ -346,16 +348,41 @@ class Search {
             hashCashTagQuery += ")";
         }
 
+        let hasAttachments = false;
+        let additionalAttachmentQuery = "";
+        if(fileType) {
+            hasAttachments = true;
+            if(fileType === "attachment") {
+                additionalAttachmentQuery = "(hasfiles:true)";
+            } else {
+                additionalAttachmentQuery = "(filetype:(" + fileType +"))";
+            }
+        }
+
+
         if (query.length > 0 ) {
-            q = "(text:(" + query + ")" + hashCashTagQuery + ")";
+            q = "((text:(" + query + "))" + hashCashTagQuery ;
+            if(hasAttachments) {
+                q += " OR (filename:(" + query + "))" ;
+            }
+            q = q + ")";
         }
 
         q = Search.appendFilterQuery(q, "senderId", senderId);
         q = Search.appendFilterQuery(q, "threadId", threadId);
 
         if(q === "") {
-            q = undefined; //will be handled in the search function
+            if(hasAttachments) {
+                q = additionalAttachmentQuery;
+            } else {
+                q = undefined; //will be handled in the search function
+            }
+        } else {
+            if(hasAttachments){
+                q = q + " AND " + additionalAttachmentQuery
+            }
         }
+        console.log(q);
         return q;
     }
 

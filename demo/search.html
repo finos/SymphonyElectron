@@ -43,6 +43,10 @@
     </div>
     <br>
     <div>
+        <label for="has">Has:</label><input id="has">
+    </div>
+    <br>
+    <div>
         <label for="offset">Offset:</label><input id="offset" type="number" value="0" size=5>
         <label for="limit">Limit:</label><input id="limit" type="number" value="25" size=5>
     </div>
@@ -99,7 +103,7 @@
 </div>
 
 <script>
-    var search = new ssf.Search("7078106230763", "7078106230763");
+    var search = new ssf.Search("7078106230763", "k2rbHBd5CgU3/PKLFUKUYkmuhCiL2Gw2bnsD7MdaZrU=");
     var buttonEl = document.getElementById('search');
     var merge = document.getElementById('merge');
     var buttonIndex = document.getElementById('index');
@@ -117,6 +121,7 @@
     var realTimeIndexing = document.getElementById('realTimeIndexing');
     var batchNumber = document.getElementById('batchNumber');
     var timestamp = document.getElementById('getLatestMessageTimestamp');
+    var has = document.getElementById('has');
 
 
     buttonIndex.addEventListener('click', function () {
@@ -146,7 +151,8 @@
         if (threadIdEl.value && threadIdEl.value !== "" && threadIdEl.value.replace(/ /g, "").length > 0) {
             threadIdObj = JSON.parse(threadIdEl.value);
         }
-        search.searchQuery(queryEl.value, senderIdObj, threadIdObj, null, startDate, endDate, limitEl.value, offsetEl.value, 0).then(function (result) {
+        let _has = has.value || null;
+        search.searchQuery(queryEl.value, senderIdObj, threadIdObj, _has, startDate, endDate, limitEl.value, offsetEl.value, 0).then(function (result) {
             if (result.messages.length < 1) {
                 resultsEl.innerHTML = "No results found"
             }
