@@ -56,9 +56,10 @@ function showInFinder(id) {
 function createDOM(arg) {
 
     if (arg && arg._id) {
+        let fileDisplayName = getFileDisplayName(arg.fileName);
+        let downloadItemKey = arg._id;
 
         local.downloadItems.push(arg);
-        let downloadItemKey = arg._id;
 
         let ul = document.getElementById('download-main');
         if (ul) {
@@ -108,7 +109,8 @@ function createDOM(arg) {
 
             let h2FileName = document.createElement('h2');
             h2FileName.classList.add('text-cutoff');
-            h2FileName.innerHTML = arg.fileName;
+            h2FileName.innerHTML = fileDisplayName;
+            h2FileName.title = fileDisplayName;
             fileNameDiv.appendChild(h2FileName);
 
             let fileProgressTitle = document.createElement('span');
@@ -194,4 +196,33 @@ function initiate() {
             });
         }
     }
+}
+
+/**
+ * Return a file display name for the download item
+ */
+function getFileDisplayName(fileName) {
+    let fileList = local.downloadItems;
+    let fileNameCount = 0;
+    let fileDisplayName = fileName;
+
+    /* Check if a file with the same name exists 
+     * (akin to the user downloading a file with the same name again)
+     * in the download bar
+     */
+    for (let i = 0; i < fileList.length; i++) {
+        if (fileName === fileList[i].fileName) {
+            fileNameCount++;
+        }
+    }
+
+    /* If it exists, add a count to the name like how Chrome does */
+    if (fileNameCount) {
+        let extLastIndex = fileDisplayName.lastIndexOf('.');
+        let fileCount = ' (' + fileNameCount + ')';
+
+        fileDisplayName = fileDisplayName.slice(0, extLastIndex) + fileCount + fileDisplayName.slice(extLastIndex);
+    }
+
+    return fileDisplayName;
 }
