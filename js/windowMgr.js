@@ -355,6 +355,9 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                         });
                     });
 
+                    // In case we navigate to an external link from inside a pop-out,
+                    // we open that link in an external browser rather than creating
+                    // a new window
                     browserWin.webContents.on('new-window', (childEvent, childWinUrl) => {
                         childEvent.preventDefault();
                         openUrlInDefaultBrower(childWinUrl);
