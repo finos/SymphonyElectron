@@ -331,13 +331,22 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                     browserWin.winName = frameName;
                     browserWin.setAlwaysOnTop(alwaysOnTop);
 
-                    browserWin.once('closed', function () {
+                    let handleChildWindowClosed = () => {
                         removeWindowKey(newWinKey);
                         browserWin.removeListener('move', throttledBoundsChange);
-                        browserWin.removeListener('resize', throttledBoundsChange);
+                        browserWin.removeListener('resize', throttledBoundsChange);                        
+                    };
+
+                    browserWin.once('closed', () => {
+                        handleChildWindowClosed();
                     });
 
-                    browserWin.webContents.on('crashed', function () {
+                    browserWin.on('close', () => {
+                        browserWin.webContents.removeListener('new-window', handleChildNewWindowEvent);
+                        browserWin.webContents.removeListener('crashed', handleChildWindowCrashEvent);
+                    });
+
+                    let handleChildWindowCrashEvent = () => {
                         const options = {
                             type: 'error',
                             title: 'Renderer Process Crashed',
@@ -353,21 +362,19 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                                 browserWin.close();
                             }
                         });
-                    });
+                    };
 
+                    browserWin.webContents.on('crashed', handleChildWindowCrashEvent);
+
+                    let handleChildNewWindowEvent = (childEvent, childWinUrl) => {
+                        childEvent.preventDefault();
+                        openUrlInDefaultBrowser(childWinUrl);
+                    };
+                    
                     // In case we navigate to an external link from inside a pop-out,
                     // we open that link in an external browser rather than creating
                     // a new window
-                    browserWin.webContents.on('new-window', (childEvent, childWinUrl) => {
-                        childEvent.preventDefault();
-                        openUrlInDefaultBrowser(childWinUrl);
-                    });
-
-                    // Clear up the browser window once the window is closed
-                    // to avoid leakage
-                    browserWin.on('closed', () => {
-                        browserWin = null;
-                    });
+                    browserWin.webContents.on('new-window', handleChildNewWindowEvent);                
 
                     addWindowKey(newWinKey, browserWin);
 
@@ -481,7 +488,7 @@ function setIsOnline(status) {
 }
 
 /**
- * Tries finding a window we have created with given name.  If founds then
+ * Tries finding a window we have created with given name.  If found, then
  * brings to front and gives focus.
  * @param  {String} windowName Name of target window. Note: main window has
  * name 'main'.
