@@ -80,8 +80,11 @@ function openConfigurationWindow(windowName) {
     if (selectedParentWindow) {
         windowConfig.parent = selectedParentWindow;
 
-        // This is a temporary work around until there
-        // is a fix for the modal window in windows from the electron
+        /**
+         * This is a temporary work around until there
+         * is a fix for the modal window in windows from the electron
+         * issue - https://github.com/electron/electron/issues/10721
+         */
         const { x, y, width, height } = selectedParentWindow.getBounds();
 
         const windowWidth = Math.round(width * 0.5);
