@@ -76,7 +76,7 @@
   "devDependencies": {
     "browserify": "^14.1.0",
     "cross-env": "^3.2.4",
-    "electron": "1.7.5",
+    "electron": "1.7.8",
     "electron-builder": "^13.9.0",
     "electron-builder-squirrel-windows": "^12.3.0",
     "electron-packager": "^8.5.2",
