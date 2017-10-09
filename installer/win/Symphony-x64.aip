@@ -13,6 +13,7 @@
     <ROW Property="ALWAYS_ON_TOP_LABEL" Value="false" Type="4"/>
     <ROW Property="ARPCOMMENTS" Value="This installer database contains the logic and data required to install [|ProductName]." ValueLocId="*"/>
     <ROW Property="ARPHELPLINK" Value="http://www.symphony.com"/>
+    <ROW Property="ARPNOMODIFY" MultiBuildValue="DefaultBuild:1"/>
     <ROW Property="ARPNOREPAIR" Value="1"/>
     <ROW Property="ARPPRODUCTICON" Value="icon.exe" Type="8"/>
     <ROW Property="ARPSYSTEMCOMPONENT" Value="1"/>
@@ -67,6 +68,7 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
     <ROW Component="AI_CustomARPName" ComponentId="{2817ACD9-F494-4729-9830-111EF3311CFA}" Directory_="APPDIR" Attributes="4" KeyPath="DisplayName" Options="1"/>
+    <ROW Component="AI_DisableModify" ComponentId="{DA4E8013-2F4B-493A-90A8-BD729DA7EE2C}" Directory_="APPDIR" Attributes="260" KeyPath="NoModify" Options="1"/>
     <ROW Component="Jobber.exe" ComponentId="{D019D33C-26A6-400F-9C74-D862032D1A5B}" Directory_="jobber_Dir" Attributes="0" KeyPath="Jobber.exe"/>
     <ROW Component="PodUrl" ComponentId="{EA80D82D-BC65-4075-A9A8-F53E2B2513CE}" Directory_="APPDIR" Attributes="260" KeyPath="PodUrl"/>
     <ROW Component="ProductInformation" ComponentId="{8B92B687-8AE0-4A5C-B6AB-5D1854009CEA}" Directory_="APPDIR" Attributes="4" KeyPath="Version"/>
@@ -134,7 +136,7 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
     <ROW Feature="D564007E3BBE4F85950A09B470A7CA65" Title="Visual C++ Redistributable for Visual Studio 2013 x86" Description="Visual C++ Redistributable for Visual Studio 2013 x86" Display="3" Level="1" Attributes="0" Components="AI_CustomARPName"/>
-    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="AI_CustomARPName Jobber.exe PodUrl ProductInformation ScreenSnippet.exe Symphony Symphony.config Symphony.exe am.pak ambient.d.ts apimswincoreconsolel110.dll apimswincoredatetimel110.dll apimswincoredebugl110.dll apimswincoreerrorhandlingl110.dll apimswincorefilel110.dll apimswincorefilel120.dll apimswincorefilel210.dll apimswincorehandlel110.dll apimswincoreheapl110.dll apimswincoreinterlockedl110.dll apimswincorelibraryloaderl110.dll apimswincorelocalizationl120.dll apimswincorememoryl110.dll apimswincorenamedpipel110.dll apimswincoreprocessenvironmentl110.dll apimswincoreprocessthreadsl110.dll apimswincoreprocessthreadsl111.dll apimswincoreprofilel110.dll apimswincorertlsupportl110.dll apimswincorestringl110.dll apimswincoresynchl110.dll apimswincoresynchl120.dll apimswincoresysinfol110.dll apimswincoretimezonel110.dll apimswincoreutill110.dll apimswincrtconiol110.dll apimswincrtconvertl110.dll apimswincrtenvironmentl110.dll apimswincrtfilesysteml110.dll apimswincrtheapl110.dll apimswincrtlocalel110.dll apimswincrtmathl110.dll apimswincrtmultibytel110.dll apimswincrtprivatel110.dll apimswincrtprocessl110.dll apimswincrtruntimel110.dll apimswincrtstdiol110.dll apimswincrtstringl110.dll apimswincrttimel110.dll apimswincrtutilityl110.dll appupdate.yml blink_image_resources_200_percent.pak cld.node d3dcompiler_47.dll ffmpeg.dll index.d.ts index.js libEGL.dll libGLESv2.dll msvcp140.dll node.dll node_modules npmignore ucrtbase.dll vcruntime140.dll"/>
+    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="AI_CustomARPName AI_DisableModify Jobber.exe PodUrl ProductInformation ScreenSnippet.exe Symphony Symphony.config Symphony.exe am.pak ambient.d.ts apimswincoreconsolel110.dll apimswincoredatetimel110.dll apimswincoredebugl110.dll apimswincoreerrorhandlingl110.dll apimswincorefilel110.dll apimswincorefilel120.dll apimswincorefilel210.dll apimswincorehandlel110.dll apimswincoreheapl110.dll apimswincoreinterlockedl110.dll apimswincorelibraryloaderl110.dll apimswincorelocalizationl120.dll apimswincorememoryl110.dll apimswincorenamedpipel110.dll apimswincoreprocessenvironmentl110.dll apimswincoreprocessthreadsl110.dll apimswincoreprocessthreadsl111.dll apimswincoreprofilel110.dll apimswincorertlsupportl110.dll apimswincorestringl110.dll apimswincoresynchl110.dll apimswincoresynchl120.dll apimswincoresysinfol110.dll apimswincoretimezonel110.dll apimswincoreutill110.dll apimswincrtconiol110.dll apimswincrtconvertl110.dll apimswincrtenvironmentl110.dll apimswincrtfilesysteml110.dll apimswincrtheapl110.dll apimswincrtlocalel110.dll apimswincrtmathl110.dll apimswincrtmultibytel110.dll apimswincrtprivatel110.dll apimswincrtprocessl110.dll apimswincrtruntimel110.dll apimswincrtstdiol110.dll apimswincrtstringl110.dll apimswincrttimel110.dll apimswincrtutilityl110.dll appupdate.yml blink_image_resources_200_percent.pak cld.node d3dcompiler_47.dll ffmpeg.dll index.d.ts index.js libEGL.dll libGLESv2.dll msvcp140.dll node.dll node_modules npmignore ucrtbase.dll vcruntime140.dll"/>
     <ATTRIBUTE name="CurrentFeature" value="MainFeature"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
@@ -291,7 +293,7 @@
     <ROW Path="&lt;AI_DICTS&gt;ui_en.ail"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.DigCertStoreComponent">
-    <ROW DigitalCertificate="Wrapper.Windows.Product.RSA.pkcs12.pfx" TimeStampUrl="http://timestamp.verisign.com/scripts/timstamp.dll" SignerDescription="[|ProductName]" DescriptionUrl="https://www.symphony.com" SignOptions="0" SignTool="0" UseSha256="1" Password="4A99BAA4D493EE030480AF53BA42EA11CCFB627AB1800400DA9692073D68C522A10A4FD0B5F78525294E51AC7194D55B5EE1D31F"/>
+    <ROW DigitalCertificate="Wrapper.Windows.Product.RSA.pkcs12.pfx" TimeStampUrl="http://timestamp.verisign.com/scripts/timstamp.dll" SignerDescription="[|ProductName]" DescriptionUrl="https://www.symphony.com" SignOptions="7" SignTool="0" UseSha256="1" Password="4A99BAA4D493EE030480AF53BA42EA11CCFB627AB1800400DA9692073D68C522A10A4FD0B5F78525294E51AC7194D55B5EE1D31F"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.FragmentComponent">
     <ROW Fragment="CommonUI.aip" Path="&lt;AI_FRAGS&gt;CommonUI.aip"/>
@@ -599,6 +601,7 @@
     <ROW Registry="HelpTelephone" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="HelpTelephone" Value="[ARPHELPTELEPHONE]" Component_="AI_CustomARPName"/>
     <ROW Registry="InstallLocation" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="InstallLocation" Value="[APPDIR]" Component_="AI_CustomARPName"/>
     <ROW Registry="ModifyPath" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="ModifyPath" Value="[AI_UNINSTALLER] /I [ProductCode]" Component_="AI_CustomARPName"/>
+    <ROW Registry="NoModify" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="NoModify" Value="#1" Component_="AI_DisableModify"/>
     <ROW Registry="NoRepair" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="NoRepair" Value="#1" Component_="AI_CustomARPName"/>
     <ROW Registry="Path" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Path" Value="[APPDIR]" Component_="ProductInformation"/>
     <ROW Registry="PodUrl" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="PodUrl" Component_="PodUrl"/>
