@@ -250,17 +250,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                 webContents.send('downloadCompleted', data);
             }
         });
-    });
-
-    // bug in electron is preventing this from working in sandboxed evt...
-    // https://github.com/electron/electron/issues/8841
-    mainWindow.webContents.on('will-navigate', function(event, willNavUrl) {
-        if (!sandboxed) {
-            return;
-        }
-        event.preventDefault();
-        openUrlInDefaultBrower(willNavUrl);
-    });
+    });    
 
     // open external links in default browser - a tag with href='_blank' or window.open
     mainWindow.webContents.on('new-window', function (event, newWinUrl,
@@ -341,13 +331,22 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                     browserWin.winName = frameName;
                     browserWin.setAlwaysOnTop(alwaysOnTop);
 
-                    browserWin.once('closed', function () {
+                    let handleChildWindowClosed = () => {
                         removeWindowKey(newWinKey);
                         browserWin.removeListener('move', throttledBoundsChange);
-                        browserWin.removeListener('resize', throttledBoundsChange);
+                        browserWin.removeListener('resize', throttledBoundsChange);                        
+                    };
+
+                    browserWin.once('closed', () => {
+                        handleChildWindowClosed();
                     });
 
-                    browserWin.webContents.on('crashed', function () {
+                    browserWin.on('close', () => {
+                        browserWin.webContents.removeListener('new-window', handleChildNewWindowEvent);
+                        browserWin.webContents.removeListener('crashed', handleChildWindowCrashEvent);
+                    });
+
+                    let handleChildWindowCrashEvent = () => {
                         const options = {
                             type: 'error',
                             title: 'Renderer Process Crashed',
@@ -357,13 +356,25 @@ function doCreateMainWindow(initialUrl, initialBounds) {
 
                         electron.dialog.showMessageBox(options, function (index) {
                             if (index === 0) {
-                                mainWindow.reload();
+                                browserWin.reload();
                             }
                             else {
-                                mainWindow.close();
+                                browserWin.close();
                             }
                         });
-                    });
+                    };
+
+                    browserWin.webContents.on('crashed', handleChildWindowCrashEvent);
+
+                    let handleChildNewWindowEvent = (childEvent, childWinUrl) => {
+                        childEvent.preventDefault();
+                        openUrlInDefaultBrowser(childWinUrl);
+                    };
+                    
+                    // In case we navigate to an external link from inside a pop-out,
+                    // we open that link in an external browser rather than creating
+                    // a new window
+                    browserWin.webContents.on('new-window', handleChildNewWindowEvent);                
 
                     addWindowKey(newWinKey, browserWin);
 
@@ -381,7 +392,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             });
         } else {
             event.preventDefault();
-            openUrlInDefaultBrower(newWinUrl)
+            openUrlInDefaultBrowser(newWinUrl);
         }
     });
 
@@ -477,7 +488,7 @@ function setIsOnline(status) {
 }
 
 /**
- * Tries finding a window we have created with given name.  If founds then
+ * Tries finding a window we have created with given name.  If found, then
  * brings to front and gives focus.
  * @param  {String} windowName Name of target window. Note: main window has
  * name 'main'.
@@ -523,8 +534,8 @@ function sendChildWinBoundsChange(window) {
  * Opens an external url in the system's default browser
  * @param urlToOpen
  */
-function openUrlInDefaultBrower(urlToOpen) {
-    if (urlToOpen) {
+function openUrlInDefaultBrowser(urlToOpen) {
+    if (urlToOpen) {        
         electron.shell.openExternal(urlToOpen);
     }
 }
