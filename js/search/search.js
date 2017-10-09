@@ -326,7 +326,7 @@ class Search {
      * @param {String} searchQuery
      * @param {Array} senderId
      * @param {Array} threadId
-     * @param fileType
+     * @param {String} fileType
      * @returns {string}
      */
     static constructQuery(searchQuery, senderId, threadId, fileType) {
