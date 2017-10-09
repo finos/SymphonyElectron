@@ -44,6 +44,16 @@ function getTemplatePath() {
  * which this window should show
  */
 function openAboutWindow(windowName) {
+
+    // This prevents creating multiple instances of the
+    // about window
+    if (aboutWindow) {
+        if (aboutWindow.isMinimized()) {
+            aboutWindow.restore();
+        }
+        aboutWindow.focus();
+        return;
+    }
     let allWindows = BrowserWindow.getAllWindows();
     allWindows = allWindows.find((window) => { return window.winName === windowName });
 
