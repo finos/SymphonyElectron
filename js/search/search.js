@@ -331,12 +331,12 @@ class Search {
      */
     static constructQuery(searchQuery, senderId, threadId, fileType) {
 
-        let query = "";
+        let searchText = "";
         if(searchQuery !== undefined) {
-            query = searchQuery.trim().toLowerCase(); //to prevent injection of AND and ORs
+            searchText = searchQuery.trim().toLowerCase(); //to prevent injection of AND and ORs
         }
         let q = "";
-        let hashTags = Search.getHashTags(query);
+        let hashTags = Search.getHashTags(searchText);
         let hashCashTagQuery = "";
 
         if(hashTags.length > 0) {
@@ -359,10 +359,10 @@ class Search {
         }
 
 
-        if (query.length > 0 ) {
-            q = "((text:(" + query + "))" + hashCashTagQuery ;
+        if (searchText.length > 0 ) {
+            q = "((text:(" + searchText + "))" + hashCashTagQuery ;
             if(hasAttachments) {
-                q += " OR (filename:(" + query + "))" ;
+                q += " OR (filename:(" + searchText + "))" ;
             }
             q = q + ")";
         }
@@ -386,12 +386,12 @@ class Search {
 
     /**
      * appending the senderId and threadId for the query
-     * @param {String} query
+     * @param {String} searchText
      * @param {String} fieldName
      * @param {Array} valueArray
      * @returns {string}
      */
-    static appendFilterQuery(query, fieldName, valueArray) {
+    static appendFilterQuery(searchText, fieldName, valueArray) {
         let q = "";
         if (valueArray && valueArray.length > 0 ) {
 
@@ -400,12 +400,12 @@ class Search {
                 q+= "\"" + item + "\" ";
             });
             q += "))";
-            if(query.length > 0 ) {
-                q = query + " AND " + q;
+            if(searchText.length > 0 ) {
+                q = searchText + " AND " + q;
             }
 
         } else {
-            q = query;
+            q = searchText;
         }
 
         return q;
@@ -417,12 +417,12 @@ class Search {
     /**
      * return the hash cash
      * tags from the query
-     * @param {String} query
+     * @param {String} searchText
      * @returns {Array}
      */
-    static getHashTags(query) {
+    static getHashTags(searchText) {
         let hashTags = [];
-        let tokens = query.toLowerCase()
+        let tokens = searchText.toLowerCase()
             .trim()
             .replace(/\s\s+/g, ' ')
             .split(' ').filter((el) => {return el.length !== 0});
