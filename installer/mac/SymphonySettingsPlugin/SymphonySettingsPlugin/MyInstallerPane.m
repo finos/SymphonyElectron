@@ -14,20 +14,23 @@
     return [[NSBundle bundleForClass:[self class]] localizedStringForKey:@"PaneTitle" value:nil table:nil];
 }
 
+- (void)willEnterPane:(InstallerSectionDirection)dir {
+    [_podUrlAlertTextBox setTitleWithMnemonic:@""];
+}
+
 - (BOOL)shouldExitPane:(InstallerSectionDirection)dir {
     
+    NSString *regex = @"^((?:http:\/\/)|(?:https:\/\/))(www.)?((?:[a-zA-Z0-9]+\.[a-z]{3})|(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?::\d+)?))([\/a-zA-Z0-9\.]*)$";
     NSString *podUrl = [_podUrlTextBox stringValue];
-    NSURL *validUrl = [NSURL URLWithString:podUrl];
     
-    if (!validUrl || !validUrl.host) {
-        
-        [_podUrlAlertTextBox setTitleWithMnemonic:@"Please enter a valid Pod url."];
-        
-        return NO;
-        
+    NSPredicate *podUrlTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex];
+    
+    if ([podUrlTest evaluateWithObject:podUrl]) {
+        return YES;
     }
     
-    return YES;
+    [_podUrlAlertTextBox setTitleWithMnemonic:@"Please enter a valid Pod url."];
+    return NO;
     
 }
 
@@ -35,7 +38,7 @@
         
     NSString *podUrl = [_podUrlTextBox stringValue];
     
-    // If the pod url is empty, by default, set it to my.symphony.com
+    // If the pod url is empty, by default, set it to https://corporate.symphony.com
     if ([podUrl length] == 0) {
         podUrl = @"https://corporate.symphony.com";
     }

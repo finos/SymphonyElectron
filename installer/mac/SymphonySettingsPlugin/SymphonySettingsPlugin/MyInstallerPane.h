@@ -7,7 +7,7 @@
 
 #import <InstallerPlugins/InstallerPlugins.h>
 
-@interface MyInstallerPane : InstallerPane
+@interface MyInstallerPane : InstallerPane<NSTextFieldDelegate>
 
 @property (weak) IBOutlet NSButton *minimizeOnCloseCheckBox;
 @property (weak) IBOutlet NSButton *autoLaunchCheckBox;
