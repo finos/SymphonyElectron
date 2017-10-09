@@ -2,6 +2,7 @@
 
 const electron = require('electron');
 const app = electron.app;
+const crashReporter = electron.crashReporter;
 const BrowserWindow = electron.BrowserWindow;
 const path = require('path');
 const nodeURL = require('url');
@@ -16,7 +17,6 @@ const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
 const notify = require('./notify/electron-notify.js');
 const eventEmitter = require('./eventEmitter');
-
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField } = require('./config.js');
 const { isMac, isNodeEnv } = require('./utils/misc');
@@ -81,7 +81,7 @@ function createMainWindow(initialUrl) {
             // failed, use default bounds
             doCreateMainWindow(initialUrl, null);
         }
-    )
+    );
 }
 
 /**
@@ -93,6 +93,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     let url = initialUrl;
     let key = getGuid();
 
+    crashReporter.start({companyName: 'Symphony', submitURL: 'http://localhost:3000', uploadToServer: false, extra: {'process': 'renderer / main window'}});
     log.send(logLevels.INFO, 'creating main window url: ' + url);
 
     let newWinOpts = {
@@ -178,6 +179,26 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     mainWindow.webContents.on('did-fail-load', function (event, errorCode,
                                                          errorDesc, validatedURL) {
         loadErrors.showLoadFailure(mainWindow, validatedURL, errorDesc, errorCode, retry, false);
+    });
+
+    // In case a renderer process crashes, provide an
+    // option for the user to either reload or close the window
+    mainWindow.webContents.on('crashed', function () {
+        const options = {
+            type: 'error',
+            title: 'Renderer Process Crashed',
+            message: 'Oops! Looks like we have had a crash. Please reload or close this window.',
+            buttons: ['Reload', 'Close']
+        };
+
+        electron.dialog.showMessageBox(options, function (index) {
+            if (index === 0) {
+                mainWindow.reload();
+            }
+            else {
+                mainWindow.close();
+            }
+        });
     });
 
     addWindowKey(key, mainWindow);
@@ -315,6 +336,8 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                 if (browserWin) {
                     log.send(logLevels.INFO, 'loaded pop-out window url: ' + newWinParsedUrl);
 
+                    crashReporter.start({companyName: 'Symphony', submitURL: 'http://localhost:3000', uploadToServer: false, extra: {'process': 'renderer / pop out window - winKey -> ' + newWinKey}});
+
                     browserWin.winName = frameName;
                     browserWin.setAlwaysOnTop(alwaysOnTop);
 
@@ -324,7 +347,30 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                         browserWin.removeListener('resize', throttledBoundsChange);
                     });
 
+                    browserWin.webContents.on('crashed', function () {
+                        const options = {
+                            type: 'error',
+                            title: 'Renderer Process Crashed',
+                            message: 'Oops! Looks like we have had a crash. Please reload or close this window.',
+                            buttons: ['Reload', 'Close']
+                        };
+
+                        electron.dialog.showMessageBox(options, function (index) {
+                            if (index === 0) {
+                                mainWindow.reload();
+                            }
+                            else {
+                                mainWindow.close();
+                            }
+                        });
+                    });
+
                     addWindowKey(newWinKey, browserWin);
+
+                    // Method that sends bound changes as soon
+                    // as a new window is created
+                    // issue https://perzoinc.atlassian.net/browse/ELECTRON-172
+                    sendChildWinBoundsChange(browserWin);
 
                     // throttle changes so we don't flood client.
                     let throttledBoundsChange = throttle(1000,
