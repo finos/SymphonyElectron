@@ -51,6 +51,7 @@ function updateScreens() {
     if (configurationWindow && screens && screens.length >= 0) {
         configurationWindow.webContents.send('screens', screens);
     }
+    configurationWindow.webContents.send('notificationSettings', {position: position, display: display});
 }
 
 /**
