@@ -10,18 +10,23 @@ describe('download manager', function() {
         });
 
         it('should inject download bar element into DOM once download is initiated', function() {
-            electron.ipcRenderer.send('downloadCompleted', { _id: '12345', fileName: 'test', total: 100 });
-            expect(document.getElementsByClassName('text-cutoff')[0].innerHTML).toBe('test');
+            electron.ipcRenderer.send('downloadCompleted', { _id: '12345', fileName: 'test.png', total: 100 });
+            expect(document.getElementsByClassName('text-cutoff')[0].innerHTML).toBe('test.png');
             expect(document.getElementById('per').innerHTML).toBe('100 Downloaded');
         });
 
         it('should inject multiple download items during multiple downloads', function() {
-            electron.ipcRenderer.send('downloadCompleted', { _id: '12345', fileName: 'test', total: 100 });
-            electron.ipcRenderer.send('downloadCompleted', { _id: '67890', fileName: 'test1', total: 200 });
+            electron.ipcRenderer.send('downloadCompleted', { _id: '12345', fileName: 'test.png', total: 100 });
+            electron.ipcRenderer.send('downloadCompleted', { _id: '67890', fileName: 'test.png', total: 200 });
 
             let fileNames = document.getElementsByClassName('text-cutoff');
-            expect(fileNames[0].innerHTML).toBe('test1');
-            expect(fileNames[1].innerHTML).toBe('test');
+            let fNames = [];            
+            
+            for (var i = 0; i < fileNames.length; i++) {
+                fNames.push(fileNames[i].innerHTML);
+            }
+
+            expect(fNames).toEqual(expect.arrayContaining(['test (1).png', 'test (2).png']));
             expect(document.getElementById('per').innerHTML).toBe('100 Downloaded');
 
             let downloadElements = document.getElementsByClassName('download-element');
