@@ -55,7 +55,7 @@ let config = {
     // corner to put notifications
     // upper-right, upper-left, lower-right, lower-left
     startCorner: 'upper-right',
-    width: 370,
+    width: 380,
     height: 70,
     borderRadius: 5,
     displayTime: 5000,
@@ -83,8 +83,8 @@ let config = {
     defaultStyleImage: {
         height: 43,
         position: 'absolute',
-        right: 13,
-        top: 13,
+        right: 30,
+        top: 11,
         width: 43
     },
     defaultStyleClose: {
@@ -124,7 +124,7 @@ let config = {
         fontSize: 12,
         color: '#4a4a4a',
         marginTop: 6,
-        marginRight: 52,
+        marginRight: 65,
         marginLeft: 52,
         overflow: 'hidden',
         display: '-webkit-box',
