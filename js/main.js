@@ -3,6 +3,7 @@
 // Third Party Dependencies
 const electron = require('electron');
 const app = electron.app;
+const crashReporter = electron.crashReporter;
 const nodeURL = require('url');
 const squirrelStartup = require('electron-squirrel-startup');
 const AutoLaunch = require('auto-launch');
@@ -30,6 +31,8 @@ require('./mainApiMgr.js');
 require('./memoryMonitor.js');
 
 const windowMgr = require('./windowMgr.js');
+
+crashReporter.start({companyName: 'Symphony', submitURL: 'http://localhost:3000', uploadToServer: false, extra: {'process': 'main'}});
 
 // only allow a single instance of app.
 const shouldQuit = app.makeSingleInstance((argv) => {

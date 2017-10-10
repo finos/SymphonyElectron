@@ -11,7 +11,7 @@
 // also to bring pieces of node.js:
 // https://github.com/electron/electron/issues/2984
 //
-const { ipcRenderer, remote } = require('electron');
+const { ipcRenderer, remote, crashReporter } = require('electron');
 
 const throttle = require('../utils/throttle.js');
 const apiEnums = require('../enums/api.js');
@@ -26,6 +26,13 @@ require('../downloadManager');
 // so loading the spellchecker in try catch so that we don't
 // block other method from loading
 document.addEventListener('DOMContentLoaded', () => {
+    loadSpellChecker();
+});
+
+/**
+ * Loads up the spell checker module
+ */
+function loadSpellChecker() {
     try {
         /* eslint-disable global-require */
         const SpellCheckerHelper = require('../spellChecker').SpellCheckHelper;
@@ -38,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('unable to load the spell checker module, hence, skipping the spell check feature ' + err);
         /* eslint-enable no-console */
     }
-});
+}
 
 // hold ref so doesn't get GC'ed
 const local = {
@@ -53,6 +60,7 @@ const throttledSetBadgeCount = throttle(1000, function(count) {
     });
 });
 
+crashReporter.start({companyName: 'Symphony', submitURL: 'http://localhost:3000', uploadToServer: false, extra: {'process': 'preload script / renderer'}});
 createAPI();
 
 // creates API exposed from electron.
@@ -108,6 +116,19 @@ function createAPI() {
          * details in screenSnipper/index.js
          */
         ScreenSnippet: remote.require('./screenSnippet/index.js').ScreenSnippet,
+
+        /**
+         * Provides API to crash the renderer process that calls this function
+         * Is only used for demos.
+         */
+        crashRendererProcess: function () {
+            // For practical purposes, we don't allow
+            // this method to work in non-dev environments
+            if (!process.env.ELECTRON_DEV) {
+                return;
+            }
+            process.crash();
+        },
 
         /**
          * Brings window forward and gives focus.

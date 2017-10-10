@@ -2,6 +2,7 @@
 
 const electron = require('electron');
 const app = electron.app;
+const crashReporter = electron.crashReporter;
 const BrowserWindow = electron.BrowserWindow;
 const path = require('path');
 const nodeURL = require('url');
@@ -16,7 +17,6 @@ const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
 const notify = require('./notify/electron-notify.js');
 const eventEmitter = require('./eventEmitter');
-
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField } = require('./config.js');
 const { isMac, isNodeEnv } = require('./utils/misc');
@@ -81,7 +81,7 @@ function createMainWindow(initialUrl) {
             // failed, use default bounds
             doCreateMainWindow(initialUrl, null);
         }
-    )
+    );
 }
 
 /**
@@ -93,6 +93,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     let url = initialUrl;
     let key = getGuid();
 
+    crashReporter.start({companyName: 'Symphony', submitURL: 'http://localhost:3000', uploadToServer: false, extra: {'process': 'renderer / main window'}});
     log.send(logLevels.INFO, 'creating main window url: ' + url);
 
     let newWinOpts = {
@@ -180,6 +181,26 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         loadErrors.showLoadFailure(mainWindow, validatedURL, errorDesc, errorCode, retry, false);
     });
 
+    // In case a renderer process crashes, provide an
+    // option for the user to either reload or close the window
+    mainWindow.webContents.on('crashed', function () {
+        const options = {
+            type: 'error',
+            title: 'Renderer Process Crashed',
+            message: 'Oops! Looks like we have had a crash. Please reload or close this window.',
+            buttons: ['Reload', 'Close']
+        };
+
+        electron.dialog.showMessageBox(options, function (index) {
+            if (index === 0) {
+                mainWindow.reload();
+            }
+            else {
+                mainWindow.close();
+            }
+        });
+    });
+
     addWindowKey(key, mainWindow);
     mainWindow.loadURL(url);
 
@@ -229,17 +250,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                 webContents.send('downloadCompleted', data);
             }
         });
-    });
-
-    // bug in electron is preventing this from working in sandboxed evt...
-    // https://github.com/electron/electron/issues/8841
-    mainWindow.webContents.on('will-navigate', function(event, willNavUrl) {
-        if (!sandboxed) {
-            return;
-        }
-        event.preventDefault();
-        openUrlInDefaultBrower(willNavUrl);
-    });
+    });    
 
     // open external links in default browser - a tag with href='_blank' or window.open
     mainWindow.webContents.on('new-window', function (event, newWinUrl,
@@ -315,16 +326,62 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                 if (browserWin) {
                     log.send(logLevels.INFO, 'loaded pop-out window url: ' + newWinParsedUrl);
 
+                    crashReporter.start({companyName: 'Symphony', submitURL: 'http://localhost:3000', uploadToServer: false, extra: {'process': 'renderer / pop out window - winKey -> ' + newWinKey}});
+
                     browserWin.winName = frameName;
                     browserWin.setAlwaysOnTop(alwaysOnTop);
 
-                    browserWin.once('closed', function () {
+                    let handleChildWindowClosed = () => {
                         removeWindowKey(newWinKey);
                         browserWin.removeListener('move', throttledBoundsChange);
-                        browserWin.removeListener('resize', throttledBoundsChange);
+                        browserWin.removeListener('resize', throttledBoundsChange);                        
+                    };
+
+                    browserWin.once('closed', () => {
+                        handleChildWindowClosed();
                     });
 
+                    browserWin.on('close', () => {
+                        browserWin.webContents.removeListener('new-window', handleChildNewWindowEvent);
+                        browserWin.webContents.removeListener('crashed', handleChildWindowCrashEvent);
+                    });
+
+                    let handleChildWindowCrashEvent = () => {
+                        const options = {
+                            type: 'error',
+                            title: 'Renderer Process Crashed',
+                            message: 'Oops! Looks like we have had a crash. Please reload or close this window.',
+                            buttons: ['Reload', 'Close']
+                        };
+
+                        electron.dialog.showMessageBox(options, function (index) {
+                            if (index === 0) {
+                                browserWin.reload();
+                            }
+                            else {
+                                browserWin.close();
+                            }
+                        });
+                    };
+
+                    browserWin.webContents.on('crashed', handleChildWindowCrashEvent);
+
+                    let handleChildNewWindowEvent = (childEvent, childWinUrl) => {
+                        childEvent.preventDefault();
+                        openUrlInDefaultBrowser(childWinUrl);
+                    };
+                    
+                    // In case we navigate to an external link from inside a pop-out,
+                    // we open that link in an external browser rather than creating
+                    // a new window
+                    browserWin.webContents.on('new-window', handleChildNewWindowEvent);                
+
                     addWindowKey(newWinKey, browserWin);
+
+                    // Method that sends bound changes as soon
+                    // as a new window is created
+                    // issue https://perzoinc.atlassian.net/browse/ELECTRON-172
+                    sendChildWinBoundsChange(browserWin);
 
                     // throttle changes so we don't flood client.
                     let throttledBoundsChange = throttle(1000,
@@ -335,7 +392,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             });
         } else {
             event.preventDefault();
-            openUrlInDefaultBrower(newWinUrl)
+            openUrlInDefaultBrowser(newWinUrl);
         }
     });
 
@@ -431,7 +488,7 @@ function setIsOnline(status) {
 }
 
 /**
- * Tries finding a window we have created with given name.  If founds then
+ * Tries finding a window we have created with given name.  If found, then
  * brings to front and gives focus.
  * @param  {String} windowName Name of target window. Note: main window has
  * name 'main'.
@@ -477,8 +534,8 @@ function sendChildWinBoundsChange(window) {
  * Opens an external url in the system's default browser
  * @param urlToOpen
  */
-function openUrlInDefaultBrower(urlToOpen) {
-    if (urlToOpen) {
+function openUrlInDefaultBrowser(urlToOpen) {
+    if (urlToOpen) {        
         electron.shell.openExternal(urlToOpen);
     }
 }
