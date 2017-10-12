@@ -200,7 +200,9 @@
 
     merge.addEventListener('click', function () {
         search.mergeIndexBatches().then(function () {
-            search.encryptIndex();
+            search.encryptIndex().then(function () {
+                resultsEl.innerHTML = "Merging and Encrypting index completed"
+            });
         }).catch(function (err) {
             resultsEl.innerHTML = 'Error: ' + err;
         });

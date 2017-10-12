@@ -54,6 +54,7 @@ class Search {
      * @param key
      */
     constructor(userId, key) {
+        console.time('Decrypting');
         this.isInitialized = false;
         this.userId = userId;
         this.key = key;
@@ -68,6 +69,7 @@ class Search {
 
     decryptAndInit() {
         this.crypto.decryption().then(() => {
+            console.timeEnd('Decrypting');
             this.init();
         }).catch(() => {
             this.init();
@@ -206,10 +208,10 @@ class Search {
      * to the main user index
      */
     encryptIndex() {
-        this.crypto.encryption().then(() => {
+        return this.crypto.encryption().then(() => {
             return 'Success'
         }).catch((e) => {
-            throw new Error(e)
+            return (new Error(e));
         });
     }
 
