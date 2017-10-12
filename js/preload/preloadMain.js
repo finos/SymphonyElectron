@@ -60,7 +60,6 @@ const throttledSetBadgeCount = throttle(1000, function(count) {
     });
 });
 
-crashReporter.start({companyName: 'Symphony', submitURL: 'http://localhost:3000', uploadToServer: false, extra: {'process': 'preload script / renderer'}});
 createAPI();
 
 // creates API exposed from electron.
@@ -334,6 +333,12 @@ function createAPI() {
             local.processProtocolAction(arg);
         }
 
+    });
+
+    local.ipcRenderer.on('register-crash-reporter', (event, arg) => {
+        if (arg) {            
+            crashReporter.start({companyName: arg.companyName, submitURL: arg.submitURL, uploadToServer: arg.uploadToServer, extra: {'process': arg.process, podUrl: arg.podUrl}});
+        }
     });
 
     function updateOnlineStatus() {
