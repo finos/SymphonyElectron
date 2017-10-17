@@ -38,7 +38,7 @@ class Crypto {
                 return;
             }
 
-            lz4.compression(`${this.indexDataFolder}`, `${this.dump}/${this.permanentIndexFolderName}`, (error) => {
+            lz4.compression(`data/${this.permanentIndexFolderName}`, `${this.permanentIndexFolderName}`, (error) => {
                 if (error) {
                     reject(error);
                 }
