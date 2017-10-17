@@ -40,7 +40,8 @@
     "extraFiles": [
       "config/Symphony.config",
       "library/libsymphonysearch.dylib",
-      "library/indexvalidator.exec"
+      "library/indexvalidator.exec",
+      "library/lz4-mac"
     ],
     "appId": "symphony-electron-desktop",
     "mac": {
@@ -98,14 +99,12 @@
   "dependencies": {
     "@paulcbetts/system-idle-time": "^1.0.4",
     "appdirectory": "^0.1.0",
-    "archiver": "^2.0.0",
     "async.map": "^0.5.2",
     "async.mapseries": "^0.5.2",
     "auto-launch": "^5.0.1",
     "electron-dl": "^1.9.0",
     "electron-spellchecker": "^1.2.0",
     "electron-squirrel-startup": "^1.0.0",
-    "extract-zip": "^1.6.5",
     "ffi": "^2.2.0",
     "filesize": "^3.5.10",
     "keymirror": "0.1.1",

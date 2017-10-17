@@ -4,6 +4,7 @@
 tempFilePath='/tmp/sym_settings.txt'
 installPath="$2"
 configPath="/Symphony.app/Contents/config/Symphony.config"
+lz4Path="/Applications/Symphony.app/Contents/library/lz4-mac"
 newPath=$installPath$configPath
 
 ## Get Symphony Settings from the temp file ##
@@ -20,6 +21,13 @@ sed -i "" -E "s#\"launchOnStartup\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#
 
 ## Remove the temp settings file created ##
 rm -f $tempFilePath
+
+## Installing the lz4 compression algorithm.
+cd $lz4Path;
+sudo make
+echo "lz4 Make success!"
+sudo make install
+echo "lz4 Install Success!"
 
 ## For launching symphony with sandbox enabled, create a shell script that is used as the launch point for the app
 EXEC_PATH=$installPath/Symphony.app/Contents/MacOS
