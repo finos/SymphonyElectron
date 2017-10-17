@@ -13,8 +13,6 @@ let minimizeOnClose = false;
 let launchOnStartup = false;
 let isAlwaysOnTop = false;
 
-setCheckboxValues();
-
 let symphonyAutoLauncher;
 
 if (isMac) {
@@ -266,38 +264,42 @@ function getTemplate(app) {
  * based on configuration
  */
 function setCheckboxValues() {
-    /**
-     * Method that reads multiple config fields
-     */
-    getMultipleConfigField(['minimizeOnClose', 'launchOnStartup', 'alwaysOnTop', 'notificationSettings'])
-        .then(function (configData) {
-            for (let key in configData) {
-                if (configData.hasOwnProperty(key)) { // eslint-disable-line no-prototype-builtins
-                    switch (key) {
-                        case 'minimizeOnClose':
-                            minimizeOnClose = configData[key];
-                            break;
-                        case 'launchOnStartup':
-                            launchOnStartup = configData[key];
-                            break;
-                        case 'alwaysOnTop':
-                            isAlwaysOnTop = configData[key];
-                            eventEmitter.emit('isAlwaysOnTop', configData[key]);
-                            break;
-                        case 'notificationSettings':
-                            eventEmitter.emit('notificationSettings', configData[key]);
-                            break;
-                        default:
-                            break;
+    return new Promise((resolve) => {
+        /**
+         * Method that reads multiple config fields
+         */
+        getMultipleConfigField(['minimizeOnClose', 'launchOnStartup', 'alwaysOnTop', 'notificationSettings'])
+            .then(function (configData) {
+                for (let key in configData) {
+                    if (configData.hasOwnProperty(key)) { // eslint-disable-line no-prototype-builtins
+                        switch (key) {
+                            case 'minimizeOnClose':
+                                minimizeOnClose = configData[key];
+                                break;
+                            case 'launchOnStartup':
+                                launchOnStartup = configData[key];
+                                break;
+                            case 'alwaysOnTop':
+                                isAlwaysOnTop = configData[key];
+                                eventEmitter.emit('isAlwaysOnTop', configData[key]);
+                                break;
+                            case 'notificationSettings':
+                                eventEmitter.emit('notificationSettings', configData[key]);
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
-            }
-        })
-        .catch((err) => {
-            let title = 'Error loading configuration';
-            log.send(logLevels.ERROR, 'MenuTemplate: error reading configuration fields, error: ' + err);
-            electron.dialog.showErrorBox(title, title + ': ' + err);
-        });
+                return resolve();
+            })
+            .catch((err) => {
+                let title = 'Error loading configuration';
+                log.send(logLevels.ERROR, 'MenuTemplate: error reading configuration fields, error: ' + err);
+                electron.dialog.showErrorBox(title, title + ': ' + err);
+                return resolve();
+            });
+    });
 }
 
 function getMinimizeOnClose() {
@@ -306,5 +308,6 @@ function getMinimizeOnClose() {
 
 module.exports = {
     getTemplate: getTemplate,
-    getMinimizeOnClose: getMinimizeOnClose
+    getMinimizeOnClose: getMinimizeOnClose,
+    setCheckboxValues: setCheckboxValues
 };

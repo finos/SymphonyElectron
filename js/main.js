@@ -11,6 +11,7 @@ const urlParser = require('url');
 
 // Local Dependencies
 const {getConfigField, updateUserConfigWin, updateUserConfigMac} = require('./config.js');
+const {setCheckboxValues} = require('./menus/menuTemplate.js');
 const { isMac, isDevEnv } = require('./utils/misc.js');
 const protocolHandler = require('./protocolHandler');
 const getCmdLineArg = require('./utils/getCmdLineArg.js');
@@ -92,7 +93,7 @@ if (isMac) {
  * initialization and is ready to create browser windows.
  * Some APIs can only be used after this event occurs.
  */
-app.on('ready', setupThenOpenMainWindow);
+app.on('ready', readConfigThenOpenMainWindow);
 
 /**
  * Is triggered when all the windows are closed
@@ -126,6 +127,20 @@ app.setAsDefaultProtocolClient('symphony');
 app.on('open-url', function(event, url) {
     handleProtocolAction(url);
 });
+
+/**
+ * Reads the config fields that are required for the menu items
+ * then opens the main window
+ *
+ * This is a workaround for the issue where the menu template was returned
+ * even before the config data was populated
+ * https://perzoinc.atlassian.net/browse/ELECTRON-154
+ */
+function readConfigThenOpenMainWindow() {
+    setCheckboxValues()
+        .then(setupThenOpenMainWindow)
+        .catch(setupThenOpenMainWindow)
+}
 
 /**
  * Sets up the app (to handle various things like config changes, protocol handling etc.)
