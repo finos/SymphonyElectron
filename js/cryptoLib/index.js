@@ -49,7 +49,9 @@ class Crypto {
                 };
                 const encrypt = crypto.encrypt(config);
 
-                input.pipe(encrypt).pipe(outputEncryption).on('finish', (err) => {
+                let encryptionProcess = input.pipe(encrypt).pipe(outputEncryption);
+
+                encryptionProcess.on('finish', (err) => {
                     if (err) {
                         reject(new Error(err));
                     }
@@ -81,7 +83,9 @@ class Crypto {
             };
             const decrypt = crypto.decrypt(config);
 
-            input.pipe(decrypt).pipe(output).on('finish', () => {
+            let decryptionProcess = input.pipe(decrypt).pipe(output);
+
+            decryptionProcess.on('finish', () => {
 
                 if (!fs.existsSync(`${this.dump}/decrypted.tar.lz4`)){
                     // will be handling after implementing in client app
