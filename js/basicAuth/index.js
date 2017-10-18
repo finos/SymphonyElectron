@@ -13,8 +13,8 @@ let basicAuthWindow;
 const local = {};
 
 let windowConfig = {
-    width: 350,
-    height: 250,
+    width: 360,
+    height: 270,
     show: false,
     modal: true,
     autoHideMenuBar: true,
