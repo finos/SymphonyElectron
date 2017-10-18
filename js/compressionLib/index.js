@@ -16,7 +16,7 @@ function compression(pathToFolder, outputPath, cb) {
             return cb(null, stdout);
         })
     } else {
-        child.exec(`cd "${DATA_FOLDER_PATH}" && tar.exe -cvf - "${pathToFolder}" | lz4.exe > "${outputPath}.tar.lz4"`, (error, stdout) => {
+        child.exec(`cd "${DATA_FOLDER_PATH}" && library\\tar-win.exe cvf - "${pathToFolder}" | library\\lz4-win.exe > "${outputPath}.tar.lz4"`, (error, stdout) => {
             if (error) {
                 return cb(new Error(error));
             }
@@ -34,7 +34,7 @@ function deCompression(pathName, cb) {
             return cb(null, stdout);
         })
     } else {
-        child.exec(`cd "${DATA_FOLDER_PATH}" && lz4.exe -d "${pathName}" | tar.exe xf - `, (error, stdout) => {
+        child.exec(`cd "${DATA_FOLDER_PATH}" && library\\lz4-win.exe -d "${pathName}" | library\\tar-win.exe xf - `, (error, stdout) => {
             if (error) {
                 return cb(new Error(error));
             }
