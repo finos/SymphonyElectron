@@ -54,6 +54,7 @@ class Search {
      * @param key
      */
     constructor(userId, key) {
+        console.time('Decrypting');
         this.isInitialized = false;
         this.userId = userId;
         this.key = key;
@@ -68,6 +69,7 @@ class Search {
 
     decryptAndInit() {
         this.crypto.decryption().then(() => {
+            console.timeEnd('Decrypting');
             this.init();
         }).catch(() => {
             this.init();
@@ -206,10 +208,10 @@ class Search {
      * to the main user index
      */
     encryptIndex() {
-        this.crypto.encryption().then(() => {
+        return this.crypto.encryption().then(() => {
             return 'Success'
         }).catch((e) => {
-            throw new Error(e)
+            return (new Error(e));
         });
     }
 
@@ -219,7 +221,7 @@ class Search {
      * @param {String} query
      * @param {Array} senderIds
      * @param {Array} threadIds
-     * @param {String} attachments
+     * @param {String} fileType
      * @param {String} startDate
      * @param {String} endDate
      * @param {Number} limit
@@ -227,7 +229,7 @@ class Search {
      * @param {Number} sortOrder
      * @returns {Promise}
      */
-    searchQuery(query, senderIds, threadIds, attachments, startDate,
+    searchQuery(query, senderIds, threadIds, fileType, startDate,
                 endDate, limit, offset, sortOrder) {
 
         let _limit = limit;
@@ -245,7 +247,7 @@ class Search {
                 return;
             }
 
-            let q = Search.constructQuery(query, senderIds, threadIds);
+            let q = Search.constructQuery(query, senderIds, threadIds, fileType);
 
             if (q === undefined) {
                 reject(new Error('Search query error'));
@@ -326,16 +328,17 @@ class Search {
      * @param {String} searchQuery
      * @param {Array} senderId
      * @param {Array} threadId
+     * @param {String} fileType
      * @returns {string}
      */
-    static constructQuery(searchQuery, senderId, threadId) {
+    static constructQuery(searchQuery, senderId, threadId, fileType) {
 
-        let query = "";
+        let searchText = "";
         if(searchQuery !== undefined) {
-            query = searchQuery.trim().toLowerCase(); //to prevent injection of AND and ORs
+            searchText = searchQuery.trim().toLowerCase(); //to prevent injection of AND and ORs
         }
         let q = "";
-        let hashTags = Search.getHashTags(query);
+        let hashTags = Search.getHashTags(searchText);
         let hashCashTagQuery = "";
 
         if(hashTags.length > 0) {
@@ -346,27 +349,51 @@ class Search {
             hashCashTagQuery += ")";
         }
 
-        if (query.length > 0 ) {
-            q = "(text:(" + query + ")" + hashCashTagQuery + ")";
+        let hasAttachments = false;
+        let additionalAttachmentQuery = "";
+        if(fileType) {
+            hasAttachments = true;
+            if(fileType === "attachment") {
+                additionalAttachmentQuery = "(hasfiles:true)";
+            } else {
+                additionalAttachmentQuery = "(filetype:(" + fileType +"))";
+            }
+        }
+
+
+        if (searchText.length > 0 ) {
+            q = "((text:(" + searchText + "))" + hashCashTagQuery ;
+            if(hasAttachments) {
+                q += " OR (filename:(" + searchText + "))" ;
+            }
+            q = q + ")";
         }
 
         q = Search.appendFilterQuery(q, "senderId", senderId);
         q = Search.appendFilterQuery(q, "threadId", threadId);
 
         if(q === "") {
-            q = undefined; //will be handled in the search function
+            if(hasAttachments) {
+                q = additionalAttachmentQuery;
+            } else {
+                q = undefined; //will be handled in the search function
+            }
+        } else {
+            if(hasAttachments){
+                q = q + " AND " + additionalAttachmentQuery
+            }
         }
         return q;
     }
 
     /**
      * appending the senderId and threadId for the query
-     * @param {String} query
+     * @param {String} searchText
      * @param {String} fieldName
      * @param {Array} valueArray
      * @returns {string}
      */
-    static appendFilterQuery(query, fieldName, valueArray) {
+    static appendFilterQuery(searchText, fieldName, valueArray) {
         let q = "";
         if (valueArray && valueArray.length > 0 ) {
 
@@ -375,12 +402,12 @@ class Search {
                 q+= "\"" + item + "\" ";
             });
             q += "))";
-            if(query.length > 0 ) {
-                q = query + " AND " + q;
+            if(searchText.length > 0 ) {
+                q = searchText + " AND " + q;
             }
 
         } else {
-            q = query;
+            q = searchText;
         }
 
         return q;
@@ -392,12 +419,12 @@ class Search {
     /**
      * return the hash cash
      * tags from the query
-     * @param {String} query
+     * @param {String} searchText
      * @returns {Array}
      */
-    static getHashTags(query) {
+    static getHashTags(searchText) {
         let hashTags = [];
-        let tokens = query.toLowerCase()
+        let tokens = searchText.toLowerCase()
             .trim()
             .replace(/\s\s+/g, ' ')
             .split(' ').filter((el) => {return el.length !== 0});
