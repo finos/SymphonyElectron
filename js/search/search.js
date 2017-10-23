@@ -208,9 +208,7 @@ class Search {
      * to the main user index
      */
     encryptIndex() {
-        console.time('encryption');
         return this.crypto.encryption().then(() => {
-            console.timeEnd('encryption');
             return 'Success'
         }).catch((e) => {
             return (new Error(e));
