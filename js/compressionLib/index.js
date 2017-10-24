@@ -17,38 +17,65 @@ const devPath = path.join(__dirname, '..', '..', 'library', winArchPath);
 
 const lz4Path = isDevEnv ? devPath : productionPath;
 
-function compression(pathToFolder, outputPath, cb) {
+/**
+ * Using the child process to execute the tar and lz4
+ * compression and the final output of this function
+ * will be compressed file with ext: .tar.lz4
+ * @param pathToFolder
+ * @param outputPath
+ * @param callback
+ */
+function compression(pathToFolder, outputPath, callback) {
     if (isMac) {
-        child.exec(`cd "${DATA_FOLDER_PATH}" && tar cvf - "${pathToFolder}" | lz4 > "${outputPath}.tar.lz4"`, (error, stdout) => {
+        child.exec(`cd "${DATA_FOLDER_PATH}" && tar cvf - "${pathToFolder}" | lz4 > "${outputPath}.tar.lz4"`, (error, stdout, stderr) => {
             if (error) {
-                return cb(new Error(error));
+                return callback(new Error(error), null);
             }
-            return cb(null, stdout);
+            return callback(null, {
+                stderr: stderr.toString().trim(),
+                stdout: stdout.toString().trim()
+            });
         })
     } else {
-        child.exec(`cd "${DATA_FOLDER_PATH}" && "${libraryFolderPath}\\tar-win.exe" cvf - "${pathToFolder}" | "${lz4Path}" > "${outputPath}.tar.lz4"`, (error, stdout) => {
+        child.exec(`cd "${DATA_FOLDER_PATH}" && "${libraryFolderPath}\\tar-win.exe" cvf - "${pathToFolder}" | "${lz4Path}" > "${outputPath}.tar.lz4"`, (error, stdout, stderr) => {
             if (error) {
-                return cb(new Error(error));
+                return callback(new Error(error), null);
             }
-            return cb(null, stdout);
+            return callback(null, {
+                stderr: stderr.toString().trim(),
+                stdout: stdout.toString().trim()
+            });
         })
     }
 }
 
-function deCompression(pathName, cb) {
+/**
+ * This function decompress the file
+ * and the ext should be .tar.lz4
+ * the output will be the user index folder
+ * @param pathName
+ * @param callback
+ */
+function deCompression(pathName, callback) {
     if (isMac) {
-        child.exec(`cd "${DATA_FOLDER_PATH}" && lz4 -d "${pathName}" | tar -xf - `, (error, stdout) => {
+        child.exec(`cd "${DATA_FOLDER_PATH}" && lz4 -d "${pathName}" | tar -xf - `, (error, stdout, stderr) => {
             if (error) {
-                return cb(new Error(error));
+                return callback(new Error(error), null);
             }
-            return cb(null, stdout);
+            return callback(null, {
+                stderr: stderr.toString().trim(),
+                stdout: stdout.toString().trim()
+            });
         })
     } else {
-        child.exec(`cd "${DATA_FOLDER_PATH}" && "${lz4Path}" -d "${pathName}" | "${libraryFolderPath}\\tar-win.exe" xf - `, (error, stdout) => {
+        child.exec(`cd "${DATA_FOLDER_PATH}" && "${lz4Path}" -d "${pathName}" | "${libraryFolderPath}\\tar-win.exe" xf - `, (error, stdout, stderr) => {
             if (error) {
-                return cb(new Error(error));
+                return callback(new Error(error), null);
             }
-            return cb(null, stdout);
+            return callback(null, {
+                stderr: stderr.toString().trim(),
+                stdout: stdout.toString().trim()
+            });
         })
     }
 }

@@ -6,6 +6,8 @@ const fs = require('fs');
 const lz4 = require('../compressionLib');
 const isDevEnv = require('../utils/misc.js').isDevEnv;
 const crypto = require('./crypto');
+const log = require('../log.js');
+const logLevels = require('../enums/logLevels.js');
 
 const userData = path.join(app.getPath('userData'));
 const DATA_FOLDER = isDevEnv ? './data' : path.join(userData, 'data');
@@ -25,23 +27,27 @@ class Crypto {
     }
 
     /**
-     * Creates a zip of the data folder and encrypting
-     * removing the data folder and the dump files
+     * Compressing the user index folder and
+     * encrypting it
      * @returns {Promise}
      */
     encryption() {
         return new Promise((resolve, reject) => {
 
             if (!fs.existsSync(this.indexDataFolder)){
-                // will be handling after implementing in client app
+                log.send(logLevels.ERROR, 'user index folder not found');
                 reject();
                 return;
             }
 
-            lz4.compression(`data/${this.permanentIndexFolderName}`, `${this.permanentIndexFolderName}`, (error) => {
+            lz4.compression(`data/${this.permanentIndexFolderName}`, `${this.permanentIndexFolderName}`, (error, response) => {
                 if (error) {
+                    log.send(logLevels.ERROR, 'lz4 compression error: ' + error);
                     reject(error);
+                    return;
                 }
+
+                log.send(logLevels.WARN, 'compression stderr, ' + response.stderr);
                 const input = fs.createReadStream(`${this.dump}/${this.permanentIndexFolderName}.tar.lz4`);
                 const outputEncryption = fs.createWriteStream(this.encryptedIndex);
                 let config = {
@@ -53,7 +59,9 @@ class Crypto {
 
                 encryptionProcess.on('finish', (err) => {
                     if (err) {
+                        log.send(logLevels.ERROR, 'encryption error: ' + err);
                         reject(new Error(err));
+                        return;
                     }
                     fs.unlinkSync(`${this.dump}/${this.permanentIndexFolderName}.tar.lz4`);
                     resolve('Success');
@@ -71,7 +79,7 @@ class Crypto {
         return new Promise((resolve, reject) => {
 
             if (!fs.existsSync(this.encryptedIndex)){
-                // will be handling after implementing in client app
+                log.send(logLevels.ERROR, 'encrypted file not found');
                 reject();
                 return;
             }
@@ -88,12 +96,18 @@ class Crypto {
             decryptionProcess.on('finish', () => {
 
                 if (!fs.existsSync(`${this.dump}/decrypted.tar.lz4`)){
-                    // will be handling after implementing in client app
+                    log.send(logLevels.ERROR, 'decrypted.tar.lz4 file not found');
                     reject();
                     return;
                 }
 
-                lz4.deCompression(`${this.dump}/decrypted.tar.lz4`,() => {
+                lz4.deCompression(`${this.dump}/decrypted.tar.lz4`,(error, response) => {
+                    if (error) {
+                        log.send(logLevels.ERROR, 'lz4 deCompression error, ' + error);
+                        // no return, need to unlink if error
+                    }
+
+                    log.send(logLevels.WARN, 'deCompression stderr, ' + response.stderr);
                     fs.unlink(`${this.dump}/decrypted.tar.lz4`, () => {
                         resolve('success');
                     });
