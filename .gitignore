@@ -79,3 +79,4 @@ artifacts/
 *.pidb
 *.svclog
 *.scc
+package-lock.json

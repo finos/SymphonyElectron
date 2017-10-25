@@ -51,6 +51,9 @@ function updateScreens() {
     if (configurationWindow && screens && screens.length >= 0) {
         configurationWindow.webContents.send('screens', screens);
     }
+    // Event that updates the DOM elements
+    // notification position checkbox and monitor selection drop-down
+    configurationWindow.webContents.send('notificationSettings', {position: position, display: display});
 }
 
 /**
@@ -72,13 +75,30 @@ function getTemplatePath() {
  * @param windowName
  */
 function openConfigurationWindow(windowName) {
-    let allWindows = BrowserWindow.getAllWindows();
-    allWindows = allWindows.find((window) => { return window.winName === windowName });
+    const allWindows = BrowserWindow.getAllWindows();
+    const selectedParentWindow = allWindows.find((window) => { return window.winName === windowName });
 
     // if we couldn't find any window matching the window name
     // it will render as a new window
-    if (allWindows) {
-        windowConfig.parent = allWindows;
+    if (selectedParentWindow) {
+        windowConfig.parent = selectedParentWindow;
+
+        /**
+         * This is a temporary work around until there
+         * is a fix for the modal window in windows from the electron
+         * issue - https://github.com/electron/electron/issues/10721
+         */
+        const { x, y, width, height } = selectedParentWindow.getBounds();
+
+        const windowWidth = Math.round(width * 0.5);
+        const windowHeight = Math.round(height * 0.5);
+
+        // Calculating the center of the parent window
+        // to place the configuration window
+        const centerX = x + width / 2.0;
+        const centerY = y + height / 2.0;
+        windowConfig.x = Math.round(centerX - (windowWidth / 2.0));
+        windowConfig.y = Math.round(centerY - (windowHeight / 2.0));
     }
 
     configurationWindow = new BrowserWindow(windowConfig);
