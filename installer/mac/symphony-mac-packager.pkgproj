@@ -432,6 +432,12 @@
 				</dict>
 				<key>PAYLOAD_TYPE</key>
 				<integer>0</integer>
+				<key>SHOW_INVISIBLE</key>
+				<false/>
+				<key>SPLIT_FORKS</key>
+				<true/>
+				<key>TREAT_MISSING_FILES_AS_WARNING</key>
+				<false/>
 				<key>VERSION</key>
 				<integer>4</integer>
 			</dict>
@@ -453,15 +459,27 @@
 				<integer>1</integer>
 				<key>CONCLUSION_ACTION</key>
 				<integer>0</integer>
+				<key>FOLLOW_SYMBOLIC_LINKS</key>
+				<false/>
 				<key>IDENTIFIER</key>
 				<string>com.symphony.symphony-desktop</string>
+				<key>LOCATION</key>
+				<integer>0</integer>
 				<key>NAME</key>
 				<string>Symphony</string>
 				<key>OVERWRITE_PERMISSIONS</key>
 				<false/>
+				<key>PAYLOAD_SIZE</key>
+				<integer>-1</integer>
+				<key>RELOCATABLE</key>
+				<false/>
+				<key>USE_HFS+_COMPRESSION</key>
+				<false/>
 				<key>VERSION</key>
 				<string>1.0.1</string>
 			</dict>
+			<key>TYPE</key>
+			<integer>0</integer>
 			<key>UUID</key>
 			<string>91776F5A-09FA-4631-A17C-BE8B5C83AF81</string>
 		</dict>
@@ -499,7 +517,7 @@
 					<integer>3</integer>
 				</dict>
 				<key>CUSTOM</key>
-				<integer>1</integer>
+				<true/>
 				<key>SCALING</key>
 				<integer>1</integer>
 			</dict>
@@ -537,8 +555,6 @@
 						<dict/>
 					</dict>
 				</dict>
-				<key>INSTALLATION TYPE</key>
-				<integer>0</integer>
 				<key>MODE</key>
 				<integer>1</integer>
 			</dict>
@@ -631,8 +647,6 @@
 			</dict>
 			<key>LICENSE</key>
 			<dict>
-				<key>KEYWORDS</key>
-				<dict/>
 				<key>LOCALIZATIONS</key>
 				<array/>
 				<key>MODE</key>
@@ -665,10 +679,6 @@
 		<dict>
 			<key>LIST</key>
 			<array/>
-			<key>POSTINSTALL_PATH</key>
-			<dict/>
-			<key>PREINSTALL_PATH</key>
-			<dict/>
 			<key>RESOURCES</key>
 			<array/>
 			<key>ROOT_VOLUME_ONLY</key>
@@ -676,8 +686,6 @@
 		</dict>
 		<key>PROJECT_SETTINGS</key>
 		<dict>
-			<key>ADVANCED_OPTIONS</key>
-			<dict/>
 			<key>BUILD_FORMAT</key>
 			<integer>0</integer>
 			<key>BUILD_PATH</key>
@@ -857,6 +865,10 @@
 			</array>
 			<key>NAME</key>
 			<string>Symphony</string>
+			<key>PAYLOAD_ONLY</key>
+			<false/>
+			<key>TREAT_MISSING_PRESENTATION_DOCUMENTS_AS_WARNING</key>
+			<false/>
 		</dict>
 	</dict>
 	<key>SHARED_GLOBAL_DATA</key>
