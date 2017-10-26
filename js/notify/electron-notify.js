@@ -123,7 +123,7 @@ let config = {
         fontFamily: 'Lato-Regular, san-serif',
         fontSize: 12,
         color: '#4a4a4a',
-        marginTop: 6,
+        marginTop: 12,
         marginRight: 65,
         marginLeft: 52,
         overflow: 'hidden',
