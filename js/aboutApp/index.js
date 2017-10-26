@@ -67,6 +67,13 @@ function openAboutWindow(windowName) {
     aboutWindow.setVisibleOnAllWorkspaces(true);
     aboutWindow.loadURL(getTemplatePath());
 
+    // sets the AlwaysOnTop property for the about window
+    // if the main window's AlwaysOnTop is true
+    let focusedWindow = BrowserWindow.getFocusedWindow();
+    if (focusedWindow && focusedWindow.isAlwaysOnTop()) {
+        aboutWindow.setAlwaysOnTop(true);
+    }
+
     aboutWindow.once('ready-to-show', () => {
         aboutWindow.show();
     });

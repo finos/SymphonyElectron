@@ -179,7 +179,7 @@ function setup() {
     setupConfig();
 
     // if display added/removed/changed then re-run setup and remove all existing
-    // notifications.  ToDo: should reposition notifications rather than closing.
+    // notifications.
     electron.screen.on('display-added', setupConfig);
     electron.screen.on('display-removed', setupConfig);
     electron.screen.on('display-metrics-changed', setupConfig);
@@ -246,7 +246,6 @@ function calcDimensions() {
  * Setup the notification config
  */
 function setupConfig() {
-    closeAll();
 
     // This feature only applies to windows
     if (!isMac) {
@@ -700,33 +699,6 @@ function getWindow() {
             })
         }
     })
-}
-
-/**
- * Closes all the notifications and windows
- */
-function closeAll() {
-    // Clear out animation Queue and close windows
-    animationQueue.clear();
-
-    activeNotifications.forEach(function(window) {
-        if (window.displayTimer) {
-            clearTimeout(window.displayTimer);
-        }
-        if (window.electronNotifyOnCloseFunc) {
-            // ToDo: fix this: shouldn't delete method on arg
-            /* eslint-disable */
-            delete window.electronNotifyOnCloseFunc;
-            /* eslint-enable */
-        }
-        window.close();
-    });
-
-    cleanUpInactiveWindow();
-
-    // Reset certain vars
-    nextInsertPos = {};
-    activeNotifications = [];
 }
 
 /**

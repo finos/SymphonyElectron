@@ -14,6 +14,8 @@ const {getConfigField, updateUserConfigWin, updateUserConfigMac} = require('./co
 const { isMac, isDevEnv } = require('./utils/misc.js');
 const protocolHandler = require('./protocolHandler');
 const getCmdLineArg = require('./utils/getCmdLineArg.js');
+const log = require('./log.js');
+const logLevels = require('./enums/logLevels.js');
 
 require('electron-dl')();
 
@@ -32,7 +34,22 @@ require('./memoryMonitor.js');
 
 const windowMgr = require('./windowMgr.js');
 
-crashReporter.start({companyName: 'Symphony', submitURL: 'http://localhost:3000', uploadToServer: false, extra: {'process': 'main'}});
+getConfigField('url')
+.then(initializeCrashReporter)
+.catch(app.quit);
+
+function initializeCrashReporter(podUrl) {
+    
+    getConfigField('crashReporter')
+    .then((crashReporterConfig) => {
+        crashReporter.start({companyName: crashReporterConfig.companyName, submitURL: crashReporterConfig.submitURL, uploadToServer: crashReporterConfig.uploadToServer, extra: {'process': 'main', podUrl: podUrl}});
+        log.send(logLevels.INFO, 'initialized crash reporter on the main process!');
+    })
+    .catch((err) => {        
+        log.send(logLevels.ERROR, 'Unable to initialize crash reporter in the main process. Error is -> ' + err);
+    });
+
+}
 
 // only allow a single instance of app.
 const shouldQuit = app.makeSingleInstance((argv) => {
