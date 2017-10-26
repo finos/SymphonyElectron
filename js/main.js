@@ -10,7 +10,7 @@ const AutoLaunch = require('auto-launch');
 const urlParser = require('url');
 
 // Local Dependencies
-const {getConfigField, updateUserConfigWin, updateUserConfigMac} = require('./config.js');
+const {getConfigField, updateUserConfigWin, updateUserConfigMac, readConfigFileSync} = require('./config.js');
 const { isMac, isDevEnv } = require('./utils/misc.js');
 const protocolHandler = require('./protocolHandler');
 const getCmdLineArg = require('./utils/getCmdLineArg.js');
@@ -86,6 +86,31 @@ if (isMac) {
         path: process.execPath,
     });
 }
+
+function setChromeFlags() {
+    
+    log.send(logLevels.INFO, 'checking if we need to set custom chrome flags!');
+    
+    let config = readConfigFileSync();
+    
+    if (config && config !== null && config.customFlags) {
+        
+        log.send(logLevels.INFO, 'Chrome flags config found!');
+        
+        if (config.customFlags.authServerWhitelist && config.customFlags.authServerWhitelist !== "") {
+            log.send(logLevels.INFO, 'Setting auth server whitelist flag');
+            app.commandLine.appendSwitch('auth-server-whitelist', config.customFlags.authServerWhitelist);
+        }
+        
+        if (config.customFlags.authNegotiateDelegateWhitelist && config.customFlags.authNegotiateDelegateWhitelist !== "") {
+            log.send(logLevels.INFO, 'Setting auth negotiate delegate whitelist flag');
+            app.commandLine.appendSwitch('auth-negotiate-delegate-whitelist', config.customFlags.authNegotiateDelegateWhitelist);
+        }
+        
+    }
+}
+
+setChromeFlags();
 
 /**
  * This method will be called when Electron has finished
