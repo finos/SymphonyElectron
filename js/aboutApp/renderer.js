@@ -22,6 +22,6 @@ ipcRenderer.on('buildVersion', (event, buildVersion) => {
     const version = remote.app.getVersion();
 
     if (versionText) {
-        versionText.innerHTML = version ? `Version ${version} (${version}.${buildVersion})` : null;
+        versionText.innerHTML = version ? `Version ${version} (${version}.${buildVersion})` : 'N/A';
     }
 });
