@@ -17,11 +17,11 @@ function renderDom() {
     });
 }
 
-ipcRenderer.on('buildVersion', (event, buildVersion) => {
+ipcRenderer.on('buildNumber', (event, buildNumber) => {
     let versionText = document.getElementById('version');
     const version = remote.app.getVersion();
 
     if (versionText) {
-        versionText.innerHTML = version ? `Version ${version} (${version}.${buildVersion})` : 'N/A';
+        versionText.innerHTML = version ? `Version ${version} (${version}.${buildNumber})` : 'N/A';
     }
 });

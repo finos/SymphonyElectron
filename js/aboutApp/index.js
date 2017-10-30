@@ -6,7 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
-const buildVersion = require('../../package.json').buildVersion;
+const buildNumber = require('../../package.json').buildNumber;
 
 let aboutWindow;
 
@@ -80,7 +80,7 @@ function openAboutWindow(windowName) {
     });
 
     aboutWindow.webContents.on('did-finish-load', () => {
-        aboutWindow.webContents.send('buildVersion', buildVersion || '0');
+        aboutWindow.webContents.send('buildNumber', buildNumber || '0');
     });
 
     aboutWindow.on('close', () => {
