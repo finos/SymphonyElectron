@@ -1,5 +1,5 @@
 'use strict';
-const { remote } = require('electron');
+const { remote, ipcRenderer } = require('electron');
 
 renderDom();
 
@@ -9,13 +9,19 @@ renderDom();
 function renderDom() {
     document.addEventListener('DOMContentLoaded', function () {
         const applicationName = remote.app.getName() || 'Symphony';
-        const version = remote.app.getVersion();
         let appName = document.getElementById('app-name');
-        let versionText = document.getElementById('version');
         let copyright = document.getElementById('copyright');
 
         appName.innerHTML = applicationName;
-        versionText.innerHTML = version ? `Version ${version} (${version})` : null;
         copyright.innerHTML = `Copyright &copy; ${new Date().getFullYear()} ${applicationName}`
     });
 }
+
+ipcRenderer.on('buildVersion', (event, buildVersion) => {
+    let versionText = document.getElementById('version');
+    const version = remote.app.getVersion();
+
+    if (versionText) {
+        versionText.innerHTML = version ? `Version ${version} (${version}.${buildVersion})` : null;
+    }
+});
