@@ -65,8 +65,10 @@ const shouldQuit = app.makeSingleInstance((argv) => {
     processProtocolAction(argv);
 });
 
-// quit if another instance is already running, ignore for dev env
-if (!isDevEnv && shouldQuit) {
+let allowMultiInstance = getCmdLineArg(process.argv, '--multiInstance', true) != null || !isDevEnv;
+
+// quit if another instance is already running, ignore for dev env or if app was started with multiInstance flag
+if (!allowMultiInstance && shouldQuit) {
     app.quit();
 }
 
@@ -140,6 +142,13 @@ function setupThenOpenMainWindow() {
     // allows installer to launch app and set appropriate global / user config params.
     let hasInstallFlag = getCmdLineArg(process.argv, '--install', true);
     let perUserInstall = getCmdLineArg(process.argv, '--peruser', true);
+    let customDataArg = getCmdLineArg(process.argv, '--userDataPath=', false);
+    
+    if (customDataArg && customDataArg.split('=').length > 1) {
+        let customDataFolder = customDataArg.split('=')[1]; 
+        console.log('Setting user data dir to ' + customDataFolder);
+        app.setPath('userData', customDataFolder);
+    }
     if (!isMac && hasInstallFlag) {
         getConfigField('launchOnStartup')
             .then(setStartup)
