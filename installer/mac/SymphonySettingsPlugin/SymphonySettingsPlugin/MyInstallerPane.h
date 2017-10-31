@@ -7,11 +7,12 @@
 
 #import <InstallerPlugins/InstallerPlugins.h>
 
-@interface MyInstallerPane : InstallerPane
+@interface MyInstallerPane : InstallerPane<NSTextFieldDelegate>
 
 @property (weak) IBOutlet NSButton *minimizeOnCloseCheckBox;
 @property (weak) IBOutlet NSButton *autoLaunchCheckBox;
 @property (weak) IBOutlet NSTextField *podUrlTextBox;
 @property (weak) IBOutlet NSButton *alwaysOnTopCheckBox;
+@property (weak) IBOutlet NSTextField *podUrlAlertTextBox;
 
 @end
