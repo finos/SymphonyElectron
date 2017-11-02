@@ -65,7 +65,7 @@ const shouldQuit = app.makeSingleInstance((argv) => {
     processProtocolAction(argv);
 });
 
-let allowMultiInstance = getCmdLineArg(process.argv, '--multiInstance', true) != null || !isDevEnv;
+let allowMultiInstance = getCmdLineArg(process.argv, '--multiInstance', true) != null || isDevEnv;
 
 // quit if another instance is already running, ignore for dev env or if app was started with multiInstance flag
 if (!allowMultiInstance && shouldQuit) {
