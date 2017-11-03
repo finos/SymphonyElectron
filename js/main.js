@@ -65,7 +65,7 @@ const shouldQuit = app.makeSingleInstance((argv) => {
     processProtocolAction(argv);
 });
 
-let allowMultiInstance = getCmdLineArg(process.argv, '--multiInstance', true) != null || isDevEnv;
+let allowMultiInstance = getCmdLineArg(process.argv, '--multiInstance', true) || isDevEnv;
 
 // quit if another instance is already running, ignore for dev env or if app was started with multiInstance flag
 if (!allowMultiInstance && shouldQuit) {
@@ -146,7 +146,6 @@ function setupThenOpenMainWindow() {
     
     if (customDataArg && customDataArg.split('=').length > 1) {
         let customDataFolder = customDataArg.split('=')[1]; 
-        console.log('Setting user data dir to ' + customDataFolder);
         app.setPath('userData', customDataFolder);
     }
     if (!isMac && hasInstallFlag) {
