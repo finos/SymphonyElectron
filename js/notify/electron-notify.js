@@ -67,52 +67,45 @@ let config = {
     defaultStyleContainer: {
         display: 'flex',
         justifyContent: 'center',
-        flexDirection: 'column',
         backgroundColor: '#f0f0f0',
         overflow: 'hidden',
-        padding: 10,
         position: 'relative',
         lineHeight: '15px',
         boxSizing: 'border-box'
     },
     defaultStyleHeader: {
-        flex: '1 0 auto',
-        display: 'flex',
-        flexDirection: 'column'
+        width: 245,
+        minWidth: 230,
+        margin: "12px 10px"
     },
     defaultStyleImage: {
         height: 43,
-        position: 'absolute',
-        right: 30,
-        top: 11,
+        borderRadius: 4,
+        marginTop: 12,
         width: 43
     },
     defaultStyleClose: {
-        position: 'absolute',
-        top: 8,
-        right: 8,
         width: 16,
         height: 16,
+        margin: "10px 8px 0 8px",
         opacity: 0.54,
         fontSize: 12,
         color: '#CCC'
     },
     defaultStyleTitle: {
-        fontFamily: 'Lato-Bold, san-serif',
+        fontFamily: 'sans-serif',
         fontSize: 14,
         fontWeight: 700,
         color: '#4a4a4a',
-        marginLeft: 52,
         overflow: 'hidden',
         display: '-webkit-box',
         webkitLineClamp: 1,
         webkitBoxOrient: 'vertical',
     },
     defaultStylePod: {
-        fontFamily: 'Lato-Regular, san-serif',
+        fontFamily: 'sans-serif',
         fontSize: 11,
         color: '#adadad',
-        marginLeft: 52,
         overflow: 'hidden',
         filter: 'brightness(70%)',
         display: '-webkit-box',
@@ -120,17 +113,19 @@ let config = {
         webkitBoxOrient: 'vertical',
     },
     defaultStyleText: {
-        fontFamily: 'Lato-Regular, san-serif',
+        fontFamily: 'sans-serif',
         fontSize: 12,
         color: '#4a4a4a',
         marginTop: 12,
-        marginRight: 65,
-        marginLeft: 52,
         overflow: 'hidden',
         display: '-webkit-box',
         webkitLineClamp: 1,
         webkitBoxOrient: 'vertical',
         cursor: 'default'
+    },
+    defaultStyleLogo: {
+        margin: "12px 0 0 -12px",
+        opacity: 0.6,
     },
     defaultWindow: {
         alwaysOnTop: true,
