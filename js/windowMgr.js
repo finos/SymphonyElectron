@@ -41,7 +41,11 @@ let sandboxed = false;
 const preloadMainScript = path.join(__dirname, 'preload/_preloadMain.js');
 
 const MIN_WIDTH = 300;
-const MIN_HEIGHT = 600;
+const MIN_HEIGHT = 300;
+
+// Default window size for pop-out windows
+const DEFAULT_WIDTH = 300;
+const DEFAULT_HEIGHT = 600;
 
 /**
  * Adds a window key
@@ -294,8 +298,8 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             let x = 0;
             let y = 0;
 
-            let width = newWinOptions.width || MIN_WIDTH;
-            let height = newWinOptions.height || MIN_HEIGHT;
+            let width = newWinOptions.width || DEFAULT_WIDTH;
+            let height = newWinOptions.height || DEFAULT_HEIGHT;
 
             // try getting x and y position from query parameters
             let query = newWinParsedUrl && querystring.parse(newWinParsedUrl.query);
@@ -324,8 +328,8 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             /* eslint-disable no-param-reassign */
             newWinOptions.x = x;
             newWinOptions.y = y;
-            newWinOptions.width = Math.max(width, MIN_WIDTH);
-            newWinOptions.height = Math.max(height, MIN_HEIGHT);
+            newWinOptions.width = Math.max(width, DEFAULT_WIDTH);
+            newWinOptions.height = Math.max(height, DEFAULT_HEIGHT);
             newWinOptions.minWidth = MIN_WIDTH;
             newWinOptions.minHeight = MIN_HEIGHT;
             newWinOptions.alwaysOnTop = alwaysOnTop;

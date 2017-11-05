@@ -48,12 +48,15 @@ function updateScreens() {
     screens = electron.screen.getAllDisplays();
 
     // Notifying renderer when a display is added/removed
-    if (configurationWindow && screens && screens.length >= 0) {
-        configurationWindow.webContents.send('screens', screens);
+    if (configurationWindow) {
+        // Event that updates the DOM elements
+        // notification position checkbox and monitor selection drop-down
+        configurationWindow.webContents.send('notificationSettings', {position: position, display: display});
+
+        if (screens && screens.length >= 0) {
+            configurationWindow.webContents.send('screens', screens);
+        }
     }
-    // Event that updates the DOM elements
-    // notification position checkbox and monitor selection drop-down
-    configurationWindow.webContents.send('notificationSettings', {position: position, display: display});
 }
 
 /**
