@@ -9,6 +9,8 @@
 const electron = require('electron');
 const ipc = electron.ipcRenderer;
 
+const whiteColorRegExp = new RegExp(/^(?:white|#fff(?:fff)?|rgba?\(\s*255\s*,\s*255\s*,\s*255\s*(?:,\s*1\s*)?\))$/i);
+
 /**
  * Sets style for a notification
  * @param config
@@ -19,7 +21,9 @@ function setStyle(config) {
     let container = notiDoc.getElementById('container');
     let header = notiDoc.getElementById('header');
     let image = notiDoc.getElementById('image');
+    let logo = notiDoc.getElementById('symphony-logo');
     let title = notiDoc.getElementById('title');
+    let pod = notiDoc.getElementById('pod');
     let message = notiDoc.getElementById('message');
     let close = notiDoc.getElementById('close');
 
@@ -37,7 +41,11 @@ function setStyle(config) {
 
     setStyleOnDomElement(config.defaultStyleImage, image);
 
+    setStyleOnDomElement(config.defaultStyleLogo, logo);
+
     setStyleOnDomElement(config.defaultStyleTitle, title);
+
+    setStyleOnDomElement(config.defaultStylePod, pod);
 
     setStyleOnDomElement(config.defaultStyleText, message);
 
@@ -75,6 +83,20 @@ function setContents(event, notificationObj) {
 
     if (notificationObj.color) {
         container.style.backgroundColor = notificationObj.color;
+        let logo = notiDoc.getElementById('symphony-logo');
+
+        if (notificationObj.color.match(whiteColorRegExp)) {
+            logo.src = './assets/symphony-logo-black.png';
+        } else {
+            let title = notiDoc.getElementById('title');
+            let pod = notiDoc.getElementById('pod');
+            let message = notiDoc.getElementById('message');
+
+            message.style.color = '#ffffff';
+            title.style.color = '#ffffff';
+            pod.style.color = notificationObj.color;
+            logo.src = './assets/symphony-logo-white.png';
+        }
     }
 
     if (notificationObj.flash) {
