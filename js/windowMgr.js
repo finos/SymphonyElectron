@@ -23,6 +23,7 @@ const { isMac, isNodeEnv } = require('./utils/misc');
 
 // show dialog when certificate errors occur
 require('./dialogs/showCertError.js');
+require('./dialogs/showBasicAuth.js');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
