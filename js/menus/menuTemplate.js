@@ -1,7 +1,7 @@
 'use strict';
 
 const electron = require('electron');
-const { getConfigField, updateConfigField } = require('../config.js');
+const { updateConfigField, getMultipleConfigField } = require('../config.js');
 const AutoLaunch = require('auto-launch');
 const isMac = require('../utils/misc.js').isMac;
 const log = require('../log.js');
@@ -12,8 +12,6 @@ const aboutApp = require('../aboutApp');
 let minimizeOnClose = false;
 let launchOnStartup = false;
 let isAlwaysOnTop = false;
-
-setCheckboxValues();
 
 let symphonyAutoLauncher;
 
@@ -266,39 +264,42 @@ function getTemplate(app) {
  * based on configuration
  */
 function setCheckboxValues() {
-    getConfigField('minimizeOnClose').then(function(mClose) {
-        minimizeOnClose = mClose;
-    }).catch(function(err) {
-        let title = 'Error loading configuration';
-        log.send(logLevels.ERROR, 'MenuTemplate: error getting config field minimizeOnClose, error: ' + err);
-        electron.dialog.showErrorBox(title, title + ': ' + err);
+    return new Promise((resolve) => {
+        /**
+         * Method that reads multiple config fields
+         */
+        getMultipleConfigField(['minimizeOnClose', 'launchOnStartup', 'alwaysOnTop', 'notificationSettings'])
+            .then(function (configData) {
+                for (let key in configData) {
+                    if (configData.hasOwnProperty(key)) { // eslint-disable-line no-prototype-builtins
+                        switch (key) {
+                            case 'minimizeOnClose':
+                                minimizeOnClose = configData[key];
+                                break;
+                            case 'launchOnStartup':
+                                launchOnStartup = configData[key];
+                                break;
+                            case 'alwaysOnTop':
+                                isAlwaysOnTop = configData[key];
+                                eventEmitter.emit('isAlwaysOnTop', configData[key]);
+                                break;
+                            case 'notificationSettings':
+                                eventEmitter.emit('notificationSettings', configData[key]);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+                return resolve();
+            })
+            .catch((err) => {
+                let title = 'Error loading configuration';
+                log.send(logLevels.ERROR, 'MenuTemplate: error reading configuration fields, error: ' + err);
+                electron.dialog.showErrorBox(title, title + ': ' + err);
+                return resolve();
+            });
     });
-
-    getConfigField('launchOnStartup').then(function(lStartup) {
-        launchOnStartup = lStartup;
-    }).catch(function(err) {
-        let title = 'Error loading configuration';
-        log.send(logLevels.ERROR, 'MenuTemplate: error getting config field launchOnStartup, error: ' + err);
-        electron.dialog.showErrorBox(title, title + ': ' + err);
-    });
-
-    getConfigField('alwaysOnTop').then(function(mAlwaysOnTop) {
-        isAlwaysOnTop = mAlwaysOnTop;
-        eventEmitter.emit('isAlwaysOnTop', isAlwaysOnTop);
-    }).catch(function(err) {
-        let title = 'Error loading configuration';
-        log.send(logLevels.ERROR, 'MenuTemplate: error getting config field alwaysOnTop, error: ' + err);
-        electron.dialog.showErrorBox(title, title + ': ' + err);
-    });
-
-    getConfigField('notificationSettings').then(function(notfObject) {
-        eventEmitter.emit('notificationSettings', notfObject);
-    }).catch(function(err) {
-        let title = 'Error loading configuration';
-        log.send(logLevels.ERROR, 'MenuTemplate: error getting config field notificationSettings, error: ' + err);
-        electron.dialog.showErrorBox(title, title + ': ' + err);
-    });
-
 }
 
 function getMinimizeOnClose() {
@@ -307,5 +308,6 @@ function getMinimizeOnClose() {
 
 module.exports = {
     getTemplate: getTemplate,
-    getMinimizeOnClose: getMinimizeOnClose
+    getMinimizeOnClose: getMinimizeOnClose,
+    setCheckboxValues: setCheckboxValues
 };

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Authentication Request</title>
+    <style>
+        html, body {
+            margin: 0;
+            height: 100%;
+            font-family: sans-serif;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            padding: 20px
+        }
+
+        span {
+            padding-top: 10px;
+            text-align: start;
+        }
+
+        .hostname {
+            font-size: .9em;
+        }
+
+        form {
+            padding-top: 15px;
+        }
+
+        table {
+            border-spacing: 5px;
+        }
+
+        input {
+            width: 200px;
+            height: 20px;
+            display: inline-block;
+        }
+
+        button {
+            width: 80px;
+        }
+
+        .footer {
+            display: flex;
+            text-align: center;
+            padding-top: 25px;
+        }
+
+        .button-container {
+            flex: 1;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <span>Please provide your login credentials for:</span>
+    <span id="hostname" class="hostname">hostname</span>
+    <form id="basicAuth" name="Basic Auth" action="Login">
+        <table class="form">
+            <tbody>
+            <tr>
+                <td>User name:</td>
+                <td>
+                    <input id="username" name="username" title="Username" required>
+                </td>
+            </tr>
+            <tr>
+                <td>Password:</td>
+                <td>
+                    <input id="password" type="password" title="Password" required>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="footer">
+            <div class="button-container">
+                <button type="submit" id="login">Log In</button>
+            </div>
+            <div class="button-container">
+                <button id="cancel">Cancel</button>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
