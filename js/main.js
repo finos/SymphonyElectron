@@ -157,9 +157,8 @@ function setupThenOpenMainWindow() {
         let launchOnStartup = process.argv[3];
         // We wire this in via the post install script
         // to get the config file path where the app is installed
-        let appGlobalConfigPath = process.argv[2];
         setStartup(launchOnStartup)
-            .then(() => updateUserConfigMac(appGlobalConfigPath))
+            .then(updateUserConfigMac)
             .then(app.quit)
             .catch(app.quit);
         return;
@@ -178,18 +177,13 @@ function setupThenOpenMainWindow() {
  * @returns {Promise}
  */
 function setStartup(lStartup) {
-    return symphonyAutoLauncher.isEnabled()
-        .then(function(isEnabled) {
-            if (!isEnabled && lStartup) {
-                return symphonyAutoLauncher.enable();
-            }
-
-            if (isEnabled && !lStartup) {
-                return symphonyAutoLauncher.disable();
-            }
-
-            return true;
-        });
+    return new Promise((resolve) => {
+        let launchOnStartup = (lStartup === 'true');
+        if (launchOnStartup) {
+            symphonyAutoLauncher.enable();
+        }
+        return resolve();
+    });
 }
 
 /**
