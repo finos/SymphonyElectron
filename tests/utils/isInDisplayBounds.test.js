@@ -33,12 +33,12 @@ describe('isInDisplayBounds should', function() {
             }
         }]);
 
-        var rect = {
+        const rect = {
             x: 1,
             y: 1,
             width: 90,
             height: 90
-        }
+        };
 
         expect(isInDisplayBounds(rect)).toBe(true);
     });
@@ -53,12 +53,12 @@ describe('isInDisplayBounds should', function() {
             }
         }]);
 
-        var rect = {
+        const rect = {
             x: 0,
             y: 0,
             width: 100,
             height: 100
-        }
+        };
 
         expect(isInDisplayBounds(rect)).toBe(true);
     });
@@ -73,12 +73,12 @@ describe('isInDisplayBounds should', function() {
             }
         }]);
 
-        var rect = {
+        const rect = {
             x: 0,
             y: 0,
             width: 100,
             height: 100
-        }
+        };
 
         expect(isInDisplayBounds(rect)).toBe(true);
     });
@@ -100,15 +100,15 @@ describe('isInDisplayBounds should', function() {
                 x: 100,
                 y: 0
             }
-        }
+        };
         createMockDisplay([ display1, display2 ]);
 
-        var rect = {
+        const rect = {
             x: 110,
             y: 0,
             width: 50,
             height: 50
-        }
+        };
 
         expect(isInDisplayBounds(rect)).toBe(true);
     });
@@ -123,12 +123,12 @@ describe('isInDisplayBounds should', function() {
             }
         }]);
 
-        var rect = {
+        const rect = {
             x: 0,
             y: 0,
             width: 100,
             height: 101
-        }
+        };
 
         expect(isInDisplayBounds(rect)).toBe(false);
     });
@@ -149,15 +149,15 @@ describe('isInDisplayBounds should', function() {
                 x: 100,
                 y: 0
             }
-        }
+        };
         createMockDisplay([ display1, display2 ]);
 
-        var rect = {
+        const rect = {
             x: 50,
             y: 50,
             width: 75,
             height: 25
-        }
+        };
 
         expect(isInDisplayBounds(rect)).toBe(false);
     });

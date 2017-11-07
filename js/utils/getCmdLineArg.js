@@ -7,7 +7,7 @@ const logLevels = require('../enums/logLevels.js');
  * Search given argv for argName using exact match or starts with.
  * @param  {Array} argv       Array of strings
  * @param  {String} argName   Arg name to search for.
- * @param  {bool} exactMatch  If true then look for exact match otherwise
+ * @param  {Boolean} exactMatch  If true then look for exact match otherwise
  * try finding arg that starts with argName.
  * @return {String}           If found, returns the arg, otherwise null.
  */
@@ -26,4 +26,5 @@ function getCmdLineArg(argv, argName, exactMatch) {
 
     return null;
 }
-module.exports = getCmdLineArg
+
+module.exports = getCmdLineArg;

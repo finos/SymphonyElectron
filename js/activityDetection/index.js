@@ -16,7 +16,7 @@ let throttleActivity;
 function activityDetection() {
     // Get system idle status and idle time from PaulCBetts package
     if (systemIdleTime.getIdleTime() < maxIdleTime) {
-        return {isUserIdle: false, systemIdleTime: systemIdleTime.getIdleTime()};
+        return { isUserIdle: false, systemIdleTime: systemIdleTime.getIdleTime() };
     }
 
     // If idle for more than 4 mins, monitor system idle status every second
@@ -65,7 +65,7 @@ function monitorUserActivity() {
 function sendActivity() {
     let systemActivity = activityDetection();
     if (systemActivity && !systemActivity.isUserIdle && systemActivity.systemIdleTime) {
-        send({systemIdleTime: systemActivity.systemIdleTime});
+        send({ systemIdleTime: systemActivity.systemIdleTime });
     }
 }
 
@@ -84,6 +84,11 @@ function send(data) {
     }
 }
 
+/**
+ * Set the activity's window
+ * @param period
+ * @param win
+ */
 function setActivityWindow(period, win) {
     maxIdleTime = period;
     activityWindow = win;
@@ -95,6 +100,5 @@ module.exports = {
     send: send,
     setActivityWindow: setActivityWindow,
     activityDetection: activityDetection,
-    monitorUserActivity: monitorUserActivity, // Exporting this for unit test
-    initiateActivityDetection: initiateActivityDetection
+    monitorUserActivity: monitorUserActivity, // Exporting this for unit tests
 };

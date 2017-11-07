@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 const electron = require('electron');
 
@@ -6,8 +6,8 @@ const electron = require('electron');
 /**
  * Returns true if given rectangle is contained within the workArea of at
  * least one of the screens.
- * @param  {x: Number, y: Number, width: Number, height: Number} rect
- * @return {Boolean}      true if condition in desc is met.
+ * @param  {Object} rect - ex:- {x: Number, y: Number, width: Number, height: Number}
+ * @return {Boolean} true if condition in desc is met.
  */
 function isInDisplayBounds(rect) {
     if (!rect) {

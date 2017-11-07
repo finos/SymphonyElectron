@@ -3,13 +3,21 @@
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 
-// One animation at a time
+/**
+ * Manages one animation at a time
+ * @param options
+ * @constructor
+ */
 const AnimationQueue = function(options) {
     this.options = options;
     this.queue = [];
     this.running = false;
-}
+};
 
+/**
+ * Pushes each animation to a queue
+ * @param object
+ */
 AnimationQueue.prototype.push = function(object) {
     if (this.running) {
         this.queue.push(object);
@@ -17,8 +25,12 @@ AnimationQueue.prototype.push = function(object) {
         this.running = true;
         setTimeout(this.animate.bind(this, object), 0);
     }
-}
+};
 
+/**
+ * Animates an animation that is part of the queue
+ * @param object
+ */
 AnimationQueue.prototype.animate = function(object) {
     object.func.apply(null, object.args)
     .then(function() {
@@ -37,10 +49,13 @@ AnimationQueue.prototype.animate = function(object) {
         ' with stack trace:' + err.stack);
         /* eslint-enable no-console */
     })
-}
+};
 
+/**
+ * Clears the queue
+ */
 AnimationQueue.prototype.clear = function() {
     this.queue = [];
-}
+};
 
 module.exports = AnimationQueue;

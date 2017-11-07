@@ -19,7 +19,6 @@ describe('Tests for Full screen', () => {
             return app.startApplication().then((startedApp) => {
                 app = startedApp;
                 getConfigPath().then((config) => {
-                    console.log(config);
                     configPath = config;
                     done();
                 }).catch((err) => {
@@ -54,7 +53,6 @@ describe('Tests for Full screen', () => {
                     app.stop().then(() => {
                         done();
                     }).catch((err) => {
-                        console.log(err);
                         done();
                     });
                 } else {
@@ -99,7 +97,6 @@ describe('Tests for Full screen', () => {
         app.browserWindow.focus();
         return app.browserWindow.setAlwaysOnTop(true).then(() => {
             return app.browserWindow.isAlwaysOnTop().then((isOnTop) => {
-                console.log(isOnTop);
                 expect(isOnTop).toBeTruthy();
             });
         });

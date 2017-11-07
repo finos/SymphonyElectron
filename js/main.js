@@ -1,24 +1,26 @@
 'use strict';
 
+// Third Party Dependencies
 const electron = require('electron');
 const app = electron.app;
+const crashReporter = electron.crashReporter;
 const nodeURL = require('url');
 const squirrelStartup = require('electron-squirrel-startup');
 const AutoLaunch = require('auto-launch');
 const urlParser = require('url');
-const { getConfigField } = require('./config.js');
+
+// Local Dependencies
+const {getConfigField, updateUserConfigWin, updateUserConfigMac} = require('./config.js');
+const {setCheckboxValues} = require('./menus/menuTemplate.js');
 const { isMac, isDevEnv } = require('./utils/misc.js');
 const protocolHandler = require('./protocolHandler');
 const getCmdLineArg = require('./utils/getCmdLineArg.js');
-const childProcess = require('child_process');
-const path = require('path');
-const AppDirectory = require('appdirectory');
-const dirs = new AppDirectory('Symphony');
+const log = require('./log.js');
+const logLevels = require('./enums/logLevels.js');
 const Crypto = require('./cryptoLib');
 const crypto = new Crypto();
 
 require('electron-dl')();
-
 
 // used to check if a url was opened when the app was already open
 let isAppAlreadyOpen = false;
@@ -34,6 +36,23 @@ require('./mainApiMgr.js');
 require('./memoryMonitor.js');
 
 const windowMgr = require('./windowMgr.js');
+
+getConfigField('url')
+.then(initializeCrashReporter)
+.catch(app.quit);
+
+function initializeCrashReporter(podUrl) {
+
+    getConfigField('crashReporter')
+    .then((crashReporterConfig) => {
+        crashReporter.start({companyName: crashReporterConfig.companyName, submitURL: crashReporterConfig.submitURL, uploadToServer: crashReporterConfig.uploadToServer, extra: {'process': 'main', podUrl: podUrl}});
+        log.send(logLevels.INFO, 'initialized crash reporter on the main process!');
+    })
+    .catch((err) => {
+        log.send(logLevels.ERROR, 'Unable to initialize crash reporter in the main process. Error is -> ' + err);
+    });
+
+}
 
 // only allow a single instance of app.
 const shouldQuit = app.makeSingleInstance((argv) => {
@@ -76,13 +95,20 @@ if (isMac) {
  * initialization and is ready to create browser windows.
  * Some APIs can only be used after this event occurs.
  */
-app.on('ready', setupThenOpenMainWindow);
+app.on('ready', readConfigThenOpenMainWindow);
 
-app.on('window-all-closed', function () {
+/**
+ * Is triggered when all the windows are closed
+ * In which case we quit the app
+ */
+app.on('window-all-closed', function() {
     app.quit();
 });
 
-app.on('activate', function () {
+/**
+ * Is triggered when the app is up & running
+ */
+app.on('activate', function() {
     if (windowMgr.isMainWindow(null)) {
         setupThenOpenMainWindow();
     } else {
@@ -101,26 +127,46 @@ app.on('will-quit', function (e) {
 // and registry keys in windows
 app.setAsDefaultProtocolClient('symphony');
 
-// This event is emitted only on macOS
-// at this moment, support for windows
-// is in pipeline (https://github.com/electron/electron/pull/8052)
-app.on('open-url', function (event, url) {
+/**
+ * This event is emitted only on macOS
+ * at this moment, support for windows
+ * is in pipeline (https://github.com/electron/electron/pull/8052)
+ */
+app.on('open-url', function(event, url) {
     handleProtocolAction(url);
 });
 
+/**
+ * Reads the config fields that are required for the menu items
+ * then opens the main window
+ *
+ * This is a workaround for the issue where the menu template was returned
+ * even before the config data was populated
+ * https://perzoinc.atlassian.net/browse/ELECTRON-154
+ */
+function readConfigThenOpenMainWindow() {
+    setCheckboxValues()
+        .then(setupThenOpenMainWindow)
+        .catch(setupThenOpenMainWindow)
+}
+
+/**
+ * Sets up the app (to handle various things like config changes, protocol handling etc.)
+ * and opens the main window
+ */
 function setupThenOpenMainWindow() {
 
     processProtocolAction(process.argv);
 
     isAppAlreadyOpen = true;
 
-    // allows installer to launch app and set auto startup mode then
-    // immediately quit.
+    // allows installer to launch app and set appropriate global / user config params.
     let hasInstallFlag = getCmdLineArg(process.argv, '--install', true);
+    let perUserInstall = getCmdLineArg(process.argv, '--peruser', true);
     if (!isMac && hasInstallFlag) {
         getConfigField('launchOnStartup')
             .then(setStartup)
-            .then(updateUserConfigWin)
+            .then(() => updateUserConfigWin(perUserInstall))
             .then(app.quit)
             .catch(app.quit);
         return;
@@ -132,8 +178,11 @@ function setupThenOpenMainWindow() {
         // as the app is launched as a root user we don't get
         // access to the config file
         let launchOnStartup = process.argv[3];
-        updateUserConfigMac()
-            .then(setStartup(launchOnStartup))
+        // We wire this in via the post install script
+        // to get the config file path where the app is installed
+        let appGlobalConfigPath = process.argv[2];
+        setStartup(launchOnStartup)
+            .then(() => updateUserConfigMac(appGlobalConfigPath))
             .then(app.quit)
             .catch(app.quit);
         return;
@@ -146,56 +195,34 @@ function setupThenOpenMainWindow() {
     electron.screen.on('display-removed', windowMgr.verifyDisplays);
 }
 
-function setStartup(lStartup){
+/**
+ * Sets Symphony on startup
+ * @param lStartup
+ * @returns {Promise}
+ */
+function setStartup(lStartup) {
     return symphonyAutoLauncher.isEnabled()
-    .then(function(isEnabled){
-        if (!isEnabled && lStartup) {
-            return symphonyAutoLauncher.enable();
-        }
-
-        if (isEnabled && !lStartup) {
-            return symphonyAutoLauncher.disable();
-        }
-
-        return true;
-    });
-}
-
-// Method to overwrite user config on mac installer
-function updateUserConfigMac() {
-    return new Promise((resolve, reject) => {
-        let userConfigPath = dirs.userConfig() + '/';
-        let globalConfigPath = process.argv[2];
-        let userName = process.env.USER;
-
-        childProcess.exec(`rsync -r "${globalConfigPath}" "${userConfigPath}" && chown -R "${userName}" "${userConfigPath}"`, {timeout: 60000}, (err) => {
-            if (err) {
-                reject(err);
+        .then(function(isEnabled) {
+            if (!isEnabled && lStartup) {
+                return symphonyAutoLauncher.enable();
             }
-            resolve();
-        });
-    });
-}
 
-// Method to overwrite user config on windows installer
-function updateUserConfigWin() {
-    return new Promise((resolve, reject) => {
-        let userConfigPath = app.getPath('userData');
-        let globalConfigPath = path.join(__dirname, '..', '..', '..', 'config/Symphony.config');
-
-        childProcess.exec(`echo D|xcopy /y /e /s /c "${globalConfigPath}" "${userConfigPath}"`, {timeout: 60000}, (err) => {
-            if (err) {
-                reject(err);
+            if (isEnabled && !lStartup) {
+                return symphonyAutoLauncher.disable();
             }
-            resolve();
+
+            return true;
         });
-    });
 }
 
+/**
+ * Checks for the url argument, processes it
+ * and creates the main window
+ */
 function getUrlAndCreateMainWindow() {
     // for dev env allow passing url argument
     if (isDevEnv) {
-        let url = getCmdLineArg(process.argv, '--url=')
+        let url = getCmdLineArg(process.argv, '--url=', false);
         if (url) {
             windowMgr.createMainWindow(url.substr(6));
             return;
@@ -203,12 +230,16 @@ function getUrlAndCreateMainWindow() {
     }
 
     getConfigField('url')
-        .then(createWin).catch(function (err) {
+        .then(createWin).catch(function(err) {
             let title = 'Error loading configuration';
             electron.dialog.showErrorBox(title, title + ': ' + err);
         });
 }
 
+/**
+ * Creates a window
+ * @param urlFromConfig
+ */
 function createWin(urlFromConfig) {
     let protocol = '';
     // add https protocol if none found.
@@ -216,7 +247,7 @@ function createWin(urlFromConfig) {
     if (!parsedUrl.protocol) {
         protocol = 'https';
     }
-    var url = nodeURL.format({
+    let url = nodeURL.format({
         protocol: protocol,
         slahes: true,
         pathname: parsedUrl.href
@@ -238,7 +269,7 @@ function processProtocolAction(argv) {
         return;
     }
 
-    let protocolUri = getCmdLineArg(argv, 'symphony://');
+    let protocolUri = getCmdLineArg(argv, 'symphony://', false);
 
     if (protocolUri) {
 
@@ -253,6 +284,10 @@ function processProtocolAction(argv) {
     }
 }
 
+/**
+ * Handles a protocol action based on the current state of the app
+ * @param uri
+ */
 function handleProtocolAction(uri) {
     if (!isAppAlreadyOpen) {
         // app is opened by the protocol url, cache the protocol url to be used later

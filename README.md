@@ -57,5 +57,11 @@ In order to achieve those goals Symphony is participating and working in close c
 - code coverage reports are placed in dir: converage
 - tests are located in dir: tests
 
+## Logging
+- Local logging is enabled for dev environments using the module [electron-log](https://www.npmjs.com/package/electron-log)
+- On macOS, the logs are stored under `~/Library/Logs/<app name>/log.log`
+- On Windows, the logs are stored under `%USERPROFILE%\AppData\Roaming\<app name>\log.log`
+- Remote logging is enabled for local and production cases and are sent to the backend server via the remote objects
+
 ## Misc notes
 If desiring to run against server without proper cert use cmd line option: --ignore-certificate-errors
