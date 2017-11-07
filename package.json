@@ -110,6 +110,7 @@
     "keymirror": "0.1.1",
     "randomstring": "^1.1.5",
     "ref": "^1.3.4",
+    "shell-path": "^2.1.0",
     "winreg": "^1.2.3"
   },
   "optionalDependencies": {

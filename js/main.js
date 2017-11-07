@@ -3,6 +3,7 @@
 const electron = require('electron');
 const app = electron.app;
 const nodeURL = require('url');
+const shellPath = require('shell-path');
 const squirrelStartup = require('electron-squirrel-startup');
 const AutoLaunch = require('auto-launch');
 const urlParser = require('url');
@@ -19,6 +20,13 @@ const crypto = new Crypto();
 
 require('electron-dl')();
 
+//setting the env path child_process issue https://github.com/electron/electron/issues/7688
+process.env.PATH = shellPath.sync() || [
+    './node_modules/.bin',
+    '/.nodebrew/current/bin',
+    '/usr/local/bin',
+    process.env.PATH
+].join(':');
 
 // used to check if a url was opened when the app was already open
 let isAppAlreadyOpen = false;
