@@ -21,7 +21,6 @@ describe('Tests for Bring to front', () => {
             app.stop().then(() => {
                 done();
             }).catch((err) => {
-                console.log(err);
                 done();
             });
         }

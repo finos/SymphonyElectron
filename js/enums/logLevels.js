@@ -1,7 +1,11 @@
 'use strict';
 
-var keyMirror = require('keymirror');
+let keyMirror = require('keymirror');
 
+/**
+ * The different log levels
+ * @type {Object}
+ */
 module.exports = keyMirror({
     ERROR: null,
     CONFLICT: null,

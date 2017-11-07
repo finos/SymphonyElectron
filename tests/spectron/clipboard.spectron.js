@@ -20,7 +20,6 @@ describe('Tests for clipboard', () => {
             app.stop().then(() => {
                 done();
             }).catch((err) => {
-                console.log(err);
                 done();
             });
         }

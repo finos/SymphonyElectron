@@ -62,13 +62,13 @@ describe('read/write config tests', function() {
     }
 
     function createTempUserConfig(config) {
-        var tmpDir = os.tmpdir();
+        const tmpDir = os.tmpdir();
         userConfigDir = fs.mkdtempSync(path.join(tmpDir, 'config-'));
         return createTempConfigFile(path.join(userConfigDir, configFileName), config);
     }
 
     function createTempGlobalConfig(config) {
-        var tmpDir = os.tmpdir();
+        const tmpDir = os.tmpdir();
         globalConfigDir = path.join(fs.mkdtempSync(path.join(tmpDir, 'config-')), 'config');
         fs.mkdirSync(globalConfigDir);
         return createTempConfigFile(path.join(globalConfigDir, configFileName), config);
@@ -80,15 +80,15 @@ describe('read/write config tests', function() {
 
     describe('getConfigField tests', function() {
         it('should fail when field not present in either user or global config', function() {
-            var userConfig = {
+            const userConfig = {
                 url: 'something'
-            }
+            };
 
             createTempUserConfig(userConfig);
 
-            var globalConfig = {
+            const globalConfig = {
                 url: 'something-else'
-            }
+            };
 
             createTempGlobalConfig(globalConfig);
 
@@ -98,9 +98,9 @@ describe('read/write config tests', function() {
         });
 
         it('should succeed when field only present in user config', function() {
-            var userConfig = {
+            const userConfig = {
                 url: 'something'
-            }
+            };
 
             createTempUserConfig(userConfig);
 
@@ -110,9 +110,9 @@ describe('read/write config tests', function() {
         });
 
         it('should succeed when field only present in global config', function() {
-            var globalConfig = {
+            const globalConfig = {
                 url: 'something-else'
-            }
+            };
 
             createTempGlobalConfig(globalConfig);
 
@@ -122,15 +122,15 @@ describe('read/write config tests', function() {
         });
 
         it('should succeed and return user config field when value is in both', function() {
-            var userConfig = {
+            const userConfig = {
                 url: 'something'
-            }
+            };
 
             createTempUserConfig(userConfig);
 
-            var globalConfig = {
+            const globalConfig = {
                 url: 'something-else'
-            }
+            };
 
             createTempGlobalConfig(globalConfig);
 
@@ -140,7 +140,7 @@ describe('read/write config tests', function() {
         });
 
         it('should fail when global config path is invalid', function() {
-            var globalConfig = {
+            const globalConfig = {
                 url: 'something-else'
             };
             createTempGlobalConfig(globalConfig);
@@ -155,7 +155,7 @@ describe('read/write config tests', function() {
         });
 
         it('should fail when user config path is invalid', function() {
-            var userConfig = {
+            const userConfig = {
                 url: 'something'
             };
             createTempUserConfig(userConfig);
@@ -170,12 +170,12 @@ describe('read/write config tests', function() {
         });
 
         it('should read cached user config value rather than reading file from disk again', function(done) {
-            var userConfig = {
+            const userConfig = {
                 url: 'qa4.symphony.com'
             };
             createTempUserConfig(userConfig);
 
-            var userConfig2 = {
+            const userConfig2 = {
                 url: 'qa5.symphony.com'
             };
 
@@ -193,12 +193,12 @@ describe('read/write config tests', function() {
         });
 
         it('should read cache global config value rather than reading file from disk again', function(done) {
-            var globalConfig = {
+            const globalConfig = {
                 url: 'qa8.symphony.com'
             };
             createTempGlobalConfig(globalConfig);
 
-            var globalConfig2 = {
+            const globalConfig2 = {
                 url: 'qa9.symphony.com'
             };
 
@@ -220,7 +220,7 @@ describe('read/write config tests', function() {
     describe('updateConfigField tests', function() {
 
         it('should succeed and overwrite existing field', function() {
-            var userConfig = {
+            const userConfig = {
                 url: 'something'
             };
 
@@ -235,7 +235,7 @@ describe('read/write config tests', function() {
         });
 
         it('should succeed and add new field', function() {
-            var userConfig = {
+            const userConfig = {
                 url: 'something'
             };
 
@@ -252,7 +252,7 @@ describe('read/write config tests', function() {
 
         it('should fail to update if invalid field name', function() {
 
-            var userConfig = {
+            const userConfig = {
                 url: 'something'
             };
 
@@ -277,7 +277,7 @@ describe('read/write config tests', function() {
 
         it('should throw error if fieldName is not defined', function() {
 
-            var userConfig = {
+            const userConfig = {
                 url: 'something'
             };
 
@@ -291,7 +291,7 @@ describe('read/write config tests', function() {
 
         it('should throw error if config is not defined', function() {
 
-            var userConfig = {
+            const userConfig = {
                 url: 'something'
             };
 

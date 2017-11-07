@@ -43,6 +43,10 @@ function setProtocolUrl(uri) {
     protocolUrl = uri;
 }
 
+/**
+ * gets the protocol url set against an instance
+ * @returns {*}
+ */
 function getProtocolUrl() {
     return protocolUrl;
 }

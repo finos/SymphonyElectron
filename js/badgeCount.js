@@ -10,6 +10,10 @@ const maxCount = 1e8;
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
 
+/**
+ * Shows the badge count
+ * @param count
+ */
 function show(count) {
     if (typeof count !== 'number') {
         log.send(logLevels.WARN, 'badgeCount: invalid func arg, must be a number: ' + count);
@@ -37,6 +41,11 @@ function show(count) {
     }
 }
 
+/**
+ * Sets the data url
+ * @param dataUrl
+ * @param count
+ */
 function setDataUrl(dataUrl, count) {
     const mainWindow = windowMgr.getMainWindow();
     if (mainWindow && dataUrl && count) {
@@ -50,4 +59,4 @@ function setDataUrl(dataUrl, count) {
 module.exports = {
     show: show,
     setDataUrl: setDataUrl
-}
+};
