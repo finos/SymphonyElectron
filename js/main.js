@@ -17,6 +17,8 @@ const protocolHandler = require('./protocolHandler');
 const getCmdLineArg = require('./utils/getCmdLineArg.js');
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
+const Crypto = require('./cryptoLib');
+const crypto = new Crypto();
 
 require('electron-dl')();
 
@@ -40,13 +42,13 @@ getConfigField('url')
 .catch(app.quit);
 
 function initializeCrashReporter(podUrl) {
-    
+
     getConfigField('crashReporter')
     .then((crashReporterConfig) => {
         crashReporter.start({companyName: crashReporterConfig.companyName, submitURL: crashReporterConfig.submitURL, uploadToServer: crashReporterConfig.uploadToServer, extra: {'process': 'main', podUrl: podUrl}});
         log.send(logLevels.INFO, 'initialized crash reporter on the main process!');
     })
-    .catch((err) => {        
+    .catch((err) => {
         log.send(logLevels.ERROR, 'Unable to initialize crash reporter in the main process. Error is -> ' + err);
     });
 
@@ -112,6 +114,12 @@ app.on('activate', function() {
     } else {
         windowMgr.showMainWindow();
     }
+});
+
+app.on('will-quit', function (e) {
+    e.preventDefault();
+    crypto.deleteFolders();
+    app.exit();
 });
 
 // adds 'symphony' as a protocol
