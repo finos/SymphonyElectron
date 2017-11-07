@@ -196,7 +196,9 @@ function setStartup(lStartup) {
         let launchOnStartup = (lStartup === 'true');
         if (launchOnStartup) {
             symphonyAutoLauncher.enable();
+            return resolve();
         }
+        symphonyAutoLauncher.disable();
         return resolve();
     });
 }

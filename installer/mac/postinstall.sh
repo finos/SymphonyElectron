@@ -6,9 +6,6 @@ installPath="$2"
 configPath="/Symphony.app/Contents/config/Symphony.config"
 newPath=${installPath}${configPath}
 
-## Initial cleanup
-sudo rm -f ~/Library/LaunchAgents/Symphony.plist
-
 ## Get Symphony Settings from the temp file ##
 pod_url=$(sed -n '1p' ${tempFilePath});
 minimize_on_close=$(sed -n '2p' '/tmp/sym_settings.txt');
