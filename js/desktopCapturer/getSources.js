@@ -12,7 +12,8 @@
 // renderer process, this will have to do.  See github issue posted here to
 // electron: https://github.com/electron/electron/issues/9312
 
-const { ipcRenderer } = require('electron');
+const { ipcRenderer, remote } = require('electron');
+const { isMac } = require('../utils/misc');
 
 let nextId = 0;
 let includes = [].includes;
@@ -50,6 +51,17 @@ function getSources(options, callback) {
             width: 150,
             height: 150
         };
+    }
+
+    if (!isMac) {
+        /**
+         * Sets the captureWindow to false if Desktop composition
+         * is disabled otherwise true
+         *
+         * Setting captureWindow to false returns only screen sources
+         * @type {boolean}
+         */
+        captureWindow = remote.systemPreferences.isAeroGlassEnabled();
     }
 
     id = getNextId();
