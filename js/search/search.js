@@ -353,7 +353,7 @@ class Search {
         let additionalAttachmentQuery = "";
         if(fileType) {
             hasAttachments = true;
-            if(fileType === "attachment") {
+            if(fileType.toLocaleUpperCase() === "attachment") {
                 additionalAttachmentQuery = "(hasfiles:true)";
             } else {
                 additionalAttachmentQuery = "(filetype:(" + fileType +"))";
