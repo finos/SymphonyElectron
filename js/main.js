@@ -24,12 +24,17 @@ const crypto = new Crypto();
 require('electron-dl')();
 
 //setting the env path child_process issue https://github.com/electron/electron/issues/7688
-process.env.PATH = shellPath.sync() || [
-    './node_modules/.bin',
-    '/.nodebrew/current/bin',
-    '/usr/local/bin',
-    process.env.PATH
-].join(':');
+shellPath()
+    .then((path) => {
+        process.env.PATH = path
+    })
+    .catch(() => {
+        process.env.PATH = [
+            './node_modules/.bin',
+            '/usr/local/bin',
+            process.env.PATH
+        ].join(':');
+    });
 
 // used to check if a url was opened when the app was already open
 let isAppAlreadyOpen = false;

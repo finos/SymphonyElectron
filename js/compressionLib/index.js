@@ -27,7 +27,7 @@ const lz4Path = isDevEnv ? devPath : productionPath;
  */
 function compression(pathToFolder, outputPath, callback) {
     if (isMac) {
-        child.exec(`cd "${DATA_FOLDER_PATH}" && tar cvf - "${pathToFolder}" | lz4 > "${outputPath}.tar.lz4"`, (error, stdout, stderr) => {
+        child.exec(`cd "${DATA_FOLDER_PATH}" && tar cf - "${pathToFolder}" | lz4 > "${outputPath}.tar.lz4"`, (error, stdout, stderr) => {
             if (error) {
                 return callback(new Error(error), null);
             }
@@ -37,7 +37,7 @@ function compression(pathToFolder, outputPath, callback) {
             });
         })
     } else {
-        child.exec(`cd "${DATA_FOLDER_PATH}" && "${libraryFolderPath}\\tar-win.exe" cvf - "${pathToFolder}" | "${lz4Path}" > "${outputPath}.tar.lz4"`, (error, stdout, stderr) => {
+        child.exec(`cd "${DATA_FOLDER_PATH}" && "${libraryFolderPath}\\tar-win.exe" cf - "${pathToFolder}" | "${lz4Path}" > "${outputPath}.tar.lz4"`, (error, stdout, stderr) => {
             if (error) {
                 return callback(new Error(error), null);
             }
