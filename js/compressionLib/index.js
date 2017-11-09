@@ -14,7 +14,7 @@ const libraryFolderPath = isDevEnv ? path.join(__dirname, '..', '..', 'library')
 const winArchPath = process.arch === 'ia32' ? 'lz4-win-x86.exe' : 'lz4-win-x64.exe';
 const productionPath = path.join(execPath, libraryFolderPath, winArchPath);
 const devPath = path.join(__dirname, '..', '..', 'library', winArchPath);
-
+const macLibraryPath = path.join(execPath, '..', 'library');
 const lz4Path = isDevEnv ? devPath : productionPath;
 
 /**
@@ -27,7 +27,7 @@ const lz4Path = isDevEnv ? devPath : productionPath;
  */
 function compression(pathToFolder, outputPath, callback) {
     if (isMac) {
-        child.exec(`cd "${DATA_FOLDER_PATH}" && tar cf - "${pathToFolder}" | lz4 > "${outputPath}.tar.lz4"`, (error, stdout, stderr) => {
+        child.exec(`cd "${DATA_FOLDER_PATH}" && tar cf - "${pathToFolder}" | "${macLibraryPath}/lz4.exec" > "${outputPath}.tar.lz4"`, (error, stdout, stderr) => {
             if (error) {
                 return callback(new Error(error), null);
             }
@@ -58,7 +58,7 @@ function compression(pathToFolder, outputPath, callback) {
  */
 function deCompression(pathName, callback) {
     if (isMac) {
-        child.exec(`cd "${DATA_FOLDER_PATH}" && lz4 -d "${pathName}" | tar -xf - `, (error, stdout, stderr) => {
+        child.exec(`cd "${DATA_FOLDER_PATH}" && "${macLibraryPath}/lz4.exec" -d "${pathName}" | tar -xf - `, (error, stdout, stderr) => {
             if (error) {
                 return callback(new Error(error), null);
             }

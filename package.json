@@ -44,7 +44,7 @@
       "config/Symphony.config",
       "library/libsymphonysearch.dylib",
       "library/indexvalidator.exec",
-      "library/lz4-mac"
+      "library/lz4.exec"
     ],
     "appId": "symphony-electron-desktop",
     "mac": {
