@@ -14,7 +14,7 @@ const libraryFolderPath = isDevEnv ? path.join(__dirname, '..', '..', 'library')
 const winArchPath = process.arch === 'ia32' ? 'lz4-win-x86.exe' : 'lz4-win-x64.exe';
 const productionPath = path.join(execPath, libraryFolderPath, winArchPath);
 const devPath = path.join(__dirname, '..', '..', 'library', winArchPath);
-const macLibraryPath = path.join(execPath, '..', 'library');
+const macLibraryPath = isDevEnv ? path.join(__dirname, '..', '..', 'library') : path.join(execPath, '..', 'library');
 const lz4Path = isDevEnv ? devPath : productionPath;
 
 /**
