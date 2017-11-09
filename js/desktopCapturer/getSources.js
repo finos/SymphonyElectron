@@ -13,7 +13,7 @@
 // electron: https://github.com/electron/electron/issues/9312
 
 const { ipcRenderer, remote } = require('electron');
-const { isMac } = require('../utils/misc');
+const { isWindowsOS } = require('../utils/misc');
 
 let nextId = 0;
 let includes = [].includes;
@@ -53,7 +53,7 @@ function getSources(options, callback) {
         };
     }
 
-    if (!isMac) {
+    if (isWindowsOS) {
         /**
          * Sets the captureWindow to false if Desktop composition
          * is disabled otherwise true
