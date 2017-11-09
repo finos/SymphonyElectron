@@ -14,7 +14,10 @@ electron.app.on('login', (event, webContents, request, authInfo, callback) => {
 
     event.preventDefault();
 
-    if(currentAuthURL !== request.url) {
+    // This check is to determine whether the request is for the same
+    // host if so then increase the login tries from which we can
+    // display invalid credentials
+    if (currentAuthURL !== request.url) {
         currentAuthURL = request.url;
     } else {
         tries++
