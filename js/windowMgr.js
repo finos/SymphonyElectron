@@ -347,6 +347,12 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                 if (browserWin) {
                     log.send(logLevels.INFO, 'loaded pop-out window url: ' + newWinParsedUrl);
 
+                    if (!isMac) {
+                        // Removes the menu bar from the pop-out window
+                        // setMenu is currently only supported on Windows and Linux
+                        browserWin.setMenu(null);
+                    }
+
                     getConfigField('url')
                     .then((podUrl) => {
                         getConfigField('crashReporter')

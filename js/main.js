@@ -66,8 +66,10 @@ const shouldQuit = app.makeSingleInstance((argv) => {
     processProtocolAction(argv);
 });
 
-// quit if another instance is already running, ignore for dev env
-if (!isDevEnv && shouldQuit) {
+let allowMultiInstance = getCmdLineArg(process.argv, '--multiInstance', true) || isDevEnv;
+
+// quit if another instance is already running, ignore for dev env or if app was started with multiInstance flag
+if (!allowMultiInstance && shouldQuit) {
     app.quit();
 }
 
@@ -155,6 +157,12 @@ function setupThenOpenMainWindow() {
     // allows installer to launch app and set appropriate global / user config params.
     let hasInstallFlag = getCmdLineArg(process.argv, '--install', true);
     let perUserInstall = getCmdLineArg(process.argv, '--peruser', true);
+    let customDataArg = getCmdLineArg(process.argv, '--userDataPath=', false);
+    
+    if (customDataArg && customDataArg.split('=').length > 1) {
+        let customDataFolder = customDataArg.split('=')[1]; 
+        app.setPath('userData', customDataFolder);
+    }
     if (!isMac && hasInstallFlag) {
         getConfigField('launchOnStartup')
             .then(setStartup)
@@ -172,9 +180,8 @@ function setupThenOpenMainWindow() {
         let launchOnStartup = process.argv[3];
         // We wire this in via the post install script
         // to get the config file path where the app is installed
-        let appGlobalConfigPath = process.argv[2];
         setStartup(launchOnStartup)
-            .then(() => updateUserConfigMac(appGlobalConfigPath))
+            .then(updateUserConfigMac)
             .then(app.quit)
             .catch(app.quit);
         return;
@@ -193,18 +200,15 @@ function setupThenOpenMainWindow() {
  * @returns {Promise}
  */
 function setStartup(lStartup) {
-    return symphonyAutoLauncher.isEnabled()
-        .then(function(isEnabled) {
-            if (!isEnabled && lStartup) {
-                return symphonyAutoLauncher.enable();
-            }
-
-            if (isEnabled && !lStartup) {
-                return symphonyAutoLauncher.disable();
-            }
-
-            return true;
-        });
+    return new Promise((resolve) => {
+        let launchOnStartup = (lStartup === 'true');
+        if (launchOnStartup) {
+            symphonyAutoLauncher.enable();
+            return resolve();
+        }
+        symphonyAutoLauncher.disable();
+        return resolve();
+    });
 }
 
 /**
