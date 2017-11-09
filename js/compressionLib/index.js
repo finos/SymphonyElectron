@@ -1,12 +1,11 @@
-const child = require('child_process');
-const isMac = require('../utils/misc.js').isMac;
 const electron = require('electron');
+const child = require('child_process');
 const app = electron.app;
 const path = require('path');
 const userData = path.join(app.getPath('userData'));
+const isMac = require('../utils/misc.js').isMac;
 const isDevEnv = require('../utils/misc.js').isDevEnv;
 const DATA_FOLDER_PATH = isDevEnv ? path.join(__dirname, '..', '..') : userData;
-
 const execPath = path.dirname(app.getPath('exe'));
 
 // lz4 library path
