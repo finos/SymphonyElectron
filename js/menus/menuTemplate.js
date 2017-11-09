@@ -65,12 +65,25 @@ const template = [{
         }
     },
     {
-        label: 'Open Crashes Directory',        
+        label: 'Set Downloads Directory',
         click() {
-            const crashesDirectory = electron.crashReporter.getCrashesDirectory() + '/completed';
-            electron.shell.showItemInFolder(crashesDirectory);
+            electron.dialog.showOpenDialog({
+                title: 'Select Downloads Directory',
+                defaultPath: '~/Downloads',
+                buttonLabel: 'Select',
+                properties: ['openDirectory', 'createDirectory']
+            }, (filePaths) => {
+                updateConfigField('downloadsDirectory', filePaths[0]);
+            })
         }
     },
+        {
+            label: 'Open Crashes Directory',
+            click() {
+                const crashesDirectory = electron.crashReporter.getCrashesDirectory() + '/completed';
+                electron.shell.showItemInFolder(crashesDirectory);
+            }
+        },
     {
         type: 'separator'
     },
