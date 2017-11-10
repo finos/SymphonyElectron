@@ -55,9 +55,9 @@ let config = {
     // corner to put notifications
     // upper-right, upper-left, lower-right, lower-left
     startCorner: 'upper-right',
-    width: 300,
-    height: 80,
-    borderRadius: 2,
+    width: 380,
+    height: 70,
+    borderRadius: 5,
     displayTime: 5000,
     animationSteps: 5,
     animationStepMs: 5,
@@ -67,62 +67,65 @@ let config = {
     defaultStyleContainer: {
         display: 'flex',
         justifyContent: 'center',
-        flexDirection: 'column',
         backgroundColor: '#f0f0f0',
         overflow: 'hidden',
-        padding: 10,
         position: 'relative',
         lineHeight: '15px',
         boxSizing: 'border-box'
     },
     defaultStyleHeader: {
-        flex: '0 0 auto',
-        display: 'flex',
-        flexDirection: 'row'
+        width: 245,
+        minWidth: 230,
+        margin: "12px 10px"
     },
     defaultStyleImage: {
-        flex: '0 0 auto',
-        overflow: 'hidden',
-        height: 30,
-        width: 30,
-        marginLeft: 0,
-        marginRight: 8
+        height: 43,
+        borderRadius: 4,
+        marginTop: 12,
+        width: 43
     },
     defaultStyleClose: {
-        position: 'absolute',
-        top: 8,
-        right: 8,
         width: 16,
         height: 16,
+        margin: "10px 8px 0 8px",
         opacity: 0.54,
         fontSize: 12,
         color: '#CCC'
     },
     defaultStyleTitle: {
-        fontFamily: 'Arial',
+        fontFamily: 'sans-serif',
         fontSize: 14,
         fontWeight: 700,
-        opacity: 0.87,
-        marginRight: 10,
-        alignSelf: 'center',
+        color: '#4a4a4a',
         overflow: 'hidden',
         display: '-webkit-box',
-        webkitLineClamp: 2,
+        webkitLineClamp: 1,
+        webkitBoxOrient: 'vertical',
+    },
+    defaultStylePod: {
+        fontFamily: 'sans-serif',
+        fontSize: 11,
+        color: '#adadad',
+        overflow: 'hidden',
+        filter: 'brightness(70%)',
+        display: '-webkit-box',
+        webkitLineClamp: 1,
         webkitBoxOrient: 'vertical',
     },
     defaultStyleText: {
-        flex: '0 0 auto',
-        fontFamily: 'Calibri',
-        fontSize: 14,
-        fontWeight: 400,
-        opacity: 0.87,
-        margin: 0,
-        marginTop: 4,
+        fontFamily: 'sans-serif',
+        fontSize: 12,
+        color: '#4a4a4a',
+        marginTop: 12,
         overflow: 'hidden',
         display: '-webkit-box',
-        webkitLineClamp: 2,
+        webkitLineClamp: 1,
         webkitBoxOrient: 'vertical',
         cursor: 'default'
+    },
+    defaultStyleLogo: {
+        margin: "12px 0 0 -12px",
+        opacity: 0.6,
     },
     defaultWindow: {
         alwaysOnTop: true,
@@ -171,7 +174,7 @@ function setup() {
     setupConfig();
 
     // if display added/removed/changed then re-run setup and remove all existing
-    // notifications.  ToDo: should reposition notifications rather than closing.
+    // notifications.
     electron.screen.on('display-added', setupConfig);
     electron.screen.on('display-removed', setupConfig);
     electron.screen.on('display-metrics-changed', setupConfig);
@@ -238,7 +241,6 @@ function calcDimensions() {
  * Setup the notification config
  */
 function setupConfig() {
-    closeAll();
 
     // This feature only applies to windows
     if (!isMac) {
@@ -692,33 +694,6 @@ function getWindow() {
             })
         }
     })
-}
-
-/**
- * Closes all the notifications and windows
- */
-function closeAll() {
-    // Clear out animation Queue and close windows
-    animationQueue.clear();
-
-    activeNotifications.forEach(function(window) {
-        if (window.displayTimer) {
-            clearTimeout(window.displayTimer);
-        }
-        if (window.electronNotifyOnCloseFunc) {
-            // ToDo: fix this: shouldn't delete method on arg
-            /* eslint-disable */
-            delete window.electronNotifyOnCloseFunc;
-            /* eslint-enable */
-        }
-        window.close();
-    });
-
-    cleanUpInactiveWindow();
-
-    // Reset certain vars
-    nextInsertPos = {};
-    activeNotifications = [];
 }
 
 /**

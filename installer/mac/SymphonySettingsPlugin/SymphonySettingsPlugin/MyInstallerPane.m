@@ -14,21 +14,40 @@
     return [[NSBundle bundleForClass:[self class]] localizedStringForKey:@"PaneTitle" value:nil table:nil];
 }
 
-- (void)willExitPane:(InstallerSectionDirection)dir {
-    
-    // Set the default protocol to https
-    NSString *protocol = @"https://";
+- (void)willEnterPane:(InstallerSectionDirection)dir {
+    // By default, set the value of the error message textbox to an empty string
+    [_podUrlAlertTextBox setTitleWithMnemonic:@""];
+}
+
+- (BOOL)shouldExitPane:(InstallerSectionDirection)dir {
     
     NSString *podUrl = [_podUrlTextBox stringValue];
     
-    // If the pod url is empty, by default, set it to my.symphony.com
-    if ([podUrl length] == 0) {
-        podUrl = @"my.symphony.com";
+    // Check if the url contains a protocol, if not, prepend https to it
+    NSString *prefix = @"https://";
+    if (![podUrl hasPrefix:prefix]) {
+        podUrl = [prefix stringByAppendingString:podUrl];
+        [_podUrlTextBox setStringValue:podUrl];
     }
     
-    // Create the final url
-    NSString *finalUrl = [protocol stringByAppendingString: podUrl];
+    // Now, validate the url against a url regex
+    NSString *regex = @"^((?:http:\/\/)|(?:https:\/\/))(www.)?((?:[a-zA-Z0-9]+\.[a-z]{3})|(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?::\d+)?))([\/a-zA-Z0-9\.]*)$";
+    NSPredicate *podUrlTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex];
+    if ([podUrlTest evaluateWithObject:podUrl]) {
+        return YES;
+    }
     
+    // In case of an invalid url, display the message under the pod url text box
+    // and don't go to the next screen, hence return NO
+    [_podUrlAlertTextBox setTitleWithMnemonic:@"Please enter a valid Pod url."];
+    return NO;
+    
+}
+
+- (void)willExitPane:(InstallerSectionDirection)dir {
+    
+    NSString *podUrl = [_podUrlTextBox stringValue];
+        
     // By default, set autoLaunchOnStart to true
     NSString *autoLaunchOnStart = @"true";
     
@@ -52,7 +71,7 @@
     }
     
     // Create an array with the selected options
-    NSArray *symSettings = [[NSArray alloc] initWithObjects:finalUrl, minimizeOnClose, autoLaunchOnStart, alwaysOnTop, nil];
+    NSArray *symSettings = [[NSArray alloc] initWithObjects:podUrl, minimizeOnClose, autoLaunchOnStart, alwaysOnTop, nil];
     
     // Create a string from the array with new-line as the separator
     NSString *symSettingsString = [symSettings componentsJoinedByString:@"\n"];

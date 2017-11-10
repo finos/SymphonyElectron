@@ -6,6 +6,8 @@ const path = require('path');
 const fs = require('fs');
 const AppDirectory = require('appdirectory');
 const omit = require('lodash.omit');
+const pick = require('lodash.pick');
+const difference = require('lodash.difference');
 
 const isDevEnv = require('./utils/misc.js').isDevEnv;
 const isMac = require('./utils/misc.js').isMac;
@@ -315,6 +317,64 @@ function updateUserConfigMac() {
 }
 
 /**
+ * Method that tries to grab multiple config field from user config
+ * if field doesn't exist tries reading from global config
+ *
+ * @param {Array} fieldNames - array of config filed names
+ * @returns {Promise} - object all the config data from user and global config
+ */
+function getMultipleConfigField(fieldNames) {
+    return new Promise((resolve, reject) => {
+        let userConfigData;
+
+        if (!fieldNames && fieldNames.length < 0) {
+            reject('cannot read config file, invalid fields');
+            return;
+        }
+
+        // reads user config data
+        readUserConfig().then((config) => {
+            userConfigData = pick(config, fieldNames);
+            let userConfigKeys = userConfigData ? Object.keys(userConfigData) : undefined;
+
+            /**
+             * Condition to validate data from user config,
+             * if all the required fields are not present
+             * this tries to fetch the remaining fields from global config
+             */
+            if (!userConfigKeys || userConfigKeys.length < fieldNames.length) {
+
+                // remainingConfig - config field that are not present in the user config
+                let remainingConfig = difference(fieldNames, userConfigKeys);
+
+                if (remainingConfig && Object.keys(remainingConfig).length > 0) {
+                    readGlobalConfig().then((globalConfigData) => {
+                        // assigns the remaining fields from global config to the user config
+                        userConfigData = Object.assign(userConfigData, pick(globalConfigData, remainingConfig));
+                        resolve(userConfigData);
+                    }).catch((err) => {
+                        reject(err);
+                    });
+                }
+
+            } else {
+                resolve(userConfigData);
+            }
+        }).catch(() => {
+            // This reads global config if there was any
+            // error while reading user config
+            readGlobalConfig().then((config) => {
+                userConfigData = pick(config, fieldNames);
+                resolve(userConfigData);
+            }).catch((err) => {
+                reject(err);
+            });
+        });
+    });
+}
+
+
+/**
  * Clears the cached config
  */
 function clearCachedConfigs() {
@@ -359,6 +419,7 @@ module.exports = {
     updateConfigField,
     updateUserConfigWin,
     updateUserConfigMac,
+    getMultipleConfigField,
 
     // items below here are only exported for testing, do NOT use!
     saveUserConfig,
