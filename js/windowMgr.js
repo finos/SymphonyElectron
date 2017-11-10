@@ -1,5 +1,6 @@
 'use strict';
 
+const fs = require('fs');
 const electron = require('electron');
 const app = electron.app;
 const crashReporter = electron.crashReporter;
@@ -36,6 +37,19 @@ let alwaysOnTop = false;
 let position = 'lower-right';
 let display;
 let sandboxed = false;
+
+let downloadsDirectory;
+
+getConfigField('downloadsDirectory')
+    .then((value) => {
+        downloadsDirectory = value;
+        if (!fs.existsSync(downloadsDirectory)) {
+            fs.mkdirSync(downloadsDirectory);
+        }
+    })
+    .catch((error) => {
+        log.send(logLevels.ERROR, 'Could not find the downloads directory config -> ' + error);
+    });
 
 // note: this file is built using browserify in prebuild step.
 const preloadMainScript = path.join(__dirname, 'preload/_preloadMain.js');
@@ -241,7 +255,11 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
         // When download is in progress, send necessary data to indicate the same
         webContents.send('downloadProgress');
-
+    
+        if (downloadsDirectory) {
+            item.setSavePath(downloadsDirectory + "/" + item.getFilename());
+        }
+        
         // Send file path when download is complete
         item.once('done', (e, state) => {
             if (state === 'completed') {
@@ -596,6 +614,11 @@ function isAlwaysOnTop(boolean) {
 // node event emitter to update always on top
 eventEmitter.on('isAlwaysOnTop', (boolean) => {
     isAlwaysOnTop(boolean);
+});
+
+// set downloads directory
+eventEmitter.on('setDownloadsDirectory', (newDirectory) => {
+    downloadsDirectory = newDirectory;
 });
 
 // node event emitter for notification settings

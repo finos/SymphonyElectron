@@ -74,7 +74,8 @@ const template = [{
                 properties: ['openDirectory', 'createDirectory']
             }, (filePaths) => {
                 updateConfigField('downloadsDirectory', filePaths[0]);
-            })
+                eventEmitter.emit('setDownloadsDirectory', filePaths[0]);
+            });
         }
     },
         {
