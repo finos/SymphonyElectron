@@ -90,21 +90,28 @@ if (isMac) {
     });
 }
 
+/**
+ * Sets chrome authentication flags in electron
+ */
 function setChromeFlags() {
     
     log.send(logLevels.INFO, 'checking if we need to set custom chrome flags!');
     
+    // Read the config parameters synchronously
     let config = readConfigFileSync();
     
+    // If we cannot find any config, just skip setting any flags
     if (config && config !== null && config.customFlags) {
         
         log.send(logLevels.INFO, 'Chrome flags config found!');
         
+        // If we cannot find the authServerWhitelist config, move on
         if (config.customFlags.authServerWhitelist && config.customFlags.authServerWhitelist !== "") {
             log.send(logLevels.INFO, 'Setting auth server whitelist flag');
             app.commandLine.appendSwitch('auth-server-whitelist', config.customFlags.authServerWhitelist);
         }
         
+        // If we cannot find the authNegotiateDelegateWhitelist config, move on
         if (config.customFlags.authNegotiateDelegateWhitelist && config.customFlags.authNegotiateDelegateWhitelist !== "") {
             log.send(logLevels.INFO, 'Setting auth negotiate delegate whitelist flag');
             app.commandLine.appendSwitch('auth-negotiate-delegate-whitelist', config.customFlags.authNegotiateDelegateWhitelist);
@@ -113,6 +120,7 @@ function setChromeFlags() {
     }
 }
 
+// Set the chrome flags
 setChromeFlags();
 
 /**
