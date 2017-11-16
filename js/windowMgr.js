@@ -37,19 +37,7 @@ let alwaysOnTop = false;
 let position = 'lower-right';
 let display;
 let sandboxed = false;
-
 let downloadsDirectory;
-
-getConfigField('downloadsDirectory')
-    .then((value) => {
-        downloadsDirectory = value;
-        if (!fs.existsSync(downloadsDirectory)) {
-            fs.mkdirSync(downloadsDirectory);
-        }
-    })
-    .catch((error) => {
-        log.send(logLevels.ERROR, 'Could not find the downloads directory config -> ' + error);
-    });
 
 // note: this file is built using browserify in prebuild step.
 const preloadMainScript = path.join(__dirname, 'preload/_preloadMain.js');
@@ -250,12 +238,29 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     }
 
     mainWindow.on('closed', destroyAllWindows);
-
+    
+    // if an user has set a custom downloads directory,
+    // we get that data from the user config file
+    getConfigField('downloadsDirectory')
+        .then((value) => {
+            downloadsDirectory = value;
+            // if the directory has been deleted, create it.
+            if (!fs.existsSync(downloadsDirectory)) {
+                fs.mkdirSync(downloadsDirectory);
+            }
+        })
+        .catch((error) => {
+            log.send(logLevels.ERROR, 'Could not find the downloads directory config -> ' + error);
+        });
+    
     // Manage File Downloads
     mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
+        
         // When download is in progress, send necessary data to indicate the same
         webContents.send('downloadProgress');
     
+        // if the user has set a custom downloads directory, save file to that directory
+        // if otherwise, we save it to the operating system's default downloads directory
         if (downloadsDirectory) {
             item.setSavePath(downloadsDirectory + "/" + item.getFilename());
         }
