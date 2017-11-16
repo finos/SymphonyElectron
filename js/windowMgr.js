@@ -244,9 +244,13 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     getConfigField('downloadsDirectory')
         .then((value) => {
             downloadsDirectory = value;
-            // if the directory has been deleted, create it.
+            // if the directory has been deleted, try creating it.
             if (!fs.existsSync(downloadsDirectory)) {
-                fs.mkdirSync(downloadsDirectory);
+                const directoryCreated = fs.mkdirSync(downloadsDirectory);
+                // If the directory creation failed, we use the default downloads directory
+                if (!directoryCreated) {
+                    downloadsDirectory = null;
+                }
             }
         })
         .catch((error) => {
