@@ -23,7 +23,7 @@ function setStyle(config) {
     let image = notiDoc.getElementById('image');
     let logo = notiDoc.getElementById('symphony-logo');
     let title = notiDoc.getElementById('title');
-    let pod = notiDoc.getElementById('pod');
+    let company = notiDoc.getElementById('company');
     let message = notiDoc.getElementById('message');
     let close = notiDoc.getElementById('close');
 
@@ -45,7 +45,7 @@ function setStyle(config) {
 
     setStyleOnDomElement(config.defaultStyleTitle, title);
 
-    setStyleOnDomElement(config.defaultStylePod, pod);
+    setStyleOnDomElement(config.defaultStyleCompany, company);
 
     setStyleOnDomElement(config.defaultStyleText, message);
 
@@ -79,7 +79,13 @@ function setContents(event, notificationObj) {
 
     let notiDoc = window.document;
 
+    // All the required DOM elements to update the content
     let container = notiDoc.getElementById('container');
+    let titleDoc = notiDoc.getElementById('title');
+    let companyDoc = notiDoc.getElementById('company');
+    let messageDoc = notiDoc.getElementById('message');
+    let imageDoc = notiDoc.getElementById('image');
+    let closeButton = notiDoc.getElementById('close');
 
     if (notificationObj.color) {
         container.style.backgroundColor = notificationObj.color;
@@ -88,13 +94,9 @@ function setContents(event, notificationObj) {
         if (notificationObj.color.match(whiteColorRegExp)) {
             logo.src = './assets/symphony-logo-black.png';
         } else {
-            let title = notiDoc.getElementById('title');
-            let pod = notiDoc.getElementById('pod');
-            let message = notiDoc.getElementById('message');
-
-            message.style.color = '#ffffff';
-            title.style.color = '#ffffff';
-            pod.style.color = notificationObj.color;
+            messageDoc.style.color = '#ffffff';
+            titleDoc.style.color = '#ffffff';
+            companyDoc.style.color = notificationObj.color;
             logo.src = './assets/symphony-logo-white.png';
         }
     }
@@ -111,24 +113,26 @@ function setContents(event, notificationObj) {
     }
 
     // Title
-    let titleDoc = notiDoc.getElementById('title');
     titleDoc.innerHTML = notificationObj.title || '';
 
     // message
-    let messageDoc = notiDoc.getElementById('message');
     messageDoc.innerHTML = notificationObj.text || '';
 
     // Image
-    let imageDoc = notiDoc.getElementById('image');
     if (notificationObj.image) {
         imageDoc.src = notificationObj.image;
     } else {
         setStyleOnDomElement({ display: 'none'}, imageDoc);
     }
 
-    const winId = notificationObj.windowId;
+    // Company
+    if (notificationObj.company) {
+        companyDoc.innerHTML = notificationObj.company
+    } else {
+        messageDoc.style.marginTop = '15px';
+    }
 
-    let closeButton = notiDoc.getElementById('close');
+    const winId = notificationObj.windowId;
 
     // note: use onclick because we only want one handler, for case
     // when content gets overwritten by notf with same tag
