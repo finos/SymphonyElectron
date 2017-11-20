@@ -48,22 +48,22 @@
     
     NSString *podUrl = [_podUrlTextBox stringValue];
         
-    // By default, set autoLaunchOnStart to true
+    // By default, set autoLaunchOnStart and minimizeOnClose to true
     NSString *autoLaunchOnStart = @"true";
+    NSString *minimizeOnClose = @"true";
     
     // If the checkbox is changed, set the auto launch value accordingly
     if ([_autoLaunchCheckBox state] == 0) {
         autoLaunchOnStart = @"false";
     }
     
-    // By default, set minimizeOnClose and alwaysOnTop to false
-    NSString *minimizeOnClose = @"false";
-    NSString *alwaysOnTop = @"false\n";
-    
     // If the checkbox is changed, set the minimize on close value accordingly
-    if ([_minimizeOnCloseCheckBox state] == 1) {
-        minimizeOnClose = @"true";
+    if ([_minimizeOnCloseCheckBox state] == 0) {
+        minimizeOnClose = @"false";
     }
+    
+    // By default, set alwaysOnTop to false
+    NSString *alwaysOnTop = @"false\n";
     
     // If the checkbox is changed, set the always on top value accordingly
     if ([_alwaysOnTopCheckBox state] == 1) {

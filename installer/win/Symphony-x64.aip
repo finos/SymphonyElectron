@@ -24,6 +24,7 @@
     <ROW Property="CTRLS" Value="2"/>
     <ROW Property="DialogBitmap" Value="dialog" MultiBuildValue="DefaultBuild:Tabloid.jpg" Type="1" MsiKey="DialogBitmap"/>
     <ROW Property="INVALID_POD_URL" Value="valid" Type="4"/>
+    <ROW Property="MINIMIZE_ON_CLOSE" Value="true"/>
     <ROW Property="MINIMIZE_ON_CLOSE_LABEL" Value="false" Type="4"/>
     <ROW Property="Manufacturer" Value="Symphony"/>
     <ROW Property="POD_URL" Value="https://corporate.symphony.com" Type="4"/>
