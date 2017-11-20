@@ -7,7 +7,7 @@ let makeBoundTimedCollector = function(isIndexing, timeout, callback) {
         if (!timer){
             timer = setTimeout(function(){
                 if (!isIndexing) {
-                    flush(getQueue())
+                    flush(getQueue());
                 }
             }, timeout);
         }
@@ -28,11 +28,11 @@ let makeBoundTimedCollector = function(isIndexing, timeout, callback) {
     }
 
     function getQueue(){
-        return messagesData
+        return messagesData;
     }
 
     function resetQueue(){
-        messagesData = []
+        messagesData = [];
     }
 };
 

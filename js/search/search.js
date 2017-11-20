@@ -140,6 +140,7 @@ class Search {
                 if (err) {
                     log.send(logLevels.ERROR, 'Error indexing the batch ->' + err);
                     reject(new Error(err));
+                    return;
                 }
                 resolve(res);
             });
@@ -156,6 +157,7 @@ class Search {
                 if (err) {
                     log.send(logLevels.ERROR, 'Error merging the index ->' + err);
                     reject(new Error(err));
+                    return;
                 }
                 libSymphonySearch.symSERemoveFolder(this.batchIndex);
                 resolve(res);
@@ -163,12 +165,22 @@ class Search {
         });
     }
 
+    /**
+     * Batching the real time
+     * messages for queue and flush
+     * @param {Object} message
+     */
     batchRealTimeIndexing(message) {
         this.collector(message);
     }
 
+    /**
+     * Returns the current state of the
+     * real-time indexing
+     * @returns {boolean}
+     */
     checkIsRealTimeIndexing() {
-        return this.isRealTimeIndexing
+        return this.isRealTimeIndexing;
     }
 
     /**
