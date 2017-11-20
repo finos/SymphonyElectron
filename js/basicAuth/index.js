@@ -7,6 +7,7 @@ const path = require('path');
 const fs = require('fs');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
+const { isMac } = require('../utils/misc');
 
 let basicAuthWindow;
 
@@ -14,7 +15,7 @@ const local = {};
 
 let windowConfig = {
     width: 360,
-    height: 270,
+    height: isMac ? 270 : 295,
     show: false,
     modal: true,
     autoHideMenuBar: true,
