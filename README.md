@@ -4,7 +4,7 @@
 
 ## About:
 
-SymphonyElectron is an electron desktop client (with support for windows and mac) for the symphony communication platform.
+SymphonyElectron is a desktop client of the Symphony Communication Platform built for macOS, Windows 10 and Windows 7.
 
 ## Project Goals:
 
