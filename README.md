@@ -2,6 +2,10 @@
 
 # SymphonyElectron
 
+## About:
+
+SymphonyElectron is a desktop client of the Symphony Communication Platform built for macOS, Windows 10 and Windows 7.
+
 ## Project Goals:
 
 Our goal is to improve the performance and development agility of Symphony's desktop wrapper and build a path to support other wrappers by:
