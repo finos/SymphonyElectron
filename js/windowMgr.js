@@ -589,14 +589,14 @@ function isAlwaysOnTop(boolean) {
     if (browserWins.length > 0) {
         browserWins.forEach(function (browser) {
             browser.setAlwaysOnTop(boolean);
-
-            // An issue where changing the alwaysOnTop property
-            // focus the pop-out window
-            // Issue - Electron-209
-            if (browser.winName === 'main') {
-                activate(browser.winName);
-            }
         });
+
+        // An issue where changing the alwaysOnTop property
+        // focus the pop-out window
+        // Issue - Electron-209
+        if (mainWindow && mainWindow.winName) {
+            activate(mainWindow.winName);
+        }
     }
 }
 
