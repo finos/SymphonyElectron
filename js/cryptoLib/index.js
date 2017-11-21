@@ -3,10 +3,11 @@ const electron = require('electron');
 const app = electron.app;
 const path = require('path');
 const fs = require('fs');
-const archiver = require('archiver');
-const extract = require('extract-zip');
+const lz4 = require('../compressionLib');
 const isDevEnv = require('../utils/misc.js').isDevEnv;
 const crypto = require('./crypto');
+const log = require('../log.js');
+const logLevels = require('../enums/logLevels.js');
 
 const userData = path.join(app.getPath('userData'));
 const DATA_FOLDER = isDevEnv ? './data' : path.join(userData, 'data');
@@ -21,65 +22,52 @@ class Crypto {
         this.permanentIndexFolderName = 'search_index_' + userId + '_' + INDEX_VERSION;
         this.dump = TEMPORARY_PATH;
         this.key = key;
-        this.extractToPath = `${TEMPORARY_PATH}/data/${this.permanentIndexFolderName}`;
         this.encryptedIndex = `${TEMPORARY_PATH}/${this.permanentIndexFolderName}.enc`;
         this.dataFolder = DATA_FOLDER;
-        this.zipErrored = false;
     }
 
     /**
-     * Creates a zip of the data folder and encrypting
-     * removing the data folder and the dump files
+     * Compressing the user index folder and
+     * encrypting it
      * @returns {Promise}
      */
     encryption() {
         return new Promise((resolve, reject) => {
 
             if (!fs.existsSync(this.indexDataFolder)){
-                // will be handling after implementing in client app
+                log.send(logLevels.ERROR, 'user index folder not found');
                 reject();
                 return;
             }
 
-            const zipArchive = archiver('zip');
-            let output = fs.createWriteStream(`${this.dump}/${this.permanentIndexFolderName}.zip`);
-
-
-            zipArchive.on('end', () => {
-
-                if (!fs.existsSync(`${this.dump}/${this.permanentIndexFolderName}.zip`)){
-                    // will be handling after implementing in client app
-                    reject();
+            lz4.compression(`data/${this.permanentIndexFolderName}`, `${this.permanentIndexFolderName}`, (error, response) => {
+                if (error) {
+                    log.send(logLevels.ERROR, 'lz4 compression error: ' + error);
+                    reject(error);
                     return;
                 }
 
-                const input = fs.createReadStream(`${this.dump}/${this.permanentIndexFolderName}.zip`);
+                if (response && response.stderr) {
+                    log.send(logLevels.WARN, 'compression stderr, ' + response.stderr);
+                }
+                const input = fs.createReadStream(`${this.dump}/${this.permanentIndexFolderName}.tar.lz4`);
                 const outputEncryption = fs.createWriteStream(this.encryptedIndex);
                 let config = {
                     key: this.key
                 };
                 const encrypt = crypto.encrypt(config);
 
-                input.pipe(encrypt).pipe(outputEncryption).on('finish', (err) => {
+                let encryptionProcess = input.pipe(encrypt).pipe(outputEncryption);
+
+                encryptionProcess.on('finish', (err) => {
                     if (err) {
+                        log.send(logLevels.ERROR, 'encryption error: ' + err);
                         reject(new Error(err));
+                        return;
                     }
-                    if (!this.zipErrored) {
-                        fs.unlinkSync(`${this.dump}/${this.permanentIndexFolderName}.zip`);
-                        resolve('Success');
-                    }
+                    fs.unlinkSync(`${this.dump}/${this.permanentIndexFolderName}.tar.lz4`);
+                    resolve('Success');
                 });
-            });
-
-            zipArchive.pipe(output);
-
-            zipArchive.directory(this.indexDataFolder + '/', false);
-
-            zipArchive.finalize((err) => {
-                if (err) {
-                    this.zipErrored = true;
-                    reject(new Error(err));
-                }
             });
         });
     }
@@ -93,49 +81,42 @@ class Crypto {
         return new Promise((resolve, reject) => {
 
             if (!fs.existsSync(this.encryptedIndex)){
-                // will be handling after implementing in client app
+                log.send(logLevels.ERROR, 'encrypted file not found');
                 reject();
                 return;
             }
 
             const input = fs.createReadStream(this.encryptedIndex);
-            const output = fs.createWriteStream(`${this.dump}/decrypted.zip`);
+            const output = fs.createWriteStream(`${this.dump}/decrypted.tar.lz4`);
             let config = {
                 key: this.key
             };
             const decrypt = crypto.decrypt(config);
 
-            input.pipe(decrypt).pipe(output).on('finish', () => {
+            let decryptionProcess = input.pipe(decrypt).pipe(output);
 
-                if (!fs.existsSync(`${this.dump}/decrypted.zip`)){
-                    // will be handling after implementing in client app
+            decryptionProcess.on('finish', () => {
+
+                if (!fs.existsSync(`${this.dump}/decrypted.tar.lz4`)){
+                    log.send(logLevels.ERROR, 'decrypted.tar.lz4 file not found');
                     reject();
                     return;
                 }
 
-                let readStream = fs.createReadStream(`${this.dump}/decrypted.zip`);
-                readStream
-                    .on('data', (data) => {
-                        if (!data) {
-                            reject(new Error("error reading zip"));
-                        }
-                        extractZip();
-                    })
-                    .on('error', (error) => {
-                        reject(new Error(error.message));
-                    });
-            });
-
-            let extractZip = () => {
-                extract(`${this.dump}/decrypted.zip`, {dir: `${this.extractToPath}`}, (err) => {
-                    if (err) {
-                        reject(new Error(err));
+                lz4.deCompression(`${this.dump}/decrypted.tar.lz4`,(error, response) => {
+                    if (error) {
+                        log.send(logLevels.ERROR, 'lz4 deCompression error, ' + error);
+                        // no return, need to unlink if error
                     }
-                    fs.unlink(`${this.dump}/decrypted.zip`, () => {
+
+                    if (response && response.stderr) {
+                        log.send(logLevels.WARN, 'deCompression stderr, ' + response.stderr);
+                    }
+                    fs.unlink(`${this.dump}/decrypted.tar.lz4`, () => {
                         resolve('success');
                     });
                 })
-            }
+            });
         });
     }
 
