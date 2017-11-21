@@ -119,32 +119,6 @@ class Crypto {
             });
         });
     }
-
-    /**
-     * Deleting the data index folder
-     * when the app is closed
-     */
-    deleteFolders() {
-        Crypto.deleteFolderRecursive(this.dataFolder);
-    }
-
-    /**
-     * Removing all the folders and files inside the data folder
-     * @param location
-     */
-    static deleteFolderRecursive(location) {
-        if (fs.existsSync(location)) {
-            fs.readdirSync(location).forEach((file) => {
-                let curPath = location + "/" + file;
-                if (fs.lstatSync(curPath).isDirectory()) {
-                    Crypto.deleteFolderRecursive(curPath);
-                } else {
-                    fs.unlinkSync(curPath);
-                }
-            });
-            fs.rmdirSync(location);
-        }
-    }
 }
 
 module.exports = Crypto;
