@@ -265,7 +265,10 @@ class Search {
 
             let ed_time = MAXIMUM_DATE;
             if (endDate && endDate !== "") {
-                ed_time = new Date(parseInt(endDate, 10)).getTime();
+                let etime = new Date(parseInt(endDate, 10)).getTime();
+                if (etime) {
+                    ed_time = etime
+                }
             }
 
             if (!_limit && _limit === "" && typeof _limit !== 'number' && Math.round(_limit) !== _limit) {
