@@ -267,7 +267,7 @@ class Search {
             if (endDate) {
                 let etime = new Date(parseInt(endDate, 10)).getTime();
                 if (etime) {
-                    ed_time = etime
+                    ed_time = etime;
                 }
             }
 
