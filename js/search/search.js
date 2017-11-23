@@ -111,20 +111,20 @@ class Search {
     indexBatch(messages) {
         return new Promise((resolve, reject) => {
             if (!messages) {
-                log.send(logLevels.ERROR, 'Messages was not provided for batch indexing');
-                reject(new Error('Messages is required'));
+                log.send(logLevels.ERROR, 'Batch Indexing: Messages not provided');
+                reject(new Error('Batch Indexing: Messages is required'));
                 return;
             }
 
             try {
                 let msg = JSON.parse(messages);
                 if (!(msg instanceof Array)) {
-                    log.send(logLevels.ERROR, 'Message must be an array batch indexing');
-                    reject(new Error('Messages must be an array'));
+                    log.send(logLevels.ERROR, 'Batch Indexing: Messages must be an array');
+                    reject(new Error('Batch Indexing: Messages must be an array'));
                     return;
                 }
             } catch(e) {
-                log.send(logLevels.ERROR, 'Batch indexing parse Error -> ' + e);
+                log.send(logLevels.ERROR, 'Batch Indexing: parse error -> ' + e);
                 reject(new Error(e));
                 return;
             }
@@ -138,7 +138,7 @@ class Search {
             const indexId = randomString.generate(searchConfig.BATCH_RANDOM_INDEX_PATH_LENGTH);
             libSymphonySearch.symSECreatePartialIndexAsync(this.batchIndex, indexId, messages, (err, res) => {
                 if (err) {
-                    log.send(logLevels.ERROR, 'Error indexing the batch ->' + err);
+                    log.send(logLevels.ERROR, 'Batch Indexing: error ->' + err);
                     reject(new Error(err));
                     return;
                 }
@@ -189,20 +189,19 @@ class Search {
      * @param message
      */
     realTimeIndexing(message) {
-
         if (!message) {
-            log.send(logLevels.ERROR, 'Error message not provided for real-time indexing');
-            return new Error('Message is required');
+            log.send(logLevels.ERROR, 'RealTime Indexing: Messages not provided');
+            return new Error('RealTime Indexing: Messages is required');
         }
 
         try {
             let msg = JSON.parse(message);
             if (!(msg instanceof Array)) {
-                log.send(logLevels.ERROR, 'Message must be an array real-time indexing');
-                return (new Error('Messages must be an array'));
+                log.send(logLevels.ERROR, 'RealTime Indexing: Messages must be an array real-time indexing');
+                return (new Error('RealTime Indexing: Messages must be an array'));
             }
         } catch(e) {
-            log.send(logLevels.ERROR, 'Real-time indexing parse Error -> ' + e);
+            log.send(logLevels.ERROR, 'RealTime Indexing: parse error -> ' + e);
             return (new Error(e));
         }
 
@@ -215,7 +214,7 @@ class Search {
         return libSymphonySearch.symSEIndexRealTimeAsync(this.realTimeIndex, message, (err, result) => {
             this.isRealTimeIndexing = false;
             if (err) {
-                log.send(logLevels.ERROR, 'Indexing the real-time data -> ' + err);
+                log.send(logLevels.ERROR, 'RealTime Indexing: error -> ' + err);
                 return new Error(err);
             }
             return result;
