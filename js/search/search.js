@@ -254,18 +254,21 @@ class Search {
                 return;
             }
 
-            let sd = new Date().getTime() - SEARCH_PERIOD_SUBTRACTOR;
-            let sd_time = MINIMUM_DATE;
-            if (startDate && startDate !== "" && typeof startDate === 'object') {
-                sd_time = new Date(startDate).getTime();
-                if (sd_time >= sd) {
-                    sd_time = sd;
+            let searchPeriod = new Date().getTime() - SEARCH_PERIOD_SUBTRACTOR;
+            let startDateTime = searchPeriod;
+            if (startDate) {
+                startDateTime = new Date(parseInt(startDate, 10)).getTime();
+                if (!startDateTime || startDateTime < searchPeriod) {
+                    startDateTime = searchPeriod;
                 }
             }
 
-            let ed_time = MAXIMUM_DATE;
-            if (endDate && endDate !== "" && typeof endDate === 'object') {
-                ed_time = new Date(endDate).getTime();
+            let endDateTime = MAXIMUM_DATE;
+            if (endDate) {
+                let eTime = new Date(parseInt(endDate, 10)).getTime();
+                if (eTime) {
+                    endDateTime = eTime;
+                }
             }
 
             if (!_limit && _limit === "" && typeof _limit !== 'number' && Math.round(_limit) !== _limit) {
@@ -280,7 +283,7 @@ class Search {
                 _sortOrder = SORT_BY_SCORE;
             }
 
-            const returnedResult = libSymphonySearch.symSESearch(this.indexFolderName, this.realTimeIndex, q, sd_time.toString(), ed_time.toString(), _offset, _limit, _sortOrder);
+            const returnedResult = libSymphonySearch.symSESearch(this.indexFolderName, this.realTimeIndex, q, startDateTime.toString(), endDateTime.toString(), _offset, _limit, _sortOrder);
             try {
                 let ret = returnedResult.readCString();
                 resolve(JSON.parse(ret));
