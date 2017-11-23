@@ -67,6 +67,10 @@ class Search {
         this.decryptAndInit();
     }
 
+    /**
+     * Decrypting the existing user .enc file
+     * and initialing the library
+     */
     decryptAndInit() {
         this.crypto.decryption().then(() => {
             console.timeEnd('Decrypting');
