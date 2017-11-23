@@ -254,17 +254,17 @@ class Search {
                 return;
             }
 
-            let sd = new Date().getTime() - SEARCH_PERIOD_SUBTRACTOR;
-            let sd_time = sd;
-            if (startDate && startDate !== "") {
+            let searchPeriod = new Date().getTime() - SEARCH_PERIOD_SUBTRACTOR;
+            let sd_time = searchPeriod;
+            if (startDate) {
                 sd_time = new Date(parseInt(startDate, 10)).getTime();
-                if (sd_time < sd) {
-                    sd_time = sd;
+                if (sd_time < searchPeriod) {
+                    sd_time = searchPeriod;
                 }
             }
 
             let ed_time = MAXIMUM_DATE;
-            if (endDate && endDate !== "") {
+            if (endDate) {
                 let etime = new Date(parseInt(endDate, 10)).getTime();
                 if (etime) {
                     ed_time = etime
