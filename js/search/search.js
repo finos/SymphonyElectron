@@ -258,7 +258,9 @@ class Search {
             let sd_time = searchPeriod;
             if (startDate) {
                 sd_time = new Date(parseInt(startDate, 10)).getTime();
-                if (sd_time < searchPeriod) {
+                if (!sd_time) {
+                    sd_time = searchPeriod;
+                } else if (sd_time < searchPeriod) {
                     sd_time = searchPeriod;
                 }
             }
