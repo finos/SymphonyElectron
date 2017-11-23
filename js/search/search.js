@@ -254,18 +254,23 @@ class Search {
                 return;
             }
 
-            let sd = new Date().getTime() - SEARCH_PERIOD_SUBTRACTOR;
-            let sd_time = MINIMUM_DATE;
-            if (startDate && startDate !== "" && typeof startDate === 'object') {
-                sd_time = new Date(startDate).getTime();
-                if (sd_time >= sd) {
-                    sd_time = sd;
+            let searchPeriod = new Date().getTime() - SEARCH_PERIOD_SUBTRACTOR;
+            let sd_time = searchPeriod;
+            if (startDate) {
+                sd_time = new Date(parseInt(startDate, 10)).getTime();
+                if (!sd_time) {
+                    sd_time = searchPeriod;
+                } else if (sd_time < searchPeriod) {
+                    sd_time = searchPeriod;
                 }
             }
 
             let ed_time = MAXIMUM_DATE;
-            if (endDate && endDate !== "" && typeof endDate === 'object') {
-                ed_time = new Date(endDate).getTime();
+            if (endDate) {
+                let etime = new Date(parseInt(endDate, 10)).getTime();
+                if (etime) {
+                    ed_time = etime;
+                }
             }
 
             if (!_limit && _limit === "" && typeof _limit !== 'number' && Math.round(_limit) !== _limit) {
