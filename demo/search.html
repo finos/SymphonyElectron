@@ -192,7 +192,8 @@
     sendMessage.addEventListener('click', function () {
         if (realTimeIndexing.value !== "") {
             let message = realTimeIndexing.value;
-            resultsEl.innerHTML = search.realTimeIndexing(message);
+            search.batchRealTimeIndexing(JSON.parse(message));
+            resultsEl.innerHTML = 'success';
         } else {
             resultsEl.innerHTML = "Please check the entered value"
         }

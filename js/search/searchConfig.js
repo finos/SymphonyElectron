@@ -1,0 +1,11 @@
+const searchConfig = {
+    SEARCH_PERIOD_SUBTRACTOR: 3 * 31 * 24 * 60 * 60 * 1000,
+    REAL_TIME_INDEXING_TIME: 60000,
+    MINIMUM_DATE: '0000000000000',
+    MAXIMUM_DATE: '9999999999999',
+    INDEX_VERSION: 'v1',
+    SORT_BY_SCORE: 0,
+    BATCH_RANDOM_INDEX_PATH_LENGTH: 20
+};
+
+module.exports = searchConfig;
