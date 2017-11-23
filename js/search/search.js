@@ -308,7 +308,7 @@ class Search {
                 return;
             }
 
-            let searchPeriod = new Date().getTime() - SEARCH_PERIOD_SUBTRACTOR;
+            let searchPeriod = new Date().getTime() - searchConfig.SEARCH_PERIOD_SUBTRACTOR;
             let startDateTime = searchPeriod;
             if (startDate) {
                 startDateTime = new Date(parseInt(startDate, 10)).getTime();
