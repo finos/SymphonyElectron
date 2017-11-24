@@ -139,7 +139,7 @@ function createAPI() {
         /**
          * Function to clear the user index data
          */
-        clearIndexFolder: remote.require('./search/search.js').clearIndexFolder,
+        deleteIndexFolder: remote.require('./search/search.js').deleteIndexFolder,
 
         /**
          * Brings window forward and gives focus.

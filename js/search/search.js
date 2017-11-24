@@ -538,9 +538,9 @@ class Search {
 
 /**
  * Deleting the data index folder
- * when the app is closed
+ * when the app is closed/signed-out/navigates
  */
-function clearIndexFolder() {
+function deleteIndexFolder() {
     Search.deleteFolderRecursive(INDEX_DATA_FOLDER);
 }
 
@@ -550,5 +550,5 @@ function clearIndexFolder() {
  */
 module.exports = {
     Search: Search,
-    clearIndexFolder: clearIndexFolder
+    deleteIndexFolder: deleteIndexFolder
 };
