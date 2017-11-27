@@ -13,10 +13,9 @@ const DUMP_PATH = isDevEnv ? path.join(__dirname, '..', '..') : searchConfig.FOL
 class Crypto {
 
     constructor(userId, key) {
-        let INDEX_VERSION = 'v1';
         this.indexDataFolder = searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH +
             '_' + userId + '_' + searchConfig.INDEX_VERSION;
-        this.permanentIndexName = searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME + '_' + userId + '_' + INDEX_VERSION;
+        this.permanentIndexName = searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME + '_' + userId + '_' + searchConfig.INDEX_VERSION;
         this.dump = DUMP_PATH;
         this.key = key;
         this.encryptedIndex = `${DUMP_PATH}/${this.permanentIndexName}.enc`;
