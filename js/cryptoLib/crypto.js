@@ -53,7 +53,6 @@ exports.createSalt = function(length) {
     try {
         return crypto.randomBytes(length);
     } catch (ex) {
-        console.error('Problem reading random data and generating salt!');
         throw ex;
     }
 };
