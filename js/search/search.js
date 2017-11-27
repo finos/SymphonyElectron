@@ -2,9 +2,7 @@
 
 const fs = require('fs');
 const randomString = require('randomstring');
-const electron = require('electron');
 const childProcess = require('child_process');
-const app = electron.app;
 const path = require('path');
 const isDevEnv = require('../utils/misc.js').isDevEnv;
 const isMac = require('../utils/misc.js').isMac;
@@ -13,30 +11,10 @@ const searchConfig = require('./searchConfig');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 
-// Search library
 const libSymphonySearch = require('./searchLibrary');
-
-// Crypto Library
 const Crypto = require('../cryptoLib');
 
-// Path for the exec file and the user data folder
-const userData = path.join(app.getPath('userData'));
-const execPath = path.dirname(app.getPath('exe'));
-
-// Constants paths for temp indexing folders
-const TEMP_BATCH_INDEX_FOLDER = isDevEnv ? './data/temp_batch_indexes' : path.join(userData, 'data/temp_batch_indexes');
-const TEMP_REAL_TIME_INDEX = isDevEnv ? './data/temp_realtime_index' : path.join(userData, 'data/temp_realtime_index');
-// Main User Index path
-const INDEX_PREFIX = isDevEnv ? './data/search_index' : path.join(userData, 'data/search_index');
-// Folder contains real time, batch and user index
-const INDEX_DATA_FOLDER = isDevEnv ? './data' : path.join(userData, 'data');
-
-// library path contractor
-const winArchPath = process.arch === 'ia32' ? 'library/indexvalidator-x86.exe' : 'library/indexvalidator-x64.exe';
-const rootPath = isMac ? 'library/indexvalidator.exec' : winArchPath;
-const productionPath = path.join(execPath, isMac ? '..' : '', rootPath);
-const devPath = path.join(__dirname, '..', '..', rootPath);
-const INDEX_VALIDATOR = isDevEnv ? devPath : productionPath;
+const INDEX_VALIDATOR = searchConfig.LIBRARY_CONSTANTS.INDEX_VALIDATOR;
 
 /**
  * This search class communicates with the SymphonySearchEngine C library via node-ffi.
@@ -50,14 +28,14 @@ class Search {
      * @param key
      */
     constructor(userId, key) {
-        console.time('Decrypting');
         this.isInitialized = false;
         this.userId = userId;
         this.key = key;
-        this.indexFolderName = INDEX_PREFIX + '_' + this.userId + '_' + searchConfig.INDEX_VERSION;
-        this.dataFolder = INDEX_DATA_FOLDER;
-        this.realTimeIndex = TEMP_REAL_TIME_INDEX;
-        this.batchIndex = TEMP_BATCH_INDEX_FOLDER;
+        this.indexFolderName = searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH +
+            '_' + this.userId + '_' + searchConfig.INDEX_VERSION;
+        this.dataFolder = searchConfig.FOLDERS_CONSTANTS.INDEX_PATH;
+        this.realTimeIndex = searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX;
+        this.batchIndex = searchConfig.FOLDERS_CONSTANTS.TEMP_BATCH_INDEX_FOLDER;
         this.messageData = [];
         this.isRealTimeIndexing = false;
         this.crypto = new Crypto(userId, key);
@@ -72,7 +50,6 @@ class Search {
      */
     decryptAndInit() {
         this.crypto.decryption().then(() => {
-            console.timeEnd('Decrypting');
             this.init();
         }).catch(() => {
             this.init();
@@ -233,7 +210,7 @@ class Search {
      */
     readJson(batch) {
         return new Promise((resolve, reject) => {
-            let dirPath = path.join(execPath, isMac ? '..' : '', 'msgsjson', batch);
+            let dirPath = path.join(searchConfig.FOLDERS_CONSTANTS.EXEC_PATH, isMac ? '..' : '', 'msgsjson', batch);
             let messageFolderPath = isDevEnv ? path.join('./msgsjson', batch) : dirPath;
             let files = fs.readdirSync(messageFolderPath);
             this.messageData = [];
