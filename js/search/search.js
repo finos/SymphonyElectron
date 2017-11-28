@@ -518,7 +518,7 @@ class Search {
  * when the app is closed/signed-out/navigates
  */
 function deleteIndexFolder() {
-    Search.deleteFolderRecursive(INDEX_DATA_FOLDER);
+    Search.deleteFolderRecursive(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
 }
 
 /**
