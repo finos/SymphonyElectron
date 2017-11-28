@@ -370,8 +370,10 @@ class Search {
     static constructQuery(searchQuery, senderId, threadId, fileType) {
 
         let searchText = "";
+        let textQuery = "";
         if(searchQuery !== undefined) {
             searchText = searchQuery.trim().toLowerCase(); //to prevent injection of AND and ORs
+            textQuery = Search.getTextQuery(searchText);
         }
         let q = "";
         let hashTags = Search.getHashTags(searchText);
@@ -398,7 +400,7 @@ class Search {
 
 
         if (searchText.length > 0 ) {
-            q = "((text:(" + searchText + "))" + hashCashTagQuery ;
+            q = "((text:(" + textQuery + "))" + hashCashTagQuery ;
             if(hasAttachments) {
                 q += " OR (filename:(" + searchText + "))" ;
             }
@@ -470,6 +472,38 @@ class Search {
             }
         });
         return hashTags;
+    }
+
+    static getTextQuery(searchText) {
+        let s1 = searchText.trim().toLowerCase();
+        let s2 = s1.replace(/[.,\/#!?|\[\]|<>\'@$%\+\\\\^&\*;:{}=\-_`~()\"]/g," ");
+        let s3 = s2.replace(/\s{2,}/g," ").trim();
+        let tokens = s3.split(" ");
+
+        let i,j = 0;
+        let out = "";
+        for(i = tokens.length; i>0; i--) {// number of tokens in a tuple
+            for(j= 0; j < tokens.length-i+1 ; j++ ){ //start from index
+                if(out != ""){
+                    out += " ";
+                }
+                out +=  Search.putTokensInRange(tokens, j, i);
+            }
+        }
+        return out;
+    }
+
+    static putTokensInRange(tokens, start, numTokens) {
+        let i=0;
+        let out = "\"";
+        for(i=0; i< numTokens; i++) {
+            if(i != 0) {
+                out += " ";
+            }
+            out+= tokens[start+i];
+        }
+        out += "\"";
+        return out;
     }
 
     /**
