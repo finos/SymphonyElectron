@@ -492,6 +492,33 @@ class Search {
             throw new Error(err);
         }
     }
+
+    /**
+     * Removing all the folders and files inside the data folder
+     * @param location
+     */
+    static deleteFolderRecursive(location) {
+        if (fs.existsSync(location)) {
+            fs.readdirSync(location).forEach((file) => {
+                let curPath = location + "/" + file;
+                if (fs.lstatSync(curPath).isDirectory()) {
+                    Search.deleteFolderRecursive(curPath);
+                } else {
+                    fs.unlinkSync(curPath);
+                }
+            });
+            fs.rmdirSync(location);
+        }
+    }
+
+}
+
+/**
+ * Deleting the data index folder
+ * when the app is closed/signed-out/navigates
+ */
+function deleteIndexFolder() {
+    Search.deleteFolderRecursive(INDEX_DATA_FOLDER);
 }
 
 /**
@@ -499,5 +526,6 @@ class Search {
  * @type {{Search: Search}}
  */
 module.exports = {
-    Search: Search
+    Search: Search,
+    deleteIndexFolder: deleteIndexFolder
 };

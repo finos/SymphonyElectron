@@ -18,8 +18,7 @@ const protocolHandler = require('./protocolHandler');
 const getCmdLineArg = require('./utils/getCmdLineArg.js');
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
-const Crypto = require('./cryptoLib');
-const crypto = new Crypto();
+const { deleteIndexFolder } = require('./search/search.js');
 
 require('electron-dl')();
 
@@ -132,7 +131,7 @@ app.on('activate', function() {
 
 app.on('will-quit', function (e) {
     e.preventDefault();
-    crypto.deleteFolders();
+    deleteIndexFolder();
     app.exit();
 });
 
