@@ -474,11 +474,22 @@ class Search {
         return hashTags;
     }
 
+    /**
+     * If the search query does not have double quotes (implying phrase search),
+     * then create all tuples of the terms in the search query
+     * @param {String} searchText
+     * @returns {String}
+     */
+
     static getTextQuery(searchText) {
         let s1 = searchText.trim().toLowerCase();
-        let s2 = s1.replace(/[.,\/#!?|\[\]|<>\'@$%\+\\\\^&\*;:{}=\-_`~()\"]/g," ");
-        let s3 = s2.replace(/\s{2,}/g," ").trim();
-        let tokens = s3.split(" ");
+        //if contains quotes we assume it will be a phrase search
+        if(searchText.indexOf("\"") !== -1 ) {
+            return s1;
+        }
+        //else we will create tuples
+        let s2 = s1.replace(/\s{2,}/g," ").trim();
+        let tokens = s2.split(" ");
 
         let i,j = 0;
         let out = "";
@@ -493,6 +504,15 @@ class Search {
         return out;
     }
 
+    /**
+    * Helper function for getTextQuery()
+    * Given a list of tokens create a tuple given the start index of the
+    * token list and given the number of tokens to create.
+    * @param {Array} tokens
+    * @param {Number} start
+    * @param {Number} numTokens
+    * @returns {String}
+    */
     static putTokensInRange(tokens, start, numTokens) {
         let i=0;
         let out = "\"";
