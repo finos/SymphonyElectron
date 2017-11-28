@@ -31,8 +31,7 @@ class Search {
         this.isInitialized = false;
         this.userId = userId;
         this.key = key;
-        this.indexFolderName = searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH +
-            '_' + this.userId + '_' + searchConfig.INDEX_VERSION;
+        this.indexFolderName = `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${this.userId}_${searchConfig.INDEX_VERSION}`;
         this.dataFolder = searchConfig.FOLDERS_CONSTANTS.INDEX_PATH;
         this.realTimeIndex = searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX;
         this.batchIndex = searchConfig.FOLDERS_CONSTANTS.TEMP_BATCH_INDEX_FOLDER;
