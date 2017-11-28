@@ -21,6 +21,7 @@ const eventEmitter = require('./eventEmitter');
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField } = require('./config.js');
 const { isMac, isNodeEnv } = require('./utils/misc');
+const { deleteIndexFolder } = require('./search/search.js');
 
 // show dialog when certificate errors occur
 require('./dialogs/showCertError.js');
@@ -281,6 +282,11 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                 webContents.send('downloadCompleted', data);
             }
         });
+    });
+
+    // To delete the user index data folder on navigation
+    mainWindow.webContents.on('will-navigate', () => {
+        deleteIndexFolder();
     });
 
     getConfigField('url')
