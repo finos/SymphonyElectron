@@ -370,8 +370,10 @@ class Search {
     static constructQuery(searchQuery, senderId, threadId, fileType) {
 
         let searchText = "";
+        let textQuery = "";
         if(searchQuery !== undefined) {
             searchText = searchQuery.trim().toLowerCase(); //to prevent injection of AND and ORs
+            textQuery = Search.getTextQuery(searchText);
         }
         let q = "";
         let hashTags = Search.getHashTags(searchText);
@@ -398,7 +400,7 @@ class Search {
 
 
         if (searchText.length > 0 ) {
-            q = "((text:(" + searchText + "))" + hashCashTagQuery ;
+            q = "((text:(" + textQuery + "))" + hashCashTagQuery ;
             if(hasAttachments) {
                 q += " OR (filename:(" + searchText + "))" ;
             }
@@ -470,6 +472,58 @@ class Search {
             }
         });
         return hashTags;
+    }
+
+    /**
+     * If the search query does not have double quotes (implying phrase search),
+     * then create all tuples of the terms in the search query
+     * @param {String} searchText
+     * @returns {String}
+     */
+
+    static getTextQuery(searchText) {
+        let s1 = searchText.trim().toLowerCase();
+        //if contains quotes we assume it will be a phrase search
+        if(searchText.indexOf("\"") !== -1 ) {
+            return s1;
+        }
+        //else we will create tuples
+        let s2 = s1.replace(/\s{2,}/g," ").trim();
+        let tokens = s2.split(" ");
+
+        let i,j = 0;
+        let out = "";
+        for(i = tokens.length; i>0; i--) {// number of tokens in a tuple
+            for(j= 0; j < tokens.length-i+1 ; j++ ){ //start from index
+                if(out != ""){
+                    out += " ";
+                }
+                out +=  Search.putTokensInRange(tokens, j, i);
+            }
+        }
+        return out;
+    }
+
+    /**
+    * Helper function for getTextQuery()
+    * Given a list of tokens create a tuple given the start index of the
+    * token list and given the number of tokens to create.
+    * @param {Array} tokens
+    * @param {Number} start
+    * @param {Number} numTokens
+    * @returns {String}
+    */
+    static putTokensInRange(tokens, start, numTokens) {
+        let i=0;
+        let out = "\"";
+        for(i=0; i< numTokens; i++) {
+            if(i != 0) {
+                out += " ";
+            }
+            out+= tokens[start+i];
+        }
+        out += "\"";
+        return out;
     }
 
     /**
