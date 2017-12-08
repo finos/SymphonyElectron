@@ -71,8 +71,8 @@ class Search {
     init() {
         libSymphonySearch.symSEInit();
         libSymphonySearch.symSEEnsureFolderExists(this.dataFolder);
-        libSymphonySearch.symSERemoveFolder(this.realTimeIndex);
-        libSymphonySearch.symSERemoveFolder(this.batchIndex);
+        Search.deleteFolderRecursive(this.realTimeIndex);
+        Search.deleteFolderRecursive(this.batchIndex);
         Search.indexValidator(this.indexFolderName);
         Search.indexValidator(this.realTimeIndex);
         let indexDateStartFrom = new Date().getTime() - searchConfig.SEARCH_PERIOD_SUBTRACTOR;
@@ -139,7 +139,7 @@ class Search {
                     reject(new Error(err));
                     return;
                 }
-                libSymphonySearch.symSERemoveFolder(this.batchIndex);
+                Search.deleteFolderRecursive(this.batchIndex);
                 resolve(res);
             });
         });
@@ -493,12 +493,12 @@ class Search {
 
         let i,j = 0;
         let out = "";
-        for(i = tokens.length; i>0; i--) {// number of tokens in a tuple
-            for(j= 0; j < tokens.length-i+1 ; j++ ){ //start from index
-                if(out != ""){
+        for(i = tokens.length; i > 0; i--) {// number of tokens in a tuple
+            for(j = 0; j < tokens.length-i + 1 ; j++){ //start from index
+                if(out !== ""){
                     out += " ";
                 }
-                out +=  Search.putTokensInRange(tokens, j, i);
+                out += Search.putTokensInRange(tokens, j, i);
             }
         }
         return out;
@@ -514,10 +514,9 @@ class Search {
     * @returns {String}
     */
     static putTokensInRange(tokens, start, numTokens) {
-        let i=0;
         let out = "\"";
-        for(i=0; i< numTokens; i++) {
-            if(i != 0) {
+        for(let i = 0; i < numTokens; i++) {
+            if(i !== 0) {
                 out += " ";
             }
             out+= tokens[start+i];
