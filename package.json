@@ -104,9 +104,10 @@
     "electron-squirrel-startup": "^1.0.0",
     "filesize": "^3.5.10",
     "keymirror": "0.1.1",
+    "lodash.difference": "^4.5.0",
     "lodash.omit": "^4.5.0",
     "lodash.pick": "^4.4.0",
-    "lodash.difference": "^4.5.0",
+    "parse-domain": "^2.0.0",
     "winreg": "^1.2.3"
   },
   "optionalDependencies": {
