@@ -1,7 +1,8 @@
 'use strict';
 
 const { getConfigField } = require('./../config.js');
-const parse = require('parse-domain');
+const parseDomain = require('parse-domain');
+const isEqual = require('lodash.isequal');
 
 /**
  * Loops through the list of whitelist urls
@@ -11,12 +12,16 @@ const parse = require('parse-domain');
 function isWhiteList(url) {
 
     return new Promise((resolve, reject) => {
-        getConfigField('whitelist').then((whiteList) => {
+        getConfigField('whiteListURL').then((whiteList) => {
+
             if (checkWhiteList(url, whiteList)) {
-                resolve();
-            } else {
-                reject();
+                return resolve();
             }
+
+            return reject(new Error('URL does not match with the whiteList'));
+
+        }).catch((err) => {
+            reject(err);
         });
     });
 }
@@ -30,14 +35,22 @@ function isWhiteList(url) {
  */
 function checkWhiteList(url, whiteList) {
     let whiteLists = whiteList.split(',');
-    const parsedURL = parse(url);
+    const parsedURL = parseDomain(url);
 
-    if (whiteLists.indexOf('*') !== -1) {
+    if (!parsedURL) {
+        return false;
+    }
+
+    if (!whiteList) {
+        return false;
+    }
+
+    if (!whiteLists.length || whiteLists.indexOf('*') !== -1) {
         return true;
     }
 
     return whiteLists.some((whiteListHost) => {
-        let parsedWhiteList = parse(whiteListHost);
+        let parsedWhiteList = parseDomain(whiteListHost);
 
         if (!parsedWhiteList) {
             return false;
@@ -59,7 +72,7 @@ function checkWhiteList(url, whiteList) {
  */
 function matchDomains(parsedURL, parsedWhiteList) {
 
-    if (_.isEqual(parsedURL, parsedWhiteList)) {
+    if (isEqual(parsedURL, parsedWhiteList)) {
         return true;
     }
 
@@ -70,7 +83,7 @@ function matchDomains(parsedURL, parsedWhiteList) {
         return hostNameFromURL === hostNameFromWhiteList
     }
 
-    return matchSubDomains(parsedURL.subdomain, parsedWhiteList.subdomain);
+    return hostNameFromURL === hostNameFromWhiteList && matchSubDomains(parsedURL.subdomain, parsedWhiteList.subdomain);
 
 }
 
@@ -98,4 +111,10 @@ function matchSubDomains(subDomainURL, subDomainWhiteList) {
     return lastCharSubDomainURL === lastCharWhiteList;
 }
 
-module.exports = isWhiteList;
+module.exports = {
+    isWhiteList,
+
+    // items below here are only exported for testing, do NOT use!
+    checkWhiteList
+
+};

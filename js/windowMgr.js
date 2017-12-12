@@ -21,6 +21,7 @@ const eventEmitter = require('./eventEmitter');
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField } = require('./config.js');
 const { isMac, isNodeEnv } = require('./utils/misc');
+const { isWhiteList } = require('./utils/isWhiteList');
 
 // show dialog when certificate errors occur
 require('./dialogs/showCertError.js');
@@ -460,6 +461,13 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             event.preventDefault();
             openUrlInDefaultBrowser(newWinUrl);
         }
+    });
+
+    mainWindow.webContents.on('will-navigate', function(event, navigatedUrl){
+        // TODO: need inputs from design to implement error dialog
+        isWhiteList(navigatedUrl).catch(() => {
+            event.preventDefault();
+        });
     });
 
 }
