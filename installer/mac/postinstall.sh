@@ -12,6 +12,22 @@ minimize_on_close=$(sed -n '2p' '/tmp/sym_settings.txt');
 launch_on_startup=$(sed -n '3p' '/tmp/sym_settings.txt');
 always_on_top=$(sed -n '4p' '/tmp/sym_settings.txt');
 
+if [ "$pod_url" == "" ]; then
+    pod_url="https://corporate.symphony.com"
+fi
+
+if [ "$minimize_on_close" == "" ]; then
+    minimize_on_close=true;
+fi
+
+if [ "$launch_on_startup" == "" ]; then
+    launch_on_startup=true;
+fi
+
+if [ "$always_on_top" == "" ]; then
+    always_on_top=false;
+fi
+
 ## Replace the default settings with the user selected settings ##
 sed -i "" -E "s#\"url\" ?: ?\".*\"#\"url\"\: \"$pod_url\"#g" ${newPath}
 sed -i "" -E "s#\"minimizeOnClose\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"minimizeOnClose\":\ $minimize_on_close#g" ${newPath}
