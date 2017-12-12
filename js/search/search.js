@@ -71,8 +71,8 @@ class Search {
     init() {
         libSymphonySearch.symSEInit();
         libSymphonySearch.symSEEnsureFolderExists(this.dataFolder);
-        Search.deleteFolderRecursive(this.realTimeIndex);
-        Search.deleteFolderRecursive(this.batchIndex);
+        Search.deleteIndexFolders(this.realTimeIndex);
+        Search.deleteIndexFolders(this.batchIndex);
         Search.indexValidator(this.indexFolderName);
         Search.indexValidator(this.realTimeIndex);
         let indexDateStartFrom = new Date().getTime() - searchConfig.SEARCH_PERIOD_SUBTRACTOR;
@@ -139,7 +139,7 @@ class Search {
                     reject(new Error(err));
                     return;
                 }
-                Search.deleteFolderRecursive(this.batchIndex);
+                Search.deleteIndexFolders(this.batchIndex);
                 resolve(res);
             });
         });
@@ -549,12 +549,12 @@ class Search {
      * Removing all the folders and files inside the data folder
      * @param location
      */
-    static deleteFolderRecursive(location) {
+    static deleteIndexFolders(location) {
         if (fs.existsSync(location)) {
             fs.readdirSync(location).forEach((file) => {
                 let curPath = location + "/" + file;
                 if (fs.lstatSync(curPath).isDirectory()) {
-                    Search.deleteFolderRecursive(curPath);
+                    Search.deleteIndexFolders(curPath);
                 } else {
                     fs.unlinkSync(curPath);
                 }
@@ -570,7 +570,7 @@ class Search {
  * when the app is closed/signed-out/navigates
  */
 function deleteIndexFolder() {
-    Search.deleteFolderRecursive(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
+    Search.deleteIndexFolders(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
 }
 
 /**
