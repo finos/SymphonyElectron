@@ -87,6 +87,13 @@
     <div>
         <label for="batchNumber">Get Latest Message Timestamp</label>
         <button id='getLatestMessageTimestamp'>Click</button>
+    </div>
+    <br>
+    <div>
+        <label>Check Free Space: </label>
+        <button id='checkFreeSpace'>Click</button>
+    </div>
+    <div>
         <div>
             <p>Results:</p>
             <p id="results"></p>
@@ -103,7 +110,8 @@
 </div>
 
 <script>
-    var search = new ssf.Search("16149077034436", "RSDFOiuVqF3WmY1pC4MP145qPOpUP6A4if27WG9y3fY=");
+    var search = new ssf.Search("12345678910112", "jjjshdncbsjkieoalskcjdhsnahsadndfnusdfsdfsd=");
+    var searchUtils = new ssf.SearchUtils();
     var buttonEl = document.getElementById('search');
     var merge = document.getElementById('merge');
     var buttonIndex = document.getElementById('index');
@@ -122,6 +130,7 @@
     var batchNumber = document.getElementById('batchNumber');
     var timestamp = document.getElementById('getLatestMessageTimestamp');
     var has = document.getElementById('has');
+    var checkFreeSpace = document.getElementById('checkFreeSpace');
 
 
     buttonIndex.addEventListener('click', function () {
@@ -214,6 +223,14 @@
             resultsEl.innerHTML = res;
         }).catch(function (err) {
             resultsEl.innerHTML = 'Error: ' + err;
+        });
+    });
+
+    checkFreeSpace.addEventListener('click', function () {
+        searchUtils.checkFreeSpace().then(function (res) {
+            resultsEl.innerHTML = res ? "Free Disk Space Available" : "Insufficient Disk Space";
+        }).catch(function (err) {
+            resultsEl.innerHTML = err;
         });
     });
 </script>

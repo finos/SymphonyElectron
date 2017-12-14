@@ -3,8 +3,7 @@ const app = electron.app;
 const path = require('path');
 const userData = path.join(app.getPath('userData'));
 const execPath = path.dirname(app.getPath('exe'));
-const isDevEnv = require('../utils/misc.js').isDevEnv;
-const isMac = require('../utils/misc.js').isMac;
+const { isDevEnv, isMac } = require('../utils/misc.js');
 
 const INDEX_FOLDER_NAME = 'data';
 
@@ -53,7 +52,8 @@ const searchConfig = {
     BATCH_RANDOM_INDEX_PATH_LENGTH: 20,
     LIBRARY_CONSTANTS: libraryPaths,
     FOLDERS_CONSTANTS: folderPaths,
-    TAR_LZ4_EXT: '.tar.lz4'
+    TAR_LZ4_EXT: '.tar.lz4',
+    MINIMUM_DISK_SPACE: 300000000 // in bytes
 };
 
 module.exports = searchConfig;
