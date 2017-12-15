@@ -129,8 +129,8 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         newWinOpts.width = bounds.width;
         newWinOpts.height = bounds.height;
     } else {
-        newWinOpts.width = 1024;
-        newWinOpts.height = 768;
+        newWinOpts.width = 900;
+        newWinOpts.height = 900;
     }
 
     // will center on screen if values not provided
