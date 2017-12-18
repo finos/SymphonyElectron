@@ -234,8 +234,8 @@ class Search {
      * Encrypting the index after the merging the index
      * to the main user index
      */
-    encryptIndex() {
-        return this.crypto.encryption().then(() => {
+    encryptIndex(key) {
+        return this.crypto.encryption(key).then(() => {
             return 'Success'
         }).catch((e) => {
             log.send(logLevels.ERROR, 'Encrypting the index folder failed ->' + e);

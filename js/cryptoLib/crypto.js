@@ -160,7 +160,7 @@ DecryptionStream.prototype._flush = function(cb) {
     try {
         this._decipher.final();
     } catch (e) {
-        return cb(e);
+        return cb();
     }
     decrypted.forEach(function(item) {
         this.push(item);

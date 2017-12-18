@@ -23,6 +23,9 @@ const indexFolderPath = isDevEnv ? `./${INDEX_FOLDER_NAME}` : path.join(userData
 const winSearchLibArchPath = arch ? 'libsymphonysearch-x86.dll' : 'libsymphonysearch-x64.dll';
 const libraryPath = isMac ? path.join(macLibraryPath, 'libsymphonysearch.dylib') : path.join(winLibraryPath, winSearchLibArchPath);
 
+const userConfigFileName = 'search_users_config.json';
+const userConfigFile = isDevEnv ? path.join(__dirname, '..', '..', userConfigFileName) : path.join(userData, userConfigFileName);
+
 const libraryPaths = {
     INDEX_VALIDATOR: indexValidatorPath,
     LZ4_PATH: lz4Path,
@@ -39,7 +42,8 @@ const folderPaths = {
     PREFIX_NAME_PATH: indexFolderPath + '/search_index',
     EXEC_PATH: execPath,
     USER_DATA_PATH: userData,
-    INDEX_FOLDER_NAME: INDEX_FOLDER_NAME
+    INDEX_FOLDER_NAME: INDEX_FOLDER_NAME,
+    USER_CONFIG_FILE: userConfigFile
 };
 
 const searchConfig = {

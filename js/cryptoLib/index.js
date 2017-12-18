@@ -26,7 +26,7 @@ class Crypto {
      * encrypting it
      * @returns {Promise}
      */
-    encryption() {
+    encryption(key) {
         return new Promise((resolve, reject) => {
 
             if (!fs.existsSync(this.indexDataFolder)){
@@ -49,7 +49,7 @@ class Crypto {
                     const input = fs.createReadStream(`${this.dump}/${this.permanentIndexName}${searchConfig.TAR_LZ4_EXT}`);
                     const outputEncryption = fs.createWriteStream(this.encryptedIndex);
                     let config = {
-                        key: this.key
+                        key: key
                     };
                     const encrypt = crypto.encrypt(config);
 
@@ -90,6 +90,10 @@ class Crypto {
             const decrypt = crypto.decrypt(config);
 
             let decryptionProcess = input.pipe(decrypt).pipe(output);
+
+            decryptionProcess.on('error', (err) => {
+                console.log(err)
+            });
 
             decryptionProcess.on('finish', () => {
 

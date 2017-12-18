@@ -93,6 +93,23 @@
         <label>Check Free Space: </label>
         <button id='checkFreeSpace'>Click</button>
     </div>
+    <br>
+    <div>
+        <label>View User Config</label>
+        <button id='viewUserConfig'>Click</button>
+    </div>
+    <br>
+    <div>
+        <div>
+            <label>Update User Config</label>
+        </div>
+        <br>
+        <label for="rotationId">Rotation Id: </label><input placeholder="Ex: 0, 1" id="rotationId">
+        <br>
+        <label for="version">Version: </label><input placeholder="Ex: 1, 2" id="version">
+        <br>
+        <button id='updateUserConfig'>Save</button>
+    </div>
     <div>
         <div>
             <p>Results:</p>
@@ -110,7 +127,7 @@
 </div>
 
 <script>
-    var search = new ssf.Search("12345678910112", "jjjshdncbsjkieoalskcjdhsnahsadndfnusdfsdfsd=");
+    var search = new ssf.Search("12345678910112", "jjjehdnctsjyieoalskcjdhsnahsadndfnusdfsdfsd=");
     var searchUtils = new ssf.SearchUtils();
     var buttonEl = document.getElementById('search');
     var merge = document.getElementById('merge');
@@ -131,6 +148,10 @@
     var timestamp = document.getElementById('getLatestMessageTimestamp');
     var has = document.getElementById('has');
     var checkFreeSpace = document.getElementById('checkFreeSpace');
+    var viewUserConfig = document.getElementById('viewUserConfig');
+    var version = document.getElementById('version');
+    var rotationId = document.getElementById('rotationId');
+    var updateUserConfig = document.getElementById('updateUserConfig');
 
 
     buttonIndex.addEventListener('click', function () {
@@ -210,7 +231,7 @@
 
     merge.addEventListener('click', function () {
         search.mergeIndexBatches().then(function () {
-            search.encryptIndex().then(function () {
+            search.encryptIndex('jjjehdnctsjyieoalskcjdhsnahsadndfnusdfsdfsd=').then(function () {
                 resultsEl.innerHTML = "Merging and Encrypting index completed"
             });
         }).catch(function (err) {
@@ -231,6 +252,26 @@
             resultsEl.innerHTML = res ? "Free Disk Space Available" : "Insufficient Disk Space";
         }).catch(function (err) {
             resultsEl.innerHTML = err;
+        });
+    });
+
+    viewUserConfig.addEventListener('click', function () {
+        searchUtils.getSearchUserConfig(12345678910112).then(function (res) {
+            resultsEl.innerHTML = JSON.stringify(res);
+        }).catch(function (err) {
+            resultsEl.innerHTML = JSON.stringify(err);
+        });
+    });
+
+    updateUserConfig.addEventListener('click', function () {
+        var data = {
+            rotationId: rotationId.value || 0,
+            version: version.value || 1
+        };
+        searchUtils.updateUserConfig(12345678910112, data).then(function (res) {
+            resultsEl.innerHTML = JSON.stringify(res);
+        }).catch(function (err) {
+            resultsEl.innerHTML = JSON.stringify(err);
         });
     });
 </script>
