@@ -91,10 +91,6 @@ class Crypto {
 
             let decryptionProcess = input.pipe(decrypt).pipe(output);
 
-            decryptionProcess.on('error', (err) => {
-                console.log(err)
-            });
-
             decryptionProcess.on('finish', () => {
 
                 if (!fs.existsSync(`${this.dump}/decrypted${searchConfig.TAR_LZ4_EXT}`)){
