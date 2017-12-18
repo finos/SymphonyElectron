@@ -32,7 +32,7 @@ function checkDiskSpace(path, callback) {
             let data = stdout.trim().split("\n");
 
             let disk_info_str = data[data.length - 1].split(':');
-            return callback(null, disk_info_str[1] * 1024);
+            return callback(null, disk_info_str[1]);
         });
     }
 
