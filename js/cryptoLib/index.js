@@ -16,14 +16,12 @@ class Crypto {
      * Constructor
      * @param userId
      * @param key
-     * @param version
      */
-    constructor(userId, key, version) {
-        this.indexDataFolder = `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${userId}`;
-        this.permanentIndexName = `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${userId}`;
+    constructor(userId, key) {
+        this.indexDataFolder = `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${userId}_${searchConfig.INDEX_VERSION}`;
+        this.permanentIndexName = `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${userId}_${searchConfig.INDEX_VERSION}`;
         this.dump = DUMP_PATH;
         this.key = key;
-        this.version = version;
         this.encryptedIndex = `${DUMP_PATH}/${this.permanentIndexName}`;
         this.dataFolder = searchConfig.FOLDERS_CONSTANTS.INDEX_PATH;
     }
@@ -33,17 +31,17 @@ class Crypto {
      * encrypting it
      * @returns {Promise}
      */
-    encryption(key, version) {
+    encryption(key) {
         return new Promise((resolve, reject) => {
 
-            if (!fs.existsSync(`${this.indexDataFolder}_${version}`)){
+            if (!fs.existsSync(this.indexDataFolder)){
                 log.send(logLevels.ERROR, 'Crypto: User index folder not found');
                 reject();
                 return;
             }
 
-            lz4.compression(`${searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME}/${this.permanentIndexName}_${version}`,
-                `${this.permanentIndexName}_${version}`, (error, response) => {
+            lz4.compression(`${searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME}/${this.permanentIndexName}`,
+                `${this.permanentIndexName}`, (error, response) => {
                     if (error) {
                         log.send(logLevels.ERROR, 'Crypto: Error while compressing to lz4: ' + error);
                         reject(error);
@@ -53,8 +51,8 @@ class Crypto {
                     if (response && response.stderr) {
                         log.send(logLevels.WARN, 'Crypto: Child process stderr while compression, ' + response.stderr);
                     }
-                    const input = fs.createReadStream(`${this.dump}/${this.permanentIndexName}_${version}${searchConfig.TAR_LZ4_EXT}`);
-                    const outputEncryption = fs.createWriteStream(`${this.encryptedIndex}_${version}.enc`);
+                    const input = fs.createReadStream(`${this.dump}/${this.permanentIndexName}${searchConfig.TAR_LZ4_EXT}`);
+                    const outputEncryption = fs.createWriteStream(`${this.encryptedIndex}.enc`);
                     let config = {
                         key: key
                     };
@@ -68,7 +66,7 @@ class Crypto {
                             reject(new Error(err));
                             return;
                         }
-                        fs.unlinkSync(`${this.dump}/${this.permanentIndexName}_${version}${searchConfig.TAR_LZ4_EXT}`);
+                        fs.unlinkSync(`${this.dump}/${this.permanentIndexName}${searchConfig.TAR_LZ4_EXT}`);
                         resolve('Success');
                     });
                 });
@@ -83,13 +81,13 @@ class Crypto {
     decryption() {
         return new Promise((resolve, reject) => {
 
-            if (!fs.existsSync(`${this.encryptedIndex}_${this.version}.enc`)){
+            if (!fs.existsSync(`${this.encryptedIndex}.enc`)){
                 log.send(logLevels.ERROR, 'Crypto: Encrypted file not found');
                 reject();
                 return;
             }
 
-            const input = fs.createReadStream(`${this.encryptedIndex}_${this.version}.enc`);
+            const input = fs.createReadStream(`${this.encryptedIndex}.enc`);
             const output = fs.createWriteStream(`${this.dump}/decrypted${searchConfig.TAR_LZ4_EXT}`);
             let config = {
                 key: this.key

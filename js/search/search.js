@@ -26,19 +26,18 @@ class Search {
      * Constructor for the SymphonySearchEngine library
      * @param userId (for the index folder name)
      * @param key
-     * @param version
      */
-    constructor(userId, key, version) {
+    constructor(userId, key) {
         this.isInitialized = false;
         this.userId = userId;
         this.key = key;
-        this.indexFolderName = `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${this.userId}_${version}`;
+        this.indexFolderName = `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${this.userId}_${searchConfig.INDEX_VERSION}`;
         this.dataFolder = searchConfig.FOLDERS_CONSTANTS.INDEX_PATH;
         this.realTimeIndex = searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX;
         this.batchIndex = searchConfig.FOLDERS_CONSTANTS.TEMP_BATCH_INDEX_FOLDER;
         this.messageData = [];
         this.isRealTimeIndexing = false;
-        this.crypto = new Crypto(userId, key, version);
+        this.crypto = new Crypto(userId, key);
         this.decryptAndInit();
         this.collector = makeBoundTimedCollector(this.checkIsRealTimeIndexing.bind(this),
             searchConfig.REAL_TIME_INDEXING_TIME, this.realTimeIndexing.bind(this));
@@ -235,8 +234,8 @@ class Search {
      * Encrypting the index after the merging the index
      * to the main user index
      */
-    encryptIndex(key, version) {
-        return this.crypto.encryption(key, version).then(() => {
+    encryptIndex(key) {
+        return this.crypto.encryption(key).then(() => {
             return 'Success'
         }).catch((e) => {
             log.send(logLevels.ERROR, 'Encrypting the index folder failed ->' + e);
