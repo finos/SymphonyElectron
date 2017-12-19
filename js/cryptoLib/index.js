@@ -22,7 +22,7 @@ class Crypto {
         this.permanentIndexName = `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${userId}_${searchConfig.INDEX_VERSION}`;
         this.dump = DUMP_PATH;
         this.key = key;
-        this.encryptedIndex = `${DUMP_PATH}/${this.permanentIndexName}`;
+        this.encryptedIndex = `${DUMP_PATH}/${this.permanentIndexName}.enc`;
         this.dataFolder = searchConfig.FOLDERS_CONSTANTS.INDEX_PATH;
     }
 
@@ -52,7 +52,7 @@ class Crypto {
                         log.send(logLevels.WARN, 'Crypto: Child process stderr while compression, ' + response.stderr);
                     }
                     const input = fs.createReadStream(`${this.dump}/${this.permanentIndexName}${searchConfig.TAR_LZ4_EXT}`);
-                    const outputEncryption = fs.createWriteStream(`${this.encryptedIndex}.enc`);
+                    const outputEncryption = fs.createWriteStream(this.encryptedIndex);
                     let config = {
                         key: key
                     };
@@ -81,13 +81,13 @@ class Crypto {
     decryption() {
         return new Promise((resolve, reject) => {
 
-            if (!fs.existsSync(`${this.encryptedIndex}.enc`)){
+            if (!fs.existsSync(this.encryptedIndex)){
                 log.send(logLevels.ERROR, 'Crypto: Encrypted file not found');
                 reject();
                 return;
             }
 
-            const input = fs.createReadStream(`${this.encryptedIndex}.enc`);
+            const input = fs.createReadStream(this.encryptedIndex);
             const output = fs.createWriteStream(`${this.dump}/decrypted${searchConfig.TAR_LZ4_EXT}`);
             let config = {
                 key: this.key
