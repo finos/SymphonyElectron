@@ -463,11 +463,18 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         }
     });
 
-    mainWindow.webContents.on('will-navigate', function(event, navigatedUrl){
-        // TODO: need inputs from design to implement error dialog
-        isWhiteList(navigatedUrl).catch(() => {
-            event.preventDefault();
-        });
+    // whenever the main window is navigated for ex: window.location.href or url redirect
+    mainWindow.webContents.on('will-navigate', function(event, navigatedURL) {
+        isWhiteList(navigatedURL)
+            .catch(() => {
+                event.preventDefault();
+                electron.dialog.showMessageBox(mainWindow, {
+                    type: 'warning',
+                    buttons: [ 'Ok' ],
+                    title: 'Not Allowed',
+                    message: `Sorry, you are not allowed to access this website (${navigatedURL}), please contact your administrator for more details`,
+                });
+            });
     });
 
 }

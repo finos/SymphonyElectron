@@ -1,6 +1,6 @@
 'use strict';
 
-const { getConfigField } = require('./../config.js');
+const { getGlobalConfigField } = require('./../config.js');
 const parseDomain = require('parse-domain');
 const isEqual = require('lodash.isequal');
 
@@ -12,7 +12,7 @@ const isEqual = require('lodash.isequal');
 function isWhiteList(url) {
 
     return new Promise((resolve, reject) => {
-        getConfigField('whiteListURL').then((whiteList) => {
+        getGlobalConfigField('whiteListURL').then((whiteList) => {
 
             if (checkWhiteList(url, whiteList)) {
                 return resolve();

@@ -425,6 +425,9 @@ module.exports = {
     saveUserConfig,
     clearCachedConfigs,
     
-    readConfigFileSync
+    readConfigFileSync,
+
+    // use only if you specifically need to read global config fields
+    getGlobalConfigField,
 
 };
