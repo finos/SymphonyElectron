@@ -1,74 +1,74 @@
-const { checkWhiteList } = require('../../js/utils/isWhiteList');
+const { checkWhitelist } = require('../../js/utils/whitelistHandler');
 
-describe('validate url with whiteList', function() {
+describe('validate url with whitelist', function() {
 
-    describe('checkWhiteList truth tests', function() {
+    describe('checkWhitelist truth tests', function() {
 
         it('should return true when the url is valid', function() {
-            const whiteList = 'www.symphony.com, app.symphony.com, my.symphony.com';
+            const whitelist = 'www.symphony.com, app.symphony.com, my.symphony.com';
             const url = 'https://my.symphony.com/';
 
-            return expect(checkWhiteList(url, whiteList)).toBeTruthy();
+            return expect(checkWhitelist(url, whitelist)).toBeTruthy();
         });
 
         it('should return true when if hostName is defined', function() {
-            const whiteList = 'www.symphony.com, app.symphony.com, symphony.com';
+            const whitelist = 'www.symphony.com, app.symphony.com, symphony.com';
             const url = 'https://xyz.symphony.com/';
 
-            return expect(checkWhiteList(url, whiteList)).toBeTruthy();
+            return expect(checkWhitelist(url, whitelist)).toBeTruthy();
         });
 
         it('should return true when the first occurrence of sub-domain is matched', function() {
-            const whiteList = 'www.symphony.com, app.symphony.com, my.symphony.com';
+            const whitelist = 'www.symphony.com, app.symphony.com, my.symphony.com';
             const url = 'https://xyz.my.symphony.com/';
 
-            return expect(checkWhiteList(url, whiteList)).toBeTruthy();
+            return expect(checkWhitelist(url, whitelist)).toBeTruthy();
         });
 
-        it('should return true when for any URL if whiteList has *', function() {
-            const whiteList = '*';
+        it('should return true when for any URL if whitelist has *', function() {
+            const whitelist = '*';
             const url = 'https://www.example.com/';
 
-            return expect(checkWhiteList(url, whiteList)).toBeTruthy();
+            return expect(checkWhitelist(url, whitelist)).toBeTruthy();
         });
 
     });
 
-    describe('checkWhiteList falsity tests', function () {
+    describe('checkWhitelist falsity tests', function () {
 
         it('should return false when sub-domain does not match', function () {
-            const whiteList = 'www.symphony.com, app.symphony.com, my.symphony.com';
+            const whitelist = 'www.symphony.com, app.symphony.com, my.symphony.com';
             const url = 'https://xyz.symphony.com/';
 
-            return expect(checkWhiteList(url, whiteList)).toBeFalsy();
+            return expect(checkWhitelist(url, whitelist)).toBeFalsy();
         });
 
         it('should return false when hostName does not match', function () {
-            const whiteList = 'www.symphony.com, app.symphony.com, my.symphony.com';
+            const whitelist = 'www.symphony.com, app.symphony.com, my.symphony.com';
             const url = 'https://my.example.com/';
 
-            return expect(checkWhiteList(url, whiteList)).toBeFalsy();
+            return expect(checkWhitelist(url, whitelist)).toBeFalsy();
         });
 
         it('should return false when the URL is invalid', function () {
-            const whiteList = 'www.symphony.com, app.symphony.com, my.symphony.com';
+            const whitelist = 'www.symphony.com, app.symphony.com, my.symphony.com';
             const url = 'invalidUrl';
 
-            return expect(checkWhiteList(url, whiteList)).toBeFalsy();
+            return expect(checkWhitelist(url, whitelist)).toBeFalsy();
         });
 
-        it('should return false when the whiteList is invalid', function () {
-            const whiteList = 'invalidWhiteList';
+        it('should return false when the whitelist is invalid', function () {
+            const whitelist = 'invalidWhitelist';
             const url = 'https://www.symphony.com';
 
-            return expect(checkWhiteList(url, whiteList)).toBeFalsy();
+            return expect(checkWhitelist(url, whitelist)).toBeFalsy();
         });
 
-        it('should return false if whiteList is empty', function() {
-            const whiteList = '';
+        it('should return false if whitelist is empty', function() {
+            const whitelist = '';
             const url = 'https://www.example.com/';
 
-            return expect(checkWhiteList(url, whiteList)).toBeFalsy();
+            return expect(checkWhitelist(url, whitelist)).toBeFalsy();
         });
     });
 });
