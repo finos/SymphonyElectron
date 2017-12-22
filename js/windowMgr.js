@@ -21,6 +21,7 @@ const eventEmitter = require('./eventEmitter');
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField } = require('./config.js');
 const { isMac, isNodeEnv } = require('./utils/misc');
+const { isWhitelisted } = require('./utils/whitelistHandler');
 
 // show dialog when certificate errors occur
 require('./dialogs/showCertError.js');
@@ -460,6 +461,20 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             event.preventDefault();
             openUrlInDefaultBrowser(newWinUrl);
         }
+    });
+
+    // whenever the main window is navigated for ex: window.location.href or url redirect
+    mainWindow.webContents.on('will-navigate', function(event, navigatedURL) {
+        isWhitelisted(navigatedURL)
+            .catch(() => {
+                event.preventDefault();
+                electron.dialog.showMessageBox(mainWindow, {
+                    type: 'warning',
+                    buttons: [ 'Ok' ],
+                    title: 'Not Allowed',
+                    message: `Sorry, you are not allowed to access this website (${navigatedURL}), please contact your administrator for more details`,
+                });
+            });
     });
 
 }

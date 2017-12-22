@@ -5,7 +5,7 @@ A few sentences describing the overall goals of the pull request's commits. Desc
 ## Approach
 How does this change address the problem?
 - #### Problem with the code:
-- #### Fix :
+- #### Fix:
 
 
 ## Learning
