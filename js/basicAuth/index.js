@@ -111,18 +111,12 @@ function openBasicAuthWindow(windowName, hostname, isValidCredentials, clearSett
 ipc.on('login', (event, args) => {
     if (typeof args === 'object' && typeof local.authCallback === 'function') {
         local.authCallback(args.username, args.password);
-        basicAuthWindow.close();
+        closeAuthWindow(false);
     }
 });
 
 ipc.on('close-basic-auth', () => {
-    if (typeof local.clearSettings === 'function') {
-        local.clearSettings();
-    }
-
-    if (basicAuthWindow) {
-        basicAuthWindow.close();
-    }
+    closeAuthWindow(true);
 });
 
 /**
@@ -132,6 +126,19 @@ function destroyWindow() {
     basicAuthWindow = null;
 }
 
+/**
+ * Method to close the auth window
+ * @param {boolean} clearSettings - Whether to clear the auth settings
+ */
+function closeAuthWindow(clearSettings) {
+    if (clearSettings && typeof local.clearSettings === 'function') {
+        local.clearSettings();
+    }
+
+    if (basicAuthWindow) {
+        basicAuthWindow.close();
+    }
+}
 
 module.exports = {
     openBasicAuthWindow: openBasicAuthWindow
