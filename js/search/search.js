@@ -171,7 +171,7 @@ class Search {
     realTimeIndexing(message) {
         if (!message) {
             log.send(logLevels.ERROR, 'RealTime Indexing: Messages not provided');
-            return new Error('RealTime Indexing: Messages is required');
+            throw new Error('RealTime Indexing: Messages is required');
         }
 
         try {
@@ -182,12 +182,12 @@ class Search {
             }
         } catch(e) {
             log.send(logLevels.ERROR, 'RealTime Indexing: parse error -> ' + e);
-            return (new Error(e));
+            throw (new Error(e));
         }
 
         if (!this.isInitialized) {
             log.send(logLevels.ERROR, 'Library not initialized');
-            return new Error('Library not initialized');
+            throw new Error('Library not initialized');
         }
 
         this.isRealTimeIndexing = true;
@@ -195,7 +195,7 @@ class Search {
             this.isRealTimeIndexing = false;
             if (err) {
                 log.send(logLevels.ERROR, 'RealTime Indexing: error -> ' + err);
-                return new Error(err);
+                throw new Error(err);
             }
             return result;
         });
