@@ -1,9 +1,6 @@
-const electron = require('./__mocks__/electron');
 const childProcess = require('child_process');
 const path = require('path');
 const fs = require('fs');
-
-const { isMac } = require('../js/utils/misc.js');
 
 let executionPath = null;
 let userConfigDir = null;
@@ -34,14 +31,16 @@ describe('Tests for Search', function() {
 
     let userId;
     let key;
+    let dataFolderPath;
     let realTimeIndexPath;
     let tempBatchPath;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 900000;
+    let currentDate = new Date().getTime();
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 90000;
 
     beforeAll(function (done) {
-        /*childProcess.exec(`npm rebuild --target=${process.version} --build-from-source`, function(err) {
+        childProcess.exec(`npm rebuild --target=${process.version} --build-from-source`, function(err) {
             userId = 12345678910112;
-            key = 'abcdefghijklmnopqrstuvwxyz123456789!@#$%^&*=';
+            key = 'jjjehdnctsjyieoalskcjdhsnahsadndfnusdfsdfsd=';
             executionPath = path.join(__dirname, 'library');
             userConfigDir = path.join(__dirname, '..');
             searchConfig = require('../js/search/searchConfig.js');
@@ -49,27 +48,17 @@ describe('Tests for Search', function() {
             SearchApi = new Search(userId, key);
             realTimeIndexPath = path.join(userConfigDir, 'data', 'temp_realtime_index');
             tempBatchPath = path.join(userConfigDir, 'data', 'temp_batch_indexes');
+            dataFolderPath = path.join(searchConfig.FOLDERS_CONSTANTS.EXEC_PATH, '..', 'data');
             done();
-        });*/
-        userId = 12345678910112;
-        key = 'jjjehdnctsjyieoalskcjdhsnahsadndfnusdfsdfsd=';
-        executionPath = path.join(__dirname, 'library');
-        userConfigDir = path.join(__dirname, '..');
-        searchConfig = require('../js/search/searchConfig.js');
-        const { Search } = require('../js/search/search.js');
-        SearchApi = new Search(userId, key);
-        realTimeIndexPath = path.join(userConfigDir, 'data', 'temp_realtime_index');
-        tempBatchPath = path.join(userConfigDir, 'data', 'temp_batch_indexes');
-        done();
+        });
     });
 
     afterAll(function (done) {
         setTimeout(() => {
-            let dataPath = path.join(searchConfig.FOLDERS_CONSTANTS.EXEC_PATH, '..', 'data');
-            deleteIndexFolders(dataPath);
+            deleteIndexFolders(dataFolderPath);
             let root = path.join(searchConfig.FOLDERS_CONSTANTS.EXEC_PATH, '..', `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${userId}_${searchConfig.INDEX_VERSION}.enc`);
             if (fs.existsSync(root)) {
-                fs.unlink(root);
+                fs.unlinkSync(root);
             }
             done();
         }, 3000);
@@ -91,14 +80,17 @@ describe('Tests for Search', function() {
 
     describe('Search Initial checks', function() {
 
-        it('should be initialized', function () {
-            expect(SearchApi.isInitialized).toBe(true);
-            expect(SearchApi.indexFolderName).toBe(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${userId}_${searchConfig.INDEX_VERSION}`);
-            expect(SearchApi.dataFolder).toBe(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
-            expect(SearchApi.realTimeIndex).toBe(searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX);
-            expect(SearchApi.batchIndex).toBe(searchConfig.FOLDERS_CONSTANTS.TEMP_BATCH_INDEX_FOLDER);
-            expect(SearchApi.messageData).toEqual([]);
-            expect(SearchApi.isRealTimeIndexing).toBe(false);
+        it('should be initialized', function (done) {
+            setTimeout(function () {
+                expect(SearchApi.isInitialized).toBe(true);
+                expect(SearchApi.indexFolderName).toBe(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${userId}_${searchConfig.INDEX_VERSION}`);
+                expect(SearchApi.dataFolder).toBe(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
+                expect(SearchApi.realTimeIndex).toBe(searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX);
+                expect(SearchApi.batchIndex).toBe(searchConfig.FOLDERS_CONSTANTS.TEMP_BATCH_INDEX_FOLDER);
+                expect(SearchApi.messageData).toEqual([]);
+                expect(SearchApi.isRealTimeIndexing).toBe(false);
+                done();
+            }, 3000)
         });
 
         it('should isLibInit to true', function () {
@@ -121,7 +113,6 @@ describe('Tests for Search', function() {
         it('should not exist index folder', function() {
             expect(fs.existsSync(tempBatchPath)).toBe(false);
         });
-
     });
 
     describe('Batch indexing process tests', function () {
@@ -131,7 +122,7 @@ describe('Tests for Search', function() {
                 {
                     messageId: "Jc+4K8RtPxHJfyuDQU9atX///qN3KHYXdA==",
                     threadId: "Au8O2xKHyX1LtE6zW019GX///rZYegAtdA==",
-                    ingestionDate: "1510684200000",
+                    ingestionDate: currentDate.toString(),
                     senderId: "71811853189212",
                     chatType: "CHATROOM",
                     isPublic: "false",
@@ -163,7 +154,7 @@ describe('Tests for Search', function() {
             let message = {
                 messageId: "Jc+4K8RtPxHJfyuDQU9atX///qN3KHYXdA==",
                 threadId: "Au8O2xKHyX1LtE6zW019GX///rZYegAtdA==",
-                ingestionDate: "1510684200000",
+                ingestionDate: currentDate.toString(),
                 senderId: "71811853189212",
                 chatType: "CHATROOM",
                 isPublic: "false",
@@ -181,7 +172,7 @@ describe('Tests for Search', function() {
             let message = [{
                 messageId: "Jc+4K8RtPxHJfyuDQU9atX///qN3KHYXdA==",
                 threadId: "Au8O2xKHyX1LtE6zW019GX///rZYegAtdA==",
-                ingestionDate: "1510684200000",
+                ingestionDate: currentDate.toString(),
                 senderId: "71811853189212",
                 chatType: "CHATROOM",
                 isPublic: "false",
@@ -223,7 +214,7 @@ describe('Tests for Search', function() {
             let message = [{
                 messageId: "Jc+4K8RtPxHJfyuDQU9atX///qN3KHYXdA==",
                 threadId: "Au8O2xKHyX1LtE6zW019GX///rZYegAtdA==",
-                ingestionDate: "1510684200000",
+                ingestionDate: currentDate.toString(),
                 senderId: "71811853189212",
                 chatType: "CHATROOM",
                 isPublic: "false",
@@ -247,7 +238,7 @@ describe('Tests for Search', function() {
             let message = [{
                 messageId: "Jc+4K8RtPxHJfyuDQU9atX///qN3KHYXdA==",
                 threadId: "Au8O2xKHyX1LtE6zW019GX///rZYegAtdA==",
-                ingestionDate: "1510684200000",
+                ingestionDate: currentDate.toString(),
                 senderId: "71811853189212",
                 chatType: "CHATROOM",
                 isPublic: "false",
@@ -255,21 +246,23 @@ describe('Tests for Search', function() {
                 text: "isRealTimeIndexing"
             }];
             const batchRealTimeIndexing = jest.spyOn(SearchApi, 'batchRealTimeIndexing');
-            SearchApi.isRealTimeIndexing = false;
+            SearchApi.isRealTimeIndexing = true;
             SearchApi.batchRealTimeIndexing(message);
             expect(batchRealTimeIndexing).toHaveBeenCalled();
-            SearchApi.searchQuery('isRealTimeIndexing', [], [], '', undefined, undefined, 25, 0, 0).then(function (res) {
-                expect(res.messages.length).toEqual(0);
-                expect(fs.existsSync(realTimeIndexPath)).toBe(true);
-                done();
-            });
+            setTimeout(function () {
+                SearchApi.searchQuery('isRealTimeIndexing', [], [], '', undefined, undefined, 25, 0, 0).then(function (res) {
+                    expect(res.messages.length).toEqual(0);
+                    expect(fs.existsSync(realTimeIndexPath)).toBe(true);
+                    done();
+                });
+            }, 6000)
         });
 
         it('should not realTime index invalid object', function () {
             let message = [{
                 messageId: "Jc+4K8RtPxHJfyuDQU9atX///qN3KHYXdA==",
                 threadId: "Au8O2xKHyX1LtE6zW019GX///rZYegAtdA==",
-                ingestionDate: "1510684200000",
+                ingestionDate: currentDate.toString(),
                 senderId: "71811853189212",
                 chatType: "CHATROOM",
                 isPublic: "false",
@@ -305,7 +298,6 @@ describe('Tests for Search', function() {
         });
     });
 
-
     describe('Test for encryption of the index', function () {
 
         it('should encrypt the user index', function (done) {
@@ -318,7 +310,7 @@ describe('Tests for Search', function() {
                 expect(fs.existsSync(path.join(userConfigDir, 'search_index_12345678910112_v1.enc'))).toBe(true);
                 expect(fs.existsSync(path.join(userConfigDir, 'search_index_12345678910112_v1.tar.lz4'))).toBe(false);
                 done();
-            },1000);
+            }, 3000);
         });
     });
 
@@ -326,7 +318,7 @@ describe('Tests for Search', function() {
 
         it('should get the latest timestamp', function (done) {
             SearchApi.getLatestMessageTimestamp().then(function (res) {
-                expect(res).toEqual('1510684200000');
+                expect(res).toEqual(currentDate.toString());
                 done();
             });
         });
@@ -334,8 +326,17 @@ describe('Tests for Search', function() {
         it('should not get the latest timestamp', function (done) {
             SearchApi.isInitialized = false;
             SearchApi.getLatestMessageTimestamp().catch(function (err) {
-                expect(err).toEqual('Not initialized');
+                expect(err).toEqual(new Error('Not initialized'));
                 SearchApi.isInitialized = true;
+                done();
+            });
+        });
+
+        it('should not get the latest timestamp', function (done) {
+            SearchApi.indexFolderName = '';
+            SearchApi.getLatestMessageTimestamp().catch(function (err) {
+                expect(err).toEqual(new Error('Index folder does not exist.'));
+                SearchApi.indexFolderName = `${dataFolderPath}/${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${userId}_${searchConfig.INDEX_VERSION}`;
                 done();
             });
         });
@@ -344,14 +345,15 @@ describe('Tests for Search', function() {
     describe('Test to decrypt the index', function () {
 
         it('should decrypt the index', function () {
-            let dataPath = path.join(searchConfig.FOLDERS_CONSTANTS.EXEC_PATH, '..', 'data');
-            deleteIndexFolders(dataPath);
+            deleteIndexFolders(dataFolderPath);
             SearchApi.decryptAndInit();
         });
 
         it('should get message from the decrypted index', function (done) {
             setTimeout(function () {
-                SearchApi.searchQuery('it works', [], [], '', undefined, undefined, 25, 0, 0).then(function (res) {
+                let endTime = new Date().getTime();
+                let startTime = new Date().getTime() - (4 * 31 * 24 * 60 * 60 * 1000);
+                SearchApi.searchQuery('it works', [], [], '', startTime.toString(), endTime.toString(), '0', 0.2, 0.1).then(function (res) {
                     expect(res.messages.length).toEqual(1);
                     done()
                 });
@@ -361,5 +363,49 @@ describe('Tests for Search', function() {
 
     describe('Test for search functions', function () {
 
-    })
+        it('should search fail isInitialized', function (done) {
+            SearchApi.isInitialized = false;
+            SearchApi.searchQuery('it works', [], [], '', '', '', 25, 0, 0).catch(function (err) {
+                expect(err).toEqual(new Error('Library not initialized'));
+                SearchApi.isInitialized = true;
+                done();
+            });
+        });
+
+        it('should search fails index folder not fund', function (done) {
+            deleteIndexFolders(dataFolderPath);
+            SearchApi.searchQuery('it works', [], [], '', '', '', 25, 0, 0).catch(function (err) {
+                expect(err).toEqual(new Error('Index folder does not exist.'));
+                SearchApi = undefined;
+                const { Search } = require('../js/search/search.js');
+                SearchApi = new Search(userId, key);
+                done();
+            });
+        });
+
+        it('should search fails query is undefined', function (done) {
+            setTimeout(function () {
+                expect(SearchApi.isInitialized).toBe(true);
+                SearchApi.searchQuery(undefined, [], [], '', '', '', 25, 0, 0).catch(function (err) {
+                    expect(err).toEqual(new Error('Search query error'));
+                    done();
+                });
+            }, 3000);
+        });
+
+        it('should search for hashtag', function (done) {
+            SearchApi.searchQuery('#123 "testing"', [], [], 'attachment', '', '', 25, 0, 0).then(function (res) {
+                expect(res.messages.length).toEqual(0);
+                done();
+            });
+        });
+
+        it('should search for pdf', function (done) {
+            SearchApi.searchQuery('', [], [], 'pdf', '', '', 25, 0, 0).then(function (res) {
+                expect(res.messages.length).toEqual(0);
+                done();
+            });
+        });
+    });
+
 });
