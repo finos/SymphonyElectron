@@ -19,6 +19,10 @@
             <input type='text' id='image' value='https://avatars0.githubusercontent.com/u/13243259?v=4&s=460'/>
         </p>
         <p>
+            <label for='company'>company:</label>
+            <input type='text' id='company' value='Symphony'/>
+        </p>
+        <p>
             <label for='flash'>flash:</label>
             <input type='checkbox' id='flash'/>
         </p>
@@ -92,6 +96,7 @@
             var shouldStick = document.getElementById('sticky').checked;
             var color = document.getElementById('color').value;
             var tag = document.getElementById('tag').value;
+            var company = document.getElementById('company').value;
 
             num++;
 
@@ -104,7 +109,8 @@
                 data: {
                     hello: 'hello word'
                 },
-                tag: tag
+                tag: tag,
+                company: company
             });
 
             notf.addEventListener('click', onclick);

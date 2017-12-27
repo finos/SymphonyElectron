@@ -53,3 +53,14 @@ ipc.on('hostname', (event, host) => {
         hostname.innerHTML = host || 'unknown';
     }
 });
+
+/**
+ * Triggered if user credentials are invalid
+ */
+ipc.on('isValidCredentials', (event, isValidCredentials) => {
+    let credentialsError = document.getElementById('credentialsError');
+
+    if (credentialsError){
+        credentialsError.style.display = isValidCredentials ? 'none' : 'block'
+    }
+});

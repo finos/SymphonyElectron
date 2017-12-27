@@ -65,7 +65,23 @@ const template = [{
         }
     },
     {
-        label: 'Open Crashes Directory',        
+        label: 'Set Downloads Directory',
+        click() {
+            electron.dialog.showOpenDialog({
+                title: 'Select Downloads Directory',
+                buttonLabel: 'Select',
+                properties: ['openDirectory', 'createDirectory']
+            }, (filePaths) => {
+                if (!filePaths || !Array.isArray(filePaths) || filePaths.length < 1) {
+                    return;
+                }
+                updateConfigField('downloadsDirectory', filePaths[0]);
+                eventEmitter.emit('setDownloadsDirectory', filePaths[0]);
+            });
+        }
+    },
+    {
+        label: 'Open Crashes Directory',
         click() {
             const crashesDirectory = electron.crashReporter.getCrashesDirectory() + '/completed';
             electron.shell.showItemInFolder(crashesDirectory);

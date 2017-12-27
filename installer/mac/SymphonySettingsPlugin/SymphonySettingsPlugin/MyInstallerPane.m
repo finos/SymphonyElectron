@@ -31,7 +31,7 @@
     }
     
     // Now, validate the url against a url regex
-    NSString *regex = @"^((?:http:\/\/)|(?:https:\/\/))(www.)?((?:[a-zA-Z0-9]+\.[a-z]{3})|(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?::\d+)?))([\/a-zA-Z0-9\.]*)$";
+    NSString *regex = @"^(https:\/\/|http:\/\/)(www.)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/[a-zA-Z0-9-_.+!*'(),;/?:@=&$]*)?$";
     NSPredicate *podUrlTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex];
     if ([podUrlTest evaluateWithObject:podUrl]) {
         return YES;
@@ -48,22 +48,22 @@
     
     NSString *podUrl = [_podUrlTextBox stringValue];
         
-    // By default, set autoLaunchOnStart to true
+    // By default, set autoLaunchOnStart and minimizeOnClose to true
     NSString *autoLaunchOnStart = @"true";
+    NSString *minimizeOnClose = @"true";
     
     // If the checkbox is changed, set the auto launch value accordingly
     if ([_autoLaunchCheckBox state] == 0) {
         autoLaunchOnStart = @"false";
     }
     
-    // By default, set minimizeOnClose and alwaysOnTop to false
-    NSString *minimizeOnClose = @"false";
-    NSString *alwaysOnTop = @"false\n";
-    
     // If the checkbox is changed, set the minimize on close value accordingly
-    if ([_minimizeOnCloseCheckBox state] == 1) {
-        minimizeOnClose = @"true";
+    if ([_minimizeOnCloseCheckBox state] == 0) {
+        minimizeOnClose = @"false";
     }
+    
+    // By default, set alwaysOnTop to false
+    NSString *alwaysOnTop = @"false\n";
     
     // If the checkbox is changed, set the always on top value accordingly
     if ([_alwaysOnTopCheckBox state] == 1) {

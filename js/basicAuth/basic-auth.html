@@ -26,6 +26,10 @@
             font-size: .9em;
         }
 
+        .credentials-error {
+            color: red;
+        }
+
         form {
             padding-top: 15px;
         }
@@ -60,6 +64,7 @@
 <div class="container">
     <span>Please provide your login credentials for:</span>
     <span id="hostname" class="hostname">hostname</span>
+    <span id="credentialsError" class="credentials-error">Invalid user name/password</span>
     <form id="basicAuth" name="Basic Auth" action="Login">
         <table class="form">
             <tbody>

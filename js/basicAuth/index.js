@@ -7,6 +7,7 @@ const path = require('path');
 const fs = require('fs');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
+const { isMac } = require('../utils/misc');
 
 let basicAuthWindow;
 
@@ -14,7 +15,7 @@ const local = {};
 
 let windowConfig = {
     width: 360,
-    height: 270,
+    height: isMac ? 270 : 295,
     show: false,
     modal: true,
     autoHideMenuBar: true,
@@ -45,13 +46,19 @@ function getTemplatePath() {
  * Opens the basic auth window for authentication
  * @param {String} windowName - name of the window upon which this window should show
  * @param {String} hostname - name of the website that requires authentication
+ * @param {boolean} isValidCredentials - false if invalid username or password
+ * @param {Function} clearSettings
  * @param {Function} callback
  */
-function openBasicAuthWindow(windowName, hostname, callback) {
+function openBasicAuthWindow(windowName, hostname, isValidCredentials, clearSettings, callback) {
 
     // Register callback function
     if (typeof callback === 'function') {
         local.authCallback = callback;
+    }
+    // Register close function
+    if (typeof clearSettings === 'function') {
+        local.clearSettings = clearSettings;
     }
 
     // This prevents creating multiple instances of the
@@ -89,6 +96,7 @@ function openBasicAuthWindow(windowName, hostname, callback) {
 
     basicAuthWindow.webContents.on('did-finish-load', () => {
         basicAuthWindow.webContents.send('hostname', hostname);
+        basicAuthWindow.webContents.send('isValidCredentials', isValidCredentials);
     });
 
     basicAuthWindow.on('close', () => {
@@ -103,14 +111,12 @@ function openBasicAuthWindow(windowName, hostname, callback) {
 ipc.on('login', (event, args) => {
     if (typeof args === 'object' && typeof local.authCallback === 'function') {
         local.authCallback(args.username, args.password);
-        basicAuthWindow.close();
+        closeAuthWindow(false);
     }
 });
 
 ipc.on('close-basic-auth', () => {
-    if (basicAuthWindow) {
-        basicAuthWindow.close();
-    }
+    closeAuthWindow(true);
 });
 
 /**
@@ -120,6 +126,19 @@ function destroyWindow() {
     basicAuthWindow = null;
 }
 
+/**
+ * Method to close the auth window
+ * @param {boolean} clearSettings - Whether to clear the auth settings
+ */
+function closeAuthWindow(clearSettings) {
+    if (clearSettings && typeof local.clearSettings === 'function') {
+        local.clearSettings();
+    }
+
+    if (basicAuthWindow) {
+        basicAuthWindow.close();
+    }
+}
 
 module.exports = {
     openBasicAuthWindow: openBasicAuthWindow
