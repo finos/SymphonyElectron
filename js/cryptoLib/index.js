@@ -12,6 +12,11 @@ const DUMP_PATH = isDevEnv ? path.join(__dirname, '..', '..') : searchConfig.FOL
 
 class Crypto {
 
+    /**
+     * Constructor
+     * @param userId
+     * @param key
+     */
     constructor(userId, key) {
         this.indexDataFolder = `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${userId}_${searchConfig.INDEX_VERSION}`;
         this.permanentIndexName = `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${userId}_${searchConfig.INDEX_VERSION}`;
@@ -26,7 +31,7 @@ class Crypto {
      * encrypting it
      * @returns {Promise}
      */
-    encryption() {
+    encryption(key) {
         return new Promise((resolve, reject) => {
 
             if (!fs.existsSync(this.indexDataFolder)){
@@ -49,7 +54,7 @@ class Crypto {
                     const input = fs.createReadStream(`${this.dump}/${this.permanentIndexName}${searchConfig.TAR_LZ4_EXT}`);
                     const outputEncryption = fs.createWriteStream(this.encryptedIndex);
                     let config = {
-                        key: this.key
+                        key: key
                     };
                     const encrypt = crypto.encrypt(config);
 

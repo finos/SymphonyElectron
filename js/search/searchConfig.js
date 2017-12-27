@@ -3,8 +3,7 @@ const app = electron.app;
 const path = require('path');
 const userData = path.join(app.getPath('userData'));
 const execPath = path.dirname(app.getPath('exe'));
-const isDevEnv = require('../utils/misc.js').isDevEnv;
-const isMac = require('../utils/misc.js').isMac;
+const { isDevEnv, isMac } = require('../utils/misc.js');
 
 const INDEX_FOLDER_NAME = 'data';
 
@@ -24,6 +23,9 @@ const indexFolderPath = isDevEnv ? `./${INDEX_FOLDER_NAME}` : path.join(userData
 const winSearchLibArchPath = arch ? 'libsymphonysearch-x86.dll' : 'libsymphonysearch-x64.dll';
 const libraryPath = isMac ? path.join(macLibraryPath, 'libsymphonysearch.dylib') : path.join(winLibraryPath, winSearchLibArchPath);
 
+const userConfigFileName = 'search_users_config.json';
+const userConfigFile = isDevEnv ? path.join(__dirname, '..', '..', userConfigFileName) : path.join(userData, userConfigFileName);
+
 const libraryPaths = {
     INDEX_VALIDATOR: indexValidatorPath,
     LZ4_PATH: lz4Path,
@@ -40,7 +42,8 @@ const folderPaths = {
     PREFIX_NAME_PATH: indexFolderPath + '/search_index',
     EXEC_PATH: execPath,
     USER_DATA_PATH: userData,
-    INDEX_FOLDER_NAME: INDEX_FOLDER_NAME
+    INDEX_FOLDER_NAME: INDEX_FOLDER_NAME,
+    USER_CONFIG_FILE: userConfigFile
 };
 
 const searchConfig = {
@@ -53,7 +56,8 @@ const searchConfig = {
     BATCH_RANDOM_INDEX_PATH_LENGTH: 20,
     LIBRARY_CONSTANTS: libraryPaths,
     FOLDERS_CONSTANTS: folderPaths,
-    TAR_LZ4_EXT: '.tar.lz4'
+    TAR_LZ4_EXT: '.tar.lz4',
+    MINIMUM_DISK_SPACE: 300000000 // in bytes
 };
 
 module.exports = searchConfig;
