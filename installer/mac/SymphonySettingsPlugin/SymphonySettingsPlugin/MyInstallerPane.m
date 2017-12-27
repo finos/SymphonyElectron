@@ -24,9 +24,10 @@
     NSString *podUrl = [_podUrlTextBox stringValue];
     
     // Check if the url contains a protocol, if not, prepend https to it
-    NSString *prefix = @"https://";
-    if (![podUrl hasPrefix:prefix]) {
-        podUrl = [prefix stringByAppendingString:podUrl];
+    NSString *prefix1 = @"https://";
+    NSString *prefix2 = @"http://";
+    if (![podUrl hasPrefix:prefix1] && ![podUrl hasPrefix:prefix2]) {
+        podUrl = [prefix1 stringByAppendingString:podUrl];
         [_podUrlTextBox setStringValue:podUrl];
     }
     
