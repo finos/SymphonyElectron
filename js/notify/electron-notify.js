@@ -76,7 +76,7 @@ let config = {
     defaultStyleHeader: {
         width: 245,
         minWidth: 230,
-        margin: "12px 10px"
+        margin: "10px 10px"
     },
     defaultStyleImage: {
         height: 43,
@@ -102,7 +102,7 @@ let config = {
         webkitLineClamp: 1,
         webkitBoxOrient: 'vertical',
     },
-    defaultStylePod: {
+    defaultStyleCompany: {
         fontFamily: 'sans-serif',
         fontSize: 11,
         color: '#adadad',
@@ -116,7 +116,7 @@ let config = {
         fontFamily: 'sans-serif',
         fontSize: 12,
         color: '#4a4a4a',
-        marginTop: 12,
+        marginTop: 5,
         overflow: 'hidden',
         display: '-webkit-box',
         webkitLineClamp: 1,

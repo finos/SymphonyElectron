@@ -2,6 +2,10 @@
 
 # SymphonyElectron
 
+## About:
+
+SymphonyElectron is a desktop client of the Symphony Communication Platform built for macOS, Windows 10 and Windows 7.
+
 ## Project Goals:
 
 Our goal is to improve the performance and development agility of Symphony's desktop wrapper and build a path to support other wrappers by:
@@ -64,4 +68,6 @@ In order to achieve those goals Symphony is participating and working in close c
 - Remote logging is enabled for local and production cases and are sent to the backend server via the remote objects
 
 ## Misc notes
-If desiring to run against server without proper cert use cmd line option: --ignore-certificate-errors
+- If desiring to run against server without proper cert use cmd line option: --ignore-certificate-errors
+- To start additional instance with custom data directory (if you want seperate user) use cmd line options: --multiInstance --userDataPath=<path to data dir>
+  - if directory doesn't exist, it will be created 

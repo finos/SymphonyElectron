@@ -41,6 +41,7 @@ class Notify {
             color: options.color,
             tag: options.tag,
             sticky: options.sticky || false,
+            company: options.company,
             onShowFunc: onShow.bind(this),
             onClickFunc: onClick.bind(this),
             onCloseFunc: onClose.bind(this),

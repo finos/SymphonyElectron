@@ -92,7 +92,7 @@ function readFile(userId, resolve, reject) {
 }
 
 /**
- * If the config as no object for the provided userId this function
+ * If the config has no object for the provided userId this function
  * creates an empty object with the key as the userId
  * @param userId
  * @param oldConfig
@@ -112,7 +112,7 @@ function createUser(userId, oldConfig) {
 }
 
 /**
- * This function the creates the config
+ * This function creates the config
  * file if not present
  * @param userId
  * @param data
