@@ -353,6 +353,11 @@ class Search {
         });
     }
 
+    deleteRealTimeFolder() {
+        Search.deleteIndexFolders(this.realTimeIndex);
+        Search.indexValidator(this.realTimeIndex);
+    }
+
     /**
      * This the query constructor
      * for the search function
