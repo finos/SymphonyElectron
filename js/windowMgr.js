@@ -268,8 +268,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         
         // We check the downloads directory to see if a file with the similar name
         // already exists and get a unique filename if that's the case
-        let newFileName;
-        newFileName = getUniqueFileName(item.getFilename());
+        let newFileName = getUniqueFileName(item.getFilename());
         item.setSavePath(downloadsDirectory + "/" + newFileName);
         
         // Send file path to construct the DOM in the UI when the download is complete
@@ -771,7 +770,7 @@ function getUniqueFileName(filename) {
     const fileExists = true;
     
     // We break the file from it's extension to get the name
-    const fileName = filename.substr(0, filename.lastIndexOf('.')) || filename;
+    const actualFilename = filename.substr(0, filename.lastIndexOf('.')) || filename;
     const fileType = filename.split('.').pop();
     
     // We use this to set the new file name with an increment on the previous existing file
@@ -780,7 +779,7 @@ function getUniqueFileName(filename) {
     
     while (fileExists) {
         
-        let fileNumber_str = fileNumber.toString();
+        let fileNameString = fileNumber.toString();
         
         // By default, we know if the file doesn't exist,
         // we can use the filename sent by the remote server
@@ -790,7 +789,7 @@ function getUniqueFileName(filename) {
         // file number variable is increased, so,
         // we construct a new file name with the file number
         if (fileNumber > 0) {
-            current = fileName + " (" + fileNumber_str + ")." + fileType;
+            current = actualFilename + " (" + fileNameString + ")." + fileType;
         }
         
         // If the file exists, increment the file number and repeat the loop
