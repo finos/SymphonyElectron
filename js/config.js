@@ -382,6 +382,34 @@ function clearCachedConfigs() {
     globalConfig = null;
 }
 
+function readConfigFileSync() {
+    
+    let configPath;
+    let globalConfigFileName = path.join('config', configFileName);
+    if (isDevEnv) {
+        // for dev env, get config file from asar
+        configPath = path.join(app.getAppPath(), globalConfigFileName);
+    } else {
+        // for non-dev, config file is placed by installer relative to exe.
+        // this is so the config can be easily be changed post install.
+        let execPath = path.dirname(app.getPath('exe'));
+        // for mac exec is stored in subdir, for linux/windows config
+        // dir is in the same location.
+        configPath = path.join(execPath, isMac ? '..' : '', globalConfigFileName);
+    }
+    
+    let data = fs.readFileSync(configPath);
+    
+    try {
+        return JSON.parse(data);
+    } catch (err) {
+        console.log("parsing config failed", err);
+    }
+    
+    return null;
+    
+}
+
 module.exports = {
 
     configFileName,
@@ -395,6 +423,11 @@ module.exports = {
 
     // items below here are only exported for testing, do NOT use!
     saveUserConfig,
-    clearCachedConfigs
+    clearCachedConfigs,
+    
+    readConfigFileSync,
+
+    // use only if you specifically need to read global config fields
+    getGlobalConfigField,
 
 };

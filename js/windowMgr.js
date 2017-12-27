@@ -1,5 +1,6 @@
 'use strict';
 
+const fs = require('fs');
 const electron = require('electron');
 const app = electron.app;
 const crashReporter = electron.crashReporter;
@@ -21,6 +22,7 @@ const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField } = require('./config.js');
 const { isMac, isNodeEnv } = require('./utils/misc');
 const { deleteIndexFolder } = require('./search/search.js');
+const { isWhitelisted } = require('./utils/whitelistHandler');
 
 // show dialog when certificate errors occur
 require('./dialogs/showCertError.js');
@@ -37,6 +39,7 @@ let alwaysOnTop = false;
 let position = 'lower-right';
 let display;
 let sandboxed = false;
+let downloadsDirectory;
 
 // note: this file is built using browserify in prebuild step.
 const preloadMainScript = path.join(__dirname, 'preload/_preloadMain.js');
@@ -128,8 +131,8 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         newWinOpts.width = bounds.width;
         newWinOpts.height = bounds.height;
     } else {
-        newWinOpts.width = 1024;
-        newWinOpts.height = 768;
+        newWinOpts.width = 900;
+        newWinOpts.height = 900;
     }
 
     // will center on screen if values not provided
@@ -238,10 +241,35 @@ function doCreateMainWindow(initialUrl, initialBounds) {
 
     mainWindow.on('closed', destroyAllWindows);
 
+    // if an user has set a custom downloads directory,
+    // we get that data from the user config file
+    getConfigField('downloadsDirectory')
+        .then((value) => {
+            downloadsDirectory = value;
+            // if the directory has been deleted, try creating it.
+            if (!fs.existsSync(downloadsDirectory)) {
+                const directoryCreated = fs.mkdirSync(downloadsDirectory);
+                // If the directory creation failed, we use the default downloads directory
+                if (!directoryCreated) {
+                    downloadsDirectory = null;
+                }
+            }
+        })
+        .catch((error) => {
+            log.send(logLevels.ERROR, 'Could not find the downloads directory config -> ' + error);
+        });
+
     // Manage File Downloads
     mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
+
         // When download is in progress, send necessary data to indicate the same
         webContents.send('downloadProgress');
+
+        // if the user has set a custom downloads directory, save file to that directory
+        // if otherwise, we save it to the operating system's default downloads directory
+        if (downloadsDirectory) {
+            item.setSavePath(downloadsDirectory + "/" + item.getFilename());
+        }
 
         // Send file path when download is complete
         item.once('done', (e, state) => {
@@ -255,11 +283,6 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                 webContents.send('downloadCompleted', data);
             }
         });
-    });
-
-    // To delete the user index data folder on navigation
-    mainWindow.webContents.on('will-navigate', () => {
-        deleteIndexFolder();
     });
 
     getConfigField('url')
@@ -353,6 +376,12 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                 if (browserWin) {
                     log.send(logLevels.INFO, 'loaded pop-out window url: ' + newWinParsedUrl);
 
+                    if (!isMac) {
+                        // Removes the menu bar from the pop-out window
+                        // setMenu is currently only supported on Windows and Linux
+                        browserWin.setMenu(null);
+                    }
+
                     getConfigField('url')
                     .then((podUrl) => {
                         getConfigField('crashReporter')
@@ -433,6 +462,21 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             event.preventDefault();
             openUrlInDefaultBrowser(newWinUrl);
         }
+    });
+
+    // whenever the main window is navigated for ex: window.location.href or url redirect
+    mainWindow.webContents.on('will-navigate', function(event, navigatedURL) {
+        deleteIndexFolder();
+        isWhitelisted(navigatedURL)
+            .catch(() => {
+                event.preventDefault();
+                electron.dialog.showMessageBox(mainWindow, {
+                    type: 'warning',
+                    buttons: [ 'Ok' ],
+                    title: 'Not Allowed',
+                    message: `Sorry, you are not allowed to access this website (${navigatedURL}), please contact your administrator for more details`,
+                });
+            });
     });
 
 }
@@ -590,12 +634,24 @@ function isAlwaysOnTop(boolean) {
         browserWins.forEach(function (browser) {
             browser.setAlwaysOnTop(boolean);
         });
+
+        // An issue where changing the alwaysOnTop property
+        // focus the pop-out window
+        // Issue - Electron-209
+        if (mainWindow && mainWindow.winName) {
+            activate(mainWindow.winName);
+        }
     }
 }
 
 // node event emitter to update always on top
 eventEmitter.on('isAlwaysOnTop', (boolean) => {
     isAlwaysOnTop(boolean);
+});
+
+// set downloads directory
+eventEmitter.on('setDownloadsDirectory', (newDirectory) => {
+    downloadsDirectory = newDirectory;
 });
 
 // node event emitter for notification settings
