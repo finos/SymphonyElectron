@@ -5,7 +5,6 @@ const electron = require('electron');
 const app = electron.app;
 const crashReporter = electron.crashReporter;
 const nodeURL = require('url');
-const shellPath = require('shell-path');
 const squirrelStartup = require('electron-squirrel-startup');
 const AutoLaunch = require('auto-launch');
 const urlParser = require('url');
@@ -18,22 +17,8 @@ const protocolHandler = require('./protocolHandler');
 const getCmdLineArg = require('./utils/getCmdLineArg.js');
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
-const { deleteIndexFolder } = require('./search/search.js');
 
 require('electron-dl')();
-
-//setting the env path child_process issue https://github.com/electron/electron/issues/7688
-shellPath()
-    .then((path) => {
-        process.env.PATH = path
-    })
-    .catch(() => {
-        process.env.PATH = [
-            './node_modules/.bin',
-            '/usr/local/bin',
-            process.env.PATH
-        ].join(':');
-    });
 
 // used to check if a url was opened when the app was already open
 let isAppAlreadyOpen = false;
@@ -55,13 +40,13 @@ getConfigField('url')
 .catch(app.quit);
 
 function initializeCrashReporter(podUrl) {
-
+    
     getConfigField('crashReporter')
     .then((crashReporterConfig) => {
         crashReporter.start({companyName: crashReporterConfig.companyName, submitURL: crashReporterConfig.submitURL, uploadToServer: crashReporterConfig.uploadToServer, extra: {'process': 'main', podUrl: podUrl}});
         log.send(logLevels.INFO, 'initialized crash reporter on the main process!');
     })
-    .catch((err) => {
+    .catch((err) => {        
         log.send(logLevels.ERROR, 'Unable to initialize crash reporter in the main process. Error is -> ' + err);
     });
 
@@ -162,12 +147,6 @@ app.on('activate', function() {
     } else {
         windowMgr.showMainWindow();
     }
-});
-
-app.on('will-quit', function (e) {
-    e.preventDefault();
-    deleteIndexFolder();
-    app.exit();
 });
 
 // adds 'symphony' as a protocol
