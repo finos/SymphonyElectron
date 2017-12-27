@@ -21,6 +21,7 @@ const eventEmitter = require('./eventEmitter');
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField } = require('./config.js');
 const { isMac, isNodeEnv } = require('./utils/misc');
+const { deleteIndexFolder } = require('./search/search.js');
 const { isWhitelisted } = require('./utils/whitelistHandler');
 
 // show dialog when certificate errors occur
@@ -239,7 +240,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     }
 
     mainWindow.on('closed', destroyAllWindows);
-    
+
     // if an user has set a custom downloads directory,
     // we get that data from the user config file
     getConfigField('downloadsDirectory')
@@ -257,19 +258,19 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         .catch((error) => {
             log.send(logLevels.ERROR, 'Could not find the downloads directory config -> ' + error);
         });
-    
+
     // Manage File Downloads
     mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
-        
+
         // When download is in progress, send necessary data to indicate the same
         webContents.send('downloadProgress');
-    
+
         // if the user has set a custom downloads directory, save file to that directory
         // if otherwise, we save it to the operating system's default downloads directory
         if (downloadsDirectory) {
             item.setSavePath(downloadsDirectory + "/" + item.getFilename());
         }
-        
+
         // Send file path when download is complete
         item.once('done', (e, state) => {
             if (state === 'completed') {
@@ -465,6 +466,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
 
     // whenever the main window is navigated for ex: window.location.href or url redirect
     mainWindow.webContents.on('will-navigate', function(event, navigatedURL) {
+        deleteIndexFolder();
         isWhitelisted(navigatedURL)
             .catch(() => {
                 event.preventDefault();
