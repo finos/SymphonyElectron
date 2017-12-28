@@ -220,7 +220,6 @@
     });
 
     sendMessage.addEventListener('click', function () {
-        search.deleteRealTimeFolder();
         if (realTimeIndexing.value !== "") {
             let message = realTimeIndexing.value;
             search.batchRealTimeIndexing(JSON.parse(message));

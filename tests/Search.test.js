@@ -274,9 +274,12 @@ describe('Tests for Search', function() {
             }];
 
             const batchRealTimeIndexing = jest.spyOn(SearchApi, 'batchRealTimeIndexing');
+            const realTimeIndexing = jest.spyOn(SearchApi, 'realTimeIndexing');
             SearchApi.isRealTimeIndexing = true;
+            expect(SearchApi.checkIsRealTimeIndexing()).toBe(true);
             SearchApi.batchRealTimeIndexing(message);
             expect(batchRealTimeIndexing).toHaveBeenCalled();
+            expect(realTimeIndexing).not.toBeCalled();
             setTimeout(function () {
 
                 SearchApi.searchQuery('isRealTimeIndexing', [], [], '', undefined, undefined, 25, 0, 0).then(function (res) {
@@ -491,5 +494,4 @@ describe('Tests for Search', function() {
             });
         });
     });
-
 });
