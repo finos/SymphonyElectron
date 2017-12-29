@@ -39,7 +39,7 @@ describe('Tests for Search', function() {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 90000;
 
     beforeAll(function (done) {
-        /*childProcess.exec(`npm rebuild --target=${process.version} --build-from-source`, function(err) {
+        childProcess.exec(`npm rebuild --target=${process.version} --build-from-source`, function(err) {
 
             userId = 12345678910112;
             key = 'jjjehdnctsjyieoalskcjdhsnahsadndfnusdfsdfsd=';
@@ -56,22 +56,7 @@ describe('Tests for Search', function() {
             dataFolderPath = path.join(searchConfig.FOLDERS_CONSTANTS.EXEC_PATH, '..', 'data');
 
             done();
-        });*/
-        userId = 12345678910112;
-        key = 'jjjehdnctsjyieoalskcjdhsnahsadndfnusdfsdfsd=';
-
-        executionPath = path.join(__dirname, 'library');
-        userConfigDir = path.join(__dirname, '..');
-
-        searchConfig = require('../js/search/searchConfig.js');
-        const { Search } = require('../js/search/search.js');
-        SearchApi = new Search(userId, key);
-
-        realTimeIndexPath = path.join(userConfigDir, 'data', 'temp_realtime_index');
-        tempBatchPath = path.join(userConfigDir, 'data', 'temp_batch_indexes');
-        dataFolderPath = path.join(searchConfig.FOLDERS_CONSTANTS.EXEC_PATH, '..', 'data');
-
-        done();
+        });
     });
 
     afterAll(function (done) {
