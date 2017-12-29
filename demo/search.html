@@ -182,7 +182,7 @@
             threadIdObj = JSON.parse(threadIdEl.value);
         }
         let _has = has.value || null;
-        search.searchQuery(queryEl.value, senderIdObj, threadIdObj, _has, startDate, endDate, limitEl.value, offsetEl.value, 0).then(function (result) {
+        search.searchQuery(queryEl.value, senderIdObj, threadIdObj, _has, startDate, endDate, parseInt(limitEl.value, 10), parseInt(offsetEl.value, 10), 0).then(function (result) {
             if (result.messages.length < 1) {
                 resultsEl.innerHTML = "No results found"
             }

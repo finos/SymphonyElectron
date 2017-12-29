@@ -39,7 +39,7 @@ describe('Tests for Search', function() {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 90000;
 
     beforeAll(function (done) {
-        childProcess.exec(`npm rebuild --target=${process.version} --build-from-source`, function(err) {
+        /*childProcess.exec(`npm rebuild --target=${process.version} --build-from-source`, function(err) {
 
             userId = 12345678910112;
             key = 'jjjehdnctsjyieoalskcjdhsnahsadndfnusdfsdfsd=';
@@ -56,7 +56,22 @@ describe('Tests for Search', function() {
             dataFolderPath = path.join(searchConfig.FOLDERS_CONSTANTS.EXEC_PATH, '..', 'data');
 
             done();
-        });
+        });*/
+        userId = 12345678910112;
+        key = 'jjjehdnctsjyieoalskcjdhsnahsadndfnusdfsdfsd=';
+
+        executionPath = path.join(__dirname, 'library');
+        userConfigDir = path.join(__dirname, '..');
+
+        searchConfig = require('../js/search/searchConfig.js');
+        const { Search } = require('../js/search/search.js');
+        SearchApi = new Search(userId, key);
+
+        realTimeIndexPath = path.join(userConfigDir, 'data', 'temp_realtime_index');
+        tempBatchPath = path.join(userConfigDir, 'data', 'temp_batch_indexes');
+        dataFolderPath = path.join(searchConfig.FOLDERS_CONSTANTS.EXEC_PATH, '..', 'data');
+
+        done();
     });
 
     afterAll(function (done) {
@@ -128,16 +143,34 @@ describe('Tests for Search', function() {
     describe('Batch indexing process tests', function () {
 
         it('should index in a batch', function (done) {
-            let messages = [ {
-                    messageId: "Jc+4K8RtPxHJfyuDQU9atX///qN3KHYXdA==",
-                    threadId: "Au8O2xKHyX1LtE6zW019GX///rZYegAtdA==",
-                    ingestionDate: currentDate.toString(),
-                    senderId: "71811853189212",
-                    chatType: "CHATROOM",
-                    isPublic: "false",
-                    sendingApp: "lc",
-                    text: "it works"
-                } ];
+            let messages = [{
+                messageId: "Jc+4K8RtPxHJfyuDQU9atX///qN3KHYXdA==",
+                threadId: "Au8O2xKHyX1LtE6zW019GX///rZYegAtdA==",
+                ingestionDate: currentDate.toString(),
+                senderId: "71811853189212",
+                chatType: "CHATROOM",
+                isPublic: "false",
+                sendingApp: "lc",
+                text: "it works"
+            }, {
+                messageId: "Jc+4K8RtPxHJfyuDQU9atX///qN3KHYXdA==",
+                threadId: "Au8O2xKHyX1LtE6zW019GX///rZYegAtdA==",
+                ingestionDate: currentDate.toString(),
+                senderId: "71811853189212",
+                chatType: "CHATROOM",
+                isPublic: "false",
+                sendingApp: "lc",
+                text: "it works"
+            }, {
+                messageId: "Jc+4K8RtPxHJfyuDQU9atX///qN3KHYXdA==",
+                threadId: "Au8O2xKHyX1LtE6zW019GX///rZYegAtdA==",
+                ingestionDate: currentDate.toString(),
+                senderId: "71811853189212",
+                chatType: "CHATROOM",
+                isPublic: "false",
+                sendingApp: "lc",
+                text: "it works"
+            }];
             const indexBatch = jest.spyOn(SearchApi, 'indexBatch');
             SearchApi.indexBatch(JSON.stringify(messages)).then(function () {
                 expect(fs.existsSync(tempBatchPath)).toBe(true);
@@ -225,7 +258,7 @@ describe('Tests for Search', function() {
         it('should match messages length after batch indexing', function (done) {
             const searchQuery = jest.spyOn(SearchApi, 'searchQuery');
             SearchApi.searchQuery('it works', [], [], '', undefined, undefined, 25, 0, 0).then(function (res) {
-                expect(res.messages.length).toEqual(1);
+                expect(res.messages.length).toEqual(3);
                 expect(searchQuery).toHaveBeenCalled();
                 done();
             });
@@ -254,7 +287,7 @@ describe('Tests for Search', function() {
         it('should match message length', function (done) {
             const searchQuery = jest.spyOn(SearchApi, 'searchQuery');
             SearchApi.searchQuery('realtime working', ["71811853189212"], ["Au8O2xKHyX1LtE6zW019GX///rZYegAtdA=="], '', undefined, undefined, 25, 0, 0).then(function (res) {
-                expect(res.messages.length).toEqual(1);
+                expect(res.messages.length).toEqual(3);
                 expect(fs.existsSync(realTimeIndexPath)).toBe(true);
                 expect(searchQuery).toHaveBeenCalled();
                 done();
@@ -428,7 +461,7 @@ describe('Tests for Search', function() {
                 let endTime = new Date().getTime();
                 let startTime = new Date().getTime() - (4 * 31 * 24 * 60 * 60 * 1000);
                 SearchApi.searchQuery('it works', [], [], '', startTime.toString(), endTime.toString(), '0', 0.2, 0.1).then(function (res) {
-                    expect(res.messages.length).toEqual(1);
+                    expect(res.messages.length).toEqual(3);
                     expect(searchQuery).toHaveBeenCalled();
                     done()
                 });
@@ -449,12 +482,22 @@ describe('Tests for Search', function() {
             });
         });
 
+        it('should filter search limit ', function (done) {
+            const searchQuery = jest.spyOn(SearchApi, 'searchQuery');
+            SearchApi.searchQuery('works', [], [], '', '', '', 2, 0, 0).then(function (res) {
+                expect(res.messages.length).toBe(2);
+                expect(searchQuery).toHaveBeenCalledTimes(7);
+                expect(searchQuery).toHaveBeenCalled();
+                done();
+            });
+        });
+
         it('should search fails index folder not fund', function (done) {
             const searchQuery = jest.spyOn(SearchApi, 'searchQuery');
             deleteIndexFolders(dataFolderPath);
             SearchApi.searchQuery('it works', [], [], '', '', '', 25, 0, 0).catch(function (err) {
                 expect(err).toEqual(new Error('Index folder does not exist.'));
-                expect(searchQuery).toHaveBeenCalledTimes(7);
+                expect(searchQuery).toHaveBeenCalledTimes(8);
                 expect(searchQuery).toHaveBeenCalled();
                 SearchApi = undefined;
                 const { Search } = require('../js/search/search.js');
