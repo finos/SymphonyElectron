@@ -271,7 +271,12 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         // We check the downloads directory to see if a file with the similar name
         // already exists and get a unique filename if that's the case
         let newFileName = getUniqueFileName(item.getFilename());
-        item.setSavePath(downloadsDirectory + "/" + newFileName);
+        
+        if (isMac) {
+            item.setSavePath(downloadsDirectory + "/" + newFileName);
+        } else {
+            item.setSavePath(downloadsDirectory + "\\" + newFileName);
+        }
         
         // Send file path to construct the DOM in the UI when the download is complete
 
