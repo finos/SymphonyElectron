@@ -16,11 +16,11 @@ describe('download manager', function() {
         });
 
         it('should inject multiple download items during multiple downloads', function() {
-            electron.ipcRenderer.send('downloadCompleted', { _id: '12345', fileName: 'test.png', total: 100 });
-            electron.ipcRenderer.send('downloadCompleted', { _id: '67890', fileName: 'test.png', total: 200 });
+            electron.ipcRenderer.send('downloadCompleted', { _id: '12345', fileName: 'test (1).png', total: 100 });
+            electron.ipcRenderer.send('downloadCompleted', { _id: '67890', fileName: 'test (2).png', total: 200 });
 
             let fileNames = document.getElementsByClassName('text-cutoff');
-            let fNames = [];            
+            let fNames = [];
             
             for (var i = 0; i < fileNames.length; i++) {
                 fNames.push(fileNames[i].innerHTML);
