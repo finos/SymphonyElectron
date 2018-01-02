@@ -39,7 +39,10 @@ let alwaysOnTop = false;
 let position = 'lower-right';
 let display;
 let sandboxed = false;
-let downloadsDirectory;
+
+// By default, we set the user's default download directory
+let defaultDownloadsDirectory = app.getPath("downloads");
+let downloadsDirectory = defaultDownloadsDirectory;
 
 // note: this file is built using browserify in prebuild step.
 const preloadMainScript = path.join(__dirname, 'preload/_preloadMain.js');
@@ -142,7 +145,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     }
 
     // will set the main window on top as per the user prefs
-    if (alwaysOnTop){
+    if (alwaysOnTop) {
         newWinOpts.alwaysOnTop = alwaysOnTop;
     }
 
@@ -176,7 +179,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             loadErrors.showNetworkConnectivityError(mainWindow, url, retry);
         } else {
             // updates the notify config with user preference
-            notify.updateConfig({position: position, display: display});
+            notify.updateConfig({ position: position, display: display });
             // removes all existing notifications when main window reloads
             notify.reset();
             log.send(logLevels.INFO, 'loaded main window url: ' + url);
@@ -185,7 +188,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     });
 
     mainWindow.webContents.on('did-fail-load', function (event, errorCode,
-                                                         errorDesc, validatedURL) {
+        errorDesc, validatedURL) {
         loadErrors.showLoadFailure(mainWindow, validatedURL, errorDesc, errorCode, retry, false);
     });
 
@@ -215,7 +218,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     const menu = electron.Menu.buildFromTemplate(getTemplate(app));
     electron.Menu.setApplicationMenu(menu);
 
-    mainWindow.on('close', function(e) {
+    mainWindow.on('close', function (e) {
         if (willQuitApp) {
             destroyAllWindows();
             return;
@@ -246,14 +249,6 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     getConfigField('downloadsDirectory')
         .then((value) => {
             downloadsDirectory = value;
-            // if the directory has been deleted, try creating it.
-            if (!fs.existsSync(downloadsDirectory)) {
-                const directoryCreated = fs.mkdirSync(downloadsDirectory);
-                // If the directory creation failed, we use the default downloads directory
-                if (!directoryCreated) {
-                    downloadsDirectory = null;
-                }
-            }
         })
         .catch((error) => {
             log.send(logLevels.ERROR, 'Could not find the downloads directory config -> ' + error);
@@ -265,20 +260,31 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         // When download is in progress, send necessary data to indicate the same
         webContents.send('downloadProgress');
 
-        // if the user has set a custom downloads directory, save file to that directory
-        // if otherwise, we save it to the operating system's default downloads directory
-        if (downloadsDirectory) {
-            item.setSavePath(downloadsDirectory + "/" + item.getFilename());
+        // An extra check to see if the user created downloads directory has been deleted
+        // This scenario can occur when user doesn't quit electron and continues using it
+        // across days and then deletes the folder.
+        if (downloadsDirectory !== defaultDownloadsDirectory && !fs.existsSync(downloadsDirectory)) {
+            downloadsDirectory = defaultDownloadsDirectory;
+            updateConfigField("downloadsDirectory", downloadsDirectory);
         }
 
-        // Send file path when download is complete
+        // We check the downloads directory to see if a file with the similar name
+        // already exists and get a unique filename if that's the case
+        let newFileName = getUniqueFileName(item.getFilename());
+        if (isMac) {
+            item.setSavePath(downloadsDirectory + "/" + newFileName);
+        } else {
+            item.setSavePath(downloadsDirectory + "\\" + newFileName);
+        }
+
+        // Send file path to construct the DOM in the UI when the download is complete
         item.once('done', (e, state) => {
             if (state === 'completed') {
                 let data = {
                     _id: getGuid(),
                     savedPath: item.getSavePath() ? item.getSavePath() : '',
                     total: filesize(item.getTotalBytes() ? item.getTotalBytes() : 0),
-                    fileName: item.getFilename() ? item.getFilename() : 'No name'
+                    fileName: newFileName
                 };
                 webContents.send('downloadCompleted', data);
             }
@@ -286,25 +292,25 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     });
 
     getConfigField('url')
-    .then(initializeCrashReporter)
-    .catch(app.quit);
-    
-    function initializeCrashReporter(podUrl) {        
+        .then(initializeCrashReporter)
+        .catch(app.quit);
+
+    function initializeCrashReporter(podUrl) {
         getConfigField('crashReporter')
-        .then((crashReporterConfig) => {
-            log.send(logLevels.INFO, 'Initializing crash reporter on the main window!');
-            crashReporter.start({companyName: crashReporterConfig.companyName, submitURL: crashReporterConfig.submitURL, uploadToServer: crashReporterConfig.uploadToServer, extra: {'process': 'renderer / main window', podUrl: podUrl}});
-            log.send(logLevels.INFO, 'initialized crash reporter on the main window!');
-            mainWindow.webContents.send('register-crash-reporter', {companyName: crashReporterConfig.companyName, submitURL: crashReporterConfig.submitURL, uploadToServer: crashReporterConfig.uploadToServer, process: 'preload script / main window renderer'});
-        })
-        .catch((err) => {                        
-            log.send(logLevels.ERROR, 'Unable to initialize crash reporter in the main window. Error is -> ' + err);
-        });
-    }    
+            .then((crashReporterConfig) => {
+                log.send(logLevels.INFO, 'Initializing crash reporter on the main window!');
+                crashReporter.start({ companyName: crashReporterConfig.companyName, submitURL: crashReporterConfig.submitURL, uploadToServer: crashReporterConfig.uploadToServer, extra: { 'process': 'renderer / main window', podUrl: podUrl } });
+                log.send(logLevels.INFO, 'initialized crash reporter on the main window!');
+                mainWindow.webContents.send('register-crash-reporter', { companyName: crashReporterConfig.companyName, submitURL: crashReporterConfig.submitURL, uploadToServer: crashReporterConfig.uploadToServer, process: 'preload script / main window renderer' });
+            })
+            .catch((err) => {
+                log.send(logLevels.ERROR, 'Unable to initialize crash reporter in the main window. Error is -> ' + err);
+            });
+    }
 
     // open external links in default browser - a tag with href='_blank' or window.open
     mainWindow.webContents.on('new-window', function (event, newWinUrl,
-                                                      frameName, disposition, newWinOptions) {
+        frameName, disposition, newWinOptions) {
 
         let newWinParsedUrl = getParsedUrl(newWinUrl);
         let mainWinParsedUrl = getParsedUrl(url);
@@ -336,7 +342,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                 let newX = Number.parseInt(query.x, 10);
                 let newY = Number.parseInt(query.y, 10);
 
-                let newWinRect = {x: newX, y: newY, width, height};
+                let newWinRect = { x: newX, y: newY, width, height };
 
                 // only accept if both are successfully parsed.
                 if (Number.isInteger(newX) && Number.isInteger(newY) &&
@@ -349,7 +355,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                 }
             } else {
                 // create new window at slight offset from main window.
-                ({x, y} = getWindowSizeAndPosition(mainWindow));
+                ({ x, y } = getWindowSizeAndPosition(mainWindow));
                 x += 50;
                 y += 50;
             }
@@ -383,18 +389,18 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                     }
 
                     getConfigField('url')
-                    .then((podUrl) => {
-                        getConfigField('crashReporter')
-                        .then((crashReporterConfig) => {                            
-                            crashReporter.start({companyName: crashReporterConfig.companyName, submitURL: crashReporterConfig.submitURL, uploadToServer: crashReporterConfig.uploadToServer, extra: {'process': 'renderer / child window', podUrl: podUrl}});
-                            log.send(logLevels.INFO, 'initialized crash reporter on a child window!');
-                            browserWin.webContents.send('register-crash-reporter', {companyName: crashReporterConfig.companyName, submitURL: crashReporterConfig.submitURL, uploadToServer: crashReporterConfig.uploadToServer, process: 'preload script / child window renderer'});
+                        .then((podUrl) => {
+                            getConfigField('crashReporter')
+                                .then((crashReporterConfig) => {
+                                    crashReporter.start({ companyName: crashReporterConfig.companyName, submitURL: crashReporterConfig.submitURL, uploadToServer: crashReporterConfig.uploadToServer, extra: { 'process': 'renderer / child window', podUrl: podUrl } });
+                                    log.send(logLevels.INFO, 'initialized crash reporter on a child window!');
+                                    browserWin.webContents.send('register-crash-reporter', { companyName: crashReporterConfig.companyName, submitURL: crashReporterConfig.submitURL, uploadToServer: crashReporterConfig.uploadToServer, process: 'preload script / child window renderer' });
+                                })
+                                .catch((err) => {
+                                    log.send(logLevels.ERROR, 'Unable to initialize crash reporter in the child window. Error is -> ' + err);
+                                });
                         })
-                        .catch((err) => {
-                            log.send(logLevels.ERROR, 'Unable to initialize crash reporter in the child window. Error is -> ' + err);
-                        });
-                    })
-                    .catch(app.quit);
+                        .catch(app.quit);
 
                     browserWin.winName = frameName;
                     browserWin.setAlwaysOnTop(alwaysOnTop);
@@ -402,7 +408,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                     let handleChildWindowClosed = () => {
                         removeWindowKey(newWinKey);
                         browserWin.removeListener('move', throttledBoundsChange);
-                        browserWin.removeListener('resize', throttledBoundsChange);                        
+                        browserWin.removeListener('resize', throttledBoundsChange);
                     };
 
                     browserWin.once('closed', () => {
@@ -438,11 +444,11 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                         childEvent.preventDefault();
                         openUrlInDefaultBrowser(childWinUrl);
                     };
-                    
+
                     // In case we navigate to an external link from inside a pop-out,
                     // we open that link in an external browser rather than creating
                     // a new window
-                    browserWin.webContents.on('new-window', handleChildNewWindowEvent);                
+                    browserWin.webContents.on('new-window', handleChildNewWindowEvent);
 
                     addWindowKey(newWinKey, browserWin);
 
@@ -455,7 +461,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                     let throttledBoundsChange = throttle(1000,
                         sendChildWinBoundsChange.bind(null, browserWin));
                     browserWin.on('move', throttledBoundsChange);
-                    browserWin.on('resize', throttledBoundsChange);                    
+                    browserWin.on('resize', throttledBoundsChange);
                 }
             });
         } else {
@@ -465,14 +471,14 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     });
 
     // whenever the main window is navigated for ex: window.location.href or url redirect
-    mainWindow.webContents.on('will-navigate', function(event, navigatedURL) {
+    mainWindow.webContents.on('will-navigate', function (event, navigatedURL) {
         deleteIndexFolder();
         isWhitelisted(navigatedURL)
             .catch(() => {
                 event.preventDefault();
                 electron.dialog.showMessageBox(mainWindow, {
                     type: 'warning',
-                    buttons: [ 'Ok' ],
+                    buttons: ['Ok'],
                     title: 'Not Allowed',
                     message: `Sorry, you are not allowed to access this website (${navigatedURL}), please contact your administrator for more details`,
                 });
@@ -618,7 +624,7 @@ function sendChildWinBoundsChange(window) {
  * @param urlToOpen
  */
 function openUrlInDefaultBrowser(urlToOpen) {
-    if (urlToOpen) {        
+    if (urlToOpen) {
         electron.shell.openExternal(urlToOpen);
     }
 }
@@ -667,7 +673,7 @@ eventEmitter.on('notificationSettings', (notificationSettings) => {
 function verifyDisplays() {
 
     // This is only for Windows, macOS handles this by itself
-    if (!mainWindow || isMac){
+    if (!mainWindow || isMac) {
         return;
     }
 
@@ -677,14 +683,14 @@ function verifyDisplays() {
         let isYAxisValid = true;
 
         // checks to make sure the x,y are valid pairs
-        if ((bounds.x === undefined && (bounds.y || bounds.y === 0))){
+        if ((bounds.x === undefined && (bounds.y || bounds.y === 0))) {
             isXAxisValid = false;
         }
-        if ((bounds.y === undefined && (bounds.x || bounds.x === 0))){
+        if ((bounds.y === undefined && (bounds.x || bounds.x === 0))) {
             isYAxisValid = false;
         }
 
-        if (!isXAxisValid && !isYAxisValid){
+        if (!isXAxisValid && !isYAxisValid) {
             return;
         }
 
@@ -715,7 +721,7 @@ function checkExternalDisplay(appBounds) {
     // Loops through all the available displays and
     // verifies if the wrapper exists within the display bounds
     // returns false if not exists otherwise true
-    return !!screen.getAllDisplays().find(({bounds}) => {
+    return !!screen.getAllDisplays().find(({ bounds }) => {
 
         const leftMost = x + (width * factor);
         const topMost = y + (height * factor);
@@ -738,7 +744,7 @@ function checkExternalDisplay(appBounds) {
 function repositionMainWindow() {
     const screen = electron.screen;
 
-    const {workArea} = screen.getPrimaryDisplay();
+    const { workArea } = screen.getPrimaryDisplay();
     const bounds = workArea;
 
     if (!bounds) {
@@ -755,10 +761,10 @@ function repositionMainWindow() {
     const x = Math.round(centerX - (windowWidth / 2.0));
     const y = Math.round(centerY - (windowHeight / 2.0));
 
-    let rectangle = {x, y, width: windowWidth, height: windowHeight};
+    let rectangle = { x, y, width: windowWidth, height: windowHeight };
 
     // resetting the main window bounds
-    if (mainWindow){
+    if (mainWindow) {
         if (!mainWindow.isVisible()) {
             mainWindow.show();
         }
@@ -771,6 +777,53 @@ function repositionMainWindow() {
         mainWindow.flashFrame(false);
         mainWindow.setBounds(rectangle, true);
     }
+}
+
+/**
+ * Creates a unique filename like Chrome
+ * from a user's download directory
+ * @param filename filename passed by the remote server
+ * @returns {String} the new filename
+ */
+function getUniqueFileName(filename) {
+
+    // By default, we assume that the file exists
+    const fileExists = true;
+
+    // We break the file from it's extension to get the name
+    const actualFilename = filename.substr(0, filename.lastIndexOf('.')) || filename;
+    const fileType = filename.split('.').pop();
+
+    // We use this to set the new file name with an increment on the previous existing file
+    let fileNumber = 0;
+    let newPath;
+
+    while (fileExists) {
+
+        let fileNameString = fileNumber.toString();
+
+        // By default, we know if the file doesn't exist,
+        // we can use the filename sent by the remote server
+        let current = filename;
+
+        // If the file already exists, we know that the
+        // file number variable is increased, so,
+        // we construct a new file name with the file number
+        if (fileNumber > 0) {
+            current = actualFilename + " (" + fileNameString + ")." + fileType;
+        }
+
+        // If the file exists, increment the file number and repeat the loop
+        if (fs.existsSync(downloadsDirectory + "/" + current)) {
+            fileNumber++;
+        } else {
+            newPath = current;
+            break;
+        }
+
+    }
+
+    return newPath;
 }
 
 module.exports = {

@@ -56,7 +56,8 @@ function showInFinder(id) {
 function createDOM(arg) {
 
     if (arg && arg._id) {
-        let fileDisplayName = getFileDisplayName(arg.fileName);
+
+        let fileDisplayName = arg.fileName;
         let downloadItemKey = arg._id;
 
         local.downloadItems.push(arg);
@@ -196,33 +197,4 @@ function initiate() {
             });
         }
     }
-}
-
-/**
- * Return a file display name for the download item
- */
-function getFileDisplayName(fileName) {
-    let fileList = local.downloadItems;
-    let fileNameCount = 0;
-    let fileDisplayName = fileName;
-
-    /* Check if a file with the same name exists 
-     * (akin to the user downloading a file with the same name again)
-     * in the download bar
-     */
-    for (let i = 0; i < fileList.length; i++) {
-        if (fileName === fileList[i].fileName) {
-            fileNameCount++;
-        }
-    }
-
-    /* If it exists, add a count to the name like how Chrome does */
-    if (fileNameCount) {
-        let extLastIndex = fileDisplayName.lastIndexOf('.');
-        let fileCount = ' (' + fileNameCount + ')';
-
-        fileDisplayName = fileDisplayName.slice(0, extLastIndex) + fileCount + fileDisplayName.slice(extLastIndex);
-    }
-
-    return fileDisplayName;
 }
