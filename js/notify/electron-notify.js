@@ -730,12 +730,6 @@ function closeAll() {
         if (window.displayTimer) {
             clearTimeout(window.displayTimer);
         }
-        if (window.electronNotifyOnCloseFunc) {
-            // ToDo: fix this: shouldn't delete method on arg
-            /* eslint-disable */
-            delete window.electronNotifyOnCloseFunc;
-            /* eslint-enable */
-        }
         window.close();
     });
 
