@@ -124,6 +124,26 @@ describe('Tests for Search Utils', function() {
                 done();
             })
         });
+
+        it('should create user if not exist', function (done) {
+            SearchUtilsAPI.getSearchUserConfig(2234567891011).catch(function (err) {
+                expect(err).toEqual(null);
+                done();
+            })
+        });
+
+        it('should create file on update', function (done) {
+            fs.unlinkSync(searchConfig.FOLDERS_CONSTANTS.USER_CONFIG_FILE);
+            let data = {
+                rotationId: 0,
+                version: 2,
+                language: 'en'
+            };
+            SearchUtilsAPI.updateUserConfig(2234567891011, data).catch(function (err) {
+                expect(err).toEqual(null);
+                done();
+            })
+        });
     });
 
 });
