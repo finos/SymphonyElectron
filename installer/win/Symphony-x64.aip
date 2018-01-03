@@ -24,7 +24,7 @@
     <ROW Property="CTRLS" Value="2"/>
     <ROW Property="DialogBitmap" Value="dialog" MultiBuildValue="DefaultBuild:Tabloid.jpg" Type="1" MsiKey="DialogBitmap"/>
     <ROW Property="INVALID_POD_URL" Value="valid" Type="4"/>
-    <ROW Property="MINIMIZE_ON_CLOSE" Value="true"/>
+    <ROW Property="MINIMIZE_ON_CLOSE" Value="CheckBox"/>
     <ROW Property="MINIMIZE_ON_CLOSE_LABEL" Value="false" Type="4"/>
     <ROW Property="Manufacturer" Value="Symphony"/>
     <ROW Property="POD_URL" Value="https://corporate.symphony.com" Type="4"/>
@@ -642,7 +642,7 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.TxtUpdateComponent">
     <ROW Name="Url" TxtUpdateSet="Symphony.config" FindPattern="&quot;url&quot;\s*:\s*&quot;.*&quot;" ReplacePattern="&quot;url&quot;: &quot;[POD_URL]&quot;" Options="19" Order="0" FileEncoding="-1"/>
-    <ROW Name="MinimizeOnClose" TxtUpdateSet="Symphony.config" FindPattern="&quot;minimizeOnClose&quot;\s*:\s*false," ReplacePattern="&quot;minimizeOnClose&quot; : [MINIMIZE_ON_CLOSE]," Options="19" Order="1" FileEncoding="-1"/>
+    <ROW Name="MinimizeOnClose" TxtUpdateSet="Symphony.config" FindPattern="&quot;minimizeOnClose&quot;\s*:\s*true," ReplacePattern="&quot;minimizeOnClose&quot; : [MINIMIZE_ON_CLOSE]," Options="19" Order="1" FileEncoding="-1"/>
     <ROW Name="AlwaysOnTop" TxtUpdateSet="Symphony.config" FindPattern="&quot;alwaysOnTop&quot;\s*:\s*false" ReplacePattern="&quot;alwaysOnTop&quot; : [ALWAYS_ON_TOP]" Options="19" Order="2" FileEncoding="-1"/>
     <ROW Name="LaunchOnStartup" TxtUpdateSet="Symphony.config" FindPattern="&quot;launchOnStartup&quot;\s*:\s*true," ReplacePattern="&quot;launchOnStartup&quot; : [AUTO_START]," Options="19" Order="3" FileEncoding="-1"/>
   </COMPONENT>
