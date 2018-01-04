@@ -165,6 +165,7 @@ function updateConfig(customConfig) {
     if (customConfig.display) {
         displayId = customConfig.display;
     }
+    closeAll();
 }
 
 /**
@@ -477,6 +478,13 @@ function setNotificationContents(notfWindow, notfObj) {
  */
 function buildCloseNotification(notificationWindow, notificationObj, getTimeoutId) {
     return function(event) {
+
+        // safety check to prevent from using an
+        // already destroyed notification window
+        if (notificationWindow.isDestroyed()) {
+            return new Promise(function(exitEarly) { exitEarly() })
+        }
+
         if (closedNotifications[notificationObj.id]) {
             delete closedNotifications[notificationObj.id];
             return new Promise(function(exitEarly) { exitEarly() });
@@ -710,6 +718,28 @@ function cleanUpInactiveWindow() {
     });
     inactiveWindows = [];
 }
+
+/**
+ * Closes all the notifications and windows
+ */
+function closeAll() {
+    // Clear out animation Queue and close windows
+    animationQueue.clear();
+
+    activeNotifications.forEach(function(window) {
+        if (window.displayTimer) {
+            clearTimeout(window.displayTimer);
+        }
+        window.close();
+    });
+
+    cleanUpInactiveWindow();
+
+    // Reset certain vars
+    nextInsertPos = {};
+    activeNotifications = [];
+}
+
 
 module.exports.notify = notify;
 module.exports.updateConfig = updateConfig;
