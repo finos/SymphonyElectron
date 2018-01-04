@@ -318,9 +318,11 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         let newWinHost = newWinParsedUrl && newWinParsedUrl.host;
         let mainWinHost = mainWinParsedUrl && mainWinParsedUrl.host;
 
+        let emptyUrlString = 'about:blank';
+        
         // only allow window.open to succeed is if coming from same hsot,
         // otherwise open in default browser.
-        if (disposition === 'new-window' && ((newWinHost === mainWinHost) || newWinUrl === 'about:blank')) {
+        if (disposition === 'new-window' && ((newWinHost === mainWinHost) || newWinUrl === emptyUrlString)) {
             // handle: window.open
 
             if (!frameName) {
