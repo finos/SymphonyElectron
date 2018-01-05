@@ -64,12 +64,12 @@
     }
     
     // By default, set alwaysOnTop and bring to front to false
-    NSString *alwaysOnTop = @"false\n";
+    NSString *alwaysOnTop = @"false";
     NSString *bringToFront = @"false\n";
     
     // If the checkbox is changed, set the always on top value accordingly
     if ([_alwaysOnTopCheckBox state] == 1) {
-        alwaysOnTop = @"true\n";
+        alwaysOnTop = @"true";
     }
     
     // If the checkbox is changed, set the bring to front value accordingly
