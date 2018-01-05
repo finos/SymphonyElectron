@@ -12,6 +12,7 @@ const aboutApp = require('../aboutApp');
 let minimizeOnClose = false;
 let launchOnStartup = false;
 let isAlwaysOnTop = false;
+let bringToFront = false;
 
 let symphonyAutoLauncher;
 
@@ -254,6 +255,17 @@ function getTemplate(app) {
         }
     });
 
+    // Window menu -> bringToFront
+    template[index].submenu.push({
+        label: 'Bring to Front',
+        type: 'checkbox',
+        checked: bringToFront,
+        click: function(item) {
+            bringToFront = item.checked;
+            updateConfigField('bringToFront', bringToFront);
+        }
+    });
+
     if (!isMac) {
         template[index].submenu.push({
             label: 'Quit Symphony',
@@ -284,7 +296,7 @@ function setCheckboxValues() {
         /**
          * Method that reads multiple config fields
          */
-        getMultipleConfigField(['minimizeOnClose', 'launchOnStartup', 'alwaysOnTop', 'notificationSettings'])
+        getMultipleConfigField(['minimizeOnClose', 'launchOnStartup', 'alwaysOnTop', 'notificationSettings', 'bringToFront'])
             .then(function (configData) {
                 for (let key in configData) {
                     if (configData.hasOwnProperty(key)) { // eslint-disable-line no-prototype-builtins
@@ -301,6 +313,9 @@ function setCheckboxValues() {
                                 break;
                             case 'notificationSettings':
                                 eventEmitter.emit('notificationSettings', configData[key]);
+                                break;
+                            case 'bringToFront':
+                                bringToFront = configData[key];
                                 break;
                             default:
                                 break;

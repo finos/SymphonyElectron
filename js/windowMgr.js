@@ -589,6 +589,7 @@ function activate(windowName) {
         if (window && !window.isDestroyed() && window.winName === windowName) {
             if (window.isMinimized()) {
                 window.restore();
+                window.focus();
             } else {
                 window.show();
             }

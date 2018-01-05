@@ -14,5 +14,7 @@
 @property (weak) IBOutlet NSTextField *podUrlTextBox;
 @property (weak) IBOutlet NSButton *alwaysOnTopCheckBox;
 @property (weak) IBOutlet NSTextField *podUrlAlertTextBox;
+@property (weak) IBOutlet NSButton *bringToFrontCheckBox;
+@property (weak) IBOutlet NSTextField *bringToFrontTextBox;
 
 @end

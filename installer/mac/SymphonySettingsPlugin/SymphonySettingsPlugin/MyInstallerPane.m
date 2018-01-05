@@ -63,16 +63,22 @@
         minimizeOnClose = @"false";
     }
     
-    // By default, set alwaysOnTop to false
+    // By default, set alwaysOnTop and bring to front to false
     NSString *alwaysOnTop = @"false\n";
+    NSString *bringToFront = @"false\n";
     
     // If the checkbox is changed, set the always on top value accordingly
     if ([_alwaysOnTopCheckBox state] == 1) {
         alwaysOnTop = @"true\n";
     }
     
+    // If the checkbox is changed, set the bring to front value accordingly
+    if ([_bringToFrontCheckBox state] == 1) {
+        bringToFront = @"true\n";
+    }
+    
     // Create an array with the selected options
-    NSArray *symSettings = [[NSArray alloc] initWithObjects:podUrl, minimizeOnClose, autoLaunchOnStart, alwaysOnTop, nil];
+    NSArray *symSettings = [[NSArray alloc] initWithObjects:podUrl, minimizeOnClose, autoLaunchOnStart, alwaysOnTop, bringToFront, nil];
     
     // Create a string from the array with new-line as the separator
     NSString *symSettingsString = [symSettings componentsJoinedByString:@"\n"];
