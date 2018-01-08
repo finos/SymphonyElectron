@@ -24,7 +24,9 @@ let makeBoundTimedCollector = function(isIndexing, timeout, callback) {
         clearTimeout(timer);
         timer = null;
         resetQueue();
-        callback(JSON.stringify(queue));
+        if (queue) {
+            callback(JSON.stringify(queue));
+        }
     }
 
     function getQueue(){

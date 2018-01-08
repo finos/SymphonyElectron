@@ -169,10 +169,6 @@ class Search {
      * @param message
      */
     realTimeIndexing(message) {
-        if (!message) {
-            log.send(logLevels.ERROR, 'RealTime Indexing: Messages not provided');
-            throw new Error('RealTime Indexing: Messages is required');
-        }
 
         try {
             let msg = JSON.parse(message);
