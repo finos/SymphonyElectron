@@ -16,14 +16,14 @@ jest.mock('electron', function() {
 });
 
 function mockedGetPath(type) {
-    if (type === 'exe') {
-        return executionPath;
+    switch (type) {
+        case 'exe':
+            return executionPath;
+        case 'userData':
+            return userConfigDir;
+        default:
+            return ''
     }
-
-    if (type === 'userData') {
-        return userConfigDir
-    }
-    return '';
 }
 
 describe('Tests for Search Utils', function() {
@@ -37,6 +37,9 @@ describe('Tests for Search Utils', function() {
         const { SearchUtils } = require('../js/search/searchUtils.js');
         SearchUtilsAPI = new SearchUtils();
         SearchUtilsAPI.path = userConfigDir;
+        if (fs.existsSync(searchConfig.FOLDERS_CONSTANTS.USER_CONFIG_FILE)) {
+            fs.unlinkSync(searchConfig.FOLDERS_CONSTANTS.USER_CONFIG_FILE);
+        }
         done();
     });
 
@@ -47,7 +50,7 @@ describe('Tests for Search Utils', function() {
 
     describe('Tests for checking disk space', function () {
 
-        it('should return free sapce', function (done) {
+        it('should return free space', function (done) {
             const checkFreeSpace = jest.spyOn(SearchUtilsAPI, 'checkFreeSpace');
             SearchUtilsAPI.checkFreeSpace().then(function () {
                 expect(checkFreeSpace).toHaveBeenCalled();

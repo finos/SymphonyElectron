@@ -92,7 +92,7 @@ class Search {
         return new Promise((resolve, reject) => {
             if (!messages) {
                 log.send(logLevels.ERROR, 'Batch Indexing: Messages not provided');
-                reject(new Error('Batch Indexing: Messages is required'));
+                reject(new Error('Batch Indexing: Messages are required'));
                 return;
             }
 
