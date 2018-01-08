@@ -9,6 +9,14 @@ const logLevels = require('../enums/logLevels.js');
 const eventEmitter = require('../eventEmitter');
 const aboutApp = require('../aboutApp');
 
+const configFields = [
+    'minimizeOnClose',
+    'launchOnStartup',
+    'alwaysOnTop',
+    'notificationSettings',
+    'bringToFront'
+];
+
 let minimizeOnClose = false;
 let launchOnStartup = false;
 let isAlwaysOnTop = false;
@@ -296,7 +304,7 @@ function setCheckboxValues() {
         /**
          * Method that reads multiple config fields
          */
-        getMultipleConfigField(['minimizeOnClose', 'launchOnStartup', 'alwaysOnTop', 'notificationSettings', 'bringToFront'])
+        getMultipleConfigField(configFields)
             .then(function (configData) {
                 for (let key in configData) {
                     if (configData.hasOwnProperty(key)) { // eslint-disable-line no-prototype-builtins
