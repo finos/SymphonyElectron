@@ -311,16 +311,18 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     // open external links in default browser - a tag with href='_blank' or window.open
     mainWindow.webContents.on('new-window', function (event, newWinUrl,
         frameName, disposition, newWinOptions) {
-
+        
         let newWinParsedUrl = getParsedUrl(newWinUrl);
         let mainWinParsedUrl = getParsedUrl(url);
 
         let newWinHost = newWinParsedUrl && newWinParsedUrl.host;
         let mainWinHost = mainWinParsedUrl && mainWinParsedUrl.host;
 
+        let emptyUrlString = 'about:blank';
+        
         // only allow window.open to succeed is if coming from same hsot,
         // otherwise open in default browser.
-        if (disposition === 'new-window' && newWinHost === mainWinHost) {
+        if (disposition === 'new-window' && ((newWinHost === mainWinHost) || newWinUrl === emptyUrlString)) {
             // handle: window.open
 
             if (!frameName) {
