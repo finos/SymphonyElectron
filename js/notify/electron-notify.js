@@ -294,10 +294,6 @@ function setupConfig() {
 function notify(notification) {
     // Is it an object and only one argument?
     if (arguments.length === 1 && typeof notification === 'object') {
-
-        if (typeof notification.onBringToFrontFunc === 'function') {
-            notification.onBringToFrontFunc({id: notification.id });
-        }
         let notf = Object.assign({}, notification);
         // Use object instead of supplied parameters
         notf.id = latestID;

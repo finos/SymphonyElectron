@@ -2,7 +2,6 @@
 
 const EventEmitter = require('events');
 const { notify } = require('./electron-notify.js');
-const { bringToFront } = require('./bringToFront.js');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 /**
@@ -46,8 +45,7 @@ class Notify {
             onShowFunc: onShow.bind(this),
             onClickFunc: onClick.bind(this),
             onCloseFunc: onClose.bind(this),
-            onErrorFunc: onError.bind(this),
-            onBringToFrontFunc: onBringToFront.bind(this)
+            onErrorFunc: onError.bind(this)
         });
 
         log.send(logLevels.INFO, 'created notification, id=' + this._id + ', text=' + options.body);
@@ -112,14 +110,6 @@ class Notify {
             }
         }
 
-        /**
-         * activates/focuses the main window
-         */
-        function onBringToFront(arg) {
-            if (arg.id === this._id) {
-                bringToFront();
-            }
-        }
     }
 
     /**
