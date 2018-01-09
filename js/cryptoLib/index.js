@@ -56,17 +56,32 @@ class Crypto {
                     let config = {
                         key: key
                     };
-                    const encrypt = crypto.encrypt(config);
+                    let encrypt;
+                    try {
+                        encrypt = crypto.encrypt(config);
+                    } catch (e) {
+                        log.send(logLevels.ERROR, 'Error decrypting : ' + e);
+                        if (fs.existsSync(`${this.dump}/${this.permanentIndexName}${searchConfig.TAR_LZ4_EXT}`)) {
+                            fs.unlinkSync(`${this.dump}/${this.permanentIndexName}${searchConfig.TAR_LZ4_EXT}`);
+                        }
+                        reject();
+                        return;
+                    }
 
                     let encryptionProcess = input.pipe(encrypt).pipe(outputEncryption);
 
                     encryptionProcess.on('finish', (err) => {
                         if (err) {
                             log.send(logLevels.ERROR, 'Crypto: Error while encrypting the compressed file: ' + err);
+                            if (fs.existsSync(`${this.dump}/${this.permanentIndexName}${searchConfig.TAR_LZ4_EXT}`)) {
+                                fs.unlinkSync(`${this.dump}/${this.permanentIndexName}${searchConfig.TAR_LZ4_EXT}`);
+                            }
                             reject(new Error(err));
                             return;
                         }
-                        fs.unlinkSync(`${this.dump}/${this.permanentIndexName}${searchConfig.TAR_LZ4_EXT}`);
+                        if (fs.existsSync(`${this.dump}/${this.permanentIndexName}${searchConfig.TAR_LZ4_EXT}`)) {
+                            fs.unlinkSync(`${this.dump}/${this.permanentIndexName}${searchConfig.TAR_LZ4_EXT}`);
+                        }
                         resolve('Success');
                     });
                 });
@@ -92,7 +107,17 @@ class Crypto {
             let config = {
                 key: this.key
             };
-            const decrypt = crypto.decrypt(config);
+            let decrypt;
+            try {
+                decrypt = crypto.decrypt(config);
+            } catch (e) {
+                log.send(logLevels.ERROR, 'Error decrypting : ' + e);
+                if (fs.existsSync(`${this.dump}/decrypted${searchConfig.TAR_LZ4_EXT}`)) {
+                    fs.unlinkSync(`${this.dump}/decrypted${searchConfig.TAR_LZ4_EXT}`);
+                }
+                reject();
+                return;
+            }
 
             let decryptionProcess = input.pipe(decrypt).pipe(output);
 

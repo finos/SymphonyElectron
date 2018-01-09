@@ -10,6 +10,9 @@ let Transform = stream.Transform;
 let util = require('util');
 let crypto = require('crypto');
 
+const log = require('../log.js');
+const logLevels = require('../enums/logLevels.js');
+
 let KEY_LENGTH = 32; // bytes
 let GCM_NONCE_LENGTH = 12; //bytes
 let GCM_MAC_LENGTH = 16; //bytes
@@ -151,7 +154,8 @@ DecryptionStream.prototype._transform = function(chunk, enc, cb) {
 DecryptionStream.prototype._flush = function(cb) {
     let mac = pullOutMac(this._cipherTextChunks);
     if (!mac) {
-        return this.emit('error', new Error('Decryption failed: bad cipher text.'));
+        log.send(logLevels.ERROR, 'Crypto: Decryption failed: bad cipher text.');
+        return cb();
     }
     this._decipher.setAuthTag(mac);
     let decrypted = this._cipherTextChunks.map(function(item) {
@@ -160,6 +164,7 @@ DecryptionStream.prototype._flush = function(cb) {
     try {
         this._decipher.final();
     } catch (e) {
+        log.send(logLevels.ERROR, 'Crypto: Decryption Failed: ' + e);
         return cb();
     }
     decrypted.forEach(function(item) {
