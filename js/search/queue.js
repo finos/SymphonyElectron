@@ -6,7 +6,7 @@ let makeBoundTimedCollector = function(isIndexing, timeout, callback) {
     return function (...args) {
         if (!timer){
             timer = setTimeout(function(){
-                if (!isIndexing) {
+                if (!isIndexing()) {
                     flush(getQueue());
                 }
             }, timeout);
@@ -24,7 +24,9 @@ let makeBoundTimedCollector = function(isIndexing, timeout, callback) {
         clearTimeout(timer);
         timer = null;
         resetQueue();
-        callback(JSON.stringify(queue));
+        if (queue) {
+            callback(JSON.stringify(queue));
+        }
     }
 
     function getQueue(){
