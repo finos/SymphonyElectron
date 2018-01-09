@@ -54,7 +54,9 @@ describe('Tests for Search', function() {
             realTimeIndexPath = path.join(userConfigDir, 'data', 'temp_realtime_index');
             tempBatchPath = path.join(userConfigDir, 'data', 'temp_batch_indexes');
             dataFolderPath = path.join(searchConfig.FOLDERS_CONSTANTS.EXEC_PATH, '..', 'data');
-
+            if (fs.existsSync(dataFolderPath)) {
+                fs.unlinkSync(dataFolderPath)
+            }
             done();
         });
     });
@@ -347,7 +349,7 @@ describe('Tests for Search', function() {
 
             expect(function () {
                 SearchApi.realTimeIndexing()
-            }).toThrow(new Error('RealTime Indexing: Messages is required'));
+            }).toThrow();
 
             SearchApi.isInitialized = false;
             expect(function () {

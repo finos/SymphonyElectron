@@ -115,6 +115,12 @@ class Search {
                 return;
             }
 
+            if (!fs.existsSync(this.dataFolder)) {
+                log.send(logLevels.ERROR, 'User index folder not found');
+                reject(new Error('User index folder not found'));
+                return;
+            }
+
             const indexId = randomString.generate(searchConfig.BATCH_RANDOM_INDEX_PATH_LENGTH);
             libSymphonySearch.symSECreatePartialIndexAsync(this.batchIndex, indexId, messages, (err, res) => {
                 if (err) {
@@ -133,6 +139,13 @@ class Search {
      */
     mergeIndexBatches() {
         return new Promise((resolve, reject) => {
+
+            if (!fs.existsSync(this.dataFolder)) {
+                log.send(logLevels.ERROR, 'User index folder not found');
+                reject(new Error('User index folder not found'));
+                return;
+            }
+
             libSymphonySearch.symSEMergePartialIndexAsync(this.indexFolderName, this.batchIndex, (err, res) => {
                 if (err) {
                     log.send(logLevels.ERROR, 'Error merging the index ->' + err);
@@ -184,6 +197,11 @@ class Search {
         if (!this.isInitialized) {
             log.send(logLevels.ERROR, 'Library not initialized');
             throw new Error('Library not initialized');
+        }
+
+        if (!fs.existsSync(this.dataFolder)) {
+            log.send(logLevels.ERROR, 'User index folder not found');
+            throw new Error('User index folder not found');
         }
 
         this.isRealTimeIndexing = true;
