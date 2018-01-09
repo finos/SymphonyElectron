@@ -63,7 +63,7 @@ describe('Tests for Search', function() {
         setTimeout(function () {
 
             deleteIndexFolders(dataFolderPath);
-            let root = path.join(searchConfig.FOLDERS_CONSTANTS.EXEC_PATH, '..', `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${userId}_${searchConfig.INDEX_VERSION}.enc`);
+            let root = path.join(searchConfig.FOLDERS_CONSTANTS.EXEC_PATH, '..', `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${userId}.enc`);
             if (fs.existsSync(root)) {
                 fs.unlinkSync(root);
             }
@@ -92,7 +92,7 @@ describe('Tests for Search', function() {
             setTimeout(function () {
 
                 expect(SearchApi.isInitialized).toBe(true);
-                expect(SearchApi.indexFolderName).toBe(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${userId}_${searchConfig.INDEX_VERSION}`);
+                expect(SearchApi.indexFolderName).toBe(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${userId}`);
                 expect(SearchApi.dataFolder).toBe(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
                 expect(SearchApi.realTimeIndex).toBe(searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX);
                 expect(SearchApi.batchIndex).toBe(searchConfig.FOLDERS_CONSTANTS.TEMP_BATCH_INDEX_FOLDER);
@@ -423,7 +423,7 @@ describe('Tests for Search', function() {
             const getLatestMessageTimestamp = jest.spyOn(SearchApi, 'getLatestMessageTimestamp');
             SearchApi.getLatestMessageTimestamp().catch(function (err) {
                 expect(err).toEqual(new Error('Index folder does not exist.'));
-                SearchApi.indexFolderName = `${dataFolderPath}/${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${userId}_${searchConfig.INDEX_VERSION}`;
+                SearchApi.indexFolderName = `${dataFolderPath}/${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${userId}`;
                 expect(getLatestMessageTimestamp).toHaveBeenCalled();
                 expect(getLatestMessageTimestamp).toHaveBeenCalledTimes(3);
                 done();
