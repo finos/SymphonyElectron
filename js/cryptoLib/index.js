@@ -20,10 +20,11 @@ class Crypto {
     constructor(userId, key) {
         this.indexDataFolder = `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${userId}_${searchConfig.INDEX_VERSION}`;
         this.permanentIndexName = `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${userId}_${searchConfig.INDEX_VERSION}`;
-        this.dump = DUMP_PATH;
         this.key = key;
         this.encryptedIndex = `${DUMP_PATH}/${this.permanentIndexName}.enc`;
         this.dataFolder = searchConfig.FOLDERS_CONSTANTS.INDEX_PATH;
+        this.lz4Temp = `${DUMP_PATH}/${this.permanentIndexName}${searchConfig.TAR_LZ4_EXT}`;
+        this.decryptedTemp = `${DUMP_PATH}/decrypted${searchConfig.TAR_LZ4_EXT}`;
     }
 
     /**
@@ -51,7 +52,7 @@ class Crypto {
                     if (response && response.stderr) {
                         log.send(logLevels.WARN, 'Crypto: Child process stderr while compression, ' + response.stderr);
                     }
-                    const input = fs.createReadStream(`${this.dump}/${this.permanentIndexName}${searchConfig.TAR_LZ4_EXT}`);
+                    const input = fs.createReadStream(this.lz4Temp);
                     const outputEncryption = fs.createWriteStream(this.encryptedIndex);
                     let config = {
                         key: key
@@ -60,9 +61,9 @@ class Crypto {
                     try {
                         encrypt = crypto.encrypt(config);
                     } catch (e) {
-                        log.send(logLevels.ERROR, 'Error decrypting : ' + e);
-                        if (fs.existsSync(`${this.dump}/${this.permanentIndexName}${searchConfig.TAR_LZ4_EXT}`)) {
-                            fs.unlinkSync(`${this.dump}/${this.permanentIndexName}${searchConfig.TAR_LZ4_EXT}`);
+                        log.send(logLevels.ERROR, 'Error encrypting : ' + e);
+                        if (fs.existsSync(this.lz4Temp)) {
+                            fs.unlinkSync(this.lz4Temp);
                         }
                         reject();
                         return;
@@ -73,14 +74,14 @@ class Crypto {
                     encryptionProcess.on('finish', (err) => {
                         if (err) {
                             log.send(logLevels.ERROR, 'Crypto: Error while encrypting the compressed file: ' + err);
-                            if (fs.existsSync(`${this.dump}/${this.permanentIndexName}${searchConfig.TAR_LZ4_EXT}`)) {
-                                fs.unlinkSync(`${this.dump}/${this.permanentIndexName}${searchConfig.TAR_LZ4_EXT}`);
+                            if (fs.existsSync(this.lz4Temp)) {
+                                fs.unlinkSync(this.lz4Temp);
                             }
                             reject(new Error(err));
                             return;
                         }
-                        if (fs.existsSync(`${this.dump}/${this.permanentIndexName}${searchConfig.TAR_LZ4_EXT}`)) {
-                            fs.unlinkSync(`${this.dump}/${this.permanentIndexName}${searchConfig.TAR_LZ4_EXT}`);
+                        if (fs.existsSync(this.lz4Temp)) {
+                            fs.unlinkSync(this.lz4Temp);
                         }
                         resolve('Success');
                     });
@@ -103,7 +104,7 @@ class Crypto {
             }
 
             const input = fs.createReadStream(this.encryptedIndex);
-            const output = fs.createWriteStream(`${this.dump}/decrypted${searchConfig.TAR_LZ4_EXT}`);
+            const output = fs.createWriteStream(this.decryptedTemp);
             let config = {
                 key: this.key
             };
@@ -112,8 +113,8 @@ class Crypto {
                 decrypt = crypto.decrypt(config);
             } catch (e) {
                 log.send(logLevels.ERROR, 'Error decrypting : ' + e);
-                if (fs.existsSync(`${this.dump}/decrypted${searchConfig.TAR_LZ4_EXT}`)) {
-                    fs.unlinkSync(`${this.dump}/decrypted${searchConfig.TAR_LZ4_EXT}`);
+                if (fs.existsSync(this.decryptedTemp)) {
+                    fs.unlinkSync(this.decryptedTemp);
                 }
                 reject();
                 return;
@@ -123,13 +124,13 @@ class Crypto {
 
             decryptionProcess.on('finish', () => {
 
-                if (!fs.existsSync(`${this.dump}/decrypted${searchConfig.TAR_LZ4_EXT}`)){
+                if (!fs.existsSync(this.decryptedTemp)){
                     log.send(logLevels.ERROR, 'decrypted.tar.lz4 file not found');
                     reject();
                     return;
                 }
 
-                lz4.deCompression(`${this.dump}/decrypted${searchConfig.TAR_LZ4_EXT}`,(error, response) => {
+                lz4.deCompression(this.decryptedTemp,(error, response) => {
                     if (error) {
                         log.send(logLevels.ERROR, 'Crypto: Error while deCompression, ' + error);
                         // no return, need to unlink if error
@@ -138,7 +139,7 @@ class Crypto {
                     if (response && response.stderr) {
                         log.send(logLevels.WARN, 'Crypto: Child process stderr while deCompression, ' + response.stderr);
                     }
-                    fs.unlink(`${this.dump}/decrypted${searchConfig.TAR_LZ4_EXT}`, () => {
+                    fs.unlink(this.decryptedTemp, () => {
                         resolve('success');
                     });
                 })
