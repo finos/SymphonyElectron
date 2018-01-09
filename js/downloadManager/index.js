@@ -56,7 +56,7 @@ function showInFinder(id) {
 function createDOM(arg) {
 
     if (arg && arg._id) {
-        
+
         let fileDisplayName = arg.fileName;
         let downloadItemKey = arg._id;
 

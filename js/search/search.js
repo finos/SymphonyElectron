@@ -92,7 +92,7 @@ class Search {
         return new Promise((resolve, reject) => {
             if (!messages) {
                 log.send(logLevels.ERROR, 'Batch Indexing: Messages not provided');
-                reject(new Error('Batch Indexing: Messages is required'));
+                reject(new Error('Batch Indexing: Messages are required'));
                 return;
             }
 
@@ -169,10 +169,6 @@ class Search {
      * @param message
      */
     realTimeIndexing(message) {
-        if (!message) {
-            log.send(logLevels.ERROR, 'RealTime Indexing: Messages not provided');
-            return new Error('RealTime Indexing: Messages is required');
-        }
 
         try {
             let msg = JSON.parse(message);
@@ -182,12 +178,12 @@ class Search {
             }
         } catch(e) {
             log.send(logLevels.ERROR, 'RealTime Indexing: parse error -> ' + e);
-            return (new Error(e));
+            throw (new Error(e));
         }
 
         if (!this.isInitialized) {
             log.send(logLevels.ERROR, 'Library not initialized');
-            return new Error('Library not initialized');
+            throw new Error('Library not initialized');
         }
 
         this.isRealTimeIndexing = true;
@@ -195,7 +191,7 @@ class Search {
             this.isRealTimeIndexing = false;
             if (err) {
                 log.send(logLevels.ERROR, 'RealTime Indexing: error -> ' + err);
-                return new Error(err);
+                throw new Error(err);
             }
             return result;
         });
@@ -268,7 +264,7 @@ class Search {
 
             if (!fs.existsSync(this.indexFolderName) || !fs.existsSync(this.realTimeIndex)) {
                 log.send(logLevels.ERROR, 'Index folder does not exist.');
-                reject('Index folder does not exist.');
+                reject(new Error('Index folder does not exist.'));
                 return;
             }
 
@@ -296,15 +292,15 @@ class Search {
                 }
             }
 
-            if (!_limit && _limit === "" && typeof _limit !== 'number' && Math.round(_limit) !== _limit) {
+            if (!_limit || _limit === "" || typeof _limit !== 'number' || Math.round(_limit) !== _limit) {
                 _limit = 25;
             }
 
-            if (!_offset && _offset === "" && typeof _offset !== 'number' && Math.round(_offset) !== _offset) {
+            if (!_offset || _offset === "" || typeof _offset !== 'number' || Math.round(_offset) !== _offset) {
                 _offset = 0
             }
 
-            if (!_sortOrder && _sortOrder === "" && typeof _sortOrder !== 'number' && Math.round(_sortOrder) !== _sortOrder) {
+            if (!_sortOrder || _sortOrder === "" || typeof _sortOrder !== 'number' || Math.round(_sortOrder) !== _sortOrder) {
                 _sortOrder = searchConfig.SORT_BY_SCORE;
             }
 
@@ -327,13 +323,13 @@ class Search {
         return new Promise((resolve, reject) => {
             if (!this.isInitialized) {
                 log.send(logLevels.ERROR, 'Library not initialized');
-                reject('Not initialized');
+                reject(new Error('Not initialized'));
                 return;
             }
 
             if (!fs.existsSync(this.indexFolderName)) {
                 log.send(logLevels.ERROR, 'Index folder does not exist.');
-                reject('Index folder does not exist.');
+                reject(new Error('Index folder does not exist.'));
                 return;
             }
 

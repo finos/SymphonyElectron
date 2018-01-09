@@ -291,17 +291,14 @@ function getUrlAndCreateMainWindow() {
  * @param urlFromConfig
  */
 function createWin(urlFromConfig) {
-    let protocol = '';
     // add https protocol if none found.
     let parsedUrl = nodeURL.parse(urlFromConfig);
+
     if (!parsedUrl.protocol) {
-        protocol = 'https';
+        parsedUrl.protocol = 'https:';
+        parsedUrl.slashes = true
     }
-    let url = nodeURL.format({
-        protocol: protocol,
-        slahes: true,
-        pathname: parsedUrl.href
-    });
+    let url = nodeURL.format(parsedUrl);
 
     windowMgr.createMainWindow(url);
 }
