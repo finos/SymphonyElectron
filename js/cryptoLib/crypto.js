@@ -164,7 +164,7 @@ DecryptionStream.prototype._flush = function(cb) {
     try {
         this._decipher.final();
     } catch (e) {
-        log.send(logLevels.ERROR, 'Crypto: Decryption Failed: ' + e);
+        log.send(logLevels.ERROR, 'Crypto: Decryption failed: ' + e);
         return cb();
     }
     decrypted.forEach(function(item) {
