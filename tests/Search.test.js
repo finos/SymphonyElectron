@@ -116,7 +116,7 @@ describe('Tests for Search', function() {
         });
 
         it('should exist index folder', function() {
-            expect(fs.existsSync(path.join(userConfigDir, 'data', 'search_index_12345678910112_v1'))).toBe(true);
+            expect(fs.existsSync(path.join(userConfigDir, 'data', 'search_index_12345678910112'))).toBe(true);
             expect(fs.existsSync(realTimeIndexPath)).toBe(true);
         });
 
@@ -388,8 +388,8 @@ describe('Tests for Search', function() {
         it('should exist encrypted file', function (done) {
             setTimeout(function () {
 
-                expect(fs.existsSync(path.join(userConfigDir, 'search_index_12345678910112_v1.enc'))).toBe(true);
-                expect(fs.existsSync(path.join(userConfigDir, 'search_index_12345678910112_v1.tar.lz4'))).toBe(false);
+                expect(fs.existsSync(path.join(userConfigDir, 'search_index_12345678910112.enc'))).toBe(true);
+                expect(fs.existsSync(path.join(userConfigDir, 'search_index_12345678910112.tar.lz4'))).toBe(false);
 
                 done();
             }, 3000);
