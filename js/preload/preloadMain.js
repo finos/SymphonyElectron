@@ -367,7 +367,7 @@ function createAPI() {
         });
     }
 
-    // reset the badge count when ever user refresh
+    // reset the badge count whenever an user refreshes the electron client
     function resetBadgeCount() {
         local.ipcRenderer.send(apiName, {
             cmd: apiCmds.setBadgeCount,
