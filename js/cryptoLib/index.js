@@ -18,8 +18,8 @@ class Crypto {
      * @param key
      */
     constructor(userId, key) {
-        this.indexDataFolder = `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${userId}_${searchConfig.INDEX_VERSION}`;
-        this.permanentIndexName = `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${userId}_${searchConfig.INDEX_VERSION}`;
+        this.indexDataFolder = `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${userId}`;
+        this.permanentIndexName = `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${userId}`;
         this.key = key;
         this.encryptedIndex = `${DUMP_PATH}/${this.permanentIndexName}.enc`;
         this.dataFolder = searchConfig.FOLDERS_CONSTANTS.INDEX_PATH;
