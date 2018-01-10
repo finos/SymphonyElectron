@@ -367,8 +367,17 @@ function createAPI() {
         });
     }
 
+    // reset the badge count when ever user refresh
+    function resetBadgeCount() {
+        local.ipcRenderer.send(apiName, {
+            cmd: apiCmds.setBadgeCount,
+            count: 0
+        });
+    }
+
     window.addEventListener('offline', updateOnlineStatus, false);
     window.addEventListener('online', updateOnlineStatus, false);
+    window.addEventListener('beforeunload', resetBadgeCount, false);
 
     updateOnlineStatus();
 }
