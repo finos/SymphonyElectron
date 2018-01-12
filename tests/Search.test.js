@@ -1,6 +1,7 @@
 const childProcess = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const { isMac } = require('../js/utils/misc.js');
 
 let executionPath = null;
 let userConfigDir = null;
@@ -45,6 +46,9 @@ describe('Tests for Search', function() {
             key = 'jjjehdnctsjyieoalskcjdhsnahsadndfnusdfsdfsd=';
 
             executionPath = path.join(__dirname, 'library');
+            if (!isMac) {
+                executionPath = path.join(__dirname, '..', 'library');
+            }
             userConfigDir = path.join(__dirname, '..');
 
             searchConfig = require('../js/search/searchConfig.js');
@@ -77,7 +81,7 @@ describe('Tests for Search', function() {
     function deleteIndexFolders(location) {
         if (fs.existsSync(location)) {
             fs.readdirSync(location).forEach(function(file) {
-                let curPath = location + "/" + file;
+                let curPath = path.join(location, file);
                 if (fs.lstatSync(curPath).isDirectory()) {
                     deleteIndexFolders(curPath);
                 } else {
@@ -425,7 +429,8 @@ describe('Tests for Search', function() {
             const getLatestMessageTimestamp = jest.spyOn(SearchApi, 'getLatestMessageTimestamp');
             SearchApi.getLatestMessageTimestamp().catch(function (err) {
                 expect(err).toEqual(new Error('Index folder does not exist.'));
-                SearchApi.indexFolderName = `${dataFolderPath}/${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${userId}`;
+                let folderName = `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${userId}`;
+                SearchApi.indexFolderName = path.join(dataFolderPath, folderName);
                 expect(getLatestMessageTimestamp).toHaveBeenCalled();
                 expect(getLatestMessageTimestamp).toHaveBeenCalledTimes(3);
                 done();

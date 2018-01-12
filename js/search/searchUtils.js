@@ -21,7 +21,11 @@ class SearchUtils {
     checkFreeSpace() {
         return new Promise((resolve, reject) => {
             if (!isMac) {
-                this.path = this.path.substring(0, 2);
+                try {
+                    this.path = this.path.substring(0, 2);
+                } catch (e) {
+                    reject(new Error('Invalid Path : ' + e));
+                }
             }
             checkDiskSpace(this.path, resolve, reject);
         });
