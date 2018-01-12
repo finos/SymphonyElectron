@@ -58,7 +58,6 @@ describe('Tests for Search', function() {
             realTimeIndexPath = path.join(userConfigDir, 'data', 'temp_realtime_index');
             tempBatchPath = path.join(userConfigDir, 'data', 'temp_batch_indexes');
             dataFolderPath = path.join(userConfigDir, 'data');
-            console.log(dataFolderPath);
             if (fs.existsSync(dataFolderPath)) {
                 fs.unlinkSync(dataFolderPath)
             }
@@ -70,7 +69,7 @@ describe('Tests for Search', function() {
         setTimeout(function () {
 
             deleteIndexFolders(dataFolderPath);
-            let root = path.join(searchConfig.FOLDERS_CONSTANTS.EXEC_PATH, '..', `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${userId}.enc`);
+            let root = path.join(userConfigDir, `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${userId}.enc`);
             if (fs.existsSync(root)) {
                 fs.unlinkSync(root);
             }

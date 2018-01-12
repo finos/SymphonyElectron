@@ -69,7 +69,7 @@ function readFile(userId, resolve, reject) {
             if (err) {
                 return reject(new Error('Error reading the '))
             }
-            let usersConfig = [];
+            let usersConfig = {};
             try {
                 usersConfig = JSON.parse(data);
             } catch (e) {
@@ -115,12 +115,17 @@ function createUser(userId, oldConfig) {
  * @param data
  */
 function createUserConfigFile(userId, data) {
+    let userData = data;
+
+    if (userData && !userData.indexVersion) {
+        userData.indexVersion = searchConfig.INDEX_VERSION;
+    }
+
     let createStream = fs.createWriteStream(searchConfig.FOLDERS_CONSTANTS.USER_CONFIG_FILE);
-    if (data) {
-        let jsonData;
+    if (userData) {
         try {
-            jsonData = JSON.stringify(data);
-            createStream.write(`{"${userId}": ${jsonData}}`);
+            userData = JSON.stringify(userData);
+            createStream.write(`{"${userId}": ${userData}}`);
         } catch (e) {
             createStream.write(`{"${userId}": {}}`);
         }
@@ -139,9 +144,15 @@ function createUserConfigFile(userId, data) {
  * @returns {*}
  */
 function updateConfig(userId, data, resolve, reject) {
+    let userData = data;
+
+    if (userData && !userData.indexVersion) {
+        userData.indexVersion = searchConfig.INDEX_VERSION;
+    }
+
     let configPath = searchConfig.FOLDERS_CONSTANTS.USER_CONFIG_FILE;
     if (!fs.existsSync(configPath)) {
-        createUserConfigFile(userId, data);
+        createUserConfigFile(userId, userData);
         return reject(null);
     }
 

@@ -124,6 +124,7 @@ describe('Tests for Search Utils', function() {
                 language: 'en'
             };
             SearchUtilsAPI.updateUserConfig(1234567891011, data).then(function (res) {
+                data.indexVersion = 'v1';
                 expect(res).toEqual(data);
                 done();
             })
@@ -137,6 +138,7 @@ describe('Tests for Search Utils', function() {
             };
             SearchUtilsAPI.updateUserConfig(1234567891011, data).then(function (res) {
                 expect(res.rotationId).toEqual(1);
+                expect(res.indexVersion).toEqual('v1');
                 done();
             })
         });
