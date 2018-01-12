@@ -425,12 +425,10 @@ describe('Tests for Search', function() {
         });
 
         it('should not get the latest timestamp', function (done) {
-            SearchApi.indexFolderName = '';
             const getLatestMessageTimestamp = jest.spyOn(SearchApi, 'getLatestMessageTimestamp');
+            deleteIndexFolders(dataFolderPath);
             SearchApi.getLatestMessageTimestamp().catch(function (err) {
                 expect(err).toEqual(new Error('Index folder does not exist.'));
-                let folderName = `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${userId}`;
-                SearchApi.indexFolderName = path.join(dataFolderPath, folderName);
                 expect(getLatestMessageTimestamp).toHaveBeenCalled();
                 expect(getLatestMessageTimestamp).toHaveBeenCalledTimes(3);
                 done();
@@ -440,11 +438,13 @@ describe('Tests for Search', function() {
 
     describe('Test to decrypt the index', function () {
 
-        it('should decrypt the index', function () {
-            deleteIndexFolders(dataFolderPath);
-            const decryptAndInit = jest.spyOn(SearchApi, 'decryptAndInit');
-            SearchApi.decryptAndInit();
-            expect(decryptAndInit).toHaveBeenCalled();
+        it('should decrypt the index', function (done) {
+            setTimeout(function () {
+                const decryptAndInit = jest.spyOn(SearchApi, 'decryptAndInit');
+                SearchApi.decryptAndInit();
+                expect(decryptAndInit).toHaveBeenCalled();
+                done();
+            }, 3000);
         });
 
         it('should get message from the decrypted index', function (done) {
