@@ -57,7 +57,8 @@ describe('Tests for Search', function() {
 
             realTimeIndexPath = path.join(userConfigDir, 'data', 'temp_realtime_index');
             tempBatchPath = path.join(userConfigDir, 'data', 'temp_batch_indexes');
-            dataFolderPath = path.join(searchConfig.FOLDERS_CONSTANTS.EXEC_PATH, '..', 'data');
+            dataFolderPath = path.join(userConfigDir, 'data');
+            console.log(dataFolderPath);
             if (fs.existsSync(dataFolderPath)) {
                 fs.unlinkSync(dataFolderPath)
             }
@@ -485,17 +486,19 @@ describe('Tests for Search', function() {
         });
 
         it('should search fails index folder not fund', function (done) {
-            const searchQuery = jest.spyOn(SearchApi, 'searchQuery');
             deleteIndexFolders(dataFolderPath);
-            SearchApi.searchQuery('it works', [], [], '', '', '', 25, 0, 0).catch(function (err) {
-                expect(err).toEqual(new Error('Index folder does not exist.'));
-                expect(searchQuery).toHaveBeenCalledTimes(8);
-                expect(searchQuery).toHaveBeenCalled();
-                SearchApi = undefined;
-                const { Search } = require('../js/search/search.js');
-                SearchApi = new Search(userId, key);
-                done();
-            });
+            setTimeout(function () {
+                const searchQuery = jest.spyOn(SearchApi, 'searchQuery');
+                SearchApi.searchQuery('it works', [], [], '', '', '', 25, 0, 0).catch(function (err) {
+                    expect(err).toEqual(new Error('Index folder does not exist.'));
+                    expect(searchQuery).toHaveBeenCalledTimes(8);
+                    expect(searchQuery).toHaveBeenCalled();
+                    SearchApi = undefined;
+                    const { Search } = require('../js/search/search.js');
+                    SearchApi = new Search(userId, key);
+                    done();
+                })
+            }, 3000);
         });
 
         it('should search fails query is undefined', function (done) {
