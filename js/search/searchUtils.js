@@ -23,14 +23,7 @@ class SearchUtils {
             if (!isMac) {
                 this.path = this.path.substring(0, 2);
             }
-            checkDiskSpace(this.path, function (error, res) {
-
-                if (error) {
-                    return reject(new Error(error));
-                }
-
-                return resolve(res >= searchConfig.MINIMUM_DISK_SPACE);
-            });
+            checkDiskSpace(this.path, resolve, reject);
         });
     }
 
@@ -120,7 +113,13 @@ function createUser(userId, oldConfig) {
 function createUserConfigFile(userId, data) {
     let createStream = fs.createWriteStream(searchConfig.FOLDERS_CONSTANTS.USER_CONFIG_FILE);
     if (data) {
-        createStream.write(`{"${userId}": ${JSON.stringify(data)}}`);
+        let jsonData;
+        try {
+            jsonData = JSON.stringify(data);
+            createStream.write(`{"${userId}": ${jsonData}}`);
+        } catch (e) {
+            createStream.write(`{"${userId}": {}}`);
+        }
     } else {
         createStream.write(`{"${userId}": {}}`);
     }
@@ -149,7 +148,7 @@ function updateConfig(userId, data, resolve, reject) {
         oldConfig = JSON.parse(oldData);
     } catch (e) {
         createUserConfigFile(userId, data);
-        return reject('can not parse user config file data: ' + e);
+        return reject(new Error('can not parse user config file data: ' + e));
     }
 
     let newConfig = Object.assign({}, oldConfig);

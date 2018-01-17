@@ -1,42 +1,43 @@
 const { exec } = require('child_process');
 const { isMac } = require('../../utils/misc');
+const searchConfig = require('../searchConfig.js');
 
-function checkDiskSpace(path, callback) {
+function checkDiskSpace(path, resolve, reject) {
     if (!path) {
-        return "Please provide path"
+        reject(new Error("Please provide path"));
+        return;
     }
 
     if (isMac) {
         exec("df -k '" + path.replace(/'/g,"'\\''") + "'", (error, stdout, stderr) => {
             if (error) {
                 if (stderr.indexOf("No such file or directory") !== -1) {
-                    return callback("No such file or directory : " + error)
+                    return reject(new Error("No such file or directory : " + error))
                 }
-                return callback("Error : " + error)
+                return reject(new Error("Error : " + error));
             }
 
             let data = stdout.trim().split("\n");
 
             let disk_info_str = data[data.length - 1].replace( /[\s\n\r]+/g,' ');
             let freeSpace = disk_info_str.split(' ');
-            return callback(null, freeSpace[3] * 1024);
+            let space = freeSpace[3] * 1024;
+            return resolve(space >= searchConfig.MINIMUM_DISK_SPACE);
         });
     } else {
         exec(`fsutil volume diskfree ${path}`, (error, stdout, stderr) => {
             if (error) {
                 if (stderr.indexOf("No such file or directory") !== -1) {
-                    return callback("No such file or directory : " + error)
+                    return reject(new Error("No such file or directory : " + error));
                 }
-                return callback("Error : " + error)
+                return reject(new Error("Error : " + error));
             }
             let data = stdout.trim().split("\n");
 
             let disk_info_str = data[data.length - 1].split(':');
-            return callback(null, disk_info_str[1]);
+            return resolve(disk_info_str[1] >= searchConfig.MINIMUM_DISK_SPACE);
         });
     }
-
-    return null;
 }
 
 module.exports = {
