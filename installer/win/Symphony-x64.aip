@@ -390,7 +390,7 @@
     <ROW Dialog_="FolderDlg" Control="LaunchOnStartupCheckBox" Type="CheckBox" X="172" Y="174" Width="98" Height="13" Attributes="3" Property="AUTO_START" Text="Launch On Startup" Order="1600"/>
     <ROW Dialog_="FolderDlg" Control="AlwaysOnTopCheckBox" Type="CheckBox" X="20" Y="174" Width="98" Height="13" Attributes="3" Property="ALWAYS_ON_TOP" Text="Always On Top" Order="1700"/>
     <ROW Dialog_="FolderDlg" Control="Edit_1" Type="Edit" X="360" Y="143" Width="2" Height="9" Attributes="2" Property="INVALID_POD_URL" Text="{260}" Order="1800"/>
-    <ROW Dialog_="FolderDlg" Control="BringToFrontCheckBox" Type="CheckBox" X="172" Y="199" Width="98" Height="13" Attributes="3" Property="BRING_TO_FRONT" Text="Bring To Front" Order="1900"/>
+    <ROW Dialog_="FolderDlg" Control="BringToFrontCheckBox" Type="CheckBox" X="172" Y="199" Width="132" Height="13" Attributes="3" Property="BRING_TO_FRONT" Text="Bring to Front on Notifications" Order="1900"/>
     <ROW Dialog_="InstallTypeDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048576" Text="[DialogBitmap]" Order="100" MsiKey="InstallTypeDlg#BannerBitmap"/>
     <ROW Dialog_="InstallTypeDlg" Control="Bitmap_background" Type="Bitmap" X="0" Y="0" Width="370" Height="234" Attributes="1" Text="[DialogBitmap]" Order="200"/>
     <ROW Dialog_="InstallTypeDlg" Control="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Next]" Order="300" TextLocId="-" MsiKey="InstallTypeDlg#Next" Options="1"/>
@@ -464,9 +464,9 @@
     <ROW Dialog_="VerifyDlg" Control="Text_6" Type="Text" X="110" Y="139" Width="145" Height="10" Attributes="65539" Property="AUTO_START_LABEL" Text="[AUTO_START_LABEL]" Order="1500"/>
     <ROW Dialog_="VerifyDlg" Control="Text_7" Type="Text" X="25" Y="164" Width="76" Height="13" Attributes="65539" Property="TEXT_3_PROP_1_1" Text="Minimize on Close : " Order="1600"/>
     <ROW Dialog_="VerifyDlg" Control="Text_8" Type="Text" X="110" Y="164" Width="145" Height="10" Attributes="65539" Property="MINIMIZE_ON_CLOSE_LABEL" Text="[MINIMIZE_ON_CLOSE_LABEL]" Order="1700"/>
-    <ROW Dialog_="VerifyDlg" Control="Text_9" Type="Text" X="25" Y="67" Width="321" Height="25" Attributes="65539" Property="TEXT_9_PROP" Text="You seem to have entered an invalid pod url. Please go back to the previous screen and rectify it." Order="1800"/>
-    <ROW Dialog_="VerifyDlg" Control="Text_10" Type="Text" X="25" Y="188" Width="76" Height="13" Attributes="65539" Property="TEXT_3_PROP_1_1_1" Text="Bring to front : " Order="1900"/>
-    <ROW Dialog_="VerifyDlg" Control="Text_11" Type="Text" X="110" Y="188" Width="145" Height="10" Attributes="65539" Property="BRING_TO_FRONT_LABEL" Text="[BRING_TO_FRONT_LABEL]" Order="2000"/>
+    <ROW Dialog_="VerifyDlg" Control="Text_9" Type="Text" X="25" Y="60" Width="321" Height="25" Attributes="65539" Property="TEXT_9_PROP" Text="You seem to have entered an invalid pod url. Please go back to the previous screen and rectify it." Order="1800"/>
+    <ROW Dialog_="VerifyDlg" Control="Text_10" Type="Text" X="25" Y="189" Width="76" Height="21" Attributes="65539" Property="TEXT_3_PROP_1_1_1" Text="Bring to Front on Notifications : " Order="1900"/>
+    <ROW Dialog_="VerifyDlg" Control="Text_11" Type="Text" X="110" Y="194" Width="145" Height="10" Attributes="65539" Property="BRING_TO_FRONT_LABEL" Text="[BRING_TO_FRONT_LABEL]" Order="2000"/>
     <ROW Dialog_="VerifyReadyDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="300" MsiKey="VerifyReadyDlg#BannerBitmap"/>
     <ROW Dialog_="VerifyReadyDlg" Control="Logo" Type="Text" X="5" Y="228" Width="39" Height="12" Attributes="1" Text="Symphony" Order="500" TextLocId="Control.Text.VerifyReadyDlg#Logo" MsiKey="VerifyReadyDlg#Logo"/>
     <ROW Dialog_="VerifyReadyDlg" Control="Text" Type="Text" X="25" Y="70" Width="320" Height="21" Attributes="196611" Text="Click &quot;Install&quot; to begin the installation.  If you want to review or change any of your installation settings, click &quot;Back&quot;.  Click &quot;Cancel&quot; to exit the wizard." Order="700" TextLocId="Control.Text.VerifyReadyDlg#Text" MsiKey="VerifyReadyDlg#Text"/>
@@ -476,7 +476,7 @@
     <ROW Dialog_="VerifyRepairDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="300" MsiKey="VerifyRepairDlg#BannerBitmap"/>
     <ROW Dialog_="VerifyRepairDlg" Control="Logo" Type="Text" X="4" Y="228" Width="38" Height="12" Attributes="1" Text="Symphony" Order="500" TextLocId="Control.Text.VerifyRepairDlg#Logo" MsiKey="VerifyRepairDlg#Logo"/>
     <ROW Dialog_="VerifyRepairDlg" Control="Description" Type="Text" X="17" Y="21" Width="272" Height="14" Attributes="196611" Text="The [Wizard] is ready to begin the repair of [ProductName]." Order="900" TextLocId="Control.Text.VerifyRepairDlg#Description" MsiKey="VerifyRepairDlg#Description"/>
-    <ATTRIBUTE name="DeletedRows" value="ExitDialog#ViewReadmeText@FolderDlg#Logo@InstallTypeDlg#BannerLine@InstallTypeDlg#InstallTypeText@InstallTypeDlg#Logo@InstallTypeDlg#Title@ProgressDlg#Logo@InstallTypeDlg#Description"/>
+    <ATTRIBUTE name="DeletedRows" value="ExitDialog#ViewReadmeText@FolderDlg#Logo@InstallTypeDlg#BannerLine@InstallTypeDlg#Description@InstallTypeDlg#InstallTypeText@InstallTypeDlg#Logo@InstallTypeDlg#Title@ProgressDlg#Logo"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlConditionComponent">
     <ROW Dialog_="VerifyDlg" Control_="Next" Action="Disable" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
