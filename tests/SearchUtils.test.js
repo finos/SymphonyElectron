@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { isMac } = require('../js/utils/misc.js');
 
 let executionPath = null;
 let userConfigDir = null;
@@ -60,20 +61,32 @@ describe('Tests for Search Utils', function() {
 
         it('should return error', function (done) {
             const checkFreeSpace = jest.spyOn(SearchUtilsAPI, 'checkFreeSpace');
-            SearchUtilsAPI.path = undefined;
-            SearchUtilsAPI.checkFreeSpace().catch(function (err) {
-                expect(err).toEqual(new Error("Please provide path"));
-                expect(checkFreeSpace).toHaveBeenCalled();
-                done();
-            });
+            if (isMac) {
+                SearchUtilsAPI.path = undefined;
+                SearchUtilsAPI.checkFreeSpace().catch(function (err) {
+                    expect(err).toEqual(new Error("Please provide path"));
+                    expect(checkFreeSpace).toHaveBeenCalled();
+                    done();
+                });
+            } else {
+                SearchUtilsAPI.path = undefined;
+                SearchUtilsAPI.checkFreeSpace().catch(function (err) {
+                    expect(err).toBeTruthy();
+                    expect(checkFreeSpace).toHaveBeenCalled();
+                    done();
+                });
+            }
         });
 
         it('should return error invalid path', function (done) {
             const checkFreeSpace = jest.spyOn(SearchUtilsAPI, 'checkFreeSpace');
             SearchUtilsAPI.path = './tp';
+            if (!isMac) {
+                SearchUtilsAPI.path = 'A://test';
+            }
             SearchUtilsAPI.checkFreeSpace().catch(function (err) {
                 expect(checkFreeSpace).toHaveBeenCalled();
-                expect(err).toEqual(err);
+                expect(err).toBeTruthy();
                 done();
             });
         });
@@ -111,6 +124,7 @@ describe('Tests for Search Utils', function() {
                 language: 'en'
             };
             SearchUtilsAPI.updateUserConfig(1234567891011, data).then(function (res) {
+                data.indexVersion = 'v1';
                 expect(res).toEqual(data);
                 done();
             })
@@ -124,6 +138,7 @@ describe('Tests for Search Utils', function() {
             };
             SearchUtilsAPI.updateUserConfig(1234567891011, data).then(function (res) {
                 expect(res.rotationId).toEqual(1);
+                expect(res.indexVersion).toEqual('v1');
                 done();
             })
         });

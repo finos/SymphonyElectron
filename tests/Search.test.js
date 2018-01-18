@@ -1,6 +1,7 @@
 const childProcess = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const { isMac } = require('../js/utils/misc.js');
 
 let executionPath = null;
 let userConfigDir = null;
@@ -45,6 +46,9 @@ describe('Tests for Search', function() {
             key = 'jjjehdnctsjyieoalskcjdhsnahsadndfnusdfsdfsd=';
 
             executionPath = path.join(__dirname, 'library');
+            if (!isMac) {
+                executionPath = path.join(__dirname, '..', 'library');
+            }
             userConfigDir = path.join(__dirname, '..');
 
             searchConfig = require('../js/search/searchConfig.js');
@@ -53,7 +57,7 @@ describe('Tests for Search', function() {
 
             realTimeIndexPath = path.join(userConfigDir, 'data', 'temp_realtime_index');
             tempBatchPath = path.join(userConfigDir, 'data', 'temp_batch_indexes');
-            dataFolderPath = path.join(searchConfig.FOLDERS_CONSTANTS.EXEC_PATH, '..', 'data');
+            dataFolderPath = path.join(userConfigDir, 'data');
             if (fs.existsSync(dataFolderPath)) {
                 fs.unlinkSync(dataFolderPath)
             }
@@ -65,7 +69,7 @@ describe('Tests for Search', function() {
         setTimeout(function () {
 
             deleteIndexFolders(dataFolderPath);
-            let root = path.join(searchConfig.FOLDERS_CONSTANTS.EXEC_PATH, '..', `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${userId}.enc`);
+            let root = path.join(userConfigDir, `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${userId}.enc`);
             if (fs.existsSync(root)) {
                 fs.unlinkSync(root);
             }
@@ -77,7 +81,7 @@ describe('Tests for Search', function() {
     function deleteIndexFolders(location) {
         if (fs.existsSync(location)) {
             fs.readdirSync(location).forEach(function(file) {
-                let curPath = location + "/" + file;
+                let curPath = path.join(location, file);
                 if (fs.lstatSync(curPath).isDirectory()) {
                     deleteIndexFolders(curPath);
                 } else {
@@ -421,11 +425,10 @@ describe('Tests for Search', function() {
         });
 
         it('should not get the latest timestamp', function (done) {
-            SearchApi.indexFolderName = '';
             const getLatestMessageTimestamp = jest.spyOn(SearchApi, 'getLatestMessageTimestamp');
+            deleteIndexFolders(dataFolderPath);
             SearchApi.getLatestMessageTimestamp().catch(function (err) {
                 expect(err).toEqual(new Error('Index folder does not exist.'));
-                SearchApi.indexFolderName = `${dataFolderPath}/${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${userId}`;
                 expect(getLatestMessageTimestamp).toHaveBeenCalled();
                 expect(getLatestMessageTimestamp).toHaveBeenCalledTimes(3);
                 done();
@@ -435,11 +438,13 @@ describe('Tests for Search', function() {
 
     describe('Test to decrypt the index', function () {
 
-        it('should decrypt the index', function () {
-            deleteIndexFolders(dataFolderPath);
-            const decryptAndInit = jest.spyOn(SearchApi, 'decryptAndInit');
-            SearchApi.decryptAndInit();
-            expect(decryptAndInit).toHaveBeenCalled();
+        it('should decrypt the index', function (done) {
+            setTimeout(function () {
+                const decryptAndInit = jest.spyOn(SearchApi, 'decryptAndInit');
+                SearchApi.decryptAndInit();
+                expect(decryptAndInit).toHaveBeenCalled();
+                done();
+            }, 3000);
         });
 
         it('should get message from the decrypted index', function (done) {
@@ -480,17 +485,19 @@ describe('Tests for Search', function() {
         });
 
         it('should search fails index folder not fund', function (done) {
-            const searchQuery = jest.spyOn(SearchApi, 'searchQuery');
             deleteIndexFolders(dataFolderPath);
-            SearchApi.searchQuery('it works', [], [], '', '', '', 25, 0, 0).catch(function (err) {
-                expect(err).toEqual(new Error('Index folder does not exist.'));
-                expect(searchQuery).toHaveBeenCalledTimes(8);
-                expect(searchQuery).toHaveBeenCalled();
-                SearchApi = undefined;
-                const { Search } = require('../js/search/search.js');
-                SearchApi = new Search(userId, key);
-                done();
-            });
+            setTimeout(function () {
+                const searchQuery = jest.spyOn(SearchApi, 'searchQuery');
+                SearchApi.searchQuery('it works', [], [], '', '', '', 25, 0, 0).catch(function (err) {
+                    expect(err).toEqual(new Error('Index folder does not exist.'));
+                    expect(searchQuery).toHaveBeenCalledTimes(8);
+                    expect(searchQuery).toHaveBeenCalled();
+                    SearchApi = undefined;
+                    const { Search } = require('../js/search/search.js');
+                    SearchApi = new Search(userId, key);
+                    done();
+                })
+            }, 3000);
         });
 
         it('should search fails query is undefined', function (done) {
