@@ -117,12 +117,11 @@ function createUser(userId, oldConfig) {
 function createUserConfigFile(userId, data) {
     let userData = data;
 
-    if (userData && !userData.indexVersion) {
-        userData.indexVersion = searchConfig.INDEX_VERSION;
-    }
-
     let createStream = fs.createWriteStream(searchConfig.FOLDERS_CONSTANTS.USER_CONFIG_FILE);
     if (userData) {
+        if (!userData.indexVersion) {
+            userData.indexVersion = searchConfig.INDEX_VERSION;
+        }
         try {
             userData = JSON.stringify(userData);
             createStream.write(`{"${userId}": ${userData}}`);
