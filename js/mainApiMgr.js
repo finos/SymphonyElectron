@@ -106,7 +106,7 @@ electron.ipcMain.on(apiName, (event, arg) => {
                 // validates the user bring to front config and activates the wrapper
                 if (typeof arg.reason === 'string' && arg.reason === 'bringToFront') {
                     bringToFront(arg.windowName);
-                    return;
+                    break;
                 }
                 windowMgr.activate(arg.windowName);
             }
