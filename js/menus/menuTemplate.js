@@ -9,9 +9,18 @@ const logLevels = require('../enums/logLevels.js');
 const eventEmitter = require('../eventEmitter');
 const aboutApp = require('../aboutApp');
 
+const configFields = [
+    'minimizeOnClose',
+    'launchOnStartup',
+    'alwaysOnTop',
+    'notificationSettings',
+    'bringToFront'
+];
+
 let minimizeOnClose = false;
 let launchOnStartup = false;
 let isAlwaysOnTop = false;
+let bringToFront = false;
 
 let symphonyAutoLauncher;
 
@@ -254,6 +263,17 @@ function getTemplate(app) {
         }
     });
 
+    // Window menu -> bringToFront
+    template[index].submenu.push({
+        label: 'Bring to Front on Notifications',
+        type: 'checkbox',
+        checked: bringToFront,
+        click: function(item) {
+            bringToFront = item.checked;
+            updateConfigField('bringToFront', bringToFront);
+        }
+    });
+
     if (!isMac) {
         template[index].submenu.push({
             label: 'Quit Symphony',
@@ -284,7 +304,7 @@ function setCheckboxValues() {
         /**
          * Method that reads multiple config fields
          */
-        getMultipleConfigField(['minimizeOnClose', 'launchOnStartup', 'alwaysOnTop', 'notificationSettings'])
+        getMultipleConfigField(configFields)
             .then(function (configData) {
                 for (let key in configData) {
                     if (configData.hasOwnProperty(key)) { // eslint-disable-line no-prototype-builtins
@@ -301,6 +321,9 @@ function setCheckboxValues() {
                                 break;
                             case 'notificationSettings':
                                 eventEmitter.emit('notificationSettings', configData[key]);
+                                break;
+                            case 'bringToFront':
+                                bringToFront = configData[key];
                                 break;
                             default:
                                 break;

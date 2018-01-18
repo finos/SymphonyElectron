@@ -13,6 +13,7 @@ const activityDetection = require('./activityDetection');
 const badgeCount = require('./badgeCount.js');
 const protocolHandler = require('./protocolHandler');
 const configureNotification = require('./notify/settings/configure-notification-position');
+const { bringToFront } = require('./bringToFront.js');
 const eventEmitter = require('./eventEmitter');
 const { isMac } = require('./utils/misc');
 
@@ -102,6 +103,11 @@ electron.ipcMain.on(apiName, (event, arg) => {
             break;
         case apiCmds.activate:
             if (typeof arg.windowName === 'string') {
+                // validates the user bring to front config and activates the wrapper
+                if (typeof arg.reason === 'string' && arg.reason === 'bringToFront') {
+                    bringToFront(arg.windowName);
+                    break;
+                }
                 windowMgr.activate(arg.windowName);
             }
             break;

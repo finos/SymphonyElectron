@@ -109,6 +109,7 @@ class Notify {
                 this.destroy();
             }
         }
+
     }
 
     /**
