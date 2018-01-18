@@ -13,6 +13,8 @@ const activityDetection = require('./activityDetection');
 const badgeCount = require('./badgeCount.js');
 const protocolHandler = require('./protocolHandler');
 const configureNotification = require('./notify/settings/configure-notification-position');
+const eventEmitter = require('./eventEmitter');
+const { isMac } = require('./utils/misc');
 
 const apiEnums = require('./enums/api.js');
 const apiCmds = apiEnums.cmds;
@@ -45,6 +47,24 @@ function isValidWindow(event) {
     }
 
     return result;
+}
+
+/**
+ * Method that is invoked when the application is reloaded/navigated
+ * window.addEventListener('beforeunload')
+ * @param windowName
+ */
+function reload(windowName) {
+    // To make sure the reload event is from the main window
+    if (windowMgr.getMainWindow() && windowName === windowMgr.getMainWindow().winName) {
+        // reset the badge count whenever an user refreshes the electron client
+        badgeCount.show(0);
+
+        // Terminates the screen snippet process on reload
+        if (!isMac) {
+            eventEmitter.emit('killScreenSnippet');
+        }
+    }
 }
 
 /**
@@ -102,6 +122,10 @@ electron.ipcMain.on(apiName, (event, arg) => {
 
     if (arg.cmd === apiCmds.showNotificationSettings && typeof arg.windowName === 'string') {
         configureNotification.openConfigurationWindow(arg.windowName);
+    }
+
+    if (arg.cmd === apiCmds.reload && typeof arg.windowName === 'string') {
+        reload(arg.windowName);
     }
 });
 

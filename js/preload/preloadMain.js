@@ -367,17 +367,17 @@ function createAPI() {
         });
     }
 
-    // reset the badge count whenever an user refreshes the electron client
-    function resetBadgeCount() {
+    // Invoked whenever the app is reloaded/navigated
+    function reload() {
         local.ipcRenderer.send(apiName, {
-            cmd: apiCmds.setBadgeCount,
-            count: 0
+            cmd: apiCmds.reload,
+            windowName: window.name
         });
     }
 
     window.addEventListener('offline', updateOnlineStatus, false);
     window.addEventListener('online', updateOnlineStatus, false);
-    window.addEventListener('beforeunload', resetBadgeCount, false);
+    window.addEventListener('beforeunload', reload, false);
 
     updateOnlineStatus();
 }

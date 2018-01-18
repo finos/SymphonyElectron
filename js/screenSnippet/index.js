@@ -181,6 +181,14 @@ function createWarn(msg) {
 }
 /* eslint-enable class-methods-use-this */
 
+// terminates the screen snippet process wherever the
+// main window is reloaded/navigated
+eventEmitter.on('killScreenSnippet', function () {
+    if (child) {
+        child.kill();
+    }
+});
+
 module.exports = {
     ScreenSnippet: ScreenSnippet,
     // note: readResult only exposed for testing purposes
