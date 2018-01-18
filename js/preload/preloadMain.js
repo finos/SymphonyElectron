@@ -368,16 +368,16 @@ function createAPI() {
     }
 
     // Invoked whenever the app is reloaded/navigated
-    function reload() {
+    function sanitize() {
         local.ipcRenderer.send(apiName, {
-            cmd: apiCmds.reload,
+            cmd: apiCmds.sanitize,
             windowName: window.name
         });
     }
 
     window.addEventListener('offline', updateOnlineStatus, false);
     window.addEventListener('online', updateOnlineStatus, false);
-    window.addEventListener('beforeunload', reload, false);
+    window.addEventListener('beforeunload', sanitize, false);
 
     updateOnlineStatus();
 }

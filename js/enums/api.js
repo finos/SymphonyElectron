@@ -16,7 +16,7 @@ const cmds = keyMirror({
     registerProtocolHandler: null,
     registerActivityDetection: null,
     showNotificationSettings: null,
-    reload: null
+    sanitize: null
 });
 
 module.exports = {
