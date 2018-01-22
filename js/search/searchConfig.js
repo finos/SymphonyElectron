@@ -26,12 +26,18 @@ const libraryPath = isMac ? path.join(macLibraryPath, 'libsymphonysearch.dylib')
 const userConfigFileName = 'search_users_config.json';
 const userConfigFile = isDevEnv ? path.join(__dirname, '..', '..', userConfigFileName) : path.join(userData, userConfigFileName);
 
+const libraryFolderPath = isMac ? path.join(macLibraryPath) : path.join(winLibraryPath);
+
+const launchdSHFile = path.join(libraryFolderPath, 'search-launchd.sh');
+
 const libraryPaths = {
     INDEX_VALIDATOR: indexValidatorPath,
     LZ4_PATH: lz4Path,
     MAC_LIBRARY_FOLDER: macLibraryPath,
     WIN_LIBRARY_FOLDER: winLibraryPath,
-    SEARCH_LIBRARY_PATH: libraryPath
+    SEARCH_LIBRARY_PATH: libraryPath,
+    LIBRARY_FOLDER_PATH: libraryFolderPath,
+    LAUNCHD_SH_FILE: launchdSHFile
 };
 
 const folderPaths = {
