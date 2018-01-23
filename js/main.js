@@ -13,7 +13,7 @@ const urlParser = require('url');
 // Local Dependencies
 const {getConfigField, updateUserConfigWin, updateUserConfigMac, readConfigFileSync} = require('./config.js');
 const {setCheckboxValues} = require('./menus/menuTemplate.js');
-const { isMac, isDevEnv } = require('./utils/misc.js');
+const { isMac, isDevEnv, isWindowsOS } = require('./utils/misc.js');
 const protocolHandler = require('./protocolHandler');
 const getCmdLineArg = require('./utils/getCmdLineArg.js');
 const log = require('./log.js');
@@ -21,6 +21,15 @@ const logLevels = require('./enums/logLevels.js');
 const { deleteIndexFolder } = require('./search/search.js');
 
 require('electron-dl')();
+
+// ELECTRON-261: On Windows, due to gpu issues, we need to disable gpu
+// to ensure screen sharing works effectively with multiple monitors
+// https://github.com/electron/electron/issues/4380
+if (isWindowsOS) {
+    app.commandLine.appendSwitch("disable-gpu", true);
+    app.commandLine.appendSwitch("disable-gpu-compositing", true);
+    app.commandLine.appendSwitch("disable-d3d11", true);
+}
 
 //setting the env path child_process issue https://github.com/electron/electron/issues/7688
 shellPath()
