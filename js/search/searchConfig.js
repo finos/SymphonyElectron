@@ -29,6 +29,7 @@ const userConfigFile = isDevEnv ? path.join(__dirname, '..', '..', userConfigFil
 const libraryFolderPath = isMac ? path.join(macLibraryPath) : path.join(winLibraryPath);
 
 const launchdSHFile = path.join(libraryFolderPath, 'search-launchd.sh');
+const searchStartUp = path.join(libraryFolderPath, 'search-start-up-script.sh');
 
 const libraryPaths = {
     INDEX_VALIDATOR: indexValidatorPath,
@@ -37,7 +38,8 @@ const libraryPaths = {
     WIN_LIBRARY_FOLDER: winLibraryPath,
     SEARCH_LIBRARY_PATH: libraryPath,
     LIBRARY_FOLDER_PATH: libraryFolderPath,
-    LAUNCHD_SH_FILE: launchdSHFile
+    LAUNCHD_SH_FILE: launchdSHFile,
+    START_UP_SH_FILE: searchStartUp
 };
 
 const folderPaths = {

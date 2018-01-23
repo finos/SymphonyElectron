@@ -10,7 +10,7 @@ const makeBoundTimedCollector = require('./queue');
 const searchConfig = require('./searchConfig');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
-const { getProcessID, launchd } = require('./utils/search-launchd.js');
+const { getProcessID, launchd, startUpCleaner } = require('./utils/search-launchd.js');
 
 const libSymphonySearch = require('./searchLibrary');
 const Crypto = require('../cryptoLib');
@@ -91,7 +91,8 @@ class Search {
             }
             let folderPath = isDevEnv ? path.join(__dirname, '..', '..', searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME) :
                 path.join(searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH, searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME);
-            launchd(res, searchConfig.LIBRARY_CONSTANTS.LAUNCHD_SH_FILE, folderPath)
+            launchd(res, searchConfig.LIBRARY_CONSTANTS.LAUNCHD_SH_FILE, folderPath);
+            startUpCleaner(searchConfig.LIBRARY_CONSTANTS.START_UP_SH_FILE, folderPath);
         });
     }
 
