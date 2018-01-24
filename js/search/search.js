@@ -97,9 +97,9 @@ class Search {
                 startUpCleaner(searchConfig.LIBRARY_CONSTANTS.START_UP_SH_FILE, folderPath);
             });
         } else {
-            folderPath = isDevEnv ? path.join(__dirname, '..', '..', searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME) :
-                path.join(searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH, searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME);
-            taskScheduler(searchConfig.LIBRARY_CONSTANTS.START_UP_SH_FILE, folderPath)
+            folderPath = isDevEnv ? path.join(__dirname, '..', '..', searchConfig.LIBRARY_CONSTANTS.WINDOWS_BAT_FILE) :
+                path.join(searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH, searchConfig.LIBRARY_CONSTANTS.WINDOWS_BAT_FILE);
+            taskScheduler(searchConfig.LIBRARY_CONSTANTS.START_UP_SH_FILE, folderPath);
         }
     }
 
