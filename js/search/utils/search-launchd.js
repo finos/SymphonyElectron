@@ -21,7 +21,7 @@ function getProcessID(callback) {
 
 function launchd(pid, script, dataPath) {
     let _pid = parseInt(pid, 10);
-    exec(`sh ${script} true ${_pid} ${dataPath}`, (error, stdout, stderr) => {
+    exec(`sh ${script} true ${_pid} '${dataPath}'`, (error, stdout, stderr) => {
         if (error) {
             log.send(logLevels.ERROR, `Lanuchd: Error creating script ${error}`);
         }
@@ -33,7 +33,7 @@ function launchd(pid, script, dataPath) {
 }
 
 function startUpCleaner(script, dataPath) {
-    exec(`sh ${script} true ${dataPath}`, (error, stdout, stderr) => {
+    exec(`sh ${script} true '${dataPath}'`, (error, stdout, stderr) => {
         if (error) {
             log.send(logLevels.ERROR, `Lanuchd: Error creating script ${error}`);
         }
@@ -44,8 +44,13 @@ function startUpCleaner(script, dataPath) {
     });
 }
 
+function taskScheduler(script, dataFolder) {
+    exec(`SCHTASKS /Create /SC MINUTE /TN SymphonySearchTask /TR "'${script}' '${dataFolder}'"`)
+}
+
 module.exports = {
     getProcessID,
     launchd,
-    startUpCleaner
+    startUpCleaner,
+    taskScheduler
 };

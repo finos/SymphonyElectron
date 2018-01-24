@@ -3,7 +3,7 @@ pid=$2
 data=$3
 
 if $1; then
-    cat > ~/Library/LaunchAgents/com.symphony-search.plist << EOT
+    cat > ~/Library/LaunchAgents/com.symphony-search.data.plist << EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -23,12 +23,12 @@ if $1; then
 </dict>
 </plist>
 EOT
-launchctl load ~/Library/LaunchAgents/com.symphony-search.plist
+launchctl load ~/Library/LaunchAgents/com.symphony-search.data.plist
 elif ps -p $pid > /dev/null
 then
     echo true
 else
     echo false
     rm -rf $data
-    launchctl unload ~/Library/LaunchAgents/com.symphony-search.plist
+    launchctl unload ~/Library/LaunchAgents/com.symphony-search.data.plist
 fi
