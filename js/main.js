@@ -13,7 +13,7 @@ const urlParser = require('url');
 // Local Dependencies
 const {getConfigField, updateUserConfigWin, updateUserConfigMac, readConfigFileSync} = require('./config.js');
 const {setCheckboxValues} = require('./menus/menuTemplate.js');
-const { isMac, isDevEnv, isWindowsOS } = require('./utils/misc.js');
+const { isMac, isDevEnv } = require('./utils/misc.js');
 const protocolHandler = require('./protocolHandler');
 const getCmdLineArg = require('./utils/getCmdLineArg.js');
 const log = require('./log.js');
