@@ -91,10 +91,12 @@ class Search {
                 if (!res) {
                     log.send(logLevels.ERROR, 'PID: Error Getting PID ' + res)
                 }
-                folderPath = isDevEnv ? path.join(__dirname, '..', '..', searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME) :
-                    path.join(searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH, searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME);
-                launchd(res, searchConfig.LIBRARY_CONSTANTS.LAUNCHD_SH_FILE, folderPath);
-                startUpCleaner(searchConfig.LIBRARY_CONSTANTS.START_UP_SH_FILE, folderPath);
+                createScriptFile(res, function () {
+                    folderPath = isDevEnv ? path.join(__dirname, '..', '..', searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME) :
+                        path.join(searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH, searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME);
+                    launchd(res, `${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data.sh`);
+                    startUpCleaner(searchConfig.LIBRARY_CONSTANTS.START_UP_SH_FILE, folderPath);
+                });
             });
         } else {
             folderPath = isDevEnv ? path.join(__dirname, '..', '..', searchConfig.LIBRARY_CONSTANTS.WINDOWS_BAT_FILE) :
@@ -233,35 +235,6 @@ class Search {
                 throw new Error(err);
             }
             return result;
-        });
-    }
-
-    /**
-     * Reading a json file
-     * for the demo search app only
-     * @param {String} batch
-     * @returns {Promise}
-     */
-    readJson(batch) {
-        return new Promise((resolve, reject) => {
-            let dirPath = path.join(searchConfig.FOLDERS_CONSTANTS.EXEC_PATH, isMac ? '..' : '', 'msgsjson', batch);
-            let messageFolderPath = isDevEnv ? path.join('./msgsjson', batch) : dirPath;
-            let files = fs.readdirSync(messageFolderPath);
-            this.messageData = [];
-            files.forEach((file) => {
-                let tempPath = path.join(messageFolderPath, file);
-                let data = fs.readFileSync(tempPath, "utf8");
-                if (data) {
-                    try {
-                        this.messageData.push(JSON.parse(data));
-                    } catch (err) {
-                        reject(new Error(err))
-                    }
-                } else {
-                    reject(new Error('Error reading batch'))
-                }
-            });
-            resolve(this.messageData);
         });
     }
 
@@ -606,6 +579,29 @@ class Search {
  */
 function deleteIndexFolder() {
     Search.deleteIndexFolders(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
+}
+
+function createScriptFile(pid, cb) {
+    fs.readFile(searchConfig.LIBRARY_CONSTANTS.LAUNCHD_SH_FILE, 'utf8', function(err,data) {
+        if (err) {
+            log.send(logLevels.ERROR, `Error reading sh file: ${err}`);
+        }
+        let result = data;
+        result = result.replace(/dataPath/g, `"${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/data"`);
+        result = result.replace(/scriptPath/g, `${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data.sh`);
+        result = result.replace(/SymphonyPID/g, `${pid}`);
+
+        if (!fs.existsSync(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/`)) {
+            fs.mkdirSync(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/`);
+        }
+
+        fs.writeFile(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data.sh`, result, 'utf8', function (error, res) {
+            if (error) {
+                log.send(logLevels.ERROR, `Error writing  sh file: ${error}`);
+            }
+            return cb(res)
+        });
+    });
 }
 
 /**

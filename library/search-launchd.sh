@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 pid=$2
-data=$3
 
 if $1; then
     cat > ~/Library/LaunchAgents/com.symphony-search.data.plist << EOT
@@ -13,10 +12,9 @@ if $1; then
   <key>ProgramArguments</key>
   <array>
   	<string>/bin/sh</string>
-    <string>$0</string>
+    <string>scriptPath</string>
     <string>false</string>
-    <string>$pid</string>
-    <string>$data</string>
+    <string>SymphonyPID</string>
   </array>
   <key>StartInterval</key>
   <integer>10</integer>
@@ -29,6 +27,6 @@ then
     echo true
 else
     echo false
-    rm -rf $data
+    rm -rf dataPath
     launchctl unload ~/Library/LaunchAgents/com.symphony-search.data.plist
 fi

@@ -4,7 +4,7 @@ const logLevels = require('../../enums/logLevels.js');
 
 function getProcessID(callback) {
 
-    exec('ps -A | grep electron', (error, stdout, stderr) => {
+    exec('ps -A | grep Symphony', (error, stdout, stderr) => {
         if (error) {
             log.send(logLevels.ERROR, `PID: Error getting pid ${error}`);
             return callback(false);
@@ -19,9 +19,9 @@ function getProcessID(callback) {
     });
 }
 
-function launchd(pid, script, dataPath) {
+function launchd(pid, script) {
     let _pid = parseInt(pid, 10);
-    exec(`sh ${script} true ${_pid} '${dataPath}'`, (error, stdout, stderr) => {
+    exec(`sh "${script}" true ${_pid}`, (error, stdout, stderr) => {
         if (error) {
             log.send(logLevels.ERROR, `Lanuchd: Error creating script ${error}`);
         }
