@@ -28,9 +28,9 @@ const userConfigFile = isDevEnv ? path.join(__dirname, '..', '..', userConfigFil
 
 const libraryFolderPath = isMac ? macLibraryPath : winLibraryPath;
 
-const launchdSHFile = path.join(libraryFolderPath, 'search-launchd.sh');
-const searchStartUp = path.join(libraryFolderPath, 'search-start-up-script.sh');
-const windowsBatFile = path.join(libraryFolderPath, 'search-clear-win-script.bat');
+const launchAgentFile = path.join(libraryFolderPath, 'search-launch-agent.sh');
+const launchDaemonFile = path.join(libraryFolderPath, 'search-launch-daemon.sh');
+const windowsBatFile = path.join(libraryFolderPath, 'search-win-task-script.bat');
 
 const libraryPaths = {
     INDEX_VALIDATOR: indexValidatorPath,
@@ -39,8 +39,8 @@ const libraryPaths = {
     WIN_LIBRARY_FOLDER: winLibraryPath,
     SEARCH_LIBRARY_PATH: libraryPath,
     LIBRARY_FOLDER_PATH: libraryFolderPath,
-    LAUNCHD_SH_FILE: launchdSHFile,
-    START_UP_SH_FILE: searchStartUp,
+    LAUNCH_AGENT_FILE: launchAgentFile,
+    LAUNCH_DAEMON_FILE: launchDaemonFile,
     WINDOWS_BAT_FILE: windowsBatFile
 };
 

@@ -2,6 +2,10 @@ const { exec } = require('child_process');
 const log = require('../../log.js');
 const logLevels = require('../../enums/logLevels.js');
 
+/**
+ * Gets the application current Process ID
+ * @param callback
+ */
 function getProcessID(callback) {
 
     exec('ps -A | grep Symphony', (error, stdout, stderr) => {
@@ -19,7 +23,12 @@ function getProcessID(callback) {
     });
 }
 
-function launchd(pid, script) {
+/**
+ * Clears the data folder on app crash
+ * @param pid
+ * @param script
+ */
+function launchAgent(pid, script) {
     let _pid = parseInt(pid, 10);
     exec(`sh "${script}" true ${_pid}`, (error, stdout, stderr) => {
         if (error) {
@@ -32,7 +41,12 @@ function launchd(pid, script) {
     });
 }
 
-function startUpCleaner(script, dataPath) {
+/**
+ * Clears the data folder on boot
+ * @param script
+ * @param dataPath
+ */
+function launchDaemon(script, dataPath) {
     exec(`sh ${script} true '${dataPath}'`, (error, stdout, stderr) => {
         if (error) {
             log.send(logLevels.ERROR, `Lanuchd: Error creating script ${error}`);
@@ -44,13 +58,18 @@ function startUpCleaner(script, dataPath) {
     });
 }
 
+/**
+ * Windows clears the data folder on app crash
+ * @param script
+ * @param dataFolder
+ */
 function taskScheduler(script, dataFolder) {
     exec(`SCHTASKS /Create /SC MINUTE /TN SymphonySearchTask /TR "'${script}' '${dataFolder}'"`)
 }
 
 module.exports = {
     getProcessID,
-    launchd,
-    startUpCleaner,
+    launchAgent,
+    launchDaemon,
     taskScheduler
 };

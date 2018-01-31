@@ -17,7 +17,7 @@ if $1; then
     <string>SymphonyPID</string>
   </array>
   <key>StartInterval</key>
-  <integer>10</integer>
+  <integer>60</integer>
 </dict>
 </plist>
 EOT
