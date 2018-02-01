@@ -134,6 +134,12 @@ electron.ipcMain.on(apiName, (event, arg) => {
                 sanitize(arg.windowName);
             }
             break;
+        case apiCmds.popupMenu:
+            var browserWin = electron.BrowserWindow.fromWebContents(event.sender);
+            if (browserWin && !browserWin.isDestroyed()) {
+                windowMgr.getMenu().popup(browserWin, { x: 20, y: 15, async: true });
+            }
+            break;
         default:
     }
 

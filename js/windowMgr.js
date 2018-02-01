@@ -20,7 +20,7 @@ const notify = require('./notify/electron-notify.js');
 const eventEmitter = require('./eventEmitter');
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField } = require('./config.js');
-const { isMac, isNodeEnv } = require('./utils/misc');
+const { isMac, isNodeEnv, isWindows10 } = require('./utils/misc');
 const { deleteIndexFolder } = require('./search/search.js');
 const { isWhitelisted } = require('./utils/whitelistHandler');
 
@@ -43,6 +43,9 @@ let sandboxed = false;
 // By default, we set the user's default download directory
 let defaultDownloadsDirectory = app.getPath("downloads");
 let downloadsDirectory = defaultDownloadsDirectory;
+
+// Application menu
+let menu;
 
 // note: this file is built using browserify in prebuild step.
 const preloadMainScript = path.join(__dirname, 'preload/_preloadMain.js');
@@ -112,6 +115,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         show: true,
         minWidth: MIN_WIDTH,
         minHeight: MIN_HEIGHT,
+        frame: !isWindows10(),
         alwaysOnTop: false,
         webPreferences: {
             sandbox: sandboxed,
@@ -215,8 +219,12 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     addWindowKey(key, mainWindow);
     mainWindow.loadURL(url);
 
-    const menu = electron.Menu.buildFromTemplate(getTemplate(app));
-    electron.Menu.setApplicationMenu(menu);
+    menu = electron.Menu.buildFromTemplate(getTemplate(app));
+    if (isWindows10()) {
+        mainWindow.setMenu(menu);
+    } else {
+        electron.Menu.setApplicationMenu(menu);
+    }
 
     mainWindow.on('close', function (e) {
         if (willQuitApp) {
@@ -513,6 +521,14 @@ function saveMainWinBounds() {
  */
 function getMainWindow() {
     return mainWindow;
+}
+
+/**
+ * Gets the application menu
+ * @returns {*}
+ */
+function getMenu() {
+    return menu;
 }
 
 /**
@@ -838,5 +854,6 @@ module.exports = {
     setIsOnline: setIsOnline,
     activate: activate,
     setBoundsChangeWindow: setBoundsChangeWindow,
-    verifyDisplays: verifyDisplays
+    verifyDisplays: verifyDisplays,
+    getMenu: getMenu
 };

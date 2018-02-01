@@ -18,6 +18,7 @@ const apiEnums = require('../enums/api.js');
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 const getMediaSources = require('../desktopCapturer/getSources');
+const { TitleBar } = require('../windowTitlebar');
 
 require('../downloadManager');
 
@@ -27,6 +28,8 @@ require('../downloadManager');
 // block other method from loading
 document.addEventListener('DOMContentLoaded', () => {
     loadSpellChecker();
+    const titleBar = new TitleBar();
+    titleBar.initiateWindowsTitleBar();
 });
 
 /**
