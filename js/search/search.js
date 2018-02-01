@@ -581,7 +581,7 @@ function initializeLaunchAgent() {
                 }
                 folderPath = isDevEnv ? path.join(__dirname, '..', '..', searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME) :
                     path.join(searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH, searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME);
-                launchAgent(pidValue, `${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data.sh`, function (response) {
+                launchAgent(pidValue, `${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data${searchConfig.LIBRARY_CONSTANTS.EXT}`, function (response) {
                     if (response) {
                         log.send(logLevels.INFO, 'Launch Agent: Creating successful')
                     }
@@ -594,10 +594,10 @@ function initializeLaunchAgent() {
             });
         });
     } else {
-        createLaunchScript(function () {
+        createLaunchScript(0, function () {
             folderPath = isDevEnv ? path.join(__dirname, '..', '..', searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME) :
                 path.join(searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH, searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME);
-            taskScheduler(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data.sh`, folderPath);
+            taskScheduler(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data${searchConfig.LIBRARY_CONSTANTS.EXT}`, folderPath);
         });
     }
 }
@@ -623,11 +623,11 @@ function createLaunchScript(pid, cb) {
         let result = data;
         if (isMac) {
             result = result.replace(/dataPath/g, `"${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/${searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME}"`);
-            result = result.replace(/scriptPath/g, `${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data.sh`);
+            result = result.replace(/scriptPath/g, `${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data${searchConfig.LIBRARY_CONSTANTS.EXT}`);
             result = result.replace(/SymphonyPID/g, `${pid}`);
         }
 
-        fs.writeFile(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data.sh`, result, 'utf8', function (error) {
+        fs.writeFile(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data${searchConfig.LIBRARY_CONSTANTS.EXT}`, result, 'utf8', function (error) {
             if (error) {
                 log.send(logLevels.ERROR, `Error writing sh file: ${error}`);
                 return cb(false)
