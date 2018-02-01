@@ -4,7 +4,7 @@ create=$1
 data=$2
 
 if $1; then
-  mkdir ~/Library/LaunchDaemons/
+     mkdir ~/Library/LaunchDaemons/
      cat > ~/Library/LaunchDaemons/com.symphony-search.clear.plist << EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">

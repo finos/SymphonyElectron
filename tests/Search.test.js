@@ -12,10 +12,15 @@ let SearchApi;
 jest.mock('electron', function() {
     return {
         app: {
-            getPath: mockedGetPath
+            getPath: mockedGetPath,
+            getName: mockedGetName
         }
     }
 });
+
+function mockedGetName() {
+    return 'Symphony';
+}
 
 function mockedGetPath(type) {
     if (type === 'exe') {
@@ -35,6 +40,7 @@ describe('Tests for Search', function() {
     let dataFolderPath;
     let realTimeIndexPath;
     let tempBatchPath;
+    let launchAgent;
     let currentDate = new Date().getTime();
 
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 90000;
@@ -54,12 +60,12 @@ describe('Tests for Search', function() {
             searchConfig = require('../js/search/searchConfig.js');
             const { Search } = require('../js/search/search.js');
             SearchApi = new Search(userId, key);
-
+            launchAgent = require('../js/search/utils/search-launchd.js');
             realTimeIndexPath = path.join(userConfigDir, 'data', 'temp_realtime_index');
             tempBatchPath = path.join(userConfigDir, 'data', 'temp_batch_indexes');
             dataFolderPath = path.join(userConfigDir, 'data');
             if (fs.existsSync(dataFolderPath)) {
-                fs.unlinkSync(dataFolderPath)
+                deleteIndexFolders(dataFolderPath);
             }
             done();
         });
@@ -73,7 +79,10 @@ describe('Tests for Search', function() {
             if (fs.existsSync(root)) {
                 fs.unlinkSync(root);
             }
-
+            let script = `${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony`;
+            if (fs.existsSync(script)) {
+                deleteIndexFolders(script);
+            }
             done();
         }, 3000);
     });

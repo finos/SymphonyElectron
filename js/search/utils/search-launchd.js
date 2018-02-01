@@ -1,4 +1,6 @@
 const { exec } = require('child_process');
+const electron = require('electron');
+const app = electron.app;
 const log = require('../../log.js');
 const logLevels = require('../../enums/logLevels.js');
 
@@ -8,7 +10,7 @@ const logLevels = require('../../enums/logLevels.js');
  */
 function getProcessID(callback) {
 
-    exec('ps -A | grep Symphony', (error, stdout, stderr) => {
+    exec(`ps -A | grep ${app.getName()}`, (error, stdout, stderr) => {
         if (error) {
             log.send(logLevels.ERROR, `PID: Error getting pid ${error}`);
             return callback(false);
@@ -27,17 +29,19 @@ function getProcessID(callback) {
  * Clears the data folder on app crash
  * @param pid
  * @param script
+ * @param cb (callback)
  */
-function launchAgent(pid, script) {
+function launchAgent(pid, script, cb) {
     let _pid = parseInt(pid, 10);
     exec(`sh "${script}" true ${_pid}`, (error, stdout, stderr) => {
         if (error) {
             log.send(logLevels.ERROR, `Lanuchd: Error creating script ${error}`);
+            return cb(false);
         }
         if (stderr) {
             log.send(logLevels.ERROR, `Lanuchd: Error creating script ${stderr}`);
         }
-        log.send(logLevels.INFO, 'Lanuchd: Creating successful')
+        return cb(true);
     });
 }
 
@@ -45,16 +49,18 @@ function launchAgent(pid, script) {
  * Clears the data folder on boot
  * @param script
  * @param dataPath
+ * @param cb (callback)
  */
-function launchDaemon(script, dataPath) {
+function launchDaemon(script, dataPath, cb) {
     exec(`sh ${script} true '${dataPath}'`, (error, stdout, stderr) => {
         if (error) {
             log.send(logLevels.ERROR, `Lanuchd: Error creating script ${error}`);
+            return cb(false);
         }
         if (stderr) {
             log.send(logLevels.ERROR, `Lanuchd: Error creating script ${stderr}`);
         }
-        log.send(logLevels.INFO, `Lanuchd: Creating successful ${stdout}`)
+        return cb(true);
     });
 }
 

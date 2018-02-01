@@ -566,21 +566,31 @@ function deleteIndexFolder() {
  */
 function initializeLaunchAgent() {
     let folderPath;
+    let pidValue;
     if (isMac) {
         getProcessID(function (pid) {
             if (!pid) {
                 log.send(logLevels.ERROR, 'PID: Error Getting PID ' + pid);
                 return;
             }
-            createLaunchScript(pid, function (res) {
+            pidValue = pid;
+            createLaunchScript(pidValue, function (res) {
                 if (!res) {
                     log.send(logLevels.ERROR, `Launch Agent not created`);
                     return;
                 }
                 folderPath = isDevEnv ? path.join(__dirname, '..', '..', searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME) :
                     path.join(searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH, searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME);
-                launchAgent(res, `${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data.sh`);
-                launchDaemon(searchConfig.LIBRARY_CONSTANTS.LAUNCH_DAEMON_FILE, folderPath);
+                launchAgent(pidValue, `${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data.sh`, function (response) {
+                    if (response) {
+                        log.send(logLevels.INFO, 'Launch Agent: Creating successful')
+                    }
+                });
+                launchDaemon(searchConfig.LIBRARY_CONSTANTS.LAUNCH_DAEMON_FILE, folderPath, function (result) {
+                    if (result) {
+                        log.send(logLevels.INFO, 'Launch Daemon: Creating successful')
+                    }
+                });
             });
         });
     } else {
@@ -617,7 +627,7 @@ function createLaunchScript(pid, cb) {
                 log.send(logLevels.ERROR, `Error writing sh file: ${error}`);
                 return cb(false)
             }
-            return cb(res)
+            return cb(true)
         });
     });
 }
