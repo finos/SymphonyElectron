@@ -622,7 +622,7 @@ function createLaunchScript(pid, cb) {
             fs.mkdirSync(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/`);
         }
 
-        fs.writeFile(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data.sh`, result, 'utf8', function (error, res) {
+        fs.writeFile(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data.sh`, result, 'utf8', function (error) {
             if (error) {
                 log.send(logLevels.ERROR, `Error writing sh file: ${error}`);
                 return cb(false)
