@@ -594,9 +594,11 @@ function initializeLaunchAgent() {
             });
         });
     } else {
-        folderPath = isDevEnv ? path.join(__dirname, '..', '..', searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME) :
-            path.join(searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH, searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME);
-        taskScheduler(searchConfig.LIBRARY_CONSTANTS.WINDOWS_BAT_FILE, folderPath);
+        createLaunchScript(function () {
+            folderPath = isDevEnv ? path.join(__dirname, '..', '..', searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME) :
+                path.join(searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH, searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME);
+            taskScheduler(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data.sh`, folderPath);
+        });
     }
 }
 
@@ -607,19 +609,22 @@ function initializeLaunchAgent() {
  * @param cb
  */
 function createLaunchScript(pid, cb) {
-    fs.readFile(searchConfig.LIBRARY_CONSTANTS.LAUNCH_AGENT_FILE, 'utf8', function(err, data) {
+
+    if (!fs.existsSync(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/`)) {
+        fs.mkdirSync(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/`);
+    }
+    let scriptPath = isMac ? searchConfig.LIBRARY_CONSTANTS.LAUNCH_AGENT_FILE : searchConfig.LIBRARY_CONSTANTS.WINDOWS_BAT_FILE;
+    fs.readFile(scriptPath, 'utf8', function (err, data) {
         if (err) {
             log.send(logLevels.ERROR, `Error reading sh file: ${err}`);
             cb(false);
             return;
         }
         let result = data;
-        result = result.replace(/dataPath/g, `"${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/${searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME}"`);
-        result = result.replace(/scriptPath/g, `${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data.sh`);
-        result = result.replace(/SymphonyPID/g, `${pid}`);
-
-        if (!fs.existsSync(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/`)) {
-            fs.mkdirSync(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/`);
+        if (isMac) {
+            result = result.replace(/dataPath/g, `"${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/${searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME}"`);
+            result = result.replace(/scriptPath/g, `${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data.sh`);
+            result = result.replace(/SymphonyPID/g, `${pid}`);
         }
 
         fs.writeFile(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data.sh`, result, 'utf8', function (error) {
