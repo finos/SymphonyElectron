@@ -30,9 +30,9 @@ const libraryFolderPath = isMac ? macLibraryPath : winLibraryPath;
 
 const launchAgentFile = path.join(libraryFolderPath, 'search-launch-agent.sh');
 const launchDaemonFile = path.join(libraryFolderPath, 'search-launch-daemon.sh');
-const windowsBatFile = path.join(libraryFolderPath, 'search-win-task-script.bat');
+const windowsTaskFile = path.join(libraryFolderPath, 'search-win-task.exe');
 
-const scriptExt = isMac ? '.sh' : '.bat';
+const scriptExt = isMac ? '.sh' : '.exe';
 
 const libraryPaths = {
     INDEX_VALIDATOR: indexValidatorPath,
@@ -43,7 +43,7 @@ const libraryPaths = {
     LIBRARY_FOLDER_PATH: libraryFolderPath,
     LAUNCH_AGENT_FILE: launchAgentFile,
     LAUNCH_DAEMON_FILE: launchDaemonFile,
-    WINDOWS_BAT_FILE: windowsBatFile,
+    WINDOWS_TASK_FILE: windowsTaskFile,
     EXT: scriptExt,
 };
 
