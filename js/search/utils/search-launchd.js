@@ -70,7 +70,15 @@ function launchDaemon(script, dataPath, cb) {
  * @param dataFolder
  */
 function taskScheduler(script, dataFolder) {
-    exec(`SCHTASKS /Create /SC MINUTE /TN SymphonySearchTask /TR "'${script}' '${dataFolder}'"`)
+    exec(`SCHTASKS /Create /SC MINUTE /TN SymphonySearchTask /TR "'${script}' '${dataFolder}'"`, (error, stdout, stderr) => {
+        if (error) {
+            log.send(logLevels.ERROR, `Lanuchd: Error creating task ${error}`);
+        }
+        if (stderr) {
+            log.send(logLevels.WARN, `Lanuchd: Error creating task ${stderr}`);
+        }
+        log.send(logLevels.INFO, `Lanuchd: Creating task successful ${stdout}`);
+    });
 }
 
 module.exports = {

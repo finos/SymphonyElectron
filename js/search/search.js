@@ -583,12 +583,12 @@ function initializeLaunchAgent() {
                     path.join(searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH, searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME);
                 launchAgent(pidValue, `${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data${searchConfig.LIBRARY_CONSTANTS.EXT}`, function (response) {
                     if (response) {
-                        log.send(logLevels.INFO, 'Launch Agent: Creating successful')
+                        log.send(logLevels.INFO, 'Launch Agent: Creating successful');
                     }
                 });
                 launchDaemon(searchConfig.LIBRARY_CONSTANTS.LAUNCH_DAEMON_FILE, folderPath, function (result) {
                     if (result) {
-                        log.send(logLevels.INFO, 'Launch Daemon: Creating successful')
+                        log.send(logLevels.INFO, 'Launch Daemon: Creating successful');
                     }
                 });
             });
@@ -627,9 +627,9 @@ function createLaunchScript(pid, cb) {
             fs.writeFile(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data${searchConfig.LIBRARY_CONSTANTS.EXT}`, result, 'utf8', function (error) {
                 if (error) {
                     log.send(logLevels.ERROR, `Error writing sh file: ${error}`);
-                    return cb(false)
+                    return cb(false);
                 }
-                return cb(true)
+                return cb(true);
             });
         })
     }
