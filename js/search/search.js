@@ -594,11 +594,9 @@ function initializeLaunchAgent() {
             });
         });
     } else {
-        createLaunchScript(0, function () {
-            folderPath = isDevEnv ? path.join(__dirname, '..', '..', searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME) :
-                path.join(searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH, searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME);
-            taskScheduler(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data${searchConfig.LIBRARY_CONSTANTS.EXT}`, folderPath);
-        });
+        folderPath = isDevEnv ? path.join(__dirname, '..', '..', searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME) :
+            path.join(searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH, searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME);
+        taskScheduler(`${searchConfig.LIBRARY_CONSTANTS.WINDOWS_TASK_FILE}`, folderPath);
     }
 }
 
@@ -634,8 +632,6 @@ function createLaunchScript(pid, cb) {
                 return cb(true)
             });
         })
-    } else {
-        fs.copyFileSync(scriptPath, `${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data${searchConfig.LIBRARY_CONSTANTS.EXT}`)
     }
 }
 

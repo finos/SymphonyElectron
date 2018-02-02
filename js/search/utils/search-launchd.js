@@ -70,7 +70,7 @@ function launchDaemon(script, dataPath, cb) {
  * @param dataFolder
  */
 function taskScheduler(script, dataFolder) {
-    exec(`SCHTASKS /Create /SC MINUTE /TN SymphonySearchTask /TR '"${script}" "${dataFolder}"'`)
+    exec(`SCHTASKS /Create /SC MINUTE /TN SymphonySearchTask /TR "'${script}' '${dataFolder}'"`)
 }
 
 module.exports = {
