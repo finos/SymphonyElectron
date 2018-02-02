@@ -1,6 +1,7 @@
 const { exec } = require('child_process');
 const electron = require('electron');
 const app = electron.app;
+const randomString = require('randomstring');
 const log = require('../../log.js');
 const logLevels = require('../../enums/logLevels.js');
 
@@ -70,7 +71,8 @@ function launchDaemon(script, dataPath, cb) {
  * @param dataFolder
  */
 function taskScheduler(script, dataFolder) {
-    exec(`SCHTASKS /Create /SC MINUTE /TN SymphonySearchTask /TR "'${script}' '${dataFolder}'"`, (error, stdout, stderr) => {
+    let taskName = `SymphonySearchTask${randomString.generate(4)}`;
+    exec(`SCHTASKS /Create /SC MINUTE /TN ${taskName} /TR "'${script}' '${dataFolder}' '${taskName}'"`, (error, stdout, stderr) => {
         if (error) {
             log.send(logLevels.ERROR, `Lanuchd: Error creating task ${error}`);
         }
