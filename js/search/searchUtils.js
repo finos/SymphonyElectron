@@ -22,7 +22,7 @@ class SearchUtils {
         return new Promise((resolve, reject) => {
             if (!isMac) {
                 try {
-                    this.path = this.path.substring(0, 2);
+                    this.path = this.path.substring(0, 1);
                 } catch (e) {
                     reject(new Error('Invalid Path : ' + e));
                 }
