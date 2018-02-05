@@ -25,7 +25,7 @@ function checkDiskSpace(path, resolve, reject) {
             return resolve(space >= searchConfig.MINIMUM_DISK_SPACE);
         });
     } else {
-        exec(`${searchConfig.LIBRARY_CONSTANTS.FREE_DISK_SPACE} ${path}`, (error, stdout, stderr) => {
+        exec(`"${searchConfig.LIBRARY_CONSTANTS.FREE_DISK_SPACE}" ${path}`, (error, stdout, stderr) => {
             if (error) {
                 if (stderr.indexOf("The system cannot find the path specified.") !== -1) {
                     return reject(new Error("No such file or directory : " + error));
