@@ -178,6 +178,9 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     // we might not have network connectivity, so warn the user.
     mainWindow.webContents.on('did-finish-load', function () {
         url = mainWindow.webContents.getURL();
+        if (isWindows10()) {
+            mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/windowTitleBar/style.css'), 'utf8').toString());
+        }
 
         if (!isOnline) {
             loadErrors.showNetworkConnectivityError(mainWindow, url, retry);

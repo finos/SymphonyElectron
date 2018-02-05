@@ -3,7 +3,6 @@ const apiEnums = require('../enums/api.js');
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 const htmlContents = require('./contents');
-const style = require('./style');
 
 class TitleBar {
 
@@ -40,26 +39,13 @@ class TitleBar {
      */
     initiateEventListeners() {
         const hamburgerMenuButton = document.getElementById('hamburger-menu-button');
-        const minimizeButton = document.getElementById('title-bar-minimize');
-        const maximizeOrUnmaximizeButton = document.getElementById('title-bar-maximize-or-unmaximize');
-        const closeButton = document.getElementById('title-bar-close');
-        const titleBar = document.getElementById('title-bar');
-        const titleContainer = document.getElementById('title-container');
-        const title = document.getElementById('title-bar-title');
+        const minimizeButton = document.getElementById('title-bar-minimize-button');
+        const maximizeButton = document.getElementById('title-bar-maximize-button');
+        const closeButton = document.getElementById('title-bar-close-button');
 
-        setStyleOnDomElement(style.titleBar, titleBar);
-        setStyleOnDomElement(style.titleContainer, titleContainer);
-        setStyleOnDomElement(style.title, title);
-        setStyleOnDomElement(style.hamburgerMenuButton, hamburgerMenuButton);
-        setStyleOnDomElement(style.button, minimizeButton);
-        setStyleOnDomElement(style.button, maximizeOrUnmaximizeButton);
-        setStyleOnDomElement(style.button, closeButton);
-
-
-        attachEventListeners(titleBar, 'onContextMenu', this.titleBarContextMenu.bind(this));
         attachEventListeners(hamburgerMenuButton, 'click', this.popupMenu.bind(this));
         attachEventListeners(closeButton, 'click', this.closeButtonClick.bind(this));
-        attachEventListeners(maximizeOrUnmaximizeButton, 'click', this.maximizeOrUnmaximize.bind(this));
+        attachEventListeners(maximizeButton, 'click', this.maximizeOrUnmaximize.bind(this));
         attachEventListeners(minimizeButton, 'click', this.minimize.bind(this));
     }
 
@@ -69,7 +55,7 @@ class TitleBar {
      * @param isMaximized
      */
     static updateIcons(isMaximized) {
-        const button = document.getElementById('title-bar-maximize-or-unmaximize');
+        const button = document.getElementById('title-bar-maximize-button');
 
         if (!button) {
             return
@@ -80,10 +66,6 @@ class TitleBar {
         } else {
             button.innerHTML = htmlContents.maximizeButton;
         }
-    }
-
-    titleBarContextMenu() {
-
     }
 
     /**
@@ -150,24 +132,6 @@ function attachEventListeners(element, eventName, func) {
     eventName.split(" ").forEach((name) => {
         element.addEventListener(name, func, false);
     });
-}
-
-function setStyleOnDomElement(styleObj, domElement) {
-    if (!styleObj || !domElement) {
-        return;
-    }
-    try {
-        let styleAttr = Object.keys(styleObj);
-        styleAttr.forEach(function(attr) {
-            /* eslint-disable */
-            domElement.style[attr] = styleObj[attr];
-            /* eslint-enable */
-        });
-    } catch (e) {
-        /* eslint-disable no-console */
-        console.error('electron-notify: Could not set style on domElement ' + e);
-        /* eslint-enable no-console */
-    }
 }
 
 module.exports = {

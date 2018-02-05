@@ -1,0 +1,101 @@
+#title-bar {
+    display: flex;
+    position: fixed;
+    background: rgba(25, 25, 25, 1);
+    top: 0;
+    width: 100%;
+    height: 31px;
+    padding-left: 10px;
+    justify-content: center;
+    align-items: center;
+    margin-left: -10px;
+    -webkit-app-region: drag;
+    -webkit-user-select: none;
+    box-sizing: content-box;
+}
+
+#hamburger-menu-button {
+    color: white;
+    text-align: center;
+    width: 30px;
+    height: 31px;
+    background: none;
+    border: none;
+    border-image: initial;
+    display: inline-grid;
+    border-radius: 0;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+#title-container {
+    flex: 1;
+    padding-left: 25px;
+    justify-content: center;
+    align-items: center;
+}
+
+#title-container span {
+    color: #ffffff;
+    font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    line-height: 1;
+    text-rendering: geometricPrecision;
+    font-size: 13px;
+}
+
+.title-bar-button {
+    justify-content: center;
+    align-items: center;
+    right: 0;
+    color: white;
+    -webkit-app-region: no-drag;
+    text-align: center;
+    width: 45px;
+    height: 31px;
+    background: rgba(25, 25, 25, 1);
+    margin: 0;
+    box-sizing: border-box !important;
+}
+
+#title-bar-minimize-button {
+    color: white;
+    text-align: center;
+    width: 30px;
+    height: 31px;
+    background: none;
+    border: none;
+    border-image: initial;
+    display: inline-grid;
+    border-radius: 0;
+    padding: 10px;
+}
+
+#title-bar-maximize-button {
+    color: white;
+    text-align: center;
+    width: 30px;
+    height: 31px;
+    background: none;
+    border: none;
+    border-image: initial;
+    display: inline-grid;
+    border-radius: 0;
+    padding: 10px;
+}
+
+#title-bar-close-button {
+    color: white;
+    text-align: center;
+    width: 30px;
+    height: 31px;
+    background: none;
+    border: none;
+    border-image: initial;
+    display: inline-grid;
+    border-radius: 0;
+    padding: 10px;
+}
+
+.title-bar-button:hover {
+    background-color: #333333;
+}
