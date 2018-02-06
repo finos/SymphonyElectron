@@ -3,6 +3,7 @@ const apiEnums = require('../enums/api.js');
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 const htmlContents = require('./contents');
+const { isWindows10 } = require('./../utils/misc');
 
 class TitleBar {
 
@@ -12,6 +13,11 @@ class TitleBar {
     }
 
     initiateWindowsTitleBar() {
+
+        if (!isWindows10()) {
+            return;
+        }
+
         const titleBarParsed = this.domParser.parseFromString(htmlContents.titleBar, 'text/html');
         const actionItemsParsed = this.domParser.parseFromString(htmlContents.button, 'text/html');
 

@@ -33,6 +33,9 @@
     padding-left: 25px;
     justify-content: center;
     align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #title-container span {
@@ -41,9 +44,11 @@
     line-height: 1;
     text-rendering: geometricPrecision;
     font-size: 13px;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
-.title-bar-button {
+.title-bar-button-container {
     justify-content: center;
     align-items: center;
     right: 0;
@@ -57,7 +62,7 @@
     box-sizing: border-box !important;
 }
 
-#title-bar-minimize-button {
+.title-bar-button {
     color: white;
     text-align: center;
     width: 30px;
@@ -70,32 +75,6 @@
     padding: 10px;
 }
 
-#title-bar-maximize-button {
-    color: white;
-    text-align: center;
-    width: 30px;
-    height: 31px;
-    background: none;
-    border: none;
-    border-image: initial;
-    display: inline-grid;
-    border-radius: 0;
-    padding: 10px;
-}
-
-#title-bar-close-button {
-    color: white;
-    text-align: center;
-    width: 30px;
-    height: 31px;
-    background: none;
-    border: none;
-    border-image: initial;
-    display: inline-grid;
-    border-radius: 0;
-    padding: 10px;
-}
-
-.title-bar-button:hover {
+.title-bar-button-container:hover {
     background-color: #333333;
 }

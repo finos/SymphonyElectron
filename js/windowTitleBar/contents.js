@@ -1,6 +1,6 @@
 const titleBar = (`
 <div id="title-bar">
-    <div class="title-bar-button">
+    <div class="title-bar-button-container">
         <button title="Menu" id='hamburger-menu-button'>
             <svg x='0px' y='0px' viewBox='0 0 10.2 10.2'>
                     <rect fill="white" width='10' height='1'/>
@@ -11,7 +11,7 @@ const titleBar = (`
     </div>
     <div id="title-container">
         <span id="title-bar-title">
-            Symphony - Communication Service
+            Symphony
         </span>
     </div>
 </div>
@@ -19,15 +19,15 @@ const titleBar = (`
 
 const button = (`
 <div class="action-items">
-<div class="title-bar-button">
-<button id="title-bar-minimize-button" title='Minimize'>
+<div class="title-bar-button-container">
+<button class="title-bar-button" id="title-bar-minimize-button" title='Minimize'>
   <svg x='0px' y='0px' viewBox='0 0 10.2 1'>
     <rect fill="white" width='10.2' height='1' />
   </svg>
 </button>
 </div>
-<div class="title-bar-button">
-<button id="title-bar-maximize-button" title='Maximize'>
+<div class="title-bar-button-container">
+<button class="title-bar-button" id="title-bar-maximize-button" title='Maximize'>
     <svg x='0px' y='0px' viewBox='0 0 10.2 10.2'>
         <path
             fill='white'
@@ -36,8 +36,8 @@ const button = (`
     </svg>
 </button>
 </div>
-<div class="title-bar-button">
-<button id="title-bar-close-button" title='Close'>
+<div class="title-bar-button-container">
+<button class="title-bar-button" id="title-bar-close-button" title='Close'>
   <svg x='0px' y='0px' viewBox='0 0 10.2 10.2'>
     <polygon
       fill="white"
