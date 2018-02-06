@@ -138,17 +138,9 @@ function setChromeFlags() {
         // to disable gpu which fixes the black screen issue observed on
         // multiple monitors
         if (config.customFlags.disableGpu) {
-            log.send(logLevels.INFO, 'Setting disable gpu flag');
+            log.send(logLevels.INFO, 'Setting disable gpu, gpu compositing and d3d11 flags to true');
             app.commandLine.appendSwitch("disable-gpu", true);
-        }
-
-        if (config.customFlags.disableGpuCompositing) {
-            log.send(logLevels.INFO, 'Setting disable gpu compositing flag');
             app.commandLine.appendSwitch("disable-gpu-compositing", true);
-        }
-
-        if (config.customFlags.disableD3d11) {
-            log.send(logLevels.INFO, 'Setting disable d3d11 flag');
             app.commandLine.appendSwitch("disable-d3d11", true);
         }
 
