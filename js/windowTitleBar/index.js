@@ -44,11 +44,13 @@ class TitleBar {
      * Method that attaches Event Listeners for elements
      */
     initiateEventListeners() {
+        const titleBar = document.getElementById('title-bar');
         const hamburgerMenuButton = document.getElementById('hamburger-menu-button');
         const minimizeButton = document.getElementById('title-bar-minimize-button');
         const maximizeButton = document.getElementById('title-bar-maximize-button');
         const closeButton = document.getElementById('title-bar-close-button');
 
+        attachEventListeners(titleBar, 'dblclick', this.maximizeOrUnmaximize.bind(this));
         attachEventListeners(hamburgerMenuButton, 'click', this.popupMenu.bind(this));
         attachEventListeners(closeButton, 'click', this.closeButtonClick.bind(this));
         attachEventListeners(maximizeButton, 'click', this.maximizeOrUnmaximize.bind(this));
@@ -140,6 +142,16 @@ function attachEventListeners(element, eventName, func) {
     });
 }
 
+function updateDOM() {
+    const contentWrapper = document.getElementById('content-wrapper');
+
+    if (contentWrapper) {
+        contentWrapper.style.marginTop = '31px';
+        document.body.style.removeProperty('margin-top');
+    }
+}
+
 module.exports = {
-    TitleBar
+    TitleBar,
+    updateDOM
 };

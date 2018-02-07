@@ -18,7 +18,7 @@ const apiEnums = require('../enums/api.js');
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 const getMediaSources = require('../desktopCapturer/getSources');
-const { TitleBar } = require('../windowTitlebar');
+const { TitleBar, updateDOM } = require('../windowTitlebar');
 
 require('../downloadManager');
 
@@ -264,6 +264,10 @@ function createAPI() {
                 cmd: apiCmds.showNotificationSettings,
                 windowName: windowName
             });
+        },
+
+        initializeWindowsTitleBar: function () {
+            updateDOM();
         }
     };
 
