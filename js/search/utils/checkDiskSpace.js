@@ -34,11 +34,11 @@ function checkDiskSpace(path, resolve, reject) {
             }
             let data = stdout.trim().split(",");
 
-            if (data[ 1 ] === "NOTREADY") {
+            if (data[ 1 ] === searchConfig.DISK_NOT_READY) {
                 return reject(new Error("Error : Disk not ready"));
             }
 
-            if (data[ 1 ] === "DISKNOTFOUND") {
+            if (data[ 1 ] === searchConfig.DISK_NOT_FOUND) {
                 return reject(new Error("Error : Disk not found"));
             }
 

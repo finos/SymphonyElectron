@@ -60,6 +60,8 @@ const searchConfig = {
     LIBRARY_CONSTANTS: libraryPaths,
     FOLDERS_CONSTANTS: folderPaths,
     TAR_LZ4_EXT: '.tar.lz4',
+    DISK_NOT_READY: 'NOTREADY',
+    DISK_NOT_FOUND: 'DISKNOTFOUND',
     MINIMUM_DISK_SPACE: 300000000 // in bytes
 };
 
