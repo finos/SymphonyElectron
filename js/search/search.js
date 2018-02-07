@@ -10,7 +10,7 @@ const makeBoundTimedCollector = require('./queue');
 const searchConfig = require('./searchConfig');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
-const { getProcessID, launchAgent, launchDaemon, taskScheduler } = require('./utils/search-launchd.js');
+const { launchAgent, launchDaemon } = require('./utils/search-launchd.js');
 
 const libSymphonySearch = require('./searchLibrary');
 const Crypto = require('../cryptoLib');
@@ -566,37 +566,26 @@ function deleteIndexFolder() {
  */
 function initializeLaunchAgent() {
     let folderPath;
-    let pidValue;
     if (isMac) {
-        getProcessID(function (pid) {
-            if (!pid) {
-                log.send(logLevels.ERROR, 'PID: Error Getting PID ' + pid);
+        let pidValue = process.pid;
+        createLaunchScript(pidValue, function (res) {
+            if (!res) {
+                log.send(logLevels.ERROR, `Launch Agent not created`);
                 return;
             }
-            pidValue = pid;
-            createLaunchScript(pidValue, function (res) {
-                if (!res) {
-                    log.send(logLevels.ERROR, `Launch Agent not created`);
-                    return;
+            folderPath = isDevEnv ? path.join(__dirname, '..', '..', searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME) :
+                path.join(searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH, searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME);
+            launchAgent(pidValue, `${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data${searchConfig.LIBRARY_CONSTANTS.EXT}`, function (response) {
+                if (response) {
+                    log.send(logLevels.INFO, 'Launch Agent: Creating successful');
                 }
-                folderPath = isDevEnv ? path.join(__dirname, '..', '..', searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME) :
-                    path.join(searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH, searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME);
-                launchAgent(pidValue, `${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data${searchConfig.LIBRARY_CONSTANTS.EXT}`, function (response) {
-                    if (response) {
-                        log.send(logLevels.INFO, 'Launch Agent: Creating successful');
-                    }
-                });
-                launchDaemon(searchConfig.LIBRARY_CONSTANTS.LAUNCH_DAEMON_FILE, folderPath, function (result) {
-                    if (result) {
-                        log.send(logLevels.INFO, 'Launch Daemon: Creating successful');
-                    }
-                });
+            });
+            launchDaemon(searchConfig.LIBRARY_CONSTANTS.LAUNCH_DAEMON_FILE, folderPath, function (result) {
+                if (result) {
+                    log.send(logLevels.INFO, 'Launch Daemon: Creating successful');
+                }
             });
         });
-    } else {
-        folderPath = isDevEnv ? path.join(__dirname, '..', '..', searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME) :
-            path.join(searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH, searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME);
-        taskScheduler(`${searchConfig.LIBRARY_CONSTANTS.WINDOWS_TASK_FILE}`, folderPath);
     }
 }
 
@@ -611,28 +600,26 @@ function createLaunchScript(pid, cb) {
     if (!fs.existsSync(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/`)) {
         fs.mkdirSync(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/`);
     }
-    let scriptPath = isMac ? searchConfig.LIBRARY_CONSTANTS.LAUNCH_AGENT_FILE : searchConfig.LIBRARY_CONSTANTS.WINDOWS_TASK_FILE;
-    if (isMac) {
-        fs.readFile(scriptPath, 'utf8', function (err, data) {
-            if (err) {
-                log.send(logLevels.ERROR, `Error reading sh file: ${err}`);
-                cb(false);
-                return;
-            }
-            let result = data;
-            result = result.replace(/dataPath/g, `"${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/${searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME}"`);
-            result = result.replace(/scriptPath/g, `${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data${searchConfig.LIBRARY_CONSTANTS.EXT}`);
-            result = result.replace(/SymphonyPID/g, `${pid}`);
 
-            fs.writeFile(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data${searchConfig.LIBRARY_CONSTANTS.EXT}`, result, 'utf8', function (error) {
-                if (error) {
-                    log.send(logLevels.ERROR, `Error writing sh file: ${error}`);
-                    return cb(false);
-                }
-                return cb(true);
-            });
-        })
-    }
+    fs.readFile(searchConfig.LIBRARY_CONSTANTS.LAUNCH_AGENT_FILE, 'utf8', function (err, data) {
+        if (err) {
+            log.send(logLevels.ERROR, `Error reading sh file: ${err}`);
+            cb(false);
+            return;
+        }
+        let result = data;
+        result = result.replace(/dataPath/g, `"${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/${searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME}"`);
+        result = result.replace(/scriptPath/g, `${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data${searchConfig.LIBRARY_CONSTANTS.EXT}`);
+        result = result.replace(/SymphonyPID/g, `${pid}`);
+
+        fs.writeFile(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data${searchConfig.LIBRARY_CONSTANTS.EXT}`, result, 'utf8', function (error) {
+            if (error) {
+                log.send(logLevels.ERROR, `Error writing sh file: ${error}`);
+                return cb(false);
+            }
+            return cb(true);
+        });
+    });
 }
 
 /**
