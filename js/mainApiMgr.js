@@ -103,11 +103,6 @@ electron.ipcMain.on(apiName, (event, arg) => {
             break;
         case apiCmds.activate:
             if (typeof arg.windowName === 'string') {
-                // validates the user bring to front config and activates the wrapper
-                if (typeof arg.reason === 'string' && arg.reason === 'bringToFront') {
-                    bringToFront(arg.windowName);
-                    break;
-                }
                 windowMgr.activate(arg.windowName);
             }
             break;
@@ -132,6 +127,12 @@ electron.ipcMain.on(apiName, (event, arg) => {
         case apiCmds.sanitize:
             if (typeof arg.windowName === 'string') {
                 sanitize(arg.windowName);
+            }
+            break;
+        case apiCmds.bringToFront:
+            // validates the user bring to front config and activates the wrapper
+            if (typeof arg.reason === 'string' && arg.reason === 'notification') {
+                bringToFront(arg.windowName, arg.reason);
             }
             break;
         default:
