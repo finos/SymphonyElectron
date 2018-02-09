@@ -16,6 +16,7 @@ const configureNotification = require('./notify/settings/configure-notification-
 const { bringToFront } = require('./bringToFront.js');
 const eventEmitter = require('./eventEmitter');
 const { isMac } = require('./utils/misc');
+const screenPicker = require('./desktopCapturer');
 
 const apiEnums = require('./enums/api.js');
 const apiCmds = apiEnums.cmds;
@@ -134,6 +135,9 @@ electron.ipcMain.on(apiName, (event, arg) => {
             if (typeof arg.reason === 'string' && arg.reason === 'notification') {
                 bringToFront(arg.windowName, arg.reason);
             }
+            break;
+        case apiCmds.openScreenPickerWindow:
+            screenPicker.openScreenPickerWindowWindow(event.sender, arg.sources);
             break;
         default:
     }

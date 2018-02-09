@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+
+        body {
+            margin: 0 auto;
+            font-family: "Helvetica Neue", sans-serif;
+        }
+
+        .content {
+            margin: 0 auto;
+            background: #F9F9FA;
+            text-align: center;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .custom-window-title {
+            display: flex;
+            flex-flow: row nowrap;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            font-size: 1.2rem;
+            line-height: 1.3;
+            text-align: left;
+        }
+
+        .x-button {
+            width: 20px;
+            color: #DDD;
+        }
+
+        span {
+            font-style: normal;
+            margin: 0 0 0 4px;
+            font-size: 1.4rem;
+            min-height: 13px;
+        }
+
+        input {
+            display: none;
+        }
+
+        label {
+            display: inline-block;
+            margin: 0 0 -1px;
+            padding: 15px 25px;
+            text-align: center;
+            color: #bbb;
+            text-transform: uppercase;
+            border: 1px solid transparent;
+        }
+
+        section {
+            display: none;
+            height: 400px;
+            overflow: scroll;
+            padding: 20px 0 0;
+            border-top: 1px solid #ddd;
+            flex-flow: row wrap;
+            text-align: center;
+            justify-content: center;
+        }
+
+        input:checked + label {
+            color: #3DA2FD;
+            border-bottom: 4px solid #3DA2FD;
+        }
+
+        #screen-tab:checked ~ #screen-contents,
+        #application-tab:checked ~ #application-contents {
+            display: flex;
+        }
+
+        .screen-item-container {
+            background: #fff;
+            border-radius: 2px;
+            display: inline-block;
+            height: 150px;
+            margin: 5px;
+            position: relative;
+            width: 40%;
+            border: 1px solid rgba(0, 0, 0, .1);
+        }
+
+        .screen-item-container:hover {
+            box-shadow: 0 1px 5px rgba(0, 0, 0, .1), 0 5px 5px rgba(0, 0, 0, .1);
+        }
+
+        .screen-section-box {
+            -webkit-transition: all 1.0s ease;
+            width: 100%;
+            height: 100px;
+            overflow: hidden;
+            margin: 10px auto;
+        }
+
+        .img-wrapper {
+            max-height: 200px;
+            width: auto;
+        }
+
+        .screen-source-title {
+            white-space: nowrap;
+            width: 70%;
+            overflow: hidden;
+            font-size: 0.8rem;
+            color: grey;
+            margin: auto;
+            text-overflow: ellipsis;
+        }
+
+        .selected {
+            border-color: #3DA2FD;
+            border-bottom-style: solid;
+        }
+
+        footer {
+            padding: 10px 16px;
+            border-top: 1px solid rgba(0, 0, 0, 0.10);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        button {
+            box-shadow: none;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            text-align: center;
+            padding: 8px 32px;
+            margin: 8px 8px 8px 0;
+            outline: none;
+            display: inline-block;
+            text-decoration: none;
+            line-height: 12px;
+        }
+
+        button:focus {
+            outline: 0;
+        }
+
+        button:active {
+            outline: 0;
+        }
+
+        .cancel-button {
+            color: rgba(0, 0, 0, 0.38);
+            background-color: rgba(255, 255, 255, 0);
+            text-transform: uppercase;
+            margin: 0;
+            padding: 8px 16px;
+        }
+
+        .cancel-button:hover {
+            background-color: rgba(255, 255, 255, 0);
+            color: black;
+        }
+
+        .share-button {
+            background-color: #3DA2FD;
+            color: #FFF;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: none;
+        }
+
+        .share-button-disable {
+            background-color: #DDD;
+            color: #949494;
+            text-transform: uppercase;
+            cursor: default;
+            box-shadow: none;
+        }
+
+
+    </style>
+</head>
+<body>
+<div class="content">
+    <div class="custom-window-title">
+        <span>Choose what you'd like to share</span>
+        <div class="x-button">
+            <div class="content-button">
+                <i>
+                    <svg viewBox="0 0 48 48" fill="grey">
+                        <path d="M39.4,33.8L31,25.4c-0.4-0.4-0.9-0.9-1.4-1.4c0.5-0.5,1-1,1.4-1.4l8.4-8.4c0.8-0.8,0.8-2,0-2.8l-2.8-2.8 c-0.8-0.8-2-0.8-2.8,0L25.4,17c-0.4,0.4-0.9,0.9-1.4,1.4c-0.5-0.5-1-1-1.4-1.4l-8.4-8.4c-0.8-0.8-2-0.8-2.8,0l-2.8,2.8 c-0.8,0.8-0.8,2,0,2.8l8.4,8.4c0.4,0.4,0.9,0.9,1.4,1.4c-0.5,0.5-1,1-1.4,1.4l-8.4,8.4c-0.8,0.8-0.8,2,0,2.8l2.8,2.8 c0.8,0.8,2,0.8,2.8,0l8.4-8.4c0.4-0.4,0.9-0.9,1.4-1.4c0.5,0.5,1,1,1.4,1.4l8.4,8.4c0.8,0.8,2,0.8,2.8,0l2.8-2.8 C40.2,35.8,40.2,34.6,39.4,33.8z"></path>
+                    </svg>
+                </i>
+            </div>
+        </div>
+    </div>
+    <input id="screen-tab" type="radio" name="tabs" checked>
+    <label for="screen-tab">Screens</label>
+    <input id="application-tab" type="radio" name="tabs">
+    <label for="application-tab">Applications</label>
+    <section id="screen-contents">
+    </section>
+    <section id="application-contents">
+    </section>
+
+    <footer>
+        <button id="cancel-button" class="cancel-button">Cancel</button>
+        <button id="share-button" class="share-button-disable">Select Screen</button>
+    </footer>
+</div>
+
+</body>
+</html>

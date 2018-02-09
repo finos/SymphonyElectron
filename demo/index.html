@@ -193,14 +193,14 @@
 
         var getSources = document.getElementById('get-sources');
         getSources.addEventListener('click', function() {
-            ssf.getMediaSources({types: ['window', 'screen']}, function(error, sources) {
+            ssf.getMediaSources({types: ['window', 'screen']}, function(error, source) {
                 if (error) throw error
                   navigator.webkitGetUserMedia({
                     audio: false,
                     video: {
                       mandatory: {
                         chromeMediaSource: 'desktop',
-                        chromeMediaSourceId: sources[0].id,
+                        chromeMediaSourceId: source.id,
                         minWidth: 1280,
                         maxWidth: 1280,
                         minHeight: 720,

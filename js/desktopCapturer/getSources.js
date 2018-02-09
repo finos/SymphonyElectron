@@ -13,6 +13,9 @@
 // electron: https://github.com/electron/electron/issues/9312
 
 const { ipcRenderer, remote } = require('electron');
+const apiEnums = require('../enums/api.js');
+const apiCmds = apiEnums.cmds;
+const apiName = apiEnums.apiName;
 const { isWindowsOS } = require('../utils/misc');
 
 let nextId = 0;
@@ -67,9 +70,15 @@ function getSources(options, callback) {
     id = getNextId();
     ipcRenderer.send('ELECTRON_BROWSER_DESKTOP_CAPTURER_GET_SOURCES', captureWindow, captureScreen, updatedOptions.thumbnailSize, id);
 
-    return ipcRenderer.once('ELECTRON_RENDERER_DESKTOP_CAPTURER_RESULT_' + id, function(event, sources) {
-        let source;
-        callback(null, (function() {
+    ipcRenderer.once('ELECTRON_RENDERER_DESKTOP_CAPTURER_RESULT_' + id, function(event, sources) {
+        //let source;
+
+        ipcRenderer.send(apiName, {
+            cmd: apiCmds.openScreenPickerWindow,
+            sources: sources
+        });
+
+        /*callback(null, (function() {
             let i, len, results;
             results = [];
             for (i = 0, len = sources.length; i < len; i++) {
@@ -83,8 +92,14 @@ function getSources(options, callback) {
 
             return results;
 
-        }()));
+        }()));*/
+
+        return ipcRenderer.on('screen-selected', function (e, source) {
+            console.error("here also");
+            callback(null, source);
+        })
     });
+
 }
 
 module.exports = getSources;
