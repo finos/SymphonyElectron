@@ -18,7 +18,7 @@ const apiEnums = require('../enums/api.js');
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 const getMediaSources = require('../desktopCapturer/getSources');
-const { TitleBar, updateDOM } = require('../windowTitlebar');
+const { TitleBar, updateDomElements } = require('../windowTitlebar');
 
 require('../downloadManager');
 
@@ -266,8 +266,12 @@ function createAPI() {
             });
         },
 
+        /**
+         * Method is called as soon as the web client is initialized
+         * so that we can modified the necessary dom elements
+         */
         initializeWindowsTitleBar: function () {
-            updateDOM();
+            updateDomElements();
         }
     };
 

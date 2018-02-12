@@ -36,7 +36,7 @@ class TitleBar {
         this.window.on('leave-full-screen', TitleBar.updateIcons.bind(this, false));
 
         document.body.appendChild(titleBar);
-        document.body.style.marginTop = '31px';
+        document.body.style.marginTop = '32px';
         this.initiateEventListeners();
     }
 
@@ -142,16 +142,20 @@ function attachEventListeners(element, eventName, func) {
     });
 }
 
-function updateDOM() {
-    const contentWrapper = document.getElementById('content-wrapper');
+/**
+ * Method to that updates dom when web client is initialized
+ */
+function updateDomElements() {
+    const contentWrapper = document.getElementById('main-content-wrapper');
+    const titleBar = document.getElementById('title-bar');
 
     if (contentWrapper) {
-        contentWrapper.style.marginTop = '31px';
+        contentWrapper.style.marginTop = titleBar ? titleBar.clientHeight + 'px' : '32px';
         document.body.style.removeProperty('margin-top');
     }
 }
 
 module.exports = {
     TitleBar,
-    updateDOM
+    updateDomElements
 };
