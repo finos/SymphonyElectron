@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 pid=$2
+launchDir=~/Library/LaunchAgents/
 
 if $1; then
-   mkdir ~/Library/LaunchAgents/
+   if [ ! -d "$launchDir" ]; then
+      mkdir "$launchDir"
+   fi
    cat > ~/Library/LaunchAgents/com.symphony-search.data.plist << EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">

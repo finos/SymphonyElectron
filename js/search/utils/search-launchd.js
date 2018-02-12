@@ -24,11 +24,10 @@ function launchAgent(pid, script, cb) {
 /**
  * Clears the data folder on boot
  * @param script
- * @param dataPath
  * @param cb (callback)
  */
-function launchDaemon(script, dataPath, cb) {
-    exec(`sh ${script} true '${dataPath}'`, (error, stdout, stderr) => {
+function launchDaemon(script, cb) {
+    exec(`sh "${script}" true`, (error, stdout, stderr) => {
         if (error) {
             log.send(logLevels.ERROR, `Lanuchd: Error creating script ${error}`);
             return cb(false);

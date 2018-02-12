@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 
-create=$1
-data=$2
+launchDir=~/Library/LaunchAgents/
 
 if $1; then
-     mkdir ~/Library/LaunchDaemons/
-     cat > ~/Library/LaunchDaemons/com.symphony-search.clear.plist << EOT
+   if [ ! -d "$launchDir" ]; then
+      mkdir "$launchDir"
+   fi
+   cat > ~/Library/LaunchAgents/com.symphony-search.clear.plist << EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -15,16 +16,15 @@ if $1; then
     <key>ProgramArguments</key>
     <array>
         <string>/bin/sh</string>
-        <string>$0</string>
+        <string>scriptPath</string>
         <string>false</string>
-        <string>$data</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
 </dict>
 </plist>
 EOT
-launchctl load ~/Library/LaunchDaemons/com.symphony-search.clear.plist
+launchctl load ~/Library/LaunchAgents/com.symphony-search.clear.plist
 else
-    rm -rf $data
+    rm -rf dataPath
 fi
