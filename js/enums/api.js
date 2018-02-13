@@ -17,6 +17,7 @@ const cmds = keyMirror({
     registerActivityDetection: null,
     showNotificationSettings: null,
     sanitize: null,
+    bringToFront: null,
     popupMenu: null
 });
 

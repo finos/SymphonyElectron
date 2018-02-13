@@ -154,11 +154,22 @@ function createAPI() {
         /**
          * Brings window forward and gives focus.
          * @param  {String} windowName Name of window. Note: main window name is 'main'
-         * @param {String} reason, The reason for which the window is to be activated
          */
-        activate: function(windowName, reason) {
+        activate: function(windowName) {
             local.ipcRenderer.send(apiName, {
                 cmd: apiCmds.activate,
+                windowName: windowName
+            });
+        },
+
+        /**
+         * Brings window forward and gives focus.
+         * @param  {String} windowName Name of window. Note: main window name is 'main'
+         * @param {String} reason, The reason for which the window is to be activated
+         */
+        bringToFront: function(windowName, reason) {
+            local.ipcRenderer.send(apiName, {
+                cmd: apiCmds.bringToFront,
                 windowName: windowName,
                 reason: reason
             });
