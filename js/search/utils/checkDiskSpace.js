@@ -25,17 +25,25 @@ function checkDiskSpace(path, resolve, reject) {
             return resolve(space >= searchConfig.MINIMUM_DISK_SPACE);
         });
     } else {
-        exec(`fsutil volume diskfree ${path}`, (error, stdout, stderr) => {
+        exec(`"${searchConfig.LIBRARY_CONSTANTS.FREE_DISK_SPACE}" ${path}`, (error, stdout, stderr) => {
             if (error) {
-                if (stderr.indexOf("No such file or directory") !== -1) {
+                if (stderr.indexOf("The system cannot find the path specified.") !== -1) {
                     return reject(new Error("No such file or directory : " + error));
                 }
                 return reject(new Error("Error : " + error));
             }
-            let data = stdout.trim().split("\n");
+            let data = stdout.trim().split(",");
 
-            let disk_info_str = data[data.length - 1].split(':');
-            return resolve(disk_info_str[1] >= searchConfig.MINIMUM_DISK_SPACE);
+            if (data[ 1 ] === searchConfig.DISK_NOT_READY) {
+                return reject(new Error("Error : Disk not ready"));
+            }
+
+            if (data[ 1 ] === searchConfig.DISK_NOT_FOUND) {
+                return reject(new Error("Error : Disk not found"));
+            }
+
+            let disk_info_str = data[ 0 ];
+            return resolve(disk_info_str >= searchConfig.MINIMUM_DISK_SPACE);
         });
     }
 }

@@ -26,12 +26,15 @@ const libraryPath = isMac ? path.join(macLibraryPath, 'libsymphonysearch.dylib')
 const userConfigFileName = 'search_users_config.json';
 const userConfigFile = isDevEnv ? path.join(__dirname, '..', '..', userConfigFileName) : path.join(userData, userConfigFileName);
 
+const freeDiskSpace = path.join(winLibraryPath, 'free-disk-space.exe');
+
 const libraryPaths = {
     INDEX_VALIDATOR: indexValidatorPath,
     LZ4_PATH: lz4Path,
     MAC_LIBRARY_FOLDER: macLibraryPath,
     WIN_LIBRARY_FOLDER: winLibraryPath,
-    SEARCH_LIBRARY_PATH: libraryPath
+    SEARCH_LIBRARY_PATH: libraryPath,
+    FREE_DISK_SPACE: freeDiskSpace
 };
 
 const folderPaths = {
@@ -57,6 +60,8 @@ const searchConfig = {
     LIBRARY_CONSTANTS: libraryPaths,
     FOLDERS_CONSTANTS: folderPaths,
     TAR_LZ4_EXT: '.tar.lz4',
+    DISK_NOT_READY: 'NOTREADY',
+    DISK_NOT_FOUND: 'DISKNOTFOUND',
     MINIMUM_DISK_SPACE: 300000000 // in bytes
 };
 
