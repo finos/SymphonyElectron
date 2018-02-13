@@ -126,7 +126,7 @@
     <ROW Component="cld.node" ComponentId="{D9F74D7B-B2E4-4ED8-A023-A54A98AE3F96}" Directory_="Release_Dir" Attributes="256" KeyPath="cld.node" Type="0"/>
     <ROW Component="d3dcompiler_47.dll" ComponentId="{C7B87C02-3116-43A8-A70B-3592B70E6AC8}" Directory_="APPDIR" Attributes="256" KeyPath="d3dcompiler_47.dll"/>
     <ROW Component="ffmpeg.dll" ComponentId="{A1C4A332-3490-44D8-A5C9-9523889B488B}" Directory_="APPDIR" Attributes="256" KeyPath="ffmpeg.dll"/>
-    <ROW Component="freediskspace.exe" ComponentId="{012071B8-758A-4A24-8A13-A48476F9F6FC}" Directory_="library_Dir" Attributes="0" KeyPath="freediskspace.exe"/>
+    <ROW Component="freediskspace.exe" ComponentId="{1B170A71-ACA1-46CF-AE66-526744701AC9}" Directory_="library_Dir" Attributes="0" KeyPath="freediskspace.exe"/>
     <ROW Component="index.d.ts" ComponentId="{74D261F1-A6C5-49DD-8554-E48337CC04AF}" Directory_="src_Dir" Attributes="0" KeyPath="index.d.ts" Type="0"/>
     <ROW Component="index.js" ComponentId="{77C48E00-B684-4E72-ACF4-15DD0253EF43}" Directory_="lib_Dir" Attributes="0" KeyPath="index.js" Type="0"/>
     <ROW Component="indexvalidatorx64.exe" ComponentId="{0266F3CF-5462-4381-9971-2353034D7E1D}" Directory_="library_Dir" Attributes="256" KeyPath="indexvalidatorx64.exe"/>
@@ -231,7 +231,7 @@
     <ROW File="fi.pak" Component_="am.pak" FileName="fi.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\fi.pak" SelfReg="false" NextFile="fil.pak"/>
     <ROW File="fil.pak" Component_="am.pak" FileName="fil.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\fil.pak" SelfReg="false" NextFile="fr.pak"/>
     <ROW File="fr.pak" Component_="am.pak" FileName="fr.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\fr.pak" SelfReg="false" NextFile="gu.pak"/>
-    <ROW File="freediskspace.exe" Component_="freediskspace.exe" FileName="FREE-D~1.EXE|free-disk-space.exe" Attributes="0" SourcePath="..\..\..\library\free-disk-space.exe" SelfReg="false" DigSign="true"/>
+    <ROW File="freediskspace.exe" Component_="freediskspace.exe" FileName="FREE-D~1.EXE|free-disk-space.exe" Attributes="0" SourcePath="..\..\library\free-disk-space.exe" SelfReg="false" DigSign="true"/>
     <ROW File="gu.pak" Component_="am.pak" FileName="gu.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\gu.pak" SelfReg="false" NextFile="he.pak"/>
     <ROW File="he.pak" Component_="am.pak" FileName="he.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\he.pak" SelfReg="false" NextFile="hi.pak"/>
     <ROW File="hi.pak" Component_="am.pak" FileName="hi.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\hi.pak" SelfReg="false" NextFile="hr.pak"/>
