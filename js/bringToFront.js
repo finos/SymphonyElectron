@@ -8,14 +8,15 @@ const logLevels = require('./enums/logLevels.js');
 /**
  * Method that checks if user has enabled the bring to front feature
  * if so then activates the main window
- * @param windowName - Name of the window to activate
+ * @param {String} windowName - Name of the window to activate
+ * @param {String} reason - The reason for which the window is to be activated
  */
-function bringToFront(windowName) {
+function bringToFront(windowName, reason) {
 
     getConfigField('bringToFront')
         .then((bringToFrontSetting) => {
             if (typeof bringToFrontSetting === 'boolean' && bringToFrontSetting) {
-                log.send(logLevels.INFO, 'Window has been activated for: bringToFront');
+                log.send(logLevels.INFO, 'Window has been activated for: ' + reason);
                 windowMgr.activate(windowName || 'main');
             }
         })
