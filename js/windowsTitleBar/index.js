@@ -5,11 +5,17 @@ const apiName = apiEnums.apiName;
 const htmlContents = require('./contents');
 const { isWindows10 } = require('./../utils/misc');
 
+// Default title bar height
+const titleBarHeight = '32px';
+
 class TitleBar {
 
     constructor() {
         this.window = remote.getCurrentWindow();
         this.domParser = new DOMParser();
+
+        const titleBarParsed = this.domParser.parseFromString(htmlContents.titleBar, 'text/html');
+        this.titleBar = titleBarParsed.getElementById('title-bar');
     }
 
     initiateWindowsTitleBar() {
@@ -18,25 +24,22 @@ class TitleBar {
             return;
         }
 
-        const titleBarParsed = this.domParser.parseFromString(htmlContents.titleBar, 'text/html');
         const actionItemsParsed = this.domParser.parseFromString(htmlContents.button, 'text/html');
-
-        const titleBar = titleBarParsed.getElementById('title-bar');
         const buttons = actionItemsParsed.getElementsByClassName('action-items');
 
         let items = Array.from(buttons[0].children);
         for (let i of items) {
-            titleBar.appendChild(i);
+            this.titleBar.appendChild(i);
         }
 
         // Event to capture and update icons
         this.window.on('maximize', TitleBar.updateIcons.bind(this, true));
-        this.window.on('enter-full-screen', TitleBar.updateIcons.bind(this, true));
         this.window.on('unmaximize', TitleBar.updateIcons.bind(this, false));
-        this.window.on('leave-full-screen', TitleBar.updateIcons.bind(this, false));
+        this.window.on('enter-full-screen', TitleBar.updateTitleBar.bind(this, true));
+        this.window.on('leave-full-screen', TitleBar.updateTitleBar.bind(this, false));
 
-        document.body.appendChild(titleBar);
-        document.body.style.marginTop = '32px';
+        document.body.appendChild(this.titleBar);
+        document.body.style.marginTop = titleBarHeight;
         this.initiateEventListeners();
     }
 
@@ -44,13 +47,12 @@ class TitleBar {
      * Method that attaches Event Listeners for elements
      */
     initiateEventListeners() {
-        const titleBar = document.getElementById('title-bar');
         const hamburgerMenuButton = document.getElementById('hamburger-menu-button');
         const minimizeButton = document.getElementById('title-bar-minimize-button');
         const maximizeButton = document.getElementById('title-bar-maximize-button');
         const closeButton = document.getElementById('title-bar-close-button');
 
-        attachEventListeners(titleBar, 'dblclick', this.maximizeOrUnmaximize.bind(this));
+        attachEventListeners(this.titleBar, 'dblclick', this.maximizeOrUnmaximize.bind(this));
         attachEventListeners(hamburgerMenuButton, 'click', this.popupMenu.bind(this));
         attachEventListeners(closeButton, 'click', this.closeButtonClick.bind(this));
         attachEventListeners(maximizeButton, 'click', this.maximizeOrUnmaximize.bind(this));
@@ -77,6 +79,22 @@ class TitleBar {
     }
 
     /**
+     * Method that updates the title bar display property
+     * based on the full screen event
+     * @param isFullScreen {Boolean}
+     */
+    static updateTitleBar(isFullScreen) {
+        if (isFullScreen) {
+            this.titleBar.style.display = 'none';
+            updateContentHeight('0px');
+        } else {
+            this.titleBar.style.display = 'flex';
+            updateContentHeight();
+        }
+
+    }
+
+    /**
      * Method that popup the application menu
      */
     popupMenu() {
@@ -100,7 +118,12 @@ class TitleBar {
      * Method that maximize or unmaximize browser window
      */
     maximizeOrUnmaximize() {
-        if (this.isValidWindow() && this.window.isMaximized()) {
+
+        if (!this.isValidWindow()) {
+            return;
+        }
+
+        if (this.window.isMaximized()) {
             this.window.unmaximize();
         } else {
             this.window.maximize();
@@ -143,19 +166,23 @@ function attachEventListeners(element, eventName, func) {
 }
 
 /**
- * Method to that updates dom when web client is initialized
+ * Method that adds margin property to the push
+ * the client content below the title bar
+ * @param height
  */
-function updateDomElements() {
-    const contentWrapper = document.getElementById('main-content-wrapper');
+function updateContentHeight(height = titleBarHeight) {
+    const contentWrapper = document.getElementById('content-wrapper');
     const titleBar = document.getElementById('title-bar');
 
     if (contentWrapper) {
-        contentWrapper.style.marginTop = titleBar ? titleBar.clientHeight + 'px' : '32px';
+        contentWrapper.style.marginTop = titleBar ? height : '0px';
         document.body.style.removeProperty('margin-top');
+    } else {
+        document.body.style.marginTop = titleBar ? height : '0px'
     }
 }
 
 module.exports = {
     TitleBar,
-    updateDomElements
+    updateContentHeight
 };

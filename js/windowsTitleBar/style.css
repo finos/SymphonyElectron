@@ -31,6 +31,10 @@
     cursor: default;
 }
 
+#hamburger-menu-button:focus {
+    outline: none;
+}
+
 #title-container {
     height: 32px;
     flex: 1;
@@ -71,6 +75,10 @@
 
 .title-bar-button:hover {
     background-color: #333333;
+}
+
+.title-bar-button:focus {
+    outline: none;
 }
 
 .title-bar-button-container:hover {

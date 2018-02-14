@@ -18,7 +18,7 @@ const apiEnums = require('../enums/api.js');
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 const getMediaSources = require('../desktopCapturer/getSources');
-const { TitleBar, updateDomElements } = require('../windowTitlebar');
+const { TitleBar, updateContentHeight } = require('../windowsTitlebar');
 
 require('../downloadManager');
 
@@ -28,6 +28,7 @@ require('../downloadManager');
 // block other method from loading
 document.addEventListener('DOMContentLoaded', () => {
     loadSpellChecker();
+    // Adds custom title bar style for Windows 10 OS
     const titleBar = new TitleBar();
     titleBar.initiateWindowsTitleBar();
 });
@@ -282,7 +283,7 @@ function createAPI() {
          * so that we can modified the necessary dom elements
          */
         initializeWindowsTitleBar: function () {
-            updateDomElements();
+            updateContentHeight();
         }
     };
 

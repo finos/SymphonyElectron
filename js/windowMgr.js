@@ -179,7 +179,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     mainWindow.webContents.on('did-finish-load', function () {
         url = mainWindow.webContents.getURL();
         if (isWindows10()) {
-            mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/windowTitleBar/style.css'), 'utf8').toString());
+            mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/windowsTitleBar/style.css'), 'utf8').toString());
         }
 
         if (!isOnline) {
