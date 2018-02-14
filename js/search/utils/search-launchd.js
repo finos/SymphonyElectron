@@ -1,4 +1,5 @@
 const { exec } = require('child_process');
+const os = require('os');
 const randomString = require('randomstring');
 const log = require('../../log.js');
 const logLevels = require('../../enums/logLevels.js');
@@ -44,10 +45,21 @@ function launchDaemon(script, cb) {
  * Windows clears the data folder on app crash
  * @param script
  * @param dataFolder
+ * @param pid
  */
-function taskScheduler(script, dataFolder) {
-    let taskName = `SymphonySearchTask${randomString.generate(4)}`;
-    exec(`SCHTASKS /Create /SC MINUTE /TN ${taskName} /TR "'${script}' '${dataFolder}' '${taskName}'"`, (error, stdout, stderr) => {
+function taskScheduler(script, dataFolder, pid) {
+    let userName;
+    if (os.userInfo) {
+        userName = os.userInfo().username;
+    } else {
+        try {
+            userName = (exec.execSync('whoami').stdout).replace(/^.*\\/, '')
+        } catch (e) {
+            log.send(logLevels.WARN, `whoami failed (using randomString): ${e}`);
+            userName = randomString.generate(4);
+        }
+    }
+    exec(`SCHTASKS /Create /SC MINUTE /TN SymphonyTask${userName} /TR "'${script}' '${dataFolder}' 'SymphonyTask${userName}' '${pid}'" /F`, (error, stdout, stderr) => {
         if (error) {
             log.send(logLevels.ERROR, `Lanuchd: Error creating task ${error}`);
         }

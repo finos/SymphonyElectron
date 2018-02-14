@@ -1,9 +1,11 @@
 'use strict';
 
 const fs = require('fs');
+const path = require('path');
 const randomString = require('randomstring');
 const childProcess = require('child_process');
 const isMac = require('../utils/misc.js').isMac;
+const isDevEnv = require('../utils/misc.js').isDevEnv;
 const makeBoundTimedCollector = require('./queue');
 const searchConfig = require('./searchConfig');
 const log = require('../log.js');
@@ -563,8 +565,8 @@ function deleteIndexFolder() {
  * index data folder when app crashed or on boot up
  */
 function initializeLaunchAgent() {
+    let pidValue = process.pid;
     if (isMac) {
-        let pidValue = process.pid;
         createLaunchScript(pidValue, 'clear-data', searchConfig.LIBRARY_CONSTANTS.LAUNCH_AGENT_FILE, function (res) {
             if (!res) {
                 log.send(logLevels.ERROR, `Launch Agent not created`);
@@ -587,9 +589,9 @@ function initializeLaunchAgent() {
             });
         });
     } else {
-        folderPath = isDevEnv ? path.join(__dirname, '..', '..', searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME) :
+        let folderPath = isDevEnv ? path.join(__dirname, '..', '..', searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME) :
             path.join(searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH, searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME);
-        taskScheduler(`${searchConfig.LIBRARY_CONSTANTS.WINDOWS_TASK_FILE}`, folderPath);
+        taskScheduler(`${searchConfig.LIBRARY_CONSTANTS.WINDOWS_TASK_FILE}`, folderPath, pidValue);
     }
 }
 
