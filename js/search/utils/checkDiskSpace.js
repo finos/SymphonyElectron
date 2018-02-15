@@ -25,12 +25,20 @@ function checkDiskSpace(path, resolve, reject) {
             return resolve(space >= searchConfig.MINIMUM_DISK_SPACE);
         });
     } else {
-        exec(`fsutil volume diskfree ${path}`, (error, stdout, stderr) => {
+        exec(`fsutil volume diskfree ${path}`, (error, stdout) => {
             if (error) {
-                if (stderr.indexOf("No such file or directory") !== -1) {
+                if (stdout.indexOf("Error:  The system cannot find the path specified.") !== -1) {
                     return reject(new Error("No such file or directory : " + error));
                 }
+                if (stdout.indexOf("The FSUTIL utility requires that you have administrative privileges.") !== -1) {
+                    // this is temporary until we use the custom exe file.
+                    return true;
+                }
                 return reject(new Error("Error : " + error));
+            }
+            if (stdout.indexOf("The FSUTIL utility requires that you have administrative privileges.") !== -1) {
+                // this is temporary until we use the custom exe file.
+                return true;
             }
             let data = stdout.trim().split("\n");
 
