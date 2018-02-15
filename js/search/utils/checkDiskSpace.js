@@ -32,13 +32,13 @@ function checkDiskSpace(path, resolve, reject) {
                 }
                 if (stdout.indexOf("The FSUTIL utility requires that you have administrative privileges.") !== -1) {
                     // this is temporary until we use the custom exe file.
-                    return true;
+                    return resolve(true);
                 }
                 return reject(new Error("Error : " + error));
             }
             if (stdout.indexOf("The FSUTIL utility requires that you have administrative privileges.") !== -1) {
                 // this is temporary until we use the custom exe file.
-                return true;
+                return resolve(true);
             }
             let data = stdout.trim().split("\n");
 
