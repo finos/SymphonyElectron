@@ -7,14 +7,14 @@ const path = require('path');
 const fs = require('fs');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
-const { isMac } = require('../utils/misc');
 
 let screenPickerWindow;
 let preloadWindow;
+let eventId;
 
 let windowConfig = {
-    width: 600,
-    height: 600,
+    width: 580,
+    height: 520,
     show: false,
     modal: true,
     frame: false,
@@ -36,24 +36,32 @@ function getTemplatePath() {
     try {
         fs.statSync(templatePath).isFile();
     } catch (err) {
-        log.send(logLevels.ERROR, 'basic-auth: Could not find template ("' + templatePath + '").');
+        log.send(logLevels.ERROR, 'screen-picker: Could not find template ("' + templatePath + '").');
     }
     return 'file://' + templatePath;
 }
 
-function openScreenPickerWindowWindow(window, sources) {
+/**
+ * Creates the screen picker window
+ * @param win {RTCRtpSender} - Name of the window which called invoked this
+ * @param sources {Array} - list of object which has screens and applications
+ * @param id {Number} - event emitter id
+ */
+function openScreenPickerWindowWindow(win, sources, id) {
 
-    preloadWindow = window;
-
-
-    let allWindows = BrowserWindow.getAllWindows();
-    allWindows = allWindows.find((win) => { return win.winName === window.name });
-
-    // if we couldn't find any window matching the window name
-    // it will render as a new window
-    if (allWindows) {
-        windowConfig.parent = allWindows;
+    if (!win) {
+        return;
     }
+
+    // prevent a new window from being opened
+    // if there is an existing windows
+    if (screenPickerWindow) {
+        return;
+    }
+
+    // Store the window ref to send event
+    preloadWindow = win;
+    eventId = id;
 
     screenPickerWindow = new BrowserWindow(windowConfig);
     screenPickerWindow.setVisibleOnAllWorkspaces(true);
@@ -81,12 +89,33 @@ function openScreenPickerWindowWindow(window, sources) {
  * Destroys a window
  */
 function destroyWindow() {
+    // sending null will clean up the event listener
+    startScreenShare(null);
     screenPickerWindow = null;
 }
 
-ipc.on('source-selected', (event, source) => {
-    preloadWindow.send('screen-selected', source);
+/**
+ * Sends an event to a specific with the selected source
+ * @param source {Object} - User selected source
+ */
+function startScreenShare(source) {
+    if (preloadWindow && !preloadWindow.isDestroyed()) {
+        preloadWindow.send('start-share' + eventId, source);
+    }
+}
+
+// Emitted when user has selected a source and press the share button
+ipc.on('share-selected-source', (event, source) => {
+    startScreenShare(source);
 });
+
+// Emitted when user closes the screen picker window
+ipc.on('close-screen-picker', () => {
+    if (screenPickerWindow && !screenPickerWindow.isDestroyed()) {
+        screenPickerWindow.close();
+    }
+});
+
 
 module.exports = {
     openScreenPickerWindowWindow

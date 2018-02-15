@@ -17,6 +17,7 @@ const apiEnums = require('../enums/api.js');
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 const { isWindowsOS } = require('../utils/misc');
+const USER_CANCELLED = 'User Cancelled';
 
 let nextId = 0;
 let includes = [].includes;
@@ -71,35 +72,26 @@ function getSources(options, callback) {
     ipcRenderer.send('ELECTRON_BROWSER_DESKTOP_CAPTURER_GET_SOURCES', captureWindow, captureScreen, updatedOptions.thumbnailSize, id);
 
     ipcRenderer.once('ELECTRON_RENDERER_DESKTOP_CAPTURER_RESULT_' + id, function(event, sources) {
-        //let source;
 
         ipcRenderer.send(apiName, {
             cmd: apiCmds.openScreenPickerWindow,
-            sources: sources
+            sources: sources,
+            id: id,
+            windowName: window.name
         });
 
-        /*callback(null, (function() {
-            let i, len, results;
-            results = [];
-            for (i = 0, len = sources.length; i < len; i++) {
-                source = sources[i];
-                results.push({
-                    id: source.id,
-                    name: source.name,
-                    thumbnail: source.thumbnail
-                });
+        function successCallback(e, source) {
+            // Cleaning up the event listener to prevent memory leaks
+            if (!source) {
+                ipcRenderer.removeListener('stat-share' + id, func);
+                return callback(new Error(USER_CANCELLED));
             }
+            return callback(null, source);
+        }
 
-            return results;
-
-        }()));*/
-
-        return ipcRenderer.on('screen-selected', function (e, source) {
-            console.error("here also");
-            callback(null, source);
-        })
+        const func = successCallback.bind(this);
+        ipcRenderer.once('start-share' + id, func);
     });
-
 }
 
 module.exports = getSources;
