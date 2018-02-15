@@ -33,6 +33,9 @@ describe('Tests for Search Utils', function() {
 
     beforeAll(function (done) {
         executionPath = path.join(__dirname, 'library');
+        if (!isMac) {
+            executionPath = path.join(__dirname, '..', 'library');
+        }
         userConfigDir = path.join(__dirname, '..');
         searchConfig = require('../js/search/searchConfig.js');
         const { SearchUtils } = require('../js/search/searchUtils.js');

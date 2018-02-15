@@ -59,7 +59,7 @@ describe('Tests for Search', function() {
             tempBatchPath = path.join(userConfigDir, 'data', 'temp_batch_indexes');
             dataFolderPath = path.join(userConfigDir, 'data');
             if (fs.existsSync(dataFolderPath)) {
-                fs.unlinkSync(dataFolderPath)
+                deleteIndexFolders(dataFolderPath)
             }
             done();
         });
