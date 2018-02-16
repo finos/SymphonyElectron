@@ -40,6 +40,8 @@ class TitleBar {
 
         document.body.appendChild(this.titleBar);
         document.body.style.marginTop = titleBarHeight;
+
+        TitleBar.addWindowBorders();
         this.initiateEventListeners();
     }
 
@@ -57,6 +59,17 @@ class TitleBar {
         attachEventListeners(closeButton, 'click', this.closeButtonClick.bind(this));
         attachEventListeners(maximizeButton, 'click', this.maximizeOrUnmaximize.bind(this));
         attachEventListeners(minimizeButton, 'click', this.minimize.bind(this));
+    }
+
+    /**
+     * Method that adds borders
+     */
+    static addWindowBorders() {
+        const borderBottom = document.createElement('div');
+        borderBottom.className = 'bottom-window-border';
+
+        document.body.appendChild(borderBottom);
+        document.body.classList.add('window-border');
     }
 
     /**

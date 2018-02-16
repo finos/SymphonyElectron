@@ -84,3 +84,15 @@
 .title-bar-button-container:hover {
     background-color: #333333;
 }
+
+.window-border {
+    border-left: 1px solid #4a4a4a;
+    border-right: 1px solid #4a4a4a;
+}
+
+.bottom-window-border {
+    position: fixed;
+    border-bottom: 1px solid #4a4a4a;
+    width: 100%;
+    bottom: 0;
+}
