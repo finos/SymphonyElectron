@@ -57,6 +57,7 @@ const searchConfig = {
     LIBRARY_CONSTANTS: libraryPaths,
     FOLDERS_CONSTANTS: folderPaths,
     TAR_LZ4_EXT: '.tar.lz4',
+    RANDOM_STRING: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
     MINIMUM_DISK_SPACE: 300000000, // in bytes
     PERMISSION_ERROR: "The FSUTIL utility requires that you have administrative privileges.",
     WIN_PATH_ERROR: "Error:  The system cannot find the path specified.",
