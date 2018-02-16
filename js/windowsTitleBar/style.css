@@ -94,5 +94,6 @@
     position: fixed;
     border-bottom: 1px solid #4a4a4a;
     width: 100%;
+    z-index: 3000;
     bottom: 0;
 }
