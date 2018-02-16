@@ -58,7 +58,10 @@ const searchConfig = {
     FOLDERS_CONSTANTS: folderPaths,
     TAR_LZ4_EXT: '.tar.lz4',
     RANDOM_STRING: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
-    MINIMUM_DISK_SPACE: 300000000 // in bytes
+    MINIMUM_DISK_SPACE: 300000000, // in bytes
+    PERMISSION_ERROR: "The FSUTIL utility requires that you have administrative privileges.",
+    WIN_PATH_ERROR: "Error:  The system cannot find the path specified.",
+    MAC_PATH_ERROR: "No such file or directory"
 };
 
 module.exports = searchConfig;
