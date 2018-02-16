@@ -15,7 +15,7 @@ let eventId;
 
 let windowConfig = {
     width: 580,
-    height: isMac ? 520 : 525,
+    height: isMac ? 520 : 523,
     show: false,
     modal: true,
     frame: false,
@@ -45,24 +45,40 @@ function getTemplatePath() {
 
 /**
  * Creates the screen picker window
- * @param win {RTCRtpSender} - Name of the window which called invoked this
+ * @param eventSender {RTCRtpSender} - event sender window object
  * @param sources {Array} - list of object which has screens and applications
  * @param id {Number} - event emitter id
+ * @param windowName {String} - Name of the window that published the event
  */
-function openScreenPickerWindowWindow(win, sources, id) {
+function openScreenPickerWindowWindow(eventSender, sources, id, windowName) {
 
-    if (!win) {
+    // prevent a new window from being opened if there is an
+    // existing window / there is no event sender
+    if (!eventSender && screenPickerWindow) {
         return;
     }
 
-    // prevent a new window from being opened
-    // if there is an existing windows
-    if (screenPickerWindow) {
-        return;
+    const allWindows = BrowserWindow.getAllWindows();
+    const selectedParentWindow = allWindows.find((window) => { return window.winName === windowName || 'main' });
+
+    // As screen picker is an independent window this will make sure
+    // it will open screen picker window center of requested window
+    if (selectedParentWindow) {
+        const { x, y, width, height } = selectedParentWindow.getBounds();
+
+        const windowWidth = Math.round(width * 0.5);
+        const windowHeight = Math.round(height * 0.5);
+
+        // Calculating the center of the parent window
+        // to place the configuration window
+        const centerX = x + width / 2.0;
+        const centerY = y + height / 2.0;
+        windowConfig.x = Math.round(centerX - (windowWidth / 2.0));
+        windowConfig.y = Math.round(centerY - (windowHeight / 2.0));
     }
 
     // Store the window ref to send event
-    preloadWindow = win;
+    preloadWindow = eventSender;
     eventId = id;
 
     screenPickerWindow = new BrowserWindow(windowConfig);
@@ -117,7 +133,6 @@ ipc.on('close-screen-picker', () => {
         screenPickerWindow.close();
     }
 });
-
 
 module.exports = {
     openScreenPickerWindowWindow

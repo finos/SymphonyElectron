@@ -137,8 +137,8 @@ electron.ipcMain.on(apiName, (event, arg) => {
             }
             break;
         case apiCmds.openScreenPickerWindow:
-            if (Array.isArray(arg.sources) && typeof arg.id === 'number') {
-                openScreenPickerWindowWindow(event.sender, arg.sources, arg.id);
+            if (Array.isArray(arg.sources) && typeof arg.id === 'number' && typeof arg.windowName === 'string') {
+                openScreenPickerWindowWindow(event.sender, arg.sources, arg.id, arg.windowName);
             }
             break;
         default:
