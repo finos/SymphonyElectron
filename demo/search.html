@@ -115,11 +115,6 @@
             <p>Results:</p>
             <p id="results"></p>
             <table id="table" class="hidden" style="width:100%">
-                <tr>
-                    <th>ThreadId</th>
-                    <th>SenderId</th>
-                    <th>Text</th>
-                </tr>
             </table>
             <br>
         </div>
@@ -189,24 +184,38 @@
             if (result.messages.length > 0) {
                 out = result;
                 var th = document.createElement('tr');
+                var avatarTh = document.createElement('td');
+                avatarTh.innerText = "Avatar";
+                var senderNameTh = document.createElement('td');
+                senderNameTh.innerText = "Sender Name";
                 var th1 = document.createElement('td');
                 th1.innerText = "ThreadId";
                 var th2 = document.createElement('td');
                 th2.innerText = 'SenderId';
                 var th3 = document.createElement('td');
                 th3.innerText = 'Text';
+                th.appendChild(avatarTh);
+                th.appendChild(senderNameTh);
                 th.appendChild(th1);
                 th.appendChild(th2);
                 th.appendChild(th3);
                 table.appendChild(th);
                 out.messages.forEach(function (msg) {
                     var tr = document.createElement('tr');
+                    var avatar = document.createElement('img');
+                    avatar.src = msg.senderAvatar;
+                    avatar.style["max-width"] = '75px';
+                    avatar.style["max-height"] = '75px';
+                    var senderName = document.createElement('td');
+                    senderName.innerText = msg.senderName;
                     var t1 = document.createElement('td');
                     t1.innerText = msg.threadId;
                     var t2 = document.createElement('td');
                     t2.innerText = msg.senderId;
                     var t3 = document.createElement('td');
                     t3.innerText = msg.text;
+                    tr.appendChild(avatar);
+                    tr.appendChild(senderName);
                     tr.appendChild(t1);
                     tr.appendChild(t2);
                     tr.appendChild(t3);
