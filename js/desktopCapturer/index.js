@@ -15,7 +15,7 @@ let eventId;
 
 let windowConfig = {
     width: 580,
-    height: isMac ? 520 : 523,
+    height: isMac ? 519 : 523,
     show: false,
     modal: true,
     frame: false,
@@ -48,9 +48,8 @@ function getTemplatePath() {
  * @param eventSender {RTCRtpSender} - event sender window object
  * @param sources {Array} - list of object which has screens and applications
  * @param id {Number} - event emitter id
- * @param windowName {String} - Name of the window that published the event
  */
-function openScreenPickerWindowWindow(eventSender, sources, id, windowName) {
+function openScreenPickerWindowWindow(eventSender, sources, id) {
 
     // prevent a new window from being opened if there is an
     // existing window / there is no event sender
@@ -58,23 +57,25 @@ function openScreenPickerWindowWindow(eventSender, sources, id, windowName) {
         return;
     }
 
-    const allWindows = BrowserWindow.getAllWindows();
-    const selectedParentWindow = allWindows.find((window) => { return window.winName === windowName || 'main' });
+    // Screen picker will always be placed on top of the focused window
+    const focusedWindow = BrowserWindow.getFocusedWindow();
 
     // As screen picker is an independent window this will make sure
-    // it will open screen picker window center of requested window
-    if (selectedParentWindow) {
-        const { x, y, width, height } = selectedParentWindow.getBounds();
+    // it will open screen picker window center of the focused window
+    if (focusedWindow) {
+        const { x, y, width, height } = focusedWindow.getBounds();
 
-        const windowWidth = Math.round(width * 0.5);
-        const windowHeight = Math.round(height * 0.5);
+        if (x !== undefined && y !== undefined) {
+            const windowWidth = Math.round(width * 0.5);
+            const windowHeight = Math.round(height * 0.5);
 
-        // Calculating the center of the parent window
-        // to place the configuration window
-        const centerX = x + width / 2.0;
-        const centerY = y + height / 2.0;
-        windowConfig.x = Math.round(centerX - (windowWidth / 2.0));
-        windowConfig.y = Math.round(centerY - (windowHeight / 2.0));
+            // Calculating the center of the parent window
+            // to place the configuration window
+            const centerX = x + width / 2.0;
+            const centerY = y + height / 2.0;
+            windowConfig.x = Math.round(centerX - (windowWidth / 2.0));
+            windowConfig.y = Math.round(centerY - (windowHeight / 2.0));
+        }
     }
 
     // Store the window ref to send event

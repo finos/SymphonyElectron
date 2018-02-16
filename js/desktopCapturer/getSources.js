@@ -76,8 +76,7 @@ function getSources(options, callback) {
         ipcRenderer.send(apiName, {
             cmd: apiCmds.openScreenPickerWindow,
             sources: sources,
-            id: id,
-            windowName: window.name
+            id: id
         });
 
         function successCallback(e, source) {
