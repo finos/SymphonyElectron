@@ -1,7 +1,7 @@
 const childProcess = require('child_process');
 const path = require('path');
 const fs = require('fs');
-const { isMac } = require('../js/utils/misc.js');
+const { isWindowsOS } = require('../js/utils/misc.js');
 
 let executionPath = null;
 let userConfigDir = null;
@@ -46,7 +46,7 @@ describe('Tests for Search', function() {
             key = 'jjjehdnctsjyieoalskcjdhsnahsadndfnusdfsdfsd=';
 
             executionPath = path.join(__dirname, 'library');
-            if (!isMac) {
+            if (isWindowsOS) {
                 executionPath = path.join(__dirname, '..', 'library');
             }
             userConfigDir = path.join(__dirname, '..');

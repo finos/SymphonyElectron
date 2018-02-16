@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { isMac } = require('../js/utils/misc.js');
+const { isMac, isWindowsOS } = require('../js/utils/misc.js');
 
 let executionPath = null;
 let userConfigDir = null;
@@ -33,7 +33,7 @@ describe('Tests for Search Utils', function() {
 
     beforeAll(function (done) {
         executionPath = path.join(__dirname, 'library');
-        if (!isMac) {
+        if (isWindowsOS) {
             executionPath = path.join(__dirname, '..', 'library');
         }
         userConfigDir = path.join(__dirname, '..');
@@ -84,7 +84,7 @@ describe('Tests for Search Utils', function() {
         it('should return error invalid path', function (done) {
             const checkFreeSpace = jest.spyOn(SearchUtilsAPI, 'checkFreeSpace');
             SearchUtilsAPI.path = './tp';
-            if (!isMac) {
+            if (isWindowsOS) {
                 SearchUtilsAPI.path = 'A://test';
             }
             SearchUtilsAPI.checkFreeSpace().catch(function (err) {
