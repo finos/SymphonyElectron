@@ -8,6 +8,11 @@
         body {
             margin: 0 auto;
             font-family: "Helvetica Neue", sans-serif;
+            overflow: hidden;
+        }
+
+        .window-border {
+            border: 2px solid #444;
         }
 
         .content {
@@ -59,7 +64,8 @@
         section {
             display: none;
             height: 331px;
-            overflow: scroll;
+            overflow-y: scroll;
+            overflow-x: hidden;
             padding: 20px 0 0;
             border-top: 1px solid #ddd;
             flex-flow: row wrap;

@@ -7,6 +7,7 @@ const path = require('path');
 const fs = require('fs');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
+const { isMac, isWindowsOS } = require('./../utils/misc.js');
 
 let screenPickerWindow;
 let preloadWindow;
@@ -14,11 +15,12 @@ let eventId;
 
 let windowConfig = {
     width: 580,
-    height: 520,
+    height: isMac ? 520 : 525,
     show: false,
     modal: true,
     frame: false,
     autoHideMenuBar: true,
+    resizable: false,
     alwaysOnTop: true,
     webPreferences: {
         preload: path.join(__dirname, 'renderer.js'),
@@ -72,7 +74,7 @@ function openScreenPickerWindowWindow(win, sources, id) {
     });
 
     screenPickerWindow.webContents.on('did-finish-load', () => {
-        screenPickerWindow.webContents.send('sources', sources);
+        screenPickerWindow.webContents.send('desktop-capturer-sources', sources, isWindowsOS);
     });
 
     screenPickerWindow.on('close', () => {

@@ -60,8 +60,16 @@ function renderDom() {
  * Event emitted by main process with a list of available
  * Screens and Applications
  */
-ipcRenderer.on('sources', (event, sources) => {
+ipcRenderer.on('desktop-capturer-sources', (event, sources, isWindowsOS) => {
+
+    if (!Array.isArray(sources) && typeof isWindowsOS !== 'boolean') {
+        return;
+    }
     availableSources = sources;
+
+    if (isWindowsOS) {
+        document.body.classList.add('window-border');
+    }
 
     const screenContent = document.getElementById('screen-contents');
     const applicationContent = document.getElementById('application-contents');
@@ -193,7 +201,7 @@ function handleKeyUpPress(e) {
             }
             break;
         case UP_ARROW:
-            updateSelectedSource(1);
+            updateSelectedSource(-2);
             break;
         case END_KEY:
             if (currentIndex !== availableSources.length - 1) {
@@ -201,7 +209,7 @@ function handleKeyUpPress(e) {
             }
             break;
         case ARROW_DOWN:
-            updateSelectedSource(-1);
+            updateSelectedSource(2);
             break;
         case ENTER_KEY:
             startShare();
