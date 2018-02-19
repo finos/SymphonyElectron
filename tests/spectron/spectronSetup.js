@@ -25,6 +25,7 @@ class App {
         return this.app.start().then((app) => {
             return app;
         }).catch((err) => {
+            throw new Error("Unable to start application " + err);
         });
     }
 
