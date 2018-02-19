@@ -92,6 +92,14 @@ ipcRenderer.on('desktop-capturer-sources', (event, sources, isWindowsOS) => {
         }
     }
 
+    if (!hasScreens && !hasApplications) {
+        const errorContent = document.getElementById('error-content');
+        const mainContent = document.getElementById('main-content');
+
+        errorContent.style.display = 'block';
+        mainContent.style.display = 'none';
+    }
+
     if (hasApplications) {
         applicationTab.classList.remove('hidden');
     }
@@ -174,7 +182,7 @@ function highlightSelectedSource() {
 function updateShareButtonText(text) {
     let shareButton = document.getElementById('share');
 
-    if (shareButton && shareButton.classList[ 0 ] === 'share-button-disable') {
+    if (shareButton && shareButton.classList[0] === 'share-button-disable') {
         shareButton.innerText = text;
     }
 }
@@ -230,7 +238,9 @@ function updateSelectedSource(index) {
 
     let selectedElement = document.getElementsByClassName('selected')[0];
     if (selectedElement) {
-        currentIndex = availableSources.findIndex((source) => { return source.id === selectedElement.id });
+        currentIndex = availableSources.findIndex((source) => {
+            return source.id === selectedElement.id
+        });
     }
 
     // Find the next item to be selected

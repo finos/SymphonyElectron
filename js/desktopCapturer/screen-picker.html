@@ -36,7 +36,7 @@
 
         #x-button {
             width: 20px;
-            color: #DDD;
+            color: rgba(221, 221, 221, 1);
         }
 
         span {
@@ -67,7 +67,7 @@
             overflow-y: scroll;
             overflow-x: hidden;
             padding: 20px 0 0;
-            border-top: 1px solid #ddd;
+            border-top: 1px solid rgba(221, 221, 221, 1);
             flex-flow: row wrap;
             text-align: center;
             justify-content: center;
@@ -178,8 +178,8 @@
         }
 
         .share-button-disable {
-            background-color: #DDD;
-            color: #949494;
+            background-color: rgba(221, 221, 221, 1);
+            color: rgba(148, 148, 148, 1);
             text-transform: uppercase;
             cursor: default;
             box-shadow: none;
@@ -189,6 +189,15 @@
             display: none;
         }
 
+        #error-content {
+            display: none;
+            padding: 180px 0 180px;
+            border-top: 1px solid rgba(221, 221, 221, 1);
+        }
+
+        #error-content span {
+            color: rgba(0, 0, 0, 0.38);
+        }
 
     </style>
 </head>
@@ -206,14 +215,19 @@
             </div>
         </div>
     </div>
-    <input id="screen-tab" type="radio" name="tabs" checked>
-    <label id="screens" for="screen-tab" class="hidden">Screens</label>
-    <input id="application-tab" type="radio" name="tabs">
-    <label id="applications" for="application-tab" class="hidden">Applications</label>
-    <section id="screen-contents">
-    </section>
-    <section id="application-contents">
-    </section>
+    <div id="error-content">
+        <span id="error-message">No screens or applications are currently available.</span>
+    </div>
+    <div id="main-content">
+        <input id="screen-tab" type="radio" name="tabs" checked>
+        <label id="screens" for="screen-tab" class="hidden">Screens</label>
+        <input id="application-tab" type="radio" name="tabs">
+        <label id="applications" for="application-tab" class="hidden">Applications</label>
+        <section id="screen-contents">
+        </section>
+        <section id="application-contents">
+        </section>
+    </div>
 
     <footer>
         <button id="cancel" class="cancel-button">Cancel</button>
