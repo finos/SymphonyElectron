@@ -1,11 +1,10 @@
-const path = require('path');
-const fs = require('fs');
 const childProcess = require('child_process');
 const Application = require('./spectronSetup');
-const {isMac} = require('../../js/utils/misc');
+const { isMac } = require('../../js/utils/misc');
+const constants = require('./spectronConstants');
+
 let robot;
 let configPath;
-
 let app = new Application({});
 
 describe('Tests for Full screen', () => {
@@ -22,10 +21,14 @@ describe('Tests for Full screen', () => {
                     configPath = config;
                     done();
                 }).catch((err) => {
+                    console.error(constants.UNABLE_TO_GET_USER_CONFIG_PATH, err);
                     expect(err).toBeNull();
+                    done();
                 });
             }).catch((err) => {
+                console.error(constants.UNABLE_TO_START_APPLICATION, err);
                 expect(err).toBeNull();
+                done();
             });
         });
     });
@@ -37,8 +40,8 @@ describe('Tests for Full screen', () => {
                     return require('electron').remote.app.getPath('userData');
                 })
             });
-            app.client.getUserDataPath().then((path) => {
-                resolve(path.value + '/Symphony.config')
+            app.client.getUserDataPath().then((userConfigPath) => {
+                resolve(userConfigPath.value)
             }).catch((err) => {
                 reject(err);
             });
@@ -108,6 +111,9 @@ describe('Tests for Full screen', () => {
             robot.moveMouseSmooth(205, 10);
             robot.mouseClick();
             robot.setKeyboardDelay(100);
+
+            // Key tap 8 times as "Enter Full Screen" is in the
+            // 8th position under view menu item
             for (let i = 0; i < 8; i++) {
                 robot.keyTap('down');
             }

@@ -1,6 +1,8 @@
 const Application = require('./spectronSetup');
 const path = require('path');
-const {isMac} = require('../../js/utils/misc');
+const { isMac } = require('../../js/utils/misc');
+const constants = require('./spectronConstants');
+
 let app = new Application({});
 
 describe('Tests for Notification position', () => {
@@ -13,7 +15,9 @@ describe('Tests for Notification position', () => {
             app = startedApp;
             done();
         }).catch((err) => {
+            console.error(constants.UNABLE_TO_START_APPLICATION, err);
             expect(err).toBeNull();
+            done();
         });
     });
 
