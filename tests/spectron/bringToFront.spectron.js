@@ -1,4 +1,6 @@
 const Application = require('./spectronSetup');
+const constants = require('./spectronConstants');
+
 let app = new Application({});
 
 describe('Tests for Bring to front', () => {
@@ -11,7 +13,9 @@ describe('Tests for Bring to front', () => {
             app = startedApp;
             done();
         }).catch((err) => {
+            console.error(constants.UNABLE_TO_START_APPLICATION, err);
             expect(err).toBeNull();
+            done();
         });
     });
 

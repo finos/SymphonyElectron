@@ -1,6 +1,7 @@
 const Application = require('./spectronSetup');
 const {isMac} = require('../../js/utils/misc.js');
 const childProcess = require('child_process');
+const constants = require('./spectronConstants');
 
 let app = new Application({});
 let robot;
@@ -20,9 +21,15 @@ describe('Tests for Always on top', () => {
                 getConfigPath().then((config) => {
                     configPath = config;
                     done();
+                }).catch((err) => {
+                    console.error(constants.UNABLE_TO_GET_USER_CONFIG_PATH, err);
+                    expect(err).toBeNull();
+                    done();
                 });
             }).catch((err) => {
+                console.error(constants.UNABLE_TO_START_APPLICATION, err);
                 expect(err).toBeNull();
+                done();
             });
         });
     });
@@ -34,8 +41,8 @@ describe('Tests for Always on top', () => {
                     return require('electron').remote.app.getPath('userData');
                 })
             });
-            app.client.getUserDataPath().then((path) => {
-                resolve(path.value + '/Symphony.config')
+            app.client.getUserDataPath().then((userConfigPath) => {
+                resolve(userConfigPath.value)
             }).catch((err) => {
                 reject(err);
             });
@@ -136,7 +143,9 @@ describe('Tests for Always on top', () => {
             robot.setMouseDelay(200);
             robot.moveMouse(190, 0);
             robot.mouseClick();
-            for (let i = 0; i < 8; i++) {
+            // Key tap 10 times as "Always on Top" is in the
+            // 10th position under view menu item
+            for (let i = 0; i < 10; i++) {
                 robot.keyTap('down');
             }
             robot.keyTap('enter');
@@ -151,6 +160,8 @@ describe('Tests for Always on top', () => {
 
                     robot.moveMouseSmooth(x, y);
                     robot.mouseClick();
+                    // Key tap 4 times as "Always on Top" is in the
+                    // 4th position under window menu item
                     for (let i = 0; i < 4; i++) {
                         robot.keyTap('down');
                     }

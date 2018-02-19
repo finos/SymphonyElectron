@@ -1,18 +1,21 @@
+const Application = require('./spectronSetup');
+const constants = require('./spectronConstants');
+
+let app = new Application({});
+
 describe('Tests for Close', () => {
 
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 90000;
 
-    let app;
-
     beforeAll((done) => {
-        const Application = require('./spectronSetup');
-        app = new Application({});
         return app.startApplication().then((startedApp) => {
             app = startedApp;
             done();
         }).catch((err) => {
+            console.error(constants.UNABLE_TO_START_APPLICATION, err);
             expect(err).toBeNull();
+            done();
         });
     });
 
