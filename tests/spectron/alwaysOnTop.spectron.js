@@ -136,7 +136,7 @@ describe('Tests for Always on top', () => {
             robot.setMouseDelay(200);
             robot.moveMouse(190, 0);
             robot.mouseClick();
-            for (let i = 0; i < 8; i++) {
+            for (let i = 0; i < 10; i++) {
                 robot.keyTap('down');
             }
             robot.keyTap('enter');

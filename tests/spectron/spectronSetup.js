@@ -16,6 +16,7 @@ class App {
         }
 
         App.copyConfigPath();
+        App.copyLibraryDir();
 
         this.app = new Application(this.options);
     }
@@ -40,27 +41,52 @@ class App {
     }
 
     static readConfig(configPath) {
-        return new Promise(function (resolve, reject) {
-            fs.readFile(configPath, function (err, data) {
-                if (err) {
-                    reject(err);
-                }
-                resolve(JSON.parse(data));
+
+        if (!fs.existsSync(configPath)) {
+            return this.copyConfigPath();
+        } else {
+            return new Promise(function (resolve) {
+                fs.readFile(configPath, 'utf-8', function (err, data) {
+                    if (err) {
+                        throw new Error("Unable to read user config file " + err);
+                    }
+                    resolve(JSON.parse(data));
+                });
             });
-        });
+        }
     }
 
     static copyConfigPath() {
+        return new Promise((resolve) => {
+            if (isMac) {
+                ncp('config', 'node_modules/electron/dist/Electron.app/Contents/config', function (err) {
+                    if (err) {
+                        throw new Error("Unable to copy config file to Electron dir " + err);
+                    }
+                    resolve();
+                });
+            } else {
+                ncp('config', 'node_modules/electron/dist/config', function (err) {
+                    if (err) {
+                        throw new Error("Unable to copy config file to Electron dir " + err);
+                    }
+                    resolve();
+                });
+            }
+        })
+    }
+
+    static copyLibraryDir() {
         if (isMac) {
-            ncp('config', 'node_modules/electron/dist/Electron.app/Contents/config', function (err) {
+            ncp('library', 'node_modules/electron/dist/Electron.app/Contents/library', function (err) {
                 if (err) {
-                    throw(err);
+                    throw new Error("Unable to copy Swift search library dir " + err);
                 }
             });
         } else {
-            ncp('config', 'node_modules/electron/dist/config', function (err) {
+            ncp('library', 'node_modules/electron/dist/library', function (err) {
                 if (err) {
-                    throw(err);
+                    throw new Error("Unable to copy Swift search library dir " + err);
                 }
             });
         }

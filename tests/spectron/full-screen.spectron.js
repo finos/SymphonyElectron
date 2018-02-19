@@ -108,7 +108,7 @@ describe('Tests for Full screen', () => {
             robot.moveMouseSmooth(205, 10);
             robot.mouseClick();
             robot.setKeyboardDelay(100);
-            for (let i = 0; i < 6; i++) {
+            for (let i = 0; i < 8; i++) {
                 robot.keyTap('down');
             }
             robot.keyTap('enter');
