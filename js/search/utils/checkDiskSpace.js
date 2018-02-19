@@ -11,8 +11,8 @@ function checkDiskSpace(path, resolve, reject) {
     if (isMac) {
         exec("df -k '" + path.replace(/'/g,"'\\''") + "'", (error, stdout, stderr) => {
             if (error) {
-                if (stderr.indexOf("No such file or directory") !== -1) {
-                    return reject(new Error("No such file or directory : " + error))
+                if (stderr.indexOf(searchConfig.MAC_PATH_ERROR) !== -1) {
+                    return reject(new Error(`${searchConfig.MAC_PATH_ERROR} ${error}`))
                 }
                 return reject(new Error("Error : " + error));
             }
@@ -25,12 +25,20 @@ function checkDiskSpace(path, resolve, reject) {
             return resolve(space >= searchConfig.MINIMUM_DISK_SPACE);
         });
     } else {
-        exec(`fsutil volume diskfree ${path}`, (error, stdout, stderr) => {
+        exec(`fsutil volume diskfree ${path}`, (error, stdout) => {
             if (error) {
-                if (stderr.indexOf("No such file or directory") !== -1) {
-                    return reject(new Error("No such file or directory : " + error));
+                if (stdout.indexOf(searchConfig.WIN_PATH_ERROR) !== -1) {
+                    return reject(new Error(`${searchConfig.WIN_PATH_ERROR} ${error}`));
+                }
+                if (stdout.indexOf(searchConfig.PERMISSION_ERROR) !== -1) {
+                    // this is temporary until we use the custom exe file.
+                    return resolve(true);
                 }
                 return reject(new Error("Error : " + error));
+            }
+            if (stdout.indexOf(searchConfig.PERMISSION_ERROR) !== -1) {
+                // this is temporary until we use the custom exe file.
+                return resolve(true);
             }
             let data = stdout.trim().split("\n");
 
