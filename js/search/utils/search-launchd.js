@@ -1,6 +1,6 @@
 const { exec } = require('child_process');
 const os = require('os');
-const randomString = require('randomstring');
+const { randomString } = require('./randomString.js');
 const log = require('../../log.js');
 const logLevels = require('../../enums/logLevels.js');
 const Winreg = require('winreg');
@@ -67,7 +67,7 @@ function taskScheduler(script, dataFolder, pid, clearScript) {
             userName = (exec.execSync('whoami').stdout).replace(/^.*\\/, '')
         } catch (e) {
             log.send(logLevels.WARN, `whoami failed (using randomString): ${e}`);
-            userName = randomString.generate(4);
+            userName = randomString();
         }
     }
     exec(`SCHTASKS /Create /SC MINUTE /TN SymphonyTask${userName} /TR "'${script}' '${dataFolder}' 'SymphonyTask${userName}' '${pid}'" /F`, (error, stdout, stderr) => {
@@ -91,7 +91,7 @@ function taskScheduler(script, dataFolder, pid, clearScript) {
  */
 function winRegScript(userName, script, dataFolder) {
     regKey.set(`SymphonyTask-${userName}`, Winreg.REG_SZ, `${script} ${dataFolder}`, function(err) {
-        if (err != null) {
+        if (err !== null) {
             log.send(logLevels.INFO, `winReg: Creating task failed ${err}`);
         }
         log.send(logLevels.INFO, 'winReg: Creating task successful');
