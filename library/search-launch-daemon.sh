@@ -21,10 +21,15 @@ if $1; then
     </array>
     <key>RunAtLoad</key>
     <true/>
+    <key>KeepAlive</key>
+    <false/>
+    <key>StandardOutPath</key>
+    <string>/dev/null</string>
+    <key>StandardErrorPath</key>
+    <string>/dev/null</string>
 </dict>
 </plist>
 EOT
-launchctl load ~/Library/LaunchAgents/com.symphony-search.clear.plist
 else
     rm -rf dataPath
 fi

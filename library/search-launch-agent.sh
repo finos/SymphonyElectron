@@ -6,6 +6,7 @@ if $1; then
    if [ ! -d "$launchDir" ]; then
       mkdir "$launchDir"
    fi
+   launchctl unload ~/Library/LaunchAgents/com.symphony-search.data.plist
    cat > ~/Library/LaunchAgents/com.symphony-search.data.plist << EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -20,8 +21,14 @@ if $1; then
     <string>false</string>
     <string>SymphonyPID</string>
   </array>
+  <key>RunAtLoad</key>
+  <false/>
   <key>StartInterval</key>
   <integer>60</integer>
+  <key>StandardOutPath</key>
+    <string>/dev/null</string>
+    <key>StandardErrorPath</key>
+    <string>/dev/null</string>
 </dict>
 </plist>
 EOT
@@ -33,4 +40,5 @@ else
     echo false
     rm -rf dataPath
     launchctl unload ~/Library/LaunchAgents/com.symphony-search.data.plist
+    rm -rf ~/Library/LaunchAgents/com.symphony-search.data.plist
 fi

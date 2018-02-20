@@ -35,6 +35,7 @@ class Search {
         this.messageData = [];
         this.isRealTimeIndexing = false;
         this.crypto = new Crypto(userId, key);
+        initializeLaunchAgent();
         this.decryptAndInit();
         this.collector = makeBoundTimedCollector(this.checkIsRealTimeIndexing.bind(this),
             searchConfig.REAL_TIME_INDEXING_TIME, this.realTimeIndexing.bind(this));
@@ -77,7 +78,6 @@ class Search {
         libSymphonySearch.symSEDeleteMessages(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${this.userId}`, null,
             searchConfig.MINIMUM_DATE, indexDateStartFrom.toString());
         this.isInitialized = true;
-        initializeLaunchAgent();
     }
 
     /**
