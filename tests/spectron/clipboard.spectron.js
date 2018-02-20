@@ -1,5 +1,7 @@
 const Application = require('./spectronSetup');
 const path = require('path');
+const constants = require('./spectronConstants');
+
 let app = new Application({});
 
 describe('Tests for clipboard', () => {
@@ -10,6 +12,10 @@ describe('Tests for clipboard', () => {
     beforeAll((done) => {
         return app.startApplication().then((startedApp) => {
             app = startedApp;
+            done();
+        }).catch((err) => {
+            console.error(constants.UNABLE_TO_START_APPLICATION, err);
+            expect(err).toBeNull();
             done();
         });
     });

@@ -1,6 +1,7 @@
 const Application = require('./spectronSetup');
 const {isMac} = require('../../js/utils/misc.js');
 const childProcess = require('child_process');
+const constants = require('./spectronConstants');
 
 let app = new Application({});
 let robot;
@@ -20,9 +21,15 @@ describe('Tests for Always on top', () => {
                 getConfigPath().then((config) => {
                     configPath = config;
                     done();
+                }).catch((err) => {
+                    console.error(constants.UNABLE_TO_GET_USER_CONFIG_PATH, err);
+                    expect(err).toBeNull();
+                    done();
                 });
             }).catch((err) => {
+                console.error(constants.UNABLE_TO_START_APPLICATION, err);
                 expect(err).toBeNull();
+                done();
             });
         });
     });
@@ -35,7 +42,7 @@ describe('Tests for Always on top', () => {
                 })
             });
             app.client.getUserDataPath().then((userConfigPath) => {
-                resolve(userConfigPath.value + '/Symphony.config')
+                resolve(userConfigPath.value)
             }).catch((err) => {
                 reject(err);
             });

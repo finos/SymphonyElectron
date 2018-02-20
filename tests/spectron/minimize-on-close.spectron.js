@@ -1,11 +1,10 @@
-const path = require('path');
-const fs = require('fs');
 const childProcess = require('child_process');
 const Application = require('./spectronSetup');
-const {isMac} = require('../../js/utils/misc');
+const { isMac } = require('../../js/utils/misc');
+const constants = require('./spectronConstants');
+
 let robot;
 let configPath;
-
 let app = new Application({});
 
 describe('Tests for Minimize on Close', () => {
@@ -22,10 +21,14 @@ describe('Tests for Minimize on Close', () => {
                     configPath = config;
                     done();
                 }).catch((err) => {
+                    console.error(constants.UNABLE_TO_GET_USER_CONFIG_PATH, err);
                     expect(err).toBeNull();
+                    done();
                 });
             }).catch((err) => {
+                console.error(constants.UNABLE_TO_START_APPLICATION, err);
                 expect(err).toBeNull();
+                done();
             });
         });
     });
@@ -38,7 +41,7 @@ describe('Tests for Minimize on Close', () => {
                 })
             });
             app.client.getUserDataPath().then((userConfigPath) => {
-                resolve(userConfigPath.value + '/Symphony.config')
+                resolve(userConfigPath.value)
             }).catch((err) => {
                 reject(err);
             });

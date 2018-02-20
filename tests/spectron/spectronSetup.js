@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const { isMac, isWindowsOS } = require('../../js/utils/misc');
 const ncp = require('ncp').ncp;
+const constants = require('./spectronConstants.js');
 
 class App {
 
@@ -15,8 +16,16 @@ class App {
             this.options.args = [path.join(__dirname, '..', '..', 'js/main.js')];
         }
 
-        App.copyConfigPath();
-        App.copyLibraries();
+        if (isMac) {
+            App.copyConfigPath(constants.ELECTRON_GLOBAL_CONFIG_PATH_MAC);
+            App.copyLibraries(constants.SEARCH_LIBRARY_PATH_MAC);
+        }
+
+        if (isWindowsOS) {
+            App.copyConfigPath(constants.ELECTRON_GLOBAL_CONFIG_PATH_WIN);
+            App.copyLibraries(constants.SEARCH_LIBRARY_PATH_WIN);
+        }
+
 
         this.app = new Application(this.options);
     }
@@ -43,70 +52,62 @@ class App {
 
     static readConfig(configPath) {
 
-        if (!fs.existsSync(configPath)) {
-            return new Promise(function (resolve) {
-                this.copyConfigPath().then(() => {
-                    fs.readFile(configPath, 'utf-8', function (err, data) {
+        const configFilePath = configPath + constants.SYMPHONY_CONFIG_FILE_NAME;
+
+        if (!fs.existsSync(configFilePath)) {
+            return new Promise(function (resolve, reject) {
+                App.copyConfigPath(configPath).then(() => {
+                    fs.readFile(configFilePath, 'utf-8', function (err, data) {
                         if (err) {
-                            throw new Error("Unable to read user config file " + err);
+                            throw new Error(`Unable to read user config file at ${configFilePath}  ${err}`);
                         }
-                        resolve(JSON.parse(data));
+                        let parsedData;
+                        try {
+                            parsedData = JSON.parse(data);
+                        } catch (err) {
+                            return reject(err);
+                        }
+                        return resolve(parsedData);
                     });
                 });
             });
         }
 
-        return new Promise(function (resolve) {
-            fs.readFile(configPath, 'utf-8', function (err, data) {
+        return new Promise(function (resolve, reject) {
+            fs.readFile(configFilePath, 'utf-8', function (err, data) {
                 if (err) {
-                    throw new Error("Unable to read user config file " + err);
+                    throw new Error(`Unable to read user config file at ${configFilePath}  ${err}`);
                 }
-                resolve(JSON.parse(data));
+                let parsedData;
+                try {
+                    parsedData = JSON.parse(data);
+                } catch (err) {
+                    reject(err);
+                }
+                resolve(parsedData);
             });
         });
     }
 
-    static copyConfigPath() {
+    static copyConfigPath(configPath) {
         return new Promise((resolve) => {
-            if (isMac) {
-                ncp('config', 'node_modules/electron/dist/Electron.app/Contents/config', function (err) {
-                    if (err) {
-                        throw new Error("Unable to copy config file to Electron dir " + err);
-                    }
-                    return resolve();
-                });
-            }
-
-            if (isWindowsOS) {
-                ncp('config', 'node_modules/electron/dist/config', function (err) {
-                    if (err) {
-                        throw new Error("Unable to copy config file to Electron dir " + err);
-                    }
-                    return resolve();
-                });
-            }
+            ncp('config', configPath, function (err) {
+                if (err) {
+                    throw new Error("Unable to copy config file to Electron dir " + err);
+                }
+                return resolve();
+            });
         })
     }
 
-    static copyLibraries() {
+    static copyLibraries(libraryPath) {
         return new Promise((resolve) => {
-            if (isMac) {
-                return ncp('library', 'node_modules/electron/dist/Electron.app/Contents/library', function (err) {
-                    if (err) {
-                        throw new Error("Unable to copy Swift search Libraries " + err);
-                    }
-                    return resolve();
-                });
-            }
-
-            if (isWindowsOS) {
-                return ncp('library', 'node_modules/electron/dist/library', function (err) {
-                    if (err) {
-                        throw new Error("Unable to copy Swift search Libraries " + err);
-                    }
-                    return resolve();
-                });
-            }
+            return ncp('library', libraryPath, function (err) {
+                if (err) {
+                    throw new Error("Unable to copy Swift search Libraries " + err);
+                }
+                return resolve();
+            });
         });
     }
 
