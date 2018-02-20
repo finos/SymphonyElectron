@@ -44,7 +44,9 @@
       "config/Symphony.config",
       "library/libsymphonysearch.dylib",
       "library/indexvalidator.exec",
-      "library/lz4.exec"
+      "library/lz4.exec",
+      "library/search-launch-agent.sh",
+      "library/search-launch-daemon.sh"
     ],
     "appId": "symphony-electron-desktop",
     "mac": {

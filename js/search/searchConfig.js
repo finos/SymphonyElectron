@@ -26,12 +26,27 @@ const libraryPath = isMac ? path.join(macLibraryPath, 'libsymphonysearch.dylib')
 const userConfigFileName = 'search_users_config.json';
 const userConfigFile = isDevEnv ? path.join(__dirname, '..', '..', userConfigFileName) : path.join(userData, userConfigFileName);
 
+const libraryFolderPath = isMac ? macLibraryPath : winLibraryPath;
+
+const launchAgentFile = path.join(libraryFolderPath, 'search-launch-agent.sh');
+const launchDaemonFile = path.join(libraryFolderPath, 'search-launch-daemon.sh');
+const windowsTaskFile = path.join(libraryFolderPath, 'search-win-task.exe');
+const windowsClearScript = path.join(libraryFolderPath, 'clear-on-launch.exe');
+
+const scriptExt = isMac ? '.sh' : '.exe';
+
 const libraryPaths = {
     INDEX_VALIDATOR: indexValidatorPath,
     LZ4_PATH: lz4Path,
     MAC_LIBRARY_FOLDER: macLibraryPath,
     WIN_LIBRARY_FOLDER: winLibraryPath,
-    SEARCH_LIBRARY_PATH: libraryPath
+    SEARCH_LIBRARY_PATH: libraryPath,
+    LIBRARY_FOLDER_PATH: libraryFolderPath,
+    LAUNCH_AGENT_FILE: launchAgentFile,
+    LAUNCH_DAEMON_FILE: launchDaemonFile,
+    WINDOWS_TASK_FILE: windowsTaskFile,
+    WINDOWS_CLEAR_SCRIPT: windowsClearScript,
+    EXT: scriptExt,
 };
 
 const folderPaths = {
