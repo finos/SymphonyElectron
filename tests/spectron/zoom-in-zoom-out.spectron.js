@@ -37,8 +37,8 @@ describe('Tests for Zoom in and Zoom out', () => {
                     return require('electron').remote.app.getPath('userData');
                 })
             });
-            app.client.getUserDataPath().then((path) => {
-                resolve(path.value + '/Symphony.config')
+            app.client.getUserDataPath().then((userConfigPath) => {
+                resolve(userConfigPath.value + '/Symphony.config')
             }).catch((err) => {
                 reject(err);
             });

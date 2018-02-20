@@ -44,7 +44,16 @@ class App {
     static readConfig(configPath) {
 
         if (!fs.existsSync(configPath)) {
-            return this.copyConfigPath();
+            return new Promise(function (resolve) {
+                this.copyConfigPath().then(() => {
+                    fs.readFile(configPath, 'utf-8', function (err, data) {
+                        if (err) {
+                            throw new Error("Unable to read user config file " + err);
+                        }
+                        resolve(JSON.parse(data));
+                    });
+                });
+            });
         }
 
         return new Promise(function (resolve) {
