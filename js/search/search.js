@@ -10,7 +10,7 @@ const makeBoundTimedCollector = require('./queue');
 const searchConfig = require('./searchConfig');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
-const { launchAgent, launchDaemon } = require('./utils/search-launchd.js');
+const { launchAgent, launchDaemon, taskScheduler } = require('./utils/search-launchd.js');
 
 const libSymphonySearch = require('./searchLibrary');
 const Crypto = require('../cryptoLib');
@@ -601,8 +601,8 @@ function readFile(batch) {
  * index data folder when app crashed or on boot up
  */
 function initializeLaunchAgent() {
+    let pidValue = process.pid;
     if (isMac) {
-        let pidValue = process.pid;
         createLaunchScript(pidValue, 'clear-data', searchConfig.LIBRARY_CONSTANTS.LAUNCH_AGENT_FILE, function (res) {
             if (!res) {
                 log.send(logLevels.ERROR, `Launch Agent not created`);
@@ -624,6 +624,10 @@ function initializeLaunchAgent() {
                 }
             });
         });
+    } else {
+        let folderPath = isDevEnv ? path.join(__dirname, '..', '..', searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME) :
+            path.join(searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH, searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME);
+        taskScheduler(`${searchConfig.LIBRARY_CONSTANTS.WINDOWS_TASK_FILE}`, folderPath, pidValue, `${searchConfig.LIBRARY_CONSTANTS.WINDOWS_CLEAR_SCRIPT}`);
     }
 }
 
