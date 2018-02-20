@@ -1,7 +1,7 @@
 const Application = require('spectron').Application;
 const path = require('path');
 const fs = require('fs');
-const {isMac} = require('../../js/utils/misc');
+const { isMac, isWindowsOS } = require('../../js/utils/misc');
 const ncp = require('ncp').ncp;
 
 class App {
@@ -16,7 +16,7 @@ class App {
         }
 
         App.copyConfigPath();
-        App.copyLibraryDir();
+        App.copyLibraries();
 
         this.app = new Application(this.options);
     }
@@ -45,16 +45,16 @@ class App {
 
         if (!fs.existsSync(configPath)) {
             return this.copyConfigPath();
-        } else {
-            return new Promise(function (resolve) {
-                fs.readFile(configPath, 'utf-8', function (err, data) {
-                    if (err) {
-                        throw new Error("Unable to read user config file " + err);
-                    }
-                    resolve(JSON.parse(data));
-                });
-            });
         }
+
+        return new Promise(function (resolve) {
+            fs.readFile(configPath, 'utf-8', function (err, data) {
+                if (err) {
+                    throw new Error("Unable to read user config file " + err);
+                }
+                resolve(JSON.parse(data));
+            });
+        });
     }
 
     static copyConfigPath() {
@@ -64,33 +64,41 @@ class App {
                     if (err) {
                         throw new Error("Unable to copy config file to Electron dir " + err);
                     }
-                    resolve();
+                    return resolve();
                 });
-            } else {
+            }
+
+            if (isWindowsOS) {
                 ncp('config', 'node_modules/electron/dist/config', function (err) {
                     if (err) {
                         throw new Error("Unable to copy config file to Electron dir " + err);
                     }
-                    resolve();
+                    return resolve();
                 });
             }
         })
     }
 
-    static copyLibraryDir() {
-        if (isMac) {
-            ncp('library', 'node_modules/electron/dist/Electron.app/Contents/library', function (err) {
-                if (err) {
-                    throw new Error("Unable to copy Swift search library dir " + err);
-                }
-            });
-        } else {
-            ncp('library', 'node_modules/electron/dist/library', function (err) {
-                if (err) {
-                    throw new Error("Unable to copy Swift search library dir " + err);
-                }
-            });
-        }
+    static copyLibraries() {
+        return new Promise((resolve) => {
+            if (isMac) {
+                return ncp('library', 'node_modules/electron/dist/Electron.app/Contents/library', function (err) {
+                    if (err) {
+                        throw new Error("Unable to copy Swift search Libraries " + err);
+                    }
+                    return resolve();
+                });
+            }
+
+            if (isWindowsOS) {
+                return ncp('library', 'node_modules/electron/dist/library', function (err) {
+                    if (err) {
+                        throw new Error("Unable to copy Swift search Libraries " + err);
+                    }
+                    return resolve();
+                });
+            }
+        });
     }
 
 }

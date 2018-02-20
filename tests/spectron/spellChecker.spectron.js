@@ -78,35 +78,33 @@ describe('Tests for spellChecker', () => {
 
     it('should invoke context menu ', (done) => {
         if (isMac) {
-            app.browserWindow.getBounds().then((bounds) => {
-                let x = bounds.x + 55;
-                let y = bounds.y + 430;
+            const tag = app.client.$('#tag');
+            tag.waitForExist('#tag', 2000);
+            tag.moveToObject('#tag', 10, 10);
+            tag.rightClick('#tag', 10, 10);
 
-                robot.moveMouseSmooth(x, y);
-                robot.setMouseDelay(200);
-                robot.mouseClick('left', true);
-                robot.mouseClick('right');
+            // Timeout is required for context menu to appear
+            setTimeout(() => {
                 robot.setKeyboardDelay(500);
                 robot.keyTap('down');
                 robot.keyTap('down');
                 robot.keyTap('enter');
                 done();
-            });
+            }, 2000);
         } else {
-            app.browserWindow.getBounds().then((bounds) => {
-                let x = bounds.x + 55;
-                let y = bounds.y + 430;
+            const tag = app.client.$('#tag');
+            tag.waitForExist('#tag', 2000);
+            tag.moveToObject('#tag', 10, 10);
+            tag.rightClick('#tag', 10, 10);
 
-                robot.moveMouseSmooth(x, y);
-                robot.setMouseDelay(200);
-                robot.mouseClick('left', true);
-                robot.mouseClick('right');
+            // Timeout is required for context menu to appear
+            setTimeout(() => {
                 robot.setKeyboardDelay(500);
                 robot.keyTap('down');
                 robot.keyTap('down');
                 robot.keyTap('enter');
                 done();
-            });
+            }, 2000);
         }
     });
 
