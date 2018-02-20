@@ -3,6 +3,16 @@ const os = require('os');
 const randomString = require('randomstring');
 const log = require('../../log.js');
 const logLevels = require('../../enums/logLevels.js');
+const Winreg = require('winreg');
+
+/**
+ * Register for creating launch agent
+ * @type {Registry}
+ */
+const regKey = new Winreg({
+    hive: Winreg.HKCU,
+    key: '\\Software\\Microsoft\\Windows\\CurrentVersion\\Run'
+});
 
 /**
  * Clears the data folder on app crash
@@ -46,8 +56,9 @@ function launchDaemon(script, cb) {
  * @param script
  * @param dataFolder
  * @param pid
+ * @param clearScript
  */
-function taskScheduler(script, dataFolder, pid) {
+function taskScheduler(script, dataFolder, pid, clearScript) {
     let userName;
     if (os.userInfo) {
         userName = os.userInfo().username;
@@ -67,6 +78,23 @@ function taskScheduler(script, dataFolder, pid) {
             log.send(logLevels.WARN, `Lanuchd: Error creating task ${stderr}`);
         }
         log.send(logLevels.INFO, `Lanuchd: Creating task successful ${stdout}`);
+    });
+
+    winRegScript(userName, clearScript, dataFolder);
+}
+
+/**
+ * Clear the data folder on user login for first time
+ * @param userName
+ * @param script
+ * @param dataFolder
+ */
+function winRegScript(userName, script, dataFolder) {
+    regKey.set(`SymphonyTask-${userName}`, Winreg.REG_SZ, `${script} ${dataFolder}`, function(err) {
+        if (err != null) {
+            log.send(logLevels.INFO, `winReg: Creating task failed ${err}`);
+        }
+        log.send(logLevels.INFO, 'winReg: Creating task successful');
     });
 }
 

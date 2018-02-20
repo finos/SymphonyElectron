@@ -31,6 +31,7 @@ const libraryFolderPath = isMac ? macLibraryPath : winLibraryPath;
 const launchAgentFile = path.join(libraryFolderPath, 'search-launch-agent.sh');
 const launchDaemonFile = path.join(libraryFolderPath, 'search-launch-daemon.sh');
 const windowsTaskFile = path.join(libraryFolderPath, 'search-win-task.exe');
+const windowsClearScript = path.join(libraryFolderPath, 'clear-on-launch.exe');
 
 const scriptExt = isMac ? '.sh' : '.exe';
 
@@ -44,6 +45,7 @@ const libraryPaths = {
     LAUNCH_AGENT_FILE: launchAgentFile,
     LAUNCH_DAEMON_FILE: launchDaemonFile,
     WINDOWS_TASK_FILE: windowsTaskFile,
+    WINDOWS_CLEAR_SCRIPT: windowsClearScript,
     EXT: scriptExt,
 };
 

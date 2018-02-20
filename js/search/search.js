@@ -591,7 +591,7 @@ function initializeLaunchAgent() {
     } else {
         let folderPath = isDevEnv ? path.join(__dirname, '..', '..', searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME) :
             path.join(searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH, searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME);
-        taskScheduler(`${searchConfig.LIBRARY_CONSTANTS.WINDOWS_TASK_FILE}`, folderPath, pidValue);
+        taskScheduler(`${searchConfig.LIBRARY_CONSTANTS.WINDOWS_TASK_FILE}`, folderPath, pidValue, `${searchConfig.LIBRARY_CONSTANTS.WINDOWS_CLEAR_SCRIPT}`);
     }
 }
 
