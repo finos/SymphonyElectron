@@ -107,10 +107,6 @@ describe('Tests for Search', function() {
             setTimeout(function () {
 
                 expect(SearchApi.isInitialized).toBe(true);
-                expect(SearchApi.indexFolderName).toBe(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${userId}`);
-                expect(SearchApi.dataFolder).toBe(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
-                expect(SearchApi.realTimeIndex).toBe(searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX);
-                expect(SearchApi.batchIndex).toBe(searchConfig.FOLDERS_CONSTANTS.TEMP_BATCH_INDEX_FOLDER);
                 expect(SearchApi.messageData).toEqual([]);
                 expect(SearchApi.isRealTimeIndexing).toBe(false);
 
