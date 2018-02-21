@@ -2,6 +2,7 @@
 const { ipcRenderer } = require('electron');
 
 const screenRegExp = new RegExp(/^Screen \d+$/gmi);
+// All the required Keyboard keyCode events
 const PAGE_DOWN = 34,
     RIGHT_ARROW = 39,
     PAGE_UP = 33,

@@ -82,7 +82,7 @@ function getSources(options, callback) {
         function successCallback(e, source) {
             // Cleaning up the event listener to prevent memory leaks
             if (!source) {
-                ipcRenderer.removeListener('stat-share' + id, func);
+                ipcRenderer.removeListener('start-share' + id, func);
                 return callback(new Error(USER_CANCELLED));
             }
             return callback(null, source);
