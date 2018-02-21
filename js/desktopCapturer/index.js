@@ -49,7 +49,7 @@ function getTemplatePath() {
  * @param sources {Array} - list of object which has screens and applications
  * @param id {Number} - event emitter id
  */
-function openScreenPickerWindowWindow(eventSender, sources, id) {
+function openScreenPickerWindow(eventSender, sources, id) {
 
     // prevent a new window from being opened if there is an
     // existing window / there is no event sender
@@ -136,5 +136,5 @@ ipc.on('close-screen-picker', () => {
 });
 
 module.exports = {
-    openScreenPickerWindowWindow
+    openScreenPickerWindow
 };
