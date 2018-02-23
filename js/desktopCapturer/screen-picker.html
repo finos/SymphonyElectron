@@ -5,9 +5,15 @@
     <title>Screen Picker</title>
     <style>
 
+        @font-face {
+            font-family: system;
+            font-style: normal;
+            src: local(".SFNSText-Light"), local(".HelveticaNeueDeskInterface-Light"), local(".LucidaGrandeUI"), local("Ubuntu Light"), local("Segoe UI Light"), local("Roboto-Light"), local("DroidSans"), local("Tahoma");
+        }
+
         body {
             margin: 0 auto;
-            font-family: "Helvetica Neue", sans-serif;
+            font-family: "system";
             overflow: hidden;
         }
 
@@ -145,25 +151,20 @@
             text-align: center;
             padding: 8px 32px;
             margin: 8px 8px 8px 0;
-            outline: none;
             display: inline-block;
             text-decoration: none;
             line-height: 12px;
         }
 
         button:focus {
-            outline: 0;
-        }
-
-        button:active {
-            outline: 0;
+            box-shadow: 0 0 10px rgba(61, 162, 253, 1);
+            outline: none;
         }
 
         .cancel-button {
             color: rgba(0, 0, 0, 0.38);
             background-color: rgba(255, 255, 255, 0);
             text-transform: uppercase;
-            margin: 0;
             padding: 8px 16px;
         }
 
