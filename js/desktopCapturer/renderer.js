@@ -2,17 +2,20 @@
 const { ipcRenderer } = require('electron');
 
 const screenRegExp = new RegExp(/^Screen \d+$/gmi);
+
 // All the required Keyboard keyCode events
-const PAGE_DOWN = 34,
-    RIGHT_ARROW = 39,
-    PAGE_UP = 33,
-    LEFT_ARROW = 37,
-    HOME_KEY = 36,
-    UP_ARROW = 38,
-    END_KEY = 35,
-    ARROW_DOWN = 40,
-    ENTER_KEY = 13,
-    ESCAPE_KEY = 27;
+const keyCodeEnum = Object.freeze({
+    pageDown: 34,
+    rightArrow: 39,
+    pageUp: 33,
+    leftArrow: 37,
+    homeKey: 36,
+    upArrow: 38,
+    endKey: 35,
+    arrowDown: 40,
+    enterKey: 13,
+    escapeKey: 27
+});
 
 let availableSources;
 let selectedSource;
@@ -170,8 +173,8 @@ function updateUI(source, itemContainer) {
  */
 function highlightSelectedSource() {
     let items = document.getElementsByClassName('item-container');
-    for (let i = 0, len = items.length; i < len; i++) {
-        items[i].classList.remove('selected');
+    for (const item of items) {
+        item.classList.remove('selected');
     }
 }
 
@@ -196,34 +199,34 @@ function handleKeyUpPress(e) {
     const keyCode = e.keyCode || e.which;
 
     switch (keyCode) {
-        case PAGE_DOWN:
-        case RIGHT_ARROW:
+        case keyCodeEnum.pageDown:
+        case keyCodeEnum.rightArrow:
             updateSelectedSource(1);
             break;
-        case PAGE_UP:
-        case LEFT_ARROW:
+        case keyCodeEnum.pageUp:
+        case keyCodeEnum.leftArrow:
             updateSelectedSource(-1);
             break;
-        case HOME_KEY:
+        case keyCodeEnum.homeKey:
             if (currentIndex !== 0) {
                 updateSelectedSource(0);
             }
             break;
-        case UP_ARROW:
+        case keyCodeEnum.upArrow:
             updateSelectedSource(-2);
             break;
-        case END_KEY:
+        case keyCodeEnum.endKey:
             if (currentIndex !== availableSources.length - 1) {
                 updateSelectedSource(availableSources.length - 1);
             }
             break;
-        case ARROW_DOWN:
+        case keyCodeEnum.arrowDown:
             updateSelectedSource(2);
             break;
-        case ENTER_KEY:
+        case keyCodeEnum.enterKey:
             startShare();
             break;
-        case ESCAPE_KEY:
+        case keyCodeEnum.escapeKey:
             closeScreenPickerWindow();
             break;
         default:

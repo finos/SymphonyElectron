@@ -12,12 +12,12 @@
         }
 
         .window-border {
-            border: 2px solid #444;
+            border: 2px solid rgba(68,68,68, 1);
         }
 
         .content {
             margin: 0 auto;
-            background: #F9F9FA;
+            background: rgba(249,249,250, 1);
             text-align: center;
             height: 100%;
             overflow: hidden;
@@ -32,6 +32,8 @@
             font-size: 1.2rem;
             line-height: 1.3;
             text-align: left;
+            -webkit-user-select: none;
+            -webkit-app-region: drag;
         }
 
         #x-button {
@@ -56,7 +58,7 @@
             font-size: 0.8em;
             letter-spacing: 1px;
             text-align: center;
-            color: #bbb;
+            color: rgba(187,187,187, 1);
             text-transform: uppercase;
             border: 1px solid transparent;
         }
@@ -74,8 +76,8 @@
         }
 
         input:checked + label {
-            color: #3DA2FD;
-            border-bottom: 4px solid #3DA2FD;
+            color: rgba(61,162,253, 1);
+            border-bottom: 4px solid rgba(61,162,253, 1);
         }
 
         #screen-tab:checked ~ #screen-contents,
@@ -84,7 +86,7 @@
         }
 
         .item-container {
-            background: #fff;
+            background: rgba(255,255,255, 1);
             border-radius: 2px;
             display: inline-block;
             height: 150px;
@@ -96,6 +98,7 @@
 
         .item-container:hover {
             box-shadow: 0 1px 5px rgba(0, 0, 0, .1), 0 5px 5px rgba(0, 0, 0, .1);
+            cursor: pointer;
         }
 
         .screen-section-box {
@@ -122,7 +125,7 @@
         }
 
         .selected {
-            border-color: #3DA2FD;
+            border-color: rgba(61,162,253, 1);
             border-bottom-style: solid;
         }
 
@@ -167,11 +170,12 @@
         .cancel-button:hover {
             background-color: rgba(255, 255, 255, 0);
             color: black;
+            cursor: pointer;
         }
 
         .share-button {
-            background-color: #3DA2FD;
-            color: #FFF;
+            background-color: rgba(61,162,253, 1);
+            color: rgba(255,255,255, 1);
             cursor: pointer;
             text-transform: uppercase;
             box-shadow: none;
@@ -204,7 +208,7 @@
 <body>
 <div class="content">
     <div class="custom-window-title">
-        <span>Choose what you'd like to share</span>
+        <span>Choose what you&#39;d like to share</span>
         <div id="x-button">
             <div class="content-button">
                 <i>
