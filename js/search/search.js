@@ -67,10 +67,8 @@ class Search {
     init() {
         libSymphonySearch.symSEInit();
         libSymphonySearch.symSEEnsureFolderExists(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
-        Search.deleteIndexFolders(searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX);
         Search.deleteIndexFolders(searchConfig.FOLDERS_CONSTANTS.TEMP_BATCH_INDEX_FOLDER);
         Search.indexValidator(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${this.userId}`);
-        Search.indexValidator(searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX);
         let indexDateStartFrom = new Date().getTime() - searchConfig.SEARCH_PERIOD_SUBTRACTOR;
         // Deleting all the messages except 3 Months from now
         libSymphonySearch.symSEDeleteMessages(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${this.userId}`, null,
@@ -142,7 +140,7 @@ class Search {
                 return;
             }
 
-            libSymphonySearch.symSEMergePartialIndexAsync(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${this.userId}`, searchConfig.FOLDERS_CONSTANTS.TEMP_BATCH_INDEX_FOLDER, (err, res) => {
+            libSymphonySearch.symSEMainFSIndexToRAMIndexAsync(searchConfig.FOLDERS_CONSTANTS.TEMP_BATCH_INDEX_FOLDER, (err, res) => {
                 if (err) {
                     log.send(logLevels.ERROR, 'Error merging the index ->' + err);
                     reject(new Error(err));
@@ -195,13 +193,8 @@ class Search {
             throw new Error('Library not initialized');
         }
 
-        if (!fs.existsSync(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH)) {
-            log.send(logLevels.ERROR, 'User index folder not found');
-            throw new Error('User index folder not found');
-        }
-
         this.isRealTimeIndexing = true;
-        return libSymphonySearch.symSEIndexRealTimeAsync(searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX, message, (err, result) => {
+        return libSymphonySearch.symSEIndexRealtimeRAMAsync(message, (err, result) => {
             this.isRealTimeIndexing = false;
             if (err) {
                 log.send(logLevels.ERROR, 'RealTime Indexing: error -> ' + err);
@@ -257,12 +250,6 @@ class Search {
                 return;
             }
 
-            if (!fs.existsSync(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${this.userId}`) || !fs.existsSync(searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX)) {
-                log.send(logLevels.ERROR, 'Index folder does not exist.');
-                reject(new Error('Index folder does not exist.'));
-                return;
-            }
-
             let q = Search.constructQuery(query, senderIds, threadIds, fileType);
 
             if (q === undefined) {
@@ -299,12 +286,11 @@ class Search {
                 _sortOrder = searchConfig.SORT_BY_SCORE;
             }
 
-            const returnedResult = libSymphonySearch.symSESearch(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${this.userId}`, searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX, q, startDateTime.toString(), endDateTime.toString(), _offset, _limit, _sortOrder);
+            const returnedResult = libSymphonySearch.symSERAMIndexSearch(q, startDateTime.toString(), endDateTime.toString(), _offset, _limit, _sortOrder);
             try {
-                let ret = returnedResult.readCString();
-                resolve(JSON.parse(ret));
+                resolve(JSON.parse(returnedResult));
             } finally {
-                libSymphonySearch.symSEFreeResult(returnedResult);
+                //libSymphonySearch.symSEFreeResult(returnedResult)
             }
         });
     }
