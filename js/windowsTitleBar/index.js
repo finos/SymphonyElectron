@@ -3,7 +3,9 @@ const apiEnums = require('../enums/api.js');
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 const htmlContents = require('./contents');
-const { isWindows10 } = require('./../utils/misc');
+
+// Check Windows version to enable title bar
+const isWindows10 = window.navigator.userAgent.indexOf("Windows NT 10.0") !== -1;
 
 // Default title bar height
 const titleBarHeight = '32px';
@@ -20,7 +22,7 @@ class TitleBar {
 
     initiateWindowsTitleBar() {
 
-        if (!isWindows10()) {
+        if (!isWindows10) {
             return;
         }
 
