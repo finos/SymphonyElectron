@@ -19,13 +19,13 @@ let libSymphonySearch = ffi.Library(searchConfig.LIBRARY_CONSTANTS.SEARCH_LIBRAR
     'symSE_index_realtime_RAM': ['int', [ 'string' ] ],
     'symSE_main_RAM_index_to_FS_index': ['int', [ 'string' ] ],
     'symSE_realtime_RAM_index_to_FS_index': ['int', [ 'string' ] ],
-    'symSE_main_RAM_index_get_last_message_timestamp': ['string', [] ],
-    'symSE_RAM_index_search': ['string', [ 'string', 'string', 'string', 'int', 'int', 'int' ] ],
+    'symSE_main_RAM_index_get_last_message_timestamp': ['char *', [] ],
+    'symSE_RAM_index_search': ['char *', [ 'string', 'string', 'string', 'int', 'int', 'int' ] ],
     'symSE_main_FS_index_to_RAM_index': ['int', [ 'string' ] ],
     'symSE_realtime_FS_index_to_RAM_index': ['int', [ 'string' ] ],
     'symSE_clear_realtime_RAM_index': ['int', [] ],
     'symSE_clear_main_RAM_index': ['int', [] ],
-    'symSE_delete_messages_from_RAM_index': ['int', [ 'string' ] ],
+    'symSE_delete_messages_from_RAM_index': ['int', [ 'string', 'string', 'string' ] ],
     'symSE_destroy': ['int', [] ],
 
 

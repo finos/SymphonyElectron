@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require('fs');
+const ref = require('ref');
 const { randomString } = require('../search/utils/randomString.js');
 const childProcess = require('child_process');
 const path = require('path');
@@ -16,6 +17,7 @@ const Crypto = require('../cryptoLib');
 
 const INDEX_VALIDATOR = searchConfig.LIBRARY_CONSTANTS.INDEX_VALIDATOR;
 
+/*eslint class-methods-use-this: ["error", { "exceptMethods": ["deleteRealTimeFolder", "mergeIndexBatches"] }] */
 /**
  * This search class communicates with the SymphonySearchEngine C library via node-ffi.
  * There should be only 1 instance of this class in the Electron
@@ -65,13 +67,14 @@ class Search {
      * and creates a folder in the userData
      */
     init() {
+        libSymphonySearch.symSEDestroy();
         libSymphonySearch.symSEInit();
         libSymphonySearch.symSEEnsureFolderExists(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
         Search.deleteIndexFolders(searchConfig.FOLDERS_CONSTANTS.TEMP_BATCH_INDEX_FOLDER);
         Search.indexValidator(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${this.userId}`);
         let indexDateStartFrom = new Date().getTime() - searchConfig.SEARCH_PERIOD_SUBTRACTOR;
         // Deleting all the messages except 3 Months from now
-        libSymphonySearch.symSEDeleteMessages(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${this.userId}`, null,
+        libSymphonySearch.symSEDeleteMessagesFromRAMIndex(null,
             searchConfig.MINIMUM_DATE, indexDateStartFrom.toString());
         this.isInitialized = true;
     }
@@ -288,9 +291,10 @@ class Search {
 
             const returnedResult = libSymphonySearch.symSERAMIndexSearch(q, startDateTime.toString(), endDateTime.toString(), _offset, _limit, _sortOrder);
             try {
-                resolve(JSON.parse(returnedResult));
+                let ret = ref.readCString(returnedResult);
+                resolve(JSON.parse(ret));
             } finally {
-                //libSymphonySearch.symSEFreeResult(returnedResult)
+                libSymphonySearch.symSEFreeResult(returnedResult);
             }
         });
     }
@@ -314,14 +318,14 @@ class Search {
                 return;
             }
 
-            libSymphonySearch.symSEGetLastMessageTimestampAsync(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${this.userId}`, (err, res) => {
+            libSymphonySearch.symSEMainRAMIndexGetLastMessageTimestampAsync((err, res) => {
                 if (err) {
                     log.send(logLevels.ERROR, 'Error getting the index timestamp ->' + err);
                     reject(new Error(err));
                 }
                 const returnedResult = res;
                 try {
-                    let ret = returnedResult.readCString();
+                    let ret = ref.readCString(returnedResult);
                     resolve(ret);
                 } finally {
                     libSymphonySearch.symSEFreeResult(returnedResult);
@@ -330,10 +334,8 @@ class Search {
         });
     }
 
-    /*eslint class-methods-use-this: ["error", { "exceptMethods": ["deleteRealTimeFolder"] }] */
     deleteRealTimeFolder() {
-        Search.deleteIndexFolders(searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX);
-        Search.indexValidator(searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX);
+        libSymphonySearch.symSEClearRealtimeRAMIndex();
     }
 
     /**
