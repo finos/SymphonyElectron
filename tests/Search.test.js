@@ -33,7 +33,6 @@ describe('Tests for Search', function() {
     let userId;
     let key;
     let dataFolderPath;
-    let realTimeIndexPath;
     let tempBatchPath;
     let currentDate = new Date().getTime();
 
@@ -55,7 +54,6 @@ describe('Tests for Search', function() {
             const { Search } = require('../js/search/search.js');
             SearchApi = new Search(userId, key);
 
-            realTimeIndexPath = path.join(userConfigDir, 'data', 'temp_realtime_index');
             tempBatchPath = path.join(userConfigDir, 'data', 'temp_batch_indexes');
             dataFolderPath = path.join(userConfigDir, 'data');
             if (fs.existsSync(dataFolderPath)) {
@@ -119,7 +117,6 @@ describe('Tests for Search', function() {
 
         it('should exist index folder', function() {
             expect(fs.existsSync(path.join(userConfigDir, 'data', 'search_index_12345678910112'))).toBe(true);
-            expect(fs.existsSync(realTimeIndexPath)).toBe(true);
         });
 
         it('should not exist index folder', function() {
@@ -275,7 +272,6 @@ describe('Tests for Search', function() {
             const searchQuery = jest.spyOn(SearchApi, 'searchQuery');
             SearchApi.searchQuery('realtime working', ["71811853189212"], ["Au8O2xKHyX1LtE6zW019GX///rZYegAtdA=="], '', undefined, undefined, 25, 0, 0).then(function (res) {
                 expect(res.messages.length).toEqual(3);
-                expect(fs.existsSync(realTimeIndexPath)).toBe(true);
                 expect(searchQuery).toHaveBeenCalled();
                 done();
             })
@@ -304,8 +300,6 @@ describe('Tests for Search', function() {
 
                 SearchApi.searchQuery('isRealTimeIndexing', [], [], '', undefined, undefined, 25, 0, 0).then(function (res) {
                     expect(res.messages.length).toEqual(0);
-                    expect(fs.existsSync(realTimeIndexPath)).toBe(true);
-
                     done();
                 });
             }, 6000)
@@ -373,7 +367,6 @@ describe('Tests for Search', function() {
         it('should delete realtime index', function () {
             const deleteRealTimeFolder = jest.spyOn(SearchApi, 'deleteRealTimeFolder');
             SearchApi.deleteRealTimeFolder();
-            expect(fs.existsSync(realTimeIndexPath)).toBe(true);
             expect(deleteRealTimeFolder).toHaveBeenCalled();
         });
     });
