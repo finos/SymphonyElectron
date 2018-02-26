@@ -381,6 +381,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             newWinOptions.minWidth = MIN_WIDTH;
             newWinOptions.minHeight = MIN_HEIGHT;
             newWinOptions.alwaysOnTop = alwaysOnTop;
+            newWinOptions.frame = true;
 
             let newWinKey = getGuid();
 
