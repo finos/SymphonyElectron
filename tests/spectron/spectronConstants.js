@@ -7,8 +7,4 @@ module.exports = {
 
     SEARCH_LIBRARY_PATH_MAC: "node_modules/electron/dist/Electron.app/Contents/library",
     SEARCH_LIBRARY_PATH_WIN: "node_modules/electron/dist/library",
-
-
-    UNABLE_TO_START_APPLICATION: "Unable to start application error: ",
-    UNABLE_TO_GET_USER_CONFIG_PATH: "Unable to get user config path error: "
 };

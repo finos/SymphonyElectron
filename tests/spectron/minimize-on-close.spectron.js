@@ -21,12 +21,12 @@ describe('Tests for Minimize on Close', () => {
                     configPath = config;
                     done();
                 }).catch((err) => {
-                    console.error(constants.UNABLE_TO_GET_USER_CONFIG_PATH, err);
+                    console.error(`Unable to get user config path error: ${err}`);
                     expect(err).toBeNull();
                     done();
                 });
             }).catch((err) => {
-                console.error(constants.UNABLE_TO_START_APPLICATION, err);
+                console.error(`Unable to start application error: ${err}`);
                 expect(err).toBeNull();
                 done();
             });

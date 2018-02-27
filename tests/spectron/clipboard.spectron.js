@@ -14,7 +14,7 @@ describe('Tests for clipboard', () => {
             app = startedApp;
             done();
         }).catch((err) => {
-            console.error(constants.UNABLE_TO_START_APPLICATION, err);
+            console.error(`Unable to start application error: ${err}`);
             expect(err).toBeNull();
             done();
         });
