@@ -1,4 +1,4 @@
-const { exec } = require('child_process');
+const { exec, execSync } = require('child_process');
 const os = require('os');
 const { randomString } = require('./randomString.js');
 const log = require('../../log.js');
@@ -64,7 +64,7 @@ function taskScheduler(script, dataFolder, pid, clearScript) {
         userName = os.userInfo().username;
     } else {
         try {
-            userName = (exec.execSync('whoami').stdout).replace(/^.*\\/, '')
+            userName = (execSync('whoami').stdout).replace(/^.*\\/, '')
         } catch (e) {
             log.send(logLevels.WARN, `whoami failed (using randomString): ${e}`);
             userName = randomString();

@@ -611,14 +611,14 @@ function initializeLaunchAgent() {
                 if (!result) {
                     log.send(logLevels.ERROR, `Launch Agent not created`);
                 }
-                launchDaemon(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data-boot${searchConfig.LIBRARY_CONSTANTS.EXT}`, function (data) {
+                launchDaemon(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data-boot.sh`, function (data) {
                     if (data) {
                         log.send(logLevels.INFO, 'Launch Daemon: Creating successful');
                     }
                 });
             });
 
-            launchAgent(pidValue, `${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data${searchConfig.LIBRARY_CONSTANTS.EXT}`, function (response) {
+            launchAgent(pidValue, `${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data.sh`, function (response) {
                 if (response) {
                     log.send(logLevels.INFO, 'Launch Agent: Creating successful');
                 }
@@ -653,12 +653,12 @@ function createLaunchScript(pid, name, scriptPath, cb) {
         }
         let result = data;
         result = result.replace(/dataPath/g, `"${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/${searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME}"`);
-        result = result.replace(/scriptPath/g, `${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/${name}${searchConfig.LIBRARY_CONSTANTS.EXT}`);
+        result = result.replace(/scriptPath/g, `${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/${name}.sh`);
         if (pid) {
             result = result.replace(/SymphonyPID/g, `${pid}`);
         }
 
-        fs.writeFile(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/${name}${searchConfig.LIBRARY_CONSTANTS.EXT}`, result, 'utf8', function (error) {
+        fs.writeFile(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/${name}.sh`, result, 'utf8', function (error) {
             if (error) {
                 log.send(logLevels.ERROR, `Error writing sh file: ${error}`);
                 return cb(false);
