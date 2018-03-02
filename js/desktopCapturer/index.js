@@ -53,7 +53,7 @@ function openScreenPickerWindow(eventSender, sources, id) {
 
     // prevent a new window from being opened if there is an
     // existing window / there is no event sender
-    if (!eventSender && screenPickerWindow) {
+    if (!eventSender || screenPickerWindow) {
         return;
     }
 
