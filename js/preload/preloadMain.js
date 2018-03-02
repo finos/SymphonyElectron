@@ -19,6 +19,7 @@ const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 const getMediaSources = require('../desktopCapturer/getSources');
 const { TitleBar, updateContentHeight } = require('../windowsTitlebar');
+const titleBar = new TitleBar();
 
 require('../downloadManager');
 
@@ -28,9 +29,6 @@ require('../downloadManager');
 // block other method from loading
 document.addEventListener('DOMContentLoaded', () => {
     loadSpellChecker();
-    // Adds custom title bar style for Windows 10 OS
-    const titleBar = new TitleBar();
-    titleBar.initiateWindowsTitleBar();
 });
 
 /**
@@ -383,6 +381,11 @@ function createAPI() {
         if (arg) {            
             crashReporter.start({companyName: arg.companyName, submitURL: arg.submitURL, uploadToServer: arg.uploadToServer, extra: {'process': arg.process, podUrl: arg.podUrl}});
         }
+    });
+
+    // Adds custom title bar style for Windows 10 OS
+    local.ipcRenderer.on('initiate-windows-title-bar', () => {
+        titleBar.initiateWindowsTitleBar();
     });
 
     function updateOnlineStatus() {

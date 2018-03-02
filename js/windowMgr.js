@@ -180,6 +180,8 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         url = mainWindow.webContents.getURL();
         if (isWindows10()) {
             mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/windowsTitleBar/style.css'), 'utf8').toString());
+            // This is required to initiate Windows title bar only after insertCSS
+            mainWindow.webContents.send('initiate-windows-title-bar');
         }
 
         if (!isOnline) {

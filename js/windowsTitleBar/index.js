@@ -4,9 +4,6 @@ const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 const htmlContents = require('./contents');
 
-// Check Windows version to enable title bar
-const isWindows10 = window.navigator.userAgent.indexOf("Windows NT 10.0") !== -1;
-
 // Default title bar height
 const titleBarHeight = '32px';
 
@@ -21,10 +18,6 @@ class TitleBar {
     }
 
     initiateWindowsTitleBar() {
-
-        if (!isWindows10) {
-            return;
-        }
 
         const actionItemsParsed = this.domParser.parseFromString(htmlContents.button, 'text/html');
         const buttons = actionItemsParsed.getElementsByClassName('action-items');
