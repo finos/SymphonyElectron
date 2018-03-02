@@ -13,7 +13,11 @@
 // electron: https://github.com/electron/electron/issues/9312
 
 const { ipcRenderer, remote } = require('electron');
+const apiEnums = require('../enums/api.js');
+const apiCmds = apiEnums.cmds;
+const apiName = apiEnums.apiName;
 const { isWindowsOS } = require('../utils/misc');
+const USER_CANCELLED = 'User Cancelled';
 
 let nextId = 0;
 let includes = [].includes;
@@ -37,7 +41,7 @@ function isValid(options) {
  * @param callback
  * @returns {*}
  */
-function getSources(options, callback) {
+function getSource(options, callback) {
     let captureScreen, captureWindow, id;
     if (!isValid(options)) {
         return callback(new Error('Invalid options'));
@@ -68,27 +72,25 @@ function getSources(options, callback) {
     ipcRenderer.send('ELECTRON_BROWSER_DESKTOP_CAPTURER_GET_SOURCES', captureWindow, captureScreen, updatedOptions.thumbnailSize, id);
 
     return ipcRenderer.once('ELECTRON_RENDERER_DESKTOP_CAPTURER_RESULT_' + id, function(event, sources) {
-        let source;
-        callback(null, (function() {
-            let i, len, results;
-            results = [];
-            for (i = 0, len = sources.length; i < len; i++) {
-                source = sources[i];
-                results.push({
-                    id: source.id,
-                    name: source.name,
-                    thumbnail: source.thumbnail
-                });
+
+        ipcRenderer.send(apiName, {
+            cmd: apiCmds.openScreenPickerWindow,
+            sources: sources,
+            id: id
+        });
+
+        function successCallback(e, source) {
+            // Cleaning up the event listener to prevent memory leaks
+            if (!source) {
+                ipcRenderer.removeListener('start-share' + id, func);
+                return callback(new Error(USER_CANCELLED));
             }
+            return callback(null, source);
+        }
 
-            return results;
-
-        }()));
+        const func = successCallback.bind(this);
+        ipcRenderer.once('start-share' + id, func);
     });
 }
 
-/**
- * @deprecated instead use getSource
- * @type {getSources}
- */
-module.exports = getSources;
+module.exports = getSource;
