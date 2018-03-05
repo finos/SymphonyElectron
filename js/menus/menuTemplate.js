@@ -42,15 +42,15 @@ if (isMac) {
 const template = [{
     label: 'Edit',
     submenu: [
-            { role: 'undo' },
-            { role: 'redo' },
+            { role: 'undo', accelerator: 'CmdOrCtrl+Z' },
+            { role: 'redo', accelerator: isMac ? 'Cmd+Shift+Z' : 'Ctrl+Y' },
             { type: 'separator' },
-            { role: 'cut' },
-            { role: 'copy' },
-            { role: 'paste' },
-            { role: 'pasteandmatchstyle' },
+            { role: 'cut', accelerator: 'CmdOrCtrl+X' },
+            { role: 'copy', accelerator: 'CmdOrCtrl+C' },
+            { role: 'paste', accelerator: 'CmdOrCtrl+V' },
+            { role: 'pasteandmatchstyle', accelerator: 'CmdOrCtrl+Shift+V' },
             { role: 'delete' },
-            { role: 'selectall' }
+            { role: 'selectall', accelerator: 'CmdOrCtrl+A' }
     ]
 },
 {
@@ -100,19 +100,23 @@ const template = [{
         type: 'separator'
     },
     {
-        role: 'resetzoom'
+        role: 'resetzoom',
+        accelerator: 'CmdOrCtrl+0'
     },
     {
-        role: 'zoomin'
+        role: 'zoomin',
+        accelerator: isMac ? 'CmdOrCtrl+Plus' : 'Ctrl+Shift+Plus'
     },
     {
-        role: 'zoomout'
+        role: 'zoomout',
+        accelerator: 'CmdOrCtrl+-'
     },
     {
         type: 'separator'
     },
     {
-        role: 'togglefullscreen'
+        role: 'togglefullscreen',
+        accelerator: isMac ? 'Alt+Command+F' : 'F11'
     }
     ]
 },
