@@ -123,10 +123,12 @@ const template = [{
 {
     role: 'window',
     submenu: [{
-        role: 'minimize'
+        role: 'minimize',
+        accelerator: 'CmdOrCtrl+M'
     },
     {
-        role: 'close'
+        role: 'close',
+        accelerator: 'CmdOrCtrl+W'
     }
     ]
 },
