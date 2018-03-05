@@ -19,7 +19,7 @@ const logLevels = require('./enums/logLevels.js');
 const notify = require('./notify/electron-notify.js');
 const eventEmitter = require('./eventEmitter');
 const throttle = require('./utils/throttle.js');
-const { getConfigField, updateConfigField } = require('./config.js');
+const { getConfigField, updateConfigField, getGlobalConfigField } = require('./config.js');
 const { isMac, isNodeEnv, isWindows10 } = require('./utils/misc');
 const { deleteIndexFolder } = require('./search/search.js');
 const { isWhitelisted } = require('./utils/whitelistHandler');
@@ -88,25 +88,28 @@ function getParsedUrl(url) {
  * @param initialUrl
  */
 function createMainWindow(initialUrl) {
-    getConfigField('mainWinPos').then(
-        function (bounds) {
-            doCreateMainWindow(initialUrl, bounds);
-        },
-        function () {
-            // failed, use default bounds
-            doCreateMainWindow(initialUrl, null);
-        }
-    );
+    Promise.all([
+        getConfigField('mainWinPos'),
+        getGlobalConfigField('isCustomTitleBar')
+    ]).then((values) => {
+        doCreateMainWindow(initialUrl, values[ 0 ], values[ 1 ]);
+    }).catch(() => {
+        // failed use default bounds and frame
+        doCreateMainWindow(initialUrl, null, false);
+    });
 }
 
 /**
  * Creates the main window with bounds
  * @param initialUrl
  * @param initialBounds
+ * @param isCustomTitleBar {Boolean} - Global config value weather to enable custom title bar
  */
-function doCreateMainWindow(initialUrl, initialBounds) {
+function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     let url = initialUrl;
     let key = getGuid();
+    // condition whether to enable custom Windows 10 title bar
+    const isCustomTitleBarEnabled = typeof isCustomTitleBar === 'boolean' && isCustomTitleBar && isWindows10();
 
     log.send(logLevels.INFO, 'creating main window url: ' + url);
 
@@ -115,7 +118,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         show: true,
         minWidth: MIN_WIDTH,
         minHeight: MIN_HEIGHT,
-        frame: !isWindows10(),
+        frame: !isCustomTitleBarEnabled,
         alwaysOnTop: false,
         webPreferences: {
             sandbox: sandboxed,
@@ -178,7 +181,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     // we might not have network connectivity, so warn the user.
     mainWindow.webContents.on('did-finish-load', function () {
         url = mainWindow.webContents.getURL();
-        if (isWindows10()) {
+        if (isCustomTitleBarEnabled) {
             mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/windowsTitleBar/style.css'), 'utf8').toString());
             // This is required to initiate Windows title bar only after insertCSS
             mainWindow.webContents.send('initiate-windows-title-bar');

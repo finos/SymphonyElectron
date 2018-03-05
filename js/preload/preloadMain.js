@@ -275,14 +275,6 @@ function createAPI() {
                 windowName: windowName
             });
         },
-
-        /**
-         * Method is called as soon as the web client is initialized
-         * so that we can modified the necessary dom elements
-         */
-        initializeWindowsTitleBar: function () {
-            updateContentHeight();
-        }
     };
 
     // add support for both ssf and SYM_API name-space.
@@ -386,6 +378,7 @@ function createAPI() {
     // Adds custom title bar style for Windows 10 OS
     local.ipcRenderer.on('initiate-windows-title-bar', () => {
         titleBar.initiateWindowsTitleBar();
+        updateContentHeight();
     });
 
     function updateOnlineStatus() {

@@ -27,14 +27,23 @@ class TitleBar {
             this.titleBar.appendChild(i);
         }
 
+        const updateIcon = TitleBar.updateIcons;
+        const updateTitleBar = TitleBar.updateTitleBar;
+
         // Event to capture and update icons
-        this.window.on('maximize', TitleBar.updateIcons.bind(this, true));
-        this.window.on('unmaximize', TitleBar.updateIcons.bind(this, false));
-        this.window.on('enter-full-screen', TitleBar.updateTitleBar.bind(this, true));
-        this.window.on('leave-full-screen', TitleBar.updateTitleBar.bind(this, false));
+        this.window.on('maximize', updateIcon.bind(this, true));
+        this.window.on('unmaximize', updateIcon.bind(this, false));
+        this.window.on('enter-full-screen', updateTitleBar.bind(this, true));
+        this.window.on('leave-full-screen', updateTitleBar.bind(this, false));
+
+        window.addEventListener('beforeunload', () => {
+            this.window.removeListener('maximize', updateIcon);
+            this.window.removeListener('unmaximize', updateIcon);
+            this.window.removeListener('enter-full-screen', updateTitleBar);
+            this.window.removeListener('leave-full-screen', updateTitleBar);
+        });
 
         document.body.appendChild(this.titleBar);
-        document.body.style.marginTop = titleBarHeight;
 
         TitleBar.addWindowBorders();
         this.initiateEventListeners();
@@ -181,6 +190,10 @@ function attachEventListeners(element, eventName, func) {
 function updateContentHeight(height = titleBarHeight) {
     const contentWrapper = document.getElementById('content-wrapper');
     const titleBar = document.getElementById('title-bar');
+
+    if (!titleBar) {
+        return;
+    }
 
     if (contentWrapper) {
         contentWrapper.style.marginTop = titleBar ? height : '0px';
