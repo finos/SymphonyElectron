@@ -283,7 +283,6 @@ function setupConfig() {
 
     // Maximum amount of Notifications we can show:
     config.maxVisibleNotifications = Math.floor(display.workAreaSize.height / config.totalHeight);
-    config.maxVisibleNotifications = config.maxVisibleNotifications > 5 ? 5 : config.maxVisibleNotifications;
 }
 
 /**
