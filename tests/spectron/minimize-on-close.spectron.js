@@ -1,11 +1,10 @@
-const path = require('path');
-const fs = require('fs');
 const childProcess = require('child_process');
 const Application = require('./spectronSetup');
-const {isMac} = require('../../js/utils/misc');
+const { isMac } = require('../../js/utils/misc');
+const constants = require('./spectronConstants');
+
 let robot;
 let configPath;
-
 let app = new Application({});
 
 describe('Tests for Minimize on Close', () => {
@@ -22,10 +21,14 @@ describe('Tests for Minimize on Close', () => {
                     configPath = config;
                     done();
                 }).catch((err) => {
+                    console.error(`Unable to get user config path error: ${err}`);
                     expect(err).toBeNull();
+                    done();
                 });
             }).catch((err) => {
+                console.error(`Unable to start application error: ${err}`);
                 expect(err).toBeNull();
+                done();
             });
         });
     });
@@ -37,8 +40,8 @@ describe('Tests for Minimize on Close', () => {
                     return require('electron').remote.app.getPath('userData');
                 })
             });
-            app.client.getUserDataPath().then((path) => {
-                resolve(path.value + '/Symphony.config')
+            app.client.getUserDataPath().then((userConfigPath) => {
+                resolve(userConfigPath.value)
             }).catch((err) => {
                 reject(err);
             });
@@ -124,6 +127,8 @@ describe('Tests for Minimize on Close', () => {
                     robot.mouseClick();
                     robot.setKeyboardDelay(100);
 
+                    // Key tap 9 times as "Minimize on Close" is in the
+                    // 9th position under view menu item
                     for (let i = 0; i < 9; i++) {
                         robot.keyTap('down');
                     }
@@ -148,6 +153,8 @@ describe('Tests for Minimize on Close', () => {
                         let y = bounds.y + 35;
                         robot.moveMouse(x, y);
                         robot.mouseClick();
+                        // Key tap 5 times as "Minimize on Close" is in the
+                        // 5th position under Window menu item
                         for (let i = 0; i < 5; i++) {
                             robot.keyTap('down');
                         }
