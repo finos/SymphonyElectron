@@ -26,7 +26,8 @@ const libraryPath = isMac ? path.join(macLibraryPath, 'libsymphonysearch.dylib')
 const userConfigFileName = 'search_users_config.json';
 const userConfigFile = isDevEnv ? path.join(__dirname, '..', '..', userConfigFileName) : path.join(userData, userConfigFileName);
 
-const freeDiskSpace = path.join(winLibraryPath, 'free-disk-space.exe');
+const pathToUtils = isDevEnv ? path.join(__dirname, '../../node_modules/electron-utils') : path.join(execPath);
+const freeDiskSpace = path.join(pathToUtils, isDevEnv ? 'FreeDiskSpace/bin/Release/FreeDiskSpace.exe' : 'FreeDiskSpace.exe');
 
 const libraryPaths = {
     INDEX_VALIDATOR: indexValidatorPath,

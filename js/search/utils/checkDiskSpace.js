@@ -1,6 +1,8 @@
 const { exec } = require('child_process');
 const { isMac } = require('../../utils/misc');
 const searchConfig = require('../searchConfig.js');
+const log = require('../log.js');
+const logLevels = require('../enums/logLevels.js');
 
 function checkDiskSpace(path, resolve, reject) {
     if (!path) {
@@ -26,12 +28,12 @@ function checkDiskSpace(path, resolve, reject) {
         });
     } else {
         exec(`"${searchConfig.LIBRARY_CONSTANTS.FREE_DISK_SPACE}" ${path}`, (error, stdout, stderr) => {
+
             if (error) {
-                if (stderr.indexOf("The system cannot find the path specified.") !== -1) {
-                    return reject(new Error("No such file or directory : " + error));
-                }
-                return reject(new Error("Error : " + error));
+                log.send(logLevels.ERROR, `Error retrieving free disk space : ${error}`);
+                log.send(logLevels.ERROR, `Error stderr: ${stderr}`);
             }
+
             let data = stdout.trim().split(",");
 
             if (data[ 1 ] === searchConfig.DISK_NOT_READY) {
