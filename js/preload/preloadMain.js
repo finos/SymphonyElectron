@@ -18,6 +18,7 @@ const apiEnums = require('../enums/api.js');
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 const getMediaSources = require('../desktopCapturer/getSources');
+const { buildNumber } = require('../../package.json');
 
 require('../downloadManager');
 
@@ -87,6 +88,7 @@ function createAPI() {
                 const verInfo = {
                     containerIdentifier: appName,
                     containerVer: appVer,
+                    buildNumber: buildNumber,
                     apiVer: '1.0.0'
                 };
                 resolve(verInfo);
