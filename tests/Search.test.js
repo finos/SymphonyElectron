@@ -1,7 +1,7 @@
 const childProcess = require('child_process');
 const path = require('path');
 const fs = require('fs');
-const { isMac } = require('../js/utils/misc.js');
+const { isWindowsOS } = require('../js/utils/misc.js');
 
 let executionPath = null;
 let userConfigDir = null;
@@ -46,7 +46,7 @@ describe('Tests for Search', function() {
             key = 'jjjehdnctsjyieoalskcjdhsnahsadndfnusdfsdfsd=';
 
             executionPath = path.join(__dirname, 'library');
-            if (!isMac) {
+            if (isWindowsOS) {
                 executionPath = path.join(__dirname, '..', 'library');
             }
             userConfigDir = path.join(__dirname, '..');
@@ -59,7 +59,7 @@ describe('Tests for Search', function() {
             tempBatchPath = path.join(userConfigDir, 'data', 'temp_batch_indexes');
             dataFolderPath = path.join(userConfigDir, 'data');
             if (fs.existsSync(dataFolderPath)) {
-                fs.unlinkSync(dataFolderPath)
+                deleteIndexFolders(dataFolderPath)
             }
             done();
         });
@@ -98,10 +98,6 @@ describe('Tests for Search', function() {
             setTimeout(function () {
 
                 expect(SearchApi.isInitialized).toBe(true);
-                expect(SearchApi.indexFolderName).toBe(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${userId}`);
-                expect(SearchApi.dataFolder).toBe(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
-                expect(SearchApi.realTimeIndex).toBe(searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX);
-                expect(SearchApi.batchIndex).toBe(searchConfig.FOLDERS_CONSTANTS.TEMP_BATCH_INDEX_FOLDER);
                 expect(SearchApi.messageData).toEqual([]);
                 expect(SearchApi.isRealTimeIndexing).toBe(false);
 

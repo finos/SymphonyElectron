@@ -13,8 +13,8 @@ function checkDiskSpace(path, resolve, reject) {
     if (isMac) {
         exec("df -k '" + path.replace(/'/g,"'\\''") + "'", (error, stdout, stderr) => {
             if (error) {
-                if (stderr.indexOf("No such file or directory") !== -1) {
-                    return reject(new Error("No such file or directory : " + error))
+                if (stderr.indexOf(searchConfig.MAC_PATH_ERROR) !== -1) {
+                    return reject(new Error(`${searchConfig.MAC_PATH_ERROR} ${error}`))
                 }
                 return reject(new Error("Error : " + error));
             }

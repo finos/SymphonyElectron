@@ -2,6 +2,8 @@ const Application = require('./spectronSetup');
 const path = require('path');
 const {isMac} = require('../../js/utils/misc.js');
 const childProcess = require('child_process');
+const constants = require('./spectronConstants');
+
 let app = new Application({});
 let robot;
 
@@ -11,10 +13,14 @@ describe('Tests for spellChecker', () => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
 
     beforeAll((done) => {
-        childProcess.exec(`npm rebuild robotjs --target=${process.version} --build-from-source`, function () {
+        childProcess.exec(`npm rebuild robotjs --target=${process.version} --build-from-source`, () => {
             robot = require('robotjs');
             app.startApplication().then((startedApp) => {
                 app = startedApp;
+                done();
+            }).catch((err) => {
+                console.error(`Unable to start application error: ${err}`);
+                expect(err).toBeNull();
                 done();
             });
         });
@@ -78,35 +84,33 @@ describe('Tests for spellChecker', () => {
 
     it('should invoke context menu ', (done) => {
         if (isMac) {
-            app.browserWindow.getBounds().then((bounds) => {
-                let x = bounds.x + 45;
-                let y = bounds.y + 398;
+            const tag = app.client.$('#tag');
+            tag.waitForExist('#tag', 2000);
+            tag.moveToObject('#tag', 10, 10);
+            tag.rightClick('#tag', 10, 10);
 
-                robot.moveMouseSmooth(x, y);
-                robot.setMouseDelay(200);
-                robot.mouseClick('left', true);
-                robot.mouseClick('right');
+            // Timeout is required for context menu to appear
+            setTimeout(() => {
                 robot.setKeyboardDelay(500);
                 robot.keyTap('down');
                 robot.keyTap('down');
                 robot.keyTap('enter');
                 done();
-            });
+            }, 2000);
         } else {
-            app.browserWindow.getBounds().then((bounds) => {
-                let x = bounds.x + 55;
-                let y = bounds.y + 430;
+            const tag = app.client.$('#tag');
+            tag.waitForExist('#tag', 2000);
+            tag.moveToObject('#tag', 10, 10);
+            tag.rightClick('#tag', 10, 10);
 
-                robot.moveMouseSmooth(x, y);
-                robot.setMouseDelay(200);
-                robot.mouseClick('left', true);
-                robot.mouseClick('right');
+            // Timeout is required for context menu to appear
+            setTimeout(() => {
                 robot.setKeyboardDelay(500);
                 robot.keyTap('down');
                 robot.keyTap('down');
                 robot.keyTap('enter');
                 done();
-            });
+            }, 2000);
         }
     });
 
@@ -114,7 +118,7 @@ describe('Tests for spellChecker', () => {
         return app.client
             .windowByIndex(0)
             .getValue('#tag').then((value) => {
-                expect(value).toBe('coming ');
+                expect(value !== 'comming').toBeTruthy();
             });
     });
 

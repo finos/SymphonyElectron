@@ -1,8 +1,8 @@
-const path = require('path');
-const fs = require('fs');
 const childProcess = require('child_process');
 const Application = require('./spectronSetup');
-const {isMac} = require('../../js/utils/misc');
+const { isMac } = require('../../js/utils/misc');
+const constants = require('./spectronConstants');
+
 let robot;
 let configPath;
 
@@ -22,10 +22,14 @@ describe('Tests for Zoom in and Zoom out', () => {
                     configPath = config;
                     done();
                 }).catch((err) => {
+                    console.error(`Unable to get user config path error: ${err}`);
                     expect(err).toBeNull();
+                    done();
                 });
             }).catch((err) => {
+                console.error(`Unable to start application error: ${err}`);
                 expect(err).toBeNull();
+                done();
             });
         });
     });
@@ -37,8 +41,8 @@ describe('Tests for Zoom in and Zoom out', () => {
                     return require('electron').remote.app.getPath('userData');
                 })
             });
-            app.client.getUserDataPath().then((path) => {
-                resolve(path.value + '/Symphony.config')
+            app.client.getUserDataPath().then((userConfigPath) => {
+                resolve(userConfigPath.value)
             }).catch((err) => {
                 reject(err);
             });
