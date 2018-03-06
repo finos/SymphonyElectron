@@ -64,8 +64,6 @@ const searchConfig = {
     DISK_NOT_READY: 'NOTREADY',
     DISK_NOT_FOUND: 'DISKNOTFOUND',
     RANDOM_STRING: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
-    PERMISSION_ERROR: "The FSUTIL utility requires that you have administrative privileges.",
-    WIN_PATH_ERROR: "Error:  The system cannot find the path specified.",
     MAC_PATH_ERROR: "No such file or directory",
     MINIMUM_DISK_SPACE: 300000000 // in bytes
 };
