@@ -64,7 +64,7 @@ function taskScheduler(script, dataFolder, pid, clearScript) {
         userName = os.userInfo().username;
     } else {
         try {
-            userName = (execSync('whoami').stdout).replace(/^.*\\/, '')
+            userName = execSync('whoami').toString().replace(/^.*\\/, '');
         } catch (e) {
             log.send(logLevels.WARN, `whoami failed (using randomString): ${e}`);
             userName = randomString();

@@ -28,10 +28,11 @@ const userConfigFile = isDevEnv ? path.join(__dirname, '..', '..', userConfigFil
 
 const libraryFolderPath = isMac ? macLibraryPath : winLibraryPath;
 
+const pathToUtils = isDevEnv ? path.join(__dirname, '../../node_modules/electron-utils') : path.join(execPath);
 const launchAgentFile = path.join(libraryFolderPath, 'search-launch-agent.sh');
 const launchDaemonFile = path.join(libraryFolderPath, 'search-launch-daemon.sh');
-const windowsTaskFile = path.join(libraryFolderPath, 'symphony-search-schtasks.exe');
-const windowsClearScript = path.join(libraryFolderPath, 'symphony-clear-on-launch.exe');
+const windowsTaskFile = path.join(pathToUtils, isDevEnv ? 'ClearSchTasks/bin/Release/ClearSchTasks.exe' : 'ClearSchTasks.exe');
+const windowsClearScript = path.join(pathToUtils, isDevEnv ? 'ClearOnBoot/bin/Release/ClearOnBoot.exe' : 'ClearOnBoot.exe');
 
 const libraryPaths = {
     INDEX_VALIDATOR: indexValidatorPath,
