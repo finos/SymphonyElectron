@@ -28,7 +28,7 @@ const userConfigFile = isDevEnv ? path.join(__dirname, '..', '..', userConfigFil
 
 const libraryFolderPath = isMac ? macLibraryPath : winLibraryPath;
 
-const pathToUtils = isDevEnv ? path.join(__dirname, '../../node_modules/electron-utils') : path.join(execPath);
+const pathToUtils = isDevEnv ? path.join(__dirname, '../../node_modules/electron-utils') : winLibraryPath;
 const launchAgentFile = path.join(libraryFolderPath, 'search-launch-agent.sh');
 const launchDaemonFile = path.join(libraryFolderPath, 'search-launch-daemon.sh');
 const windowsTaskFile = path.join(pathToUtils, isDevEnv ? 'ClearSchTasks/bin/Release/ClearSchTasks.exe' : 'ClearSchTasks.exe');
