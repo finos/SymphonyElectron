@@ -26,7 +26,7 @@ const libraryPath = isMac ? path.join(macLibraryPath, 'libsymphonysearch.dylib')
 const userConfigFileName = 'search_users_config.json';
 const userConfigFile = isDevEnv ? path.join(__dirname, '..', '..', userConfigFileName) : path.join(userData, userConfigFileName);
 
-const pathToUtils = isDevEnv ? path.join(__dirname, '../../node_modules/electron-utils') : path.join(execPath);
+const pathToUtils = isDevEnv ? path.join(__dirname, '../../node_modules/electron-utils') : winLibraryPath;
 const freeDiskSpace = path.join(pathToUtils, isDevEnv ? 'FreeDiskSpace/bin/Release/FreeDiskSpace.exe' : 'FreeDiskSpace.exe');
 
 const libraryPaths = {
@@ -61,8 +61,8 @@ const searchConfig = {
     LIBRARY_CONSTANTS: libraryPaths,
     FOLDERS_CONSTANTS: folderPaths,
     TAR_LZ4_EXT: '.tar.lz4',
-    DISK_NOT_READY: 'NOTREADY',
-    DISK_NOT_FOUND: 'DISKNOTFOUND',
+    DISK_NOT_READY: 'NOT_READY',
+    DISK_NOT_FOUND: 'DISK_NOT_FOUND',
     RANDOM_STRING: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
     MAC_PATH_ERROR: "No such file or directory",
     MINIMUM_DISK_SPACE: 300000000 // in bytes

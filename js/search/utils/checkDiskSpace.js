@@ -1,8 +1,8 @@
 const { exec } = require('child_process');
 const { isMac } = require('../../utils/misc');
 const searchConfig = require('../searchConfig.js');
-const log = require('../log.js');
-const logLevels = require('../enums/logLevels.js');
+const log = require('../../log.js');
+const logLevels = require('../../enums/logLevels.js');
 
 function checkDiskSpace(path, resolve, reject) {
     if (!path) {
