@@ -60,7 +60,7 @@ class TitleBar {
 
         attachEventListeners(this.titleBar, 'dblclick', this.maximizeOrUnmaximize.bind(this));
         attachEventListeners(hamburgerMenuButton, 'click', this.popupMenu.bind(this));
-        attachEventListeners(closeButton, 'click', this.closeButtonClick.bind(this));
+        attachEventListeners(closeButton, 'click', this.closeWindow.bind(this));
         attachEventListeners(maximizeButton, 'click', this.maximizeOrUnmaximize.bind(this));
         attachEventListeners(minimizeButton, 'click', this.minimize.bind(this));
     }
@@ -150,7 +150,7 @@ class TitleBar {
     /**
      * Method that closes the browser window
      */
-    closeButtonClick() {
+    closeWindow() {
         if (this.isValidWindow()) {
             this.window.close();
         }
