@@ -70,7 +70,7 @@ function taskScheduler(script, dataFolder, pid, clearScript) {
             userName = randomString();
         }
     }
-    exec(`SCHTASKS /Create /SC MINUTE /TN SymphonyTask${userName} /TR "'${script}' '${dataFolder}' 'SymphonyTask${userName}' '${pid}'" /F`, (error, stdout, stderr) => {
+    exec(`SCHTASKS /Create /SC MINUTE /TN "SymphonyTask${userName}" /TR "'${script}' '${dataFolder}' 'SymphonyTask${userName}' '${pid}'" /F`, (error, stdout, stderr) => {
         if (error) {
             log.send(logLevels.ERROR, `Lanuchd: Error creating task ${error}`);
         }
