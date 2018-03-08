@@ -90,7 +90,7 @@ function taskScheduler(script, dataFolder, pid, clearScript) {
  * @param dataFolder
  */
 function winRegScript(userName, script, dataFolder) {
-    regKey.set(`SymphonyTask-${userName}`, Winreg.REG_SZ, `${script} ${dataFolder}`, function(err) {
+    regKey.set(`SymphonyTask-${userName}`, Winreg.REG_SZ, `"${script}" "${dataFolder}"`, function(err) {
         if (err !== null) {
             log.send(logLevels.INFO, `winReg: Creating task failed ${err}`);
         }
