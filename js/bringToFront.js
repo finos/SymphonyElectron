@@ -17,7 +17,7 @@ function bringToFront(windowName, reason) {
         .then((bringToFrontSetting) => {
             if (typeof bringToFrontSetting === 'boolean' && bringToFrontSetting) {
                 log.send(logLevels.INFO, 'Window has been activated for: ' + reason);
-                windowMgr.activate(windowName || 'main');
+                windowMgr.activate(windowName || 'main', false);
             }
         })
         .catch((error) => {
