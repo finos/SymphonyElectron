@@ -126,6 +126,6 @@
   },
   "optionalDependencies": {
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.1",
-    "electron-utils": "git+https://github.com/symphonyoss/electron-utils.git#v1.0.1"
+    "electron-utils": "git+https://github.com/symphonyoss/electron-utils.git#v1.0.2"
   }
 }
