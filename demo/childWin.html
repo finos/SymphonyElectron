@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Child pop-out window</title>
+</head>
+<body>
+<h3>This is a child window created by a child window</h3>
+<button id="open-win">Open a new child window</button>
+<br>
+<br>
+
+<button id="open-in-browser">Open Symphony in browser</button>
+
+<br>
+<script>
+    var openWinButton = document.getElementById('open-win');
+    openWinButton.addEventListener('click', function() {
+        win = window.open('childWin.html?x=100&y=100', 'childWin', 'height=800,width=400');
+    });
+
+    var openInBrowser = document.getElementById('open-in-browser');
+    openInBrowser.addEventListener('click', function () {
+        window.open('https://symphony.com');
+    });
+</script>
+</body>
+</html>
