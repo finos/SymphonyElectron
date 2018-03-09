@@ -18,7 +18,8 @@ const cmds = keyMirror({
     showNotificationSettings: null,
     sanitize: null,
     bringToFront: null,
-    openScreenPickerWindow: null
+    openScreenPickerWindow: null,
+    popupMenu: null
 });
 
 module.exports = {

@@ -19,6 +19,8 @@ const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 const getMediaSources = require('../desktopCapturer/getSources');
 const getMediaSource = require('../desktopCapturer/getSource');
+const { TitleBar, updateContentHeight } = require('../windowsTitlebar');
+const titleBar = new TitleBar();
 
 require('../downloadManager');
 
@@ -385,6 +387,12 @@ function createAPI() {
         if (arg) {            
             crashReporter.start({companyName: arg.companyName, submitURL: arg.submitURL, uploadToServer: arg.uploadToServer, extra: {'process': arg.process, podUrl: arg.podUrl}});
         }
+    });
+
+    // Adds custom title bar style for Windows 10 OS
+    local.ipcRenderer.on('initiate-windows-title-bar', () => {
+        titleBar.initiateWindowsTitleBar();
+        updateContentHeight();
     });
 
     function updateOnlineStatus() {
