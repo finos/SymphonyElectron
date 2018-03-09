@@ -16,6 +16,7 @@ const configureNotification = require('./notify/settings/configure-notification-
 const { bringToFront } = require('./bringToFront.js');
 const eventEmitter = require('./eventEmitter');
 const { isMac } = require('./utils/misc');
+const { openScreenPickerWindow } = require('./desktopCapturer');
 
 const apiEnums = require('./enums/api.js');
 const apiCmds = apiEnums.cmds;
@@ -133,6 +134,11 @@ electron.ipcMain.on(apiName, (event, arg) => {
             // validates the user bring to front config and activates the wrapper
             if (typeof arg.reason === 'string' && arg.reason === 'notification') {
                 bringToFront(arg.windowName, arg.reason);
+            }
+            break;
+        case apiCmds.openScreenPickerWindow:
+            if (Array.isArray(arg.sources) && typeof arg.id === 'number') {
+                openScreenPickerWindow(event.sender, arg.sources, arg.id);
             }
             break;
         case apiCmds.popupMenu:

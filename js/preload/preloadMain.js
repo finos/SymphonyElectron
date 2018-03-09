@@ -18,6 +18,7 @@ const apiEnums = require('../enums/api.js');
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 const getMediaSources = require('../desktopCapturer/getSources');
+const getMediaSource = require('../desktopCapturer/getSource');
 const { TitleBar, updateContentHeight } = require('../windowsTitlebar');
 const titleBar = new TitleBar();
 
@@ -262,8 +263,21 @@ function createAPI() {
          * a sandboxed renderer process.
          * see: https://electron.atom.io/docs/api/desktop-capturer/
          * for interface: see documentation in desktopCapturer/getSources.js
+         *
+         * @deprecated instead use getMediaSource
          */
         getMediaSources: getMediaSources,
+
+        /**
+         * Implements equivalent of desktopCapturer.getSources - that works in
+         * a sandboxed renderer process.
+         * see: https://electron.atom.io/docs/api/desktop-capturer/
+         * for interface: see documentation in desktopCapturer/getSource.js
+         *
+         * This opens a window and displays all the desktop sources
+         * and returns selected source
+         */
+        getMediaSource: getMediaSource,
 
         /**
          * Opens a modal window to configure notification preference.
@@ -274,7 +288,7 @@ function createAPI() {
                 cmd: apiCmds.showNotificationSettings,
                 windowName: windowName
             });
-        },
+        }
     };
 
     // add support for both ssf and SYM_API name-space.
