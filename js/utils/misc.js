@@ -1,4 +1,5 @@
 'use strict';
+const os = require('os');
 
 const isDevEnv = process.env.ELECTRON_DEV ?
         process.env.ELECTRON_DEV.trim().toLowerCase() === 'true' : false;
@@ -8,9 +9,15 @@ const isWindowsOS = (process.platform === 'win32');
 
 const isNodeEnv = !!process.env.NODE_ENV;
 
+function isWindows10() {
+    const [ major ] = os.release().split('.').map((part) => parseInt(part, 10));
+    return isWindowsOS && major >= 10;
+}
+
 module.exports = {
     isDevEnv: isDevEnv,
     isMac: isMac,
     isWindowsOS: isWindowsOS,
-    isNodeEnv: isNodeEnv
+    isNodeEnv: isNodeEnv,
+    isWindows10: isWindows10
 };

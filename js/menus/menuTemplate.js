@@ -3,7 +3,7 @@
 const electron = require('electron');
 const { updateConfigField, getMultipleConfigField } = require('../config.js');
 const AutoLaunch = require('auto-launch');
-const isMac = require('../utils/misc.js').isMac;
+const { isMac, isWindowsOS } = require('../utils/misc.js');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 const eventEmitter = require('../eventEmitter');
@@ -24,6 +24,22 @@ let bringToFront = false;
 
 let symphonyAutoLauncher;
 
+const windowsAccelerator = Object.assign({
+    undo: 'Ctrl+Z',
+    redo: 'Ctrl+Y',
+    cut: 'Ctrl+X',
+    copy: 'Ctrl+C',
+    paste: 'Ctrl+V',
+    pasteandmatchstyle: 'Ctrl+Shift+V',
+    selectall: 'Ctrl+A',
+    resetzoom: 'Ctrl+0',
+    zoomin: 'Ctrl+Shift+Plus',
+    zoomout: 'Ctrl+-',
+    togglefullscreen: 'F11',
+    minimize: 'Ctrl+M',
+    close: 'Ctrl+W',
+});
+
 if (isMac) {
     symphonyAutoLauncher = new AutoLaunch({
         name: 'Symphony',
@@ -42,15 +58,15 @@ if (isMac) {
 const template = [{
     label: 'Edit',
     submenu: [
-            { role: 'undo' },
-            { role: 'redo' },
-            { type: 'separator' },
-            { role: 'cut' },
-            { role: 'copy' },
-            { role: 'paste' },
-            { role: 'pasteandmatchstyle' },
-            { role: 'delete' },
-            { role: 'selectall' }
+        buildMenuItem('undo'),
+        buildMenuItem('redo'),
+        { type: 'separator' },
+        buildMenuItem('cut'),
+        buildMenuItem('copy'),
+        buildMenuItem('paste'),
+        buildMenuItem('pasteandmatchstyle'),
+        buildMenuItem('delete'),
+        buildMenuItem('selectall')
     ]
 },
 {
@@ -96,34 +112,19 @@ const template = [{
             electron.shell.showItemInFolder(crashesDirectory);
         }
     },
-    {
-        type: 'separator'
-    },
-    {
-        role: 'resetzoom'
-    },
-    {
-        role: 'zoomin'
-    },
-    {
-        role: 'zoomout'
-    },
-    {
-        type: 'separator'
-    },
-    {
-        role: 'togglefullscreen'
-    }
+        { type: 'separator' },
+        buildMenuItem('resetzoom'),
+        buildMenuItem('zoomin'),
+        buildMenuItem('zoomout'), 
+        { type: 'separator' },
+        buildMenuItem('togglefullscreen'),
     ]
 },
 {
     role: 'window',
-    submenu: [{
-        role: 'minimize'
-    },
-    {
-        role: 'close'
-    }
+    submenu: [
+        buildMenuItem('minimize'),
+        buildMenuItem('close'),
     ]
 },
 {
@@ -339,6 +340,28 @@ function setCheckboxValues() {
                 return resolve();
             });
     });
+}
+
+/**
+ * Sets respective accelerators w.r.t roles for the menu template
+ *
+ * @param role {String}              The action of the menu item
+ *
+ * @return {Object}
+ * @return {Object}.role         The action of the menu item
+ * @return {Object}.accelerator  keyboard shortcuts and modifiers
+ */
+function buildMenuItem(role) {
+
+    if (isMac) {
+        return { role: role }
+    }
+
+    if (isWindowsOS) {
+        return { role: role, accelerator: windowsAccelerator[role] || '' }
+    }
+
+    return { role: role }
 }
 
 function getMinimizeOnClose() {
