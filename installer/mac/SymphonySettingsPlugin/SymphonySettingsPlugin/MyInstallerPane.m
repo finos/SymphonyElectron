@@ -32,7 +32,7 @@
     }
     
     // Now, validate the url against a url regex
-    NSString *regex = @"^(https:\/\/|http:\/\/)(www.)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/[a-zA-Z0-9-_.+!*'(),;/?:@=&$]*)?$";
+    NSString *regex = @"^(https:\/\/)(www.)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/[a-zA-Z0-9-_.+!*'(),;/?:@=&$]*)?$";
     NSPredicate *podUrlTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex];
     if ([podUrlTest evaluateWithObject:podUrl]) {
         return YES;
