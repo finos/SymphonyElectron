@@ -309,8 +309,9 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     }
 
     // open external links in default browser - a tag with href='_blank' or window.open
-    mainWindow.webContents.on('new-window', function (event, newWinUrl,
-        frameName, disposition, newWinOptions) {
+    mainWindow.webContents.on('new-window', handleNewWindow);
+
+    function handleNewWindow(event, newWinUrl, frameName, disposition, newWinOptions) {
 
         let newWinParsedUrl = getParsedUrl(newWinUrl);
         let mainWinParsedUrl = getParsedUrl(url);
@@ -419,7 +420,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                     });
 
                     browserWin.on('close', () => {
-                        browserWin.webContents.removeListener('new-window', handleChildNewWindowEvent);
+                        browserWin.webContents.removeListener('new-window', handleNewWindow);
                         browserWin.webContents.removeListener('crashed', handleChildWindowCrashEvent);
                     });
 
@@ -443,15 +444,10 @@ function doCreateMainWindow(initialUrl, initialBounds) {
 
                     browserWin.webContents.on('crashed', handleChildWindowCrashEvent);
 
-                    let handleChildNewWindowEvent = (childEvent, childWinUrl) => {
-                        childEvent.preventDefault();
-                        openUrlInDefaultBrowser(childWinUrl);
-                    };
-
                     // In case we navigate to an external link from inside a pop-out,
                     // we open that link in an external browser rather than creating
                     // a new window
-                    browserWin.webContents.on('new-window', handleChildNewWindowEvent);
+                    browserWin.webContents.on('new-window', handleNewWindow.bind(this));
 
                     addWindowKey(newWinKey, browserWin);
 
@@ -471,7 +467,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             event.preventDefault();
             openUrlInDefaultBrowser(newWinUrl);
         }
-    });
+    }
 
     // whenever the main window is navigated for ex: window.location.href or url redirect
     mainWindow.webContents.on('will-navigate', function (event, navigatedURL) {
