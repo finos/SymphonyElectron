@@ -21,6 +21,7 @@ const getMediaSources = require('../desktopCapturer/getSources');
 const getMediaSource = require('../desktopCapturer/getSource');
 const { TitleBar, updateContentHeight } = require('../windowsTitlebar');
 const titleBar = new TitleBar();
+const { buildNumber } = require('../../package.json');
 
 require('../downloadManager');
 
@@ -90,6 +91,7 @@ function createAPI() {
                 const verInfo = {
                     containerIdentifier: appName,
                     containerVer: appVer,
+                    buildNumber: buildNumber,
                     apiVer: '1.0.0'
                 };
                 resolve(verInfo);

@@ -82,6 +82,7 @@
     "url": "https://support.symphony.com"
   },
   "devDependencies": {
+    "bluebird": "3.5.1",
     "browserify": "14.5.0",
     "cross-env": "3.2.4",
     "electron": "1.8.3",
