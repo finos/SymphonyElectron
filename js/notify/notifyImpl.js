@@ -33,9 +33,12 @@ class Notify {
         let emitter = new EventEmitter();
         this.emitter = Queue(emitter);
 
+        // Replaces all html <> tags to entity name
+        let message = replaceHTMLTags(options.body);
+
         this._id = notify({
             title: title,
-            text: options.body,
+            text: message || '',
             image: options.image || options.icon,
             flash: options.flash,
             color: options.color,
@@ -240,5 +243,26 @@ function Queue(emitter) {
 
     return modifiedEmitter;
 }
+
+/**
+ * Replace HTML tags <> from messages test to prevent
+ * HTML injection
+ *
+ * @param string
+ * @return {void | string | *}
+ */
+function replaceHTMLTags(string) {
+    const tagsToReplace = {
+        '<': '&lt;',
+        '>': '&gt;'
+    };
+
+    function replaceTag(tag) {
+        return tagsToReplace[tag] || tag;
+    }
+
+    return string.replace(/[<>]/g, replaceTag);
+}
+
 
 module.exports = Notify;
