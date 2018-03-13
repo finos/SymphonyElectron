@@ -13,9 +13,7 @@ describe('Tests for Bring to front', () => {
             app = startedApp;
             done();
         }).catch((err) => {
-            console.error(`Unable to start application error: ${err}`);
-            expect(err).toBeNull();
-            done();
+            done.fail(new Error(`Unable to start application error: ${err}`));
         });
     });
 
@@ -36,50 +34,54 @@ describe('Tests for Bring to front', () => {
                 expect(count === 1).toBeTruthy();
                 done();
             }).catch((err) => {
-                expect(err).toBeNull();
+                done.fail(new Error(`bringToFront failed in getWindowCount with error: ${err}`));
             });
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`bringToFront failed in waitUntilWindowLoaded with error: ${err}`));
         });
     });
 
-    it('should minimize the app', () => {
+    it('should minimize the app', (done) => {
         return app.browserWindow.minimize().then(() => {
             return app.browserWindow.isMinimized().then((isMinimized) => {
                 expect(isMinimized).toBeTruthy();
+                done();
             }).catch((err) => {
-                expect(err).toBeNull();
+                done.fail(new Error(`bringToFront failed in isMinimized with error: ${err}`));
             });
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`bringToFront failed in minimize with error: ${err}`));
         });
     });
 
-    it('should not be focused', () => {
+    it('should not be focused', (done) => {
         return app.browserWindow.isFocused().then((isFocused) => {
             expect(isFocused).toBeFalsy();
+            done();
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`bringToFront failed in isFocused with error: ${err}`));
         });
     });
 
-    it('should maximize browser window', () => {
+    it('should maximize browser window', (done) => {
         return app.browserWindow.restore().then(() => {
             return app.browserWindow.isMinimized().then((isMinimized) => {
                 expect(isMinimized).toBeFalsy();
+                done();
             }).catch((err) => {
-                expect(err).toBeNull();
+                done.fail(new Error(`bringToFront failed in isMinimized with error: ${err}`));
             });
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`bringToFront failed in restore with error: ${err}`));
         });
     });
 
-    it('should be focused', () => {
+    it('should be focused', (done) => {
         return app.browserWindow.isFocused().then((isFocused) => {
             expect(isFocused).toBeTruthy();
+            done();
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`bringToFront failed in isFocused with error: ${err}`));
         });
     });
 
