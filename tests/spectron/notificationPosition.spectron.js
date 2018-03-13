@@ -1,7 +1,6 @@
 const Application = require('./spectronSetup');
 const path = require('path');
 const { isMac } = require('../../js/utils/misc');
-const constants = require('./spectronConstants');
 
 let app = new Application({});
 
@@ -15,9 +14,7 @@ describe('Tests for Notification position', () => {
             app = startedApp;
             done();
         }).catch((err) => {
-            console.error(`Unable to start application error: ${err}`);
-            expect(err).toBeNull();
-            done();
+            done.fail(new Error(`Unable to start application error: ${err}`));
         });
     });
 
@@ -38,10 +35,10 @@ describe('Tests for Notification position', () => {
                 expect(count === 1).toBeTruthy();
                 done();
             }).catch((err) => {
-                expect(err).toBeNull();
+                done.fail(new Error(`notificationPosition failed in getWindowCount with error: ${err}`));
             });
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`notificationPosition failed in waitUntilWindowLoaded with error: ${err}`));
         });
     });
 
@@ -49,15 +46,16 @@ describe('Tests for Notification position', () => {
         return app.client.url('file:///' + path.join(__dirname, '..', '..', 'demo/index.html'));
     });
 
-    it('should load demo html', () => {
+    it('should load demo html', (done) => {
         return app.client.waitUntilWindowLoaded().then(() => {
             return app.client.getTitle().then((title) => {
                 expect(title === '').toBeTruthy();
+                done();
             }).catch((err) => {
-                expect(err).toBeNull();
+                done.fail(new Error(`notificationPosition failed in getTitle with error: ${err}`));
             });
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`notificationPosition failed in waitUntilWindowLoaded with error: ${err}`));
         });
     });
 
@@ -72,32 +70,35 @@ describe('Tests for Notification position', () => {
             .windowByIndex(1)
     });
 
-    it('should check notification position', () => {
+    it('should check notification position', (done) => {
         return app.browserWindow.getBounds().then((bounds) => {
             expect(bounds.x === 0).toBeTruthy();
             if (isMac) {
                 expect(bounds.y > 0).toBeTruthy();
+                done();
             } else {
                 expect(bounds.y === 0).toBeTruthy();
+                done();
             }
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`notificationPosition failed in getBounds with error: ${err}`));
         });
     });
 
-    it('should change the window', () => {
+    it('should change the window', (done) => {
         return app.client.windowByIndex(0).then(() => {
             return app.browserWindow.getTitle().then((title) => {
                 expect(title === 'Symphony | Secure Seamless Communication').toBeTruthy();
+                done();
             }).catch((err) => {
-                expect(err).toBeNull();
+                done.fail(new Error(`notificationPosition failed in getTitle with error: ${err}`));
             });
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`notificationPosition failed in windowByIndex with error: ${err}`));
         });
     });
 
-    it('should change notification position to lower-right', () => {
+    it('should change notification position to lower-right', (done) => {
         return app.client
             .click('#open-config-win')
             .windowByIndex(2)
@@ -108,36 +109,39 @@ describe('Tests for Notification position', () => {
             .windowByIndex(1).then(() => {
                 return app.browserWindow.getTitle().then((title) => {
                     expect(title === 'Electron').toBeTruthy();
+                    done();
                 }).catch((err) => {
-                    expect(err).toBeNull();
+                    done.fail(new Error(`notificationPosition failed in getTitle with error: ${err}`));
                 });
             }).catch((err) => {
-                expect(err).toBeNull();
+                done.fail(new Error(`notificationPosition failed in windowByIndex with error: ${err}`));
             });
     });
 
-    it('should check notification position and equal to lower-right', () => {
+    it('should check notification position and equal to lower-right', (done) => {
         return app.browserWindow.getBounds().then((bounds) => {
             expect(bounds.x > 0).toBeTruthy();
             expect(bounds.y > 0).toBeTruthy();
+            done();
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`notificationPosition failed in getBounds with error: ${err}`));
         });
     });
 
-    it('should change the window', () => {
+    it('should change the window', (done) => {
         return app.client.windowByIndex(0).then(() => {
             return app.browserWindow.getTitle().then((title) => {
                 expect(title === 'Symphony | Secure Seamless Communication').toBeTruthy();
+                done();
             }).catch((err) => {
-                expect(err).toBeNull();
+                done.fail(new Error(`notificationPosition failed in getTitle with error: ${err}`));
             });
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`notificationPosition failed in windowByIndex with error: ${err}`));
         });
     });
 
-    it('should change notification position to upper-right', () => {
+    it('should change notification position to upper-right', (done) => {
         return app.client
             .click('#open-config-win')
             .windowByIndex(2)
@@ -148,56 +152,62 @@ describe('Tests for Notification position', () => {
             .windowByIndex(1).then(() => {
                 return app.browserWindow.getTitle().then((title) => {
                     expect(title === 'Electron').toBeTruthy();
+                    done();
                 }).catch((err) => {
-                    expect(err).toBeNull();
+                    done.fail(new Error(`notificationPosition failed in getTitle with error: ${err}`));
                 });
             }).catch((err) => {
-                expect(err).toBeNull();
+                done.fail(new Error(`notificationPosition failed in windowByIndex with error: ${err}`));
             });
     });
 
-    it('should check notification position and equal to upper-right', () => {
+    it('should check notification position and equal to upper-right', (done) => {
         return app.browserWindow.getBounds().then((bounds) => {
             expect(bounds.x > 0).toBeTruthy();
             if (isMac) {
                 expect(bounds.y > 0).toBeTruthy();
+                done();
             } else {
                 expect(bounds.y === 0).toBeTruthy();
+                done();
             }
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`notificationPosition failed in getBounds with error: ${err}`));
         });
     });
 
-    it('should change the window to main', () => {
+    it('should change the window to main', (done) => {
         return app.client.windowByIndex(0).then(() => {
             return app.browserWindow.getTitle().then((title) => {
                 expect(title === 'Symphony | Secure Seamless Communication').toBeTruthy();
+                done();
             }).catch((err) => {
-                expect(err).toBeNull();
+                done.fail(new Error(`notificationPosition failed in getTitle with error: ${err}`));
             });
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`notificationPosition failed in windowByIndex with error: ${err}`));
         });
     });
 
-    it('should open notification and close', () => {
+    it('should open notification and close', (done) => {
         return app.client
             .windowByIndex(0)
             .click('#notf')
             .getWindowCount().then((count) => {
                 expect(count === 3).toBeTruthy();
+                done();
             }).catch((err) => {
-                expect(err).toBeNull();
+                done.fail(new Error(`notificationPosition failed in getWindowCount with error: ${err}`));
             })
             .windowByIndex(1).then(() => {
                 return app.browserWindow.getTitle().then((title) => {
                     expect(title === 'Electron').toBeTruthy();
+                    done();
                 }).catch((err) => {
-                    expect(err).toBeNull();
+                    done.fail(new Error(`notificationPosition failed in getTitle with error: ${err}`));
                 });
             }).catch((err) => {
-                expect(err).toBeNull();
+                done.fail(new Error(`notificationPosition failed in windowByIndex with error: ${err}`));
             });
     });
 

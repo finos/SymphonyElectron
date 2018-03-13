@@ -1,6 +1,5 @@
 const Application = require('./spectronSetup');
 const path = require('path');
-const constants = require('./spectronConstants');
 
 let app = new Application({});
 
@@ -14,9 +13,7 @@ describe('Tests for clipboard', () => {
             app = startedApp;
             done();
         }).catch((err) => {
-            console.error(`Unable to start application error: ${err}`);
-            expect(err).toBeNull();
-            done();
+            done.fail(new Error(`Unable to start application error: ${err}`));
         });
     });
 
@@ -37,10 +34,10 @@ describe('Tests for clipboard', () => {
                 expect(count === 1).toBeTruthy();
                 done();
             }).catch((err) => {
-                expect(err).toBeFalsy();
+                done.fail(new Error(`clipboard failed in getWindowCount with error: ${err}`));
             });
         }).catch((err) => {
-            expect(err).toBeFalsy();
+            done.fail(new Error(`clipboard failed in waitUntilWindowLoaded with error: ${err}`));
         });
     });
 

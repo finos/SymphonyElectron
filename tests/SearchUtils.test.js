@@ -29,7 +29,7 @@ function mockedGetPath(type) {
 
 describe('Tests for Search Utils', function() {
 
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 90000;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
 
     beforeAll(function (done) {
         executionPath = path.join(__dirname, 'library');

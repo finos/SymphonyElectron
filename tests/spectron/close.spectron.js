@@ -1,21 +1,18 @@
 const Application = require('./spectronSetup');
-const constants = require('./spectronConstants');
 
 let app = new Application({});
 
 describe('Tests for Close', () => {
 
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 90000;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
 
     beforeAll((done) => {
         return app.startApplication().then((startedApp) => {
             app = startedApp;
             done();
         }).catch((err) => {
-            console.error(`Unable to start application error: ${err}`);
-            expect(err).toBeNull();
-            done();
+            done.fail(new Error(`Unable to start application error: ${err}`));
         });
     });
 
@@ -38,26 +35,28 @@ describe('Tests for Close', () => {
                 expect(count === 1).toBeTruthy();
                 done();
             }).catch((err) => {
-                expect(err).toBeNull();
+                done.fail(new Error(`close failed in getWindowCount with error: ${err}`));
             });
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`close failed in waitUntilWindowLoaded with error: ${err}`));
         });
     });
 
-    it('should check window count', () => {
+    it('should check window count', (done) => {
         return app.client.getWindowCount().then((count) => {
             expect(count === 1).toBeTruthy();
+            done();
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`close failed in getWindowCount with error: ${err}`));
         });
     });
 
-    it('should check browser window visibility', () => {
+    it('should check browser window visibility', (done) => {
         return app.browserWindow.isVisible().then((isVisible) => {
             expect(isVisible).toBeTruthy();
+            done();
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`close failed in isVisible with error: ${err}`));
         });
     });
 

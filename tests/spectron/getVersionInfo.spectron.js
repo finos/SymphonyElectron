@@ -1,6 +1,7 @@
 const Application = require('./spectronSetup');
 const path = require('path');
 const { buildNumber } = require('../../package');
+const electronVersion = require('../../package').devDependencies.electron;
 const bluebird = require('bluebird');
 
 let app = new Application({});
@@ -15,9 +16,7 @@ describe('Tests for getVersionInfo API', () => {
             app = startedApp;
             done();
         }).catch((err) => {
-            console.error(`Unable to start application error: ${err}`);
-            expect(err).toBeNull();
-            done();
+            done.fail(new Error(`Unable to start application error: ${err}`));
         });
     });
 
@@ -38,10 +37,10 @@ describe('Tests for getVersionInfo API', () => {
                 expect(count === 1).toBeTruthy();
                 done();
             }).catch((err) => {
-                expect(err).toBeNull();
+                done.fail(new Error(`getVersionInfo failed in getWindowCount with error: ${err}`));
             });
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`getVersionInfo failed in waitUntilWindowLoaded with error: ${err}`));
         });
     });
 
@@ -63,7 +62,7 @@ describe('Tests for getVersionInfo API', () => {
         }).then((values) => {
             expect(values[ 0 ]).toBe('1.0.0');
             expect(values[ 1 ]).toBe('Electron');
-            expect(values[ 2 ]).toBe('1.8.3');
+            expect(values[ 2 ]).toBe(electronVersion);
             expect(values[ 3 ]).toBe(buildNumber);
             done();
         });
