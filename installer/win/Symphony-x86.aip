@@ -620,4 +620,14 @@
     <ROW UpgradeCode="[|UpgradeCode]" VersionMin="0.0.1" VersionMax="[|ProductVersion]" Attributes="257" ActionProperty="OLDPRODUCTS"/>
     <ROW UpgradeCode="[|UpgradeCode]" VersionMin="[|ProductVersion]" Attributes="2" ActionProperty="AI_NEWERPRODUCTFOUND"/>
   </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.TxtUpdateComponent">
+      <ROW Name="Url" TxtUpdateSet="Symphony.config" FindPattern="&quot;url&quot;\s*:\s*&quot;.*&quot;" ReplacePattern="&quot;url&quot;: &quot;[POD_URL]&quot;" Options="19" Order="0" FileEncoding="-1"/>
+      <ROW Name="MinimizeOnClose" TxtUpdateSet="Symphony.config" FindPattern="&quot;minimizeOnClose&quot;\s*:\s*true," ReplacePattern="&quot;minimizeOnClose&quot; : [MINIMIZE_ON_CLOSE]," Options="19" Order="1" FileEncoding="-1"/>
+      <ROW Name="AlwaysOnTop" TxtUpdateSet="Symphony.config" FindPattern="&quot;alwaysOnTop&quot;\s*:\s*false" ReplacePattern="&quot;alwaysOnTop&quot; : [ALWAYS_ON_TOP]" Options="19" Order="2" FileEncoding="-1"/>
+      <ROW Name="LaunchOnStartup" TxtUpdateSet="Symphony.config" FindPattern="&quot;launchOnStartup&quot;\s*:\s*true," ReplacePattern="&quot;launchOnStartup&quot; : [AUTO_START]," Options="19" Order="3" FileEncoding="-1"/>
+      <ROW Name="BringToFront" TxtUpdateSet="Symphony.config" FindPattern="&quot;bringToFront&quot;\s*:\s*false," ReplacePattern="&quot;bringToFront&quot; : [BRING_TO_FRONT]," Options="19" Order="4" FileEncoding="-1"/>
+    </COMPONENT>
+    <COMPONENT cid="caphyon.advinst.msicomp.TxtUpdateSetComponent">
+      <ROW Key="Symphony.config" Component="am.pak" FileName="Symphony.config" Directory="config_Dir" Options="17"/>
+    </COMPONENT>
 </DOCUMENT>
