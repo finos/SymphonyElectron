@@ -250,12 +250,12 @@ function Queue(emitter) {
  * Replace HTML tags <> from messages test to prevent
  * HTML injection
  *
- * @param string
+ * @param message {String}    main text to display in notifications
  * @return {void | string | *}
  */
-function replaceHTMLTags(string) {
+function replaceHTMLTags(message) {
 
-    if (typeof string !== 'string') {
+    if (typeof message !== 'string') {
         return null;
     }
 
@@ -268,22 +268,22 @@ function replaceHTMLTags(string) {
         return tagsToReplace[tag] || tag;
     }
 
-    return string.replace(/[<>]/g, replaceTag);
+    return message.replace(/[<>]/g, replaceTag);
 }
 
 /**
  * Replace strong HTML tags from the string
  *
- * @param string
+ * @param message {String}    main text to display in notifications
  * @return {void | string | *}
  */
-function replaceStrongTag(string) {
+function replaceStrongTag(message) {
 
-    if (typeof string !== 'string') {
+    if (typeof message !== 'string') {
         return null;
     }
 
-    return string.replace(/(?:<strong>)|(?:<\/strong>)+/g, '');
+    return message.replace(/(?:<strong>)|(?:<\/strong>)+/g, '');
 }
 
 module.exports = Notify;
