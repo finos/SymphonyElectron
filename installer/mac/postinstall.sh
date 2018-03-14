@@ -33,8 +33,10 @@ if [ "$bring_to_front" == "" ]; then
     bring_to_front=false;
 fi
 
+pod_url_escaped=$(sed 's#[&/\]#\\&#g' <<<"$pod_url")
+
 ## Replace the default settings with the user selected settings ##
-sed -i "" -E "s#\"url\" ?: ?\".*\"#\"url\"\: \"$pod_url\"#g" ${newPath}
+sed -i "" -E "s#\"url\" ?: ?\".*\"#\"url\"\: \"$pod_url_escaped\"#g" ${newPath}
 sed -i "" -E "s#\"minimizeOnClose\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"minimizeOnClose\":\ $minimize_on_close#g" ${newPath}
 sed -i "" -E "s#\"alwaysOnTop\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"alwaysOnTop\":\ $always_on_top#g" ${newPath}
 sed -i "" -E "s#\"launchOnStartup\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"launchOnStartup\":\ $launch_on_startup#g" ${newPath}
