@@ -325,9 +325,16 @@
     <ROW Fragment="VerifyRemoveDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\VerifyRemoveDlg.aip"/>
     <ROW Fragment="VerifyRepairDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\VerifyRepairDlg.aip"/>
   </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiActionTextComponent">
+    <ROW Action="AI_TxtUpdaterCommit" Description="Commit text file changes. " Template="Commit text file changes." DescriptionLocId="ActionText.Description.AI_TxtUpdaterCommit" TemplateLocId="ActionText.Template.AI_TxtUpdaterCommit"/>
+    <ROW Action="AI_TxtUpdaterConfig" Description="Executing text file updates" Template="Updating text file: &quot;[1]&quot;" DescriptionLocId="ActionText.Description.AI_TxtUpdaterConfig" TemplateLocId="ActionText.Template.AI_TxtUpdaterConfig"/>
+    <ROW Action="AI_TxtUpdaterInstall" Description="Generating actions to configure text files updates" DescriptionLocId="ActionText.Description.AI_TxtUpdaterInstall"/>
+    <ROW Action="AI_TxtUpdaterRollback" Description="Rolling back text file changes. " Template="Rolling back text file changes." DescriptionLocId="ActionText.Description.AI_TxtUpdaterRollback" TemplateLocId="ActionText.Template.AI_TxtUpdaterRollback"/>
+  </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiBinaryComponent">
     <ROW Name="Banner.jpg" SourcePath="Assets\Banner.jpg"/>
     <ROW Name="Tabloid.jpg" SourcePath="Assets\Tabloid.jpg"/>
+    <ROW Name="TxtUpdater.dll" SourcePath="&lt;AI_CUSTACTS&gt;TxtUpdater.dll"/>
     <ROW Name="aicustact.dll" SourcePath="&lt;AI_CUSTACTS&gt;aicustact.dll"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCheckBoxComponent">
@@ -535,6 +542,10 @@
     <ROW Action="AI_SETMIXINSTLOCATION" Type="1" Source="aicustact.dll" Target="MixedAllUsersInstallLocation"/>
     <ROW Action="AI_SHOW_LOG" Type="65" Source="aicustact.dll" Target="LaunchLogFile" WithoutSeq="true"/>
     <ROW Action="AI_STORE_LOCATION" Type="51" Source="ARPINSTALLLOCATION" Target="[APPDIR]"/>
+    <ROW Action="AI_TxtUpdaterCommit" Type="11777" Source="TxtUpdater.dll" Target="OnTxtUpdaterCommit" WithoutSeq="true"/>
+    <ROW Action="AI_TxtUpdaterConfig" Type="11265" Source="TxtUpdater.dll" Target="OnTxtUpdaterConfig" WithoutSeq="true"/>
+    <ROW Action="AI_TxtUpdaterInstall" Type="1" Source="TxtUpdater.dll" Target="OnTxtUpdaterInstall"/>
+    <ROW Action="AI_TxtUpdaterRollback" Type="11521" Source="TxtUpdater.dll" Target="OnTxtUpdaterRollback" WithoutSeq="true"/>
     <ROW Action="KillParagon" Type="1" Source="aicustact.dll" Target="StopProcess" Options="1" AdditionalSeq="AI_DATA_SETTER_2"/>
     <ROW Action="KillRenderer" Type="1" Source="aicustact.dll" Target="StopProcess" Options="1" AdditionalSeq="AI_DATA_SETTER"/>
     <ROW Action="PodUrlValidation" Type="37" Target="Script Text" TargetUnformatted="// First, check if the protocol is part of the url, if not, prepend it&#13;&#10;var prefix1 = &quot;https://&quot;;&#13;&#10;var prefix2 = &quot;http://&quot;;&#13;&#10;if (Session.Property(&quot;POD_URL&quot;).substr(0, prefix1.length) !== prefix1 &amp;&amp; Session.Property(&quot;POD_URL&quot;).substr(0, prefix2.length) !== prefix2) {&#13;&#10;    Session.Property(&quot;POD_URL&quot;) = prefix1 + Session.Property(&quot;POD_URL&quot;);&#13;&#10;}&#13;&#10;&#13;&#10;// Check if the entered pod url is valid&#13;&#10;var podUrlRE = /^(https:\/\/|http:\/\/)(www.)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/[a-zA-Z0-9-_.+!*&apos;(),;/?:@=&amp;$]*)?$/;&#13;&#10;var podUrlTest = podUrlRE.test(Session.Property(&quot;POD_URL&quot;));&#13;&#10;if (!podUrlTest) {&#13;&#10;&#9;Session.Property(&quot;INVALID_POD_URL&quot;) = &quot;invalid&quot;;&#13;&#10;} else {&#13;&#10;&#9;Session.Property(&quot;INVALID_POD_URL&quot;) = &quot;valid&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// By default, we set all the values to false and change based on conditions&#13;&#10;Session.Property(&quot;ALWAYS_ON_TOP_LABEL&quot;) = &quot;false&quot;;            &#13;&#10;Session.Property(&quot;AUTO_START_LABEL&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;MINIMIZE_ON_CLOSE_LABEL&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;BRING_TO_FRONT_LABEL&quot;) = &quot;false&quot;;&#13;&#10;&#13;&#10;// If always on top is checked in the checkbox, set the label value to true&#13;&#10;if (Session.Property(&quot;ALWAYS_ON_TOP&quot;) &amp;&amp; Session.Property(&quot;ALWAYS_ON_TOP&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;ALWAYS_ON_TOP_LABEL&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// If launch on startup is checked in the checkbox, set the label value to true&#13;&#10;if (Session.Property(&quot;MINIMIZE_ON_CLOSE&quot;) &amp;&amp; Session.Property(&quot;MINIMIZE_ON_CLOSE&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;MINIMIZE_ON_CLOSE_LABEL&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// If minimise on close is checked in the checkbox, set the label value to true&#13;&#10;if (Session.Property(&quot;AUTO_START&quot;) &amp;&amp; Session.Property(&quot;AUTO_START&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;AUTO_START_LABEL&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// If bring to front is checked in the checkbox, set the label value to true&#13;&#10;if (Session.Property(&quot;BRING_TO_FRONT&quot;) &amp;&amp; Session.Property(&quot;BRING_TO_FRONT&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;BRING_TO_FRONT_LABEL&quot;) = &quot;true&quot;;&#13;&#10;}" WithoutSeq="true"/>
@@ -566,6 +577,7 @@
     <ROW Action="AI_SETMIXINSTLOCATION" Sequence="749"/>
     <ROW Action="Symphony.exe" Condition="( NOT Installed ) AND ( MSIINSTALLPERUSER )" Sequence="5935"/>
     <ROW Action="Symphony.exe_All_User" Condition="( NOT Installed ) AND ( ALLUSERS )" Sequence="5936"/>
+    <ROW Action="AI_TxtUpdaterInstall" Sequence="5101"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
     <ROW Action="AI_ResolveKnownFolders" Sequence="52"/>
@@ -621,13 +633,13 @@
     <ROW UpgradeCode="[|UpgradeCode]" VersionMin="[|ProductVersion]" Attributes="2" ActionProperty="AI_NEWERPRODUCTFOUND"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.TxtUpdateComponent">
-      <ROW Name="Url" TxtUpdateSet="Symphony.config" FindPattern="&quot;url&quot;\s*:\s*&quot;.*&quot;" ReplacePattern="&quot;url&quot;: &quot;[POD_URL]&quot;" Options="19" Order="0" FileEncoding="-1"/>
-      <ROW Name="MinimizeOnClose" TxtUpdateSet="Symphony.config" FindPattern="&quot;minimizeOnClose&quot;\s*:\s*true," ReplacePattern="&quot;minimizeOnClose&quot; : [MINIMIZE_ON_CLOSE]," Options="19" Order="1" FileEncoding="-1"/>
-      <ROW Name="AlwaysOnTop" TxtUpdateSet="Symphony.config" FindPattern="&quot;alwaysOnTop&quot;\s*:\s*false" ReplacePattern="&quot;alwaysOnTop&quot; : [ALWAYS_ON_TOP]" Options="19" Order="2" FileEncoding="-1"/>
-      <ROW Name="LaunchOnStartup" TxtUpdateSet="Symphony.config" FindPattern="&quot;launchOnStartup&quot;\s*:\s*true," ReplacePattern="&quot;launchOnStartup&quot; : [AUTO_START]," Options="19" Order="3" FileEncoding="-1"/>
-      <ROW Name="BringToFront" TxtUpdateSet="Symphony.config" FindPattern="&quot;bringToFront&quot;\s*:\s*false," ReplacePattern="&quot;bringToFront&quot; : [BRING_TO_FRONT]," Options="19" Order="4" FileEncoding="-1"/>
-    </COMPONENT>
-    <COMPONENT cid="caphyon.advinst.msicomp.TxtUpdateSetComponent">
-      <ROW Key="Symphony.config" Component="am.pak" FileName="Symphony.config" Directory="config_Dir" Options="17"/>
-    </COMPONENT>
+    <ROW Name="Url" TxtUpdateSet="Symphony.config" FindPattern="&quot;url&quot;\s*:\s*&quot;.*&quot;" ReplacePattern="&quot;url&quot;: &quot;[POD_URL]&quot;" Options="19" Order="0" FileEncoding="-1"/>
+    <ROW Name="MinimizeOnClose" TxtUpdateSet="Symphony.config" FindPattern="&quot;minimizeOnClose&quot;\s*:\s*true," ReplacePattern="&quot;minimizeOnClose&quot; : [MINIMIZE_ON_CLOSE]," Options="19" Order="1" FileEncoding="-1"/>
+    <ROW Name="AlwaysOnTop" TxtUpdateSet="Symphony.config" FindPattern="&quot;alwaysOnTop&quot;\s*:\s*false" ReplacePattern="&quot;alwaysOnTop&quot; : [ALWAYS_ON_TOP]" Options="19" Order="2" FileEncoding="-1"/>
+    <ROW Name="LaunchOnStartup" TxtUpdateSet="Symphony.config" FindPattern="&quot;launchOnStartup&quot;\s*:\s*true," ReplacePattern="&quot;launchOnStartup&quot; : [AUTO_START]," Options="19" Order="3" FileEncoding="-1"/>
+    <ROW Name="BringToFront" TxtUpdateSet="Symphony.config" FindPattern="&quot;bringToFront&quot;\s*:\s*false," ReplacePattern="&quot;bringToFront&quot; : [BRING_TO_FRONT]," Options="19" Order="4" FileEncoding="-1"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.TxtUpdateSetComponent">
+    <ROW Key="Symphony.config" Component="am.pak" FileName="Symphony.config" Directory="config_Dir" Options="17"/>
+  </COMPONENT>
 </DOCUMENT>
