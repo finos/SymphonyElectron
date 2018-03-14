@@ -1,35 +1,26 @@
-const childProcess = require('child_process');
 const Application = require('./spectronSetup');
 const { isMac } = require('../../js/utils/misc');
-const constants = require('./spectronConstants');
+const robot = require('robotjs');
 
-let robot;
 let configPath;
 let app = new Application({});
 
 describe('Tests for Full screen', () => {
 
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 90000;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
 
     beforeAll((done) => {
-        childProcess.exec(`npm rebuild robotjs --target=${process.version} --build-from-source`, function () {
-            robot = require('robotjs');
-            return app.startApplication().then((startedApp) => {
-                app = startedApp;
-                getConfigPath().then((config) => {
-                    configPath = config;
-                    done();
-                }).catch((err) => {
-                    console.error(`Unable to get user config path error: ${err}`);
-                    expect(err).toBeNull();
-                    done();
-                });
-            }).catch((err) => {
-                console.error(`Unable to start application error: ${err}`);
-                expect(err).toBeNull();
+        return app.startApplication().then((startedApp) => {
+            app = startedApp;
+            getConfigPath().then((config) => {
+                configPath = config;
                 done();
+            }).catch((err) => {
+                done.fail(new Error(`full-screen failed in getConfigPath with error: ${err}`));
             });
+        }).catch((err) => {
+            done.fail(new Error(`Unable to start application error: ${err}`));
         });
     });
 
@@ -73,26 +64,28 @@ describe('Tests for Full screen', () => {
                 expect(count === 1).toBeTruthy();
                 done();
             }).catch((err) => {
-                expect(err).toBeNull();
+                done.fail(new Error(`full-screen failed in getWindowCount with error: ${err}`));
             });
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`full-screen failed in waitUntilWindowLoaded with error: ${err}`));
         });
     });
 
-    it('should check window count', () => {
+    it('should check window count', (done) => {
         return app.client.getWindowCount().then((count) => {
             expect(count === 1).toBeTruthy();
+            done();
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`full-screen failed in getWindowCount with error: ${err}`));
         });
     });
 
-    it('should check browser window visibility', () => {
+    it('should check browser window visibility', (done) => {
         return app.browserWindow.isVisible().then((isVisible) => {
             expect(isVisible).toBeTruthy();
+            done();
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`full-screen failed in getWindowCount with error: ${err}`));
         });
     });
 
@@ -105,7 +98,7 @@ describe('Tests for Full screen', () => {
         });
     });
 
-    it('should set the app full screen and check whether it is in full screen', () => {
+    it('should set the app full screen and check whether it is in full screen', (done) => {
         if (isMac) {
             robot.setMouseDelay(100);
             robot.moveMouseSmooth(205, 10);
@@ -121,8 +114,9 @@ describe('Tests for Full screen', () => {
 
             return app.browserWindow.isFullScreen().then((fullscreen) => {
                 expect(fullscreen).toBeTruthy();
+                done();
             }).catch((err) => {
-                expect(err).toBeNull();
+                done.fail(new Error(`full-screen failed in isFullScreen with error: ${err}`));
             })
         } else {
             return app.browserWindow.getBounds().then((bounds) => {
@@ -136,8 +130,9 @@ describe('Tests for Full screen', () => {
 
                 return app.browserWindow.isFullScreen().then((fullscreen) => {
                     expect(fullscreen).toBeTruthy();
+                    done();
                 }).catch((err) => {
-                    expect(err).toBeNull();
+                    done.fail(new Error(`full-screen failed in isFullScreen with error: ${err}`));
                 })
             });
         }

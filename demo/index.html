@@ -1,5 +1,15 @@
 <html>
     <head>
+        <style>
+            table {
+                border-collapse: collapse;
+                border-spacing: 0;
+            }
+            table, th, td {
+                padding: 5px;
+                border: 1px solid black;
+            }
+        </style>
     </head>
     <body>
         <h1>Symphony Electron API Demo</h1>
@@ -67,7 +77,7 @@
 
         <hr>
         <p>Get Media Sources:</p>
-        <button id='get-sources'>get entire desktop</button>
+        <button id='get-sources'>Open screen picker</button>
         <br>
         <video id='video'></video>
 
@@ -75,7 +85,21 @@
         <p>Get Version Info:</p>
         <button id='get-version'>get version info</button>
         <br>
-        Version Info:<span id='info'></span>
+        Version Info:
+        <table  >
+            <tr>
+                <th>API Version</th>
+                <th>Container Identifier</th>
+                <th>Container Version</th>
+                <th>Build Number</th>
+            </tr>
+            <tr>
+                <td id="api-version"></td>
+                <td id="container-identifier"></td>
+                <td id="container-ver"></td>
+                <td id="build-number"></td>
+            </tr>
+        </table>
     </body>
     <script>
         var openConfigWin = document.getElementById('open-config-win');
@@ -193,14 +217,14 @@
 
         var getSources = document.getElementById('get-sources');
         getSources.addEventListener('click', function() {
-            ssf.getMediaSources({types: ['window', 'screen']}, function(error, sources) {
+            ssf.getMediaSource({types: ['window', 'screen']}, function(error, source) {
                 if (error) throw error
                   navigator.webkitGetUserMedia({
                     audio: false,
                     video: {
                       mandatory: {
                         chromeMediaSource: 'desktop',
-                        chromeMediaSourceId: sources[0].id,
+                        chromeMediaSourceId: source.id,
                         minWidth: 1280,
                         maxWidth: 1280,
                         minHeight: 720,
@@ -219,14 +243,19 @@
           console.log(e)
         }
 
-        var getSources = document.getElementById('get-version');
-        getSources.addEventListener('click', function() {
+        var getVersionInfo = document.getElementById('get-version');
+        getVersionInfo.addEventListener('click', function() {
             ssf.getVersionInfo().then(function(verInfo) {
-                var verEl = document.getElementById('info');
-                verEl.innerText = '\napi ver=' + verInfo.apiVer +
-                '\ncontainer identifier=' + verInfo.containerIdentifier +
-                '\ncontainer ver=' + verInfo.containerVer
-            })
+                let apiVersionInfo = document.getElementById('api-version');
+                let containerIdentifier = document.getElementById('container-identifier');
+                let version = document.getElementById('container-ver');
+                let buildNumber = document.getElementById('build-number');
+
+                apiVersionInfo.innerText = verInfo.apiVer;
+                containerIdentifier.innerText = verInfo.containerIdentifier;
+                version.innerText = verInfo.containerVer;
+                buildNumber.innerText = verInfo.buildNumber;
+            });
         });
 
     </script>
