@@ -13,7 +13,7 @@ describe('Tests for pop outs', () => {
             app = startedApp;
             done();
         }).catch((err) => {
-            console.error(`Unable to start application error: ${err}`);
+            console.error(`Unable to start application: ${err}`);
             expect(err).toBeNull();
             done();
         });
@@ -43,7 +43,7 @@ describe('Tests for pop outs', () => {
         });
     });
 
-    it('should check window count', () => {
+    it('should load the demo page', () => {
         return app.client.url('file:///' + path.join(__dirname, '..', '..', 'demo/index.html'));
     });
 
