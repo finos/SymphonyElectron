@@ -27,4 +27,7 @@ installer/mac/SymphonySettingsPlugin/SymphonySettingsPlugin.xcodeproj/xcuserdata
 installer/mac/SymphonySettingsPlugin/SymphonySettingsPlugin.xcodeproj/project.xcworkspace/xcuserdata
 installer/win/Symphony-x64-cache
 installer/win/Symphony-x64-SetupFiles
+installer/win/Symphony-x86-cache
+installer/win/Symphony-x86-SetupFiles
 package-lock.json
+library

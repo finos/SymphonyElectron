@@ -1,10 +1,8 @@
 const Application = require('./spectronSetup');
 const {isMac} = require('../../js/utils/misc.js');
-const childProcess = require('child_process');
-const constants = require('./spectronConstants');
+const robot = require('robotjs');
 
 let app = new Application({});
-let robot;
 let configPath;
 let mIsAlwaysOnTop;
 
@@ -14,23 +12,16 @@ describe('Tests for Always on top', () => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
 
     beforeAll((done) => {
-        childProcess.exec(`npm rebuild robotjs --target=${process.version} --build-from-source`, function () {
-            robot = require('robotjs');
-            return app.startApplication().then((startedApp) => {
-                app = startedApp;
-                getConfigPath().then((config) => {
-                    configPath = config;
-                    done();
-                }).catch((err) => {
-                    console.error(`Unable to get user config path error: ${err}`);
-                    expect(err).toBeNull();
-                    done();
-                });
-            }).catch((err) => {
-                console.error(`Unable to start application error: ${err}`);
-                expect(err).toBeNull();
+        return app.startApplication().then((startedApp) => {
+            app = startedApp;
+            getConfigPath().then((config) => {
+                configPath = config;
                 done();
+            }).catch((err) => {
+                done.fail(new Error(`Unable to start application error: ${err}`));
             });
+        }).catch((err) => {
+            done.fail(new Error(`Unable to start application error: ${err}`));
         });
     });
 
@@ -57,8 +48,7 @@ describe('Tests for Always on top', () => {
                 done();
             }).catch((err) => {
                 jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
-                expect(err).toBeNull();
-                done();
+                done.fail(new Error(`alwaysOnTop failed in afterAll with error: ${err}`));
             });
         }
     });
@@ -70,23 +60,25 @@ describe('Tests for Always on top', () => {
                 done();
             });
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`alwaysOnTop failed in waitUntilWindowLoaded with error: ${err}`));
         });
     });
 
-    it('should check window count', () => {
+    it('should check window count', (done) => {
         return app.client.getWindowCount().then((count) => {
             expect(count === 1).toBeTruthy();
+            done();
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`alwaysOnTop failed in getWindowCount with error: ${err}`));
         });
     });
 
-    it('should check browser window visibility', () => {
+    it('should check browser window visibility', (done) => {
         return app.browserWindow.isVisible().then((isVisible) => {
             expect(isVisible).toBeTruthy();
+            done();
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`alwaysOnTop failed in isVisible with error: ${err}`));
         });
     });
 
@@ -116,25 +108,28 @@ describe('Tests for Always on top', () => {
                     });
                 });
             }).catch((err) => {
-                expect(err).toBeNull();
+                done.fail(new Error(`alwaysOnTop failed in setAlwaysOnTop with error: ${err}`));
             });
         } else {
             done();
         }
     });
 
-    it('should check is always on top', () => {
+    it('should check is always on top', (done) => {
         return Application.readConfig(configPath).then((userData) => {
             return app.browserWindow.isAlwaysOnTop().then((isAlwaysOnTop) => {
                 mIsAlwaysOnTop = isAlwaysOnTop;
                 if (userData.alwaysOnTop) {
                     expect(isAlwaysOnTop).toBeTruthy();
+                    done();
                 } else {
                     expect(isAlwaysOnTop).toBeFalsy();
+                    done();
                 }
+                done();
             });
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`alwaysOnTop failed in readConfig with error: ${err}`));
         });
     });
 
@@ -169,23 +164,25 @@ describe('Tests for Always on top', () => {
                     done();
                 });
             }).catch((err) => {
-                expect(err).toBeNull();
+                done.fail(new Error(`alwaysOnTop failed in getBounds with error: ${err}`));
             });
         }
     });
 
-    it('should check is always on top to be true', () => {
+    it('should check is always on top to be true', (done) => {
         if (!mIsAlwaysOnTop) {
             return app.browserWindow.isAlwaysOnTop().then((isAlwaysOnTop) => {
                 expect(isAlwaysOnTop).toBeTruthy();
+                done();
             }).catch((err) => {
-                expect(err).toBeNull();
+                done.fail(new Error(`alwaysOnTop failed in isAlwaysOnTop with error: ${err}`));
             });
         } else {
             return app.browserWindow.isAlwaysOnTop().then((isAlwaysOnTop) => {
                 expect(isAlwaysOnTop).toBeFalsy();
+                done();
             }).catch((err) => {
-                expect(err).toBeNull();
+                done.fail(new Error(`alwaysOnTop failed in isAlwaysOnTop with error: ${err}`));
             });
         }
     });
