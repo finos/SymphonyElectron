@@ -277,7 +277,6 @@ function replaceHTMLTags(string) {
  * @param string
  * @return {void | string | *}
  */
-// TODO(KiranNiranjan): Can be removed after 2-3 sprints
 function replaceStrongTag(string) {
 
     if (typeof string !== 'string') {
@@ -286,6 +285,5 @@ function replaceStrongTag(string) {
 
     return string.replace(/(?:<strong>)|(?:<\/strong>)+/g, '');
 }
-
 
 module.exports = Notify;
