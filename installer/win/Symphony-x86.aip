@@ -10,7 +10,7 @@
     <ROW Property="AI_ThemeStyle" Value="default" MsiKey="AI_ThemeStyle"/>
     <ROW Property="AI_UNINSTALLER" Value="msiexec.exe"/>
     <ROW Property="ALLUSERS" Value="1" MultiBuildValue="DefaultBuild:2"/>
-    <ROW Property="ALWAYS_ON_TOP_LABEL" Value="false" Type="4"/>
+    <ROW Property="ALWAYS_ON_TOP" Value="false" Type="4"/>
     <ROW Property="ARPCOMMENTS" Value="This installer database contains the logic and data required to install [|ProductName]." ValueLocId="*"/>
     <ROW Property="ARPHELPLINK" Value="http://www.symphony.com"/>
     <ROW Property="ARPNOMODIFY" MultiBuildValue="DefaultBuild:1"/>
@@ -18,22 +18,22 @@
     <ROW Property="ARPPRODUCTICON" Value="icon.exe" Type="8"/>
     <ROW Property="ARPSYSTEMCOMPONENT" Value="1"/>
     <ROW Property="ARPURLINFOABOUT" Value="http://www.symphony.com"/>
-    <ROW Property="AUTO_START" Value="CheckBox"/>
-    <ROW Property="AUTO_START_LABEL" Value="true" Type="4"/>
-    <ROW Property="BRING_TO_FRONT_LABEL" Value="false" Type="4"/>
+    <ROW Property="AUTO_START" Value="true" Type="4"/>
+    <ROW Property="AUTO_START_CB" Value="true" Type="4"/>
+    <ROW Property="BRING_TO_FRONT" Value="false"/>
     <ROW Property="BannerBitmap" Value="banner" MultiBuildValue="DefaultBuild:Banner.jpg" Type="1" MsiKey="BannerBitmap"/>
     <ROW Property="CTRLS" Value="2"/>
     <ROW Property="DialogBitmap" Value="dialog" MultiBuildValue="DefaultBuild:Tabloid.jpg" Type="1" MsiKey="DialogBitmap"/>
     <ROW Property="INVALID_POD_URL" Value="valid" Type="4"/>
-    <ROW Property="MINIMIZE_ON_CLOSE" Value="CheckBox"/>
-    <ROW Property="MINIMIZE_ON_CLOSE_LABEL" Value="false" Type="4"/>
+    <ROW Property="MINIMIZE_ON_CLOSE" Value="true" Type="4"/>
+    <ROW Property="MINIMIZE_ON_CLOSE_CB" Value="true" Type="4"/>
     <ROW Property="Manufacturer" Value="Symphony"/>
     <ROW Property="POD_URL" Value="https://corporate.symphony.com" Type="4"/>
+    <ROW Property="POD_URL_LABEL" Value="https://corporate.symphony.com" Type="4"/>
     <ROW Property="ProductCode" Value="1033:{F17EDEB4-A15F-46B9-83E9-8652CBC886B2} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="Symphony-Electron"/>
     <ROW Property="ProductVersion" Value="2.0.0" Type="32"/>
-    <ROW Property="REBOOT" MultiBuildValue="DefaultBuild:ReallySuppress"/>
     <ROW Property="RUNAPPLICATION" Value="1" Type="4"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
     <ROW Property="UpgradeCode" Value="{36402281-8141-4797-8A90-07CFA75EFA55}"/>
@@ -295,11 +295,6 @@
     <ROW File="zhCN.pak" Component_="am.pak" FileName="zh-CN.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\zh-CN.pak" SelfReg="false" NextFile="zhTW.pak"/>
     <ROW File="zhTW.pak" Component_="am.pak" FileName="zh-TW.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\zh-TW.pak" SelfReg="false" NextFile="appupdate.yml"/>
   </COMPONENT>
-  <COMPONENT cid="caphyon.advinst.custcomp.AiPropertyAliasComponent">
-    <ROW AliasRowId="AUTO_START" AliasRowOperation="2" Value="true"/>
-    <ROW AliasRowId="MINIMIZE_ON_CLOSE" AliasRowOperation="2" Value="true"/>
-    <ROW AliasRowId="ALWAYS_ON_TOP" AliasRowOperation="2" Value="true"/>
-  </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BuildComponent">
     <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="1" Languages="en" InstallationType="4" UseLargeSchema="true"/>
     <ATTRIBUTE name="CurrentBuild" value="DefaultBuild"/>
@@ -325,16 +320,23 @@
     <ROW Fragment="VerifyRemoveDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\VerifyRemoveDlg.aip"/>
     <ROW Fragment="VerifyRepairDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\VerifyRepairDlg.aip"/>
   </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiActionTextComponent">
+    <ROW Action="AI_TxtUpdaterCommit" Description="Commit text file changes. " Template="Commit text file changes." DescriptionLocId="ActionText.Description.AI_TxtUpdaterCommit" TemplateLocId="ActionText.Template.AI_TxtUpdaterCommit"/>
+    <ROW Action="AI_TxtUpdaterConfig" Description="Executing text file updates" Template="Updating text file: &quot;[1]&quot;" DescriptionLocId="ActionText.Description.AI_TxtUpdaterConfig" TemplateLocId="ActionText.Template.AI_TxtUpdaterConfig"/>
+    <ROW Action="AI_TxtUpdaterInstall" Description="Generating actions to configure text files updates" DescriptionLocId="ActionText.Description.AI_TxtUpdaterInstall"/>
+    <ROW Action="AI_TxtUpdaterRollback" Description="Rolling back text file changes. " Template="Rolling back text file changes." DescriptionLocId="ActionText.Description.AI_TxtUpdaterRollback" TemplateLocId="ActionText.Template.AI_TxtUpdaterRollback"/>
+  </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiBinaryComponent">
     <ROW Name="Banner.jpg" SourcePath="Assets\Banner.jpg"/>
     <ROW Name="Tabloid.jpg" SourcePath="Assets\Tabloid.jpg"/>
+    <ROW Name="TxtUpdater.dll" SourcePath="&lt;AI_CUSTACTS&gt;TxtUpdater.dll"/>
     <ROW Name="aicustact.dll" SourcePath="&lt;AI_CUSTACTS&gt;aicustact.dll"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCheckBoxComponent">
-    <ROW Property="MINIMIZE_ON_CLOSE" Value="true"/>
-    <ROW Property="AUTO_START" Value="true"/>
-    <ROW Property="ALWAYS_ON_TOP" Value="true"/>
-    <ROW Property="BRING_TO_FRONT" Value="true"/>
+    <ROW Property="MINIMIZE_ON_CLOSE_CB" Value="true"/>
+    <ROW Property="AUTO_START_CB" Value="true"/>
+    <ROW Property="ALWAYS_ON_TOP_CB" Value="true"/>
+    <ROW Property="BRING_TO_FRONT_CB" Value="true"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlComponent">
     <ROW Dialog_="AdminBrowseDlg" Control="Logo" Type="Text" X="4" Y="228" Width="38" Height="12" Attributes="1" Text="Symphony" Order="300" TextLocId="Control.Text.AdminBrowseDlg#Logo" MsiKey="AdminBrowseDlg#Logo"/>
@@ -373,11 +375,11 @@
     <ROW Dialog_="FolderDlg" Control="BannerLine" Type="Line" X="0" Y="44" Width="372" Height="0" Attributes="1" Order="1200" MsiKey="FolderDlg#BannerLine"/>
     <ROW Dialog_="FolderDlg" Control="Edit_POD_URL" Type="Edit" X="20" Y="143" Width="251" Height="18" Attributes="3" Property="POD_URL" Text="{260}" Order="1300"/>
     <ROW Dialog_="FolderDlg" Control="Text_1" Type="Text" X="20" Y="131" Width="251" Height="12" Attributes="3" Text="Symphony POD URL:" Help="|" Order="1400" TextLocId="Control.Text.FolderDlg#FolderLabel" HelpLocId="Control.Help.FolderDlg#FolderLabel"/>
-    <ROW Dialog_="FolderDlg" Control="MinimizeOnCloseCheckBox" Type="CheckBox" X="20" Y="199" Width="98" Height="13" Attributes="3" Property="MINIMIZE_ON_CLOSE" Text="Minimize On Close" Order="1500"/>
-    <ROW Dialog_="FolderDlg" Control="LaunchOnStartupCheckBox" Type="CheckBox" X="172" Y="174" Width="98" Height="13" Attributes="3" Property="AUTO_START" Text="Launch On Startup" Order="1600"/>
-    <ROW Dialog_="FolderDlg" Control="AlwaysOnTopCheckBox" Type="CheckBox" X="20" Y="174" Width="98" Height="13" Attributes="3" Property="ALWAYS_ON_TOP" Text="Always On Top" Order="1700"/>
+    <ROW Dialog_="FolderDlg" Control="MinimizeOnCloseCheckBox" Type="CheckBox" X="20" Y="199" Width="98" Height="13" Attributes="3" Property="MINIMIZE_ON_CLOSE_CB" Text="Minimize On Close" Order="1500"/>
+    <ROW Dialog_="FolderDlg" Control="LaunchOnStartupCheckBox" Type="CheckBox" X="172" Y="174" Width="98" Height="13" Attributes="3" Property="AUTO_START_CB" Text="Launch On Startup" Order="1600"/>
+    <ROW Dialog_="FolderDlg" Control="AlwaysOnTopCheckBox" Type="CheckBox" X="20" Y="174" Width="98" Height="13" Attributes="3" Property="ALWAYS_ON_TOP_CB" Text="Always On Top" Order="1700"/>
     <ROW Dialog_="FolderDlg" Control="Edit_1" Type="Edit" X="360" Y="143" Width="2" Height="9" Attributes="2" Property="INVALID_POD_URL" Text="{260}" Order="1800"/>
-    <ROW Dialog_="FolderDlg" Control="BringToFrontCheckBox" Type="CheckBox" X="172" Y="199" Width="132" Height="13" Attributes="3" Property="BRING_TO_FRONT" Text="Bring to Front on Notifications" Order="1900"/>
+    <ROW Dialog_="FolderDlg" Control="BringToFrontCheckBox" Type="CheckBox" X="172" Y="199" Width="132" Height="13" Attributes="3" Property="BRING_TO_FRONT_CB" Text="Bring to Front on Notifications" Order="1900"/>
     <ROW Dialog_="InstallTypeDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048576" Text="[DialogBitmap]" Order="100" MsiKey="InstallTypeDlg#BannerBitmap"/>
     <ROW Dialog_="InstallTypeDlg" Control="Bitmap_background" Type="Bitmap" X="0" Y="0" Width="370" Height="234" Attributes="1" Text="[DialogBitmap]" Order="200"/>
     <ROW Dialog_="InstallTypeDlg" Control="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Next]" Order="300" TextLocId="-" MsiKey="InstallTypeDlg#Next" Options="1"/>
@@ -444,16 +446,16 @@
     <ROW Dialog_="VerifyDlg" Control="Logo" Type="Text" X="4" Y="228" Width="70" Height="12" Attributes="1" Text="Advanced Installer" Order="800"/>
     <ROW Dialog_="VerifyDlg" Control="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Attributes="196611" Text="Settings Verification" TextStyle="[DlgTitleFont]" Order="900"/>
     <ROW Dialog_="VerifyDlg" Control="Text_1" Type="Text" X="25" Y="88" Width="76" Height="17" Attributes="65539" Property="TEXT_1_PROP" Text="Symphony POD Url : " Order="1000"/>
-    <ROW Dialog_="VerifyDlg" Control="Text_2" Type="Text" X="110" Y="88" Width="145" Height="17" Attributes="65539" Property="TEXT_2_PROP" Text="[POD_URL]" Order="1100"/>
+    <ROW Dialog_="VerifyDlg" Control="PodUrlLabel" Type="Text" X="110" Y="88" Width="145" Height="17" Attributes="65539" Property="POD_URL_LABEL" Text="[POD_URL]" Order="1100"/>
     <ROW Dialog_="VerifyDlg" Control="Text_3" Type="Text" X="25" Y="114" Width="76" Height="13" Attributes="65539" Property="TEXT_3_PROP" Text="Always on Top : " Order="1200"/>
-    <ROW Dialog_="VerifyDlg" Control="Text_4" Type="Text" X="110" Y="114" Width="145" Height="10" Attributes="65539" Property="ALWAYS_ON_TOP_LABEL" Text="[ALWAYS_ON_TOP_LABEL]" Order="1300"/>
+    <ROW Dialog_="VerifyDlg" Control="AlwaysOnTopLabel" Type="Text" X="110" Y="114" Width="145" Height="10" Attributes="65539" Property="ALWAYS_ON_TOP" Text="[ALWAYS_ON_TOP]" Order="1300"/>
     <ROW Dialog_="VerifyDlg" Control="Text_5" Type="Text" X="25" Y="139" Width="76" Height="13" Attributes="65539" Property="TEXT_3_PROP_1" Text="Launch on Startup : " Order="1400"/>
-    <ROW Dialog_="VerifyDlg" Control="Text_6" Type="Text" X="110" Y="139" Width="145" Height="10" Attributes="65539" Property="AUTO_START_LABEL" Text="[AUTO_START_LABEL]" Order="1500"/>
+    <ROW Dialog_="VerifyDlg" Control="AutoStartLabel" Type="Text" X="110" Y="139" Width="145" Height="10" Attributes="65539" Property="AUTO_START" Text="[AUTO_START]" Order="1500"/>
     <ROW Dialog_="VerifyDlg" Control="Text_7" Type="Text" X="25" Y="164" Width="76" Height="13" Attributes="65539" Property="TEXT_3_PROP_1_1" Text="Minimize on Close : " Order="1600"/>
-    <ROW Dialog_="VerifyDlg" Control="Text_8" Type="Text" X="110" Y="164" Width="145" Height="10" Attributes="65539" Property="MINIMIZE_ON_CLOSE_LABEL" Text="[MINIMIZE_ON_CLOSE_LABEL]" Order="1700"/>
+    <ROW Dialog_="VerifyDlg" Control="MinimizeOnCloseLabel" Type="Text" X="110" Y="164" Width="145" Height="10" Attributes="65539" Property="MINIMIZE_ON_CLOSE" Text="[MINIMIZE_ON_CLOSE]" Order="1700"/>
     <ROW Dialog_="VerifyDlg" Control="Text_9" Type="Text" X="25" Y="60" Width="321" Height="25" Attributes="65539" Property="TEXT_9_PROP" Text="You seem to have entered an invalid pod url. Please go back to the previous screen and rectify it." Order="1800"/>
     <ROW Dialog_="VerifyDlg" Control="Text_10" Type="Text" X="25" Y="189" Width="76" Height="21" Attributes="65539" Property="TEXT_3_PROP_1_1_1" Text="Bring to Front on Notifications : " Order="1900"/>
-    <ROW Dialog_="VerifyDlg" Control="Text_11" Type="Text" X="110" Y="194" Width="145" Height="10" Attributes="65539" Property="BRING_TO_FRONT_LABEL" Text="[BRING_TO_FRONT_LABEL]" Order="2000"/>
+    <ROW Dialog_="VerifyDlg" Control="BringToFrontLabel" Type="Text" X="110" Y="189" Width="145" Height="10" Attributes="65539" Property="BRING_TO_FRONT" Text="[BRING_TO_FRONT]" Order="2000"/>
     <ROW Dialog_="VerifyReadyDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="300" MsiKey="VerifyReadyDlg#BannerBitmap"/>
     <ROW Dialog_="VerifyReadyDlg" Control="Logo" Type="Text" X="5" Y="228" Width="39" Height="12" Attributes="1" Text="Symphony" Order="500" TextLocId="Control.Text.VerifyReadyDlg#Logo" MsiKey="VerifyReadyDlg#Logo"/>
     <ROW Dialog_="VerifyReadyDlg" Control="Text" Type="Text" X="25" Y="70" Width="320" Height="21" Attributes="196611" Text="Click &quot;Install&quot; to begin the installation.  If you want to review or change any of your installation settings, click &quot;Back&quot;.  Click &quot;Cancel&quot; to exit the wizard." Order="700" TextLocId="Control.Text.VerifyReadyDlg#Text" MsiKey="VerifyReadyDlg#Text"/>
@@ -468,16 +470,16 @@
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlConditionComponent">
     <ROW Dialog_="VerifyDlg" Control_="Next" Action="Disable" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
     <ROW Dialog_="VerifyDlg" Control_="Text_1" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
-    <ROW Dialog_="VerifyDlg" Control_="Text_2" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
+    <ROW Dialog_="VerifyDlg" Control_="PodUrlLabel" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
     <ROW Dialog_="VerifyDlg" Control_="Text_3" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
-    <ROW Dialog_="VerifyDlg" Control_="Text_4" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
+    <ROW Dialog_="VerifyDlg" Control_="AlwaysOnTopLabel" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
     <ROW Dialog_="VerifyDlg" Control_="Text_5" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
-    <ROW Dialog_="VerifyDlg" Control_="Text_6" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
+    <ROW Dialog_="VerifyDlg" Control_="AutoStartLabel" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
     <ROW Dialog_="VerifyDlg" Control_="Text_7" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
-    <ROW Dialog_="VerifyDlg" Control_="Text_8" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
+    <ROW Dialog_="VerifyDlg" Control_="MinimizeOnCloseLabel" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
     <ROW Dialog_="VerifyDlg" Control_="Text_9" Action="Hide" Condition="INVALID_POD_URL = &quot;valid&quot;"/>
     <ROW Dialog_="VerifyDlg" Control_="Text_10" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
-    <ROW Dialog_="VerifyDlg" Control_="Text_11" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
+    <ROW Dialog_="VerifyDlg" Control_="BringToFrontLabel" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
     <ATTRIBUTE name="DeletedRows" value="ExitDialog#ViewReadmeText#Hide#((NOT AI_INSTALL) AND (NOT AI_PATCH)) OR ((CTRLS &lt;&gt; 1) AND (CTRLS &lt;&gt; 3))"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlEventComponent">
@@ -501,7 +503,6 @@
     <ROW Dialog_="InstallTypeDlg" Control_="Next" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="101"/>
     <ROW Dialog_="FolderDlg" Control_="Next" Event="NewDialog" Argument="VerifyDlg" Condition="AI_INSTALL" Ordering="201"/>
     <ROW Dialog_="FolderDlg" Control_="Back" Event="NewDialog" Argument="InstallTypeDlg" Condition="AI_INSTALL" Ordering="1"/>
-    <ROW Dialog_="FolderDlg" Control_="Next" Event="DoAction" Argument="PodUrlValidation" Condition="AI_INSTALL" Ordering="215"/>
     <ROW Dialog_="SpawnWaitDialog" Control_="No" Event="EndDialog" Argument="Return" Condition="1" Ordering="100"/>
     <ROW Dialog_="SpawnWaitDialog" Control_="Yes" Event="EndDialog" Argument="Return" Condition="1" Ordering="100"/>
     <ROW Dialog_="VerifyDlg" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="100"/>
@@ -516,7 +517,7 @@
     <ROW Dialog_="VerifyDlg" Control_="TemplateDlgDialogInitializer" Event="[Text_Next]" Argument="[Text_Install]" Condition="AI_INSTALL" Ordering="3" Options="2"/>
     <ROW Dialog_="VerifyDlg" Control_="Back" Event="[ButtonText_Next]" Argument="[AI_ButtonText_Next_Orig]" Condition="AI_INSTALL" Ordering="2" Options="2"/>
     <ROW Dialog_="VerifyDlg" Control_="Back" Event="[Text_Next]" Argument="[AI_Text_Next_Orig]" Condition="AI_INSTALL" Ordering="3" Options="2"/>
-    <ROW Dialog_="VerifyDlg" Control_="Next" Event="DoAction" Argument="SetCheckboxValues" Condition="AI_INSTALL" Ordering="5"/>
+    <ROW Dialog_="FolderDlg" Control_="Next" Event="DoAction" Argument="PodUrlValidation" Condition="AI_INSTALL" Ordering="202"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCreateFolderComponent">
     <ROW Directory_="Symphony_Dir" Component_="Symphony" ManualDelete="false"/>
@@ -535,13 +536,16 @@
     <ROW Action="AI_SETMIXINSTLOCATION" Type="1" Source="aicustact.dll" Target="MixedAllUsersInstallLocation"/>
     <ROW Action="AI_SHOW_LOG" Type="65" Source="aicustact.dll" Target="LaunchLogFile" WithoutSeq="true"/>
     <ROW Action="AI_STORE_LOCATION" Type="51" Source="ARPINSTALLLOCATION" Target="[APPDIR]"/>
+    <ROW Action="AI_TxtUpdaterCommit" Type="11777" Source="TxtUpdater.dll" Target="OnTxtUpdaterCommit" WithoutSeq="true"/>
+    <ROW Action="AI_TxtUpdaterConfig" Type="11265" Source="TxtUpdater.dll" Target="OnTxtUpdaterConfig" WithoutSeq="true"/>
+    <ROW Action="AI_TxtUpdaterInstall" Type="1" Source="TxtUpdater.dll" Target="OnTxtUpdaterInstall"/>
+    <ROW Action="AI_TxtUpdaterRollback" Type="11521" Source="TxtUpdater.dll" Target="OnTxtUpdaterRollback" WithoutSeq="true"/>
     <ROW Action="KillParagon" Type="1" Source="aicustact.dll" Target="StopProcess" Options="1" AdditionalSeq="AI_DATA_SETTER_2"/>
     <ROW Action="KillRenderer" Type="1" Source="aicustact.dll" Target="StopProcess" Options="1" AdditionalSeq="AI_DATA_SETTER"/>
-    <ROW Action="PodUrlValidation" Type="37" Target="Script Text" TargetUnformatted="// First, check if the protocol is part of the url, if not, prepend it&#13;&#10;var prefix1 = &quot;https://&quot;;&#13;&#10;var prefix2 = &quot;http://&quot;;&#13;&#10;if (Session.Property(&quot;POD_URL&quot;).substr(0, prefix1.length) !== prefix1 &amp;&amp; Session.Property(&quot;POD_URL&quot;).substr(0, prefix2.length) !== prefix2) {&#13;&#10;    Session.Property(&quot;POD_URL&quot;) = prefix1 + Session.Property(&quot;POD_URL&quot;);&#13;&#10;}&#13;&#10;&#13;&#10;// Check if the entered pod url is valid&#13;&#10;var podUrlRE = /^(https:\/\/)(www.)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/[a-zA-Z0-9-_.+!*&apos;(),;/?:@=&amp;$]*)?$/;&#13;&#10;var podUrlTest = podUrlRE.test(Session.Property(&quot;POD_URL&quot;));&#13;&#10;if (!podUrlTest) {&#13;&#10;&#9;Session.Property(&quot;INVALID_POD_URL&quot;) = &quot;invalid&quot;;&#13;&#10;} else {&#13;&#10;&#9;Session.Property(&quot;INVALID_POD_URL&quot;) = &quot;valid&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// By default, we set all the values to false and change based on conditions&#13;&#10;Session.Property(&quot;ALWAYS_ON_TOP_LABEL&quot;) = &quot;false&quot;;            &#13;&#10;Session.Property(&quot;AUTO_START_LABEL&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;MINIMIZE_ON_CLOSE_LABEL&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;BRING_TO_FRONT_LABEL&quot;) = &quot;false&quot;;&#13;&#10;&#13;&#10;// If always on top is checked in the checkbox, set the label value to true&#13;&#10;if (Session.Property(&quot;ALWAYS_ON_TOP&quot;) &amp;&amp; Session.Property(&quot;ALWAYS_ON_TOP&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;ALWAYS_ON_TOP_LABEL&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// If launch on startup is checked in the checkbox, set the label value to true&#13;&#10;if (Session.Property(&quot;MINIMIZE_ON_CLOSE&quot;) &amp;&amp; Session.Property(&quot;MINIMIZE_ON_CLOSE&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;MINIMIZE_ON_CLOSE_LABEL&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// If minimise on close is checked in the checkbox, set the label value to true&#13;&#10;if (Session.Property(&quot;AUTO_START&quot;) &amp;&amp; Session.Property(&quot;AUTO_START&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;AUTO_START_LABEL&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// If bring to front is checked in the checkbox, set the label value to true&#13;&#10;if (Session.Property(&quot;BRING_TO_FRONT&quot;) &amp;&amp; Session.Property(&quot;BRING_TO_FRONT&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;BRING_TO_FRONT_LABEL&quot;) = &quot;true&quot;;&#13;&#10;}" WithoutSeq="true"/>
+    <ROW Action="PodUrlValidation" Type="37" Target="Script Text" TargetUnformatted="// First, check if the protocol is part of the url, if not, prepend it&#13;&#10;var prefix1 = &quot;https://&quot;;&#13;&#10;var prefix2 = &quot;http://&quot;;&#13;&#10;if (Session.Property(&quot;POD_URL&quot;).substr(0, prefix1.length) !== prefix1 &amp;&amp; Session.Property(&quot;POD_URL&quot;).substr(0, prefix2.length) !== prefix2) {&#13;&#10;    Session.Property(&quot;POD_URL&quot;) = prefix1 + Session.Property(&quot;POD_URL&quot;);&#13;&#10;}&#13;&#10;&#13;&#10;// Check if the entered pod url is valid&#13;&#10;var podUrlRE = /^(https:\/\/|http:\/\/)(www.)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/[a-zA-Z0-9-_.+!*&apos;(),;/?:@=&amp;$]*)?$/;&#13;&#10;var podUrlTest = podUrlRE.test(Session.Property(&quot;POD_URL&quot;));&#13;&#10;if (!podUrlTest) {&#13;&#10;&#9;Session.Property(&quot;INVALID_POD_URL&quot;) = &quot;invalid&quot;;&#13;&#10;} else {&#13;&#10;&#9;Session.Property(&quot;INVALID_POD_URL&quot;) = &quot;valid&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// By default, we set all the values to false and change based on conditions&#13;&#10;Session.Property(&quot;ALWAYS_ON_TOP&quot;) = &quot;false&quot;;            &#13;&#10;Session.Property(&quot;AUTO_START&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;MINIMIZE_ON_CLOSE&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;BRING_TO_FRONT&quot;) = &quot;false&quot;;&#13;&#10;&#13;&#10;// If always on top is checked in the checkbox, set the label value to true&#13;&#10;if (Session.Property(&quot;ALWAYS_ON_TOP_CB&quot;) &amp;&amp; Session.Property(&quot;ALWAYS_ON_TOP_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;ALWAYS_ON_TOP&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// If launch on startup is checked in the checkbox, set the label value to true&#13;&#10;if (Session.Property(&quot;MINIMIZE_ON_CLOSE_CB&quot;) &amp;&amp; Session.Property(&quot;MINIMIZE_ON_CLOSE_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;MINIMIZE_ON_CLOSE&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// If minimise on close is checked in the checkbox, set the label value to true&#13;&#10;if (Session.Property(&quot;AUTO_START_CB&quot;) &amp;&amp; Session.Property(&quot;AUTO_START_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;AUTO_START&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// If bring to front is checked in the checkbox, set the label value to true&#13;&#10;if (Session.Property(&quot;BRING_TO_FRONT_CB&quot;) &amp;&amp; Session.Property(&quot;BRING_TO_FRONT_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;BRING_TO_FRONT&quot;) = &quot;true&quot;;&#13;&#10;}" WithoutSeq="true"/>
     <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:[AI_UserProgramFiles][Manufacturer]\[ProductName]"/>
     <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
     <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
-    <ROW Action="SetCheckboxValues" Type="37" Target="Script Text" TargetUnformatted="// Pick the values from the selected checkboxes and set it against the session variables&#13;&#10;Session.Property(&quot;AUTO_START&quot;) = (Session.Property(&quot;AUTO_START&quot;) === &quot;true&quot; ? &quot;true&quot; : &quot;false&quot;);&#13;&#10;Session.Property(&quot;MINIMIZE_ON_CLOSE&quot;) = (Session.Property(&quot;MINIMIZE_ON_CLOSE&quot;) === &quot;true&quot; ? &quot;true&quot; : &quot;false&quot;);&#13;&#10;Session.Property(&quot;ALWAYS_ON_TOP&quot;) = (Session.Property(&quot;ALWAYS_ON_TOP&quot;) === &quot;true&quot; ? &quot;true&quot; : &quot;false&quot;);&#13;&#10;Session.Property(&quot;BRING_TO_FRONT&quot;) = (Session.Property(&quot;BRING_TO_FRONT&quot;) === &quot;true&quot; ? &quot;true&quot; : &quot;false&quot;);" WithoutSeq="true"/>
     <ROW Action="Symphony.exe" Type="1042" Source="Symphony.exe" Target="--install --peruser"/>
     <ROW Action="Symphony.exe_All_User" Type="1042" Source="Symphony.exe" Target="--install"/>
     <ROW Action="UninstallPreviousVersions" Type="1" Source="aicustact.dll" Target="UninstallPreviousVersions" Options="1"/>
@@ -563,17 +567,18 @@
     <ROW Action="AI_DATA_SETTER_2" Sequence="51"/>
     <ROW Action="KillRenderer" Sequence="55"/>
     <ROW Action="AI_DATA_SETTER" Sequence="54"/>
-    <ROW Action="AI_SETMIXINSTLOCATION" Sequence="749"/>
     <ROW Action="Symphony.exe" Condition="( NOT Installed ) AND ( MSIINSTALLPERUSER )" Sequence="5935"/>
     <ROW Action="Symphony.exe_All_User" Condition="( NOT Installed ) AND ( ALLUSERS )" Sequence="5936"/>
+    <ROW Action="AI_TxtUpdaterInstall" Sequence="5101"/>
+    <ROW Action="AI_SETMIXINSTLOCATION" Sequence="748"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
     <ROW Action="AI_ResolveKnownFolders" Sequence="52"/>
     <ROW Action="AI_DpiContentScale" Sequence="51"/>
     <ROW Action="ExecuteAction" Sequence="1299" SeqType="0" MsiKey="ExecuteAction"/>
-    <ROW Action="AI_SETMIXINSTLOCATION" Sequence="749"/>
     <ROW Action="InstallTypeDlg" Condition="AI_INSTALL" Sequence="1230" SeqType="3" MsiKey="WelcomeDlg"/>
     <ROW Action="UninstallPreviousVersions" Sequence="1281"/>
+    <ROW Action="AI_SETMIXINSTLOCATION" Sequence="748"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiLaunchConditionsComponent">
     <ROW Condition="( Version9X OR ( NOT VersionNT64 ) OR ( VersionNT64 AND ((VersionNT64 &lt;&gt; 502) OR (((VersionNT64 = 502) AND (ServicePackLevel &gt;= 1)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 502) OR (((VersionNT64 = 502) AND (ServicePackLevel &lt;&gt; 1)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 502) OR (((VersionNT64 = 502) AND (ServicePackLevel &lt;&gt; 2)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 502) OR ((VersionNT64 = 502) AND ((MsiNTProductType = 1) OR (ServicePackLevel &gt;= 1)))) AND ((VersionNT64 &lt;&gt; 502) OR ((VersionNT64 = 502) AND ((MsiNTProductType = 1) OR (ServicePackLevel &lt;&gt; 1)))) AND ((VersionNT64 &lt;&gt; 502) OR ((VersionNT64 = 502) AND ((MsiNTProductType = 1) OR (ServicePackLevel &lt;&gt; 2)))) AND ((VersionNT64 &lt;&gt; 600) OR (((VersionNT64 = 600) AND (ServicePackLevel &gt;= 1)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 600) OR (((VersionNT64 = 600) AND (ServicePackLevel &lt;&gt; 1)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 600) OR (((VersionNT64 = 600) AND (ServicePackLevel &lt;&gt; 2)) OR (MsiNTProductType &lt;&gt; 1))) ) )" Description="[ProductName] cannot be installed on the following Windows versions: [WindowsTypeNT64Display]" DescriptionLocId="AI.LaunchCondition.NoSpecificNT64" IsPredefined="true" Builds="DefaultBuild"/>
@@ -619,5 +624,15 @@
   <COMPONENT cid="caphyon.advinst.msicomp.MsiUpgradeComponent">
     <ROW UpgradeCode="[|UpgradeCode]" VersionMin="0.0.1" VersionMax="[|ProductVersion]" Attributes="257" ActionProperty="OLDPRODUCTS"/>
     <ROW UpgradeCode="[|UpgradeCode]" VersionMin="[|ProductVersion]" Attributes="2" ActionProperty="AI_NEWERPRODUCTFOUND"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.TxtUpdateComponent">
+    <ROW Name="Url" TxtUpdateSet="Symphony.config" FindPattern="&quot;url&quot;\s*:\s*&quot;.*&quot;" ReplacePattern="&quot;url&quot;: &quot;[POD_URL]&quot;" Options="19" Order="0" FileEncoding="-1"/>
+    <ROW Name="MinimizeOnClose" TxtUpdateSet="Symphony.config" FindPattern="&quot;minimizeOnClose&quot;\s*:\s*true," ReplacePattern="&quot;minimizeOnClose&quot; : [MINIMIZE_ON_CLOSE]," Options="19" Order="1" FileEncoding="-1"/>
+    <ROW Name="AlwaysOnTop" TxtUpdateSet="Symphony.config" FindPattern="&quot;alwaysOnTop&quot;\s*:\s*false" ReplacePattern="&quot;alwaysOnTop&quot; : [ALWAYS_ON_TOP]" Options="19" Order="2" FileEncoding="-1"/>
+    <ROW Name="LaunchOnStartup" TxtUpdateSet="Symphony.config" FindPattern="&quot;launchOnStartup&quot;\s*:\s*true," ReplacePattern="&quot;launchOnStartup&quot; : [AUTO_START]," Options="19" Order="3" FileEncoding="-1"/>
+    <ROW Name="BringToFront" TxtUpdateSet="Symphony.config" FindPattern="&quot;bringToFront&quot;\s*:\s*false," ReplacePattern="&quot;bringToFront&quot; : [BRING_TO_FRONT]," Options="19" Order="4" FileEncoding="-1"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.TxtUpdateSetComponent">
+    <ROW Key="Symphony.config" Component="am.pak" FileName="Symphony.config" Directory="config_Dir" Options="17"/>
   </COMPONENT>
 </DOCUMENT>
