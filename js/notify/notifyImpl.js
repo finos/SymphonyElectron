@@ -33,8 +33,10 @@ class Notify {
         let emitter = new EventEmitter();
         this.emitter = Queue(emitter);
 
-        // Replaces all html <> tags to entity name
-        let message = replaceHTMLTags(options.body);
+        // Replace strong html tags from the options.body
+        let message = replaceStrongTag(options.body);
+        // Replaces all html angle brackets w.r.t their entity name
+        message = replaceHTMLTags(message);
 
         this._id = notify({
             title: title,
@@ -252,6 +254,11 @@ function Queue(emitter) {
  * @return {void | string | *}
  */
 function replaceHTMLTags(string) {
+
+    if (typeof string !== 'string') {
+        return null;
+    }
+
     const tagsToReplace = {
         '<': '&lt;',
         '>': '&gt;'
@@ -262,6 +269,22 @@ function replaceHTMLTags(string) {
     }
 
     return string.replace(/[<>]/g, replaceTag);
+}
+
+/**
+ * Replace strong HTML tags from the string
+ *
+ * @param string
+ * @return {void | string | *}
+ */
+// TODO(KiranNiranjan): Can be removed after 2-3 sprints
+function replaceStrongTag(string) {
+
+    if (typeof string !== 'string') {
+        return null;
+    }
+
+    return string.replace(/(?:<strong>)|(?:<\/strong>)+/g, '');
 }
 
 
