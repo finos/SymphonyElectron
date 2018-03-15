@@ -164,6 +164,18 @@ function setStyleOnDomElement(styleObj, domElement) {
     }
 }
 
+window.addEventListener('keydown', handleKeyPress, true);
+window.addEventListener('keyup', handleKeyPress, true);
+
+/**
+ * Method the prevent key stroke on notification window
+ *
+ * @param e  keydown event
+ */
+function handleKeyPress(e) {
+    e.preventDefault();
+}
+
 /**
  * Loads the config
  * @param event

@@ -361,22 +361,24 @@ function showNotification(notificationObj) {
 
             // next check notfs being shown
             for(let i = 0; i < activeNotifications.length; i++) {
-                let existingNotfyObj = activeNotifications[ i ].notfyObj;
-                if (existingNotfyObj && tag === existingNotfyObj.tag) {
-                    let notificationWindow = activeNotifications[ i ];
+                if (activeNotifications[ i ] && !activeNotifications[ i ].isDestroyed()) {
+                    let existingNotfyObj = activeNotifications[ i ].notfyObj;
+                    if (existingNotfyObj && tag === existingNotfyObj.tag) {
+                        let notificationWindow = activeNotifications[ i ];
 
-                    // be sure to call close event for existing, so it gets
-                    // cleaned up.
-                    if (notificationWindow.electronNotifyOnCloseFunc) {
-                        notificationWindow.electronNotifyOnCloseFunc({
-                            event: 'close',
-                            id: existingNotfyObj.id
-                        });
-                        delete notificationWindow.electronNotifyOnCloseFunc;
+                        // be sure to call close event for existing, so it gets
+                        // cleaned up.
+                        if (notificationWindow.electronNotifyOnCloseFunc) {
+                            notificationWindow.electronNotifyOnCloseFunc({
+                                event: 'close',
+                                id: existingNotfyObj.id
+                            });
+                            delete notificationWindow.electronNotifyOnCloseFunc;
+                        }
+                        setNotificationContents(notificationWindow, notificationObj);
+                        resolve();
+                        return;
                     }
-                    setNotificationContents(notificationWindow, notificationObj);
-                    resolve();
-                    return;
                 }
             }
         }
@@ -698,7 +700,9 @@ function getWindow() {
                 // Done
                 notificationWindow.webContents.send('electron-notify-load-config', config);
                 resolve(notificationWindow)
-            })
+            });
+
+            notificationWindow.once('closed', cleanUpActiveNotification);
         }
     })
 }
@@ -708,12 +712,29 @@ function getWindow() {
  */
 setInterval(cleanUpInactiveWindow, 60000);
 
+function cleanUpActiveNotification(event) {
+
+    if (!event || !event.sender) {
+        return null;
+    }
+
+    let pos = activeNotifications.indexOf(event.sender);
+    if (pos !== -1) {
+        activeNotifications.splice(pos, 1);
+        return moveOneDown(pos);
+    }
+
+    return null;
+}
+
 /**
  * Cleans up inactive windows
  */
 function cleanUpInactiveWindow() {
     inactiveWindows.forEach(function(window) {
-        window.close();
+        if (!window.isDestroyed()) {
+            window.close();
+        }
     });
     inactiveWindows = [];
 }
@@ -729,7 +750,9 @@ function closeAll() {
         if (window.displayTimer) {
             clearTimeout(window.displayTimer);
         }
-        window.close();
+        if (!window.isDestroyed()) {
+            window.close();
+        }
     });
 
     cleanUpInactiveWindow();
