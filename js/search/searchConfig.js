@@ -33,6 +33,8 @@ const launchAgentFile = path.join(libraryFolderPath, 'search-launch-agent.sh');
 const launchDaemonFile = path.join(libraryFolderPath, 'search-launch-daemon.sh');
 const windowsTaskFile = path.join(pathToUtils, isDevEnv ? 'ClearSchTasks/bin/Release/ClearSchTasks.exe' : 'ClearSchTasks.exe');
 const windowsClearScript = path.join(pathToUtils, isDevEnv ? 'ClearOnBoot/bin/Release/ClearOnBoot.exe' : 'ClearOnBoot.exe');
+const freeDiskSpace = path.join(pathToUtils, isDevEnv ? 'FreeDiskSpace/bin/Release/FreeDiskSpace.exe' : 'FreeDiskSpace.exe');
+
 
 const libraryPaths = {
     INDEX_VALIDATOR: indexValidatorPath,
@@ -45,6 +47,7 @@ const libraryPaths = {
     LAUNCH_DAEMON_FILE: launchDaemonFile,
     WINDOWS_TASK_FILE: windowsTaskFile,
     WINDOWS_CLEAR_SCRIPT: windowsClearScript,
+    FREE_DISK_SPACE: freeDiskSpace,
 };
 
 const folderPaths = {
@@ -70,6 +73,8 @@ const searchConfig = {
     LIBRARY_CONSTANTS: libraryPaths,
     FOLDERS_CONSTANTS: folderPaths,
     TAR_LZ4_EXT: '.tar.lz4',
+    DISK_NOT_READY: 'NOT_READY',
+    DISK_NOT_FOUND: 'DISK_NOT_FOUND',
     RANDOM_STRING: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
     MINIMUM_DISK_SPACE: 300000000, // in bytes
     PERMISSION_ERROR: "The FSUTIL utility requires that you have administrative privileges.",

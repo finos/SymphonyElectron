@@ -1,6 +1,8 @@
 const { exec } = require('child_process');
 const { isMac } = require('../../utils/misc');
 const searchConfig = require('../searchConfig.js');
+const log = require('../../log.js');
+const logLevels = require('../../enums/logLevels.js');
 
 function checkDiskSpace(path, resolve, reject) {
     if (!path) {
@@ -25,25 +27,25 @@ function checkDiskSpace(path, resolve, reject) {
             return resolve(space >= searchConfig.MINIMUM_DISK_SPACE);
         });
     } else {
-        exec(`fsutil volume diskfree ${path}`, (error, stdout) => {
-            if (error) {
-                if (stdout.indexOf(searchConfig.WIN_PATH_ERROR) !== -1) {
-                    return reject(new Error(`${searchConfig.WIN_PATH_ERROR} ${error}`));
-                }
-                if (stdout.indexOf(searchConfig.PERMISSION_ERROR) !== -1) {
-                    // this is temporary until we use the custom exe file.
-                    return resolve(true);
-                }
-                return reject(new Error("Error : " + error));
-            }
-            if (stdout.indexOf(searchConfig.PERMISSION_ERROR) !== -1) {
-                // this is temporary until we use the custom exe file.
-                return resolve(true);
-            }
-            let data = stdout.trim().split("\n");
+        exec(`"${searchConfig.LIBRARY_CONSTANTS.FREE_DISK_SPACE}" ${path}`, (error, stdout, stderr) => {
 
-            let disk_info_str = data[data.length - 1].split(':');
-            return resolve(disk_info_str[1] >= searchConfig.MINIMUM_DISK_SPACE);
+            if (error) {
+                log.send(logLevels.ERROR, `Error retrieving free disk space : ${error}`);
+                log.send(logLevels.ERROR, `Error stderr: ${stderr}`);
+            }
+
+            let data = stdout.trim().split(",");
+
+            if (data[ 1 ] === searchConfig.DISK_NOT_READY) {
+                return reject(new Error("Error : Disk not ready"));
+            }
+
+            if (data[ 1 ] === searchConfig.DISK_NOT_FOUND) {
+                return reject(new Error("Error : Disk not found"));
+            }
+
+            let disk_info_str = data[ 0 ];
+            return resolve(disk_info_str >= searchConfig.MINIMUM_DISK_SPACE);
         });
     }
 }
