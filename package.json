@@ -44,7 +44,9 @@
       "config/Symphony.config",
       "library/libsymphonysearch.dylib",
       "library/indexvalidator.exec",
-      "library/lz4.exec"
+      "library/lz4.exec",
+      "library/search-launch-agent.sh",
+      "library/search-launch-daemon.sh"
     ],
     "appId": "symphony-electron-desktop",
     "mac": {
@@ -124,6 +126,7 @@
     "winreg": "1.2.4"
   },
   "optionalDependencies": {
-    "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.1"
+    "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.1",
+    "electron-utils": "git+https://github.com/symphonyoss/electron-utils.git#v1.0.5"
   }
 }
