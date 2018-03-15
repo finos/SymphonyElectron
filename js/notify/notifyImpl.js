@@ -33,9 +33,14 @@ class Notify {
         let emitter = new EventEmitter();
         this.emitter = Queue(emitter);
 
+        // Replace strong html tags from the options.body
+        let message = replaceStrongTag(options.body);
+        // Replaces all html angle brackets w.r.t their entity name
+        message = replaceHTMLTags(message);
+
         this._id = notify({
             title: title,
-            text: options.body,
+            text: message || '',
             image: options.image || options.icon,
             flash: options.flash,
             color: options.color,
@@ -239,6 +244,46 @@ function Queue(emitter) {
     };
 
     return modifiedEmitter;
+}
+
+/**
+ * Replace HTML tags <> from messages test to prevent
+ * HTML injection
+ *
+ * @param message {String}    main text to display in notifications
+ * @return {void | string | *}
+ */
+function replaceHTMLTags(message) {
+
+    if (typeof message !== 'string') {
+        return null;
+    }
+
+    const tagsToReplace = {
+        '<': '&lt;',
+        '>': '&gt;'
+    };
+
+    function replaceTag(tag) {
+        return tagsToReplace[tag] || tag;
+    }
+
+    return message.replace(/[<>]/g, replaceTag);
+}
+
+/**
+ * Replace strong HTML tags from the string
+ *
+ * @param message {String}    main text to display in notifications
+ * @return {void | string | *}
+ */
+function replaceStrongTag(message) {
+
+    if (typeof message !== 'string') {
+        return null;
+    }
+
+    return message.replace(/(?:<strong>)|(?:<\/strong>)+/g, '');
 }
 
 module.exports = Notify;
