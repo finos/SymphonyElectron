@@ -20,7 +20,7 @@ const notify = require('./notify/electron-notify.js');
 const eventEmitter = require('./eventEmitter');
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField, getGlobalConfigField } = require('./config.js');
-const { isMac, isNodeEnv, isWindows10 } = require('./utils/misc');
+const { isMac, isNodeEnv, isWindows10, isWindowsOS } = require('./utils/misc');
 const { deleteIndexFolder } = require('./search/search.js');
 const { isWhitelisted } = require('./utils/whitelistHandler');
 
@@ -603,23 +603,35 @@ function setIsOnline(status) {
 /**
  * Tries finding a window we have created with given name.  If found, then
  * brings to front and gives focus.
- * @param  {String} windowName Name of target window. Note: main window has
+ * @param  {String} windowName   Name of target window. Note: main window has
  * name 'main'.
+ * @param {Boolean} shouldFocus  whether to get window to focus or just show
+ * without giving focus
  */
-function activate(windowName) {
+function activate(windowName, shouldFocus = true) {
     let keys = Object.keys(windows);
     for (let i = 0, len = keys.length; i < len; i++) {
         let window = windows[keys[i]];
         if (window && !window.isDestroyed() && window.winName === windowName) {
-            if (window.isMinimized()) {
-                window.restore();
-                window.focus();
-            } else {
-                window.show();
+
+            // Flash task bar icon in Windows
+            if (isWindowsOS && !shouldFocus) {
+                return window.flashFrame(true);
             }
-            return;
+
+            // brings window without giving focus on mac
+            if (isMac && !shouldFocus) {
+                return window.showInactive();
+            }
+
+            if (window.isMinimized()) {
+                return window.restore();
+            }
+
+            return window.show();
         }
     }
+    return null;
 }
 
 /**

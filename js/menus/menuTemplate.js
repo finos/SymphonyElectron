@@ -266,7 +266,7 @@ function getTemplate(app) {
 
     // Window menu -> bringToFront
     template[index].submenu.push({
-        label: 'Bring to Front on Notifications',
+        label: isWindowsOS ? 'Flash Notification in Taskbar' : 'Bring to Front on Notifications',
         type: 'checkbox',
         checked: bringToFront,
         click: function(item) {
