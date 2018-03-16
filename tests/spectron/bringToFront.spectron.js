@@ -1,7 +1,15 @@
 const Application = require('./spectronSetup');
-const constants = require('./spectronConstants');
+const bluebird = require('bluebird');
+const { isMac, isWindowsOS } = require('../../js/utils/misc');
+const robot = require('robotjs');
 
 let app = new Application({});
+
+function blurBrowserWindow() {
+    robot.setMouseDelay(200);
+    robot.moveMouse(0, 100);
+    robot.mouseClick();
+}
 
 describe('Tests for Bring to front', () => {
 
@@ -28,7 +36,7 @@ describe('Tests for Bring to front', () => {
         }
     });
 
-    it('should launch the app', (done) => {
+    it('should launch the app and verify window count', (done) => {
         return app.client.waitUntilWindowLoaded().then(() => {
             return app.client.getWindowCount().then((count) => {
                 expect(count === 1).toBeTruthy();
@@ -41,7 +49,7 @@ describe('Tests for Bring to front', () => {
         });
     });
 
-    it('should minimize the app', (done) => {
+    it('should minimize the app and verify if the window isMinimized', (done) => {
         return app.browserWindow.minimize().then(() => {
             return app.browserWindow.isMinimized().then((isMinimized) => {
                 expect(isMinimized).toBeTruthy();
@@ -49,39 +57,61 @@ describe('Tests for Bring to front', () => {
             }).catch((err) => {
                 done.fail(new Error(`bringToFront failed in isMinimized with error: ${err}`));
             });
-        }).catch((err) => {
-            done.fail(new Error(`bringToFront failed in minimize with error: ${err}`));
         });
     });
 
-    it('should not be focused', (done) => {
-        return app.browserWindow.isFocused().then((isFocused) => {
-            expect(isFocused).toBeFalsy();
+    it('should restore the browser window and verify window focus', (done) => {
+        bluebird.all([
+            blurBrowserWindow,
+            app.browserWindow.restore,
+            app.browserWindow.isMinimized,
+            app.browserWindow.isFocused,
+        ]).mapSeries((method) => {
+            return method();
+        }).then((results) => {
+            if (isMac) {
+                expect(results[2]).toBe(false);
+                expect(results[3]).toBe(false);
+            }
+
+            if (isWindowsOS) {
+                expect(results[2]).toBe(false);
+                expect(results[3]).toBe(true);
+            }
             done();
         }).catch((err) => {
-            done.fail(new Error(`bringToFront failed in isFocused with error: ${err}`));
+            done.fail(new Error(`bringToFront failed to restore with error: ${err}`));
         });
     });
 
-    it('should maximize browser window', (done) => {
-        return app.browserWindow.restore().then(() => {
+    it('should minimize and verify if the window isMinimized again', function () {
+        return app.browserWindow.minimize().then(() => {
             return app.browserWindow.isMinimized().then((isMinimized) => {
-                expect(isMinimized).toBeFalsy();
-                done();
+                expect(isMinimized).toBeTruthy();
             }).catch((err) => {
-                done.fail(new Error(`bringToFront failed in isMinimized with error: ${err}`));
+                done.fail(new Error(`bringToFront failed to minimize with error: ${err}`));
             });
-        }).catch((err) => {
-            done.fail(new Error(`bringToFront failed in restore with error: ${err}`));
         });
     });
 
-    it('should be focused', (done) => {
-        return app.browserWindow.isFocused().then((isFocused) => {
-            expect(isFocused).toBeTruthy();
+    it('should show the browser window and verify window focus', (done) => {
+        bluebird.all([
+            blurBrowserWindow,
+            app.browserWindow.showInactive,
+            app.browserWindow.isFocused
+        ]).mapSeries((method) => {
+            return method();
+        }).then((results) => {
+            if (isMac) {
+                expect(results[2]).toBe(false);
+            }
+
+            if (isWindowsOS) {
+                expect(results[2]).toBe(true);
+            }
             done();
         }).catch((err) => {
-            done.fail(new Error(`bringToFront failed in isFocused with error: ${err}`));
+            done.fail(new Error(`bringToFront failed to focus with error: ${err}`));
         });
     });
 

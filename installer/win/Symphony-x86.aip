@@ -375,7 +375,7 @@
     <ROW Dialog_="FolderDlg" Control="LaunchOnStartupCheckBox" Type="CheckBox" X="172" Y="174" Width="98" Height="13" Attributes="3" Property="AUTO_START_CB" Text="Launch On Startup" Order="1600"/>
     <ROW Dialog_="FolderDlg" Control="AlwaysOnTopCheckBox" Type="CheckBox" X="20" Y="174" Width="98" Height="13" Attributes="3" Property="ALWAYS_ON_TOP_CB" Text="Always On Top" Order="1700"/>
     <ROW Dialog_="FolderDlg" Control="Edit_1" Type="Edit" X="360" Y="143" Width="2" Height="9" Attributes="2" Property="INVALID_POD_URL" Text="{260}" Order="1800"/>
-    <ROW Dialog_="FolderDlg" Control="BringToFrontCheckBox" Type="CheckBox" X="172" Y="199" Width="132" Height="13" Attributes="3" Property="BRING_TO_FRONT_CB" Text="Bring to Front on Notifications" Order="1900"/>
+    <ROW Dialog_="FolderDlg" Control="BringToFrontCheckBox" Type="CheckBox" X="172" Y="199" Width="132" Height="13" Attributes="3" Property="BRING_TO_FRONT_CB" Text="Flash Notification in Taskbar" Order="1900"/>
     <ROW Dialog_="InstallTypeDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048576" Text="[DialogBitmap]" Order="100" MsiKey="InstallTypeDlg#BannerBitmap"/>
     <ROW Dialog_="InstallTypeDlg" Control="Bitmap_background" Type="Bitmap" X="0" Y="0" Width="370" Height="234" Attributes="1" Text="[DialogBitmap]" Order="200"/>
     <ROW Dialog_="InstallTypeDlg" Control="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Next]" Order="300" TextLocId="-" MsiKey="InstallTypeDlg#Next" Options="1"/>
@@ -450,7 +450,7 @@
     <ROW Dialog_="VerifyDlg" Control="Text_7" Type="Text" X="25" Y="164" Width="76" Height="13" Attributes="65539" Property="TEXT_3_PROP_1_1" Text="Minimize on Close : " Order="1600"/>
     <ROW Dialog_="VerifyDlg" Control="MinimizeOnCloseLabel" Type="Text" X="110" Y="164" Width="145" Height="10" Attributes="65539" Property="MINIMIZE_ON_CLOSE" Text="[MINIMIZE_ON_CLOSE]" Order="1700"/>
     <ROW Dialog_="VerifyDlg" Control="Text_9" Type="Text" X="25" Y="60" Width="321" Height="25" Attributes="65539" Property="TEXT_9_PROP" Text="You seem to have entered an invalid pod url. Please go back to the previous screen and rectify it." Order="1800"/>
-    <ROW Dialog_="VerifyDlg" Control="Text_10" Type="Text" X="25" Y="189" Width="76" Height="21" Attributes="65539" Property="TEXT_3_PROP_1_1_1" Text="Bring to Front on Notifications : " Order="1900"/>
+    <ROW Dialog_="VerifyDlg" Control="Text_10" Type="Text" X="25" Y="189" Width="76" Height="21" Attributes="65539" Property="TEXT_3_PROP_1_1_1" Text="Flash Notification in Taskbar :" Order="1900"/>
     <ROW Dialog_="VerifyDlg" Control="BringToFrontLabel" Type="Text" X="110" Y="189" Width="145" Height="10" Attributes="65539" Property="BRING_TO_FRONT" Text="[BRING_TO_FRONT]" Order="2000"/>
     <ROW Dialog_="VerifyReadyDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="300" MsiKey="VerifyReadyDlg#BannerBitmap"/>
     <ROW Dialog_="VerifyReadyDlg" Control="Logo" Type="Text" X="5" Y="228" Width="39" Height="12" Attributes="1" Text="Symphony" Order="500" TextLocId="Control.Text.VerifyReadyDlg#Logo" MsiKey="VerifyReadyDlg#Logo"/>

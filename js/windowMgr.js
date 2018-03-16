@@ -20,7 +20,7 @@ const notify = require('./notify/electron-notify.js');
 const eventEmitter = require('./eventEmitter');
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField, getGlobalConfigField } = require('./config.js');
-const { isMac, isNodeEnv, isWindows10 } = require('./utils/misc');
+const { isMac, isNodeEnv, isWindows10, isWindowsOS } = require('./utils/misc');
 const { deleteIndexFolder } = require('./search/search.js');
 const { isWhitelisted } = require('./utils/whitelistHandler');
 
@@ -613,16 +613,25 @@ function activate(windowName, shouldFocus = true) {
     for (let i = 0, len = keys.length; i < len; i++) {
         let window = windows[keys[i]];
         if (window && !window.isDestroyed() && window.winName === windowName) {
-            if (window.isMinimized()) {
-                window.restore();
-            } else if (!shouldFocus) {
-                window.showInactive();
-            } else {
-                window.show();
+
+            // Flash task bar icon in Windows
+            if (isWindowsOS && !shouldFocus) {
+                return window.flashFrame(true);
             }
-            return;
+
+            // brings window without giving focus on mac
+            if (isMac && !shouldFocus) {
+                return window.showInactive();
+            }
+
+            if (window.isMinimized()) {
+                return window.restore();
+            }
+
+            return window.show();
         }
     }
+    return null;
 }
 
 /**
