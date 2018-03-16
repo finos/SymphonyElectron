@@ -768,4 +768,3 @@ function closeAll() {
 module.exports.notify = notify;
 module.exports.updateConfig = updateConfig;
 module.exports.reset = setupConfig;
-module.exports.closeAll = closeAll;
