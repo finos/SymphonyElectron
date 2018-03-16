@@ -746,7 +746,9 @@ function closeAll() {
     // Clear out animation Queue and close windows
     animationQueue.clear();
 
-    activeNotifications.forEach(function(window) {
+    let notificationWindows = Array.from(activeNotifications);
+
+    notificationWindows.forEach((window) => {
         if (window.displayTimer) {
             clearTimeout(window.displayTimer);
         }
@@ -766,3 +768,4 @@ function closeAll() {
 module.exports.notify = notify;
 module.exports.updateConfig = updateConfig;
 module.exports.reset = setupConfig;
+module.exports.closeAll = closeAll;
