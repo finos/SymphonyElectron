@@ -26,12 +26,28 @@ const libraryPath = isMac ? path.join(macLibraryPath, 'libsymphonysearch.dylib')
 const userConfigFileName = 'search_users_config.json';
 const userConfigFile = isDevEnv ? path.join(__dirname, '..', '..', userConfigFileName) : path.join(userData, userConfigFileName);
 
+const libraryFolderPath = isMac ? macLibraryPath : winLibraryPath;
+
+const pathToUtils = isDevEnv ? path.join(__dirname, '../../node_modules/electron-utils') : winLibraryPath;
+const launchAgentFile = path.join(libraryFolderPath, 'search-launch-agent.sh');
+const launchDaemonFile = path.join(libraryFolderPath, 'search-launch-daemon.sh');
+const windowsTaskFile = path.join(pathToUtils, isDevEnv ? 'ClearSchTasks/bin/Release/ClearSchTasks.exe' : 'ClearSchTasks.exe');
+const windowsClearScript = path.join(pathToUtils, isDevEnv ? 'ClearOnBoot/bin/Release/ClearOnBoot.exe' : 'ClearOnBoot.exe');
+const freeDiskSpace = path.join(pathToUtils, isDevEnv ? 'FreeDiskSpace/bin/Release/FreeDiskSpace.exe' : 'FreeDiskSpace.exe');
+
+
 const libraryPaths = {
     INDEX_VALIDATOR: indexValidatorPath,
     LZ4_PATH: lz4Path,
     MAC_LIBRARY_FOLDER: macLibraryPath,
     WIN_LIBRARY_FOLDER: winLibraryPath,
-    SEARCH_LIBRARY_PATH: libraryPath
+    SEARCH_LIBRARY_PATH: libraryPath,
+    LIBRARY_FOLDER_PATH: libraryFolderPath,
+    LAUNCH_AGENT_FILE: launchAgentFile,
+    LAUNCH_DAEMON_FILE: launchDaemonFile,
+    WINDOWS_TASK_FILE: windowsTaskFile,
+    WINDOWS_CLEAR_SCRIPT: windowsClearScript,
+    FREE_DISK_SPACE: freeDiskSpace,
 };
 
 const folderPaths = {
@@ -57,6 +73,8 @@ const searchConfig = {
     LIBRARY_CONSTANTS: libraryPaths,
     FOLDERS_CONSTANTS: folderPaths,
     TAR_LZ4_EXT: '.tar.lz4',
+    DISK_NOT_READY: 'NOT_READY',
+    DISK_NOT_FOUND: 'DISK_NOT_FOUND',
     RANDOM_STRING: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
     MINIMUM_DISK_SPACE: 300000000, // in bytes
     PERMISSION_ERROR: "The FSUTIL utility requires that you have administrative privileges.",

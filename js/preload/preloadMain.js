@@ -18,6 +18,10 @@ const apiEnums = require('../enums/api.js');
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 const getMediaSources = require('../desktopCapturer/getSources');
+const getMediaSource = require('../desktopCapturer/getSource');
+const { TitleBar, updateContentHeight } = require('../windowsTitlebar');
+const titleBar = new TitleBar();
+const { buildNumber } = require('../../package.json');
 
 require('../downloadManager');
 
@@ -87,6 +91,7 @@ function createAPI() {
                 const verInfo = {
                     containerIdentifier: appName,
                     containerVer: appVer,
+                    buildNumber: buildNumber,
                     apiVer: '1.0.0'
                 };
                 resolve(verInfo);
@@ -260,8 +265,21 @@ function createAPI() {
          * a sandboxed renderer process.
          * see: https://electron.atom.io/docs/api/desktop-capturer/
          * for interface: see documentation in desktopCapturer/getSources.js
+         *
+         * @deprecated instead use getMediaSource
          */
         getMediaSources: getMediaSources,
+
+        /**
+         * Implements equivalent of desktopCapturer.getSources - that works in
+         * a sandboxed renderer process.
+         * see: https://electron.atom.io/docs/api/desktop-capturer/
+         * for interface: see documentation in desktopCapturer/getSource.js
+         *
+         * This opens a window and displays all the desktop sources
+         * and returns selected source
+         */
+        getMediaSource: getMediaSource,
 
         /**
          * Opens a modal window to configure notification preference.
@@ -371,6 +389,12 @@ function createAPI() {
         if (arg) {            
             crashReporter.start({companyName: arg.companyName, submitURL: arg.submitURL, uploadToServer: arg.uploadToServer, extra: {'process': arg.process, podUrl: arg.podUrl}});
         }
+    });
+
+    // Adds custom title bar style for Windows 10 OS
+    local.ipcRenderer.on('initiate-windows-title-bar', () => {
+        titleBar.initiateWindowsTitleBar();
+        updateContentHeight();
     });
 
     function updateOnlineStatus() {

@@ -1,11 +1,23 @@
 <html>
 <head>
+    <meta charset="UTF-8">
+    <title>Test pop-out window</title>
 </head>
 Test Window has been opened
 <p>
     <label for='tag'>tag:</label>
     <input type='text' id='tag' value=''/>
 </p>
+
+<button id="open-win">Open a new child window</button>
+<br>
+<br>
+
+<button id="open-in-browser">Open Symphony in browser</button>
+<br>
+<br>
+
+<a href="https://symphony.com" target="_blank">Open Symphony</a>
 
 <hr>
 <p>Badge Count:<p>
@@ -20,5 +32,16 @@ Test Window has been opened
             badgeCount++;
             ssf.setBadgeCount(badgeCount);
         });
+
+        var openWinButton = document.getElementById('open-win');
+        openWinButton.addEventListener('click', function() {
+            win = window.open('childWin.html?x=200&y=200', 'childWin', 'height=500,width=500');
+        });
+
+        var openInBrowser = document.getElementById('open-in-browser');
+        openInBrowser.addEventListener('click', function () {
+            window.open('https://symphony.com');
+        });
+
     </script>
 </html>

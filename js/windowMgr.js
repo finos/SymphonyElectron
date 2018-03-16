@@ -19,8 +19,8 @@ const logLevels = require('./enums/logLevels.js');
 const notify = require('./notify/electron-notify.js');
 const eventEmitter = require('./eventEmitter');
 const throttle = require('./utils/throttle.js');
-const { getConfigField, updateConfigField } = require('./config.js');
-const { isMac, isNodeEnv } = require('./utils/misc');
+const { getConfigField, updateConfigField, getGlobalConfigField } = require('./config.js');
+const { isMac, isNodeEnv, isWindows10 } = require('./utils/misc');
 const { deleteIndexFolder } = require('./search/search.js');
 const { isWhitelisted } = require('./utils/whitelistHandler');
 
@@ -43,6 +43,9 @@ let sandboxed = false;
 // By default, we set the user's default download directory
 let defaultDownloadsDirectory = app.getPath("downloads");
 let downloadsDirectory = defaultDownloadsDirectory;
+
+// Application menu
+let menu;
 
 // note: this file is built using browserify in prebuild step.
 const preloadMainScript = path.join(__dirname, 'preload/_preloadMain.js');
@@ -85,25 +88,28 @@ function getParsedUrl(url) {
  * @param initialUrl
  */
 function createMainWindow(initialUrl) {
-    getConfigField('mainWinPos').then(
-        function (bounds) {
-            doCreateMainWindow(initialUrl, bounds);
-        },
-        function () {
-            // failed, use default bounds
-            doCreateMainWindow(initialUrl, null);
-        }
-    );
+    Promise.all([
+        getConfigField('mainWinPos'),
+        getGlobalConfigField('isCustomTitleBar')
+    ]).then((values) => {
+        doCreateMainWindow(initialUrl, values[ 0 ], values[ 1 ]);
+    }).catch(() => {
+        // failed use default bounds and frame
+        doCreateMainWindow(initialUrl, null, false);
+    });
 }
 
 /**
  * Creates the main window with bounds
  * @param initialUrl
  * @param initialBounds
+ * @param isCustomTitleBar {Boolean} - Global config value weather to enable custom title bar
  */
-function doCreateMainWindow(initialUrl, initialBounds) {
+function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     let url = initialUrl;
     let key = getGuid();
+    // condition whether to enable custom Windows 10 title bar
+    const isCustomTitleBarEnabled = typeof isCustomTitleBar === 'boolean' && isCustomTitleBar && isWindows10();
 
     log.send(logLevels.INFO, 'creating main window url: ' + url);
 
@@ -112,6 +118,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         show: true,
         minWidth: MIN_WIDTH,
         minHeight: MIN_HEIGHT,
+        frame: !isCustomTitleBarEnabled,
         alwaysOnTop: false,
         webPreferences: {
             sandbox: sandboxed,
@@ -174,6 +181,11 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     // we might not have network connectivity, so warn the user.
     mainWindow.webContents.on('did-finish-load', function () {
         url = mainWindow.webContents.getURL();
+        if (isCustomTitleBarEnabled) {
+            mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/windowsTitleBar/style.css'), 'utf8').toString());
+            // This is required to initiate Windows title bar only after insertCSS
+            mainWindow.webContents.send('initiate-windows-title-bar');
+        }
 
         if (!isOnline) {
             loadErrors.showNetworkConnectivityError(mainWindow, url, retry);
@@ -215,8 +227,12 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     addWindowKey(key, mainWindow);
     mainWindow.loadURL(url);
 
-    const menu = electron.Menu.buildFromTemplate(getTemplate(app));
-    electron.Menu.setApplicationMenu(menu);
+    menu = electron.Menu.buildFromTemplate(getTemplate(app));
+    if (isWindows10()) {
+        mainWindow.setMenu(menu);
+    } else {
+        electron.Menu.setApplicationMenu(menu);
+    }
 
     mainWindow.on('close', function (e) {
         if (willQuitApp) {
@@ -309,8 +325,9 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     }
 
     // open external links in default browser - a tag with href='_blank' or window.open
-    mainWindow.webContents.on('new-window', function (event, newWinUrl,
-        frameName, disposition, newWinOptions) {
+    mainWindow.webContents.on('new-window', handleNewWindow);
+
+    function handleNewWindow(event, newWinUrl, frameName, disposition, newWinOptions) {
 
         let newWinParsedUrl = getParsedUrl(newWinUrl);
         let mainWinParsedUrl = getParsedUrl(url);
@@ -371,6 +388,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             newWinOptions.minWidth = MIN_WIDTH;
             newWinOptions.minHeight = MIN_HEIGHT;
             newWinOptions.alwaysOnTop = alwaysOnTop;
+            newWinOptions.frame = true;
 
             let newWinKey = getGuid();
 
@@ -419,7 +437,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                     });
 
                     browserWin.on('close', () => {
-                        browserWin.webContents.removeListener('new-window', handleChildNewWindowEvent);
+                        browserWin.webContents.removeListener('new-window', handleNewWindow);
                         browserWin.webContents.removeListener('crashed', handleChildWindowCrashEvent);
                     });
 
@@ -443,15 +461,10 @@ function doCreateMainWindow(initialUrl, initialBounds) {
 
                     browserWin.webContents.on('crashed', handleChildWindowCrashEvent);
 
-                    let handleChildNewWindowEvent = (childEvent, childWinUrl) => {
-                        childEvent.preventDefault();
-                        openUrlInDefaultBrowser(childWinUrl);
-                    };
-
                     // In case we navigate to an external link from inside a pop-out,
                     // we open that link in an external browser rather than creating
                     // a new window
-                    browserWin.webContents.on('new-window', handleChildNewWindowEvent);
+                    browserWin.webContents.on('new-window', handleNewWindow.bind(this));
 
                     addWindowKey(newWinKey, browserWin);
 
@@ -471,7 +484,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             event.preventDefault();
             openUrlInDefaultBrowser(newWinUrl);
         }
-    });
+    }
 
     // whenever the main window is navigated for ex: window.location.href or url redirect
     mainWindow.webContents.on('will-navigate', function (event, navigatedURL) {
@@ -514,6 +527,14 @@ function saveMainWinBounds() {
  */
 function getMainWindow() {
     return mainWindow;
+}
+
+/**
+ * Gets the application menu
+ * @returns {*}
+ */
+function getMenu() {
+    return menu;
 }
 
 /**
@@ -842,5 +863,6 @@ module.exports = {
     setIsOnline: setIsOnline,
     activate: activate,
     setBoundsChangeWindow: setBoundsChangeWindow,
-    verifyDisplays: verifyDisplays
+    verifyDisplays: verifyDisplays,
+    getMenu: getMenu
 };

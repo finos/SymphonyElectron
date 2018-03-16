@@ -1,19 +1,14 @@
 const electron = require('./__mocks__/electron');
-const childProcess = require('child_process');
-
-let activityDetection;
+const activityDetection = require('../js/activityDetection');
 
 describe('Tests for Activity Detection', function() {
 
     const originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 90000;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
 
     beforeAll(function(done) {
-        childProcess.exec(`npm rebuild --target=${process.version} --build-from-source`, function(err) {
-            activityDetection = require('../js/activityDetection');
-            activityDetection.setActivityWindow(900000, electron.ipcRenderer);
-            done();
-        });
+        activityDetection.setActivityWindow(900000, electron.ipcRenderer);
+        done();
     });
 
     beforeEach(function() {

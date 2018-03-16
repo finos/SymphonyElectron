@@ -1,9 +1,7 @@
-const childProcess = require('child_process');
 const Application = require('./spectronSetup');
 const { isMac } = require('../../js/utils/misc');
-const constants = require('./spectronConstants');
+const robot = require('robotjs');
 
-let robot;
 let configPath;
 
 let app = new Application({});
@@ -11,26 +9,19 @@ let app = new Application({});
 describe('Tests for Zoom in and Zoom out', () => {
 
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 90000;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
 
     beforeAll((done) => {
-        childProcess.exec(`npm rebuild robotjs --target=${process.version} --build-from-source`, function () {
-            robot = require('robotjs');
-            return app.startApplication().then((startedApp) => {
-                app = startedApp;
-                getConfigPath().then((config) => {
-                    configPath = config;
-                    done();
-                }).catch((err) => {
-                    console.error(`Unable to get user config path error: ${err}`);
-                    expect(err).toBeNull();
-                    done();
-                });
-            }).catch((err) => {
-                console.error(`Unable to start application error: ${err}`);
-                expect(err).toBeNull();
+        return app.startApplication().then((startedApp) => {
+            app = startedApp;
+            getConfigPath().then((config) => {
+                configPath = config;
                 done();
+            }).catch((err) => {
+                done.fail(new Error(`Unable to start application error: ${err}`));
             });
+        }).catch((err) => {
+            done.fail(new Error(`Unable to start application error: ${err}`));
         });
     });
 
@@ -74,26 +65,28 @@ describe('Tests for Zoom in and Zoom out', () => {
                 expect(count === 1).toBeTruthy();
                 done();
             }).catch((err) => {
-                expect(err).toBeNull();
+                done.fail(new Error(`zoom-in-zoom-out failed in getWindowCount with error: ${err}`));
             });
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`zoom-in-zoom-out failed in waitUntilWindowLoaded with error: ${err}`));
         });
     });
 
-    it('should check window count', () => {
+    it('should check window count', (done) => {
         return app.client.getWindowCount().then((count) => {
             expect(count === 1).toBeTruthy();
+            done();
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`zoom-in-zoom-out failed in waitUntilWindowLoaded with error: ${err}`));
         });
     });
 
-    it('should check browser window visibility', () => {
+    it('should check browser window visibility', (done) => {
         return app.browserWindow.isVisible().then((isVisible) => {
             expect(isVisible).toBeTruthy();
+            done();
         }).catch((err) => {
-            expect(err).toBeNull();
+            done.fail(new Error(`zoom-in-zoom-out failed in isVisible with error: ${err}`));
         });
     });
 
@@ -106,7 +99,7 @@ describe('Tests for Zoom in and Zoom out', () => {
         });
     });
 
-    it('should zoom in the app and check whether it is zoomed in', () => {
+    it('should zoom in the app and check whether it is zoomed in', (done) => {
         robot.setKeyboardDelay(500);
         if (isMac) {
 
@@ -122,8 +115,9 @@ describe('Tests for Zoom in and Zoom out', () => {
 
             return app.electron.webFrame.getZoomFactor().then((zoomFactor) => {
                 expect(zoomFactor > 1).toBeTruthy();
+                done();
             }).catch((err) => {
-                expect(err).toBeNull();
+                done.fail(new Error(`zoom-in-zoom-out failed in getZoomFactor with error: ${err}`));
             })
         } else {
             return app.browserWindow.getBounds().then((bounds) => {
@@ -146,8 +140,9 @@ describe('Tests for Zoom in and Zoom out', () => {
 
                 return app.electron.webFrame.getZoomFactor().then((zoomFactor) => {
                     expect(zoomFactor > 1).toBeTruthy();
+                    done();
                 }).catch((err) => {
-                    expect(err).toBeNull();
+                    done.fail(new Error(`zoom-in-zoom-out failed in getBounds with error: ${err}`));
                 })
             });
         }
