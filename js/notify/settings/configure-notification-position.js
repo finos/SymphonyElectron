@@ -155,6 +155,7 @@ function updateConfig() {
  */
 function updateNotification(mPosition, mDisplay) {
     notify.updateConfig({position: mPosition, display: mDisplay});
+    eventEmitter.emit('notificationSettings', {position: mPosition, display: mDisplay});
     notify.reset();
 }
 
