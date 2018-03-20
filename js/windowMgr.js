@@ -223,6 +223,8 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
             }
         });
     });
+    
+    handlePermissionRequests(mainWindow.webContents);
 
     addWindowKey(key, mainWindow);
     mainWindow.loadURL(url);
@@ -478,6 +480,8 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                         sendChildWinBoundsChange.bind(null, browserWin));
                     browserWin.on('move', throttledBoundsChange);
                     browserWin.on('resize', throttledBoundsChange);
+    
+                    handlePermissionRequests(browserWin.webContents);
                 }
             });
         } else {
@@ -500,6 +504,77 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                 });
             });
     });
+    
+    // ELECTRON-323: Handle session permission requests
+    function handlePermissionRequests(webContents) {
+        
+        let session = webContents.session;
+        
+        getConfigField('permissions')
+            .then((permissions) => {
+                
+                if (!permissions) {
+                    log.send(logLevels.ERROR, 'permissions configuration is invalid, so, everything will be true by default!');
+                    return;
+                }
+                
+                session.setPermissionRequestHandler((sessionWebContents, permission, callback) => {
+                    
+                    function handleSessionPermissions(userPermission, message, cb) {
+                        
+                        log.send(logLevels.INFO, 'permission is -> ' + userPermission);
+                        
+                        if (!userPermission) {
+                            let fullMessage = `Your administrator has disabled ${message}. Please contact your admin for help.`;
+                            electron.dialog.showErrorBox('Permission Denied!', fullMessage);
+                        }
+                        
+                        return cb(userPermission);
+                        
+                    }
+                    
+                    let PERMISSION_MEDIA = 'media';
+                    let PERMISSION_LOCATION = 'geolocation';
+                    let PERMISSION_NOTIFICATIONS = 'notifications';
+                    let PERMISSION_MIDI_SYSEX = 'midiSysex';
+                    let PERMISSION_POINTER_LOCK = 'pointerLock';
+                    let PERMISSION_FULL_SCREEN = 'fullscreen';
+                    let PERMISSION_OPEN_EXTERNAL = 'openExternal';
+                    
+                    switch (permission) {
+                        
+                        case PERMISSION_MEDIA:
+                            return handleSessionPermissions(permissions.media, 'sharing your camera, microphone, and speakers', callback);
+                        
+                        case PERMISSION_LOCATION:
+                            return handleSessionPermissions(permissions.geolocation, 'sharing your location', callback);
+                        
+                        case PERMISSION_NOTIFICATIONS:
+                            return handleSessionPermissions(permissions.notifications, 'notifications', callback);
+                        
+                        case PERMISSION_MIDI_SYSEX:
+                            return handleSessionPermissions(permissions.midiSysex, 'MIDI Sysex', callback);
+                        
+                        case PERMISSION_POINTER_LOCK:
+                            return handleSessionPermissions(permissions.pointerLock, 'Pointer Lock', callback);
+                        
+                        case PERMISSION_FULL_SCREEN:
+                            return handleSessionPermissions(permissions.fullscreen, 'Full Screen', callback);
+                        
+                        case PERMISSION_OPEN_EXTERNAL:
+                            return handleSessionPermissions(permissions.openExternal, 'Opening External App', callback);
+                        
+                        default:
+                            return callback(false);
+                    }
+                    
+                });
+                
+            }).catch((error) => {
+                log.send(logLevels.ERROR, 'unable to get permissions configuration, so, everything will be true by default! ' + error);
+            })
+        
+    }
 
 }
 
@@ -753,12 +828,11 @@ function checkExternalDisplay(appBounds) {
     const width = appBounds.width;
     const height = appBounds.height;
     const factor = 0.2;
-    const screen = electron.screen;
-
+    
     // Loops through all the available displays and
     // verifies if the wrapper exists within the display bounds
     // returns false if not exists otherwise true
-    return !!screen.getAllDisplays().find(({ bounds }) => {
+    return !!electron.screen.getAllDisplays().find(({ bounds }) => {
 
         const leftMost = x + (width * factor);
         const topMost = y + (height * factor);
@@ -779,9 +853,8 @@ function checkExternalDisplay(appBounds) {
  * was removed and if the wrapper was contained within that bounds
  */
 function repositionMainWindow() {
-    const screen = electron.screen;
-
-    const { workArea } = screen.getPrimaryDisplay();
+    
+    const { workArea } = electron.screen.getPrimaryDisplay();
     const bounds = workArea;
 
     if (!bounds) {
