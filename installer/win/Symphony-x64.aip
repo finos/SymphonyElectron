@@ -320,9 +320,6 @@
     <ROW File="zhCN.pak" Component_="am.pak" FileName="zh-CN.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\zh-CN.pak" SelfReg="false" NextFile="zhTW.pak"/>
     <ROW File="zhTW.pak" Component_="am.pak" FileName="zh-TW.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\zh-TW.pak" SelfReg="false" NextFile="appupdate.yml"/>
   </COMPONENT>
-  <COMPONENT cid="caphyon.advinst.custcomp.AiAI_TxtUpdateAliasComponent">
-    <ROW AliasRowId="Symphony.config#&quot;minimizeOnClose&quot;\s*:\s*true," AliasRowOperation="2" ReplacePattern="&quot;minimizeOnClose&quot; : [MINIMIZE_ON_CLOSE_CB],"/>
-  </COMPONENT>
   <COMPONENT cid="caphyon.advinst.custcomp.AiPropertyAliasComponent">
     <ROW AliasRowId="ALWAYS_ON_TOP_CB" AliasRowOperation="2" Value="true"/>
     <ROW AliasRowId="FULL_SCREEN_CB" AliasRowOperation="2" Value="true"/>
@@ -739,7 +736,7 @@
     <ROW Name="BringToFront" TxtUpdateSet="Symphony.config" FindPattern="&quot;bringToFront&quot;\s*:\s*false," ReplacePattern="&quot;bringToFront&quot; : [BRING_TO_FRONT]," Options="19" Order="4" FileEncoding="-1"/>
     <ROW Name="LaunchOnStartup" TxtUpdateSet="Symphony.config" FindPattern="&quot;launchOnStartup&quot;\s*:\s*true," ReplacePattern="&quot;launchOnStartup&quot; : [AUTO_START]," Options="19" Order="3" FileEncoding="-1"/>
     <ROW Name="MidiSysex" TxtUpdateSet="Symphony.config" FindPattern="&quot;midiSysex&quot;\s*:\s*true," ReplacePattern="&quot;midiSysex&quot; : [MIDI_SYSEX]," Options="19" Order="8" FileEncoding="-1"/>
-    <ROW Name="OpenExternal" TxtUpdateSet="Symphony.config" FindPattern="&quot;openExternal&quot;\s*:\s*true," ReplacePattern="&quot;openExternal&quot; : [OPEN_EXTERNAL]," Options="19" Order="11" FileEncoding="-1"/>
+    <ROW Name="OpenExternal" TxtUpdateSet="Symphony.config" FindPattern="&quot;openExternal&quot;\s*:\s*true" ReplacePattern="&quot;openExternal&quot; : [OPEN_EXTERNAL]" Options="19" Order="11" FileEncoding="-1"/>
     <ROW Name="Url" TxtUpdateSet="Symphony.config" FindPattern="&quot;url&quot;\s*:\s*&quot;.*&quot;" ReplacePattern="&quot;url&quot;: &quot;[POD_URL]&quot;" Options="19" Order="0" FileEncoding="-1"/>
     <ROW Name="Notifications" TxtUpdateSet="Symphony.config" FindPattern="&quot;notifications&quot;\s*:\s*true," ReplacePattern="&quot;notifications&quot; : [NOTIFICATIONS]," Options="19" Order="7" FileEncoding="-1"/>
     <ROW Name="MinimizeOnClose" TxtUpdateSet="Symphony.config" FindPattern="&quot;minimizeOnClose&quot;\s*:\s*true," ReplacePattern="&quot;minimizeOnClose&quot; : [MINIMIZE_ON_CLOSE]," Options="19" Order="1" FileEncoding="-1"/>

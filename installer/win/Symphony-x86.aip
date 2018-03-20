@@ -713,7 +713,7 @@
     <ROW Name="PointerLock" TxtUpdateSet="Symphony.config" FindPattern="&quot;pointerLock&quot;\s*:\s*true," ReplacePattern="&quot;pointerLock&quot; : [POINTER_LOCK]," Options="19" Order="9" FileEncoding="-1"/>
     <ROW Name="LaunchOnStartup" TxtUpdateSet="Symphony.config" FindPattern="&quot;launchOnStartup&quot;\s*:\s*true," ReplacePattern="&quot;launchOnStartup&quot; : [AUTO_START]," Options="19" Order="3" FileEncoding="-1"/>
     <ROW Name="FullScreen" TxtUpdateSet="Symphony.config" FindPattern="&quot;fullscreen&quot;\s*:\s*true," ReplacePattern="&quot;fullscreen&quot; : [FULL_SCREEN]," Options="19" Order="10" FileEncoding="-1"/>
-    <ROW Name="OpenExternal" TxtUpdateSet="Symphony.config" FindPattern="&quot;openExternal&quot;\s*:\s*true," ReplacePattern="&quot;openExternal&quot; : [OPEN_EXTERNAL]," Options="19" Order="11" FileEncoding="-1"/>
+    <ROW Name="OpenExternal" TxtUpdateSet="Symphony.config" FindPattern="&quot;openExternal&quot;\s*:\s*true" ReplacePattern="&quot;openExternal&quot; : [OPEN_EXTERNAL]" Options="19" Order="11" FileEncoding="-1"/>
     <ROW Name="AlwaysOnTop" TxtUpdateSet="Symphony.config" FindPattern="&quot;alwaysOnTop&quot;\s*:\s*false" ReplacePattern="&quot;alwaysOnTop&quot; : [ALWAYS_ON_TOP]" Options="19" Order="2" FileEncoding="-1"/>
     <ROW Name="MidiSysex" TxtUpdateSet="Symphony.config" FindPattern="&quot;midiSysex&quot;\s*:\s*true," ReplacePattern="&quot;midiSysex&quot; : [MIDI_SYSEX]," Options="19" Order="8" FileEncoding="-1"/>
     <ROW Name="Location" TxtUpdateSet="Symphony.config" FindPattern="&quot;geolocation&quot;\s*:\s*true," ReplacePattern="&quot;geolocation&quot; : [LOCATION]," Options="19" Order="6" FileEncoding="-1"/>
