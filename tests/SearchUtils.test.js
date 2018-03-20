@@ -86,8 +86,12 @@ describe('Tests for Search Utils', function() {
             SearchUtilsAPI.path = './tp';
             if (isWindowsOS) {
                 SearchUtilsAPI.path = 'A://test';
+                searchConfig.LIBRARY_CONSTANTS.FREE_DISK_SPACE = path.join(__dirname, '..',
+                    "node_modules/electron-utils/FreeDiskSpace/bin/Release/FreeDiskSpace.exe");
             }
             SearchUtilsAPI.checkFreeSpace().catch(function (err) {
+                searchConfig.LIBRARY_CONSTANTS.FREE_DISK_SPACE = path.join(__dirname, '..',
+                    "library/FreeDiskSpace.exe");
                 expect(checkFreeSpace).toHaveBeenCalled();
                 expect(err).toBeTruthy();
                 done();
