@@ -24,12 +24,33 @@
     <ROW Property="BannerBitmap" Value="banner" MultiBuildValue="DefaultBuild:Banner.jpg" Type="1" MsiKey="BannerBitmap"/>
     <ROW Property="CTRLS" Value="2"/>
     <ROW Property="DialogBitmap" Value="dialog" MultiBuildValue="DefaultBuild:Tabloid.jpg" Type="1" MsiKey="DialogBitmap"/>
+    <ROW Property="FULL_SCREEN" Value="true"/>
+    <ROW Property="FULL_SCREEN_CB" Value="true" Type="4"/>
+    <ROW Property="FULL_SCREEN_DT" Value="No"/>
     <ROW Property="INVALID_POD_URL" Value="valid" Type="4"/>
+    <ROW Property="LOCATION" Value="true"/>
+    <ROW Property="LOCATION_CB" Value="true" Type="4"/>
+    <ROW Property="LOCATION_DT" Value="No"/>
+    <ROW Property="MEDIA" Value="true"/>
+    <ROW Property="MEDIA_CB" Value="true" Type="4"/>
+    <ROW Property="MEDIA_DT" Value="No"/>
+    <ROW Property="MIDI_SYSEX" Value="true"/>
+    <ROW Property="MIDI_SYSEX_CB" Value="true" Type="4"/>
+    <ROW Property="MIDI_SYSEX_DT" Value="No"/>
     <ROW Property="MINIMIZE_ON_CLOSE" Value="true" Type="4"/>
     <ROW Property="MINIMIZE_ON_CLOSE_CB" Value="true" Type="4"/>
     <ROW Property="Manufacturer" Value="Symphony"/>
+    <ROW Property="NOTIFICATIONS" Value="true"/>
+    <ROW Property="NOTIFICATIONS_CB" Value="true" Type="4"/>
+    <ROW Property="NOTIFICATIONS_DT" Value="No"/>
+    <ROW Property="OPEN_EXTERNAL" Value="true"/>
+    <ROW Property="OPEN_EXTERNAL_CB" Value="true" Type="4"/>
+    <ROW Property="OPEN_EXTERNAL_DT" Value="No"/>
     <ROW Property="POD_URL" Value="https://corporate.symphony.com" Type="4"/>
     <ROW Property="POD_URL_LABEL" Value="https://corporate.symphony.com" Type="4"/>
+    <ROW Property="POINTER_LOCK" Value="true"/>
+    <ROW Property="POINTER_LOCK_CB" Value="true" Type="4"/>
+    <ROW Property="POINTER_LOCK_DT" Value="No"/>
     <ROW Property="ProductCode" Value="1033:{F17EDEB4-A15F-46B9-83E9-8652CBC886B2} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="Symphony-Electron"/>
@@ -291,6 +312,9 @@
     <ROW File="zhCN.pak" Component_="am.pak" FileName="zh-CN.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\zh-CN.pak" SelfReg="false" NextFile="zhTW.pak"/>
     <ROW File="zhTW.pak" Component_="am.pak" FileName="zh-TW.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\zh-TW.pak" SelfReg="false" NextFile="appupdate.yml"/>
   </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.custcomp.AiPropertyAliasComponent">
+    <ROW AliasRowOperation="0" Property="NOTIFICATION_CB" Value="true"/>
+  </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BuildComponent">
     <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="1" Languages="en" InstallationType="4" UseLargeSchema="true"/>
     <ATTRIBUTE name="CurrentBuild" value="DefaultBuild"/>
@@ -333,6 +357,13 @@
     <ROW Property="AUTO_START_CB" Value="true"/>
     <ROW Property="ALWAYS_ON_TOP_CB" Value="true"/>
     <ROW Property="BRING_TO_FRONT_CB" Value="true"/>
+    <ROW Property="MEDIA_CB" Value="true"/>
+    <ROW Property="LOCATION_CB" Value="true"/>
+    <ROW Property="NOTIFICATIONS_CB" Value="true"/>
+    <ROW Property="MIDI_SYSEX_CB" Value="true"/>
+    <ROW Property="POINTER_LOCK_CB" Value="true"/>
+    <ROW Property="FULL_SCREEN_CB" Value="true"/>
+    <ROW Property="OPEN_EXTERNAL_CB" Value="true"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlComponent">
     <ROW Dialog_="AdminBrowseDlg" Control="Logo" Type="Text" X="4" Y="228" Width="38" Height="12" Attributes="1" Text="Symphony" Order="300" TextLocId="Control.Text.AdminBrowseDlg#Logo" MsiKey="AdminBrowseDlg#Logo"/>
@@ -426,12 +457,27 @@
     <ROW Dialog_="ProgressDlg" Control="ProgressBar" Type="ProgressBar" X="35" Y="115" Width="300" Height="10" Attributes="65537" Text="Progress done" Order="1100" TextLocId="Control.Text.ProgressDlg#ProgressBar" MsiKey="ProgressDlg#ProgressBar"/>
     <ROW Dialog_="ResumeDlg" Control="Title" Type="Text" X="132" Y="10" Width="220" Height="47" Attributes="196611" Text="Resuming the [ProductName] [Wizard]" TextStyle="VerdanaBold13" Order="500" TextLocId="Control.Text.ResumeDlg#Title" MsiKey="ResumeDlg#Title"/>
     <ROW Dialog_="ResumeDlg" Control="Description" Type="Text" X="132" Y="61" Width="220" Height="40" Attributes="196611" Text="The [Wizard] will complete the installation of [ProductName] on your computer.  Click &quot;Install&quot; to continue or &quot;Cancel&quot; to exit the [Wizard]." Order="600" TextLocId="Control.Text.ResumeDlg#Description" MsiKey="ResumeDlg#Description"/>
+    <ROW Dialog_="SelectPermissionsDlg" Control="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Next]" Order="100" TextLocId="-" Options="1"/>
+    <ROW Dialog_="SelectPermissionsDlg" Control="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Cancel]" Order="200" TextLocId="-" Options="1"/>
+    <ROW Dialog_="SelectPermissionsDlg" Control="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Back]" Order="300" TextLocId="-" Options="1"/>
+    <ROW Dialog_="SelectPermissionsDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="400"/>
+    <ROW Dialog_="SelectPermissionsDlg" Control="BannerLine" Type="Line" X="0" Y="44" Width="372" Height="0" Attributes="1" Order="500"/>
+    <ROW Dialog_="SelectPermissionsDlg" Control="BottomLine" Type="Line" X="5" Y="234" Width="368" Height="0" Attributes="1" Order="600"/>
+    <ROW Dialog_="SelectPermissionsDlg" Control="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Attributes="196611" Text="Select the Permissions your users should have" Order="700"/>
+    <ROW Dialog_="SelectPermissionsDlg" Control="Logo" Type="Text" X="4" Y="228" Width="70" Height="12" Attributes="1" Text="Advanced Installer" Order="800"/>
+    <ROW Dialog_="SelectPermissionsDlg" Control="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Attributes="196611" Text="Select Permissions" TextStyle="[DlgTitleFont]" Order="900"/>
+    <ROW Dialog_="SelectPermissionsDlg" Control="MediaCheckBox" Type="CheckBox" X="15" Y="60" Width="144" Height="13" Attributes="3" Property="MEDIA_CB" Text="Media (Audio, Video, Screenshare)" Order="1000"/>
+    <ROW Dialog_="SelectPermissionsDlg" Control="LocationCheckBox" Type="CheckBox" X="15" Y="90" Width="98" Height="13" Attributes="3" Property="LOCATION_CB" Text="Geo Location" Order="1100"/>
+    <ROW Dialog_="SelectPermissionsDlg" Control="NotificationsCheckBox" Type="CheckBox" X="15" Y="120" Width="98" Height="13" Attributes="3" Property="NOTIFICATIONS_CB" Text="Notifications" Order="1200"/>
+    <ROW Dialog_="SelectPermissionsDlg" Control="MidiSysexCheckBox" Type="CheckBox" X="15" Y="150" Width="98" Height="13" Attributes="3" Property="MIDI_SYSEX_CB" Text="Midi Sysex" Order="1300"/>
+    <ROW Dialog_="SelectPermissionsDlg" Control="OpinterLockCheckBox" Type="CheckBox" X="180" Y="60" Width="98" Height="13" Attributes="3" Property="POINTER_LOCK_CB" Text="Pointer Lock" Order="1400"/>
+    <ROW Dialog_="SelectPermissionsDlg" Control="FullScreenCheckBox" Type="CheckBox" X="180" Y="90" Width="98" Height="13" Attributes="3" Property="FULL_SCREEN_CB" Text="Full Screen" Order="1500"/>
+    <ROW Dialog_="SelectPermissionsDlg" Control="OpenExternalCheckBox" Type="CheckBox" X="180" Y="120" Width="98" Height="13" Attributes="3" Property="OPEN_EXTERNAL_CB" Text="Open External App" Order="1600"/>
     <ROW Dialog_="SpawnWaitDialog" Control="Yes" Type="PushButton" X="72" Y="57" Width="56" Height="17" Attributes="3" Text="[ButtonText_Yes]" Order="100" TextLocId="-"/>
     <ROW Dialog_="SpawnWaitDialog" Control="Icon" Type="Icon" X="15" Y="15" Width="24" Height="24" Attributes="5242881" Text="[InfoIcon]" Order="200"/>
     <ROW Dialog_="SpawnWaitDialog" Control="Text" Type="Text" X="48" Y="15" Width="194" Height="30" Attributes="3" Text="New Spawn(Wait) Dialog" Order="300"/>
     <ROW Dialog_="SpawnWaitDialog" Control="No" Type="PushButton" X="132" Y="57" Width="56" Height="17" Attributes="3" Text="[ButtonText_No]" Order="400" TextLocId="-"/>
     <ROW Dialog_="UserExit" Control="Title" Type="Text" X="132" Y="10" Width="220" Height="47" Attributes="196611" Text="The [ProductName] [Wizard] was interrupted" TextStyle="VerdanaBold13" Order="500" TextLocId="Control.Text.UserExit#Title" MsiKey="UserExit#Title"/>
-    <ROW Dialog_="VerifyDlg" Control="TemplateDlgDialogInitializer" Type="DialogInitializer" X="0" Y="0" Width="0" Height="0" Attributes="0" Order="-1" TextLocId="-" HelpLocId="-" ExtDataLocId="-"/>
     <ROW Dialog_="VerifyDlg" Control="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Next]" Order="100" TextLocId="-" Options="1"/>
     <ROW Dialog_="VerifyDlg" Control="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Cancel]" Order="200" TextLocId="-" Options="1"/>
     <ROW Dialog_="VerifyDlg" Control="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Back]" Order="300" TextLocId="-" Options="1"/>
@@ -452,6 +498,30 @@
     <ROW Dialog_="VerifyDlg" Control="Text_9" Type="Text" X="25" Y="60" Width="321" Height="25" Attributes="65539" Property="TEXT_9_PROP" Text="You seem to have entered an invalid pod url. Please go back to the previous screen and rectify it." Order="1800"/>
     <ROW Dialog_="VerifyDlg" Control="Text_10" Type="Text" X="25" Y="189" Width="76" Height="21" Attributes="65539" Property="TEXT_3_PROP_1_1_1" Text="Flash Notification in Taskbar :" Order="1900"/>
     <ROW Dialog_="VerifyDlg" Control="BringToFrontLabel" Type="Text" X="110" Y="189" Width="145" Height="10" Attributes="65539" Property="BRING_TO_FRONT" Text="[BRING_TO_FRONT]" Order="2000"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control="VerifyPermissionsDlgDialogInitializer" Type="DialogInitializer" X="0" Y="0" Width="0" Height="0" Attributes="0" Order="-1" TextLocId="-" HelpLocId="-" ExtDataLocId="-"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Next]" Order="100" TextLocId="-" Options="1"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Cancel]" Order="200" TextLocId="-" Options="1"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Back]" Order="300" TextLocId="-" Options="1"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="400"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control="BannerLine" Type="Line" X="0" Y="44" Width="372" Height="0" Attributes="1" Order="500"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control="BottomLine" Type="Line" X="5" Y="234" Width="368" Height="0" Attributes="1" Order="600"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Attributes="196611" Text="Verify the information selected" Order="700"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control="Logo" Type="Text" X="4" Y="228" Width="70" Height="12" Attributes="1" Text="Advanced Installer" Order="800"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Attributes="196611" Text="Verify Permissions" TextStyle="[DlgTitleFont]" Order="900"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control="media" Type="Text" X="15" Y="60" Width="136" Height="11" Attributes="65539" Property="TEXT_2_PROP" Text="Media (Audio, Video, Screenshare) :" Order="1000"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control="location" Type="Text" X="15" Y="80" Width="75" Height="11" Attributes="65539" Property="TEXT_3_PROP_2" Text="Geo Location :" Order="1100"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control="notifications" Type="Text" X="15" Y="100" Width="75" Height="11" Attributes="65539" Property="TEXT_4_PROP" Text="Notifications :" Order="1200"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control="Text_4" Type="Text" X="15" Y="120" Width="75" Height="11" Attributes="65539" Property="TEXT_4_PROP_1" Text="Midi Sysex :" Order="1300"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control="Text_6" Type="Text" X="15" Y="140" Width="75" Height="11" Attributes="65539" Property="TEXT_6_PROP_1" Text="Pointer Lock :" Order="1400"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control="Text_8" Type="Text" X="15" Y="160" Width="75" Height="11" Attributes="65539" Property="TEXT_8_PROP" Text="Full Screen :" Order="1500"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control="Text_10" Type="Text" X="15" Y="180" Width="75" Height="11" Attributes="65539" Property="TEXT_10_PROP" Text="Open External App :" Order="1600"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control="Text_1" Type="Text" X="160" Y="60" Width="75" Height="11" Attributes="65539" Property="MEDIA_DT" Text="[MEDIA_DT]" Order="1700"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control="Text_2" Type="Text" X="160" Y="80" Width="75" Height="11" Attributes="65539" Property="LOCATION_DT" Text="[LOCATION_DT]" Order="1800"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control="Text_3" Type="Text" X="160" Y="100" Width="75" Height="11" Attributes="65539" Property="NOTIFICATIONS_DT" Text="[NOTIFICATIONS_DT]" Order="1900"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control="Text_5" Type="Text" X="160" Y="120" Width="75" Height="11" Attributes="65539" Property="MIDI_SYSEX_DT" Text="[MIDI_SYSEX_DT]" Order="2000"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control="Text_7" Type="Text" X="160" Y="140" Width="75" Height="11" Attributes="65539" Property="POINTER_LOCK_DT" Text="[POINTER_LOCK_DT]" Order="2100"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control="Text_9" Type="Text" X="160" Y="160" Width="75" Height="11" Attributes="65539" Property="FULL_SCREEN_DT" Text="[FULL_SCREEN_DT]" Order="2200"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control="Text_11" Type="Text" X="160" Y="180" Width="75" Height="11" Attributes="65539" Property="OPEN_EXTERNAL_DT" Text="[OPEN_EXTERNAL_DT]" Order="2300"/>
     <ROW Dialog_="VerifyReadyDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="300" MsiKey="VerifyReadyDlg#BannerBitmap"/>
     <ROW Dialog_="VerifyReadyDlg" Control="Logo" Type="Text" X="5" Y="228" Width="39" Height="12" Attributes="1" Text="Symphony" Order="500" TextLocId="Control.Text.VerifyReadyDlg#Logo" MsiKey="VerifyReadyDlg#Logo"/>
     <ROW Dialog_="VerifyReadyDlg" Control="Text" Type="Text" X="25" Y="70" Width="320" Height="21" Attributes="196611" Text="Click &quot;Install&quot; to begin the installation.  If you want to review or change any of your installation settings, click &quot;Back&quot;.  Click &quot;Cancel&quot; to exit the wizard." Order="700" TextLocId="Control.Text.VerifyReadyDlg#Text" MsiKey="VerifyReadyDlg#Text"/>
@@ -502,18 +572,25 @@
     <ROW Dialog_="SpawnWaitDialog" Control_="No" Event="EndDialog" Argument="Return" Condition="1" Ordering="100"/>
     <ROW Dialog_="SpawnWaitDialog" Control_="Yes" Event="EndDialog" Argument="Return" Condition="1" Ordering="100"/>
     <ROW Dialog_="VerifyDlg" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="100"/>
-    <ROW Dialog_="VerifyDlg" Control_="Next" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="VerifyDlg" Control_="Next" Event="NewDialog" Argument="SelectPermissionsDlg" Condition="AI_INSTALL" Ordering="1"/>
     <ROW Dialog_="VerifyDlg" Control_="Back" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="1"/>
-    <ROW Dialog_="VerifyDlg" Control_="Next" Event="SpawnDialog" Argument="OutOfRbDiskDlg" Condition="AI_INSTALL AND OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST=&quot;P&quot; OR NOT PROMPTROLLBACKCOST)" Ordering="2" Options="2"/>
-    <ROW Dialog_="VerifyDlg" Control_="Next" Event="EnableRollback" Argument="False" Condition="AI_INSTALL AND OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST=&quot;D&quot;" Ordering="3" Options="2"/>
-    <ROW Dialog_="VerifyDlg" Control_="Next" Event="SpawnDialog" Argument="OutOfDiskDlg" Condition="AI_INSTALL AND ( (OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST=&quot;F&quot;) )" Ordering="4" Options="2"/>
-    <ROW Dialog_="VerifyDlg" Control_="TemplateDlgDialogInitializer" Event="[AI_ButtonText_Next_Orig]" Argument="[ButtonText_Next]" Condition="AI_INSTALL" Ordering="0" Options="2"/>
-    <ROW Dialog_="VerifyDlg" Control_="TemplateDlgDialogInitializer" Event="[ButtonText_Next]" Argument="[[AI_CommitButton]]" Condition="AI_INSTALL" Ordering="1" Options="2"/>
-    <ROW Dialog_="VerifyDlg" Control_="TemplateDlgDialogInitializer" Event="[AI_Text_Next_Orig]" Argument="[Text_Next]" Condition="AI_INSTALL" Ordering="2" Options="2"/>
-    <ROW Dialog_="VerifyDlg" Control_="TemplateDlgDialogInitializer" Event="[Text_Next]" Argument="[Text_Install]" Condition="AI_INSTALL" Ordering="3" Options="2"/>
-    <ROW Dialog_="VerifyDlg" Control_="Back" Event="[ButtonText_Next]" Argument="[AI_ButtonText_Next_Orig]" Condition="AI_INSTALL" Ordering="2" Options="2"/>
-    <ROW Dialog_="VerifyDlg" Control_="Back" Event="[Text_Next]" Argument="[AI_Text_Next_Orig]" Condition="AI_INSTALL" Ordering="3" Options="2"/>
     <ROW Dialog_="FolderDlg" Control_="Next" Event="DoAction" Argument="PodUrlValidation" Condition="AI_INSTALL" Ordering="202"/>
+    <ROW Dialog_="SelectPermissionsDlg" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="100"/>
+    <ROW Dialog_="SelectPermissionsDlg" Control_="Next" Event="NewDialog" Argument="VerifyPermissionsDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="SelectPermissionsDlg" Control_="Back" Event="NewDialog" Argument="VerifyDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="100"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control_="Next" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control_="Back" Event="NewDialog" Argument="SelectPermissionsDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control_="Next" Event="SpawnDialog" Argument="OutOfRbDiskDlg" Condition="AI_INSTALL AND OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST=&quot;P&quot; OR NOT PROMPTROLLBACKCOST)" Ordering="2" Options="2"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control_="Next" Event="EnableRollback" Argument="False" Condition="AI_INSTALL AND OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST=&quot;D&quot;" Ordering="3" Options="2"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control_="Next" Event="SpawnDialog" Argument="OutOfDiskDlg" Condition="AI_INSTALL AND ( (OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST=&quot;F&quot;) )" Ordering="4" Options="2"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control_="VerifyPermissionsDlgDialogInitializer" Event="[AI_ButtonText_Next_Orig]" Argument="[ButtonText_Next]" Condition="AI_INSTALL" Ordering="0" Options="2"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control_="VerifyPermissionsDlgDialogInitializer" Event="[ButtonText_Next]" Argument="[[AI_CommitButton]]" Condition="AI_INSTALL" Ordering="1" Options="2"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control_="VerifyPermissionsDlgDialogInitializer" Event="[AI_Text_Next_Orig]" Argument="[Text_Next]" Condition="AI_INSTALL" Ordering="2" Options="2"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control_="VerifyPermissionsDlgDialogInitializer" Event="[Text_Next]" Argument="[Text_Install]" Condition="AI_INSTALL" Ordering="3" Options="2"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control_="Back" Event="[ButtonText_Next]" Argument="[AI_ButtonText_Next_Orig]" Condition="AI_INSTALL" Ordering="2" Options="2"/>
+    <ROW Dialog_="VerifyPermissionsDlg" Control_="Back" Event="[Text_Next]" Argument="[AI_Text_Next_Orig]" Condition="AI_INSTALL" Ordering="3" Options="2"/>
+    <ROW Dialog_="SelectPermissionsDlg" Control_="Next" Event="DoAction" Argument="PodUrlValidation" Condition="AI_INSTALL" Ordering="2"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCreateFolderComponent">
     <ROW Directory_="Symphony_Dir" Component_="Symphony" ManualDelete="false"/>
@@ -538,7 +615,7 @@
     <ROW Action="AI_TxtUpdaterRollback" Type="11521" Source="TxtUpdater.dll" Target="OnTxtUpdaterRollback" WithoutSeq="true"/>
     <ROW Action="KillParagon" Type="1" Source="aicustact.dll" Target="StopProcess" Options="1" AdditionalSeq="AI_DATA_SETTER_2"/>
     <ROW Action="KillRenderer" Type="1" Source="aicustact.dll" Target="StopProcess" Options="1" AdditionalSeq="AI_DATA_SETTER"/>
-    <ROW Action="PodUrlValidation" Type="37" Target="Script Text" TargetUnformatted="// First, check if the protocol is part of the url, if not, prepend it&#13;&#10;var prefix1 = &quot;https://&quot;;&#13;&#10;var prefix2 = &quot;http://&quot;;&#13;&#10;if (Session.Property(&quot;POD_URL&quot;).substr(0, prefix1.length) !== prefix1 &amp;&amp; Session.Property(&quot;POD_URL&quot;).substr(0, prefix2.length) !== prefix2) {&#13;&#10;    Session.Property(&quot;POD_URL&quot;) = prefix1 + Session.Property(&quot;POD_URL&quot;);&#13;&#10;}&#13;&#10;&#13;&#10;// Check if the entered pod url is valid&#13;&#10;var podUrlRE = /^(https:\/\/)(www.)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/[a-zA-Z0-9-_.+!*&apos;(),;/?:@=&amp;$]*)?$/;&#13;&#10;var podUrlTest = podUrlRE.test(Session.Property(&quot;POD_URL&quot;));&#13;&#10;if (!podUrlTest) {&#13;&#10;&#9;Session.Property(&quot;INVALID_POD_URL&quot;) = &quot;invalid&quot;;&#13;&#10;} else {&#13;&#10;&#9;Session.Property(&quot;INVALID_POD_URL&quot;) = &quot;valid&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// By default, we set all the values to false and change based on conditions&#13;&#10;Session.Property(&quot;ALWAYS_ON_TOP&quot;) = &quot;false&quot;;            &#13;&#10;Session.Property(&quot;AUTO_START&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;MINIMIZE_ON_CLOSE&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;BRING_TO_FRONT&quot;) = &quot;false&quot;;&#13;&#10;&#13;&#10;// If always on top is checked in the checkbox, set the label value to true&#13;&#10;if (Session.Property(&quot;ALWAYS_ON_TOP_CB&quot;) &amp;&amp; Session.Property(&quot;ALWAYS_ON_TOP_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;ALWAYS_ON_TOP&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// If launch on startup is checked in the checkbox, set the label value to true&#13;&#10;if (Session.Property(&quot;MINIMIZE_ON_CLOSE_CB&quot;) &amp;&amp; Session.Property(&quot;MINIMIZE_ON_CLOSE_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;MINIMIZE_ON_CLOSE&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// If minimise on close is checked in the checkbox, set the label value to true&#13;&#10;if (Session.Property(&quot;AUTO_START_CB&quot;) &amp;&amp; Session.Property(&quot;AUTO_START_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;AUTO_START&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// If bring to front is checked in the checkbox, set the label value to true&#13;&#10;if (Session.Property(&quot;BRING_TO_FRONT_CB&quot;) &amp;&amp; Session.Property(&quot;BRING_TO_FRONT_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;BRING_TO_FRONT&quot;) = &quot;true&quot;;&#13;&#10;}" WithoutSeq="true"/>
+    <ROW Action="PodUrlValidation" Type="37" Target="Script Text" TargetUnformatted="// First, check if the protocol is part of the url, if not, prepend it&#13;&#10;var prefix1 = &quot;https://&quot;;&#13;&#10;var prefix2 = &quot;http://&quot;;&#13;&#10;if (Session.Property(&quot;POD_URL&quot;).substr(0, prefix1.length) !== prefix1 &amp;&amp; Session.Property(&quot;POD_URL&quot;).substr(0, prefix2.length) !== prefix2) {&#13;&#10;    Session.Property(&quot;POD_URL&quot;) = prefix1 + Session.Property(&quot;POD_URL&quot;);&#13;&#10;}&#13;&#10;&#13;&#10;// Check if the entered pod url is valid&#13;&#10;var podUrlRE = /^(https:\/\/)(www.)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/[a-zA-Z0-9-_.+!*&apos;(),;/?:@=&amp;$]*)?$/;&#13;&#10;var podUrlTest = podUrlRE.test(Session.Property(&quot;POD_URL&quot;));&#13;&#10;if (!podUrlTest) {&#13;&#10;&#9;Session.Property(&quot;INVALID_POD_URL&quot;) = &quot;invalid&quot;;&#13;&#10;} else {&#13;&#10;&#9;Session.Property(&quot;INVALID_POD_URL&quot;) = &quot;valid&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// By default, we set all the values to false and change based on conditions&#13;&#10;Session.Property(&quot;ALWAYS_ON_TOP&quot;) = &quot;false&quot;;            &#13;&#10;Session.Property(&quot;AUTO_START&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;MINIMIZE_ON_CLOSE&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;BRING_TO_FRONT&quot;) = &quot;false&quot;;&#13;&#10;// Permission request properties&#13;&#10;Session.Property(&quot;MEDIA&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;LOCATION&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;NOTIFICATIONS&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;MIDI_SYSEX&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;POINTER_LOCK&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;FULL_SCREEN&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;OPEN_EXTERNAL&quot;) = &quot;false&quot;;&#13;&#10;&#13;&#10;// Permission display text based on checkbox&#13;&#10;Session.Property(&quot;MEDIA_DT&quot;) = &quot;No&quot;;&#13;&#10;Session.Property(&quot;LOCATION_DT&quot;) = &quot;No&quot;;&#13;&#10;Session.Property(&quot;NOTIFICATIONS_DT&quot;) = &quot;No&quot;;&#13;&#10;Session.Property(&quot;MIDI_SYSEX_DT&quot;) = &quot;No&quot;;&#13;&#10;Session.Property(&quot;POINTER_LOCK_DT&quot;) = &quot;No&quot;;&#13;&#10;Session.Property(&quot;FULL_SCREEN_DT&quot;) = &quot;No&quot;;&#13;&#10;Session.Property(&quot;OPEN_EXTERNAL_DT&quot;) = &quot;No&quot;;&#13;&#10;&#13;&#10;// If always on top is checked in the checkbox, set the label value to true&#13;&#10;if (Session.Property(&quot;ALWAYS_ON_TOP_CB&quot;) &amp;&amp; Session.Property(&quot;ALWAYS_ON_TOP_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;ALWAYS_ON_TOP&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// If launch on startup is checked in the checkbox, set the label value to true&#13;&#10;if (Session.Property(&quot;MINIMIZE_ON_CLOSE_CB&quot;) &amp;&amp; Session.Property(&quot;MINIMIZE_ON_CLOSE_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;MINIMIZE_ON_CLOSE&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// If minimise on close is checked in the checkbox, set the label value to true&#13;&#10;if (Session.Property(&quot;AUTO_START_CB&quot;) &amp;&amp; Session.Property(&quot;AUTO_START_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;AUTO_START&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// If bring to front is checked in the checkbox, set the label value to true&#13;&#10;if (Session.Property(&quot;BRING_TO_FRONT_CB&quot;) &amp;&amp; Session.Property(&quot;BRING_TO_FRONT_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;BRING_TO_FRONT&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// Permissions checkbox remains checked, set the label value to true&#13;&#10;&#13;&#10;if (Session.Property(&quot;MEDIA_CB&quot;) &amp;&amp; Session.Property(&quot;MEDIA_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;MEDIA&quot;) = &quot;true&quot;;&#13;&#10;    Session.Property(&quot;MEDIA_DT&quot;) = &quot;Yes&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;LOCATION_CB&quot;) &amp;&amp; Session.Property(&quot;LOCATION_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;LOCATION&quot;) = &quot;true&quot;;&#13;&#10;    Session.Property(&quot;LOCATION_DT&quot;) = &quot;Yes&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;NOTIFICATIONS_CB&quot;) &amp;&amp; Session.Property(&quot;NOTIFICATIONS_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;NOTIFICATIONS&quot;) = &quot;true&quot;;&#13;&#10;    Session.Property(&quot;NOTIFICATIONS_DT&quot;) = &quot;Yes&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;MIDI_SYSEX_CB&quot;) &amp;&amp; Session.Property(&quot;MIDI_SYSEX_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;MIDI_SYSEX&quot;) = &quot;true&quot;;&#13;&#10;    Session.Property(&quot;MIDI_SYSEX_DT&quot;) = &quot;Yes&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;POINTER_LOCK_CB&quot;) &amp;&amp; Session.Property(&quot;POINTER_LOCK_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;POINTER_LOCK&quot;) = &quot;true&quot;;&#13;&#10;    Session.Property(&quot;POINTER_LOCK_DT&quot;) = &quot;Yes&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;FULL_SCREEN_CB&quot;) &amp;&amp; Session.Property(&quot;FULL_SCREEN_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;FULL_SCREEN&quot;) = &quot;true&quot;;&#13;&#10;    Session.Property(&quot;FULL_SCREEN_DT&quot;) = &quot;Yes&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;OPEN_EXTERNAL_CB&quot;) &amp;&amp; Session.Property(&quot;OPEN_EXTERNAL_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;OPEN_EXTERNAL&quot;) = &quot;true&quot;;&#13;&#10;&#9;&#9;Session.Property(&quot;OPEN_EXTERNAL_DT&quot;) = &quot;Yes&quot;;&#13;&#10;}&#13;&#10;" WithoutSeq="true"/>
     <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:[AI_UserProgramFiles][Manufacturer]\[ProductName]"/>
     <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
     <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
@@ -547,8 +624,10 @@
     <ROW Action="UninstallPreviousVersions" Type="1" Source="aicustact.dll" Target="UninstallPreviousVersions" Options="1"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiDialogComponent">
+    <ROW Dialog="SelectPermissionsDlg" HCentering="50" VCentering="50" Width="370" Height="270" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel"/>
     <ROW Dialog="SpawnWaitDialog" HCentering="50" VCentering="50" Width="260" Height="85" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Yes" Control_Cancel="No"/>
     <ROW Dialog="VerifyDlg" HCentering="50" VCentering="50" Width="370" Height="270" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel"/>
+    <ROW Dialog="VerifyPermissionsDlg" HCentering="50" VCentering="50" Width="370" Height="270" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiIconsComponent">
     <ROW Name="icon.exe" SourcePath="..\..\build\icon.ico" Index="0"/>
@@ -565,8 +644,8 @@
     <ROW Action="AI_DATA_SETTER" Sequence="54"/>
     <ROW Action="Symphony.exe" Condition="( NOT Installed ) AND ( MSIINSTALLPERUSER )" Sequence="5935"/>
     <ROW Action="Symphony.exe_All_User" Condition="( NOT Installed ) AND ( ALLUSERS )" Sequence="5936"/>
-    <ROW Action="AI_TxtUpdaterInstall" Sequence="5101"/>
     <ROW Action="AI_SETMIXINSTLOCATION" Sequence="748"/>
+    <ROW Action="AI_TxtUpdaterInstall" Sequence="5101"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
     <ROW Action="AI_ResolveKnownFolders" Sequence="52"/>
@@ -623,10 +702,17 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.TxtUpdateComponent">
     <ROW Name="Url" TxtUpdateSet="Symphony.config" FindPattern="&quot;url&quot;\s*:\s*&quot;.*&quot;" ReplacePattern="&quot;url&quot;: &quot;[POD_URL]&quot;" Options="19" Order="0" FileEncoding="-1"/>
-    <ROW Name="MinimizeOnClose" TxtUpdateSet="Symphony.config" FindPattern="&quot;minimizeOnClose&quot;\s*:\s*true," ReplacePattern="&quot;minimizeOnClose&quot; : [MINIMIZE_ON_CLOSE]," Options="19" Order="1" FileEncoding="-1"/>
-    <ROW Name="AlwaysOnTop" TxtUpdateSet="Symphony.config" FindPattern="&quot;alwaysOnTop&quot;\s*:\s*false" ReplacePattern="&quot;alwaysOnTop&quot; : [ALWAYS_ON_TOP]" Options="19" Order="2" FileEncoding="-1"/>
-    <ROW Name="LaunchOnStartup" TxtUpdateSet="Symphony.config" FindPattern="&quot;launchOnStartup&quot;\s*:\s*true," ReplacePattern="&quot;launchOnStartup&quot; : [AUTO_START]," Options="19" Order="3" FileEncoding="-1"/>
     <ROW Name="BringToFront" TxtUpdateSet="Symphony.config" FindPattern="&quot;bringToFront&quot;\s*:\s*false," ReplacePattern="&quot;bringToFront&quot; : [BRING_TO_FRONT]," Options="19" Order="4" FileEncoding="-1"/>
+    <ROW Name="MinimizeOnClose" TxtUpdateSet="Symphony.config" FindPattern="&quot;minimizeOnClose&quot;\s*:\s*true," ReplacePattern="&quot;minimizeOnClose&quot; : [MINIMIZE_ON_CLOSE]," Options="19" Order="1" FileEncoding="-1"/>
+    <ROW Name="Notifications" TxtUpdateSet="Symphony.config" FindPattern="&quot;notifications&quot;\s*:\s*true," ReplacePattern="&quot;notifications&quot; : [NOTIFICATIONS]," Options="19" Order="7" FileEncoding="-1"/>
+    <ROW Name="Media" TxtUpdateSet="Symphony.config" FindPattern="&quot;media&quot;\s*:\s*true," ReplacePattern="&quot;media&quot; : [MEDIA]," Options="19" Order="5" FileEncoding="-1"/>
+    <ROW Name="PointerLock" TxtUpdateSet="Symphony.config" FindPattern="&quot;pointerLock&quot;\s*:\s*true," ReplacePattern="&quot;pointerLock&quot; : [POINTER_LOCK]," Options="19" Order="9" FileEncoding="-1"/>
+    <ROW Name="LaunchOnStartup" TxtUpdateSet="Symphony.config" FindPattern="&quot;launchOnStartup&quot;\s*:\s*true," ReplacePattern="&quot;launchOnStartup&quot; : [AUTO_START]," Options="19" Order="3" FileEncoding="-1"/>
+    <ROW Name="FullScreen" TxtUpdateSet="Symphony.config" FindPattern="&quot;fullscreen&quot;\s*:\s*true," ReplacePattern="&quot;fullscreen&quot; : [FULL_SCREEN]," Options="19" Order="10" FileEncoding="-1"/>
+    <ROW Name="OpenExternal" TxtUpdateSet="Symphony.config" FindPattern="&quot;openExternal&quot;\s*:\s*true," ReplacePattern="&quot;openExternal&quot; : [OPEN_EXTERNAL]," Options="19" Order="11" FileEncoding="-1"/>
+    <ROW Name="AlwaysOnTop" TxtUpdateSet="Symphony.config" FindPattern="&quot;alwaysOnTop&quot;\s*:\s*false" ReplacePattern="&quot;alwaysOnTop&quot; : [ALWAYS_ON_TOP]" Options="19" Order="2" FileEncoding="-1"/>
+    <ROW Name="MidiSysex" TxtUpdateSet="Symphony.config" FindPattern="&quot;midiSysex&quot;\s*:\s*true," ReplacePattern="&quot;midiSysex&quot; : [MIDI_SYSEX]," Options="19" Order="8" FileEncoding="-1"/>
+    <ROW Name="Location" TxtUpdateSet="Symphony.config" FindPattern="&quot;geolocation&quot;\s*:\s*true," ReplacePattern="&quot;geolocation&quot; : [LOCATION]," Options="19" Order="6" FileEncoding="-1"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.TxtUpdateSetComponent">
     <ROW Key="Symphony.config" Component="am.pak" FileName="Symphony.config" Directory="config_Dir" Options="17"/>
