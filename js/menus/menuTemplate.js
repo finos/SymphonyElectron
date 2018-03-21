@@ -4,6 +4,7 @@ const electron = require('electron');
 const { updateConfigField, getMultipleConfigField } = require('../config.js');
 const AutoLaunch = require('auto-launch');
 const { isMac, isWindowsOS } = require('../utils/misc.js');
+const archiveHandler = require('../utils/archiveHandler');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 const eventEmitter = require('../eventEmitter');
@@ -110,6 +111,26 @@ const template = [{
         click() {
             const crashesDirectory = electron.crashReporter.getCrashesDirectory() + '/completed';
             electron.shell.showItemInFolder(crashesDirectory);
+        }
+    },
+    {
+        label: 'Share Logs',
+        click() {
+            
+            let logsPath = isMac ? '/Library/Logs/Symphony/' : '\\AppData\\Roaming\\Symphony\\';
+            let source = electron.app.getPath('home') + logsPath;
+            
+            let destPath = isMac ? '/logs_symphony_' : '\\logs_symphony_';
+            let destination = electron.app.getPath('downloads') + destPath + new Date().getTime() + '.zip';
+            
+            archiveHandler.generateArchiveForDirectory(source, destination, (err) => {
+                if (err) {
+                    electron.dialog.showErrorBox('Failed!', 'Unable to generate log due to -> ' + err);
+                } else {
+                    electron.shell.showItemInFolder(destination);
+                }
+            });
+            
         }
     },
         { type: 'separator' },

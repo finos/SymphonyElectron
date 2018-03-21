@@ -19,7 +19,7 @@
     "prebuild": "npm run rebuild && npm run browserify-preload",
     "browserify-preload": "browserify -o js/preload/_preloadMain.js -x electron --insert-global-vars=__filename,__dirname js/preload/preloadMain.js  --exclude electron-spellchecker",
     "rebuild": "electron-rebuild -f",
-    "test": "npm run lint && npm rebuild --build-from-source && jest --verbose --testPathPattern test && npm run rebuild",
+    "test": "npm run lint && npm rebuild --build-from-source && cross-env ELECTRON_QA=true && jest --verbose --testPathPattern test && npm run rebuild",
     "spectron-test": "npm rebuild --build-from-source && jest --config tests/spectron/jest_spectron.json --runInBand && npm run rebuild",
     "lint": "eslint --ext .js js/",
     "rename-exe": "cd dist/win-unpacked && ren Symphony.exe Symphony-Electron.exe"
@@ -106,6 +106,7 @@
   "dependencies": {
     "@paulcbetts/system-idle-time": "1.0.4",
     "appdirectory": "0.1.0",
+    "archiver": "^2.1.1",
     "async.map": "0.5.2",
     "async.mapseries": "0.5.2",
     "auto-launch": "5.0.5",
