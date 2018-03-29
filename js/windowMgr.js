@@ -3,6 +3,7 @@
 const fs = require('fs');
 const electron = require('electron');
 const app = electron.app;
+const globalShortcut = electron.globalShortcut;
 const crashReporter = electron.crashReporter;
 const BrowserWindow = electron.BrowserWindow;
 const path = require('path');
@@ -230,6 +231,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         });
     });
     
+    registerShortcuts();
     handlePermissionRequests(mainWindow.webContents);
 
     addWindowKey(key, mainWindow);
@@ -511,7 +513,25 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
             });
     });
     
-    // ELECTRON-323: Handle session permission requests
+    /**
+     * Register shortcuts for the app
+     */
+    function registerShortcuts() {
+        
+        // Register dev tools shortcut
+        globalShortcut.register(isMac ? 'Alt+Command+I' : 'Ctrl+Shift+I', () => {
+            let focusedWindow = BrowserWindow.getFocusedWindow();
+            if (focusedWindow && !focusedWindow.isDestroyed()) {
+                focusedWindow.webContents.toggleDevTools();
+            }
+        });
+        
+    }
+    
+    /**
+     * Sets permission requests for the window
+     * @param webContents Web contents of the window
+     */
     function handlePermissionRequests(webContents) {
         
         let session = webContents.session;
