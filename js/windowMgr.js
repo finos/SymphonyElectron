@@ -76,11 +76,17 @@ function removeWindowKey(key) {
 
 /**
  * Gets the parsed url
- * @param url
- * @returns {Url}
+ * @returns {String}
+ * @param appUrl
  */
-function getParsedUrl(url) {
-    return nodeURL.parse(url);
+function getParsedUrl(appUrl) {
+    let parsedUrl = nodeURL.parse(appUrl);
+    if (!parsedUrl.protocol || parsedUrl.protocol !== 'https') {
+        parsedUrl.protocol = 'https:';
+        parsedUrl.slashes = true
+    }
+    let url = nodeURL.format(parsedUrl);
+    return url;
 }
 
 /**
@@ -330,7 +336,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     mainWindow.webContents.on('new-window', handleNewWindow);
 
     function handleNewWindow(event, newWinUrl, frameName, disposition, newWinOptions) {
-
+        
         let newWinParsedUrl = getParsedUrl(newWinUrl);
         let mainWinParsedUrl = getParsedUrl(url);
 

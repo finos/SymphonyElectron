@@ -306,7 +306,7 @@ function createWin(urlFromConfig) {
     // add https protocol if none found.
     let parsedUrl = nodeURL.parse(urlFromConfig);
 
-    if (!parsedUrl.protocol) {
+    if (!parsedUrl.protocol || parsedUrl.protocol !== 'https') {
         parsedUrl.protocol = 'https:';
         parsedUrl.slashes = true
     }
