@@ -77,17 +77,17 @@ function removeWindowKey(key) {
 
 /**
  * Gets the parsed url
- * @returns {String}
+ * @returns {Url}
  * @param appUrl
  */
 function getParsedUrl(appUrl) {
     let parsedUrl = nodeURL.parse(appUrl);
-    if (!parsedUrl.protocol || parsedUrl.protocol !== 'https') {
+    if (!parsedUrl.protocol || parsedUrl.protocol !== 'https:') {
         parsedUrl.protocol = 'https:';
         parsedUrl.slashes = true
     }
     let url = nodeURL.format(parsedUrl);
-    return url;
+    return nodeURL.parse(url);
 }
 
 /**
