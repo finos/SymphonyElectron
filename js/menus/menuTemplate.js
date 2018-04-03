@@ -82,15 +82,6 @@ const template = [{
         }
     },
     {
-        label: 'Toggle Developer Tools',
-        accelerator: isMac ? 'Alt+Command+I' : 'Ctrl+Shift+I',
-        click(item, focusedWindow) {
-            if (focusedWindow) {
-                focusedWindow.webContents.toggleDevTools();
-            }
-        }
-    },
-    {
         label: 'Set Downloads Directory',
         click() {
             electron.dialog.showOpenDialog({
