@@ -105,9 +105,9 @@ describe('Tests for Full screen', () => {
             robot.mouseClick();
             robot.setKeyboardDelay(100);
 
-            // Key tap 7 times as "Enter Full Screen" is in the
-            // 7th position under view menu item
-            for (let i = 0; i < 7; i++) {
+            // Key tap 6 times as "Enter Full Screen" is in the
+            // 6th position under view menu item
+            for (let i = 0; i < 6; i++) {
                 robot.keyTap('down');
             }
             robot.keyTap('enter');
