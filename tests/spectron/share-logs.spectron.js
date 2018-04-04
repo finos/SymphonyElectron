@@ -143,8 +143,6 @@ describe('Tests for Generating & Sharing Logs', () => {
                 
             });
             
-        } else {
-            // TODO: for windows, write css based automation test
         }
     });
     

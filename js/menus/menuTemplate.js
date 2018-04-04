@@ -98,13 +98,6 @@ const template = [{
             });
         }
     },
-    {
-        label: 'Open Crashes Directory',
-        click() {
-            const crashesDirectory = electron.crashReporter.getCrashesDirectory() + '/completed';
-            electron.shell.showItemInFolder(crashesDirectory);
-        }
-    },
         { type: 'separator' },
         buildMenuItem('resetzoom'),
         buildMenuItem('zoomin'),
@@ -151,16 +144,23 @@ const template = [{
                         
                         let destination = electron.app.getPath('downloads') + destPath + timestamp + '.zip';
             
-                        archiveHandler.generateArchiveForDirectory(source, destination, (err) => {
-                            if (err) {
-                                electron.dialog.showErrorBox('Failed!', 'Unable to generate logs due to -> ' + err);
-                            } else {
+                        archiveHandler.generateArchiveForDirectory(source, destination)
+                            .then(() => {
                                 electron.shell.showItemInFolder(destination);
-                            }
-                        });
+                            })
+                            .catch((err) => {
+                                electron.dialog.showErrorBox('Failed!', 'Unable to generate logs due to -> ' + err);
+                            })
             
                     }
                 },
+                {
+                    label: 'Open Crashes Directory',
+                    click() {
+                        const crashesDirectory = electron.crashReporter.getCrashesDirectory() + '/completed';
+                        electron.shell.showItemInFolder(crashesDirectory);
+                    }
+                }
             ]
         }
     ]
