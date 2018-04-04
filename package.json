@@ -107,7 +107,7 @@
   "dependencies": {
     "@paulcbetts/system-idle-time": "1.0.4",
     "appdirectory": "0.1.0",
-    "archiver": "^2.1.1",
+    "archiver": "2.1.1",
     "async.map": "0.5.2",
     "async.mapseries": "0.5.2",
     "auto-launch": "5.0.5",
