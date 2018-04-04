@@ -132,7 +132,7 @@ const template = [{
             label: 'Troubleshooting',
             submenu: [
                 {
-                    label: 'Show Logs in Finder',
+                    label: isMac ? 'Show Logs in Finder' : 'Show Logs in Explorer',
                     click() {
             
                         const MAC_LOGS_PATH = '/Library/Logs/Symphony/';
