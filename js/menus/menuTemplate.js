@@ -1,6 +1,7 @@
 'use strict';
 
 const electron = require('electron');
+const fs = require('fs');
 const { updateConfigField, getMultipleConfigField } = require('../config.js');
 const AutoLaunch = require('auto-launch');
 const { isMac, isWindowsOS } = require('../utils/misc.js');
@@ -104,26 +105,6 @@ const template = [{
             electron.shell.showItemInFolder(crashesDirectory);
         }
     },
-    {
-        label: 'Share Logs',
-        click() {
-            
-            let logsPath = isMac ? '/Library/Logs/Symphony/' : '\\AppData\\Roaming\\Symphony\\';
-            let source = electron.app.getPath('home') + logsPath;
-            
-            let destPath = isMac ? '/logs_symphony_' : '\\logs_symphony_';
-            let destination = electron.app.getPath('downloads') + destPath + new Date().getTime() + '.zip';
-            
-            archiveHandler.generateArchiveForDirectory(source, destination, (err) => {
-                if (err) {
-                    electron.dialog.showErrorBox('Failed!', 'Unable to generate log due to -> ' + err);
-                } else {
-                    electron.shell.showItemInFolder(destination);
-                }
-            });
-            
-        }
-    },
         { type: 'separator' },
         buildMenuItem('resetzoom'),
         buildMenuItem('zoomin'),
@@ -141,11 +122,46 @@ const template = [{
 },
 {
     role: 'help',
-    submenu: [
+    submenu: 
+    [
         {
             label: 'Learn More',
             click() { electron.shell.openExternal('https://www.symphony.com'); }
-        }]
+        },
+        {
+            label: 'Troubleshooting',
+            submenu: [
+                {
+                    label: 'Show Logs in Finder',
+                    click() {
+            
+                        const MAC_LOGS_PATH = '/Library/Logs/Symphony/';
+                        const WINDOWS_LOGS_PATH = '\\AppData\\Roaming\\Symphony\\';
+            
+                        let logsPath = isMac ? MAC_LOGS_PATH : WINDOWS_LOGS_PATH;
+                        let source = electron.app.getPath('home') + logsPath;
+            
+                        if (!fs.existsSync(source)) {
+                            electron.dialog.showErrorBox('Failed!', 'No logs are available to share');
+                            return;
+                        }
+            
+                        let destPath = isMac ? '/logs_symphony_' : '\\logs_symphony_';
+                        let destination = electron.app.getPath('downloads') + destPath + new Date().getTime() + '.zip';
+            
+                        archiveHandler.generateArchiveForDirectory(source, destination, (err) => {
+                            if (err) {
+                                electron.dialog.showErrorBox('Failed!', 'Unable to generate logs due to -> ' + err);
+                            } else {
+                                electron.shell.showItemInFolder(destination);
+                            }
+                        });
+            
+                    }
+                },
+            ]
+        }
+    ]
 }
 ];
 
