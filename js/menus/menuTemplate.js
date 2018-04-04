@@ -147,7 +147,9 @@ const template = [{
                         }
             
                         let destPath = isMac ? '/logs_symphony_' : '\\logs_symphony_';
-                        let destination = electron.app.getPath('downloads') + destPath + new Date().getTime() + '.zip';
+                        let timestamp = new Date().getTime();
+                        
+                        let destination = electron.app.getPath('downloads') + destPath + timestamp + '.zip';
             
                         archiveHandler.generateArchiveForDirectory(source, destination, (err) => {
                             if (err) {
