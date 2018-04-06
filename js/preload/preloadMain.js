@@ -122,19 +122,6 @@ function createAPI() {
         ScreenSnippet: remote.require('./screenSnippet/index.js').ScreenSnippet,
 
         /**
-         * Provides API to crash the renderer process that calls this function
-         * Is only used for demos.
-         */
-        crashRendererProcess: function () {
-            // For practical purposes, we don't allow
-            // this method to work in non-dev environments
-            if (!process.env.ELECTRON_DEV) {
-                return;
-            }
-            process.crash();
-        },
-
-        /**
          * Provides api for client side searching
          * using the SymphonySearchEngine library
          * details in ./search/search.js & ./search/searchLibrary.js
@@ -385,9 +372,13 @@ function createAPI() {
 
     });
 
+    /**
+     * an event triggered by the main process to start crash reporter
+     * in the render thread
+     */
     local.ipcRenderer.on('register-crash-reporter', (event, arg) => {
-        if (arg) {            
-            crashReporter.start({companyName: arg.companyName, submitURL: arg.submitURL, uploadToServer: arg.uploadToServer, extra: {'process': arg.process, podUrl: arg.podUrl}});
+        if (arg && typeof arg === 'object') {
+            crashReporter.start(arg);
         }
     });
 
