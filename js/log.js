@@ -1,7 +1,6 @@
 'use strict';
 
 const getCmdLineArg = require('./utils/getCmdLineArg.js');
-const { isDevEnv } = require('./utils/misc');
 const logLevels = require('./enums/logLevels.js');
 
 const MAX_LOG_QUEUE_LENGTH = 100;
@@ -18,7 +17,7 @@ class Logger {
         this.logQueue = [];
 
         // Initializes the local logger
-        if (isDevEnv) {
+        if (!process.env.ELECTRON_QA) {
             initializeLocalLogger();
         }
     }
@@ -35,7 +34,7 @@ class Logger {
             return;
         }
 
-        if (isDevEnv) {
+        if (!process.env.ELECTRON_QA) {
             logLocally(level, details);
         }
 

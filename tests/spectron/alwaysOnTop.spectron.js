@@ -138,9 +138,9 @@ describe('Tests for Always on top', () => {
             robot.setMouseDelay(200);
             robot.moveMouse(190, 0);
             robot.mouseClick();
-            // Key tap 9 times as "Always on Top" is in the
-            // 9th position under view menu item
-            for (let i = 0; i < 9; i++) {
+            // Key tap 8 times as "Always on Top" is in the
+            // 8th position under view menu item
+            for (let i = 0; i < 8; i++) {
                 robot.keyTap('down');
             }
             robot.keyTap('enter');

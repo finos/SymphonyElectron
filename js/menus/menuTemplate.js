@@ -1,9 +1,11 @@
 'use strict';
 
 const electron = require('electron');
+const fs = require('fs');
 const { updateConfigField, getMultipleConfigField } = require('../config.js');
 const AutoLaunch = require('auto-launch');
 const { isMac, isWindowsOS } = require('../utils/misc.js');
+const archiveHandler = require('../utils/archiveHandler');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 const eventEmitter = require('../eventEmitter');
@@ -96,13 +98,6 @@ const template = [{
             });
         }
     },
-    {
-        label: 'Open Crashes Directory',
-        click() {
-            const crashesDirectory = electron.crashReporter.getCrashesDirectory() + '/completed';
-            electron.shell.showItemInFolder(crashesDirectory);
-        }
-    },
         { type: 'separator' },
         buildMenuItem('resetzoom'),
         buildMenuItem('zoomin'),
@@ -120,11 +115,55 @@ const template = [{
 },
 {
     role: 'help',
-    submenu: [
+    submenu: 
+    [
         {
             label: 'Learn More',
             click() { electron.shell.openExternal('https://www.symphony.com'); }
-        }]
+        },
+        {
+            label: 'Troubleshooting',
+            submenu: [
+                {
+                    label: isMac ? 'Show Logs in Finder' : 'Show Logs in Explorer',
+                    click() {
+            
+                        const MAC_LOGS_PATH = '/Library/Logs/Symphony/';
+                        const WINDOWS_LOGS_PATH = '\\AppData\\Roaming\\Symphony\\';
+            
+                        let logsPath = isMac ? MAC_LOGS_PATH : WINDOWS_LOGS_PATH;
+                        let source = electron.app.getPath('home') + logsPath;
+            
+                        if (!fs.existsSync(source)) {
+                            electron.dialog.showErrorBox('Failed!', 'No logs are available to share');
+                            return;
+                        }
+            
+                        let destPath = isMac ? '/logs_symphony_' : '\\logs_symphony_';
+                        let timestamp = new Date().getTime();
+                        
+                        let destination = electron.app.getPath('downloads') + destPath + timestamp + '.zip';
+            
+                        archiveHandler.generateArchiveForDirectory(source, destination)
+                            .then(() => {
+                                electron.shell.showItemInFolder(destination);
+                            })
+                            .catch((err) => {
+                                electron.dialog.showErrorBox('Failed!', 'Unable to generate logs due to -> ' + err);
+                            })
+            
+                    }
+                },
+                {
+                    label: 'Open Crashes Directory',
+                    click() {
+                        const crashesDirectory = electron.crashReporter.getCrashesDirectory() + '/completed';
+                        electron.shell.showItemInFolder(crashesDirectory);
+                    }
+                }
+            ]
+        }
+    ]
 }
 ];
 

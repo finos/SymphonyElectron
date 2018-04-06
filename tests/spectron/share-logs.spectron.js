@@ -1,44 +1,47 @@
 const Application = require('./spectronSetup');
 const { isMac } = require('../../js/utils/misc');
 const robot = require('robotjs');
+const fs = require('fs');
+const glob = require('glob');
 
-let configPath;
+let downloadsPath;
+
 let app = new Application({});
 
-describe('Tests for Full screen', () => {
-
+describe('Tests for Generating & Sharing Logs', () => {
+    
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
-
+    
     beforeAll((done) => {
         return app.startApplication().then((startedApp) => {
             app = startedApp;
-            getConfigPath().then((config) => {
-                configPath = config;
+            getDownloadsPath().then((path) => {
+                downloadsPath = path;
                 done();
             }).catch((err) => {
-                done.fail(new Error(`full-screen failed in getConfigPath with error: ${err}`));
+                done.fail(new Error(`Unable to start application error: ${err}`));
             });
         }).catch((err) => {
             done.fail(new Error(`Unable to start application error: ${err}`));
         });
     });
-
-    function getConfigPath() {
+    
+    function getDownloadsPath() {
         return new Promise(function (resolve, reject) {
-            app.client.addCommand('getUserDataPath', function () {
+            app.client.addCommand('getDownloadsPath', function () {
                 return this.execute(function () {
-                    return require('electron').remote.app.getPath('userData');
+                    return require('electron').remote.app.getPath('downloads');
                 })
             });
-            app.client.getUserDataPath().then((userConfigPath) => {
-                resolve(userConfigPath.value)
+            app.client.getDownloadsPath().then((downloadsPath) => {
+                resolve(downloadsPath.value)
             }).catch((err) => {
                 reject(err);
             });
         });
     }
-
+    
     afterAll((done) => {
         if (app && app.isRunning()) {
             jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
@@ -57,38 +60,38 @@ describe('Tests for Full screen', () => {
             done();
         }
     });
-
+    
     it('should launch the app', (done) => {
         return app.client.waitUntilWindowLoaded().then(() => {
             return app.client.getWindowCount().then((count) => {
                 expect(count === 1).toBeTruthy();
                 done();
             }).catch((err) => {
-                done.fail(new Error(`full-screen failed in getWindowCount with error: ${err}`));
+                done.fail(new Error(`share-logs failed in getWindowCount with error: ${err}`));
             });
         }).catch((err) => {
-            done.fail(new Error(`full-screen failed in waitUntilWindowLoaded with error: ${err}`));
+            done.fail(new Error(`share-logs failed in waitUntilWindowLoaded with error: ${err}`));
         });
     });
-
+    
     it('should check window count', (done) => {
         return app.client.getWindowCount().then((count) => {
             expect(count === 1).toBeTruthy();
             done();
         }).catch((err) => {
-            done.fail(new Error(`full-screen failed in getWindowCount with error: ${err}`));
+            done.fail(new Error(`share-logs failed in waitUntilWindowLoaded with error: ${err}`));
         });
     });
-
+    
     it('should check browser window visibility', (done) => {
         return app.browserWindow.isVisible().then((isVisible) => {
             expect(isVisible).toBeTruthy();
             done();
         }).catch((err) => {
-            done.fail(new Error(`full-screen failed in getWindowCount with error: ${err}`));
+            done.fail(new Error(`share-logs failed in isVisible with error: ${err}`));
         });
     });
-
+    
     it('should bring the app to top', () => {
         app.browserWindow.focus();
         return app.browserWindow.setAlwaysOnTop(true).then(() => {
@@ -97,44 +100,50 @@ describe('Tests for Full screen', () => {
             });
         });
     });
-
-    it('should set the app full screen and check whether it is in full screen', (done) => {
+    
+    it('should generate logs', (done) => {
+        robot.setKeyboardDelay(500);
         if (isMac) {
-            robot.setMouseDelay(100);
-            robot.moveMouseSmooth(205, 10);
+    
+            const x = 305;
+            const y = 8;
+            robot.moveMouseSmooth(x, y);
             robot.mouseClick();
-            robot.setKeyboardDelay(100);
-
-            // Key tap 6 times as "Enter Full Screen" is in the
-            // 6th position under view menu item
-            for (let i = 0; i < 6; i++) {
-                robot.keyTap('down');
-            }
+            robot.keyTap('down');
+            robot.keyTap('down');
+            robot.keyTap('right');
             robot.keyTap('enter');
-
-            return app.browserWindow.isFullScreen().then((fullscreen) => {
-                expect(fullscreen).toBeTruthy();
-                done();
-            }).catch((err) => {
-                done.fail(new Error(`full-screen failed in isFullScreen with error: ${err}`));
-            })
-        } else {
-            return app.browserWindow.getBounds().then((bounds) => {
-                robot.setMouseDelay(100);
-                let x = bounds.x + 200;
-                let y = bounds.y + 200;
-                robot.moveMouseSmooth(x, y);
-                robot.mouseClick();
-
-                robot.keyTap('f11');
-
-                return app.browserWindow.isFullScreen().then((fullscreen) => {
-                    expect(fullscreen).toBeTruthy();
-                    done();
-                }).catch((err) => {
-                    done.fail(new Error(`full-screen failed in isFullScreen with error: ${err}`));
-                })
+            
+            console.log(downloadsPath);
+            
+            glob(downloadsPath + '/logs_symphony*.zip', function (err, files) {
+                
+                if (err || files.length < 1) {
+                    return done.fail(new Error(`log was not generated / file doesn't exist`));
+                }
+                
+                let i = files.length;
+                
+                files.forEach(function (file) {
+                    
+                    fs.unlink(file, function (err) {
+                        
+                        i--;
+                        
+                        if (err) {
+                            console.log('unable to delete file -> ' + file);
+                        }
+                        
+                        if (i <=0 ) {
+                            return done();
+                        }
+                        
+                    });
+                });
+                
             });
+            
         }
     });
+    
 });
