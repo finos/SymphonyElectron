@@ -53,18 +53,18 @@ function initCrashReporterMain(extras) {
 
 
 /**
- * Method to initialize crash reporter for render process
+ * Method to initialize crash reporter for renderer process
  *
  * @param browserWindow {Electron.BrowserWindow}
  * @param extras {Object}
  */
 function initCrashReporterRenderer(browserWindow, extras) {
     if (browserWindow && browserWindow.webContents && !browserWindow.isDestroyed()) {
-        getCrashReporterConfig(extras).then((renderCrashReporterData) => {
-            browserWindow.webContents.send('register-crash-reporter', renderCrashReporterData);
+        getCrashReporterConfig(extras).then((rendererCrashReporterData) => {
+            browserWindow.webContents.send('register-crash-reporter', rendererCrashReporterData);
         }).catch((err) => log.send(
             logLevels.ERROR,
-            'Unable to initialize crash reporter for render process. Error is ->  ' + err
+            'Unable to initialize crash reporter for renderer process. Error is ->  ' + err
         ));
     }
 }
