@@ -127,7 +127,8 @@ const template = [{
                 {
                     label: isMac ? 'Show Logs in Finder' : 'Show Logs in Explorer',
                     click() {
-            
+
+                        const FILE_EXTENSIONS = [ '.log' ];
                         const MAC_LOGS_PATH = '/Library/Logs/Symphony/';
                         const WINDOWS_LOGS_PATH = '\\AppData\\Roaming\\Symphony\\';
             
@@ -144,7 +145,7 @@ const template = [{
                         
                         let destination = electron.app.getPath('downloads') + destPath + timestamp + '.zip';
             
-                        archiveHandler.generateArchiveForDirectory(source, destination)
+                        archiveHandler.generateArchiveForDirectory(source, destination, FILE_EXTENSIONS)
                             .then(() => {
                                 electron.shell.showItemInFolder(destination);
                             })
@@ -157,8 +158,27 @@ const template = [{
                 {
                     label: 'Open Crashes Directory',
                     click() {
-                        const crashesDirectory = electron.crashReporter.getCrashesDirectory() + '/completed';
-                        electron.shell.showItemInFolder(crashesDirectory);
+                        const FILE_EXTENSIONS = isMac ? [ '.dmp' ] : [ '.dmp', '.txt' ];
+                        const crashesDirectory = electron.crashReporter.getCrashesDirectory();
+                        let source = isMac ? crashesDirectory + '/completed' : crashesDirectory;
+
+                        if (!fs.existsSync(crashesDirectory)) {
+                            electron.dialog.showErrorBox('Failed!', 'No crashes available to share');
+                            return;
+                        }
+
+                        let destPath = isMac ? '/crashes_symphony_' : '\\crashes_symphony_';
+                        let timestamp = new Date().getTime();
+
+                        let destination = electron.app.getPath('downloads') + destPath + timestamp + '.zip';
+
+                        archiveHandler.generateArchiveForDirectory(source, destination, FILE_EXTENSIONS)
+                            .then(() => {
+                                electron.shell.showItemInFolder(destination);
+                            })
+                            .catch((err) => {
+                                electron.dialog.showErrorBox('Failed!', 'Unable to generate crash report due to -> ' + err);
+                            });
                     }
                 }
             ]

@@ -4,7 +4,16 @@ const fs = require('fs');
 const path = require('path');
 const archiver = require('archiver');
 
-function generateArchiveForDirectory(source, destination) {
+/**
+ * Archives files in the source directory
+ * that matches the given file extension
+ *
+ * @param source {String} source path
+ * @param destination {String} destination path
+ * @param fileExtensions {Array} array of file ext
+ * @return {Promise<any>}
+ */
+function generateArchiveForDirectory(source, destination, fileExtensions) {
     
     return new Promise((resolve, reject) => {
         
@@ -22,11 +31,21 @@ function generateArchiveForDirectory(source, destination) {
         archive.pipe(output);
         
         let files = fs.readdirSync(source);
-        files.forEach((file) => {
-            if (path.extname(file) === '.log') {
-                archive.file(source + '/' + file, { name: 'logs/' + file });
-            }
-        });
+        files
+            .filter((file) => fileExtensions.indexOf(path.extname(file)) !== -1)
+            .forEach((file) => {
+                switch (path.extname(file)) {
+                    case '.log':
+                        archive.file(source + '/' + file, { name: 'logs/' + file });
+                        break;
+                    case '.dmp':
+                    case '.txt': // on Windows .txt files will be created as part of crash dump
+                        archive.file(source + '/' + file, { name: 'crashes/' + file });
+                        break;
+                    default:
+                        break;
+                }
+            });
         
         archive.finalize();
         
