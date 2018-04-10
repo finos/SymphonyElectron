@@ -23,7 +23,7 @@ const dirs = new AppDirectory('Symphony');
 let userConfig;
 let globalConfig;
 
-let ignoreSettings = ['minimizeOnClose', 'launchOnStartup', 'alwaysOnTop', 'url'];
+let ignoreSettings = ['minimizeOnClose', 'launchOnStartup', 'alwaysOnTop', 'url', 'memoryRefresh'];
 
 /**
  * Tries to read given field from user config file, if field doesn't exist
