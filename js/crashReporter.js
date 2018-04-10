@@ -4,6 +4,8 @@ const { getMultipleConfigField } = require('./config.js');
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
 
+let configData;
+
 /**
  * Method that returns all the required field for crash reporter
  *
@@ -12,20 +14,36 @@ const logLevels = require('./enums/logLevels.js');
  */
 function getCrashReporterConfig(extras) {
     return new Promise((resolve, reject) => {
-        getMultipleConfigField(['url', 'crashReporter'])
-            .then((configData) => {
 
-                if (!configData && !configData.crashReporter && !configData.crashReporter.companyName) {
+        if (configData && configData.crashReporter) {
+            let crashReporterData = {
+                companyName: configData.crashReporter.companyName,
+                submitURL: configData.crashReporter.submitURL,
+                uploadToServer: configData.crashReporter.uploadToServer,
+                extra: Object.assign(
+                    {podUrl: configData.url},
+                    extras
+                )
+            };
+            resolve(crashReporterData);
+            return;
+        }
+
+        getMultipleConfigField(['url', 'crashReporter'])
+            .then((data) => {
+
+                if (!data && !data.crashReporter && !data.crashReporter.companyName) {
                     reject('company name cannot be empty');
                     return;
                 }
 
+                configData = data;
                 let crashReporterData = {
-                    companyName: configData.crashReporter.companyName,
-                    submitURL: configData.crashReporter.submitURL,
-                    uploadToServer: configData.crashReporter.uploadToServer,
+                    companyName: data.crashReporter.companyName,
+                    submitURL: data.crashReporter.submitURL,
+                    uploadToServer: data.crashReporter.uploadToServer,
                     extra: Object.assign(
-                        {podUrl: configData.url},
+                        {podUrl: data.url},
                         extras
                     )
                 };
