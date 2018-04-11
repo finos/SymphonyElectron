@@ -7,7 +7,9 @@ const systemIdleTime = require('@paulcbetts/system-idle-time');
 const { getConfigField } = require('./config');
 
 const maxMemory = 800;
-let maxIdleTime = 2 * 60 * 1000;
+let maxIdleTime = 4 * 60 * 1000;
+let reloadThreshold = 30 * 60 * 1000;
+let reloadedTimeStamp;
 
 // once a minute
 setInterval(gatherMemory, 1000 * 60);
@@ -34,7 +36,9 @@ function gatherMemory() {
  */
 function optimizeMemory(memoryInfo) {
     const memoryConsumed = (memoryInfo && memoryInfo.workingSetSize / 1024) || 0;
-    if (memoryConsumed > maxMemory && systemIdleTime.getIdleTime() > maxIdleTime) {
+    const canReload = (!reloadedTimeStamp || (new Date().getTime() - reloadedTimeStamp) > reloadThreshold);
+
+    if (memoryConsumed > maxMemory && systemIdleTime.getIdleTime() > maxIdleTime && canReload) {
         getConfigField('memoryRefresh')
             .then((enabled) => {
                 if (enabled) {
@@ -42,6 +46,7 @@ function optimizeMemory(memoryInfo) {
 
                     if (mainWindow && !mainWindow.isDestroyed()) {
                         setIsAutoReload(true);
+                        reloadedTimeStamp = new Date().getTime();
                         log.send(logLevels.INFO, 'Reloading the app to optimize memory usage');
                         mainWindow.webContents.reload();
                     }
@@ -50,15 +55,6 @@ function optimizeMemory(memoryInfo) {
     }
 }
 
-/**
- * Update the value same as the user idle time
- * @param period
- */
-function setMaxIdleTime(period) {
-    maxIdleTime = period;
-}
-
 module.exports = {
-    setMaxIdleTime,
     optimizeMemory
 };

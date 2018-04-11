@@ -71,7 +71,7 @@ setInterval(() => {
         cmd: apiCmds.optimizeMemoryConsumption,
         memory: memory
     });
-}, 1000 * 60);
+}, 1000 * 60 * 4);
 
 createAPI();
 

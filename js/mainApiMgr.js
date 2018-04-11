@@ -17,7 +17,7 @@ const { bringToFront } = require('./bringToFront.js');
 const eventEmitter = require('./eventEmitter');
 const { isMac } = require('./utils/misc');
 const { openScreenPickerWindow } = require('./desktopCapturer');
-const { setMaxIdleTime, optimizeMemory } = require('./memoryMonitor');
+const { optimizeMemory } = require('./memoryMonitor');
 
 const apiEnums = require('./enums/api.js');
 const apiCmds = apiEnums.cmds;
@@ -119,8 +119,6 @@ electron.ipcMain.on(apiName, (event, arg) => {
             if (typeof arg.period === 'number') {
                 // renderer window that has a registered activity detection from JS.
                 activityDetection.setActivityWindow(arg.period, event.sender);
-                // update the max user idle time for optimizing memory
-                setMaxIdleTime(arg.period);
             }
             break;
         case apiCmds.showNotificationSettings:
