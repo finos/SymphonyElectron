@@ -16,7 +16,7 @@ const archiver = require('archiver');
 function generateArchiveForDirectory(source, destination, fileExtensions) {
     
     return new Promise((resolve, reject) => {
-        
+
         let output = fs.createWriteStream(destination);
         let archive = archiver('zip', {zlib: {level: 9}});
 
@@ -29,7 +29,7 @@ function generateArchiveForDirectory(source, destination, fileExtensions) {
         });
         
         archive.pipe(output);
-        
+
         let files = fs.readdirSync(source);
         files
             .filter((file) => fileExtensions.indexOf(path.extname(file)) !== -1)

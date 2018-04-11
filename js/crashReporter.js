@@ -4,7 +4,8 @@ const { getMultipleConfigField } = require('./config.js');
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
 
-let configData;
+const configFields = ['url', 'crashReporter'];
+let crashReporterData;
 
 /**
  * Method that returns all the required field for crash reporter
@@ -15,30 +16,21 @@ let configData;
 function getCrashReporterConfig(extras) {
     return new Promise((resolve, reject) => {
 
-        if (configData && configData.crashReporter) {
-            let crashReporterData = {
-                companyName: configData.crashReporter.companyName,
-                submitURL: configData.crashReporter.submitURL,
-                uploadToServer: configData.crashReporter.uploadToServer,
-                extra: Object.assign(
-                    {podUrl: configData.url},
-                    extras
-                )
-            };
+        if (crashReporterData && crashReporterData.companyName) {
+            crashReporterData.extra = Object.assign(crashReporterData.extra, extras);
             resolve(crashReporterData);
             return;
         }
 
-        getMultipleConfigField(['url', 'crashReporter'])
+        getMultipleConfigField(configFields)
             .then((data) => {
 
                 if (!data && !data.crashReporter && !data.crashReporter.companyName) {
-                    reject('company name cannot be empty');
+                    reject('Company name cannot be empty');
                     return;
                 }
 
-                configData = data;
-                let crashReporterData = {
+                crashReporterData = {
                     companyName: data.crashReporter.companyName,
                     submitURL: data.crashReporter.submitURL,
                     uploadToServer: data.crashReporter.uploadToServer,
@@ -61,7 +53,7 @@ function initCrashReporterMain(extras) {
         try {
             crashReporter.start(mainCrashReporterData);
         } catch (err) {
-            log.send(logLevels.ERROR, 'failed to start crash reporter main process. Error is ->  ' + err);
+            log.send(logLevels.ERROR, 'Failed to start crash reporter main process. Error is ->  ' + err);
         }
     }).catch((err) => log.send(
         logLevels.ERROR,

@@ -162,7 +162,7 @@ const template = [{
                         const crashesDirectory = electron.crashReporter.getCrashesDirectory();
                         let source = isMac ? crashesDirectory + '/completed' : crashesDirectory;
 
-                        if (!fs.existsSync(crashesDirectory)) {
+                        if (!fs.existsSync(source) || fs.readdirSync(source).length === 0) {
                             electron.dialog.showErrorBox('Failed!', 'No crashes available to share');
                             return;
                         }
