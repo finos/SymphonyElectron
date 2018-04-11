@@ -156,7 +156,7 @@ const template = [{
                     }
                 },
                 {
-                    label: 'Open Crashes Directory',
+                    label: isMac ? 'Show crash dump in Finder' : 'Show crash dump in Explorer',
                     click() {
                         const FILE_EXTENSIONS = isMac ? [ '.dmp' ] : [ '.dmp', '.txt' ];
                         const crashesDirectory = electron.crashReporter.getCrashesDirectory();
