@@ -16,13 +16,15 @@ const configFields = [
     'launchOnStartup',
     'alwaysOnTop',
     'notificationSettings',
-    'bringToFront'
+    'bringToFront',
+    'memoryRefresh'
 ];
 
 let minimizeOnClose = false;
 let launchOnStartup = false;
 let isAlwaysOnTop = false;
 let bringToFront = false;
+let memoryRefresh = false;
 
 let symphonyAutoLauncher;
 
@@ -305,6 +307,22 @@ function getTemplate(app) {
         }
     });
 
+    // Window/View menu -> separator
+    template[index].submenu.push({
+        type: 'separator',
+    });
+
+    // Window - View menu -> memoryRefresh
+    template[index].submenu.push({
+        label: 'Memory Refresh',
+        type: 'checkbox',
+        checked: memoryRefresh,
+        click: function(item) {
+            memoryRefresh = item.checked;
+            updateConfigField('memoryRefresh', memoryRefresh);
+        }
+    });
+
     if (!isMac) {
         template[index].submenu.push({
             label: 'Quit Symphony',
@@ -355,6 +373,9 @@ function setCheckboxValues() {
                                 break;
                             case 'bringToFront':
                                 bringToFront = configData[key];
+                                break;
+                            case 'memoryRefresh':
+                                memoryRefresh = configData[key];
                                 break;
                             default:
                                 break;

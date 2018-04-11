@@ -5,6 +5,13 @@ const throttle = require('../utils/throttle');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 
+let setIsAutoReload;
+if (!process.env.ELECTRON_QA) {
+    /* eslint-disable global-require */
+    setIsAutoReload = require('../windowMgr').setIsAutoReload;
+    /* eslint-enable global-require */
+}
+
 let maxIdleTime;
 let activityWindow;
 let intervalId;
@@ -51,6 +58,9 @@ function monitorUserActivity() {
         if (systemIdleTime.getIdleTime() < maxIdleTime) {
             // If system is active, send an update to the app bridge and clear the timer
             sendActivity();
+            if (typeof setIsAutoReload === 'function') {
+                setIsAutoReload(false);
+            }
             clearInterval(intervalId);
             intervalId = undefined;
         }

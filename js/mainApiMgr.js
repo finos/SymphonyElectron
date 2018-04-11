@@ -17,6 +17,7 @@ const { bringToFront } = require('./bringToFront.js');
 const eventEmitter = require('./eventEmitter');
 const { isMac } = require('./utils/misc');
 const { openScreenPickerWindow } = require('./desktopCapturer');
+const { optimizeMemory } = require('./memoryMonitor');
 
 const apiEnums = require('./enums/api.js');
 const apiCmds = apiEnums.cmds;
@@ -145,6 +146,11 @@ electron.ipcMain.on(apiName, (event, arg) => {
             var browserWin = electron.BrowserWindow.fromWebContents(event.sender);
             if (browserWin && !browserWin.isDestroyed()) {
                 windowMgr.getMenu().popup(browserWin, { x: 20, y: 15, async: true });
+            }
+            break;
+        case apiCmds.optimizeMemoryConsumption:
+            if (typeof arg.memory === 'object' && typeof arg.memory.workingSetSize === 'number') {
+                optimizeMemory(arg.memory);
             }
             break;
         default:

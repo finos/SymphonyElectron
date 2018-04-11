@@ -40,6 +40,7 @@ let alwaysOnTop = false;
 let position = 'lower-right';
 let display;
 let sandboxed = false;
+let isAutoReload = false;
 
 // By default, we set the user's default download directory
 let defaultDownloadsDirectory = app.getPath("downloads");
@@ -710,6 +711,13 @@ function setIsOnline(status) {
  * without giving focus
  */
 function activate(windowName, shouldFocus = true) {
+
+    // don't activate when the app is reloaded programmatically
+    // Electron-136
+    if (isAutoReload) {
+        return null;
+    }
+
     let keys = Object.keys(windows);
     for (let i = 0, len = keys.length; i < len; i++) {
         let window = windows[keys[i]];
@@ -733,6 +741,16 @@ function activate(windowName, shouldFocus = true) {
         }
     }
     return null;
+}
+
+/**
+ * Sets if is auto reloading the app
+ * @param reload
+ */
+function setIsAutoReload(reload) {
+    if (typeof reload === 'boolean') {
+        isAutoReload = reload
+    }
 }
 
 /**
@@ -972,5 +990,6 @@ module.exports = {
     activate: activate,
     setBoundsChangeWindow: setBoundsChangeWindow,
     verifyDisplays: verifyDisplays,
-    getMenu: getMenu
+    getMenu: getMenu,
+    setIsAutoReload: setIsAutoReload
 };
