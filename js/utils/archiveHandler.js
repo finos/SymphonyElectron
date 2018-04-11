@@ -41,7 +41,7 @@ function generateArchiveForDirectory(source, destination, fileExtensions) {
         mapMimeType(filtered, source)
             .then((mappedData) => {
                 if (mappedData.length > 0) {
-                    mappedData.map((data) => {
+                    mappedData.forEach((data) => {
                         switch (data.mimeType) {
                             case 'text/plain':
                                 if (path.extname(data.file) === '.txt') {
