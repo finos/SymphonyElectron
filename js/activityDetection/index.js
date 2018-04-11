@@ -4,6 +4,7 @@ const systemIdleTime = require('@paulcbetts/system-idle-time');
 const throttle = require('../utils/throttle');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
+const { setIsAutoReload } = require('../windowMgr');
 
 let maxIdleTime;
 let activityWindow;
@@ -51,6 +52,7 @@ function monitorUserActivity() {
         if (systemIdleTime.getIdleTime() < maxIdleTime) {
             // If system is active, send an update to the app bridge and clear the timer
             sendActivity();
+            setIsAutoReload(false);
             clearInterval(intervalId);
             intervalId = undefined;
         }

@@ -2,12 +2,12 @@
 
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
-const { getMainWindow } = require('./windowMgr');
+const { getMainWindow, setIsAutoReload } = require('./windowMgr');
 const systemIdleTime = require('@paulcbetts/system-idle-time');
 const { getConfigField } = require('./config');
 
-const maxMemory = 10;
-const maxIdleTime = 2 * 60 * 1000;
+const maxMemory = 800;
+let maxIdleTime = 2 * 60 * 1000;
 
 // once a minute
 setInterval(gatherMemory, 1000 * 60);
@@ -17,7 +17,6 @@ setInterval(gatherMemory, 1000 * 60);
  */
 function gatherMemory() {
     let memory = process.getProcessMemoryInfo();
-    optimizeMemory(memory);
     let details =
         'workingSetSize: ' + memory.workingSetSize +
         ' peakWorkingSetSize: ' + memory.peakWorkingSetSize +
@@ -34,7 +33,7 @@ function gatherMemory() {
  * @param memoryInfo
  */
 function optimizeMemory(memoryInfo) {
-    const memoryConsumed = (memoryInfo && memoryInfo.workingSetSize / 1000) || 0;
+    const memoryConsumed = (memoryInfo && memoryInfo.workingSetSize / 1024) || 0;
     if (memoryConsumed > maxMemory && systemIdleTime.getIdleTime() > maxIdleTime) {
         getConfigField('memoryRefresh')
             .then((enabled) => {
@@ -42,9 +41,24 @@ function optimizeMemory(memoryInfo) {
                     const mainWindow = getMainWindow();
 
                     if (mainWindow && !mainWindow.isDestroyed()) {
+                        setIsAutoReload(true);
+                        log.send(logLevels.INFO, 'Reloading the app to optimize memory usage');
                         mainWindow.webContents.reload();
                     }
                 }
             });
     }
 }
+
+/**
+ * Update the value same as the user idle time
+ * @param period
+ */
+function setMaxIdleTime(period) {
+    maxIdleTime = period;
+}
+
+module.exports = {
+    setMaxIdleTime,
+    optimizeMemory
+};

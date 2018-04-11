@@ -16,7 +16,8 @@ const configFields = [
     'launchOnStartup',
     'alwaysOnTop',
     'notificationSettings',
-    'bringToFront'
+    'bringToFront',
+    'memoryRefresh'
 ];
 
 let minimizeOnClose = false;
@@ -318,7 +319,7 @@ function getTemplate(app) {
         checked: memoryRefresh,
         click: function(item) {
             memoryRefresh = item.checked;
-            updateConfigField('bringToFront', memoryRefresh);
+            updateConfigField('memoryRefresh', memoryRefresh);
         }
     });
 
