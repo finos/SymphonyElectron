@@ -7,6 +7,7 @@ const fs = require('fs');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 const buildNumber = require('../../package.json').buildNumber;
+const { initCrashReporterMain, initCrashReporterRenderer } = require('../crashReporter.js');
 
 let aboutWindow;
 
@@ -80,7 +81,25 @@ function openAboutWindow(windowName) {
     });
 
     aboutWindow.webContents.on('did-finish-load', () => {
+        // initialize crash reporter
+        initCrashReporterMain({ process: 'about app window' });
+        initCrashReporterRenderer(aboutWindow, { process: 'render | about app window' });
         aboutWindow.webContents.send('buildNumber', buildNumber || '0');
+    });
+
+    aboutWindow.webContents.on('crashed', function () {
+        const options = {
+            type: 'error',
+            title: 'Renderer Process Crashed',
+            message: 'Oops! Looks like we have had a crash.',
+            buttons: ['Close']
+        };
+
+        electron.dialog.showMessageBox(options, function () {
+            if (aboutWindow && !aboutWindow.isDestroyed()) {
+                aboutWindow.close();
+            }
+        });
     });
 
     aboutWindow.on('close', () => {

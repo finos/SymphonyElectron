@@ -4,7 +4,6 @@ const fs = require('fs');
 const electron = require('electron');
 const app = electron.app;
 const globalShortcut = electron.globalShortcut;
-const crashReporter = electron.crashReporter;
 const BrowserWindow = electron.BrowserWindow;
 const path = require('path');
 const nodeURL = require('url');
@@ -24,6 +23,7 @@ const { getConfigField, updateConfigField, getGlobalConfigField } = require('./c
 const { isMac, isNodeEnv, isWindows10, isWindowsOS } = require('./utils/misc');
 const { deleteIndexFolder } = require('./search/search.js');
 const { isWhitelisted } = require('./utils/whitelistHandler');
+const { initCrashReporterMain, initCrashReporterRenderer } = require('./crashReporter.js');
 
 // show dialog when certificate errors occur
 require('./dialogs/showCertError.js');
@@ -188,6 +188,10 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     // content can be cached and will still finish load but
     // we might not have network connectivity, so warn the user.
     mainWindow.webContents.on('did-finish-load', function () {
+        // Initialize crash reporter
+        initCrashReporterMain({ process: 'main window' });
+        initCrashReporterRenderer(mainWindow, { process: 'render | main window' });
+
         url = mainWindow.webContents.getURL();
         if (isCustomTitleBarEnabled) {
             mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/windowsTitleBar/style.css'), 'utf8').toString());
@@ -318,23 +322,6 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         });
     });
 
-    getConfigField('url')
-        .then(initializeCrashReporter)
-        .catch(app.quit);
-
-    function initializeCrashReporter(podUrl) {
-        getConfigField('crashReporter')
-            .then((crashReporterConfig) => {
-                log.send(logLevels.INFO, 'Initializing crash reporter on the main window!');
-                crashReporter.start({ companyName: crashReporterConfig.companyName, submitURL: crashReporterConfig.submitURL, uploadToServer: crashReporterConfig.uploadToServer, extra: { 'process': 'renderer / main window', podUrl: podUrl } });
-                log.send(logLevels.INFO, 'initialized crash reporter on the main window!');
-                mainWindow.webContents.send('register-crash-reporter', { companyName: crashReporterConfig.companyName, submitURL: crashReporterConfig.submitURL, uploadToServer: crashReporterConfig.uploadToServer, process: 'preload script / main window renderer' });
-            })
-            .catch((err) => {
-                log.send(logLevels.ERROR, 'Unable to initialize crash reporter in the main window. Error is -> ' + err);
-            });
-    }
-
     // open external links in default browser - a tag with href='_blank' or window.open
     mainWindow.webContents.on('new-window', handleNewWindow);
 
@@ -420,19 +407,8 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                         browserWin.setMenu(null);
                     }
 
-                    getConfigField('url')
-                        .then((podUrl) => {
-                            getConfigField('crashReporter')
-                                .then((crashReporterConfig) => {
-                                    crashReporter.start({ companyName: crashReporterConfig.companyName, submitURL: crashReporterConfig.submitURL, uploadToServer: crashReporterConfig.uploadToServer, extra: { 'process': 'renderer / child window', podUrl: podUrl } });
-                                    log.send(logLevels.INFO, 'initialized crash reporter on a child window!');
-                                    browserWin.webContents.send('register-crash-reporter', { companyName: crashReporterConfig.companyName, submitURL: crashReporterConfig.submitURL, uploadToServer: crashReporterConfig.uploadToServer, process: 'preload script / child window renderer' });
-                                })
-                                .catch((err) => {
-                                    log.send(logLevels.ERROR, 'Unable to initialize crash reporter in the child window. Error is -> ' + err);
-                                });
-                        })
-                        .catch(app.quit);
+                    initCrashReporterMain({ process: 'pop-out window' });
+                    initCrashReporterRenderer(browserWin, { process: 'render | pop-out window' });
 
                     browserWin.winName = frameName;
                     browserWin.setAlwaysOnTop(alwaysOnTop);
@@ -452,7 +428,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                         browserWin.webContents.removeListener('crashed', handleChildWindowCrashEvent);
                     });
 
-                    let handleChildWindowCrashEvent = () => {
+                    let handleChildWindowCrashEvent = (e) => {
                         const options = {
                             type: 'error',
                             title: 'Renderer Process Crashed',
@@ -460,14 +436,16 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                             buttons: ['Reload', 'Close']
                         };
 
-                        electron.dialog.showMessageBox(options, function (index) {
-                            if (index === 0) {
-                                browserWin.reload();
-                            }
-                            else {
-                                browserWin.close();
-                            }
-                        });
+                        let childBrowserWindow = BrowserWindow.fromWebContents(e.sender);
+                        if (childBrowserWindow && !childBrowserWindow.isDestroyed()) {
+                            electron.dialog.showMessageBox(childBrowserWindow, options, function (index) {
+                                if (index === 0) {
+                                    childBrowserWindow.reload();
+                                } else {
+                                    childBrowserWindow.close();
+                                }
+                            });
+                        }
                     };
 
                     browserWin.webContents.on('crashed', handleChildWindowCrashEvent);

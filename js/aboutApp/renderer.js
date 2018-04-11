@@ -1,5 +1,5 @@
 'use strict';
-const { remote, ipcRenderer } = require('electron');
+const { remote, ipcRenderer, crashReporter } = require('electron');
 
 renderDom();
 
@@ -23,5 +23,11 @@ ipcRenderer.on('buildNumber', (event, buildNumber) => {
 
     if (versionText) {
         versionText.innerHTML = version ? `Version ${version} (${version}.${buildNumber})` : 'N/A';
+    }
+});
+
+ipcRenderer.on('register-crash-reporter', (event, arg) => {
+    if (arg && typeof arg === 'object') {
+        crashReporter.start(arg);
     }
 });

@@ -8,6 +8,7 @@ const fs = require('fs');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 const { isMac, isWindowsOS } = require('./../utils/misc.js');
+const { initCrashReporterMain, initCrashReporterRenderer } = require('../crashReporter.js');
 
 let screenPickerWindow;
 let preloadWindow;
@@ -91,7 +92,25 @@ function openScreenPickerWindow(eventSender, sources, id) {
     });
 
     screenPickerWindow.webContents.on('did-finish-load', () => {
+        // initialize crash reporter
+        initCrashReporterMain({ process: 'desktop capture window' });
+        initCrashReporterRenderer(screenPickerWindow, { process: 'render | desktop capture window' });
         screenPickerWindow.webContents.send('desktop-capturer-sources', sources, isWindowsOS);
+    });
+
+    screenPickerWindow.webContents.on('crashed', function () {
+        const options = {
+            type: 'error',
+            title: 'Renderer Process Crashed',
+            message: 'Oops! Looks like we have had a crash.',
+            buttons: ['Close']
+        };
+
+        electron.dialog.showMessageBox(options, function () {
+            if (screenPickerWindow && !screenPickerWindow.isDestroyed()) {
+                screenPickerWindow.close();
+            }
+        });
     });
 
     screenPickerWindow.on('close', () => {

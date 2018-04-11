@@ -1,5 +1,5 @@
 'use strict';
-const { ipcRenderer } = require('electron');
+const { ipcRenderer, crashReporter } = require('electron');
 
 const screenRegExp = new RegExp(/^Screen \d+$/gmi);
 
@@ -266,3 +266,9 @@ function closeScreenPickerWindow() {
     document.removeEventListener('keyUp', handleKeyUpPress.bind(this), true);
     ipcRenderer.send('close-screen-picker');
 }
+
+ipcRenderer.on('register-crash-reporter', (event, arg) => {
+    if (arg && typeof arg === 'object') {
+        crashReporter.start(arg);
+    }
+});

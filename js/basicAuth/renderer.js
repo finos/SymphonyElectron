@@ -1,6 +1,5 @@
 'use strict';
-const electron = require('electron');
-const ipc = electron.ipcRenderer;
+const { ipcRenderer, crashReporter } = require('electron');
 
 renderDom();
 
@@ -26,7 +25,7 @@ function loadContent() {
 
     if (cancel) {
         cancel.addEventListener('click', () => {
-            ipc.send('close-basic-auth');
+            ipcRenderer.send('close-basic-auth');
         });
     }
 }
@@ -39,14 +38,14 @@ function submitForm() {
     let password = document.getElementById('password').value;
 
     if (username && password) {
-        ipc.send('login', { username, password });
+        ipcRenderer.send('login', { username, password });
     }
 }
 
 /**
  * Updates the hosts name
  */
-ipc.on('hostname', (event, host) => {
+ipcRenderer.on('hostname', (event, host) => {
     let hostname = document.getElementById('hostname');
 
     if (hostname){
@@ -57,10 +56,16 @@ ipc.on('hostname', (event, host) => {
 /**
  * Triggered if user credentials are invalid
  */
-ipc.on('isValidCredentials', (event, isValidCredentials) => {
+ipcRenderer.on('isValidCredentials', (event, isValidCredentials) => {
     let credentialsError = document.getElementById('credentialsError');
 
     if (credentialsError){
         credentialsError.style.display = isValidCredentials ? 'none' : 'block'
+    }
+});
+
+ipcRenderer.on('register-crash-reporter', (event, arg) => {
+    if (arg && typeof arg === 'object') {
+        crashReporter.start(arg);
     }
 });
