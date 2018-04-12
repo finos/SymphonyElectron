@@ -3,11 +3,6 @@
 const fs = require('fs');
 const path = require('path');
 const archiver = require('archiver');
-const log = require('../log.js');
-const logLevels = require('../enums/logLevels.js');
-const mmm = require('mmmagic');
-const Magic = mmm.Magic;
-const magic = new Magic(mmm.MAGIC_MIME_TYPE);
 
 /**
  * Archives files in the source directory
@@ -36,51 +31,25 @@ function generateArchiveForDirectory(source, destination, fileExtensions) {
         archive.pipe(output);
 
         let files = fs.readdirSync(source);
-
-        let filtered = files.filter((file) => fileExtensions.indexOf(path.extname(file)) !== -1);
-        mapMimeType(filtered, source)
-            .then((mappedData) => {
-                if (mappedData.length > 0) {
-                    mappedData.forEach((data) => {
-                        switch (data.mimeType) {
-                            case 'text/plain':
-                                if (path.extname(data.file) === '.txt') {
-                                    archive.file(source + '/' + data.file, { name: 'crashes/' + data.file });
-                                } else {
-                                    archive.file(source + '/' + data.file, { name: 'logs/' + data.file });
-                                }
-                                break;
-                            case 'application/x-dmp':
-                                archive.file(source + '/' + data.file, { name: 'crashes/' + data.file });
-                                break;
-                            default:
-                                break;
-                        }
-                    });
+        files
+            .filter((file) => fileExtensions.indexOf(path.extname(file)) !== -1)
+            .forEach((file) => {
+                switch (path.extname(file)) {
+                    case '.log':
+                        archive.file(source + '/' + file, { name: 'logs/' + file });
+                        break;
+                    case '.dmp':
+                    case '.txt': // on Windows .txt files will be created as part of crash dump
+                        archive.file(source + '/' + file, { name: 'crashes/' + file });
+                        break;
+                    default:
+                        break;
                 }
-                archive.finalize();
-            })
-            .catch((err) => {
-                log.send(logLevels.ERROR, 'Failed to find mime type. Error is ->  ' + err);
             });
 
+        archive.finalize();
     });
     
-}
-
-function mapMimeType(files, source) {
-    return Promise.all(files.map((file) => {
-        return new Promise((resolve, reject) => {
-            return magic.detectFile(source + '/' + file, (err, result) => {
-                if (err) {
-                    return reject(err);
-                }
-                return resolve({file: file, mimeType: result});
-            });
-        });
-    }))
-        .then((data) => data)
-        .catch((err) => log.send(logLevels.ERROR, 'Failed to find mime type. Error is ->  ' + err));
 }
 
 module.exports = {
