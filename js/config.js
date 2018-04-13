@@ -23,7 +23,7 @@ const dirs = new AppDirectory('Symphony');
 let userConfig;
 let globalConfig;
 
-let ignoreSettings = ['minimizeOnClose', 'launchOnStartup', 'alwaysOnTop', 'url', 'memoryRefresh'];
+let ignoreSettings = ['minimizeOnClose', 'launchOnStartup', 'alwaysOnTop', 'url', 'memoryRefresh', 'bringToFront'];
 
 /**
  * Tries to read given field from user config file, if field doesn't exist
@@ -403,7 +403,7 @@ function readConfigFileSync() {
     try {
         return JSON.parse(data);
     } catch (err) {
-        console.log("parsing config failed", err);
+        log.send(logLevels.ERROR, 'config: parsing config failed: ' + err);
     }
     
     return null;
