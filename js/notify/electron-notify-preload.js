@@ -134,6 +134,39 @@ function setContents(event, notificationObj) {
 
     const winId = notificationObj.windowId;
 
+    let displayTime = notificationObj.displayTime || 5000;
+    let mouseLeaveTimer;
+    let closeTimer;
+    if (!notificationObj.sticky) {
+        container.addEventListener('mouseleave', onMouseLeave);
+        container.addEventListener('mouseover', onMouseOver);
+
+        closeTimer = setTimeout(() => {
+            ipc.send('electron-notify-close', winId, notificationObj)
+        }, displayTime);
+    }
+
+    /**
+     * Start a new timer to close the notification
+     */
+    function onMouseLeave() {
+        if (!mouseLeaveTimer) {
+            mouseLeaveTimer = setTimeout(() => {
+                ipc.send('electron-notify-close', winId, notificationObj)
+            }, 3000);
+        }
+    }
+
+    /**
+     * Clear all timeouts to prevent notification
+     * from closing
+     */
+    function onMouseOver() {
+        clearTimeout(closeTimer);
+        clearTimeout(mouseLeaveTimer);
+        mouseLeaveTimer = undefined;
+    }
+
     // note: use onclick because we only want one handler, for case
     // when content gets overwritten by notf with same tag
     closeButton.onclick = function(clickEvent) {

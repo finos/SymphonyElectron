@@ -418,30 +418,12 @@ function showNotification(notificationObj) {
  */
 function setNotificationContents(notfWindow, notfObj) {
 
-    // Display time per notification basis.
-    let displayTime = notfObj.displayTime ? notfObj.displayTime : config.displayTime;
-
-    if (notfWindow.displayTimer) {
-        clearTimeout(notfWindow.displayTimer);
-    }
-
     const updatedNotificationWindow = notfWindow;
 
     updatedNotificationWindow.notfyObj = notfObj;
 
-    let timeoutId;
-    let closeFunc = buildCloseNotification(notfWindow, notfObj, function() {
-        return timeoutId
-    });
+    let closeFunc = buildCloseNotification(notfWindow, notfObj);
     let closeNotificationSafely = buildCloseNotificationSafely(closeFunc);
-
-    // don't start timer to close if we aren't sticky
-    if (!notfObj.sticky) {
-        timeoutId = setTimeout(function() {
-            closeNotificationSafely('timeout');
-        }, displayTime);
-        updatedNotificationWindow.displayTimer = timeoutId;
-    }
 
     // Trigger onShowFunc if existent
     if (notfObj.onShowFunc) {
@@ -479,10 +461,9 @@ function setNotificationContents(notfWindow, notfObj) {
  * Closes the notification
  * @param notificationWindow
  * @param notificationObj
- * @param getTimeoutId
  * @returns {Function}
  */
-function buildCloseNotification(notificationWindow, notificationObj, getTimeoutId) {
+function buildCloseNotification(notificationWindow, notificationObj) {
     return function(event) {
 
         // safety check to prevent from using an
@@ -511,10 +492,6 @@ function buildCloseNotification(notificationWindow, notificationObj, getTimeoutI
 
         // reset content
         notificationWindow.webContents.send('electron-notify-reset');
-        if (getTimeoutId && typeof getTimeoutId === 'function') {
-            let timeoutId = getTimeoutId();
-            clearTimeout(timeoutId);
-        }
 
         // Recycle window
         let pos = activeNotifications.indexOf(notificationWindow);
