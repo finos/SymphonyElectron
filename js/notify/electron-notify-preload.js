@@ -10,6 +10,8 @@ const electron = require('electron');
 const ipc = electron.ipcRenderer;
 
 const whiteColorRegExp = new RegExp(/^(?:white|#fff(?:fff)?|rgba?\(\s*255\s*,\s*255\s*,\s*255\s*(?:,\s*1\s*)?\))$/i);
+let mouseLeaveTimer;
+let closeTimer;
 
 /**
  * Sets style for a notification
@@ -135,8 +137,6 @@ function setContents(event, notificationObj) {
     const winId = notificationObj.windowId;
 
     let displayTime = notificationObj.displayTime || 5000;
-    let mouseLeaveTimer;
-    let closeTimer;
     if (!notificationObj.sticky) {
         container.addEventListener('mouseleave', onMouseLeave);
         container.addEventListener('mouseover', onMouseOver);
@@ -162,8 +162,8 @@ function setContents(event, notificationObj) {
      * from closing
      */
     function onMouseOver() {
-        clearTimeout(closeTimer);
-        clearTimeout(mouseLeaveTimer);
+        if (closeTimer) clearTimeout(closeTimer);
+        if (mouseLeaveTimer) clearTimeout(mouseLeaveTimer);
         mouseLeaveTimer = undefined;
     }
 
@@ -230,7 +230,11 @@ function reset() {
     let newContainer = container.cloneNode(true);
     container.parentNode.replaceChild(newContainer, container);
     let newCloseButton = closeButton.cloneNode(true);
-    closeButton.parentNode.replaceChild(newCloseButton, closeButton)
+    closeButton.parentNode.replaceChild(newCloseButton, closeButton);
+
+    // Reset timers
+    if (closeTimer) clearTimeout(closeTimer);
+    if (mouseLeaveTimer) clearTimeout(mouseLeaveTimer);
 }
 
 ipc.on('electron-notify-set-contents', setContents);
