@@ -165,7 +165,12 @@ function updateConfig(customConfig) {
     if (customConfig.display) {
         displayId = customConfig.display;
     }
-    closeAll();
+    // Reposition active notification on config changes
+    setupConfig();
+    moveOneDown(0)
+        .then(() => {
+            log.send(logLevels.INFO, 'updateConfig: repositioned '+ activeNotifications.length +' active notification');
+        });
 }
 
 /**
@@ -737,31 +742,6 @@ function cleanUpInactiveWindow() {
         }
     });
     inactiveWindows = [];
-}
-
-/**
- * Closes all the notifications and windows
- */
-function closeAll() {
-    // Clear out animation Queue and close windows
-    animationQueue.clear();
-
-    let notificationWindows = Array.from(activeNotifications);
-
-    notificationWindows.forEach((window) => {
-        if (window.displayTimer) {
-            clearTimeout(window.displayTimer);
-        }
-        if (!window.isDestroyed()) {
-            window.close();
-        }
-    });
-
-    cleanUpInactiveWindow();
-
-    // Reset certain vars
-    nextInsertPos = {};
-    activeNotifications = [];
 }
 
 
