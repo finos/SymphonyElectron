@@ -6,6 +6,12 @@ permissionsFilePath='/tmp/sym_permissions.txt'
 installPath="$2"
 configPath="/Symphony.app/Contents/config/Symphony.config"
 newPath=${installPath}${configPath}
+firstLaunchFileDir=/Symphony.app/Contents/temp
+
+## Create a first time launch file for setting user config
+mkdir -p ${installPath}${firstLaunchFileDir}
+touch ${installPath}${firstLaunchFileDir}/first_launch.txt
+chmod -R 777 ${installPath}${firstLaunchFileDir}
 
 ## Get Symphony Settings from the temp file ##
 pod_url=$(sed -n '1p' ${settingsFilePath});
@@ -94,8 +100,3 @@ sed -i "" -E "s#\"openExternal\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"o
 
 ## Remove the temp permissions file created ##
 rm -f ${permissionsFilePath}
-
-## For launching symphony with sandbox enabled, create a shell script that is used as the launch point for the app
-EXEC_PATH=${installPath}/Symphony.app/Contents/MacOS
-exec ${EXEC_PATH}/Symphony --install ${newPath} ${launch_on_startup}
-chmod 755 ${EXEC_PATH}/Symphony
