@@ -101,7 +101,7 @@ function createAPI() {
                     containerIdentifier: appName,
                     containerVer: appVer,
                     buildNumber: buildNumber,
-                    apiVer: '1.0.0'
+                    apiVer: '2.0.0'
                 };
                 resolve(verInfo);
             });
