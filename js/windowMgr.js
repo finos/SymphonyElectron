@@ -130,6 +130,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         alwaysOnTop: false,
         webPreferences: {
             sandbox: sandboxed,
+            contextIsolation: true,
             nodeIntegration: isNodeEnv,
             preload: preloadMainScript,
             nativeWindowOpen: true

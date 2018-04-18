@@ -24,6 +24,7 @@ let windowConfig = {
     resizable: false,
     alwaysOnTop: true,
     webPreferences: {
+        contextIsolation: true,
         preload: path.join(__dirname, 'renderer.js'),
         sandbox: true,
         nodeIntegration: false
