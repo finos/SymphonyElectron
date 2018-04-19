@@ -246,16 +246,12 @@ function checkFirstTimeLaunch() {
                 const execPath = nodePath.dirname(app.getPath('exe'));
                 const shouldUpdateUserConfig = execPath.indexOf('AppData/Local/Programs') !== -1 || isMac;
 
-                if (configVersion
+                if (!(configVersion
                     && typeof configVersion === 'string'
-                    && (compareSemVersions.check(appVersionString, configVersion) === 0
-                    || compareSemVersions.check(appVersionString, configVersion) === -1)) {
-                    return resolve();
-                }
-
-                if (shouldUpdateUserConfig) {
+                    && (compareSemVersions.check(appVersionString, configVersion) !== 1)) && shouldUpdateUserConfig) {
                     return setupFirstTimeLaunch();
                 }
+
                 return resolve();
             })
             .catch(() => {
