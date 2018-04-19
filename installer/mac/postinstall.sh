@@ -6,12 +6,6 @@ permissionsFilePath='/tmp/sym_permissions.txt'
 installPath="$2"
 configPath="/Symphony.app/Contents/config/Symphony.config"
 newPath=${installPath}${configPath}
-firstLaunchFileDir=/Symphony.app/Contents/temp
-
-## Create a first time launch file for setting user config
-mkdir -p ${installPath}${firstLaunchFileDir}
-touch ${installPath}${firstLaunchFileDir}/first_launch.txt
-chmod -R 777 ${installPath}${firstLaunchFileDir}
 
 ## Get Symphony Settings from the temp file ##
 pod_url=$(sed -n '1p' ${settingsFilePath});
