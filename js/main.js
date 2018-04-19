@@ -9,7 +9,6 @@ const shellPath = require('shell-path');
 const squirrelStartup = require('electron-squirrel-startup');
 const AutoLaunch = require('auto-launch');
 const urlParser = require('url');
-const fs = require('fs');
 const nodePath = require('path');
 
 // Local Dependencies
@@ -233,22 +232,15 @@ function checkFirstTimeLaunch() {
     return new Promise((resolve) => {
     
         let execPath = nodePath.dirname(app.getPath('exe'));
-        let relativePath = isMac ? '..' : '';
-        let fileLaunchPath = nodePath.join(execPath, relativePath);
+        let shouldUpdateUserConfig = execPath.indexOf('AppData/Local/Programs') !== -1 || isMac;
         
-        const firstLaunchDir = nodePath.join(fileLaunchPath, 'temp');
-        const firstLaunchFile = nodePath.join(firstLaunchDir, 'first_launch.txt');
-        
-        if (fs.existsSync(firstLaunchFile)) {
+        if (shouldUpdateUserConfig) {
     
             log.send(logLevels.INFO, 'setting first time launch config');
             getGlobalConfigField('launchOnStartup')
-                .then((data) => {
-                    setStartup(data)
-                })
+                .then(setStartup)
                 .then(updateUserConfigOnLaunch)
                 .then(() => {
-                    fs.unlinkSync(firstLaunchFile);
                     log.send(logLevels.INFO, 'first time launch config changes succeeded -> ');
                     return resolve();
                 })
