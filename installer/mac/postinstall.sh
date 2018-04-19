@@ -94,8 +94,3 @@ sed -i "" -E "s#\"openExternal\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"o
 
 ## Remove the temp permissions file created ##
 rm -f ${permissionsFilePath}
-
-## For launching symphony with sandbox enabled, create a shell script that is used as the launch point for the app
-EXEC_PATH=${installPath}/Symphony.app/Contents/MacOS
-exec ${EXEC_PATH}/Symphony --install ${newPath} ${launch_on_startup}
-chmod 755 ${EXEC_PATH}/Symphony

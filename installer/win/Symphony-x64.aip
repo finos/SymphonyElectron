@@ -335,7 +335,6 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BuildComponent">
     <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="1" Languages="en" InstallationType="4" UseLargeSchema="true" MsiPackageType="x64"/>
-    <ATTRIBUTE name="CurrentBuild" value="DefaultBuild"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.DictionaryComponent">
     <ROW Path="&lt;AI_DICTS&gt;ui.ail"/>
@@ -648,8 +647,6 @@
     <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:[AI_UserProgramFiles][Manufacturer]\[ProductName]"/>
     <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
     <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
-    <ROW Action="Symphony.exe" Type="1042" Source="Symphony.exe" Target="--install --peruser"/>
-    <ROW Action="Symphony.exe_All_User" Type="1042" Source="Symphony.exe" Target="--install"/>
     <ROW Action="UninstallPreviousVersions" Type="1" Source="aicustact.dll" Target="UninstallPreviousVersions" Options="1"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiDialogComponent">
@@ -672,8 +669,6 @@
     <ROW Action="KillRenderer" Sequence="55"/>
     <ROW Action="AI_DATA_SETTER" Sequence="54"/>
     <ROW Action="AI_SETMIXINSTLOCATION" Sequence="749"/>
-    <ROW Action="Symphony.exe" Condition="( NOT Installed ) AND ( MSIINSTALLPERUSER )" Sequence="5935"/>
-    <ROW Action="Symphony.exe_All_User" Condition="( NOT Installed ) AND ( ALLUSERS )" Sequence="5936"/>
     <ROW Action="AI_AiBackupImmediate" Sequence="1001"/>
     <ROW Action="AI_AiBackupRollback" Sequence="1501"/>
     <ROW Action="AI_AiRestoreDeferred" Sequence="6599"/>

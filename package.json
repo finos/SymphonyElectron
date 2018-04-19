@@ -48,7 +48,7 @@
       "library/search-launch-agent.sh",
       "library/search-launch-daemon.sh"
     ],
-    "appId": "symphony-electron-desktop",
+    "appId": "com.symphony.electron-desktop",
     "mac": {
       "target": "dmg",
       "category": "public.app-category.business"
@@ -106,7 +106,6 @@
   },
   "dependencies": {
     "@paulcbetts/system-idle-time": "1.0.4",
-    "appdirectory": "0.1.0",
     "archiver": "2.1.1",
     "async.map": "0.5.2",
     "async.mapseries": "0.5.2",
