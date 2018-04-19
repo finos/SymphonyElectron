@@ -10,9 +10,16 @@ const squirrelStartup = require('electron-squirrel-startup');
 const AutoLaunch = require('auto-launch');
 const urlParser = require('url');
 const nodePath = require('path');
+const compareSemVersions = require('./utils/compareSemVersions.js');
 
 // Local Dependencies
-const {getConfigField, getGlobalConfigField, readConfigFileSync, updateUserConfigOnLaunch} = require('./config.js');
+const {
+    getConfigField,
+    getGlobalConfigField,
+    readConfigFileSync,
+    updateUserConfigOnLaunch,
+    getUserConfigField
+} = require('./config.js');
 const {setCheckboxValues} = require('./menus/menuTemplate.js');
 const { isMac, isDevEnv } = require('./utils/misc.js');
 const protocolHandler = require('./protocolHandler');
@@ -230,29 +237,56 @@ function setupThenOpenMainWindow() {
 function checkFirstTimeLaunch() {
     
     return new Promise((resolve) => {
-    
-        let execPath = nodePath.dirname(app.getPath('exe'));
-        let shouldUpdateUserConfig = execPath.indexOf('AppData/Local/Programs') !== -1 || isMac;
-        
-        if (shouldUpdateUserConfig) {
-    
-            log.send(logLevels.INFO, 'setting first time launch config');
-            getGlobalConfigField('launchOnStartup')
-                .then(setStartup)
-                .then(updateUserConfigOnLaunch)
-                .then(() => {
-                    log.send(logLevels.INFO, 'first time launch config changes succeeded -> ');
+
+        getUserConfigField('version')
+            .then((configVersion) => {
+
+                const appVersionString = app.getVersion().toString();
+
+                const execPath = nodePath.dirname(app.getPath('exe'));
+                const shouldUpdateUserConfig = execPath.indexOf('AppData/Local/Programs') !== -1 || isMac;
+
+                if (configVersion
+                    && typeof configVersion === 'string'
+                    && (compareSemVersions.check(appVersionString, configVersion) === 0
+                    || compareSemVersions.check(appVersionString, configVersion) === -1)) {
                     return resolve();
-                })
-                .catch((err) => {
-                    log.send(logLevels.ERROR, 'first time launch config changes failed -> ' + err);
-                    return resolve();
-                });
-            
-        }
+                }
+
+                if (shouldUpdateUserConfig) {
+                    return setupFirstTimeLaunch();
+                }
+                return resolve();
+            })
+            .catch(() => {
+                return setupFirstTimeLaunch();
+            });
         return resolve();
     });
     
+}
+
+/**
+ * Setup and update user config
+ * on first time launch or if the latest app version
+ *
+ * @return {Promise<any>}
+ */
+function setupFirstTimeLaunch() {
+    return new Promise(resolve => {
+        log.send(logLevels.INFO, 'setting first time launch config');
+        getGlobalConfigField('launchOnStartup')
+            .then(setStartup)
+            .then(updateUserConfigOnLaunch)
+            .then(() => {
+                log.send(logLevels.INFO, 'first time launch config changes succeeded -> ');
+                return resolve();
+            })
+            .catch((err) => {
+                log.send(logLevels.ERROR, 'first time launch config changes failed -> ' + err);
+                return resolve();
+            });
+    });
 }
 
 /**

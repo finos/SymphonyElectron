@@ -285,7 +285,11 @@ function updateUserConfigOnLaunch() {
         // values are fetched from the global config
         // https://perzoinc.atlassian.net/browse/ELECTRON-126
         readUserConfig(userConfigFile).then((data) => {
-            resolve(updateUserConfig(data));
+            // Add version info to the user config data
+            const version = app.getVersion().toString();
+            const updatedData = Object.assign(data, { version });
+
+            resolve(updateUserConfig(updatedData));
         }).catch((err) => {
             reject(err);
         });
@@ -406,5 +410,6 @@ module.exports = {
     readConfigFileSync,
 
     // use only if you specifically need to read global config fields
-    getGlobalConfigField
+    getGlobalConfigField,
+    getUserConfigField
 };
