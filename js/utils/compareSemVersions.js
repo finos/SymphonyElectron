@@ -1,6 +1,6 @@
 // regex match the semver (semantic version) this checks for the pattern X.Y.Z
 // ex-valid  v1.2.0, 1.2.0, 2.3.4-r51
-const semver = /^v?(?:\d+)(\.(?:[x*]|\d+)(\.(?:[x*]|\d+)(?:-[\da-z\-]+(?:\.[\da-z\-]+)*)?(?:\+[\da-z\-]+(?:\.[\da-z\-]+)*)?)?)?$/i;
+const semver = /^v?(?:\d+)(\.(?:[x*]|\d+)(\.(?:[x*]|\d+)(?:-[\da-z-]+(?:\.[\da-z-]+)*)?(?:\+[\da-z-]+(?:\.[\da-z-]+)*)?)?)?$/i;
 const patch = /-([0-9A-Za-z-.]+)/;
 
 /**
