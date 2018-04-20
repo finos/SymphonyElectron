@@ -491,16 +491,16 @@
     <ROW Dialog_="VerifyDlg" Control="Logo" Type="Text" X="4" Y="228" Width="70" Height="12" Attributes="1" Text="Advanced Installer" Order="800"/>
     <ROW Dialog_="VerifyDlg" Control="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Attributes="196611" Text="Settings Verification" TextStyle="[DlgTitleFont]" Order="900"/>
     <ROW Dialog_="VerifyDlg" Control="Text_1" Type="Text" X="25" Y="88" Width="76" Height="17" Attributes="65539" Property="TEXT_1_PROP" Text="Symphony POD Url : " Order="1000"/>
-    <ROW Dialog_="VerifyDlg" Control="PodUrlLabel" Type="Text" X="110" Y="88" Width="145" Height="17" Attributes="65539" Property="POD_URL_LABEL" Text="[POD_URL]" Order="1100"/>
+    <ROW Dialog_="VerifyDlg" Control="PodUrlLabel" Type="Text" X="169" Y="88" Width="145" Height="17" Attributes="65539" Property="POD_URL_LABEL" Text="[POD_URL]" Order="1100"/>
     <ROW Dialog_="VerifyDlg" Control="Text_3" Type="Text" X="25" Y="114" Width="76" Height="13" Attributes="65539" Property="TEXT_3_PROP" Text="Always on Top : " Order="1200"/>
-    <ROW Dialog_="VerifyDlg" Control="AlwaysOnTopLabel" Type="Text" X="110" Y="114" Width="145" Height="10" Attributes="65539" Property="ALWAYS_ON_TOP_DT" Text="[ALWAYS_ON_TOP_DT]" Order="1300"/>
+    <ROW Dialog_="VerifyDlg" Control="AlwaysOnTopLabel" Type="Text" X="169" Y="114" Width="145" Height="10" Attributes="65539" Property="ALWAYS_ON_TOP_DT" Text="[ALWAYS_ON_TOP_DT]" Order="1300"/>
     <ROW Dialog_="VerifyDlg" Control="Text_5" Type="Text" X="25" Y="139" Width="76" Height="13" Attributes="65539" Property="TEXT_3_PROP_1" Text="Launch on Startup : " Order="1400"/>
-    <ROW Dialog_="VerifyDlg" Control="AutoStartLabel" Type="Text" X="110" Y="139" Width="145" Height="10" Attributes="65539" Property="AUTO_START_DT" Text="[AUTO_START_DT]" Order="1500"/>
+    <ROW Dialog_="VerifyDlg" Control="AutoStartLabel" Type="Text" X="169" Y="139" Width="145" Height="10" Attributes="65539" Property="AUTO_START_DT" Text="[AUTO_START_DT]" Order="1500"/>
     <ROW Dialog_="VerifyDlg" Control="Text_7" Type="Text" X="25" Y="164" Width="76" Height="13" Attributes="65539" Property="TEXT_3_PROP_1_1" Text="Minimize on Close : " Order="1600"/>
-    <ROW Dialog_="VerifyDlg" Control="MinimizeOnCloseLabel" Type="Text" X="110" Y="164" Width="145" Height="10" Attributes="65539" Property="MINIMIZE_ON_CLOSE_DT" Text="[MINIMIZE_ON_CLOSE_DT]" Order="1700"/>
+    <ROW Dialog_="VerifyDlg" Control="MinimizeOnCloseLabel" Type="Text" X="169" Y="164" Width="145" Height="10" Attributes="65539" Property="MINIMIZE_ON_CLOSE_DT" Text="[MINIMIZE_ON_CLOSE_DT]" Order="1700"/>
     <ROW Dialog_="VerifyDlg" Control="Text_9" Type="Text" X="25" Y="60" Width="321" Height="25" Attributes="65539" Property="TEXT_9_PROP" Text="You seem to have entered an invalid pod url. Please go back to the previous screen and rectify it." Order="1800"/>
-    <ROW Dialog_="VerifyDlg" Control="Text_10" Type="Text" X="25" Y="189" Width="76" Height="21" Attributes="65539" Property="TEXT_3_PROP_1_1_1" Text="Flash Notification in Taskbar :" Order="1900"/>
-    <ROW Dialog_="VerifyDlg" Control="BringToFrontLabel" Type="Text" X="110" Y="189" Width="145" Height="10" Attributes="65539" Property="BRING_TO_FRONT_DT" Text="[BRING_TO_FRONT_DT]" Order="2000"/>
+    <ROW Dialog_="VerifyDlg" Control="Text_10" Type="Text" X="25" Y="189" Width="120" Height="21" Attributes="65539" Property="TEXT_3_PROP_1_1_1" Text="Flash Notification in Taskbar :" Order="1900"/>
+    <ROW Dialog_="VerifyDlg" Control="BringToFrontLabel" Type="Text" X="169" Y="189" Width="145" Height="10" Attributes="65539" Property="BRING_TO_FRONT_DT" Text="[BRING_TO_FRONT_DT]" Order="2000"/>
     <ROW Dialog_="VerifyPermissionsDlg" Control="VerifyPermissionsDlgDialogInitializer" Type="DialogInitializer" X="0" Y="0" Width="0" Height="0" Attributes="0" Order="-1" TextLocId="-" HelpLocId="-" ExtDataLocId="-"/>
     <ROW Dialog_="VerifyPermissionsDlg" Control="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Next]" Order="100" TextLocId="-" Options="1"/>
     <ROW Dialog_="VerifyPermissionsDlg" Control="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Cancel]" Order="200" TextLocId="-" Options="1"/>
