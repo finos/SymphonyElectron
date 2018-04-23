@@ -15,14 +15,9 @@
 @property (weak) IBOutlet NSButton *alwaysOnTopCheckBox;
 @property (weak) IBOutlet NSTextField *podUrlAlertTextBox;
 @property (weak) IBOutlet NSButton *bringToFrontCheckBox;
-@property (weak) IBOutlet NSTextField *bringToFrontTextBox;
 
 @property (weak) IBOutlet NSButton *mediaCheckBox;
 @property (weak) IBOutlet NSButton *geoLocationCheckBox;
 @property (weak) IBOutlet NSButton *notificationsCheckBox;
-@property (weak) IBOutlet NSButton *midiSysexCheckBox;
-@property (weak) IBOutlet NSButton *pointerLockCheckBox;
-@property (weak) IBOutlet NSButton *fullScreenCheckBox;
-@property (weak) IBOutlet NSButton *externalAppCheckBox;
 
 @end

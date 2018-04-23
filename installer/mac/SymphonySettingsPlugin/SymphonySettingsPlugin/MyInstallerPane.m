@@ -112,11 +112,7 @@
     // By default, set all the values to true
     NSString *media = @"true";
     NSString *geoLocation = @"true";
-    NSString *notifications = @"true";
-    NSString *midiSysex = @"true";
-    NSString *pointerLock = @"true";
-    NSString *fullScreen = @"true";
-    NSString *openExternal = @"true";
+    NSString *notifications = @"true";    
     
     if ([_mediaCheckBox state] == 0) {
         media = @"false";
@@ -130,24 +126,8 @@
         notifications = @"false";
     }
     
-    if ([_midiSysexCheckBox state] == 0) {
-        midiSysex = @"false";
-    }
-    
-    if ([_pointerLockCheckBox state] == 0) {
-        pointerLock = @"false";
-    }
-    
-    if ([_fullScreenCheckBox state] == 0) {
-        fullScreen = @"false";
-    }
-    
-    if ([_externalAppCheckBox state] == 0) {
-        openExternal = @"false";
-    }
-    
     // Create an array with the selected options
-    NSArray *symPermissions = [[NSArray alloc] initWithObjects:media, geoLocation, notifications, midiSysex, pointerLock, fullScreen, openExternal, nil];
+    NSArray *symPermissions = [[NSArray alloc] initWithObjects:media, geoLocation, notifications, nil];
     
     // Create a string from the array with new-line as the separator
     NSString *symPermissionsString = [symPermissions componentsJoinedByString:@"\n"];

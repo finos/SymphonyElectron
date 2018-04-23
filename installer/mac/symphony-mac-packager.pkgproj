@@ -543,6 +543,8 @@
 						<key>LIST</key>
 						<array>
 							<dict>
+								<key>CHILDREN</key>
+								<array/>
 								<key>DESCRIPTION</key>
 								<array/>
 								<key>OPTIONS</key>
@@ -555,8 +557,6 @@
 								<key>PACKAGE_UUID</key>
 								<string>91776F5A-09FA-4631-A17C-BE8B5C83AF81</string>
 								<key>TITLE</key>
-								<array/>
-								<key>TOOLTIP</key>
 								<array/>
 								<key>TYPE</key>
 								<integer>0</integer>
