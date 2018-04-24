@@ -15,9 +15,13 @@
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customObject id="Qsn-FY-4qK" customClass="MyInstallerPane">
             <connections>
+                <outlet property="alwaysOnTopCheckBox" destination="xJR-Fr-mRt" id="WhA-p1-kga"/>
+                <outlet property="autoLaunchCheckBox" destination="Zqh-0e-vtD" id="ETW-F7-I4U"/>
+                <outlet property="bringToFrontCheckBox" destination="2Me-7N-GvD" id="pH5-dt-hyv"/>
                 <outlet property="contentView" destination="TUK-W2-vig" id="gTd-A7-dof"/>
                 <outlet property="geoLocationCheckBox" destination="L6E-73-ezq" id="iLj-hy-quO"/>
                 <outlet property="mediaCheckBox" destination="B4Z-uk-s4I" id="NOT-XU-pPs"/>
+                <outlet property="minimizeOnCloseCheckBox" destination="pJv-Z5-S8c" id="hy7-4l-Y2A"/>
                 <outlet property="notificationsCheckBox" destination="X7P-UH-q4X" id="2vt-Ew-8lN"/>
                 <outlet property="parentSection" destination="-2" id="FB7-UV-e8k"/>
                 <outlet property="podUrlAlertTextBox" destination="lha-ib-BpX" id="2Hp-DE-0mS"/>
