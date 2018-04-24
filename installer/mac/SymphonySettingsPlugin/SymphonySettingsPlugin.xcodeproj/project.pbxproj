@@ -97,7 +97,7 @@
 				TargetAttributes = {
 					3A10EBCE1ED4336D0083702F = {
 						CreatedOnToolsVersion = 8.3.2;
-						DevelopmentTeam = 2CWJ37D7FB;
+						DevelopmentTeam = BUX8SV4LQA;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -283,7 +283,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 2CWJ37D7FB;
+				DEVELOPMENT_TEAM = BUX8SV4LQA;
 				INFOPLIST_FILE = SymphonySettingsPlugin/Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
@@ -299,7 +299,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 2CWJ37D7FB;
+				DEVELOPMENT_TEAM = BUX8SV4LQA;
 				INFOPLIST_FILE = SymphonySettingsPlugin/Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;

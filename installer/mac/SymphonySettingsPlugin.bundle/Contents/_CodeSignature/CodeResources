@@ -6,7 +6,7 @@
 	<dict>
 		<key>Resources/Base.lproj/MyInstallerPane.nib</key>
 		<data>
-		HgIXbsRk3WaH+POG7/k6aCa1Ti0=
+		vi02vVVfaRMHFbnDhBBM0OkaDqo=
 		</data>
 		<key>Resources/InstallerSections.plist</key>
 		<data>
@@ -37,11 +37,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			HgIXbsRk3WaH+POG7/k6aCa1Ti0=
+			vi02vVVfaRMHFbnDhBBM0OkaDqo=
 			</data>
 			<key>hash2</key>
 			<data>
-			bGt03AbK+Q9qWLmv2W0X/B3tIaMFvBFE3wNEvZBS0kA=
+			GdL2fXsCIIR7s30TWYK+gVWb3iDz5zQzQbNN2HlGD3E=
 			</data>
 		</dict>
 		<key>Resources/InstallerSections.plist</key>
