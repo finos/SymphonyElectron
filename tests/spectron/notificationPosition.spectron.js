@@ -144,7 +144,7 @@ describe('Tests for Notification position', () => {
     it('should change notification position to upper-right', (done) => {
         return app.client
             .click('#open-config-win')
-            .windowByIndex(2)
+            .windowByIndex(3)
             .click('#upper-right')
             .click('#ok-button')
             .windowByIndex(0)
@@ -194,7 +194,7 @@ describe('Tests for Notification position', () => {
             .windowByIndex(0)
             .click('#notf')
             .getWindowCount().then((count) => {
-                expect(count === 3).toBeTruthy();
+                expect(count === 4).toBeTruthy();
                 done();
             }).catch((err) => {
                 done.fail(new Error(`notificationPosition failed in getWindowCount with error: ${err}`));
