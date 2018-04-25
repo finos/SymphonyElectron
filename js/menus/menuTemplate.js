@@ -84,22 +84,6 @@ const template = [{
             }
         }
     },
-    {
-        label: 'Set Downloads Directory',
-        click() {
-            electron.dialog.showOpenDialog({
-                title: 'Select Downloads Directory',
-                buttonLabel: 'Select',
-                properties: ['openDirectory', 'createDirectory']
-            }, (filePaths) => {
-                if (!filePaths || !Array.isArray(filePaths) || filePaths.length < 1) {
-                    return;
-                }
-                updateConfigField('downloadsDirectory', filePaths[0]);
-                eventEmitter.emit('setDownloadsDirectory', filePaths[0]);
-            });
-        }
-    },
         { type: 'separator' },
         buildMenuItem('resetzoom'),
         buildMenuItem('zoomin'),
