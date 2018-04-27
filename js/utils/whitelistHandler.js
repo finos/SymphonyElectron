@@ -1,8 +1,11 @@
 'use strict';
 
-const { getGlobalConfigField } = require('./../config.js');
+const { getGlobalConfigField, readConfigFileSync } = require('./../config.js');
 const parseDomain = require('parse-domain');
 const isEqual = require('lodash.isequal');
+
+let config = readConfigFileSync();
+let customTlds = config && config.customTlds;
 
 /**
  * Loops through the list of whitelist urls
@@ -35,7 +38,7 @@ function isWhitelisted(url) {
  */
 function checkWhitelist(url, whitelist) {
     let whitelistArray = whitelist.split(',');
-    const parsedUrl = parseDomain(url);
+    const parsedUrl = parseDomain(url, {customTlds});
 
     if (!parsedUrl) {
         return false;
