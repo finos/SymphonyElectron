@@ -113,7 +113,7 @@ function setContents(event, notificationObj) {
     }
 
     // Title
-    titleDoc.innerHTML = notificationObj.title || '';
+    titleDoc.innerText = notificationObj.title || '';
 
     // message
     messageDoc.innerHTML = notificationObj.text || '';
@@ -127,7 +127,7 @@ function setContents(event, notificationObj) {
 
     // Company
     if (notificationObj.company) {
-        companyDoc.innerHTML = notificationObj.company
+        companyDoc.innerText = notificationObj.company
     } else {
         messageDoc.style.marginTop = '15px';
     }
