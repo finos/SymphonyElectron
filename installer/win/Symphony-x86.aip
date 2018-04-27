@@ -20,7 +20,7 @@
     <ROW Property="ARPSYSTEMCOMPONENT" Value="1"/>
     <ROW Property="ARPURLINFOABOUT" Value="http://www.symphony.com"/>
     <ROW Property="AUTO_START" Value="true" Type="4"/>
-    <ROW Property="AUTO_START_CB" Value="true" Type="4"/>
+    <ROW Property="AUTO_START_CB" Value="true"/>
     <ROW Property="AUTO_START_DT" Value="No"/>
     <ROW Property="BRING_TO_FRONT" Value="false"/>
     <ROW Property="BRING_TO_FRONT_DT" Value="No"/>
@@ -30,7 +30,6 @@
     <ROW Property="FULL_SCREEN" Value="true"/>
     <ROW Property="FULL_SCREEN_CB" Value="true" Type="4"/>
     <ROW Property="FULL_SCREEN_DT" Value="No"/>
-    <ROW Property="INVALID_POD_URL" Value="valid" Type="4"/>
     <ROW Property="LOCATION" Value="true"/>
     <ROW Property="LOCATION_CB" Value="true" Type="4"/>
     <ROW Property="LOCATION_DT" Value="No"/>
@@ -41,23 +40,21 @@
     <ROW Property="MIDI_SYSEX_CB" Value="true" Type="4"/>
     <ROW Property="MIDI_SYSEX_DT" Value="No"/>
     <ROW Property="MINIMIZE_ON_CLOSE" Value="true" Type="4"/>
-    <ROW Property="MINIMIZE_ON_CLOSE_CB" Value="true" Type="4"/>
+    <ROW Property="MINIMIZE_ON_CLOSE_CB" Value="true"/>
     <ROW Property="MINIMIZE_ON_CLOSE_DT" Value="No"/>
     <ROW Property="Manufacturer" Value="Symphony"/>
     <ROW Property="NOTIFICATIONS" Value="true"/>
-    <ROW Property="NOTIFICATIONS_CB" Value="true" Type="4"/>
     <ROW Property="NOTIFICATIONS_DT" Value="No"/>
     <ROW Property="OPEN_EXTERNAL" Value="true"/>
     <ROW Property="OPEN_EXTERNAL_CB" Value="true" Type="4"/>
     <ROW Property="OPEN_EXTERNAL_DT" Value="No"/>
     <ROW Property="POD_URL" Value="https://corporate.symphony.com" Type="4"/>
-    <ROW Property="POD_URL_LABEL" Value="https://corporate.symphony.com" Type="4"/>
     <ROW Property="POINTER_LOCK" Value="true"/>
     <ROW Property="POINTER_LOCK_CB" Value="true" Type="4"/>
     <ROW Property="POINTER_LOCK_DT" Value="No"/>
     <ROW Property="ProductCode" Value="1033:{F17EDEB4-A15F-46B9-83E9-8652CBC886B2} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
-    <ROW Property="ProductName" Value="Symphony-Electron"/>
+    <ROW Property="ProductName" Value="Symphony"/>
     <ROW Property="ProductVersion" Value="2.0.0" Type="32"/>
     <ROW Property="RUNAPPLICATION" Value="1" Type="4"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
@@ -321,6 +318,7 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BuildComponent">
     <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="1" Languages="en" InstallationType="4" UseLargeSchema="true"/>
+    <ATTRIBUTE name="CurrentBuild" value="DefaultBuild"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.DictionaryComponent">
     <ROW Path="&lt;AI_DICTS&gt;ui.ail"/>
@@ -331,7 +329,6 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.FragmentComponent">
     <ROW Fragment="CommonUI.aip" Path="&lt;AI_FRAGS&gt;CommonUI.aip"/>
-    <ROW Fragment="FolderDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\FolderDlg.aip"/>
     <ROW Fragment="InstallTypeDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\InstallTypeDlg.aip"/>
     <ROW Fragment="MaintenanceTypeDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\MaintenanceTypeDlg.aip"/>
     <ROW Fragment="MaintenanceWelcomeDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\MaintenanceWelcomeDlg.aip"/>
@@ -362,7 +359,6 @@
     <ROW Property="BRING_TO_FRONT_CB" Value="true"/>
     <ROW Property="MEDIA_CB" Value="true"/>
     <ROW Property="LOCATION_CB" Value="true"/>
-    <ROW Property="NOTIFICATIONS_CB" Value="true"/>
     <ROW Property="MIDI_SYSEX_CB" Value="true"/>
     <ROW Property="POINTER_LOCK_CB" Value="true"/>
     <ROW Property="FULL_SCREEN_CB" Value="true"/>
@@ -376,6 +372,33 @@
     <ROW Dialog_="AdminInstallPointDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="900" MsiKey="AdminInstallPointDlg#BannerBitmap"/>
     <ROW Dialog_="AdminWelcomeDlg" Control="Title" Type="Text" X="132" Y="10" Width="220" Height="47" Attributes="196611" Text="Welcome to the [ProductName] [Wizard]" TextStyle="VerdanaBold13" Order="500" TextLocId="Control.Text.AdminWelcomeDlg#Title" MsiKey="AdminWelcomeDlg#Title"/>
     <ROW Dialog_="AdminWelcomeDlg" Control="Description" Type="Text" X="132" Y="61" Width="220" Height="40" Attributes="196611" Text="The [Wizard] will create a server image of [ProductName], at a specified network location.  Click &quot;[Text_Next]&quot; to continue or &quot;Cancel&quot; to exit the [Wizard]." Order="600" TextLocId="Control.Text.AdminWelcomeDlg#Description" MsiKey="AdminWelcomeDlg#Description"/>
+    <ROW Dialog_="AdvanceSettings" Control="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Attributes="3" Text="OK" Order="100" TextLocId="-" Options="1"/>
+    <ROW Dialog_="AdvanceSettings" Control="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Cancel]" Order="200" TextLocId="-" Options="1"/>
+    <ROW Dialog_="AdvanceSettings" Control="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Attributes="2" Text="[ButtonText_Back]" Order="300" TextLocId="-" Options="1"/>
+    <ROW Dialog_="AdvanceSettings" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="400"/>
+    <ROW Dialog_="AdvanceSettings" Control="BannerLine" Type="Line" X="0" Y="44" Width="372" Height="0" Attributes="1" Order="500"/>
+    <ROW Dialog_="AdvanceSettings" Control="BottomLine" Type="Line" X="5" Y="234" Width="368" Height="0" Attributes="1" Order="600"/>
+    <ROW Dialog_="AdvanceSettings" Control="Logo" Type="Text" X="4" Y="228" Width="70" Height="12" Attributes="1" Text="Advanced Installer" Order="700"/>
+    <ROW Dialog_="AdvanceSettings" Control="MediaCheckBox" Type="CheckBox" X="29" Y="90" Width="146" Height="13" Attributes="3" Property="MEDIA_CB" Text="Allow" Order="800"/>
+    <ROW Dialog_="AdvanceSettings" Control="Text_1" Type="Text" X="30" Y="60" Width="75" Height="11" Attributes="65539" Property="TEXT_1_PROP_2" Text="Media" TextStyle="DlgFontBold8" Order="900"/>
+    <ROW Dialog_="AdvanceSettings" Control="Text_2" Type="Text" X="30" Y="75" Width="161" Height="11" Attributes="65539" Property="TEXT_2_PROP_2" Text="Allow access to Camera, Audio, Microphone" Order="1000"/>
+    <ROW Dialog_="AdvanceSettings" Control="Text_5" Type="Text" X="30" Y="110" Width="75" Height="11" Attributes="65539" Property="TEXT_5_PROP" Text="Geo Location" TextStyle="DlgFontBold8" Order="1100"/>
+    <ROW Dialog_="AdvanceSettings" Control="LocationCheckBox" Type="CheckBox" X="29" Y="140" Width="98" Height="13" Attributes="3" Property="LOCATION_CB" Text="Allow" Order="1200"/>
+    <ROW Dialog_="AdvanceSettings" Control="Text_6" Type="Text" X="30" Y="125" Width="154" Height="11" Attributes="65539" Property="TEXT_6_PROP_2" Text="Allow access to user’s location" Order="1300"/>
+    <ROW Dialog_="AdvanceSettings" Control="Text_3" Type="Text" X="30" Y="165" Width="75" Height="11" Attributes="65539" Property="TEXT_3_PROP" Text="MIDI Sysex" TextStyle="DlgFontBold8" Order="1400"/>
+    <ROW Dialog_="AdvanceSettings" Control="Text_4" Type="Text" X="30" Y="180" Width="161" Height="14" Attributes="65539" Property="TEXT_4_PROP" Text="Allow access to external devices connected" Order="1500"/>
+    <ROW Dialog_="AdvanceSettings" Control="MidiSysexCheckBox" Type="CheckBox" X="30" Y="195" Width="98" Height="13" Attributes="3" Property="MIDI_SYSEX_CB" Text="Allow" Order="1600"/>
+    <ROW Dialog_="AdvanceSettings" Control="Text_7" Type="Text" X="212" Y="60" Width="75" Height="11" Attributes="65539" Property="TEXT_7_PROP_1" Text="Pointer Lock" TextStyle="DlgFontBold8" Order="1700"/>
+    <ROW Dialog_="AdvanceSettings" Control="Text_8" Type="Text" X="212" Y="75" Width="140" Height="11" Attributes="65539" Property="TEXT_8_PROP" Text="Allow locking a pointer" Order="1800"/>
+    <ROW Dialog_="AdvanceSettings" Control="OpinterLockCheckBox" Type="CheckBox" X="212" Y="90" Width="98" Height="13" Attributes="3" Property="POINTER_LOCK_CB" Text="Allow" Order="1900"/>
+    <ROW Dialog_="AdvanceSettings" Control="Text_9" Type="Text" X="212" Y="111" Width="75" Height="11" Attributes="65539" Property="TEXT_9_PROP" Text="Full Screen" TextStyle="DlgFontBold8" Order="2000"/>
+    <ROW Dialog_="AdvanceSettings" Control="Text_10" Type="Text" X="212" Y="125" Width="140" Height="11" Attributes="65539" Property="TEXT_10_PROP" Text="Allow [ProductName] to full screen" Order="2100"/>
+    <ROW Dialog_="AdvanceSettings" Control="FullScreenCheckBox" Type="CheckBox" X="212" Y="140" Width="98" Height="13" Attributes="3" Property="FULL_SCREEN_CB" Text="Allow" Order="2200"/>
+    <ROW Dialog_="AdvanceSettings" Control="Text_11" Type="Text" X="212" Y="165" Width="140" Height="11" Attributes="65539" Property="TEXT_11_PROP" Text="Open External App" TextStyle="DlgFontBold8" Order="2300"/>
+    <ROW Dialog_="AdvanceSettings" Control="Text_12" Type="Text" X="212" Y="180" Width="140" Height="11" Attributes="65539" Property="TEXT_12_PROP" Text="Allow opening an external app" Order="2400"/>
+    <ROW Dialog_="AdvanceSettings" Control="OpenExternalCheckBox" Type="CheckBox" X="212" Y="195" Width="98" Height="13" Attributes="3" Property="OPEN_EXTERNAL_CB" Text="Allow" Order="2500"/>
+    <ROW Dialog_="AdvanceSettings" Control="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Attributes="196611" Text="Select permissions for your users." Order="2600"/>
+    <ROW Dialog_="AdvanceSettings" Control="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Attributes="196611" Text="Advance Settings" TextStyle="[DlgTitleFont]" Order="2700"/>
     <ROW Dialog_="BrowseDlg" Control="Logo" Type="Text" X="4" Y="228" Width="38" Height="12" Attributes="1" Text="Symphony" Order="300" TextLocId="Control.Text.BrowseDlg#Logo" MsiKey="BrowseDlg#Logo"/>
     <ROW Dialog_="BrowseDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="1200" MsiKey="BrowseDlg#BannerBitmap"/>
     <ROW Dialog_="BrowseDlg" Control="Description" Type="Text" X="17" Y="21" Width="272" Height="14" Attributes="196611" Text="Browse to the destination folder" Order="1400" TextLocId="Control.Text.BrowseDlg#Description" MsiKey="BrowseDlg#Description"/>
@@ -393,36 +416,30 @@
     <ROW Dialog_="FatalError" Control="Title" Type="Text" X="132" Y="10" Width="220" Height="47" Attributes="196611" Text="The [ProductName] [Wizard] ended prematurely" TextStyle="VerdanaBold13" Order="800" TextLocId="Control.Text.FatalError#Title" MsiKey="FatalError#Title"/>
     <ROW Dialog_="FilesInUse" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="400" MsiKey="FilesInUse#BannerBitmap"/>
     <ROW Dialog_="FilesInUse" Control="Logo" Type="Text" X="4" Y="228" Width="37" Height="12" Attributes="1" Text="Symphony" Order="600" TextLocId="Control.Text.FilesInUse#Logo" MsiKey="FilesInUse#Logo"/>
-    <ROW Dialog_="FolderDlg" Control="FolderLabel" Type="Text" X="20" Y="92" Width="348" Height="12" Attributes="3" Text="&amp;Folder:" Help="|" Order="200" TextLocId="Control.Text.FolderDlg#FolderLabel" HelpLocId="Control.Help.FolderDlg#FolderLabel" MsiKey="FolderDlg#FolderLabel"/>
-    <ROW Dialog_="FolderDlg" Control="FolderEdit" Type="PathEdit" X="18" Y="104" Width="252" Height="18" Attributes="7" Property="APPDIR" Help="|" Order="300" HelpLocId="Control.Help.FolderDlg#FolderEdit" MsiKey="FolderDlg#FolderEdit"/>
-    <ROW Dialog_="FolderDlg" Control="Browse" Type="PushButton" X="276" Y="104" Width="90" Height="18" Attributes="3" Text="[ButtonText_Browse]" Help="|" Order="400" TextLocId="-" HelpLocId="Control.Help.FolderDlg#Browse" MsiKey="FolderDlg#Browse"/>
-    <ROW Dialog_="FolderDlg" Control="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Cancel]" Order="600" TextLocId="-" MsiKey="FolderDlg#Cancel" Options="1"/>
-    <ROW Dialog_="FolderDlg" Control="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Back]" Order="700" TextLocId="-" MsiKey="FolderDlg#Back" Options="1"/>
-    <ROW Dialog_="FolderDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Help="|" Order="800" HelpLocId="Control.Help.FolderDlg#BannerBitmap" MsiKey="FolderDlg#BannerBitmap"/>
-    <ROW Dialog_="FolderDlg" Control="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Attributes="196611" Text="Select Installation Folder and POD URL" TextStyle="[DlgTitleFont]" Order="900" TextLocId="Control.Text.FolderDlg#Title" MsiKey="FolderDlg#Title"/>
-    <ROW Dialog_="FolderDlg" Control="Text" Type="Text" X="25" Y="70" Width="320" Height="21" Attributes="3" Text="To install in this folder, click &quot;[Text_Next]&quot;. To install to a different folder, enter it below or click &quot;Browse&quot;." Order="1000" TextLocId="Control.Text.FolderDlg#Text" MsiKey="FolderDlg#Text"/>
-    <ROW Dialog_="FolderDlg" Control="Description" Type="Text" X="17" Y="21" Width="272" Height="14" Attributes="196611" Text="This is the folder where [ProductName] will be installed." Order="1100" TextLocId="Control.Text.FolderDlg#Description" MsiKey="FolderDlg#Description"/>
-    <ROW Dialog_="FolderDlg" Control="BannerLine" Type="Line" X="0" Y="44" Width="372" Height="0" Attributes="1" Order="1200" MsiKey="FolderDlg#BannerLine"/>
-    <ROW Dialog_="FolderDlg" Control="Edit_POD_URL" Type="Edit" X="20" Y="143" Width="251" Height="18" Attributes="3" Property="POD_URL" Text="{260}" Order="1300"/>
-    <ROW Dialog_="FolderDlg" Control="Text_1" Type="Text" X="20" Y="131" Width="251" Height="12" Attributes="3" Text="Symphony POD URL:" Help="|" Order="1400" TextLocId="Control.Text.FolderDlg#FolderLabel" HelpLocId="Control.Help.FolderDlg#FolderLabel"/>
-    <ROW Dialog_="FolderDlg" Control="MinimizeOnCloseCheckBox" Type="CheckBox" X="20" Y="199" Width="98" Height="13" Attributes="3" Property="MINIMIZE_ON_CLOSE_CB" Text="Minimize On Close" Order="1500"/>
-    <ROW Dialog_="FolderDlg" Control="LaunchOnStartupCheckBox" Type="CheckBox" X="172" Y="174" Width="98" Height="13" Attributes="3" Property="AUTO_START_CB" Text="Launch On Startup" Order="1600"/>
-    <ROW Dialog_="FolderDlg" Control="AlwaysOnTopCheckBox" Type="CheckBox" X="20" Y="174" Width="98" Height="13" Attributes="3" Property="ALWAYS_ON_TOP_CB" Text="Always On Top" Order="1700"/>
-    <ROW Dialog_="FolderDlg" Control="Edit_1" Type="Edit" X="360" Y="143" Width="2" Height="9" Attributes="2" Property="INVALID_POD_URL" Text="{260}" Order="1800"/>
-    <ROW Dialog_="FolderDlg" Control="BringToFrontCheckBox" Type="CheckBox" X="172" Y="199" Width="132" Height="13" Attributes="3" Property="BRING_TO_FRONT_CB" Text="Flash Notification in Taskbar" Order="1900"/>
     <ROW Dialog_="InstallTypeDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048576" Text="[DialogBitmap]" Order="100" MsiKey="InstallTypeDlg#BannerBitmap"/>
     <ROW Dialog_="InstallTypeDlg" Control="Bitmap_background" Type="Bitmap" X="0" Y="0" Width="370" Height="234" Attributes="1" Text="[DialogBitmap]" Order="200"/>
-    <ROW Dialog_="InstallTypeDlg" Control="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Next]" Order="300" TextLocId="-" MsiKey="InstallTypeDlg#Next" Options="1"/>
+    <ROW Dialog_="InstallTypeDlg" Control="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Attributes="3" Text="Next &gt;" Order="300" TextLocId="-" MsiKey="InstallTypeDlg#Next" Options="1"/>
     <ROW Dialog_="InstallTypeDlg" Control="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Cancel]" Order="400" TextLocId="-" MsiKey="InstallTypeDlg#Cancel" Options="1"/>
     <ROW Dialog_="InstallTypeDlg" Control="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Attributes="2" Text="[ButtonText_Back]" Order="500" TextLocId="-" MsiKey="InstallTypeDlg#Back" Options="1"/>
     <ROW Dialog_="InstallTypeDlg" Control="BottomLine" Type="Line" X="5" Y="234" Width="368" Height="0" Attributes="1" Order="600" MsiKey="InstallTypeDlg#BottomLine"/>
     <ROW Dialog_="InstallTypeDlg" Control="Text_1" Type="Text" X="132" Y="10" Width="220" Height="36" Attributes="196611" Text="Thanks for downloading [ProductName]" TextStyle="VerdanaBold13" Order="700" TextLocId="Control.Text.WelcomeDlg#Title"/>
-    <ROW Dialog_="InstallTypeDlg" Control="Text_2" Type="Text" X="132" Y="49" Width="220" Height="40" Attributes="196611" Text="With [ProductName] on your desktop" Order="800" TextLocId="Control.Text.WelcomeDlg#Description"/>
-    <ROW Dialog_="InstallTypeDlg" Control="Text_3" Type="Text" X="135" Y="60" Width="203" Height="12" Attributes="196611" Text="- Don&apos;t miss any notifications" Order="900" TextLocId="Control.Text.WelcomeDlg#Description"/>
-    <ROW Dialog_="InstallTypeDlg" Control="Text_4" Type="Text" X="135" Y="72" Width="198" Height="12" Attributes="196611" Text="- Easily capture and share screenshots" Order="1000" TextLocId="Control.Text.WelcomeDlg#Description"/>
-    <ROW Dialog_="InstallTypeDlg" Control="Text_5" Type="Text" X="135" Y="84" Width="204" Height="19" Attributes="196611" Text="- Organize how your alerts are positioned" Order="1100" TextLocId="Control.Text.WelcomeDlg#Description"/>
-    <ROW Dialog_="InstallTypeDlg" Control="InstallTypeRadioButtonGroup" Type="RadioButtonGroup" X="132" Y="137" Width="176" Height="50" Attributes="3" Property="AI_InstallPerUser" Order="1200" MsiKey="InstallTypeDlg#InstallTypeRadioButtonGroup"/>
-    <ROW Dialog_="InstallTypeDlg" Control="Text_6" Type="Text" X="132" Y="123" Width="136" Height="11" Attributes="65539" Property="TEXT_6_PROP" Text="Select the installation type:" Order="1300"/>
+    <ROW Dialog_="InstallTypeDlg" Control="InstallTypeRadioButtonGroup" Type="RadioButtonGroup" X="132" Y="137" Width="176" Height="50" Attributes="3" Property="AI_InstallPerUser" Order="800" MsiKey="InstallTypeDlg#InstallTypeRadioButtonGroup"/>
+    <ROW Dialog_="InstallTypeDlg" Control="Text_6" Type="Text" X="132" Y="123" Width="136" Height="11" Attributes="65539" Property="TEXT_6_PROP" Text="Select the installation type:" Order="900"/>
+    <ROW Dialog_="InstallTypeDlg" Control="Text_2" Type="Text" X="132" Y="49" Width="220" Height="40" Attributes="196611" Text="[ProductName] allows you to:" Order="1000" TextLocId="Control.Text.WelcomeDlg#Description"/>
+    <ROW Dialog_="InstallTypeDlg" Control="Text_3" Type="Text" X="135" Y="60" Width="203" Height="12" Attributes="196611" Text="- Collaborate securely" Order="1100" TextLocId="Control.Text.WelcomeDlg#Description"/>
+    <ROW Dialog_="InstallTypeDlg" Control="Text_4" Type="Text" X="135" Y="72" Width="198" Height="12" Attributes="196611" Text="- Communicate via messages, voice, and video" Order="1200" TextLocId="Control.Text.WelcomeDlg#Description"/>
+    <ROW Dialog_="InstallTypeDlg" Control="Text_5" Type="Text" X="135" Y="84" Width="204" Height="19" Attributes="196611" Text="- Connect with colleagues and coworkers" Order="1300" TextLocId="Control.Text.WelcomeDlg#Description"/>
+    <ROW Dialog_="InstallationDlg" Control="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Attributes="3" Text="Next &gt;" Order="100" TextLocId="-" Options="1"/>
+    <ROW Dialog_="InstallationDlg" Control="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Cancel]" Order="200" TextLocId="-" Options="1"/>
+    <ROW Dialog_="InstallationDlg" Control="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" Attributes="1048577" Text="[DialogBitmap]" Order="300"/>
+    <ROW Dialog_="InstallationDlg" Control="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Back]" Order="400" TextLocId="-" Options="1"/>
+    <ROW Dialog_="InstallationDlg" Control="BottomLine" Type="Line" X="0" Y="234" Width="372" Height="0" Attributes="1" Order="500"/>
+    <ROW Dialog_="InstallationDlg" Control="FolderEdit" Type="PathEdit" X="129" Y="106" Width="134" Height="18" Attributes="7" Property="APPDIR" Help="|" Order="600" HelpLocId="Control.Help.FolderDlg#FolderEdit"/>
+    <ROW Dialog_="InstallationDlg" Control="Browse" Type="PushButton" X="269" Y="106" Width="90" Height="18" Attributes="3" Text="[ButtonText_Browse]" Help="|" Order="700" TextLocId="-" HelpLocId="Control.Help.FolderDlg#Browse"/>
+    <ROW Dialog_="InstallationDlg" Control="Edit_POD_URL" Type="Edit" X="128" Y="157" Width="231" Height="18" Attributes="3" Property="POD_URL" Text="{260}" Order="800"/>
+    <ROW Dialog_="InstallationDlg" Control="Text_2" Type="Text" X="129" Y="142" Width="131" Height="11" Attributes="65539" Property="TEXT_2_PROP_1" Text="[ProductName] POD URL:" Order="900"/>
+    <ROW Dialog_="InstallationDlg" Control="Text_1" Type="Text" X="129" Y="52" Width="230" Height="23" Attributes="65539" Property="TEXT_1_PROP_3" Text="Click Install to install [ProductName] in the folder below. To install to a different folder, enter it below or click Browse." Order="1000"/>
+    <ROW Dialog_="InstallationDlg" Control="Text_3" Type="Text" X="129" Y="90" Width="75" Height="11" Attributes="65539" Property="TEXT_3_PROP_4" Text="&amp;Folder:" Order="1100"/>
     <ROW Dialog_="MaintenanceTypeDlg" Control="ChangeLabel" Type="Text" X="105" Y="65" Width="100" Height="10" Attributes="2" Text="&amp;Modify" TextStyle="[DlgTitleFont]" Order="100" TextLocId="Control.Text.MaintenanceTypeDlg#ChangeLabel" MsiKey="MaintenanceTypeDlg#ChangeLabel"/>
     <ROW Dialog_="MaintenanceTypeDlg" Control="ChangeButton" Type="PushButton" X="50" Y="65" Width="38" Height="38" Attributes="5767170" Text="[CustomSetupIcon]" Help="Modify Installation|" Order="200" HelpLocId="Control.Help.MaintenanceTypeDlg#ChangeButton" MsiKey="MaintenanceTypeDlg#ChangeButton"/>
     <ROW Dialog_="MaintenanceTypeDlg" Control="RepairLabel" Type="Text" X="105" Y="92" Width="100" Height="10" Attributes="3" Text="Re&amp;pair" TextStyle="[DlgTitleFont]" Order="300" TextLocId="Control.Text.MaintenanceTypeDlg#RepairLabel" MsiKey="MaintenanceTypeDlg#RepairLabel"/>
@@ -460,71 +477,28 @@
     <ROW Dialog_="ProgressDlg" Control="ProgressBar" Type="ProgressBar" X="35" Y="115" Width="300" Height="10" Attributes="65537" Text="Progress done" Order="1100" TextLocId="Control.Text.ProgressDlg#ProgressBar" MsiKey="ProgressDlg#ProgressBar"/>
     <ROW Dialog_="ResumeDlg" Control="Title" Type="Text" X="132" Y="10" Width="220" Height="47" Attributes="196611" Text="Resuming the [ProductName] [Wizard]" TextStyle="VerdanaBold13" Order="500" TextLocId="Control.Text.ResumeDlg#Title" MsiKey="ResumeDlg#Title"/>
     <ROW Dialog_="ResumeDlg" Control="Description" Type="Text" X="132" Y="61" Width="220" Height="40" Attributes="196611" Text="The [Wizard] will complete the installation of [ProductName] on your computer.  Click &quot;Install&quot; to continue or &quot;Cancel&quot; to exit the [Wizard]." Order="600" TextLocId="Control.Text.ResumeDlg#Description" MsiKey="ResumeDlg#Description"/>
-    <ROW Dialog_="SelectPermissionsDlg" Control="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Next]" Order="100" TextLocId="-" Options="1"/>
-    <ROW Dialog_="SelectPermissionsDlg" Control="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Cancel]" Order="200" TextLocId="-" Options="1"/>
-    <ROW Dialog_="SelectPermissionsDlg" Control="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Back]" Order="300" TextLocId="-" Options="1"/>
-    <ROW Dialog_="SelectPermissionsDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="400"/>
-    <ROW Dialog_="SelectPermissionsDlg" Control="BannerLine" Type="Line" X="0" Y="44" Width="372" Height="0" Attributes="1" Order="500"/>
-    <ROW Dialog_="SelectPermissionsDlg" Control="BottomLine" Type="Line" X="5" Y="234" Width="368" Height="0" Attributes="1" Order="600"/>
-    <ROW Dialog_="SelectPermissionsDlg" Control="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Attributes="196611" Text="Select the Permissions your users should have" Order="700"/>
-    <ROW Dialog_="SelectPermissionsDlg" Control="Logo" Type="Text" X="4" Y="228" Width="70" Height="12" Attributes="1" Text="Advanced Installer" Order="800"/>
-    <ROW Dialog_="SelectPermissionsDlg" Control="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Attributes="196611" Text="Select Permissions" TextStyle="[DlgTitleFont]" Order="900"/>
-    <ROW Dialog_="SelectPermissionsDlg" Control="MediaCheckBox" Type="CheckBox" X="15" Y="60" Width="144" Height="13" Attributes="3" Property="MEDIA_CB" Text="Media (Audio, Video, Screenshare)" Order="1000"/>
-    <ROW Dialog_="SelectPermissionsDlg" Control="LocationCheckBox" Type="CheckBox" X="15" Y="90" Width="98" Height="13" Attributes="3" Property="LOCATION_CB" Text="Geo Location" Order="1100"/>
-    <ROW Dialog_="SelectPermissionsDlg" Control="NotificationsCheckBox" Type="CheckBox" X="15" Y="120" Width="98" Height="13" Attributes="3" Property="NOTIFICATIONS_CB" Text="Notifications" Order="1200"/>
-    <ROW Dialog_="SelectPermissionsDlg" Control="MidiSysexCheckBox" Type="CheckBox" X="15" Y="150" Width="98" Height="13" Attributes="3" Property="MIDI_SYSEX_CB" Text="Midi Sysex" Order="1300"/>
-    <ROW Dialog_="SelectPermissionsDlg" Control="OpinterLockCheckBox" Type="CheckBox" X="180" Y="60" Width="98" Height="13" Attributes="3" Property="POINTER_LOCK_CB" Text="Pointer Lock" Order="1400"/>
-    <ROW Dialog_="SelectPermissionsDlg" Control="FullScreenCheckBox" Type="CheckBox" X="180" Y="90" Width="98" Height="13" Attributes="3" Property="FULL_SCREEN_CB" Text="Full Screen" Order="1500"/>
-    <ROW Dialog_="SelectPermissionsDlg" Control="OpenExternalCheckBox" Type="CheckBox" X="180" Y="120" Width="98" Height="13" Attributes="3" Property="OPEN_EXTERNAL_CB" Text="Open External App" Order="1600"/>
-    <ROW Dialog_="SpawnWaitDialog" Control="Yes" Type="PushButton" X="72" Y="57" Width="56" Height="17" Attributes="3" Text="[ButtonText_Yes]" Order="100" TextLocId="-"/>
-    <ROW Dialog_="SpawnWaitDialog" Control="Icon" Type="Icon" X="15" Y="15" Width="24" Height="24" Attributes="5242881" Text="[InfoIcon]" Order="200"/>
-    <ROW Dialog_="SpawnWaitDialog" Control="Text" Type="Text" X="48" Y="15" Width="194" Height="30" Attributes="3" Text="New Spawn(Wait) Dialog" Order="300"/>
-    <ROW Dialog_="SpawnWaitDialog" Control="No" Type="PushButton" X="132" Y="57" Width="56" Height="17" Attributes="3" Text="[ButtonText_No]" Order="400" TextLocId="-"/>
+    <ROW Dialog_="SettingsDlg" Control="TemplateSeqDlgDialogInitializer" Type="DialogInitializer" X="0" Y="0" Width="0" Height="0" Attributes="0" Order="-1" TextLocId="-" HelpLocId="-" ExtDataLocId="-"/>
+    <ROW Dialog_="SettingsDlg" Control="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Next]" Order="100" TextLocId="-" Options="1"/>
+    <ROW Dialog_="SettingsDlg" Control="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Cancel]" Order="200" TextLocId="-" Options="1"/>
+    <ROW Dialog_="SettingsDlg" Control="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Back]" Order="300" TextLocId="-" Options="1"/>
+    <ROW Dialog_="SettingsDlg" Control="BottomLine" Type="Line" X="0" Y="234" Width="372" Height="0" Attributes="1" Order="400"/>
+    <ROW Dialog_="SettingsDlg" Control="MinimizeOnCloseCheckBox" Type="CheckBox" X="33" Y="169" Width="98" Height="13" Attributes="3" Property="MINIMIZE_ON_CLOSE_CB" Text="Enable" Order="500"/>
+    <ROW Dialog_="SettingsDlg" Control="LaunchOnStartupCheckBox" Type="CheckBox" X="185" Y="169" Width="98" Height="13" Attributes="3" Property="AUTO_START_CB" Text="Enable" Order="600"/>
+    <ROW Dialog_="SettingsDlg" Control="AlwaysOnTopCheckBox" Type="CheckBox" X="33" Y="101" Width="98" Height="13" Attributes="3" Property="ALWAYS_ON_TOP_CB" Text="Enable" Order="700"/>
+    <ROW Dialog_="SettingsDlg" Control="BringToFrontCheckBox" Type="CheckBox" X="185" Y="101" Width="132" Height="13" Attributes="3" Property="BRING_TO_FRONT_CB" Text="Enable" Order="800"/>
+    <ROW Dialog_="SettingsDlg" Control="Text_1" Type="Text" X="33" Y="62" Width="75" Height="11" Attributes="65539" Property="TEXT_1_PROP_4" Text="Always on Top" TextStyle="DlgFontBold8" Order="900"/>
+    <ROW Dialog_="SettingsDlg" Control="Text_2" Type="Text" X="33" Y="76" Width="135" Height="28" Attributes="65539" Property="TEXT_2_PROP_3" Text="Keeps [ProductName] on top of other applications" Order="1000"/>
+    <ROW Dialog_="SettingsDlg" Control="Text_3" Type="Text" X="33" Y="139" Width="99" Height="11" Attributes="65539" Property="TEXT_3_PROP_5" Text="Minimize on Close" TextStyle="DlgFontBold8" Order="1100"/>
+    <ROW Dialog_="SettingsDlg" Control="Text_4" Type="Text" X="33" Y="154" Width="135" Height="11" Attributes="65539" Property="TEXT_4_PROP_3" Text="Minimize [ProductName] when closed" Order="1200"/>
+    <ROW Dialog_="SettingsDlg" Control="Text_5" Type="Text" X="185" Y="154" Width="152" Height="11" Attributes="65539" Property="TEXT_5_PROP_1" Text="Launch [ProductName] when computer starts" Order="1300"/>
+    <ROW Dialog_="SettingsDlg" Control="Text_6" Type="Text" X="185" Y="139" Width="122" Height="11" Attributes="65539" Property="TEXT_6_PROP_3" Text="Launch on Startup" TextStyle="DlgFontBold8" Order="1400"/>
+    <ROW Dialog_="SettingsDlg" Control="Text_7" Type="Text" X="185" Y="76" Width="135" Height="28" Attributes="65539" Property="TEXT_7_PROP" Text="Flash icon in taskbar when a message is received" Order="1500"/>
+    <ROW Dialog_="SettingsDlg" Control="Text_8" Type="Text" X="185" Y="62" Width="75" Height="11" Attributes="65539" Property="TEXT_8_PROP_1" Text="Flash Notification in Taskbar" TextStyle="DlgFontBold8" Order="1600"/>
+    <ROW Dialog_="SettingsDlg" Control="PushButton_1" Type="PushButton" X="267" Y="206" Width="92" Height="17" Attributes="3" Text="Advance Settings" Order="1700"/>
+    <ROW Dialog_="SettingsDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Help="|" Order="1800" HelpLocId="Control.Help.FolderDlg#BannerBitmap"/>
+    <ROW Dialog_="SettingsDlg" Control="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Attributes="196611" Text="Basic Settings" TextStyle="[DlgTitleFont]" Order="1900" TextLocId="Control.Text.FolderDlg#Title"/>
+    <ROW Dialog_="SettingsDlg" Control="Description" Type="Text" X="17" Y="21" Width="272" Height="14" Attributes="196611" Text="Select features for your users." Order="2000" TextLocId="Control.Text.FolderDlg#Description"/>
     <ROW Dialog_="UserExit" Control="Title" Type="Text" X="132" Y="10" Width="220" Height="47" Attributes="196611" Text="The [ProductName] [Wizard] was interrupted" TextStyle="VerdanaBold13" Order="500" TextLocId="Control.Text.UserExit#Title" MsiKey="UserExit#Title"/>
-    <ROW Dialog_="VerifyDlg" Control="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Next]" Order="100" TextLocId="-" Options="1"/>
-    <ROW Dialog_="VerifyDlg" Control="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Cancel]" Order="200" TextLocId="-" Options="1"/>
-    <ROW Dialog_="VerifyDlg" Control="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Back]" Order="300" TextLocId="-" Options="1"/>
-    <ROW Dialog_="VerifyDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="400"/>
-    <ROW Dialog_="VerifyDlg" Control="BannerLine" Type="Line" X="0" Y="44" Width="372" Height="0" Attributes="1" Order="500"/>
-    <ROW Dialog_="VerifyDlg" Control="BottomLine" Type="Line" X="5" Y="234" Width="368" Height="0" Attributes="1" Order="600"/>
-    <ROW Dialog_="VerifyDlg" Control="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Attributes="196611" Text="Verify the information entered" Order="700"/>
-    <ROW Dialog_="VerifyDlg" Control="Logo" Type="Text" X="4" Y="228" Width="70" Height="12" Attributes="1" Text="Advanced Installer" Order="800"/>
-    <ROW Dialog_="VerifyDlg" Control="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Attributes="196611" Text="Settings Verification" TextStyle="[DlgTitleFont]" Order="900"/>
-    <ROW Dialog_="VerifyDlg" Control="Text_1" Type="Text" X="25" Y="88" Width="76" Height="17" Attributes="65539" Property="TEXT_1_PROP" Text="Symphony POD Url : " Order="1000"/>
-    <ROW Dialog_="VerifyDlg" Control="PodUrlLabel" Type="Text" X="169" Y="88" Width="145" Height="17" Attributes="65539" Property="POD_URL_LABEL" Text="[POD_URL]" Order="1100"/>
-    <ROW Dialog_="VerifyDlg" Control="Text_3" Type="Text" X="25" Y="114" Width="76" Height="13" Attributes="65539" Property="TEXT_3_PROP" Text="Always on Top : " Order="1200"/>
-    <ROW Dialog_="VerifyDlg" Control="AlwaysOnTopLabel" Type="Text" X="169" Y="114" Width="145" Height="10" Attributes="65539" Property="ALWAYS_ON_TOP_DT" Text="[ALWAYS_ON_TOP_DT]" Order="1300"/>
-    <ROW Dialog_="VerifyDlg" Control="Text_5" Type="Text" X="25" Y="139" Width="76" Height="13" Attributes="65539" Property="TEXT_3_PROP_1" Text="Launch on Startup : " Order="1400"/>
-    <ROW Dialog_="VerifyDlg" Control="AutoStartLabel" Type="Text" X="169" Y="139" Width="145" Height="10" Attributes="65539" Property="AUTO_START_DT" Text="[AUTO_START_DT]" Order="1500"/>
-    <ROW Dialog_="VerifyDlg" Control="Text_7" Type="Text" X="25" Y="164" Width="76" Height="13" Attributes="65539" Property="TEXT_3_PROP_1_1" Text="Minimize on Close : " Order="1600"/>
-    <ROW Dialog_="VerifyDlg" Control="MinimizeOnCloseLabel" Type="Text" X="169" Y="164" Width="145" Height="10" Attributes="65539" Property="MINIMIZE_ON_CLOSE_DT" Text="[MINIMIZE_ON_CLOSE_DT]" Order="1700"/>
-    <ROW Dialog_="VerifyDlg" Control="Text_9" Type="Text" X="25" Y="60" Width="321" Height="25" Attributes="65539" Property="TEXT_9_PROP" Text="You seem to have entered an invalid pod url. Please go back to the previous screen and rectify it." Order="1800"/>
-    <ROW Dialog_="VerifyDlg" Control="Text_10" Type="Text" X="25" Y="189" Width="120" Height="21" Attributes="65539" Property="TEXT_3_PROP_1_1_1" Text="Flash Notification in Taskbar :" Order="1900"/>
-    <ROW Dialog_="VerifyDlg" Control="BringToFrontLabel" Type="Text" X="169" Y="189" Width="145" Height="10" Attributes="65539" Property="BRING_TO_FRONT_DT" Text="[BRING_TO_FRONT_DT]" Order="2000"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control="VerifyPermissionsDlgDialogInitializer" Type="DialogInitializer" X="0" Y="0" Width="0" Height="0" Attributes="0" Order="-1" TextLocId="-" HelpLocId="-" ExtDataLocId="-"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Next]" Order="100" TextLocId="-" Options="1"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Cancel]" Order="200" TextLocId="-" Options="1"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Back]" Order="300" TextLocId="-" Options="1"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="400"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control="BannerLine" Type="Line" X="0" Y="44" Width="372" Height="0" Attributes="1" Order="500"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control="BottomLine" Type="Line" X="5" Y="234" Width="368" Height="0" Attributes="1" Order="600"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Attributes="196611" Text="Verify the information selected" Order="700"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control="Logo" Type="Text" X="4" Y="228" Width="70" Height="12" Attributes="1" Text="Advanced Installer" Order="800"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Attributes="196611" Text="Verify Permissions" TextStyle="[DlgTitleFont]" Order="900"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control="media" Type="Text" X="15" Y="60" Width="136" Height="11" Attributes="65539" Property="TEXT_2_PROP" Text="Media (Audio, Video, Screenshare) :" Order="1000"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control="location" Type="Text" X="15" Y="80" Width="75" Height="11" Attributes="65539" Property="TEXT_3_PROP_2" Text="Geo Location :" Order="1100"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control="notifications" Type="Text" X="15" Y="100" Width="75" Height="11" Attributes="65539" Property="TEXT_4_PROP" Text="Notifications :" Order="1200"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control="Text_4" Type="Text" X="15" Y="120" Width="75" Height="11" Attributes="65539" Property="TEXT_4_PROP_1" Text="Midi Sysex :" Order="1300"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control="Text_6" Type="Text" X="15" Y="140" Width="75" Height="11" Attributes="65539" Property="TEXT_6_PROP_1" Text="Pointer Lock :" Order="1400"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control="Text_8" Type="Text" X="15" Y="160" Width="75" Height="11" Attributes="65539" Property="TEXT_8_PROP" Text="Full Screen :" Order="1500"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control="Text_10" Type="Text" X="15" Y="180" Width="75" Height="11" Attributes="65539" Property="TEXT_10_PROP" Text="Open External App :" Order="1600"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control="Text_1" Type="Text" X="160" Y="60" Width="75" Height="11" Attributes="65539" Property="MEDIA_DT" Text="[MEDIA_DT]" Order="1700"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control="Text_2" Type="Text" X="160" Y="80" Width="75" Height="11" Attributes="65539" Property="LOCATION_DT" Text="[LOCATION_DT]" Order="1800"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control="Text_3" Type="Text" X="160" Y="100" Width="75" Height="11" Attributes="65539" Property="NOTIFICATIONS_DT" Text="[NOTIFICATIONS_DT]" Order="1900"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control="Text_5" Type="Text" X="160" Y="120" Width="75" Height="11" Attributes="65539" Property="MIDI_SYSEX_DT" Text="[MIDI_SYSEX_DT]" Order="2000"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control="Text_7" Type="Text" X="160" Y="140" Width="75" Height="11" Attributes="65539" Property="POINTER_LOCK_DT" Text="[POINTER_LOCK_DT]" Order="2100"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control="Text_9" Type="Text" X="160" Y="160" Width="75" Height="11" Attributes="65539" Property="FULL_SCREEN_DT" Text="[FULL_SCREEN_DT]" Order="2200"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control="Text_11" Type="Text" X="160" Y="180" Width="75" Height="11" Attributes="65539" Property="OPEN_EXTERNAL_DT" Text="[OPEN_EXTERNAL_DT]" Order="2300"/>
     <ROW Dialog_="VerifyReadyDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="300" MsiKey="VerifyReadyDlg#BannerBitmap"/>
     <ROW Dialog_="VerifyReadyDlg" Control="Logo" Type="Text" X="5" Y="228" Width="39" Height="12" Attributes="1" Text="Symphony" Order="500" TextLocId="Control.Text.VerifyReadyDlg#Logo" MsiKey="VerifyReadyDlg#Logo"/>
     <ROW Dialog_="VerifyReadyDlg" Control="Text" Type="Text" X="25" Y="70" Width="320" Height="21" Attributes="196611" Text="Click &quot;Install&quot; to begin the installation.  If you want to review or change any of your installation settings, click &quot;Back&quot;.  Click &quot;Cancel&quot; to exit the wizard." Order="700" TextLocId="Control.Text.VerifyReadyDlg#Text" MsiKey="VerifyReadyDlg#Text"/>
@@ -534,21 +508,9 @@
     <ROW Dialog_="VerifyRepairDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="300" MsiKey="VerifyRepairDlg#BannerBitmap"/>
     <ROW Dialog_="VerifyRepairDlg" Control="Logo" Type="Text" X="4" Y="228" Width="38" Height="12" Attributes="1" Text="Symphony" Order="500" TextLocId="Control.Text.VerifyRepairDlg#Logo" MsiKey="VerifyRepairDlg#Logo"/>
     <ROW Dialog_="VerifyRepairDlg" Control="Description" Type="Text" X="17" Y="21" Width="272" Height="14" Attributes="196611" Text="The [Wizard] is ready to begin the repair of [ProductName]." Order="900" TextLocId="Control.Text.VerifyRepairDlg#Description" MsiKey="VerifyRepairDlg#Description"/>
-    <ATTRIBUTE name="DeletedRows" value="ExitDialog#ViewReadmeText@FolderDlg#Logo@InstallTypeDlg#BannerLine@InstallTypeDlg#Description@InstallTypeDlg#InstallTypeText@InstallTypeDlg#Logo@InstallTypeDlg#Title@ProgressDlg#Logo"/>
+    <ATTRIBUTE name="DeletedRows" value="ExitDialog#ViewReadmeText@InstallTypeDlg#BannerLine@InstallTypeDlg#Description@InstallTypeDlg#InstallTypeText@InstallTypeDlg#Logo@InstallTypeDlg#Title@ProgressDlg#Logo"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlConditionComponent">
-    <ROW Dialog_="VerifyDlg" Control_="Next" Action="Disable" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
-    <ROW Dialog_="VerifyDlg" Control_="Text_1" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
-    <ROW Dialog_="VerifyDlg" Control_="PodUrlLabel" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
-    <ROW Dialog_="VerifyDlg" Control_="Text_3" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
-    <ROW Dialog_="VerifyDlg" Control_="AlwaysOnTopLabel" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
-    <ROW Dialog_="VerifyDlg" Control_="Text_5" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
-    <ROW Dialog_="VerifyDlg" Control_="AutoStartLabel" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
-    <ROW Dialog_="VerifyDlg" Control_="Text_7" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
-    <ROW Dialog_="VerifyDlg" Control_="MinimizeOnCloseLabel" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
-    <ROW Dialog_="VerifyDlg" Control_="Text_9" Action="Hide" Condition="INVALID_POD_URL = &quot;valid&quot;"/>
-    <ROW Dialog_="VerifyDlg" Control_="Text_10" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
-    <ROW Dialog_="VerifyDlg" Control_="BringToFrontLabel" Action="Hide" Condition="INVALID_POD_URL = &quot;invalid&quot;"/>
     <ATTRIBUTE name="DeletedRows" value="ExitDialog#ViewReadmeText#Hide#((NOT AI_INSTALL) AND (NOT AI_PATCH)) OR ((CTRLS &lt;&gt; 1) AND (CTRLS &lt;&gt; 3))"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlEventComponent">
@@ -569,31 +531,29 @@
     <ROW Dialog_="ResumeDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_RESUME" Ordering="299"/>
     <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_PATCH" Ordering="199"/>
     <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="PatchWelcomeDlg" Condition="AI_PATCH" Ordering="203"/>
-    <ROW Dialog_="InstallTypeDlg" Control_="Next" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="101"/>
-    <ROW Dialog_="FolderDlg" Control_="Next" Event="NewDialog" Argument="VerifyDlg" Condition="AI_INSTALL" Ordering="201"/>
-    <ROW Dialog_="FolderDlg" Control_="Back" Event="NewDialog" Argument="InstallTypeDlg" Condition="AI_INSTALL" Ordering="1"/>
-    <ROW Dialog_="SpawnWaitDialog" Control_="No" Event="EndDialog" Argument="Return" Condition="1" Ordering="100"/>
-    <ROW Dialog_="SpawnWaitDialog" Control_="Yes" Event="EndDialog" Argument="Return" Condition="1" Ordering="100"/>
-    <ROW Dialog_="VerifyDlg" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="100"/>
-    <ROW Dialog_="VerifyDlg" Control_="Next" Event="NewDialog" Argument="SelectPermissionsDlg" Condition="AI_INSTALL" Ordering="1"/>
-    <ROW Dialog_="VerifyDlg" Control_="Back" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="1"/>
-    <ROW Dialog_="FolderDlg" Control_="Next" Event="DoAction" Argument="PodUrlValidation" Condition="AI_INSTALL" Ordering="202"/>
-    <ROW Dialog_="SelectPermissionsDlg" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="100"/>
-    <ROW Dialog_="SelectPermissionsDlg" Control_="Next" Event="NewDialog" Argument="VerifyPermissionsDlg" Condition="AI_INSTALL" Ordering="1"/>
-    <ROW Dialog_="SelectPermissionsDlg" Control_="Back" Event="NewDialog" Argument="VerifyDlg" Condition="AI_INSTALL" Ordering="1"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="100"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control_="Next" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="1"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control_="Back" Event="NewDialog" Argument="SelectPermissionsDlg" Condition="AI_INSTALL" Ordering="1"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control_="Next" Event="SpawnDialog" Argument="OutOfRbDiskDlg" Condition="AI_INSTALL AND OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST=&quot;P&quot; OR NOT PROMPTROLLBACKCOST)" Ordering="2" Options="2"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control_="Next" Event="EnableRollback" Argument="False" Condition="AI_INSTALL AND OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST=&quot;D&quot;" Ordering="3" Options="2"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control_="Next" Event="SpawnDialog" Argument="OutOfDiskDlg" Condition="AI_INSTALL AND ( (OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST=&quot;F&quot;) )" Ordering="4" Options="2"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control_="VerifyPermissionsDlgDialogInitializer" Event="[AI_ButtonText_Next_Orig]" Argument="[ButtonText_Next]" Condition="AI_INSTALL" Ordering="0" Options="2"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control_="VerifyPermissionsDlgDialogInitializer" Event="[ButtonText_Next]" Argument="[[AI_CommitButton]]" Condition="AI_INSTALL" Ordering="1" Options="2"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control_="VerifyPermissionsDlgDialogInitializer" Event="[AI_Text_Next_Orig]" Argument="[Text_Next]" Condition="AI_INSTALL" Ordering="2" Options="2"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control_="VerifyPermissionsDlgDialogInitializer" Event="[Text_Next]" Argument="[Text_Install]" Condition="AI_INSTALL" Ordering="3" Options="2"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control_="Back" Event="[ButtonText_Next]" Argument="[AI_ButtonText_Next_Orig]" Condition="AI_INSTALL" Ordering="2" Options="2"/>
-    <ROW Dialog_="VerifyPermissionsDlg" Control_="Back" Event="[Text_Next]" Argument="[AI_Text_Next_Orig]" Condition="AI_INSTALL" Ordering="3" Options="2"/>
-    <ROW Dialog_="SelectPermissionsDlg" Control_="Next" Event="DoAction" Argument="PodUrlValidation" Condition="AI_INSTALL" Ordering="2"/>
+    <ROW Dialog_="InstallTypeDlg" Control_="Next" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="101"/>
+    <ROW Dialog_="SettingsDlg" Control_="Next" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="3"/>
+    <ROW Dialog_="SettingsDlg" Control_="PushButton_1" Event="SpawnDialog" Argument="AdvanceSettings" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="SettingsDlg" Control_="Next" Event="SpawnDialog" Argument="OutOfRbDiskDlg" Condition="AI_INSTALL AND OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST=&quot;P&quot; OR NOT PROMPTROLLBACKCOST)" Ordering="4" Options="2"/>
+    <ROW Dialog_="SettingsDlg" Control_="Next" Event="EnableRollback" Argument="False" Condition="AI_INSTALL AND OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST=&quot;D&quot;" Ordering="5" Options="2"/>
+    <ROW Dialog_="SettingsDlg" Control_="Next" Event="SpawnDialog" Argument="OutOfDiskDlg" Condition="AI_INSTALL AND ( (OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST=&quot;F&quot;) )" Ordering="6" Options="2"/>
+    <ROW Dialog_="SettingsDlg" Control_="TemplateSeqDlgDialogInitializer" Event="[AI_ButtonText_Next_Orig]" Argument="[ButtonText_Next]" Condition="AI_INSTALL" Ordering="0" Options="2"/>
+    <ROW Dialog_="SettingsDlg" Control_="TemplateSeqDlgDialogInitializer" Event="[ButtonText_Next]" Argument="[[AI_CommitButton]]" Condition="AI_INSTALL" Ordering="1" Options="2"/>
+    <ROW Dialog_="SettingsDlg" Control_="TemplateSeqDlgDialogInitializer" Event="[AI_Text_Next_Orig]" Argument="[Text_Next]" Condition="AI_INSTALL" Ordering="2" Options="2"/>
+    <ROW Dialog_="SettingsDlg" Control_="TemplateSeqDlgDialogInitializer" Event="[Text_Next]" Argument="[Text_Install]" Condition="AI_INSTALL" Ordering="3" Options="2"/>
+    <ROW Dialog_="SettingsDlg" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="100"/>
+    <ROW Dialog_="SettingsDlg" Control_="Back" Event="[ButtonText_Next]" Argument="[AI_ButtonText_Next_Orig]" Condition="AI_INSTALL" Ordering="0" Options="2"/>
+    <ROW Dialog_="InstallationDlg" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="100"/>
+    <ROW Dialog_="InstallationDlg" Control_="Next" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="InstallationDlg" Control_="Browse" Event="[_BrowseProperty]" Argument="APPDIR" Condition="1" Ordering="100"/>
+    <ROW Dialog_="InstallationDlg" Control_="Browse" Event="SpawnDialog" Argument="BrowseDlg" Condition="1" Ordering="200"/>
+    <ROW Dialog_="AdvanceSettings" Control_="Cancel" Event="EndDialog" Argument="Return" Condition="1" Ordering="0"/>
+    <ROW Dialog_="AdvanceSettings" Control_="Next" Event="DoAction" Argument="PodUrlValidation" Condition="1" Ordering="0"/>
+    <ROW Dialog_="AdvanceSettings" Control_="Next" Event="EndDialog" Argument="Return" Condition="1" Ordering="1"/>
+    <ROW Dialog_="SettingsDlg" Control_="Back" Event="SpawnDialog" Argument="InstallationDlg" Condition="AI_INSTALL" Ordering="2"/>
+    <ROW Dialog_="InstallationDlg" Control_="Back" Event="SpawnDialog" Argument="InstallTypeDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="SettingsDlg" Control_="Next" Event="DoAction" Argument="PodUrlValidation" Condition="AI_INSTALL" Ordering="2"/>
+    <ROW Dialog_="SettingsDlg" Control_="Back" Event="[Text_Next]" Argument="[AI_Text_Next_Orig]" Condition="AI_INSTALL" Ordering="1" Options="2"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCreateFolderComponent">
     <ROW Directory_="Symphony_Dir" Component_="Symphony" ManualDelete="false"/>
@@ -625,10 +585,9 @@
     <ROW Action="UninstallPreviousVersions" Type="1" Source="aicustact.dll" Target="UninstallPreviousVersions" Options="1"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiDialogComponent">
-    <ROW Dialog="SelectPermissionsDlg" HCentering="50" VCentering="50" Width="370" Height="270" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel"/>
-    <ROW Dialog="SpawnWaitDialog" HCentering="50" VCentering="50" Width="260" Height="85" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Yes" Control_Cancel="No"/>
-    <ROW Dialog="VerifyDlg" HCentering="50" VCentering="50" Width="370" Height="270" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel"/>
-    <ROW Dialog="VerifyPermissionsDlg" HCentering="50" VCentering="50" Width="370" Height="270" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel"/>
+    <ROW Dialog="AdvanceSettings" HCentering="50" VCentering="50" Width="370" Height="270" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel"/>
+    <ROW Dialog="InstallationDlg" HCentering="50" VCentering="50" Width="370" Height="270" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel"/>
+    <ROW Dialog="SettingsDlg" HCentering="50" VCentering="50" Width="370" Height="270" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiIconsComponent">
     <ROW Name="icon.exe" SourcePath="..\..\build\icon.ico" Index="0"/>
@@ -650,9 +609,11 @@
     <ROW Action="AI_ResolveKnownFolders" Sequence="52"/>
     <ROW Action="AI_DpiContentScale" Sequence="51"/>
     <ROW Action="ExecuteAction" Sequence="1299" SeqType="0" MsiKey="ExecuteAction"/>
-    <ROW Action="InstallTypeDlg" Condition="AI_INSTALL" Sequence="1230" SeqType="3" MsiKey="WelcomeDlg"/>
+    <ROW Action="InstallTypeDlg" Condition="AI_INSTALL" Sequence="1227" SeqType="3" MsiKey="WelcomeDlg"/>
     <ROW Action="UninstallPreviousVersions" Sequence="1281"/>
     <ROW Action="AI_SETMIXINSTLOCATION" Sequence="748"/>
+    <ROW Action="SettingsDlg" Condition="AI_INSTALL" Sequence="1232" SeqType="3"/>
+    <ROW Action="InstallationDlg" Condition="AI_INSTALL" Sequence="1228" SeqType="3"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiLaunchConditionsComponent">
     <ROW Condition="( Version9X OR ( NOT VersionNT64 ) OR ( VersionNT64 AND ((VersionNT64 &lt;&gt; 502) OR (((VersionNT64 = 502) AND (ServicePackLevel &gt;= 1)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 502) OR (((VersionNT64 = 502) AND (ServicePackLevel &lt;&gt; 1)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 502) OR (((VersionNT64 = 502) AND (ServicePackLevel &lt;&gt; 2)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 502) OR ((VersionNT64 = 502) AND ((MsiNTProductType = 1) OR (ServicePackLevel &gt;= 1)))) AND ((VersionNT64 &lt;&gt; 502) OR ((VersionNT64 = 502) AND ((MsiNTProductType = 1) OR (ServicePackLevel &lt;&gt; 1)))) AND ((VersionNT64 &lt;&gt; 502) OR ((VersionNT64 = 502) AND ((MsiNTProductType = 1) OR (ServicePackLevel &lt;&gt; 2)))) AND ((VersionNT64 &lt;&gt; 600) OR (((VersionNT64 = 600) AND (ServicePackLevel &gt;= 1)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 600) OR (((VersionNT64 = 600) AND (ServicePackLevel &lt;&gt; 1)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 600) OR (((VersionNT64 = 600) AND (ServicePackLevel &lt;&gt; 2)) OR (MsiNTProductType &lt;&gt; 1))) ) )" Description="[ProductName] cannot be installed on the following Windows versions: [WindowsTypeNT64Display]" DescriptionLocId="AI.LaunchCondition.NoSpecificNT64" IsPredefined="true" Builds="DefaultBuild"/>
@@ -662,7 +623,7 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiRadioButtonComponent">
     <ROW Property="AI_InstallPerUser" Order="1" Value="1" X="17" Y="10" Width="158" Height="11" Text="Only for me ([LogonUser])" TextLocId="RadioButton.Text.InstallTypeDlg#1" MsiKey="AI_InstallPerUser#1"/>
-    <ROW Property="AI_InstallPerUser" Order="2" Value="0" X="17" Y="29" Width="158" Height="11" Text="Everybody (all users - admin required)" MsiKey="AI_InstallPerUser#2"/>
+    <ROW Property="AI_InstallPerUser" Order="2" Value="0" X="17" Y="29" Width="158" Height="11" Text="For all users (admin required)" MsiKey="AI_InstallPerUser#2"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiRegsComponent">
     <ROW Registry="Comments" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="Comments" Value="[ARPCOMMENTS]" Component_="AI_CustomARPName"/>
