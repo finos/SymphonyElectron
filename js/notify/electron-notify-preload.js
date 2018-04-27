@@ -116,7 +116,7 @@ function setContents(event, notificationObj) {
     titleDoc.innerText = notificationObj.title || '';
 
     // message
-    messageDoc.innerHTML = notificationObj.text || '';
+    messageDoc.innerText = notificationObj.text || '';
 
     // Image
     if (notificationObj.image) {
