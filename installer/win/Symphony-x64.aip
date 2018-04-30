@@ -107,7 +107,7 @@
     <ROW Component="Symphony.config" ComponentId="{644A231D-2C96-4D3D-ADB0-7820DA373499}" Directory_="config_Dir" Attributes="0" KeyPath="Symphony.config_1" Type="0"/>
     <ROW Component="Symphony.exe" ComponentId="{853053E4-D96C-42FE-9AF1-52FF1F449FFD}" Directory_="APPDIR" Attributes="256" KeyPath="Symphony.exe"/>
     <ROW Component="am.pak" ComponentId="{76F935B8-6077-4C7A-AD1B-77E2DBA856CC}" Directory_="locales_Dir" Attributes="0" KeyPath="am.pak" Type="0"/>
-    <ROW Component="ambient.d.ts" ComponentId="{CAFDE1D9-C005-4ED5-A541-E08241C0EE3E}" Directory_="src_1_Dir" Attributes="0" KeyPath="ambient.d.ts" Type="0"/>
+    <ROW Component="ambient.d.ts" ComponentId="{CAFDE1D9-C005-4ED5-A541-E08241C0EE3E}" Directory_="src_1_Dir" Attributes="0" KeyPath="index.ts" Type="0"/>
     <ROW Component="apimswincoreconsolel110.dll" ComponentId="{24C259E2-26D5-4B36-9029-C373504B0DDD}" Directory_="APPDIR" Attributes="256" KeyPath="apimswincoreconsolel110.dll"/>
     <ROW Component="apimswincoredatetimel110.dll" ComponentId="{E600038E-64D7-4245-9AFD-7E47970B7D6A}" Directory_="APPDIR" Attributes="256" KeyPath="apimswincoredatetimel110.dll"/>
     <ROW Component="apimswincoredebugl110.dll" ComponentId="{4C033829-BD86-4529-BC64-6848E1662B75}" Directory_="APPDIR" Attributes="256" KeyPath="apimswincoredebugl110.dll"/>
@@ -148,12 +148,12 @@
     <ROW Component="apimswincrtstringl110.dll" ComponentId="{C8732501-6C9F-4A7F-83A6-70718E908A00}" Directory_="APPDIR" Attributes="256" KeyPath="apimswincrtstringl110.dll"/>
     <ROW Component="apimswincrttimel110.dll" ComponentId="{B86BBEB1-2984-4AC9-896C-973716988AF2}" Directory_="APPDIR" Attributes="256" KeyPath="apimswincrttimel110.dll"/>
     <ROW Component="apimswincrtutilityl110.dll" ComponentId="{C2BDE659-5902-481C-91F4-EE4B0291076C}" Directory_="APPDIR" Attributes="256" KeyPath="apimswincrtutilityl110.dll"/>
-    <ROW Component="appupdate.yml" ComponentId="{F7586760-660A-4C38-8937-138DBEC18D34}" Directory_="resources_Dir" Attributes="0" KeyPath="appupdate.yml" Type="0"/>
+    <ROW Component="appupdate.yml" ComponentId="{F7586760-660A-4C38-8937-138DBEC18D34}" Directory_="resources_Dir" Attributes="0" KeyPath="app.asar" Type="0"/>
     <ROW Component="blink_image_resources_200_percent.pak" ComponentId="{56AB17A5-B690-4CBE-A39D-512381AAAFE1}" Directory_="APPDIR" Attributes="0" KeyPath="blink_image_resources_200_percent.pak" Type="0"/>
     <ROW Component="cld.node" ComponentId="{D9F74D7B-B2E4-4ED8-A023-A54A98AE3F96}" Directory_="Release_Dir" Attributes="256" KeyPath="cld.node" Type="0"/>
     <ROW Component="d3dcompiler_47.dll" ComponentId="{C7B87C02-3116-43A8-A70B-3592B70E6AC8}" Directory_="APPDIR" Attributes="256" KeyPath="d3dcompiler_47.dll"/>
     <ROW Component="ffmpeg.dll" ComponentId="{A1C4A332-3490-44D8-A5C9-9523889B488B}" Directory_="APPDIR" Attributes="256" KeyPath="ffmpeg.dll"/>
-    <ROW Component="index.d.ts" ComponentId="{74D261F1-A6C5-49DD-8554-E48337CC04AF}" Directory_="src_Dir" Attributes="0" KeyPath="index.d.ts" Type="0"/>
+    <ROW Component="index.d.ts" ComponentId="{74D261F1-A6C5-49DD-8554-E48337CC04AF}" Directory_="src_Dir" Attributes="0" KeyPath="index.js.map" Type="0"/>
     <ROW Component="index.js" ComponentId="{77C48E00-B684-4E72-ACF4-15DD0253EF43}" Directory_="lib_Dir" Attributes="0" KeyPath="index.js" Type="0"/>
     <ROW Component="indexvalidatorx64.exe" ComponentId="{0266F3CF-5462-4381-9971-2353034D7E1D}" Directory_="library_Dir" Attributes="256" KeyPath="indexvalidatorx64.exe"/>
     <ROW Component="libEGL.dll" ComponentId="{8EEC76AB-3601-4D11-B13E-32EC2A38C539}" Directory_="APPDIR" Attributes="256" KeyPath="libEGL.dll"/>
@@ -163,7 +163,7 @@
     <ROW Component="msvcp140.dll" ComponentId="{93A6289C-CF23-4BB8-A579-7FDDD1D15591}" Directory_="APPDIR" Attributes="256" KeyPath="msvcp140.dll"/>
     <ROW Component="node.dll" ComponentId="{C0972355-339E-438C-94A3-74174DE4C6B6}" Directory_="APPDIR" Attributes="256" KeyPath="node.dll"/>
     <ROW Component="node_modules" ComponentId="{A4EB33A8-FEA8-40A5-94EF-705EBE64DDC1}" Directory_="node_modules_Dir" Attributes="0"/>
-    <ROW Component="npmignore" ComponentId="{849CFFE2-EBC3-4430-AC8B-DEE1B66DF589}" Directory_="spawnrx_Dir" Attributes="0" KeyPath="npmignore" Type="0"/>
+    <ROW Component="npmignore" ComponentId="{849CFFE2-EBC3-4430-AC8B-DEE1B66DF589}" Directory_="spawnrx_Dir" Attributes="0" KeyPath="COPYING" Type="0"/>
     <ROW Component="tarwin.exe" ComponentId="{4C98F3B1-1A73-4761-86C0-DE0FC18A8800}" Directory_="library_Dir" Attributes="0" KeyPath="tarwin.exe"/>
     <ROW Component="ucrtbase.dll" ComponentId="{16D802A3-DAD4-4BF4-AD64-88D6F63F5D1E}" Directory_="APPDIR" Attributes="256" KeyPath="ucrtbase.dll"/>
     <ROW Component="vcruntime140.dll" ComponentId="{2542FC82-8D71-4351-8514-2C0D12772ED5}" Directory_="APPDIR" Attributes="256" KeyPath="vcruntime140.dll"/>
@@ -186,7 +186,6 @@
     <ROW File="Symphony.config_1" Component_="Symphony.config" FileName="SYMPHO~1.CON|Symphony.config" Attributes="0" SourcePath="..\..\dist\win-unpacked\config\Symphony.config" SelfReg="false" NextFile="ScreenSnippet.exe"/>
     <ROW File="Symphony.exe" Component_="Symphony.exe" FileName="Symphony.exe" Attributes="0" SourcePath="..\..\dist\win-unpacked\Symphony.exe" SelfReg="false" NextFile="ui_resources_200_percent.pak" DigSign="true"/>
     <ROW File="am.pak" Component_="am.pak" FileName="am.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\am.pak" SelfReg="false" NextFile="ar.pak"/>
-    <ROW File="ambient.d.ts" Component_="ambient.d.ts" FileName="AMBIEN~1.TS|ambient.d.ts" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\src\ambient.d.ts" SelfReg="false" NextFile="index.ts"/>
     <ROW File="apimswincoreconsolel110.dll" Component_="apimswincoreconsolel110.dll" FileName="API-MS~1.DLL|api-ms-win-core-console-l1-1-0.dll" Attributes="0" SourcePath="..\..\dist\win-unpacked\api-ms-win-core-console-l1-1-0.dll" SelfReg="false" NextFile="apimswincoredatetimel110.dll"/>
     <ROW File="apimswincoredatetimel110.dll" Component_="apimswincoredatetimel110.dll" FileName="API-MS~2.DLL|api-ms-win-core-datetime-l1-1-0.dll" Attributes="0" SourcePath="..\..\dist\win-unpacked\api-ms-win-core-datetime-l1-1-0.dll" SelfReg="false" NextFile="apimswincoredebugl110.dll"/>
     <ROW File="apimswincoredebugl110.dll" Component_="apimswincoredebugl110.dll" FileName="API-MS~3.DLL|api-ms-win-core-debug-l1-1-0.dll" Attributes="0" SourcePath="..\..\dist\win-unpacked\api-ms-win-core-debug-l1-1-0.dll" SelfReg="false" NextFile="apimswincoreerrorhandlingl110.dll"/>
@@ -228,7 +227,6 @@
     <ROW File="apimswincrttimel110.dll" Component_="apimswincrttimel110.dll" FileName="API-M~39.DLL|api-ms-win-crt-time-l1-1-0.dll" Attributes="0" SourcePath="..\..\dist\win-unpacked\api-ms-win-crt-time-l1-1-0.dll" SelfReg="false" NextFile="apimswincrtutilityl110.dll"/>
     <ROW File="apimswincrtutilityl110.dll" Component_="apimswincrtutilityl110.dll" FileName="API-M~40.DLL|api-ms-win-crt-utility-l1-1-0.dll" Attributes="0" SourcePath="..\..\dist\win-unpacked\api-ms-win-crt-utility-l1-1-0.dll" SelfReg="false" NextFile="msvcp140.dll"/>
     <ROW File="app.asar" Component_="appupdate.yml" FileName="APP~1.ASA|app.asar" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar" SelfReg="false" NextFile="electron.asar"/>
-    <ROW File="appupdate.yml" Component_="appupdate.yml" FileName="APP-UP~1.YML|app-update.yml" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app-update.yml" SelfReg="false" NextFile="app.asar"/>
     <ROW File="ar.pak" Component_="am.pak" FileName="ar.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\ar.pak" SelfReg="false" NextFile="bg.pak"/>
     <ROW File="bg.pak" Component_="am.pak" FileName="bg.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\bg.pak" SelfReg="false" NextFile="bn.pak"/>
     <ROW File="blink_image_resources_200_percent.pak" Component_="blink_image_resources_200_percent.pak" FileName="BLINK_~1.PAK|blink_image_resources_200_percent.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\blink_image_resources_200_percent.pak" SelfReg="false" NextFile="content_resources_200_percent.pak"/>
@@ -264,8 +262,7 @@
     <ROW File="hu.pak" Component_="am.pak" FileName="hu.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\hu.pak" SelfReg="false" NextFile="id.pak"/>
     <ROW File="icudtl.dat" Component_="blink_image_resources_200_percent.pak" FileName="icudtl.dat" Attributes="0" SourcePath="..\..\dist\win-unpacked\icudtl.dat" SelfReg="false" NextFile="libEGL.dll"/>
     <ROW File="id.pak" Component_="am.pak" FileName="id.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\id.pak" SelfReg="false" NextFile="it.pak"/>
-    <ROW File="index.d.ts" Component_="index.d.ts" FileName="INDEXD~1.TS|index.d.ts" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\lib\src\index.d.ts" SelfReg="false" NextFile="index.js_1"/>
-    <ROW File="index.js" Component_="index.js" FileName="index.js" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\lib\index.js" SelfReg="false" NextFile="index.d.ts"/>
+    <ROW File="index.js" Component_="index.js" FileName="index.js" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\lib\index.js" SelfReg="false" NextFile="index.js_1"/>
     <ROW File="index.js.map" Component_="index.d.ts" FileName="INDEXJ~1.MAP|index.js.map" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\lib\src\index.js.map" SelfReg="false" NextFile="package.json"/>
     <ROW File="index.js_1" Component_="index.d.ts" FileName="index.js" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\lib\src\index.js" SelfReg="false" NextFile="index.js.map"/>
     <ROW File="index.ts" Component_="ambient.d.ts" FileName="index.ts" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\src\index.ts" SelfReg="false" NextFile="tsconfig.json"/>
@@ -288,8 +285,7 @@
     <ROW File="nb.pak" Component_="am.pak" FileName="nb.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\nb.pak" SelfReg="false" NextFile="nl.pak"/>
     <ROW File="nl.pak" Component_="am.pak" FileName="nl.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\nl.pak" SelfReg="false" NextFile="pl.pak"/>
     <ROW File="node.dll" Component_="node.dll" FileName="node.dll" Attributes="0" SourcePath="..\..\dist\win-unpacked\node.dll" SelfReg="false" NextFile="snapshot_blob.bin"/>
-    <ROW File="npmignore" Component_="npmignore" FileName="NPMIGN~1|.npmignore" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\.npmignore" SelfReg="false" NextFile="build.cmd"/>
-    <ROW File="package.json" Component_="npmignore" FileName="PACKAG~1.JSO|package.json" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\package.json" SelfReg="false" NextFile="ambient.d.ts"/>
+    <ROW File="package.json" Component_="npmignore" FileName="PACKAG~1.JSO|package.json" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\package.json" SelfReg="false" NextFile="index.ts"/>
     <ROW File="pl.pak" Component_="am.pak" FileName="pl.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\pl.pak" SelfReg="false" NextFile="ptBR.pak"/>
     <ROW File="ptBR.pak" Component_="am.pak" FileName="pt-BR.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\pt-BR.pak" SelfReg="false" NextFile="ptPT.pak"/>
     <ROW File="ptPT.pak" Component_="am.pak" FileName="pt-PT.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\pt-PT.pak" SelfReg="false" NextFile="ro.pak"/>
@@ -311,11 +307,11 @@
     <ROW File="ucrtbase.dll" Component_="ucrtbase.dll" FileName="ucrtbase.dll" Attributes="0" SourcePath="..\..\dist\win-unpacked\ucrtbase.dll" SelfReg="false" NextFile="vcruntime140.dll"/>
     <ROW File="ui_resources_200_percent.pak" Component_="blink_image_resources_200_percent.pak" FileName="UI_RES~1.PAK|ui_resources_200_percent.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\ui_resources_200_percent.pak" SelfReg="false" NextFile="views_resources_200_percent.pak"/>
     <ROW File="uk.pak" Component_="am.pak" FileName="uk.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\uk.pak" SelfReg="false" NextFile="vi.pak"/>
-    <ROW File="vcruntime140.dll" Component_="vcruntime140.dll" FileName="VCRUNT~1.DLL|vcruntime140.dll" Attributes="0" SourcePath="..\..\dist\win-unpacked\vcruntime140.dll" SelfReg="false" NextFile="npmignore"/>
+    <ROW File="vcruntime140.dll" Component_="vcruntime140.dll" FileName="VCRUNT~1.DLL|vcruntime140.dll" Attributes="0" SourcePath="..\..\dist\win-unpacked\vcruntime140.dll" SelfReg="false" NextFile="build.cmd"/>
     <ROW File="vi.pak" Component_="am.pak" FileName="vi.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\vi.pak" SelfReg="false" NextFile="zhCN.pak"/>
     <ROW File="views_resources_200_percent.pak" Component_="blink_image_resources_200_percent.pak" FileName="VIEWS_~1.PAK|views_resources_200_percent.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\views_resources_200_percent.pak" SelfReg="false" NextFile="am.pak"/>
     <ROW File="zhCN.pak" Component_="am.pak" FileName="zh-CN.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\zh-CN.pak" SelfReg="false" NextFile="zhTW.pak"/>
-    <ROW File="zhTW.pak" Component_="am.pak" FileName="zh-TW.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\zh-TW.pak" SelfReg="false" NextFile="appupdate.yml"/>
+    <ROW File="zhTW.pak" Component_="am.pak" FileName="zh-TW.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\zh-TW.pak" SelfReg="false" NextFile="app.asar"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.AiPersistentDataComponent">
     <ROW PersistentRow="Symphony.config_1" Type="0" Condition="REINSTALL"/>
