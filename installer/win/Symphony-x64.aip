@@ -560,7 +560,7 @@
     <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="PatchWelcomeDlg" Condition="AI_PATCH" Ordering="203"/>
     <ROW Dialog_="InstallTypeDlg" Control_="Next" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="102"/>
     <ROW Dialog_="InstallationDlg" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="100"/>
-    <ROW Dialog_="InstallationDlg" Control_="Next" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="2"/>
+    <ROW Dialog_="InstallationDlg" Control_="Next" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="4"/>
     <ROW Dialog_="SettingsDlg" Control_="Next" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="6"/>
     <ROW Dialog_="SettingsDlg" Control_="PushButton_1" Event="SpawnDialog" Argument="AdvanceSettings" Condition="AI_INSTALL" Ordering="1"/>
     <ROW Dialog_="SettingsDlg" Control_="Next" Event="SpawnDialog" Argument="OutOfRbDiskDlg" Condition="AI_INSTALL AND OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST=&quot;P&quot; OR NOT PROMPTROLLBACKCOST)" Ordering="9" Options="2"/>
@@ -580,11 +580,12 @@
     <ROW Dialog_="InstallationDlg" Control_="Back" Event="SpawnDialog" Argument="InstallTypeDlg" Condition="AI_INSTALL" Ordering="1"/>
     <ROW Dialog_="NewDialog" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="100"/>
     <ROW Dialog_="SettingsDlg" Control_="TemplateSeqDlgDialogInitializer" Event="[AI_ButtonText_Next_Orig]" Argument="[ButtonText_Next]" Condition="AI_INSTALL" Ordering="4"/>
-    <ROW Dialog_="InstallationDlg" Control_="Next" Event="NewDialog" Argument="SettingsDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="InstallationDlg" Control_="Next" Event="NewDialog" Argument="SettingsDlg" Condition="AI_INSTALL" Ordering="3"/>
     <ROW Dialog_="NewDialog_1" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="100"/>
     <ROW Dialog_="InstallTypeDlg" Control_="Next" Event="NewDialog" Argument="InstallationDlg" Condition="AI_INSTALL" Ordering="101"/>
     <ROW Dialog_="SettingsDlg" Control_="Back" Event="[Text_Next]" Argument="[AI_Text_Next_Orig]" Condition="AI_INSTALL" Ordering="5" Options="2"/>
     <ROW Dialog_="SettingsDlg" Control_="Back" Event="SpawnDialog" Argument="InstallationDlg" Condition="AI_INSTALL" Ordering="6"/>
+    <ROW Dialog_="InstallationDlg" Control_="Next" Event="SetTargetPath" Argument="APPDIR" Condition="AI_INSTALL" Ordering="2"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCreateFolderComponent">
     <ROW Directory_="Symphony_Dir" Component_="Symphony" ManualDelete="false"/>
