@@ -10,8 +10,6 @@ const electron = require('electron');
 const ipc = electron.ipcRenderer;
 
 const whiteColorRegExp = new RegExp(/^(?:white|#fff(?:fff)?|rgba?\(\s*255\s*,\s*255\s*,\s*255\s*(?:,\s*1\s*)?\))$/i);
-let mouseLeaveTimer;
-let closeTimer;
 
 /**
  * Sets style for a notification
@@ -136,25 +134,16 @@ function setContents(event, notificationObj) {
 
     const winId = notificationObj.windowId;
 
-    let displayTime = notificationObj.displayTime || 5000;
     if (!notificationObj.sticky) {
         container.addEventListener('mouseleave', onMouseLeave);
         container.addEventListener('mouseover', onMouseOver);
-
-        closeTimer = setTimeout(() => {
-            ipc.send('electron-notify-close', winId, notificationObj)
-        }, displayTime);
     }
 
     /**
      * Start a new timer to close the notification
      */
     function onMouseLeave() {
-        if (!mouseLeaveTimer) {
-            mouseLeaveTimer = setTimeout(() => {
-                ipc.send('electron-notify-close', winId, notificationObj)
-            }, 3000);
-        }
+        ipc.send('electron-notify-mouseleave', winId, notificationObj);
     }
 
     /**
@@ -162,9 +151,7 @@ function setContents(event, notificationObj) {
      * from closing
      */
     function onMouseOver() {
-        if (closeTimer) clearTimeout(closeTimer);
-        if (mouseLeaveTimer) clearTimeout(mouseLeaveTimer);
-        mouseLeaveTimer = undefined;
+        ipc.send('electron-notify-mouseover', winId);
     }
 
     // note: use onclick because we only want one handler, for case

@@ -418,12 +418,29 @@ function showNotification(notificationObj) {
  */
 function setNotificationContents(notfWindow, notfObj) {
 
+    // Display time per notification basis.
+    let displayTime = notfObj.displayTime ? notfObj.displayTime : config.displayTime;
+
+    if (notfWindow.displayTimer) {
+        clearTimeout(notfWindow.displayTimer);
+    }
+
     const updatedNotificationWindow = notfWindow;
 
     updatedNotificationWindow.notfyObj = notfObj;
 
-    let closeFunc = buildCloseNotification(notfWindow, notfObj);
+    let timeoutId;
+    let closeFunc = buildCloseNotification(notfWindow, notfObj, function() {
+        return timeoutId
+    });
     let closeNotificationSafely = buildCloseNotificationSafely(closeFunc);
+
+    if (!notfObj.sticky) {
+        timeoutId = setTimeout(function() {
+            closeNotificationSafely('timeout');
+        }, displayTime);
+        updatedNotificationWindow.displayTimer = timeoutId;
+    }
 
     // Trigger onShowFunc if existent
     if (notfObj.onShowFunc) {
@@ -461,9 +478,10 @@ function setNotificationContents(notfWindow, notfObj) {
  * Closes the notification
  * @param notificationWindow
  * @param notificationObj
+ * @param getTimeoutId
  * @returns {Function}
  */
-function buildCloseNotification(notificationWindow, notificationObj) {
+function buildCloseNotification(notificationWindow, notificationObj, getTimeoutId) {
     return function(event) {
 
         // safety check to prevent from using an
@@ -492,6 +510,10 @@ function buildCloseNotification(notificationWindow, notificationObj) {
 
         // reset content
         notificationWindow.webContents.send('electron-notify-reset');
+        if (getTimeoutId && typeof getTimeoutId === 'function') {
+            let timeoutId = getTimeoutId();
+            clearTimeout(timeoutId);
+        }
 
         // Recycle window
         let pos = activeNotifications.indexOf(notificationWindow);
@@ -720,6 +742,42 @@ function cleanUpInactiveWindow() {
     });
     inactiveWindows = [];
 }
+
+/**
+ * Start a new timer to close the notification
+ * @param event
+ * @param winId
+ * @param notificationObj
+ */
+function onMouseLeave(event, winId, notificationObj) {
+    if (winId) {
+        const notificationWindow = BrowserWindow.fromId(winId);
+        if (notificationWindow && !notificationWindow.isDestroyed()) {
+            notificationWindow.displayTimer = setTimeout(function () {
+                let closeFunc = buildCloseNotification(BrowserWindow.fromId(winId), notificationObj);
+                buildCloseNotificationSafely(closeFunc)('close');
+            }, 3000);
+        }
+    }
+}
+
+/**
+ * Clears the timer for a specific notification window
+ * @param event
+ * @param winId
+ */
+function onMouseOver(event, winId) {
+    if (winId) {
+        const notificationWindow = BrowserWindow.fromId(winId);
+        if (notificationWindow) {
+            clearTimeout(notificationWindow.displayTimer);
+        }
+    }
+}
+
+// capturing mouse events
+ipc.on('electron-notify-mouseleave', onMouseLeave);
+ipc.on('electron-notify-mouseover', onMouseOver);
 
 
 module.exports.notify = notify;
