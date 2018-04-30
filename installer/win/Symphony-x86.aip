@@ -378,7 +378,7 @@
     <ROW Dialog_="AdvanceSettings" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="400"/>
     <ROW Dialog_="AdvanceSettings" Control="BannerLine" Type="Line" X="0" Y="44" Width="372" Height="0" Attributes="1" Order="500"/>
     <ROW Dialog_="AdvanceSettings" Control="BottomLine" Type="Line" X="5" Y="234" Width="368" Height="0" Attributes="1" Order="600"/>
-    <ROW Dialog_="AdvanceSettings" Control="Logo" Type="Text" X="4" Y="228" Width="70" Height="12" Attributes="1" Text="Advanced Installer" Order="700"/>
+    <ROW Dialog_="AdvanceSettings" Control="Logo" Type="Text" X="4" Y="228" Width="70" Height="12" Attributes="1" Text="Advance Settings" Order="700"/>
     <ROW Dialog_="AdvanceSettings" Control="MediaCheckBox" Type="CheckBox" X="29" Y="90" Width="146" Height="13" Attributes="3" Property="MEDIA_CB" Text="Allow" Order="800"/>
     <ROW Dialog_="AdvanceSettings" Control="Text_1" Type="Text" X="30" Y="60" Width="75" Height="11" Attributes="65539" Property="TEXT_1_PROP_2" Text="Media" TextStyle="DlgFontBold8" Order="900"/>
     <ROW Dialog_="AdvanceSettings" Control="Text_2" Type="Text" X="30" Y="75" Width="161" Height="11" Attributes="65539" Property="TEXT_2_PROP_2" Text="Allow access to Camera, Audio, Microphone" Order="1000"/>
