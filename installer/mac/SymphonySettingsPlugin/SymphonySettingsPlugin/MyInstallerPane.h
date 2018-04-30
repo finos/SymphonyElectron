@@ -20,4 +20,9 @@
 @property (weak) IBOutlet NSButton *geoLocationCheckBox;
 @property (weak) IBOutlet NSButton *notificationsCheckBox;
 
+@property (weak) IBOutlet NSButton *pointerLockCheckBox;
+@property (weak) IBOutlet NSButton *fullScreenCheckBox;
+@property (weak) IBOutlet NSButton *openExternalAppCheckBox;
+@property (weak) IBOutlet NSButton *midiSysexCheckBox;
+
 @end
