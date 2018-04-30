@@ -218,10 +218,6 @@ function reset() {
     container.parentNode.replaceChild(newContainer, container);
     let newCloseButton = closeButton.cloneNode(true);
     closeButton.parentNode.replaceChild(newCloseButton, closeButton);
-
-    // Reset timers
-    if (closeTimer) clearTimeout(closeTimer);
-    if (mouseLeaveTimer) clearTimeout(mouseLeaveTimer);
 }
 
 ipc.on('electron-notify-set-contents', setContents);
