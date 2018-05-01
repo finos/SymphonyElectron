@@ -1,7 +1,6 @@
 'use strict';
 
 const { getGlobalConfigField } = require('./../config.js');
-const parseDomain = require('parse-domain');
 const isEqual = require('lodash.isequal');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
@@ -20,6 +19,9 @@ getGlobalConfigField('customTlds')
     .catch((err) => {
         log.send(logLevels.INFO, `error setting custom tlds -> ${err}`);
     });
+
+const urlParts = /^(https?:\/\/)?([^/]*@)?(.+?)(:\d{2,5})?([/?].*)?$/;
+const dot = /\./g;
 
 /**
  * Loops through the list of whitelist urls
@@ -126,6 +128,32 @@ function matchSubDomains(subDomainUrl, subDomainWhitelist) {
     const lastCharWhitelist = subDomainWhitelistArray[subDomainWhitelistArray.length - 1];
 
     return lastCharSubDomainUrl === lastCharWhitelist;
+}
+
+/**
+ * Splits the url into tld, domain, subdomain
+ * @param url
+ * @return {{tld: string | *, domain: string | *, subdomain: string}}
+ */
+function parseDomain(url) {
+    let urlSplit = url.match(urlParts);
+    let domain = urlSplit[3];
+
+    // capture top level domain
+    const tld = domain.slice(domain.lastIndexOf('.'));
+    urlSplit = domain.slice(0, -tld.length).split(dot);
+
+    // capture domain
+    domain = urlSplit.pop();
+
+    // capture subdomain
+    const subdomain = urlSplit.join(".");
+
+    return {
+        tld: tld.trim(),
+        domain: domain.trim(),
+        subdomain: subdomain.trim()
+    }
 }
 
 module.exports = {
