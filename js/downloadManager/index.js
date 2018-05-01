@@ -162,21 +162,21 @@ function createDOM(arg) {
 function initiate() {
     let mainFooter = document.getElementById('footer');
     let mainDownloadDiv = document.getElementById('download-manager-footer');
-    
+
     if (mainDownloadDiv) {
-        
+
         mainFooter.classList.remove('hidden');
-        
+
         let ulFind = document.getElementById('download-main');
-        
+
         if (!ulFind) {
             let uList = document.createElement('ul');
             uList.id = 'download-main';
             mainDownloadDiv.appendChild(uList);
         }
-        
+
         let closeSpanFind = document.getElementById('close-download-bar');
-        
+
         if (!closeSpanFind) {
             let closeSpan = document.createElement('span');
             closeSpan.id = 'close-download-bar';
@@ -185,7 +185,7 @@ function initiate() {
             closeSpan.classList.add('tempo-icon--close');
             mainDownloadDiv.appendChild(closeSpan);
         }
-        
+
         let closeDownloadManager = document.getElementById('close-download-bar');
         if (closeDownloadManager) {
             closeDownloadManager.addEventListener('click', () => {
