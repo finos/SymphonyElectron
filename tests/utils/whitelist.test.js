@@ -32,6 +32,13 @@ describe('validate url with whitelist', function() {
             return expect(checkWhitelist(url, whitelist)).toBeTruthy();
         });
 
+        it('should return true for non-standard TLDs', function() {
+            const whitelist = 'symphony.com, symphony.econet';
+            const url = 'https://my.symphony.econet/';
+
+            return expect(checkWhitelist(url, whitelist)).toBeTruthy();
+        });
+
     });
 
     describe('checkWhitelist falsity tests', function () {
