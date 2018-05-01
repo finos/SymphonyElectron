@@ -43,10 +43,6 @@ let display;
 let sandboxed = false;
 let isAutoReload = false;
 
-// By default, we set the user's default download directory
-let defaultDownloadsDirectory = app.getPath("downloads");
-let downloadsDirectory = defaultDownloadsDirectory;
-
 // Application menu
 let menu;
 
@@ -288,48 +284,20 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     }
 
     mainWindow.on('closed', destroyAllWindows);
-
-    // if an user has set a custom downloads directory,
-    // we get that data from the user config file
-    getConfigField('downloadsDirectory')
-        .then((value) => {
-            downloadsDirectory = value;
-        })
-        .catch((error) => {
-            log.send(logLevels.ERROR, 'Could not find the downloads directory config -> ' + error);
-        });
-
+    
     // Manage File Downloads
     mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
-
         // When download is in progress, send necessary data to indicate the same
         webContents.send('downloadProgress');
-
-        // An extra check to see if the user created downloads directory has been deleted
-        // This scenario can occur when user doesn't quit electron and continues using it
-        // across days and then deletes the folder.
-        if (downloadsDirectory !== defaultDownloadsDirectory && !fs.existsSync(downloadsDirectory)) {
-            downloadsDirectory = defaultDownloadsDirectory;
-            updateConfigField("downloadsDirectory", downloadsDirectory);
-        }
-
-        // We check the downloads directory to see if a file with the similar name
-        // already exists and get a unique filename if that's the case
-        let newFileName = getUniqueFileName(item.getFilename());
-        if (isMac) {
-            item.setSavePath(downloadsDirectory + "/" + newFileName);
-        } else {
-            item.setSavePath(downloadsDirectory + "\\" + newFileName);
-        }
-
-        // Send file path to construct the DOM in the UI when the download is complete
+        
+        // Send file path when download is complete
         item.once('done', (e, state) => {
             if (state === 'completed') {
                 let data = {
                     _id: getGuid(),
                     savedPath: item.getSavePath() ? item.getSavePath() : '',
                     total: filesize(item.getTotalBytes() ? item.getTotalBytes() : 0),
-                    fileName: newFileName
+                    fileName: item.getFilename() ? item.getFilename() : 'No name'
                 };
                 webContents.send('downloadCompleted', data);
             }
@@ -803,11 +771,6 @@ eventEmitter.on('isAlwaysOnTop', (boolean) => {
     isAlwaysOnTop(boolean);
 });
 
-// set downloads directory
-eventEmitter.on('setDownloadsDirectory', (newDirectory) => {
-    downloadsDirectory = newDirectory;
-});
-
 // node event emitter for notification settings
 eventEmitter.on('notificationSettings', (notificationSettings) => {
     position = notificationSettings.position;
@@ -923,53 +886,6 @@ function repositionMainWindow() {
         mainWindow.flashFrame(false);
         mainWindow.setBounds(rectangle, true);
     }
-}
-
-/**
- * Creates a unique filename like Chrome
- * from a user's download directory
- * @param filename filename passed by the remote server
- * @returns {String} the new filename
- */
-function getUniqueFileName(filename) {
-
-    // By default, we assume that the file exists
-    const fileExists = true;
-
-    // We break the file from it's extension to get the name
-    const actualFilename = filename.substr(0, filename.lastIndexOf('.')) || filename;
-    const fileType = filename.split('.').pop();
-
-    // We use this to set the new file name with an increment on the previous existing file
-    let fileNumber = 0;
-    let newPath;
-
-    while (fileExists) {
-
-        let fileNameString = fileNumber.toString();
-
-        // By default, we know if the file doesn't exist,
-        // we can use the filename sent by the remote server
-        let current = filename;
-
-        // If the file already exists, we know that the
-        // file number variable is increased, so,
-        // we construct a new file name with the file number
-        if (fileNumber > 0) {
-            current = actualFilename + " (" + fileNameString + ")." + fileType;
-        }
-
-        // If the file exists, increment the file number and repeat the loop
-        if (fs.existsSync(downloadsDirectory + "/" + current)) {
-            fileNumber++;
-        } else {
-            newPath = current;
-            break;
-        }
-
-    }
-
-    return newPath;
 }
 
 module.exports = {
