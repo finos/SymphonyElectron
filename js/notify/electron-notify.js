@@ -435,7 +435,6 @@ function setNotificationContents(notfWindow, notfObj) {
     });
     let closeNotificationSafely = buildCloseNotificationSafely(closeFunc);
 
-    // don't start timer to close if we aren't sticky
     if (!notfObj.sticky) {
         timeoutId = setTimeout(function() {
             closeNotificationSafely('timeout');
@@ -743,6 +742,42 @@ function cleanUpInactiveWindow() {
     });
     inactiveWindows = [];
 }
+
+/**
+ * Start a new timer to close the notification
+ * @param event
+ * @param winId
+ * @param notificationObj
+ */
+function onMouseLeave(event, winId, notificationObj) {
+    if (winId) {
+        const notificationWindow = BrowserWindow.fromId(winId);
+        if (notificationWindow && !notificationWindow.isDestroyed()) {
+            notificationWindow.displayTimer = setTimeout(function () {
+                let closeFunc = buildCloseNotification(BrowserWindow.fromId(winId), notificationObj);
+                buildCloseNotificationSafely(closeFunc)('close');
+            }, 3000);
+        }
+    }
+}
+
+/**
+ * Clears the timer for a specific notification window
+ * @param event
+ * @param winId
+ */
+function onMouseOver(event, winId) {
+    if (winId) {
+        const notificationWindow = BrowserWindow.fromId(winId);
+        if (notificationWindow) {
+            clearTimeout(notificationWindow.displayTimer);
+        }
+    }
+}
+
+// capturing mouse events
+ipc.on('electron-notify-mouseleave', onMouseLeave);
+ipc.on('electron-notify-mouseover', onMouseOver);
 
 
 module.exports.notify = notify;
