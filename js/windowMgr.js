@@ -3,6 +3,7 @@
 const fs = require('fs');
 const electron = require('electron');
 const app = electron.app;
+const electronSession = electron.session;
 const globalShortcut = electron.globalShortcut;
 const BrowserWindow = electron.BrowserWindow;
 const path = require('path');
@@ -19,7 +20,7 @@ const logLevels = require('./enums/logLevels.js');
 const notify = require('./notify/electron-notify.js');
 const eventEmitter = require('./eventEmitter');
 const throttle = require('./utils/throttle.js');
-const { getConfigField, updateConfigField, getGlobalConfigField } = require('./config.js');
+const { getConfigField, updateConfigField, getGlobalConfigField, readConfigFileSync } = require('./config.js');
 const { isMac, isNodeEnv, isWindows10, isWindowsOS } = require('./utils/misc');
 const { deleteIndexFolder } = require('./search/search.js');
 const { isWhitelisted } = require('./utils/whitelistHandler');
@@ -116,7 +117,20 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     const isCustomTitleBarEnabled = typeof isCustomTitleBar === 'boolean' && isCustomTitleBar && isWindows10();
 
     log.send(logLevels.INFO, 'creating main window url: ' + url);
-
+    
+    let config = readConfigFileSync();
+    
+    if (config && config !== null && config.customFlags) {
+        
+        log.send(logLevels.INFO, 'Chrome flags config found!');
+        
+        if (config.customFlags.authServerWhitelist && config.customFlags.authServerWhitelist !== "") {
+            log.send(logLevels.INFO, 'setting ntlm domains');
+            electronSession.defaultSession.allowNTLMCredentialsForDomains(config.customFlags.authServerWhitelist);
+        }
+        
+    }
+    
     let newWinOpts = {
         title: 'Symphony',
         show: true,

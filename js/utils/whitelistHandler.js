@@ -3,6 +3,23 @@
 const { getGlobalConfigField } = require('./../config.js');
 const parseDomain = require('parse-domain');
 const isEqual = require('lodash.isequal');
+const log = require('../log.js');
+const logLevels = require('../enums/logLevels.js');
+
+let customTlds = [];
+
+getGlobalConfigField('customTlds')
+    .then((domains) => {
+        
+        if (domains && Array.isArray(domains) && domains.length > 0) {
+            log.send(logLevels.INFO, `setting custom tlds that are -> ${domains}`);
+            customTlds = domains;
+        }
+        
+    })
+    .catch((err) => {
+        log.send(logLevels.INFO, `error setting custom tlds -> ${err}`);
+    });
 
 /**
  * Loops through the list of whitelist urls
@@ -35,7 +52,7 @@ function isWhitelisted(url) {
  */
 function checkWhitelist(url, whitelist) {
     let whitelistArray = whitelist.split(',');
-    const parsedUrl = parseDomain(url);
+    const parsedUrl = parseDomain(url, {customTlds});
 
     if (!parsedUrl) {
         return false;

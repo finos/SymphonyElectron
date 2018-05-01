@@ -543,6 +543,8 @@
 						<key>LIST</key>
 						<array>
 							<dict>
+								<key>CHILDREN</key>
+								<array/>
 								<key>DESCRIPTION</key>
 								<array/>
 								<key>OPTIONS</key>
@@ -555,8 +557,6 @@
 								<key>PACKAGE_UUID</key>
 								<string>91776F5A-09FA-4631-A17C-BE8B5C83AF81</string>
 								<key>TITLE</key>
-								<array/>
-								<key>TOOLTIP</key>
 								<array/>
 								<key>TYPE</key>
 								<integer>0</integer>
@@ -691,7 +691,130 @@
 		<key>PROJECT_REQUIREMENTS</key>
 		<dict>
 			<key>LIST</key>
-			<array/>
+			<array>
+				<dict>
+					<key>BEHAVIOR</key>
+					<integer>3</integer>
+					<key>DICTIONARY</key>
+					<dict>
+						<key>IC_REQUIREMENT_OS_DISK_TYPE</key>
+						<integer>0</integer>
+						<key>IC_REQUIREMENT_OS_DISTRIBUTION_TYPE</key>
+						<integer>0</integer>
+						<key>IC_REQUIREMENT_OS_MINIMUM_VERSION</key>
+						<integer>100700</integer>
+					</dict>
+					<key>IC_REQUIREMENT_CHECK_TYPE</key>
+					<integer>1</integer>
+					<key>IDENTIFIER</key>
+					<string>fr.whitebox.Packages.requirement.os</string>
+					<key>MESSAGE</key>
+					<array/>
+					<key>NAME</key>
+					<string>Operating System</string>
+					<key>STATE</key>
+					<true/>
+				</dict>
+				<dict>
+					<key>BEHAVIOR</key>
+					<integer>3</integer>
+					<key>DICTIONARY</key>
+					<dict>
+						<key>IC_REQUIREMENT_RAM_MINIMUM_SIZE_INDEX</key>
+						<integer>5</integer>
+					</dict>
+					<key>IC_REQUIREMENT_CHECK_TYPE</key>
+					<integer>0</integer>
+					<key>IDENTIFIER</key>
+					<string>fr.whitebox.Packages.requirement.ram</string>
+					<key>MESSAGE</key>
+					<array/>
+					<key>NAME</key>
+					<string>Installed RAM</string>
+					<key>STATE</key>
+					<true/>
+				</dict>
+				<dict>
+					<key>BEHAVIOR</key>
+					<integer>3</integer>
+					<key>DICTIONARY</key>
+					<dict>
+						<key>IC_REQUIREMENT_CPU_ARCHITECTURE_FAMILY</key>
+						<integer>2</integer>
+						<key>IC_REQUIREMENT_CPU_INTEL_ARCHITECTURE_TYPE</key>
+						<integer>2</integer>
+						<key>IC_REQUIREMENT_CPU_MINIMUM_CPU_CORES_COUNT</key>
+						<integer>1</integer>
+						<key>IC_REQUIREMENT_CPU_MINIMUM_FREQUENCY</key>
+						<integer>1000000</integer>
+						<key>IC_REQUIREMENT_CPU_POWERPC_ARCHITECTURE_TYPE</key>
+						<integer>0</integer>
+					</dict>
+					<key>IC_REQUIREMENT_CHECK_TYPE</key>
+					<integer>0</integer>
+					<key>IDENTIFIER</key>
+					<string>fr.whitebox.Packages.requirement.cpu</string>
+					<key>MESSAGE</key>
+					<array/>
+					<key>NAME</key>
+					<string>Processor</string>
+					<key>STATE</key>
+					<true/>
+				</dict>
+				<dict>
+					<key>BEHAVIOR</key>
+					<integer>3</integer>
+					<key>DICTIONARY</key>
+					<dict>
+						<key>IC_REQUIREMENT_SCRIPT_ARGUMENTS</key>
+						<array/>
+						<key>IC_REQUIREMENT_SCRIPT_COMPARATOR</key>
+						<integer>0</integer>
+						<key>IC_REQUIREMENT_SCRIPT_EMBED</key>
+						<true/>
+						<key>IC_REQUIREMENT_SCRIPT_PATH</key>
+						<dict>
+							<key>PATH</key>
+							<string>postinstall.sh</string>
+							<key>PATH_TYPE</key>
+							<integer>1</integer>
+						</dict>
+						<key>IC_REQUIREMENT_SCRIPT_VALUE</key>
+						<integer>0</integer>
+					</dict>
+					<key>IC_REQUIREMENT_CHECK_TYPE</key>
+					<integer>1</integer>
+					<key>IDENTIFIER</key>
+					<string>fr.whitebox.Packages.requirement.scripts</string>
+					<key>MESSAGE</key>
+					<array/>
+					<key>NAME</key>
+					<string>Result of External Script</string>
+					<key>STATE</key>
+					<true/>
+				</dict>
+				<dict>
+					<key>BEHAVIOR</key>
+					<integer>3</integer>
+					<key>DICTIONARY</key>
+					<dict>
+						<key>IC_REQUIREMENT_DISKSPACE_MINIMUM_SIZE_UNIT</key>
+						<integer>0</integer>
+						<key>IC_REQUIREMENT_DISKSPACE_MINIMUM_SIZE_VALUE</key>
+						<integer>500</integer>
+					</dict>
+					<key>IC_REQUIREMENT_CHECK_TYPE</key>
+					<integer>1</integer>
+					<key>IDENTIFIER</key>
+					<string>fr.whitebox.Packages.requirement.diskspace</string>
+					<key>MESSAGE</key>
+					<array/>
+					<key>NAME</key>
+					<string>Available Disk Space</string>
+					<key>STATE</key>
+					<true/>
+				</dict>
+			</array>
 			<key>RESOURCES</key>
 			<array/>
 			<key>ROOT_VOLUME_ONLY</key>

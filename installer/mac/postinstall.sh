@@ -83,6 +83,7 @@ if [ "$open_external_app" == "" ]; then
     open_external_app=true;
 fi
 
+
 ## Replace the default permissions with the user selected permissions ##
 sed -i "" -E "s#\"media\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"media\":\ $media#g" ${newPath}
 sed -i "" -E "s#\"geolocation\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"geolocation\":\ $geo_location#g" ${newPath}
@@ -91,6 +92,7 @@ sed -i "" -E "s#\"midiSysex\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"midi
 sed -i "" -E "s#\"pointerLock\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"pointerLock\":\ $pointer_lock#g" ${newPath}
 sed -i "" -E "s#\"fullscreen\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"fullscreen\":\ $full_screen#g" ${newPath}
 sed -i "" -E "s#\"openExternal\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"openExternal\":\ $open_external_app#g" ${newPath}
+
 
 ## Remove the temp permissions file created ##
 rm -f ${permissionsFilePath}
