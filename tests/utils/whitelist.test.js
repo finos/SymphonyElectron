@@ -57,6 +57,13 @@ describe('validate url with whitelist', function() {
             return expect(checkWhitelist(url, whitelist)).toBeFalsy();
         });
 
+        it('should return false when TLD does not match', function () {
+            const whitelist = 'www.symphony.com, app.symphony.com, my.symphony.com';
+            const url = 'https://my.symphony.echonet/';
+
+            return expect(checkWhitelist(url, whitelist)).toBeFalsy();
+        });
+
         it('should return false when the URL is invalid', function () {
             const whitelist = 'www.symphony.com, app.symphony.com, my.symphony.com';
             const url = 'invalidUrl';
