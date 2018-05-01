@@ -395,21 +395,6 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                     browserWin.winName = frameName;
                     browserWin.setAlwaysOnTop(alwaysOnTop);
 
-                    let handleChildWindowClosed = () => {
-                        removeWindowKey(newWinKey);
-                        browserWin.removeListener('move', throttledBoundsChange);
-                        browserWin.removeListener('resize', throttledBoundsChange);
-                    };
-
-                    browserWin.once('closed', () => {
-                        handleChildWindowClosed();
-                    });
-
-                    browserWin.on('close', () => {
-                        browserWin.webContents.removeListener('new-window', handleNewWindow);
-                        browserWin.webContents.removeListener('crashed', handleChildWindowCrashEvent);
-                    });
-
                     let handleChildWindowCrashEvent = (e) => {
                         const options = {
                             type: 'error',
@@ -450,6 +435,21 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                     browserWin.on('move', throttledBoundsChange);
                     browserWin.on('resize', throttledBoundsChange);
     
+                    let handleChildWindowClosed = () => {
+                        removeWindowKey(newWinKey);
+                        browserWin.removeListener('move', throttledBoundsChange);
+                        browserWin.removeListener('resize', throttledBoundsChange);
+                    };
+    
+                    browserWin.on('close', () => {
+                        browserWin.webContents.removeListener('new-window', handleNewWindow);
+                        browserWin.webContents.removeListener('crashed', handleChildWindowCrashEvent);
+                    });
+    
+                    browserWin.once('closed', () => {
+                        handleChildWindowClosed();
+                    });
+                    
                     handlePermissionRequests(browserWin.webContents);
                 }
             });
