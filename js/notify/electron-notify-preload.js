@@ -10,6 +10,9 @@ const electron = require('electron');
 const ipc = electron.ipcRenderer;
 
 const whiteColorRegExp = new RegExp(/^(?:white|#fff(?:fff)?|rgba?\(\s*255\s*,\s*255\s*,\s*255\s*(?:,\s*1\s*)?\))$/i);
+// event functions ref
+let onMouseLeaveFunc;
+let onMouseOverFunc;
 
 /**
  * Sets style for a notification
@@ -135,8 +138,10 @@ function setContents(event, notificationObj) {
     const winId = notificationObj.windowId;
 
     if (!notificationObj.sticky) {
-        container.addEventListener('mouseleave', onMouseLeave);
-        container.addEventListener('mouseover', onMouseOver);
+        onMouseLeaveFunc = onMouseLeave.bind(this);
+        onMouseOverFunc = onMouseOver.bind(this);
+        container.addEventListener('mouseleave', onMouseLeaveFunc);
+        container.addEventListener('mouseover', onMouseOverFunc);
     }
 
     /**
@@ -218,6 +223,9 @@ function reset() {
     container.parentNode.replaceChild(newContainer, container);
     let newCloseButton = closeButton.cloneNode(true);
     closeButton.parentNode.replaceChild(newCloseButton, closeButton);
+
+    container.removeEventListener('mouseleave', onMouseLeaveFunc);
+    container.removeEventListener('mouseover', onMouseOverFunc);
 }
 
 ipc.on('electron-notify-set-contents', setContents);
