@@ -104,6 +104,10 @@ const template = [{
     submenu: 
     [
         {
+            label: 'Symphony Help',
+            click() { electron.shell.openExternal('https://support.symphony.com'); }
+        },
+        {
             label: 'Learn More',
             click() { electron.shell.openExternal('https://www.symphony.com'); }
         },
