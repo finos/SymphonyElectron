@@ -27,6 +27,7 @@ let windowConfig = {
     autoHideMenuBar: true,
     resizable: false,
     webPreferences: {
+        contextIsolation: true,
         preload: path.join(__dirname, 'configure-notification-position-preload.js'),
         sandbox: sandboxed,
         nodeIntegration: false
