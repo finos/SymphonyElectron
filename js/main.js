@@ -228,6 +228,13 @@ function setupThenOpenMainWindow() {
     isAppAlreadyOpen = true;
     getUrlAndCreateMainWindow();
     
+    let customDataArg = getCmdLineArg(process.argv, '--userDataPath=', false);
+    
+    if (customDataArg && customDataArg.split('=').length > 1) {
+        let customDataFolder = customDataArg.split('=')[1];
+        app.setPath('userData', customDataFolder);
+    }
+    
     // Event that fixes the remote desktop issue in Windows
     // by repositioning the browser window
     electron.screen.on('display-removed', windowMgr.verifyDisplays);
