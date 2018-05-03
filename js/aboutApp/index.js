@@ -20,7 +20,6 @@ let windowConfig = {
     titleBarStyle: true,
     resizable: false,
     webPreferences: {
-        contextIsolation: true,
         preload: path.join(__dirname, 'renderer.js'),
         sandbox: true,
         nodeIntegration: false
