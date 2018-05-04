@@ -10,6 +10,7 @@ const maxMemory = 800;
 let maxIdleTime = 4 * 60 * 1000;
 let reloadThreshold = 30 * 60 * 1000;
 let reloadedTimeStamp;
+let userPresenceStatus;
 
 // once a minute
 setInterval(gatherMemory, 1000 * 60);
@@ -38,7 +39,7 @@ function optimizeMemory(memoryInfo) {
     const memoryConsumed = (memoryInfo && memoryInfo.workingSetSize / 1024) || 0;
     const canReload = (!reloadedTimeStamp || (new Date().getTime() - reloadedTimeStamp) > reloadThreshold);
 
-    if (memoryConsumed > maxMemory && systemIdleTime.getIdleTime() > maxIdleTime && canReload) {
+    if (memoryConsumed > maxMemory && systemIdleTime.getIdleTime() > maxIdleTime && canReload && !isUserActive()) {
         getConfigField('memoryRefresh')
             .then((enabled) => {
                 if (enabled) {
@@ -47,14 +48,49 @@ function optimizeMemory(memoryInfo) {
                     if (mainWindow && !mainWindow.isDestroyed()) {
                         setIsAutoReload(true);
                         reloadedTimeStamp = new Date().getTime();
-                        log.send(logLevels.INFO, 'Reloading the app to optimize memory usage');
-                        mainWindow.webContents.reload();
+                        log.send(logLevels.INFO, 'Reloading the app to optimize memory usage as' +
+                            ' memory consumption was ' + memoryConsumed +
+                            ' user activity tick was ' + systemIdleTime.getIdleTime() +
+                            ' user presence status was ' + userPresenceStatus );
+                        mainWindow.reload();
                     }
                 }
             });
     }
 }
 
+/**
+ * Checks the user presence status to see
+ * if the user is active
+ * @return {boolean}
+ */
+function isUserActive() {
+
+    if (!userPresenceStatus) {
+        return true
+    }
+
+    switch (userPresenceStatus) {
+        case 'AVAILABLE':
+        case 'IN_A_MEETING':
+        case 'ON_THE_PHONE':
+        case 'OFFLINE':
+            return true;
+        default:
+            return false;
+
+    }
+}
+
+/**
+ * Sets the current user presence status
+ * @param status
+ */
+function setPresenceStatus(status) {
+    userPresenceStatus = status;
+}
+
 module.exports = {
-    optimizeMemory
+    optimizeMemory,
+    setPresenceStatus
 };

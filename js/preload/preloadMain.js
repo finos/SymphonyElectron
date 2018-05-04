@@ -64,6 +64,13 @@ const throttledSetBadgeCount = throttle(1000, function(count) {
     });
 });
 
+const throttledSetPresenceStatus = throttle(1000, function(status) {
+    local.ipcRenderer.send(apiName, {
+        cmd: apiCmds.setPresenceStatus,
+        status: status
+    });
+});
+
 // Gathers renderer process memory
 setInterval(() => {
     const memory = process.getProcessMemoryInfo();
@@ -286,6 +293,14 @@ function createAPI() {
                 cmd: apiCmds.showNotificationSettings,
                 windowName: windowName
             });
+        },
+
+        /**
+         * Sets user presence status
+         * will be used to handle memory refresh functionality
+         */
+        setPresenceStatus: function (status) {
+            throttledSetPresenceStatus(status);
         }
     };
 
