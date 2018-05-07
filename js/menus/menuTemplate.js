@@ -120,7 +120,7 @@ const template = [{
 
                         const FILE_EXTENSIONS = [ '.log' ];
                         const MAC_LOGS_PATH = '/Library/Logs/Symphony/';
-                        const WINDOWS_LOGS_PATH = '\\AppData\\Roaming\\Symphony\\';
+                        const WINDOWS_LOGS_PATH = '\\AppData\\Roaming\\Symphony\\logs';
             
                         let logsPath = isMac ? MAC_LOGS_PATH : WINDOWS_LOGS_PATH;
                         let source = electron.app.getPath('home') + logsPath;
