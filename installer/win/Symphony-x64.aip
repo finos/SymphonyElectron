@@ -31,10 +31,10 @@
     <ROW Property="FULL_SCREEN_CB" Value="true"/>
     <ROW Property="FULL_SCREEN_DT" Value="No"/>
     <ROW Property="LOCATION" Value="true"/>
-    <ROW Property="LOCATION_CB" Value="CheckBox"/>
+    <ROW Property="LOCATION_CB" Value="true" Type="4"/>
     <ROW Property="LOCATION_DT" Value="No"/>
     <ROW Property="MEDIA" Value="true"/>
-    <ROW Property="MEDIA_CB" Value="CheckBox"/>
+    <ROW Property="MEDIA_CB" Value="true" Type="4"/>
     <ROW Property="MEDIA_DT" Value="No"/>
     <ROW Property="MEDIS_DT" Value="No"/>
     <ROW Property="MIDI_SYSEX" Value="true"/>
@@ -383,7 +383,7 @@
     <ROW Dialog_="AdvanceSettings" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="400"/>
     <ROW Dialog_="AdvanceSettings" Control="BannerLine" Type="Line" X="0" Y="44" Width="372" Height="0" Attributes="1" Order="500"/>
     <ROW Dialog_="AdvanceSettings" Control="BottomLine" Type="Line" X="5" Y="234" Width="368" Height="0" Attributes="1" Order="600"/>
-    <ROW Dialog_="AdvanceSettings" Control="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Attributes="196611" Text="Select permissions for your users." Order="700"/>
+    <ROW Dialog_="AdvanceSettings" Control="Description" Type="Text" X="15" Y="21" Width="280" Height="15" Attributes="196611" Text="Select permissions for your users." Order="700"/>
     <ROW Dialog_="AdvanceSettings" Control="Logo" Type="Text" X="4" Y="228" Width="70" Height="12" Attributes="1" Text="Advance Settings" Order="800"/>
     <ROW Dialog_="AdvanceSettings" Control="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Attributes="196611" Text="Advance Settings" TextStyle="[DlgTitleFont]" Order="900"/>
     <ROW Dialog_="AdvanceSettings" Control="MediaCheckBox" Type="CheckBox" X="29" Y="90" Width="146" Height="13" Attributes="3" Property="MEDIA_CB" Text="Allow" Order="1000"/>

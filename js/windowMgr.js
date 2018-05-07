@@ -753,9 +753,11 @@ function isAlwaysOnTop(boolean) {
     alwaysOnTop = boolean;
     let browserWins = BrowserWindow.getAllWindows();
     if (browserWins.length > 0) {
-        browserWins.forEach(function (browser) {
-            browser.setAlwaysOnTop(boolean);
-        });
+        browserWins
+            .filter((browser) => typeof browser.notfyObj !== 'object')
+            .forEach(function (browser) {
+                browser.setAlwaysOnTop(boolean);
+            });
 
         // An issue where changing the alwaysOnTop property
         // focus the pop-out window
