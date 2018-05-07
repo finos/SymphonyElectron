@@ -228,6 +228,9 @@ function setupThenOpenMainWindow() {
     isAppAlreadyOpen = true;
     getUrlAndCreateMainWindow();
     
+    // Allows a developer to set custom user data path from command line when
+    // launching the app. Mostly used for running automation tests with
+    // multiple instances
     let customDataArg = getCmdLineArg(process.argv, '--userDataPath=', false);
     
     if (customDataArg && customDataArg.split('=').length > 1) {
