@@ -65,21 +65,7 @@ function optimizeMemory(memoryInfo) {
  * @return {boolean}
  */
 function isUserActive() {
-
-    if (!userPresenceStatus) {
-        return true
-    }
-
-    switch (userPresenceStatus) {
-        case 'AVAILABLE':
-        case 'IN_A_MEETING':
-        case 'ON_THE_PHONE':
-        case 'OFFLINE':
-            return true;
-        default:
-            return false;
-
-    }
+    return !(userPresenceStatus && userPresenceStatus === 'AWAY');
 }
 
 /**
