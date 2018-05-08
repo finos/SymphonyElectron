@@ -6,7 +6,9 @@ const { getMainWindow, setIsAutoReload } = require('./windowMgr');
 const systemIdleTime = require('@paulcbetts/system-idle-time');
 const { getConfigField } = require('./config');
 
+const awayStatus = 'AWAY';
 const maxMemory = 800;
+
 let maxIdleTime = 4 * 60 * 1000;
 let reloadThreshold = 30 * 60 * 1000;
 let reloadedTimeStamp;
@@ -65,7 +67,7 @@ function optimizeMemory(memoryInfo) {
  * @return {boolean}
  */
 function isUserActive() {
-    return !(userPresenceStatus && userPresenceStatus === 'AWAY');
+    return !(userPresenceStatus && userPresenceStatus === awayStatus);
 }
 
 /**
