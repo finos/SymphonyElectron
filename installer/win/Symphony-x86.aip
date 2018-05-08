@@ -434,7 +434,7 @@
     <ROW Dialog_="InstallationDlg" Control="FolderEdit" Type="PathEdit" X="129" Y="106" Width="134" Height="18" Attributes="7" Property="APPDIR" Help="|" Order="600" HelpLocId="Control.Help.FolderDlg#FolderEdit"/>
     <ROW Dialog_="InstallationDlg" Control="Browse" Type="PushButton" X="269" Y="106" Width="90" Height="18" Attributes="3" Text="[ButtonText_Browse]" Help="|" Order="700" TextLocId="-" HelpLocId="Control.Help.FolderDlg#Browse"/>
     <ROW Dialog_="InstallationDlg" Control="Edit_POD_URL" Type="Edit" X="128" Y="157" Width="231" Height="18" Attributes="3" Property="POD_URL" Text="{260}" Order="800"/>
-    <ROW Dialog_="InstallationDlg" Control="Text_2" Type="Text" X="129" Y="142" Width="131" Height="11" Attributes="65539" Property="TEXT_2_PROP_1" Text="[ProductName] POD URL:" Order="900"/>
+    <ROW Dialog_="InstallationDlg" Control="Text_2" Type="Text" X="129" Y="142" Width="131" Height="11" Attributes="65539" Property="TEXT_2_PROP_1" Text="[ProductName] Pod URL:" Order="900"/>
     <ROW Dialog_="InstallationDlg" Control="Text_1" Type="Text" X="129" Y="52" Width="230" Height="23" Attributes="65539" Property="TEXT_1_PROP_3" Text="Click Install to install [ProductName] in the folder below. To install to a different folder, enter it below or click Browse." Order="1000"/>
     <ROW Dialog_="InstallationDlg" Control="Text_3" Type="Text" X="129" Y="90" Width="75" Height="11" Attributes="65539" Property="TEXT_3_PROP_4" Text="&amp;Folder:" Order="1100"/>
     <ROW Dialog_="MaintenanceTypeDlg" Control="ChangeLabel" Type="Text" X="105" Y="65" Width="100" Height="10" Attributes="2" Text="&amp;Modify" TextStyle="[DlgTitleFont]" Order="100" TextLocId="Control.Text.MaintenanceTypeDlg#ChangeLabel" MsiKey="MaintenanceTypeDlg#ChangeLabel"/>
@@ -499,8 +499,8 @@
     <ROW Dialog_="UrlValidationDlg" Control="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Attributes="2" Text="[ButtonText_Cancel]" Order="200" TextLocId="-" Options="1"/>
     <ROW Dialog_="UrlValidationDlg" Control="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" Attributes="1048577" Text="[DialogBitmap]" Order="300"/>
     <ROW Dialog_="UrlValidationDlg" Control="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Back]" Order="400" TextLocId="-" Options="1"/>
-    <ROW Dialog_="UrlValidationDlg" Control="Title" Type="Text" X="135" Y="20" Width="220" Height="60" Attributes="196611" Text="Invalid POD URL" TextStyle="VerdanaBold13" Order="500"/>
-    <ROW Dialog_="UrlValidationDlg" Control="Description" Type="Text" X="135" Y="86" Width="220" Height="60" Attributes="196611" Text="You seem to have entered an invalid pod url. Please go back to the previous screen and rectify it." Order="600"/>
+    <ROW Dialog_="UrlValidationDlg" Control="Title" Type="Text" X="135" Y="20" Width="220" Height="60" Attributes="196611" Text="Invalid Pod URL" TextStyle="VerdanaBold13" Order="500"/>
+    <ROW Dialog_="UrlValidationDlg" Control="Description" Type="Text" X="135" Y="86" Width="220" Height="60" Attributes="196611" Text="Sorry, the pod URL you entered is invalid. Please return to the previous screen and re-enter it." Order="600"/>
     <ROW Dialog_="UrlValidationDlg" Control="BottomLine" Type="Line" X="0" Y="234" Width="372" Height="0" Attributes="1" Order="700"/>
     <ROW Dialog_="UserExit" Control="Title" Type="Text" X="132" Y="10" Width="220" Height="47" Attributes="196611" Text="The [ProductName] [Wizard] was interrupted" TextStyle="VerdanaBold13" Order="500" TextLocId="Control.Text.UserExit#Title" MsiKey="UserExit#Title"/>
     <ROW Dialog_="VerifyReadyDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="300" MsiKey="VerifyReadyDlg#BannerBitmap"/>
