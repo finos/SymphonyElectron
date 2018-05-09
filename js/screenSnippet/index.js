@@ -70,7 +70,10 @@ class ScreenSnippet {
                 if (windows && windows.length > 0) {
                     isAlwaysOnTop = windows[ 0 ].isAlwaysOnTop();
                     if (isAlwaysOnTop) {
-                        eventEmitter.emit('isAlwaysOnTop', false, false);
+                        eventEmitter.emit('isAlwaysOnTop', {
+                            isAlwaysOnTop: false,
+                            shouldActivateMainWindow: false
+                        });
                     }
                 }
 
@@ -87,7 +90,10 @@ class ScreenSnippet {
             child = childProcess.execFile(captureUtil, captureUtilArgs, (error) => {
                 // Method to reset always on top feature
                 if (isAlwaysOnTop) {
-                    eventEmitter.emit('isAlwaysOnTop', true, false);
+                    eventEmitter.emit('isAlwaysOnTop', {
+                        isAlwaysOnTop: true,
+                        shouldActivateMainWindow: false
+                    });
                 }
                 // will be called when child process exits.
                 if (error && error.killed) {

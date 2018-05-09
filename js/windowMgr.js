@@ -770,8 +770,8 @@ function isAlwaysOnTop(boolean, shouldActivateMainWindow = true) {
 }
 
 // node event emitter to update always on top
-eventEmitter.on('isAlwaysOnTop', (boolean, shouldActivateMainWindow) => {
-    isAlwaysOnTop(boolean, shouldActivateMainWindow);
+eventEmitter.on('isAlwaysOnTop', (params) => {
+    isAlwaysOnTop(params.isAlwaysOnTop, params.shouldActivateMainWindow);
 });
 
 // node event emitter for notification settings

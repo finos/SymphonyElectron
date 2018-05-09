@@ -287,7 +287,10 @@ function getTemplate(app) {
         checked: isAlwaysOnTop,
         click: (item) => {
             isAlwaysOnTop = item.checked;
-            eventEmitter.emit('isAlwaysOnTop', isAlwaysOnTop, true);
+            eventEmitter.emit('isAlwaysOnTop', {
+                isAlwaysOnTop,
+                shouldActivateMainWindow: true
+            });
             updateConfigField('alwaysOnTop', isAlwaysOnTop);
         }
     });
@@ -374,7 +377,10 @@ function setCheckboxValues() {
                                 break;
                             case 'alwaysOnTop':
                                 isAlwaysOnTop = configData[key];
-                                eventEmitter.emit('isAlwaysOnTop', configData[key], true);
+                                eventEmitter.emit('isAlwaysOnTop', {
+                                    isAlwaysOnTop: configData[key],
+                                    shouldActivateMainWindow: true
+                                });
                                 break;
                             case 'notificationSettings':
                                 eventEmitter.emit('notificationSettings', configData[key]);
