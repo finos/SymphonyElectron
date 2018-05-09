@@ -747,9 +747,10 @@ function openUrlInDefaultBrowser(urlToOpen) {
 
 /**
  * Called when an event is received from menu
- * @param boolean weather to enable or disable alwaysOnTop.
+ * @param {boolean} boolean whether to enable or disable alwaysOnTop.
+ * @param {boolean} shouldActivateMainWindow whether to activate main window
  */
-function isAlwaysOnTop(boolean) {
+function isAlwaysOnTop(boolean, shouldActivateMainWindow = true) {
     alwaysOnTop = boolean;
     let browserWins = BrowserWindow.getAllWindows();
     if (browserWins.length > 0) {
@@ -761,16 +762,16 @@ function isAlwaysOnTop(boolean) {
 
         // An issue where changing the alwaysOnTop property
         // focus the pop-out window
-        // Issue - Electron-209
-        if (mainWindow && mainWindow.winName) {
+        // Issue - Electron-209/470
+        if (mainWindow && mainWindow.winName && shouldActivateMainWindow) {
             activate(mainWindow.winName);
         }
     }
 }
 
 // node event emitter to update always on top
-eventEmitter.on('isAlwaysOnTop', (boolean) => {
-    isAlwaysOnTop(boolean);
+eventEmitter.on('isAlwaysOnTop', (params) => {
+    isAlwaysOnTop(params.isAlwaysOnTop, params.shouldActivateMainWindow);
 });
 
 // node event emitter for notification settings
