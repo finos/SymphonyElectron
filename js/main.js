@@ -228,6 +228,16 @@ function setupThenOpenMainWindow() {
     isAppAlreadyOpen = true;
     getUrlAndCreateMainWindow();
     
+    // Allows a developer to set custom user data path from command line when
+    // launching the app. Mostly used for running automation tests with
+    // multiple instances
+    let customDataArg = getCmdLineArg(process.argv, '--userDataPath=', false);
+    let customDataFolder = customDataArg.substring(customDataArg.indexOf('=') + 1);
+    
+    if (customDataArg && customDataFolder) {
+        app.setPath('userData', customDataFolder);
+    }
+    
     // Event that fixes the remote desktop issue in Windows
     // by repositioning the browser window
     electron.screen.on('display-removed', windowMgr.verifyDisplays);
