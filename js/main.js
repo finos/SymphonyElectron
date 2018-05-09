@@ -232,7 +232,7 @@ function setupThenOpenMainWindow() {
     // launching the app. Mostly used for running automation tests with
     // multiple instances
     let customDataArg = getCmdLineArg(process.argv, '--userDataPath=', false);
-    let customDataFolder = customDataArg.substring(customDataArg.indexOf('=') + 1);
+    let customDataFolder = customDataArg && customDataArg.substring(customDataArg.indexOf('=') + 1);
     
     if (customDataArg && customDataFolder) {
         app.setPath('userData', customDataFolder);
