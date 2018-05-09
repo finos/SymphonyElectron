@@ -325,7 +325,7 @@ function getTemplate(app) {
 
     // Window - View menu -> memoryRefresh
     template[index].submenu.push({
-        label: 'Memory Refresh',
+        label: 'Refresh app when idle',
         type: 'checkbox',
         checked: memoryRefresh,
         click: function(item) {
