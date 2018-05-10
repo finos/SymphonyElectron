@@ -513,7 +513,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                         
                         if (!userPermission) {
                             let fullMessage = `Your administrator has disabled ${message}. Please contact your admin for help.`;
-                            electron.dialog.showErrorBox('Permission Denied!', fullMessage);
+                            electron.dialog.showMessageBox(BrowserWindow.fromWebContents(webContents), {type: 'error', title: 'Permission Denied!', message: fullMessage});
                         }
                         
                         return cb(userPermission);
