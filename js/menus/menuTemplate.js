@@ -326,22 +326,6 @@ function getTemplate(app) {
         }
     });
 
-    // Window/View menu -> separator
-    template[index].submenu.push({
-        type: 'separator',
-    });
-
-    // Window - View menu -> memoryRefresh
-    template[index].submenu.push({
-        label: 'Refresh app when idle',
-        type: 'checkbox',
-        checked: memoryRefresh,
-        click: function(item) {
-            memoryRefresh = item.checked;
-            updateConfigField('memoryRefresh', memoryRefresh);
-        }
-    });
-
     if (!isMac) {
         template[index].submenu.push({
             label: 'Quit Symphony',
