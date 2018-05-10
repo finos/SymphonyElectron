@@ -379,9 +379,6 @@ function setCheckboxValues() {
                             case 'bringToFront':
                                 bringToFront = configData[key];
                                 break;
-                            case 'memoryRefresh':
-                                memoryRefresh = configData[key];
-                                break;
                             default:
                                 break;
                         }
