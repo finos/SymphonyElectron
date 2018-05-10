@@ -45,10 +45,10 @@ function optimizeMemory(memoryInfo) {
                     const mainWindow = getMainWindow();
 
                     if (mainWindow && !mainWindow.isDestroyed()) {
-                        setIsAutoReload(true);
+                        //setIsAutoReload(true);
                         reloadedTimeStamp = new Date().getTime();
                         log.send(logLevels.INFO, 'Reloading the app to optimize memory usage');
-                        mainWindow.webContents.reload();
+                        //mainWindow.webContents.reload();
                     }
                 }
             });
