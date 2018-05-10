@@ -24,7 +24,6 @@ let minimizeOnClose = false;
 let launchOnStartup = false;
 let isAlwaysOnTop = false;
 let bringToFront = false;
-let memoryRefresh = false;
 
 let symphonyAutoLauncher;
 
