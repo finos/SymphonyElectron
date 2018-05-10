@@ -21,7 +21,7 @@ const cmds = keyMirror({
     openScreenPickerWindow: null,
     popupMenu: null,
     optimizeMemoryConsumption: null,
-    setPresenceStatus: null
+    setIsInMeeting: null
 });
 
 module.exports = {

@@ -64,10 +64,10 @@ const throttledSetBadgeCount = throttle(1000, function(count) {
     });
 });
 
-const throttledSetPresenceStatus = throttle(1000, function(status) {
+const throttledSetIsInMeetingStatus = throttle(1000, function(isInMeeting) {
     local.ipcRenderer.send(apiName, {
-        cmd: apiCmds.setPresenceStatus,
-        status: status
+        cmd: apiCmds.setIsInMeeting,
+        isInMeeting
     });
 });
 
@@ -296,11 +296,11 @@ function createAPI() {
         },
 
         /**
-         * Sets user presence status
+         * Sets if the user is in an active meeting
          * will be used to handle memory refresh functionality
          */
-        setPresenceStatus: function (status) {
-            throttledSetPresenceStatus(status);
+        setIsInMeeting: function (isInMeeting) {
+            throttledSetIsInMeetingStatus(isInMeeting);
         }
     };
 

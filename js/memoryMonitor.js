@@ -6,13 +6,12 @@ const { getMainWindow, setIsAutoReload } = require('./windowMgr');
 const systemIdleTime = require('@paulcbetts/system-idle-time');
 const { getConfigField } = require('./config');
 
-const awayStatus = 'AWAY';
 const maxMemory = 800;
 
 let maxIdleTime = 4 * 60 * 1000;
 let reloadThreshold = 30 * 60 * 1000;
 let reloadedTimeStamp;
-let userPresenceStatus;
+let isInMeeting = false;
 
 // once a minute
 setInterval(gatherMemory, 1000 * 60);
@@ -41,7 +40,7 @@ function optimizeMemory(memoryInfo) {
     const memoryConsumed = (memoryInfo && memoryInfo.workingSetSize / 1024) || 0;
     const canReload = (!reloadedTimeStamp || (new Date().getTime() - reloadedTimeStamp) > reloadThreshold);
 
-    if (memoryConsumed > maxMemory && systemIdleTime.getIdleTime() > maxIdleTime && canReload && !isUserActive()) {
+    if (memoryConsumed > maxMemory && systemIdleTime.getIdleTime() > maxIdleTime && canReload && !isInMeeting) {
         getConfigField('memoryRefresh')
             .then((enabled) => {
                 if (enabled) {
@@ -53,7 +52,7 @@ function optimizeMemory(memoryInfo) {
                         log.send(logLevels.INFO, 'Reloading the app to optimize memory usage as' +
                             ' memory consumption was ' + memoryConsumed +
                             ' user activity tick was ' + systemIdleTime.getIdleTime() +
-                            ' user presence status was ' + userPresenceStatus );
+                            ' user was in a meeting? ' + isInMeeting );
                         mainWindow.reload();
                     }
                 }
@@ -62,23 +61,14 @@ function optimizeMemory(memoryInfo) {
 }
 
 /**
- * Checks the user presence status to see
- * if the user is active
- * @return {boolean}
+ * Sets the current user meeting status
+ * @param bool - Whether user is in an active meeting
  */
-function isUserActive() {
-    return !(userPresenceStatus && userPresenceStatus === awayStatus);
-}
-
-/**
- * Sets the current user presence status
- * @param status
- */
-function setPresenceStatus(status) {
-    userPresenceStatus = status;
+function setIsInMeeting(bool) {
+    isInMeeting = bool;
 }
 
 module.exports = {
     optimizeMemory,
-    setPresenceStatus
+    setIsInMeeting
 };

@@ -17,7 +17,7 @@ const { bringToFront } = require('./bringToFront.js');
 const eventEmitter = require('./eventEmitter');
 const { isMac } = require('./utils/misc');
 const { openScreenPickerWindow } = require('./desktopCapturer');
-const { optimizeMemory, setPresenceStatus } = require('./memoryMonitor');
+const { optimizeMemory, setIsInMeeting } = require('./memoryMonitor');
 
 const apiEnums = require('./enums/api.js');
 const apiCmds = apiEnums.cmds;
@@ -153,9 +153,9 @@ electron.ipcMain.on(apiName, (event, arg) => {
                 optimizeMemory(arg.memory);
             }
             break;
-        case apiCmds.setPresenceStatus:
-            if (typeof arg.status === 'string') {
-                setPresenceStatus(arg.status);
+        case apiCmds.setIsInMeeting:
+            if (typeof arg.isInMeeting === 'boolean') {
+                setIsInMeeting(arg.isInMeeting);
             }
             break;
         default:
