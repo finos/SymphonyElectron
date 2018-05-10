@@ -93,32 +93,34 @@ function getParsedUrl(appUrl) {
  * @param initialUrl
  */
 function createMainWindow(initialUrl) {
-    Promise.all([
-        getConfigField('mainWinPos'),
-        getGlobalConfigField('isCustomTitleBar')
-    ]).then((values) => {
-        doCreateMainWindow(initialUrl, values[ 0 ], values[ 1 ]);
-    }).catch(() => {
-        // failed use default bounds and frame
-        doCreateMainWindow(initialUrl, null, false);
-    });
+    getConfigField('mainWinPos')
+        .then(winPos => {
+            doCreateMainWindow(initialUrl, winPos);
+        })
+        .catch(() => {
+            // failed use default bounds and frame
+            doCreateMainWindow(initialUrl, null);
+        });
 }
 
 /**
  * Creates the main window with bounds
  * @param initialUrl
  * @param initialBounds
- * @param isCustomTitleBar {Boolean} - Global config value weather to enable custom title bar
  */
-function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
+function doCreateMainWindow(initialUrl, initialBounds) {
     let url = initialUrl;
     let key = getGuid();
+
+    const config = readConfigFileSync();
+
     // condition whether to enable custom Windows 10 title bar
-    const isCustomTitleBarEnabled = typeof isCustomTitleBar === 'boolean' && isCustomTitleBar && isWindows10();
+    const isCustomTitleBarEnabled = config
+        && typeof config.isCustomTitleBar === 'boolean'
+        && config.isCustomTitleBar
+        && isWindows10();
 
     log.send(logLevels.INFO, 'creating main window url: ' + url);
-    
-    let config = readConfigFileSync();
     
     if (config && config !== null && config.customFlags) {
         
