@@ -160,7 +160,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
 
     // if bounds if not fully contained in some display then use default size
     // and position.
-    if (!isInDisplayBounds(bounds)) {
+    if (!isInDisplayBounds(bounds) || initialBounds.isMaximized || initialBounds.isFullScreen) {
         bounds = null;
     }
 
@@ -189,9 +189,21 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     mainWindow = new BrowserWindow(newWinOpts);
     mainWindow.winName = 'main';
 
-    let throttledMainWinBoundsChange = throttle(5000, saveMainWinBounds);
+    let throttledMainWinBoundsChange = throttle(1000, saveMainWinBounds);
     mainWindow.on('move', throttledMainWinBoundsChange);
     mainWindow.on('resize', throttledMainWinBoundsChange);
+
+    if (initialBounds && !isNodeEnv) {
+        // maximizes the application if previously maximized
+        if (initialBounds.isMaximized) {
+            mainWindow.maximize();
+        }
+
+        // Sets the application to full-screen if previously set to full-screen
+        if (initialBounds.isFullScreen && isMac) {
+            mainWindow.setFullScreen(true);
+        }
+    }
 
     function retry() {
         if (!isOnline) {
@@ -610,6 +622,12 @@ app.on('before-quit', function () {
  */
 function saveMainWinBounds() {
     let newBounds = getWindowSizeAndPosition(mainWindow);
+
+    // set application full-screen and maximized state
+    if (mainWindow && !mainWindow.isDestroyed()) {
+        newBounds.isMaximized = mainWindow.isMaximized();
+        newBounds.isFullScreen = mainWindow.isFullScreen();
+    }
 
     if (newBounds) {
         updateConfigField('mainWinPos', newBounds);
