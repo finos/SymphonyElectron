@@ -364,17 +364,15 @@ function processProtocolAction(argv) {
     }
 
     let protocolUri = getCmdLineArg(argv, 'symphony://', false);
+    log.send(logLevels.INFO, `Trying to process a protocol action for uri ${protocolUri}`);
 
     if (protocolUri) {
-
         const parsedURL = urlParser.parse(protocolUri);
-
         if (!parsedURL.protocol || !parsedURL.slashes) {
             return;
         }
-
+        log.send(logLevels.INFO, `Parsing protocol url successful for ${parsedURL}`);
         handleProtocolAction(protocolUri);
-
     }
 }
 
@@ -384,10 +382,12 @@ function processProtocolAction(argv) {
  */
 function handleProtocolAction(uri) {
     if (!isAppAlreadyOpen) {
+        log.send(logLevels.INFO, `App started by protocol url ${uri}. We are caching this to be processed later!`);
         // app is opened by the protocol url, cache the protocol url to be used later
         protocolHandler.setProtocolUrl(uri);
     } else {
         // app is already open, so, just trigger the protocol action method
+        log.send(logLevels.INFO, `App opened by protocol url ${uri}`);
         protocolHandler.processProtocolAction(uri);
     }
 }
