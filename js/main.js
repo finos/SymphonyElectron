@@ -354,7 +354,7 @@ function createWin(urlFromConfig) {
  * processes protocol action for windows clients
  * @param argv {Array} an array of command line arguments
  */
-function processProtocolAction(argv) {    
+function processProtocolAction(argv) {
 
     // In case of windows, we need to handle protocol handler
     // manually because electron doesn't emit
@@ -367,17 +367,12 @@ function processProtocolAction(argv) {
     log.send(logLevels.INFO, `Trying to process a protocol action for uri ${protocolUri}`);
 
     if (protocolUri) {
-
         const parsedURL = urlParser.parse(protocolUri);
-
         if (!parsedURL.protocol || !parsedURL.slashes) {
             return;
         }
-
         log.send(logLevels.INFO, `Parsing protocol url successful for ${parsedURL}`);
-
         handleProtocolAction(protocolUri);
-
     }
 }
 

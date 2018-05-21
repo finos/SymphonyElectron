@@ -12,13 +12,11 @@ let protocolUrl;
  */
 function processProtocolAction(uri) {
     log.send(logLevels.INFO, `protocol action, uri ${uri}`);
-    
     if (!protocolWindow) {
         log.send(logLevels.INFO, `protocol window not yet initialized, caching the uri ${uri}`);
         setProtocolUrl(uri);
         return;
     }
-    
     if (uri && uri.startsWith('symphony://')) {
         protocolWindow.send('protocol-action', uri);
     }
