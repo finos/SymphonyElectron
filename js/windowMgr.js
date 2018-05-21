@@ -96,16 +96,14 @@ function getParsedUrl(appUrl) {
  * @param initialUrl
  */
 function createMainWindow(initialUrl) {
-    Promise.all([
-        getConfigField('mainWinPos'),
-        getConfigField('ctWhitelist')
-    ]).then((values) => {
-        ctWhitelist = values[1];
-        doCreateMainWindow(initialUrl, values[0]);
-    }).catch(() => {
-        // failed use default bounds and frame
-        doCreateMainWindow(initialUrl, null);
-    });
+    getConfigField('mainWinPos')
+        .then(winPos => {
+            doCreateMainWindow(initialUrl, winPos);
+        })
+        .catch(() => {
+            // failed use default bounds and frame
+            doCreateMainWindow(initialUrl, null);
+        });
 }
 
 /**
@@ -124,8 +122,12 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         && typeof config.isCustomTitleBar === 'boolean'
         && config.isCustomTitleBar
         && isWindows10();
-
-    log.send(logLevels.INFO, 'creating main window url: ' + url);
+    log.send(logLevels.INFO, `we are configuring a custom title bar for windows -> ${isCustomTitleBarEnabled}`);
+    
+    ctWhitelist = config && config.ctWhitelist;
+    log.send(logLevels.INFO, `we are configuring certificate transparency whitelist for the domains -> ${ctWhitelist}`);
+    
+    log.send(logLevels.INFO, `creating main window for ${url}`);
     
     if (config && config !== null && config.customFlags) {
         
