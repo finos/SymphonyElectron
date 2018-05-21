@@ -23,7 +23,7 @@ const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField, readConfigFileSync } = require('./config.js');
 const { isMac, isNodeEnv, isWindows10, isWindowsOS } = require('./utils/misc');
 const { deleteIndexFolder } = require('./search/search.js');
-const { isWhitelisted } = require('./utils/whitelistHandler');
+const { isWhitelisted, parseDomain } = require('./utils/whitelistHandler');
 const { initCrashReporterMain, initCrashReporterRenderer } = require('./crashReporter.js');
 
 // show dialog when certificate errors occur
@@ -55,6 +55,9 @@ const MIN_HEIGHT = 300;
 // Default window size for pop-out windows
 const DEFAULT_WIDTH = 300;
 const DEFAULT_HEIGHT = 600;
+
+// Certificate transparency whitelist
+let ctWhitelist = [];
 
 /**
  * Adds a window key
@@ -93,14 +96,16 @@ function getParsedUrl(appUrl) {
  * @param initialUrl
  */
 function createMainWindow(initialUrl) {
-    getConfigField('mainWinPos')
-        .then(winPos => {
-            doCreateMainWindow(initialUrl, winPos);
-        })
-        .catch(() => {
-            // failed use default bounds and frame
-            doCreateMainWindow(initialUrl, null);
-        });
+    Promise.all([
+        getConfigField('mainWinPos'),
+        getConfigField('ctWhitelist')
+    ]).then((values) => {
+        ctWhitelist = values[1];
+        doCreateMainWindow(initialUrl, values[0]);
+    }).catch(() => {
+        // failed use default bounds and frame
+        doCreateMainWindow(initialUrl, null);
+    });
 }
 
 /**
@@ -308,6 +313,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
 
     // open external links in default browser - a tag with href='_blank' or window.open
     mainWindow.webContents.on('new-window', handleNewWindow);
+    mainWindow.webContents.session.setCertificateVerifyProc(handleCertificateTransparencyChecks);
 
     function handleNewWindow(event, newWinUrl, frameName, disposition, newWinOptions) {
         
@@ -453,6 +459,8 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                     });
                     
                     handlePermissionRequests(browserWin.webContents);
+    
+                    browserWin.webContents.session.setCertificateVerifyProc(handleCertificateTransparencyChecks);
                 }
             });
         } else {
@@ -563,6 +571,24 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                 log.send(logLevels.ERROR, 'unable to get permissions configuration, so, everything will be true by default! ' + error);
             })
         
+    }
+    
+    function handleCertificateTransparencyChecks(request, callback) {
+        
+        const { hostname: hostUrl, errorCode } = request;
+        
+        if (errorCode === 0) {
+            return callback(0);
+        }
+        
+        let { tld, domain } = parseDomain(hostUrl);
+        let host = domain + tld;
+        
+        if (ctWhitelist && Array.isArray(ctWhitelist) && ctWhitelist.length > 0 && ctWhitelist.indexOf(host) > -1) {
+            return callback(0);
+        }
+        
+        return callback(-2);
     }
 
 }
