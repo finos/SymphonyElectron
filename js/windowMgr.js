@@ -200,7 +200,7 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         }
 
         // Sets the application to full-screen if previously set to full-screen
-        if (initialBounds.isFullScreen && isMac) {
+        if (isMac && initialBounds.isFullScreen) {
             mainWindow.setFullScreen(true);
         }
     }
