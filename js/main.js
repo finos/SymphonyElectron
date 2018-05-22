@@ -301,9 +301,12 @@ function setupFirstTimeLaunch() {
  * @returns {Promise}
  */
 function setStartup(lStartup) {
+    log.send(logLevels.INFO, `launch on startup parameter value is ${lStartup}`);
     return new Promise((resolve) => {
-        let launchOnStartup = (lStartup === 'true');
+        let launchOnStartup = (String(lStartup) === 'true');
+        log.send(logLevels.INFO, `launchOnStartup value is ${launchOnStartup}`);
         if (launchOnStartup) {
+            log.send(logLevels.INFO, `enabling launch on startup`);
             symphonyAutoLauncher.enable();
             return resolve();
         }
