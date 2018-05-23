@@ -79,13 +79,7 @@
     </div>
     <br>
     <div>
-        <label for="batchNumber">Batch Number: </label><input placeholder="Ex: batch1, batch2" id="batchNumber">
-        <button id='index'>Index Messages</button>
-        <button id='merge'>Merge</button>
-    </div>
-    <br>
-    <div>
-        <label for="batchNumber">Get Latest Message Timestamp</label>
+        <label for="getLatestMessageTimestamp">Get Latest Message Timestamp</label>
         <button id='getLatestMessageTimestamp'>Click</button>
     </div>
     <br>
@@ -126,7 +120,6 @@
     var searchUtils = new ssf.SearchUtils();
     var buttonEl = document.getElementById('search');
     var merge = document.getElementById('merge');
-    var buttonIndex = document.getElementById('index');
     var queryEl = document.getElementById('query');
     var offsetEl = document.getElementById('offset');
     var limitEl = document.getElementById('limit');
@@ -139,7 +132,6 @@
     var table = document.getElementById('table');
     var sendMessage = document.getElementById('sendMessage');
     var realTimeIndexing = document.getElementById('realTimeIndexing');
-    var batchNumber = document.getElementById('batchNumber');
     var timestamp = document.getElementById('getLatestMessageTimestamp');
     var has = document.getElementById('has');
     var checkFreeSpace = document.getElementById('checkFreeSpace');
@@ -147,18 +139,6 @@
     var version = document.getElementById('version');
     var rotationId = document.getElementById('rotationId');
     var updateUserConfig = document.getElementById('updateUserConfig');
-
-
-    buttonIndex.addEventListener('click', function () {
-        let batchIndex = batchNumber.value;
-        search.readJson(batchIndex).then(function (res) {
-            search.indexBatch(JSON.stringify(res)).then(function () {
-                resultsEl.innerHTML = "Index created";
-            });
-        }).catch(function (err) {
-            console.log(err);
-        });
-    });
 
     buttonEl.addEventListener('click', function () {
         if (!search.isLibInit()) {
