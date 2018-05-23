@@ -60,7 +60,7 @@ describe('Tests for getVersionInfo API', () => {
         ]).mapSeries((string) => {
             return app.client.getText(string)
         }).then((values) => {
-            expect(values[ 0 ]).toBe('1.0.0');
+            expect(values[ 0 ]).toBe('2.0.0');
             expect(values[ 1 ]).toBe('Electron');
             expect(values[ 2 ]).toBe(electronVersion);
             expect(values[ 3 ]).toBe(buildNumber);
