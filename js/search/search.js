@@ -69,8 +69,8 @@ class Search {
     init() {
         libSymphonySearch.symSEInit();
         libSymphonySearch.symSEEnsureFolderExists(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
-        Search.deleteIndexFolders(searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX);
-        Search.deleteIndexFolders(searchConfig.FOLDERS_CONSTANTS.TEMP_BATCH_INDEX_FOLDER);
+        Search.deleteIndexFolders('REAL_TIME_INDEX');
+        Search.deleteIndexFolders('BATCH_INDEX');
         Search.indexValidator(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${this.userId}`);
         Search.indexValidator(searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX);
         let indexDateStartFrom = new Date().getTime() - searchConfig.SEARCH_PERIOD_SUBTRACTOR;
@@ -150,7 +150,7 @@ class Search {
                     reject(new Error(err));
                     return;
                 }
-                Search.deleteIndexFolders(searchConfig.FOLDERS_CONSTANTS.TEMP_BATCH_INDEX_FOLDER);
+                Search.deleteIndexFolders('BATCH_INDEX');
                 resolve(res);
             });
         });
@@ -348,7 +348,7 @@ class Search {
 
     /*eslint class-methods-use-this: ["error", { "exceptMethods": ["deleteRealTimeFolder"] }] */
     deleteRealTimeFolder() {
-        Search.deleteIndexFolders(searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX);
+        Search.deleteIndexFolders('REAL_TIME_INDEX');
         Search.indexValidator(searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX);
     }
 
@@ -541,19 +541,36 @@ class Search {
 
     /**
      * Removing all the folders and files inside the data folder
-     * @param location
+     * @param type
      */
-    static deleteIndexFolders(location) {
-        if (fs.existsSync(location)) {
-            fs.readdirSync(location).forEach((file) => {
-                let curPath = location + "/" + file;
-                if (fs.lstatSync(curPath).isDirectory()) {
-                    Search.deleteIndexFolders(curPath);
-                } else {
-                    fs.unlinkSync(curPath);
-                }
-            });
-            fs.rmdirSync(location);
+    static deleteIndexFolders(type) {
+
+        function removeFiles(filePath) {
+            if (fs.existsSync(filePath)) {
+                fs.readdirSync(filePath).forEach((file) => {
+                    let curPath = filePath + "/" + file;
+                    if (fs.lstatSync(curPath).isDirectory()) {
+                        removeFiles(curPath);
+                    } else {
+                        fs.unlinkSync(curPath);
+                    }
+                });
+                fs.rmdirSync(filePath);
+            }
+        }
+
+        switch (type) {
+            case 'INDEX_PATH':
+                removeFiles(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
+                break;
+            case 'REAL_TIME_INDEX':
+                removeFiles(searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX);
+                break;
+            case 'BATCH_INDEX':
+                removeFiles(searchConfig.FOLDERS_CONSTANTS.TEMP_BATCH_INDEX_FOLDER);
+                break;
+            default:
+                break;
         }
     }
 
@@ -564,7 +581,7 @@ class Search {
  * when the app is closed/signed-out/navigates
  */
 function deleteIndexFolder() {
-    Search.deleteIndexFolders(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
+    Search.deleteIndexFolders('INDEX_PATH');
 }
 
 /**
