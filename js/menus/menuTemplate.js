@@ -10,6 +10,7 @@ const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 const eventEmitter = require('../eventEmitter');
 const aboutApp = require('../aboutApp');
+const titleBarStyles = require('../enums/titleBarStyles');
 
 const configFields = [
     'minimizeOnClose',
@@ -24,6 +25,7 @@ let minimizeOnClose = false;
 let launchOnStartup = false;
 let isAlwaysOnTop = false;
 let bringToFront = false;
+let tileBarStyle = titleBarStyles.NATIVE_WITH_CUSTOM;
 
 let symphonyAutoLauncher;
 
@@ -325,7 +327,43 @@ function getTemplate(app) {
         }
     });
 
-    if (!isMac) {
+    if (isMac) {
+        template[index].submenu.push({
+            label: 'Title Bar Style',
+            submenu: [
+                {
+                    label: 'Native With Custom',
+                    type: 'checkbox',
+                    checked: tileBarStyle === titleBarStyles.NATIVE_WITH_CUSTOM,
+                    click: function (item) {
+                        item.menu.items[1].checked = false;
+                        item.menu.items[2].checked = false;
+                        tileBarStyle = titleBarStyles.NATIVE_WITH_CUSTOM;
+                    }
+                },
+                {
+                    label: 'Native',
+                    type: 'checkbox',
+                    checked: tileBarStyle === titleBarStyles.NATIVE,
+                    click: function (item) {
+                        item.menu.items[0].checked = false;
+                        item.menu.items[2].checked = false;
+                        tileBarStyle = titleBarStyles.NATIVE;
+                    }
+                },
+                {
+                    label: 'Custom',
+                    type: 'checkbox',
+                    checked: tileBarStyle === titleBarStyles.CUSTOM,
+                    click: function (item) {
+                        item.menu.items[0].checked = false;
+                        item.menu.items[1].checked = false;
+                        tileBarStyle = titleBarStyles.CUSTOM
+                    }
+                }
+            ]
+        });
+
         template[index].submenu.push({
             label: 'Quit Symphony',
             click: function() {
