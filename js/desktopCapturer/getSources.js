@@ -40,7 +40,8 @@ function isValid(options) {
 function getSources(options, callback) {
     let captureScreen, captureWindow, id;
     if (!isValid(options)) {
-        return callback(new Error('Invalid options'));
+        callback(new Error('Invalid options'));
+        return;
     }
     captureWindow = includes.call(options.types, 'window');
     captureScreen = includes.call(options.types, 'screen');
@@ -67,7 +68,7 @@ function getSources(options, callback) {
     id = getNextId();
     ipcRenderer.send('ELECTRON_BROWSER_DESKTOP_CAPTURER_GET_SOURCES', captureWindow, captureScreen, updatedOptions.thumbnailSize, id);
 
-    return ipcRenderer.once('ELECTRON_RENDERER_DESKTOP_CAPTURER_RESULT_' + id, function(event, sources) {
+    ipcRenderer.once('ELECTRON_RENDERER_DESKTOP_CAPTURER_RESULT_' + id, function(event, sources) {
         let source;
         callback(null, (function() {
             let i, len, results;
