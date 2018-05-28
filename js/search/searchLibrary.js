@@ -28,6 +28,9 @@ let libSymphonySearch = ffi.Library(searchConfig.LIBRARY_CONSTANTS.SEARCH_LIBRAR
     'symSE_delete_messages_from_RAM_index': ['int', [ 'string', 'string', 'string' ] ],
     'symSE_destroy': ['int', [] ],
 
+    // Serialization/Deserialization API
+    'symSE_serialize_main_index_to_encrypted_folders': ['int', [ 'string', 'string' ] ],
+    'symSE_deserialize_main_index_from_encrypted_folders': ['int', [ 'string', 'string' ] ],
 
     //init
     'symSE_init': ['void', []],
@@ -69,6 +72,13 @@ module.exports = {
     symSEClearMainRAMIndex: libSymphonySearch.symSE_clear_main_RAM_index,
     symSEDeleteMessagesFromRAMIndex: libSymphonySearch.symSE_delete_messages_from_RAM_index,
     symSEDestroy: libSymphonySearch.symSE_destroy,
+
+    // Serialization/Deserialization API
+    symSESerializeMainIndexToEncryptedFolders: libSymphonySearch.symSE_serialize_main_index_to_encrypted_folders,
+    symSEDeserializeMainIndexToEncryptedFolders: libSymphonySearch.symSE_deserialize_main_index_from_encrypted_folders,
+    symSESerializeMainIndexToEncryptedFoldersAsync: libSymphonySearch.symSE_serialize_main_index_to_encrypted_folders.async,
+    symSEDeserializeMainIndexToEncryptedFoldersAsync: libSymphonySearch.symSE_deserialize_main_index_from_encrypted_folders.async,
+
     symSEIndexMainRAMAsync: libSymphonySearch.symSE_index_main_RAM.async,
     symSEIndexRealtimeRAMAsync: libSymphonySearch.symSE_index_realtime_RAM.async,
     symSEMainRAMIndexToFSIndexAsync: libSymphonySearch.symSE_main_RAM_index_to_FS_index.async,
