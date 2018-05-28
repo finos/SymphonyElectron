@@ -2,7 +2,6 @@
 
 const fs = require('fs');
 const ref = require('ref');
-const childProcess = require('child_process');
 const path = require('path');
 const isDevEnv = require('../utils/misc.js').isDevEnv;
 const isMac = require('../utils/misc.js').isMac;
@@ -10,12 +9,8 @@ const makeBoundTimedCollector = require('./queue');
 const searchConfig = require('./searchConfig');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
-const { launchAgent, launchDaemon, taskScheduler } = require('./utils/search-launchd.js');
 
 const libSymphonySearch = require('./searchLibrary');
-const Crypto = require('../cryptoLib');
-
-const INDEX_VALIDATOR = searchConfig.LIBRARY_CONSTANTS.INDEX_VALIDATOR;
 
 /*eslint class-methods-use-this: ["error", { "exceptMethods": ["deleteRealTimeFolder"] }] */
 /**
@@ -31,27 +26,11 @@ class Search {
      */
     constructor(userId, key) {
         this.isInitialized = false;
-        this.userId = userId;
-        this.key = key;
         this.messageData = [];
         this.isRealTimeIndexing = false;
-        this.crypto = new Crypto(userId, key);
-        initializeLaunchAgent();
-        this.decryptAndInit();
+        this.init(key);
         this.collector = makeBoundTimedCollector(this.checkIsRealTimeIndexing.bind(this),
             searchConfig.REAL_TIME_INDEXING_TIME, this.realTimeIndexing.bind(this));
-    }
-
-    /**
-     * Decrypting the existing user .enc file
-     * and initialing the library
-     */
-    decryptAndInit() {
-        this.crypto.decryption().then(() => {
-            this.init();
-        }).catch(() => {
-            this.init();
-        });
     }
 
     /**
@@ -67,20 +46,19 @@ class Search {
      * initialise the SymphonySearchEngine library
      * and creates a folder in the userData
      */
-    init() {
+    init(key) {
         libSymphonySearch.symSEDestroy();
         libSymphonySearch.symSEInit();
         libSymphonySearch.symSEClearMainRAMIndex();
         libSymphonySearch.symSEClearRealtimeRAMIndex();
-        libSymphonySearch.symSEEnsureFolderExists(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
-        Search.indexValidator(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${this.userId}`);
-        let indexDateStartFrom = new Date().getTime() - searchConfig.SEARCH_PERIOD_SUBTRACTOR;
-        libSymphonySearch.symSEMainFSIndexToRAMIndex(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${this.userId}`);
-        // Deleting all the messages except 3 Months from now
-        libSymphonySearch.symSEDeleteMessagesFromRAMIndex(null,
-            searchConfig.MINIMUM_DATE, indexDateStartFrom.toString());
-        Search.deleteIndexFolders(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
-        this.isInitialized = true;
+        let p = path.join(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH, 'mainindex');
+        libSymphonySearch.symSEDeserializeMainIndexToEncryptedFoldersAsync(p, key, (err, res) => {
+            let indexDateStartFrom = new Date().getTime() - searchConfig.SEARCH_PERIOD_SUBTRACTOR;
+            // Deleting all the messages except 3 Months from now
+            libSymphonySearch.symSEDeleteMessagesFromRAMIndex(null,
+                searchConfig.MINIMUM_DATE, indexDateStartFrom.toString());
+            this.isInitialized = true;
+        });
     }
 
     /**
@@ -120,33 +98,6 @@ class Search {
                 if (err) {
                     log.send(logLevels.ERROR, `IndexBatch: Error indexing messages to memory : ${err}`);
                     reject(new Error('IndexBatch: Error indexing messages to memory '));
-                    return;
-                }
-                resolve(res);
-            });
-        });
-    }
-
-    /**
-     * Merging the temporary
-     * created from indexBatch()
-     */
-    memoryIndexToFSIndex() {
-        return new Promise((resolve, reject) => {
-
-            Search.deleteIndexFolders(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
-            libSymphonySearch.symSEEnsureFolderExists(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
-
-            if (!fs.existsSync(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH)) {
-                log.send(logLevels.ERROR, 'User index folder not found');
-                reject(new Error('User index folder not found'));
-                return;
-            }
-
-            libSymphonySearch.symSEMainRAMIndexToFSIndexAsync(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${this.userId}`, (err, res) => {
-                if (err) {
-                    log.send(logLevels.ERROR, 'Error merging the index ->' + err);
-                    reject(new Error(err));
                     return;
                 }
                 resolve(res);
@@ -221,7 +172,11 @@ class Search {
      * to the main user index
      */
     encryptIndex(key) {
-        return this.crypto.encryption(key);
+        return new Promise(resolve => {
+            libSymphonySearch.symSESerializeMainIndexToEncryptedFoldersAsync(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH, key, function (err, res) {
+                resolve(res);
+            });
+        })
     }
 
     /**
@@ -498,57 +453,6 @@ class Search {
         return out;
     }
 
-    /**
-     * Validate the index folder exist or not
-     * @param {String} file
-     * @returns {*}
-     */
-    static indexValidator(file) {
-        let data;
-        let result = childProcess.execFileSync(INDEX_VALIDATOR, [file]).toString();
-        try {
-            data = JSON.parse(result);
-            if (data.status === 'OK') {
-                return data;
-            }
-            log.send(logLevels.ERROR, 'Unable validate index folder');
-            return new Error('Unable validate index folder')
-        } catch (err) {
-            throw new Error(err);
-        }
-    }
-
-    /**
-     * Removing all the folders and files inside the data folder
-     * @param location
-     */
-    static deleteIndexFolders(location) {
-        if (fs.existsSync(location)) {
-            fs.readdirSync(location).forEach((file) => {
-                let curPath = location + "/" + file;
-                if (fs.lstatSync(curPath).isDirectory()) {
-                    Search.deleteIndexFolders(curPath);
-                } else {
-                    fs.unlinkSync(curPath);
-                }
-            });
-            fs.rmdirSync(location);
-        }
-    }
-
-}
-
-/**
- * Deleting the data index folder
- * when the app is closed/signed-out/navigates
- * isEncryption if that is true
- * will not clear the memory index
- */
-function deleteIndexFolder(isEncryption) {
-    if (!isEncryption) {
-        libSymphonySearch.symSEDestroy();
-    }
-    Search.deleteIndexFolders(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
 }
 
 /**
@@ -581,82 +485,9 @@ function readFile(batch) {
 }
 
 /**
- * Creating launch agent for handling the deletion of
- * index data folder when app crashed or on boot up
- */
-function initializeLaunchAgent() {
-    let pidValue = process.pid;
-    if (isMac) {
-        createLaunchScript(pidValue, 'clear-data', searchConfig.LIBRARY_CONSTANTS.LAUNCH_AGENT_FILE, function (res) {
-            if (!res) {
-                log.send(logLevels.ERROR, `Launch Agent not created`);
-            }
-            createLaunchScript(null, 'clear-data-boot', searchConfig.LIBRARY_CONSTANTS.LAUNCH_DAEMON_FILE, function (result) {
-                if (!result) {
-                    log.send(logLevels.ERROR, `Launch Agent not created`);
-                }
-                launchDaemon(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data-boot.sh`, function (data) {
-                    if (data) {
-                        log.send(logLevels.INFO, 'Launch Daemon: Creating successful');
-                    }
-                });
-            });
-
-            launchAgent(pidValue, `${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/clear-data.sh`, function (response) {
-                if (response) {
-                    log.send(logLevels.INFO, 'Launch Agent: Creating successful');
-                }
-            });
-        });
-    } else {
-        let folderPath = isDevEnv ? path.join(__dirname, '..', '..', searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME) :
-            path.join(searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH, searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME);
-        taskScheduler(`${searchConfig.LIBRARY_CONSTANTS.WINDOWS_TASK_FILE}`, folderPath, pidValue, `${searchConfig.LIBRARY_CONSTANTS.WINDOWS_CLEAR_SCRIPT}`);
-    }
-}
-
-/**
- * Passing the pid of the application and creating the
- * bash file in the userData folder
- * @param pid
- * @param name
- * @param scriptPath
- * @param cb
- */
-function createLaunchScript(pid, name, scriptPath, cb) {
-
-    if (!fs.existsSync(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/`)) {
-        fs.mkdirSync(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/`);
-    }
-
-    fs.readFile(scriptPath, 'utf8', function (err, data) {
-        if (err) {
-            log.send(logLevels.ERROR, `Error reading sh file: ${err}`);
-            cb(false);
-            return;
-        }
-        let result = data;
-        result = result.replace(/dataPath/g, `"${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/${searchConfig.FOLDERS_CONSTANTS.INDEX_FOLDER_NAME}"`);
-        result = result.replace(/scriptPath/g, `${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/${name}.sh`);
-        if (pid) {
-            result = result.replace(/SymphonyPID/g, `${pid}`);
-        }
-
-        fs.writeFile(`${searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH}/.symphony/${name}.sh`, result, 'utf8', function (error) {
-            if (error) {
-                log.send(logLevels.ERROR, `Error writing sh file: ${error}`);
-                return cb(false);
-            }
-            return cb(true);
-        });
-    });
-}
-
-/**
  * Exporting the search library
  * @type {{Search: Search}}
  */
 module.exports = {
-    Search: Search,
-    deleteIndexFolder: deleteIndexFolder
+    Search: Search
 };

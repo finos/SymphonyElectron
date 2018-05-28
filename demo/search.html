@@ -123,7 +123,6 @@
 
 <script>
     var search = new ssf.Search("12345678910112", "jjjehdnctsjyieoalskcjdhsnahsadndfnusdfsdfsd=");
-    var deleteDataFolder = ssf.deleteIndexFolder;
     var searchUtils = new ssf.SearchUtils();
     var buttonEl = document.getElementById('search');
     var merge = document.getElementById('merge');
@@ -240,17 +239,12 @@
     });
 
     merge.addEventListener('click', function () {
-        search.memoryIndexToFSIndex().then(function () {
-            search.encryptIndex('jjjehdnctsjyieoalskcjdhsnahsadndfnusdfsdfsd=').then(function () {
-                deleteDataFolder(true);
-                searchUtils.updateUserConfig(12345678910112, {rotationId:0, version: 1}).then(function (res) {
-                    resultsEl.innerHTML = JSON.stringify(res);
-                }).catch(function (err) {
-                    resultsEl.innerHTML = JSON.stringify(err);
-                });
+        search.encryptIndex('jjjehdnctsjyieoalskcjdhsnahsadndfnusdfsdfsd=').then(function () {
+            searchUtils.updateUserConfig(12345678910112, {rotationId: 0, version: 1}).then(function (res) {
+                resultsEl.innerHTML = JSON.stringify(res);
+            }).catch(function (err) {
+                resultsEl.innerHTML = JSON.stringify(err);
             });
-        }).catch(function (err) {
-            resultsEl.innerHTML = 'Error: ' + err;
         });
     });
 

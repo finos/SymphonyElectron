@@ -26,7 +26,6 @@ const protocolHandler = require('./protocolHandler');
 const getCmdLineArg = require('./utils/getCmdLineArg.js');
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
-const { deleteIndexFolder } = require('./search/search.js');
 
 require('electron-dl')();
 
@@ -181,12 +180,6 @@ app.on('activate', function() {
     } else {
         windowMgr.showMainWindow();
     }
-});
-
-app.on('will-quit', function (e) {
-    e.preventDefault();
-    deleteIndexFolder();
-    app.exit();
 });
 
 // adds 'symphony' as a protocol
