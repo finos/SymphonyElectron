@@ -5,20 +5,15 @@ const userData = path.join(app.getPath('userData'));
 const execPath = path.dirname(app.getPath('exe'));
 const { isDevEnv, isMac } = require('../utils/misc.js');
 
-const INDEX_FOLDER_NAME = 'data';
-
 const winLibraryPath = isDevEnv ? path.join(__dirname, '..', '..', 'library') : path.join(execPath, 'library');
 const macLibraryPath = isDevEnv ? path.join(__dirname, '..', '..', 'library') : path.join(execPath, '..', 'library');
 
 const arch = process.arch === 'ia32';
 
-const winIndexValidatorArch = arch ? 'indexvalidator-x86.exe' : 'indexvalidator-x64.exe';
-const indexValidatorPath = isMac ? path.join(macLibraryPath, 'indexvalidator.exec') : path.join(winLibraryPath, winIndexValidatorArch);
-
 const winLZ4ArchPath = arch ? 'lz4-win-x86.exe' : 'lz4-win-x64.exe';
 const lz4Path = path.join(winLibraryPath, winLZ4ArchPath);
 
-const indexFolderPath = isDevEnv ? `./${INDEX_FOLDER_NAME}` : path.join(userData, INDEX_FOLDER_NAME);
+const indexFolderPath = isDevEnv ? './' : userData;
 
 const winSearchLibArchPath = arch ? 'libsymphonysearch-x86.dll' : 'libsymphonysearch-x64.dll';
 const libraryPath = isMac ? path.join(macLibraryPath, 'libsymphonysearch.dylib') : path.join(winLibraryPath, winSearchLibArchPath);
@@ -37,7 +32,6 @@ const freeDiskSpace = path.join(pathToUtils, isDevEnv ? 'FreeDiskSpace/bin/Relea
 
 
 const libraryPaths = {
-    INDEX_VALIDATOR: indexValidatorPath,
     LZ4_PATH: lz4Path,
     MAC_LIBRARY_FOLDER: macLibraryPath,
     WIN_LIBRARY_FOLDER: winLibraryPath,
@@ -51,13 +45,12 @@ const libraryPaths = {
 };
 
 const folderPaths = {
+    MAIN_INDEX: 'mainindex',
     INDEX_PATH: indexFolderPath,
     TEMP_BATCH_INDEX_FOLDER: indexFolderPath + '/temp_batch_indexes',
     PREFIX_NAME: 'search_index',
-    PREFIX_NAME_PATH: indexFolderPath + '/search_index',
     EXEC_PATH: execPath,
     USER_DATA_PATH: userData,
-    INDEX_FOLDER_NAME: INDEX_FOLDER_NAME,
     USER_CONFIG_FILE: userConfigFile
 };
 

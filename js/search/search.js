@@ -9,6 +9,7 @@ const makeBoundTimedCollector = require('./queue');
 const searchConfig = require('./searchConfig');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
+const lz4 = require('../compressionLib');
 
 const libSymphonySearch = require('./searchLibrary');
 
@@ -27,8 +28,9 @@ class Search {
     constructor(userId, key) {
         this.isInitialized = false;
         this.messageData = [];
+        this.userId = userId;
         this.isRealTimeIndexing = false;
-        this.init(key);
+        this.deCompress(key);
         this.collector = makeBoundTimedCollector(this.checkIsRealTimeIndexing.bind(this),
             searchConfig.REAL_TIME_INDEXING_TIME, this.realTimeIndexing.bind(this));
     }
@@ -47,18 +49,53 @@ class Search {
      * and creates a folder in the userData
      */
     init(key) {
+        if (!key) {
+            libSymphonySearch.symSEDestroy();
+            return;
+        }
         libSymphonySearch.symSEDestroy();
         libSymphonySearch.symSEInit();
         libSymphonySearch.symSEClearMainRAMIndex();
         libSymphonySearch.symSEClearRealtimeRAMIndex();
-        let p = path.join(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH, 'mainindex');
-        libSymphonySearch.symSEDeserializeMainIndexToEncryptedFoldersAsync(p, key, (err, res) => {
-            let indexDateStartFrom = new Date().getTime() - searchConfig.SEARCH_PERIOD_SUBTRACTOR;
-            // Deleting all the messages except 3 Months from now
-            libSymphonySearch.symSEDeleteMessagesFromRAMIndex(null,
-                searchConfig.MINIMUM_DATE, indexDateStartFrom.toString());
-            this.isInitialized = true;
-        });
+        this.isInitialized = true;
+        let userIndexPath = path.join(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH,
+            `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${this.userId}`);
+        let mainIndexFolder = path.join(userIndexPath, searchConfig.FOLDERS_CONSTANTS.MAIN_INDEX);
+        if (fs.existsSync(mainIndexFolder)) {
+            libSymphonySearch.symSEDeserializeMainIndexToEncryptedFoldersAsync(mainIndexFolder, key, (error, res) => {
+
+                clearSearchData.call(this);
+                if (res < 0) {
+                    log.send(logLevels.ERROR, 'Deserialization of Main Index Failed-> ' + error);
+                    return;
+                }
+                log.send(logLevels.INFO, 'Deserialization of Main Index Successful-> ' + res);
+                let indexDateStartFrom = new Date().getTime() - searchConfig.SEARCH_PERIOD_SUBTRACTOR;
+                // Deleting all the messages except 3 Months from now
+                libSymphonySearch.symSEDeleteMessagesFromRAMIndex(null,
+                    searchConfig.MINIMUM_DATE, indexDateStartFrom.toString());
+            });
+        } else {
+            clearSearchData.call(this);
+        }
+    }
+
+    deCompress(key) {
+        let userIndexPath = path.join(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH,
+            `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${this.userId}`);
+        if (fs.existsSync(`${userIndexPath}${searchConfig.TAR_LZ4_EXT}`)) {
+            lz4.deCompression(`${userIndexPath}${searchConfig.TAR_LZ4_EXT}`, (err) => {
+                if (err) {
+                    fs.mkdirSync(userIndexPath);
+                }
+                this.init(key);
+            })
+        } else {
+            if (!fs.existsSync(userIndexPath)) {
+                fs.mkdirSync(userIndexPath);
+            }
+            this.init(key);
+        }
     }
 
     /**
@@ -172,11 +209,34 @@ class Search {
      * to the main user index
      */
     encryptIndex(key) {
+        let mainIndexFolder = path.join(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH,
+            `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${this.userId}`);
         return new Promise(resolve => {
-            libSymphonySearch.symSESerializeMainIndexToEncryptedFoldersAsync(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH, key, function (err, res) {
-                resolve(res);
+            if (!fs.existsSync(mainIndexFolder)) {
+                fs.mkdirSync(mainIndexFolder);
+            }
+
+            if (!this.isInitialized) {
+                log.send(logLevels.ERROR, 'Library not initialized');
+                return;
+            }
+            libSymphonySearch.symSESerializeMainIndexToEncryptedFoldersAsync(mainIndexFolder, key, (err, res) => {
+                if (res < 0) {
+                    log.send(logLevels.ERROR, 'Serializing Main Index Failed-> ' + err);
+                    if (fs.existsSync(mainIndexFolder)) {
+                        clearSearchData.call(this);
+                    }
+                    return;
+                }
+                lz4.compression(mainIndexFolder, mainIndexFolder, (error) => {
+                    if (error) {
+                        log.send(logLevels.ERROR, 'Compressing Main Index Folder-> ' + err);
+                    }
+                    clearSearchData.call(this);
+                });
+                resolve();
             });
-        })
+        });
     }
 
     /**
@@ -200,17 +260,27 @@ class Search {
         let _offset = offset;
         let _sortOrder = sortOrder;
 
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             if (!this.isInitialized) {
                 log.send(logLevels.ERROR, 'Library not initialized');
-                reject(new Error('Library not initialized'));
+                resolve({
+                    messages: [],
+                    more: 0,
+                    returned: 0,
+                    total: 0,
+                });
                 return;
             }
 
             let q = Search.constructQuery(query, senderIds, threadIds, fileType);
 
             if (q === undefined) {
-                reject(new Error('Search query error'));
+                resolve({
+                    messages: [],
+                    more: 0,
+                    returned: 0,
+                    total: 0,
+                });
                 return;
             }
 
@@ -482,6 +552,27 @@ function readFile(batch) {
         });
         resolve(this.messageData);
     });
+}
+
+function clearSearchData() {
+    function removeFiles(filePath) {
+        if (fs.existsSync(filePath)) {
+            fs.readdirSync(filePath).forEach((file) => {
+                let curPath = filePath + "/" + file;
+                if (fs.lstatSync(curPath).isDirectory()) {
+                    removeFiles(curPath);
+                } else {
+                    fs.unlinkSync(curPath);
+                }
+            });
+            fs.rmdirSync(filePath);
+        }
+    }
+
+    if (this.userId) {
+        removeFiles(path.join(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH,
+            `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${this.userId}`));
+    }
 }
 
 /**
