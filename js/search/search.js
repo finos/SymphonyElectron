@@ -50,7 +50,6 @@ class Search {
      */
     init(key) {
         if (!key) {
-            libSymphonySearch.symSEDestroy();
             return;
         }
         libSymphonySearch.symSEDestroy();
