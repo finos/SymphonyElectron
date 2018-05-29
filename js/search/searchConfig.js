@@ -24,10 +24,6 @@ const userConfigFile = isDevEnv ? path.join(__dirname, '..', '..', userConfigFil
 const libraryFolderPath = isMac ? macLibraryPath : winLibraryPath;
 
 const pathToUtils = isDevEnv ? path.join(__dirname, '../../node_modules/electron-utils') : winLibraryPath;
-const launchAgentFile = path.join(libraryFolderPath, 'search-launch-agent.sh');
-const launchDaemonFile = path.join(libraryFolderPath, 'search-launch-daemon.sh');
-const windowsTaskFile = path.join(pathToUtils, isDevEnv ? 'ClearSchTasks/bin/Release/ClearSchTasks.exe' : 'ClearSchTasks.exe');
-const windowsClearScript = path.join(pathToUtils, isDevEnv ? 'ClearOnBoot/bin/Release/ClearOnBoot.exe' : 'ClearOnBoot.exe');
 const freeDiskSpace = path.join(pathToUtils, isDevEnv ? 'FreeDiskSpace/bin/Release/FreeDiskSpace.exe' : 'FreeDiskSpace.exe');
 
 
@@ -37,17 +33,12 @@ const libraryPaths = {
     WIN_LIBRARY_FOLDER: winLibraryPath,
     SEARCH_LIBRARY_PATH: libraryPath,
     LIBRARY_FOLDER_PATH: libraryFolderPath,
-    LAUNCH_AGENT_FILE: launchAgentFile,
-    LAUNCH_DAEMON_FILE: launchDaemonFile,
-    WINDOWS_TASK_FILE: windowsTaskFile,
-    WINDOWS_CLEAR_SCRIPT: windowsClearScript,
     FREE_DISK_SPACE: freeDiskSpace,
 };
 
 const folderPaths = {
     MAIN_INDEX: 'mainindex',
     INDEX_PATH: indexFolderPath,
-    TEMP_BATCH_INDEX_FOLDER: indexFolderPath + '/temp_batch_indexes',
     PREFIX_NAME: 'search_index',
     EXEC_PATH: execPath,
     USER_DATA_PATH: userData,
@@ -61,16 +52,12 @@ const searchConfig = {
     MAXIMUM_DATE: '9999999999999',
     SORT_BY_SCORE: 0,
     INDEX_VERSION: 'v1',
-    BATCH_RANDOM_INDEX_PATH_LENGTH: 20,
     LIBRARY_CONSTANTS: libraryPaths,
     FOLDERS_CONSTANTS: folderPaths,
     TAR_LZ4_EXT: '.tar.lz4',
     DISK_NOT_READY: 'NOT_READY',
     DISK_NOT_FOUND: 'DISK_NOT_FOUND',
-    RANDOM_STRING: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
     MINIMUM_DISK_SPACE: 300000000, // in bytes
-    PERMISSION_ERROR: "The FSUTIL utility requires that you have administrative privileges.",
-    WIN_PATH_ERROR: "Error:  The system cannot find the path specified.",
     MAC_PATH_ERROR: "No such file or directory"
 };
 
