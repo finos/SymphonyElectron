@@ -43,10 +43,7 @@
     "extraFiles": [
       "config/Symphony.config",
       "library/libsymphonysearch.dylib",
-      "library/indexvalidator.exec",
-      "library/lz4.exec",
-      "library/search-launch-agent.sh",
-      "library/search-launch-daemon.sh"
+      "library/lz4.exec"
     ],
     "appId": "com.symphony.electron-desktop",
     "mac": {
