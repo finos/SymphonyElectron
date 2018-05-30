@@ -60,7 +60,7 @@ class Search {
         let userIndexPath = path.join(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH,
             `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${this.userId}`);
         let mainIndexFolder = path.join(userIndexPath, searchConfig.FOLDERS_CONSTANTS.MAIN_INDEX);
-        if (fs.existsSync(mainIndexFolder)) {
+        if (fs.existsSync(userIndexPath)) {
             libSymphonySearch.symSEDeserializeMainIndexToEncryptedFoldersAsync(mainIndexFolder, key, (error, res) => {
 
                 clearSearchData.call(this);
@@ -74,8 +74,6 @@ class Search {
                 libSymphonySearch.symSEDeleteMessagesFromRAMIndex(null,
                     searchConfig.MINIMUM_DATE, indexDateStartFrom.toString());
             });
-        } else {
-            clearSearchData.call(this);
         }
     }
 
@@ -84,7 +82,7 @@ class Search {
             `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${this.userId}`);
         if (fs.existsSync(`${userIndexPath}${searchConfig.TAR_LZ4_EXT}`)) {
             lz4.deCompression(`${userIndexPath}${searchConfig.TAR_LZ4_EXT}`, (err) => {
-                if (err) {
+                if (err && !fs.existsSync(userIndexPath)) {
                     fs.mkdirSync(userIndexPath);
                 }
                 this.init(key);
@@ -227,7 +225,8 @@ class Search {
                     }
                     return;
                 }
-                lz4.compression(mainIndexFolder, mainIndexFolder, (error) => {
+                let userIndexPath = `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${this.userId}`;
+                lz4.compression(userIndexPath, userIndexPath, (error) => {
                     if (error) {
                         log.send(logLevels.ERROR, 'Compressing Main Index Folder-> ' + err);
                     }
