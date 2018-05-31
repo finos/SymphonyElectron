@@ -59,7 +59,7 @@ describe('Tests for getVersionInfo API', () => {
             '#container-identifier',
             '#container-ver',
             '#build-number',
-            'search-api-ver'
+            '#search-api-ver'
         ]).mapSeries((string) => {
             return app.client.getText(string)
         }).then((values) => {
