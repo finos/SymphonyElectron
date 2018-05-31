@@ -2,7 +2,7 @@
 
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
-const { getMainWindow, setIsAutoReload } = require('./windowMgr');
+const { getMainWindow } = require('./windowMgr');
 const systemIdleTime = require('@paulcbetts/system-idle-time');
 const { getConfigField } = require('./config');
 
@@ -45,10 +45,8 @@ function optimizeMemory(memoryInfo) {
                     const mainWindow = getMainWindow();
 
                     if (mainWindow && !mainWindow.isDestroyed()) {
-                        setIsAutoReload(true);
                         reloadedTimeStamp = new Date().getTime();
                         log.send(logLevels.INFO, 'Reloading the app to optimize memory usage');
-                        mainWindow.webContents.reload();
                     }
                 }
             });

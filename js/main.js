@@ -9,9 +9,17 @@ const shellPath = require('shell-path');
 const squirrelStartup = require('electron-squirrel-startup');
 const AutoLaunch = require('auto-launch');
 const urlParser = require('url');
+const nodePath = require('path');
+const compareSemVersions = require('./utils/compareSemVersions.js');
 
 // Local Dependencies
-const {getConfigField, updateUserConfigWin, updateUserConfigMac, readConfigFileSync} = require('./config.js');
+const {
+    getConfigField,
+    getGlobalConfigField,
+    readConfigFileSync,
+    updateUserConfigOnLaunch,
+    getUserConfigField
+} = require('./config.js');
 const {setCheckboxValues} = require('./menus/menuTemplate.js');
 const { isMac, isDevEnv } = require('./utils/misc.js');
 const protocolHandler = require('./protocolHandler');
@@ -21,10 +29,6 @@ const logLevels = require('./enums/logLevels.js');
 const { deleteIndexFolder } = require('./search/search.js');
 
 require('electron-dl')();
-
-// ELECTRON-261: On Windows, due to gpu issues, we need to disable gpu
-// to ensure screen sharing works effectively with multiple monitors
-// https://github.com/electron/electron/issues/4380
 
 //setting the env path child_process issue https://github.com/electron/electron/issues/7688
 shellPath()
@@ -155,7 +159,10 @@ setChromeFlags();
  * initialization and is ready to create browser windows.
  * Some APIs can only be used after this event occurs.
  */
-app.on('ready', readConfigThenOpenMainWindow);
+app.on('ready', () => {
+    checkFirstTimeLaunch()
+        .then(readConfigThenOpenMainWindow);
+});
 
 /**
  * Is triggered when all the windows are closed
@@ -219,45 +226,73 @@ function setupThenOpenMainWindow() {
     processProtocolAction(process.argv);
 
     isAppAlreadyOpen = true;
-
-    // allows installer to launch app and set appropriate global / user config params.
-    let hasInstallFlag = getCmdLineArg(process.argv, '--install', true);
-    let perUserInstall = getCmdLineArg(process.argv, '--peruser', true);
+    getUrlAndCreateMainWindow();
+    
+    // Allows a developer to set custom user data path from command line when
+    // launching the app. Mostly used for running automation tests with
+    // multiple instances
     let customDataArg = getCmdLineArg(process.argv, '--userDataPath=', false);
-
-    if (customDataArg && customDataArg.split('=').length > 1) {
-        let customDataFolder = customDataArg.split('=')[1];
+    let customDataFolder = customDataArg && customDataArg.substring(customDataArg.indexOf('=') + 1);
+    
+    if (customDataArg && customDataFolder) {
         app.setPath('userData', customDataFolder);
     }
-    if (!isMac && hasInstallFlag) {
-        getConfigField('launchOnStartup')
-            .then(setStartup)
-            .then(() => updateUserConfigWin(perUserInstall))
-            .then(app.quit)
-            .catch(app.quit);
-        return;
-    }
-
-    // allows mac installer to overwrite user config
-    if (isMac && hasInstallFlag) {
-        // This value is being sent from post install script
-        // as the app is launched as a root user we don't get
-        // access to the config file
-        let launchOnStartup = process.argv[3];
-        // We wire this in via the post install script
-        // to get the config file path where the app is installed
-        setStartup(launchOnStartup)
-            .then(updateUserConfigMac)
-            .then(app.quit)
-            .catch(app.quit);
-        return;
-    }
-
-    getUrlAndCreateMainWindow();
-
+    
     // Event that fixes the remote desktop issue in Windows
     // by repositioning the browser window
     electron.screen.on('display-removed', windowMgr.verifyDisplays);
+    
+}
+
+function checkFirstTimeLaunch() {
+    
+    return new Promise((resolve) => {
+
+        getUserConfigField('version')
+            .then((configVersion) => {
+
+                const appVersionString = app.getVersion().toString();
+
+                const execPath = nodePath.dirname(app.getPath('exe'));
+                const shouldUpdateUserConfig = execPath.indexOf('AppData/Local/Programs') !== -1 || isMac;
+
+                if (!(configVersion
+                    && typeof configVersion === 'string'
+                    && (compareSemVersions.check(appVersionString, configVersion) !== 1)) && shouldUpdateUserConfig) {
+                    return setupFirstTimeLaunch();
+                }
+
+                return resolve();
+            })
+            .catch(() => {
+                return setupFirstTimeLaunch();
+            });
+        return resolve();
+    });
+    
+}
+
+/**
+ * Setup and update user config
+ * on first time launch or if the latest app version
+ *
+ * @return {Promise<any>}
+ */
+function setupFirstTimeLaunch() {
+    return new Promise(resolve => {
+        log.send(logLevels.INFO, 'setting first time launch config');
+        getGlobalConfigField('launchOnStartup')
+            .then(setStartup)
+            .then(updateUserConfigOnLaunch)
+            .then(() => {
+                log.send(logLevels.INFO, 'first time launch config changes succeeded -> ');
+                return resolve();
+            })
+            .catch((err) => {
+                log.send(logLevels.ERROR, 'first time launch config changes failed -> ' + err);
+                return resolve();
+            });
+    });
 }
 
 /**
@@ -266,9 +301,12 @@ function setupThenOpenMainWindow() {
  * @returns {Promise}
  */
 function setStartup(lStartup) {
+    log.send(logLevels.INFO, `launch on startup parameter value is ${lStartup}`);
     return new Promise((resolve) => {
-        let launchOnStartup = (lStartup === 'true');
+        let launchOnStartup = (String(lStartup) === 'true');
+        log.send(logLevels.INFO, `launchOnStartup value is ${launchOnStartup}`);
         if (launchOnStartup) {
+            log.send(logLevels.INFO, `enabling launch on startup`);
             symphonyAutoLauncher.enable();
             return resolve();
         }
@@ -293,8 +331,8 @@ function getUrlAndCreateMainWindow() {
 
     getConfigField('url')
         .then(createWin).catch(function(err) {
-            let title = 'Error loading configuration';
-            electron.dialog.showErrorBox(title, title + ': ' + err);
+            log.send(logLevels.ERROR, `unable to create main window -> ${err}`);
+            app.quit();
         });
 }
 
@@ -329,17 +367,15 @@ function processProtocolAction(argv) {
     }
 
     let protocolUri = getCmdLineArg(argv, 'symphony://', false);
+    log.send(logLevels.INFO, `Trying to process a protocol action for uri ${protocolUri}`);
 
     if (protocolUri) {
-
         const parsedURL = urlParser.parse(protocolUri);
-
         if (!parsedURL.protocol || !parsedURL.slashes) {
             return;
         }
-
+        log.send(logLevels.INFO, `Parsing protocol url successful for ${parsedURL}`);
         handleProtocolAction(protocolUri);
-
     }
 }
 
@@ -349,10 +385,12 @@ function processProtocolAction(argv) {
  */
 function handleProtocolAction(uri) {
     if (!isAppAlreadyOpen) {
+        log.send(logLevels.INFO, `App started by protocol url ${uri}. We are caching this to be processed later!`);
         // app is opened by the protocol url, cache the protocol url to be used later
         protocolHandler.setProtocolUrl(uri);
     } else {
         // app is already open, so, just trigger the protocol action method
+        log.send(logLevels.INFO, `App opened by protocol url ${uri}`);
         protocolHandler.processProtocolAction(uri);
     }
 }

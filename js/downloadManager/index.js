@@ -27,8 +27,9 @@ function openFile(id) {
     });
     if (fileIndex !== -1) {
         let openResponse = remote.shell.openExternal(`file:///${local.downloadItems[fileIndex].savedPath}`);
-        if (!openResponse) {
-            remote.dialog.showErrorBox("File not found", 'The file you are trying to open cannot be found in the specified path.');
+        let focusedWindow = remote.BrowserWindow.getFocusedWindow();
+        if (!openResponse && focusedWindow && !focusedWindow.isDestroyed()) {
+            remote.dialog.showMessageBox(focusedWindow, {type: 'error', title: 'File not found', message: 'The file you are trying to open cannot be found in the specified path.'});
         }
     }
 }
@@ -43,8 +44,9 @@ function showInFinder(id) {
     });
     if (showFileIndex !== -1) {
         let showResponse = remote.shell.showItemInFolder(local.downloadItems[showFileIndex].savedPath);
-        if (!showResponse) {
-            remote.dialog.showErrorBox("File not found", 'The file you are trying to access cannot be found in the specified path.');
+        let focusedWindow = remote.BrowserWindow.getFocusedWindow();
+        if (!showResponse && focusedWindow && !focusedWindow.isDestroyed()) {
+            remote.dialog.showMessageBox(focusedWindow, {type: 'error', title: 'File not found', message: 'The file you are trying to open cannot be found in the specified path.'});
         }
     }
 }
@@ -56,15 +58,13 @@ function showInFinder(id) {
 function createDOM(arg) {
 
     if (arg && arg._id) {
-
-        let fileDisplayName = arg.fileName;
+        let fileDisplayName = getFileDisplayName(arg.fileName);
         let downloadItemKey = arg._id;
 
         local.downloadItems.push(arg);
 
         let ul = document.getElementById('download-main');
         if (ul) {
-
             let li = document.createElement('li');
             li.id = downloadItemKey;
             li.classList.add('download-element');
@@ -197,4 +197,33 @@ function initiate() {
             });
         }
     }
+}
+
+/**
+ * Return a file display name for the download item
+ */
+function getFileDisplayName(fileName) {
+    let fileList = local.downloadItems;
+    let fileNameCount = 0;
+    let fileDisplayName = fileName;
+    
+    /* Check if a file with the same name exists
+     * (akin to the user downloading a file with the same name again)
+     * in the download bar
+     */
+    for (let i = 0; i < fileList.length; i++) {
+        if (fileName === fileList[i].fileName) {
+            fileNameCount++;
+        }
+    }
+    
+    /* If it exists, add a count to the name like how Chrome does */
+    if (fileNameCount) {
+        let extLastIndex = fileDisplayName.lastIndexOf('.');
+        let fileCount = ' (' + fileNameCount + ')';
+        
+        fileDisplayName = fileDisplayName.slice(0, extLastIndex) + fileCount + fileDisplayName.slice(extLastIndex);
+    }
+    
+    return fileDisplayName;
 }
