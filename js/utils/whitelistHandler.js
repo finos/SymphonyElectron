@@ -1,8 +1,27 @@
 'use strict';
 
 const { getGlobalConfigField } = require('./../config.js');
-const parseDomain = require('parse-domain');
 const isEqual = require('lodash.isequal');
+const log = require('../log.js');
+const logLevels = require('../enums/logLevels.js');
+
+let customTlds = [];
+
+getGlobalConfigField('customTlds')
+    .then((domains) => {
+        
+        if (domains && Array.isArray(domains) && domains.length > 0) {
+            log.send(logLevels.INFO, `setting custom tlds that are -> ${domains}`);
+            customTlds = domains;
+        }
+        
+    })
+    .catch((err) => {
+        log.send(logLevels.INFO, `error setting custom tlds -> ${err}`);
+    });
+
+const urlParts = /^(https?:\/\/)?([^/]*@)?(.+?)(:\d{2,5})?([/?].*)?$/;
+const dot = /\./g;
 
 /**
  * Loops through the list of whitelist urls
@@ -35,7 +54,7 @@ function isWhitelisted(url) {
  */
 function checkWhitelist(url, whitelist) {
     let whitelistArray = whitelist.split(',');
-    const parsedUrl = parseDomain(url);
+    const parsedUrl = parseDomain(url, {customTlds});
 
     if (!parsedUrl) {
         return false;
@@ -111,8 +130,35 @@ function matchSubDomains(subDomainUrl, subDomainWhitelist) {
     return lastCharSubDomainUrl === lastCharWhitelist;
 }
 
+/**
+ * Splits the url into tld, domain, subdomain
+ * @param url
+ * @return {{tld: string | *, domain: string | *, subdomain: string}}
+ */
+function parseDomain(url) {
+    let urlSplit = url.match(urlParts);
+    let domain = urlSplit[3];
+
+    // capture top level domain
+    const tld = domain.slice(domain.lastIndexOf('.'));
+    urlSplit = domain.slice(0, -tld.length).split(dot);
+
+    // capture domain
+    domain = urlSplit.pop();
+
+    // capture subdomain
+    const subdomain = urlSplit.join(".");
+
+    return {
+        tld: tld.trim(),
+        domain: domain.trim(),
+        subdomain: subdomain.trim()
+    }
+}
+
 module.exports = {
     isWhitelisted,
+    parseDomain,
 
     // items below here are only exported for testing, do NOT use!
     checkWhitelist

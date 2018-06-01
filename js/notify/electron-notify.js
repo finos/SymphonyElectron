@@ -165,7 +165,12 @@ function updateConfig(customConfig) {
     if (customConfig.display) {
         displayId = customConfig.display;
     }
-    closeAll();
+    // Reposition active notification on config changes
+    setupConfig();
+    moveOneDown(0)
+        .then(() => {
+            log.send(logLevels.INFO, 'updateConfig: repositioned '+ activeNotifications.length +' active notification');
+        });
 }
 
 /**
@@ -430,7 +435,6 @@ function setNotificationContents(notfWindow, notfObj) {
     });
     let closeNotificationSafely = buildCloseNotificationSafely(closeFunc);
 
-    // don't start timer to close if we aren't sticky
     if (!notfObj.sticky) {
         timeoutId = setTimeout(function() {
             closeNotificationSafely('timeout');
@@ -740,29 +744,40 @@ function cleanUpInactiveWindow() {
 }
 
 /**
- * Closes all the notifications and windows
+ * Start a new timer to close the notification
+ * @param event
+ * @param winId
+ * @param notificationObj
  */
-function closeAll() {
-    // Clear out animation Queue and close windows
-    animationQueue.clear();
-
-    let notificationWindows = Array.from(activeNotifications);
-
-    notificationWindows.forEach((window) => {
-        if (window.displayTimer) {
-            clearTimeout(window.displayTimer);
+function onMouseLeave(event, winId, notificationObj) {
+    if (winId) {
+        const notificationWindow = BrowserWindow.fromId(winId);
+        if (notificationWindow && !notificationWindow.isDestroyed()) {
+            notificationWindow.displayTimer = setTimeout(function () {
+                let closeFunc = buildCloseNotification(BrowserWindow.fromId(winId), notificationObj);
+                buildCloseNotificationSafely(closeFunc)('close');
+            }, 3000);
         }
-        if (!window.isDestroyed()) {
-            window.close();
-        }
-    });
-
-    cleanUpInactiveWindow();
-
-    // Reset certain vars
-    nextInsertPos = {};
-    activeNotifications = [];
+    }
 }
+
+/**
+ * Clears the timer for a specific notification window
+ * @param event
+ * @param winId
+ */
+function onMouseOver(event, winId) {
+    if (winId) {
+        const notificationWindow = BrowserWindow.fromId(winId);
+        if (notificationWindow) {
+            clearTimeout(notificationWindow.displayTimer);
+        }
+    }
+}
+
+// capturing mouse events
+ipc.on('electron-notify-mouseleave', onMouseLeave);
+ipc.on('electron-notify-mouseover', onMouseOver);
 
 
 module.exports.notify = notify;

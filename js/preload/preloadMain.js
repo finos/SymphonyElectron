@@ -64,15 +64,6 @@ const throttledSetBadgeCount = throttle(1000, function(count) {
     });
 });
 
-// Gathers renderer process memory
-setInterval(() => {
-    const memory = process.getProcessMemoryInfo();
-    local.ipcRenderer.send(apiName, {
-        cmd: apiCmds.optimizeMemoryConsumption,
-        memory: memory
-    });
-}, 1000 * 60 * 4);
-
 createAPI();
 
 // creates API exposed from electron.

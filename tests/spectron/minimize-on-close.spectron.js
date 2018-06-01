@@ -119,9 +119,9 @@ describe('Tests for Minimize on Close', () => {
                     robot.mouseClick();
                     robot.setKeyboardDelay(100);
 
-                    // Key tap 9 times as "Minimize on Close" is in the
-                    // 9th position under view menu item
-                    for (let i = 0; i < 9; i++) {
+                    // Key tap 8 times as "Minimize on Close" is in the
+                    // 8th position under view menu item
+                    for (let i = 0; i < 8; i++) {
                         robot.keyTap('down');
                     }
                     robot.keyTap('enter');

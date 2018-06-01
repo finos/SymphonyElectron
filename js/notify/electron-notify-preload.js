@@ -10,6 +10,9 @@ const electron = require('electron');
 const ipc = electron.ipcRenderer;
 
 const whiteColorRegExp = new RegExp(/^(?:white|#fff(?:fff)?|rgba?\(\s*255\s*,\s*255\s*,\s*255\s*(?:,\s*1\s*)?\))$/i);
+// event functions ref
+let onMouseLeaveFunc;
+let onMouseOverFunc;
 
 /**
  * Sets style for a notification
@@ -134,6 +137,28 @@ function setContents(event, notificationObj) {
 
     const winId = notificationObj.windowId;
 
+    if (!notificationObj.sticky) {
+        onMouseLeaveFunc = onMouseLeave.bind(this);
+        onMouseOverFunc = onMouseOver.bind(this);
+        container.addEventListener('mouseleave', onMouseLeaveFunc);
+        container.addEventListener('mouseover', onMouseOverFunc);
+    }
+
+    /**
+     * Start a new timer to close the notification
+     */
+    function onMouseLeave() {
+        ipc.send('electron-notify-mouseleave', winId, notificationObj);
+    }
+
+    /**
+     * Clear all timeouts to prevent notification
+     * from closing
+     */
+    function onMouseOver() {
+        ipc.send('electron-notify-mouseover', winId);
+    }
+
     // note: use onclick because we only want one handler, for case
     // when content gets overwritten by notf with same tag
     closeButton.onclick = function(clickEvent) {
@@ -197,7 +222,10 @@ function reset() {
     let newContainer = container.cloneNode(true);
     container.parentNode.replaceChild(newContainer, container);
     let newCloseButton = closeButton.cloneNode(true);
-    closeButton.parentNode.replaceChild(newCloseButton, closeButton)
+    closeButton.parentNode.replaceChild(newCloseButton, closeButton);
+
+    container.removeEventListener('mouseleave', onMouseLeaveFunc);
+    container.removeEventListener('mouseover', onMouseOverFunc);
 }
 
 ipc.on('electron-notify-set-contents', setContents);
