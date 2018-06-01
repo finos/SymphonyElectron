@@ -71,10 +71,10 @@ function getSource(options, callback) {
     }
 
     if (captureWindow) {
-        sourceTypes.push('window')
+        sourceTypes.push('window');
     }
     if (captureScreen) {
-        sourceTypes.push('screen')
+        sourceTypes.push('screen');
     }
 
     id = getNextId();

@@ -61,10 +61,10 @@ function getSources(options, callback) {
         captureWindow = remote.systemPreferences.isAeroGlassEnabled();
     }
     if (captureWindow) {
-        sourceTypes.push('window')
+        sourceTypes.push('window');
     }
     if (captureScreen) {
-        sourceTypes.push('screen')
+        sourceTypes.push('screen');
     }
 
     desktopCapturer.getSources({ types: sourceTypes, thumbnailSize: updatedOptions.thumbnailSize }, (event, sources) => {
