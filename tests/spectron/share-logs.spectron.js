@@ -111,6 +111,7 @@ describe('Tests for Generating & Sharing Logs', () => {
             robot.mouseClick();
             robot.keyTap('down');
             robot.keyTap('down');
+            robot.keyTap('down');
             robot.keyTap('right');
             robot.keyTap('enter');
             

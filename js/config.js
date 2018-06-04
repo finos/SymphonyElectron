@@ -4,7 +4,6 @@ const electron = require('electron');
 const app = electron.app;
 const path = require('path');
 const fs = require('fs');
-const AppDirectory = require('appdirectory');
 const omit = require('lodash.omit');
 const pick = require('lodash.pick');
 const difference = require('lodash.difference');
@@ -16,7 +15,6 @@ const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
 
 const configFileName = 'Symphony.config';
-const dirs = new AppDirectory('Symphony');
 
 // cached config when first reading files. initially undefined and will be
 // updated when read from disk.
@@ -70,7 +68,11 @@ function getUserConfigField(fieldName) {
  * @returns {Promise}
  */
 function readUserConfig(customConfigPath) {
+    
+    log.send(logLevels.INFO, `custom config path ${customConfigPath}`);
+    
     return new Promise((resolve, reject) => {
+        
         if (userConfig) {
             resolve(userConfig);
             return;
@@ -81,26 +83,33 @@ function readUserConfig(customConfigPath) {
         if (!configPath) {
             configPath = path.join(app.getPath('userData'), configFileName);
         }
+        
+        log.send(logLevels.INFO, `config path ${configPath}`);
 
         fs.readFile(configPath, 'utf8', (err, data) => {
+            
             if (err) {
-                reject('cannot open user config file: ' + configPath + ', error: ' + err);
-            } else {
-                try {
-                    // data is the contents of the text file we just read
-                    userConfig = JSON.parse(data);
-                } catch (e) {
-                    reject('can not parse user config file data: ' + data + ', error: ' + err);
-                    return;
-                }
-                resolve(userConfig);
+                log.send(logLevels.INFO, `cannot open user config file ${configPath}, error is ${err}`);
+                reject(`cannot open user config file ${configPath}, error is ${err}`);
+                return;
             }
+            
+            try {
+                // data is the contents of the text file we just read
+                userConfig = JSON.parse(data);
+                log.send(logLevels.INFO, `user config data is ${JSON.stringify(userConfig)}`);
+                resolve(userConfig);
+            } catch (e) {
+                log.send(logLevels.INFO, `cannot parse user config data ${data}, error is ${e}`);
+                reject(`cannot parse user config data ${data}, error is ${e}`);
+            }
+            
         });
     });
 }
 
 /**
- * Gets a specific user config value for a field
+ * Gets a specific global config value for a field
  * @param fieldName
  * @returns {Promise}
  */
@@ -230,19 +239,18 @@ function updateUserConfig(oldUserConfig) {
         // create a new object from the old user config
         // by ommitting the user related settings from
         // the old user config
+        log.send(logLevels.INFO, `old user config string ${JSON.stringify(oldUserConfig)}`);
         let newUserConfig = omit(oldUserConfig, ignoreSettings);
         let newUserConfigString = JSON.stringify(newUserConfig, null, 2);
 
+        log.send(logLevels.INFO, `new config string ${newUserConfigString}`);
+        
         // get the user config path
         let userConfigFile;
-        if (isMac) {
-            userConfigFile = path.join(dirs.userConfig(), configFileName);
-        } else {
-            userConfigFile = path.join(app.getPath('userData'), configFileName);
-        }
+        userConfigFile = path.join(app.getPath('userData'), configFileName);
 
         if (!userConfigFile) {
-            return reject('user config file doesn\'t exist');
+            return reject(`user config file doesn't exist`);
         }
 
         // write the new user config changes to the user config file
@@ -255,11 +263,10 @@ function updateUserConfig(oldUserConfig) {
 }
 
 /**
- * Manipulates user config on windows
- * @param {String} perUserInstall - Is a flag to determine if we are installing for an individual user
+ * Manipulates user config on first time launch
  * @returns {Promise}
  */
-function updateUserConfigWin(perUserInstall) {
+function updateUserConfigOnLaunch() {
 
     return new Promise((resolve, reject) => {
 
@@ -268,36 +275,6 @@ function updateUserConfigWin(perUserInstall) {
 
         // if it's not a per user installation or if the
         // user config file doesn't exist, we simple move on
-        if (!perUserInstall || !fs.existsSync(userConfigFile)) {
-            log.send(logLevels.WARN, 'config: Could not find the user config file!');
-            reject();
-            return;
-        }
-
-        // In case the file exists, we remove it so that all the
-        // values are fetched from the global config
-        // https://perzoinc.atlassian.net/browse/ELECTRON-126
-        readUserConfig(userConfigFile).then((data) => {
-            resolve(updateUserConfig(data));
-        }).catch((err) => {
-            reject(err);
-        });
-
-    });
-
-}
-
-/**
- * Manipulates user config on macOS
- * @param {String} globalConfigPath - The global config path from installer
- * @returns {Promise}
- */
-function updateUserConfigMac() {
-    return new Promise((resolve, reject) => {
-        const userConfigFile = path.join(dirs.userConfig(), configFileName);
-
-        // if user config file does't exist, just use the global config settings
-        // i.e. until an user makes changes manually using the menu items
         if (!fs.existsSync(userConfigFile)) {
             log.send(logLevels.WARN, 'config: Could not find the user config file!');
             reject();
@@ -307,13 +284,18 @@ function updateUserConfigMac() {
         // In case the file exists, we remove it so that all the
         // values are fetched from the global config
         // https://perzoinc.atlassian.net/browse/ELECTRON-126
-        readUserConfig(userConfigFile).then((data) => {            
-            resolve(updateUserConfig(data));
+        readUserConfig(userConfigFile).then((data) => {
+            // Add version info to the user config data
+            const version = app.getVersion().toString();
+            const updatedData = Object.assign(data, { version });
+
+            resolve(updateUserConfig(updatedData));
         }).catch((err) => {
             reject(err);
         });
-        
+
     });
+
 }
 
 /**
@@ -417,8 +399,8 @@ module.exports = {
     getConfigField,
 
     updateConfigField,
-    updateUserConfigWin,
-    updateUserConfigMac,
+    updateUserConfigOnLaunch,
+    
     getMultipleConfigField,
 
     // items below here are only exported for testing, do NOT use!
@@ -429,5 +411,5 @@ module.exports = {
 
     // use only if you specifically need to read global config fields
     getGlobalConfigField,
-
+    getUserConfigField
 };
