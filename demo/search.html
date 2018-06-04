@@ -152,9 +152,13 @@
     buttonIndex.addEventListener('click', function () {
         let batchIndex = batchNumber.value;
         search.readJson(batchIndex).then(function (res) {
-            search.indexBatch(JSON.stringify(res)).then(function () {
-                resultsEl.innerHTML = "Index created";
-            });
+            var response = function(status, response) {
+                if (status) {
+                    resultsEl.innerHTML = "Index created";
+                }
+                resultsEl.innerHTML = response;
+            };
+            search.indexBatch(JSON.stringify(res), response);
         }).catch(function (err) {
             console.log(err);
         });
