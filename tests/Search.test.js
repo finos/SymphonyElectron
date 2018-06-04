@@ -7,6 +7,7 @@ let userConfigDir = null;
 
 let searchConfig;
 let SearchApi;
+let libSymphonySearch;
 
 jest.mock('electron', function() {
     return {
@@ -37,9 +38,6 @@ describe('Tests for Search', function() {
     let userId;
     let key;
     let dataFolderPath;
-    let realTimeIndexPath;
-    let tempBatchPath;
-    let launchAgent;
     let currentDate = new Date().getTime();
 
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
@@ -48,28 +46,32 @@ describe('Tests for Search', function() {
         userId = 12345678910112;
         key = 'jjjehdnctsjyieoalskcjdhsnahsadndfnusdfsdfsd=';
 
-        executionPath = path.join(__dirname, 'library');
-        if (isWindowsOS) {
-            executionPath = path.join(__dirname, '..', 'library');
-        }
-        userConfigDir = path.join(__dirname, '..');
+            executionPath = path.join(__dirname, 'library');
+            if (isWindowsOS) {
+                executionPath = path.join(__dirname, '..', 'library');
+            }
+            userConfigDir = path.join(__dirname, '..');
+            libSymphonySearch = require('../js/search/searchLibrary.js');
+            searchConfig = require('../js/search/searchConfig.js');
+            let root = path.join(userConfigDir, `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${userId}.enc`);
+            if (fs.existsSync(root)) {
+                fs.unlinkSync(root);
+            }
+            const { Search } = require('../js/search/search.js');
+            SearchApi = new Search(userId, key);
 
-        searchConfig = require('../js/search/searchConfig.js');
-        const { Search } = require('../js/search/search.js');
-        SearchApi = new Search(userId, key);
-        launchAgent = require('../js/search/utils/search-launchd.js');
-        realTimeIndexPath = path.join(userConfigDir, 'data', 'temp_realtime_index');
-        tempBatchPath = path.join(userConfigDir, 'data', 'temp_batch_indexes');
-        dataFolderPath = path.join(userConfigDir, 'data');
-        if (fs.existsSync(dataFolderPath)) {
-            deleteIndexFolders(dataFolderPath);
-        }
-        done();
+            libSymphonySearch.symSEDestroy();
+            dataFolderPath = path.join(userConfigDir, 'data');
+            if (fs.existsSync(dataFolderPath)) {
+                deleteIndexFolders(dataFolderPath)
+            }
+            done();
     });
 
     afterAll(function (done) {
         setTimeout(function () {
 
+            libSymphonySearch.symSEDestroy();
             deleteIndexFolders(dataFolderPath);
             let root = path.join(userConfigDir, `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${userId}.enc`);
             if (fs.existsSync(root)) {
@@ -83,12 +85,15 @@ describe('Tests for Search', function() {
         }, 3000);
     });
 
-    function deleteIndexFolders(location) {
+    function deleteIndexFolders(location, isEncryption) {
+        if (!isEncryption) {
+            libSymphonySearch.symSEDestroy();
+        }
         if (fs.existsSync(location)) {
             fs.readdirSync(location).forEach(function(file) {
                 let curPath = path.join(location, file);
                 if (fs.lstatSync(curPath).isDirectory()) {
-                    deleteIndexFolders(curPath);
+                    deleteIndexFolders(curPath, true);
                 } else {
                     fs.unlinkSync(curPath);
                 }
@@ -123,13 +128,9 @@ describe('Tests for Search', function() {
         });
 
         it('should exist index folder', function() {
-            expect(fs.existsSync(path.join(userConfigDir, 'data', 'search_index_12345678910112'))).toBe(true);
-            expect(fs.existsSync(realTimeIndexPath)).toBe(true);
+            expect(fs.existsSync(path.join(userConfigDir, 'data', 'search_index_12345678910112'))).toBe(false);
         });
 
-        it('should not exist index folder', function() {
-            expect(fs.existsSync(tempBatchPath)).toBe(false);
-        });
     });
 
     describe('Batch indexing process tests', function () {
@@ -165,7 +166,6 @@ describe('Tests for Search', function() {
             }];
             const indexBatch = jest.spyOn(SearchApi, 'indexBatch');
             SearchApi.indexBatch(JSON.stringify(messages)).then(function () {
-                expect(fs.existsSync(tempBatchPath)).toBe(true);
                 expect(indexBatch).toHaveBeenCalledWith(JSON.stringify(messages));
                 done();
             });
@@ -232,28 +232,22 @@ describe('Tests for Search', function() {
         it('should match messages length after batch indexing', function (done) {
             const searchQuery = jest.spyOn(SearchApi, 'searchQuery');
             SearchApi.searchQuery('it works', [], [], '', undefined, undefined, 25, 0, 0).then(function (res) {
-                expect(res.messages.length).toEqual(0);
+                expect(res.messages.length).toEqual(3);
                 expect(searchQuery).toHaveBeenCalled();
                 done()
             });
         });
 
         it('should merge batch index to user index', function (done) {
-            const mergeIndexBatches = jest.spyOn(SearchApi, 'mergeIndexBatches');
-            SearchApi.mergeIndexBatches().then(function () {
-                expect(fs.existsSync(tempBatchPath)).toBe(false);
-                expect(mergeIndexBatches).toHaveBeenCalled();
+            const memoryIndexToFSIndex = jest.spyOn(SearchApi, 'memoryIndexToFSIndex');
+            SearchApi.memoryIndexToFSIndex().then(function () {
+                expect(memoryIndexToFSIndex).toHaveBeenCalled();
                 done();
             });
         });
 
-        it('should match messages length after batch indexing', function (done) {
-            const searchQuery = jest.spyOn(SearchApi, 'searchQuery');
-            SearchApi.searchQuery('it works', [], [], '', undefined, undefined, 25, 0, 0).then(function (res) {
-                expect(res.messages.length).toEqual(3);
-                expect(searchQuery).toHaveBeenCalled();
-                done();
-            });
+        it('should exist data folder after ram index to fs index', function () {
+            expect(fs.existsSync(dataFolderPath)).toBe(true);
         });
     });
 
@@ -280,7 +274,6 @@ describe('Tests for Search', function() {
             const searchQuery = jest.spyOn(SearchApi, 'searchQuery');
             SearchApi.searchQuery('realtime working', ["71811853189212"], ["Au8O2xKHyX1LtE6zW019GX///rZYegAtdA=="], '', undefined, undefined, 25, 0, 0).then(function (res) {
                 expect(res.messages.length).toEqual(3);
-                expect(fs.existsSync(realTimeIndexPath)).toBe(true);
                 expect(searchQuery).toHaveBeenCalled();
                 done();
             })
@@ -309,8 +302,6 @@ describe('Tests for Search', function() {
 
                 SearchApi.searchQuery('isRealTimeIndexing', [], [], '', undefined, undefined, 25, 0, 0).then(function (res) {
                     expect(res.messages.length).toEqual(0);
-                    expect(fs.existsSync(realTimeIndexPath)).toBe(true);
-
                     done();
                 });
             }, 6000)
@@ -378,7 +369,6 @@ describe('Tests for Search', function() {
         it('should delete realtime index', function () {
             const deleteRealTimeFolder = jest.spyOn(SearchApi, 'deleteRealTimeFolder');
             SearchApi.deleteRealTimeFolder();
-            expect(fs.existsSync(realTimeIndexPath)).toBe(true);
             expect(deleteRealTimeFolder).toHaveBeenCalled();
         });
     });
@@ -425,13 +415,14 @@ describe('Tests for Search', function() {
             });
         });
 
-        it('should not get the latest timestamp', function (done) {
+        it('should be equal to 0000000000000', function (done) {
             const getLatestMessageTimestamp = jest.spyOn(SearchApi, 'getLatestMessageTimestamp');
-            deleteIndexFolders(dataFolderPath);
-            SearchApi.getLatestMessageTimestamp().catch(function (err) {
-                expect(err).toEqual(new Error('Index folder does not exist.'));
+            libSymphonySearch.symSEClearMainRAMIndex();
+            libSymphonySearch.symSEClearRealtimeRAMIndex();
+            SearchApi.getLatestMessageTimestamp().then(function (res) {
                 expect(getLatestMessageTimestamp).toHaveBeenCalled();
                 expect(getLatestMessageTimestamp).toHaveBeenCalledTimes(3);
+                expect(res).toEqual('0000000000000');
                 done();
             });
         });
@@ -479,26 +470,25 @@ describe('Tests for Search', function() {
             const searchQuery = jest.spyOn(SearchApi, 'searchQuery');
             SearchApi.searchQuery('works', [], [], '', '', '', 2, 0, 0).then(function (res) {
                 expect(res.messages.length).toBe(2);
-                expect(searchQuery).toHaveBeenCalledTimes(7);
+                expect(searchQuery).toHaveBeenCalledTimes(6);
                 expect(searchQuery).toHaveBeenCalled();
                 done();
             });
         });
 
-        it('should search fails index folder not fund', function (done) {
-            deleteIndexFolders(dataFolderPath);
-            setTimeout(function () {
-                const searchQuery = jest.spyOn(SearchApi, 'searchQuery');
-                SearchApi.searchQuery('it works', [], [], '', '', '', 25, 0, 0).catch(function (err) {
-                    expect(err).toEqual(new Error('Index folder does not exist.'));
-                    expect(searchQuery).toHaveBeenCalledTimes(8);
-                    expect(searchQuery).toHaveBeenCalled();
-                    SearchApi = undefined;
-                    const { Search } = require('../js/search/search.js');
-                    SearchApi = new Search(userId, key);
-                    done();
-                })
-            }, 3000);
+        it('should search fails result cleared', function (done) {
+            libSymphonySearch.symSEClearMainRAMIndex();
+            libSymphonySearch.symSEClearRealtimeRAMIndex();
+            const searchQuery = jest.spyOn(SearchApi, 'searchQuery');
+            SearchApi.searchQuery('it works', [], [], '', '', '', 25, 0, 0).then(function (res) {
+                expect(res.messages.length).toBe(0);
+                expect(searchQuery).toHaveBeenCalledTimes(7);
+                expect(searchQuery).toHaveBeenCalled();
+                SearchApi = undefined;
+                const { Search } = require('../js/search/search.js');
+                SearchApi = new Search(userId, key);
+                done();
+            });
         });
 
         it('should search fails query is undefined', function (done) {
@@ -528,6 +518,53 @@ describe('Tests for Search', function() {
                 expect(res.messages.length).toEqual(0);
                 expect(searchQuery).toHaveBeenCalled();
                 expect(searchQuery).toHaveBeenCalledTimes(3);
+                done();
+            });
+        });
+
+        it('should index for testing quote', function (done) {
+            let messages = [{
+                messageId: "Jc+4K8RtPxHJfyuDQU9atX///qN3KHYXdA==",
+                threadId: "Au8O2xKHyX1LtE6zW019GX///rZYegAtdA==",
+                ingestionDate: currentDate.toString(),
+                senderId: "71811853189212",
+                chatType: "CHATROOM",
+                isPublic: "false",
+                sendingApp: "lc",
+                text: "quote search"
+            }, {
+                messageId: "Jc+4K8RtPxHJfyuDQU9atX///qN3KHYXdA==",
+                threadId: "Au8O2xKHyX1LtE6zW019GX///rZYegAtdA==",
+                ingestionDate: currentDate.toString(),
+                senderId: "71811853189212",
+                chatType: "CHATROOM",
+                isPublic: "false",
+                sendingApp: "lc",
+                text: "search"
+            }];
+            const indexBatch = jest.spyOn(SearchApi, 'indexBatch');
+            SearchApi.indexBatch(JSON.stringify(messages)).then(function () {
+                expect(indexBatch).toHaveBeenCalledWith(JSON.stringify(messages));
+                done();
+            });
+        });
+
+        it('should search without quote', function (done) {
+            const searchQuery = jest.spyOn(SearchApi, 'searchQuery');
+            SearchApi.searchQuery('search', [], [], undefined, '', '', 25, 0, 0).then(function (res) {
+                expect(res.messages.length).toEqual(2);
+                expect(searchQuery).toHaveBeenCalled();
+                expect(searchQuery).toHaveBeenCalledTimes(4);
+                done();
+            });
+        });
+
+        it('should quote search', function (done) {
+            const searchQuery = jest.spyOn(SearchApi, 'searchQuery');
+            SearchApi.searchQuery('\"quote search\"', [], [], undefined, '', '', 25, 0, 0).then(function (res) {
+                expect(res.messages.length).toEqual(1);
+                expect(searchQuery).toHaveBeenCalled();
+                expect(searchQuery).toHaveBeenCalledTimes(5);
                 done();
             });
         });
