@@ -18,17 +18,16 @@ class SearchUtils {
      * is more than the constant MINIMUM_DISK_SPACE
      * @returns {Promise<boolean>}
      */
-    checkFreeSpace() {
-        return new Promise((resolve, reject) => {
-            if (!isMac) {
-                try {
-                    this.path = this.path.substring(0, 1);
-                } catch (e) {
-                    reject(new Error('Invalid Path : ' + e));
-                }
+    checkFreeSpace(callback) {
+        if (!isMac) {
+            try {
+                this.path = this.path.substring(0, 1);
+            } catch (e) {
+                return callback(false, 'Invalid Path');
             }
-            checkDiskSpace(this.path, resolve, reject);
-        });
+        }
+        checkDiskSpace(this.path, callback);
+        return null;
     }
 
     /**

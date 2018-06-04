@@ -249,11 +249,14 @@
     });
 
     timestamp.addEventListener('click', function () {
-        search.getLatestMessageTimestamp().then(function (res) {
-            resultsEl.innerHTML = res;
-        }).catch(function (err) {
-            resultsEl.innerHTML = 'Error: ' + err;
-        });
+        var callback = function(status, data) {
+            if (status) {
+                resultsEl.innerHTML = data;
+            } else {
+                resultsEl.innerHTML = 'Error: ' + data;
+            }
+        };
+        search.getLatestMessageTimestamp(callback.bind(this))
     });
 
     checkFreeSpace.addEventListener('click', function () {

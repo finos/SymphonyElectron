@@ -1,3 +1,6 @@
+const log = require('../log.js');
+const logLevels = require('../enums/logLevels.js');
+
 let messagesData = [];
 
 let makeBoundTimedCollector = function(isIndexing, timeout, callback) {
@@ -20,12 +23,21 @@ let makeBoundTimedCollector = function(isIndexing, timeout, callback) {
         }
     };
 
+    function handleRealTimeResponse(status, response) {
+        if (status) {
+            log.send(logLevels.INFO, response);
+        } else {
+            log.send(logLevels.ERROR, response);
+        }
+
+    }
+
     function flush(queue) {
         clearTimeout(timer);
         timer = null;
         resetQueue();
         if (queue) {
-            callback(JSON.stringify(queue));
+            callback(JSON.stringify(queue), handleRealTimeResponse.bind(this));
         }
     }
 

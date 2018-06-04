@@ -99,44 +99,43 @@ class Search {
      * An array of messages is passed for indexing
      * it will be indexed in a temporary index folder
      * @param {Array} messages
-     * @returns {Promise}
+     * @param callback
      */
-    indexBatch(messages) {
-        return new Promise((resolve, reject) => {
-            if (!messages) {
-                log.send(logLevels.ERROR, 'Batch Indexing: Messages not provided');
-                reject(new Error('Batch Indexing: Messages are required'));
-                return;
-            }
+    indexBatch(messages, callback) {
+        if (typeof callback !== "function") {
+            return false;
+        }
 
-            try {
-                let msg = JSON.parse(messages);
-                if (!(msg instanceof Array)) {
-                    log.send(logLevels.ERROR, 'Batch Indexing: Messages must be an array');
-                    reject(new Error('Batch Indexing: Messages must be an array'));
-                    return;
-                }
-            } catch(e) {
-                log.send(logLevels.ERROR, 'Batch Indexing: parse error -> ' + e);
-                reject(new Error(e));
-                return;
-            }
+        if (!messages) {
+            log.send(logLevels.ERROR, 'Batch Indexing: Messages not provided');
+            return callback(false, 'Batch Indexing: Messages are required');
+        }
 
-            if (!this.isInitialized) {
-                log.send(logLevels.ERROR, 'Library not initialized');
-                reject(new Error('Library not initialized'));
-                return;
+        try {
+            let msg = JSON.parse(messages);
+            if (!(msg instanceof Array)) {
+                log.send(logLevels.ERROR, 'Batch Indexing: Messages must be an array');
+                return callback(false, 'Batch Indexing: Messages must be an array');
             }
+        } catch (e) {
+            log.send(logLevels.ERROR, 'Batch Indexing: parse error -> ' + e);
+            return callback(false, 'Batch Indexing parse error');
+        }
 
-            libSymphonySearch.symSEIndexMainRAMAsync(messages, function (err, res) {
-                if (err) {
-                    log.send(logLevels.ERROR, `IndexBatch: Error indexing messages to memory : ${err}`);
-                    reject(new Error('IndexBatch: Error indexing messages to memory '));
-                    return;
-                }
-                resolve(res);
-            });
+        if (!this.isInitialized) {
+            log.send(logLevels.ERROR, 'Library not initialized');
+            return callback(false, 'Library not initialized');
+        }
+
+        libSymphonySearch.symSEIndexMainRAMAsync(messages, (err, res) => {
+            if (err) {
+                log.send(logLevels.ERROR, `IndexBatch: Error indexing messages to memory : ${err}`);
+                return callback(false, 'IndexBatch: Error indexing messages to memory');
+            }
+            return callback(true, res);
         });
+
+        return null;
     }
 
     /**
@@ -161,34 +160,36 @@ class Search {
      * An array of messages to be indexed
      * in real time
      * @param message
+     * @param callback
      */
-    realTimeIndexing(message) {
+    realTimeIndexing(message, callback) {
+        if (typeof callback !== "function") {
+            return false;
+        }
 
         try {
             let msg = JSON.parse(message);
             if (!(msg instanceof Array)) {
-                log.send(logLevels.ERROR, 'RealTime Indexing: Messages must be an array real-time indexing');
-                return (new Error('RealTime Indexing: Messages must be an array'));
+                return callback(false, 'RealTime Indexing: Messages must be an array');
             }
         } catch(e) {
-            log.send(logLevels.ERROR, 'RealTime Indexing: parse error -> ' + e);
-            throw (new Error(e));
+            return callback(false, 'RealTime Indexing: parse error ');
         }
 
         if (!this.isInitialized) {
-            log.send(logLevels.ERROR, 'Library not initialized');
-            throw new Error('Library not initialized');
+            return callback(false, 'Library not initialized');
         }
 
         this.isRealTimeIndexing = true;
-        return libSymphonySearch.symSEIndexRealtimeRAMAsync(message, (err, result) => {
+        libSymphonySearch.symSEIndexRealtimeRAMAsync(message, (err, result) => {
             this.isRealTimeIndexing = false;
             if (err) {
-                log.send(logLevels.ERROR, 'RealTime Indexing: error -> ' + err);
-                throw new Error(err);
+                return callback(false, 'RealTime Indexing: error');
             }
-            return result;
+            return callback(true, result);
         });
+
+        return null;
     }
 
     /**
@@ -324,32 +325,39 @@ class Search {
     /**
      * returns the latest message timestamp
      * from the indexed data
-     * @returns {Promise}
+     * @param callback
      */
-    getLatestMessageTimestamp() {
-        return new Promise((resolve, reject) => {
-            if (!this.isInitialized) {
-                log.send(logLevels.ERROR, 'Library not initialized');
-                reject(new Error('Not initialized'));
-                return;
-            }
+    getLatestMessageTimestamp(callback) {
+        if (typeof callback !== "function") {
+            return false;
+        }
 
-            libSymphonySearch.symSEMainRAMIndexGetLastMessageTimestampAsync((err, res) => {
-                if (err) {
-                    log.send(logLevels.ERROR, 'Error getting the index timestamp ->' + err);
-                    reject(new Error(err));
-                }
-                const returnedResult = res;
-                try {
-                    let ret = ref.readCString(returnedResult);
-                    resolve(ret);
-                } finally {
-                    libSymphonySearch.symSEFreeResult(returnedResult);
-                }
-            });
+        if (!this.isInitialized) {
+            log.send(logLevels.ERROR, 'Library not initialized');
+            return callback(false, 'Not initialized');
+        }
+
+        libSymphonySearch.symSEMainRAMIndexGetLastMessageTimestampAsync((err, res) => {
+            if (err) {
+                log.send(logLevels.ERROR, 'Error getting the index timestamp ->' + err);
+                return callback(false, 'Error getting the index timestamp');
+            }
+            const returnedResult = res;
+            try {
+                let ret = ref.readCString(returnedResult);
+                return callback(true, ret);
+            } finally {
+                libSymphonySearch.symSEFreeResult(returnedResult);
+            }
         });
+
+        return null;
     }
 
+    /**
+     * This function clears the real-time index
+     * before starting the batch-indexing
+     */
     deleteRealTimeFolder() {
         libSymphonySearch.symSEClearRealtimeRAMIndex();
     }
