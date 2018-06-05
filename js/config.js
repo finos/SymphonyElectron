@@ -21,7 +21,15 @@ const configFileName = 'Symphony.config';
 let userConfig;
 let globalConfig;
 
-let ignoreSettings = ['minimizeOnClose', 'launchOnStartup', 'alwaysOnTop', 'url', 'memoryRefresh', 'bringToFront'];
+let ignoreSettings = [
+    'minimizeOnClose',
+    'launchOnStartup',
+    'alwaysOnTop',
+    'url',
+    'memoryRefresh',
+    'bringToFront',
+    'isCustomTitleBar'
+];
 
 /**
  * Tries to read given field from user config file, if field doesn't exist

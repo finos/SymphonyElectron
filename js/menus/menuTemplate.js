@@ -18,14 +18,15 @@ const configFields = [
     'alwaysOnTop',
     'notificationSettings',
     'bringToFront',
-    'memoryRefresh'
+    'memoryRefresh',
+    'isCustomTitleBar'
 ];
 
 let minimizeOnClose = false;
 let launchOnStartup = false;
 let isAlwaysOnTop = false;
 let bringToFront = false;
-let tileBarStyle = titleBarStyles.NATIVE_WITH_CUSTOM;
+let tileBarStyle = titleBarStyles.CUSTOM;
 
 let symphonyAutoLauncher;
 
@@ -327,7 +328,8 @@ function getTemplate(app) {
         }
     });
 
-    if (isMac) {
+    if (!isMac) {
+        /* eslint-disable no-param-reassign */
         template[index].submenu.push({
             label: 'Title Bar Style',
             submenu: [
@@ -337,18 +339,8 @@ function getTemplate(app) {
                     checked: tileBarStyle === titleBarStyles.NATIVE_WITH_CUSTOM,
                     click: function (item) {
                         item.menu.items[1].checked = false;
-                        item.menu.items[2].checked = false;
                         tileBarStyle = titleBarStyles.NATIVE_WITH_CUSTOM;
-                    }
-                },
-                {
-                    label: 'Native',
-                    type: 'checkbox',
-                    checked: tileBarStyle === titleBarStyles.NATIVE,
-                    click: function (item) {
-                        item.menu.items[0].checked = false;
-                        item.menu.items[2].checked = false;
-                        tileBarStyle = titleBarStyles.NATIVE;
+                        updateConfigField('isCustomTitleBar', false);
                     }
                 },
                 {
@@ -357,12 +349,13 @@ function getTemplate(app) {
                     checked: tileBarStyle === titleBarStyles.CUSTOM,
                     click: function (item) {
                         item.menu.items[0].checked = false;
-                        item.menu.items[1].checked = false;
-                        tileBarStyle = titleBarStyles.CUSTOM
+                        tileBarStyle = titleBarStyles.CUSTOM;
+                        updateConfigField('isCustomTitleBar', true);
                     }
                 }
             ]
         });
+        /* eslint-enable no-param-reassign */
 
         template[index].submenu.push({
             label: 'Quit Symphony',
@@ -417,6 +410,9 @@ function setCheckboxValues() {
                             case 'bringToFront':
                                 bringToFront = configData[key];
                                 break;
+                            case 'isCustomTitleBar':
+                                tileBarStyle = configData[key] ? titleBarStyles.CUSTOM : titleBarStyles.NATIVE_WITH_CUSTOM;
+                                break;
                             default:
                                 break;
                         }
@@ -461,8 +457,13 @@ function getMinimizeOnClose() {
     return minimizeOnClose;
 }
 
+function getTitleBarStyle() {
+    return tileBarStyle;
+}
+
 module.exports = {
     getTemplate: getTemplate,
     getMinimizeOnClose: getMinimizeOnClose,
-    setCheckboxValues: setCheckboxValues
+    setCheckboxValues: setCheckboxValues,
+    getTitleBarStyle: getTitleBarStyle
 };

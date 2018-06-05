@@ -11,7 +11,7 @@ const nodeURL = require('url');
 const querystring = require('querystring');
 const filesize = require('filesize');
 
-const { getTemplate, getMinimizeOnClose } = require('./menus/menuTemplate.js');
+const { getTemplate, getMinimizeOnClose, getTitleBarStyle } = require('./menus/menuTemplate.js');
 const loadErrors = require('./dialogs/showLoadError.js');
 const isInDisplayBounds = require('./utils/isInDisplayBounds.js');
 const getGuid = require('./utils/getGuid.js');
@@ -20,7 +20,7 @@ const logLevels = require('./enums/logLevels.js');
 const notify = require('./notify/electron-notify.js');
 const eventEmitter = require('./eventEmitter');
 const throttle = require('./utils/throttle.js');
-const { getConfigField, updateConfigField, readConfigFileSync } = require('./config.js');
+const { getConfigField, updateConfigField, readConfigFileSync, getMultipleConfigField } = require('./config.js');
 const { isMac, isNodeEnv, isWindows10, isWindowsOS } = require('./utils/misc');
 const { deleteIndexFolder } = require('./search/search.js');
 const { isWhitelisted, parseDomain } = require('./utils/whitelistHandler');
@@ -96,13 +96,13 @@ function getParsedUrl(appUrl) {
  * @param initialUrl
  */
 function createMainWindow(initialUrl) {
-    getConfigField('mainWinPos')
-        .then(winPos => {
-            doCreateMainWindow(initialUrl, winPos);
+    getMultipleConfigField([ 'mainWinPos', 'isCustomTitleBar' ])
+        .then(configData => {
+            doCreateMainWindow(initialUrl, configData.mainWinPos, configData.isCustomTitleBar);
         })
         .catch(() => {
             // failed use default bounds and frame
-            doCreateMainWindow(initialUrl, null);
+            doCreateMainWindow(initialUrl, null, false);
         });
 }
 
@@ -110,17 +110,17 @@ function createMainWindow(initialUrl) {
  * Creates the main window with bounds
  * @param initialUrl
  * @param initialBounds
+ * @param isCustomTitleBar
  */
-function doCreateMainWindow(initialUrl, initialBounds) {
+function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     let url = initialUrl;
     let key = getGuid();
 
     const config = readConfigFileSync();
 
     // condition whether to enable custom Windows 10 title bar
-    const isCustomTitleBarEnabled = config
-        && typeof config.isCustomTitleBar === 'boolean'
-        && config.isCustomTitleBar
+    const isCustomTitleBarEnabled = typeof isCustomTitleBar === 'boolean'
+        && isCustomTitleBar
         && isWindows10();
     log.send(logLevels.INFO, `we are configuring a custom title bar for windows -> ${isCustomTitleBarEnabled}`);
     
@@ -224,10 +224,11 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         initCrashReporterRenderer(mainWindow, { process: 'render | main window' });
 
         url = mainWindow.webContents.getURL();
-        if (isCustomTitleBarEnabled) {
+        if (isCustomTitleBarEnabled || isWindows10()) {
             mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/windowsTitleBar/style.css'), 'utf8').toString());
             // This is required to initiate Windows title bar only after insertCSS
-            mainWindow.webContents.send('initiate-windows-title-bar');
+            const titleBarStyle = getTitleBarStyle();
+            mainWindow.webContents.send('initiate-windows-title-bar', titleBarStyle);
         }
 
         if (!isOnline) {
