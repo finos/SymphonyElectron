@@ -11,8 +11,13 @@ let protocolUrl;
  * @param {String} uri - the uri opened in the format 'symphony://...'
  */
 function processProtocolAction(uri) {
-    log.send(logLevels.INFO, 'protocol action, uri=' + uri);
-    if (protocolWindow && uri && uri.startsWith('symphony://')) {
+    log.send(logLevels.INFO, `protocol action, uri ${uri}`);
+    if (!protocolWindow) {
+        log.send(logLevels.INFO, `protocol window not yet initialized, caching the uri ${uri}`);
+        setProtocolUrl(uri);
+        return;
+    }
+    if (uri && uri.startsWith('symphony://')) {
         protocolWindow.send('protocol-action', uri);
     }
 }
@@ -29,7 +34,9 @@ function setProtocolWindow(win) {
  * checks to see if the app was opened by a uri
  */
 function checkProtocolAction() {
+    log.send(logLevels.INFO, `checking if we have a cached protocol url`);
     if (protocolUrl) {
+        log.send(logLevels.INFO, `found a cached protocol url, processing it!`);
         processProtocolAction(protocolUrl);
         protocolUrl = undefined;
     }

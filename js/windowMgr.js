@@ -20,10 +20,10 @@ const logLevels = require('./enums/logLevels.js');
 const notify = require('./notify/electron-notify.js');
 const eventEmitter = require('./eventEmitter');
 const throttle = require('./utils/throttle.js');
-const { getConfigField, updateConfigField, getGlobalConfigField, readConfigFileSync } = require('./config.js');
+const { getConfigField, updateConfigField, readConfigFileSync } = require('./config.js');
 const { isMac, isNodeEnv, isWindows10, isWindowsOS } = require('./utils/misc');
 const { deleteIndexFolder } = require('./search/search.js');
-const { isWhitelisted } = require('./utils/whitelistHandler');
+const { isWhitelisted, parseDomain } = require('./utils/whitelistHandler');
 const { initCrashReporterMain, initCrashReporterRenderer } = require('./crashReporter.js');
 
 // show dialog when certificate errors occur
@@ -55,6 +55,9 @@ const MIN_HEIGHT = 300;
 // Default window size for pop-out windows
 const DEFAULT_WIDTH = 300;
 const DEFAULT_HEIGHT = 600;
+
+// Certificate transparency whitelist
+let ctWhitelist = [];
 
 /**
  * Adds a window key
@@ -93,32 +96,38 @@ function getParsedUrl(appUrl) {
  * @param initialUrl
  */
 function createMainWindow(initialUrl) {
-    Promise.all([
-        getConfigField('mainWinPos'),
-        getGlobalConfigField('isCustomTitleBar')
-    ]).then((values) => {
-        doCreateMainWindow(initialUrl, values[ 0 ], values[ 1 ]);
-    }).catch(() => {
-        // failed use default bounds and frame
-        doCreateMainWindow(initialUrl, null, false);
-    });
+    getConfigField('mainWinPos')
+        .then(winPos => {
+            doCreateMainWindow(initialUrl, winPos);
+        })
+        .catch(() => {
+            // failed use default bounds and frame
+            doCreateMainWindow(initialUrl, null);
+        });
 }
 
 /**
  * Creates the main window with bounds
  * @param initialUrl
  * @param initialBounds
- * @param isCustomTitleBar {Boolean} - Global config value weather to enable custom title bar
  */
-function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
+function doCreateMainWindow(initialUrl, initialBounds) {
     let url = initialUrl;
     let key = getGuid();
-    // condition whether to enable custom Windows 10 title bar
-    const isCustomTitleBarEnabled = typeof isCustomTitleBar === 'boolean' && isCustomTitleBar && isWindows10();
 
-    log.send(logLevels.INFO, 'creating main window url: ' + url);
+    const config = readConfigFileSync();
+
+    // condition whether to enable custom Windows 10 title bar
+    const isCustomTitleBarEnabled = config
+        && typeof config.isCustomTitleBar === 'boolean'
+        && config.isCustomTitleBar
+        && isWindows10();
+    log.send(logLevels.INFO, `we are configuring a custom title bar for windows -> ${isCustomTitleBarEnabled}`);
     
-    let config = readConfigFileSync();
+    ctWhitelist = config && config.ctWhitelist;
+    log.send(logLevels.INFO, `we are configuring certificate transparency whitelist for the domains -> ${ctWhitelist}`);
+    
+    log.send(logLevels.INFO, `creating main window for ${url}`);
     
     if (config && config !== null && config.customFlags) {
         
@@ -151,7 +160,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
     // if bounds if not fully contained in some display then use default size
     // and position.
-    if (!isInDisplayBounds(bounds)) {
+    if (!isInDisplayBounds(bounds) || initialBounds.isMaximized || initialBounds.isFullScreen) {
         bounds = null;
     }
 
@@ -180,9 +189,21 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     mainWindow = new BrowserWindow(newWinOpts);
     mainWindow.winName = 'main';
 
-    let throttledMainWinBoundsChange = throttle(5000, saveMainWinBounds);
+    let throttledMainWinBoundsChange = throttle(1000, saveMainWinBounds);
     mainWindow.on('move', throttledMainWinBoundsChange);
     mainWindow.on('resize', throttledMainWinBoundsChange);
+
+    if (initialBounds && !isNodeEnv) {
+        // maximizes the application if previously maximized
+        if (initialBounds.isMaximized) {
+            mainWindow.maximize();
+        }
+
+        // Sets the application to full-screen if previously set to full-screen
+        if (isMac && initialBounds.isFullScreen) {
+            mainWindow.setFullScreen(true);
+        }
+    }
 
     function retry() {
         if (!isOnline) {
@@ -306,6 +327,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
     // open external links in default browser - a tag with href='_blank' or window.open
     mainWindow.webContents.on('new-window', handleNewWindow);
+    mainWindow.webContents.session.setCertificateVerifyProc(handleCertificateTransparencyChecks);
 
     function handleNewWindow(event, newWinUrl, frameName, disposition, newWinOptions) {
         
@@ -395,21 +417,6 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                     browserWin.winName = frameName;
                     browserWin.setAlwaysOnTop(alwaysOnTop);
 
-                    let handleChildWindowClosed = () => {
-                        removeWindowKey(newWinKey);
-                        browserWin.removeListener('move', throttledBoundsChange);
-                        browserWin.removeListener('resize', throttledBoundsChange);
-                    };
-
-                    browserWin.once('closed', () => {
-                        handleChildWindowClosed();
-                    });
-
-                    browserWin.on('close', () => {
-                        browserWin.webContents.removeListener('new-window', handleNewWindow);
-                        browserWin.webContents.removeListener('crashed', handleChildWindowCrashEvent);
-                    });
-
                     let handleChildWindowCrashEvent = (e) => {
                         const options = {
                             type: 'error',
@@ -450,7 +457,24 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                     browserWin.on('move', throttledBoundsChange);
                     browserWin.on('resize', throttledBoundsChange);
     
+                    let handleChildWindowClosed = () => {
+                        removeWindowKey(newWinKey);
+                        browserWin.removeListener('move', throttledBoundsChange);
+                        browserWin.removeListener('resize', throttledBoundsChange);
+                    };
+    
+                    browserWin.on('close', () => {
+                        browserWin.webContents.removeListener('new-window', handleNewWindow);
+                        browserWin.webContents.removeListener('crashed', handleChildWindowCrashEvent);
+                    });
+    
+                    browserWin.once('closed', () => {
+                        handleChildWindowClosed();
+                    });
+                    
                     handlePermissionRequests(browserWin.webContents);
+    
+                    browserWin.webContents.session.setCertificateVerifyProc(handleCertificateTransparencyChecks);
                 }
             });
         } else {
@@ -494,32 +518,35 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
      * @param webContents Web contents of the window
      */
     function handlePermissionRequests(webContents) {
-        
+
         let session = webContents.session;
-        
+
         getConfigField('permissions')
             .then((permissions) => {
-                
+
                 if (!permissions) {
                     log.send(logLevels.ERROR, 'permissions configuration is invalid, so, everything will be true by default!');
                     return;
                 }
-                
+
                 session.setPermissionRequestHandler((sessionWebContents, permission, callback) => {
-                    
+
                     function handleSessionPermissions(userPermission, message, cb) {
-                        
+
                         log.send(logLevels.INFO, 'permission is -> ' + userPermission);
-                        
+
                         if (!userPermission) {
                             let fullMessage = `Your administrator has disabled ${message}. Please contact your admin for help.`;
-                            electron.dialog.showErrorBox('Permission Denied!', fullMessage);
+                            const browserWindow = BrowserWindow.getFocusedWindow();
+                            if (browserWindow && !browserWindow.isDestroyed()) {
+                                electron.dialog.showMessageBox(browserWindow, {type: 'error', title: 'Permission Denied!', message: fullMessage});
+                            }
                         }
-                        
+
                         return cb(userPermission);
-                        
+
                     }
-                    
+
                     let PERMISSION_MEDIA = 'media';
                     let PERMISSION_LOCATION = 'geolocation';
                     let PERMISSION_NOTIFICATIONS = 'notifications';
@@ -527,40 +554,58 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                     let PERMISSION_POINTER_LOCK = 'pointerLock';
                     let PERMISSION_FULL_SCREEN = 'fullscreen';
                     let PERMISSION_OPEN_EXTERNAL = 'openExternal';
-                    
+
                     switch (permission) {
-                        
+
                         case PERMISSION_MEDIA:
                             return handleSessionPermissions(permissions.media, 'sharing your camera, microphone, and speakers', callback);
-                        
+
                         case PERMISSION_LOCATION:
                             return handleSessionPermissions(permissions.geolocation, 'sharing your location', callback);
-                        
+
                         case PERMISSION_NOTIFICATIONS:
                             return handleSessionPermissions(permissions.notifications, 'notifications', callback);
-                        
+
                         case PERMISSION_MIDI_SYSEX:
                             return handleSessionPermissions(permissions.midiSysex, 'MIDI Sysex', callback);
-                        
+
                         case PERMISSION_POINTER_LOCK:
                             return handleSessionPermissions(permissions.pointerLock, 'Pointer Lock', callback);
-                        
+
                         case PERMISSION_FULL_SCREEN:
                             return handleSessionPermissions(permissions.fullscreen, 'Full Screen', callback);
-                        
+
                         case PERMISSION_OPEN_EXTERNAL:
                             return handleSessionPermissions(permissions.openExternal, 'Opening External App', callback);
-                        
+
                         default:
                             return callback(false);
                     }
-                    
+
                 });
-                
+
             }).catch((error) => {
                 log.send(logLevels.ERROR, 'unable to get permissions configuration, so, everything will be true by default! ' + error);
             })
+
+    }
+    
+    function handleCertificateTransparencyChecks(request, callback) {
         
+        const { hostname: hostUrl, errorCode } = request;
+        
+        if (errorCode === 0) {
+            return callback(0);
+        }
+        
+        let { tld, domain } = parseDomain(hostUrl);
+        let host = domain + tld;
+        
+        if (ctWhitelist && Array.isArray(ctWhitelist) && ctWhitelist.length > 0 && ctWhitelist.indexOf(host) > -1) {
+            return callback(0);
+        }
+        
+        return callback(-2);
     }
 
 }
@@ -577,6 +622,12 @@ app.on('before-quit', function () {
  */
 function saveMainWinBounds() {
     let newBounds = getWindowSizeAndPosition(mainWindow);
+
+    // set application full-screen and maximized state
+    if (mainWindow && !mainWindow.isDestroyed()) {
+        newBounds.isMaximized = mainWindow.isMaximized();
+        newBounds.isFullScreen = mainWindow.isFullScreen();
+    }
 
     if (newBounds) {
         updateConfigField('mainWinPos', newBounds);
@@ -747,28 +798,31 @@ function openUrlInDefaultBrowser(urlToOpen) {
 
 /**
  * Called when an event is received from menu
- * @param boolean weather to enable or disable alwaysOnTop.
+ * @param {boolean} boolean whether to enable or disable alwaysOnTop.
+ * @param {boolean} shouldActivateMainWindow whether to activate main window
  */
-function isAlwaysOnTop(boolean) {
+function isAlwaysOnTop(boolean, shouldActivateMainWindow = true) {
     alwaysOnTop = boolean;
     let browserWins = BrowserWindow.getAllWindows();
     if (browserWins.length > 0) {
-        browserWins.forEach(function (browser) {
-            browser.setAlwaysOnTop(boolean);
-        });
+        browserWins
+            .filter((browser) => typeof browser.notfyObj !== 'object')
+            .forEach(function (browser) {
+                browser.setAlwaysOnTop(boolean);
+            });
 
         // An issue where changing the alwaysOnTop property
         // focus the pop-out window
-        // Issue - Electron-209
-        if (mainWindow && mainWindow.winName) {
+        // Issue - Electron-209/470
+        if (mainWindow && mainWindow.winName && shouldActivateMainWindow) {
             activate(mainWindow.winName);
         }
     }
 }
 
 // node event emitter to update always on top
-eventEmitter.on('isAlwaysOnTop', (boolean) => {
-    isAlwaysOnTop(boolean);
+eventEmitter.on('isAlwaysOnTop', (params) => {
+    isAlwaysOnTop(params.isAlwaysOnTop, params.shouldActivateMainWindow);
 });
 
 // node event emitter for notification settings

@@ -2,7 +2,7 @@
 
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
-const { getMainWindow, setIsAutoReload } = require('./windowMgr');
+const { getMainWindow } = require('./windowMgr');
 const systemIdleTime = require('@paulcbetts/system-idle-time');
 const { getConfigField } = require('./config');
 

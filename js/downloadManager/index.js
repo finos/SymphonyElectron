@@ -27,8 +27,9 @@ function openFile(id) {
     });
     if (fileIndex !== -1) {
         let openResponse = remote.shell.openExternal(`file:///${local.downloadItems[fileIndex].savedPath}`);
-        if (!openResponse) {
-            remote.dialog.showErrorBox("File not found", 'The file you are trying to open cannot be found in the specified path.');
+        let focusedWindow = remote.BrowserWindow.getFocusedWindow();
+        if (!openResponse && focusedWindow && !focusedWindow.isDestroyed()) {
+            remote.dialog.showMessageBox(focusedWindow, {type: 'error', title: 'File not found', message: 'The file you are trying to open cannot be found in the specified path.'});
         }
     }
 }
@@ -43,8 +44,9 @@ function showInFinder(id) {
     });
     if (showFileIndex !== -1) {
         let showResponse = remote.shell.showItemInFolder(local.downloadItems[showFileIndex].savedPath);
-        if (!showResponse) {
-            remote.dialog.showErrorBox("File not found", 'The file you are trying to access cannot be found in the specified path.');
+        let focusedWindow = remote.BrowserWindow.getFocusedWindow();
+        if (!showResponse && focusedWindow && !focusedWindow.isDestroyed()) {
+            remote.dialog.showMessageBox(focusedWindow, {type: 'error', title: 'File not found', message: 'The file you are trying to open cannot be found in the specified path.'});
         }
     }
 }

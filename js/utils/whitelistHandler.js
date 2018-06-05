@@ -158,6 +158,7 @@ function parseDomain(url) {
 
 module.exports = {
     isWhitelisted,
+    parseDomain,
 
     // items below here are only exported for testing, do NOT use!
     checkWhitelist

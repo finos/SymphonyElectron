@@ -368,8 +368,8 @@
     <ROW Dialog_="AdminInstallPointDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="900" MsiKey="AdminInstallPointDlg#BannerBitmap"/>
     <ROW Dialog_="AdminWelcomeDlg" Control="Title" Type="Text" X="132" Y="10" Width="220" Height="47" Attributes="196611" Text="Welcome to the [ProductName] [Wizard]" TextStyle="VerdanaBold13" Order="500" TextLocId="Control.Text.AdminWelcomeDlg#Title" MsiKey="AdminWelcomeDlg#Title"/>
     <ROW Dialog_="AdminWelcomeDlg" Control="Description" Type="Text" X="132" Y="61" Width="220" Height="40" Attributes="196611" Text="The [Wizard] will create a server image of [ProductName], at a specified network location.  Click &quot;[Text_Next]&quot; to continue or &quot;Cancel&quot; to exit the [Wizard]." Order="600" TextLocId="Control.Text.AdminWelcomeDlg#Description" MsiKey="AdminWelcomeDlg#Description"/>
-    <ROW Dialog_="AdvanceSettings" Control="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Attributes="3" Text="OK" Order="100" TextLocId="-" Options="1"/>
-    <ROW Dialog_="AdvanceSettings" Control="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Cancel]" Order="200" TextLocId="-" Options="1"/>
+    <ROW Dialog_="AdvanceSettings" Control="Next" Type="PushButton" X="304" Y="243" Width="56" Height="17" Attributes="3" Text="OK" Order="100" TextLocId="-" Options="1"/>
+    <ROW Dialog_="AdvanceSettings" Control="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Attributes="2" Text="[ButtonText_Cancel]" Order="200" TextLocId="-" Options="1"/>
     <ROW Dialog_="AdvanceSettings" Control="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Attributes="2" Text="[ButtonText_Back]" Order="300" TextLocId="-" Options="1"/>
     <ROW Dialog_="AdvanceSettings" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="400"/>
     <ROW Dialog_="AdvanceSettings" Control="BannerLine" Type="Line" X="0" Y="44" Width="372" Height="0" Attributes="1" Order="500"/>
@@ -407,7 +407,7 @@
     <ROW Dialog_="ExitDialog" Control="Title" Type="Text" X="132" Y="10" Width="220" Height="47" Attributes="196611" Text="Installation of [ProductName] is complete" TextStyle="VerdanaBold13" Order="600" TextLocId="Control.Text.ExitDialog#Title" MsiKey="ExitDialog#Title"/>
     <ROW Dialog_="ExitDialog" Control="LaunchProdText" Type="Text" X="148" Y="170" Width="220" Height="20" Attributes="196611" Text="Launch [ProductName]" Order="700" TextLocId="Control.Text.ExitDialog#LaunchProdText" MsiKey="ExitDialog#LaunchProdText"/>
     <ROW Dialog_="ExitDialog" Control="LaunchProdCheckBox" Type="CheckBox" X="135" Y="170" Width="10" Height="10" Attributes="3" Property="RUNAPPLICATION" Order="800" MsiKey="ExitDialog#LaunchProdCheckBox" Options="1"/>
-    <ROW Dialog_="ExitDialog" Control="Description" Type="Text" X="132" Y="60" Width="220" Height="20" Attributes="196611" Text="Click &quot;Finish&quot;to get started!" Order="900" TextLocId="Control.Text.ExitDialog#Description" MsiKey="ExitDialog#Description"/>
+    <ROW Dialog_="ExitDialog" Control="Description" Type="Text" X="132" Y="60" Width="220" Height="20" Attributes="196611" Text="Click &quot;Finish&quot; to get started!" Order="900" TextLocId="Control.Text.ExitDialog#Description" MsiKey="ExitDialog#Description"/>
     <ROW Dialog_="ExitDialog" Control="BottomLine" Type="Line" X="0" Y="234" Width="372" Height="0" Attributes="1" Order="1000" MsiKey="ExitDialog#BottomLine"/>
     <ROW Dialog_="FatalError" Control="Title" Type="Text" X="132" Y="10" Width="220" Height="47" Attributes="196611" Text="The [ProductName] [Wizard] ended prematurely" TextStyle="VerdanaBold13" Order="800" TextLocId="Control.Text.FatalError#Title" MsiKey="FatalError#Title"/>
     <ROW Dialog_="FilesInUse" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="400" MsiKey="FilesInUse#BannerBitmap"/>
@@ -425,6 +425,7 @@
     <ROW Dialog_="InstallTypeDlg" Control="Text_3" Type="Text" X="135" Y="60" Width="203" Height="12" Attributes="196611" Text="- Collaborate securely" Order="1100" TextLocId="Control.Text.WelcomeDlg#Description"/>
     <ROW Dialog_="InstallTypeDlg" Control="Text_4" Type="Text" X="135" Y="72" Width="198" Height="12" Attributes="196611" Text="- Communicate via messages, voice, and video" Order="1200" TextLocId="Control.Text.WelcomeDlg#Description"/>
     <ROW Dialog_="InstallTypeDlg" Control="Text_5" Type="Text" X="135" Y="84" Width="204" Height="19" Attributes="196611" Text="- Connect with colleagues and coworkers" Order="1300" TextLocId="Control.Text.WelcomeDlg#Description"/>
+    <ROW Dialog_="InstallationDlg" Control="InstallationDlgDialogInitializer" Type="DialogInitializer" X="0" Y="0" Width="0" Height="0" Attributes="0" Order="-1" TextLocId="-" HelpLocId="-" ExtDataLocId="-"/>
     <ROW Dialog_="InstallationDlg" Control="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Attributes="3" Text="Next &gt;" Order="100" TextLocId="-" Options="1"/>
     <ROW Dialog_="InstallationDlg" Control="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Cancel]" Order="200" TextLocId="-" Options="1"/>
     <ROW Dialog_="InstallationDlg" Control="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" Attributes="1048577" Text="[DialogBitmap]" Order="300"/>
@@ -433,7 +434,7 @@
     <ROW Dialog_="InstallationDlg" Control="FolderEdit" Type="PathEdit" X="129" Y="106" Width="134" Height="18" Attributes="7" Property="APPDIR" Help="|" Order="600" HelpLocId="Control.Help.FolderDlg#FolderEdit"/>
     <ROW Dialog_="InstallationDlg" Control="Browse" Type="PushButton" X="269" Y="106" Width="90" Height="18" Attributes="3" Text="[ButtonText_Browse]" Help="|" Order="700" TextLocId="-" HelpLocId="Control.Help.FolderDlg#Browse"/>
     <ROW Dialog_="InstallationDlg" Control="Edit_POD_URL" Type="Edit" X="128" Y="157" Width="231" Height="18" Attributes="3" Property="POD_URL" Text="{260}" Order="800"/>
-    <ROW Dialog_="InstallationDlg" Control="Text_2" Type="Text" X="129" Y="142" Width="131" Height="11" Attributes="65539" Property="TEXT_2_PROP_1" Text="[ProductName] POD URL:" Order="900"/>
+    <ROW Dialog_="InstallationDlg" Control="Text_2" Type="Text" X="129" Y="142" Width="131" Height="11" Attributes="65539" Property="TEXT_2_PROP_1" Text="[ProductName] Pod URL:" Order="900"/>
     <ROW Dialog_="InstallationDlg" Control="Text_1" Type="Text" X="129" Y="52" Width="230" Height="23" Attributes="65539" Property="TEXT_1_PROP_3" Text="Click Install to install [ProductName] in the folder below. To install to a different folder, enter it below or click Browse." Order="1000"/>
     <ROW Dialog_="InstallationDlg" Control="Text_3" Type="Text" X="129" Y="90" Width="75" Height="11" Attributes="65539" Property="TEXT_3_PROP_4" Text="&amp;Folder:" Order="1100"/>
     <ROW Dialog_="MaintenanceTypeDlg" Control="ChangeLabel" Type="Text" X="105" Y="65" Width="100" Height="10" Attributes="2" Text="&amp;Modify" TextStyle="[DlgTitleFont]" Order="100" TextLocId="Control.Text.MaintenanceTypeDlg#ChangeLabel" MsiKey="MaintenanceTypeDlg#ChangeLabel"/>
@@ -494,6 +495,13 @@
     <ROW Dialog_="SettingsDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Help="|" Order="1800" HelpLocId="Control.Help.FolderDlg#BannerBitmap"/>
     <ROW Dialog_="SettingsDlg" Control="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Attributes="196611" Text="Basic Settings" TextStyle="[DlgTitleFont]" Order="1900" TextLocId="Control.Text.FolderDlg#Title"/>
     <ROW Dialog_="SettingsDlg" Control="Description" Type="Text" X="17" Y="21" Width="272" Height="14" Attributes="196611" Text="Select features for your users." Order="2000" TextLocId="Control.Text.FolderDlg#Description"/>
+    <ROW Dialog_="UrlValidationDlg" Control="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Attributes="1" Text="[ButtonText_Next]" Order="100" TextLocId="-" Options="1"/>
+    <ROW Dialog_="UrlValidationDlg" Control="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Attributes="2" Text="[ButtonText_Cancel]" Order="200" TextLocId="-" Options="1"/>
+    <ROW Dialog_="UrlValidationDlg" Control="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" Attributes="1048577" Text="[DialogBitmap]" Order="300"/>
+    <ROW Dialog_="UrlValidationDlg" Control="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Back]" Order="400" TextLocId="-" Options="1"/>
+    <ROW Dialog_="UrlValidationDlg" Control="Title" Type="Text" X="135" Y="20" Width="220" Height="60" Attributes="196611" Text="Invalid Pod URL" TextStyle="VerdanaBold13" Order="500"/>
+    <ROW Dialog_="UrlValidationDlg" Control="Description" Type="Text" X="135" Y="86" Width="220" Height="60" Attributes="196611" Text="Sorry, the pod URL you entered is invalid. Please return to the previous screen and re-enter it." Order="600"/>
+    <ROW Dialog_="UrlValidationDlg" Control="BottomLine" Type="Line" X="0" Y="234" Width="372" Height="0" Attributes="1" Order="700"/>
     <ROW Dialog_="UserExit" Control="Title" Type="Text" X="132" Y="10" Width="220" Height="47" Attributes="196611" Text="The [ProductName] [Wizard] was interrupted" TextStyle="VerdanaBold13" Order="500" TextLocId="Control.Text.UserExit#Title" MsiKey="UserExit#Title"/>
     <ROW Dialog_="VerifyReadyDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="300" MsiKey="VerifyReadyDlg#BannerBitmap"/>
     <ROW Dialog_="VerifyReadyDlg" Control="Logo" Type="Text" X="5" Y="228" Width="39" Height="12" Attributes="1" Text="Symphony" Order="500" TextLocId="Control.Text.VerifyReadyDlg#Logo" MsiKey="VerifyReadyDlg#Logo"/>
@@ -540,7 +548,7 @@
     <ROW Dialog_="SettingsDlg" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="100"/>
     <ROW Dialog_="SettingsDlg" Control_="Back" Event="[ButtonText_Next]" Argument="[AI_ButtonText_Next_Orig]" Condition="AI_INSTALL" Ordering="0" Options="2"/>
     <ROW Dialog_="InstallationDlg" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="100"/>
-    <ROW Dialog_="InstallationDlg" Control_="Next" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="3"/>
+    <ROW Dialog_="InstallationDlg" Control_="Next" Event="EndDialog" Argument="Return" Condition="AI_INSTALL AND ( INVALID_POD_URL = &quot;valid&quot; )" Ordering="5"/>
     <ROW Dialog_="InstallationDlg" Control_="Browse" Event="[_BrowseProperty]" Argument="APPDIR" Condition="1" Ordering="100"/>
     <ROW Dialog_="InstallationDlg" Control_="Browse" Event="SpawnDialog" Argument="BrowseDlg" Condition="1" Ordering="200"/>
     <ROW Dialog_="AdvanceSettings" Control_="Cancel" Event="EndDialog" Argument="Return" Condition="1" Ordering="0"/>
@@ -551,7 +559,12 @@
     <ROW Dialog_="SettingsDlg" Control_="Next" Event="DoAction" Argument="PodUrlValidation" Condition="AI_INSTALL" Ordering="2"/>
     <ROW Dialog_="SettingsDlg" Control_="Back" Event="[Text_Next]" Argument="[AI_Text_Next_Orig]" Condition="AI_INSTALL" Ordering="1" Options="2"/>
     <ROW Dialog_="InstallationDlg" Control_="Next" Event="SetTargetPath" Argument="APPDIR" Condition="AI_INSTALL" Ordering="1"/>
-    <ROW Dialog_="InstallationDlg" Control_="Next" Event="NewDialog" Argument="SettingsDlg" Condition="AI_INSTALL" Ordering="2"/>
+    <ROW Dialog_="InstallationDlg" Control_="Next" Event="NewDialog" Argument="SettingsDlg" Condition="AI_INSTALL AND ( INVALID_POD_URL = &quot;valid&quot; )" Ordering="4"/>
+    <ROW Dialog_="UrlValidationDlg" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="100"/>
+    <ROW Dialog_="InstallationDlg" Control_="InstallationDlgDialogInitializer" Event="DoAction" Argument="PodUrlValidation" Condition="AI_INSTALL" Ordering="0"/>
+    <ROW Dialog_="InstallationDlg" Control_="Next" Event="DoAction" Argument="PodUrlValidation" Condition="AI_INSTALL" Ordering="2"/>
+    <ROW Dialog_="InstallationDlg" Control_="Next" Event="SpawnDialog" Argument="UrlValidationDlg" Condition="AI_INSTALL AND ( INVALID_POD_URL = &quot;invalid&quot; )" Ordering="3"/>
+    <ROW Dialog_="UrlValidationDlg" Control_="Back" Event="EndDialog" Argument="Return" Condition="1" Ordering="0"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCreateFolderComponent">
     <ROW Directory_="Symphony_Dir" Component_="Symphony" ManualDelete="false"/>
@@ -586,6 +599,7 @@
     <ROW Dialog="AdvanceSettings" HCentering="50" VCentering="50" Width="370" Height="270" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel"/>
     <ROW Dialog="InstallationDlg" HCentering="50" VCentering="50" Width="370" Height="270" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel"/>
     <ROW Dialog="SettingsDlg" HCentering="50" VCentering="50" Width="370" Height="270" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel"/>
+    <ROW Dialog="UrlValidationDlg" HCentering="50" VCentering="50" Width="370" Height="270" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiIconsComponent">
     <ROW Name="icon.exe" SourcePath="..\..\build\icon.ico" Index="0"/>
@@ -607,7 +621,7 @@
     <ROW Action="AI_ResolveKnownFolders" Sequence="52"/>
     <ROW Action="AI_DpiContentScale" Sequence="51"/>
     <ROW Action="ExecuteAction" Sequence="1299" SeqType="0" MsiKey="ExecuteAction"/>
-    <ROW Action="InstallTypeDlg" Condition="AI_INSTALL" Sequence="1227" SeqType="3" MsiKey="WelcomeDlg"/>
+    <ROW Action="InstallTypeDlg" Condition="AI_INSTALL" Sequence="1224" SeqType="3" MsiKey="WelcomeDlg"/>
     <ROW Action="UninstallPreviousVersions" Sequence="1281"/>
     <ROW Action="AI_SETMIXINSTLOCATION" Sequence="748"/>
     <ROW Action="SettingsDlg" Condition="AI_INSTALL" Sequence="1232" SeqType="3"/>

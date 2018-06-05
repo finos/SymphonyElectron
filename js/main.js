@@ -228,6 +228,16 @@ function setupThenOpenMainWindow() {
     isAppAlreadyOpen = true;
     getUrlAndCreateMainWindow();
     
+    // Allows a developer to set custom user data path from command line when
+    // launching the app. Mostly used for running automation tests with
+    // multiple instances
+    let customDataArg = getCmdLineArg(process.argv, '--userDataPath=', false);
+    let customDataFolder = customDataArg && customDataArg.substring(customDataArg.indexOf('=') + 1);
+    
+    if (customDataArg && customDataFolder) {
+        app.setPath('userData', customDataFolder);
+    }
+    
     // Event that fixes the remote desktop issue in Windows
     // by repositioning the browser window
     electron.screen.on('display-removed', windowMgr.verifyDisplays);
@@ -291,9 +301,12 @@ function setupFirstTimeLaunch() {
  * @returns {Promise}
  */
 function setStartup(lStartup) {
+    log.send(logLevels.INFO, `launch on startup parameter value is ${lStartup}`);
     return new Promise((resolve) => {
-        let launchOnStartup = (lStartup === 'true');
+        let launchOnStartup = (String(lStartup) === 'true');
+        log.send(logLevels.INFO, `launchOnStartup value is ${launchOnStartup}`);
         if (launchOnStartup) {
+            log.send(logLevels.INFO, `enabling launch on startup`);
             symphonyAutoLauncher.enable();
             return resolve();
         }
@@ -318,8 +331,8 @@ function getUrlAndCreateMainWindow() {
 
     getConfigField('url')
         .then(createWin).catch(function(err) {
-            let title = 'Error loading configuration';
-            electron.dialog.showErrorBox(title, title + ': ' + err);
+            log.send(logLevels.ERROR, `unable to create main window -> ${err}`);
+            app.quit();
         });
 }
 
@@ -354,17 +367,15 @@ function processProtocolAction(argv) {
     }
 
     let protocolUri = getCmdLineArg(argv, 'symphony://', false);
+    log.send(logLevels.INFO, `Trying to process a protocol action for uri ${protocolUri}`);
 
     if (protocolUri) {
-
         const parsedURL = urlParser.parse(protocolUri);
-
         if (!parsedURL.protocol || !parsedURL.slashes) {
             return;
         }
-
+        log.send(logLevels.INFO, `Parsing protocol url successful for ${parsedURL}`);
         handleProtocolAction(protocolUri);
-
     }
 }
 
@@ -374,10 +385,12 @@ function processProtocolAction(argv) {
  */
 function handleProtocolAction(uri) {
     if (!isAppAlreadyOpen) {
+        log.send(logLevels.INFO, `App started by protocol url ${uri}. We are caching this to be processed later!`);
         // app is opened by the protocol url, cache the protocol url to be used later
         protocolHandler.setProtocolUrl(uri);
     } else {
         // app is already open, so, just trigger the protocol action method
+        log.send(logLevels.INFO, `App opened by protocol url ${uri}`);
         protocolHandler.processProtocolAction(uri);
     }
 }
