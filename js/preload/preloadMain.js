@@ -74,11 +74,13 @@ const throttledSetIsInMeetingStatus = throttle(1000, function(isInMeeting) {
 // Gathers renderer process memory
 setInterval(() => {
     const memory = process.getProcessMemoryInfo();
+    const cpuUsage = process.getCPUUsage();
     local.ipcRenderer.send(apiName, {
         cmd: apiCmds.optimizeMemoryConsumption,
-        memory: memory
+        memory: memory,
+        cpuUsage: cpuUsage
     });
-}, 1000 * 60 * 4);
+}, 1000 * 60 * 15);
 
 createAPI();
 

@@ -8,8 +8,8 @@ const { getConfigField } = require('./config');
 
 const maxMemory = 800;
 
-let maxIdleTime = 4 * 60 * 1000;
-let reloadThreshold = 30 * 60 * 1000;
+let maxIdleTime = 15 * 60 * 1000;
+let reloadThreshold = 60 * 60 * 1000;
 let reloadedTimeStamp;
 let isInMeeting = false;
 
@@ -35,12 +35,18 @@ function gatherMemory() {
  * application to free up some memory consumption
  * 
  * @param memoryInfo
+ * @param cpuUsage
  */
-function optimizeMemory(memoryInfo) {
+function optimizeMemory(memoryInfo, cpuUsage) {
     const memoryConsumed = (memoryInfo && memoryInfo.workingSetSize / 1024) || 0;
     const canReload = (!reloadedTimeStamp || (new Date().getTime() - reloadedTimeStamp) > reloadThreshold);
 
-    if (memoryConsumed > maxMemory && systemIdleTime.getIdleTime() > maxIdleTime && canReload && !isInMeeting) {
+    if (memoryConsumed > maxMemory
+        && systemIdleTime.getIdleTime() > maxIdleTime
+        && canReload
+        && !isInMeeting
+        && cpuUsage.percentCPUUsage < 1
+    ) {
         getConfigField('memoryRefresh')
             .then((enabled) => {
                 if (enabled) {
@@ -51,6 +57,7 @@ function optimizeMemory(memoryInfo) {
                         reloadedTimeStamp = new Date().getTime();
                         log.send(logLevels.INFO, 'Reloading the app to optimize memory usage as' +
                             ' memory consumption was ' + memoryConsumed +
+                            ' CPU usage percentage was ' + cpuUsage.percentCPUUsage +
                             ' user activity tick was ' + systemIdleTime.getIdleTime() +
                             ' user was in a meeting? ' + isInMeeting );
                         mainWindow.reload();

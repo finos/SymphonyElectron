@@ -149,8 +149,8 @@ electron.ipcMain.on(apiName, (event, arg) => {
             }
             break;
         case apiCmds.optimizeMemoryConsumption:
-            if (typeof arg.memory === 'object' && typeof arg.memory.workingSetSize === 'number') {
-                optimizeMemory(arg.memory);
+            if (typeof arg.memory === 'object' && typeof arg.cpuUsage === 'object' && typeof arg.memory.workingSetSize === 'number') {
+                optimizeMemory(arg.memory, arg.cpuUsage);
             }
             break;
         case apiCmds.setIsInMeeting:
