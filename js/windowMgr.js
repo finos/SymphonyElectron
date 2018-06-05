@@ -275,9 +275,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     mainWindow.loadURL(url);
 
     menu = electron.Menu.buildFromTemplate(getTemplate(app));
-    if (isWindows10()) {
-        mainWindow.setMenu(menu);
-    } else {
+    if (!isWindows10()) {
         electron.Menu.setApplicationMenu(menu);
     }
 

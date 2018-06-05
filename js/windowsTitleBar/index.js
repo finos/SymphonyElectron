@@ -21,11 +21,14 @@ class TitleBar {
     initiateWindowsTitleBar(titleBarStyle) {
 
         const actionItemsParsed = this.domParser.parseFromString(htmlContents.button, 'text/html');
-        const buttons = actionItemsParsed.getElementsByClassName('action-items');
 
-        let items = Array.from(buttons[0].children);
-        for (let i of items) {
-            this.titleBar.appendChild(i);
+        if (titleBarStyle === titleBarStyles.CUSTOM) {
+            const buttons = actionItemsParsed.getElementsByClassName('action-items');
+
+            let items = Array.from(buttons[0].children);
+            for (let i of items) {
+                this.titleBar.appendChild(i);
+            }
         }
 
         const updateIcon = TitleBar.updateIcons;
@@ -46,10 +49,10 @@ class TitleBar {
 
         document.body.appendChild(this.titleBar);
 
-        TitleBar.addWindowBorders();
         switch (titleBarStyle) {
             case titleBarStyles.CUSTOM:
                 TitleBar.setTitleBarTitle();
+                TitleBar.addWindowBorders();
                 break;
             case titleBarStyles.NATIVE_WITH_CUSTOM:
                 TitleBar.hideTitleContainer();

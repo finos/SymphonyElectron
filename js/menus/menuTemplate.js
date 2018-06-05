@@ -331,6 +331,8 @@ function getTemplate(app) {
     if (!isMac) {
         /* eslint-disable no-param-reassign */
         template[index].submenu.push({
+            type: 'separator'
+        }, {
             label: 'Title Bar Style',
             submenu: [
                 {
@@ -354,6 +356,8 @@ function getTemplate(app) {
                     }
                 }
             ]
+        }, {
+            type: 'separator'
         });
         /* eslint-enable no-param-reassign */
 
