@@ -26,7 +26,6 @@ other_pr_dev | [link]()
 
 
 ## Open Questions if any and Todos
-- [ ] Unit-Tests
-- [ ] Documentation
-- [ ] Automation-Tests
-When solved, check the box and explain the answer.
+- [] Unit-Tests
+- [] Documentation
+- [] Automation-Tests

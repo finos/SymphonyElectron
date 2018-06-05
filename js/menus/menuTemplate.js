@@ -153,6 +153,7 @@ const template = [{
                         const crashesDirectory = electron.crashReporter.getCrashesDirectory();
                         let source = isMac ? crashesDirectory + '/completed' : crashesDirectory;
 
+                        // TODO: Add support to get diagnostic reports from ~/Library/Logs/DiagnosticReports
                         if (!fs.existsSync(source) || fs.readdirSync(source).length === 0 && focusedWindow && !focusedWindow.isDestroyed()) {
                             electron.dialog.showMessageBox(focusedWindow, {type: 'error', title: 'Failed!', message: 'No crashes available to share'});
                             return;
