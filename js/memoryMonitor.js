@@ -2,7 +2,7 @@
 
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
-const { getMainWindow } = require('./windowMgr');
+const { getMainWindow, setIsAutoReload } = require('./windowMgr');
 const systemIdleTime = require('@paulcbetts/system-idle-time');
 const { getConfigField } = require('./config');
 
@@ -69,10 +69,10 @@ function optimizeMemory(memoryInfo, cpuUsage) {
 
 /**
  * Sets the current user meeting status
- * @param bool - Whether user is in an active meeting
+ * @param meetingStatus - Whether user is in an active meeting
  */
-function setIsInMeeting(bool) {
-    isInMeeting = bool;
+function setIsInMeeting(meetingStatus) {
+    isInMeeting = meetingStatus;
 }
 
 module.exports = {
