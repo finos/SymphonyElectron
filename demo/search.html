@@ -79,13 +79,7 @@
     </div>
     <br>
     <div>
-        <label for="batchNumber">Batch Number: </label><input placeholder="Ex: batch1, batch2" id="batchNumber">
-        <button id='index'>Index Messages</button>
-        <button id='merge'>Merge</button>
-    </div>
-    <br>
-    <div>
-        <label for="batchNumber">Get Latest Message Timestamp</label>
+        <label for="getLatestMessageTimestamp">Get Latest Message Timestamp</label>
         <button id='getLatestMessageTimestamp'>Click</button>
     </div>
     <br>
@@ -125,8 +119,6 @@
     var search = new ssf.Search("12345678910112", "jjjehdnctsjyieoalskcjdhsnahsadndfnusdfsdfsd=");
     var searchUtils = new ssf.SearchUtils();
     var buttonEl = document.getElementById('search');
-    var merge = document.getElementById('merge');
-    var buttonIndex = document.getElementById('index');
     var queryEl = document.getElementById('query');
     var offsetEl = document.getElementById('offset');
     var limitEl = document.getElementById('limit');
@@ -135,11 +127,9 @@
     var resultsEl = document.getElementById('results');
     var senderIdEl = document.getElementById('senderId');
     var threadIdEl = document.getElementById('threadId');
-    var var1El = document.getElementById('var1');
     var table = document.getElementById('table');
     var sendMessage = document.getElementById('sendMessage');
     var realTimeIndexing = document.getElementById('realTimeIndexing');
-    var batchNumber = document.getElementById('batchNumber');
     var timestamp = document.getElementById('getLatestMessageTimestamp');
     var has = document.getElementById('has');
     var checkFreeSpace = document.getElementById('checkFreeSpace');
@@ -147,22 +137,6 @@
     var version = document.getElementById('version');
     var rotationId = document.getElementById('rotationId');
     var updateUserConfig = document.getElementById('updateUserConfig');
-
-
-    buttonIndex.addEventListener('click', function () {
-        let batchIndex = batchNumber.value;
-        search.readJson(batchIndex).then(function (res) {
-            var response = function(status, response) {
-                if (status) {
-                    resultsEl.innerHTML = "Index created";
-                }
-                resultsEl.innerHTML = response;
-            };
-            search.indexBatch(JSON.stringify(res), response);
-        }).catch(function (err) {
-            console.log(err);
-        });
-    });
 
     buttonEl.addEventListener('click', function () {
         if (!search.isLibInit()) {
@@ -240,16 +214,6 @@
         } else {
             resultsEl.innerHTML = "Please check the entered value"
         }
-    });
-
-    merge.addEventListener('click', function () {
-        search.encryptIndex('jjjehdnctsjyieoalskcjdhsnahsadndfnusdfsdfsd=').then(function () {
-            searchUtils.updateUserConfig(12345678910112, {rotationId: 0, version: 1}).then(function (res) {
-                resultsEl.innerHTML = JSON.stringify(res);
-            }).catch(function (err) {
-                resultsEl.innerHTML = JSON.stringify(err);
-            });
-        });
     });
 
     timestamp.addEventListener('click', function () {
