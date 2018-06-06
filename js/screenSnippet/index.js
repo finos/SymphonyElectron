@@ -166,24 +166,26 @@ function readResult(outputFileName, resolve, reject, childProcessErr) {
 /* eslint-disable class-methods-use-this */
 /**
  * Create an error object with the ERROR level
- * @param msg
- * @returns {Error}
+ * @param message
+ * @returns {{message: string, type: string}}
  */
-function createError(msg) {
-    let err = new Error(msg);
-    err.type = 'ERROR';
-    return err;
+function createError(message) {
+    return {
+        message,
+        type: 'ERROR',
+    };
 }
 
 /**
  * Create an error object with the WARN level
- * @param msg
- * @returns {Error}
+ * @param message
+ * @returns {{message: string, type: string}}
  */
-function createWarn(msg) {
-    let err = new Error(msg);
-    err.type = 'WARN';
-    return err;
+function createWarn(message) {
+    return {
+        message,
+        type: 'WARN',
+    };
 }
 /* eslint-enable class-methods-use-this */
 
