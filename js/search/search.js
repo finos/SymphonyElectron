@@ -79,7 +79,7 @@ class Search {
         // Deleting all the messages except 3 Months from now
         libSymphonySearch.symSEDeleteMessagesFromRAMIndex(null,
             searchConfig.MINIMUM_DATE, indexDateStartFrom.toString());
-        Search.deleteIndexFolders(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
+        Search.deleteIndexFolders();
         this.isInitialized = true;
     }
 
@@ -134,7 +134,7 @@ class Search {
     memoryIndexToFSIndex() {
         return new Promise((resolve, reject) => {
 
-            Search.deleteIndexFolders(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
+            Search.deleteIndexFolders();
             libSymphonySearch.symSEEnsureFolderExists(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
 
             if (!fs.existsSync(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH)) {
@@ -510,20 +510,22 @@ class Search {
 
     /**
      * Removing all the folders and files inside the data folder
-     * @param location
      */
-    static deleteIndexFolders(location) {
-        if (fs.existsSync(location)) {
-            fs.readdirSync(location).forEach((file) => {
-                let curPath = location + "/" + file;
-                if (fs.lstatSync(curPath).isDirectory()) {
-                    Search.deleteIndexFolders(curPath);
-                } else {
-                    fs.unlinkSync(curPath);
-                }
-            });
-            fs.rmdirSync(location);
+    static deleteIndexFolders() {
+        function removeFiles(filePath) {
+            if (fs.existsSync(filePath)) {
+                fs.readdirSync(filePath).forEach((file) => {
+                    let curPath = filePath + "/" + file;
+                    if (fs.lstatSync(curPath).isDirectory()) {
+                        removeFiles(curPath);
+                    } else {
+                        fs.unlinkSync(curPath);
+                    }
+                });
+                fs.rmdirSync(filePath);
+            }
         }
+        removeFiles(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
     }
 
 }
@@ -538,7 +540,7 @@ function deleteIndexFolder(isEncryption) {
     if (!isEncryption) {
         libSymphonySearch.symSEDestroy();
     }
-    Search.deleteIndexFolders(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
+    Search.deleteIndexFolders();
 }
 
 
