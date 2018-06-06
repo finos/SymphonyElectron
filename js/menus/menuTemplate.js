@@ -4,12 +4,13 @@ const electron = require('electron');
 const fs = require('fs');
 const { updateConfigField, getMultipleConfigField } = require('../config.js');
 const AutoLaunch = require('auto-launch');
-const { isMac, isWindowsOS } = require('../utils/misc.js');
+const { isMac, isWindowsOS, isWindows10 } = require('../utils/misc.js');
 const archiveHandler = require('../utils/archiveHandler');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 const eventEmitter = require('../eventEmitter');
 const aboutApp = require('../aboutApp');
+const titleBarStyles = require('../enums/titleBarStyles');
 
 const configFields = [
     'minimizeOnClose',
@@ -17,13 +18,15 @@ const configFields = [
     'alwaysOnTop',
     'notificationSettings',
     'bringToFront',
-    'memoryRefresh'
+    'memoryRefresh',
+    'isCustomTitleBar'
 ];
 
 let minimizeOnClose = false;
 let launchOnStartup = false;
 let isAlwaysOnTop = false;
 let bringToFront = false;
+let titleBarStyle = titleBarStyles.CUSTOM;
 
 let symphonyAutoLauncher;
 
@@ -258,6 +261,10 @@ function getTemplate(app) {
         index = 3;
     }
 
+    template[index].submenu.push({
+        type: 'separator'
+    });
+
     // Window menu -> launchOnStartup.
     template[index].submenu.push({
         label: 'Auto Launch On Startup',
@@ -327,6 +334,39 @@ function getTemplate(app) {
     });
 
     if (!isMac) {
+
+        if (isWindows10()) {
+            /* eslint-disable no-param-reassign */
+            template[index].submenu.push({
+                label: 'Title Bar Style',
+                submenu: [
+                    {
+                        label: 'Native With Custom',
+                        type: 'checkbox',
+                        checked: titleBarStyle === titleBarStyles.NATIVE_WITH_CUSTOM,
+                        click: function (item) {
+                            item.menu.items[1].checked = false;
+                            titleBarStyle = titleBarStyles.NATIVE_WITH_CUSTOM;
+                            updateConfigField('isCustomTitleBar', false);
+                        }
+                    },
+                    {
+                        label: 'Custom',
+                        type: 'checkbox',
+                        checked: titleBarStyle === titleBarStyles.CUSTOM,
+                        click: function (item) {
+                            item.menu.items[0].checked = false;
+                            titleBarStyle = titleBarStyles.CUSTOM;
+                            updateConfigField('isCustomTitleBar', true);
+                        }
+                    }
+                ]
+            }, {
+                type: 'separator'
+            });
+            /* eslint-enable no-param-reassign */
+        }
+
         template[index].submenu.push({
             label: 'Quit Symphony',
             click: function() {
@@ -380,6 +420,9 @@ function setCheckboxValues() {
                             case 'bringToFront':
                                 bringToFront = configData[key];
                                 break;
+                            case 'isCustomTitleBar':
+                                titleBarStyle = configData[key] ? titleBarStyles.CUSTOM : titleBarStyles.NATIVE_WITH_CUSTOM;
+                                break;
                             default:
                                 break;
                         }
@@ -424,8 +467,13 @@ function getMinimizeOnClose() {
     return minimizeOnClose;
 }
 
+function getTitleBarStyle() {
+    return titleBarStyle;
+}
+
 module.exports = {
     getTemplate: getTemplate,
     getMinimizeOnClose: getMinimizeOnClose,
-    setCheckboxValues: setCheckboxValues
+    setCheckboxValues: setCheckboxValues,
+    getTitleBarStyle: getTitleBarStyle
 };

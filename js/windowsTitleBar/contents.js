@@ -10,68 +10,76 @@ const titleBar = (`
         </button>
     </div>
     <div id="title-container">
-        <?xml version="1.0" encoding="UTF-8"?>
-        <svg width="100px" height="32px" viewBox="0 0 120 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-            <title>Symphony_logo</title>
-            <defs>
-                <linearGradient x1="72.8054587%" y1="20.0451624%" x2="15.4902814%" y2="45.5271843%" id="linearGradient-1">
-                    <stop stop-color="#197A68" offset="0%"></stop>
-                    <stop stop-color="#329D87" offset="100%"></stop>
-                </linearGradient>
-                <linearGradient x1="0%" y1="49.9999462%" x2="100%" y2="49.9999462%" id="linearGradient-2">
-                    <stop stop-color="#1D7E7B" offset="0%"></stop>
-                    <stop stop-color="#35B0B7" offset="100%"></stop>
-                </linearGradient>
-                <linearGradient x1="26.4092062%" y1="82.7312532%" x2="48.5078994%" y2="9.46528209%" id="linearGradient-3">
-                    <stop stop-color="#175952" offset="0%"></stop>
-                    <stop stop-color="#3A8F88" offset="100%"></stop>
-                </linearGradient>
-                <linearGradient x1="29.6396432%" y1="86.849168%" x2="75.7050882%" y2="58.9371981%" id="linearGradient-4">
-                    <stop stop-color="#39A8BA" offset="0%"></stop>
-                    <stop stop-color="#3992B4" offset="100%"></stop>
-                </linearGradient>
-                <linearGradient x1="71.6243272%" y1="78.079356%" x2="20.750027%" y2="55.8481886%" id="linearGradient-5">
-                    <stop stop-color="#021C3C" offset="0%"></stop>
-                    <stop stop-color="#215180" offset="100%"></stop>
-                </linearGradient>
-                <linearGradient x1="0%" y1="49.9955545%" x2="100%" y2="49.9955545%" id="linearGradient-6">
-                    <stop stop-color="#23796C" offset="0%"></stop>
-                    <stop stop-color="#41BEAF" offset="100%"></stop>
-                </linearGradient>
-                <linearGradient x1="6.58475486%" y1="32.6158208%" x2="42.3714661%" y2="80.2915692%" id="linearGradient-7">
-                    <stop stop-color="#14466A" offset="0%"></stop>
-                    <stop stop-color="#286395" offset="100%"></stop>
-                </linearGradient>
-                <linearGradient x1="28.7298091%" y1="40.5717151%" x2="84.0259024%" y2="48.3784687%" id="linearGradient-8">
-                    <stop stop-color="#261D49" offset="0%"></stop>
-                    <stop stop-color="#483A6D" offset="100%"></stop>
-                </linearGradient>
-            </defs>
-            <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                <g id="Symphony_logo" fill-rule="nonzero">
-                    <g id="Group" transform="translate(27.000000, 7.000000)" fill="#FFFFFF">
-                        <path d="M8.7,3 C8.1,2.5 6.9,1.9 5.3,1.9 C4.2,1.9 3.3,2.3 3.3,3.2 C3.3,4.2 4.6,4.2 6,4.3 C7.7,4.4 10.5,4.6 10.5,7.3 C10.5,9.7 8.5,10.6 6.2,10.6 C3.7,10.6 2,9.6 0.9,8.6 L2,7.3 C2.8,8 4.2,9 6.2,9 C7.5,9 8.6,8.5 8.6,7.5 C8.6,6.4 7.6,6.2 6,6.1 C3.9,5.9 1.4,5.8 1.4,3.4 C1.4,1.1 3.5,0.4 5.3,0.4 C7.3,0.4 9,1.2 9.8,1.7 L8.7,3 Z" id="Shape"></path>
-                        <polygon id="Shape" points="31.4 10.2 31.4 4.1 31.3 4.1 28.4 9 28 9 25 4.2 24.9 4.2 24.9 10.3 23.1 10.3 23.1 0.6 25 0.6 28.3 6.1 28.3 6.1 31.5 0.6 33.3 0.6 33.3 10.2"></polygon>
-                        <polygon id="Shape" points="47.6 10.2 47.6 0.6 49.5 0.6 49.5 4.4 54.4 4.4 54.4 0.6 56.3 0.6 56.3 10.2 54.4 10.2 54.4 6 49.5 6 49.5 10.2"></polygon>
-                        <path d="M63.9,8.9 C65.8,8.9 67.2,7.3 67.2,5.4 C67.2,3.5 65.7,2 63.9,2 C62.1,2 60.6,3.5 60.6,5.4 C60.7,7.3 62.1,8.9 63.9,8.9 Z M63.9,0.3 C66.8,0.3 69.2,2.6 69.2,5.4 C69.2,8.3 66.9,10.5 63.9,10.5 C61,10.5 58.7,8.2 58.7,5.4 C58.7,2.6 61,0.3 63.9,0.3 Z" id="Shape"></path>
-                        <polygon id="Shape" points="80.3 0.6 80.3 10.2 78.7 10.2 73.5 3.9 73.5 3.9 73.5 10.2 71.6 10.2 71.6 0.6 73.2 0.6 78.4 6.9 78.4 6.9 78.4 0.6"></polygon>
-                        <polygon id="Shape" points="92.1 0.6 89.9 0.6 87.2 5.2 87.1 5.2 84.4 0.6 82.1 0.6 86.2 7 86.2 10.2 88 10.2 88 7"></polygon>
-                        <polygon id="Shape" points="21.3 0.6 19.1 0.6 16.4 5.2 16.3 5.2 13.6 0.6 11.3 0.6 15.4 7 15.4 10.2 17.2 10.2 17.2 7"></polygon>
-                        <path d="M38.2,7.1 L41.3,7.1 C42.7,7.1 43.6,6.7 44.2,6.1 C44.8,5.5 45.2,4.7 45.2,3.8 C45.2,3 44.9,2.3 44.4,1.7 C43.7,1 42.8,0.6 41.3,0.6 L36.3,0.6 L36.3,10.2 L38.2,10.2 L38.2,7.1 Z M38.2,2.2 L41.3,2.2 C41.8,2.2 42.4,2.3 42.8,2.7 C43.1,3 43.2,3.4 43.2,3.8 C43.2,4.2 43,4.6 42.7,4.9 C42.2,5.3 41.7,5.4 41.2,5.4 L38.1,5.4 L38.1,2.2 L38.2,2.2 Z" id="Shape"></path>
-                    </g>
-                    <g id="logo2">
-                        <path d="M2.8585265,13.7071419 C2.85630496,15.1495531 3.19699055,16.5718335 3.85249917,17.8566932 L11.9973636,13.7071419 L2.8585265,13.7071419 Z" id="Shape" fill="url(#linearGradient-1)"></path>
-                        <path d="M8.63923275,18.3280906 C9.61438114,19.0384932 10.7901678,19.4204097 11.9966428,19.4186435 L11.9966428,13.7071419 L8.63923275,18.3280906 Z" id="Shape" fill="url(#linearGradient-2)"></path>
-                        <path d="M17.2396228,1.04297388 C15.5766877,0.35369093 13.7938873,-2.76553156e-05 11.9937597,0.00216235083 C11.2754862,0.00215229435 10.558302,0.0580618177 9.84870765,0.169384149 L11.9937597,13.7093043 L17.2396228,1.04297388 Z" id="Shape" fill="url(#linearGradient-3)"></path>
-                        <path d="M11.9966428,13.7071419 L23.4189285,13.7071419 C23.4226965,11.2942632 22.6585571,8.94277657 21.2370999,6.99304259 L11.9966428,13.7071419 Z" id="Shape" fill="url(#linearGradient-4)"></path>
-                        <path d="M1.76871415,7.43992843 C0.610698934,9.32503749 -0.000916945813,11.4947622 0.00206101979,13.7071419 L11.9966428,13.7071419 L1.76871415,7.43992843 Z" id="Shape" fill="url(#linearGradient-5)"></path>
-                        <path d="M11.9966428,5.71146961 C10.3076163,5.70881714 8.66152029,6.24346454 7.29641289,7.23810107 L11.9966428,13.7071419 L11.9966428,5.71146961 Z" id="Shape" fill="url(#linearGradient-6)"></path>
-                        <path d="M11.9966428,23.9877027 C14.1680786,23.9910306 16.2842613,23.3033903 18.0389718,22.0242737 L11.9966428,13.7071419 L11.9966428,23.9877027 Z" id="Shape" fill="url(#linearGradient-7)"></path>
-                        <path d="M19.8949896,12.4558616 L11.9966428,13.7071419 L19.3846748,16.7675891 C19.7870484,15.7974896 19.993552,14.7573781 19.9922954,13.7071419 C19.9921318,13.288165 19.9595998,12.8698268 19.8949896,12.4558616 Z" id="Shape" fill="url(#linearGradient-8)"></path>
-                    </g>
+        <?xml version="1.0" encoding="utf-8"?>
+        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+             width="20px" viewBox="0 0 19.7 32" style="enable-background:new 0 0 19.7 32;" xml:space="preserve">
+        <style type="text/css">
+            .st0{fill:url(#Shape_8_);}
+            .st1{fill:url(#Shape_9_);}
+            .st2{fill:url(#Shape_10_);}
+            .st3{fill:url(#Shape_11_);}
+            .st4{fill:url(#Shape_12_);}
+            .st5{fill:url(#Shape_13_);}
+            .st6{fill:url(#Shape_14_);}
+            .st7{fill:url(#Shape_15_);}
+        </style>
+        <title>Symphony_logo</title>
+        <g id="Page-1">
+            <g id="Symphony_logo">
+                <g id="logo2">
+                        <linearGradient id="Shape_8_" gradientUnits="userSpaceOnUse" x1="39.8192" y1="23.9806" x2="39.2461" y2="23.7258" gradientTransform="matrix(7.6157 0 0 -3.458 -295.3247 101.0398)">
+                        <stop  offset="0" style="stop-color:#197A68"/>
+                        <stop  offset="1" style="stop-color:#329D87"/>
+                    </linearGradient>
+                    <path id="Shape" class="st0" d="M2.4,17.4c0,1.2,0.3,2.4,0.8,3.5l6.8-3.5H2.4z"/>
+                    
+                        <linearGradient id="Shape_9_" gradientUnits="userSpaceOnUse" x1="28.9162" y1="22.8111" x2="29.9162" y2="22.8111" gradientTransform="matrix(2.7978 0 0 -4.7596 -73.7035 128.374)">
+                        <stop  offset="0" style="stop-color:#1D7E7B"/>
+                        <stop  offset="1" style="stop-color:#35B0B7"/>
+                    </linearGradient>
+                    <path id="Shape_1_" class="st1" d="M7.2,21.3C8,21.9,9,22.2,10,22.2v-4.8L7.2,21.3z"/>
+                    
+                        <linearGradient id="Shape_10_" gradientUnits="userSpaceOnUse" x1="37.9575" y1="21.1358" x2="38.1785" y2="21.8684" gradientTransform="matrix(6.1591 0 0 -11.4226 -223.952 256.8769)">
+                        <stop  offset="0" style="stop-color:#175952"/>
+                        <stop  offset="1" style="stop-color:#3A8F88"/>
+                    </linearGradient>
+                    <path id="Shape_2_" class="st2" d="M14.4,6.9C13,6.3,11.5,6,10,6C9.4,6,8.8,6,8.2,6.1L10,17.4L14.4,6.9z"/>
+                    
+                        <linearGradient id="Shape_11_" gradientUnits="userSpaceOnUse" x1="40.5688" y1="22.0975" x2="41.0294" y2="22.3767" gradientTransform="matrix(9.5186 0 0 -5.5951 -373.339 140.3243)">
+                        <stop  offset="0" style="stop-color:#39A8BA"/>
+                        <stop  offset="1" style="stop-color:#3992B4"/>
+                    </linearGradient>
+                    <path id="Shape_3_" class="st3" d="M10,17.4h9.5c0-2-0.6-4-1.8-5.6L10,17.4z"/>
+                    
+                        <linearGradient id="Shape_12_" gradientUnits="userSpaceOnUse" x1="41.2142" y1="22.3254" x2="40.7055" y2="22.5477" gradientTransform="matrix(9.9955 0 0 -5.2227 -404.7955 132.8762)">
+                        <stop  offset="0" style="stop-color:#021C3C"/>
+                        <stop  offset="1" style="stop-color:#215180"/>
+                    </linearGradient>
+                    <path id="Shape_4_" class="st4" d="M1.5,12.2c-1,1.6-1.5,3.4-1.5,5.2h10L1.5,12.2z"/>
+                    
+                        <linearGradient id="Shape_13_" gradientUnits="userSpaceOnUse" x1="33.5112" y1="22.1509" x2="34.5112" y2="22.1509" gradientTransform="matrix(3.9169 0 0 -6.6631 -125.1783 161.684)">
+                        <stop  offset="0" style="stop-color:#23796C"/>
+                        <stop  offset="1" style="stop-color:#41BEAF"/>
+                    </linearGradient>
+                    <path id="Shape_5_" class="st5" d="M10,10.8c-1.4,0-2.8,0.4-3.9,1.3l3.9,5.4V10.8z"/>
+                    
+                        <linearGradient id="Shape_14_" gradientUnits="userSpaceOnUse" x1="36.1289" y1="21.9578" x2="36.4868" y2="21.4811" gradientTransform="matrix(5.0353 0 0 -8.5671 -171.5901 208.3326)">
+                        <stop  offset="0" style="stop-color:#14466A"/>
+                        <stop  offset="1" style="stop-color:#286395"/>
+                    </linearGradient>
+                    <path id="Shape_6_" class="st6" d="M10,26c1.8,0,3.6-0.6,5-1.6l-5-6.9V26z"/>
+                    
+                        <linearGradient id="Shape_15_" gradientUnits="userSpaceOnUse" x1="38.5336" y1="23.6558" x2="39.0866" y2="23.5777" gradientTransform="matrix(6.663 0 0 -3.5931 -244.8399 102.8351)">
+                        <stop  offset="0" style="stop-color:#261D49"/>
+                        <stop  offset="1" style="stop-color:#483A6D"/>
+                    </linearGradient>
+                    <path id="Shape_7_" class="st7" d="M16.6,16.4l-6.6,1l6.2,2.6c0.3-0.8,0.5-1.7,0.5-2.6C16.7,17.1,16.6,16.7,16.6,16.4z"/>
                 </g>
             </g>
+        </g>
         </svg>
+
+        <p id="title-bar-title">Symphony</p>
     </div>
 </div>
 `);
