@@ -65,14 +65,14 @@ describe('Tests for Search Utils', function() {
         it('should return error', function (done) {
             const checkFreeSpace = jest.spyOn(SearchUtilsAPI, 'checkFreeSpace');
             if (isMac) {
-                SearchUtilsAPI.path = undefined;
+                searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH = undefined;
                 SearchUtilsAPI.checkFreeSpace().catch(function (err) {
                     expect(err).toEqual(new Error("Please provide path"));
                     expect(checkFreeSpace).toHaveBeenCalled();
                     done();
                 });
             } else {
-                SearchUtilsAPI.path = undefined;
+                searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH = undefined;
                 SearchUtilsAPI.checkFreeSpace().catch(function (err) {
                     expect(err).toBeTruthy();
                     expect(checkFreeSpace).toHaveBeenCalled();
@@ -85,7 +85,7 @@ describe('Tests for Search Utils', function() {
             const checkFreeSpace = jest.spyOn(SearchUtilsAPI, 'checkFreeSpace');
             SearchUtilsAPI.path = './tp';
             if (isWindowsOS) {
-                SearchUtilsAPI.path = 'A://test';
+                searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH = 'A://test';
                 searchConfig.LIBRARY_CONSTANTS.FREE_DISK_SPACE = path.join(__dirname, '..',
                     "node_modules/electron-utils/FreeDiskSpace/bin/Release/FreeDiskSpace.exe");
             }
