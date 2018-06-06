@@ -64,6 +64,24 @@ const throttledSetBadgeCount = throttle(1000, function(count) {
     });
 });
 
+const throttledSetIsInMeetingStatus = throttle(1000, function(isInMeeting) {
+    local.ipcRenderer.send(apiName, {
+        cmd: apiCmds.setIsInMeeting,
+        isInMeeting
+    });
+});
+
+// Gathers renderer process memory
+setInterval(() => {
+    const memory = process.getProcessMemoryInfo();
+    const cpuUsage = process.getCPUUsage();
+    local.ipcRenderer.send(apiName, {
+        cmd: apiCmds.optimizeMemoryConsumption,
+        memory: memory,
+        cpuUsage: cpuUsage
+    });
+}, 1000 * 60 * 15);
+
 createAPI();
 
 // creates API exposed from electron.
@@ -277,6 +295,14 @@ function createAPI() {
                 cmd: apiCmds.showNotificationSettings,
                 windowName: windowName
             });
+        },
+
+        /**
+         * Sets if the user is in an active meeting
+         * will be used to handle memory refresh functionality
+         */
+        setIsInMeeting: function (isInMeeting) {
+            throttledSetIsInMeetingStatus(isInMeeting);
         }
     };
 
