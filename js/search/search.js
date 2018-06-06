@@ -207,16 +207,6 @@ class Search {
     }
 
     /**
-     * Reading a json file
-     * for the demo search app only
-     * @param {String} batch
-     * @returns {Promise}
-     */
-    readJson(batch) {
-        return readFile.call(this, batch);
-    }
-
-    /**
      * Encrypting the index after the merging the index
      * to the main user index
      */
@@ -551,34 +541,6 @@ function deleteIndexFolder(isEncryption) {
     Search.deleteIndexFolders(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
 }
 
-/**
- * Reads the file from the msgjson
- * this is only for the demo page
- * @param batch
- * @returns {Promise<Array>}
- */
-function readFile(batch) {
-    return new Promise((resolve, reject) => {
-        let dirPath = path.join(searchConfig.FOLDERS_CONSTANTS.EXEC_PATH, isMac ? '..' : '', 'msgsjson', batch);
-        let messageFolderPath = isDevEnv ? path.join('./msgsjson', batch) : dirPath;
-        let files = fs.readdirSync(messageFolderPath);
-        this.messageData = [];
-        files.forEach((file) => {
-            let tempPath = path.join(messageFolderPath, file);
-            let data = fs.readFileSync(tempPath, "utf8");
-            if (data) {
-                try {
-                    this.messageData.push(JSON.parse(data));
-                } catch (err) {
-                    reject(new Error(err))
-                }
-            } else {
-                reject(new Error('Error reading batch'))
-            }
-        });
-        resolve(this.messageData);
-    });
-}
 
 /**
  * Creating launch agent for handling the deletion of
