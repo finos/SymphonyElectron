@@ -7,26 +7,27 @@ const { isMac } = require('../utils/misc.js');
  * Utils to validate users config data and
  * available disk space to enable electron search
  */
+/*eslint class-methods-use-this: ["error", { "exceptMethods": ["checkFreeSpace"] }] */
 class SearchUtils {
-
-    constructor() {
-        this.path = searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH;
-    }
 
     /**
      * This function returns true if the available disk space
      * is more than the constant MINIMUM_DISK_SPACE
-     * @returns {Promise<boolean>}
+     * @param callback
      */
     checkFreeSpace(callback) {
+        if (typeof callback !== "function") {
+            return false;
+        }
+        let userDataPath = searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH;
         if (!isMac) {
             try {
-                this.path = this.path.substring(0, 1);
+                userDataPath = userDataPath.substring(0, 1);
             } catch (e) {
                 return callback(false, 'Invalid Path');
             }
         }
-        checkDiskSpace(this.path, callback);
+        checkDiskSpace(userDataPath, callback);
         return null;
     }
 

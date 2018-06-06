@@ -56,46 +56,49 @@ describe('Tests for Search Utils', function() {
 
         it('should return free space', function (done) {
             const checkFreeSpace = jest.spyOn(SearchUtilsAPI, 'checkFreeSpace');
-            SearchUtilsAPI.checkFreeSpace().then(function () {
+            function handleResponse(status) {
                 expect(checkFreeSpace).toHaveBeenCalled();
+                expect(status).toBe(true);
                 done();
-            });
+            }
+            SearchUtilsAPI.checkFreeSpace(handleResponse);
         });
 
         it('should return error', function (done) {
             const checkFreeSpace = jest.spyOn(SearchUtilsAPI, 'checkFreeSpace');
+            function handleResponse(status) {
+                expect(checkFreeSpace).toHaveBeenCalled();
+                expect(status).toBe(false);
+                done();
+            }
             if (isMac) {
-                SearchUtilsAPI.path = undefined;
-                SearchUtilsAPI.checkFreeSpace().catch(function (err) {
-                    expect(err).toEqual(new Error("Please provide path"));
-                    expect(checkFreeSpace).toHaveBeenCalled();
-                    done();
-                });
+                searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH = undefined;
+                SearchUtilsAPI.checkFreeSpace(handleResponse);
             } else {
-                SearchUtilsAPI.path = undefined;
-                SearchUtilsAPI.checkFreeSpace().catch(function (err) {
-                    expect(err).toBeTruthy();
-                    expect(checkFreeSpace).toHaveBeenCalled();
-                    done();
-                });
+                searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH = undefined;
+                SearchUtilsAPI.checkFreeSpace(handleResponse);
             }
         });
 
         it('should return error invalid path', function (done) {
             const checkFreeSpace = jest.spyOn(SearchUtilsAPI, 'checkFreeSpace');
-            SearchUtilsAPI.path = './tp';
+            searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH = './tp';
             if (isWindowsOS) {
-                SearchUtilsAPI.path = 'A://test';
+                searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH = 'A://test';
                 searchConfig.LIBRARY_CONSTANTS.FREE_DISK_SPACE = path.join(__dirname, '..',
                     "node_modules/electron-utils/FreeDiskSpace/bin/Release/FreeDiskSpace.exe");
             }
-            SearchUtilsAPI.checkFreeSpace().catch(function (err) {
-                searchConfig.LIBRARY_CONSTANTS.FREE_DISK_SPACE = path.join(__dirname, '..',
-                    "library/FreeDiskSpace.exe");
+            function handleResponse(status) {
                 expect(checkFreeSpace).toHaveBeenCalled();
-                expect(err).toBeTruthy();
+                expect(status).toBe(false);
                 done();
-            });
+            }
+            SearchUtilsAPI.checkFreeSpace(handleResponse);
+        });
+
+        it('should fail when no callback is passed', function () {
+            let test = SearchUtilsAPI.checkFreeSpace();
+            expect(test).toBe(false);
         });
     });
 
