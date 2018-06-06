@@ -192,6 +192,10 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     let throttledMainWinBoundsChange = throttle(1000, saveMainWinBounds);
     mainWindow.on('move', throttledMainWinBoundsChange);
     mainWindow.on('resize', throttledMainWinBoundsChange);
+    mainWindow.on('enter-full-screen', () => {
+        // event sent to renderer process to show snack bar
+        mainWindow.webContents.send('show-snack-bar');
+    });
 
     if (initialBounds && !isNodeEnv) {
         // maximizes the application if previously maximized
@@ -224,6 +228,9 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         initCrashReporterRenderer(mainWindow, { process: 'render | main window' });
 
         url = mainWindow.webContents.getURL();
+        mainWindow.webContents.send('on-page-load');
+        // initializes and applies styles required for snack bar
+        mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/snackBar/style.css'), 'utf8').toString());
         if (isCustomTitleBarEnabled || isWindows10()) {
             mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/windowsTitleBar/style.css'), 'utf8').toString());
             // This is required to initiate Windows title bar only after insertCSS
@@ -409,6 +416,9 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                         // setMenu is currently only supported on Windows and Linux
                         browserWin.setMenu(null);
                     }
+                    browserWin.webContents.send('on-page-load');
+                    // applies styles required for snack bar
+                    browserWin.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/snackBar/style.css'), 'utf8').toString());
 
                     initCrashReporterMain({ process: 'pop-out window' });
                     initCrashReporterRenderer(browserWin, { process: 'render | pop-out window' });
@@ -450,16 +460,23 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                     // issue https://perzoinc.atlassian.net/browse/ELECTRON-172
                     sendChildWinBoundsChange(browserWin);
 
+                    // throttle full screen
+                    let throttledFullScreen = throttle(1000,
+                        handleChildWindowFullScreen.bind(null, browserWin));
+
                     // throttle changes so we don't flood client.
                     let throttledBoundsChange = throttle(1000,
                         sendChildWinBoundsChange.bind(null, browserWin));
+
                     browserWin.on('move', throttledBoundsChange);
                     browserWin.on('resize', throttledBoundsChange);
-    
+                    browserWin.on('enter-full-screen', throttledFullScreen);
+
                     let handleChildWindowClosed = () => {
                         removeWindowKey(newWinKey);
                         browserWin.removeListener('move', throttledBoundsChange);
                         browserWin.removeListener('resize', throttledBoundsChange);
+                        browserWin.removeListener('enter-full-screen', throttledFullScreen);
                     };
     
                     browserWin.on('close', () => {
@@ -501,15 +518,23 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
      * Register shortcuts for the app
      */
     function registerShortcuts() {
-        
-        // Register dev tools shortcut
-        globalShortcut.register(isMac ? 'Alt+Command+I' : 'Ctrl+Shift+I', () => {
-            let focusedWindow = BrowserWindow.getFocusedWindow();
+
+        function devTools() {
+            const focusedWindow = BrowserWindow.getFocusedWindow();
+
             if (focusedWindow && !focusedWindow.isDestroyed()) {
                 focusedWindow.webContents.toggleDevTools();
             }
+        }
+
+        app.on('browser-window-focus', function () {
+            globalShortcut.register(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I', devTools);
         });
-        
+
+        app.on('browser-window-blur', function () {
+            globalShortcut.unregister(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I');
+        });
+
     }
     
     /**
@@ -783,6 +808,13 @@ function sendChildWinBoundsChange(window) {
         // ipc msg back to renderer to inform bounds has changed.
         boundsChangeWindow.send('boundsChange', newBounds);
     }
+}
+
+/**
+ * Called when the child window is set to full screen
+ */
+function handleChildWindowFullScreen(browserWindow) {
+    browserWindow.webContents.send('show-snack-bar');
 }
 
 /**
