@@ -757,6 +757,9 @@
     <ROW Shortcut="Symphony" Directory_="DesktopFolder" Name="SYMPHO~1|Symphony Shortcut" Component_="Symphony.exe" Target="[#Symphony.exe]" Description="Shortcut to Symphony Application" Hotkey="0" Icon_="icon.exe" IconIndex="0" ShowCmd="1" WkDir="APPDIR"/>
     <ROW Shortcut="Symphony2" Directory_="Symphony_Dir" Name="Symphony" Component_="Symphony.exe" Target="[#Symphony.exe]" Description="Symphony shortcut" Hotkey="0" Icon_="icon.exe" IconIndex="0" ShowCmd="1" WkDir="APPDIR"/>
   </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiTextStyleComponent">
+    <ROW TextStyle="DlgFontBold8_DlgFontBold8" FaceName="Tahoma" Size="8" Color="0" StyleBits="1"/>
+  </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiThemeComponent">
     <ATTRIBUTE name="UsedTheme" value="classic"/>
   </COMPONENT>
