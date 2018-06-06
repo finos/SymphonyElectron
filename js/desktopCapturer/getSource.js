@@ -12,7 +12,7 @@
 // renderer process, this will have to do.  See github issue posted here to
 // electron: https://github.com/electron/electron/issues/9312
 
-const { ipcRenderer, remote } = require('electron');
+const { ipcRenderer, remote, desktopCapturer } = require('electron');
 const apiEnums = require('../enums/api.js');
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
@@ -43,8 +43,10 @@ function isValid(options) {
  */
 function getSource(options, callback) {
     let captureScreen, captureWindow, id;
+    let sourceTypes = [];
     if (!isValid(options)) {
-        return callback(new Error('Invalid options'));
+        callback(new Error('Invalid options'));
+        return;
     }
     captureWindow = includes.call(options.types, 'window');
     captureScreen = includes.call(options.types, 'screen');
@@ -68,14 +70,24 @@ function getSource(options, callback) {
         captureWindow = remote.systemPreferences.isAeroGlassEnabled();
     }
 
-    id = getNextId();
-    ipcRenderer.send('ELECTRON_BROWSER_DESKTOP_CAPTURER_GET_SOURCES', captureWindow, captureScreen, updatedOptions.thumbnailSize, id);
+    if (captureWindow) {
+        sourceTypes.push('window');
+    }
+    if (captureScreen) {
+        sourceTypes.push('screen');
+    }
 
-    return ipcRenderer.once('ELECTRON_RENDERER_DESKTOP_CAPTURER_RESULT_' + id, function(event, sources) {
+    id = getNextId();
+    desktopCapturer.getSources({ types: sourceTypes, thumbnailSize: updatedOptions.thumbnailSize }, (event, sources) => {
+        const updatedSources = sources.map(source => {
+            return Object.assign({}, source, {
+                thumbnail: source.thumbnail.toDataURL()
+            });
+        });
 
         ipcRenderer.send(apiName, {
             cmd: apiCmds.openScreenPickerWindow,
-            sources: sources,
+            sources: updatedSources,
             id: id
         });
 
