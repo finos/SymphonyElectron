@@ -10,6 +10,10 @@ const { isMac } = require('../utils/misc.js');
 /*eslint class-methods-use-this: ["error", { "exceptMethods": ["checkFreeSpace"] }] */
 class SearchUtils {
 
+    constructor() {
+        this.indexVersion = searchConfig.INDEX_VERSION
+    }
+
     /**
      * This function returns true if the available disk space
      * is more than the constant MINIMUM_DISK_SPACE
@@ -120,7 +124,7 @@ function createUserConfigFile(userId, data) {
     let createStream = fs.createWriteStream(searchConfig.FOLDERS_CONSTANTS.USER_CONFIG_FILE);
     if (userData) {
         if (!userData.indexVersion) {
-            userData.indexVersion = searchConfig.INDEX_VERSION;
+            userData.indexVersion = this.indexVersion;
         }
         try {
             userData = JSON.stringify(userData);
@@ -146,7 +150,7 @@ function updateConfig(userId, data, resolve, reject) {
     let userData = data;
 
     if (userData && !userData.indexVersion) {
-        userData.indexVersion = searchConfig.INDEX_VERSION;
+        userData.indexVersion = this.indexVersion
     }
 
     let configPath = searchConfig.FOLDERS_CONSTANTS.USER_CONFIG_FILE;
