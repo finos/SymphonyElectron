@@ -37,10 +37,19 @@
 #title-container {
     height: 32px;
     flex: 1;
-    justify-content: center;
+    display: flex;
+    justify-content: flex-start;
     align-items: center;
     white-space: nowrap;
     overflow: hidden;
+}
+
+#title-bar-title {
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: white;
+    margin: 0;
+    padding-left: 10px;
+    font-size: 13px;
 }
 
 .title-bar-button-container {

@@ -31,3 +31,4 @@ installer/win/Symphony-x86-cache
 installer/win/Symphony-x86-SetupFiles
 package-lock.json
 library
+*.log
