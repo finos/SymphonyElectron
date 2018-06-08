@@ -58,7 +58,9 @@ const searchConfig = {
     DISK_NOT_READY: 'NOT_READY',
     DISK_NOT_FOUND: 'DISK_NOT_FOUND',
     MINIMUM_DISK_SPACE: 300000000, // in bytes
-    MAC_PATH_ERROR: "No such file or directory"
+    MAC_PATH_ERROR: "No such file or directory",
+    KEY_LENGTH: 32,
+    KEY_ENCODING: 'base64'
 };
 
 module.exports = searchConfig;

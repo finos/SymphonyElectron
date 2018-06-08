@@ -14,7 +14,7 @@ const symLucyIndexerPtr = ref.refType(symLucyIndexer);
  */
 let libSymphonySearch = ffi.Library(searchConfig.LIBRARY_CONSTANTS.SEARCH_LIBRARY_PATH, {
 
-    //New Memory Indexing API
+    // New Memory Indexing API
     'symSE_index_main_RAM': ['int', [ 'string' ] ],
     'symSE_index_realtime_RAM': ['int', [ 'string' ] ],
     'symSE_main_RAM_index_to_FS_index': ['int', [ 'string' ] ],
@@ -32,29 +32,29 @@ let libSymphonySearch = ffi.Library(searchConfig.LIBRARY_CONSTANTS.SEARCH_LIBRAR
     'symSE_serialize_main_index_to_encrypted_folders': ['int', [ 'string', 'string' ] ],
     'symSE_deserialize_main_index_from_encrypted_folders': ['int', [ 'string', 'string' ] ],
 
-    //init
+    // init
     'symSE_init': ['void', []],
     'symSE_remove_folder': ['int', ['string']],
     'symSE_ensure_index_exists': ['int', ['string']],
     'symSE_ensure_folder_exists': ['int', ['string']],
-    //first time indexing and delta indexing
+    // first time indexing and delta indexing
     'symSE_get_indexer': [symLucyIndexerPtr, ['string']], //will be removed
     'symSE_create_partial_index': ['int', ['string', 'string', 'string']],
     'symSE_merge_partial_index': ['int', ['string', 'string']],
-    //real time indexing
+    // real time indexing
     'symSE_index_realtime': ['int', ['string', 'string']],
     'symSE_merge_temp_index': ['int', ['string', 'string']],
     'symSE_clear_temp_index': ['int', ['string']],
-    //Search,
+    // Search,
     'symSE_search': ['char *', ['string', 'string', 'string', 'string', 'string', 'int', 'int', 'int']],
-    //Deletion
+    // Deletion
     'symSE_delete_messages': ['int', ['string', 'string', 'string', 'string']],
-    //Index commit/optimize
+    // Index commit/optimize
     'symSE_commit_index': ['int', [symLucyIndexerPtr, 'int']], //will be removed
-    //freePointer
+    // freePointer
     'symSE_free_results': ['int', ['char *']],
 
-    //Latest messages timestamp
+    // Latest messages timestamp
     'symSE_get_last_message_timestamp': ['char *', ['string']]
 });
 

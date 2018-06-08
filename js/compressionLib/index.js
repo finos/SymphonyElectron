@@ -44,7 +44,7 @@ function compression(pathToFolder, outputPath, callback) {
  * @param pathName
  * @param callback
  */
-function deCompression(pathName, callback) {
+function decompression(pathName, callback) {
     if (isMac) {
         child.exec(`cd "${ROOT_PATH}" && "${searchConfig.LIBRARY_CONSTANTS.MAC_LIBRARY_FOLDER}/lz4.exec" -d "${pathName}" | tar -xf - `, (error, stdout, stderr) => {
             if (error) {
@@ -70,5 +70,5 @@ function deCompression(pathName, callback) {
 
 module.exports = {
     compression,
-    deCompression
+    decompression
 };

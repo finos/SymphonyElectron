@@ -28,7 +28,7 @@ class Search {
         this.messageData = [];
         this.userId = userId;
         this.isRealTimeIndexing = false;
-        this.deCompress(key);
+        this.decompress(key);
         this.collector = makeBoundTimedCollector(this.checkIsRealTimeIndexing.bind(this),
             searchConfig.REAL_TIME_INDEXING_TIME, this.realTimeIndexing.bind(this));
     }
@@ -47,7 +47,8 @@ class Search {
      * and creates a folder in the userData
      */
     init(key) {
-        if (!key) {
+        let bufKey = new Buffer(key, searchConfig.KEY_ENCODING);
+        if (!key && bufKey.length !== searchConfig.KEY_LENGTH) {
             return;
         }
         libSymphonySearch.symSEDestroy();
@@ -57,8 +58,8 @@ class Search {
         this.isInitialized = true;
         const userIndexPath = path.join(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH,
             `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${this.userId}`);
-        const mainIndexFolder = path.join(userIndexPath, searchConfig.FOLDERS_CONSTANTS.MAIN_INDEX);
-        if (fs.existsSync(userIndexPath)) {
+        if (isFileExist.call(this, 'USER_INDEX_PATH')) {
+            const mainIndexFolder = path.join(userIndexPath, searchConfig.FOLDERS_CONSTANTS.MAIN_INDEX);
             libSymphonySearch.symSEDeserializeMainIndexToEncryptedFoldersAsync(mainIndexFolder, key, (error, res) => {
 
                 clearSearchData.call(this);
@@ -75,18 +76,18 @@ class Search {
         }
     }
 
-    deCompress(key) {
+    decompress(key) {
         const userIndexPath = path.join(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH,
             `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${this.userId}`);
-        if (fs.existsSync(`${userIndexPath}${searchConfig.TAR_LZ4_EXT}`)) {
-            lz4.deCompression(`${userIndexPath}${searchConfig.TAR_LZ4_EXT}`, (err) => {
-                if (err && !fs.existsSync(userIndexPath)) {
+        if (isFileExist.call(this, 'LZ4')) {
+            lz4.decompression(`${userIndexPath}${searchConfig.TAR_LZ4_EXT}`, (err) => {
+                if (err && !isFileExist.call(this, 'USER_INDEX_PATH')) {
                     fs.mkdirSync(userIndexPath);
                 }
                 this.init(key);
             })
         } else {
-            if (!fs.existsSync(userIndexPath)) {
+            if (!isFileExist.call(this, 'USER_INDEX_PATH')) {
                 fs.mkdirSync(userIndexPath);
             }
             this.init(key);
@@ -110,8 +111,8 @@ class Search {
         }
 
         try {
-            let msg = JSON.parse(messages);
-            if (!(msg instanceof Array)) {
+            let messagesData = JSON.parse(messages);
+            if (!(messagesData instanceof Array)) {
                 log.send(logLevels.ERROR, 'Batch Indexing: Messages must be an array');
                 return callback(false, 'Batch Indexing: Messages must be an array');
             }
@@ -157,17 +158,17 @@ class Search {
     /**
      * An array of messages to be indexed
      * in real time
-     * @param message
+     * @param messages
      * @param callback
      */
-    realTimeIndexing(message, callback) {
+    realTimeIndexing(messages, callback) {
         if (typeof callback !== "function") {
             return false;
         }
 
         try {
-            let msg = JSON.parse(message);
-            if (!(msg instanceof Array)) {
+            let messagesData = JSON.parse(messages);
+            if (!(messagesData instanceof Array)) {
                 return callback(false, 'RealTime Indexing: Messages must be an array');
             }
         } catch(e) {
@@ -179,7 +180,7 @@ class Search {
         }
 
         this.isRealTimeIndexing = true;
-        libSymphonySearch.symSEIndexRealtimeRAMAsync(message, (err, result) => {
+        libSymphonySearch.symSEIndexRealtimeRAMAsync(messages, (err, result) => {
             this.isRealTimeIndexing = false;
             if (err) {
                 return callback(false, 'RealTime Indexing: error');
@@ -198,7 +199,7 @@ class Search {
         const mainIndexFolder = path.join(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH,
             `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${this.userId}`);
         return new Promise(resolve => {
-            if (!fs.existsSync(mainIndexFolder)) {
+            if (!isFileExist.call(this, 'USER_INDEX_PATH')) {
                 fs.mkdirSync(mainIndexFolder);
             }
 
@@ -209,7 +210,7 @@ class Search {
             libSymphonySearch.symSESerializeMainIndexToEncryptedFoldersAsync(mainIndexFolder, key, (err, res) => {
                 if (res < 0) {
                     log.send(logLevels.ERROR, 'Serializing Main Index Failed-> ' + err);
-                    if (fs.existsSync(mainIndexFolder)) {
+                    if (isFileExist.call(this, 'USER_INDEX_PATH')) {
                         clearSearchData.call(this);
                     }
                     return;
@@ -538,6 +539,24 @@ function clearSearchData() {
         removeFiles(path.join(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH,
             `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${this.userId}`));
     }
+}
+
+function isFileExist(type) {
+    let searchPath;
+    switch (type) {
+        case 'USER_INDEX_PATH':
+            searchPath = path.join(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH,
+                `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${this.userId}`);
+            break;
+        case 'LZ4':
+            searchPath = path.join(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH,
+                `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${this.userId}${searchConfig.TAR_LZ4_EXT}`);
+            break;
+        default:
+            break;
+    }
+
+    return !!(searchPath && fs.existsSync(searchPath));
 }
 
 /**
