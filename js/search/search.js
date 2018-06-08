@@ -55,9 +55,9 @@ class Search {
         libSymphonySearch.symSEClearMainRAMIndex();
         libSymphonySearch.symSEClearRealtimeRAMIndex();
         this.isInitialized = true;
-        let userIndexPath = path.join(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH,
+        const userIndexPath = path.join(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH,
             `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${this.userId}`);
-        let mainIndexFolder = path.join(userIndexPath, searchConfig.FOLDERS_CONSTANTS.MAIN_INDEX);
+        const mainIndexFolder = path.join(userIndexPath, searchConfig.FOLDERS_CONSTANTS.MAIN_INDEX);
         if (fs.existsSync(userIndexPath)) {
             libSymphonySearch.symSEDeserializeMainIndexToEncryptedFoldersAsync(mainIndexFolder, key, (error, res) => {
 
@@ -195,7 +195,7 @@ class Search {
      * to the main user index
      */
     encryptIndex(key) {
-        let mainIndexFolder = path.join(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH,
+        const mainIndexFolder = path.join(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH,
             `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${this.userId}`);
         return new Promise(resolve => {
             if (!fs.existsSync(mainIndexFolder)) {
@@ -214,7 +214,7 @@ class Search {
                     }
                     return;
                 }
-                let userIndexPath = `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${this.userId}`;
+                const userIndexPath = `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${this.userId}`;
                 lz4.compression(userIndexPath, userIndexPath, (error) => {
                     if (error) {
                         log.send(logLevels.ERROR, 'Compressing Main Index Folder-> ' + err);
@@ -302,7 +302,7 @@ class Search {
 
             const returnedResult = libSymphonySearch.symSERAMIndexSearch(q, startDateTime.toString(), endDateTime.toString(), _offset, _limit, _sortOrder);
             try {
-                let ret = ref.readCString(returnedResult);
+                const ret = ref.readCString(returnedResult);
                 resolve(JSON.parse(ret));
             } finally {
                 libSymphonySearch.symSEFreeResult(returnedResult);
@@ -332,7 +332,7 @@ class Search {
             }
             const returnedResult = res;
             try {
-                let ret = ref.readCString(returnedResult);
+                const ret = ref.readCString(returnedResult);
                 return callback(true, ret);
             } finally {
                 libSymphonySearch.symSEFreeResult(returnedResult);
