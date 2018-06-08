@@ -541,8 +541,18 @@ function clearSearchData() {
     }
 }
 
+/**
+ * Check if the file or folder exist or not
+ * @param type
+ * @returns {boolean}
+ */
 function isFileExist(type) {
     let searchPath;
+
+    if (!this.userId) {
+        return false
+    }
+
     switch (type) {
         case 'USER_INDEX_PATH':
             searchPath = path.join(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH,
