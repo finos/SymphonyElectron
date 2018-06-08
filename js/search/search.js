@@ -76,7 +76,7 @@ class Search {
     }
 
     deCompress(key) {
-        let userIndexPath = path.join(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH,
+        const userIndexPath = path.join(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH,
             `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${this.userId}`);
         if (fs.existsSync(`${userIndexPath}${searchConfig.TAR_LZ4_EXT}`)) {
             lz4.deCompression(`${userIndexPath}${searchConfig.TAR_LZ4_EXT}`, (err) => {
