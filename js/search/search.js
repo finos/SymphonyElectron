@@ -47,8 +47,11 @@ class Search {
      * and creates a folder in the userData
      */
     init(key) {
+        if (!key) {
+            return;
+        }
         let bufKey = new Buffer(key, searchConfig.KEY_ENCODING);
-        if (!key && bufKey.length !== searchConfig.KEY_LENGTH) {
+        if (bufKey.length !== searchConfig.KEY_LENGTH) {
             return;
         }
         libSymphonySearch.symSEDestroy();
@@ -63,7 +66,7 @@ class Search {
             libSymphonySearch.symSEDeserializeMainIndexToEncryptedFoldersAsync(mainIndexFolder, key, (error, res) => {
 
                 clearSearchData.call(this);
-                if (res < 0) {
+                if (res === undefined || res === null || res < 0) {
                     log.send(logLevels.ERROR, 'Deserialization of Main Index Failed-> ' + error);
                     return;
                 }
@@ -208,7 +211,7 @@ class Search {
                 return;
             }
             libSymphonySearch.symSESerializeMainIndexToEncryptedFoldersAsync(mainIndexFolder, key, (err, res) => {
-                if (res < 0) {
+                if (res === undefined || res === null || res < 0) {
                     log.send(logLevels.ERROR, 'Serializing Main Index Failed-> ' + err);
                     if (isFileExist.call(this, 'USER_INDEX_PATH')) {
                         clearSearchData.call(this);
