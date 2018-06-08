@@ -26,6 +26,7 @@ let minimizeOnClose = false;
 let launchOnStartup = false;
 let isAlwaysOnTop = false;
 let bringToFront = false;
+let memoryRefresh = false;
 let titleBarStyle = titleBarStyles.CUSTOM;
 
 let symphonyAutoLauncher;
@@ -333,6 +334,22 @@ function getTemplate(app) {
         }
     });
 
+    // Window/View menu -> separator
+    template[index].submenu.push({
+        type: 'separator',
+    });
+
+    // Window - View menu -> memoryRefresh
+    template[index].submenu.push({
+        label: 'Memory Refresh',
+        type: 'checkbox',
+        checked: memoryRefresh,
+        click: function(item) {
+            memoryRefresh = item.checked;
+            updateConfigField('memoryRefresh', memoryRefresh);
+        }
+    });
+
     if (!isMac) {
 
         if (isWindows10()) {
@@ -422,6 +439,9 @@ function setCheckboxValues() {
                                 break;
                             case 'isCustomTitleBar':
                                 titleBarStyle = configData[key] ? titleBarStyles.CUSTOM : titleBarStyles.NATIVE_WITH_CUSTOM;
+                                break;
+                            case 'memoryRefresh':
+                                memoryRefresh = configData[key];
                                 break;
                             default:
                                 break;
