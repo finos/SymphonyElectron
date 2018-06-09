@@ -11,6 +11,7 @@ const logLevels = require('../enums/logLevels.js');
 const eventEmitter = require('../eventEmitter');
 const aboutApp = require('../aboutApp');
 const titleBarStyles = require('../enums/titleBarStyles');
+const i18n = new(require('../translation/i18n'))('en-US');
 
 const configFields = [
     'minimizeOnClose',
@@ -62,7 +63,7 @@ if (isMac) {
 }
 
 const template = [{
-    label: 'Edit',
+    label: i18n.__('Edit'),
     submenu: [
         buildMenuItem('undo'),
         buildMenuItem('redo'),
@@ -76,9 +77,9 @@ const template = [{
     ]
 },
 {
-    label: 'View',
+    label: i18n.__('View'),
     submenu: [{
-        label: 'Reload',
+        label: i18n.__('Reload'),
         accelerator: 'CmdOrCtrl+R',
         click(item, focusedWindow) {
             if (focusedWindow) {
@@ -106,18 +107,18 @@ const template = [{
     submenu: 
     [
         {
-            label: 'Symphony Help',
+            label: i18n.__('Symphony Help'),
             click() { electron.shell.openExternal('https://support.symphony.com'); }
         },
         {
-            label: 'Learn More',
+            label: i18n.__('Learn More'),
             click() { electron.shell.openExternal('https://www.symphony.com'); }
         },
         {
-            label: 'Troubleshooting',
+            label: i18n.__('Troubleshooting'),
             submenu: [
                 {
-                    label: isMac ? 'Show Logs in Finder' : 'Show Logs in Explorer',
+                    label: isMac ? i18n.__('Show Logs in Finder') : i18n.__('Show Logs in Explorer'),
                     click(item, focusedWindow) {
 
                         const FILE_EXTENSIONS = [ '.log' ];
@@ -150,7 +151,7 @@ const template = [{
                     }
                 },
                 {
-                    label: isMac ? 'Show crash dump in Finder' : 'Show crash dump in Explorer',
+                    label: isMac ? i18n.__('Show crash dump in Finder') : i18n.__('Show crash dump in Explorer'),
                     click(item, focusedWindow) {
                         const FILE_EXTENSIONS = isMac ? [ '.dmp' ] : [ '.dmp', '.txt' ];
                         const crashesDirectory = electron.crashReporter.getCrashesDirectory();
@@ -222,7 +223,7 @@ function getTemplate(app) {
         template[1].submenu.push({
             type: 'separator'
         }, {
-            label: 'Speech',
+            label: i18n.__('Speech'),
             submenu: [{
                 role: 'startspeaking'
             },
@@ -233,24 +234,24 @@ function getTemplate(app) {
         });
         // Window menu.
         template[3].submenu = [{
-            label: 'Close',
+            label: i18n.__('Close'),
             accelerator: 'CmdOrCtrl+W',
             role: 'close'
         },
         {
-            label: 'Minimize',
+            label: i18n.__('Minimize'),
             accelerator: 'CmdOrCtrl+M',
             role: 'minimize'
         },
         {
-            label: 'Zoom',
+            label: i18n.__('Zoom'),
             role: 'zoom'
         },
         {
             type: 'separator'
         },
         {
-            label: 'Bring All to Front',
+            label: i18n.__('Bring All to Front'),
             role: 'front'
         }
         ];
@@ -267,7 +268,7 @@ function getTemplate(app) {
 
     // Window menu -> launchOnStartup.
     template[index].submenu.push({
-        label: 'Auto Launch On Startup',
+        label: i18n.__('Auto Launch On Startup'),
         type: 'checkbox',
         checked: launchOnStartup,
         click: function(item, focusedWindow) {
@@ -297,7 +298,7 @@ function getTemplate(app) {
 
     // Window menu -> alwaysOnTop.
     template[index].submenu.push({
-        label: 'Always on top',
+        label: i18n.__('Always on Top'),
         type: 'checkbox',
         checked: isAlwaysOnTop,
         click: (item) => {
@@ -313,7 +314,7 @@ function getTemplate(app) {
     // Window menu -> minimizeOnClose.
     // ToDo: Add behavior on Close.
     template[index].submenu.push({
-        label: 'Minimize on Close',
+        label: i18n.__('Minimize on Close'),
         type: 'checkbox',
         checked: minimizeOnClose,
         click: function(item) {
@@ -324,7 +325,7 @@ function getTemplate(app) {
 
     // Window menu -> bringToFront
     template[index].submenu.push({
-        label: isWindowsOS ? 'Flash Notification in Taskbar' : 'Bring to Front on Notifications',
+        label: isWindowsOS ? i18n.__('Flash Notification in Taskbar') : i18n.__('Bring to Front on Notifications'),
         type: 'checkbox',
         checked: bringToFront,
         click: function(item) {
@@ -338,10 +339,10 @@ function getTemplate(app) {
         if (isWindows10()) {
             /* eslint-disable no-param-reassign */
             template[index].submenu.push({
-                label: 'Title Bar Style',
+                label: i18n.__('Title Bar Style'),
                 submenu: [
                     {
-                        label: 'Native With Custom',
+                        label: i18n.__('Native With Custom'),
                         type: 'checkbox',
                         checked: titleBarStyle === titleBarStyles.NATIVE_WITH_CUSTOM,
                         click: function (item) {
@@ -351,7 +352,7 @@ function getTemplate(app) {
                         }
                     },
                     {
-                        label: 'Custom',
+                        label: i18n.__('Custom'),
                         type: 'checkbox',
                         checked: titleBarStyle === titleBarStyles.CUSTOM,
                         click: function (item) {
@@ -368,7 +369,7 @@ function getTemplate(app) {
         }
 
         template[index].submenu.push({
-            label: 'Quit Symphony',
+            label: i18n.__('Quit Symphony'),
             click: function() {
                 app.quit();
             }
@@ -376,7 +377,7 @@ function getTemplate(app) {
 
         // This adds About Symphony under help menu for windows
         template[3].submenu.push({
-            label: 'About Symphony',
+            label: i18n.__('About Symphony'),
             click(focusedWindow) {
                 let windowName = focusedWindow ? focusedWindow.name : '';
                 aboutApp.openAboutWindow(windowName);
