@@ -556,18 +556,14 @@ function isFileExist(type) {
         return false
     }
 
-    switch (type) {
-        case 'USER_INDEX_PATH':
-            searchPath = path.join(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH,
-                `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${this.userId}`);
-            break;
-        case 'LZ4':
-            searchPath = path.join(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH,
-                `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${this.userId}${searchConfig.TAR_LZ4_EXT}`);
-            break;
-        default:
-            break;
-    }
+    const pathObject = {
+        USER_INDEX_PATH: path.join(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH,
+            `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${this.userId}`),
+        LZ4: path.join(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH,
+            `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${this.userId}${searchConfig.TAR_LZ4_EXT}`),
+    };
+
+    searchPath = pathObject[type];
 
     return !!(searchPath && fs.existsSync(searchPath));
 }
