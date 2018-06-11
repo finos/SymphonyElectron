@@ -11,7 +11,7 @@ const logLevels = require('../enums/logLevels.js');
 const eventEmitter = require('../eventEmitter');
 const aboutApp = require('../aboutApp');
 const titleBarStyles = require('../enums/titleBarStyles');
-const i18n = new(require('../translation/i18n'))('en-US');
+const i18n = new(require('../translation/i18n'))('ja-JP');
 
 const configFields = [
     'minimizeOnClose',
@@ -65,7 +65,7 @@ if (isMac) {
 const template = [{
     label: i18n.__('Edit'),
     submenu: [
-        buildMenuItem('undo'),
+        buildMenuItem('undo', i18n.__('Undo')),
         buildMenuItem('redo'),
         { type: 'separator' },
         buildMenuItem('cut'),
@@ -451,17 +451,17 @@ function setCheckboxValues() {
  * @return {Object}.role         The action of the menu item
  * @return {Object}.accelerator  keyboard shortcuts and modifiers
  */
-function buildMenuItem(role) {
+function buildMenuItem(role, label) {
 
     if (isMac) {
-        return { role: role }
+        return { role: role, label: label }
     }
 
     if (isWindowsOS) {
-        return { role: role, accelerator: windowsAccelerator[role] || '' }
+        return { role: role, label: label, accelerator: windowsAccelerator[role] || '' }
     }
 
-    return { role: role }
+    return { role: role, label: label }
 }
 
 function getMinimizeOnClose() {
