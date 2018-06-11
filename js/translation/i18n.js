@@ -26,6 +26,10 @@ i18n.prototype.switchLanguage = function(lng) {
 
 function generateMissingPhrase(phrase) {
     missingPhrases[phrase] = phrase;
-    let data = JSON.stringify(missingPhrases, null, 4);
+    let data = JSON.stringify(missingPhrases, null, 2);
     fs.writeFile(path.join(__dirname, language + '_missing.json'), data, err => err ? console.error(err) : null);
+}
+
+function cleanupTranslationMissingFiles(language) {
+    fs.writeFile(path.join(__dirname, language + '_missing.json'), JSON.stringify({}, null, 2), err => err ? console.error(err) : null);
 }

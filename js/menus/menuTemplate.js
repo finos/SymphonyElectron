@@ -1,9 +1,10 @@
 'use strict';
 
-const electron = require('electron');
 const fs = require('fs');
-const { updateConfigField, getMultipleConfigField } = require('../config.js');
 const AutoLaunch = require('auto-launch');
+const electron = require('electron');
+
+const { updateConfigField, getMultipleConfigField } = require('../config.js');
 const { isMac, isWindowsOS, isWindows10 } = require('../utils/misc.js');
 const archiveHandler = require('../utils/archiveHandler');
 const log = require('../log.js');
@@ -11,7 +12,7 @@ const logLevels = require('../enums/logLevels.js');
 const eventEmitter = require('../eventEmitter');
 const aboutApp = require('../aboutApp');
 const titleBarStyles = require('../enums/titleBarStyles');
-const i18n = new(require('../translation/i18n'))('ja-JP');
+const i18n = new(require('../translation/i18n'));
 
 const configFields = [
     'minimizeOnClose',
@@ -67,14 +68,14 @@ const template = [{
     label: i18n.__('Edit'),
     submenu: [
         buildMenuItem('undo', i18n.__('Undo')),
-        buildMenuItem('redo'),
+        buildMenuItem('redo', i18n.__('Redo')),
         { type: 'separator' },
-        buildMenuItem('cut'),
-        buildMenuItem('copy'),
-        buildMenuItem('paste'),
-        buildMenuItem('pasteandmatchstyle'),
-        buildMenuItem('delete'),
-        buildMenuItem('selectall')
+        buildMenuItem('cut', i18n.__('Cut')),
+        buildMenuItem('copy', i18n.__('Copy')),
+        buildMenuItem('paste', i18n.__('Paste')),
+        buildMenuItem('pasteandmatchstyle', i18n.__('Paste and Match Style')),
+        buildMenuItem('delete', i18n.__('Delete')),
+        buildMenuItem('selectall', i18n.__('Select All'))
     ]
 },
 {
@@ -89,23 +90,25 @@ const template = [{
         }
     },
         { type: 'separator' },
-        buildMenuItem('resetzoom'),
-        buildMenuItem('zoomin'),
-        buildMenuItem('zoomout'), 
+        buildMenuItem('resetzoom', i18n.__('Actual Size')),
+        buildMenuItem('zoomin', i18n.__('Zoom In')),
+        buildMenuItem('zoomout', i18n.__('Zoom Out')),
         { type: 'separator' },
-        buildMenuItem('togglefullscreen'),
+        buildMenuItem('togglefullscreen', i18n.__('Toggle Full Screen')),
     ]
 },
 {
     role: 'window',
+    label: i18n.__('Window'),
     submenu: [
-        buildMenuItem('minimize'),
-        buildMenuItem('close'),
+        buildMenuItem('minimize', i18n.__('Minimize')),
+        buildMenuItem('close', i18n.__('Close')),
     ]
 },
 {
     role: 'help',
-    submenu: 
+    label: i18n.__('Help'),
+    submenu:
     [
         {
             label: i18n.__('Symphony Help'),
@@ -191,32 +194,38 @@ function getTemplate(app) {
         template.unshift({
             label: app.getName(),
             submenu: [{
-                role: 'about'
+                role: 'about',
+                label: i18n.__('About Symphony')
             },
             {
                 type: 'separator'
             },
             {
                 role: 'services',
+                label: i18n.__('Services'),
                 submenu: []
             },
             {
                 type: 'separator'
             },
             {
-                role: 'hide'
+                role: 'hide',
+                label: i18n.__('Hide Symphony')
             },
             {
-                role: 'hideothers'
+                role: 'hideothers',
+                label: i18n.__('Hide Others')
             },
             {
-                role: 'unhide'
+                role: 'unhide',
+                label: i18n.__('Show All')
             },
             {
                 type: 'separator'
             },
             {
-                role: 'quit'
+                role: 'quit',
+                label: i18n.__('Quit Symphony')
             }
             ]
         });
@@ -226,34 +235,36 @@ function getTemplate(app) {
         }, {
             label: i18n.__('Speech'),
             submenu: [{
-                role: 'startspeaking'
+                role: 'startspeaking',
+                label: i18n.__('Start Speaking')
             },
             {
-                role: 'stopspeaking'
+                role: 'stopspeaking',
+                label: i18n.__('Stop Speaking')
             }
             ]
         });
         // Window menu.
         template[3].submenu = [{
-            label: i18n.__('Close'),
             accelerator: 'CmdOrCtrl+W',
-            role: 'close'
+            role: 'close',
+            label: i18n.__('Close')
         },
         {
-            label: i18n.__('Minimize'),
             accelerator: 'CmdOrCtrl+M',
-            role: 'minimize'
+            role: 'minimize',
+            label: i18n.__('Minimize')
         },
         {
-            label: i18n.__('Zoom'),
-            role: 'zoom'
+            role: 'zoom',
+            label: i18n.__('Zoom')
         },
         {
             type: 'separator'
         },
         {
-            label: i18n.__('Bring All to Front'),
-            role: 'front'
+            role: 'front',
+            label: i18n.__('Bring All to Front')
         }
         ];
     }
@@ -342,7 +353,7 @@ function getTemplate(app) {
 
     // Window - View menu -> memoryRefresh
     template[index].submenu.push({
-        label: 'Refresh app when idle',
+        label: i18n.__('Refresh app when idle'),
         type: 'checkbox',
         checked: memoryRefresh,
         click: function(item) {
@@ -465,23 +476,24 @@ function setCheckboxValues() {
 /**
  * Sets respective accelerators w.r.t roles for the menu template
  *
- * @param role {String}              The action of the menu item
- *
+ * @param role {String} The action of the menu item
+ * @param label {String} Menu item name
  * @return {Object}
- * @return {Object}.role         The action of the menu item
- * @return {Object}.accelerator  keyboard shortcuts and modifiers
+ * @return {Object}.role The action of the menu item
+ * @return {Object}.accelerator keyboard shortcuts and modifiers
  */
 function buildMenuItem(role, label) {
 
     if (isMac) {
-        return { role: role, label: label }
+        return label ? { role: role, label: label } : { role: role }
     }
 
     if (isWindowsOS) {
-        return { role: role, label: label, accelerator: windowsAccelerator[role] || '' }
+        return label ? { role: role, label: label, accelerator: windowsAccelerator[role] || '' }
+        : { role: role, accelerator: windowsAccelerator[role] || '' }
     }
 
-    return { role: role, label: label }
+    return label ? { role: role, label: label } : { role: role }
 }
 
 function getMinimizeOnClose() {
