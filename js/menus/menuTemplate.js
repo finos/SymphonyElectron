@@ -12,7 +12,8 @@ const logLevels = require('../enums/logLevels.js');
 const eventEmitter = require('../eventEmitter');
 const aboutApp = require('../aboutApp');
 const titleBarStyles = require('../enums/titleBarStyles');
-const i18n = new(require('../translation/i18n'));
+const i18n = require('../translation/i18n');
+i18n.setLanguage('ja-JP');
 
 const configFields = [
     'minimizeOnClose',
@@ -65,23 +66,23 @@ if (isMac) {
 }
 
 const template = [{
-    label: i18n.__('Edit'),
+    label: i18n.getMessageFor('Edit'),
     submenu: [
-        buildMenuItem('undo', i18n.__('Undo')),
-        buildMenuItem('redo', i18n.__('Redo')),
+        buildMenuItem('undo', i18n.getMessageFor('Undo')),
+        buildMenuItem('redo', i18n.getMessageFor('Redo')),
         { type: 'separator' },
-        buildMenuItem('cut', i18n.__('Cut')),
-        buildMenuItem('copy', i18n.__('Copy')),
-        buildMenuItem('paste', i18n.__('Paste')),
-        buildMenuItem('pasteandmatchstyle', i18n.__('Paste and Match Style')),
-        buildMenuItem('delete', i18n.__('Delete')),
-        buildMenuItem('selectall', i18n.__('Select All'))
+        buildMenuItem('cut', i18n.getMessageFor('Cut')),
+        buildMenuItem('copy', i18n.getMessageFor('Copy')),
+        buildMenuItem('paste', i18n.getMessageFor('Paste')),
+        buildMenuItem('pasteandmatchstyle', i18n.getMessageFor('Paste and Match Style')),
+        buildMenuItem('delete', i18n.getMessageFor('Delete')),
+        buildMenuItem('selectall', i18n.getMessageFor('Select All'))
     ]
 },
 {
-    label: i18n.__('View'),
+    label: i18n.getMessageFor('View'),
     submenu: [{
-        label: i18n.__('Reload'),
+        label: i18n.getMessageFor('Reload'),
         accelerator: 'CmdOrCtrl+R',
         click(item, focusedWindow) {
             if (focusedWindow) {
@@ -90,39 +91,39 @@ const template = [{
         }
     },
         { type: 'separator' },
-        buildMenuItem('resetzoom', i18n.__('Actual Size')),
-        buildMenuItem('zoomin', i18n.__('Zoom In')),
-        buildMenuItem('zoomout', i18n.__('Zoom Out')),
+        buildMenuItem('resetzoom', i18n.getMessageFor('Actual Size')),
+        buildMenuItem('zoomin', i18n.getMessageFor('Zoom In')),
+        buildMenuItem('zoomout', i18n.getMessageFor('Zoom Out')),
         { type: 'separator' },
-        buildMenuItem('togglefullscreen', i18n.__('Toggle Full Screen')),
+        buildMenuItem('togglefullscreen', i18n.getMessageFor('Toggle Full Screen')),
     ]
 },
 {
     role: 'window',
-    label: i18n.__('Window'),
+    label: i18n.getMessageFor('Window'),
     submenu: [
-        buildMenuItem('minimize', i18n.__('Minimize')),
-        buildMenuItem('close', i18n.__('Close')),
+        buildMenuItem('minimize', i18n.getMessageFor('Minimize')),
+        buildMenuItem('close', i18n.getMessageFor('Close')),
     ]
 },
 {
     role: 'help',
-    label: i18n.__('Help'),
+    label: i18n.getMessageFor('Help'),
     submenu:
     [
         {
-            label: i18n.__('Symphony Help'),
+            label: i18n.getMessageFor('Symphony Help'),
             click() { electron.shell.openExternal('https://support.symphony.com'); }
         },
         {
-            label: i18n.__('Learn More'),
+            label: i18n.getMessageFor('Learn More'),
             click() { electron.shell.openExternal('https://www.symphony.com'); }
         },
         {
-            label: i18n.__('Troubleshooting'),
+            label: i18n.getMessageFor('Troubleshooting'),
             submenu: [
                 {
-                    label: isMac ? i18n.__('Show Logs in Finder') : i18n.__('Show Logs in Explorer'),
+                    label: isMac ? i18n.getMessageFor('Show Logs in Finder') : i18n.getMessageFor('Show Logs in Explorer'),
                     click(item, focusedWindow) {
 
                         const FILE_EXTENSIONS = [ '.log' ];
@@ -155,7 +156,7 @@ const template = [{
                     }
                 },
                 {
-                    label: isMac ? i18n.__('Show crash dump in Finder') : i18n.__('Show crash dump in Explorer'),
+                    label: isMac ? i18n.getMessageFor('Show crash dump in Finder') : i18n.getMessageFor('Show crash dump in Explorer'),
                     click(item, focusedWindow) {
                         const FILE_EXTENSIONS = isMac ? [ '.dmp' ] : [ '.dmp', '.txt' ];
                         const crashesDirectory = electron.crashReporter.getCrashesDirectory();
@@ -195,14 +196,14 @@ function getTemplate(app) {
             label: app.getName(),
             submenu: [{
                 role: 'about',
-                label: i18n.__('About Symphony')
+                label: i18n.getMessageFor('About Symphony')
             },
             {
                 type: 'separator'
             },
             {
                 role: 'services',
-                label: i18n.__('Services'),
+                label: i18n.getMessageFor('Services'),
                 submenu: []
             },
             {
@@ -210,22 +211,22 @@ function getTemplate(app) {
             },
             {
                 role: 'hide',
-                label: i18n.__('Hide Symphony')
+                label: i18n.getMessageFor('Hide Symphony')
             },
             {
                 role: 'hideothers',
-                label: i18n.__('Hide Others')
+                label: i18n.getMessageFor('Hide Others')
             },
             {
                 role: 'unhide',
-                label: i18n.__('Show All')
+                label: i18n.getMessageFor('Show All')
             },
             {
                 type: 'separator'
             },
             {
                 role: 'quit',
-                label: i18n.__('Quit Symphony')
+                label: i18n.getMessageFor('Quit Symphony')
             }
             ]
         });
@@ -233,14 +234,14 @@ function getTemplate(app) {
         template[1].submenu.push({
             type: 'separator'
         }, {
-            label: i18n.__('Speech'),
+            label: i18n.getMessageFor('Speech'),
             submenu: [{
                 role: 'startspeaking',
-                label: i18n.__('Start Speaking')
+                label: i18n.getMessageFor('Start Speaking')
             },
             {
                 role: 'stopspeaking',
-                label: i18n.__('Stop Speaking')
+                label: i18n.getMessageFor('Stop Speaking')
             }
             ]
         });
@@ -248,23 +249,23 @@ function getTemplate(app) {
         template[3].submenu = [{
             accelerator: 'CmdOrCtrl+W',
             role: 'close',
-            label: i18n.__('Close')
+            label: i18n.getMessageFor('Close')
         },
         {
             accelerator: 'CmdOrCtrl+M',
             role: 'minimize',
-            label: i18n.__('Minimize')
+            label: i18n.getMessageFor('Minimize')
         },
         {
             role: 'zoom',
-            label: i18n.__('Zoom')
+            label: i18n.getMessageFor('Zoom')
         },
         {
             type: 'separator'
         },
         {
             role: 'front',
-            label: i18n.__('Bring All to Front')
+            label: i18n.getMessageFor('Bring All to Front')
         }
         ];
     }
@@ -280,7 +281,7 @@ function getTemplate(app) {
 
     // Window menu -> launchOnStartup.
     template[index].submenu.push({
-        label: i18n.__('Auto Launch On Startup'),
+        label: i18n.getMessageFor('Auto Launch On Startup'),
         type: 'checkbox',
         checked: launchOnStartup,
         click: function(item, focusedWindow) {
@@ -310,7 +311,7 @@ function getTemplate(app) {
 
     // Window menu -> alwaysOnTop.
     template[index].submenu.push({
-        label: i18n.__('Always on Top'),
+        label: i18n.getMessageFor('Always on Top'),
         type: 'checkbox',
         checked: isAlwaysOnTop,
         click: (item) => {
@@ -326,7 +327,7 @@ function getTemplate(app) {
     // Window menu -> minimizeOnClose.
     // ToDo: Add behavior on Close.
     template[index].submenu.push({
-        label: i18n.__('Minimize on Close'),
+        label: i18n.getMessageFor('Minimize on Close'),
         type: 'checkbox',
         checked: minimizeOnClose,
         click: function(item) {
@@ -337,7 +338,7 @@ function getTemplate(app) {
 
     // Window menu -> bringToFront
     template[index].submenu.push({
-        label: isWindowsOS ? i18n.__('Flash Notification in Taskbar') : i18n.__('Bring to Front on Notifications'),
+        label: isWindowsOS ? i18n.getMessageFor('Flash Notification in Taskbar') : i18n.getMessageFor('Bring to Front on Notifications'),
         type: 'checkbox',
         checked: bringToFront,
         click: function(item) {
@@ -353,7 +354,7 @@ function getTemplate(app) {
 
     // Window - View menu -> memoryRefresh
     template[index].submenu.push({
-        label: i18n.__('Refresh app when idle'),
+        label: i18n.getMessageFor('Refresh app when idle'),
         type: 'checkbox',
         checked: memoryRefresh,
         click: function(item) {
@@ -367,10 +368,10 @@ function getTemplate(app) {
         if (isWindows10()) {
             /* eslint-disable no-param-reassign */
             template[index].submenu.push({
-                label: i18n.__('Title Bar Style'),
+                label: i18n.getMessageFor('Title Bar Style'),
                 submenu: [
                     {
-                        label: i18n.__('Native With Custom'),
+                        label: i18n.getMessageFor('Native With Custom'),
                         type: 'checkbox',
                         checked: titleBarStyle === titleBarStyles.NATIVE_WITH_CUSTOM,
                         click: function (item) {
@@ -380,7 +381,7 @@ function getTemplate(app) {
                         }
                     },
                     {
-                        label: i18n.__('Custom'),
+                        label: i18n.getMessageFor('Custom'),
                         type: 'checkbox',
                         checked: titleBarStyle === titleBarStyles.CUSTOM,
                         click: function (item) {
@@ -397,7 +398,7 @@ function getTemplate(app) {
         }
 
         template[index].submenu.push({
-            label: i18n.__('Quit Symphony'),
+            label: i18n.getMessageFor('Quit Symphony'),
             click: function() {
                 app.quit();
             }
@@ -405,7 +406,7 @@ function getTemplate(app) {
 
         // This adds About Symphony under help menu for windows
         template[3].submenu.push({
-            label: i18n.__('About Symphony'),
+            label: i18n.getMessageFor('About Symphony'),
             click(focusedWindow) {
                 let windowName = focusedWindow ? focusedWindow.name : '';
                 aboutApp.openAboutWindow(windowName);
