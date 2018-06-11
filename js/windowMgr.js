@@ -289,7 +289,9 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
             e.preventDefault();
             mainWindow.minimize();
         } else {
-            app.quit();
+            if (!isMac) {
+                app.quit();
+            }
         }
     });
 
