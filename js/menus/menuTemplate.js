@@ -13,7 +13,6 @@ const eventEmitter = require('../eventEmitter');
 const aboutApp = require('../aboutApp');
 const titleBarStyles = require('../enums/titleBarStyles');
 const i18n = require('../translation/i18n');
-i18n.setLanguage('ja-JP');
 
 const configFields = [
     'minimizeOnClose',
@@ -134,7 +133,7 @@ const template = [{
                         let source = electron.app.getPath('home') + logsPath;
             
                         if (!fs.existsSync(source) && focusedWindow && !focusedWindow.isDestroyed()) {
-                            electron.dialog.showMessageBox(focusedWindow, {type: 'error', title: 'Failed!', message: 'No logs are available to share'});
+                            electron.dialog.showMessageBox(focusedWindow, {type: 'error', title: i18n.getMessageFor('Failed!'), message: i18n.getMessageFor('No logs are available to share')});
                             return;
                         }
             
@@ -149,10 +148,10 @@ const template = [{
                             })
                             .catch((err) => {
                                 if (focusedWindow && !focusedWindow.isDestroyed()) {
-                                    electron.dialog.showMessageBox(focusedWindow, {type: 'error', title: 'Failed!', message: `Unable to generate logs due to -> ${err}`});
+                                    electron.dialog.showMessageBox(focusedWindow, {type: 'error', title: i18n.getMessageFor('Failed!'), message: i18n.getMessageFor('Unable to generate logs due to ') + err});
                                 }
-                            })
-            
+                            });
+
                     }
                 },
                 {
@@ -164,7 +163,7 @@ const template = [{
 
                         // TODO: Add support to get diagnostic reports from ~/Library/Logs/DiagnosticReports
                         if (!fs.existsSync(source) || fs.readdirSync(source).length === 0 && focusedWindow && !focusedWindow.isDestroyed()) {
-                            electron.dialog.showMessageBox(focusedWindow, {type: 'error', title: 'Failed!', message: 'No crashes available to share'});
+                            electron.dialog.showMessageBox(focusedWindow, {type: 'error', title: i18n.getMessageFor('Failed!'), message: i18n.getMessageFor('No crashes available to share')});
                             return;
                         }
 
@@ -179,7 +178,7 @@ const template = [{
                             })
                             .catch((err) => {
                                 if (focusedWindow && !focusedWindow.isDestroyed()) {
-                                    electron.dialog.showMessageBox(focusedWindow, {type: 'error', title: 'Failed!', message: `Unable to generate crash reports due to -> ${err}`});
+                                    electron.dialog.showMessageBox(focusedWindow, {type: 'error', title: i18n.getMessageFor('Failed!'), message: i18n.getMessageFor('Unable to generate crash reports due to ') + err});
                                 }
                             });
                     }
@@ -291,7 +290,7 @@ function getTemplate(app) {
                         let title = 'Error setting AutoLaunch configuration';
                         log.send(logLevels.ERROR, 'MenuTemplate: ' + title + ': auto launch error ' + err);
                         if (focusedWindow && !focusedWindow.isDestroyed()) {
-                            electron.dialog.showMessageBox(focusedWindow, {type: 'error', title, message: title + ': ' + err});
+                            electron.dialog.showMessageBox(focusedWindow, {type: 'error', title: i18n.getMessageFor(title), message: i18n.getMessageFor(title) + ': ' + err});
                         }
                     });
             } else {
@@ -300,7 +299,7 @@ function getTemplate(app) {
                         let title = 'Error setting AutoLaunch configuration';
                         log.send(logLevels.ERROR, 'MenuTemplate: ' + title + ': auto launch error ' + err);
                         if (focusedWindow && !focusedWindow.isDestroyed()) {
-                            electron.dialog.showMessageBox(focusedWindow, {type: 'error', title, message: title + ': ' + err});
+                            electron.dialog.showMessageBox(focusedWindow, {type: 'error', title: i18n.getMessageFor(title), message: i18n.getMessageFor(title) + ': ' + err});
                         }
                     });
             }
@@ -467,7 +466,7 @@ function setCheckboxValues() {
                 let title = 'Error loading configuration';
                 log.send(logLevels.ERROR, 'MenuTemplate: error reading configuration fields, error: ' + err);
                 if (electron.BrowserWindow.getFocusedWindow() && !electron.BrowserWindow.getFocusedWindow().isDestroyed()) {
-                    electron.dialog.showMessageBox(electron.BrowserWindow.getFocusedWindow(), {type: 'error', title, message: title + ': ' + err});
+                    electron.dialog.showMessageBox(electron.BrowserWindow.getFocusedWindow(), {type: 'error', title: i18n.getMessageFor(title), message: i18n.getMessageFor(title) + ': ' + err});
                 }
                 return resolve();
             });

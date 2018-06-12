@@ -25,6 +25,7 @@ const { isMac, isNodeEnv, isWindows10, isWindowsOS } = require('./utils/misc');
 const { deleteIndexFolder } = require('./search/search.js');
 const { isWhitelisted, parseDomain } = require('./utils/whitelistHandler');
 const { initCrashReporterMain, initCrashReporterRenderer } = require('./crashReporter.js');
+const i18n = require('./translation/i18n');
 
 // show dialog when certificate errors occur
 require('./dialogs/showCertError.js');
@@ -253,8 +254,8 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     mainWindow.webContents.on('crashed', function () {
         const options = {
             type: 'error',
-            title: 'Renderer Process Crashed',
-            message: 'Oops! Looks like we have had a crash. Please reload or close this window.',
+            title: i18n.getMessageFor('Renderer Process Crashed'),
+            message: i18n.getMessageFor('Oops! Looks like we have had a crash. Please reload or close this window.'),
             buttons: ['Reload', 'Close']
         };
 
@@ -421,8 +422,8 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                     let handleChildWindowCrashEvent = (e) => {
                         const options = {
                             type: 'error',
-                            title: 'Renderer Process Crashed',
-                            message: 'Oops! Looks like we have had a crash. Please reload or close this window.',
+                            title: i18n.getMessageFor('Renderer Process Crashed'),
+                            message: i18n.getMessageFor('Oops! Looks like we have had a crash. Please reload or close this window.'),
                             buttons: ['Reload', 'Close']
                         };
 
@@ -493,8 +494,8 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                 electron.dialog.showMessageBox(mainWindow, {
                     type: 'warning',
                     buttons: ['Ok'],
-                    title: 'Not Allowed',
-                    message: `Sorry, you are not allowed to access this website (${navigatedURL}), please contact your administrator for more details`,
+                    title: i18n.getMessageFor('Not Allowed'),
+                    message: i18n.getMessageFor('Sorry, you are not allowed to access this website') + ' (' + navigatedURL + '), ' + i18n.getMessageFor('please contact your administrator for more details'),
                 });
             });
     });
@@ -537,10 +538,10 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                         log.send(logLevels.INFO, 'permission is -> ' + userPermission);
 
                         if (!userPermission) {
-                            let fullMessage = `Your administrator has disabled ${message}. Please contact your admin for help.`;
+                            let fullMessage = i18n.getMessageFor('Your administrator has disabled') + message + '. ' + i18n.getMessageFor('Please contact your admin for help' + '.');
                             const browserWindow = BrowserWindow.getFocusedWindow();
                             if (browserWindow && !browserWindow.isDestroyed()) {
-                                electron.dialog.showMessageBox(browserWindow, {type: 'error', title: 'Permission Denied!', message: fullMessage});
+                                electron.dialog.showMessageBox(browserWindow, {type: 'error', title: i18n.getMessageFor('Permission Denied') + '!', message: fullMessage});
                             }
                         }
 

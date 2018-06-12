@@ -1,7 +1,7 @@
 const path = require("path");
 const fs = require('fs');
 let language;
-let loadedTranslations;
+let loadedTranslations = {};
 let missingPhrases = {};
 
 const getMessageFor = function(phrase) {

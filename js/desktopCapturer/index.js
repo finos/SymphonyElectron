@@ -104,8 +104,8 @@ function openScreenPickerWindow(eventSender, sources, id) {
     screenPickerWindow.webContents.on('crashed', function () {
         const options = {
             type: 'error',
-            title: 'Renderer Process Crashed',
-            message: 'Oops! Looks like we have had a crash.',
+            title: i18n.getMessageFor('Renderer Process Crashed'),
+            message: i18n.getMessageFor('Oops! Looks like we have had a crash.'),
             buttons: ['Close']
         };
 
