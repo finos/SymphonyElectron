@@ -17,22 +17,20 @@ class SearchUtils {
     /**
      * This function returns true if the available disk space
      * is more than the constant MINIMUM_DISK_SPACE
-     * @param callback
+     * @returns {Promise}
      */
-    checkFreeSpace(callback) {
-        if (typeof callback !== "function") {
-            return false;
-        }
-        let userDataPath = searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH;
-        if (!isMac) {
-            try {
-                userDataPath = userDataPath.substring(0, 1);
-            } catch (e) {
-                return callback(false, 'Invalid Path');
+    checkFreeSpace() {
+        return new Promise((resolve, reject) => {
+            let userDataPath = searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH;
+            if (!isMac) {
+                try {
+                    userDataPath = userDataPath.substring(0, 1);
+                } catch (e) {
+                    reject(false);
+                }
             }
-        }
-        checkDiskSpace(userDataPath, callback);
-        return null;
+            checkDiskSpace(userDataPath, resolve, reject);
+        });
     }
 
     /**
