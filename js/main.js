@@ -118,15 +118,13 @@ if (isMac) {
  */
 function setChromeFlags() {
 
-    log.send(logLevels.INFO, 'checking if we need to set custom chrome flags!');
+    log.send(logLevels.INFO, 'setting chrome flags!');
 
     // Read the config parameters synchronously
     let config = readConfigFileSync();
 
     // If we cannot find any config, just skip setting any flags
     if (config && config !== null && config.customFlags) {
-
-        log.send(logLevels.INFO, 'Chrome flags config found!');
 
         if (config.customFlags.authServerWhitelist && config.customFlags.authServerWhitelist !== "") {
             log.send(logLevels.INFO, 'Setting auth server whitelist flag');
@@ -149,6 +147,8 @@ function setChromeFlags() {
         }
 
     }
+    
+    app.commandLine.appendSwitch("disable-background-timer-throttling", true);
 }
 
 // Set the chrome flags
