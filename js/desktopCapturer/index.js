@@ -9,6 +9,7 @@ const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 const { isMac, isWindowsOS } = require('./../utils/misc.js');
 const { initCrashReporterMain, initCrashReporterRenderer } = require('../crashReporter.js');
+const i18n = require('../translation/i18n');
 
 let screenPickerWindow;
 let preloadWindow;
@@ -92,6 +93,8 @@ function openScreenPickerWindow(eventSender, sources, id) {
     });
 
     screenPickerWindow.webContents.on('did-finish-load', () => {
+        const screenPickerContent = i18n.getMessageFor('ScreenPicker');
+        screenPickerWindow.webContents.send('i18n-screen-picker', screenPickerContent);
         // initialize crash reporter
         initCrashReporterMain({ process: 'desktop capture window' });
         initCrashReporterRenderer(screenPickerWindow, { process: 'render | desktop capture window' });
