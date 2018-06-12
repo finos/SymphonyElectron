@@ -679,7 +679,9 @@ function getWindowSizeAndPosition(window) {
  * Shows the main window
  */
 function showMainWindow() {
-    mainWindow.show();
+    if (mainWindow) {
+        mainWindow.show();
+    }
 }
 
 /**
