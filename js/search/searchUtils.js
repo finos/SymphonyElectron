@@ -10,6 +10,10 @@ const { isMac } = require('../utils/misc.js');
 /*eslint class-methods-use-this: ["error", { "exceptMethods": ["checkFreeSpace"] }] */
 class SearchUtils {
 
+    constructor() {
+        this.indexVersion = searchConfig.INDEX_VERSION;
+    }
+
     /**
      * This function returns true if the available disk space
      * is more than the constant MINIMUM_DISK_SPACE
