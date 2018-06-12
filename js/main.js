@@ -148,7 +148,7 @@ function setChromeFlags() {
 
     }
     
-    app.commandLine.appendSwitch("--disable-background-timer-throttling", true);
+    app.commandLine.appendSwitch("disable-background-timer-throttling", true);
 }
 
 // Set the chrome flags
