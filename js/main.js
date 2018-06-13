@@ -169,9 +169,7 @@ app.on('ready', () => {
  * In which case we quit the app
  */
 app.on('window-all-closed', function() {
-    if (!isMac) {
-        app.quit();
-    }
+    app.quit();
 });
 
 /**
