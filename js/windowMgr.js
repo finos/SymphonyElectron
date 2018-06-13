@@ -289,10 +289,11 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         if (getMinimizeOnClose()) {
             e.preventDefault();
             mainWindow.minimize();
+        } else if (isMac) {
+            e.preventDefault();
+            mainWindow.hide();
         } else {
-            if (!isMac) {
-                app.quit();
-            }
+            app.quit();
         }
     });
 
