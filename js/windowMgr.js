@@ -275,10 +275,17 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     addWindowKey(key, mainWindow);
     mainWindow.loadURL(url);
 
-    menu = electron.Menu.buildFromTemplate(getTemplate(app));
-    if (!isWindows10()) {
-        electron.Menu.setApplicationMenu(menu);
-    }
+    getConfigField('locale')
+        .then((language) => {
+            const lang = language || app.getLocale();
+            log.send(`setting app language to ${lang}`);
+            rebuildMenu(lang);
+        })
+        .catch((err) => {
+            const lang = app.getLocale();
+            log.send(`could not find language settings ${err}, defaulting to system language ${app.getLocale()}`);
+            rebuildMenu(lang);
+        });
 
     mainWindow.on('close', function (e) {
         if (willQuitApp) {
@@ -835,6 +842,24 @@ eventEmitter.on('notificationSettings', (notificationSettings) => {
     position = notificationSettings.position;
     display = notificationSettings.display;
 });
+
+eventEmitter.on('language-changed', (opts) => {
+    const lang = opts && opts.language || app.getLocale();
+    log.send(logLevels.INFO, `inside change language event, language changed to ${lang}`);
+    rebuildMenu(lang);
+});
+
+function rebuildMenu(language) {
+    setLanguage(language);
+    menu = electron.Menu.buildFromTemplate(getTemplate(app));
+    if (!isWindows10()) {
+        electron.Menu.setApplicationMenu(menu);
+    }
+}
+
+function setLanguage(lang) {
+    i18n.setLanguage(lang);
+}
 
 /**
  * Method that gets invoked when an external display
