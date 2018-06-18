@@ -18,6 +18,7 @@ const eventEmitter = require('./eventEmitter');
 const { isMac } = require('./utils/misc');
 const { openScreenPickerWindow } = require('./desktopCapturer');
 const { optimizeMemory, setIsInMeeting } = require('./memoryMonitor');
+const { openFile, showInFinder, clearDownloadData } = require('./downloadManager');
 
 const apiEnums = require('./enums/api.js');
 const apiCmds = apiEnums.cmds;
@@ -157,6 +158,19 @@ electron.ipcMain.on(apiName, (event, arg) => {
             if (typeof arg.isInMeeting === 'boolean') {
                 setIsInMeeting(arg.isInMeeting);
             }
+            break;
+        case apiCmds.openFile:
+            if (typeof arg.id === 'string') {
+                openFile(arg.id);
+            }
+            break;
+        case apiCmds.showInFinder:
+            if (typeof arg.id === 'string') {
+                showInFinder(arg.id);
+            }
+            break;
+        case apiCmds.clearDownloadData:
+            clearDownloadData();
             break;
         default:
     }
