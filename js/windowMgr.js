@@ -546,7 +546,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                         log.send(logLevels.INFO, 'permission is -> ' + userPermission);
 
                         if (!userPermission) {
-                            let fullMessage = i18n.getMessageFor('Your administrator has disabled') + message + '. ' + i18n.getMessageFor('Please contact your admin for help' + '.');
+                            let fullMessage = i18n.getMessageFor('Your administrator has disabled') + message + '. ' + i18n.getMessageFor('Please contact your admin for help');
                             const browserWindow = BrowserWindow.getFocusedWindow();
                             if (browserWindow && !browserWindow.isDestroyed()) {
                                 electron.dialog.showMessageBox(browserWindow, {type: 'error', title: i18n.getMessageFor('Permission Denied') + '!', message: fullMessage});
