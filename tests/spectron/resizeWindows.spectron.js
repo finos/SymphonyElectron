@@ -1,5 +1,4 @@
 const Application = require('./spectronSetup');
-const { isMac } = require('../../js/utils/misc');
 const robot = require('robotjs');
 
 let app = new Application({});
@@ -22,8 +21,8 @@ describe('Tests for Resizing windows', () => {
         if (app && app.isRunning()) {
             // resize to default size
             app.browserWindow.getBounds().then((bounds) => {
-                let x = bounds.x - (960 - bounds.width);
-                let y = bounds.y - (870 - bounds.height);
+                let x = bounds.x - (defaultWidth - bounds.width);
+                let y = bounds.y - (defaultHeight - bounds.height);
                 robot.moveMouse(bounds.x, bounds.y);
                 robot.mouseToggle("down");
                 robot.dragMouse(x, y);
@@ -41,6 +40,8 @@ describe('Tests for Resizing windows', () => {
 
     it('should be minimized up to 300px', (done) => {
         app.browserWindow.getBounds().then((bounds) => {
+            defaultHeight = bounds.height;
+            defaultWidth = bounds.width;
             let x = bounds.x + bounds.width;
             let y = bounds.y + bounds.height;
             robot.setMouseDelay(500);
