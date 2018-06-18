@@ -30,10 +30,13 @@ class App {
         this.app = new Application(this.options);
     }
 
-    startApplication(onTop = true) {
+    startApplication(configurations) {
         return this.app.start().then((app) => {
-            if (onTop)  {
-                app.browserWindow.setAlwaysOnTop(true);
+            if (configurations)
+            {
+                if (configurations.alwaysOnTop)  {
+                    app.browserWindow.setAlwaysOnTop(true);
+                }
             }
             return app;
         }).catch((err) => {
