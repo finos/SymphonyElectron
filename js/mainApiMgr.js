@@ -18,7 +18,6 @@ const eventEmitter = require('./eventEmitter');
 const { isMac } = require('./utils/misc');
 const { openScreenPickerWindow } = require('./desktopCapturer');
 const { optimizeMemory, setIsInMeeting } = require('./memoryMonitor');
-const { updateConfigField } = require('./config');
 
 const apiEnums = require('./enums/api.js');
 const apiCmds = apiEnums.cmds;
@@ -144,7 +143,7 @@ electron.ipcMain.on(apiName, (event, arg) => {
             }
             break;
         case apiCmds.popupMenu:
-            var browserWin = electron.BrowserWindow.fromWebContents(event.sender);
+            let browserWin = electron.BrowserWindow.fromWebContents(event.sender);
             if (browserWin && !browserWin.isDestroyed()) {
                 windowMgr.getMenu().popup(browserWin, { x: 20, y: 15, async: true });
             }
@@ -161,7 +160,6 @@ electron.ipcMain.on(apiName, (event, arg) => {
             break;
         case apiCmds.setLocale:
             if (typeof arg.locale === 'string') {
-                updateConfigField('locale', arg.locale);
                 eventEmitter.emit('language-changed', { language: arg.locale });
             }
             break;

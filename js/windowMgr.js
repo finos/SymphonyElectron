@@ -845,8 +845,9 @@ eventEmitter.on('notificationSettings', (notificationSettings) => {
 
 eventEmitter.on('language-changed', (opts) => {
     const lang = opts && opts.language || app.getLocale();
-    log.send(logLevels.INFO, `inside change language event, language changed to ${lang}`);
+    log.send(logLevels.INFO, `language changed to ${lang}. Updating menu and user config`);
     rebuildMenu(lang);
+    updateConfigField('locale', lang);
 });
 
 function rebuildMenu(language) {
