@@ -12,7 +12,7 @@ describe('Tests for Always on top', () => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
 
     beforeAll((done) => {
-        return app.startApplication().then((startedApp) => {
+        return app.startApplication(false).then((startedApp) => {
             app = startedApp;
             getConfigPath().then((config) => {
                 configPath = config;

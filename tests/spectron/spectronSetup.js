@@ -30,8 +30,11 @@ class App {
         this.app = new Application(this.options);
     }
 
-    startApplication() {
+    startApplication(onTop = true) {
         return this.app.start().then((app) => {
+            if (onTop)  {
+                app.browserWindow.setAlwaysOnTop(true);
+            }
             return app;
         }).catch((err) => {
             throw new Error("Unable to start application " + err);
