@@ -86,3 +86,15 @@ ipc.on('screens', (event, screens) => {
         });
     }
 });
+
+ipc.on('i18n-notification-settings', (event, content) => {
+    if (content && typeof content === 'object') {
+        const i18nNodes = document.querySelectorAll('[data-i18n-text]');
+
+        for (let node of i18nNodes) {
+            if (node.attributes['data-i18n-text'] && node.attributes['data-i18n-text'].value) {
+                node.innerText = content[node.attributes['data-i18n-text'].value] || node.attributes['data-i18n-text'].value;
+            }
+        }
+    }
+});

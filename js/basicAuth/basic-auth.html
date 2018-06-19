@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Authentication Request</title>
+    <title data-i18n-text="Authentication Request"></title>
     <style>
         html, body {
             margin: 0;
             height: 100%;
             font-family: sans-serif;
+            font-size: 14px;
         }
 
         .container {
@@ -62,20 +63,20 @@
 </head>
 <body>
 <div class="container">
-    <span>Please provide your login credentials for:</span>
-    <span id="hostname" class="hostname">hostname</span>
-    <span id="credentialsError" class="credentials-error">Invalid user name/password</span>
+    <span data-i18n-text="Please provide your login credentials for:"></span>
+    <span id="hostname" class="hostname" data-i18n-text="hostname"></span>
+    <span id="credentialsError" class="credentials-error" data-i18n-text="Invalid user name/password"></span>
     <form id="basicAuth" name="Basic Auth" action="Login">
         <table class="form">
             <tbody>
             <tr>
-                <td>User name:</td>
+                <td id="username-text" data-i18n-text="User name:"></td>
                 <td>
                     <input id="username" name="username" title="Username" required>
                 </td>
             </tr>
             <tr>
-                <td>Password:</td>
+                <td id="password-text" data-i18n-text="Password:"></td>
                 <td>
                     <input id="password" type="password" title="Password" required>
                 </td>
@@ -84,10 +85,10 @@
         </table>
         <div class="footer">
             <div class="button-container">
-                <button type="submit" id="login">Log In</button>
+                <button type="submit" id="login" data-i18n-text="Log In"></button>
             </div>
             <div class="button-container">
-                <button type="button" id="cancel">Cancel</button>
+                <button type="button" id="cancel" data-i18n-text="Cancel"></button>
             </div>
         </div>
     </form>
