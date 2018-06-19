@@ -21,7 +21,7 @@ const notify = require('./notify/electron-notify.js');
 const eventEmitter = require('./eventEmitter');
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField, readConfigFileSync, getMultipleConfigField } = require('./config.js');
-const { isMac, isNodeEnv, isWindows10, isWindowsOS, isQAEnv } = require('./utils/misc');
+const { isMac, isNodeEnv, isWindows10, isWindowsOS } = require('./utils/misc');
 const { deleteIndexFolder } = require('./search/search.js');
 const { isWhitelisted, parseDomain } = require('./utils/whitelistHandler');
 const { initCrashReporterMain, initCrashReporterRenderer } = require('./crashReporter.js');
@@ -245,8 +245,8 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
         // ELECTRON-540 - needed to automatically
         // select desktop capture source
-        if (isQAEnv) {
-            const screenShareArg = getCmdLineArg(process.argv, 'auto-select-desktop-capture-source', false);
+        const screenShareArg = getCmdLineArg(process.argv, 'auto-select-desktop-capture-source', false);
+        if (screenShareArg && typeof screenShareArg === 'string') {
             mainWindow.webContents.send('screen-share-argv', screenShareArg);
         }
     });
