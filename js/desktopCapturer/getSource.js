@@ -21,6 +21,7 @@ const USER_CANCELLED = 'User Cancelled';
 
 let nextId = 0;
 let includes = [].includes;
+let screenShareArgv;
 
 function getNextId() {
     return ++nextId;
@@ -79,6 +80,28 @@ function getSource(options, callback) {
 
     id = getNextId();
     desktopCapturer.getSources({ types: sourceTypes, thumbnailSize: updatedOptions.thumbnailSize }, (event, sources) => {
+
+        if (screenShareArgv) {
+            const title = screenShareArgv.substr(screenShareArgv.indexOf('=') + 1);
+            const filteredSource = sources.filter(source => source.name === title);
+
+            if (Array.isArray(filteredSource) && filteredSource.length > 0) {
+                callback(null, filteredSource[0]);
+                return;
+            }
+
+            if (typeof filteredSource === 'object' && filteredSource.name) {
+                callback(null, filteredSource);
+                return;
+            }
+
+            if (sources.length > 0) {
+                callback(null, sources[0]);
+                return;
+            }
+
+        }
+
         const updatedSources = sources.map(source => {
             return Object.assign({}, source, {
                 thumbnail: source.thumbnail.toDataURL()
@@ -104,5 +127,12 @@ function getSource(options, callback) {
         ipcRenderer.once('start-share' + id, func);
     });
 }
+
+// event that updates screen share argv
+ipcRenderer.once('screen-share-argv', (event, arg) => {
+    if (typeof arg === 'string') {
+        screenShareArgv = arg;
+    }
+});
 
 module.exports = getSource;
