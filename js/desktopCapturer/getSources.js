@@ -75,24 +75,21 @@ function getSources(options, callback) {
             const filteredSource = sources.filter(source => source.name === title);
 
             if (Array.isArray(filteredSource) && filteredSource.length > 0) {
-                callback(null, filteredSource[0]);
-                return;
+                return callback(null, filteredSource[0]);
             }
 
             if (typeof filteredSource === 'object' && filteredSource.name) {
-                callback(null, filteredSource);
-                return;
+                return callback(null, filteredSource);
             }
 
             if (sources.length > 0) {
-                callback(null, sources[0]);
-                return;
+                return callback(null, sources[0]);
             }
 
         }
 
         let source;
-        callback(null, (function() {
+        return callback(null, (function() {
             let i, len, results;
             results = [];
             for (i = 0, len = sources.length; i < len; i++) {
