@@ -38,6 +38,11 @@ describe('Tests for Resizing windows', () => {
         }
     });
 
+    /**
+     * Verify whether the main window can be minimized upto 300px
+     * TC-ID: 3028239
+     * Cover scenarios in AVT-768
+     */
     it('should be minimized up to 300px', (done) => {
         app.browserWindow.getBounds().then((bounds) => {
             defaultHeight = bounds.height;
