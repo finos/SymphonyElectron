@@ -321,13 +321,13 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
                 let domData = {
                     _id: fileId,
-                    total: filesize(item.getTotalBytes() ? item.getTotalBytes() : 0),
-                    fileName: item.getFilename() ? item.getFilename() : 'No name'
+                    total: filesize(item.getTotalBytes() || 0),
+                    fileName: item.getFilename() || 'No name'
                 };
 
                 let localData = {
                     _id: fileId,
-                    savedPath: item.getSavePath() ? item.getSavePath() : ''
+                    savedPath: item.getSavePath() || ''
                 };
 
                 webContents.send('downloadCompleted', domData);
