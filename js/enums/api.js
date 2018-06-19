@@ -21,7 +21,10 @@ const cmds = keyMirror({
     openScreenPickerWindow: null,
     popupMenu: null,
     optimizeMemoryConsumption: null,
-    setIsInMeeting: null
+    setIsInMeeting: null,
+    openFile: null,
+    showInFinder: null,
+    clearDownloadData: null,
 });
 
 module.exports = {

@@ -25,6 +25,7 @@ const { isMac, isNodeEnv, isWindows10, isWindowsOS } = require('./utils/misc');
 const { deleteIndexFolder } = require('./search/search.js');
 const { isWhitelisted, parseDomain } = require('./utils/whitelistHandler');
 const { initCrashReporterMain, initCrashReporterRenderer } = require('./crashReporter.js');
+const { setDownloadData } = require('./downloadManager');
 
 // show dialog when certificate errors occur
 require('./dialogs/showCertError.js');
@@ -316,13 +317,21 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         // Send file path when download is complete
         item.once('done', (e, state) => {
             if (state === 'completed') {
-                let data = {
-                    _id: getGuid(),
-                    savedPath: item.getSavePath() ? item.getSavePath() : '',
-                    total: filesize(item.getTotalBytes() ? item.getTotalBytes() : 0),
-                    fileName: item.getFilename() ? item.getFilename() : 'No name'
+                let fileId = getGuid();
+
+                let domData = {
+                    _id: fileId,
+                    total: filesize(item.getTotalBytes() || 0),
+                    fileName: item.getFilename() || 'No name'
                 };
-                webContents.send('downloadCompleted', data);
+
+                let localData = {
+                    _id: fileId,
+                    savedPath: item.getSavePath() || ''
+                };
+
+                webContents.send('downloadCompleted', domData);
+                setDownloadData(localData);
             }
         });
     });

@@ -1,4 +1,4 @@
-const downloadManager = require('../js/downloadManager');
+const downloadManager = require('../js/downloadManager/dmPreload');
 const electron = require('./__mocks__/electron');
 
 describe('download manager', function() {

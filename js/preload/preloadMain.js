@@ -23,7 +23,7 @@ const { TitleBar, updateContentHeight } = require('../windowsTitlebar');
 const titleBar = new TitleBar();
 const { buildNumber } = require('../../package.json');
 
-require('../downloadManager');
+require('../downloadManager/dmPreload');
 
 // bug in electron preventing us from using spellchecker in pop outs
 // https://github.com/electron/electron/issues/4025
