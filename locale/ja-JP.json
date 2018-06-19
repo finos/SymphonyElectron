@@ -56,6 +56,13 @@
     "Select Screen": "画面の選択",
     "Share": "共有"
   },
+  "ScreenSnippet": {
+    "Pen": "ペン",
+    "Done": "完了",
+    "Snipping Tool": "スニッピングツール",
+    "Erase": "消去する",
+    "Highlight": "ハイライト"
+  },
   "Select All": "すべてを選択",
   "Services": "サービス",
   "Show All": "すべてを表示",
