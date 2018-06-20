@@ -44,6 +44,10 @@ let display;
 let sandboxed = false;
 let isAutoReload = false;
 
+const KeyCodes = {
+    Esc: 27,
+};
+
 // Application menu
 let menu;
 
@@ -1007,6 +1011,26 @@ function repositionMainWindow() {
     }
 }
 
+/**
+ * Method that handles key press
+ * @param keyCode {number}
+ */
+function handleKeyPress(keyCode) {
+    switch (keyCode) {
+        case KeyCodes.Esc: {
+            const focusedWindow = BrowserWindow.getFocusedWindow();
+
+            if (focusedWindow && !focusedWindow.isDestroyed() && focusedWindow.isFullScreen()) {
+                focusedWindow.setFullScreen(false);
+            }
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+
 module.exports = {
     createMainWindow: createMainWindow,
     getMainWindow: getMainWindow,
@@ -1018,5 +1042,6 @@ module.exports = {
     setBoundsChangeWindow: setBoundsChangeWindow,
     verifyDisplays: verifyDisplays,
     getMenu: getMenu,
-    setIsAutoReload: setIsAutoReload
+    setIsAutoReload: setIsAutoReload,
+    handleKeyPress: handleKeyPress
 };

@@ -5,7 +5,6 @@
  * from the renderer process.
  */
 const electron = require('electron');
-const BrowserWindow = electron.BrowserWindow;
 
 const windowMgr = require('./windowMgr.js');
 const log = require('./log.js');
@@ -23,9 +22,6 @@ const { optimizeMemory, setIsInMeeting } = require('./memoryMonitor');
 const apiEnums = require('./enums/api.js');
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
-const KeyCodes = {
-    Esc: 27,
-};
 
 // can be overridden for testing
 let checkValidWindow = true;
@@ -71,25 +67,6 @@ function sanitize(windowName) {
         if (!isMac) {
             eventEmitter.emit('killScreenSnippet');
         }
-    }
-}
-
-/**
- * Method that handles key press
- * @param keyCode {number}
- */
-function handleKeyPress(keyCode) {
-    switch (keyCode) {
-        case KeyCodes.Esc: {
-            const focusedWindow = BrowserWindow.getFocusedWindow();
-
-            if (focusedWindow && !focusedWindow.isDestroyed() && focusedWindow.isFullScreen()) {
-                focusedWindow.setFullScreen(false);
-            }
-            break;
-        }
-        default:
-            break;
     }
 }
 
@@ -189,7 +166,7 @@ electron.ipcMain.on(apiName, (event, arg) => {
             break;
         case apiCmds.keyPress:
             if (typeof arg.keyCode === 'number') {
-                handleKeyPress(arg.keyCode);
+                windowMgr.handleKeyPress(arg.keyCode);
             }
             break;
         default:
