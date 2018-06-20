@@ -13,7 +13,16 @@ const getMessageFor = function(phrase) {
 
 const setLanguage = function(lng) {
     language = lng ? lng : 'en-US';
-    loadedTranslations = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'locale', language + '.json'), 'utf8'));
+    let file = path.join(__dirname, '..', '..', 'locale', language + '.json');
+    if (!fs.existsSync(file)) {
+        file = path.join(__dirname, '..', '..', 'locale', 'en-US.json');
+    }
+    let data = fs.readFileSync(file, 'utf8');
+    try {
+        loadedTranslations = JSON.parse(data);
+    } catch (e) {
+        loadedTranslations = {}
+    }
 };
 
 module.exports = {
