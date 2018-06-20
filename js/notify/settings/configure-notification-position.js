@@ -10,8 +10,8 @@ const log = require('../../log.js');
 const logLevels = require('../../enums/logLevels.js');
 const notify = require('./../electron-notify');
 const eventEmitter = require('./../../eventEmitter');
-
 const { updateConfigField } = require('../../config');
+const i18n = require('../../translation/i18n');
 
 let configurationWindow;
 let screens;
@@ -113,6 +113,8 @@ function openConfigurationWindow(windowName) {
     });
 
     configurationWindow.webContents.on('did-finish-load', () => {
+        const notificationSettingsContent = i18n.getMessageFor('NotificationSettings');
+        configurationWindow.webContents.send('i18n-notification-settings', notificationSettingsContent);
         if (screens && screens.length >= 0) {
             configurationWindow.webContents.send('screens', screens);
         }

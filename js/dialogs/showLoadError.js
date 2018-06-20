@@ -4,6 +4,7 @@ const electron = require('electron');
 
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
+const i18n = require('../translation/i18n');
 
 /**
  * Show dialog pinned to given window when loading error occurs
@@ -17,9 +18,9 @@ const logLevels = require('../enums/logLevels.js');
 function showLoadFailure(win, url, errorDesc, errorCode, retryCallback, showDialog) {
     let msg;
     if (url) {
-        msg = 'Error loading URL:\n' + url;
+        msg = i18n.getMessageFor('Error loading URL') + `:\n${url}`;
     } else {
-        msg = 'Error loading window';
+        msg = i18n.getMessageFor('Error loading window');
     }
     if (errorDesc) {
         msg += '\n\n' + errorDesc;
@@ -35,7 +36,7 @@ function showLoadFailure(win, url, errorDesc, errorCode, retryCallback, showDial
             defaultId: 0,
             cancelId: 1,
             noLink: true,
-            title: 'Loading Error',
+            title: i18n.getMessageFor('Loading Error'),
             message: msg
         }, response);
     }

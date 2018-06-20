@@ -22,6 +22,7 @@ const cmds = keyMirror({
     popupMenu: null,
     optimizeMemoryConsumption: null,
     setIsInMeeting: null,
+    setLocale: null,
     keyPress: null,
 });
 
