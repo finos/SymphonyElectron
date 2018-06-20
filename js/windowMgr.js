@@ -194,8 +194,9 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     mainWindow.on('move', throttledMainWinBoundsChange);
     mainWindow.on('resize', throttledMainWinBoundsChange);
     mainWindow.on('enter-full-screen', () => {
+        const snackBarContent = i18n.getMessageFor('SnackBar');
         // event sent to renderer process to show snack bar
-        mainWindow.webContents.send('show-snack-bar');
+        mainWindow.webContents.send('show-snack-bar', snackBarContent);
     });
 
     if (initialBounds && !isNodeEnv) {
@@ -827,7 +828,8 @@ function sendChildWinBoundsChange(window) {
  * Called when the child window is set to full screen
  */
 function handleChildWindowFullScreen(browserWindow) {
-    browserWindow.webContents.send('show-snack-bar');
+    const snackBarContent = i18n.getMessageFor('SnackBar');
+    browserWindow.webContents.send('show-snack-bar', snackBarContent);
 }
 
 /**

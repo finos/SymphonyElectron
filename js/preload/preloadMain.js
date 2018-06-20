@@ -437,9 +437,9 @@ function createAPI() {
      * an event triggered by the main process to snack bar on
      * full screen
      */
-    local.ipcRenderer.on('show-snack-bar', () => {
-        if (snackBar) {
-            snackBar.showSnackBar();
+    local.ipcRenderer.on('show-snack-bar', (event, arg) => {
+        if (snackBar && typeof arg === 'object') {
+            setTimeout(() => snackBar.showSnackBar(arg), 500);
         }
     });
 
