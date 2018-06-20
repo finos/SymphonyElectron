@@ -59,7 +59,7 @@ function getSource(options, callback) {
         };
     }
 
-    if (isWindowsOS) {
+    if (isWindowsOS && captureWindow) {
         /**
          * Sets the captureWindow to false if Desktop composition
          * is disabled otherwise true
