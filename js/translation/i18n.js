@@ -16,7 +16,16 @@ const setLanguage = function(lng) {
     loadedTranslations = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'locale', language + '.json'), 'utf8'));
 };
 
+/**
+ * Returns the current locale
+ * @return {*|string}
+ */
+const getLanguage = function() {
+    return language || 'en-US';
+};
+
 module.exports = {
     setLanguage: setLanguage,
-    getMessageFor: getMessageFor
+    getMessageFor: getMessageFor,
+    getLanguage: getLanguage,
 };
