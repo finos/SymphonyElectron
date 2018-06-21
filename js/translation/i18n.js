@@ -1,5 +1,11 @@
+const electron = require('electron');
+const app = electron.app;
 const path = require("path");
 const fs = require('fs');
+
+const log = require('../log.js');
+const logLevels = require('../enums/logLevels.js');
+
 let language;
 let loadedTranslations = {};
 
@@ -25,7 +31,22 @@ const setLanguage = function(lng) {
     }
 };
 
+/**
+ * Returns the current locale
+ * @return {*|string}
+ */
+const getLanguage = function() {
+    let sysLocale;
+    try {
+        sysLocale = app.getLocale();
+    } catch (err) {
+        log.send(logLevels.WARN, `i18n: Failed to fetch app.getLocale with an ${err}`);
+    }
+    return language || sysLocale || 'en-US';
+};
+
 module.exports = {
     setLanguage: setLanguage,
-    getMessageFor: getMessageFor
+    getMessageFor: getMessageFor,
+    getLanguage: getLanguage,
 };
