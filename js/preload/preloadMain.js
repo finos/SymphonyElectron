@@ -303,6 +303,18 @@ function createAPI() {
          */
         setIsInMeeting: function (isInMeeting) {
             throttledSetIsInMeetingStatus(isInMeeting);
+        },
+
+        /**
+         * Sets the language which updates the application locale
+         * @param {string} locale - language identifier and a region identifier
+         * Ex: en-US, ja-JP
+         */
+        setLocale: function (locale) {
+            local.ipcRenderer.send(apiName, {
+                cmd: apiCmds.setLocale,
+                locale,
+            });
         }
     };
 
