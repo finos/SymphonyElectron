@@ -46,6 +46,7 @@ let isAutoReload = false;
 
 // Application menu
 let menu;
+let lang;
 
 // note: this file is built using browserify in prebuild step.
 const preloadMainScript = path.join(__dirname, 'preload/_preloadMain.js');
@@ -97,12 +98,14 @@ function getParsedUrl(appUrl) {
  * @param initialUrl
  */
 function createMainWindow(initialUrl) {
-    getMultipleConfigField([ 'mainWinPos', 'isCustomTitleBar' ])
+    getMultipleConfigField([ 'mainWinPos', 'isCustomTitleBar', 'locale' ])
         .then(configData => {
+            lang = configData.locale || app.getLocale();
             doCreateMainWindow(initialUrl, configData.mainWinPos, configData.isCustomTitleBar);
         })
         .catch(() => {
             // failed use default bounds and frame
+            lang = app.getLocale();
             doCreateMainWindow(initialUrl, null, false);
         });
 }
@@ -274,18 +277,8 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
     addWindowKey(key, mainWindow);
     mainWindow.loadURL(url);
-
-    getConfigField('locale')
-        .then((language) => {
-            const lang = language || app.getLocale();
-            log.send(`setting app language to ${lang}`);
-            rebuildMenu(lang);
-        })
-        .catch((err) => {
-            const lang = app.getLocale();
-            log.send(`could not find language settings ${err}, defaulting to system language ${app.getLocale()}`);
-            rebuildMenu(lang);
-        });
+    
+    rebuildMenu(lang);
 
     mainWindow.on('close', function (e) {
         if (willQuitApp) {
