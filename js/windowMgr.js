@@ -245,7 +245,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
         // ELECTRON-540 - needed to automatically
         // select desktop capture source
-        const screenShareArg = getCmdLineArg(process.argv, 'auto-select-desktop-capture-source', false);
+        const screenShareArg = getCmdLineArg(process.argv, '--auto-select-desktop-capture-source', false);
         if (screenShareArg && typeof screenShareArg === 'string') {
             mainWindow.webContents.send('screen-share-argv', screenShareArg);
         }
