@@ -30,12 +30,22 @@ class App {
         this.app = new Application(this.options);
     }
 
-    startApplication() {
-        return this.app.start().then((app) => {
-            return app;
-        }).catch((err) => {
+    async startApplication(configurations) {
+        try {
+            this.app = await this.app.start()
+            if (configurations){
+                this.app.browserWindow.focus();
+                this.app.browserWindow.setAlwaysOnTop(configurations.alwaysOnTop);
+            }
+            else {
+                this.app.browserWindow.focus();
+                this.app.browserWindow.setAlwaysOnTop(true);
+            }
+            await this.app.client.waitUntilWindowLoaded().url(constants.TESTED_HOST)
+            return this.app;
+        } catch(err) {
             throw new Error("Unable to start application " + err);
-        });
+        };
     }
 
     static getAppPath() {
