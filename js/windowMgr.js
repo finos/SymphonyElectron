@@ -26,6 +26,7 @@ const { deleteIndexFolder } = require('./search/search.js');
 const { isWhitelisted, parseDomain } = require('./utils/whitelistHandler');
 const { initCrashReporterMain, initCrashReporterRenderer } = require('./crashReporter.js');
 const i18n = require('./translation/i18n');
+const getCmdLineArg = require('./utils/getCmdLineArg');
 
 // show dialog when certificate errors occur
 require('./dialogs/showCertError.js');
@@ -244,6 +245,13 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
             notify.reset();
             log.send(logLevels.INFO, 'loaded main window url: ' + url);
 
+        }
+
+        // ELECTRON-540 - needed to automatically
+        // select desktop capture source
+        const screenShareArg = getCmdLineArg(process.argv, '--auto-select-desktop-capture-source', false);
+        if (screenShareArg && typeof screenShareArg === 'string') {
+            mainWindow.webContents.send('screen-share-argv', screenShareArg);
         }
     });
 
