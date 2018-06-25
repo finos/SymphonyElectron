@@ -845,10 +845,10 @@ eventEmitter.on('notificationSettings', (notificationSettings) => {
 });
 
 eventEmitter.on('language-changed', (opts) => {
-    const lang = opts && opts.language || app.getLocale();
-    log.send(logLevels.INFO, `language changed to ${lang}. Updating menu and user config`);
-    rebuildMenu(lang);
-    updateConfigField('locale', lang);
+    const language = opts && opts.language || app.getLocale();
+    log.send(logLevels.INFO, `language changed to ${language}. Updating menu and user config`);
+    rebuildMenu(language);
+    updateConfigField('locale', language);
 });
 
 function rebuildMenu(language) {
