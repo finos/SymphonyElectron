@@ -859,8 +859,8 @@ function rebuildMenu(language) {
     }
 }
 
-function setLanguage(lang) {
-    i18n.setLanguage(lang);
+function setLanguage(language) {
+    i18n.setLanguage(language);
 }
 
 /**
