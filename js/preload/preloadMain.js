@@ -71,6 +71,28 @@ const throttledSetIsInMeetingStatus = throttle(1000, function(isInMeeting) {
     });
 });
 
+const throttledActivate = throttle(1000, function(windowName) {
+    local.ipcRenderer.send(apiName, {
+        cmd: apiCmds.activate,
+        windowName: windowName
+    });
+});
+
+const throttledBringToFront = throttle(1000, function(windowName, reason) {
+    local.ipcRenderer.send(apiName, {
+        cmd: apiCmds.bringToFront,
+        windowName: windowName,
+        reason: reason
+    });
+});
+
+const throttledSetLocale = throttle(1000, function(locale) {
+    local.ipcRenderer.send(apiName, {
+        cmd: apiCmds.setLocale,
+        locale,
+    });
+});
+
 // Gathers renderer process memory
 setInterval(() => {
     const memory = process.getProcessMemoryInfo();
@@ -163,10 +185,9 @@ function createAPI() {
          * @param  {String} windowName Name of window. Note: main window name is 'main'
          */
         activate: function(windowName) {
-            local.ipcRenderer.send(apiName, {
-                cmd: apiCmds.activate,
-                windowName: windowName
-            });
+            if (typeof windowName === 'string') {
+                throttledActivate(windowName);
+            }
         },
 
         /**
@@ -175,11 +196,9 @@ function createAPI() {
          * @param {String} reason, The reason for which the window is to be activated
          */
         bringToFront: function(windowName, reason) {
-            local.ipcRenderer.send(apiName, {
-                cmd: apiCmds.bringToFront,
-                windowName: windowName,
-                reason: reason
-            });
+            if (typeof windowName === 'string') {
+                throttledBringToFront(windowName, reason);
+            }
         },
 
         /**
@@ -311,10 +330,9 @@ function createAPI() {
          * Ex: en-US, ja-JP
          */
         setLocale: function (locale) {
-            local.ipcRenderer.send(apiName, {
-                cmd: apiCmds.setLocale,
-                locale,
-            });
+            if (typeof locale === 'string') {
+                throttledSetLocale(locale);
+            }
         }
     };
 
