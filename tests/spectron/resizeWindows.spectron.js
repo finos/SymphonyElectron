@@ -1,5 +1,6 @@
 const Application = require('./spectronSetup');
 const robot = require('robotjs');
+const {isMac} = require('../../js/utils/misc');
 
 let app = new Application({});
 
@@ -44,6 +45,9 @@ describe('Tests for Resizing windows', () => {
      * Cover scenarios in AVT-768
      */
     it('should be minimized up to 300px', (done) => {
+        if (isMac) {
+            return done();
+        }
         app.browserWindow.getBounds().then((bounds) => {
             defaultHeight = bounds.height;
             defaultWidth = bounds.width;
