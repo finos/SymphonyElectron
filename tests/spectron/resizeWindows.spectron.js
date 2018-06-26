@@ -1,6 +1,6 @@
 const Application = require('./spectronSetup');
 const robot = require('robotjs');
-const { isMac } = require('../../js/utils/misc');
+const {isMac} = require('../../js/utils/misc');
 
 let app = new Application({});
 let defaultWidth;
