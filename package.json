@@ -11,7 +11,7 @@
     "prebuild": "npm run rebuild && npm run browserify-preload",
     "browserify-preload": "browserify -o js/preload/_preloadMain.js -x electron --insert-global-vars=__filename,__dirname js/preload/preloadMain.js  --exclude electron-spellchecker",
     "rebuild": "electron-rebuild -f",
-    "dev": "npm run prebuild && npm run set-dev-env && electron .",
+    "dev": "npm run prebuild && cross-env ELECTRON_DEV=true electron .",
     "test": "npm run lint && npm rebuild --build-from-source && cross-env ELECTRON_QA=true jest --config tests/jest_unit.json --runInBand && npm run rebuild",
     "spectron-test": "npm run lint && npm rebuild --build-from-source robotjs && cross-env ELECTRON_QA=true jest --config tests/spectron/jest_spectron.json --runInBand && npm run rebuild",
     "demo-win": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file:///demo/index.html",
@@ -134,7 +134,7 @@
     "winreg": "1.2.4"
   },
   "optionalDependencies": {
-    "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.1",
+    "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.2",
     "electron-utils": "git+https://github.com/symphonyoss/electron-utils.git#v1.0.5"
   }
 }

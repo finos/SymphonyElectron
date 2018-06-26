@@ -20,6 +20,7 @@ const keyCodeEnum = Object.freeze({
 let availableSources;
 let selectedSource;
 let currentIndex = -1;
+let localizedContent;
 
 document.addEventListener('DOMContentLoaded', () => {
     renderDom();
@@ -49,11 +50,15 @@ function renderDom() {
     }, false);
 
     screenTab.addEventListener('click', () => {
-        updateShareButtonText('Select Screen');
+        updateShareButtonText(localizedContent && localizedContent[ 'Select Screen' ] ?
+            localizedContent[ 'Select Screen' ] :
+            'Select Screen');
     }, false);
 
     applicationTab.addEventListener('click', () => {
-        updateShareButtonText('Select Application');
+        updateShareButtonText(localizedContent && localizedContent[ 'Select Application' ] ?
+            localizedContent[ 'Select Application' ] :
+            'Select Application');
     }, false);
 
     document.addEventListener('keyup', handleKeyUpPress.bind(this), true);
@@ -164,7 +169,7 @@ function updateUI(source, itemContainer) {
 
     highlightSelectedSource();
     itemContainer.classList.add('selected');
-    shareButton.innerText = 'Share'
+    shareButton.innerText = localizedContent && localizedContent.Share ? localizedContent.Share : 'Share';
 }
 
 /**
@@ -270,5 +275,18 @@ function closeScreenPickerWindow() {
 ipcRenderer.on('register-crash-reporter', (event, arg) => {
     if (arg && typeof arg === 'object') {
         crashReporter.start(arg);
+    }
+});
+
+ipcRenderer.on('i18n-screen-picker', (event, content) => {
+    localizedContent = content;
+    if (content && typeof content === 'object') {
+        const i18nNodes = document.querySelectorAll('[data-i18n-text]');
+
+        for (let node of i18nNodes) {
+            if (node.attributes['data-i18n-text'] && node.attributes['data-i18n-text'].value) {
+                node.innerText = content[node.attributes['data-i18n-text'].value] || node.attributes['data-i18n-text'].value;
+            }
+        }
     }
 });

@@ -142,12 +142,13 @@ electron.ipcMain.on(apiName, (event, arg) => {
                 openScreenPickerWindow(event.sender, arg.sources, arg.id);
             }
             break;
-        case apiCmds.popupMenu:
-            var browserWin = electron.BrowserWindow.fromWebContents(event.sender);
+        case apiCmds.popupMenu: {
+            let browserWin = electron.BrowserWindow.fromWebContents(event.sender);
             if (browserWin && !browserWin.isDestroyed()) {
-                windowMgr.getMenu().popup(browserWin, { x: 20, y: 15, async: true });
+                windowMgr.getMenu().popup(browserWin, {x: 20, y: 15, async: true});
             }
             break;
+        }
         case apiCmds.optimizeMemoryConsumption:
             if (typeof arg.memory === 'object' && typeof arg.cpuUsage === 'object' && typeof arg.memory.workingSetSize === 'number') {
                 optimizeMemory(arg.memory, arg.cpuUsage);
@@ -156,6 +157,11 @@ electron.ipcMain.on(apiName, (event, arg) => {
         case apiCmds.setIsInMeeting:
             if (typeof arg.isInMeeting === 'boolean') {
                 setIsInMeeting(arg.isInMeeting);
+            }
+            break;
+        case apiCmds.setLocale:
+            if (typeof arg.locale === 'string') {
+                eventEmitter.emit('language-changed', { language: arg.locale });
             }
             break;
         default:
