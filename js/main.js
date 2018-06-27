@@ -59,19 +59,19 @@ require('./memoryMonitor.js');
 const windowMgr = require('./windowMgr.js');
 
 getConfigField('url')
-.then(initializeCrashReporter)
-.catch(app.quit);
+    .then(initializeCrashReporter)
+    .catch(app.quit);
 
 function initializeCrashReporter(podUrl) {
 
     getConfigField('crashReporter')
-    .then((crashReporterConfig) => {
-        crashReporter.start({companyName: crashReporterConfig.companyName, submitURL: crashReporterConfig.submitURL, uploadToServer: crashReporterConfig.uploadToServer, extra: {'process': 'main', podUrl: podUrl}});
-        log.send(logLevels.INFO, 'initialized crash reporter on the main process!');
-    })
-    .catch((err) => {
-        log.send(logLevels.ERROR, 'Unable to initialize crash reporter in the main process. Error is -> ' + err);
-    });
+        .then((crashReporterConfig) => {
+            crashReporter.start({companyName: crashReporterConfig.companyName, submitURL: crashReporterConfig.submitURL, uploadToServer: crashReporterConfig.uploadToServer, extra: {'process': 'main', podUrl: podUrl}});
+            log.send(logLevels.INFO, 'initialized crash reporter on the main process!');
+        })
+        .catch((err) => {
+            log.send(logLevels.ERROR, 'Unable to initialize crash reporter in the main process. Error is -> ' + err);
+        });
 
 }
 

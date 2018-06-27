@@ -17,7 +17,7 @@ let ignoreAllCertErrors = false;
  * user provides a response.
  */
 electron.app.on('certificate-error', function(event, webContents, url, error,
-        certificate, callback) {
+    certificate, callback) {
 
     if (ignoreAllCertErrors) {
         event.preventDefault();
