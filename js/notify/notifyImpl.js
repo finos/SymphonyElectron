@@ -28,7 +28,7 @@ class Notify {
      * }
      */
     constructor(title, options) {
-        log.send(logLevels.INFO, 'creating notification, text=' + options.body);
+        log.send(logLevels.INFO, 'creating notification text');
 
         let emitter = new EventEmitter();
         this.emitter = Queue(emitter);
@@ -50,7 +50,7 @@ class Notify {
             onErrorFunc: onError.bind(this)
         });
 
-        log.send(logLevels.INFO, 'created notification, id=' + this._id + ', text=' + options.body);
+        log.send(logLevels.INFO, `created notification with id: ${this._id}`);
 
         this._data = options.data || null;
 
