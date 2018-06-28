@@ -15,6 +15,10 @@
   },
   "Bring All to Front": "Bring All to Front",
   "Bring to Front on Notifications": "Bring to Front on Notifications",
+  "Flash Notification in Taskbar": "Flash Notification in Taskbar",
+  "Title Bar Style": "Title Bar Style",
+  "Native With Custom": "Native With Custom",
+  "Custom": "Custom",
   "Close": "Close",
   "Copy": "Copy",
   "Cut": "Cut",
@@ -56,11 +60,19 @@
     "Select Screen": "Select Screen",
     "Share": "Share"
   },
+  "ScreenSnippet": {
+    "Pen": "Pen",
+    "Done": "Done",
+    "Snipping Tool": "Snipping Tool",
+    "Erase": "Erase",
+    "Highlight": "Highlight"
+  },
   "Select All": "Select All",
   "Services": "Services",
   "Show All": "Show All",
   "Show crash dump in Finder": "Show crash dump in Finder",
   "Show Logs in Finder": "Show Logs in Finder",
+  "Show Logs in Explorer": "Show Logs in Explorer",
   "SnackBar": {
     "Press ": "Press ",
     "esc": "esc",

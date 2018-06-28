@@ -26,6 +26,7 @@ const { deleteIndexFolder } = require('./search/search.js');
 const { isWhitelisted, parseDomain } = require('./utils/whitelistHandler');
 const { initCrashReporterMain, initCrashReporterRenderer } = require('./crashReporter.js');
 const i18n = require('./translation/i18n');
+const getCmdLineArg = require('./utils/getCmdLineArg');
 
 // show dialog when certificate errors occur
 require('./dialogs/showCertError.js');
@@ -50,6 +51,7 @@ const KeyCodes = {
 
 // Application menu
 let menu;
+let lang;
 
 // note: this file is built using browserify in prebuild step.
 const preloadMainScript = path.join(__dirname, 'preload/_preloadMain.js');
@@ -101,12 +103,14 @@ function getParsedUrl(appUrl) {
  * @param initialUrl
  */
 function createMainWindow(initialUrl) {
-    getMultipleConfigField([ 'mainWinPos', 'isCustomTitleBar' ])
+    getMultipleConfigField([ 'mainWinPos', 'isCustomTitleBar', 'locale' ])
         .then(configData => {
+            lang = configData.locale || app.getLocale();
             doCreateMainWindow(initialUrl, configData.mainWinPos, configData.isCustomTitleBar);
         })
         .catch(() => {
             // failed use default bounds and frame
+            lang = app.getLocale();
             doCreateMainWindow(initialUrl, null, false);
         });
 }
@@ -254,6 +258,13 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
             log.send(logLevels.INFO, 'loaded main window url: ' + url);
 
         }
+
+        // ELECTRON-540 - needed to automatically
+        // select desktop capture source
+        const screenShareArg = getCmdLineArg(process.argv, '--auto-select-desktop-capture-source', false);
+        if (screenShareArg && typeof screenShareArg === 'string') {
+            mainWindow.webContents.send('screen-share-argv', screenShareArg);
+        }
     });
 
     mainWindow.webContents.on('did-fail-load', function (event, errorCode,
@@ -286,18 +297,8 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
     addWindowKey(key, mainWindow);
     mainWindow.loadURL(url);
-
-    getConfigField('locale')
-        .then((language) => {
-            const lang = language || app.getLocale();
-            log.send(`setting app language to ${lang}`);
-            rebuildMenu(lang);
-        })
-        .catch((err) => {
-            const lang = app.getLocale();
-            log.send(`could not find language settings ${err}, defaulting to system language ${app.getLocale()}`);
-            rebuildMenu(lang);
-        });
+    
+    rebuildMenu(lang);
 
     mainWindow.on('close', function (e) {
         if (willQuitApp) {
@@ -882,10 +883,10 @@ eventEmitter.on('notificationSettings', (notificationSettings) => {
 });
 
 eventEmitter.on('language-changed', (opts) => {
-    const lang = opts && opts.language || app.getLocale();
-    log.send(logLevels.INFO, `language changed to ${lang}. Updating menu and user config`);
-    rebuildMenu(lang);
-    updateConfigField('locale', lang);
+    const language = opts && opts.language || app.getLocale();
+    log.send(logLevels.INFO, `language changed to ${language}. Updating menu and user config`);
+    rebuildMenu(language);
+    updateConfigField('locale', language);
 });
 
 function rebuildMenu(language) {
@@ -896,8 +897,8 @@ function rebuildMenu(language) {
     }
 }
 
-function setLanguage(lang) {
-    i18n.setLanguage(lang);
+function setLanguage(language) {
+    i18n.setLanguage(language);
 }
 
 /**

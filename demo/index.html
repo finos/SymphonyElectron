@@ -92,12 +92,14 @@
                 <th>Container Identifier</th>
                 <th>Container Version</th>
                 <th>Build Number</th>
+                <th>Search Api Version</th>
             </tr>
             <tr>
                 <td id="api-version"></td>
                 <td id="container-identifier"></td>
                 <td id="container-ver"></td>
                 <td id="build-number"></td>
+                <td id="search-api-ver"></td>
             </tr>
         </table>
     </body>
@@ -250,11 +252,13 @@
                 let containerIdentifier = document.getElementById('container-identifier');
                 let version = document.getElementById('container-ver');
                 let buildNumber = document.getElementById('build-number');
+                let searchApiVer = document.getElementById('search-api-ver');
 
                 apiVersionInfo.innerText = verInfo.apiVer;
                 containerIdentifier.innerText = verInfo.containerIdentifier;
                 version.innerText = verInfo.containerVer;
                 buildNumber.innerText = verInfo.buildNumber;
+                searchApiVer.innerText = verInfo.searchApiVer;
             });
         });
 
