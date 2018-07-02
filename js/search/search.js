@@ -229,7 +229,7 @@ class Search {
      * @returns {Promise}
      */
     searchQuery(query, senderIds, threadIds, fileType, startDate,
-                endDate, limit, offset, sortOrder) {
+        endDate, limit, offset, sortOrder) {
 
         let _limit = limit;
         let _offset = offset;
