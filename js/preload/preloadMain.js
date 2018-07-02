@@ -22,6 +22,7 @@ const getMediaSource = require('../desktopCapturer/getSource');
 const { TitleBar, updateContentHeight } = require('../windowsTitlebar');
 const titleBar = new TitleBar();
 const { buildNumber } = require('../../package.json');
+const memoryMonitorInterval = 1000 * 60 * 60;
 
 require('../downloadManager');
 
@@ -80,7 +81,7 @@ setInterval(() => {
         memory: memory,
         cpuUsage: cpuUsage
     });
-}, 1000 * 60 * 15);
+}, memoryMonitorInterval);
 
 createAPI();
 
