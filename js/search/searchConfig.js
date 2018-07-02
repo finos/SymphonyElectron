@@ -53,7 +53,6 @@ const libraryPaths = {
 const folderPaths = {
     INDEX_PATH: indexFolderPath,
     TEMP_BATCH_INDEX_FOLDER: indexFolderPath + '/temp_batch_indexes',
-    TEMP_REAL_TIME_INDEX: indexFolderPath + '/temp_realtime_index',
     PREFIX_NAME: 'search_index',
     PREFIX_NAME_PATH: indexFolderPath + '/search_index',
     EXEC_PATH: execPath,
