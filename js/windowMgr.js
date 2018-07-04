@@ -221,6 +221,13 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         }
     }
 
+    // Event needed to hide native menu bar on Windows 10 as we use custom menu bar
+    mainWindow.webContents.once('did-start-loading', () => {
+        if (isWindows10() && mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.setMenuBarVisibility(false);
+        }
+    });
+
     // content can be cached and will still finish load but
     // we might not have network connectivity, so warn the user.
     mainWindow.webContents.on('did-finish-load', function () {
@@ -410,17 +417,19 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
             let webContents = newWinOptions.webContents;
 
+            // Event needed to hide native menu bar
+            webContents.once('did-start-loading', () => {
+                let browserWin = BrowserWindow.fromWebContents(webContents);
+                if (isWindowsOS && browserWin && !browserWin.isDestroyed()) {
+                    browserWin.setMenuBarVisibility(false);
+                }
+            });
+
             webContents.once('did-finish-load', function () {
                 let browserWin = BrowserWindow.fromWebContents(webContents);
 
                 if (browserWin) {
                     log.send(logLevels.INFO, 'loaded pop-out window url: ' + newWinParsedUrl);
-
-                    if (!isMac) {
-                        // Removes the menu bar from the pop-out window
-                        // setMenu is currently only supported on Windows and Linux
-                        browserWin.setMenu(null);
-                    }
 
                     initCrashReporterMain({ process: 'pop-out window' });
                     initCrashReporterRenderer(browserWin, { process: 'render | pop-out window' });
@@ -854,9 +863,7 @@ eventEmitter.on('language-changed', (opts) => {
 function rebuildMenu(language) {
     setLanguage(language);
     menu = electron.Menu.buildFromTemplate(getTemplate(app));
-    if (!isWindows10()) {
-        electron.Menu.setApplicationMenu(menu);
-    }
+    electron.Menu.setApplicationMenu(menu);
 }
 
 function setLanguage(language) {
