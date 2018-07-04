@@ -209,7 +209,7 @@ function Queue(emitter) {
             this.emit.apply(this, arguments);
         } else {
             (this._queue[topic] = this._queue[topic] || [])
-            .push([].slice.call(arguments, 1));
+                .push([].slice.call(arguments, 1));
         }
     };
 

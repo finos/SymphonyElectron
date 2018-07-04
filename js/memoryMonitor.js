@@ -8,9 +8,7 @@ const { getConfigField } = require('./config');
 
 const maxMemory = 800;
 
-let maxIdleTime = 15 * 60 * 1000;
-let reloadThreshold = 60 * 60 * 1000;
-let reloadedTimeStamp;
+let maxIdleTime = 4 * 60 * 60 * 1000;
 let isInMeeting = false;
 
 // once a minute
@@ -39,13 +37,10 @@ function gatherMemory() {
  */
 function optimizeMemory(memoryInfo, cpuUsage) {
     const memoryConsumed = (memoryInfo && memoryInfo.workingSetSize / 1024) || 0;
-    const canReload = (!reloadedTimeStamp || (new Date().getTime() - reloadedTimeStamp) > reloadThreshold);
 
     if (memoryConsumed > maxMemory
         && systemIdleTime.getIdleTime() > maxIdleTime
-        && canReload
         && !isInMeeting
-        && cpuUsage.percentCPUUsage < 1
     ) {
         getConfigField('memoryRefresh')
             .then((enabled) => {
@@ -54,7 +49,6 @@ function optimizeMemory(memoryInfo, cpuUsage) {
 
                     if (mainWindow && !mainWindow.isDestroyed()) {
                         setIsAutoReload(true);
-                        reloadedTimeStamp = new Date().getTime();
                         log.send(logLevels.INFO, 'Reloading the app to optimize memory usage as' +
                             ' memory consumption was ' + memoryConsumed +
                             ' CPU usage percentage was ' + cpuUsage.percentCPUUsage +
