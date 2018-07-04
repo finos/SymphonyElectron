@@ -27,9 +27,21 @@ class SnackBar {
         if (this.body && this.body.length > 0 && this.snackBar) {
             this.body[0].appendChild(this.snackBar);
             this.snackBar.className = "show";
-            setTimeout(() => {
+            this.snackBarTimmer = setTimeout(() => {
                 this.body[0].removeChild(this.snackBar);
             }, 3000);
+        }
+    }
+
+    /**
+     * Method that removes snack bar from the DOM
+     */
+    removeSnackBar() {
+        if (this.body && this.body.length > 0 && this.snackBar) {
+            this.body[0].removeChild(this.snackBar);
+            if (this.snackBarTimmer) {
+                clearTimeout(this.snackBarTimmer);
+            }
         }
     }
 

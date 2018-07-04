@@ -206,6 +206,10 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         // event sent to renderer process to show snack bar
         mainWindow.webContents.send('show-snack-bar', snackBarContent);
     });
+    mainWindow.on('leave-full-screen', () => {
+        // event sent to renderer process to remove snack bar
+        mainWindow.webContents.send('remove-snack-bar');
+    });
 
     if (initialBounds && !isNodeEnv) {
         // maximizes the application if previously maximized
@@ -481,6 +485,10 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                     let throttledFullScreen = throttle(1000,
                         handleChildWindowFullScreen.bind(null, browserWin));
 
+                    // throttle leave full screen
+                    let throttledLeaveFullScreen = throttle(1000,
+                        handleChildWindowLeaveFullScreen.bind(null, browserWin));
+
                     // throttle changes so we don't flood client.
                     let throttledBoundsChange = throttle(1000,
                         sendChildWinBoundsChange.bind(null, browserWin));
@@ -488,12 +496,14 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                     browserWin.on('move', throttledBoundsChange);
                     browserWin.on('resize', throttledBoundsChange);
                     browserWin.on('enter-full-screen', throttledFullScreen);
+                    browserWin.on('leave-full-screen', throttledLeaveFullScreen);
 
                     let handleChildWindowClosed = () => {
                         removeWindowKey(newWinKey);
                         browserWin.removeListener('move', throttledBoundsChange);
                         browserWin.removeListener('resize', throttledBoundsChange);
                         browserWin.removeListener('enter-full-screen', throttledFullScreen);
+                        browserWin.removeListener('leave-full-screen', throttledLeaveFullScreen);
                     };
     
                     browserWin.on('close', () => {
@@ -835,6 +845,13 @@ function sendChildWinBoundsChange(window) {
 function handleChildWindowFullScreen(browserWindow) {
     const snackBarContent = i18n.getMessageFor('SnackBar');
     browserWindow.webContents.send('show-snack-bar', snackBarContent);
+}
+
+/**
+ * Called when the child window left full screen
+ */
+function handleChildWindowLeaveFullScreen(browserWindow) {
+    browserWindow.webContents.send('remove-snack-bar');
 }
 
 /**

@@ -445,6 +445,16 @@ function createAPI() {
         }
     });
 
+    /**
+     * an event triggered by the main process to snack bar on
+     * full screen
+     */
+    local.ipcRenderer.on('remove-snack-bar', () => {
+        if (snackBar) {
+            snackBar.removeSnackBar();
+        }
+    });
+
     function updateOnlineStatus() {
         local.ipcRenderer.send(apiName, {
             cmd: apiCmds.isOnline,
