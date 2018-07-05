@@ -9,7 +9,9 @@ const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 const lz4 = require('../compressionLib');
 
-const libSymphonySearch = require('./searchLibrary');
+const libSymphonySearch = require('./searchLibrary.js');
+const SearchUtils = require('./searchUtils.js').SearchUtils;
+const Utils = new SearchUtils();
 
 /*eslint class-methods-use-this: ["error", { "exceptMethods": ["deleteRealTimeFolder"] }] */
 /**
@@ -28,9 +30,48 @@ class Search {
         this.messageData = [];
         this.userId = userId;
         this.isRealTimeIndexing = false;
-        this.decompress(key);
+        this.getUserConfig(key);
         this.collector = makeBoundTimedCollector(this.checkIsRealTimeIndexing.bind(this),
             searchConfig.REAL_TIME_INDEXING_TIME, this.realTimeIndexing.bind(this));
+    }
+
+    /**
+     * Checks config version before decompression
+     * @param key
+     */
+    getUserConfig(key) {
+        Utils.getSearchUserConfig(this.userId)
+            .then((config) => {
+                if (config.indexVersion === searchConfig.INDEX_VERSION) {
+                    /**
+                     * decompress passing false as 2nd arg creates
+                     * a new index without decrypting the old
+                     * index
+                     */
+                    this.decompress(key, false);
+                } else {
+                    /**
+                     * decompress passing true as 2nd arg
+                     * decrypts the previously stored index
+                     */
+                    this.decompress(key, true);
+
+                    // Check if indexVersion exist in the config
+                    // else do not update
+                    let userConfig = config;
+                    if (userConfig && userConfig.indexVersion) {
+                        userConfig.indexVersion = searchConfig.INDEX_VERSION;
+                        Utils.updateUserConfig(this.userId, userConfig)
+                            .catch(() => {
+                                log.send(logLevels.ERROR, 'Error updating index version user config');
+                            })
+                    }
+                }
+            })
+            .catch(() => {
+                this.decompress(key, true);
+                log.send(logLevels.ERROR, 'Error reading user config');
+            });
     }
 
     /**
@@ -79,10 +120,15 @@ class Search {
         }
     }
 
-    decompress(key) {
+    /**
+     * decompress the previously
+     * @param key
+     * @param reIndex
+     */
+    decompress(key, reIndex) {
         const userIndexPath = path.join(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH,
             `${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME}_${this.userId}`);
-        if (isFileExist.call(this, 'LZ4')) {
+        if (isFileExist.call(this, 'LZ4') && !reIndex) {
             lz4.decompression(`${userIndexPath}${searchConfig.TAR_LZ4_EXT}`, (err) => {
                 if (err && !isFileExist.call(this, 'USER_INDEX_PATH')) {
                     fs.mkdirSync(userIndexPath);
