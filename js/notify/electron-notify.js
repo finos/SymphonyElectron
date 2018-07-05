@@ -591,12 +591,12 @@ function moveOneDown(startPos) {
             resolve();
             return
         }
-    // Build array with index of affected notifications
+        // Build array with index of affected notifications
         let notificationPosArray = [];
         for (let i = startPos; i < activeNotifications.length; i++) {
             notificationPosArray.push(i)
         }
-    // Start to animate all notifications at once or in parallel
+        // Start to animate all notifications at once or in parallel
         let asyncFunc = asyncMap; // Best performance
         if (config.animateInParallel === false) {
             asyncFunc = asyncMapSeries // Sluggish

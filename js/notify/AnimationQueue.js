@@ -33,22 +33,22 @@ AnimationQueue.prototype.push = function(object) {
  */
 AnimationQueue.prototype.animate = function(object) {
     object.func.apply(null, object.args)
-    .then(function() {
-        if (this.queue.length > 0) {
-            // Run next animation
-            this.animate.call(this, this.queue.shift());
-        } else {
-            this.running = false;
-        }
-    }.bind(this))
-    .catch(function(err) {
-        log.send(logLevels.ERROR, 'animationQueue: encountered an error: ' + err +
+        .then(function() {
+            if (this.queue.length > 0) {
+                // Run next animation
+                this.animate.call(this, this.queue.shift());
+            } else {
+                this.running = false;
+            }
+        }.bind(this))
+        .catch(function(err) {
+            log.send(logLevels.ERROR, 'animationQueue: encountered an error: ' + err +
+                ' with stack trace:' + err.stack);
+            /* eslint-disable no-console */
+            console.error('animation queue encountered an error: ' + err +
             ' with stack trace:' + err.stack);
-        /* eslint-disable no-console */
-        console.error('animation queue encountered an error: ' + err +
-        ' with stack trace:' + err.stack);
-        /* eslint-enable no-console */
-    })
+            /* eslint-enable no-console */
+        })
 };
 
 /**

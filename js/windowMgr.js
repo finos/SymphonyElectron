@@ -11,7 +11,7 @@ const nodeURL = require('url');
 const querystring = require('querystring');
 const filesize = require('filesize');
 
-const { getTemplate, getMinimizeOnClose } = require('./menus/menuTemplate.js');
+const { getTemplate, getMinimizeOnClose, getTitleBarStyle } = require('./menus/menuTemplate.js');
 const loadErrors = require('./dialogs/showLoadError.js');
 const isInDisplayBounds = require('./utils/isInDisplayBounds.js');
 const getGuid = require('./utils/getGuid.js');
@@ -20,10 +20,12 @@ const logLevels = require('./enums/logLevels.js');
 const notify = require('./notify/electron-notify.js');
 const eventEmitter = require('./eventEmitter');
 const throttle = require('./utils/throttle.js');
-const { getConfigField, updateConfigField, readConfigFileSync } = require('./config.js');
+const { getConfigField, updateConfigField, readConfigFileSync, getMultipleConfigField } = require('./config.js');
 const { isMac, isNodeEnv, isWindows10, isWindowsOS } = require('./utils/misc');
 const { isWhitelisted, parseDomain } = require('./utils/whitelistHandler');
 const { initCrashReporterMain, initCrashReporterRenderer } = require('./crashReporter.js');
+const i18n = require('./translation/i18n');
+const getCmdLineArg = require('./utils/getCmdLineArg');
 
 // show dialog when certificate errors occur
 require('./dialogs/showCertError.js');
@@ -44,6 +46,7 @@ let isAutoReload = false;
 
 // Application menu
 let menu;
+let lang;
 
 // note: this file is built using browserify in prebuild step.
 const preloadMainScript = path.join(__dirname, 'preload/_preloadMain.js');
@@ -95,13 +98,15 @@ function getParsedUrl(appUrl) {
  * @param initialUrl
  */
 function createMainWindow(initialUrl) {
-    getConfigField('mainWinPos')
-        .then(winPos => {
-            doCreateMainWindow(initialUrl, winPos);
+    getMultipleConfigField([ 'mainWinPos', 'isCustomTitleBar', 'locale' ])
+        .then(configData => {
+            lang = configData.locale || app.getLocale();
+            doCreateMainWindow(initialUrl, configData.mainWinPos, configData.isCustomTitleBar);
         })
         .catch(() => {
             // failed use default bounds and frame
-            doCreateMainWindow(initialUrl, null);
+            lang = app.getLocale();
+            doCreateMainWindow(initialUrl, null, false);
         });
 }
 
@@ -109,17 +114,17 @@ function createMainWindow(initialUrl) {
  * Creates the main window with bounds
  * @param initialUrl
  * @param initialBounds
+ * @param isCustomTitleBar
  */
-function doCreateMainWindow(initialUrl, initialBounds) {
+function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     let url = initialUrl;
     let key = getGuid();
 
     const config = readConfigFileSync();
 
     // condition whether to enable custom Windows 10 title bar
-    const isCustomTitleBarEnabled = config
-        && typeof config.isCustomTitleBar === 'boolean'
-        && config.isCustomTitleBar
+    const isCustomTitleBarEnabled = typeof isCustomTitleBar === 'boolean'
+        && isCustomTitleBar
         && isWindows10();
     log.send(logLevels.INFO, `we are configuring a custom title bar for windows -> ${isCustomTitleBarEnabled}`);
     
@@ -223,10 +228,11 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         initCrashReporterRenderer(mainWindow, { process: 'render | main window' });
 
         url = mainWindow.webContents.getURL();
-        if (isCustomTitleBarEnabled) {
+        if (isCustomTitleBarEnabled || isWindows10()) {
             mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/windowsTitleBar/style.css'), 'utf8').toString());
             // This is required to initiate Windows title bar only after insertCSS
-            mainWindow.webContents.send('initiate-windows-title-bar');
+            const titleBarStyle = getTitleBarStyle();
+            mainWindow.webContents.send('initiate-windows-title-bar', titleBarStyle);
         }
 
         if (!isOnline) {
@@ -238,6 +244,13 @@ function doCreateMainWindow(initialUrl, initialBounds) {
             notify.reset();
             log.send(logLevels.INFO, 'loaded main window url: ' + url);
 
+        }
+
+        // ELECTRON-540 - needed to automatically
+        // select desktop capture source
+        const screenShareArg = getCmdLineArg(process.argv, '--auto-select-desktop-capture-source', false);
+        if (screenShareArg && typeof screenShareArg === 'string') {
+            mainWindow.webContents.send('screen-share-argv', screenShareArg);
         }
     });
 
@@ -251,8 +264,8 @@ function doCreateMainWindow(initialUrl, initialBounds) {
     mainWindow.webContents.on('crashed', function () {
         const options = {
             type: 'error',
-            title: 'Renderer Process Crashed',
-            message: 'Oops! Looks like we have had a crash. Please reload or close this window.',
+            title: i18n.getMessageFor('Renderer Process Crashed'),
+            message: i18n.getMessageFor('Oops! Looks like we have had a crash. Please reload or close this window.'),
             buttons: ['Reload', 'Close']
         };
 
@@ -271,13 +284,8 @@ function doCreateMainWindow(initialUrl, initialBounds) {
 
     addWindowKey(key, mainWindow);
     mainWindow.loadURL(url);
-
-    menu = electron.Menu.buildFromTemplate(getTemplate(app));
-    if (isWindows10()) {
-        mainWindow.setMenu(menu);
-    } else {
-        electron.Menu.setApplicationMenu(menu);
-    }
+    
+    rebuildMenu(lang);
 
     mainWindow.on('close', function (e) {
         if (willQuitApp) {
@@ -288,6 +296,9 @@ function doCreateMainWindow(initialUrl, initialBounds) {
         if (getMinimizeOnClose()) {
             e.preventDefault();
             mainWindow.minimize();
+        } else if (isMac) {
+            e.preventDefault();
+            mainWindow.hide();
         } else {
             app.quit();
         }
@@ -419,8 +430,8 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                     let handleChildWindowCrashEvent = (e) => {
                         const options = {
                             type: 'error',
-                            title: 'Renderer Process Crashed',
-                            message: 'Oops! Looks like we have had a crash. Please reload or close this window.',
+                            title: i18n.getMessageFor('Renderer Process Crashed'),
+                            message: i18n.getMessageFor('Oops! Looks like we have had a crash. Please reload or close this window.'),
                             buttons: ['Reload', 'Close']
                         };
 
@@ -490,8 +501,8 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                 electron.dialog.showMessageBox(mainWindow, {
                     type: 'warning',
                     buttons: ['Ok'],
-                    title: 'Not Allowed',
-                    message: `Sorry, you are not allowed to access this website (${navigatedURL}), please contact your administrator for more details`,
+                    title: i18n.getMessageFor('Not Allowed'),
+                    message: i18n.getMessageFor('Sorry, you are not allowed to access this website') + ' (' + navigatedURL + '), ' + i18n.getMessageFor('please contact your administrator for more details'),
                 });
             });
     });
@@ -534,10 +545,10 @@ function doCreateMainWindow(initialUrl, initialBounds) {
                         log.send(logLevels.INFO, 'permission is -> ' + userPermission);
 
                         if (!userPermission) {
-                            let fullMessage = `Your administrator has disabled ${message}. Please contact your admin for help.`;
+                            let fullMessage = i18n.getMessageFor('Your administrator has disabled') + message + '. ' + i18n.getMessageFor('Please contact your admin for help');
                             const browserWindow = BrowserWindow.getFocusedWindow();
                             if (browserWindow && !browserWindow.isDestroyed()) {
-                                electron.dialog.showMessageBox(browserWindow, {type: 'error', title: 'Permission Denied!', message: fullMessage});
+                                electron.dialog.showMessageBox(browserWindow, {type: 'error', title: i18n.getMessageFor('Permission Denied') + '!', message: fullMessage});
                             }
                         }
 
@@ -676,7 +687,9 @@ function getWindowSizeAndPosition(window) {
  * Shows the main window
  */
 function showMainWindow() {
-    mainWindow.show();
+    if (mainWindow) {
+        mainWindow.show();
+    }
 }
 
 /**
@@ -828,6 +841,25 @@ eventEmitter.on('notificationSettings', (notificationSettings) => {
     position = notificationSettings.position;
     display = notificationSettings.display;
 });
+
+eventEmitter.on('language-changed', (opts) => {
+    const language = opts && opts.language || app.getLocale();
+    log.send(logLevels.INFO, `language changed to ${language}. Updating menu and user config`);
+    rebuildMenu(language);
+    updateConfigField('locale', language);
+});
+
+function rebuildMenu(language) {
+    setLanguage(language);
+    menu = electron.Menu.buildFromTemplate(getTemplate(app));
+    if (!isWindows10()) {
+        electron.Menu.setApplicationMenu(menu);
+    }
+}
+
+function setLanguage(language) {
+    i18n.setLanguage(language);
+}
 
 /**
  * Method that gets invoked when an external display
