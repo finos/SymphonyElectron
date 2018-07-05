@@ -204,11 +204,11 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     mainWindow.on('enter-full-screen', () => {
         const snackBarContent = i18n.getMessageFor('SnackBar');
         // event sent to renderer process to show snack bar
-        mainWindow.webContents.send('show-snack-bar', snackBarContent);
+        mainWindow.webContents.send('window-enter-full-screen', { snackBar: snackBarContent });
     });
     mainWindow.on('leave-full-screen', () => {
         // event sent to renderer process to remove snack bar
-        mainWindow.webContents.send('remove-snack-bar');
+        mainWindow.webContents.send('window-leave-full-screen');
     });
 
     if (initialBounds && !isNodeEnv) {
@@ -844,14 +844,14 @@ function sendChildWinBoundsChange(window) {
  */
 function handleChildWindowFullScreen(browserWindow) {
     const snackBarContent = i18n.getMessageFor('SnackBar');
-    browserWindow.webContents.send('show-snack-bar', snackBarContent);
+    browserWindow.webContents.send('window-enter-full-screen', { snackBar: snackBarContent });
 }
 
 /**
  * Called when the child window left full screen
  */
 function handleChildWindowLeaveFullScreen(browserWindow) {
-    browserWindow.webContents.send('remove-snack-bar');
+    browserWindow.webContents.send('window-leave-full-screen');
 }
 
 /**

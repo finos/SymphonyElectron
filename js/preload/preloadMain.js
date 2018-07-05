@@ -436,20 +436,22 @@ function createAPI() {
     });
 
     /**
-     * an event triggered by the main process to snack bar on
-     * full screen
+     * an event triggered by the main process when
+     * the window enters full screen
      */
-    local.ipcRenderer.on('show-snack-bar', (event, arg) => {
-        if (snackBar && typeof arg === 'object') {
-            setTimeout(() => snackBar.showSnackBar(arg), 500);
+    local.ipcRenderer.on('window-enter-full-screen', (event, arg) => {
+        window.addEventListener('keydown', throttledKeyDown, true);
+        if (snackBar && typeof arg === 'object' && arg.snackBar) {
+            setTimeout(() => snackBar.showSnackBar(arg.snackBar), 500);
         }
     });
 
     /**
-     * an event triggered by the main process to snack bar on
-     * full screen
+     * an event triggered by the main process when
+     * the window leave full screen
      */
-    local.ipcRenderer.on('remove-snack-bar', () => {
+    local.ipcRenderer.on('window-leave-full-screen', () => {
+        window.removeEventListener('keydown', throttledKeyDown, true);
         if (snackBar) {
             snackBar.removeSnackBar();
         }
@@ -482,7 +484,6 @@ function createAPI() {
     window.addEventListener('offline', updateOnlineStatus, false);
     window.addEventListener('online', updateOnlineStatus, false);
     window.addEventListener('beforeunload', sanitize, false);
-    window.addEventListener('keydown', throttledKeyDown, true);
 
     updateOnlineStatus();
 }
