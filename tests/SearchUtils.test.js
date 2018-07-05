@@ -56,27 +56,28 @@ describe('Tests for Search Utils', function() {
 
         it('should return free space', function (done) {
             const checkFreeSpace = jest.spyOn(SearchUtilsAPI, 'checkFreeSpace');
-            function handleResponse(status) {
+            SearchUtilsAPI.checkFreeSpace().then(function () {
                 expect(checkFreeSpace).toHaveBeenCalled();
-                expect(status).toBe(true);
                 done();
-            }
-            SearchUtilsAPI.checkFreeSpace(handleResponse);
+            });
         });
 
         it('should return error', function (done) {
             const checkFreeSpace = jest.spyOn(SearchUtilsAPI, 'checkFreeSpace');
-            function handleResponse(status) {
-                expect(checkFreeSpace).toHaveBeenCalled();
-                expect(status).toBe(false);
-                done();
-            }
             if (isMac) {
                 searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH = undefined;
-                SearchUtilsAPI.checkFreeSpace(handleResponse);
+                SearchUtilsAPI.checkFreeSpace().catch(function (err) {
+                    expect(err).toEqual(false);
+                    expect(checkFreeSpace).toHaveBeenCalled();
+                    done();
+                });
             } else {
                 searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH = undefined;
-                SearchUtilsAPI.checkFreeSpace(handleResponse);
+                SearchUtilsAPI.checkFreeSpace().catch(function (err) {
+                    expect(err).toEqual(false);
+                    expect(checkFreeSpace).toHaveBeenCalled();
+                    done();
+                });
             }
         });
 
@@ -88,17 +89,13 @@ describe('Tests for Search Utils', function() {
                 searchConfig.LIBRARY_CONSTANTS.FREE_DISK_SPACE = path.join(__dirname, '..',
                     "node_modules/electron-utils/FreeDiskSpace/bin/Release/FreeDiskSpace.exe");
             }
-            function handleResponse(status) {
+            SearchUtilsAPI.checkFreeSpace().catch(function (err) {
+                searchConfig.LIBRARY_CONSTANTS.FREE_DISK_SPACE = path.join(__dirname, '..',
+                    "library/FreeDiskSpace.exe");
                 expect(checkFreeSpace).toHaveBeenCalled();
-                expect(status).toBe(false);
+                expect(err).toEqual(false);
                 done();
-            }
-            SearchUtilsAPI.checkFreeSpace(handleResponse);
-        });
-
-        it('should fail when no callback is passed', function () {
-            let test = SearchUtilsAPI.checkFreeSpace();
-            expect(test).toBe(false);
+            });
         });
     });
 

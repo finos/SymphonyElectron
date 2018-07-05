@@ -70,6 +70,10 @@ describe('Tests for Search', function() {
             if (fs.existsSync(path.join(userConfigDir, 'search_index_12345678910112.tar.lz4'))) {
                 fs.unlink(path.join(userConfigDir, 'search_index_12345678910112.tar.lz4'));
             }
+
+            if (fs.existsSync(searchConfig.FOLDERS_CONSTANTS.USER_CONFIG_FILE)) {
+                fs.unlinkSync(searchConfig.FOLDERS_CONSTANTS.USER_CONFIG_FILE);
+            }
             done();
         }, 3000);
     });
