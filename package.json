@@ -1,13 +1,19 @@
 {
   "name": "Symphony",
   "productName": "Symphony",
-  "version": "2.7.1",
+  "version": "2.8.5",
   "buildNumber": "0",
   "description": "Symphony desktop app (Foundation ODP)",
   "author": "Symphony",
   "main": "js/main.js",
   "scripts": {
+    "lint": "eslint --ext .js js/",
+    "prebuild": "npm run rebuild && npm run browserify-preload",
+    "browserify-preload": "browserify -o js/preload/_preloadMain.js -x electron --insert-global-vars=__filename,__dirname js/preload/preloadMain.js  --exclude electron-spellchecker",
+    "rebuild": "electron-rebuild -f",
     "dev": "npm run prebuild && cross-env ELECTRON_DEV=true electron .",
+    "test": "npm run lint && npm rebuild --build-from-source && cross-env ELECTRON_QA=true jest --config tests/jest_unit.json --runInBand && npm run rebuild",
+    "spectron-test": "npm run lint && npm rebuild --build-from-source robotjs && cross-env ELECTRON_QA=true jest --config tests/spectron/jest_spectron.json --runInBand && npm run rebuild",
     "demo-win": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file:///demo/index.html",
     "demo-mac": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/demo/index.html",
     "search-win": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file:///demo/search.html",
@@ -15,18 +21,19 @@
     "unpacked-mac": "npm run prebuild && npm run test && build --mac --dir",
     "packed-mac": "npm run unpacked-mac && packagesbuild -v installer/mac/symphony-mac-packager.pkgproj",
     "unpacked-win": "npm run prebuild && npm run test && build --win --x64 --dir",
-    "unpacked-win-x86": "npm run prebuild && npm run test && build --win --ia32 --dir",
-    "prebuild": "npm run rebuild && npm run browserify-preload",
-    "browserify-preload": "browserify -o js/preload/_preloadMain.js -x electron --insert-global-vars=__filename,__dirname js/preload/preloadMain.js  --exclude electron-spellchecker",
-    "rebuild": "electron-rebuild -f",
-    "test": "npm run lint && npm rebuild --build-from-source && cross-env ELECTRON_QA=true && jest --verbose --testPathPattern test && npm run rebuild",
-    "spectron-test": "npm rebuild --build-from-source && jest --config tests/spectron/jest_spectron.json --runInBand && npm run rebuild",
-    "lint": "eslint --ext .js js/",
-    "rename-exe": "cd dist/win-unpacked && ren Symphony.exe Symphony-Electron.exe"
+    "unpacked-win-x86": "npm run prebuild && npm run test && build --win --ia32 --dir"
   },
   "jest": {
     "collectCoverage": true,
     "transformIgnorePatterns": []
+  },
+  "jest-html-reporter": {
+    "pageTitle": "Symphony Electron Test Result",
+    "includeFailureMsg": true,
+    "includeConsoleLog": true,
+    "theme": "lightTheme",
+    "outputPath": "./dist/Jest Test Report.html",
+    "sort": "status"
   },
   "build": {
     "asarUnpack": [
@@ -82,24 +89,25 @@
   },
   "devDependencies": {
     "bluebird": "3.5.1",
-    "browserify": "14.5.0",
-    "cross-env": "3.2.4",
-    "electron": "2.0.2",
-    "electron-builder": "20.10.0",
+    "browserify": "16.2.2",
+    "cross-env": "5.2.0",
+    "electron": "2.0.4",
+    "electron-builder": "20.16.4",
     "electron-builder-squirrel-windows": "12.3.0",
-    "electron-chromedriver": "1.8.0",
-    "electron-packager": "8.7.2",
-    "electron-rebuild": "1.6.0",
-    "eslint": "3.19.0",
+    "electron-chromedriver": "2.0.0",
+    "electron-packager": "12.1.0",
+    "electron-rebuild": "1.7.3",
+    "eslint": "5.0.1",
     "eslint-config-airbnb": "14.1.0",
-    "eslint-plugin-import": "2.8.0",
-    "eslint-plugin-jsx-a11y": "4.0.0",
-    "eslint-plugin-react": "6.10.3",
+    "eslint-plugin-import": "2.13.0",
+    "eslint-plugin-jsx-a11y": "6.0.3",
+    "eslint-plugin-react": "7.10.0",
     "glob": "7.1.2",
     "jest": "19.0.2",
+    "jest-html-reporter": "2.4.1",
     "ncp": "2.0.0",
-    "robotjs": "0.4.7",
-    "spectron": "3.7.2"
+    "robotjs": "0.5.1",
+    "spectron": "3.8.0"
   },
   "dependencies": {
     "@paulcbetts/system-idle-time": "1.0.4",
@@ -107,12 +115,12 @@
     "async.map": "0.5.2",
     "async.mapseries": "0.5.2",
     "auto-launch": "5.0.5",
-    "electron-dl": "1.10.0",
-    "electron-log": "2.2.13",
+    "electron-dl": "1.12.0",
+    "electron-log": "2.2.15",
     "electron-spellchecker": "1.1.2",
     "electron-squirrel-startup": "1.0.0",
     "ffi": "2.2.0",
-    "filesize": "3.5.11",
+    "filesize": "3.6.1",
     "keymirror": "0.1.1",
     "lodash.difference": "4.5.0",
     "lodash.isequal": "4.5.0",
@@ -123,7 +131,7 @@
     "winreg": "1.2.4"
   },
   "optionalDependencies": {
-    "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.1",
+    "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.2",
     "electron-utils": "git+https://github.com/symphonyoss/electron-utils.git#v1.0.5"
   }
 }

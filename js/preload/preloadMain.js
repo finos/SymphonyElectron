@@ -22,6 +22,7 @@ const getMediaSource = require('../desktopCapturer/getSource');
 const { TitleBar, updateContentHeight } = require('../windowsTitlebar');
 const titleBar = new TitleBar();
 const { buildNumber } = require('../../package.json');
+const memoryMonitorInterval = 1000 * 60 * 60;
 
 require('../downloadManager');
 
@@ -63,6 +64,24 @@ const throttledSetBadgeCount = throttle(1000, function(count) {
         count: count
     });
 });
+
+const throttledSetIsInMeetingStatus = throttle(1000, function(isInMeeting) {
+    local.ipcRenderer.send(apiName, {
+        cmd: apiCmds.setIsInMeeting,
+        isInMeeting
+    });
+});
+
+// Gathers renderer process memory
+setInterval(() => {
+    const memory = process.getProcessMemoryInfo();
+    const cpuUsage = process.getCPUUsage();
+    local.ipcRenderer.send(apiName, {
+        cmd: apiCmds.optimizeMemoryConsumption,
+        memory: memory,
+        cpuUsage: cpuUsage
+    });
+}, memoryMonitorInterval);
 
 createAPI();
 
@@ -273,6 +292,26 @@ function createAPI() {
                 cmd: apiCmds.showNotificationSettings,
                 windowName: windowName
             });
+        },
+
+        /**
+         * Sets if the user is in an active meeting
+         * will be used to handle memory refresh functionality
+         */
+        setIsInMeeting: function (isInMeeting) {
+            throttledSetIsInMeetingStatus(isInMeeting);
+        },
+
+        /**
+         * Sets the language which updates the application locale
+         * @param {string} locale - language identifier and a region identifier
+         * Ex: en-US, ja-JP
+         */
+        setLocale: function (locale) {
+            local.ipcRenderer.send(apiName, {
+                cmd: apiCmds.setLocale,
+                locale,
+            });
         }
     };
 
@@ -379,9 +418,11 @@ function createAPI() {
     });
 
     // Adds custom title bar style for Windows 10 OS
-    local.ipcRenderer.on('initiate-windows-title-bar', () => {
-        titleBar.initiateWindowsTitleBar();
-        updateContentHeight();
+    local.ipcRenderer.on('initiate-windows-title-bar', (event, arg) => {
+        if (arg && typeof arg === 'string') {
+            titleBar.initiateWindowsTitleBar(arg);
+            updateContentHeight();
+        }
     });
 
     function updateOnlineStatus() {

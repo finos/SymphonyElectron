@@ -4,6 +4,7 @@ const electron = require('electron');
 
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
+const i18n = require('../translation/i18n');
 
 let ignoreAllCertErrors = false;
 
@@ -16,7 +17,7 @@ let ignoreAllCertErrors = false;
  * user provides a response.
  */
 electron.app.on('certificate-error', function(event, webContents, url, error,
-        certificate, callback) {
+    certificate, callback) {
 
     if (ignoreAllCertErrors) {
         event.preventDefault();
@@ -33,8 +34,8 @@ electron.app.on('certificate-error', function(event, webContents, url, error,
         defaultId: 1,
         cancelId: 1,
         noLink: true,
-        title: 'Certificate Error',
-        message: 'Certificate Error: ' + error + '\nURL: ' + url,
+        title: i18n.getMessageFor('Certificate Error'),
+        message: i18n.getMessageFor('Certificate Error') + `: ${error}\nURL: ${url}`,
     });
 
     event.preventDefault();

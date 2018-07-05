@@ -1,4 +1,5 @@
 {
   "testMatch": ["**/*.spectron.js"],
-  "verbose": true
+  "verbose": true,
+  "testResultsProcessor": "./node_modules/jest-html-reporter"
 }

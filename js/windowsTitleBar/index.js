@@ -3,6 +3,7 @@ const apiEnums = require('../enums/api.js');
 const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 const htmlContents = require('./contents');
+const titleBarStyles = require('../enums/titleBarStyles');
 
 // Default title bar height
 const titleBarHeight = '32px';
@@ -17,14 +18,17 @@ class TitleBar {
         this.titleBar = titleBarParsed.getElementById('title-bar');
     }
 
-    initiateWindowsTitleBar() {
+    initiateWindowsTitleBar(titleBarStyle) {
 
         const actionItemsParsed = this.domParser.parseFromString(htmlContents.button, 'text/html');
-        const buttons = actionItemsParsed.getElementsByClassName('action-items');
 
-        let items = Array.from(buttons[0].children);
-        for (let i of items) {
-            this.titleBar.appendChild(i);
+        if (titleBarStyle === titleBarStyles.CUSTOM) {
+            const buttons = actionItemsParsed.getElementsByClassName('action-items');
+
+            let items = Array.from(buttons[0].children);
+            for (let i of items) {
+                this.titleBar.appendChild(i);
+            }
         }
 
         const updateIcon = TitleBar.updateIcons;
@@ -45,7 +49,17 @@ class TitleBar {
 
         document.body.appendChild(this.titleBar);
 
-        TitleBar.addWindowBorders();
+        switch (titleBarStyle) {
+            case titleBarStyles.CUSTOM:
+                TitleBar.setTitleBarTitle();
+                TitleBar.addWindowBorders();
+                break;
+            case titleBarStyles.NATIVE_WITH_CUSTOM:
+                TitleBar.hideTitleContainer();
+                break;
+            default:
+                break;
+        }
         this.initiateEventListeners();
     }
 
@@ -74,6 +88,30 @@ class TitleBar {
 
         document.body.appendChild(borderBottom);
         document.body.classList.add('window-border');
+    }
+
+    /**
+     * Method that sets the title bar title
+     * from document.title
+     */
+    static setTitleBarTitle() {
+        const titleBarTitle = document.getElementById('title-bar-title');
+
+        if (titleBarTitle) {
+            titleBarTitle.innerText = document.title || 'Symphony';
+        }
+    }
+
+    /**
+     * Method that hides the title container
+     * if the title bar style is NATIVE_WITH_CUSTOM
+     */
+    static hideTitleContainer() {
+        const titleContainer = document.getElementById('title-container');
+
+        if (titleContainer) {
+            titleContainer.style.visibility = 'hidden';
+        }
     }
 
     /**

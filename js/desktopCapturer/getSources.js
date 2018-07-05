@@ -12,15 +12,11 @@
 // renderer process, this will have to do.  See github issue posted here to
 // electron: https://github.com/electron/electron/issues/9312
 
-const { ipcRenderer, remote } = require('electron');
+const { remote, desktopCapturer, ipcRenderer } = require('electron');
 const { isWindowsOS } = require('../utils/misc');
 
-let nextId = 0;
 let includes = [].includes;
-
-function getNextId() {
-    return ++nextId;
-}
+let screenShareArgv;
 
 /**
  * Checks if the options and their types are valid
@@ -38,9 +34,11 @@ function isValid(options) {
  * @returns {*}
  */
 function getSources(options, callback) {
-    let captureScreen, captureWindow, id;
+    let captureScreen, captureWindow;
+    let sourceTypes = [];
     if (!isValid(options)) {
-        return callback(new Error('Invalid options'));
+        callback(new Error('Invalid options'));
+        return;
     }
     captureWindow = includes.call(options.types, 'window');
     captureScreen = includes.call(options.types, 'screen');
@@ -53,7 +51,7 @@ function getSources(options, callback) {
         };
     }
 
-    if (isWindowsOS) {
+    if (isWindowsOS && captureWindow) {
         /**
          * Sets the captureWindow to false if Desktop composition
          * is disabled otherwise true
@@ -63,13 +61,35 @@ function getSources(options, callback) {
          */
         captureWindow = remote.systemPreferences.isAeroGlassEnabled();
     }
+    if (captureWindow) {
+        sourceTypes.push('window');
+    }
+    if (captureScreen) {
+        sourceTypes.push('screen');
+    }
 
-    id = getNextId();
-    ipcRenderer.send('ELECTRON_BROWSER_DESKTOP_CAPTURER_GET_SOURCES', captureWindow, captureScreen, updatedOptions.thumbnailSize, id);
+    desktopCapturer.getSources({ types: sourceTypes, thumbnailSize: updatedOptions.thumbnailSize }, (event, sources) => {
 
-    return ipcRenderer.once('ELECTRON_RENDERER_DESKTOP_CAPTURER_RESULT_' + id, function(event, sources) {
+        if (screenShareArgv) {
+            const title = screenShareArgv.substr(screenShareArgv.indexOf('=') + 1);
+            const filteredSource = sources.filter(source => source.name === title);
+
+            if (Array.isArray(filteredSource) && filteredSource.length > 0) {
+                return callback(null, filteredSource[0]);
+            }
+
+            if (typeof filteredSource === 'object' && filteredSource.name) {
+                return callback(null, filteredSource);
+            }
+
+            if (sources.length > 0) {
+                return callback(null, sources[0]);
+            }
+
+        }
+
         let source;
-        callback(null, (function() {
+        return callback(null, (function() {
             let i, len, results;
             results = [];
             for (i = 0, len = sources.length; i < len; i++) {
@@ -77,7 +97,7 @@ function getSources(options, callback) {
                 results.push({
                     id: source.id,
                     name: source.name,
-                    thumbnail: source.thumbnail
+                    thumbnail: source.thumbnail.toDataURL()
                 });
             }
 
@@ -86,6 +106,13 @@ function getSources(options, callback) {
         }()));
     });
 }
+
+// event that updates screen share argv
+ipcRenderer.once('screen-share-argv', (event, arg) => {
+    if (typeof arg === 'string') {
+        screenShareArgv = arg;
+    }
+});
 
 /**
  * @deprecated instead use getSource
