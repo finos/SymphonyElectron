@@ -38,9 +38,11 @@ class SnackBar {
      */
     removeSnackBar() {
         if (this.body && this.body.length > 0 && this.snackBar) {
-            this.body[0].removeChild(this.snackBar);
-            if (this.snackBarTimmer) {
-                clearTimeout(this.snackBarTimmer);
+            if (document.getElementById('snackbar')) {
+                this.body[0].removeChild(this.snackBar);
+                if (this.snackBarTimmer) {
+                    clearTimeout(this.snackBarTimmer);
+                }
             }
         }
     }
