@@ -45,6 +45,10 @@ let display;
 let sandboxed = false;
 let isAutoReload = false;
 
+const KeyCodes = {
+    Esc: 27,
+};
+
 // Application menu
 let menu;
 let lang;
@@ -197,6 +201,15 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     let throttledMainWinBoundsChange = throttle(1000, saveMainWinBounds);
     mainWindow.on('move', throttledMainWinBoundsChange);
     mainWindow.on('resize', throttledMainWinBoundsChange);
+    mainWindow.on('enter-full-screen', () => {
+        const snackBarContent = i18n.getMessageFor('SnackBar');
+        // event sent to renderer process to show snack bar
+        mainWindow.webContents.send('window-enter-full-screen', { snackBar: snackBarContent });
+    });
+    mainWindow.on('leave-full-screen', () => {
+        // event sent to renderer process to remove snack bar
+        mainWindow.webContents.send('window-leave-full-screen');
+    });
 
     if (initialBounds && !isNodeEnv) {
         // maximizes the application if previously maximized
@@ -236,6 +249,9 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         initCrashReporterRenderer(mainWindow, { process: 'render | main window' });
 
         url = mainWindow.webContents.getURL();
+        mainWindow.webContents.send('on-page-load');
+        // initializes and applies styles required for snack bar
+        mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/snackBar/style.css'), 'utf8').toString());
         if (isCustomTitleBarEnabled || isWindows10()) {
             mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/windowsTitleBar/style.css'), 'utf8').toString());
             // This is required to initiate Windows title bar only after insertCSS
@@ -431,6 +447,15 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                 if (browserWin) {
                     log.send(logLevels.INFO, 'loaded pop-out window url: ' + newWinParsedUrl);
 
+                    if (!isMac) {
+                        // Removes the menu bar from the pop-out window
+                        // setMenu is currently only supported on Windows and Linux
+                        browserWin.setMenu(null);
+                    }
+                    browserWin.webContents.send('on-page-load');
+                    // applies styles required for snack bar
+                    browserWin.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/snackBar/style.css'), 'utf8').toString());
+
                     initCrashReporterMain({ process: 'pop-out window' });
                     initCrashReporterRenderer(browserWin, { process: 'render | pop-out window' });
 
@@ -471,16 +496,29 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                     // issue https://perzoinc.atlassian.net/browse/ELECTRON-172
                     sendChildWinBoundsChange(browserWin);
 
+                    // throttle full screen
+                    let throttledFullScreen = throttle(1000,
+                        handleChildWindowFullScreen.bind(null, browserWin));
+
+                    // throttle leave full screen
+                    let throttledLeaveFullScreen = throttle(1000,
+                        handleChildWindowLeaveFullScreen.bind(null, browserWin));
+
                     // throttle changes so we don't flood client.
                     let throttledBoundsChange = throttle(1000,
                         sendChildWinBoundsChange.bind(null, browserWin));
+
                     browserWin.on('move', throttledBoundsChange);
                     browserWin.on('resize', throttledBoundsChange);
-    
+                    browserWin.on('enter-full-screen', throttledFullScreen);
+                    browserWin.on('leave-full-screen', throttledLeaveFullScreen);
+
                     let handleChildWindowClosed = () => {
                         removeWindowKey(newWinKey);
                         browserWin.removeListener('move', throttledBoundsChange);
                         browserWin.removeListener('resize', throttledBoundsChange);
+                        browserWin.removeListener('enter-full-screen', throttledFullScreen);
+                        browserWin.removeListener('leave-full-screen', throttledLeaveFullScreen);
                     };
     
                     browserWin.on('close', () => {
@@ -522,15 +560,23 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
      * Register shortcuts for the app
      */
     function registerShortcuts() {
-        
-        // Register dev tools shortcut
-        globalShortcut.register(isMac ? 'Alt+Command+I' : 'Ctrl+Shift+I', () => {
-            let focusedWindow = BrowserWindow.getFocusedWindow();
+
+        function devTools() {
+            const focusedWindow = BrowserWindow.getFocusedWindow();
+
             if (focusedWindow && !focusedWindow.isDestroyed()) {
                 focusedWindow.webContents.toggleDevTools();
             }
+        }
+
+        app.on('browser-window-focus', function () {
+            globalShortcut.register(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I', devTools);
         });
-        
+
+        app.on('browser-window-blur', function () {
+            globalShortcut.unregister(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I');
+        });
+
     }
     
     /**
@@ -809,6 +855,21 @@ function sendChildWinBoundsChange(window) {
 }
 
 /**
+ * Called when the child window is set to full screen
+ */
+function handleChildWindowFullScreen(browserWindow) {
+    const snackBarContent = i18n.getMessageFor('SnackBar');
+    browserWindow.webContents.send('window-enter-full-screen', { snackBar: snackBarContent });
+}
+
+/**
+ * Called when the child window left full screen
+ */
+function handleChildWindowLeaveFullScreen(browserWindow) {
+    browserWindow.webContents.send('window-leave-full-screen');
+}
+
+/**
  * Opens an external url in the system's default browser
  * @param urlToOpen
  */
@@ -981,6 +1042,26 @@ function repositionMainWindow() {
     }
 }
 
+/**
+ * Method that handles key press
+ * @param keyCode {number}
+ */
+function handleKeyPress(keyCode) {
+    switch (keyCode) {
+        case KeyCodes.Esc: {
+            const focusedWindow = BrowserWindow.getFocusedWindow();
+
+            if (focusedWindow && !focusedWindow.isDestroyed() && focusedWindow.isFullScreen()) {
+                focusedWindow.setFullScreen(false);
+            }
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+
 module.exports = {
     createMainWindow: createMainWindow,
     getMainWindow: getMainWindow,
@@ -992,5 +1073,6 @@ module.exports = {
     setBoundsChangeWindow: setBoundsChangeWindow,
     verifyDisplays: verifyDisplays,
     getMenu: getMenu,
-    setIsAutoReload: setIsAutoReload
+    setIsAutoReload: setIsAutoReload,
+    handleKeyPress: handleKeyPress
 };
