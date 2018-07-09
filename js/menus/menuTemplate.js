@@ -71,7 +71,7 @@ function getTemplate(app) {
         submenu: [
             buildMenuItem('undo', i18n.getMessageFor('Undo')),
             buildMenuItem('redo', i18n.getMessageFor('Redo')),
-			{ type: 'separator' },
+            { type: 'separator' },
             buildMenuItem('cut', i18n.getMessageFor('Cut')),
             buildMenuItem('copy', i18n.getMessageFor('Copy')),
             buildMenuItem('paste', i18n.getMessageFor('Paste')),
@@ -91,12 +91,12 @@ function getTemplate(app) {
                 }
             }
         },
-		{ type: 'separator' },
-            buildMenuItem('resetzoom', i18n.getMessageFor('Actual Size')),
-            buildMenuItem('zoomin', i18n.getMessageFor('Zoom In')),
-            buildMenuItem('zoomout', i18n.getMessageFor('Zoom Out')),
-		{ type: 'separator' },
-            buildMenuItem('togglefullscreen', i18n.getMessageFor('Toggle Full Screen')),
+        { type: 'separator' },
+        buildMenuItem('resetzoom', i18n.getMessageFor('Actual Size')),
+        buildMenuItem('zoomin', i18n.getMessageFor('Zoom In')),
+        buildMenuItem('zoomout', i18n.getMessageFor('Zoom Out')),
+        { type: 'separator' },
+        buildMenuItem('togglefullscreen', i18n.getMessageFor('Toggle Full Screen')),
         ]
     },
     {
@@ -153,18 +153,18 @@ function getTemplate(app) {
                             let destination = electron.app.getPath('downloads') + destPath + timestamp + '.zip';
 
                             archiveHandler.generateArchiveForDirectory(source, destination, FILE_EXTENSIONS)
-									.then(() => {
-    electron.shell.showItemInFolder(destination);
-})
-									.catch((err) => {
-    if (focusedWindow && !focusedWindow.isDestroyed()) {
-        electron.dialog.showMessageBox(focusedWindow, {
-            type: 'error',
-            title: i18n.getMessageFor('Failed!'),
-            message: i18n.getMessageFor('Unable to generate logs due to ') + err
-        });
-    }
-});
+                                .then(() => {
+                                    electron.shell.showItemInFolder(destination);
+                                })
+                                .catch((err) => {
+                                    if (focusedWindow && !focusedWindow.isDestroyed()) {
+                                        electron.dialog.showMessageBox(focusedWindow, {
+                                            type: 'error',
+                                            title: i18n.getMessageFor('Failed!'),
+                                            message: i18n.getMessageFor('Unable to generate logs due to ') + err
+                                        });
+                                    }
+                                });
 
                         }
                     },
@@ -175,7 +175,7 @@ function getTemplate(app) {
                             const crashesDirectory = electron.crashReporter.getCrashesDirectory();
                             let source = isMac ? crashesDirectory + '/completed' : crashesDirectory;
 
-								// TODO: Add support to get diagnostic reports from ~/Library/Logs/DiagnosticReports
+                            // TODO: Add support to get diagnostic reports from ~/Library/Logs/DiagnosticReports
                             if (!fs.existsSync(source) || fs.readdirSync(source).length === 0 && focusedWindow && !focusedWindow.isDestroyed()) {
                                 electron.dialog.showMessageBox(focusedWindow, {
                                     type: 'error',
@@ -191,18 +191,18 @@ function getTemplate(app) {
                             let destination = electron.app.getPath('downloads') + destPath + timestamp + '.zip';
 
                             archiveHandler.generateArchiveForDirectory(source, destination, FILE_EXTENSIONS)
-									.then(() => {
-    electron.shell.showItemInFolder(destination);
-})
-									.catch((err) => {
-    if (focusedWindow && !focusedWindow.isDestroyed()) {
-        electron.dialog.showMessageBox(focusedWindow, {
-            type: 'error',
-            title: i18n.getMessageFor('Failed!'),
-            message: i18n.getMessageFor('Unable to generate crash reports due to ') + err
-        });
-    }
-});
+                                .then(() => {
+                                    electron.shell.showItemInFolder(destination);
+                                })
+                                .catch((err) => {
+                                    if (focusedWindow && !focusedWindow.isDestroyed()) {
+                                        electron.dialog.showMessageBox(focusedWindow, {
+                                            type: 'error',
+                                            title: i18n.getMessageFor('Failed!'),
+                                            message: i18n.getMessageFor('Unable to generate crash reports due to ') + err
+                                        });
+                                    }
+                                });
                         }
                     }
                 ]
@@ -250,7 +250,7 @@ function getTemplate(app) {
             }
             ]
         });
-		// Edit menu.
+        // Edit menu.
         template[1].submenu.push({
             type: 'separator'
         }, {
@@ -265,7 +265,7 @@ function getTemplate(app) {
             }
             ]
         });
-		// Window menu.
+        // Window menu.
         template[3].submenu = [{
             accelerator: 'CmdOrCtrl+W',
             role: 'close',
@@ -299,7 +299,7 @@ function getTemplate(app) {
         type: 'separator'
     });
 
-	// Window menu -> launchOnStartup.
+    // Window menu -> launchOnStartup.
     template[index].submenu.push({
         label: i18n.getMessageFor('Auto Launch On Startup'),
         type: 'checkbox',
@@ -307,37 +307,37 @@ function getTemplate(app) {
         click: function (item, focusedWindow) {
             if (item.checked) {
                 symphonyAutoLauncher.enable()
-					.catch(function (err) {
-    let title = 'Error setting AutoLaunch configuration';
-    log.send(logLevels.ERROR, 'MenuTemplate: ' + title + ': auto launch error ' + err);
-    if (focusedWindow && !focusedWindow.isDestroyed()) {
-        electron.dialog.showMessageBox(focusedWindow, {
-            type: 'error',
-            title: i18n.getMessageFor(title),
-            message: i18n.getMessageFor(title) + ': ' + err
-        });
-    }
-});
+                    .catch(function (err) {
+                        let title = 'Error setting AutoLaunch configuration';
+                        log.send(logLevels.ERROR, 'MenuTemplate: ' + title + ': auto launch error ' + err);
+                        if (focusedWindow && !focusedWindow.isDestroyed()) {
+                            electron.dialog.showMessageBox(focusedWindow, {
+                                type: 'error',
+                                title: i18n.getMessageFor(title),
+                                message: i18n.getMessageFor(title) + ': ' + err
+                            });
+                        }
+                    });
             } else {
                 symphonyAutoLauncher.disable()
-					.catch(function (err) {
-    let title = 'Error setting AutoLaunch configuration';
-    log.send(logLevels.ERROR, 'MenuTemplate: ' + title + ': auto launch error ' + err);
-    if (focusedWindow && !focusedWindow.isDestroyed()) {
-        electron.dialog.showMessageBox(focusedWindow, {
-            type: 'error',
-            title: i18n.getMessageFor(title),
-            message: i18n.getMessageFor(title) + ': ' + err
-        });
-    }
-});
+                    .catch(function (err) {
+                        let title = 'Error setting AutoLaunch configuration';
+                        log.send(logLevels.ERROR, 'MenuTemplate: ' + title + ': auto launch error ' + err);
+                        if (focusedWindow && !focusedWindow.isDestroyed()) {
+                            electron.dialog.showMessageBox(focusedWindow, {
+                                type: 'error',
+                                title: i18n.getMessageFor(title),
+                                message: i18n.getMessageFor(title) + ': ' + err
+                            });
+                        }
+                    });
             }
             launchOnStartup = item.checked;
             updateConfigField('launchOnStartup', launchOnStartup);
         }
     });
 
-	// Window menu -> alwaysOnTop.
+    // Window menu -> alwaysOnTop.
     template[index].submenu.push({
         label: i18n.getMessageFor('Always on Top'),
         type: 'checkbox',
@@ -352,8 +352,8 @@ function getTemplate(app) {
         }
     });
 
-	// Window menu -> minimizeOnClose.
-	// ToDo: Add behavior on Close.
+    // Window menu -> minimizeOnClose.
+    // ToDo: Add behavior on Close.
     template[index].submenu.push({
         label: i18n.getMessageFor('Minimize on Close'),
         type: 'checkbox',
@@ -364,7 +364,7 @@ function getTemplate(app) {
         }
     });
 
-	// Window menu -> bringToFront
+    // Window menu -> bringToFront
     template[index].submenu.push({
         label: isWindowsOS ? i18n.getMessageFor('Flash Notification in Taskbar') : i18n.getMessageFor('Bring to Front on Notifications'),
         type: 'checkbox',
@@ -375,12 +375,12 @@ function getTemplate(app) {
         }
     });
 
-	// Window/View menu -> separator
+    // Window/View menu -> separator
     template[index].submenu.push({
         type: 'separator',
     });
 
-	// Window - View menu -> memoryRefresh
+    // Window - View menu -> memoryRefresh
     template[index].submenu.push({
         label: i18n.getMessageFor('Refresh app when idle'),
         type: 'checkbox',
@@ -394,7 +394,7 @@ function getTemplate(app) {
     if (!isMac) {
 
         if (isWindows10()) {
-			/* eslint-disable no-param-reassign */
+            /* eslint-disable no-param-reassign */
             template[index].submenu.push({
                 label: i18n.getMessageFor('Title Bar Style'),
                 submenu: [
@@ -422,7 +422,7 @@ function getTemplate(app) {
             }, {
                 type: 'separator'
             });
-			/* eslint-enable no-param-reassign */
+            /* eslint-enable no-param-reassign */
         }
 
         template[index].submenu.push({
@@ -432,7 +432,7 @@ function getTemplate(app) {
             }
         });
 
-		// This adds About Symphony under help menu for windows
+        // This adds About Symphony under help menu for windows
         template[3].submenu.push({
             label: i18n.getMessageFor('About Symphony'),
             click(focusedWindow) {
@@ -451,58 +451,58 @@ function getTemplate(app) {
  */
 function setCheckboxValues() {
     return new Promise((resolve) => {
-		/**
+        /**
 		 * Method that reads multiple config fields
 		 */
         getMultipleConfigField(configFields)
-			.then(function (configData) {
-    for (let key in configData) {
-        if (configData.hasOwnProperty(key)) { // eslint-disable-line no-prototype-builtins
-            switch (key) {
-                case 'minimizeOnClose':
-                    minimizeOnClose = configData[key];
-                    break;
-                case 'launchOnStartup':
-                    launchOnStartup = configData[key];
-                    break;
-                case 'alwaysOnTop':
-                    isAlwaysOnTop = configData[key];
-                    eventEmitter.emit('isAlwaysOnTop', {
-                        isAlwaysOnTop: configData[key],
-                        shouldActivateMainWindow: true
+            .then(function (configData) {
+                for (let key in configData) {
+                    if (configData.hasOwnProperty(key)) { // eslint-disable-line no-prototype-builtins
+                        switch (key) {
+                            case 'minimizeOnClose':
+                                minimizeOnClose = configData[key];
+                                break;
+                            case 'launchOnStartup':
+                                launchOnStartup = configData[key];
+                                break;
+                            case 'alwaysOnTop':
+                                isAlwaysOnTop = configData[key];
+                                eventEmitter.emit('isAlwaysOnTop', {
+                                    isAlwaysOnTop: configData[key],
+                                    shouldActivateMainWindow: true
+                                });
+                                break;
+                            case 'notificationSettings':
+                                eventEmitter.emit('notificationSettings', configData[key]);
+                                break;
+                            case 'bringToFront':
+                                bringToFront = configData[key];
+                                break;
+                            case 'isCustomTitleBar':
+                                titleBarStyle = configData[key] ? titleBarStyles.CUSTOM : titleBarStyles.NATIVE_WITH_CUSTOM;
+                                break;
+                            case 'memoryRefresh':
+                                memoryRefresh = configData[key];
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+                return resolve();
+            })
+            .catch((err) => {
+                let title = 'Error loading configuration';
+                log.send(logLevels.ERROR, 'MenuTemplate: error reading configuration fields, error: ' + err);
+                if (electron.BrowserWindow.getFocusedWindow() && !electron.BrowserWindow.getFocusedWindow().isDestroyed()) {
+                    electron.dialog.showMessageBox(electron.BrowserWindow.getFocusedWindow(), {
+                        type: 'error',
+                        title: i18n.getMessageFor(title),
+                        message: i18n.getMessageFor(title) + ': ' + err
                     });
-                    break;
-                case 'notificationSettings':
-                    eventEmitter.emit('notificationSettings', configData[key]);
-                    break;
-                case 'bringToFront':
-                    bringToFront = configData[key];
-                    break;
-                case 'isCustomTitleBar':
-                    titleBarStyle = configData[key] ? titleBarStyles.CUSTOM : titleBarStyles.NATIVE_WITH_CUSTOM;
-                    break;
-                case 'memoryRefresh':
-                    memoryRefresh = configData[key];
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-    return resolve();
-})
-			.catch((err) => {
-    let title = 'Error loading configuration';
-    log.send(logLevels.ERROR, 'MenuTemplate: error reading configuration fields, error: ' + err);
-    if (electron.BrowserWindow.getFocusedWindow() && !electron.BrowserWindow.getFocusedWindow().isDestroyed()) {
-        electron.dialog.showMessageBox(electron.BrowserWindow.getFocusedWindow(), {
-            type: 'error',
-            title: i18n.getMessageFor(title),
-            message: i18n.getMessageFor(title) + ': ' + err
-        });
-    }
-    return resolve();
-});
+                }
+                return resolve();
+            });
     });
 }
 
@@ -523,7 +523,7 @@ function buildMenuItem(role, label) {
 
     if (isWindowsOS) {
         return label ? { role: role, label: label, accelerator: windowsAccelerator[role] || '' }
-			: { role: role, accelerator: windowsAccelerator[role] || '' }
+            : { role: role, accelerator: windowsAccelerator[role] || '' }
     }
 
     return label ? { role: role, label: label } : { role: role }

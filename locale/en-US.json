@@ -73,6 +73,11 @@
   "Show crash dump in Finder": "Show crash dump in Finder",
   "Show Logs in Finder": "Show Logs in Finder",
   "Show Logs in Explorer": "Show Logs in Explorer",
+  "SnackBar": {
+    "Press ": "Press ",
+    "esc": "esc",
+    " to exit full screen": " to exit full screen"
+  },
   "Speech": "Speech",
   "Start Speaking": "Start Speaking",
   "Stop Speaking": "Stop Speaking",

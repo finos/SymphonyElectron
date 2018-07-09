@@ -1,7 +1,7 @@
 'use strict';
 
 const fs = require('fs');
-const { randomString } = require('../search/utils/randomString.js');
+const ref = require('ref');
 const childProcess = require('child_process');
 const path = require('path');
 const isDevEnv = require('../utils/misc.js').isDevEnv;
@@ -17,6 +17,7 @@ const Crypto = require('../cryptoLib');
 
 const INDEX_VALIDATOR = searchConfig.LIBRARY_CONSTANTS.INDEX_VALIDATOR;
 
+/*eslint class-methods-use-this: ["error", { "exceptMethods": ["deleteRealTimeFolder"] }] */
 /**
  * This search class communicates with the SymphonySearchEngine C library via node-ffi.
  * There should be only 1 instance of this class in the Electron
@@ -67,16 +68,18 @@ class Search {
      * and creates a folder in the userData
      */
     init() {
+        libSymphonySearch.symSEDestroy();
         libSymphonySearch.symSEInit();
+        libSymphonySearch.symSEClearMainRAMIndex();
+        libSymphonySearch.symSEClearRealtimeRAMIndex();
         libSymphonySearch.symSEEnsureFolderExists(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
-        Search.deleteIndexFolders(searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX);
-        Search.deleteIndexFolders(searchConfig.FOLDERS_CONSTANTS.TEMP_BATCH_INDEX_FOLDER);
         Search.indexValidator(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${this.userId}`);
-        Search.indexValidator(searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX);
         let indexDateStartFrom = new Date().getTime() - searchConfig.SEARCH_PERIOD_SUBTRACTOR;
+        libSymphonySearch.symSEMainFSIndexToRAMIndex(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${this.userId}`);
         // Deleting all the messages except 3 Months from now
-        libSymphonySearch.symSEDeleteMessages(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${this.userId}`, null,
+        libSymphonySearch.symSEDeleteMessagesFromRAMIndex(null,
             searchConfig.MINIMUM_DATE, indexDateStartFrom.toString());
+        Search.deleteIndexFolders();
         this.isInitialized = true;
     }
 
@@ -113,17 +116,10 @@ class Search {
                 return;
             }
 
-            if (!fs.existsSync(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH)) {
-                log.send(logLevels.ERROR, 'User index folder not found');
-                reject(new Error('User index folder not found'));
-                return;
-            }
-
-            const indexId = randomString();
-            libSymphonySearch.symSECreatePartialIndexAsync(searchConfig.FOLDERS_CONSTANTS.TEMP_BATCH_INDEX_FOLDER, indexId, messages, (err, res) => {
+            libSymphonySearch.symSEIndexMainRAMAsync(messages, function (err, res) {
                 if (err) {
-                    log.send(logLevels.ERROR, 'Batch Indexing: error ->' + err);
-                    reject(new Error(err));
+                    log.send(logLevels.ERROR, `IndexBatch: Error indexing messages to memory : ${err}`);
+                    reject(new Error('IndexBatch: Error indexing messages to memory '));
                     return;
                 }
                 resolve(res);
@@ -135,8 +131,11 @@ class Search {
      * Merging the temporary
      * created from indexBatch()
      */
-    mergeIndexBatches() {
+    memoryIndexToFSIndex() {
         return new Promise((resolve, reject) => {
+
+            Search.deleteIndexFolders();
+            libSymphonySearch.symSEEnsureFolderExists(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
 
             if (!fs.existsSync(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH)) {
                 log.send(logLevels.ERROR, 'User index folder not found');
@@ -144,13 +143,12 @@ class Search {
                 return;
             }
 
-            libSymphonySearch.symSEMergePartialIndexAsync(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${this.userId}`, searchConfig.FOLDERS_CONSTANTS.TEMP_BATCH_INDEX_FOLDER, (err, res) => {
+            libSymphonySearch.symSEMainRAMIndexToFSIndexAsync(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${this.userId}`, (err, res) => {
                 if (err) {
                     log.send(logLevels.ERROR, 'Error merging the index ->' + err);
                     reject(new Error(err));
                     return;
                 }
-                Search.deleteIndexFolders(searchConfig.FOLDERS_CONSTANTS.TEMP_BATCH_INDEX_FOLDER);
                 resolve(res);
             });
         });
@@ -197,13 +195,8 @@ class Search {
             throw new Error('Library not initialized');
         }
 
-        if (!fs.existsSync(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH)) {
-            log.send(logLevels.ERROR, 'User index folder not found');
-            throw new Error('User index folder not found');
-        }
-
         this.isRealTimeIndexing = true;
-        return libSymphonySearch.symSEIndexRealTimeAsync(searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX, message, (err, result) => {
+        return libSymphonySearch.symSEIndexRealtimeRAMAsync(message, (err, result) => {
             this.isRealTimeIndexing = false;
             if (err) {
                 log.send(logLevels.ERROR, 'RealTime Indexing: error -> ' + err);
@@ -211,16 +204,6 @@ class Search {
             }
             return result;
         });
-    }
-
-    /**
-     * Reading a json file
-     * for the demo search app only
-     * @param {String} batch
-     * @returns {Promise}
-     */
-    readJson(batch) {
-        return readFile.call(this, batch);
     }
 
     /**
@@ -246,7 +229,7 @@ class Search {
      * @returns {Promise}
      */
     searchQuery(query, senderIds, threadIds, fileType, startDate,
-                endDate, limit, offset, sortOrder) {
+        endDate, limit, offset, sortOrder) {
 
         let _limit = limit;
         let _offset = offset;
@@ -256,12 +239,6 @@ class Search {
             if (!this.isInitialized) {
                 log.send(logLevels.ERROR, 'Library not initialized');
                 reject(new Error('Library not initialized'));
-                return;
-            }
-
-            if (!fs.existsSync(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${this.userId}`) || !fs.existsSync(searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX)) {
-                log.send(logLevels.ERROR, 'Index folder does not exist.');
-                reject(new Error('Index folder does not exist.'));
                 return;
             }
 
@@ -301,9 +278,9 @@ class Search {
                 _sortOrder = searchConfig.SORT_BY_SCORE;
             }
 
-            const returnedResult = libSymphonySearch.symSESearch(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${this.userId}`, searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX, q, startDateTime.toString(), endDateTime.toString(), _offset, _limit, _sortOrder);
+            const returnedResult = libSymphonySearch.symSERAMIndexSearch(q, startDateTime.toString(), endDateTime.toString(), _offset, _limit, _sortOrder);
             try {
-                let ret = returnedResult.readCString();
+                let ret = ref.readCString(returnedResult);
                 resolve(JSON.parse(ret));
             } finally {
                 libSymphonySearch.symSEFreeResult(returnedResult);
@@ -324,20 +301,14 @@ class Search {
                 return;
             }
 
-            if (!fs.existsSync(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${this.userId}`)) {
-                log.send(logLevels.ERROR, 'Index folder does not exist.');
-                reject(new Error('Index folder does not exist.'));
-                return;
-            }
-
-            libSymphonySearch.symSEGetLastMessageTimestampAsync(`${searchConfig.FOLDERS_CONSTANTS.PREFIX_NAME_PATH}_${this.userId}`, (err, res) => {
+            libSymphonySearch.symSEMainRAMIndexGetLastMessageTimestampAsync((err, res) => {
                 if (err) {
                     log.send(logLevels.ERROR, 'Error getting the index timestamp ->' + err);
                     reject(new Error(err));
                 }
                 const returnedResult = res;
                 try {
-                    let ret = returnedResult.readCString();
+                    let ret = ref.readCString(returnedResult);
                     resolve(ret);
                 } finally {
                     libSymphonySearch.symSEFreeResult(returnedResult);
@@ -346,10 +317,8 @@ class Search {
         });
     }
 
-    /*eslint class-methods-use-this: ["error", { "exceptMethods": ["deleteRealTimeFolder"] }] */
     deleteRealTimeFolder() {
-        Search.deleteIndexFolders(searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX);
-        Search.indexValidator(searchConfig.FOLDERS_CONSTANTS.TEMP_REAL_TIME_INDEX);
+        libSymphonySearch.symSEClearRealtimeRAMIndex();
     }
 
     /**
@@ -541,20 +510,22 @@ class Search {
 
     /**
      * Removing all the folders and files inside the data folder
-     * @param location
      */
-    static deleteIndexFolders(location) {
-        if (fs.existsSync(location)) {
-            fs.readdirSync(location).forEach((file) => {
-                let curPath = location + "/" + file;
-                if (fs.lstatSync(curPath).isDirectory()) {
-                    Search.deleteIndexFolders(curPath);
-                } else {
-                    fs.unlinkSync(curPath);
-                }
-            });
-            fs.rmdirSync(location);
+    static deleteIndexFolders() {
+        function removeFiles(filePath) {
+            if (fs.existsSync(filePath)) {
+                fs.readdirSync(filePath).forEach((file) => {
+                    let curPath = filePath + "/" + file;
+                    if (fs.lstatSync(curPath).isDirectory()) {
+                        removeFiles(curPath);
+                    } else {
+                        fs.unlinkSync(curPath);
+                    }
+                });
+                fs.rmdirSync(filePath);
+            }
         }
+        removeFiles(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
     }
 
 }
@@ -562,39 +533,16 @@ class Search {
 /**
  * Deleting the data index folder
  * when the app is closed/signed-out/navigates
+ * isEncryption if that is true
+ * will not clear the memory index
  */
-function deleteIndexFolder() {
-    Search.deleteIndexFolders(searchConfig.FOLDERS_CONSTANTS.INDEX_PATH);
+function deleteIndexFolder(isEncryption) {
+    if (!isEncryption) {
+        libSymphonySearch.symSEDestroy();
+    }
+    Search.deleteIndexFolders();
 }
 
-/**
- * Reads the file from the msgjson
- * this is only for the demo page
- * @param batch
- * @returns {Promise<Array>}
- */
-function readFile(batch) {
-    return new Promise((resolve, reject) => {
-        let dirPath = path.join(searchConfig.FOLDERS_CONSTANTS.EXEC_PATH, isMac ? '..' : '', 'msgsjson', batch);
-        let messageFolderPath = isDevEnv ? path.join('./msgsjson', batch) : dirPath;
-        let files = fs.readdirSync(messageFolderPath);
-        this.messageData = [];
-        files.forEach((file) => {
-            let tempPath = path.join(messageFolderPath, file);
-            let data = fs.readFileSync(tempPath, "utf8");
-            if (data) {
-                try {
-                    this.messageData.push(JSON.parse(data));
-                } catch (err) {
-                    reject(new Error(err))
-                }
-            } else {
-                reject(new Error('Error reading batch'))
-            }
-        });
-        resolve(this.messageData);
-    });
-}
 
 /**
  * Creating launch agent for handling the deletion of

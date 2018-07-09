@@ -23,6 +23,7 @@ const cmds = keyMirror({
     optimizeMemoryConsumption: null,
     setIsInMeeting: null,
     setLocale: null,
+    keyPress: null,
 });
 
 module.exports = {

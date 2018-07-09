@@ -164,6 +164,11 @@ electron.ipcMain.on(apiName, (event, arg) => {
                 eventEmitter.emit('language-changed', { language: arg.locale });
             }
             break;
+        case apiCmds.keyPress:
+            if (typeof arg.keyCode === 'number') {
+                windowMgr.handleKeyPress(arg.keyCode);
+            }
+            break;
         default:
     }
 
