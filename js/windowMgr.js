@@ -234,6 +234,13 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         }
     }
 
+    // Event needed to hide native menu bar on Windows 10 as we use custom menu bar
+    mainWindow.webContents.once('did-start-loading', () => {
+        if (isWindows10() && mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.setMenuBarVisibility(false);
+        }
+    });
+
     // content can be cached and will still finish load but
     // we might not have network connectivity, so warn the user.
     mainWindow.webContents.on('did-finish-load', function () {
@@ -425,6 +432,14 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
             /* eslint-enable no-param-reassign */
 
             let webContents = newWinOptions.webContents;
+
+            // Event needed to hide native menu bar
+            webContents.once('did-start-loading', () => {
+                let browserWin = BrowserWindow.fromWebContents(webContents);
+                if (isWindowsOS && browserWin && !browserWin.isDestroyed()) {
+                    browserWin.setMenuBarVisibility(false);
+                }
+            });
 
             webContents.once('did-finish-load', function () {
                 let browserWin = BrowserWindow.fromWebContents(webContents);
@@ -909,9 +924,7 @@ eventEmitter.on('language-changed', (opts) => {
 function rebuildMenu(language) {
     setLanguage(language);
     menu = electron.Menu.buildFromTemplate(getTemplate(app));
-    if (!isWindows10()) {
-        electron.Menu.setApplicationMenu(menu);
-    }
+    electron.Menu.setApplicationMenu(menu);
 }
 
 function setLanguage(language) {
