@@ -12,10 +12,11 @@
 // renderer process, this will have to do.  See github issue posted here to
 // electron: https://github.com/electron/electron/issues/9312
 
-const { remote, desktopCapturer } = require('electron');
+const { remote, desktopCapturer, ipcRenderer } = require('electron');
 const { isWindowsOS } = require('../utils/misc');
 
 let includes = [].includes;
+let screenShareArgv;
 
 /**
  * Checks if the options and their types are valid
@@ -50,7 +51,7 @@ function getSources(options, callback) {
         };
     }
 
-    if (isWindowsOS) {
+    if (isWindowsOS && captureWindow) {
         /**
          * Sets the captureWindow to false if Desktop composition
          * is disabled otherwise true
@@ -68,8 +69,27 @@ function getSources(options, callback) {
     }
 
     desktopCapturer.getSources({ types: sourceTypes, thumbnailSize: updatedOptions.thumbnailSize }, (event, sources) => {
+
+        if (screenShareArgv) {
+            const title = screenShareArgv.substr(screenShareArgv.indexOf('=') + 1);
+            const filteredSource = sources.filter(source => source.name === title);
+
+            if (Array.isArray(filteredSource) && filteredSource.length > 0) {
+                return callback(null, filteredSource[0]);
+            }
+
+            if (typeof filteredSource === 'object' && filteredSource.name) {
+                return callback(null, filteredSource);
+            }
+
+            if (sources.length > 0) {
+                return callback(null, sources[0]);
+            }
+
+        }
+
         let source;
-        callback(null, (function() {
+        return callback(null, (function() {
             let i, len, results;
             results = [];
             for (i = 0, len = sources.length; i < len; i++) {
@@ -86,6 +106,13 @@ function getSources(options, callback) {
         }()));
     });
 }
+
+// event that updates screen share argv
+ipcRenderer.once('screen-share-argv', (event, arg) => {
+    if (typeof arg === 'string') {
+        screenShareArgv = arg;
+    }
+});
 
 /**
  * @deprecated instead use getSource

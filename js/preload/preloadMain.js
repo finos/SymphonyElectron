@@ -22,6 +22,7 @@ const getMediaSource = require('../desktopCapturer/getSource');
 const { TitleBar, updateContentHeight } = require('../windowsTitlebar');
 const titleBar = new TitleBar();
 const { buildNumber } = require('../../package.json');
+const memoryMonitorInterval = 1000 * 60 * 60;
 
 require('../downloadManager');
 
@@ -80,7 +81,7 @@ setInterval(() => {
         memory: memory,
         cpuUsage: cpuUsage
     });
-}, 1000 * 60 * 15);
+}, memoryMonitorInterval);
 
 createAPI();
 
@@ -110,7 +111,8 @@ function createAPI() {
                     containerIdentifier: appName,
                     containerVer: appVer,
                     buildNumber: buildNumber,
-                    apiVer: '1.0.0'
+                    apiVer: '2.0.0',
+                    searchApiVer: '3.0.0'
                 };
                 resolve(verInfo);
             });
@@ -152,11 +154,6 @@ function createAPI() {
          * details in ./search/searchUtils.js & ./search/searchConfig.js
          */
         SearchUtils: remote.require('./search/searchUtils.js').SearchUtils,
-
-        /**
-         * Function to clear the user index data
-         */
-        deleteIndexFolder: remote.require('./search/search.js').deleteIndexFolder,
 
         /**
          * Brings window forward and gives focus.
@@ -303,6 +300,18 @@ function createAPI() {
          */
         setIsInMeeting: function (isInMeeting) {
             throttledSetIsInMeetingStatus(isInMeeting);
+        },
+
+        /**
+         * Sets the language which updates the application locale
+         * @param {string} locale - language identifier and a region identifier
+         * Ex: en-US, ja-JP
+         */
+        setLocale: function (locale) {
+            local.ipcRenderer.send(apiName, {
+                cmd: apiCmds.setLocale,
+                locale,
+            });
         }
     };
 

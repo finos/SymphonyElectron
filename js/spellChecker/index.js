@@ -16,6 +16,7 @@ class SpellCheckHelper {
      * Method to initialize spell checker
      */
     initializeSpellChecker() {
+        this.spellCheckHandler.automaticallyIdentifyLanguages = false;
         this.spellCheckHandler.attachToInput();
 
         // This is only for window as in mac the
@@ -24,7 +25,8 @@ class SpellCheckHelper {
         // In windows we need to implement RxJS observable
         // in order to switch language dynamically
         if (!isMac) {
-            this.spellCheckHandler.switchLanguage('en-US');
+            const sysLocale = remote.app.getLocale() || 'en-US';
+            this.spellCheckHandler.switchLanguage(sysLocale);
         }
 
         const contextMenuBuilder = new ContextMenuBuilder(this.spellCheckHandler, null, false, SpellCheckHelper.processMenu);

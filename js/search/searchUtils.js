@@ -7,27 +7,29 @@ const { isMac } = require('../utils/misc.js');
  * Utils to validate users config data and
  * available disk space to enable electron search
  */
+/*eslint class-methods-use-this: ["error", { "exceptMethods": ["checkFreeSpace"] }] */
 class SearchUtils {
 
     constructor() {
-        this.path = searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH;
+        this.indexVersion = searchConfig.INDEX_VERSION
     }
 
     /**
      * This function returns true if the available disk space
      * is more than the constant MINIMUM_DISK_SPACE
-     * @returns {Promise<boolean>}
+     * @returns {Promise}
      */
     checkFreeSpace() {
         return new Promise((resolve, reject) => {
+            let userDataPath = searchConfig.FOLDERS_CONSTANTS.USER_DATA_PATH;
             if (!isMac) {
                 try {
-                    this.path = this.path.substring(0, 1);
+                    userDataPath = userDataPath.substring(0, 1);
                 } catch (e) {
-                    reject(new Error('Invalid Path : ' + e));
+                    reject(false);
                 }
             }
-            checkDiskSpace(this.path, resolve, reject);
+            checkDiskSpace(userDataPath, resolve, reject);
         });
     }
 
@@ -120,7 +122,7 @@ function createUserConfigFile(userId, data) {
     let createStream = fs.createWriteStream(searchConfig.FOLDERS_CONSTANTS.USER_CONFIG_FILE);
     if (userData) {
         if (!userData.indexVersion) {
-            userData.indexVersion = searchConfig.INDEX_VERSION;
+            userData.indexVersion = this.indexVersion;
         }
         try {
             userData = JSON.stringify(userData);
@@ -146,7 +148,7 @@ function updateConfig(userId, data, resolve, reject) {
     let userData = data;
 
     if (userData && !userData.indexVersion) {
-        userData.indexVersion = searchConfig.INDEX_VERSION;
+        userData.indexVersion = this.indexVersion
     }
 
     let configPath = searchConfig.FOLDERS_CONSTANTS.USER_CONFIG_FILE;

@@ -13,33 +13,85 @@ const symLucyIndexerPtr = ref.refType(symLucyIndexer);
  * using the node-ffi
  */
 let libSymphonySearch = ffi.Library(searchConfig.LIBRARY_CONSTANTS.SEARCH_LIBRARY_PATH, {
-    //init
+
+    // New Memory Indexing API
+    'symSE_index_main_RAM': ['int', [ 'string' ] ],
+    'symSE_index_realtime_RAM': ['int', [ 'string' ] ],
+    'symSE_main_RAM_index_to_FS_index': ['int', [ 'string' ] ],
+    'symSE_realtime_RAM_index_to_FS_index': ['int', [ 'string' ] ],
+    'symSE_main_RAM_index_get_last_message_timestamp': ['char *', [] ],
+    'symSE_RAM_index_search': ['char *', [ 'string', 'string', 'string', 'int', 'int', 'int' ] ],
+    'symSE_main_FS_index_to_RAM_index': ['int', [ 'string' ] ],
+    'symSE_realtime_FS_index_to_RAM_index': ['int', [ 'string' ] ],
+    'symSE_clear_realtime_RAM_index': ['int', [] ],
+    'symSE_clear_main_RAM_index': ['int', [] ],
+    'symSE_delete_messages_from_RAM_index': ['int', [ 'string', 'string', 'string' ] ],
+    'symSE_destroy': ['int', [] ],
+
+    // Serialization/Deserialization API
+    'symSE_serialize_main_index_to_encrypted_folders': ['int', [ 'string', 'string' ] ],
+    'symSE_deserialize_main_index_from_encrypted_folders': ['int', [ 'string', 'string' ] ],
+
+    // init
     'symSE_init': ['void', []],
     'symSE_remove_folder': ['int', ['string']],
     'symSE_ensure_index_exists': ['int', ['string']],
     'symSE_ensure_folder_exists': ['int', ['string']],
-    //first time indexing and delta indexing
+    // first time indexing and delta indexing
     'symSE_get_indexer': [symLucyIndexerPtr, ['string']], //will be removed
     'symSE_create_partial_index': ['int', ['string', 'string', 'string']],
     'symSE_merge_partial_index': ['int', ['string', 'string']],
-    //real time indexing
+    // real time indexing
     'symSE_index_realtime': ['int', ['string', 'string']],
     'symSE_merge_temp_index': ['int', ['string', 'string']],
     'symSE_clear_temp_index': ['int', ['string']],
-    //Search,
+    // Search,
     'symSE_search': ['char *', ['string', 'string', 'string', 'string', 'string', 'int', 'int', 'int']],
-    //Deletion
+    // Deletion
     'symSE_delete_messages': ['int', ['string', 'string', 'string', 'string']],
-    //Index commit/optimize
+    // Index commit/optimize
     'symSE_commit_index': ['int', [symLucyIndexerPtr, 'int']], //will be removed
-    //freePointer
+    // freePointer
     'symSE_free_results': ['int', ['char *']],
 
-    //Latest messages timestamp
+    // Latest messages timestamp
     'symSE_get_last_message_timestamp': ['char *', ['string']]
 });
 
 module.exports = {
+    // New Memory Indexing API
+    symSEIndexMainRAM: libSymphonySearch.symSE_index_main_RAM,
+    symSEIndexRealtimeRAM: libSymphonySearch.symSE_index_realtime_RAM,
+    symSEMainRAMIndexToFSIndex: libSymphonySearch.symSE_main_RAM_index_to_FS_index,
+    symSERealtimeRAMIndexToFSIndex: libSymphonySearch.symSE_realtime_RAM_index_to_FS_index,
+    symSEMainRAMIndexGetLastMessageTimestamp: libSymphonySearch.symSE_main_RAM_index_get_last_message_timestamp,
+    symSERAMIndexSearch: libSymphonySearch.symSE_RAM_index_search,
+    symSEMainFSIndexToRAMIndex: libSymphonySearch.symSE_main_FS_index_to_RAM_index,
+    symSERealtimeFSIndexToRAMIndex: libSymphonySearch.symSE_realtime_FS_index_to_RAM_index,
+    symSEClearRealtimeRAMIndex: libSymphonySearch.symSE_clear_realtime_RAM_index,
+    symSEClearMainRAMIndex: libSymphonySearch.symSE_clear_main_RAM_index,
+    symSEDeleteMessagesFromRAMIndex: libSymphonySearch.symSE_delete_messages_from_RAM_index,
+    symSEDestroy: libSymphonySearch.symSE_destroy,
+
+    // Serialization/Deserialization API
+    symSESerializeMainIndexToEncryptedFolders: libSymphonySearch.symSE_serialize_main_index_to_encrypted_folders,
+    symSEDeserializeMainIndexToEncryptedFolders: libSymphonySearch.symSE_deserialize_main_index_from_encrypted_folders,
+    symSESerializeMainIndexToEncryptedFoldersAsync: libSymphonySearch.symSE_serialize_main_index_to_encrypted_folders.async,
+    symSEDeserializeMainIndexToEncryptedFoldersAsync: libSymphonySearch.symSE_deserialize_main_index_from_encrypted_folders.async,
+
+    symSEIndexMainRAMAsync: libSymphonySearch.symSE_index_main_RAM.async,
+    symSEIndexRealtimeRAMAsync: libSymphonySearch.symSE_index_realtime_RAM.async,
+    symSEMainRAMIndexToFSIndexAsync: libSymphonySearch.symSE_main_RAM_index_to_FS_index.async,
+    symSERealtimeRAMIndexToFSIndexAsync: libSymphonySearch.symSE_realtime_RAM_index_to_FS_index.async,
+    symSEMainRAMIndexGetLastMessageTimestampAsync: libSymphonySearch.symSE_main_RAM_index_get_last_message_timestamp.async,
+    symSERAMIndexSearchAsync: libSymphonySearch.symSE_RAM_index_search.async,
+    symSEMainFSIndexToRAMIndexAsync: libSymphonySearch.symSE_main_FS_index_to_RAM_index.async,
+    symSERealtimeFSIndexToRAMIndexAsync: libSymphonySearch.symSE_realtime_FS_index_to_RAM_index.async,
+    symSEClearRealtimeRAMIndexAsync: libSymphonySearch.symSE_clear_realtime_RAM_index.async,
+    symSEClearMainRAMIndexAsync: libSymphonySearch.symSE_clear_main_RAM_index.async,
+    symSEDeleteMessagesFromRAMIndexAsync: libSymphonySearch.symSE_delete_messages_from_RAM_index.async,
+    symSEDestroyAsync: libSymphonySearch.symSE_destroy.async,
+
     symSEInit: libSymphonySearch.symSE_init,
     symSERemoveFolder: libSymphonySearch.symSE_remove_folder,
     symSEEnsureIndexExists: libSymphonySearch.symSE_ensure_index_exists,
@@ -69,5 +121,5 @@ module.exports = {
     symSEDeleteMessagesAsync: libSymphonySearch.symSE_delete_messages.async,
     symSECommitIndexAsync: libSymphonySearch.symSE_commit_index.async,
     symSEFreeResultAsync: libSymphonySearch.symSE_free_results.async,
-    symSEGetLastMessageTimestampAsync: libSymphonySearch.symSE_get_last_message_timestamp.async
+    symSEGetLastMessageTimestampAsync: libSymphonySearch.symSE_get_last_message_timestamp.async,
 };

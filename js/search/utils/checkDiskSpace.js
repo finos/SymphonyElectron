@@ -6,17 +6,16 @@ const logLevels = require('../../enums/logLevels.js');
 
 function checkDiskSpace(path, resolve, reject) {
     if (!path) {
-        reject(new Error("Please provide path"));
-        return;
+        return reject(false);
     }
 
     if (isMac) {
         exec("df -k '" + path.replace(/'/g,"'\\''") + "'", (error, stdout, stderr) => {
             if (error) {
                 if (stderr.indexOf(searchConfig.MAC_PATH_ERROR) !== -1) {
-                    return reject(new Error(`${searchConfig.MAC_PATH_ERROR} ${error}`))
+                    return reject(false);
                 }
-                return reject(new Error("Error : " + error));
+                return reject(false);
             }
 
             let data = stdout.trim().split("\n");
@@ -37,17 +36,19 @@ function checkDiskSpace(path, resolve, reject) {
             let data = stdout.trim().split(",");
 
             if (data[ 1 ] === searchConfig.DISK_NOT_READY) {
-                return reject(new Error("Error : Disk not ready"));
+                return reject(false);
             }
 
             if (data[ 1 ] === searchConfig.DISK_NOT_FOUND) {
-                return reject(new Error("Error : Disk not found"));
+                return reject(false);
             }
 
             let disk_info_str = data[ 0 ];
             return resolve(disk_info_str >= searchConfig.MINIMUM_DISK_SPACE);
         });
     }
+
+    return null;
 }
 
 module.exports = {

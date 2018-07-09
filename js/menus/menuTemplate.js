@@ -1,9 +1,10 @@
 'use strict';
 
-const electron = require('electron');
 const fs = require('fs');
-const { updateConfigField, getMultipleConfigField } = require('../config.js');
 const AutoLaunch = require('auto-launch');
+const electron = require('electron');
+
+const { updateConfigField, getMultipleConfigField } = require('../config.js');
 const { isMac, isWindowsOS, isWindows10 } = require('../utils/misc.js');
 const archiveHandler = require('../utils/archiveHandler');
 const log = require('../log.js');
@@ -11,6 +12,7 @@ const logLevels = require('../enums/logLevels.js');
 const eventEmitter = require('../eventEmitter');
 const aboutApp = require('../aboutApp');
 const titleBarStyles = require('../enums/titleBarStyles');
+const i18n = require('../translation/i18n');
 
 const configFields = [
     'minimizeOnClose',
@@ -26,6 +28,7 @@ let minimizeOnClose = false;
 let launchOnStartup = false;
 let isAlwaysOnTop = false;
 let bringToFront = false;
+let memoryRefresh = false;
 let titleBarStyle = titleBarStyles.CUSTOM;
 
 let symphonyAutoLauncher;
@@ -61,160 +64,189 @@ if (isMac) {
     });
 }
 
-const template = [{
-    label: 'Edit',
-    submenu: [
-        buildMenuItem('undo'),
-        buildMenuItem('redo'),
-        { type: 'separator' },
-        buildMenuItem('cut'),
-        buildMenuItem('copy'),
-        buildMenuItem('paste'),
-        buildMenuItem('pasteandmatchstyle'),
-        buildMenuItem('delete'),
-        buildMenuItem('selectall')
-    ]
-},
-{
-    label: 'View',
-    submenu: [{
-        label: 'Reload',
-        accelerator: 'CmdOrCtrl+R',
-        click(item, focusedWindow) {
-            if (focusedWindow) {
-                focusedWindow.reload();
-            }
-        }
-    },
-        { type: 'separator' },
-        buildMenuItem('resetzoom'),
-        buildMenuItem('zoomin'),
-        buildMenuItem('zoomout'), 
-        { type: 'separator' },
-        buildMenuItem('togglefullscreen'),
-    ]
-},
-{
-    role: 'window',
-    submenu: [
-        buildMenuItem('minimize'),
-        buildMenuItem('close'),
-    ]
-},
-{
-    role: 'help',
-    submenu: 
-    [
-        {
-            label: 'Symphony Help',
-            click() { electron.shell.openExternal('https://support.symphony.com'); }
-        },
-        {
-            label: 'Learn More',
-            click() { electron.shell.openExternal('https://www.symphony.com'); }
-        },
-        {
-            label: 'Troubleshooting',
-            submenu: [
-                {
-                    label: isMac ? 'Show Logs in Finder' : 'Show Logs in Explorer',
-                    click(item, focusedWindow) {
-
-                        const FILE_EXTENSIONS = [ '.log' ];
-                        const MAC_LOGS_PATH = '/Library/Logs/Symphony/';
-                        const WINDOWS_LOGS_PATH = '\\AppData\\Roaming\\Symphony\\logs';
-            
-                        let logsPath = isMac ? MAC_LOGS_PATH : WINDOWS_LOGS_PATH;
-                        let source = electron.app.getPath('home') + logsPath;
-            
-                        if (!fs.existsSync(source) && focusedWindow && !focusedWindow.isDestroyed()) {
-                            electron.dialog.showMessageBox(focusedWindow, {type: 'error', title: 'Failed!', message: 'No logs are available to share'});
-                            return;
-                        }
-            
-                        let destPath = isMac ? '/logs_symphony_' : '\\logs_symphony_';
-                        let timestamp = new Date().getTime();
-                        
-                        let destination = electron.app.getPath('downloads') + destPath + timestamp + '.zip';
-            
-                        archiveHandler.generateArchiveForDirectory(source, destination, FILE_EXTENSIONS)
-                            .then(() => {
-                                electron.shell.showItemInFolder(destination);
-                            })
-                            .catch((err) => {
-                                if (focusedWindow && !focusedWindow.isDestroyed()) {
-                                    electron.dialog.showMessageBox(focusedWindow, {type: 'error', title: 'Failed!', message: `Unable to generate logs due to -> ${err}`});
-                                }
-                            })
-            
-                    }
-                },
-                {
-                    label: isMac ? 'Show crash dump in Finder' : 'Show crash dump in Explorer',
-                    click(item, focusedWindow) {
-                        const FILE_EXTENSIONS = isMac ? [ '.dmp' ] : [ '.dmp', '.txt' ];
-                        const crashesDirectory = electron.crashReporter.getCrashesDirectory();
-                        let source = isMac ? crashesDirectory + '/completed' : crashesDirectory;
-
-                        // TODO: Add support to get diagnostic reports from ~/Library/Logs/DiagnosticReports
-                        if (!fs.existsSync(source) || fs.readdirSync(source).length === 0 && focusedWindow && !focusedWindow.isDestroyed()) {
-                            electron.dialog.showMessageBox(focusedWindow, {type: 'error', title: 'Failed!', message: 'No crashes available to share'});
-                            return;
-                        }
-
-                        let destPath = isMac ? '/crashes_symphony_' : '\\crashes_symphony_';
-                        let timestamp = new Date().getTime();
-
-                        let destination = electron.app.getPath('downloads') + destPath + timestamp + '.zip';
-
-                        archiveHandler.generateArchiveForDirectory(source, destination, FILE_EXTENSIONS)
-                            .then(() => {
-                                electron.shell.showItemInFolder(destination);
-                            })
-                            .catch((err) => {
-                                if (focusedWindow && !focusedWindow.isDestroyed()) {
-                                    electron.dialog.showMessageBox(focusedWindow, {type: 'error', title: 'Failed!', message: `Unable to generate crash reports due to -> ${err}`});
-                                }
-                            });
-                    }
-                }
-            ]
-        }
-    ]
-}
-];
-
 function getTemplate(app) {
+
+    const template = [{
+        label: i18n.getMessageFor('Edit'),
+        submenu: [
+            buildMenuItem('undo', i18n.getMessageFor('Undo')),
+            buildMenuItem('redo', i18n.getMessageFor('Redo')),
+            { type: 'separator' },
+            buildMenuItem('cut', i18n.getMessageFor('Cut')),
+            buildMenuItem('copy', i18n.getMessageFor('Copy')),
+            buildMenuItem('paste', i18n.getMessageFor('Paste')),
+            buildMenuItem('pasteandmatchstyle', i18n.getMessageFor('Paste and Match Style')),
+            buildMenuItem('delete', i18n.getMessageFor('Delete')),
+            buildMenuItem('selectall', i18n.getMessageFor('Select All'))
+        ]
+    },
+    {
+        label: i18n.getMessageFor('View'),
+        submenu: [{
+            label: i18n.getMessageFor('Reload'),
+            accelerator: 'CmdOrCtrl+R',
+            click(item, focusedWindow) {
+                if (focusedWindow) {
+                    focusedWindow.reload();
+                }
+            }
+        },
+        { type: 'separator' },
+        buildMenuItem('resetzoom', i18n.getMessageFor('Actual Size')),
+        buildMenuItem('zoomin', i18n.getMessageFor('Zoom In')),
+        buildMenuItem('zoomout', i18n.getMessageFor('Zoom Out')),
+        { type: 'separator' },
+        buildMenuItem('togglefullscreen', i18n.getMessageFor('Toggle Full Screen')),
+        ]
+    },
+    {
+        role: 'window',
+        label: i18n.getMessageFor('Window'),
+        submenu: [
+            buildMenuItem('minimize', i18n.getMessageFor('Minimize')),
+            buildMenuItem('close', i18n.getMessageFor('Close')),
+        ]
+    },
+    {
+        role: 'help',
+        label: i18n.getMessageFor('Help'),
+        submenu:
+        [
+            {
+                label: i18n.getMessageFor('Symphony Help'),
+                click() {
+                    electron.shell.openExternal('https://support.symphony.com');
+                }
+            },
+            {
+                label: i18n.getMessageFor('Learn More'),
+                click() {
+                    electron.shell.openExternal('https://www.symphony.com');
+                }
+            },
+            {
+                label: i18n.getMessageFor('Troubleshooting'),
+                submenu: [
+                    {
+                        label: isMac ? i18n.getMessageFor('Show Logs in Finder') : i18n.getMessageFor('Show Logs in Explorer'),
+                        click(item, focusedWindow) {
+
+                            const FILE_EXTENSIONS = ['.log'];
+                            const MAC_LOGS_PATH = '/Library/Logs/Symphony/';
+                            const WINDOWS_LOGS_PATH = '\\AppData\\Roaming\\Symphony\\logs';
+
+                            let logsPath = isMac ? MAC_LOGS_PATH : WINDOWS_LOGS_PATH;
+                            let source = electron.app.getPath('home') + logsPath;
+
+                            if (!fs.existsSync(source) && focusedWindow && !focusedWindow.isDestroyed()) {
+                                electron.dialog.showMessageBox(focusedWindow, {
+                                    type: 'error',
+                                    title: i18n.getMessageFor('Failed!'),
+                                    message: i18n.getMessageFor('No logs are available to share')
+                                });
+                                return;
+                            }
+
+                            let destPath = isMac ? '/logs_symphony_' : '\\logs_symphony_';
+                            let timestamp = new Date().getTime();
+
+                            let destination = electron.app.getPath('downloads') + destPath + timestamp + '.zip';
+
+                            archiveHandler.generateArchiveForDirectory(source, destination, FILE_EXTENSIONS)
+                                .then(() => {
+                                    electron.shell.showItemInFolder(destination);
+                                })
+                                .catch((err) => {
+                                    if (focusedWindow && !focusedWindow.isDestroyed()) {
+                                        electron.dialog.showMessageBox(focusedWindow, {
+                                            type: 'error',
+                                            title: i18n.getMessageFor('Failed!'),
+                                            message: i18n.getMessageFor('Unable to generate logs due to ') + err
+                                        });
+                                    }
+                                });
+
+                        }
+                    },
+                    {
+                        label: isMac ? i18n.getMessageFor('Show crash dump in Finder') : i18n.getMessageFor('Show crash dump in Explorer'),
+                        click(item, focusedWindow) {
+                            const FILE_EXTENSIONS = isMac ? ['.dmp'] : ['.dmp', '.txt'];
+                            const crashesDirectory = electron.crashReporter.getCrashesDirectory();
+                            let source = isMac ? crashesDirectory + '/completed' : crashesDirectory;
+
+                            // TODO: Add support to get diagnostic reports from ~/Library/Logs/DiagnosticReports
+                            if (!fs.existsSync(source) || fs.readdirSync(source).length === 0 && focusedWindow && !focusedWindow.isDestroyed()) {
+                                electron.dialog.showMessageBox(focusedWindow, {
+                                    type: 'error',
+                                    title: i18n.getMessageFor('Failed!'),
+                                    message: i18n.getMessageFor('No crashes available to share')
+                                });
+                                return;
+                            }
+
+                            let destPath = isMac ? '/crashes_symphony_' : '\\crashes_symphony_';
+                            let timestamp = new Date().getTime();
+
+                            let destination = electron.app.getPath('downloads') + destPath + timestamp + '.zip';
+
+                            archiveHandler.generateArchiveForDirectory(source, destination, FILE_EXTENSIONS)
+                                .then(() => {
+                                    electron.shell.showItemInFolder(destination);
+                                })
+                                .catch((err) => {
+                                    if (focusedWindow && !focusedWindow.isDestroyed()) {
+                                        electron.dialog.showMessageBox(focusedWindow, {
+                                            type: 'error',
+                                            title: i18n.getMessageFor('Failed!'),
+                                            message: i18n.getMessageFor('Unable to generate crash reports due to ') + err
+                                        });
+                                    }
+                                });
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+    ];
+
     if (isMac && template[0].label !== app.getName()) {
         template.unshift({
             label: app.getName(),
             submenu: [{
-                role: 'about'
+                role: 'about',
+                label: i18n.getMessageFor('About Symphony')
             },
             {
                 type: 'separator'
             },
             {
                 role: 'services',
+                label: i18n.getMessageFor('Services'),
                 submenu: []
             },
             {
                 type: 'separator'
             },
             {
-                role: 'hide'
+                role: 'hide',
+                label: i18n.getMessageFor('Hide Symphony')
             },
             {
-                role: 'hideothers'
+                role: 'hideothers',
+                label: i18n.getMessageFor('Hide Others')
             },
             {
-                role: 'unhide'
+                role: 'unhide',
+                label: i18n.getMessageFor('Show All')
             },
             {
                 type: 'separator'
             },
             {
-                role: 'quit'
+                role: 'quit',
+                label: i18n.getMessageFor('Quit Symphony')
             }
             ]
         });
@@ -222,36 +254,38 @@ function getTemplate(app) {
         template[1].submenu.push({
             type: 'separator'
         }, {
-            label: 'Speech',
+            label: i18n.getMessageFor('Speech'),
             submenu: [{
-                role: 'startspeaking'
+                role: 'startspeaking',
+                label: i18n.getMessageFor('Start Speaking')
             },
             {
-                role: 'stopspeaking'
+                role: 'stopspeaking',
+                label: i18n.getMessageFor('Stop Speaking')
             }
             ]
         });
         // Window menu.
         template[3].submenu = [{
-            label: 'Close',
             accelerator: 'CmdOrCtrl+W',
-            role: 'close'
+            role: 'close',
+            label: i18n.getMessageFor('Close')
         },
         {
-            label: 'Minimize',
             accelerator: 'CmdOrCtrl+M',
-            role: 'minimize'
+            role: 'minimize',
+            label: i18n.getMessageFor('Minimize')
         },
         {
-            label: 'Zoom',
-            role: 'zoom'
+            role: 'zoom',
+            label: i18n.getMessageFor('Zoom')
         },
         {
             type: 'separator'
         },
         {
-            label: 'Bring All to Front',
-            role: 'front'
+            role: 'front',
+            label: i18n.getMessageFor('Bring All to Front')
         }
         ];
     }
@@ -267,26 +301,34 @@ function getTemplate(app) {
 
     // Window menu -> launchOnStartup.
     template[index].submenu.push({
-        label: 'Auto Launch On Startup',
+        label: i18n.getMessageFor('Auto Launch On Startup'),
         type: 'checkbox',
         checked: launchOnStartup,
-        click: function(item, focusedWindow) {
+        click: function (item, focusedWindow) {
             if (item.checked) {
                 symphonyAutoLauncher.enable()
-                    .catch(function(err) {
+                    .catch(function (err) {
                         let title = 'Error setting AutoLaunch configuration';
                         log.send(logLevels.ERROR, 'MenuTemplate: ' + title + ': auto launch error ' + err);
                         if (focusedWindow && !focusedWindow.isDestroyed()) {
-                            electron.dialog.showMessageBox(focusedWindow, {type: 'error', title, message: title + ': ' + err});
+                            electron.dialog.showMessageBox(focusedWindow, {
+                                type: 'error',
+                                title: i18n.getMessageFor(title),
+                                message: i18n.getMessageFor(title) + ': ' + err
+                            });
                         }
                     });
             } else {
                 symphonyAutoLauncher.disable()
-                    .catch(function(err) {
+                    .catch(function (err) {
                         let title = 'Error setting AutoLaunch configuration';
                         log.send(logLevels.ERROR, 'MenuTemplate: ' + title + ': auto launch error ' + err);
                         if (focusedWindow && !focusedWindow.isDestroyed()) {
-                            electron.dialog.showMessageBox(focusedWindow, {type: 'error', title, message: title + ': ' + err});
+                            electron.dialog.showMessageBox(focusedWindow, {
+                                type: 'error',
+                                title: i18n.getMessageFor(title),
+                                message: i18n.getMessageFor(title) + ': ' + err
+                            });
                         }
                     });
             }
@@ -297,7 +339,7 @@ function getTemplate(app) {
 
     // Window menu -> alwaysOnTop.
     template[index].submenu.push({
-        label: 'Always on top',
+        label: i18n.getMessageFor('Always on Top'),
         type: 'checkbox',
         checked: isAlwaysOnTop,
         click: (item) => {
@@ -313,10 +355,10 @@ function getTemplate(app) {
     // Window menu -> minimizeOnClose.
     // ToDo: Add behavior on Close.
     template[index].submenu.push({
-        label: 'Minimize on Close',
+        label: i18n.getMessageFor('Minimize on Close'),
         type: 'checkbox',
         checked: minimizeOnClose,
-        click: function(item) {
+        click: function (item) {
             minimizeOnClose = item.checked;
             updateConfigField('minimizeOnClose', minimizeOnClose);
         }
@@ -324,12 +366,28 @@ function getTemplate(app) {
 
     // Window menu -> bringToFront
     template[index].submenu.push({
-        label: isWindowsOS ? 'Flash Notification in Taskbar' : 'Bring to Front on Notifications',
+        label: isWindowsOS ? i18n.getMessageFor('Flash Notification in Taskbar') : i18n.getMessageFor('Bring to Front on Notifications'),
         type: 'checkbox',
         checked: bringToFront,
-        click: function(item) {
+        click: function (item) {
             bringToFront = item.checked;
             updateConfigField('bringToFront', bringToFront);
+        }
+    });
+
+    // Window/View menu -> separator
+    template[index].submenu.push({
+        type: 'separator',
+    });
+
+    // Window - View menu -> memoryRefresh
+    template[index].submenu.push({
+        label: i18n.getMessageFor('Refresh app when idle'),
+        type: 'checkbox',
+        checked: memoryRefresh,
+        click: function (item) {
+            memoryRefresh = item.checked;
+            updateConfigField('memoryRefresh', memoryRefresh);
         }
     });
 
@@ -338,10 +396,10 @@ function getTemplate(app) {
         if (isWindows10()) {
             /* eslint-disable no-param-reassign */
             template[index].submenu.push({
-                label: 'Title Bar Style',
+                label: i18n.getMessageFor('Title Bar Style'),
                 submenu: [
                     {
-                        label: 'Native With Custom',
+                        label: i18n.getMessageFor('Native With Custom'),
                         type: 'checkbox',
                         checked: titleBarStyle === titleBarStyles.NATIVE_WITH_CUSTOM,
                         click: function (item) {
@@ -351,7 +409,7 @@ function getTemplate(app) {
                         }
                     },
                     {
-                        label: 'Custom',
+                        label: i18n.getMessageFor('Custom'),
                         type: 'checkbox',
                         checked: titleBarStyle === titleBarStyles.CUSTOM,
                         click: function (item) {
@@ -368,15 +426,15 @@ function getTemplate(app) {
         }
 
         template[index].submenu.push({
-            label: 'Quit Symphony',
-            click: function() {
+            label: i18n.getMessageFor('Quit Symphony'),
+            click: function () {
                 app.quit();
             }
         });
 
         // This adds About Symphony under help menu for windows
         template[3].submenu.push({
-            label: 'About Symphony',
+            label: i18n.getMessageFor('About Symphony'),
             click(focusedWindow) {
                 let windowName = focusedWindow ? focusedWindow.name : '';
                 aboutApp.openAboutWindow(windowName);
@@ -394,8 +452,8 @@ function getTemplate(app) {
 function setCheckboxValues() {
     return new Promise((resolve) => {
         /**
-         * Method that reads multiple config fields
-         */
+		 * Method that reads multiple config fields
+		 */
         getMultipleConfigField(configFields)
             .then(function (configData) {
                 for (let key in configData) {
@@ -423,6 +481,9 @@ function setCheckboxValues() {
                             case 'isCustomTitleBar':
                                 titleBarStyle = configData[key] ? titleBarStyles.CUSTOM : titleBarStyles.NATIVE_WITH_CUSTOM;
                                 break;
+                            case 'memoryRefresh':
+                                memoryRefresh = configData[key];
+                                break;
                             default:
                                 break;
                         }
@@ -434,7 +495,11 @@ function setCheckboxValues() {
                 let title = 'Error loading configuration';
                 log.send(logLevels.ERROR, 'MenuTemplate: error reading configuration fields, error: ' + err);
                 if (electron.BrowserWindow.getFocusedWindow() && !electron.BrowserWindow.getFocusedWindow().isDestroyed()) {
-                    electron.dialog.showMessageBox(electron.BrowserWindow.getFocusedWindow(), {type: 'error', title, message: title + ': ' + err});
+                    electron.dialog.showMessageBox(electron.BrowserWindow.getFocusedWindow(), {
+                        type: 'error',
+                        title: i18n.getMessageFor(title),
+                        message: i18n.getMessageFor(title) + ': ' + err
+                    });
                 }
                 return resolve();
             });
@@ -444,23 +509,24 @@ function setCheckboxValues() {
 /**
  * Sets respective accelerators w.r.t roles for the menu template
  *
- * @param role {String}              The action of the menu item
- *
+ * @param role {String} The action of the menu item
+ * @param label {String} Menu item name
  * @return {Object}
- * @return {Object}.role         The action of the menu item
- * @return {Object}.accelerator  keyboard shortcuts and modifiers
+ * @return {Object}.role The action of the menu item
+ * @return {Object}.accelerator keyboard shortcuts and modifiers
  */
-function buildMenuItem(role) {
+function buildMenuItem(role, label) {
 
     if (isMac) {
-        return { role: role }
+        return label ? { role: role, label: label } : { role: role }
     }
 
     if (isWindowsOS) {
-        return { role: role, accelerator: windowsAccelerator[role] || '' }
+        return label ? { role: role, label: label, accelerator: windowsAccelerator[role] || '' }
+            : { role: role, accelerator: windowsAccelerator[role] || '' }
     }
 
-    return { role: role }
+    return label ? { role: role, label: label } : { role: role }
 }
 
 function getMinimizeOnClose() {

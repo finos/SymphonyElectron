@@ -11,6 +11,7 @@ const { isMac, isDevEnv } = require('../utils/misc.js');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 const eventEmitter = require('.././eventEmitter');
+const { getLanguage } = require('../translation/i18n');
 
 // static ref to child process, only allow one screen snippet at time, so
 // hold ref to prev, so can kill before starting next snippet.
@@ -77,7 +78,7 @@ class ScreenSnippet {
                     }
                 }
 
-                captureUtilArgs = [outputFileName];
+                captureUtilArgs = [outputFileName, getLanguage()];
             }
 
             log.send(logLevels.INFO, 'ScreenSnippet: starting screen capture util: ' + captureUtil + ' with args=' + captureUtilArgs);

@@ -9,6 +9,7 @@ const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 const { isMac } = require('../utils/misc');
 const { initCrashReporterMain, initCrashReporterRenderer } = require('../crashReporter.js');
+const i18n = require('../translation/i18n');
 
 let basicAuthWindow;
 
@@ -96,6 +97,8 @@ function openBasicAuthWindow(windowName, hostname, isValidCredentials, clearSett
     });
 
     basicAuthWindow.webContents.on('did-finish-load', () => {
+        const basicAuthContent = i18n.getMessageFor('BasicAuth');
+        basicAuthWindow.webContents.send('i18n-basic-auth', basicAuthContent);
         // initialize crash reporter
         initCrashReporterMain({ process: 'basic auth window' });
         initCrashReporterRenderer(basicAuthWindow, { process: 'render | basic auth window' });
@@ -106,8 +109,8 @@ function openBasicAuthWindow(windowName, hostname, isValidCredentials, clearSett
     basicAuthWindow.webContents.on('crashed', function () {
         const options = {
             type: 'error',
-            title: 'Renderer Process Crashed',
-            message: 'Oops! Looks like we have had a crash.',
+            title: i18n.getMessageFor('Renderer Process Crashed'),
+            message: i18n.getMessageFor('Oops! Looks like we have had a crash.'),
             buttons: ['Close']
         };
 
