@@ -1,6 +1,6 @@
 const { isWhitelisted, matchDomains, parseDomain } = require('./utils/whitelistHandler');
 const { getGlobalConfigField } = require('./config');
-const { isDevEnv } = require('./utils/misc');
+const { isDevEnv, isNodeEnv } = require('./utils/misc');
 
 /**
  * Validate whitelist and location.origin
@@ -10,7 +10,7 @@ const { isDevEnv } = require('./utils/misc');
  */
 function originCheck(eventSender, origin) {
 
-    if (isDevEnv) {
+    if (isDevEnv || isNodeEnv) {
         eventSender.send('initialize-api');
         return null;
     }
