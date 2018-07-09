@@ -49,23 +49,23 @@ class Search {
                      * index
                      */
                     this.decompress(key, false);
-                } else {
-                    /**
-                     * decompress passing true as 2nd arg
-                     * decrypts the previously stored index
-                     */
-                    this.decompress(key, true);
+                    return;
+                }
+                /**
+                 * decompress passing true as 2nd arg
+                 * decrypts the previously stored index
+                 */
+                this.decompress(key, true);
 
-                    // Check if indexVersion exist in the config
-                    // else do not update
-                    let userConfig = config;
-                    if (userConfig && userConfig.indexVersion) {
-                        userConfig.indexVersion = searchConfig.INDEX_VERSION;
-                        Utils.updateUserConfig(this.userId, userConfig)
-                            .catch(() => {
-                                log.send(logLevels.ERROR, 'Error updating index version user config');
-                            })
-                    }
+                // Check if indexVersion exist in the config
+                // else do not update
+                let userConfig = config;
+                if (userConfig && userConfig.indexVersion) {
+                    userConfig.indexVersion = searchConfig.INDEX_VERSION;
+                    Utils.updateUserConfig(this.userId, userConfig)
+                        .catch(() => {
+                            log.send(logLevels.ERROR, 'Error updating index version user config');
+                        })
                 }
             })
             .catch(() => {
