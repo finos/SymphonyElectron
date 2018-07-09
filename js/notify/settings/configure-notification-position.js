@@ -77,6 +77,16 @@ function getTemplatePath() {
  * @param windowName
  */
 function openConfigurationWindow(windowName) {
+    // This prevents creating multiple instances of the
+    // notification configuration window
+    if (configurationWindow && !configurationWindow.isDestroyed()) {
+        if (configurationWindow.isMinimized()) {
+            configurationWindow.restore();
+        }
+        configurationWindow.focus();
+        return;
+    }
+
     const allWindows = BrowserWindow.getAllWindows();
     const selectedParentWindow = allWindows.find((window) => { return window.winName === windowName });
 
