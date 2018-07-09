@@ -23,16 +23,13 @@ const { TitleBar, updateContentHeight } = require('../windowsTitlebar');
 const titleBar = new TitleBar();
 const { buildNumber } = require('../../package.json');
 const memoryMonitorInterval = 1000 * 60 * 60;
+const SnackBar = require('../snackBar').SnackBar;
+const KeyCodes = {
+    Esc: 27,
+};
 
 require('../downloadManager');
-
-// bug in electron preventing us from using spellchecker in pop outs
-// https://github.com/electron/electron/issues/4025
-// so loading the spellchecker in try catch so that we don't
-// block other method from loading
-document.addEventListener('DOMContentLoaded', () => {
-    loadSpellChecker();
-});
+let snackBar;
 
 /**
  * Loads up the spell checker module
@@ -70,6 +67,14 @@ const throttledSetIsInMeetingStatus = throttle(1000, function(isInMeeting) {
         cmd: apiCmds.setIsInMeeting,
         isInMeeting
     });
+});
+
+/**
+ * an event triggered by the main process onload event
+ */
+local.ipcRenderer.on('on-page-load', () => {
+    loadSpellChecker();
+    snackBar = new SnackBar();
 });
 
 // Gathers renderer process memory
@@ -430,6 +435,28 @@ function createAPI() {
         }
     });
 
+    /**
+     * an event triggered by the main process when
+     * the window enters full screen
+     */
+    local.ipcRenderer.on('window-enter-full-screen', (event, arg) => {
+        window.addEventListener('keydown', throttledKeyDown, true);
+        if (snackBar && typeof arg === 'object' && arg.snackBar) {
+            setTimeout(() => snackBar.showSnackBar(arg.snackBar), 500);
+        }
+    });
+
+    /**
+     * an event triggered by the main process when
+     * the window leave full screen
+     */
+    local.ipcRenderer.on('window-leave-full-screen', () => {
+        window.removeEventListener('keydown', throttledKeyDown, true);
+        if (snackBar) {
+            snackBar.removeSnackBar();
+        }
+    });
+
     function updateOnlineStatus() {
         local.ipcRenderer.send(apiName, {
             cmd: apiCmds.isOnline,
@@ -444,6 +471,15 @@ function createAPI() {
             windowName: window.name
         });
     }
+
+    const throttledKeyDown = throttle(1000, (event) => {
+        if (event.keyCode === KeyCodes.Esc) {
+            local.ipcRenderer.send(apiName, {
+                cmd: apiCmds.keyPress,
+                keyCode: KeyCodes.Esc
+            });
+        }
+    });
 
     window.addEventListener('offline', updateOnlineStatus, false);
     window.addEventListener('online', updateOnlineStatus, false);
