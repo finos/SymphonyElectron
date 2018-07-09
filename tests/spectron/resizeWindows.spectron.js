@@ -3,8 +3,10 @@ const robot = require('robotjs');
 const {isMac} = require('../../js/utils/misc');
 
 let app = new Application({});
+let defaultWidth;
+let defaultHeight;
 
-describe('Tests for Resizing windows', () => {
+!isMac ? describe('Tests for Resizing windows', () => {
 
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
@@ -45,9 +47,6 @@ describe('Tests for Resizing windows', () => {
      * Cover scenarios in AVT-768
      */
     it('should be minimized up to 300px', (done) => {
-        if (isMac) {
-            return done();
-        }
         app.browserWindow.getBounds().then((bounds) => {
             defaultHeight = bounds.height;
             defaultWidth = bounds.width;
@@ -67,4 +66,4 @@ describe('Tests for Resizing windows', () => {
             })
         });
     });
-});
+}) : describe.skip();
