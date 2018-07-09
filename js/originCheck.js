@@ -6,16 +6,15 @@ const { isDevEnv, isNodeEnv } = require('./utils/misc');
  * Validate whitelist and location.origin
  * @param eventSender
  * @param origin {String} location.origin
- * @return {Promise<T>}
  */
 function originCheck(eventSender, origin) {
 
     if (isDevEnv || isNodeEnv) {
         eventSender.send('initialize-api');
-        return null;
+        return;
     }
 
-    return isWhitelisted(origin)
+    isWhitelisted(origin)
         .then(() => {
             eventSender.send('initialize-api', true);
         })
