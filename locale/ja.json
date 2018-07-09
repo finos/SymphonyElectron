@@ -73,6 +73,11 @@
   "Show crash dump in Finder": "ファインダーにクラッシュダンプを表示",
   "Show Logs in Finder": "ファインダーにログを表示",
   "Show Logs in Explorer": "Explorerにログを表示",
+  "SnackBar": {
+    "Press ": "全画面表示を終了するには ",
+    "esc": "esc",
+    " to exit full screen": " を押します"
+  },
   "Speech": "スピーチ",
   "Start Speaking": "スピーチを開始",
   "Stop Speaking": "スピーチを終了",
