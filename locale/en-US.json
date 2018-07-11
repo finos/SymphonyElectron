@@ -110,5 +110,7 @@
   "please contact your administrator for more details": "please contact your administrator for more details",
   "Your administrator has disabled": "Your administrator has disabled",
   "Please contact your admin for help": "Please contact your admin for help",
-  "Permission Denied": "Permission Denied"
+  "Permission Denied": "Permission Denied",
+  "Dev Tools disabled": "Dev Tools disabled",
+  "Dev Tools has been disabled. Please contact your system administrator": "Dev Tools has been disabled. Please contact your system administrator"
 }

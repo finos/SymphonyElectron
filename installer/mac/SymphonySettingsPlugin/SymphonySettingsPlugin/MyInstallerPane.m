@@ -71,6 +71,7 @@
     // By default, set autoLaunchOnStart and minimizeOnClose to true
     NSString *autoLaunchOnStart = @"true";
     NSString *minimizeOnClose = @"true";
+    NSString *devToolsEnabled = @"true";
     
     // If the checkbox is changed, set the auto launch value accordingly
     if ([_autoLaunchCheckBox state] == 0) {
@@ -80,6 +81,11 @@
     // If the checkbox is changed, set the minimize on close value accordingly
     if ([_minimizeOnCloseCheckBox state] == 0) {
         minimizeOnClose = @"false";
+    }
+    
+    // If the checkbox is changed, set the dev tools enabled value accordingly
+    if ([_devToolsCheckBox state] == 0) {
+        devToolsEnabled = @"false";
     }
     
     // By default, set alwaysOnTop and bring to front to false
@@ -97,7 +103,7 @@
     }
     
     // Create an array with the selected options
-    NSArray *symSettings = [[NSArray alloc] initWithObjects:podUrl, minimizeOnClose, autoLaunchOnStart, alwaysOnTop, bringToFront, nil];
+    NSArray *symSettings = [[NSArray alloc] initWithObjects:podUrl, minimizeOnClose, autoLaunchOnStart, alwaysOnTop, bringToFront, devToolsEnabled, nil];
     
     // Create a string from the array with new-line as the separator
     NSString *symSettingsString = [symSettings componentsJoinedByString:@"\n"];

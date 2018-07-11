@@ -110,5 +110,7 @@
   "please contact your administrator for more details": "詳細は、管理者にお問い合わせください",
   "Your administrator has disabled": "管理者によて無効にされています",
   "Please contact your admin for help": "不明な点がある場合は､管理者にお問い合わせください",
-  "Permission Denied": "アクセス許可が拒否されています"
+  "Permission Denied": "アクセス許可が拒否されています",
+  "Dev Tools disabled": "開発ツールを無効にする",
+  "Dev Tools has been disabled. Please contact your system administrator": "Dev Toolsが無効になっています。システム管理者に連絡してください"
 }

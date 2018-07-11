@@ -746,7 +746,7 @@
 						<key>IC_REQUIREMENT_CPU_MINIMUM_CPU_CORES_COUNT</key>
 						<integer>1</integer>
 						<key>IC_REQUIREMENT_CPU_MINIMUM_FREQUENCY</key>
-						<integer>1000000</integer>
+						<integer>0</integer>
 						<key>IC_REQUIREMENT_CPU_POWERPC_ARCHITECTURE_TYPE</key>
 						<integer>0</integer>
 					</dict>
@@ -791,7 +791,7 @@
 					<key>NAME</key>
 					<string>Result of External Script</string>
 					<key>STATE</key>
-					<true/>
+					<false/>
 				</dict>
 				<dict>
 					<key>BEHAVIOR</key>
@@ -799,16 +799,23 @@
 					<key>DICTIONARY</key>
 					<dict>
 						<key>IC_REQUIREMENT_DISKSPACE_MINIMUM_SIZE_UNIT</key>
-						<integer>0</integer>
+						<integer>1</integer>
 						<key>IC_REQUIREMENT_DISKSPACE_MINIMUM_SIZE_VALUE</key>
-						<integer>500</integer>
+						<integer>1</integer>
 					</dict>
 					<key>IC_REQUIREMENT_CHECK_TYPE</key>
 					<integer>1</integer>
 					<key>IDENTIFIER</key>
 					<string>fr.whitebox.Packages.requirement.diskspace</string>
 					<key>MESSAGE</key>
-					<array/>
+					<array>
+						<dict>
+							<key>LANGUAGE</key>
+							<string>English</string>
+							<key>VALUE</key>
+							<string>There should be a minimum of 1 GB free space in the volume before installation</string>
+						</dict>
+					</array>
 					<key>NAME</key>
 					<string>Available Disk Space</string>
 					<key>STATE</key>
