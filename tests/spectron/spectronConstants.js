@@ -12,4 +12,3 @@ module.exports = {
     ADMIN_USERNAME: "spectron_auto_admin",
     ADMIN_PASSWORD: "Symphony!123456",
 };
-
