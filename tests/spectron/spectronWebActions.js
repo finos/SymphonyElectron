@@ -1,6 +1,6 @@
 const ui = require('./spectronInterfaces.js');
 
-class Actions {
+class WebActions {
     constructor(app) {
             this.app = app;
     }
@@ -22,17 +22,16 @@ class Actions {
     }
 
     async verifyShortcutModalCorrect(){
-        var shortcutItems = [];
-        shortcutItems.push({
-            key:   "CTRL + ALT + C", value: "New chat",
-            key:   "CTRL + ALT + A", value: "New blast",
-            key:   "CTRL + ALT + P", value: "New post",
-            key:   "CTRL + B", value: "Bold font",
-            key:   "CTRL + I", value: "Italic font",
-        });
-        
-        
-    }    
+        var shortcutItems = require('../../tests/testdata/shortcuts.json');
+        for (var title in shortcutItems){
+            for (var command in shortcutItems[title]){
+                this.app.client.waitForVisible("//div[@class='shortcuts__title' and normalize-space()='"
+                + title +"']/following-sibling::div//span[normalize-space()='"
+                + command +"']/following-sibling::span[normalize-space()='"
+                + shortcutItems[title][command] +"']");
+            }
+        }
+    }
 }
 
-module.exports = Actions;
+module.exports = WebActions;

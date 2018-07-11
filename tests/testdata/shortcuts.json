@@ -1,0 +1,26 @@
+{
+    "Creation": {
+        "CTRL + ALT + C": "New chat",
+        "CTRL + ALT + A": "New blast",
+        "CTRL + ALT + P": "New post"
+    },
+    "RTE Actions": {
+        "CTRL + B": "Bold font",
+        "CTRL + I": "Italic font"
+    },
+    "Left Nav Actions": {
+        "Double Click": "Pop out chat"
+    },
+    "Navigation": {
+        "ESC": "Remove focus from current input",
+        "CTRL + ALT + X": "Close module",
+        "CTRL + ALT + E": "Pin module",
+        "CTRL + ALT + F": "Move focus to search bar",
+        "CTRL + ALT + U": "Scroll to first unread message in conversation",
+        "CTRL + ALT + R": "Open last unread room",
+        "CTRL + ALT + B": "Open last unread IM",
+        "CTRL + Shift + S": "Open settings",
+        "CTRL + Shift + M": "Open Mentions module",
+        "CTRL + ALT + J/K": "Cycle through open modules in grid"
+    }
+}
