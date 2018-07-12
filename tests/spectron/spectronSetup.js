@@ -33,15 +33,17 @@ class App {
     async startApplication(configurations) {
         try {
             this.app = await this.app.start()
-            if (configurations){
-                this.app.browserWindow.focus();
-                this.app.browserWindow.setAlwaysOnTop(configurations.alwaysOnTop);
-            }
-            else {
-                this.app.browserWindow.focus();
-                this.app.browserWindow.setAlwaysOnTop(true);
-            }
-            await this.app.client.waitUntilWindowLoaded().url(constants.TESTED_HOST)
+            await this.app.browserWindow.focus();
+            await this.app.browserWindow.setAlwaysOnTop(true);
+            if (configurations) {
+                if ((typeof configurations.alwaysOnTop !== "undefined") && (configurations.alwaysOnTop === false)) {
+                    await this.app.browserWindow.focus();
+                    await this.app.browserWindow.setAlwaysOnTop(false);
+                }
+                if (configurations.testedHost) {
+                    await this.app.client.waitUntilWindowLoaded().url(configurations.testedHost)
+                }
+            } 
             return this.app;
         } catch(err) {
             throw new Error("Unable to start application " + err);

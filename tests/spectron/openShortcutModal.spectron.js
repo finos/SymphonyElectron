@@ -12,7 +12,7 @@ describe('Tests for Opening Shortcut Modal', () => {
 
     beforeAll(async (done) => {
         try {
-            app = await app.startApplication()
+            app = await app.startApplication({testedHost: constants.TESTED_HOST})
             webActions = await new WebActions(app)
             done()
         } catch(err) {
