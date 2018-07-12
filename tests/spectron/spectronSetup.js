@@ -30,18 +30,24 @@ class App {
         this.app = new Application(this.options);
     }
 
-    startApplication(configurations) {
-        return this.app.start().then((app) => {
-            if (configurations)
-            {
-                if (configurations.alwaysOnTop)  {
-                    app.browserWindow.setAlwaysOnTop(true);
+    async startApplication(configurations) {
+        try {
+            this.app = await this.app.start()
+            await this.app.browserWindow.focus();
+            await this.app.browserWindow.setAlwaysOnTop(true);
+            if (configurations) {
+                if ((typeof configurations.alwaysOnTop !== "undefined") && (configurations.alwaysOnTop === false)) {
+                    await this.app.browserWindow.focus();
+                    await this.app.browserWindow.setAlwaysOnTop(false);
                 }
-            }
-            return app;
-        }).catch((err) => {
+                if (configurations.testedHost) {
+                    await this.app.client.waitUntilWindowLoaded().url(configurations.testedHost)
+                }
+            } 
+            return this.app;
+        } catch(err) {
             throw new Error("Unable to start application " + err);
-        });
+        };
     }
 
     static getAppPath() {
