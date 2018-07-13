@@ -1,38 +1,41 @@
 const Application = require('./spectronSetup');
 const WindowsActions = require('./spectronWindowsActions');
+const WebActions = require('./spectronWebActions');
 
 let app;
-let window;
+let windowActions;
+let webActions;
 let defaultPosition; 
 let defaultSize;
 
-describe('Tests for Opening Shortcut Modal', () => {
+describe('Tests for Keeping size and position of the windows in previous session', () => {
 
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
 
     beforeAll(async (done) => {
         try {
-            app = await new Application({}).startApplication()
-            window = await new WindowsActions(app)
-            done()
+            app = await new Application({}).startApplication();
+            windowActions = await new WindowsActions(app);
+            done();
         } catch(err) {
             done.fail(new Error(`Unable to start application error: ${err}`));
         };
     });
 
     afterAll(async (done) => {
-        await window.dragWindows(defaultPosition["x"], defaultPosition["y"]); // Exit maximize mode
-        await window.resizeWindows(defaultSize["width"], defaultSize["height"]);
-        await window.dragWindows(defaultPosition["x"], defaultPosition["y"]); // Drag to defaultPosition
-        if (app && app.isRunning()) {
-            jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
-            app.stop().then(() => {
+        try {
+            await webActions.clickMaximizeButton(); // Click maximize button again to exit maximize mode
+            await windowActions.resizeWindows(defaultSize["width"], defaultSize["height"]);
+            await windowActions.dragWindows(defaultPosition["x"], defaultPosition["y"]); // Drag to defaultPosition
+            if (app && app.isRunning()) {
+                jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+                await app.stop();
                 done();
-            }).catch((err) => {
-                done();
-            });
-        }
+            }
+        } catch (err) {
+            done.fail(new Error(`Failed at post-condition: ${err}`));
+        };
     });
 
     /**
@@ -42,27 +45,29 @@ describe('Tests for Opening Shortcut Modal', () => {
      */
     it('Keep size and position of the windows in previous session', async (done) => {
         try {
-            defaultPosition = await window.getCurrentWindowsPosition();
-            defaultSize = await window.getCurrentWindowsSize();
+            defaultPosition = await windowActions.getCurrentWindowsPosition();
+            defaultSize = await windowActions.getCurrentWindowsSize();
 
             // Size and position of previos session keep after resizing and dragging
-            await window.dragWindows(defaultPosition["x"], 20);
-            await window.resizeWindows(defaultSize["width"] - 100, defaultSize["height"] - 100);
-            var previousPosition = await window.getCurrentWindowsPosition();
-            var previousSize = await window.getCurrentWindowsSize();
+            await windowActions.dragWindows(defaultPosition["x"], 20);
+            await windowActions.resizeWindows(defaultSize["width"] - 100, defaultSize["height"] - 100);
+            var previousPosition = await windowActions.getCurrentWindowsPosition();
+            var previousSize = await windowActions.getCurrentWindowsSize();
             await app.stop();
             app = await new Application({}).startApplication();
-            window = await new WindowsActions(app)
-            expect(previousPosition).toEqual(await window.getCurrentWindowsPosition());
-            expect(previousSize).toEqual(await window.getCurrentWindowsSize());
+            windowActions = await new WindowsActions(app);
+            webActions = await new WebActions(app);
+            expect(previousPosition).toEqual(await windowActions.getCurrentWindowsPosition());
+            expect(previousSize).toEqual(await windowActions.getCurrentWindowsSize());
 
             // Size and position of previos session keep after maximizing
-            await window.maximizeWindows();
-            previousSize = await window.getCurrentWindowsSize();
+            await webActions.maximizeWindows();
+            previousSize = await windowActions.getCurrentWindowsSize();
             await app.stop();
             app = await new Application({}).startApplication();
-            window = await new WindowsActions(app)
-            expect(previousSize).toEqual(await window.getCurrentWindowsSize());
+            windowActions = await new WindowsActions(app);
+            webActions = await new WebActions(app);
+            expect(previousSize).toEqual(await windowActions.getCurrentWindowsSize());
             done();
         } catch(err) {
             done.fail(new Error(`Fail to keep size and position of the windows in previous session with error: ${err}`));

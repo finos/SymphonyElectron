@@ -4,6 +4,7 @@ const fs = require('fs');
 const { isMac, isWindowsOS } = require('../../js/utils/misc');
 const ncp = require('ncp').ncp;
 const constants = require('./spectronConstants.js');
+const ui = require('./spectronInterfaces.js');
 
 class App {
 
@@ -32,7 +33,8 @@ class App {
 
     async startApplication(configurations) {
         try {
-            this.app = await this.app.start()
+            this.app = await this.app.start();
+            await this.app.client.waitForVisible(ui.TITLE_BAR, 60000);
             await this.app.browserWindow.focus();
             await this.app.browserWindow.setAlwaysOnTop(true);
             if (configurations) {

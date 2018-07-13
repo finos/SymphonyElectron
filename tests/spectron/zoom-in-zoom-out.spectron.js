@@ -41,6 +41,16 @@ describe('Tests for Zoom in and Zoom out', () => {
     }
 
     afterAll((done) => {
+        // Get it back normal size
+        if (!isMac) {
+            for (let i = 0; i < 4; i++) {
+                robot.keyToggle('+', 'down', ['control', 'shift']);
+            }
+            robot.keyToggle('+', 'up');
+            robot.keyToggle('control', 'up');
+            robot.keyToggle('shift', 'up');
+        }
+
         if (app && app.isRunning()) {
             jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
             app.client.getWindowCount().then((count) => {
@@ -124,7 +134,7 @@ describe('Tests for Zoom in and Zoom out', () => {
                 robot.setMouseDelay(100);
                 let x = bounds.x + 200;
                 let y = bounds.y + 200;
-                robot.moveMouseSmooth(x, y);
+                robot.moveMouse(x, y);
                 robot.mouseClick();
 
                 robot.keyToggle('0', 'down', ['control']);
@@ -174,7 +184,7 @@ describe('Tests for Zoom in and Zoom out', () => {
                 robot.setMouseDelay(100);
                 let x = bounds.x + 200;
                 let y = bounds.y + 200;
-                robot.moveMouseSmooth(x, y);
+                robot.moveMouse(x, y);
                 robot.mouseClick();
 
                 robot.keyToggle('0', 'down', ['control']);

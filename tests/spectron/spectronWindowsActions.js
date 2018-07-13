@@ -38,22 +38,11 @@ class WindowsActions {
     async dragWindows(x, y) {
         await this.app.browserWindow.getBounds().then((bounds) => {
             robot.setMouseDelay(500);
-            robot.moveMouse(bounds.x + 200, bounds.y + 15);
+            robot.moveMouse(bounds.x + 200, bounds.y + 10);
             robot.mouseToggle("down");
-            robot.moveMouse(bounds.x + 205, bounds.y + 15); // Workaround to make this keyword works properly, refer: https://github.com/octalmage/robotjs/issues/389
-            robot.dragMouse(x + 205, y + 15);
+            robot.moveMouse(bounds.x + 205, bounds.y + 10); // Workaround to make this keyword works properly, refer: https://github.com/octalmage/robotjs/issues/389
+            robot.dragMouse(x + 205, y + 10);
             robot.mouseToggle("up");
-        })
-    }
-
-    async maximizeWindows(){
-        await this.app.browserWindow.getBounds().then((bounds) => {
-            robot.setMouseDelay(500);
-            robot.moveMouse(bounds.x + 200, bounds.y + 15);
-            robot.mouseClick("left", "double");
-        })
-        await this.app.browserWindow.isMaximized().then(function (maximized) {
-            expect(maximized).toBeTruthy();
         })
     }
 }
