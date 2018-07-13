@@ -2,13 +2,14 @@ const Application = require('./spectronSetup');
 const { isMac } = require('../../js/utils/misc');
 const robot = require('robotjs');
 const WindowsAction = require('./spectronWindowsActions');
+
 let configPath;
 let app = new Application({
     startTimeout: Application.getTimeOut(),
     waitTimeout: Application.getTimeOut()
 });
 let wActions;
-describe('Add Test To Verify Minimize on Close', () => {
+describe('Verify by deselecting Minimize on Close', () => {
 
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
@@ -61,29 +62,30 @@ describe('Add Test To Verify Minimize on Close', () => {
             done();
         }
     });
-  
+   
     /**
-    * Keep size and position of the windows in previous session
-    * TC-ID: 3084609
-   * Cover scenarios in AVT-939
-   */
-    it('Verify Minimize on Close option once the application is installed', async (done) => {
+     * Keep size and position of the windows in previous session
+     * TC-ID: 3084612
+    * Cover scenarios in AVT-938
+    */
+    it('Verify by deselecting Minimize on Close option once the application is launched', async (done) => {
         await Application.readConfig(configPath).then(async (userConfig) => {
             if (isMac) {
                 done();
             }
             else {
-                //When app  un-ticked on Minimize On Close Menu Item
-                //Select 1 times to perform for ticking Menu 
-                if (userConfig.minimizeOnClose == false) {                    
+                //When app does not tick on Minimize On Close Menu Item
+                //Select 2 times to perform for un-ticking Menu 
+                if (userConfig.minimizeOnClose == false) {
                     await wActions.selectMinimizeOnClose();
-                    await wActions.closeWindowByClick();                   
+                    await wActions.selectMinimizeOnClose();
+                    await wActions.closeWindowByClick();
                     await wActions.verifyMinimizeWindows();
                 }
-                //When app ticked on Minimize On Close Menu Item
-                //Select 2 times to perform for ticking Menu
-                else {                    
-                    await wActions.selectMinimizeOnClose();
+                //When app  ticked on Minimize On Close Menu Item
+                //Select 1 times to perform for un-tick 
+                else {
+                    console.log("userConfig.minimizeOnClose::true::" + userConfig.minimizeOnClose);
                     await wActions.selectMinimizeOnClose();
                     await wActions.closeWindowByClick();
                     await wActions.verifyMinimizeWindows();

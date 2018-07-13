@@ -35,8 +35,13 @@ class App {
             if (configurations)
             {
                 if (configurations.alwaysOnTop)  {
-                    app.browserWindow.setAlwaysOnTop(true);
+                    this.app.browserWindow.focus();
+                    this.app.browserWindow.setAlwaysOnTop(true);
                 }
+            }
+            else {
+                this.app.browserWindow.focus();
+                this.app.browserWindow.setAlwaysOnTop(true);
             }
             return app;
         }).catch((err) => {
