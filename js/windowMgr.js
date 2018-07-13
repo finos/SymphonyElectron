@@ -215,7 +215,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         mainWindow.webContents.send('window-leave-full-screen');
     });
 
-    if (initialBounds && !isNodeEnv) {
+    if (initialBounds) {
         // maximizes the application if previously maximized
         if (initialBounds.isMaximized) {
             mainWindow.maximize();

@@ -123,8 +123,8 @@ describe('Tests for Full screen', () => {
                 robot.setMouseDelay(100);
                 let x = bounds.x + 200;
                 let y = bounds.y + 200;
-                robot.moveMouseSmooth(x, y);
-                robot.mouseClick();
+                robot.moveMouse(x, y);
+                robot.mouseClick("left");
 
                 robot.keyTap('f11');
 
