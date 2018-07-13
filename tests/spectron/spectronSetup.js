@@ -43,7 +43,7 @@ class App {
                     await this.app.browserWindow.setAlwaysOnTop(false);
                 }
                 if (configurations.testedHost) {
-                    await this.app.client.waitUntilWindowLoaded().url(configurations.testedHost)
+                    await this.app.client.waitUntilWindowLoaded().url(configurations.testedHost);
                 }
             } 
             return this.app;
