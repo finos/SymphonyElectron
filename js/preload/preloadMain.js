@@ -110,17 +110,7 @@ setInterval(() => {
     });
 }, memoryMonitorInterval);
 
-// Create API only on an allowed origin
-local.ipcRenderer.once('initialize-api', () => {
-    createAPI();
-});
-
-setTimeout(() => {
-    local.ipcRenderer.send(apiName, {
-        cmd: apiCmds.originCheck,
-        origin: location.origin,
-    });
-}, 0);
+createAPI();
 
 // creates API exposed from electron.
 // wrapped in a function so we can abort early in function coming from an iframe
