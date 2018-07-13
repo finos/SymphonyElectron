@@ -19,26 +19,22 @@ class WindowsActions {
         await this.app.browserWindow.isMinimized().then(async function (minimized) {
             rminimized = constants.MINIMIZED;
         }).catch((err) => {
-            rminimized = constants.QUIT;
-            console.log("isMinimizedWindows: Quit");
+            rminimized = constants.QUIT;            
             return rminimized;
         });
 
         return rminimized;
     }
 
-    async minimizeWindowByClick() {
-        console.log("minimizeWindowByClick");
+    async minimizeWindowByClick() {       
         await this.app.client.click("button#title-bar-minimize-button");
     }
 
-    async closeWindowByClick() {
-        console.log("closeWindowByClick");
+    async closeWindowByClick() {        
         await this.app.client.click("button#title-bar-close-button");
     }
 
-    async openApplicationMenuByClick() {
-        console.log("openApplicationMenuByClick");
+    async openApplicationMenuByClick() {       
         await this.app.client.click("#hamburger-menu-button");
     }
 

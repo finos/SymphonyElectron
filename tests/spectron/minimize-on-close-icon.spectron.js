@@ -63,7 +63,7 @@ describe('Add Test To Verify Minimize on Close', () => {
     });
   
     /**
-    * Keep size and position of the windows in previous session
+    * Verify Minimize on Close option once the application is installed
     * TC-ID: 3084609
    * Cover scenarios in AVT-939
    */

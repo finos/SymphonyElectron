@@ -64,7 +64,7 @@ describe('Verify by deselecting Minimize on Close', () => {
     });
    
     /**
-     * Keep size and position of the windows in previous session
+     * Verify by deselecting Minimize on Close option once the application is launched
      * TC-ID: 3084612
     * Cover scenarios in AVT-938
     */
