@@ -8,7 +8,7 @@ let webActions;
 let defaultPosition; 
 let defaultSize;
 
-describe('Tests for Keeping size and position of the windows in previous session', () => {
+describe('Tests for saved layout', () => {
 
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
