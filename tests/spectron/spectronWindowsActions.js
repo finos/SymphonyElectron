@@ -1,5 +1,6 @@
 const robot = require('robotjs');
 const constants = require('./spectronConstants.js');
+
 class WindowsActions {
     constructor(app) {
         this.app = app;
@@ -78,6 +79,16 @@ class WindowsActions {
             }
             await robot.keyTap('enter');
         });
+    }
+    async pressCtrlW()
+    {	
+        await robot.keyToggle('w', 'down', ['control']);
+        await robot.keyToggle('w', 'up', ['control']);
+    }
+    async openApp()
+    {
+         this.app.browserWindow.focus();
+         this.app.browserWindow.setAlwaysOnTop(true);
     }
 }
 

@@ -78,7 +78,7 @@ describe('Add Test To Verify Minimize on Close', () => {
                 if (userConfig.minimizeOnClose == false) {                    
                     await wActions.selectMinimizeOnClose();
                     await wActions.closeWindowByClick();                   
-                    await wActions.verifyMinimizeWindows();
+                    await wActions.verifyMinimizeWindows();                   
                 }
                 //When app ticked on Minimize On Close Menu Item
                 //Select 2 times to perform for ticking Menu
@@ -86,7 +86,7 @@ describe('Add Test To Verify Minimize on Close', () => {
                     await wActions.selectMinimizeOnClose();
                     await wActions.selectMinimizeOnClose();
                     await wActions.closeWindowByClick();
-                    await wActions.verifyMinimizeWindows();
+                    await wActions.verifyMinimizeWindows();                   
                 }
                 done();
             }
@@ -94,5 +94,56 @@ describe('Add Test To Verify Minimize on Close', () => {
             done.fail(new Error(`minimize-on-close failed in readConfig with error: ${err}`));
         })
     });
+
+     /**
+        * Close window when 'Minimize on Close' is ON
+        * TC-ID: 2911252
+    * Cover scenarios in AVT-937
+    */
+it('Close window when "Minimize on Close" is ON', async (done) => {
+   
+    await Application.readConfig(configPath).then(async (userConfig) => {
+        if (isMac) {
+            done();
+        }
+        else {
+            //When app  un-ticked on Minimize On Close Menu Item
+            //Select 1 times to perform for ticking Menu 
+            await wActions.openApp();
+            if (userConfig.minimizeOnClose == false) {                    
+                await wActions.selectMinimizeOnClose();
+                await wActions.closeWindowByClick();                   
+                await wActions.verifyMinimizeWindows(); 
+
+                await wActions.openApp();             
+                await wActions.pressCtrlW();
+                await wActions.verifyMinimizeWindows();
+
+                await wActions.openApp();  
+                await wActions.closeWindowByClick();  
+                await wActions.verifyMinimizeWindows();
+            }
+            //When app ticked on Minimize On Close Menu Item
+            //Select 2 times to perform for ticking Menu
+            else {                    
+                await wActions.selectMinimizeOnClose();
+                await wActions.selectMinimizeOnClose();
+                await wActions.closeWindowByClick();
+                await wActions.verifyMinimizeWindows();
+
+                await wActions.openApp();
+                await wActions.pressCtrlW();
+                await wActions.verifyMinimizeWindows();
+
+                await wActions.openApp();  
+                await wActions.closeWindowByClick();  
+                await wActions.verifyMinimizeWindows();
+            }
+            done();
+        }
+    }).catch((err) => {
+        done.fail(new Error(`minimize-on-close failed in readConfig with error: ${err}`));
+    })
+});
 
 });
