@@ -58,6 +58,11 @@
         </p>
         <br>
         <hr>
+        <p>Change language:<p>
+            <button id='set-locale-en-US'>Change language to English - US</button>
+            <button id='set-locale-ja-JP'>Change language to Japanese</button>
+            <br>
+        <hr>
         <p>Badge Count:<p>
         <button id='inc-badge'>increment badge count</button>
         <br>
@@ -260,6 +265,17 @@
                 buildNumber.innerText = verInfo.buildNumber;
                 searchApiVer.innerText = verInfo.searchApiVer;
             });
+        });
+
+        var setLocaleToEn = document.getElementById('set-locale-en-US');
+        setLocaleToEn.addEventListener('click', function () {
+            ssf.setLocale('en-US');
+            document.location.reload();
+        });
+        var setLocaleToJa = document.getElementById('set-locale-ja-JP');
+        setLocaleToJa.addEventListener('click', function () {
+            ssf.setLocale('ja-JP');
+            document.location.reload();
         });
 
     </script>

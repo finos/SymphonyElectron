@@ -17,6 +17,8 @@ const { isWindowsOS } = require('../utils/misc');
 
 let includes = [].includes;
 let screenShareArgv;
+let isScreenShareEnabled = false;
+let dialogContent;
 
 /**
  * Checks if the options and their types are valid
@@ -68,6 +70,21 @@ function getSources(options, callback) {
         sourceTypes.push('screen');
     }
 
+    // displays a dialog if media permissions are disable
+    if (!isScreenShareEnabled) {
+        let focusedWindow = remote.BrowserWindow.getFocusedWindow();
+        if (focusedWindow && !focusedWindow.isDestroyed()) {
+            remote.dialog.showMessageBox(focusedWindow, dialogContent ||
+                {
+                    type: 'error',
+                    title: 'Permission Denied!',
+                    message: 'Your administrator has disabled screen share. Please contact your admin for help'
+                });
+            callback(new Error('Permission Denied'));
+            return;
+        }
+    }
+
     desktopCapturer.getSources({ types: sourceTypes, thumbnailSize: updatedOptions.thumbnailSize }, (event, sources) => {
 
         if (screenShareArgv) {
@@ -111,6 +128,14 @@ function getSources(options, callback) {
 ipcRenderer.once('screen-share-argv', (event, arg) => {
     if (typeof arg === 'string') {
         screenShareArgv = arg;
+    }
+});
+
+// event that updates screen share permission
+ipcRenderer.on('is-screen-share-enabled', (event, screenShare, content) => {
+    dialogContent = content;
+    if (typeof screenShare === 'boolean' && screenShare) {
+        isScreenShareEnabled = true;
     }
 });
 
