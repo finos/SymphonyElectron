@@ -389,6 +389,14 @@ function handleProtocolAction(uri) {
         // app is opened by the protocol url, cache the protocol url to be used later
         protocolHandler.setProtocolUrl(uri);
     } else {
+        // This is needed for mac OS as it brings pop-outs to foreground
+        // (if it has been previously focused) instead of main window
+        if (isMac) {
+            const mainWindow = windowMgr.getMainWindow();
+            if (mainWindow && !mainWindow.isDestroyed()) {
+                windowMgr.activate(mainWindow.winName);
+            }
+        }
         // app is already open, so, just trigger the protocol action method
         log.send(logLevels.INFO, `App opened by protocol url ${uri}`);
         protocolHandler.processProtocolAction(uri);
