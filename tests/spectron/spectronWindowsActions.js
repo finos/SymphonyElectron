@@ -5,13 +5,12 @@ class WindowsActions {
         this.app = app;
     }
 
-    async getCurrentWindowsSize() {
-        var currentSize = {};
-        await this.app.browserWindow.getBounds().then((bounds) => {
-            currentSize["height"] = bounds.height;
-            currentSize["width"] = bounds.width;
-        })
-        return currentSize;
+    async getCurrentSize() {
+        return this.app.browserWindow.getSize();
+    }
+
+    async setSize(width, height) {
+        await this.app.browserWindow.setSize(width, height);
     }
 
     async resizeWindows(width, height) {
@@ -26,13 +25,12 @@ class WindowsActions {
         })
     }
 
-    async getCurrentWindowsPosition() {
-        var currentPosition = {};
-        await this.app.browserWindow.getBounds().then((bounds) => {
-            currentPosition["y"] = bounds.y;
-            currentPosition["x"] = bounds.x;
-        })
-        return currentPosition;
+    async getCurrentPosition() {
+        return this.app.browserWindow.getPosition();
+    }
+
+    async setPosition(x, y) {
+        await this.app.browserWindow.setPosition(x, y);
     }
 
     async dragWindows(x, y) {
@@ -43,6 +41,12 @@ class WindowsActions {
             robot.moveMouse(bounds.x + 205, bounds.y + 10); // Workaround to make this keyword works properly, refer: https://github.com/octalmage/robotjs/issues/389
             robot.dragMouse(x + 205, y + 10);
             robot.mouseToggle("up");
+        })
+    }
+
+    async sleep(ms){
+        return new Promise(resolve=>{
+            setTimeout(resolve,ms)
         })
     }
 }

@@ -45,9 +45,17 @@ class App {
                 if (configurations.testedHost) {
                     await this.app.client.waitUntilWindowLoaded().url(configurations.testedHost);
                 }
-            } 
+            }
+            
+            if ((typeof configurations === "undefined") || (typeof configurations.defaultSize === "undefined") || (configurations.defaultSize === true)) {
+                await this.app.browserWindow.setSize(900, 900);
+            }
+            if ((typeof configurations === "undefined") || (typeof configurations.defaultPosition === "undefined") || (configurations.defaultPosition === true)) {
+                await this.app.browserWindow.center();
+            }
+
             return this.app;
-        } catch(err) {
+        } catch (err) {
             throw new Error("Unable to start application " + err);
         };
     }

@@ -5,8 +5,6 @@ const WebActions = require('./spectronWebActions');
 let app;
 let windowActions;
 let webActions;
-let defaultPosition; 
-let defaultSize;
 
 describe('Tests for saved layout', () => {
 
@@ -25,9 +23,6 @@ describe('Tests for saved layout', () => {
 
     afterAll(async (done) => {
         try {
-            await webActions.clickMaximizeButton(); // Click maximize button again to exit maximize mode
-            await windowActions.resizeWindows(defaultSize["width"], defaultSize["height"]);
-            await windowActions.dragWindows(defaultPosition["x"], defaultPosition["y"]); // Drag to defaultPosition
             if (app && app.isRunning()) {
                 jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
                 await app.stop();
@@ -45,29 +40,30 @@ describe('Tests for saved layout', () => {
      */
     it('Keep size and position of the windows in previous session', async (done) => {
         try {
-            defaultPosition = await windowActions.getCurrentWindowsPosition();
-            defaultSize = await windowActions.getCurrentWindowsSize();
+            var defaultPosition = await windowActions.getCurrentPosition();
+            var defaultSize = await windowActions.getCurrentSize();
 
             // Size and position of previos session keep after resizing and dragging
-            await windowActions.dragWindows(defaultPosition["x"], 20);
-            await windowActions.resizeWindows(defaultSize["width"] - 100, defaultSize["height"] - 100);
-            var previousPosition = await windowActions.getCurrentWindowsPosition();
-            var previousSize = await windowActions.getCurrentWindowsSize();
+            await windowActions.setPosition(defaultPosition[0], 20);
+            await windowActions.setSize(defaultSize[0] - 100, defaultSize[0] - 100);
+            await windowActions.sleep(1000); // Sleep 1s after resizing 
+            var previousPosition = await windowActions.getCurrentPosition();
+            var previousSize = await windowActions.getCurrentSize();
             await app.stop();
-            app = await new Application({}).startApplication();
+            app = await new Application({}).startApplication({defaultSize: false, defaultPosition: false});
             windowActions = await new WindowsActions(app);
             webActions = await new WebActions(app);
-            expect(previousPosition).toEqual(await windowActions.getCurrentWindowsPosition());
-            expect(previousSize).toEqual(await windowActions.getCurrentWindowsSize());
+            expect(previousPosition).toEqual(await windowActions.getCurrentPosition());
+            expect(previousSize).toEqual(await windowActions.getCurrentSize());
 
-            // Size and position of previos session keep after maximizing
+            // Size and position of previous session keep after maximizing
             await webActions.maximizeWindows();
-            previousSize = await windowActions.getCurrentWindowsSize();
+            previousSize = await windowActions.getCurrentSize();
             await app.stop();
-            app = await new Application({}).startApplication();
+            app = await new Application({}).startApplication({defaultSize: false, defaultPosition: false});
             windowActions = await new WindowsActions(app);
             webActions = await new WebActions(app);
-            expect(previousSize).toEqual(await windowActions.getCurrentWindowsSize());
+            expect(previousSize).toEqual(await windowActions.getCurrentSize());
             done();
         } catch(err) {
             done.fail(new Error(`Fail to keep size and position of the windows in previous session with error: ${err}`));
