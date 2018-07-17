@@ -18,7 +18,6 @@ const eventEmitter = require('./eventEmitter');
 const { isMac } = require('./utils/misc');
 const { openScreenPickerWindow } = require('./desktopCapturer');
 const { optimizeMemory, setIsInMeeting } = require('./memoryMonitor');
-const originCheck = require('./originCheck');
 
 const apiEnums = require('./enums/api.js');
 const apiCmds = apiEnums.cmds;
@@ -168,11 +167,6 @@ electron.ipcMain.on(apiName, (event, arg) => {
         case apiCmds.keyPress:
             if (typeof arg.keyCode === 'number') {
                 windowMgr.handleKeyPress(arg.keyCode);
-            }
-            break;
-        case apiCmds.originCheck:
-            if (typeof arg.origin === 'string') {
-                originCheck(event.sender, arg.origin);
             }
             break;
         default:

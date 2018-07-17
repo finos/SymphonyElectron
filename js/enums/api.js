@@ -24,7 +24,6 @@ const cmds = keyMirror({
     setIsInMeeting: null,
     setLocale: null,
     keyPress: null,
-    originCheck: null,
 });
 
 module.exports = {
