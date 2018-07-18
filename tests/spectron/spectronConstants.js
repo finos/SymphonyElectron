@@ -10,4 +10,3 @@ module.exports = {
 
     TESTED_HOST: "https://cip4-qa.symphony.com/",
 };
-
