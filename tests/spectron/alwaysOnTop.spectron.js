@@ -25,6 +25,7 @@ describe('Tests for always on top', () => {
     afterAll(async (done) => {
         try {
             await windowActions.killProcess("notepad.exe");
+            await windowActions.killProcess("mspaint.exe");
             if (app && app.isRunning()) {
                 jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
                 await app.stop();
@@ -44,6 +45,7 @@ describe('Tests for always on top', () => {
         try {
             await webActions.minimizeWindows();
             await windowActions.openAppInMaximize("C:\\Windows\\notepad.exe");
+            await windowActions.openAppInMaximize("C:\\Windows\\system32\\mspaint.exe");
             await windowActions.showWindow();
             await windowActions.clickOutsideWindow();
             await windowActions.verifyWindowsOnTop();
