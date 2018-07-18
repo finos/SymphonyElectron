@@ -12,7 +12,7 @@
 // https://github.com/electron/electron/issues/2984
 //
 const { ipcRenderer, remote, crashReporter } = require('electron');
-
+const SwiftSearch = remote.require('swift-search');
 const throttle = require('../utils/throttle.js');
 const apiEnums = require('../enums/api.js');
 const apiCmds = apiEnums.cmds;
@@ -27,6 +27,23 @@ const SnackBar = require('../snackBar').SnackBar;
 const KeyCodes = {
     Esc: 27,
 };
+
+let Search;
+let SearchUtils;
+
+try {
+    Search = SwiftSearch.Search;
+} catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn("Failed to initializing Search");
+}
+
+try {
+    SearchUtils = remote.require('SwiftSearch').SearchUtils;
+} catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn("Failed to initializing SearchUtils");
+}
 
 require('../downloadManager');
 let snackBar;
@@ -173,19 +190,14 @@ function createAPI() {
          * using the SymphonySearchEngine library
          * details in ./search/search.js & ./search/searchLibrary.js
          */
-        Search: remote.require('./search/search.js').Search,
+        Search: Search || null,
 
         /**
          * Provides api for search module utils
          * like checking free space / search user config data to the client app
          * details in ./search/searchUtils.js & ./search/searchConfig.js
          */
-        SearchUtils: remote.require('./search/searchUtils.js').SearchUtils,
-
-        /**
-         * Function to clear the user index data
-         */
-        deleteIndexFolder: remote.require('./search/search.js').deleteIndexFolder,
+        SearchUtils: SearchUtils || null,
 
         /**
          * Brings window forward and gives focus.

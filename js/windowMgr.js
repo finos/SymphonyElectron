@@ -22,7 +22,6 @@ const eventEmitter = require('./eventEmitter');
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField, readConfigFileSync, getMultipleConfigField } = require('./config.js');
 const { isMac, isNodeEnv, isWindows10, isWindowsOS } = require('./utils/misc');
-const { deleteIndexFolder } = require('./search/search.js');
 const { isWhitelisted, parseDomain } = require('./utils/whitelistHandler');
 const { initCrashReporterMain, initCrashReporterRenderer } = require('./crashReporter.js');
 const i18n = require('./translation/i18n');
@@ -132,23 +131,23 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         && isCustomTitleBar
         && isWindows10();
     log.send(logLevels.INFO, `we are configuring a custom title bar for windows -> ${isCustomTitleBarEnabled}`);
-    
+
     ctWhitelist = config && config.ctWhitelist;
     log.send(logLevels.INFO, `we are configuring certificate transparency whitelist for the domains -> ${ctWhitelist}`);
-    
+
     log.send(logLevels.INFO, `creating main window for ${url}`);
-    
+
     if (config && config !== null && config.customFlags) {
-        
+
         log.send(logLevels.INFO, 'Chrome flags config found!');
-        
+
         if (config.customFlags.authServerWhitelist && config.customFlags.authServerWhitelist !== "") {
             log.send(logLevels.INFO, 'setting ntlm domains');
             electronSession.defaultSession.allowNTLMCredentialsForDomains(config.customFlags.authServerWhitelist);
         }
-        
+
     }
-    
+
     let newWinOpts = {
         title: 'Symphony',
         show: true,
@@ -309,13 +308,13 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
             }
         });
     });
-    
+
     registerShortcuts();
     handlePermissionRequests(mainWindow.webContents);
 
     addWindowKey(key, mainWindow);
     mainWindow.loadURL(url);
-    
+
     rebuildMenu(lang);
 
     mainWindow.on('close', function (e) {
@@ -346,12 +345,12 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     }
 
     mainWindow.on('closed', destroyAllWindows);
-    
+
     // Manage File Downloads
     mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
         // When download is in progress, send necessary data to indicate the same
         webContents.send('downloadProgress');
-        
+
         // Send file path when download is complete
         item.once('done', (e, state) => {
             if (state === 'completed') {
@@ -371,7 +370,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     mainWindow.webContents.session.setCertificateVerifyProc(handleCertificateTransparencyChecks);
 
     function handleNewWindow(event, newWinUrl, frameName, disposition, newWinOptions) {
-        
+
         let newWinParsedUrl = getParsedUrl(newWinUrl);
         let mainWinParsedUrl = getParsedUrl(url);
 
@@ -527,18 +526,18 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                         browserWin.removeListener('enter-full-screen', throttledFullScreen);
                         browserWin.removeListener('leave-full-screen', throttledLeaveFullScreen);
                     };
-    
+
                     browserWin.on('close', () => {
                         browserWin.webContents.removeListener('new-window', handleNewWindow);
                         browserWin.webContents.removeListener('crashed', handleChildWindowCrashEvent);
                     });
-    
+
                     browserWin.once('closed', () => {
                         handleChildWindowClosed();
                     });
-                    
+
                     handlePermissionRequests(browserWin.webContents);
-    
+
                     browserWin.webContents.session.setCertificateVerifyProc(handleCertificateTransparencyChecks);
                 }
             });
@@ -550,7 +549,6 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
     // whenever the main window is navigated for ex: window.location.href or url redirect
     mainWindow.webContents.on('will-navigate', function (event, navigatedURL) {
-        deleteIndexFolder();
         isWhitelisted(navigatedURL)
             .catch(() => {
                 event.preventDefault();
@@ -562,7 +560,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                 });
             });
     });
-    
+
     /**
      * Register shortcuts for the app
      */
@@ -585,7 +583,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         });
 
     }
-    
+
     /**
      * Sets permission requests for the window
      * @param webContents Web contents of the window
@@ -662,22 +660,22 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
             })
 
     }
-    
+
     function handleCertificateTransparencyChecks(request, callback) {
-        
+
         const { hostname: hostUrl, errorCode } = request;
-        
+
         if (errorCode === 0) {
             return callback(0);
         }
-        
+
         let { tld, domain } = parseDomain(hostUrl);
         let host = domain + tld;
-        
+
         if (ctWhitelist && Array.isArray(ctWhitelist) && ctWhitelist.length > 0 && ctWhitelist.indexOf(host) > -1) {
             return callback(0);
         }
-        
+
         return callback(-2);
     }
 
@@ -988,7 +986,7 @@ function checkExternalDisplay(appBounds) {
     const width = appBounds.width;
     const height = appBounds.height;
     const factor = 0.2;
-    
+
     // Loops through all the available displays and
     // verifies if the wrapper exists within the display bounds
     // returns false if not exists otherwise true
@@ -1013,7 +1011,7 @@ function checkExternalDisplay(appBounds) {
  * was removed and if the wrapper was contained within that bounds
  */
 function repositionMainWindow() {
-    
+
     const { workArea } = electron.screen.getPrimaryDisplay();
     const bounds = workArea;
 
