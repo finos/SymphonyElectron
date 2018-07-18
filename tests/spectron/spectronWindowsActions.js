@@ -1,5 +1,4 @@
 const robot = require('robotjs');
-const childProcess = require('child_process');
 
 class WindowsActions {
     constructor(app) {
@@ -45,23 +44,10 @@ class WindowsActions {
         })
     }
 
-    async sleep(ms) {
-        return new Promise(resolve => {
-            setTimeout(resolve, ms)
-        })
-    }
-
-    async showWindow(x, y) {
+    async showWindow() {
         await this.app.browserWindow.show();
     }
 
-    async openAppInMaximize(appPath) {
-        await childProcess.exec('start /MAX ' + appPath);
-    }
-
-    async killProcess(processName) {
-        await childProcess.exec('taskkill /f /t /im ' + processName);
-    }
 
     async clickOutsideWindow() {
         await this.setPosition(0, 0);

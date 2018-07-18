@@ -33,7 +33,7 @@ class App {
     async startApplication(configurations) {
         try {
             this.app = await this.app.start();
-            await this.app.client.waitForVisible(ui.TITLE_BAR, 60000);
+            await this.app.client.waitForVisible(ui.TITLE_BAR, require('./spectronSetup').getTimeOut());
             await this.app.browserWindow.focus();
             await this.app.browserWindow.setAlwaysOnTop(true);
             if (configurations) {

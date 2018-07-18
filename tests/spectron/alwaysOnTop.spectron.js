@@ -1,6 +1,7 @@
 const Application = require('./spectronSetup');
 const WindowsActions = require('./spectronWindowsActions');
 const WebActions = require('./spectronWebActions');
+const Utils = require('./spectronUtils');
 
 let app;
 let windowActions;
@@ -24,8 +25,8 @@ describe('Tests for always on top', () => {
 
     afterAll(async (done) => {
         try {
-            await windowActions.killProcess("notepad.exe");
-            await windowActions.killProcess("mspaint.exe");
+            await Utils.killProcess("notepad.exe");
+            await Utils.killProcess("mspaint.exe");
             if (app && app.isRunning()) {
                 jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
                 await app.stop();
@@ -44,8 +45,8 @@ describe('Tests for always on top', () => {
     it('Verify Always on Top options when multiple applications are opened', async (done) => {
         try {
             await webActions.minimizeWindows();
-            await windowActions.openAppInMaximize("C:\\Windows\\notepad.exe");
-            await windowActions.openAppInMaximize("C:\\Windows\\system32\\mspaint.exe");
+            await Utils.openAppInMaximize("C:\\Windows\\notepad.exe");
+            await Utils.openAppInMaximize("C:\\Windows\\system32\\mspaint.exe");
             await windowActions.showWindow();
             await windowActions.clickOutsideWindow();
             await windowActions.verifyWindowsOnTop();
