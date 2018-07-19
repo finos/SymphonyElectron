@@ -1,9 +1,5 @@
 ## Prerequisites
 
-### General
-- You'll need a set of binaries for swift search to work. To get these binaries, please contact the project maintainers
-- Without these binaries, you'll not be able to build the app
-
 ### Windows
 - NodeJS version >= 8.9.4 (corresponds to electron 2.0.2)
 - Microsoft Visual Studio 2015 Community or Paid (C++ and .NET/C# development tools)
