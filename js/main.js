@@ -26,7 +26,6 @@ const protocolHandler = require('./protocolHandler');
 const getCmdLineArg = require('./utils/getCmdLineArg.js');
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
-const { deleteIndexFolder } = require('./search/search.js');
 
 require('electron-dl')();
 
@@ -147,7 +146,7 @@ function setChromeFlags() {
         }
 
     }
-    
+
     app.commandLine.appendSwitch("disable-background-timer-throttling", true);
 }
 
@@ -181,12 +180,6 @@ app.on('activate', function() {
     } else {
         windowMgr.showMainWindow();
     }
-});
-
-app.on('will-quit', function (e) {
-    e.preventDefault();
-    deleteIndexFolder();
-    app.exit();
 });
 
 // adds 'symphony' as a protocol
@@ -227,25 +220,25 @@ function setupThenOpenMainWindow() {
 
     isAppAlreadyOpen = true;
     getUrlAndCreateMainWindow();
-    
+
     // Allows a developer to set custom user data path from command line when
     // launching the app. Mostly used for running automation tests with
     // multiple instances
     let customDataArg = getCmdLineArg(process.argv, '--userDataPath=', false);
     let customDataFolder = customDataArg && customDataArg.substring(customDataArg.indexOf('=') + 1);
-    
+
     if (customDataArg && customDataFolder) {
         app.setPath('userData', customDataFolder);
     }
-    
+
     // Event that fixes the remote desktop issue in Windows
     // by repositioning the browser window
     electron.screen.on('display-removed', windowMgr.verifyDisplays);
-    
+
 }
 
 function checkFirstTimeLaunch() {
-    
+
     return new Promise((resolve) => {
 
         getUserConfigField('version')
@@ -269,7 +262,7 @@ function checkFirstTimeLaunch() {
             });
         return resolve();
     });
-    
+
 }
 
 /**
