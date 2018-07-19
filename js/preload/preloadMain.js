@@ -35,14 +35,14 @@ try {
     Search = remote.require('swift-search').Search;
 } catch (e) {
     // eslint-disable-next-line no-console
-    console.warn("Failed to initializing Search");
+    console.warn("Failed to initialize swift search. You'll need to include the search dependency. Contact the developers for more details");
 }
 
 try {
     SearchUtils = remote.require('swift-search').SearchUtils;
 } catch (e) {
     // eslint-disable-next-line no-console
-    console.warn("Failed to initializing SearchUtils");
+    console.warn("Failed to initialize swift search (Utils). You'll need to include the search dependency. Contact the developers for more details");
 }
 
 require('../downloadManager');
