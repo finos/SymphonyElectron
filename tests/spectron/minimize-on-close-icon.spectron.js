@@ -1,37 +1,36 @@
 const Application = require('./spectronSetup');
 const { isMac } = require('../../js/utils/misc');
-const robot = require('robotjs');
 const WindowsAction = require('./spectronWindowsActions');
-let configPath;
-let app = new Application({
-    startTimeout: Application.getTimeOut(),
-    waitTimeout: Application.getTimeOut()
-});
+const WebAction = require('./spectronWebActions');
+var app  =  new Application({
+            startTimeout: Application.getTimeOut(),
+            waitTimeout: Application.getTimeOut()
+        });
 let wActions;
-describe('Add Test To Verify Minimize on Close', () => {
+let webActions;
 
+describe('Add Test To Verify Minimize on Close', async() => {
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
-
-    beforeAll((done) => {
-        return app.startApplication().then((startedApp) => {
-            app = startedApp;
-            getConfigPath().then((config) => {
-                configPath = config;
+    beforeAll(async (done) => {       
+        await app.startApplication().then(async(startedApp) => {
+            app.app =  await  startedApp; 
+            wActions = await new WindowsAction(app.app); 
+            webActions = await new WebAction(app.app);            
+            }).then((async() =>{          
+            await getConfigPath(app.app).then((config) => {
+                    app.pathApp = config;  
+                }).catch((err) => {
+                    done.fail(new Error(`Unable to start application error: ${err}`));
+                });      
                 done();
-            }).catch((err) => {
-                done.fail(new Error(`Unable to start application error: ${err}`));
-            });
-            wActions = new WindowsAction(app);
-        }).catch((err) => {
-            done.fail(new Error(`Unable to start application error: ${err}`));
-        });
+            }));
     });
 
-    function getConfigPath() {
+    function getConfigPath(app) {
         return new Promise(function (resolve, reject) {
             app.client.addCommand('getUserDataPath', function () {
-                return this.execute(function () {
+                return app.client.execute(function () {
                     return require('electron').remote.app.getPath('userData');
                 })
             });
@@ -67,27 +66,23 @@ describe('Add Test To Verify Minimize on Close', () => {
     * TC-ID: 3084609
    * Cover scenarios in AVT-939
    */
-    it('Verify Minimize on Close option once the application is installed', async (done) => {
-        await Application.readConfig(configPath).then(async (userConfig) => {
+    it('Verify Minimize on Close option once the application is installed',  async(done) => {
+        await Application.readConfig(app.pathApp).then(async (userConfig) => {
             if (isMac) {
                 done();
             }
             else {
                 //When app  un-ticked on Minimize On Close Menu Item
                 //Select 1 times to perform for ticking Menu 
-                if (userConfig.minimizeOnClose == false) {                    
+                await wActions.selectMinimizeOnClose();
+                if (userConfig.minimizeOnClose != false) {  
+                    //When app ticked on Minimize On Close Menu Item
+                    //Select 2 times to perform for ticking Menu                  
                     await wActions.selectMinimizeOnClose();
-                    await wActions.closeWindowByClick();                   
-                    await wActions.verifyMinimizeWindows();                   
-                }
-                //When app ticked on Minimize On Close Menu Item
-                //Select 2 times to perform for ticking Menu
-                else {                    
-                    await wActions.selectMinimizeOnClose();
-                    await wActions.selectMinimizeOnClose();
-                    await wActions.closeWindowByClick();
-                    await wActions.verifyMinimizeWindows();                   
-                }
+                                      
+                }                
+                await webActions.closeWindowByClick();                   
+                await wActions.verifyMinimizeWindows(); 
                 done();
             }
         }).catch((err) => {
@@ -100,50 +95,38 @@ describe('Add Test To Verify Minimize on Close', () => {
         * TC-ID: 2911252
     * Cover scenarios in AVT-937
     */
-it('Close window when "Minimize on Close" is ON', async (done) => {
+    it('Close window when "Minimize on Close" is ON', async (done) => {
    
-    await Application.readConfig(configPath).then(async (userConfig) => {
-        if (isMac) {
-            done();
-        }
-        else {
-            //When app  un-ticked on Minimize On Close Menu Item
-            //Select 1 times to perform for ticking Menu 
-            await wActions.openApp();
-            if (userConfig.minimizeOnClose == false) {                    
+        Application.readConfig(app.pathApp).then(async (userConfig) => {
+            if (isMac) {
+                done();
+            }
+            else {
+                //When app  un-ticked on Minimize On Close Menu Item
+                //Select 1 times to perform for ticking Menu 
+                await wActions.focusWindow();
                 await wActions.selectMinimizeOnClose();
-                await wActions.closeWindowByClick();                   
-                await wActions.verifyMinimizeWindows(); 
+                if (userConfig.minimizeOnClose != false) {                    
+                    await wActions.selectMinimizeOnClose();                
+                }
+                //When app ticked on Minimize On Close Menu Item
+                //Select 2 times to perform for ticking Menu                              
+                    
+                await webActions.closeWindowByClick();
+                await wActions.verifyMinimizeWindows();
 
-                await wActions.openApp();             
+                await wActions.focusWindow();
                 await wActions.pressCtrlW();
                 await wActions.verifyMinimizeWindows();
 
-                await wActions.openApp();  
-                await wActions.closeWindowByClick();  
-                await wActions.verifyMinimizeWindows();
+                await wActions.focusWindow();  
+                await webActions.closeWindowByClick();  
+                await wActions.verifyMinimizeWindows();            
+                done();
             }
-            //When app ticked on Minimize On Close Menu Item
-            //Select 2 times to perform for ticking Menu
-            else {                    
-                await wActions.selectMinimizeOnClose();
-                await wActions.selectMinimizeOnClose();
-                await wActions.closeWindowByClick();
-                await wActions.verifyMinimizeWindows();
-
-                await wActions.openApp();
-                await wActions.pressCtrlW();
-                await wActions.verifyMinimizeWindows();
-
-                await wActions.openApp();  
-                await wActions.closeWindowByClick();  
-                await wActions.verifyMinimizeWindows();
-            }
-            done();
-        }
-    }).catch((err) => {
-        done.fail(new Error(`minimize-on-close failed in readConfig with error: ${err}`));
-    })
-});
+        }).catch((err) => {
+            done.fail(new Error(`minimize-on-close failed in readConfig with error: ${err}`));
+        })
+    });
 
 });

@@ -1,9 +1,12 @@
 const robot = require('robotjs');
 const constants = require('./spectronConstants.js');
+const WebActions = require ('./spectronWebActions.js')
 
 class WindowsActions {
     constructor(app) {
         this.app = app;
+        //this.getConfigPath(app);
+        this.webAction = new WebActions(app);
     }
 
     async verifyMinimizeWindows() {
@@ -27,18 +30,7 @@ class WindowsActions {
         return rminimized;
     }
 
-    async minimizeWindowByClick() {       
-        await this.app.client.click("button#title-bar-minimize-button");
-    }
-
-    async closeWindowByClick() {        
-        await this.app.client.click("button#title-bar-close-button");
-    }
-
-    async openApplicationMenuByClick() {       
-        await this.app.client.click("#hamburger-menu-button");
-    }
-
+    
     async selectMinimizeOnClose() {
         await this.app.browserWindow.getBounds().then(async (bounds) => {
             await robot.setMouseDelay(100);
@@ -47,7 +39,7 @@ class WindowsActions {
             await robot.moveMouseSmooth(x, y);
             await robot.moveMouse(x, y);
             await robot.mouseClick();
-            await this.openApplicationMenuByClick();
+            await this.webAction.openApplicationMenuByClick();
             await robot.setKeyboardDelay(1000);
             await robot.keyTap('enter');
             await robot.keyTap('down');
@@ -68,7 +60,7 @@ class WindowsActions {
             await robot.moveMouseSmooth(x, y);
             await robot.moveMouse(x, y);
             await robot.mouseClick();
-            await this.openApplicationMenuByClick();
+            await this.webAction.openApplicationMenuByClick();
             await robot.setKeyboardDelay(1000);
             await robot.keyTap('enter');
             await robot.keyTap('down');
@@ -85,11 +77,11 @@ class WindowsActions {
         await robot.keyToggle('w', 'down', ['control']);
         await robot.keyToggle('w', 'up', ['control']);
     }
-    async openApp()
+    async focusWindow()
     {
-         this.app.browserWindow.focus();
-         this.app.browserWindow.setAlwaysOnTop(true);
+        await this.app.browserWindow.show();     
     }
+
 }
 
 module.exports = WindowsActions;

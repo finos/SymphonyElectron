@@ -2,8 +2,8 @@ const Application = require('./spectronSetup');
 const { isMac } = require('../../js/utils/misc');
 const robot = require('robotjs');
 const WindowsAction = require('./spectronWindowsActions');
+const WebAction = require('./spectronWebActions');
 
-let configPath;
 let app = new Application({
     startTimeout: Application.getTimeOut(),
     waitTimeout: Application.getTimeOut()
@@ -14,25 +14,25 @@ describe('Verify by deselecting Minimize on Close', () => {
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
 
-    beforeAll((done) => {
-        return app.startApplication().then((startedApp) => {
-            app = startedApp;
-            getConfigPath().then((config) => {
-                configPath = config;
+    beforeAll(async (done) => {       
+        await app.startApplication().then(async(startedApp) => {
+            app.app =  await  startedApp; 
+            wActions = await new WindowsAction(app.app); 
+            webActions = await new WebAction(app.app);            
+            }).then((async() =>{          
+            await getConfigPath(app.app).then((config) => {
+                    app.pathApp = config;  
+                }).catch((err) => {
+                    done.fail(new Error(`Unable to start application error: ${err}`));
+                });      
                 done();
-            }).catch((err) => {
-                done.fail(new Error(`Unable to start application error: ${err}`));
-            });
-            wActions = new WindowsAction(app);
-        }).catch((err) => {
-            done.fail(new Error(`Unable to start application error: ${err}`));
-        });
+            }));
     });
 
-    function getConfigPath() {
+    function getConfigPath(app) {
         return new Promise(function (resolve, reject) {
             app.client.addCommand('getUserDataPath', function () {
-                return this.execute(function () {
+                return app.client.execute(function () {
                     return require('electron').remote.app.getPath('userData');
                 })
             });
@@ -43,7 +43,7 @@ describe('Verify by deselecting Minimize on Close', () => {
             });
         });
     }
-
+    
     afterAll((done) => {
         if (app && app.isRunning()) {
             jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
@@ -69,27 +69,20 @@ describe('Verify by deselecting Minimize on Close', () => {
     * Cover scenarios in AVT-938
     */
     it('Verify by deselecting Minimize on Close option once the application is launched', async (done) => {
-        await Application.readConfig(configPath).then(async (userConfig) => {
+        await Application.readConfig(app.pathApp).then(async (userConfig) => {
             if (isMac) {
                 done();
             }
             else {
-                //When app does not tick on Minimize On Close Menu Item
-                //Select 2 times to perform for un-ticking Menu 
+                
+                await wActions.selectMinimizeOnClose();
                 if (userConfig.minimizeOnClose == false) {
-                    await wActions.selectMinimizeOnClose();
-                    await wActions.selectMinimizeOnClose();
-                    await wActions.closeWindowByClick();
-                    await wActions.verifyMinimizeWindows();
+                    //When app does not tick on Minimize On Close Menu Item
+                    //Select 2 times to perform for un-ticking Menu
+                    await wActions.selectMinimizeOnClose(); 
                 }
-                //When app  ticked on Minimize On Close Menu Item
-                //Select 1 times to perform for un-tick 
-                else {
-                    console.log("userConfig.minimizeOnClose::true::" + userConfig.minimizeOnClose);
-                    await wActions.selectMinimizeOnClose();
-                    await wActions.closeWindowByClick();
-                    await wActions.verifyMinimizeWindows();
-                }
+                await webActions.closeWindowByClick();
+                await wActions.verifyMinimizeWindows();               
                 done();
             }
         }).catch((err) => {
