@@ -12,7 +12,6 @@
 // https://github.com/electron/electron/issues/2984
 //
 const { ipcRenderer, remote, crashReporter } = require('electron');
-const SwiftSearch = remote.require('swift-search');
 const throttle = require('../utils/throttle.js');
 const apiEnums = require('../enums/api.js');
 const apiCmds = apiEnums.cmds;
@@ -32,14 +31,14 @@ let Search;
 let SearchUtils;
 
 try {
-    Search = SwiftSearch.Search;
+    Search = remote.require('swift-search').Search;
 } catch (e) {
     // eslint-disable-next-line no-console
     console.warn("Failed to initializing Search");
 }
 
 try {
-    SearchUtils = remote.require('SwiftSearch').SearchUtils;
+    SearchUtils = remote.require('swift-search').SearchUtils;
 } catch (e) {
     // eslint-disable-next-line no-console
     console.warn("Failed to initializing SearchUtils");
