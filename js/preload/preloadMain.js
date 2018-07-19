@@ -12,6 +12,7 @@
 // https://github.com/electron/electron/issues/2984
 //
 const { ipcRenderer, remote, crashReporter } = require('electron');
+
 const throttle = require('../utils/throttle.js');
 const apiEnums = require('../enums/api.js');
 const apiCmds = apiEnums.cmds;
