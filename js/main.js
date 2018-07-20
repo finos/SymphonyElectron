@@ -313,13 +313,11 @@ function setStartup(lStartup) {
  * and creates the main window
  */
 function getUrlAndCreateMainWindow() {
-    // for dev env allow passing url argument
-    if (isDevEnv) {
-        let url = getCmdLineArg(process.argv, '--url=', false);
-        if (url) {
-            windowMgr.createMainWindow(url.substr(6));
-            return;
-        }
+    // allow passing url argument
+    let url = getCmdLineArg(process.argv, '--url=', false);
+    if (url) {
+        windowMgr.createMainWindow(url.substr(6));
+        return;
     }
 
     getConfigField('url')
