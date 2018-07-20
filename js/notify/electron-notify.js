@@ -138,7 +138,8 @@ let config = {
         webPreferences: {
             preload: path.join(__dirname, 'electron-notify-preload.js'),
             sandbox: sandboxed,
-            nodeIntegration: isNodeEnv
+            nodeIntegration: isNodeEnv,
+            devTools: false
         }
     }
 };

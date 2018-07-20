@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<DOCUMENT Type="Advanced Installer" CreateVersion="11.7.1" version="11.7.1" Modules="enterprise" RootPath="." Language="en" Id="{B6EC4BDE-C578-4A57-A3D2-C9B0154B042C}">
+<DOCUMENT Type="Advanced Installer" CreateVersion="11.7.1" version="15.0.1" Modules="enterprise" RootPath="." Language="en" Id="{B6EC4BDE-C578-4A57-A3D2-C9B0154B042C}">
   <COMPONENT cid="caphyon.advinst.msicomp.ProjectOptionsComponent">
-    <ROW Name="HiddenItems" Value="SccmComponent;ActSyncAppComponent"/>
+    <ROW Name="HiddenItems" Value="SccmComponent;ActSyncAppComponent;AppXAppDetailsComponent;AppXCapabilitiesComponent;AppXDependenciesComponent;AppXProductDetailsComponent;AppXVisualAssetsComponent;AppXAppDeclarationsComponent;AppXUriRulesComponent"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiPropsComponent">
     <ROW Property="AI_APP_ARGS" Value="/start-app=&quot;[#Symphony.pgx]&quot; --enable-media-stream"/>
@@ -11,7 +11,6 @@
     <ROW Property="AI_UNINSTALLER" Value="msiexec.exe"/>
     <ROW Property="ALLUSERS" Value="1" MultiBuildValue="DefaultBuild:2"/>
     <ROW Property="ALWAYS_ON_TOP" Value="false" Type="4"/>
-    <ROW Property="ALWAYS_ON_TOP_DT" Value="No"/>
     <ROW Property="ARPCOMMENTS" Value="This installer database contains the logic and data required to install [|ProductName]." ValueLocId="*"/>
     <ROW Property="ARPHELPLINK" Value="http://www.symphony.com"/>
     <ROW Property="ARPNOMODIFY" MultiBuildValue="DefaultBuild:1"/>
@@ -21,39 +20,31 @@
     <ROW Property="ARPURLINFOABOUT" Value="http://www.symphony.com"/>
     <ROW Property="AUTO_START" Value="true" Type="4"/>
     <ROW Property="AUTO_START_CB" Value="true"/>
-    <ROW Property="AUTO_START_DT" Value="No"/>
     <ROW Property="BRING_TO_FRONT" Value="false"/>
-    <ROW Property="BRING_TO_FRONT_DT" Value="No"/>
     <ROW Property="BannerBitmap" Value="banner" MultiBuildValue="DefaultBuild:Banner.jpg" Type="1" MsiKey="BannerBitmap"/>
     <ROW Property="CTRLS" Value="2"/>
     <ROW Property="CUSTOM_TITLE_BAR" Value="true"/>
     <ROW Property="CUSTOM_TITLE_BAR_CB" Value="true" Type="4"/>
+    <ROW Property="DEV_TOOLS_CB" Value="true" Type="4"/>
+    <ROW Property="DEV_TOOLS_ENABLED" Value="true"/>
     <ROW Property="DialogBitmap" Value="dialog" MultiBuildValue="DefaultBuild:Tabloid.jpg" Type="1" MsiKey="DialogBitmap"/>
     <ROW Property="FULL_SCREEN" Value="true"/>
     <ROW Property="FULL_SCREEN_CB" Value="true" Type="4"/>
-    <ROW Property="FULL_SCREEN_DT" Value="No"/>
     <ROW Property="LOCATION" Value="true"/>
     <ROW Property="LOCATION_CB" Value="true" Type="4"/>
-    <ROW Property="LOCATION_DT" Value="No"/>
     <ROW Property="MEDIA" Value="true"/>
     <ROW Property="MEDIA_CB" Value="true" Type="4"/>
-    <ROW Property="MEDIA_DT" Value="No"/>
     <ROW Property="MIDI_SYSEX" Value="true"/>
     <ROW Property="MIDI_SYSEX_CB" Value="true" Type="4"/>
-    <ROW Property="MIDI_SYSEX_DT" Value="No"/>
     <ROW Property="MINIMIZE_ON_CLOSE" Value="true" Type="4"/>
     <ROW Property="MINIMIZE_ON_CLOSE_CB" Value="true"/>
-    <ROW Property="MINIMIZE_ON_CLOSE_DT" Value="No"/>
     <ROW Property="Manufacturer" Value="Symphony"/>
     <ROW Property="NOTIFICATIONS" Value="true"/>
-    <ROW Property="NOTIFICATIONS_DT" Value="No"/>
     <ROW Property="OPEN_EXTERNAL" Value="true"/>
     <ROW Property="OPEN_EXTERNAL_CB" Value="true" Type="4"/>
-    <ROW Property="OPEN_EXTERNAL_DT" Value="No"/>
     <ROW Property="POD_URL" Value="https://corporate.symphony.com" Type="4"/>
     <ROW Property="POINTER_LOCK" Value="true"/>
     <ROW Property="POINTER_LOCK_CB" Value="true" Type="4"/>
-    <ROW Property="POINTER_LOCK_DT" Value="No"/>
     <ROW Property="ProductCode" Value="1033:{F17EDEB4-A15F-46B9-83E9-8652CBC886B2} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="Symphony"/>
@@ -63,12 +54,16 @@
     <ROW Property="UpgradeCode" Value="{36402281-8141-4797-8A90-07CFA75EFA55}"/>
     <ROW Property="WindowsType9X" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
     <ROW Property="WindowsType9XDisplay" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
-    <ROW Property="WindowsTypeNT" MultiBuildValue="DefaultBuild:Windows 2000, Windows 2000 Service Pack 1, Windows 2000 Service Pack 2, Windows 2000 Service Pack 3, Windows 2000 Service Pack 4, Windows XP x86, Windows XP x86 Service Pack 1, Windows XP x86 Service Pack 2, Windows XP x86 Service Pack 3, Windows Server 2003 x86, Windows Server 2003 x86 Service Pack 1, Windows Server 2003 x86 Service Pack 2, Windows Vista x86, Windows Vista x86 Service Pack 1, Windows Vista x86 Service Pack 2" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT" MultiBuildValue="DefaultBuild:Windows XP SP3 x86, Windows Server 2003 SP2 x86, Windows Vista x86" ValueLocId="-"/>
     <ROW Property="WindowsTypeNT40" MultiBuildValue="DefaultBuild:Windows NT 4.0" ValueLocId="-"/>
     <ROW Property="WindowsTypeNT40Display" MultiBuildValue="DefaultBuild:Windows NT 4.0" ValueLocId="-"/>
-    <ROW Property="WindowsTypeNT64" MultiBuildValue="DefaultBuild:Windows XP x64, Windows XP x64 Service Pack 1, Windows XP x64 Service Pack 2, Windows Server 2003 x64, Windows Server 2003 x64 Service Pack 1, Windows Server 2003 x64 Service Pack 2, Windows Vista x64, Windows Vista x64 Service Pack 1, Windows Vista x64 Service Pack 2" ValueLocId="-"/>
-    <ROW Property="WindowsTypeNT64Display" MultiBuildValue="DefaultBuild:Windows XP x64, Windows Server 2003 x64, Windows Vista x64" ValueLocId="-"/>
-    <ROW Property="WindowsTypeNTDisplay" MultiBuildValue="DefaultBuild:Windows 2000, Windows XP x86, Windows Server 2003 x86, Windows Vista x86" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT50" MultiBuildValue="DefaultBuild:Windows 2000" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT50Display" MultiBuildValue="DefaultBuild:Windows 2000" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT5X" MultiBuildValue="DefaultBuild:Windows XP/2003 RTM, Windows XP/2003 SP1, Windows XP SP2 x86" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT5XDisplay" MultiBuildValue="DefaultBuild:Windows XP/2003 RTM, Windows XP/2003 SP1, Windows XP SP2 x86" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT64" MultiBuildValue="DefaultBuild:Windows XP SP2 x64, Windows Server 2003 SP2 x64, Windows Vista x64" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT64Display" MultiBuildValue="DefaultBuild:Windows XP SP2 x64, Windows Server 2003 SP2 x64, Windows Vista x64" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNTDisplay" MultiBuildValue="DefaultBuild:Windows XP SP3 x86, Windows Server 2003 SP2 x86, Windows Vista x86" ValueLocId="-"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiDirsComponent">
     <ROW Directory="APPDIR" Directory_Parent="TARGETDIR" DefaultDir="APPDIR:." IsPseudoRoot="1"/>
@@ -321,7 +316,6 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BuildComponent">
     <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="1" Languages="en" InstallationType="4" UseLargeSchema="true"/>
-    <ATTRIBUTE name="CurrentBuild" value="DefaultBuild"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.DictionaryComponent">
     <ROW Path="&lt;AI_DICTS&gt;ui.ail"/>
@@ -344,10 +338,10 @@
     <ROW Fragment="VerifyRepairDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\VerifyRepairDlg.aip"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiActionTextComponent">
-    <ROW Action="AI_TxtUpdaterCommit" Description="Commit text file changes. " Template="Commit text file changes." DescriptionLocId="ActionText.Description.AI_TxtUpdaterCommit" TemplateLocId="ActionText.Template.AI_TxtUpdaterCommit"/>
-    <ROW Action="AI_TxtUpdaterConfig" Description="Executing text file updates" Template="Updating text file: &quot;[1]&quot;" DescriptionLocId="ActionText.Description.AI_TxtUpdaterConfig" TemplateLocId="ActionText.Template.AI_TxtUpdaterConfig"/>
+    <ROW Action="AI_TxtUpdaterCommit" Description="Commit text file changes. " DescriptionLocId="ActionText.Description.AI_TxtUpdaterCommit" Template="Commit text file changes." TemplateLocId="ActionText.Template.AI_TxtUpdaterCommit"/>
+    <ROW Action="AI_TxtUpdaterConfig" Description="Executing text file updates" DescriptionLocId="ActionText.Description.AI_TxtUpdaterConfig" Template="Updating text file: &quot;[1]&quot;" TemplateLocId="ActionText.Template.AI_TxtUpdaterConfig"/>
     <ROW Action="AI_TxtUpdaterInstall" Description="Generating actions to configure text files updates" DescriptionLocId="ActionText.Description.AI_TxtUpdaterInstall"/>
-    <ROW Action="AI_TxtUpdaterRollback" Description="Rolling back text file changes. " Template="Rolling back text file changes." DescriptionLocId="ActionText.Description.AI_TxtUpdaterRollback" TemplateLocId="ActionText.Template.AI_TxtUpdaterRollback"/>
+    <ROW Action="AI_TxtUpdaterRollback" Description="Rolling back text file changes. " DescriptionLocId="ActionText.Description.AI_TxtUpdaterRollback" Template="Rolling back text file changes." TemplateLocId="ActionText.Template.AI_TxtUpdaterRollback"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiBinaryComponent">
     <ROW Name="Banner.jpg" SourcePath="Assets\Banner.jpg"/>
@@ -367,6 +361,7 @@
     <ROW Property="FULL_SCREEN_CB" Value="true"/>
     <ROW Property="OPEN_EXTERNAL_CB" Value="true"/>
     <ROW Property="CUSTOM_TITLE_BAR_CB" Value="true"/>
+    <ROW Property="DEV_TOOLS_CB" Value="true"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlComponent">
     <ROW Dialog_="AdminBrowseDlg" Control="Logo" Type="Text" X="4" Y="228" Width="38" Height="12" Attributes="1" Text="Symphony" Order="300" TextLocId="Control.Text.AdminBrowseDlg#Logo" MsiKey="AdminBrowseDlg#Logo"/>
@@ -490,7 +485,7 @@
     <ROW Dialog_="SettingsDlg" Control="MinimizeOnCloseCheckBox" Type="CheckBox" X="33" Y="155" Width="98" Height="13" Attributes="3" Property="MINIMIZE_ON_CLOSE_CB" Text="Enable" Order="500"/>
     <ROW Dialog_="SettingsDlg" Control="LaunchOnStartupCheckBox" Type="CheckBox" X="185" Y="155" Width="98" Height="13" Attributes="3" Property="AUTO_START_CB" Text="Enable" Order="600"/>
     <ROW Dialog_="SettingsDlg" Control="AlwaysOnTopCheckBox" Type="CheckBox" X="33" Y="101" Width="98" Height="13" Attributes="3" Property="ALWAYS_ON_TOP_CB" Text="Enable" Order="700"/>
-    <ROW Dialog_="SettingsDlg" Control="BringToFrontCheckBox" Type="CheckBox" X="185" Y="101" Width="132" Height="13" Attributes="3" Property="BRING_TO_FRONT_CB" Text="Enable" Order="800"/>
+    <ROW Dialog_="SettingsDlg" Control="BringToFrontCheckBox" Type="CheckBox" X="185" Y="101" Width="98" Height="13" Attributes="3" Property="BRING_TO_FRONT_CB" Text="Enable" Order="800"/>
     <ROW Dialog_="SettingsDlg" Control="Text_1" Type="Text" X="33" Y="62" Width="75" Height="11" Attributes="65539" Property="TEXT_1_PROP_4" Text="Always on Top" TextStyle="DlgFontBold8" Order="900"/>
     <ROW Dialog_="SettingsDlg" Control="Text_2" Type="Text" X="33" Y="76" Width="135" Height="28" Attributes="65539" Property="TEXT_2_PROP_3" Text="Keeps [ProductName] on top of other applications" Order="1000"/>
     <ROW Dialog_="SettingsDlg" Control="Text_3" Type="Text" X="33" Y="125" Width="135" Height="11" Attributes="65539" Property="TEXT_3_PROP_5" Text="Minimize on Close" TextStyle="DlgFontBold8" Order="1100"/>
@@ -499,13 +494,16 @@
     <ROW Dialog_="SettingsDlg" Control="Text_6" Type="Text" X="185" Y="125" Width="122" Height="11" Attributes="65539" Property="TEXT_6_PROP_3" Text="Launch on Startup" TextStyle="DlgFontBold8" Order="1400"/>
     <ROW Dialog_="SettingsDlg" Control="Text_7" Type="Text" X="185" Y="76" Width="175" Height="28" Attributes="65539" Property="TEXT_7_PROP" Text="Flash icon in taskbar when a message is received" Order="1500"/>
     <ROW Dialog_="SettingsDlg" Control="Text_8" Type="Text" X="185" Y="62" Width="152" Height="11" Attributes="65539" Property="TEXT_8_PROP_1" Text="Flash Notification in Taskbar" TextStyle="DlgFontBold8" Order="1600"/>
-    <ROW Dialog_="SettingsDlg" Control="PushButton_1" Type="PushButton" X="267" Y="206" Width="92" Height="17" Attributes="3" Text="Advance Settings" Order="1700"/>
+    <ROW Dialog_="SettingsDlg" Control="PushButton_1" Type="PushButton" X="33" Y="243" Width="92" Height="17" Attributes="3" Text="Advance Settings" Order="1700"/>
     <ROW Dialog_="SettingsDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Help="|" Order="1800" HelpLocId="Control.Help.FolderDlg#BannerBitmap"/>
     <ROW Dialog_="SettingsDlg" Control="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Attributes="196611" Text="Basic Settings" TextStyle="[DlgTitleFont]" Order="1900" TextLocId="Control.Text.FolderDlg#Title"/>
     <ROW Dialog_="SettingsDlg" Control="Description" Type="Text" X="17" Y="21" Width="272" Height="14" Attributes="196611" Text="Select features for your users." Order="2000" TextLocId="Control.Text.FolderDlg#Description"/>
-    <ROW Dialog_="SettingsDlg" Control="CheckBox_1" Type="CheckBox" X="33" Y="209" Width="98" Height="13" Attributes="3" Property="CUSTOM_TITLE_BAR_CB" Text="Enable" Order="2100"/>
+    <ROW Dialog_="SettingsDlg" Control="CustomTitleBarCheckBox" Type="CheckBox" X="33" Y="209" Width="98" Height="13" Attributes="3" Property="CUSTOM_TITLE_BAR_CB" Text="Enable" Order="2100"/>
     <ROW Dialog_="SettingsDlg" Control="Text_9" Type="Text" X="33" Y="179" Width="135" Height="11" Attributes="65539" Property="TEXT_3_PROP_5_1" Text="Custom Title Bar" TextStyle="DlgFontBold8_DlgFontBold8" Order="2200"/>
     <ROW Dialog_="SettingsDlg" Control="Text_10" Type="Text" X="33" Y="194" Width="147" Height="11" Attributes="65539" Property="TEXT_4_PROP_3_1" Text="Applies custom title bar style" Order="2300"/>
+    <ROW Dialog_="SettingsDlg" Control="DevToolsCheckBox" Type="CheckBox" X="185" Y="209" Width="98" Height="13" Attributes="3" Property="DEV_TOOLS_CB" Text="Enable" Order="2400"/>
+    <ROW Dialog_="SettingsDlg" Control="Text_11" Type="Text" X="185" Y="179" Width="135" Height="11" Attributes="65539" Property="TEXT_3_PROP_5_1_1" Text="Enabled Dev Tools" TextStyle="DlgFontBold8_DlgFontBold8" Order="2500"/>
+    <ROW Dialog_="SettingsDlg" Control="Text_12" Type="Text" X="185" Y="194" Width="147" Height="11" Attributes="65539" Property="TEXT_4_PROP_3_1_1" Text="Enable dev tools for troubleshooting" Order="2600"/>
     <ROW Dialog_="UrlValidationDlg" Control="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Attributes="1" Text="[ButtonText_Next]" Order="100" TextLocId="-" Options="1"/>
     <ROW Dialog_="UrlValidationDlg" Control="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Attributes="2" Text="[ButtonText_Cancel]" Order="200" TextLocId="-" Options="1"/>
     <ROW Dialog_="UrlValidationDlg" Control="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" Attributes="1048577" Text="[DialogBitmap]" Order="300"/>
@@ -651,6 +649,7 @@
     <ROW Action="AI_DATA_SETTER_2" Type="51" Source="CustomActionData" Target="Symphony.exe"/>
     <ROW Action="AI_DOWNGRADE" Type="19" Target="4010"/>
     <ROW Action="AI_DpiContentScale" Type="1" Source="aicustact.dll" Target="DpiContentScale"/>
+    <ROW Action="AI_EnableDebugLog" Type="321" Source="aicustact.dll" Target="EnableDebugLog"/>
     <ROW Action="AI_GetArpIconPath" Type="1" Source="aicustact.dll" Target="GetArpIconPath"/>
     <ROW Action="AI_InstallModeCheck" Type="1" Source="aicustact.dll" Target="UpdateInstallMode" WithoutSeq="true"/>
     <ROW Action="AI_LaunchApp" Type="1" Source="aicustact.dll" Target="[#Symphony.exe]"/>
@@ -665,7 +664,7 @@
     <ROW Action="AI_TxtUpdaterRollback" Type="11521" Source="TxtUpdater.dll" Target="OnTxtUpdaterRollback" WithoutSeq="true"/>
     <ROW Action="KillParagon" Type="1" Source="aicustact.dll" Target="StopProcess" Options="1" AdditionalSeq="AI_DATA_SETTER_2"/>
     <ROW Action="KillRenderer" Type="1" Source="aicustact.dll" Target="StopProcess" Options="1" AdditionalSeq="AI_DATA_SETTER"/>
-    <ROW Action="PodUrlValidation" Type="37" Target="Script Text" TargetUnformatted="// First, check if the protocol is part of the url, if not, prepend it&#13;&#10;var prefix1 = &quot;https://&quot;;&#13;&#10;var prefix2 = &quot;http://&quot;;&#13;&#10;if (Session.Property(&quot;POD_URL&quot;).substr(0, prefix1.length) !== prefix1 &amp;&amp; Session.Property(&quot;POD_URL&quot;).substr(0, prefix2.length) !== prefix2) {&#13;&#10;    Session.Property(&quot;POD_URL&quot;) = prefix1 + Session.Property(&quot;POD_URL&quot;);&#13;&#10;}&#13;&#10;&#13;&#10;// Check if the entered pod url is valid&#13;&#10;var podUrlRE = /^(https:\/\/)(www.)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/[a-zA-Z0-9-_.+!*&apos;(),;/?:@=&amp;$]*)?$/;&#13;&#10;var podUrlTest = podUrlRE.test(Session.Property(&quot;POD_URL&quot;));&#13;&#10;if (!podUrlTest) {&#13;&#10;&#9;Session.Property(&quot;INVALID_POD_URL&quot;) = &quot;invalid&quot;;&#13;&#10;} else {&#13;&#10;&#9;Session.Property(&quot;INVALID_POD_URL&quot;) = &quot;valid&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// By default, we set all the values to false and change based on conditions&#13;&#10;Session.Property(&quot;ALWAYS_ON_TOP&quot;) = &quot;false&quot;;            &#13;&#10;Session.Property(&quot;AUTO_START&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;MINIMIZE_ON_CLOSE&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;BRING_TO_FRONT&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;CUSTOM_TITLE_BAR&quot;) = &quot;false&quot;;&#13;&#10;&#13;&#10;// App options display text based on checkbox&#13;&#10;Session.Property(&quot;ALWAYS_ON_TOP_DT&quot;) = &quot;No&quot;;            &#13;&#10;Session.Property(&quot;AUTO_START_DT&quot;) = &quot;No&quot;;&#13;&#10;Session.Property(&quot;MINIMIZE_ON_CLOSE_DT&quot;) = &quot;No&quot;;&#13;&#10;Session.Property(&quot;BRING_TO_FRONT_DT&quot;) = &quot;No&quot;;&#13;&#10;&#13;&#10;// Permission request properties&#13;&#10;Session.Property(&quot;MEDIA&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;LOCATION&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;NOTIFICATIONS&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;MIDI_SYSEX&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;POINTER_LOCK&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;FULL_SCREEN&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;OPEN_EXTERNAL&quot;) = &quot;false&quot;;&#13;&#10;&#13;&#10;// Permission display text based on checkbox&#13;&#10;Session.Property(&quot;MEDIA_DT&quot;) = &quot;No&quot;;&#13;&#10;Session.Property(&quot;LOCATION_DT&quot;) = &quot;No&quot;;&#13;&#10;Session.Property(&quot;NOTIFICATIONS_DT&quot;) = &quot;No&quot;;&#13;&#10;Session.Property(&quot;MIDI_SYSEX_DT&quot;) = &quot;No&quot;;&#13;&#10;Session.Property(&quot;POINTER_LOCK_DT&quot;) = &quot;No&quot;;&#13;&#10;Session.Property(&quot;FULL_SCREEN_DT&quot;) = &quot;No&quot;;&#13;&#10;Session.Property(&quot;OPEN_EXTERNAL_DT&quot;) = &quot;No&quot;;&#13;&#10;&#13;&#10;// If always on top is checked in the checkbox, set the label value to true&#13;&#10;if (Session.Property(&quot;ALWAYS_ON_TOP_CB&quot;) &amp;&amp; Session.Property(&quot;ALWAYS_ON_TOP_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;ALWAYS_ON_TOP&quot;) = &quot;true&quot;;&#13;&#10;    Session.Property(&quot;ALWAYS_ON_TOP_DT&quot;) = &quot;Yes&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// If launch on startup is checked in the checkbox, set the label value to true&#13;&#10;if (Session.Property(&quot;MINIMIZE_ON_CLOSE_CB&quot;) &amp;&amp; Session.Property(&quot;MINIMIZE_ON_CLOSE_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;MINIMIZE_ON_CLOSE&quot;) = &quot;true&quot;;&#13;&#10;    Session.Property(&quot;MINIMIZE_ON_CLOSE_DT&quot;) = &quot;Yes&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// If minimise on close is checked in the checkbox, set the label value to true&#13;&#10;if (Session.Property(&quot;AUTO_START_CB&quot;) &amp;&amp; Session.Property(&quot;AUTO_START_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;AUTO_START&quot;) = &quot;true&quot;;&#13;&#10;    Session.Property(&quot;AUTO_START_DT&quot;) = &quot;Yes&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// If bring to front is checked in the checkbox, set the label value to true&#13;&#10;if (Session.Property(&quot;BRING_TO_FRONT_CB&quot;) &amp;&amp; Session.Property(&quot;BRING_TO_FRONT_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;BRING_TO_FRONT&quot;) = &quot;true&quot;;&#13;&#10;    Session.Property(&quot;BRING_TO_FRONT_DT&quot;) = &quot;Yes&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// If bring to front is checked in the checkbox, set the label value to true&#13;&#10;if (Session.Property(&quot;CUSTOM_TITLE_BAR_CB&quot;) &amp;&amp; Session.Property(&quot;CUSTOM_TITLE_BAR_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;CUSTOM_TITLE_BAR&quot;) = &quot;true&quot;;&#13;&#10;    Session.Property(&quot;CUSTOM_TITLE_BAR_DT&quot;) = &quot;Yes&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;// Permissions checkbox remains checked, set the label value to true&#13;&#10;&#13;&#10;if (Session.Property(&quot;MEDIA_CB&quot;) &amp;&amp; Session.Property(&quot;MEDIA_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;MEDIA&quot;) = &quot;true&quot;;&#13;&#10;    Session.Property(&quot;MEDIA_DT&quot;) = &quot;Yes&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;LOCATION_CB&quot;) &amp;&amp; Session.Property(&quot;LOCATION_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;LOCATION&quot;) = &quot;true&quot;;&#13;&#10;    Session.Property(&quot;LOCATION_DT&quot;) = &quot;Yes&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;NOTIFICATIONS_CB&quot;) &amp;&amp; Session.Property(&quot;NOTIFICATIONS_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;NOTIFICATIONS&quot;) = &quot;true&quot;;&#13;&#10;    Session.Property(&quot;NOTIFICATIONS_DT&quot;) = &quot;Yes&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;MIDI_SYSEX_CB&quot;) &amp;&amp; Session.Property(&quot;MIDI_SYSEX_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;MIDI_SYSEX&quot;) = &quot;true&quot;;&#13;&#10;    Session.Property(&quot;MIDI_SYSEX_DT&quot;) = &quot;Yes&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;POINTER_LOCK_CB&quot;) &amp;&amp; Session.Property(&quot;POINTER_LOCK_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;POINTER_LOCK&quot;) = &quot;true&quot;;&#13;&#10;    Session.Property(&quot;POINTER_LOCK_DT&quot;) = &quot;Yes&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;FULL_SCREEN_CB&quot;) &amp;&amp; Session.Property(&quot;FULL_SCREEN_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;FULL_SCREEN&quot;) = &quot;true&quot;;&#13;&#10;    Session.Property(&quot;FULL_SCREEN_DT&quot;) = &quot;Yes&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;OPEN_EXTERNAL_CB&quot;) &amp;&amp; Session.Property(&quot;OPEN_EXTERNAL_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;OPEN_EXTERNAL&quot;) = &quot;true&quot;;&#13;&#10;&#9;&#9;Session.Property(&quot;OPEN_EXTERNAL_DT&quot;) = &quot;Yes&quot;;&#13;&#10;}&#13;&#10;" WithoutSeq="true"/>
+    <ROW Action="PodUrlValidation" Type="37" Target="Script Text" TargetUnformatted="var prefix1 = &quot;https://&quot;;&#13;&#10;var prefix2 = &quot;http://&quot;;&#13;&#10;if (Session.Property(&quot;POD_URL&quot;).substr(0, prefix1.length) !== prefix1 &amp;&amp; Session.Property(&quot;POD_URL&quot;).substr(0, prefix2.length) !== prefix2) {&#13;&#10;    Session.Property(&quot;POD_URL&quot;) = prefix1 + Session.Property(&quot;POD_URL&quot;);&#13;&#10;}&#13;&#10;&#13;&#10;var podUrlRE = /^(https:\/\/)(www.)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/[a-zA-Z0-9-_.+!*&apos;(),;/?:@=&amp;$]*)?$/;&#13;&#10;var podUrlTest = podUrlRE.test(Session.Property(&quot;POD_URL&quot;));&#13;&#10;if (!podUrlTest) {&#13;&#10;&#9;Session.Property(&quot;INVALID_POD_URL&quot;) = &quot;invalid&quot;;&#13;&#10;} else {&#13;&#10;&#9;Session.Property(&quot;INVALID_POD_URL&quot;) = &quot;valid&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;Session.Property(&quot;ALWAYS_ON_TOP&quot;) = &quot;false&quot;;            &#13;&#10;Session.Property(&quot;AUTO_START&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;MINIMIZE_ON_CLOSE&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;BRING_TO_FRONT&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;CUSTOM_TITLE_BAR&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;DEV_TOOLS_ENABLED&quot;) = &quot;false&quot;;&#13;&#10;&#13;&#10;Session.Property(&quot;MEDIA&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;LOCATION&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;NOTIFICATIONS&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;MIDI_SYSEX&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;POINTER_LOCK&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;FULL_SCREEN&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;OPEN_EXTERNAL&quot;) = &quot;false&quot;;&#13;&#10;&#13;&#10;if (Session.Property(&quot;ALWAYS_ON_TOP_CB&quot;) &amp;&amp; Session.Property(&quot;ALWAYS_ON_TOP_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;ALWAYS_ON_TOP&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;MINIMIZE_ON_CLOSE_CB&quot;) &amp;&amp; Session.Property(&quot;MINIMIZE_ON_CLOSE_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;MINIMIZE_ON_CLOSE&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;AUTO_START_CB&quot;) &amp;&amp; Session.Property(&quot;AUTO_START_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;AUTO_START&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;BRING_TO_FRONT_CB&quot;) &amp;&amp; Session.Property(&quot;BRING_TO_FRONT_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;BRING_TO_FRONT&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;CUSTOM_TITLE_BAR_CB&quot;) &amp;&amp; Session.Property(&quot;CUSTOM_TITLE_BAR_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;CUSTOM_TITLE_BAR&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;DEV_TOOLS_CB&quot;) &amp;&amp; Session.Property(&quot;DEV_TOOLS_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;DEV_TOOLS_ENABLED&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;MEDIA_CB&quot;) &amp;&amp; Session.Property(&quot;MEDIA_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;MEDIA&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;LOCATION_CB&quot;) &amp;&amp; Session.Property(&quot;LOCATION_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;LOCATION&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;NOTIFICATIONS_CB&quot;) &amp;&amp; Session.Property(&quot;NOTIFICATIONS_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;NOTIFICATIONS&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;MIDI_SYSEX_CB&quot;) &amp;&amp; Session.Property(&quot;MIDI_SYSEX_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;MIDI_SYSEX&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;POINTER_LOCK_CB&quot;) &amp;&amp; Session.Property(&quot;POINTER_LOCK_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;POINTER_LOCK&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;FULL_SCREEN_CB&quot;) &amp;&amp; Session.Property(&quot;FULL_SCREEN_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;FULL_SCREEN&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;OPEN_EXTERNAL_CB&quot;) &amp;&amp; Session.Property(&quot;OPEN_EXTERNAL_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;OPEN_EXTERNAL&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;" WithoutSeq="true"/>
     <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:[AI_UserProgramFiles][Manufacturer]\[ProductName]"/>
     <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
     <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
@@ -684,30 +683,34 @@
     <ROW Action="AI_DOWNGRADE" Condition="AI_NEWERPRODUCTFOUND AND (UILevel &lt;&gt; 5)" Sequence="210"/>
     <ROW Action="AI_STORE_LOCATION" Condition="(Not Installed) OR REINSTALL" Sequence="1501"/>
     <ROW Action="AI_PREPARE_UPGRADE" Condition="AI_UPGRADE=&quot;No&quot; AND (Not Installed)" Sequence="1399"/>
-    <ROW Action="AI_ResolveKnownFolders" Sequence="53"/>
+    <ROW Action="AI_ResolveKnownFolders" Sequence="55"/>
     <ROW Action="AI_GetArpIconPath" Sequence="1401"/>
-    <ROW Action="KillParagon" Sequence="52"/>
-    <ROW Action="AI_DATA_SETTER_2" Sequence="51"/>
-    <ROW Action="KillRenderer" Sequence="55"/>
-    <ROW Action="AI_DATA_SETTER" Sequence="54"/>
+    <ROW Action="KillParagon" Sequence="54"/>
+    <ROW Action="AI_DATA_SETTER_2" Sequence="53"/>
+    <ROW Action="KillRenderer" Sequence="57"/>
+    <ROW Action="AI_DATA_SETTER" Sequence="56"/>
     <ROW Action="AI_SETMIXINSTLOCATION" Sequence="748"/>
     <ROW Action="AI_TxtUpdaterInstall" Sequence="5101"/>
+    <ROW Action="AI_EnableDebugLog" Sequence="51"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
-    <ROW Action="AI_ResolveKnownFolders" Sequence="52"/>
-    <ROW Action="AI_DpiContentScale" Sequence="51"/>
+    <ROW Action="AI_ResolveKnownFolders" Sequence="53"/>
+    <ROW Action="AI_DpiContentScale" Sequence="52"/>
     <ROW Action="ExecuteAction" Sequence="1299" SeqType="0" MsiKey="ExecuteAction"/>
     <ROW Action="InstallTypeDlg" Condition="AI_INSTALL" Sequence="1224" SeqType="3" MsiKey="WelcomeDlg"/>
     <ROW Action="UninstallPreviousVersions" Sequence="1281"/>
     <ROW Action="AI_SETMIXINSTLOCATION" Sequence="748"/>
     <ROW Action="SettingsDlg" Condition="AI_INSTALL" Sequence="1232" SeqType="3"/>
     <ROW Action="InstallationDlg" Condition="AI_INSTALL" Sequence="1228" SeqType="3"/>
+    <ROW Action="AI_EnableDebugLog" Sequence="51"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiLaunchConditionsComponent">
-    <ROW Condition="( Version9X OR ( NOT VersionNT64 ) OR ( VersionNT64 AND ((VersionNT64 &lt;&gt; 502) OR (((VersionNT64 = 502) AND (ServicePackLevel &gt;= 1)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 502) OR (((VersionNT64 = 502) AND (ServicePackLevel &lt;&gt; 1)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 502) OR (((VersionNT64 = 502) AND (ServicePackLevel &lt;&gt; 2)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 502) OR ((VersionNT64 = 502) AND ((MsiNTProductType = 1) OR (ServicePackLevel &gt;= 1)))) AND ((VersionNT64 &lt;&gt; 502) OR ((VersionNT64 = 502) AND ((MsiNTProductType = 1) OR (ServicePackLevel &lt;&gt; 1)))) AND ((VersionNT64 &lt;&gt; 502) OR ((VersionNT64 = 502) AND ((MsiNTProductType = 1) OR (ServicePackLevel &lt;&gt; 2)))) AND ((VersionNT64 &lt;&gt; 600) OR (((VersionNT64 = 600) AND (ServicePackLevel &gt;= 1)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 600) OR (((VersionNT64 = 600) AND (ServicePackLevel &lt;&gt; 1)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 600) OR (((VersionNT64 = 600) AND (ServicePackLevel &lt;&gt; 2)) OR (MsiNTProductType &lt;&gt; 1))) ) )" Description="[ProductName] cannot be installed on the following Windows versions: [WindowsTypeNT64Display]" DescriptionLocId="AI.LaunchCondition.NoSpecificNT64" IsPredefined="true" Builds="DefaultBuild"/>
-    <ROW Condition="( Version9X OR VersionNT64 OR ( VersionNT AND ((VersionNT &lt;&gt; 500) OR ((VersionNT = 500) AND (ServicePackLevel &gt;= 1))) AND ((VersionNT &lt;&gt; 500) OR ((VersionNT = 500) AND (ServicePackLevel &lt;&gt; 1))) AND ((VersionNT &lt;&gt; 500) OR ((VersionNT = 500) AND (ServicePackLevel &lt;&gt; 2))) AND ((VersionNT &lt;&gt; 500) OR ((VersionNT = 500) AND (ServicePackLevel &lt;&gt; 3))) AND ((VersionNT &lt;&gt; 500) OR ((VersionNT = 500) AND (ServicePackLevel &lt;&gt; 4))) AND (((VersionNT &lt;&gt; 501) OR ((VersionNT = 501) AND (ServicePackLevel &gt;= 1))) OR VersionNT64) AND (((VersionNT &lt;&gt; 501) OR ((VersionNT = 501) AND (ServicePackLevel &lt;&gt; 1))) OR VersionNT64) AND (((VersionNT &lt;&gt; 501) OR ((VersionNT = 501) AND (ServicePackLevel &lt;&gt; 2))) OR VersionNT64) AND (((VersionNT &lt;&gt; 501) OR ((VersionNT = 501) AND (ServicePackLevel &lt;&gt; 3))) OR VersionNT64) AND (((VersionNT &lt;&gt; 502) OR ((VersionNT = 502) AND (ServicePackLevel &gt;= 1))) OR VersionNT64) AND (((VersionNT &lt;&gt; 502) OR ((VersionNT = 502) AND (ServicePackLevel &lt;&gt; 1))) OR VersionNT64) AND (((VersionNT &lt;&gt; 502) OR ((VersionNT = 502) AND (ServicePackLevel &lt;&gt; 2))) OR VersionNT64) AND (((VersionNT &lt;&gt; 600) OR (((VersionNT = 600) AND (ServicePackLevel &gt;= 1)) OR (MsiNTProductType &lt;&gt; 1))) OR VersionNT64) AND (((VersionNT &lt;&gt; 600) OR (((VersionNT = 600) AND (ServicePackLevel &lt;&gt; 1)) OR (MsiNTProductType &lt;&gt; 1))) OR VersionNT64) AND (((VersionNT &lt;&gt; 600) OR (((VersionNT = 600) AND (ServicePackLevel &lt;&gt; 2)) OR (MsiNTProductType &lt;&gt; 1))) OR VersionNT64) ) )" Description="[ProductName] cannot be installed on the following Windows versions: [WindowsTypeNTDisplay]" DescriptionLocId="AI.LaunchCondition.NoSpecificNT" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="( Version9X OR ( NOT VersionNT64 ) OR ( VersionNT64 AND ((VersionNT64 &lt;&gt; 502) OR (ServicePackLevel &lt;&gt; 2) OR (MsiNTProductType &lt;&gt; 1)) AND ((VersionNT64 &lt;&gt; 502) OR (ServicePackLevel &lt;&gt; 2) OR (MsiNTProductType = 1)) AND ((VersionNT64 &lt;&gt; 600) OR (MsiNTProductType &lt;&gt; 1)) ) )" Description="[ProductName] cannot be installed on the following Windows versions: [WindowsTypeNT64Display]." DescriptionLocId="AI.LaunchCondition.NoSpecificNT64" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="( Version9X OR VersionNT64 OR ( VersionNT AND ((VersionNT &lt;&gt; 501) OR (ServicePackLevel &lt;&gt; 3)) AND ((VersionNT &lt;&gt; 502) OR (ServicePackLevel &lt;&gt; 2)) AND ((VersionNT &lt;&gt; 600) OR (MsiNTProductType &lt;&gt; 1)) ) )" Description="[ProductName] cannot be installed on the following Windows versions: [WindowsTypeNTDisplay]." DescriptionLocId="AI.LaunchCondition.NoSpecificNT" IsPredefined="true" Builds="DefaultBuild"/>
     <ROW Condition="(VersionNT &lt;&gt; 400)" Description="[ProductName] cannot be installed on the following Windows versions: [WindowsTypeNT40Display]" DescriptionLocId="AI.LaunchCondition.NoNT40" IsPredefined="true" Builds="DefaultBuild"/>
-    <ROW Condition="VersionNT" Description="[ProductName] cannot be installed on [WindowsType9XDisplay]" DescriptionLocId="AI.LaunchCondition.No9X" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="(VersionNT &lt;&gt; 500)" Description="[ProductName] cannot be installed on [WindowsTypeNT50Display]." DescriptionLocId="AI.LaunchCondition.NoNT50" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="(VersionNT64 OR ((VersionNT &lt;&gt; 501) OR (ServicePackLevel = 3))) AND ((VersionNT &lt;&gt; 502) OR (ServicePackLevel = 2))" Description="[ProductName] cannot be installed on [WindowsTypeNT5XDisplay]." DescriptionLocId="AI.LaunchCondition.NoNT5X" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="VersionNT" Description="[ProductName] cannot be installed on [WindowsType9XDisplay]." DescriptionLocId="AI.LaunchCondition.No9X" IsPredefined="true" Builds="DefaultBuild"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiRadioButtonComponent">
     <ROW Property="AI_InstallPerUser" Order="1" Value="1" X="17" Y="10" Width="158" Height="11" Text="Only for me ([LogonUser])" TextLocId="RadioButton.Text.InstallTypeDlg#1" MsiKey="AI_InstallPerUser#1"/>
@@ -731,8 +734,8 @@
     <ROW Registry="Publisher" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="Publisher" Value="[Manufacturer]" Component_="AI_CustomARPName"/>
     <ROW Registry="URLInfoAbout" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="URLInfoAbout" Value="[ARPURLINFOABOUT]" Component_="AI_CustomARPName"/>
     <ROW Registry="URLUpdateInfo" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="URLUpdateInfo" Value="[ARPURLUPDATEINFO]" Component_="AI_CustomARPName"/>
-    <ROW Registry="UninstallPath" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="UninstallPath" Value="[AI_UNINSTALLER] /x [ProductCode]" Component_="AI_CustomARPName"/>
-    <ROW Registry="UninstallString" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="UninstallString" Value="[AI_UNINSTALLER] /x [ProductCode]" Component_="AI_CustomARPName"/>
+    <ROW Registry="UninstallPath" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="UninstallPath" Value="[AI_UNINSTALLER] /x [ProductCode] AI_UNINSTALLER_CTP=1" Component_="AI_CustomARPName"/>
+    <ROW Registry="UninstallString" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="UninstallString" Value="[AI_UNINSTALLER] /x [ProductCode] AI_UNINSTALLER_CTP=1" Component_="AI_CustomARPName"/>
     <ROW Registry="Version" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Version" Value="[ProductVersion]" Component_="ProductInformation"/>
     <ROW Registry="VersionMajor" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="VersionMajor" Value="#1" Component_="AI_CustomARPName"/>
     <ROW Registry="VersionMinor" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="VersionMinor" Value="#0" Component_="AI_CustomARPName"/>
@@ -765,6 +768,7 @@
     <ROW Name="MidiSysex" TxtUpdateSet="Symphony.config" FindPattern="&quot;midiSysex&quot;\s*:\s*true," ReplacePattern="&quot;midiSysex&quot; : [MIDI_SYSEX]," Options="19" Order="8" FileEncoding="-1"/>
     <ROW Name="Location" TxtUpdateSet="Symphony.config" FindPattern="&quot;geolocation&quot;\s*:\s*true," ReplacePattern="&quot;geolocation&quot; : [LOCATION]," Options="19" Order="6" FileEncoding="-1"/>
     <ROW Name="CustomTitleBar" TxtUpdateSet="Symphony.config" FindPattern="&quot;isCustomTitleBar&quot;\s*:\s*true," ReplacePattern="&quot;isCustomTitleBar&quot; : [CUSTOM_TITLE_BAR]," Options="19" Order="12" FileEncoding="-1"/>
+    <ROW Name="DevTools" TxtUpdateSet="Symphony.config" FindPattern="&quot;devToolsEnabled&quot;\s*:\s*true," ReplacePattern="&quot;devToolsEnabled&quot; : [DEV_TOOLS_ENABLED]," Options="19" Order="13" FileEncoding="-1"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.TxtUpdateSetComponent">
     <ROW Key="Symphony.config" Component="am.pak" FileName="Symphony.config" Directory="config_Dir" Options="17"/>

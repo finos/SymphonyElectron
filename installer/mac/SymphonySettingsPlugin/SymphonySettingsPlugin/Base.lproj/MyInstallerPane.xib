@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14113" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14109"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14113"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -19,6 +19,7 @@
                 <outlet property="autoLaunchCheckBox" destination="Zqh-0e-vtD" id="ETW-F7-I4U"/>
                 <outlet property="bringToFrontCheckBox" destination="2Me-7N-GvD" id="pH5-dt-hyv"/>
                 <outlet property="contentView" destination="TUK-W2-vig" id="gTd-A7-dof"/>
+                <outlet property="devToolsCheckBox" destination="TGe-oB-TBf" id="qqn-SW-zAf"/>
                 <outlet property="fullScreenCheckBox" destination="duA-yQ-iEf" id="0dM-Fa-K6i"/>
                 <outlet property="geoLocationCheckBox" destination="L6E-73-ezq" id="iLj-hy-quO"/>
                 <outlet property="mediaCheckBox" destination="B4Z-uk-s4I" id="NOT-XU-pPs"/>
@@ -44,11 +45,11 @@
                     <tabViewItems>
                         <tabViewItem label="Settings" identifier="" id="bcH-AH-92V">
                             <view key="view" id="ltw-L5-z8g">
-                                <rect key="frame" x="10" y="33" width="439" height="335"/>
+                                <rect key="frame" x="10" y="33" width="254" height="0.0"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bt3-SN-uKp">
-                                        <rect key="frame" x="152" y="278" width="245" height="22"/>
+                                        <rect key="frame" x="152" y="-57" width="245" height="22"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="https://corporate.symphony.com" drawsBackground="YES" usesSingleLineMode="YES" id="4WS-yY-IPf">
                                             <font key="font" metaFont="system"/>
@@ -57,7 +58,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hdX-B9-o0w">
-                                        <rect key="frame" x="15" y="281" width="131" height="17"/>
+                                        <rect key="frame" x="15" y="-54" width="131" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Symphony Pod URL" id="R21-b3-R67">
                                             <font key="font" metaFont="systemBold"/>
@@ -66,7 +67,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lRj-wz-i1m">
-                                        <rect key="frame" x="244" y="222" width="122" height="17"/>
+                                        <rect key="frame" x="244" y="-113" width="122" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Minimize on Close" id="VXX-cj-1fp">
                                             <font key="font" metaFont="systemBold"/>
@@ -75,7 +76,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pJv-Z5-S8c">
-                                        <rect key="frame" x="244" y="152" width="79" height="27"/>
+                                        <rect key="frame" x="244" y="-183" width="79" height="27"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Enable" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Wks-ms-Dds">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -83,7 +84,7 @@
                                         </buttonCell>
                                     </button>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Oc1-Dm-yfg">
-                                        <rect key="frame" x="244" y="114" width="93" height="17"/>
+                                        <rect key="frame" x="244" y="-221" width="93" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Bring to Front" id="nNz-Ll-NWY">
                                             <font key="font" metaFont="systemBold"/>
@@ -92,7 +93,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2Me-7N-GvD">
-                                        <rect key="frame" x="244" y="45" width="79" height="27"/>
+                                        <rect key="frame" x="244" y="-290" width="79" height="27"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Enable" bezelStyle="regularSquare" imagePosition="left" inset="2" id="xdK-SE-fCI">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -100,7 +101,7 @@
                                         </buttonCell>
                                     </button>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="INy-Sf-8qZ">
-                                        <rect key="frame" x="15" y="221" width="124" height="17"/>
+                                        <rect key="frame" x="15" y="-114" width="124" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Launch on Startup" id="m0Q-sb-lur">
                                             <font key="font" metaFont="systemBold"/>
@@ -109,7 +110,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Zqh-0e-vtD">
-                                        <rect key="frame" x="15" y="152" width="79" height="27"/>
+                                        <rect key="frame" x="15" y="-183" width="79" height="27"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Enable" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="961-eU-jAZ">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -117,7 +118,7 @@
                                         </buttonCell>
                                     </button>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1Xi-cm-l1K">
-                                        <rect key="frame" x="244" y="185" width="175" height="28"/>
+                                        <rect key="frame" x="244" y="-150" width="175" height="28"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Minimize Symphony when closed" id="YlU-cU-Dpo">
                                             <font key="font" metaFont="smallSystem"/>
@@ -126,7 +127,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4up-16-Exw">
-                                        <rect key="frame" x="15" y="185" width="175" height="28"/>
+                                        <rect key="frame" x="15" y="-150" width="175" height="28"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Launch Symphony when computer starts" id="Gdo-1v-GBn">
                                             <font key="font" metaFont="smallSystem"/>
@@ -135,7 +136,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mch-Fi-uVp">
-                                        <rect key="frame" x="244" y="78" width="175" height="28"/>
+                                        <rect key="frame" x="244" y="-257" width="175" height="28"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Bring Symphony to front when message is received" id="eaz-Rv-tsn">
                                             <font key="font" metaFont="smallSystem"/>
@@ -144,7 +145,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Wzo-bc-Yl0">
-                                        <rect key="frame" x="15" y="114" width="99" height="17"/>
+                                        <rect key="frame" x="15" y="-221" width="99" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Always on Top" id="hAT-ho-9sn">
                                             <font key="font" metaFont="systemBold"/>
@@ -153,7 +154,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KDh-Sm-XR0">
-                                        <rect key="frame" x="15" y="77" width="175" height="28"/>
+                                        <rect key="frame" x="15" y="-258" width="175" height="28"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Keep Symphony on top of other applications" id="hun-gL-63Y">
                                             <font key="font" metaFont="smallSystem"/>
@@ -162,7 +163,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xJR-Fr-mRt">
-                                        <rect key="frame" x="15" y="44" width="79" height="27"/>
+                                        <rect key="frame" x="15" y="-291" width="79" height="27"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="Enable" bezelStyle="regularSquare" imagePosition="left" inset="2" id="9CK-aX-XOH">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -170,7 +171,7 @@
                                         </buttonCell>
                                     </button>
                                     <textField verticalHuggingPriority="750" fixedFrame="YES" allowsExpansionToolTips="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lha-ib-BpX">
-                                        <rect key="frame" x="150" y="247" width="274" height="22"/>
+                                        <rect key="frame" x="150" y="-88" width="274" height="22"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" state="on" id="BfU-TS-qd2">
                                             <font key="font" metaFont="smallSystem"/>
@@ -182,7 +183,7 @@
                             </view>
                         </tabViewItem>
                         <tabViewItem label="Permissions" identifier="" id="Tgb-j9-73A">
-                            <view key="view" ambiguous="YES" id="50f-DH-wx7">
+                            <view key="view" id="50f-DH-wx7">
                                 <rect key="frame" x="10" y="33" width="439" height="335"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
@@ -363,6 +364,40 @@
                                         <rect key="frame" x="298" y="261" width="126" height="32"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Access to external connected devices" id="r4B-Jw-Y03">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                </subviews>
+                            </view>
+                        </tabViewItem>
+                        <tabViewItem label="Security" identifier="" id="vrn-fr-Dgw" userLabel="Security">
+                            <view key="view" ambiguous="YES" id="m10-37-sFo">
+                                <rect key="frame" x="10" y="33" width="439" height="335"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <subviews>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gme-WH-3ls">
+                                        <rect key="frame" x="15" y="284" width="114" height="17"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Enable Dev Tools" id="UlB-kZ-FRf">
+                                            <font key="font" metaFont="systemBold"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TGe-oB-TBf">
+                                        <rect key="frame" x="15" y="215" width="79" height="27"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="check" title="Enable" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="ftT-x5-nva">
+                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                    </button>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ggB-Ig-gRa">
+                                        <rect key="frame" x="15" y="248" width="112" height="28"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Enable dev tools for troubleshooting" id="XrC-xT-jAS">
                                             <font key="font" metaFont="smallSystem"/>
                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>

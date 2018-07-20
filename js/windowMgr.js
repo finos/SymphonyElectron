@@ -43,6 +43,7 @@ let position = 'lower-right';
 let display;
 let sandboxed = false;
 let isAutoReload = false;
+let devToolsEnabled = true;
 
 const KeyCodes = {
     Esc: 27,
@@ -102,9 +103,13 @@ function getParsedUrl(appUrl) {
  * @param initialUrl
  */
 function createMainWindow(initialUrl) {
-    getMultipleConfigField([ 'mainWinPos', 'isCustomTitleBar', 'locale' ])
+
+    let configParams = ['mainWinPos', 'isCustomTitleBar', 'locale', 'devToolsEnabled'];
+
+    getMultipleConfigField(configParams)
         .then(configData => {
-            lang = configData.locale || app.getLocale();
+            lang = configData && configData.locale || app.getLocale();
+            devToolsEnabled = configData && configData.devToolsEnabled;
             doCreateMainWindow(initialUrl, configData.mainWinPos, configData.isCustomTitleBar);
         })
         .catch(() => {
@@ -539,6 +544,10 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                     handlePermissionRequests(browserWin.webContents);
 
                     browserWin.webContents.session.setCertificateVerifyProc(handleCertificateTransparencyChecks);
+
+                    browserWin.webContents.on('devtools-opened', () => {
+                        handleDevTools(browserWin);
+                    });
                 }
             });
         } else {
@@ -559,6 +568,10 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                     message: i18n.getMessageFor('Sorry, you are not allowed to access this website') + ' (' + navigatedURL + '), ' + i18n.getMessageFor('please contact your administrator for more details'),
                 });
             });
+    });
+
+    mainWindow.webContents.on('devtools-opened', () => {
+        handleDevTools(mainWindow);
     });
 
     /**
@@ -680,6 +693,21 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         }
 
         return callback(-2);
+    }
+
+    function handleDevTools(browserWindow) {
+
+        if (!devToolsEnabled) {
+            log.send(logLevels.INFO, `dev tools disabled for ${browserWindow.winName} window`);
+            browserWindow.webContents.closeDevTools();
+            electron.dialog.showMessageBox(browserWindow, {
+                type: 'warning',
+                buttons: ['Ok'],
+                title: i18n.getMessageFor('Dev Tools disabled'),
+                message: i18n.getMessageFor('Dev Tools has been disabled! Please contact your system administrator to enable it!'),
+            });
+        }
+
     }
 
 }

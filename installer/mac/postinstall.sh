@@ -13,6 +13,7 @@ minimize_on_close=$(sed -n '2p' ${settingsFilePath});
 launch_on_startup=$(sed -n '3p' ${settingsFilePath});
 always_on_top=$(sed -n '4p' ${settingsFilePath});
 bring_to_front=$(sed -n '5p' ${settingsFilePath});
+dev_tools_enabled=$(sed -n '6p' ${settingsFilePath});
 
 if [ "$pod_url" == "" ]; then
     pod_url="https://corporate.symphony.com"
@@ -34,6 +35,10 @@ if [ "$bring_to_front" == "" ]; then
     bring_to_front=false;
 fi
 
+if [ "$dev_tools_enabled" == "" ]; then
+    dev_tools_enabled=false;
+fi
+
 pod_url_escaped=$(sed 's#[&/\]#\\&#g' <<<"$pod_url")
 
 ## Replace the default settings with the user selected settings ##
@@ -42,6 +47,7 @@ sed -i "" -E "s#\"minimizeOnClose\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#
 sed -i "" -E "s#\"alwaysOnTop\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"alwaysOnTop\":\ $always_on_top#g" ${newPath}
 sed -i "" -E "s#\"launchOnStartup\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"launchOnStartup\":\ $launch_on_startup#g" ${newPath}
 sed -i "" -E "s#\"bringToFront\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"bringToFront\":\ $bring_to_front#g" ${newPath}
+sed -i "" -E "s#\"devToolsEnabled\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"devToolsEnabled\":\ $dev_tools_enabled#g" ${newPath}
 
 ## Remove the temp settings file created ##
 rm -f ${settingsFilePath}
@@ -82,7 +88,6 @@ fi
 if [ "$open_external_app" == "" ]; then
     open_external_app=true;
 fi
-
 
 ## Replace the default permissions with the user selected permissions ##
 sed -i "" -E "s#\"media\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"media\":\ $media#g" ${newPath}

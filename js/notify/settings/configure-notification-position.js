@@ -28,7 +28,8 @@ let windowConfig = {
     webPreferences: {
         preload: path.join(__dirname, 'configure-notification-position-preload.js'),
         sandbox: sandboxed,
-        nodeIntegration: false
+        nodeIntegration: false,
+        devTools: false
     }
 };
 

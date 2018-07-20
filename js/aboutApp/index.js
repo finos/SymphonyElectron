@@ -23,7 +23,8 @@ let windowConfig = {
     webPreferences: {
         preload: path.join(__dirname, 'renderer.js'),
         sandbox: true,
-        nodeIntegration: false
+        nodeIntegration: false,
+        devTools: false
     }
 };
 
