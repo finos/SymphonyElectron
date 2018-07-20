@@ -27,9 +27,9 @@ class App {
             App.copyLibraries(constants.SEARCH_LIBRARY_PATH_WIN);
         }
 
-
         this.app = new Application(this.options);
-    }
+        this.pathApp = '';    
+    }    
     
     async startApplication(configurations) {
         try {
@@ -56,7 +56,7 @@ class App {
             }
 
             return this.app;
-        } catch (err) {
+        } catch (err) { 
             throw new Error("Unable to start application " + err);
         };
     }
@@ -70,7 +70,7 @@ class App {
     }
 
     static getTimeOut() {
-        return 90000
+        return 90000;
     }
 
     static readConfig(configPath) {
@@ -133,7 +133,7 @@ class App {
             });
         });
     }
-
+     
 }
 
 module.exports = App;
