@@ -26,18 +26,24 @@ class App {
             App.copyLibraries(constants.SEARCH_LIBRARY_PATH_WIN);
         }
 
-
         this.app = new Application(this.options);
+        this.pathApp = '';    
     }
 
-    startApplication(configurations) {
-        return this.app.start().then((app) => {
+    async  startApplication(configurations) {
+        return await this.app.start().then((app) => {
             if (configurations)
             {
                 if (configurations.alwaysOnTop)  {
-                    app.browserWindow.setAlwaysOnTop(true);
+                    this.app.browserWindow.focus();
+                    this.app.browserWindow.setAlwaysOnTop(true);
                 }
             }
+            else {
+                this.app.browserWindow.focus();
+                this.app.browserWindow.setAlwaysOnTop(true);
+            }
+                 
             return app;
         }).catch((err) => {
             throw new Error("Unable to start application " + err);
@@ -53,7 +59,7 @@ class App {
     }
 
     static getTimeOut() {
-        return 90000
+        return 90000;
     }
 
     static readConfig(configPath) {
@@ -116,7 +122,7 @@ class App {
             });
         });
     }
-
+     
 }
 
 module.exports = App;
