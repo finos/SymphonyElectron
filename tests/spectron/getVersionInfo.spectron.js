@@ -4,7 +4,8 @@ const { buildNumber } = require('../../package');
 const electronVersion = require('../../package').devDependencies.electron;
 const bluebird = require('bluebird');
 
-const SEARCH_API_VERSION = '2.0.0';
+const API_VERSION = '2.0.0';
+const SEARCH_API_VERSION = '3.0.0';
 
 let app = new Application({});
 
@@ -63,7 +64,7 @@ describe('Tests for getVersionInfo API', () => {
         ]).mapSeries((string) => {
             return app.client.getText(string)
         }).then((values) => {
-            expect(values[ 0 ]).toBe('2.0.0');
+            expect(values[ 0 ]).toBe(API_VERSION);
             expect(values[ 1 ]).toBe('Electron');
             expect(values[ 2 ]).toBe(electronVersion);
             expect(values[ 3 ]).toBe(buildNumber);
