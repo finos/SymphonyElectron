@@ -103,7 +103,10 @@ function getParsedUrl(appUrl) {
  * @param initialUrl
  */
 function createMainWindow(initialUrl) {
-    getMultipleConfigField([ 'mainWinPos', 'isCustomTitleBar', 'locale', 'devToolsEnabled' ])
+
+    let configParams = ['mainWinPos', 'isCustomTitleBar', 'locale', 'devToolsEnabled'];
+
+    getMultipleConfigField(configParams)
         .then(configData => {
             lang = configData && configData.locale || app.getLocale();
             devToolsEnabled = configData && configData.devToolsEnabled;
