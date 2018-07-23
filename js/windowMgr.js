@@ -21,7 +21,7 @@ const notify = require('./notify/electron-notify.js');
 const eventEmitter = require('./eventEmitter');
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField, readConfigFileSync, getMultipleConfigField } = require('./config.js');
-const { isMac, isNodeEnv, isWindows10, isWindowsOS } = require('./utils/misc');
+const { isMac, isNodeEnv, isWindows10, isWindowsOS, isDevEnv } = require('./utils/misc');
 const { isWhitelisted, parseDomain } = require('./utils/whitelistHandler');
 const { initCrashReporterMain, initCrashReporterRenderer } = require('./crashReporter.js');
 const i18n = require('./translation/i18n');
@@ -372,7 +372,10 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
     // open external links in default browser - a tag with href='_blank' or window.open
     mainWindow.webContents.on('new-window', handleNewWindow);
-    mainWindow.webContents.session.setCertificateVerifyProc(handleCertificateTransparencyChecks);
+
+    if (!isDevEnv) {
+        mainWindow.webContents.session.setCertificateVerifyProc(handleCertificateTransparencyChecks);
+    }
 
     function handleNewWindow(event, newWinUrl, frameName, disposition, newWinOptions) {
 
@@ -543,7 +546,9 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
                     handlePermissionRequests(browserWin.webContents);
 
-                    browserWin.webContents.session.setCertificateVerifyProc(handleCertificateTransparencyChecks);
+                    if (!isDevEnv) {
+                        browserWin.webContents.session.setCertificateVerifyProc(handleCertificateTransparencyChecks);
+                    }
 
                     browserWin.webContents.on('devtools-opened', () => {
                         handleDevTools(browserWin);
