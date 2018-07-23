@@ -26,6 +26,10 @@ class WebActions {
             expect(isMinimized).toBeTruthy();
         })
     }
+
+    async openApplicationMenuByClick() {
+        await this.app.client.click(ui.MAIN_MENU_ITEM);
+    }
 }
 
 module.exports = WebActions;

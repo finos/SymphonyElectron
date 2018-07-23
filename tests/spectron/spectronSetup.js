@@ -34,18 +34,19 @@ class App {
         try {
             this.app = await this.app.start();
             await this.app.client.waitForVisible(ui.TITLE_BAR, require('./spectronSetup').getTimeOut());
-            await this.app.browserWindow.focus();
-            await this.app.browserWindow.setAlwaysOnTop(true);
+            await this.app.browserWindow.minimize();
+            await this.app.browserWindow.restore();
             if (configurations) {
                 if ((typeof configurations.alwaysOnTop !== "undefined") && (configurations.alwaysOnTop === false)) {
-                    await this.app.browserWindow.focus();
                     await this.app.browserWindow.setAlwaysOnTop(false);
+                } else {
+                    await this.app.browserWindow.setAlwaysOnTop(true);
                 }
                 if (configurations.testedHost) {
                     await this.app.client.waitUntilWindowLoaded().url(configurations.testedHost);
                 }
             }
-            
+
             if ((typeof configurations === "undefined") || (typeof configurations.defaultSize === "undefined") || (configurations.defaultSize === true)) {
                 await this.app.browserWindow.setSize(900, 900);
             }

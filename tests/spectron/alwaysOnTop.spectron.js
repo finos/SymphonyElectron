@@ -14,7 +14,7 @@ describe('Tests for always on top', () => {
 
     beforeAll(async (done) => {
         try {
-            app = await new Application({}).startApplication();
+            app = await new Application({}).startApplication({alwaysOnTop: false});
             windowActions = await new WindowsActions(app);
             webActions = await new WebActions(app);
             done();
@@ -27,6 +27,7 @@ describe('Tests for always on top', () => {
         try {
             await Utils.killProcess("notepad.exe");
             await Utils.killProcess("mspaint.exe");
+            await windowActions.openMenu(["Window","Always on Top"]);
             if (app && app.isRunning()) {
                 jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
                 await app.stop();
@@ -44,6 +45,7 @@ describe('Tests for always on top', () => {
      */
     it('Verify Always on Top options when multiple applications are opened', async (done) => {
         try {
+            await windowActions.openMenu(["Window","Always on Top"]);
             await webActions.minimizeWindows();
             await Utils.openAppInMaximize("C:\\Windows\\notepad.exe");
             await Utils.openAppInMaximize("C:\\Windows\\system32\\mspaint.exe");
