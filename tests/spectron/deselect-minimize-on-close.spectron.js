@@ -2,13 +2,15 @@ const Application = require('./spectronSetup');
 const { isMac } = require('../../js/utils/misc');
 const robot = require('robotjs');
 const WindowsAction = require('./spectronWindowsActions');
-const WebAction = require('./spectronWebActions');
+const WebActions = require('./spectronWebActions');
+const constants = require('./spectronConstants.js');
 
 let app = new Application({
     startTimeout: Application.getTimeOut(),
     waitTimeout: Application.getTimeOut()
 });
 let wActions;
+let webActions;
 describe('Verify by deselecting Minimize on Close', () => {
 
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
@@ -18,7 +20,7 @@ describe('Verify by deselecting Minimize on Close', () => {
         await app.startApplication().then(async(startedApp) => {
             app.app =  await  startedApp; 
             wActions = await new WindowsAction(app.app); 
-            webActions = await new WebAction(app.app);            
+            webActions = await new WebActions(app.app);            
             }).then((async() =>{          
             await getConfigPath(app.app).then((config) => {
                     app.pathApp = config;  
@@ -74,16 +76,19 @@ describe('Verify by deselecting Minimize on Close', () => {
                 done();
             }
             else {
-                
-                await wActions.selectMinimizeOnClose();
-                if (userConfig.minimizeOnClose == false) {
-                    //When app does not tick on Minimize On Close Menu Item
-                    //Select 2 times to perform for un-ticking Menu
-                    await wActions.selectMinimizeOnClose(); 
-                }
-                await webActions.closeWindowByClick();
-                await wActions.verifyMinimizeWindows();               
-                done();
+                await wActions.openMenu(["Window","Minimize on Close"]).then(async ()=>
+                {
+                    if (userConfig.minimizeOnClose == false) {
+                        //When app does not tick on Minimize On Close Menu Item
+                        //Select 2 times to perform for un-ticking Menu
+                        await wActions.openMenu(["Window","Minimize on Close"]);                      
+                                            
+                    }
+                    await wActions.webAction.closeWindowByClick();
+                    await wActions.verifyMinimizeWindows();   
+                    done();
+                });              
+              
             }
         }).catch((err) => {
             done.fail(new Error(`minimize-on-close failed in readConfig with error: ${err}`));

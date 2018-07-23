@@ -75,11 +75,12 @@ describe('Add Test To Verify Minimize on Close', async() => {
             else {
                 //When app  un-ticked on Minimize On Close Menu Item
                 //Select 1 times to perform for ticking Menu 
-                await wActions.selectMinimizeOnClose();
+                await wActions.openMenu(["Window","Minimize on Close"]);
+                              
                 if (userConfig.minimizeOnClose != false) {  
                     //When app ticked on Minimize On Close Menu Item
                     //Select 2 times to perform for ticking Menu                  
-                    await wActions.selectMinimizeOnClose();
+                    await wActions.openMenu(["Window","Minimize on Close"]);                              
                                       
                 }                
                 await webActions.closeWindowByClick();                   
