@@ -9,7 +9,7 @@ var app  =  new Application({
 let wActions;
 let webActions;
 
-describe('Add Test To Verify Minimize on Close', async() => {
+describe('Add Test To Verify Minimize on Close', () => {
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
     beforeAll(async (done) => {       
@@ -130,5 +130,34 @@ describe('Add Test To Verify Minimize on Close', async() => {
             done.fail(new Error(`minimize-on-close failed in readConfig with error: ${err}`));
         })
     });
-
+     /**
+     * Verify by deselecting Minimize on Close option once the application is launched
+     * TC-ID: 3084612
+    * Cover scenarios in AVT-938
+    */
+    it('Verify by deselecting Minimize on Close option once the application is launched', async (done) => {
+        await Application.readConfig(app.pathApp).then(async (userConfig) => {
+            if (isMac) {
+                done();
+            }
+            else {
+                await wActions.focusWindow();
+                await wActions.openMenu(["Window","Minimize on Close"]).then(async ()=>
+                {
+                    if (userConfig.minimizeOnClose == false) {
+                        //When app does not tick on Minimize On Close Menu Item
+                        //Select 2 times to perform for un-ticking Menu
+                        await wActions.openMenu(["Window","Minimize on Close"]);                      
+                                            
+                    }
+                    await wActions.openMenu(["Window","Close"])
+                    await wActions.verifyMinimizeWindows();   
+                    done();
+                });              
+            
+            }
+        }).catch((err) => {
+            done.fail(new Error(`minimize-on-close failed in readConfig with error: ${err}`));
+        })
+    });
 });
