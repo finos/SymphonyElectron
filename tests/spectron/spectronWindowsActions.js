@@ -141,17 +141,17 @@ class WindowsActions {
         return await null;
     }
 
-    async openMenu(arr_menu) {
-        var array_step = [];
-        for (var i = 0; i < arr_menu.length; i++) {
-            var item = await this.menuSearch(constants.MENU.root, arr_menu[i]);
-            await  array_step.push(item);
+    async openMenu(arrMenu) {
+        var arrStep = [];
+        for (var i = 0; i < arrMenu.length; i++) {
+            var item = await this.menuSearch(constants.MENU.root, arrMenu[i]);
+            await  arrStep.push(item);
         }       
-        await this.actionForMenus(array_step);
-        return array_step;
+        await this.actionForMenus(arrStep);
+        return arrStep;
     }
 
-    async actionForMenus(arr_menu) {
+    async actionForMenus(arrMenu) {
         await this.app.browserWindow.getBounds().then(async (bounds) => {
             await robot.setMouseDelay(100);
             let x = bounds.x + 95;
@@ -162,12 +162,12 @@ class WindowsActions {
             await this.webAction.openApplicationMenuByClick();
             await robot.setKeyboardDelay(1000);
             await robot.keyTap('enter');
-            for (var i = 0; i < arr_menu.length; i++) {
+            for (var i = 0; i < arrMenu.length; i++) {
                 
-                for (var s = 0; s < arr_menu[i].step; s++) {
+                for (var s = 0; s < arrMenu[i].step; s++) {
                     await robot.keyTap('down');
                 }
-                if (arr_menu.length > 1 && i != arr_menu.length - 1) {
+                if (arrMenu.length > 1 && i != arrMenu.length - 1) {
                     //handle right keygen
                     await robot.keyTap('right');
                 }
