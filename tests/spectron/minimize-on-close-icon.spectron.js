@@ -83,7 +83,7 @@ describe('Add Test To Verify Minimize on Close', async() => {
                     await wActions.openMenu(["Window","Minimize on Close"]);                              
                                       
                 }                
-                await webActions.closeWindowByClick();                   
+                await wActions.openMenu(["Window","Close"]);               
                 await wActions.verifyMinimizeWindows(); 
                 done();
             }
@@ -107,14 +107,14 @@ describe('Add Test To Verify Minimize on Close', async() => {
                 //When app  un-ticked on Minimize On Close Menu Item
                 //Select 1 times to perform for ticking Menu 
                 await wActions.focusWindow();
-                await wActions.selectMinimizeOnClose();
+                await wActions.openMenu(["Window","Minimize on Close"]); 
                 if (userConfig.minimizeOnClose != false) {                    
-                    await wActions.selectMinimizeOnClose();                
+                    await wActions.openMenu(["Window","Minimize on Close"]);             
                 }
                 //When app ticked on Minimize On Close Menu Item
                 //Select 2 times to perform for ticking Menu                              
                     
-                await webActions.closeWindowByClick();
+                await wActions.openMenu(["Window","Close"])
                 await wActions.verifyMinimizeWindows();
 
                 await wActions.focusWindow();
@@ -122,7 +122,7 @@ describe('Add Test To Verify Minimize on Close', async() => {
                 await wActions.verifyMinimizeWindows();
 
                 await wActions.focusWindow();  
-                await webActions.closeWindowByClick();  
+                await wActions.openMenu(["Window","Close"])
                 await wActions.verifyMinimizeWindows();            
                 done();
             }

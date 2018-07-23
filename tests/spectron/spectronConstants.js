@@ -7,9 +7,8 @@ module.exports = {
 
     SEARCH_LIBRARY_PATH_MAC: "node_modules/electron/dist/Electron.app/Contents/library",
     SEARCH_LIBRARY_PATH_WIN: "node_modules/electron/dist/library",
-
-
     TESTED_HOST: "https://cip4-qa.symphony.com/",
+
     MENU : {
         "root":{name:"menu",step:0,items :[
            {name:"Edit",step:0, items: [ {name:"Undo",step:0},{name:"Redo",step:1},{name:"Cut",step:2},{name:"Copy",step:3},{name:"Paste",step:4},{name:"Paste and Match Style",step:5},{name:"Delete",step:6},{name:"Select All",step:7}]},

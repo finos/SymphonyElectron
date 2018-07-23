@@ -117,6 +117,7 @@ class WindowsActions {
             await robot.keyTap('enter');
         });
     }
+
     async pressCtrlW() {
         await robot.keyToggle('w', 'down', ['control']);
         await robot.keyToggle('w', 'up', ['control']);
@@ -173,7 +174,7 @@ class WindowsActions {
             }
             await robot.keyTap('enter');
         });
-    }
+    }  
 
 }
 

@@ -84,7 +84,7 @@ describe('Verify by deselecting Minimize on Close', () => {
                         await wActions.openMenu(["Window","Minimize on Close"]);                      
                                             
                     }
-                    await wActions.webAction.closeWindowByClick();
+                    await wActions.openMenu(["Window","Close"])
                     await wActions.verifyMinimizeWindows();   
                     done();
                 });              
