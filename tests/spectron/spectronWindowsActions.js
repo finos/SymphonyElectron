@@ -1,6 +1,7 @@
 const robot = require('robotjs');
 const constants = require('./spectronConstants.js');
-const WebActions = require('./spectronWebActions.js')
+const WebActions = require('./spectronWebActions.js');
+const {isMac} = require('../../js/utils/misc.js');
 
 class WindowsActions {
     constructor(app) {
@@ -66,7 +67,7 @@ class WindowsActions {
     }
 
     async menuSearch(element, namevalue) {
-        if (element.name == namevalue) {           
+        if (element.name == namevalue) {
             return await element;
         }
         else if (element.items !== undefined) {
@@ -83,7 +84,11 @@ class WindowsActions {
     async openMenu(arrMenu) {
         var arrStep = [];
         for (var i = 0; i < arrMenu.length; i++) {
-            var item = await this.menuSearch(constants.MENU.root, arrMenu[i]);
+            if (isMac){
+                var item = await this.menuSearch(constants.MENU.mac, arrMenu[i]);
+            } else {
+                var item = await this.menuSearch(constants.MENU.windows, arrMenu[i]);
+            }
             await arrStep.push(item);
         }
         await this.actionForMenus(arrStep);
@@ -91,29 +96,37 @@ class WindowsActions {
     }
 
     async actionForMenus(arrMenu) {
-        await this.app.browserWindow.getBounds().then(async (bounds) => {
-            await robot.setMouseDelay(100);
-            let x = bounds.x + 95;
-            let y = bounds.y + 35;
-            await robot.moveMouseSmooth(x, y);
-            await robot.moveMouse(x, y);
+        await robot.setKeyboardDelay(500);
+        if (isMac) {
+            await robot.moveMouse(20, 0);
             await robot.mouseClick();
-            await this.webAction.openApplicationMenuByClick();
-            await robot.setKeyboardDelay(1000);
-            await robot.keyTap('enter');
-            for (var i = 0; i < arrMenu.length; i++) {
-                for (var s = 0; s < arrMenu[i].step; s++) {
-                    await robot.keyTap('down');
-                }
-                if (arrMenu.length > 1 && i != arrMenu.length - 1) {
-                    //handle right keygen
-                    await robot.keyTap('right');
-                }
+        } else {
+            await this.app.browserWindow.getBounds().then(async (bounds) => {
+                await robot.setMouseDelay(100);
+                let x = bounds.x + 95;
+                let y = bounds.y + 35;
+                await robot.moveMouseSmooth(x, y);
+                await robot.moveMouse(x, y);
+                await robot.mouseClick();
+                await this.webAction.openApplicationMenuByClick();
+                await robot.keyTap('enter');
+            });
+        }
+        for (var i = 0; i < arrMenu.length; i++) {
+            let key = 'down';
+            if (isMac && i===0){
+                key = 'right';
+            }            
+            for (var s = 0; s < arrMenu[i].step; s++) {
+                await robot.keyTap(key);
             }
-            await robot.keyTap('enter');
-        });
+            if (arrMenu.length > 1 && i != arrMenu.length - 1) {
+                //handle right keygen
+                await robot.keyTap('right');
+            }
+        }
+        await robot.keyTap('enter');
     }
-
 }
 
 module.exports = WindowsActions;

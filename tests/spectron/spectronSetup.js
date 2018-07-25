@@ -33,7 +33,7 @@ class App {
     async startApplication(configurations) {
         try {
             this.app = await this.app.start();
-            await this.app.client.waitForVisible(ui.TITLE_BAR, require('./spectronSetup').getTimeOut());
+            await this.app.client.waitForVisible(ui.SYM_LOGO, require('./spectronSetup').getTimeOut());
             await this.app.browserWindow.minimize();
             await this.app.browserWindow.restore();
             if (configurations) {

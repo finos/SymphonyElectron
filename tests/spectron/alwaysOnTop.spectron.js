@@ -2,10 +2,12 @@ const Application = require('./spectronSetup');
 const WindowsActions = require('./spectronWindowsActions');
 const WebActions = require('./spectronWebActions');
 const Utils = require('./spectronUtils');
+const {isMac} = require('../../js/utils/misc.js');
 
 let app;
 let windowActions;
 let webActions;
+let menuItem;
 
 describe('Tests for always on top', () => {
 
@@ -17,6 +19,11 @@ describe('Tests for always on top', () => {
             app = await new Application({}).startApplication({alwaysOnTop: false});
             windowActions = await new WindowsActions(app);
             webActions = await new WebActions(app);
+            if(isMac){
+                menuItem = "View";
+            } else {
+                menuItem = "Window";
+            }
             done();
         } catch(err) {
             done.fail(new Error(`Unable to start application error: ${err}`));
@@ -27,7 +34,7 @@ describe('Tests for always on top', () => {
         try {
             await Utils.killProcess("notepad.exe");
             await Utils.killProcess("mspaint.exe");
-            await windowActions.openMenu(["Window","Always on Top"]);
+            await windowActions.openMenu([menuItem,"Always on Top"]);
             if (app && app.isRunning()) {
                 jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
                 await app.stop();
@@ -45,8 +52,8 @@ describe('Tests for always on top', () => {
      */
     it('Verify Always on Top options when multiple applications are opened', async (done) => {
         try {
-            await windowActions.openMenu(["Window","Always on Top"]);
-            await webActions.minimizeWindows();
+            await windowActions.openMenu([menuItem,"Always on Top"]);
+            //await webActions.minimizeWindows();
             await Utils.openAppInMaximize("C:\\Windows\\notepad.exe");
             await Utils.openAppInMaximize("C:\\Windows\\system32\\mspaint.exe");
             await windowActions.showWindow();
