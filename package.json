@@ -22,6 +22,9 @@
     "unpacked-win-x86": "npm run prebuild && npm run test && build --win --ia32 --dir"
   },
   "jest": {
+    "testMatch": [
+      "**/alwaysOnTop.spectron.js"
+    ],
     "collectCoverage": true,
     "transformIgnorePatterns": []
   },
@@ -109,6 +112,7 @@
   },
   "dependencies": {
     "@paulcbetts/system-idle-time": "1.0.4",
+    "applescript": "^1.0.0",
     "archiver": "2.1.1",
     "async.map": "0.5.2",
     "async.mapseries": "0.5.2",
