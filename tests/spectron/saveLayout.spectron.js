@@ -1,12 +1,13 @@
 const Application = require('./spectronSetup');
 const WindowsActions = require('./spectronWindowsActions');
 const WebActions = require('./spectronWebActions');
+const { isMac } = require('../../js/utils/misc');
 
 let app;
 let windowActions;
 let webActions;
 
-describe('Tests for saved layout', () => {
+!isMac ? describe('Tests for saved layout', () => {
 
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
@@ -58,6 +59,7 @@ describe('Tests for saved layout', () => {
 
             // Size and position of previous session keep after maximizing
             await webActions.maximizeWindows();
+            await windowActions.sleep(1000); // Sleep 1s after resizing 
             previousSize = await windowActions.getCurrentSize();
             await app.stop();
             app = await new Application({}).startApplication({defaultSize: false, defaultPosition: false});
@@ -69,4 +71,4 @@ describe('Tests for saved layout', () => {
             done.fail(new Error(`Fail to keep size and position of the windows in previous session with error: ${err}`));
         };
     });
-});
+}) : describe.skip();
