@@ -9,7 +9,7 @@ var app  =  new Application({
 let wActions;
 let webActions;
 
-describe('Add Test To Verify Minimize on Close', () => {
+!isMac ?describe('Add Test To Verify Minimize on Close', () => {
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
     beforeAll(async (done) => {       
@@ -69,10 +69,7 @@ describe('Add Test To Verify Minimize on Close', () => {
    */
     it('Verify Minimize on Close option once the application is installed',  async(done) => {
         await Application.readConfig(app.pathApp).then(async (userConfig) => {
-            if (isMac) {
-                done();
-            }
-            else {
+            
                 //When app  un-ticked on Minimize On Close Menu Item
                 //Select 1 times to perform for ticking Menu 
                 await wActions.openMenu(["Window","Minimize on Close"]);
@@ -86,7 +83,7 @@ describe('Add Test To Verify Minimize on Close', () => {
                 await wActions.openMenu(["Window","Close"]);               
                 await wActions.verifyMinimizeWindows(); 
                 done();
-            }
+           
         }).catch((err) => {
             done.fail(new Error(`minimize-on-close failed in readConfig with error: ${err}`));
         })
@@ -100,10 +97,7 @@ describe('Add Test To Verify Minimize on Close', () => {
     it('Close window when "Minimize on Close" is ON', async (done) => {
    
         Application.readConfig(app.pathApp).then(async (userConfig) => {
-            if (isMac) {
-                done();
-            }
-            else {
+           
                 //When app  un-ticked on Minimize On Close Menu Item
                 //Select 1 times to perform for ticking Menu 
                 await wActions.focusWindow();
@@ -125,7 +119,7 @@ describe('Add Test To Verify Minimize on Close', () => {
                 await wActions.openMenu(["Window","Close"])
                 await wActions.verifyMinimizeWindows();            
                 done();
-            }
+           
         }).catch((err) => {
             done.fail(new Error(`minimize-on-close failed in readConfig with error: ${err}`));
         })
@@ -137,10 +131,7 @@ describe('Add Test To Verify Minimize on Close', () => {
     */
     it('Verify by deselecting Minimize on Close option once the application is launched', async (done) => {
         await Application.readConfig(app.pathApp).then(async (userConfig) => {
-            if (isMac) {
-                done();
-            }
-            else {
+           
                 await wActions.focusWindow();
                 await wActions.openMenu(["Window","Minimize on Close"]).then(async ()=>
                 {
@@ -155,9 +146,9 @@ describe('Add Test To Verify Minimize on Close', () => {
                     done();
                 });              
             
-            }
+            
         }).catch((err) => {
             done.fail(new Error(`minimize-on-close failed in readConfig with error: ${err}`));
         })
     });
-});
+}) : describe.skip();
