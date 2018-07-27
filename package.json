@@ -1,7 +1,7 @@
 {
   "name": "Symphony",
   "productName": "Symphony",
-  "version": "2.10.0",
+  "version": "2.9.0",
   "buildNumber": "0",
   "description": "Symphony desktop app (Foundation ODP)",
   "author": "Symphony",
@@ -22,6 +22,9 @@
     "unpacked-win-x86": "npm run prebuild && npm run test && build --win --ia32 --dir"
   },
   "jest": {
+    "testMatch": [
+      "**/tests/spectron/turnONPersistentToast.spectron.js"
+    ],
     "collectCoverage": true,
     "transformIgnorePatterns": []
   },
@@ -88,6 +91,7 @@
   "devDependencies": {
     "bluebird": "3.5.1",
     "browserify": "16.2.2",
+    "chromedriver": "^2.40.0",
     "cross-env": "5.2.0",
     "electron": "2.0.4",
     "electron-builder": "20.16.4",
@@ -100,12 +104,15 @@
     "eslint-plugin-import": "2.13.0",
     "eslint-plugin-jsx-a11y": "6.0.3",
     "eslint-plugin-react": "7.10.0",
+    "geckodriver": "^1.11.0",
     "glob": "7.1.2",
     "jest": "19.0.2",
     "jest-html-reporter": "2.4.1",
     "ncp": "2.0.0",
     "robotjs": "0.5.1",
-    "spectron": "3.8.0"
+    "selenium-webdriver": "^3.6.0",
+    "spectron": "3.8.0",
+    "wdio-selenium-standalone-service": "0.0.10"
   },
   "dependencies": {
     "@paulcbetts/system-idle-time": "1.0.4",
@@ -128,6 +135,6 @@
   },
   "optionalDependencies": {
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.2",
-    "swift-search": "1.0.4"
+    "swift-search": "1.0.1"
   }
 }
