@@ -21,10 +21,7 @@
     "unpacked-win": "npm run prebuild && npm run test && build --win --x64 --dir",
     "unpacked-win-x86": "npm run prebuild && npm run test && build --win --ia32 --dir"
   },
-  "jest": {
-    "testMatch": [
-      "**/tests/spectron/turnONPersistentToast.spectron.js"
-    ],
+  "jest": {   
     "collectCoverage": true,
     "transformIgnorePatterns": []
   },
@@ -91,7 +88,7 @@
   "devDependencies": {
     "bluebird": "3.5.1",
     "browserify": "16.2.2",
-    "chromedriver": "^2.40.0",
+    "chromedriver": "2.40.0",
     "cross-env": "5.2.0",
     "electron": "2.0.4",
     "electron-builder": "20.16.4",
