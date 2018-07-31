@@ -1102,6 +1102,27 @@ function handleKeyPress(keyCode) {
     }
 }
 
+/**
+ * Finds all the child window and closes it
+ */
+function cleanUpChildWindows() {
+    const browserWindows = BrowserWindow.getAllWindows();
+    notify.resetAnimationQueue();
+    if (browserWindows && browserWindows.length) {
+        browserWindows.forEach(browserWindow => {
+            // Closes only child windows
+            if (browserWindow && !browserWindow.isDestroyed() && browserWindow.winName !== 'main') {
+                // clean up notification windows
+                if (browserWindow.winName === 'notification-window') {
+                    notify.closeAll();
+                } else {
+                    browserWindow.close();
+                }
+            }
+        });
+    }
+}
+
 
 module.exports = {
     createMainWindow: createMainWindow,
@@ -1115,5 +1136,6 @@ module.exports = {
     verifyDisplays: verifyDisplays,
     getMenu: getMenu,
     setIsAutoReload: setIsAutoReload,
-    handleKeyPress: handleKeyPress
+    handleKeyPress: handleKeyPress,
+    cleanUpChildWindows: cleanUpChildWindows,
 };
