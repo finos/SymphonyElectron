@@ -498,7 +498,7 @@ function createAPI() {
     function sanitize() {
         local.ipcRenderer.send(apiName, {
             cmd: apiCmds.sanitize,
-            windowName: window.name
+            windowName: window.name || 'main'
         });
     }
 
