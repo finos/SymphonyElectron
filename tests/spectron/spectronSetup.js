@@ -27,7 +27,6 @@ class App {
             App.copyLibraries(constants.SEARCH_LIBRARY_PATH_WIN);
         }
 
-
         this.app = new Application(this.options);
     }
     
