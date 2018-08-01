@@ -1,13 +1,11 @@
 const robot = require('robotjs');
-
 const constants = require('./spectronConstants.js');
-const WebActions = require ('./spectronWebActions.js');
-
+const WebActions = require('./spectronWebActions.js')
 
 class WindowsActions {
     constructor(app) {
         this.app = app;
-
+        this.webAction = new WebActions(app);
     }
 
     async getCurrentSize() {
@@ -49,9 +47,20 @@ class WindowsActions {
         })
     }
 
-    async sleep(ms){
-        return new Promise(resolve=>{
-            setTimeout(resolve,ms)
+    async showWindow() {
+        await this.app.browserWindow.show();
+    }
+
+    async clickOutsideWindow() {
+        await this.setPosition(0, 0);
+        var currentSize = await this.getCurrentSize();
+        await robot.moveMouse(currentSize[0] + 20, currentSize[1] + 20);
+        await robot.mouseClick();
+    }
+
+    async verifyWindowsOnTop() {
+        await this.app.browserWindow.isAlwaysOnTop().then(function (isAlwaysOnTop) {
+            expect(isAlwaysOnTop).toBeTruthy();
         })
     }    
 
@@ -145,8 +154,8 @@ class WindowsActions {
         var arrStep = [];
         for (var i = 0; i < arrMenu.length; i++) {
             var item = await this.menuSearch(constants.MENU.root, arrMenu[i]);
-            await  arrStep.push(item);
-        }       
+            await arrStep.push(item);
+        }
         await this.actionForMenus(arrStep);
         return arrStep;
     }
@@ -160,10 +169,9 @@ class WindowsActions {
             await robot.moveMouse(x, y);
             await robot.mouseClick();
             await this.webAction.openApplicationMenuByClick();
-            await robot.setKeyboardDelay(1000);
+            await robot.setKeyboardDelay(200);
             await robot.keyTap('enter');
             for (var i = 0; i < arrMenu.length; i++) {
-                
                 for (var s = 0; s < arrMenu[i].step; s++) {
                     await robot.keyTap('down');
                 }
@@ -174,8 +182,7 @@ class WindowsActions {
             }
             await robot.keyTap('enter');
         });
-    }  
-
+    }
 }
 
 module.exports = WindowsActions;

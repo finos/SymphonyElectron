@@ -16,10 +16,21 @@ class WebActions {
         })
     }
 
-    async minimizeWindowByClick() {       
-        await this.app.client.click(ui.MINIMIZED_BUTTON);
+    async clickMinimizeButton(){
+        await this.app.client.waitForVisible(ui.MINIMIZE_BTN, 10000).click(ui.MINIMIZE_BTN);
     }
 
+    async minimizeWindows() {
+        await this.clickMinimizeButton();
+        await this.app.browserWindow.isMinimized().then(function (isMinimized) {
+            expect(isMinimized).toBeTruthy();
+        })
+    }
+
+    async openApplicationMenuByClick() {
+        await this.app.client.click(ui.MAIN_MENU_ITEM);
+    }
+    
     async closeWindowByClick() {        
         await this.app.client.click(ui.CLOSE_BUTTON);
     }
@@ -27,7 +38,6 @@ class WebActions {
     async openApplicationMenuByClick() {       
         await this.app.client.click(ui.MAIN_MENU_ITEM);
     }
-
 }
 
 module.exports = WebActions;
