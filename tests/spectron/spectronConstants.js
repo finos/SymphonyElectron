@@ -15,8 +15,14 @@ module.exports = {
                 { name: "Edit", step: 0, items: [{ name: "Undo", step: 0 }, { name: "Redo", step: 1 }, { name: "Cut", step: 2 }, { name: "Copy", step: 3 }, { name: "Paste", step: 4 }, { name: "Paste and Match Style", step: 5 }, { name: "Delete", step: 6 }, { name: "Select All", step: 7 }] },
                 { name: "View", step: 1, items: [{ name: "Reload", step: 0 }, { name: "Actual Size", step: 1 }, { name: "Zoom In", step: 2 }, { name: "Zoom Out", step: 3 }, { name: "Toogle Full Screen", step: 4 }] },
                 { name: "Window", step: 2, items: [{ name: "Minimize", step: 0 }, { name: "Close", step: 1 }, { name: "Auto Launch On Startup", step: 2 }, { name: "Always on Top", step: 3 }, { name: "Minimize on Close", step: 4 }] },
-                { name: "Help", step: 3, items: [{ name: "Symphony Help", step: 0 }, { name: "Learn More", step: 1 }, { name: "Troubleshooting", step: 2 }, { name: "About Symphony", step: 3 }] }
+                { name: "Help", step: 3, items: [{ name: "Symphony Help", step: 0 }, { name: "Learn More", step: 1 }, { name: "Troubleshooting", step: 2, items:[{name: "Show Logs in Explorer", step: 0}] }, { name: "About Symphony", step: 3 }] }
             ]
         }
+<<<<<<< HEAD
     }
+=======
+    },
+
+    LOG_FILENAME_PREFIX: "logs_symphony_"
+>>>>>>> Add test
 };
