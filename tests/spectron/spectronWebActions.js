@@ -2,10 +2,10 @@ const ui = require('./spectronInterfaces.js');
 
 class WebActions {
     constructor(app) {
-            this.app = app;
-    }    
+        this.app = app;
+    }
 
-    async clickMaximizeButton(){
+    async clickMaximizeButton() {
         await this.app.client.waitForVisible(ui.MAXIMIZE_BTN, 10000).click(ui.MAXIMIZE_BTN);
     }
 

@@ -28,8 +28,7 @@ class App {
         }
 
         this.app = new Application(this.options);
-        this.pathApp = '';    
-    }    
+    }
     
     async startApplication(configurations) {
         try {
@@ -38,10 +37,8 @@ class App {
             await this.app.browserWindow.minimize();
             await this.app.browserWindow.restore();
             if (configurations) {
-                if ((typeof configurations.alwaysOnTop !== "undefined") && (configurations.alwaysOnTop === false)) {
-                    await this.app.browserWindow.setAlwaysOnTop(false);
-                } else {
-                    await this.app.browserWindow.setAlwaysOnTop(true);
+                if (typeof configurations.alwaysOnTop !== "undefined") {
+                    await this.app.browserWindow.setAlwaysOnTop(configurations.alwaysOnTop);
                 }
                 if (configurations.testedHost) {
                     await this.app.client.waitUntilWindowLoaded().url(configurations.testedHost);
@@ -54,7 +51,6 @@ class App {
             if ((typeof configurations === "undefined") || (typeof configurations.defaultPosition === "undefined") || (configurations.defaultPosition === true)) {
                 await this.app.browserWindow.center();
             }
-
             return this.app;
         } catch (err) { 
             throw new Error("Unable to start application " + err);

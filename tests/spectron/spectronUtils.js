@@ -1,4 +1,6 @@
 const childProcess = require('child_process');
+const path = require('path');
+const fs = require('fs');
 
 class Utils {
     static async openAppInMaximize(appPath) {
@@ -13,6 +15,14 @@ class Utils {
         return new Promise(resolve => {
             setTimeout(resolve, ms)
         })
+    }
+
+    static getFolderPath(folderName){
+        return path.join(require('os').homedir(), folderName);
+    }
+
+    static getFiles(path){
+        return fs.readdirSync(path);
     }
 }
 

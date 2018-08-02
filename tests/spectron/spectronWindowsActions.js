@@ -1,5 +1,7 @@
 const robot = require('robotjs');
 const constants = require('./spectronConstants.js');
+const Utils = require('./spectronUtils.js');
+const fs = require('fs');
 const WebActions = require('./spectronWebActions.js')
 
 class WindowsActions {
@@ -62,7 +64,78 @@ class WindowsActions {
         await this.app.browserWindow.isAlwaysOnTop().then(function (isAlwaysOnTop) {
             expect(isAlwaysOnTop).toBeTruthy();
         })
-    }    
+    } 
+
+    async menuSearch(element, namevalue) {
+        if (element.name == namevalue) {
+            return await element;
+        }
+        else if (element.items !== undefined) {
+            var result;
+            for (var i = 0; result == null && i < element.items.length; i++) {
+                result = await this.menuSearch(element.items[i], namevalue);
+                result;
+            }
+            return await result;
+        }
+        return await null;
+    }
+
+    async openMenu(arrMenu) {
+        var arrStep = [];
+        for (var i = 0; i < arrMenu.length; i++) {
+            var item = await this.menuSearch(constants.MENU.root, arrMenu[i]);
+            await arrStep.push(item);
+        }
+        await this.actionForMenus(arrStep);
+        return arrStep;
+    }
+
+    async actionForMenus(arrMenu) {
+        await this.app.browserWindow.getBounds().then(async (bounds) => {
+            await robot.setMouseDelay(100);
+            let x = bounds.x + 95;
+            let y = bounds.y + 35;
+            await robot.moveMouseSmooth(x, y);
+            await robot.moveMouse(x, y);
+            await robot.mouseClick();
+            await this.webAction.openApplicationMenuByClick();
+            await robot.setKeyboardDelay(200);
+            await robot.keyTap('enter');
+            for (var i = 0; i < arrMenu.length; i++) {
+                for (var s = 0; s < arrMenu[i].step; s++) {
+                    await robot.keyTap('down');
+                }
+                if (arrMenu.length > 1 && i != arrMenu.length - 1) {
+                    //handle right keygen
+                    await robot.keyTap('right');
+                }
+            }
+            await robot.keyTap('enter');
+        });
+    }
+
+    async verifyLogExported() {
+        let expected = false;
+        let path = await Utils.getFolderPath('Downloads');
+        var listFiles = Utils.getFiles(path);
+        listFiles.forEach(function (fileName) {
+            if (fileName.indexOf(constants.LOG_FILENAME_PREFIX) > -1) {
+                expected = true;
+            }
+        })
+        await expect(expected).toBeTruthy();
+    }
+
+    async deleteAllLogFiles() {
+        let path = await Utils.getFolderPath('Downloads');
+        var listFiles = Utils.getFiles(path);
+        await listFiles.forEach(function (fileName) {
+            if (fileName.indexOf(constants.LOG_FILENAME_PREFIX) > -1) {
+                fs.unlinkSync(path.concat("\\", fileName));
+            }
+        })
+    }
 
     async verifyMinimizeWindows() {
         await this.app.browserWindow.isMinimized().then(async function (minimized) {
