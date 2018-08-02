@@ -18,11 +18,7 @@ module.exports = {
                 { name: "Help", step: 3, items: [{ name: "Symphony Help", step: 0 }, { name: "Learn More", step: 1 }, { name: "Troubleshooting", step: 2, items:[{name: "Show Logs in Explorer", step: 0}] }, { name: "About Symphony", step: 3 }] }
             ]
         }
-<<<<<<< HEAD
-    }
-=======
     },
 
     LOG_FILENAME_PREFIX: "logs_symphony_"
->>>>>>> Add test
 };
