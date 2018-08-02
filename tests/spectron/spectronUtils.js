@@ -1,9 +1,6 @@
 const childProcess = require('child_process');
-<<<<<<< HEAD
-=======
 const path = require('path');
 const fs = require('fs');
->>>>>>> Add test
 
 class Utils {
     static async openAppInMaximize(appPath) {
@@ -19,8 +16,6 @@ class Utils {
             setTimeout(resolve, ms)
         })
     }
-<<<<<<< HEAD
-=======
 
     static getFolderPath(folderName){
         return path.join(require('os').homedir(), folderName);
@@ -29,7 +24,6 @@ class Utils {
     static getFiles(path){
         return fs.readdirSync(path);
     }
->>>>>>> Add test
 }
 
 module.exports = Utils;
