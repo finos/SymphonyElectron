@@ -48,7 +48,7 @@ let webActions;
             // Size and position of previos session keep after resizing and dragging
             await windowActions.setPosition(defaultPosition[0], 20);
             await windowActions.setSize(defaultSize[0] - 100, defaultSize[0] - 100);
-            await Utils.sleep(1000); // Sleep 1s after resizing 
+            await Utils.sleep(1); // Sleep 1s after resizing 
             var previousPosition = await windowActions.getCurrentPosition();
             var previousSize = await windowActions.getCurrentSize();
             await app.stop();
@@ -60,7 +60,7 @@ let webActions;
 
             // Size and position of previous session keep after maximizing
             await webActions.maximizeWindows();
-            await Utils.sleep(1000); // Sleep 1s after resizing 
+            await Utils.sleep(1); // Sleep 1s after resizing 
             previousSize = await windowActions.getCurrentSize();
             await app.stop();
             app = await new Application({}).startApplication({defaultSize: false, defaultPosition: false});

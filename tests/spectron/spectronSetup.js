@@ -29,11 +29,11 @@ class App {
 
         this.app = new Application(this.options);
     }
-    
+
     async startApplication(configurations) {
         try {
             this.app = await this.app.start();
-            await this.app.client.waitForVisible(ui.SYM_LOGO, require('./spectronSetup').getTimeOut());
+            await this.app.client.waitForVisible(ui.SYM_LOGO, constants.TIMEOUT_PAGE_LOAD);
             await this.app.browserWindow.minimize();
             await this.app.browserWindow.restore();
             if (configurations) {

@@ -7,7 +7,6 @@ module.exports = {
 
     SEARCH_LIBRARY_PATH_MAC: "node_modules/electron/dist/Electron.app/Contents/library",
     SEARCH_LIBRARY_PATH_WIN: "node_modules/electron/dist/library",
-    TESTED_HOST: "https://cip4-qa.symphony.com/",
 
     MENU: {
         "root": {
@@ -20,5 +19,14 @@ module.exports = {
         }
     },
 
-    LOG_FILENAME_PREFIX: "logs_symphony_"
+    LOG_FILENAME_PREFIX: "logs_symphony_",
+    
+    TESTED_HOST: 'https://qa5.symphony.com/',
+    USER_A: {username:"jest01",password:"Symphony!123456"},
+    USER_B: {username:"jest02",password:"Symphony!123456"},
+    USER_C: {username:"jest03",password:"Symphony!123456"},
+    TYPE_ROOM: {private:"PRIVATE",public:"PUBLIC"},
+
+    TIMEOUT_PAGE_LOAD: 120000,
+    TIMEOUT_WAIT_ELEMENT: 10000
 };
