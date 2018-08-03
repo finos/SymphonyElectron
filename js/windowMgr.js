@@ -371,194 +371,209 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     });
 
     // open external links in default browser - a tag with href='_blank' or window.open
-    mainWindow.webContents.on('new-window', handleNewWindow);
+    const enforceInheritance = (topWebContents) => {
+        const handleNewWindow = (webContents) => {
+            webContents.on('new-window', (event, newWinUrl, frameName, disposition, newWinOptions) => {
+                if (!newWinOptions.webPreferences) {
+                    // eslint-disable-next-line no-param-reassign
+                    newWinOptions.webPreferences = {};
+                }
+
+                Object.assign(newWinOptions.webPreferences, topWebContents);
+
+                let newWinParsedUrl = getParsedUrl(newWinUrl);
+                let mainWinParsedUrl = getParsedUrl(url);
+
+                let newWinHost = newWinParsedUrl && newWinParsedUrl.host;
+                let mainWinHost = mainWinParsedUrl && mainWinParsedUrl.host;
+
+                let emptyUrlString = 'about:blank';
+                let dispositionWhitelist = ['new-window', 'foreground-tab'];
+
+                // only allow window.open to succeed is if coming from same hsot,
+                // otherwise open in default browser.
+                if ((newWinHost === mainWinHost || newWinUrl === emptyUrlString) && dispositionWhitelist.includes(disposition)) {
+                    // handle: window.open
+
+                    if (!frameName) {
+                        // abort - no frame name provided.
+                        return;
+                    }
+
+                    log.send(logLevels.INFO, 'creating pop-out window url: ' + newWinParsedUrl);
+
+                    let x = 0;
+                    let y = 0;
+
+                    let width = newWinOptions.width || DEFAULT_WIDTH;
+                    let height = newWinOptions.height || DEFAULT_HEIGHT;
+
+                    // try getting x and y position from query parameters
+                    let query = newWinParsedUrl && querystring.parse(newWinParsedUrl.query);
+                    if (query && query.x && query.y) {
+                        let newX = Number.parseInt(query.x, 10);
+                        let newY = Number.parseInt(query.y, 10);
+
+                        let newWinRect = { x: newX, y: newY, width, height };
+
+                        // only accept if both are successfully parsed.
+                        if (Number.isInteger(newX) && Number.isInteger(newY) &&
+                            isInDisplayBounds(newWinRect)) {
+                            x = newX;
+                            y = newY;
+                        } else {
+                            x = 0;
+                            y = 0;
+                        }
+                    } else {
+                        // create new window at slight offset from main window.
+                        ({ x, y } = getWindowSizeAndPosition(mainWindow));
+                        x += 50;
+                        y += 50;
+                    }
+
+                    /* eslint-disable no-param-reassign */
+                    newWinOptions.x = x;
+                    newWinOptions.y = y;
+                    newWinOptions.width = Math.max(width, DEFAULT_WIDTH);
+                    newWinOptions.height = Math.max(height, DEFAULT_HEIGHT);
+                    newWinOptions.minWidth = MIN_WIDTH;
+                    newWinOptions.minHeight = MIN_HEIGHT;
+                    newWinOptions.alwaysOnTop = alwaysOnTop;
+                    newWinOptions.frame = true;
+
+                    let newWinKey = getGuid();
+
+                    newWinOptions.winKey = newWinKey;
+                    /* eslint-enable no-param-reassign */
+
+                    let childWebContents = newWinOptions.webContents;
+
+                    // Event needed to hide native menu bar
+                    childWebContents.once('did-start-loading', () => {
+                        let browserWin = BrowserWindow.fromWebContents(childWebContents);
+                        if (isWindowsOS && browserWin && !browserWin.isDestroyed()) {
+                            browserWin.setMenuBarVisibility(false);
+                        }
+                    });
+
+                    childWebContents.once('did-finish-load', function () {
+                        let browserWin = BrowserWindow.fromWebContents(childWebContents);
+
+                        if (browserWin) {
+                            log.send(logLevels.INFO, 'loaded pop-out window url: ' + newWinParsedUrl);
+
+                            if (!isMac) {
+                                // Removes the menu bar from the pop-out window
+                                // setMenu is currently only supported on Windows and Linux
+                                browserWin.setMenu(null);
+                            }
+                            browserWin.webContents.send('on-page-load');
+                            // applies styles required for snack bar
+                            browserWin.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/snackBar/style.css'), 'utf8').toString());
+
+                            initCrashReporterMain({ process: 'pop-out window' });
+                            initCrashReporterRenderer(browserWin, { process: 'render | pop-out window' });
+
+                            browserWin.winName = frameName;
+                            browserWin.setAlwaysOnTop(alwaysOnTop);
+
+                            let handleChildWindowCrashEvent = (e) => {
+                                const options = {
+                                    type: 'error',
+                                    title: i18n.getMessageFor('Renderer Process Crashed'),
+                                    message: i18n.getMessageFor('Oops! Looks like we have had a crash. Please reload or close this window.'),
+                                    buttons: ['Reload', 'Close']
+                                };
+
+                                let childBrowserWindow = BrowserWindow.fromWebContents(e.sender);
+                                if (childBrowserWindow && !childBrowserWindow.isDestroyed()) {
+                                    electron.dialog.showMessageBox(childBrowserWindow, options, function (index) {
+                                        if (index === 0) {
+                                            childBrowserWindow.reload();
+                                        } else {
+                                            childBrowserWindow.close();
+                                        }
+                                    });
+                                }
+                            };
+
+                            browserWin.webContents.on('crashed', handleChildWindowCrashEvent);
+
+                            // In case we navigate to an external link from inside a pop-out,
+                            // we open that link in an external browser rather than creating
+                            // a new window
+                            if (browserWin.webContents) {
+                                handleNewWindow(browserWin.webContents);
+                            }
+
+                            addWindowKey(newWinKey, browserWin);
+
+                            // Method that sends bound changes as soon
+                            // as a new window is created
+                            // issue https://perzoinc.atlassian.net/browse/ELECTRON-172
+                            sendChildWinBoundsChange(browserWin);
+
+                            // throttle full screen
+                            let throttledFullScreen = throttle(1000,
+                                handleChildWindowFullScreen.bind(null, browserWin));
+
+                            // throttle leave full screen
+                            let throttledLeaveFullScreen = throttle(1000,
+                                handleChildWindowLeaveFullScreen.bind(null, browserWin));
+
+                            // throttle changes so we don't flood client.
+                            let throttledBoundsChange = throttle(1000,
+                                sendChildWinBoundsChange.bind(null, browserWin));
+
+                            browserWin.on('move', throttledBoundsChange);
+                            browserWin.on('resize', throttledBoundsChange);
+                            browserWin.on('enter-full-screen', throttledFullScreen);
+                            browserWin.on('leave-full-screen', throttledLeaveFullScreen);
+
+                            let handleChildWindowClosed = () => {
+                                removeWindowKey(newWinKey);
+                                browserWin.removeListener('move', throttledBoundsChange);
+                                browserWin.removeListener('resize', throttledBoundsChange);
+                                browserWin.removeListener('enter-full-screen', throttledFullScreen);
+                                browserWin.removeListener('leave-full-screen', throttledLeaveFullScreen);
+                            };
+
+                            browserWin.on('close', () => {
+                                browserWin.webContents.removeListener('crashed', handleChildWindowCrashEvent);
+                            });
+
+                            browserWin.once('closed', () => {
+                                handleChildWindowClosed();
+                            });
+
+                            handlePermissionRequests(browserWin.webContents);
+
+                            if (!isDevEnv) {
+                                browserWin.webContents.session.setCertificateVerifyProc(handleCertificateTransparencyChecks);
+                            }
+
+                            browserWin.webContents.on('devtools-opened', () => {
+                                handleDevTools(browserWin);
+                            });
+                        }
+                    });
+                } else {
+                    event.preventDefault();
+                    openUrlInDefaultBrowser(newWinUrl);
+                }
+            });
+        };
+        handleNewWindow(topWebContents);
+    };
 
     if (!isDevEnv) {
         mainWindow.webContents.session.setCertificateVerifyProc(handleCertificateTransparencyChecks);
     }
 
-    function handleNewWindow(event, newWinUrl, frameName, disposition, newWinOptions) {
-
-        let newWinParsedUrl = getParsedUrl(newWinUrl);
-        let mainWinParsedUrl = getParsedUrl(url);
-
-        let newWinHost = newWinParsedUrl && newWinParsedUrl.host;
-        let mainWinHost = mainWinParsedUrl && mainWinParsedUrl.host;
-
-        let emptyUrlString = 'about:blank';
-        let dispositionWhitelist = ['new-window', 'foreground-tab'];
-
-        // only allow window.open to succeed is if coming from same hsot,
-        // otherwise open in default browser.
-        if ((newWinHost === mainWinHost || newWinUrl === emptyUrlString) && dispositionWhitelist.includes(disposition)) {
-            // handle: window.open
-
-            if (!frameName) {
-                // abort - no frame name provided.
-                return;
-            }
-
-            log.send(logLevels.INFO, 'creating pop-out window url: ' + newWinParsedUrl);
-
-            let x = 0;
-            let y = 0;
-
-            let width = newWinOptions.width || DEFAULT_WIDTH;
-            let height = newWinOptions.height || DEFAULT_HEIGHT;
-
-            // try getting x and y position from query parameters
-            let query = newWinParsedUrl && querystring.parse(newWinParsedUrl.query);
-            if (query && query.x && query.y) {
-                let newX = Number.parseInt(query.x, 10);
-                let newY = Number.parseInt(query.y, 10);
-
-                let newWinRect = { x: newX, y: newY, width, height };
-
-                // only accept if both are successfully parsed.
-                if (Number.isInteger(newX) && Number.isInteger(newY) &&
-                    isInDisplayBounds(newWinRect)) {
-                    x = newX;
-                    y = newY;
-                } else {
-                    x = 0;
-                    y = 0;
-                }
-            } else {
-                // create new window at slight offset from main window.
-                ({ x, y } = getWindowSizeAndPosition(mainWindow));
-                x += 50;
-                y += 50;
-            }
-
-            /* eslint-disable no-param-reassign */
-            newWinOptions.x = x;
-            newWinOptions.y = y;
-            newWinOptions.width = Math.max(width, DEFAULT_WIDTH);
-            newWinOptions.height = Math.max(height, DEFAULT_HEIGHT);
-            newWinOptions.minWidth = MIN_WIDTH;
-            newWinOptions.minHeight = MIN_HEIGHT;
-            newWinOptions.alwaysOnTop = alwaysOnTop;
-            newWinOptions.frame = true;
-
-            let newWinKey = getGuid();
-
-            newWinOptions.winKey = newWinKey;
-            /* eslint-enable no-param-reassign */
-
-            let webContents = newWinOptions.webContents;
-
-            // Event needed to hide native menu bar
-            webContents.once('did-start-loading', () => {
-                let browserWin = BrowserWindow.fromWebContents(webContents);
-                if (isWindowsOS && browserWin && !browserWin.isDestroyed()) {
-                    browserWin.setMenuBarVisibility(false);
-                }
-            });
-
-            webContents.once('did-finish-load', function () {
-                let browserWin = BrowserWindow.fromWebContents(webContents);
-
-                if (browserWin) {
-                    log.send(logLevels.INFO, 'loaded pop-out window url: ' + newWinParsedUrl);
-
-                    if (!isMac) {
-                        // Removes the menu bar from the pop-out window
-                        // setMenu is currently only supported on Windows and Linux
-                        browserWin.setMenu(null);
-                    }
-                    browserWin.webContents.send('on-page-load');
-                    // applies styles required for snack bar
-                    browserWin.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/snackBar/style.css'), 'utf8').toString());
-
-                    initCrashReporterMain({ process: 'pop-out window' });
-                    initCrashReporterRenderer(browserWin, { process: 'render | pop-out window' });
-
-                    browserWin.winName = frameName;
-                    browserWin.setAlwaysOnTop(alwaysOnTop);
-
-                    let handleChildWindowCrashEvent = (e) => {
-                        const options = {
-                            type: 'error',
-                            title: i18n.getMessageFor('Renderer Process Crashed'),
-                            message: i18n.getMessageFor('Oops! Looks like we have had a crash. Please reload or close this window.'),
-                            buttons: ['Reload', 'Close']
-                        };
-
-                        let childBrowserWindow = BrowserWindow.fromWebContents(e.sender);
-                        if (childBrowserWindow && !childBrowserWindow.isDestroyed()) {
-                            electron.dialog.showMessageBox(childBrowserWindow, options, function (index) {
-                                if (index === 0) {
-                                    childBrowserWindow.reload();
-                                } else {
-                                    childBrowserWindow.close();
-                                }
-                            });
-                        }
-                    };
-
-                    browserWin.webContents.on('crashed', handleChildWindowCrashEvent);
-
-                    // In case we navigate to an external link from inside a pop-out,
-                    // we open that link in an external browser rather than creating
-                    // a new window
-                    browserWin.webContents.on('new-window', handleNewWindow.bind(this));
-
-                    addWindowKey(newWinKey, browserWin);
-
-                    // Method that sends bound changes as soon
-                    // as a new window is created
-                    // issue https://perzoinc.atlassian.net/browse/ELECTRON-172
-                    sendChildWinBoundsChange(browserWin);
-
-                    // throttle full screen
-                    let throttledFullScreen = throttle(1000,
-                        handleChildWindowFullScreen.bind(null, browserWin));
-
-                    // throttle leave full screen
-                    let throttledLeaveFullScreen = throttle(1000,
-                        handleChildWindowLeaveFullScreen.bind(null, browserWin));
-
-                    // throttle changes so we don't flood client.
-                    let throttledBoundsChange = throttle(1000,
-                        sendChildWinBoundsChange.bind(null, browserWin));
-
-                    browserWin.on('move', throttledBoundsChange);
-                    browserWin.on('resize', throttledBoundsChange);
-                    browserWin.on('enter-full-screen', throttledFullScreen);
-                    browserWin.on('leave-full-screen', throttledLeaveFullScreen);
-
-                    let handleChildWindowClosed = () => {
-                        removeWindowKey(newWinKey);
-                        browserWin.removeListener('move', throttledBoundsChange);
-                        browserWin.removeListener('resize', throttledBoundsChange);
-                        browserWin.removeListener('enter-full-screen', throttledFullScreen);
-                        browserWin.removeListener('leave-full-screen', throttledLeaveFullScreen);
-                    };
-
-                    browserWin.on('close', () => {
-                        browserWin.webContents.removeListener('new-window', handleNewWindow);
-                        browserWin.webContents.removeListener('crashed', handleChildWindowCrashEvent);
-                    });
-
-                    browserWin.once('closed', () => {
-                        handleChildWindowClosed();
-                    });
-
-                    handlePermissionRequests(browserWin.webContents);
-
-                    if (!isDevEnv) {
-                        browserWin.webContents.session.setCertificateVerifyProc(handleCertificateTransparencyChecks);
-                    }
-
-                    browserWin.webContents.on('devtools-opened', () => {
-                        handleDevTools(browserWin);
-                    });
-                }
-            });
-        } else {
-            event.preventDefault();
-            openUrlInDefaultBrowser(newWinUrl);
-        }
+    // enforce main window's webPreferences to child windows
+    if (mainWindow.webContents) {
+        enforceInheritance(mainWindow.webContents);
     }
 
     // whenever the main window is navigated for ex: window.location.href or url redirect
