@@ -1167,7 +1167,7 @@ function cleanUpChildWindows() {
 function popupMenu() {
     const focusedWindow = BrowserWindow.getFocusedWindow();
     if (mainWindow && !mainWindow.isDestroyed() && isMainWindow(focusedWindow)) {
-        const popupOpts = { browserWin: mainWindow, x: 10, y: -40 };
+        const popupOpts = { browserWin: mainWindow, x: 10, y: -20 };
         getMenu().popup(popupOpts);
     }
 }
