@@ -285,33 +285,5 @@
             ssf.setLocale('ja-JP');
             document.location.reload();
         });
-
-        /**
-         * Native Encryption
-         */
-
-        var GCM_VECTOR_16 = {
-            K: '/v/pkoZlcxxtao+UZzCDCP7/6ZKGZXMcbWqPlGcwgwg=',
-            P: '2TEyJfiEBuWlWQnFr/UmmoanqVMVNPfaLkwwPYoxinIcPAyVlWgJUy/PDiRJprUlsWrt9aoN5le6Y3s5',
-            IV: 'yv66vvrO263eyviI',
-            C: 'Ui3B8JlWfQf0fzejKoRCfWQ6jNy/5cDJdZiivSVV0aqMsI5IWQ27PaewixBWgog4xfYeY5O6egq8yfZi',
-            A: '/u36zt6tvu/+7frO3q2+76ut2tI=',
-            T: 'dvxuzg9OF2jN34hTuy1VGw=='
-        };
-
-        var realCt = 'Ui3B8JlWfQf0fzejKoRCfWQ6jNy/5cDJdZiivSVV0aqMsI5IWQ27PaewixBWgog4xfYeY5O6egq8yfZidvxuzg9OF2jN34hTuy1VGw==';
-
-        var encrypt = document.getElementById('encrypt');
-        var encryptedResult = document.getElementById('encrypted-result');
-        encrypt.addEventListener('click', function () {
-            encryptedResult.innerText = ssf.CryptoLib.AESGCMEncrypt(GCM_VECTOR_16.IV, GCM_VECTOR_16.A, GCM_VECTOR_16.K, GCM_VECTOR_16.P);
-        });
-
-        var decrypt = document.getElementById('decrypt');
-        var decryptedResult = document.getElementById('decrypted-result');
-        decrypt.addEventListener('click', function () {
-            decryptedResult.innerText = ssf.CryptoLib.AESGCMDecrypt(GCM_VECTOR_16.IV, GCM_VECTOR_16.A, GCM_VECTOR_16.K, realCt);
-        });
-
     </script>
 </html>

@@ -50,8 +50,6 @@ const library = new ffi.Library((cryptoLibPath), {
 });
 
 const AESGCMEncrypt = function(Base64IV, Base64AAD, Base64Key, Base64In) {
-
-    const TagLen = TAG_LENGTH;
     let base64In = Base64In;
 
     if (!base64In) {
@@ -66,22 +64,17 @@ const AESGCMEncrypt = function(Base64IV, Base64AAD, Base64Key, Base64In) {
     const OutPtr = Buffer.alloc(In.length);
     const Tag = Buffer.alloc(TAG_LENGTH);
 
-    const ret = library.AESEncryptGCM(In, In.length, AAD, AAD.length, Key, IV, IV.length, OutPtr, Tag, TagLen);
+    const resultCode = library.AESEncryptGCM(In, In.length, AAD, AAD.length, Key, IV, IV.length, OutPtr, Tag, TAG_LENGTH);
 
-    if (ret < 0) {
-        log.send(logLevels.ERROR, `AESEncryptGCM, Failed to encrypt with exit code ${ret}`);
+    if (resultCode < 0) {
+        log.send(logLevels.ERROR, `AESEncryptGCM, Failed to encrypt with exit code ${resultCode}`);
     }
-
-    log.send(logLevels.INFO, `Output from AESEncryptGCM ${ret}`);
-
+    log.send(logLevels.INFO, `Output from AESEncryptGCM ${resultCode}`);
     const bufferArray = [OutPtr, Tag];
-
     return Buffer.concat(bufferArray).toString('base64')
 };
 
 const AESGCMDecrypt = function(Base64IV, Base64AAD, Base64Key, Base64In) {
-
-    const TagLen = TAG_LENGTH;
     let base64In = Base64In;
 
     if (!base64In) {
@@ -93,18 +86,16 @@ const AESGCMDecrypt = function(Base64IV, Base64AAD, Base64Key, Base64In) {
     const Key = Buffer.from(Base64Key, 'base64');
     const In = Buffer.from(base64In, 'base64');
 
-    const OutPtr = Buffer.alloc(In.length - TagLen);
-    const CipherTextLen = In.length - TagLen;
+    const OutPtr = Buffer.alloc(In.length - TAG_LENGTH);
+    const CipherTextLen = In.length - TAG_LENGTH;
     const Tag = Buffer.alloc(TAG_LENGTH);
 
-    const ret = library.AESDecryptGCM(In, CipherTextLen, AAD, AAD.length, Tag, TagLen, Key, IV, IV.length, OutPtr);
+    const resultCode = library.AESDecryptGCM(In, CipherTextLen, AAD, AAD.length, Tag, TAG_LENGTH, Key, IV, IV.length, OutPtr);
 
-    if (ret < 0) {
-        log.send(logLevels.ERROR, `AESDecryptGCM, Failed to decrypt with exit code ${ret}`);
+    if (resultCode < 0) {
+        log.send(logLevels.ERROR, `AESDecryptGCM, Failed to decrypt with exit code ${resultCode}`);
     }
-
-    log.send(logLevels.INFO, `Output from AESDecryptGCM ${ret}`);
-
+    log.send(logLevels.INFO, `Output from AESDecryptGCM ${resultCode}`);
     return OutPtr.toString('base64')
 };
 
