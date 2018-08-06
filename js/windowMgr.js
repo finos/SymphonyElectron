@@ -44,9 +44,11 @@ let display;
 let sandboxed = false;
 let isAutoReload = false;
 let devToolsEnabled = true;
+let isCustomTitleBar = true;
 
 const KeyCodes = {
     Esc: 27,
+    Alt: 18,
 };
 
 // Application menu
@@ -110,6 +112,7 @@ function createMainWindow(initialUrl) {
         .then(configData => {
             lang = configData && configData.locale || app.getLocale();
             devToolsEnabled = configData && configData.devToolsEnabled;
+            isCustomTitleBar = configData && configData.isCustomTitleBar;
             doCreateMainWindow(initialUrl, configData.mainWinPos, configData.isCustomTitleBar);
         })
         .catch(() => {
@@ -240,7 +243,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
     // Event needed to hide native menu bar on Windows 10 as we use custom menu bar
     mainWindow.webContents.once('did-start-loading', () => {
-        if (isWindows10() && mainWindow && !mainWindow.isDestroyed()) {
+        if (isWindows10() && isCustomTitleBarEnabled && mainWindow && !mainWindow.isDestroyed()) {
             mainWindow.setMenuBarVisibility(false);
         }
     });
@@ -256,7 +259,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         mainWindow.webContents.send('on-page-load');
         // initializes and applies styles required for snack bar
         mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/snackBar/style.css'), 'utf8').toString());
-        if (isCustomTitleBarEnabled || isWindows10()) {
+        if (isCustomTitleBarEnabled && isWindows10()) {
             mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/windowsTitleBar/style.css'), 'utf8').toString());
             // This is required to initiate Windows title bar only after insertCSS
             const titleBarStyle = getTitleBarStyle();
@@ -320,7 +323,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     addWindowKey(key, mainWindow);
     mainWindow.loadURL(url);
 
-    rebuildMenu(lang);
+    setLocale(mainWindow, lang);
 
     mainWindow.on('close', function (e) {
         if (willQuitApp) {
@@ -970,19 +973,30 @@ eventEmitter.on('notificationSettings', (notificationSettings) => {
     display = notificationSettings.display;
 });
 
-eventEmitter.on('language-changed', (opts) => {
+/**
+ * Sets the locale settings
+ *
+ * @param browserWindow {Electron.BrowserWindow}
+ * @param opts {Object}
+ * @param opts.language {String} - locale string ex: en-US
+ */
+function setLocale(browserWindow, opts) {
     const language = opts && opts.language || app.getLocale();
     log.send(logLevels.INFO, `language changed to ${language}. Updating menu and user config`);
-    rebuildMenu(language);
-    updateConfigField('locale', language);
-});
 
-function rebuildMenu(language) {
     setLanguage(language);
-    menu = electron.Menu.buildFromTemplate(getTemplate(app));
-    electron.Menu.setApplicationMenu(menu);
+    if (browserWindow && isMainWindow(browserWindow)) {
+        menu = electron.Menu.buildFromTemplate(getTemplate(app));
+        electron.Menu.setApplicationMenu(menu);
+    }
+
+    updateConfigField('locale', language);
 }
 
+/**
+ * Sets language for i18n
+ * @param language {String} - locale string ex: en-US
+ */
 function setLanguage(language) {
     i18n.setLanguage(language);
 }
@@ -1112,6 +1126,11 @@ function handleKeyPress(keyCode) {
             }
             break;
         }
+        case KeyCodes.Alt:
+            if (isWindowsOS && !isCustomTitleBar) {
+                popupMenu();
+            }
+            break;
         default:
             break;
     }
@@ -1138,6 +1157,18 @@ function cleanUpChildWindows() {
     }
 }
 
+/**
+ * Method that popup the menu on top of the native title bar
+ * whenever Alt key is pressed
+ */
+function popupMenu() {
+    const focusedWindow = BrowserWindow.getFocusedWindow();
+    if (mainWindow && !mainWindow.isDestroyed() && isMainWindow(focusedWindow)) {
+        const popupOpts = { browserWin: mainWindow, x: 10, y: -40 };
+        getMenu().popup(popupOpts);
+    }
+}
+
 
 module.exports = {
     createMainWindow: createMainWindow,
@@ -1153,4 +1184,5 @@ module.exports = {
     setIsAutoReload: setIsAutoReload,
     handleKeyPress: handleKeyPress,
     cleanUpChildWindows: cleanUpChildWindows,
+    setLocale: setLocale,
 };

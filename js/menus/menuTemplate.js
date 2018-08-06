@@ -399,7 +399,7 @@ function getTemplate(app) {
                 label: i18n.getMessageFor('Title Bar Style'),
                 submenu: [
                     {
-                        label: i18n.getMessageFor('Native With Custom'),
+                        label: i18n.getMessageFor('Native'),
                         type: 'checkbox',
                         checked: titleBarStyle === titleBarStyles.NATIVE_WITH_CUSTOM,
                         click: function (item) {
