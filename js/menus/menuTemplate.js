@@ -3,6 +3,7 @@
 const fs = require('fs');
 const AutoLaunch = require('auto-launch');
 const electron = require('electron');
+const app = electron.app;
 
 const { updateConfigField, getMultipleConfigField } = require('../config.js');
 const { isMac, isWindowsOS, isWindows10 } = require('../utils/misc.js');
@@ -401,11 +402,12 @@ function getTemplate(app) {
                     {
                         label: i18n.getMessageFor('Native'),
                         type: 'checkbox',
-                        checked: titleBarStyle === titleBarStyles.NATIVE_WITH_CUSTOM,
+                        checked: titleBarStyle === titleBarStyles.NATIVE,
                         click: function (item) {
                             item.menu.items[1].checked = false;
-                            titleBarStyle = titleBarStyles.NATIVE_WITH_CUSTOM;
+                            titleBarStyle = titleBarStyles.NATIVE;
                             updateConfigField('isCustomTitleBar', false);
+                            titleBarActions();
                         }
                     },
                     {
@@ -416,6 +418,7 @@ function getTemplate(app) {
                             item.menu.items[0].checked = false;
                             titleBarStyle = titleBarStyles.CUSTOM;
                             updateConfigField('isCustomTitleBar', true);
+                            titleBarActions();
                         }
                     }
                 ]
@@ -479,7 +482,7 @@ function setCheckboxValues() {
                                 bringToFront = configData[key];
                                 break;
                             case 'isCustomTitleBar':
-                                titleBarStyle = configData[key] ? titleBarStyles.CUSTOM : titleBarStyles.NATIVE_WITH_CUSTOM;
+                                titleBarStyle = configData[key] ? titleBarStyles.CUSTOM : titleBarStyles.NATIVE;
                                 break;
                             case 'memoryRefresh':
                                 memoryRefresh = configData[key];
@@ -535,6 +538,26 @@ function getMinimizeOnClose() {
 
 function getTitleBarStyle() {
     return titleBarStyle;
+}
+
+/**
+ * Displays an option to the user whether
+ * to relaunch application
+ */
+function titleBarActions() {
+    const options = {
+        type: 'question',
+        title: i18n.getMessageFor('Relaunch Application'),
+        message: i18n.getMessageFor('Updating Title bar style requires Symphony to relaunch'),
+        buttons: ['Relaunch', 'Cancel']
+    };
+
+    electron.dialog.showMessageBox(options, function (index) {
+        if (index === 0) {
+            app.relaunch();
+            app.exit();
+        }
+    });
 }
 
 module.exports = {

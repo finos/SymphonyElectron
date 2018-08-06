@@ -44,7 +44,7 @@ let display;
 let sandboxed = false;
 let isAutoReload = false;
 let devToolsEnabled = true;
-let isCustomTitleBar = true;
+let isCustomTitleBarEnabled = true;
 
 const KeyCodes = {
     Esc: 27,
@@ -112,7 +112,6 @@ function createMainWindow(initialUrl) {
         .then(configData => {
             lang = configData && configData.locale || app.getLocale();
             devToolsEnabled = configData && configData.devToolsEnabled;
-            isCustomTitleBar = configData && configData.isCustomTitleBar;
             doCreateMainWindow(initialUrl, configData.mainWinPos, configData.isCustomTitleBar);
         })
         .catch(() => {
@@ -135,7 +134,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     const config = readConfigFileSync();
 
     // condition whether to enable custom Windows 10 title bar
-    const isCustomTitleBarEnabled = typeof isCustomTitleBar === 'boolean'
+    isCustomTitleBarEnabled = typeof isCustomTitleBar === 'boolean'
         && isCustomTitleBar
         && isWindows10();
     log.send(logLevels.INFO, `we are configuring a custom title bar for windows -> ${isCustomTitleBarEnabled}`);
@@ -243,7 +242,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
     // Event needed to hide native menu bar on Windows 10 as we use custom menu bar
     mainWindow.webContents.once('did-start-loading', () => {
-        if (isWindows10() && isCustomTitleBarEnabled && mainWindow && !mainWindow.isDestroyed()) {
+        if ((isCustomTitleBarEnabled || isWindows10()) && mainWindow && !mainWindow.isDestroyed()) {
             mainWindow.setMenuBarVisibility(false);
         }
     });
@@ -259,7 +258,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         mainWindow.webContents.send('on-page-load');
         // initializes and applies styles required for snack bar
         mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/snackBar/style.css'), 'utf8').toString());
-        if (isCustomTitleBarEnabled && isWindows10()) {
+        if (isCustomTitleBarEnabled) {
             mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/windowsTitleBar/style.css'), 'utf8').toString());
             // This is required to initiate Windows title bar only after insertCSS
             const titleBarStyle = getTitleBarStyle();
@@ -988,6 +987,10 @@ function setLocale(browserWindow, opts) {
     if (browserWindow && isMainWindow(browserWindow)) {
         menu = electron.Menu.buildFromTemplate(getTemplate(app));
         electron.Menu.setApplicationMenu(menu);
+
+        if (isWindows10()) {
+            browserWindow.setMenuBarVisibility(false);
+        }
     }
 
     updateConfigField('locale', language);
@@ -1127,7 +1130,7 @@ function handleKeyPress(keyCode) {
             break;
         }
         case KeyCodes.Alt:
-            if (isWindowsOS && !isCustomTitleBar) {
+            if (isWindows10() && !isCustomTitleBarEnabled) {
                 popupMenu();
             }
             break;
