@@ -3,7 +3,6 @@
 const fs = require('fs');
 const AutoLaunch = require('auto-launch');
 const electron = require('electron');
-const app = electron.app;
 
 const { updateConfigField, getMultipleConfigField } = require('../config.js');
 const { isMac, isWindowsOS, isWindows10 } = require('../utils/misc.js');
@@ -407,7 +406,7 @@ function getTemplate(app) {
                             item.menu.items[1].checked = false;
                             titleBarStyle = titleBarStyles.NATIVE;
                             updateConfigField('isCustomTitleBar', false);
-                            titleBarActions();
+                            titleBarActions(app);
                         }
                     },
                     {
@@ -418,7 +417,7 @@ function getTemplate(app) {
                             item.menu.items[0].checked = false;
                             titleBarStyle = titleBarStyles.CUSTOM;
                             updateConfigField('isCustomTitleBar', true);
-                            titleBarActions();
+                            titleBarActions(app);
                         }
                     }
                 ]
@@ -543,8 +542,10 @@ function getTitleBarStyle() {
 /**
  * Displays an option to the user whether
  * to relaunch application
+ *
+ * @param app
  */
-function titleBarActions() {
+function titleBarActions(app) {
     const options = {
         type: 'question',
         title: i18n.getMessageFor('Relaunch Application'),
