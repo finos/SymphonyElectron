@@ -15,7 +15,7 @@ const winLibraryPath = isDevEnv ? path.join(__dirname, '..', 'library') : path.j
 const macLibraryPath = isDevEnv ? path.join(__dirname, '..', 'library') : path.join(execPath, '..', 'library');
 
 const cryptoLibPath = isMac ?
-    path.join(macLibraryPath, 'libsymphonysearch.dylib') :
+    path.join(macLibraryPath, 'cryptoLib.dylib') :
     (arch ? path.join(winLibraryPath, 'libsymphonysearch-x86.dll') : path.join(winLibraryPath, 'libsymphonysearch-x64.dll'));
 
 const library = new ffi.Library((cryptoLibPath), {
