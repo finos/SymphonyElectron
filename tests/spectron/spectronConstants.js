@@ -21,10 +21,10 @@ module.exports = {
 
     LOG_FILENAME_PREFIX: "logs_symphony_",
     
-    TESTED_HOST: 'https://qa5.symphony.com/',
-    USER_A: {username:"jest01",password:"Symphony!123456"},
-    USER_B: {username:"jest02",password:"Symphony!123456"},
-    USER_C: {username:"jest03",password:"Symphony!123456"},
+    // TESTED_HOST: 'https://qa5.symphony.com/',
+    // USER_A: {username:"jest01",password:"Symphony!123456"},
+    // USER_B: {username:"jest02",password:"Symphony!123456"},
+    // USER_C: {username:"jest03",password:"Symphony!123456"},
     TYPE_ROOM: {private:"PRIVATE",public:"PUBLIC"},
 
     TIMEOUT_PAGE_LOAD: 120000,

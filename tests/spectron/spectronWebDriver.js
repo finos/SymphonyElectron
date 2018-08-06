@@ -1,8 +1,6 @@
 const { Builder, By, Key, until } = require('selenium-webdriver')
 require('selenium-webdriver/chrome');
-require('selenium-webdriver/firefox');
 require('chromedriver');
-require('geckodriver');
 var assert = require('assert');
 const ui = require('./spectronInterfaces.js');
 const specconst = require('./spectronConstants.js');
@@ -81,7 +79,7 @@ class WebDriver {
 
     async  login(user) {
         await this.inputText(ui.SIGN_IN_EMAIL, user.username);
-        await this.inputText(ui.SIGN_IN_PASSWORD, user.password);
+        await this.inputText(ui.SIGN_IN_PASSWORD, process.env.PASSWORD);
         var singin = await this.getElementByXPath(ui.SIGN_IN_BUTTON);
         await singin.click();       
         await this.waitElelmentIsVisible(ui.SETTTING_BUTTON,specconst.TIMEOUT_PAGE_LOAD);
@@ -174,7 +172,7 @@ class WebDriver {
         var size = await await this.driver
             .manage()
             .window().getSize();
-        await this.driver.get(specconst.TESTED_HOST);
+        await this.driver.get(process.env.TESTED_HOST);
     }
     async  focusCurrentBrowser() {
         this.driver.switchTo().window(this.driver.getAllWindowHandles()[0]);

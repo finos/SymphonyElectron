@@ -58,7 +58,7 @@ class WebActions {
 
     async login(user) {
         await this.inputText(ui.SIGN_IN_EMAIL, user.username);
-        await this.inputText(ui.SIGN_IN_PASSWORD, user.password);
+        await this.inputText(ui.SIGN_IN_PASSWORD, process.env.PASSWORD);
         await this.clickAndWaitElementVisible(ui.SIGN_IN_BUTTON, ui.PLUS_BTN, constants.TIMEOUT_PAGE_LOAD);
     }
     async scrollAndClick(selector, findElement) {

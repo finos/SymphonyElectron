@@ -22,6 +22,9 @@
     "unpacked-win-x86": "npm run prebuild && npm run test && build --win --ia32 --dir"
   },
   "jest": {
+    "testMatch": [
+      "**/toastNotification.spectron.js"
+    ],
     "collectCoverage": true,
     "transformIgnorePatterns": []
   },
@@ -88,6 +91,7 @@
   "devDependencies": {
     "bluebird": "3.5.1",
     "browserify": "16.2.2",
+    "chromedriver": "^2.41.0",
     "cross-env": "5.2.0",
     "electron": "2.0.4",
     "electron-builder": "20.16.4",
@@ -105,7 +109,9 @@
     "jest-html-reporter": "2.4.1",
     "ncp": "2.0.0",
     "robotjs": "0.5.1",
-    "spectron": "3.8.0"
+    "selenium-webdriver": "3.6.0",
+    "spectron": "3.8.0",
+    "wdio-selenium-standalone-service": "0.0.10"
   },
   "dependencies": {
     "@paulcbetts/system-idle-time": "1.0.4",
