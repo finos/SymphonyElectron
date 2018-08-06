@@ -1,5 +1,7 @@
 {
-  "testMatch": ["**/*.spectron.js"],
+  "testMatch": [
+    "**/toastNotification.spectron.js"
+  ],
   "verbose": true,
   "testResultsProcessor": "./node_modules/jest-html-reporter"
 }
