@@ -8,5 +8,5 @@ let keyMirror = require('keymirror');
  */
 module.exports = keyMirror({
     CUSTOM: null,
-    NATIVE_WITH_CUSTOM: null,
+    NATIVE: null,
 });

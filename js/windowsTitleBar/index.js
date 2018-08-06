@@ -54,7 +54,7 @@ class TitleBar {
                 TitleBar.setTitleBarTitle();
                 TitleBar.addWindowBorders();
                 break;
-            case titleBarStyles.NATIVE_WITH_CUSTOM:
+            case titleBarStyles.NATIVE:
                 TitleBar.hideTitleContainer();
                 break;
             default:
@@ -104,7 +104,7 @@ class TitleBar {
 
     /**
      * Method that hides the title container
-     * if the title bar style is NATIVE_WITH_CUSTOM
+     * if the title bar style is NATIVE
      */
     static hideTitleContainer() {
         const titleContainer = document.getElementById('title-container');
