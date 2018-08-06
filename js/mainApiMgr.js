@@ -163,7 +163,8 @@ electron.ipcMain.on(apiName, (event, arg) => {
             break;
         case apiCmds.setLocale:
             if (typeof arg.locale === 'string') {
-                eventEmitter.emit('language-changed', { language: arg.locale });
+                let browserWin = electron.BrowserWindow.fromWebContents(event.sender);
+                windowMgr.setLocale(browserWin, { language: arg.locale });
             }
             break;
         case apiCmds.keyPress:

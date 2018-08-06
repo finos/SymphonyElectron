@@ -26,10 +26,12 @@ const memoryMonitorInterval = 1000 * 60 * 60;
 const SnackBar = require('../snackBar').SnackBar;
 const KeyCodes = {
     Esc: 27,
+    Alt: 18,
 };
 
 let Search;
 let SearchUtils;
+let isAltKey = false;
 
 try {
     Search = remote.require('swift-search').Search;
@@ -470,7 +472,6 @@ function createAPI() {
      * the window enters full screen
      */
     local.ipcRenderer.on('window-enter-full-screen', (event, arg) => {
-        window.addEventListener('keydown', throttledKeyDown, true);
         if (snackBar && typeof arg === 'object' && arg.snackBar) {
             setTimeout(() => snackBar.showSnackBar(arg.snackBar), 500);
         }
@@ -481,7 +482,6 @@ function createAPI() {
      * the window leave full screen
      */
     local.ipcRenderer.on('window-leave-full-screen', () => {
-        window.removeEventListener('keydown', throttledKeyDown, true);
         if (snackBar) {
             snackBar.removeSnackBar();
         }
@@ -502,11 +502,23 @@ function createAPI() {
         });
     }
 
+    // Handle key down events
     const throttledKeyDown = throttle(1000, (event) => {
+        isAltKey = event.keyCode === KeyCodes.Alt;
         if (event.keyCode === KeyCodes.Esc) {
             local.ipcRenderer.send(apiName, {
                 cmd: apiCmds.keyPress,
-                keyCode: KeyCodes.Esc
+                keyCode: event.keyCode
+            });
+        }
+    });
+
+    // Handle key up events
+    const throttledKeyUp = throttle(1000, (event) => {
+        if (isAltKey && event.keyCode === KeyCodes.Alt) {
+            local.ipcRenderer.send(apiName, {
+                cmd: apiCmds.keyPress,
+                keyCode: event.keyCode
             });
         }
     });
@@ -514,6 +526,8 @@ function createAPI() {
     window.addEventListener('offline', updateOnlineStatus, false);
     window.addEventListener('online', updateOnlineStatus, false);
     window.addEventListener('beforeunload', sanitize, false);
+    window.addEventListener('keyup', throttledKeyUp, true);
+    window.addEventListener('keydown', throttledKeyDown, true);
 
     updateOnlineStatus();
 }
