@@ -1,13 +1,10 @@
 const { Builder, By, Key, until } = require('selenium-webdriver')
 require('selenium-webdriver/chrome');
-require('selenium-webdriver/firefox');
 require('chromedriver');
-require('geckodriver');
 var assert = require('assert');
 const ui = require('./spectronInterfaces.js');
 const specconst = require('./spectronConstants.js');
 const waitUntilTime = 20000;
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000 * 60 * 50;
 
 class WebDriver {
 
@@ -264,17 +261,6 @@ class WebDriver {
     async timeOut(secondSleep)
     {
        return secondSleep*1000;
-    }
-    
-    async randomString() {
-        var chars = await "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
-        var string_length = await 8;
-        var randomstring = await '';
-        for (var i=0; i<string_length; i++) {
-            var rnum = await Math.floor(Math.random() * chars.length);
-            randomstring +=  await chars.substring(rnum,rnum+1);
-        }
-        return randomstring;
     }
     
 }

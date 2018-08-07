@@ -1,3 +1,4 @@
+require('dotenv').config()
 module.exports = {
 
     SYMPHONY_CONFIG_FILE_NAME: "/Symphony.config",
@@ -7,7 +8,7 @@ module.exports = {
 
     SEARCH_LIBRARY_PATH_MAC: "node_modules/electron/dist/Electron.app/Contents/library",
     SEARCH_LIBRARY_PATH_WIN: "node_modules/electron/dist/library",
-    TESTED_HOST: "https://qa4.symphony.com",
+    TESTED_HOST: process.env.TESTED_HOST,
     MENU: {
         "root": {
             name: "menu", step: 0, items: [
@@ -19,10 +20,10 @@ module.exports = {
         }
     },
 
-    LOG_FILENAME_PREFIX: "logs_symphony_",
+    LOG_FILENAME_PREFIX: process.env.LOG_FILENAME_PREFIX,
 
-    USER_A: {username:"jest01",password:"Symphony!123456",name:"jest01 jest01"},
-    USER_B: {username:"jest02",password:"Symphony!123456",name:"jest02 jest02"},
-    USER_C: {username:"jest03",password:"Symphony!123456"},
+    USER_A: {username:process.env.USER_A,password:process.env.PASSWORD,name:process.env.NAME_A},
+    USER_B: {username:process.env.USER_B,password:process.env.PASSWORD,name:process.env.NAME_B},
+    USER_C: {username:process.env.USER_C,password:process.env.PASSWORD},
     TYPE_ROOM: {private:"PRIVATE",public:"PUBLIC"}
 };
