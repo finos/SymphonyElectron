@@ -7,7 +7,6 @@ const crashReporter = electron.crashReporter;
 const nodeURL = require('url');
 const shellPath = require('shell-path');
 const squirrelStartup = require('electron-squirrel-startup');
-const AutoLaunch = require('auto-launch');
 const urlParser = require('url');
 const nodePath = require('path');
 const compareSemVersions = require('./utils/compareSemVersions.js');
@@ -26,6 +25,9 @@ const protocolHandler = require('./protocolHandler');
 const getCmdLineArg = require('./utils/getCmdLineArg.js');
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
+const autoLaunch = require('./autoLaunch');
+
+autoLaunch.init();
 
 require('electron-dl')();
 
@@ -93,23 +95,6 @@ let allowMultiInstance = getCmdLineArg(process.argv, '--multiInstance', true) ||
 // quit if another instance is already running, ignore for dev env or if app was started with multiInstance flag
 if (!allowMultiInstance && shouldQuit) {
     app.quit();
-}
-
-let symphonyAutoLauncher;
-
-if (isMac) {
-    symphonyAutoLauncher = new AutoLaunch({
-        name: 'Symphony',
-        mac: {
-            useLaunchAgent: true,
-        },
-        path: process.execPath,
-    });
-} else {
-    symphonyAutoLauncher = new AutoLaunch({
-        name: 'Symphony',
-        path: process.execPath,
-    });
 }
 
 /**
@@ -300,10 +285,10 @@ function setStartup(lStartup) {
         log.send(logLevels.INFO, `launchOnStartup value is ${launchOnStartup}`);
         if (launchOnStartup) {
             log.send(logLevels.INFO, `enabling launch on startup`);
-            symphonyAutoLauncher.enable();
+            autoLaunch.enable();
             return resolve();
         }
-        symphonyAutoLauncher.disable();
+        autoLaunch.disable();
         return resolve();
     });
 }
