@@ -322,7 +322,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     addWindowKey(key, mainWindow);
     mainWindow.loadURL(url);
 
-    setLocale(mainWindow, lang);
+    setLocale(mainWindow, { language: lang });
 
     mainWindow.on('close', function (e) {
         if (willQuitApp) {
