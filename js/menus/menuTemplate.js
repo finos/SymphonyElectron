@@ -402,8 +402,15 @@ function getTemplate(app) {
                         label: i18n.getMessageFor('Native'),
                         type: 'checkbox',
                         checked: titleBarStyle === titleBarStyles.NATIVE,
+                        enabled: titleBarStyle !== titleBarStyles.NATIVE,
                         click: function (item) {
-                            item.menu.items[1].checked = false;
+                            const isNativeStyle = titleBarStyle === titleBarStyles.NATIVE;
+                            item.menu.items[1].checked = isNativeStyle;
+
+                            // Disable menu item accordingly
+                            item.menu.items[0].enabled = isNativeStyle;
+                            item.menu.items[1].enabled = !isNativeStyle;
+
                             titleBarStyle = titleBarStyles.NATIVE;
                             updateConfigField('isCustomTitleBar', false);
                             titleBarActions(app);
@@ -413,8 +420,15 @@ function getTemplate(app) {
                         label: i18n.getMessageFor('Custom'),
                         type: 'checkbox',
                         checked: titleBarStyle === titleBarStyles.CUSTOM,
+                        enabled: titleBarStyle !== titleBarStyles.CUSTOM,
                         click: function (item) {
-                            item.menu.items[0].checked = false;
+                            const isCustomStyle = titleBarStyle === titleBarStyles.CUSTOM;
+                            item.menu.items[0].checked = isCustomStyle;
+
+                            // Disable menu item accordingly
+                            item.menu.items[1].enabled = isCustomStyle;
+                            item.menu.items[0].enabled = !isCustomStyle;
+
                             titleBarStyle = titleBarStyles.CUSTOM;
                             updateConfigField('isCustomTitleBar', true);
                             titleBarActions(app);
