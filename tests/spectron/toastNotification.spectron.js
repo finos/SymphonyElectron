@@ -47,7 +47,6 @@ describe('Tests for Toast Notification ', () => {
     it('Pop-up alert play depends on setting', async (done) => {
         try {
             if (isMac) {
-                console.log("aa")
                 done();
             } else {
                 let message1 = await Utils.randomString();
