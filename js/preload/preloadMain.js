@@ -32,6 +32,7 @@ const KeyCodes = {
 let Search;
 let SearchUtils;
 let isAltKey = false;
+let isMenuOpen = false;
 
 try {
     Search = remote.require('swift-search').Search;
@@ -503,7 +504,7 @@ function createAPI() {
     }
 
     // Handle key down events
-    const throttledKeyDown = throttle(1000, (event) => {
+    const throttledKeyDown = throttle(500, (event) => {
         isAltKey = event.keyCode === KeyCodes.Alt;
         if (event.keyCode === KeyCodes.Esc) {
             local.ipcRenderer.send(apiName, {
@@ -514,12 +515,21 @@ function createAPI() {
     });
 
     // Handle key up events
-    const throttledKeyUp = throttle(1000, (event) => {
-        if (isAltKey && event.keyCode === KeyCodes.Alt) {
+    const throttledKeyUp = throttle(500, (event) => {
+        if (isAltKey && (event.keyCode === KeyCodes.Alt || KeyCodes.Esc)) {
+            isMenuOpen = !isMenuOpen;
+        }
+        if (isAltKey && isMenuOpen && event.keyCode === KeyCodes.Alt) {
             local.ipcRenderer.send(apiName, {
                 cmd: apiCmds.keyPress,
                 keyCode: event.keyCode
             });
+        }
+    });
+
+    const throttleMouseDown = throttle(500, () => {
+        if (isAltKey && isMenuOpen) {
+            isMenuOpen = !isMenuOpen;
         }
     });
 
@@ -528,6 +538,7 @@ function createAPI() {
     window.addEventListener('beforeunload', sanitize, false);
     window.addEventListener('keyup', throttledKeyUp, true);
     window.addEventListener('keydown', throttledKeyDown, true);
+    window.addEventListener('mousedown', throttleMouseDown, { capture: true });
 
     updateOnlineStatus();
 }
