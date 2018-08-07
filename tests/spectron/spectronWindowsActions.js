@@ -355,6 +355,86 @@ class WindowsActions {
         await expect(notshow).toBeTruthy();
         await this.app.client.windowByIndex(0);
     }
+
+    async verifyNotCloseToastWhenMouseOver()
+    {
+        await this.mouseMoveNotification();
+        var i =0;
+        while(i < 11)
+        {            
+            await this.sleep(1);  
+            await i++;
+        }
+        await this.verifyToastNotificationShow();
+        await this.mouseMoveCenter();
+    }
+    
+    async veriryPersistToastNotification()
+    {
+        var i =0;
+        while(i < 11)
+        {            
+            await Utils.sleep(1);
+            await i++;
+        }
+        await this.verifyToastNotificationShow();
+        await this.clickNotification();        
+        await this.mouseMoveCenter();
+    }
+
+    async veriryNotPersistToastNotification()
+    {
+        var i = 0;
+        let count =0;
+      
+        while(i < 11)
+        {            
+            await Utils.sleep(1);
+            await i++;
+        }
+        await this.verifyNotShowToastNotification();
+        await this.mouseMoveCenter();
+    }
+
+    async verifyToastNotificationShow() {
+        let show = false;
+        for (let i = 0; i < 10; i++) {
+            var winCount = await this.app.client.getWindowCount();
+            if (winCount > 1) {
+                await this.app.client.windowByIndex(1);
+                if (await this.app.browserWindow.getTitle() === 'Electron') {
+                    show = true;
+                    break;
+                }
+            }
+            await Utils.sleep(1);
+        }
+        await expect(show).toBeTruthy();
+        await this.app.client.windowByIndex(0);
+    }
+
+    async verifyNotShowToastNotification()
+    {
+        let notshow = true;
+        for (let i = 0; i < 10; i++) {
+            var winCount = await this.app.client.getWindowCount();
+            if (winCount == 1) {               
+                    notshow = true;
+                    break;                
+            }
+            else
+            {
+                await this.app.client.windowByIndex(1);
+                if (await this.app.browserWindow.getTitle() !== 'Electron') {
+                    notshow = true;
+                    break;
+                }
+            }
+            await Utils.sleep(1);
+        }
+        await expect(notshow).toBeTruthy();
+        await this.app.client.windowByIndex(0);
+    }
 }
 
 module.exports = WindowsActions;
