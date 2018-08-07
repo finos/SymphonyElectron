@@ -29,8 +29,13 @@ class WebActions {
         })
     }
 
+    async minimizeWindowByClick() {
+        await this.app.client.click(ui.MINIMIZED_BUTTON);
+    }
+
     async closeWindowByClick() {
         await this.app.client.click(ui.CLOSE_BUTTON);
+
     }
 
     async openApplicationMenuByClick() {
@@ -110,15 +115,7 @@ class WebActions {
     async openAlertsSettings() {
         await this.clickAndWaitElementVisible(ui.SETTTING_BUTTON, ui.ALERT_OPTION);
         await this.clickAndWaitElementVisible(ui.ALERT_OPTION, ui.ALERT_TAB);
-    }
-
-    async checkBox(selector, value) {
-        var checked = await this.app.client.isSelected(selector);
-        while (checked != value) {
-            await this.clickIfElementVisible(selector);
-            checked = await this.app.client.isSelected(selector);
-        }
-    }
+    }  
 
     async verifyToastNotificationShow(message) {
         let show = false;
@@ -163,6 +160,47 @@ class WebActions {
         }
         await expect(noShow).toBeTruthy();
         await this.app.client.windowByIndex(0);
+    }
+
+    async getElementByXPath(xpath) {
+        var elem = this.app.client.element(xpath);
+        if (elem.isVisible()) {
+            return elem;
+        }
+        return null;
+    }
+    
+    async inputText(el, data) {
+        var obj = await this.getElementByXPath(el);
+        if (obj != null)
+            await this.app.client.setValue(el, data);
+    }
+
+    async clickAndWaitElementVisible(xpath,elementToVisible,timeOut=5000)
+    {     
+        await this.app.client.click(xpath).then(async()=>
+        {
+            await  this.app.client.waitForVisible(elementToVisible,timeOut);           
+        });
+    }
+    
+    async clickIfElementVisible(xpath, timeOut = 5000) {
+        await this.app.client.waitForVisible(xpath, timeOut)
+            .click(xpath)
+    }
+
+    async login(user) {
+        await this.inputText(ui.SIGN_IN_EMAIL, user.username);
+        await this.inputText(ui.SIGN_IN_PASSWORD, user.password);
+        await this.clickAndWaitElementVisible(ui.SIGN_IN_BUTTON,ui.SETTTING_BUTTON,60000);       
+    }
+   
+    async persistToastIM()
+    {       
+        await this.clickAndWaitElementVisible(ui.SETTTING_BUTTON, ui.ALERT_OPTION, 5000);
+        await this.clickAndWaitElementVisible(ui.ALERT_OPTION, ui.ALERT_TAB,10000);
+        await this.clickAndWaitElementVisible(ui.PERSIS_NOTIFICATION_INPUT_IM,ui.PERSIS_NOTIFICATION_INPUT_IM, 5000);
+
     }
 }
 

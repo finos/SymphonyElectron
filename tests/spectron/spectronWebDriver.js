@@ -21,7 +21,7 @@ class WebDriver {
                 until.elementLocated(By.xpath(xpath)),
                 waitUntilTime
             )
-            await this.driver.wait(until.elementIsNotVisible(el), 10000);
+            await this.driver.wait(until.elementIsNotVisible(el), waitUntilTime);
             if (this.driver.findElements(By.xpath(xpath)).length > 0) {
                 result = true;
             }
@@ -35,7 +35,20 @@ class WebDriver {
         }
     }
 
-    async waitElementVisibleAndGet(xpath) {
+    async  waitElelmentIsVisible(xpath,timeout) {       
+        try {
+            const el = await this.driver.wait(
+                until.elementLocated(By.xpath(xpath)),
+                waitUntilTime
+            )
+            await this.driver.wait(until.elementIsVisible(el), timeout);          
+        }
+        catch (err) {
+           console.log("Error:"+err.messages);
+        }
+    }
+
+    async  waitElementVisibleAndGet(xpath) {
         const el = await this.driver.wait(
             until.elementLocated(By.xpath(xpath)),
             waitUntilTime
@@ -68,7 +81,7 @@ class WebDriver {
 
     async sendMessage(message) {
         await this.inputText(ui.CHAT_INPUT_TYPING, message);
-        await this.sendEnter(ui.CHAT_INPUT_TYPING, message);
+        await this.sendEnter(ui.CHAT_INPUT_TYPING);
     }
 
     async sendMessages(messages) {
@@ -84,6 +97,23 @@ class WebDriver {
         var singin = await this.getElementByXPath(ui.SIGN_IN_BUTTON);
         await singin.click();       
         await this.waitElelmentIsVisible(ui.SETTTING_BUTTON,specconst.TIMEOUT_PAGE_LOAD);
+    }
+
+    async mentionUserOnChat(user)
+    {
+        await this.inputText(ui.CHAT_INPUT_TYPING, "@"+user.name);
+        var suggestion = ui.MENTION_USER_SUGGESTION.replace("$$",user.name);      
+        var el = await this.getElementByXPath(suggestion);
+        await el.click();
+        await this.sendEnter(ui.CHAT_INPUT_TYPING);    
+    }
+
+    async waitSuggestionShowOnlyOneItem(xpath)
+    {
+        if (this.driver.findElements(By.xpath(xpath)).length==1) {
+            return result = true;
+        }
+        return false;
     }
 
     async clickShowConversationCreationModal() {
@@ -113,6 +143,18 @@ class WebDriver {
         await el.click();
     }
 
+    async clickDoneButton() {
+        var el = await this.getElementByXPath(ui.CREATE_IM_DONE_BTN);
+        await el.click();
+        await this.waitElelmentIsNotVisible(ui.CREATE_IM_DONE_BTN);
+    }
+    
+    async clickConfirmCreateRoom() {
+        var el = await this.getElementByXPath(ui.CONFIRM_CREATE_ROOM_BUTTON);
+        await el.click();
+        await this.waitElelmentIsNotVisible(ui.CONFIRM_CREATE_ROOM_BUTTON);
+    }
+
     async clickStartChat() {
         var el = await this.getElementByXPath(ui.START_CHAT);
         await el.click();
@@ -136,6 +178,11 @@ class WebDriver {
         await this.clickDoneButton();
     }
 
+    async  clickCreateSignal() {
+        var el = await this.getElementByXPath(ui.SIGNAL_OPTION);
+        await el.click();
+    }
+
     async selectPublicRadioButton() {
         var el = await this.waitElementVisibleAndGet(ui.PUBLIC_ROOM_RADIO_BTN);
         await el.click();
@@ -144,12 +191,14 @@ class WebDriver {
     async selectPrivateRadioButton() {
         var el = await this.waitElementVisibleAndGet(ui.PRIVATE_ROOM_RADIO_BTN);
         await el.click();
-    }
+    } 
 
     async clickLeftNavItem(name) {
-        xpath = ui.LEFT_NAV_SINGLE_ITEM.replace("$$", name);
-        var el = await this.waitElementVisibleAndGet(xpath);
+        var xpath = await ui.LEFT_NAV_SINGLE_ITEM.replace("$$", name);      
+        var el = await this.getElementByXPath(xpath);
         await el.click();
+        var eheader = await this.getElementByXPath(ui.HEADER_MODULE);       
+        await this.driver.wait(until.elementIsVisible(eheader), waitUntilTime)
     }
 
     async createRoom(usernames, name, description, type) {
@@ -167,6 +216,16 @@ class WebDriver {
         for (var i = 0; i < usernames.length; i++) {
             await this.addParticipant(usernames[i]);
         }
+        await this.clickDoneButton();
+        // await this.clickConfirmCreateRoom();
+    }
+
+    async createSignal(signalName, hashTag)
+    {
+        await this.clickShowConversationCreationModal();
+        await this.clickCreateSignal();
+        await this.inputText(ui.SIGNAL_NAME,signalName);
+        await this.inputText(ui.LAST_RULE_ROW+ui.ENTER_KEYWORD_IN_LAST_INPUT,hashTag);
         await this.clickDoneButton();
     }
 
@@ -191,12 +250,10 @@ class WebDriver {
         this.driver.switchTo().window(this.driver.getAllWindowHandles()[0]);
     }
 
-    async quit() {
-        await d.quit();
-    }
     async sleep(secondSleep) {
         await this.driver.sleep(secondSleep * 1000);
     }
+
     async timeOut(secondSleep) {
         return secondSleep * 1000;
     }

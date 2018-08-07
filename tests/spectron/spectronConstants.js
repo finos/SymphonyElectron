@@ -1,3 +1,4 @@
+require('dotenv').config()
 module.exports = {
 
     SYMPHONY_CONFIG_FILE_NAME: "/Symphony.config",
@@ -7,7 +8,6 @@ module.exports = {
 
     SEARCH_LIBRARY_PATH_MAC: "node_modules/electron/dist/Electron.app/Contents/library",
     SEARCH_LIBRARY_PATH_WIN: "node_modules/electron/dist/library",
-
     MENU: {
         "root": {
             name: "menu", step: 0, items: [

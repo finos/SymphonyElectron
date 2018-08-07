@@ -1,8 +1,7 @@
 module.exports= {    
     // Title bar
     TITLE_BAR: "#title-bar",
-    MAXIMIZE_BTN: "#title-bar-maximize-button",
-    MINIMIZE_BTN: "#title-bar-minimize-button",
+    MAXIMIZE_BTN: "#title-bar-maximize-button", 
     CLOSE_BUTTON: "button#title-bar-close-button",
     MAIN_MENU_ITEM: "#hamburger-menu-button",
     SYM_LOGO: "#logo",
@@ -25,6 +24,7 @@ module.exports= {
     PUBLIC_ROOM_RADIO_BTN: "//form[@class='create-chatroom']//input[@value='PUBLIC']",
     CREATE_IM_DONE_BTN: "//button[contains(@class,tempo-btn--good) and text()='Create']",
     START_CHAT: "//*[contains(@class, 'sym-menu-tooltip__option')]/*[text()='Start a Chat']",
+    SIGNAL_OPTION: "//div[@class='sym-menu-tooltip__option']/*[text()='Create a Signal']", 
     LEFT_NAV_SINGLE_ITEM: "//div[contains(@class, 'navigation-item-title')][.//span[@class='navigation-item-name' and normalize-space()='$$']]",
     CHAT_INPUT_TYPING: "//div[contains(@class,'public-DraftEditor-content')]",
     SETTTING_BUTTON: "//div[@class='toolbar-settings-text-container']",
@@ -34,13 +34,20 @@ module.exports= {
     ALERT_TAB: "//*[contains(@class,'tempo-tabs__tab tabs-tab') and @data-tab='alerts']",
     ALERT_OPTION: "//span[@class='sym-menu-tooltip__option-label' and contains(.,'Alerts')]",
     NAV_ALIAS: "//div[@class='nav-profile__alias']",
-    SIGNAL_HEADER : "//span[@class='navigation-category-name' and contains(.,'Signals')]",
-    WARNING_CLOSE_ICON : "//div[@id='sysMsg']//span[@class='close-icon']",
-    SCROLL_TAB_ACTIVE : "//div[@class='active-tab-container']",
-
+    SIGNAL_HEADER: "//span[@class='navigation-category-name' and contains(.,'Signals')]",
+    WARNING_CLOSE_ICON: "//div[@id='sysMsg']//span[@class='close-icon']",
+    SCROLL_TAB_ACTIVE: "//div[@class='active-tab-container']",
+    SIGNAL_NAME: "//input[@class='react-signal__name']",
+    HASHTAG_NAME: "//div[@class='react-signal__rule-name']//input",
+    LAST_RULE_ROW: "//div[@class='react-signal__rules'][last()]",
+    ENTER_KEYWORD_IN_LAST_INPUT: "//input",
+    HEADER_MODULE: "//header[contains(@class,'module-header gs-draggable')]",
+    MENTION_USER_SUGGESTION: "//span[@class='draftJs__suggestionsEntryText' and text()='$$']",
+    SUGGESTED_ENTITY_DROPDOWN: "//span[@class='draftJs__suggestionsEntryText']",
+    CONFIRM_CREATE_ROOM_BUTTON: "//div[@class='modal-box__footer-buttons']//button[text()='Yes']",
     //Alert Settings
     MUTE_POPUP_ALERTS_CKB: ".field.field-notifications-on input",
-
     //Toast Message
     TOAST_MESSAGE_CONTENT: "#message",
 };
+
