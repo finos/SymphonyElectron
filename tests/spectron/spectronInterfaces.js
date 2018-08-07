@@ -1,12 +1,12 @@
 module.exports= {    
     // Title bar
     TITLE_BAR: "#title-bar",
-    MAXIMIZE_BTN: "#title-bar-maximize-button",
-    MINIMIZE_BTN: "#title-bar-minimize-button",
+    MAXIMIZE_BTN: "#title-bar-maximize-button", 
     CLOSE_BUTTON: "button#title-bar-close-button",
     MAIN_MENU_ITEM: "#hamburger-menu-button",
     SYM_LOGO: "#logo",
-    //Sign In,
+
+    //Sign In
     SIGN_IN_BUTTON: "//button[@name='signin-submit']",
     SIGN_IN_EMAIL: "//input[@name='signin-email']",
     SIGN_IN_PASSWORD: "//input[@name='signin-password']",
@@ -28,7 +28,7 @@ module.exports= {
     LEFT_NAV_SINGLE_ITEM: "//div[contains(@class, 'navigation-item-title')][.//span[@class='navigation-item-name' and normalize-space()='$$']]",
     CHAT_INPUT_TYPING: "//div[contains(@class,'public-DraftEditor-content')]",
     SETTTING_BUTTON: "//div[@class='toolbar-settings-text-container']",
-    PERSIS_NOTIFICATION_INPUT_ROOM:"//div[@class='alerts-settings__notification-category']//h5[text()='Rooms:']/..//input[@class='persistent-notification']",
+    PERSIS_NOTIFICATION_INPUT_ROOM: "//div[@class='alerts-settings__notification-category']//h5[text()='Rooms:']/..//input[@class='persistent-notification']",
     PERSIS_NOTIFICATION_INPUT_IM: "//div[@class='alerts-settings__notification-category']//h5[text()='IMs:']/..//input[@class='persistent-notification']",
     PERSIS_NOTIFICATION_INPUT_SIGNAL: "//div[@class='alerts-settings__notification-category']//h5[text()='Signals:']/..//input[@class='persistent-notification']",
     ALERT_TAB: "//*[contains(@class,'tempo-tabs__tab tabs-tab') and @data-tab='alerts']",
@@ -44,6 +44,10 @@ module.exports= {
     HEADER_MODULE: "//header[contains(@class,'module-header gs-draggable')]",
     MENTION_USER_SUGGESTION: "//span[@class='draftJs__suggestionsEntryText' and text()='$$']",
     SUGGESTED_ENTITY_DROPDOWN: "//span[@class='draftJs__suggestionsEntryText']",
-    CONFIRM_CREATE_ROOM_BUTTON: "//div[@class='modal-box__footer-buttons']//button[text()='Yes']"
+    CONFIRM_CREATE_ROOM_BUTTON: "//div[@class='modal-box__footer-buttons']//button[text()='Yes']",
+    //Alert Settings
+    MUTE_POPUP_ALERTS_CKB: ".field.field-notifications-on input",
+    //Toast Message
+    TOAST_MESSAGE_CONTENT: "#message",
 };
 

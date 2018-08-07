@@ -8,7 +8,6 @@ module.exports = {
 
     SEARCH_LIBRARY_PATH_MAC: "node_modules/electron/dist/Electron.app/Contents/library",
     SEARCH_LIBRARY_PATH_WIN: "node_modules/electron/dist/library",
-    TESTED_HOST: process.env.TESTED_HOST,
     MENU: {
         "root": {
             name: "menu", step: 0, items: [
@@ -20,10 +19,13 @@ module.exports = {
         }
     },
 
-    LOG_FILENAME_PREFIX: process.env.LOG_FILENAME_PREFIX,
-
-    USER_A: {username:process.env.USER_A,password:process.env.PASSWORD,name:process.env.NAME_A},
-    USER_B: {username:process.env.USER_B,password:process.env.PASSWORD,name:process.env.NAME_B},
-    USER_C: {username:process.env.USER_C,password:process.env.PASSWORD},
-    TYPE_ROOM: {private:"PRIVATE",public:"PUBLIC"}
+    LOG_FILENAME_PREFIX: "logs_symphony_",
+    USER_A: process.env.USER_A,
+    USER_B: process.env.USER_B,
+    USER_C: process.env.USER_C,
+    SIGN_IN_PASSWORD: process.env.PASSWORD,
+    TESTED_HOST: process.env.TESTED_HOST,
+    TYPE_ROOM: {private:"PRIVATE",public:"PUBLIC"},
+    TIMEOUT_PAGE_LOAD: 120000,
+    TIMEOUT_WAIT_ELEMENT: 10000
 };

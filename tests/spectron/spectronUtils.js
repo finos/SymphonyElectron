@@ -11,27 +11,31 @@ class Utils {
         await childProcess.exec('taskkill /f /t /im ' + processName);
     }
 
-    static async sleep(ms) {
+    static async sleep(second) {
         return new Promise(resolve => {
-            setTimeout(resolve, ms)
+            setTimeout(resolve, this.toMs(second));
         })
     }
 
-    static getFolderPath(folderName){
+    static getFolderPath(folderName) {
         return path.join(require('os').homedir(), folderName);
     }
 
-    static getFiles(path){
+    static getFiles(path) {
         return fs.readdirSync(path);
     }
 
-    static randomString() {
-        var chars =  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
-        var string_length =  8;
-        var randomstring =  '';
-        for (var i=0; i<string_length; i++) {
-            var rnum =  Math.floor(Math.random() * chars.length);
-            randomstring +=  chars.substring(rnum,rnum+1);
+    static toMs(second) {
+        return second * 1000;
+    }
+
+    static async randomString() {
+        var chars = await "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+        var string_length = await 8;
+        var randomstring = await '';
+        for (var i = 0; i < string_length; i++) {
+            var rnum = await Math.floor(Math.random() * chars.length);
+            randomstring += await chars.substring(rnum, rnum + 1);
         }
         return randomstring;
     }

@@ -377,15 +377,7 @@ class WindowsActions {
         await robot.moveMouseSmooth(x, y);
         await robot.moveMouse(x, y);  
       });     
-    }
-
-    async sleep(s)
-    {       
-       return new Promise(resolve=>{
-            setTimeout(resolve,this.timeOut(s));
-       })
-        
-    }
+    }    
     
     async verifyNotCloseToastWhenMouseOver()
     {
@@ -393,7 +385,7 @@ class WindowsActions {
         var i =0;
         while(i < 11)
         {            
-            await this.sleep(1);  
+            await Utils.sleep(1);  
             await i++;
         }
         await this.verifyToastNotificationShow();
@@ -405,7 +397,7 @@ class WindowsActions {
         var i =0;
         while(i < 11)
         {            
-            await this.sleep(1);  
+            await Utils.sleep(1);  
             await i++;
         }
         await this.verifyToastNotificationShow();
@@ -420,7 +412,7 @@ class WindowsActions {
       
         while(i < 11)
         {            
-            await this.sleep(1); 
+            await Utils.sleep(1); 
             await i++;
         }
         await this.verifyNotShowToastNotification();
@@ -465,11 +457,6 @@ class WindowsActions {
         }
         await expect(notshow).toBeTruthy();
         await this.app.client.windowByIndex(0);
-    }
-
-    timeOut(second)
-    {
-        return second*1000;
     }
 }
 

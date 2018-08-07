@@ -108,8 +108,7 @@
     "robotjs": "0.5.1",
     "selenium-webdriver": "3.6.0",
     "spectron": "3.8.0",
-    "wdio-selenium-standalone-service": "0.0.10",
-    "dotenv": "6.0.0"
+    "wdio-selenium-standalone-service": "0.0.10"
   },
   "dependencies": {
     "@paulcbetts/system-idle-time": "1.0.4",
