@@ -37,14 +37,14 @@ class WebActions {
         await this.app.client.click(ui.MAIN_MENU_ITEM);
     }
 
-    async  getElementByXPath(xpath) {
+    async getElementByXPath(xpath) {
         var elem = this.app.client.element(xpath);
         if (elem.isVisible()) {
             return elem;
         }
         return null;
     }
-    async  inputText(el, data) {
+    async inputText(el, data) {
         var obj = await this.getElementByXPath(el);
         if (obj != null)
             await this.app.client.setValue(el, data);
