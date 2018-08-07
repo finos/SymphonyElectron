@@ -13,7 +13,7 @@
     "rebuild": "electron-rebuild -f",
     "dev": "npm run prebuild && cross-env ELECTRON_DEV=true electron .",
     "test": "npm run lint && npm rebuild --build-from-source && cross-env ELECTRON_QA=true jest --config tests/jest_unit.json --runInBand && npm run rebuild",
-    "spectron-test": "npm run lint && npm rebuild --build-from-source robotjs && cross-env ELECTRON_QA=true TESTED_HOST=https://qa5.symphony.com/ USER_A=jest01 USER_B=jest02 USER_C=jest03 PASSWORD=Symphony!123456 jest --config tests/spectron/jest_spectron.json --runInBand && npm run rebuild",
+    "spectron-test": "npm run lint && npm rebuild --build-from-source robotjs && cross-env ELECTRON_QA=true jest --config tests/spectron/jest_spectron.json --runInBand && npm run rebuild",
     "demo-win": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file:///demo/index.html",
     "demo-mac": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/demo/index.html",
     "unpacked-mac": "npm run prebuild && npm run test && build --mac --dir",

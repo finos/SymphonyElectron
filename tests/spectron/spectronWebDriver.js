@@ -6,16 +6,15 @@ const ui = require('./spectronInterfaces.js');
 const specconst = require('./spectronConstants.js');
 
 const waitUntilTime = 20000;
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000 * 60 * 50
+
 class WebDriver {
     constructor(options) {
         this.options = options;
         this.d = new Builder().forBrowser(options.browser).build();
         this.initDriver();
-
     }
 
-    async  waitElelmentIsNotVisible(xpath) {
+    async waitElelmentIsNotVisible(xpath) {
         let result = false;
         try {
             const el = await this.driver.wait(
@@ -36,7 +35,7 @@ class WebDriver {
         }
     }
 
-    async  waitElementVisibleAndGet(xpath) {
+    async waitElementVisibleAndGet(xpath) {
         const el = await this.driver.wait(
             until.elementLocated(By.xpath(xpath)),
             waitUntilTime
@@ -44,12 +43,12 @@ class WebDriver {
         return await this.driver.wait(until.elementIsVisible(el), waitUntilTime)
     }
 
-    async  getElementById(id) {
+    async getElementById(id) {
         const el = await this.driver.wait(until.elementLocated(By.id(id)), waitUntilTime)
         return await this.driver.wait(until.elementIsVisible(el), waitUntilTime)
     }
 
-    async  getElementByXPath(xpath) {
+    async getElementByXPath(xpath) {
         const el = await this.driver.wait(
             until.elementLocated(By.xpath(xpath)),
             waitUntilTime
@@ -57,60 +56,69 @@ class WebDriver {
         return await this.driver.wait(until.elementIsVisible(el), waitUntilTime)
     }
 
-    async  inputText(el, data) {
+    async inputText(el, data) {
         var obj = await this.getElementByXPath(el);
         await obj.sendKeys(data);
     }
-    async  sendEnter(el) {
+
+    async sendEnter(el) {
         var obj = await this.getElementByXPath(el);
         await obj.sendKeys(Key.ENTER);
     }
-    async  sendMessage(message) {
+
+    async sendMessage(message) {
         await this.inputText(ui.CHAT_INPUT_TYPING, message);
         await this.sendEnter(ui.CHAT_INPUT_TYPING, message);
     }
 
-    async  sendMessages(messages) {
+    async sendMessages(messages) {
         for (var i = 0; i < messages.length; i++) {
             await this.sendMessage(messages[i]);
             await this.sleep(1);
         }
     }
 
-    async  login(username) {
+    async login(username) {
         await this.inputText(ui.SIGN_IN_EMAIL, username);
-        await this.inputText(ui.SIGN_IN_PASSWORD, process.env.PASSWORD);
+        await this.inputText(ui.SIGN_IN_PASSWORD, specconst.SIGN_IN_PASSWORD);
         var singin = await this.getElementByXPath(ui.SIGN_IN_BUTTON);
         await singin.click();       
         await this.waitElelmentIsVisible(ui.SETTTING_BUTTON,specconst.TIMEOUT_PAGE_LOAD);
     }
+
     async clickShowConversationCreationModal() {
         var plusButton = await this.getElementByXPath(ui.PLUS_BTN);
         await plusButton.click();
     }
+
     async selectIMTab() {
         var imTab = await this.getElementByXPath(ui.IM_TAB);
         await imTab.click();
     }
-    async  selectRoomTab() {
+
+    async selectRoomTab() {
         var roomTab = await this.getElementByXPath(ui.CHATROOM_TAB);
         await roomTab.click();
     }
-    async  addParticipant(username) {
+
+    async addParticipant(username) {
         await this.inputText(ui.ADD_PARTICIPANT_TEXT, username);
         await this.sleep(5);
         var el = await this.waitElementVisibleAndGet(ui.USERS_SUGGESTION_LIST);
         await el.click();
     }
-    async  clickDoneButton() {
+
+    async clickDoneButton() {
         var el = await this.getElementByXPath(ui.CREATE_IM_DONE_BTN);
         await el.click();
     }
-    async  clickStartChat() {
+
+    async clickStartChat() {
         var el = await this.getElementByXPath(ui.START_CHAT);
         await el.click();
     }
-    async  createIM(username) {
+
+    async createIM(username) {
         await this.clickShowConversationCreationModal();
         await this.clickStartChat();
         await this.selectIMTab();
@@ -118,7 +126,7 @@ class WebDriver {
         await this.clickDoneButton();
     }
 
-    async  createMIM(usernames) {
+    async createMIM(usernames) {
         await this.clickShowConversationCreationModal();
         await this.clickStartChat();
         await this.selectIMTab();
@@ -127,22 +135,24 @@ class WebDriver {
         }
         await this.clickDoneButton();
     }
-    async  selectPublicRadioButton() {
+
+    async selectPublicRadioButton() {
         var el = await this.waitElementVisibleAndGet(ui.PUBLIC_ROOM_RADIO_BTN);
         await el.click();
     }
-    async  selectPrivateRadioButton() {
+
+    async selectPrivateRadioButton() {
         var el = await this.waitElementVisibleAndGet(ui.PRIVATE_ROOM_RADIO_BTN);
         await el.click();
     }
 
-
-    async  clickLeftNavItem(name) {
+    async clickLeftNavItem(name) {
         xpath = ui.LEFT_NAV_SINGLE_ITEM.replace("$$", name);
         var el = await this.waitElementVisibleAndGet(xpath);
         await el.click();
     }
-    async  createRoom(usernames, name, description, type) {
+
+    async createRoom(usernames, name, description, type) {
         await this.clickShowConversationCreationModal();
         await this.clickStartChat();
         await this.selectRoomTab();
@@ -159,12 +169,14 @@ class WebDriver {
         }
         await this.clickDoneButton();
     }
-    async  initDriver() {
+
+    async initDriver() {
         return this.d.then(_d => {
             this.driver = _d
         })
     }
-    async  startDriver() {
+
+    async startDriver() {
         await this.driver
             .manage()
             .window()
@@ -172,12 +184,14 @@ class WebDriver {
         var size = await await this.driver
             .manage()
             .window().getSize();
-        await this.driver.get(process.env.TESTED_HOST);
+        await this.driver.get(specconst.TESTED_HOST);
     }
-    async  focusCurrentBrowser() {
+
+    async focusCurrentBrowser() {
         this.driver.switchTo().window(this.driver.getAllWindowHandles()[0]);
     }
-    async  quit() {
+
+    async quit() {
         await d.quit();
     }
     async sleep(secondSleep) {
@@ -187,7 +201,7 @@ class WebDriver {
         return secondSleep * 1000;
     }
     
-    async  waitElelmentIsVisible(xpath,timeout) {       
+    async waitElelmentIsVisible(xpath,timeout) {
         try {
             const el = await this.driver.wait(
                 until.elementLocated(By.xpath(xpath)),

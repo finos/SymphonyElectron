@@ -20,6 +20,11 @@ module.exports = {
     },
 
     LOG_FILENAME_PREFIX: "logs_symphony_",
+    USER_A: process.env.USER_A,
+    USER_B: process.env.USER_B,
+    USER_C: process.env.USER_C,
+    SIGN_IN_PASSWORD: process.env.PASSWORD,
+    TESTED_HOST: process.env.TESTED_HOST,
     TYPE_ROOM: {private:"PRIVATE",public:"PUBLIC"},
     TIMEOUT_PAGE_LOAD: 120000,
     TIMEOUT_WAIT_ELEMENT: 10000
