@@ -1,8 +1,6 @@
 const { Builder, By, Key, until } = require('selenium-webdriver')
 require('selenium-webdriver/chrome');
-require('selenium-webdriver/firefox');
 require('chromedriver');
-require('geckodriver');
 var assert = require('assert');
 const ui = require('./spectronInterfaces.js');
 const specconst = require('./spectronConstants.js');
@@ -79,9 +77,9 @@ class WebDriver {
         }
     }
 
-    async  login(user) {
-        await this.inputText(ui.SIGN_IN_EMAIL, user.username);
-        await this.inputText(ui.SIGN_IN_PASSWORD, user.password);
+    async  login(username) {
+        await this.inputText(ui.SIGN_IN_EMAIL, username);
+        await this.inputText(ui.SIGN_IN_PASSWORD, process.env.PASSWORD);
         var singin = await this.getElementByXPath(ui.SIGN_IN_BUTTON);
         await singin.click();       
         await this.waitElelmentIsVisible(ui.SETTTING_BUTTON,specconst.TIMEOUT_PAGE_LOAD);
@@ -98,8 +96,8 @@ class WebDriver {
         var roomTab = await this.getElementByXPath(ui.CHATROOM_TAB);
         await roomTab.click();
     }
-    async  addParticipant(user) {
-        await this.inputText(ui.ADD_PARTICIPANT_TEXT, user.username);
+    async  addParticipant(username) {
+        await this.inputText(ui.ADD_PARTICIPANT_TEXT, username);
         await this.sleep(5);
         var el = await this.waitElementVisibleAndGet(ui.USERS_SUGGESTION_LIST);
         await el.click();
@@ -112,20 +110,20 @@ class WebDriver {
         var el = await this.getElementByXPath(ui.START_CHAT);
         await el.click();
     }
-    async  createIM(user) {
+    async  createIM(username) {
         await this.clickShowConversationCreationModal();
         await this.clickStartChat();
         await this.selectIMTab();
-        await this.addParticipant(user);
+        await this.addParticipant(username);
         await this.clickDoneButton();
     }
 
-    async  createMIM(users) {
+    async  createMIM(usernames) {
         await this.clickShowConversationCreationModal();
         await this.clickStartChat();
         await this.selectIMTab();
-        for (var i = 0; i < users.length; i++) {
-            await this.addParticipant(users[i]);
+        for (var i = 0; i < usernames.length; i++) {
+            await this.addParticipant(usernames[i]);
         }
         await this.clickDoneButton();
     }
@@ -144,7 +142,7 @@ class WebDriver {
         var el = await this.waitElementVisibleAndGet(xpath);
         await el.click();
     }
-    async  createRoom(users, name, description, type) {
+    async  createRoom(usernames, name, description, type) {
         await this.clickShowConversationCreationModal();
         await this.clickStartChat();
         await this.selectRoomTab();
@@ -156,8 +154,8 @@ class WebDriver {
         if (type === specconst.TYPE_ROOM.public) {
             await this.selectPublicRadioButton();
         }
-        for (var i = 0; i < users.length; i++) {
-            await this.addParticipant(users[i]);
+        for (var i = 0; i < usernames.length; i++) {
+            await this.addParticipant(usernames[i]);
         }
         await this.clickDoneButton();
     }
@@ -174,7 +172,7 @@ class WebDriver {
         var size = await await this.driver
             .manage()
             .window().getSize();
-        await this.driver.get(specconst.TESTED_HOST);
+        await this.driver.get(process.env.TESTED_HOST);
     }
     async  focusCurrentBrowser() {
         this.driver.switchTo().window(this.driver.getAllWindowHandles()[0]);
