@@ -23,7 +23,8 @@ class WindowsActions {
             let x = bounds.x + (bounds.width - width);
             let y = bounds.y + (bounds.height - height);
             robot.setMouseDelay(500);
-            robot.moveMouse(bounds.x, bounds.y);
+            // Plus 2 pixels to make sure this function works well on MAC
+            robot.moveMouse(bounds.x + 2, bounds.y + 2);
             robot.mouseToggle("down");
             robot.dragMouse(x, y);
             robot.mouseToggle("up");
