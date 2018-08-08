@@ -67,55 +67,6 @@ class WindowsActions {
         })
     } 
 
-    async menuSearch(element, namevalue) {
-        if (element.name == namevalue) {
-            return await element;
-        }
-        else if (element.items !== undefined) {
-            var result;
-            for (var i = 0; result == null && i < element.items.length; i++) {
-                result = await this.menuSearch(element.items[i], namevalue);
-                result;
-            }
-            return await result;
-        }
-        return await null;
-    }
-
-    async openMenu(arrMenu) {
-        var arrStep = [];
-        for (var i = 0; i < arrMenu.length; i++) {
-            var item = await this.menuSearch(constants.MENU.root, arrMenu[i]);
-            await arrStep.push(item);
-        }
-        await this.actionForMenus(arrStep);
-        return arrStep;
-    }
-
-    async actionForMenus(arrMenu) {
-        await this.app.browserWindow.getBounds().then(async (bounds) => {
-            await robot.setMouseDelay(100);
-            let x = bounds.x + 95;
-            let y = bounds.y + 35;
-            await robot.moveMouseSmooth(x, y);
-            await robot.moveMouse(x, y);
-            await robot.mouseClick();
-            await this.webAction.openApplicationMenuByClick();
-            await robot.setKeyboardDelay(200);
-            await robot.keyTap('enter');
-            for (var i = 0; i < arrMenu.length; i++) {
-                for (var s = 0; s < arrMenu[i].step; s++) {
-                    await robot.keyTap('down');
-                }
-                if (arrMenu.length > 1 && i != arrMenu.length - 1) {
-                    //handle right keygen
-                    await robot.keyTap('right');
-                }
-            }
-            await robot.keyTap('enter');
-        });
-    }
-
     async verifyLogExported() {
         let expected = false;
         let path = await Utils.getFolderPath('Downloads');
@@ -178,36 +129,7 @@ class WindowsActions {
             }
             await robot.keyTap('enter');
         });
-    }
-
-    async quitApp() {
-        await this.app.browserWindow.getBounds().then(async (bounds) => {
-            await robot.setMouseDelay(100);
-            let x = bounds.x + 95;
-            let y = bounds.y + 35;
-            await robot.moveMouseSmooth(x, y);
-            await robot.moveMouse(x, y);
-            await robot.mouseClick();
-            await this.webAction.openApplicationMenuByClick();
-            await robot.setKeyboardDelay(1000);
-            await robot.keyTap('enter');
-            await robot.keyTap('down');
-            await robot.keyTap('down');
-            await robot.keyTap('right');
-            for (let i = 0; i < 6; i++) {
-                await robot.keyTap('down');
-            }
-            await robot.keyTap('enter');
-        });
-    }
-
-    async pressCtrlW() {
-        await robot.keyToggle('w', 'down', ['control']);
-        await robot.keyToggle('w', 'up', ['control']);
-    }
-    async focusWindow() {
-        await this.app.browserWindow.show();
-    }
+    } 
 
     async menuSearch(element, namevalue) {
         if (element.name == namevalue) {           
@@ -222,16 +144,6 @@ class WindowsActions {
             return await result;
         }
         return await null;
-    }
-
-    async openMenu(arrMenu) {
-        var arrStep = [];
-        for (var i = 0; i < arrMenu.length; i++) {
-            var item = await this.menuSearch(constants.MENU.root, arrMenu[i]);
-            await arrStep.push(item);
-        }
-        await this.actionForMenus(arrStep);
-        return arrStep;
     }
 
     async actionForMenus(arrMenu) {
@@ -297,22 +209,7 @@ class WindowsActions {
     async focusWindow() {        
         this.app.browserWindow.focus();
         this.app.browserWindow.setAlwaysOnTop(true);
-    }
-
-    async menuSearch(element, namevalue) {
-        if (element.name == namevalue) {           
-            return await element;
-        }
-        else if (element.items !== undefined) {
-            var result;
-            for (var i = 0; result == null && i < element.items.length; i++) {
-                result = await this.menuSearch(element.items[i], namevalue);
-                result;
-            }
-            return await result;
-        }
-        return await null;
-    }
+    }    
 
     async openMenu(arrMenu) {
         var arrStep = [];
@@ -346,7 +243,7 @@ class WindowsActions {
     {
         let screen = await this.app.electron.screen.getAllDisplays(); 
         await this.app.browserWindow.getBounds().then(async (bounds) => {  
-            await robot.setMouseDelay(100);
+            await robot.setMouseDelay(50);
             let x = screen[0].bounds.width-50;
             let y = screen[0].bounds.height - 100;
             await robot.moveMouseSmooth(x, y);
@@ -359,7 +256,7 @@ class WindowsActions {
     {
         let screen = await this.app.electron.screen.getAllDisplays(); 
         await this.app.browserWindow.getBounds().then(async (bounds) => {  
-            await robot.setMouseDelay(100);
+            await robot.setMouseDelay(50);
             let x = screen[0].bounds.width-50;
             let y = screen[0].bounds.height - 100;
             await robot.moveMouseSmooth(x, y);
@@ -371,41 +268,28 @@ class WindowsActions {
     {
         let screen = await this.app.electron.screen.getAllDisplays(); 
         await this.app.browserWindow.getBounds().then(async (bounds) => {  
-            await robot.setMouseDelay(100);
+            await robot.setMouseDelay(50);
             let x = screen[0].bounds.width-500;
             let y = screen[0].bounds.height - 100;          
         await robot.moveMouseSmooth(x, y);
         await robot.moveMouse(x, y);  
       });     
-    }    
+    }   
     
-    async verifyNotCloseToastWhenMouseOver()
+    async veriryPersistToastNotification(message)
     {
-        await this.mouseMoveNotification();
         var i =0;
-        while(i < 11)
+        while(i < 6)
         {            
             await Utils.sleep(1);  
             await i++;
         }
-        await this.verifyToastNotificationShow();
-        await this.mouseMoveCenter();
-    }
-    
-    async veriryPersistToastNotification()
-    {
-        var i =0;
-        while(i < 11)
-        {            
-            await Utils.sleep(1);  
-            await i++;
-        }
-        await this.verifyToastNotificationShow();
+        await this.webAction.verifyToastNotificationShow(message);
         await this.clickNotification();        
         await this.mouseMoveCenter();
     }
 
-    async veriryNotPersistToastNotification()
+    async verifyNotPersistToastNotification(message)
     {
         var i = 0;
         let count =0;
@@ -415,49 +299,23 @@ class WindowsActions {
             await Utils.sleep(1); 
             await i++;
         }
-        await this.verifyNotShowToastNotification();
+        await this.webAction.verifyNoToastNotificationShow(message);
         await this.mouseMoveCenter();
-    }
+    } 
 
-    async verifyToastNotificationShow() {
-        let show = false;
-        for (let i = 0; i < 10; i++) {
-            var winCount = await this.app.client.getWindowCount();
-            if (winCount > 1) {
-                await this.app.client.windowByIndex(1);
-                if (await this.app.browserWindow.getTitle() === 'Electron') {
-                    show = true;
-                    break;
-                }
-            }
-            await Utils.sleep(1);
-        }
-        await expect(show).toBeTruthy();
-        await this.app.client.windowByIndex(0);
-    }
-
-    async verifyNotShowToastNotification()
+    async verifyNotCloseToastWhenMouseOver(message)
     {
-        let notshow = true;
-        for (let i = 0; i < 10; i++) {
-            var winCount = await this.app.client.getWindowCount();
-            if (winCount == 1) {               
-                    notshow = true;
-                    break;                
-            }
-            else
-            {
-                await this.app.client.windowByIndex(1);
-                if (await this.app.browserWindow.getTitle() !== 'Electron') {
-                    notshow = true;
-                    break;
-                }
-            }
-            await Utils.sleep(1);
+        await this.mouseMoveNotification();
+        var i =0;
+        while(i < 8)
+        {            
+            await Utils.sleep(1);  
+            await i++;
         }
-        await expect(notshow).toBeTruthy();
-        await this.app.client.windowByIndex(0);
-    }
+        await this.webAction.verifyToastNotificationShow(message);
+        await this.mouseMoveCenter();
+    } 
+
 }
 
 module.exports = WindowsActions;

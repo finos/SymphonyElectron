@@ -66,7 +66,7 @@ class App {
     }
 
     static getTimeOut() {
-        return 90000;
+        return 600000;
     }
 
     static readConfig(configPath) {
