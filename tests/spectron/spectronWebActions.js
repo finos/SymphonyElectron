@@ -118,10 +118,7 @@ class WebActions {
             var winCount = await this.app.client.getWindowCount();
             if (winCount > 1) {
                 for (let j = 1; j < winCount; j++) {
-                    await this.app.client.windowByIndex(j);
-                    await console.log("this.app.client.getText(ui.TOAST_MESSAGE_CONTENT)");
-                    var s = await this.app.client.getText(ui.TOAST_MESSAGE_CONTENT);
-                    await console.log(s);
+                    await this.app.client.windowByIndex(j);                   
                     if (await this.app.client.getText(ui.TOAST_MESSAGE_CONTENT) === message) {
                         show = true;
                     }
@@ -142,10 +139,7 @@ class WebActions {
             var winCount = await this.app.client.getWindowCount();
             if (winCount > 1) {
                 for (let j = 1; j < winCount; j++) {
-                    await this.app.client.windowByIndex(j);
-                    await console.log("verifyNoToastNotificationShow");
-                    var s = await this.app.client.getText(ui.TOAST_MESSAGE_CONTENT);
-                    await console.log(s);
+                    await this.app.client.windowByIndex(j);                   
                     if (await this.app.client.getText(ui.TOAST_MESSAGE_CONTENT) !== message) {
                         noShow = true;
                     }
