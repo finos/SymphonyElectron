@@ -243,7 +243,7 @@ class WindowsActions {
     {
         let screen = await this.app.electron.screen.getAllDisplays(); 
         await this.app.browserWindow.getBounds().then(async (bounds) => {  
-            await robot.setMouseDelay(100);
+            await robot.setMouseDelay(50);
             let x = screen[0].bounds.width-50;
             let y = screen[0].bounds.height - 100;
             await robot.moveMouseSmooth(x, y);
@@ -256,7 +256,7 @@ class WindowsActions {
     {
         let screen = await this.app.electron.screen.getAllDisplays(); 
         await this.app.browserWindow.getBounds().then(async (bounds) => {  
-            await robot.setMouseDelay(100);
+            await robot.setMouseDelay(50);
             let x = screen[0].bounds.width-50;
             let y = screen[0].bounds.height - 100;
             await robot.moveMouseSmooth(x, y);
@@ -268,41 +268,28 @@ class WindowsActions {
     {
         let screen = await this.app.electron.screen.getAllDisplays(); 
         await this.app.browserWindow.getBounds().then(async (bounds) => {  
-            await robot.setMouseDelay(100);
+            await robot.setMouseDelay(50);
             let x = screen[0].bounds.width-500;
             let y = screen[0].bounds.height - 100;          
         await robot.moveMouseSmooth(x, y);
         await robot.moveMouse(x, y);  
       });     
-    }    
+    }   
     
-    async verifyNotCloseToastWhenMouseOver()
+    async veriryPersistToastNotification(message)
     {
-        await this.mouseMoveNotification();
         var i =0;
-        while(i < 11)
+        while(i < 6)
         {            
             await Utils.sleep(1);  
             await i++;
         }
-        await this.verifyToastNotificationShow();
-        await this.mouseMoveCenter();
-    }
-    
-    async veriryPersistToastNotification()
-    {
-        var i =0;
-        while(i < 11)
-        {            
-            await Utils.sleep(1);  
-            await i++;
-        }
-        await this.verifyToastNotificationShow();
+        await this.webAction.verifyToastNotificationShow(message);
         await this.clickNotification();        
         await this.mouseMoveCenter();
     }
 
-    async veriryNotPersistToastNotification()
+    async verifyNotPersistToastNotification(message)
     {
         var i = 0;
         let count =0;
@@ -312,129 +299,23 @@ class WindowsActions {
             await Utils.sleep(1); 
             await i++;
         }
-        await this.verifyNotShowToastNotification();
+        await this.webAction.verifyNoToastNotificationShow(message);
         await this.mouseMoveCenter();
-    }
+    } 
 
-    async verifyToastNotificationShow() {
-        let show = false;
-        for (let i = 0; i < 10; i++) {
-            var winCount = await this.app.client.getWindowCount();
-            if (winCount > 1) {
-                await this.app.client.windowByIndex(1);
-                if (await this.app.browserWindow.getTitle() === 'Electron') {
-                    show = true;
-                    break;
-                }
-            }
-            await Utils.sleep(1);
-        }
-        await expect(show).toBeTruthy();
-        await this.app.client.windowByIndex(0);
-    }
-
-    async verifyNotShowToastNotification()
-    {
-        let notshow = true;
-        for (let i = 0; i < 10; i++) {
-            var winCount = await this.app.client.getWindowCount();
-            if (winCount == 1) {               
-                    notshow = true;
-                    break;                
-            }
-            else
-            {
-                await this.app.client.windowByIndex(1);
-                if (await this.app.browserWindow.getTitle() !== 'Electron') {
-                    notshow = true;
-                    break;
-                }
-            }
-            await Utils.sleep(1);
-        }
-        await expect(notshow).toBeTruthy();
-        await this.app.client.windowByIndex(0);
-    }
-
-    async verifyNotCloseToastWhenMouseOver()
+    async verifyNotCloseToastWhenMouseOver(message)
     {
         await this.mouseMoveNotification();
         var i =0;
-        while(i < 11)
+        while(i < 8)
         {            
-            await this.sleep(1);  
+            await Utils.sleep(1);  
             await i++;
         }
-        await this.verifyToastNotificationShow();
+        await this.webAction.verifyToastNotificationShow(message);
         await this.mouseMoveCenter();
-    }
-    
-    async veriryPersistToastNotification()
-    {
-        var i =0;
-        while(i < 11)
-        {            
-            await Utils.sleep(1);
-            await i++;
-        }
-        await this.verifyToastNotificationShow();
-        await this.clickNotification();        
-        await this.mouseMoveCenter();
-    }
+    } 
 
-    async veriryNotPersistToastNotification()
-    {
-        var i = 0;
-        let count =0;
-      
-        while(i < 11)
-        {            
-            await Utils.sleep(1);
-            await i++;
-        }
-        await this.verifyNotShowToastNotification();
-        await this.mouseMoveCenter();
-    }
-
-    async verifyToastNotificationShow() {
-        let show = false;
-        for (let i = 0; i < 10; i++) {
-            var winCount = await this.app.client.getWindowCount();
-            if (winCount > 1) {
-                await this.app.client.windowByIndex(1);
-                if (await this.app.browserWindow.getTitle() === 'Electron') {
-                    show = true;
-                    break;
-                }
-            }
-            await Utils.sleep(1);
-        }
-        await expect(show).toBeTruthy();
-        await this.app.client.windowByIndex(0);
-    }
-
-    async verifyNotShowToastNotification()
-    {
-        let notshow = true;
-        for (let i = 0; i < 10; i++) {
-            var winCount = await this.app.client.getWindowCount();
-            if (winCount == 1) {               
-                    notshow = true;
-                    break;                
-            }
-            else
-            {
-                await this.app.client.windowByIndex(1);
-                if (await this.app.browserWindow.getTitle() !== 'Electron') {
-                    notshow = true;
-                    break;
-                }
-            }
-            await Utils.sleep(1);
-        }
-        await expect(notshow).toBeTruthy();
-        await this.app.client.windowByIndex(0);
-    }
 }
 
 module.exports = WindowsActions;

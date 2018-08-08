@@ -61,11 +61,6 @@ class WebActions {
         });
     }
 
-    async login(username) {
-        await this.inputText(ui.SIGN_IN_EMAIL, username);
-        await this.inputText(ui.SIGN_IN_PASSWORD, constants.SIGN_IN_PASSWORD);
-        await this.clickAndWaitElementVisible(ui.SIGN_IN_BUTTON, ui.PLUS_BTN, constants.TIMEOUT_PAGE_LOAD);
-    }
     async scrollAndClick(selector, findElement) {
         var i = 0;
         var y = 0;
@@ -124,6 +119,9 @@ class WebActions {
             if (winCount > 1) {
                 for (let j = 1; j < winCount; j++) {
                     await this.app.client.windowByIndex(j);
+                    await console.log("this.app.client.getText(ui.TOAST_MESSAGE_CONTENT)");
+                    var s = await this.app.client.getText(ui.TOAST_MESSAGE_CONTENT);
+                    await console.log(s);
                     if (await this.app.client.getText(ui.TOAST_MESSAGE_CONTENT) === message) {
                         show = true;
                     }
@@ -145,6 +143,9 @@ class WebActions {
             if (winCount > 1) {
                 for (let j = 1; j < winCount; j++) {
                     await this.app.client.windowByIndex(j);
+                    await console.log("verifyNoToastNotificationShow");
+                    var s = await this.app.client.getText(ui.TOAST_MESSAGE_CONTENT);
+                    await console.log(s);
                     if (await this.app.client.getText(ui.TOAST_MESSAGE_CONTENT) !== message) {
                         noShow = true;
                     }

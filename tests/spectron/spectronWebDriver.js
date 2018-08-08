@@ -5,8 +5,6 @@ var assert = require('assert');
 const ui = require('./spectronInterfaces.js');
 const specconst = require('./spectronConstants.js');
 
-const waitUntilTime = 20000;
-
 class WebDriver {
     constructor(options) {
         this.options = options;
@@ -19,9 +17,9 @@ class WebDriver {
         try {
             const el = await this.driver.wait(
                 until.elementLocated(By.xpath(xpath)),
-                waitUntilTime
+                specconst.TIMEOUT_WAIT_ELEMENT
             )
-            await this.driver.wait(until.elementIsNotVisible(el), waitUntilTime);
+            await this.driver.wait(until.elementIsNotVisible(el), specconst.TIMEOUT_WAIT_ELEMENT);
             if (this.driver.findElements(By.xpath(xpath)).length > 0) {
                 result = true;
             }
@@ -39,7 +37,7 @@ class WebDriver {
         try {
             const el = await this.driver.wait(
                 until.elementLocated(By.xpath(xpath)),
-                waitUntilTime
+                specconst.TIMEOUT_WAIT_ELEMENT
             )
             await this.driver.wait(until.elementIsVisible(el), timeout);          
         }
@@ -51,22 +49,22 @@ class WebDriver {
     async  waitElementVisibleAndGet(xpath) {
         const el = await this.driver.wait(
             until.elementLocated(By.xpath(xpath)),
-            waitUntilTime
+            specconst.TIMEOUT_WAIT_ELEMENT
         )
-        return await this.driver.wait(until.elementIsVisible(el), waitUntilTime)
+        return await this.driver.wait(until.elementIsVisible(el), specconst.TIMEOUT_WAIT_ELEMENT)
     }
 
     async getElementById(id) {
-        const el = await this.driver.wait(until.elementLocated(By.id(id)), waitUntilTime)
-        return await this.driver.wait(until.elementIsVisible(el), waitUntilTime)
+        const el = await this.driver.wait(until.elementLocated(By.id(id)), specconst.TIMEOUT_WAIT_ELEMENT)
+        return await this.driver.wait(until.elementIsVisible(el), specconst.TIMEOUT_WAIT_ELEMENT)
     }
 
     async getElementByXPath(xpath) {
         const el = await this.driver.wait(
             until.elementLocated(By.xpath(xpath)),
-            waitUntilTime
+            specconst.TIMEOUT_WAIT_ELEMENT
         )
-        return await this.driver.wait(until.elementIsVisible(el), waitUntilTime)
+        return await this.driver.wait(until.elementIsVisible(el), specconst.TIMEOUT_WAIT_ELEMENT)
     }
 
     async inputText(el, data) {
@@ -91,9 +89,9 @@ class WebDriver {
         }
     }
 
-    async login(username) {
-        await this.inputText(ui.SIGN_IN_EMAIL, username);
-        await this.inputText(ui.SIGN_IN_PASSWORD, specconst.SIGN_IN_PASSWORD);
+    async login(user) {
+        await this.inputText(ui.SIGN_IN_EMAIL, user.username);
+        await this.inputText(ui.SIGN_IN_PASSWORD, user.password);
         var singin = await this.getElementByXPath(ui.SIGN_IN_BUTTON);
         await singin.click();       
         await this.waitElelmentIsVisible(ui.SETTTING_BUTTON,specconst.TIMEOUT_PAGE_LOAD);
@@ -198,7 +196,7 @@ class WebDriver {
         var el = await this.getElementByXPath(xpath);
         await el.click();
         var eheader = await this.getElementByXPath(ui.HEADER_MODULE);       
-        await this.driver.wait(until.elementIsVisible(eheader), waitUntilTime)
+        await this.driver.wait(until.elementIsVisible(eheader), specconst.TIMEOUT_WAIT_ELEMENT)
     }
 
     async createRoom(usernames, name, description, type) {
@@ -262,7 +260,7 @@ class WebDriver {
         try {
             const el = await this.driver.wait(
                 until.elementLocated(By.xpath(xpath)),
-                waitUntilTime
+                specconst.TIMEOUT_WAIT_ELEMENT
             )
             await this.driver.wait(until.elementIsVisible(el), timeout);          
         }

@@ -48,21 +48,21 @@ let webActions, windowAction;
 
         await webdriver.startDriver();
         await webdriver.login(specconst.USER_A);
-        await webdriver.createIM(specconst.USER_B);
-        await webdriver.sendMessages([Utils.randomString()]);
+        await webdriver.createIM(specconst.USER_B.username);       
         await webActions.login(specconst.USER_B);
         
         await windowAction.reload(); 
-        await app.client.waitForVisible(ifc.SETTTING_BUTTON, windowAction.timeOut(50));       
+        await app.client.waitForVisible(ifc.SETTTING_BUTTON, Utils.toMs(50));       
         await webActions.persistToastIM();
     
         await windowAction.pressCtrlM();
-        await webdriver.sendMessages([Utils.randomString(),Utils.randomString()]);
-        await windowAction.veriryPersistToastNotification();
+        var message = await Utils.randomString();
+        await webdriver.sendMessages([message]);
+        await windowAction.veriryPersistToastNotification(message);
         await webdriver.startDriver();
-        await webdriver.createMIM([specconst.USER_B, specconst.USER_C]);
-        await webdriver.sendMessages([Utils.randomString(),Utils.randomString()]);
-        await windowAction.veriryPersistToastNotification();
+        await webdriver.createMIM([specconst.USER_B.username, specconst.USER_C.username]);
+        await webdriver.sendMessages([message]);
+        await windowAction.veriryPersistToastNotification(message);
      
     })
      /**
@@ -73,14 +73,15 @@ let webActions, windowAction;
    it('Toast notification appears on screen and should disappear in few seconds IM', async () => {
     
         await windowAction.showWindow();
-        await app.client.waitForVisible(ifc.SETTTING_BUTTON, windowAction.timeOut(50));
+        await app.client.waitForVisible(ifc.SETTTING_BUTTON, Utils.toMs(50));
         await webActions.persistToastIM();
         await webdriver.clickLeftNavItem(specconst.USER_B.name);
-        await webdriver.sendMessages([Utils.randomString(),Utils.randomString()]);
-        await windowAction.veriryNotPersistToastNotification();
-        await webdriver.createMIM([specconst.USER_B, specconst.USER_C]);
-        await webdriver.sendMessages([Utils.randomString(),Utils.randomString()]);
-        await windowAction.veriryNotPersistToastNotification();
+        var message = await Utils.randomString();
+        await webdriver.sendMessages([message]);
+        await windowAction.verifyNotPersistToastNotification("Electron");
+        await webdriver.createMIM([specconst.USER_B.username, specconst.USER_C.username]);      
+        await webdriver.sendMessages([message]);
+        await windowAction.verifyNotPersistToastNotification("Electron");
       
   })
  

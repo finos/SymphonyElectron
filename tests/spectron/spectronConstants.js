@@ -1,4 +1,3 @@
-require('dotenv').config()
 module.exports = {
 
     SYMPHONY_CONFIG_FILE_NAME: "/Symphony.config",
@@ -20,10 +19,9 @@ module.exports = {
     },
 
     LOG_FILENAME_PREFIX: "logs_symphony_",
-    USER_A: process.env.USER_A,
-    USER_B: process.env.USER_B,
-    USER_C: process.env.USER_C,
-    SIGN_IN_PASSWORD: process.env.PASSWORD,
+    USER_A: {username:process.env.USER_A,password:process.env.PASSWORD,name:process.env.USER_A_NAME},
+    USER_B: {username:process.env.USER_B,password:process.env.PASSWORD,name:process.env.USER_B_NAME},
+    USER_C: {username:process.env.USER_C,password:process.env.PASSWORD,name:process.env.USER_C_NAME},   
     TESTED_HOST: process.env.TESTED_HOST,
     TYPE_ROOM: {private:"PRIVATE",public:"PUBLIC"},
     TIMEOUT_PAGE_LOAD: 120000,
