@@ -316,6 +316,18 @@ class WindowsActions {
         await this.mouseMoveCenter();
     } 
 
+    async getBadgeCount()
+    {
+        let count = await this.app.electron.remote.app.getBadgeCount();
+        console.log(count);
+        return count;
+    }
+
+    async resetBadgeCount()
+    {
+        await this.app.electron.remote.app.setBadgeCount(0);
+    }
+
 }
 
 module.exports = WindowsActions;
