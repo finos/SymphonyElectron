@@ -87,32 +87,43 @@ const library = new ffi.Library((cryptoLibPath), {
     getVersion: [ref.types.CString, []],
 });
 
+/**
+ * Method to decrypt content
+ * @param Base64IV
+ * @param Base64AAD
+ * @param Base64Key
+ * @param Base64In
+ * @return {*}
+ * @constructor
+ */
 const AESGCMEncrypt = function(Base64IV, Base64AAD, Base64Key, Base64In) {
-    let base64In = Base64In;
-
-    if (!base64In) {
-        base64In = "";
-    }
-
-    const IV = Buffer.from(Base64IV, 'base64');
-    const AAD = Buffer.from(Base64AAD, 'base64');
-    const Key = Buffer.from(Base64Key, 'base64');
-    const In = Buffer.from(base64In, 'base64');
-
-    const OutPtr = Buffer.alloc(In.length);
-    const Tag = Buffer.alloc(TAG_LENGTH);
-
-    const resultCode = library.AESEncryptGCM(In, In.length, AAD, AAD.length, Key, IV, IV.length, OutPtr, Tag, TAG_LENGTH);
-
-    if (resultCode < 0) {
-        log.send(logLevels.ERROR, `AESEncryptGCM, Failed to encrypt with exit code ${resultCode}`);
-    }
-    log.send(logLevels.INFO, `Output from AESEncryptGCM ${resultCode}`);
-    const bufferArray = [OutPtr, Tag];
-    return Buffer.concat(bufferArray).toString('base64')
+    return EncryptDecrypt('AESGCMEncrypt', Base64IV, Base64AAD, Base64Key, Base64In);
 };
 
+/**
+ * Method to decrypt content
+ * @param Base64IV
+ * @param Base64AAD
+ * @param Base64Key
+ * @param Base64In
+ * @return {*}
+ * @constructor
+ */
 const AESGCMDecrypt = function(Base64IV, Base64AAD, Base64Key, Base64In) {
+    return EncryptDecrypt('AESGCMDecrypt', Base64IV, Base64AAD, Base64Key, Base64In);
+};
+
+/**
+ * Encrypt / Decrypt
+ * @param name {String} - Method name
+ * @param Base64IV {String} base64
+ * @param Base64AAD {String} base64
+ * @param Base64Key {String} base64
+ * @param Base64In {String} base64
+ * @return {*}
+ * @constructor
+ */
+const EncryptDecrypt = function(name, Base64IV, Base64AAD, Base64Key, Base64In) {
     let base64In = Base64In;
 
     if (!base64In) {
@@ -124,30 +135,56 @@ const AESGCMDecrypt = function(Base64IV, Base64AAD, Base64Key, Base64In) {
     const Key = Buffer.from(Base64Key, 'base64');
     const In = Buffer.from(base64In, 'base64');
 
-    const CipherTextLen = In.length - TAG_LENGTH;
-    const Tag = Buffer.from(In.slice(In.length - 16, In.length));
-    const OutPtr = Buffer.alloc(In.length - TAG_LENGTH);
-
-    const resultCode = library.AESDecryptGCM(In, CipherTextLen, AAD, AAD.length, Tag, TAG_LENGTH, Key, IV, IV.length, OutPtr);
-
-    if (resultCode < 0) {
-        log.send(logLevels.ERROR, `AESDecryptGCM, Failed to decrypt with exit code ${resultCode}`);
-    }
-    log.send(logLevels.INFO, `Output from AESDecryptGCM ${resultCode}`);
-    return OutPtr.toString('base64')
-};
-
-const EncryptDecrypt = function(name, Base64IV, Base64AAD, Base64Key, Base64In) {
     if (name === 'AESGCMEncrypt') {
-        return AESGCMEncrypt(Base64IV, Base64AAD, Base64Key, Base64In);
+        const OutPtr = Buffer.alloc(In.length);
+        const Tag = Buffer.alloc(TAG_LENGTH);
+
+        const resultCode = library.AESEncryptGCM(In, In.length, AAD, AAD.length, Key, IV, IV.length, OutPtr, Tag, TAG_LENGTH);
+
+        if (resultCode < 0) {
+            log.send(logLevels.ERROR, `AESEncryptGCM, Failed to encrypt with exit code ${resultCode}`);
+        }
+        log.send(logLevels.INFO, `Output from AESEncryptGCM ${resultCode}`);
+        const bufferArray = [OutPtr, Tag];
+        return Buffer.concat(bufferArray).toString('base64');
     }
-    return AESGCMDecrypt(Base64IV, Base64AAD, Base64Key, Base64In);
+
+    if (name === 'AESGCMDecrypt') {
+        const CipherTextLen = In.length - TAG_LENGTH;
+        const Tag = Buffer.from(In.slice(In.length - 16, In.length));
+        const OutPtr = Buffer.alloc(In.length - TAG_LENGTH);
+
+        const resultCode = library.AESDecryptGCM(In, CipherTextLen, AAD, AAD.length, Tag, TAG_LENGTH, Key, IV, IV.length, OutPtr);
+
+        if (resultCode < 0) {
+            log.send(logLevels.ERROR, `AESDecryptGCM, Failed to decrypt with exit code ${resultCode}`);
+        }
+        log.send(logLevels.INFO, `Output from AESDecryptGCM ${resultCode}`);
+        return OutPtr.toString('base64');
+    }
+
+    return null;
 };
 
+/**
+ * Decrypt RSA
+ * @param pemKey
+ * @param input
+ * @return {*}
+ * @constructor
+ */
 const RSADecrypt = function (pemKey, input) {
     return RSAEncryptDecrypt("RSADecrypt", pemKey, input);
 };
 
+/**
+ * Encrypt / Decrypt RSA
+ * @param action
+ * @param pemKey
+ * @param inputStr
+ * @return {String}
+ * @constructor
+ */
 const RSAEncryptDecrypt = function (action, pemKey, inputStr) {
 
     let rsaKey = getRSAKeyFromPEM(pemKey);
@@ -179,6 +216,11 @@ const RSAEncryptDecrypt = function (action, pemKey, inputStr) {
     return Buffer.from(outPtr.toString('hex'), 'hex').toString('base64');
 };
 
+/**
+ * Get RSA key from PEM key
+ * @param pemKey
+ * @return {*}
+ */
 const getRSAKeyFromPEM = function (pemKey) {
 
     let pemKeyBytes = Buffer.from(pemKey, 'utf-8');
@@ -201,6 +243,5 @@ const getRSAKeyFromPEM = function (pemKey) {
 module.exports = {
     AESGCMEncrypt: AESGCMEncrypt,
     AESGCMDecrypt: AESGCMDecrypt,
-    EncryptDecrypt: EncryptDecrypt,
     RSADecrypt: RSADecrypt,
 };
