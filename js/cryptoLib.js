@@ -124,9 +124,9 @@ const AESGCMDecrypt = function(Base64IV, Base64AAD, Base64Key, Base64In) {
     const Key = Buffer.from(Base64Key, 'base64');
     const In = Buffer.from(base64In, 'base64');
 
-    const OutPtr = Buffer.alloc(In.length - TAG_LENGTH);
     const CipherTextLen = In.length - TAG_LENGTH;
-    const Tag = Buffer.alloc(TAG_LENGTH);
+    const Tag = Buffer.from(In.slice(In.length - 16, In.length));
+    const OutPtr = Buffer.alloc(In.length - TAG_LENGTH);
 
     const resultCode = library.AESDecryptGCM(In, CipherTextLen, AAD, AAD.length, Tag, TAG_LENGTH, Key, IV, IV.length, OutPtr);
 
