@@ -31,6 +31,7 @@ const KeyCodes = {
 
 let Search;
 let SearchUtils;
+let CryptoLib;
 let isAltKey = false;
 let isMenuOpen = false;
 
@@ -46,6 +47,14 @@ try {
 } catch (e) {
     // eslint-disable-next-line no-console
     console.warn("Failed to initialize swift search (Utils). You'll need to include the search dependency. Contact the developers for more details");
+}
+
+try {
+    CryptoLib = remote.require('./cryptoLib.js');
+} catch (e) {
+    CryptoLib = null;
+    // eslint-disable-next-line no-console
+    console.warn("Failed to initialize Crypto Lib. You'll need to include the Crypto library. Contact the developers for more details");
 }
 
 require('../downloadManager');
@@ -201,6 +210,11 @@ function createAPI() {
          * details in ./search/searchUtils.js & ./search/searchConfig.js
          */
         SearchUtils: SearchUtils || null,
+
+        /**
+         * Native encryption and decryption.
+         */
+        CryptoLib: CryptoLib,
 
         /**
          * Brings window forward and gives focus.
