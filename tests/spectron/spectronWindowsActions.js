@@ -56,7 +56,7 @@ class WindowsActions {
 
     async clickOutsideWindow() {
         await this.setPosition(0, 0);
-        var currentSize = await this.getCurrentSize();
+        let currentSize = await this.getCurrentSize();
         await robot.moveMouse(currentSize[0] + 20, currentSize[1] + 20);
         await robot.mouseClick();
     }
@@ -70,7 +70,7 @@ class WindowsActions {
     async verifyLogExported() {
         let expected = false;
         let path = await Utils.getFolderPath('Downloads');
-        var listFiles = Utils.getFiles(path);
+        let listFiles = Utils.getFiles(path);
         listFiles.forEach(function (fileName) {
             if (fileName.indexOf(constants.LOG_FILENAME_PREFIX) > -1) {
                 expected = true;
@@ -81,7 +81,7 @@ class WindowsActions {
 
     async deleteAllLogFiles() {
         let path = await Utils.getFolderPath('Downloads');
-        var listFiles = Utils.getFiles(path);
+        let listFiles = Utils.getFiles(path);
         await listFiles.forEach(function (fileName) {
             if (fileName.indexOf(constants.LOG_FILENAME_PREFIX) > -1) {
                 fs.unlinkSync(path.concat("\\", fileName));
@@ -136,7 +136,7 @@ class WindowsActions {
             return await element;
         }
         else if (element.items !== undefined) {
-            var result;
+            let result;
             for (var i = 0; result == null && i < element.items.length; i++) {
                 result = await this.menuSearch(element.items[i], namevalue);
                 result;
@@ -212,7 +212,7 @@ class WindowsActions {
     }
 
     async openMenu(arrMenu) {
-        var arrStep = [];
+        let arrStep = [];
         for (var i = 0; i < arrMenu.length; i++) {
             var item = await this.menuSearch(constants.MENU.root, arrMenu[i]);
             await arrStep.push(item);
@@ -273,7 +273,7 @@ class WindowsActions {
     }
 
     async veriryPersistToastNotification(message) {
-        var i = 0;
+        let i = 0;
         while (i < 6) {
             await Utils.sleep(1);
             await i++;
@@ -284,7 +284,7 @@ class WindowsActions {
     }
 
     async verifyNotPersistToastNotification(message) {
-        var i = 0;
+        let i = 0;
         let count = 0;
 
         while (i < 11) {
@@ -297,7 +297,7 @@ class WindowsActions {
 
     async verifyNotCloseToastWhenMouseOver(message) {
         await this.mouseMoveNotification();
-        var i = 0;
+        let i = 0;
         while (i < 8) {
             await Utils.sleep(1);
             await i++;
@@ -308,7 +308,6 @@ class WindowsActions {
 
     async getBadgeCount() {
         let count = await this.app.electron.remote.app.getBadgeCount();
-        console.log(count);
         return count;
     }
 
@@ -323,8 +322,8 @@ class WindowsActions {
 
     async verifyCurrentBadgeCount(number) {
         let expected = false;
-        var i = 0;
-        var count = await this.getBadgeCount();
+        let i = 0;
+        let count = await this.getBadgeCount();
         while (i < 5) {
             if (count == number) {
                 expected = true;
