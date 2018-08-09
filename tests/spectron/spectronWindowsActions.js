@@ -49,7 +49,7 @@ class WindowsActions {
         })
     }
 
-    async showWindow() {      
+    async showWindow() {
         await this.app.browserWindow.restore();
         await this.app.browserWindow.setAlwaysOnTop(true);
     }
@@ -65,7 +65,7 @@ class WindowsActions {
         await this.app.browserWindow.isAlwaysOnTop().then(function (isAlwaysOnTop) {
             expect(isAlwaysOnTop).toBeTruthy();
         })
-    } 
+    }
 
     async verifyLogExported() {
         let expected = false;
@@ -129,10 +129,10 @@ class WindowsActions {
             }
             await robot.keyTap('enter');
         });
-    } 
+    }
 
     async menuSearch(element, namevalue) {
-        if (element.name == namevalue) {           
+        if (element.name == namevalue) {
             return await element;
         }
         else if (element.items !== undefined) {
@@ -174,7 +174,7 @@ class WindowsActions {
         await this.app.browserWindow.isMinimized().then(async function (minimized) {
             await expect(minimized).toBeTruthy();
         }).catch((err) => {
-            console.log("error:"+err.name);
+            console.log("error:" + err.name);
         });;
     }
 
@@ -206,23 +206,22 @@ class WindowsActions {
         await robot.keyToggle('r', 'up', ['control']);
     }
 
-    async focusWindow() {        
+    async focusWindow() {
         this.app.browserWindow.focus();
         this.app.browserWindow.setAlwaysOnTop(true);
-    }    
+    }
 
     async openMenu(arrMenu) {
         var arrStep = [];
         for (var i = 0; i < arrMenu.length; i++) {
             var item = await this.menuSearch(constants.MENU.root, arrMenu[i]);
-            await  arrStep.push(item);
-        }       
+            await arrStep.push(item);
+        }
         await this.actionForMenus(arrStep);
         return arrStep;
-    }    
+    }
 
-    async reload()
-    {
+    async reload() {
         await this.app.browserWindow.getBounds().then(async (bounds) => {
             await robot.setMouseDelay(100);
             let x = bounds.x + 95;
@@ -231,101 +230,111 @@ class WindowsActions {
             await robot.moveMouse(x, y);
             await robot.mouseClick('right');
             await robot.setKeyboardDelay(2000);
-            await robot.keyTap('right');  
-            await robot.keyTap('down');           
-            await robot.keyTap('enter'); 
-          }).catch((err1) => {
-            console.log("Message:"+err1);
-          });
-    }
-    
-    async clickNotification()
-    {
-        let screen = await this.app.electron.screen.getAllDisplays(); 
-        await this.app.browserWindow.getBounds().then(async (bounds) => {  
-            await robot.setMouseDelay(50);
-            let x = screen[0].bounds.width-50;
-            let y = screen[0].bounds.height - 100;
-            await robot.moveMouseSmooth(x, y);
-            await robot.moveMouse(x, y);   
-            await robot.mouseClick();           
-          });         
+            await robot.keyTap('right');
+            await robot.keyTap('down');
+            await robot.keyTap('enter');
+        }).catch((err1) => {
+            console.log("Message:" + err1);
+        });
     }
 
-    async mouseMoveNotification()
-    {
-        let screen = await this.app.electron.screen.getAllDisplays(); 
-        await this.app.browserWindow.getBounds().then(async (bounds) => {  
+    async clickNotification() {
+        let screen = await this.app.electron.screen.getAllDisplays();
+        await this.app.browserWindow.getBounds().then(async (bounds) => {
             await robot.setMouseDelay(50);
-            let x = screen[0].bounds.width-50;
+            let x = screen[0].bounds.width - 50;
             let y = screen[0].bounds.height - 100;
             await robot.moveMouseSmooth(x, y);
-            await robot.moveMouse(x, y);   
-          });
+            await robot.moveMouse(x, y);
+            await robot.mouseClick();
+        });
     }
 
-    async mouseMoveCenter()
-    {
-        let screen = await this.app.electron.screen.getAllDisplays(); 
-        await this.app.browserWindow.getBounds().then(async (bounds) => {  
+    async mouseMoveNotification() {
+        let screen = await this.app.electron.screen.getAllDisplays();
+        await this.app.browserWindow.getBounds().then(async (bounds) => {
             await robot.setMouseDelay(50);
-            let x = screen[0].bounds.width-500;
-            let y = screen[0].bounds.height - 100;          
-        await robot.moveMouseSmooth(x, y);
-        await robot.moveMouse(x, y);  
-      });     
-    }   
-    
-    async veriryPersistToastNotification(message)
-    {
-        var i =0;
-        while(i < 6)
-        {            
-            await Utils.sleep(1);  
+            let x = screen[0].bounds.width - 50;
+            let y = screen[0].bounds.height - 100;
+            await robot.moveMouseSmooth(x, y);
+            await robot.moveMouse(x, y);
+        });
+    }
+
+    async mouseMoveCenter() {
+        let screen = await this.app.electron.screen.getAllDisplays();
+        await this.app.browserWindow.getBounds().then(async (bounds) => {
+            await robot.setMouseDelay(50);
+            let x = screen[0].bounds.width - 500;
+            let y = screen[0].bounds.height - 100;
+            await robot.moveMouseSmooth(x, y);
+            await robot.moveMouse(x, y);
+        });
+    }
+
+    async veriryPersistToastNotification(message) {
+        var i = 0;
+        while (i < 6) {
+            await Utils.sleep(1);
             await i++;
         }
         await this.webAction.verifyToastNotificationShow(message);
-        await this.clickNotification();        
+        await this.clickNotification();
         await this.mouseMoveCenter();
     }
 
-    async verifyNotPersistToastNotification(message)
-    {
+    async verifyNotPersistToastNotification(message) {
         var i = 0;
-        let count =0;
-      
-        while(i < 11)
-        {            
-            await Utils.sleep(1); 
+        let count = 0;
+
+        while (i < 11) {
+            await Utils.sleep(1);
             await i++;
         }
         await this.webAction.verifyNoToastNotificationShow(message);
         await this.mouseMoveCenter();
-    } 
+    }
 
-    async verifyNotCloseToastWhenMouseOver(message)
-    {
+    async verifyNotCloseToastWhenMouseOver(message) {
         await this.mouseMoveNotification();
-        var i =0;
-        while(i < 8)
-        {            
-            await Utils.sleep(1);  
+        var i = 0;
+        while (i < 8) {
+            await Utils.sleep(1);
             await i++;
         }
         await this.webAction.verifyToastNotificationShow(message);
         await this.mouseMoveCenter();
-    } 
+    }
 
-    async getBadgeCount()
-    {
+    async getBadgeCount() {
         let count = await this.app.electron.remote.app.getBadgeCount();
         console.log(count);
         return count;
     }
 
-    async resetBadgeCount()
-    {
+    async resetBadgeCount() {
         await this.app.electron.remote.app.setBadgeCount(0);
+    }
+
+    async getBadgeCount() {
+        let count = await this.app.electron.remote.app.getBadgeCount();
+        return count;
+    }
+
+    async verifyCurrentBadgeCount(number) {
+        let expected = false;
+        var i = 0;
+        var count = await this.getBadgeCount();
+        while (i < 5) {
+            if (count == number) {
+                expected = true;
+                break;
+            }
+            await Utils.sleep(1);
+            count = await this.getBadgeCount();
+            await i++;
+        }
+        await expect(expected).toBeTruthy();
     }
 
 }
