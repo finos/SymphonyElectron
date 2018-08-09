@@ -2,11 +2,11 @@ const Application = require('./spectronSetup');
 const WebDriver = require('./spectronWebDriver');
 const { isMac } = require('../../js/utils/misc.js');
 const Utils = require('./spectronUtils');
-var app = new Application({
+let app = new Application({
     startTimeout: Application.getTimeOut(),
     waitTimeout: Application.getTimeOut()
 });
-var webdriver = new WebDriver({ browser: 'chrome' });
+let webdriver = new WebDriver({ browser: 'chrome' });
 const WindowsAction = require('./spectronWindowsActions');
 const WebActions = require('./spectronWebActions');
 const specconst = require('./spectronConstants.js');

@@ -159,7 +159,7 @@ class WebActions {
     }
 
     async getElementByXPath(xpath) {
-        var elem = this.app.client.element(xpath);
+        let elem = this.app.client.element(xpath);
         if (elem.isVisible()) {
             return elem;
         }
@@ -167,7 +167,7 @@ class WebActions {
     }
 
     async inputText(el, data) {
-        var obj = await this.getElementByXPath(el);
+        let obj = await this.getElementByXPath(el);
         if (obj != null)
             await this.app.client.setValue(el, data);
     }
@@ -195,7 +195,7 @@ class WebActions {
 
     }
     async clickLeftNavItem(name) {
-        var xpath = await ui.LEFT_NAV_SINGLE_ITEM.replace("$$", name);
+        let xpath = await ui.LEFT_NAV_SINGLE_ITEM.replace("$$", name);
         await this.clickAndWaitElementVisible(xpath,ui.HEADER_MODULE);
     }
 }
