@@ -275,5 +275,16 @@ class WebDriver {
      async close() {
         await this.driver.close();
     }
+
+    async sendMessagesAndVerifyToast(messages) {
+        for (var i = 0; i < messages.length; i++) {
+            await this.sendMessage(messages[i]).then(async()=>
+            {
+                await this.webAction.verifyToastNotificationShow(messages[i])
+            }).catch((err) => {
+                console.log("error:"+err.message);
+            });         
+        }
+    }
 }
 module.exports = WebDriver;
