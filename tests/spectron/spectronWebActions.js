@@ -274,10 +274,6 @@ class WebActions {
         await this.clickAndWaitElementVisible(ui.SIGNOUT, ui.SIGNOUT_MODAL_BUTTON);
         await this.clickAndWaitElementVisible(ui.SIGNOUT_MODAL_BUTTON, ui.SIGN_IN_BUTTON, constants.TIMEOUT_PAGE_LOAD);
     }
-    async clickLeftNavItem(name) {
-        let xpath = await ui.LEFT_NAV_SINGLE_ITEM.replace("$$", name);
-        await this.clickAndWaitElementVisible(xpath,ui.HEADER_MODULE);
-    }
 }
 
 module.exports = WebActions;
