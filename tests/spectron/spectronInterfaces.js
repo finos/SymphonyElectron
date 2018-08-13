@@ -32,7 +32,9 @@ module.exports= {
     PERSIS_NOTIFICATION_INPUT_IM: "//div[@class='alerts-settings__notification-category']//h5[text()='IMs:']/..//input[@class='persistent-notification']",
     PERSIS_NOTIFICATION_INPUT_SIGNAL: "//div[@class='alerts-settings__notification-category']//h5[text()='Signals:']/..//input[@class='persistent-notification']",
     ALERT_TAB: "//*[contains(@class,'tempo-tabs__tab tabs-tab') and @data-tab='alerts']",
+    GENERAL_TAB: "//*[contains(@class,'tempo-tabs__tab tabs-tab') and @data-tab='general']",
     ALERT_OPTION: "//span[@class='sym-menu-tooltip__option-label' and contains(.,'Alerts')]",
+    GENERAL_OPTION: "//span[@class='sym-menu-tooltip__option-label' and contains(.,'General')]",
     NAV_ALIAS: "//div[@class='nav-profile__alias']",
     SIGNAL_HEADER: "//span[@class='navigation-category-name' and contains(.,'Signals')]",
     WARNING_CLOSE_ICON: "//div[@id='sysMsg']//span[@class='close-icon']",
@@ -65,5 +67,15 @@ module.exports= {
     //Inbox
     INBOX_BUTTON: ".toolbar-btn-inbox",
     INBOX_HEADER: ".inbox-header",
+    //ACP
+    ACP_LINK: "//button[@class='show-admin-link left-action button-reset']",
+    IMG_ADMIN_LOGO: "//img[@src='./img/nav_admin_logo.png']",
+    //LOG OUT
+    LOGOUT_DROPDOWN: "//div[@class='header-account']",
+    ADMIN_NAME: "//*[@class='account-name']",
+    ADMIN_LOG_OUT: "//*[text()[contains(.,'Log out')]]",
+    ADMIN_PAGE_TITLE: "//h2[@class='page-title']",
+    //INPUT SEARCH
+    INPUT_SEARCH_ENTITIES: "//input[@id='search-entities']"
 };
 
