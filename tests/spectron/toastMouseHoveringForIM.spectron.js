@@ -14,8 +14,9 @@ const ifc = require('./spectronInterfaces.js');
 let webActions, windowAction;
 
 !isMac? describe('Verify toast notification for IMs', () => {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
-    let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    let originalTimeout = specconst.DEFAULT_TIMEOUT_INTERVAL;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = specconst.TIMEOUT_TEST_SUITE;
+    
     beforeAll(async(done) => {
         try
         {

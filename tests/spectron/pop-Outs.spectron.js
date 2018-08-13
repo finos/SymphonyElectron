@@ -10,7 +10,7 @@ let app, webActions, windowsActions;
 describe('Tests for Pop-Outs', () => {
 
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 300000;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = constants.TIMEOUT_TEST_SUITE;
 
     beforeAll(async (done) => {
         try {

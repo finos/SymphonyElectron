@@ -24,6 +24,7 @@ module.exports = {
     USER_C: { username: process.env.USER_C, password: process.env.PASSWORD, name: process.env.USER_C_NAME },
     TESTED_HOST: process.env.TESTED_HOST,
     TYPE_ROOM: { private: "PRIVATE", public: "PUBLIC" },
+    TIMEOUT_TEST_SUITE: 600000,
     TIMEOUT_PAGE_LOAD: 120000,
     TIMEOUT_WAIT_ELEMENT: 10000
 };
