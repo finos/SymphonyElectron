@@ -8,8 +8,7 @@ const Utils = require('./spectronUtils');
 let app, webActions, windowsActions;
 
 describe('Tests for Pop-Outs', () => {
-
-    let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    
     jasmine.DEFAULT_TIMEOUT_INTERVAL = constants.TIMEOUT_TEST_SUITE;
 
     beforeAll(async (done) => {
@@ -27,7 +26,6 @@ describe('Tests for Pop-Outs', () => {
         try {
             await windowsActions.closeAllPopOutWindow();
             if (app && app.isRunning()) {
-                jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
                 await app.stop();
                 await webDriver.quit();
                 done();
@@ -67,7 +65,7 @@ describe('Tests for Pop-Outs', () => {
 
                 await windowsActions.bringToFront("Symphony");
                 await webActions.clickLeftNavItem(constants.USER_B.name);
-                await Utils.sleep(1); //wait for popout loading completely
+                await Utils.sleep(1); //wait for popout overlaying completely
                 await windowsActions.verifyWindowFocus(constants.USER_B.name);
 
                 await windowsActions.bringToFront("Symphony");
