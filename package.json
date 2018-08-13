@@ -91,7 +91,7 @@
     "browserify": "16.2.2",
     "chromedriver": "2.40.0",
     "cross-env": "5.2.0",
-    "electron": "2.0.6",
+    "electron": "2.0.7",
     "electron-builder": "20.16.4",
     "electron-builder-squirrel-windows": "12.3.0",
     "electron-chromedriver": "2.0.0",
@@ -134,6 +134,6 @@
   },
   "optionalDependencies": {
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.2",
-    "swift-search": "1.0.4"
+    "swift-search": "1.0.5"
   }
 }
