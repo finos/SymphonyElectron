@@ -399,23 +399,39 @@ function getTemplate(app) {
                 label: i18n.getMessageFor('Title Bar Style'),
                 submenu: [
                     {
-                        label: i18n.getMessageFor('Native With Custom'),
+                        label: i18n.getMessageFor('Native'),
                         type: 'checkbox',
-                        checked: titleBarStyle === titleBarStyles.NATIVE_WITH_CUSTOM,
+                        checked: titleBarStyle === titleBarStyles.NATIVE,
+                        enabled: titleBarStyle !== titleBarStyles.NATIVE,
                         click: function (item) {
-                            item.menu.items[1].checked = false;
-                            titleBarStyle = titleBarStyles.NATIVE_WITH_CUSTOM;
+                            const isNativeStyle = titleBarStyle === titleBarStyles.NATIVE;
+                            item.menu.items[1].checked = isNativeStyle;
+
+                            // Disable menu item accordingly
+                            item.menu.items[0].enabled = isNativeStyle;
+                            item.menu.items[1].enabled = !isNativeStyle;
+
+                            titleBarStyle = titleBarStyles.NATIVE;
                             updateConfigField('isCustomTitleBar', false);
+                            titleBarActions(app);
                         }
                     },
                     {
                         label: i18n.getMessageFor('Custom'),
                         type: 'checkbox',
                         checked: titleBarStyle === titleBarStyles.CUSTOM,
+                        enabled: titleBarStyle !== titleBarStyles.CUSTOM,
                         click: function (item) {
-                            item.menu.items[0].checked = false;
+                            const isCustomStyle = titleBarStyle === titleBarStyles.CUSTOM;
+                            item.menu.items[0].checked = isCustomStyle;
+
+                            // Disable menu item accordingly
+                            item.menu.items[1].enabled = isCustomStyle;
+                            item.menu.items[0].enabled = !isCustomStyle;
+
                             titleBarStyle = titleBarStyles.CUSTOM;
                             updateConfigField('isCustomTitleBar', true);
+                            titleBarActions(app);
                         }
                     }
                 ]
@@ -479,7 +495,7 @@ function setCheckboxValues() {
                                 bringToFront = configData[key];
                                 break;
                             case 'isCustomTitleBar':
-                                titleBarStyle = configData[key] ? titleBarStyles.CUSTOM : titleBarStyles.NATIVE_WITH_CUSTOM;
+                                titleBarStyle = configData[key] ? titleBarStyles.CUSTOM : titleBarStyles.NATIVE;
                                 break;
                             case 'memoryRefresh':
                                 memoryRefresh = configData[key];
@@ -535,6 +551,28 @@ function getMinimizeOnClose() {
 
 function getTitleBarStyle() {
     return titleBarStyle;
+}
+
+/**
+ * Displays an option to the user whether
+ * to relaunch application
+ *
+ * @param app
+ */
+function titleBarActions(app) {
+    const options = {
+        type: 'question',
+        title: i18n.getMessageFor('Relaunch Application'),
+        message: i18n.getMessageFor('Updating Title bar style requires Symphony to relaunch'),
+        buttons: ['Relaunch', 'Cancel']
+    };
+
+    electron.dialog.showMessageBox(options, function (index) {
+        if (index === 0) {
+            app.relaunch();
+            app.exit();
+        }
+    });
 }
 
 module.exports = {

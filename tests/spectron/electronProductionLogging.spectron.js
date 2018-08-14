@@ -1,11 +1,12 @@
 const Application = require('./spectronSetup');
-const {isMac} = require('../../js/utils/misc');
 const WindowsActions = require('./spectronWindowsActions');
+const { isMac } = require('../../js/utils/misc.js');
+const Utils = require('./spectronUtils');
 
-let app = new Application({});
+let app;
 let windowActions;
 
-describe('Tests for Resizing windows', () => {
+!isMac ? describe('Tests for Electron Production Logging', () => {
 
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
@@ -14,8 +15,9 @@ describe('Tests for Resizing windows', () => {
         try {
             app = await new Application({}).startApplication();
             windowActions = await new WindowsActions(app);
+            await windowActions.deleteAllLogFiles();
             done();
-        } catch(err) {
+        } catch (err) {
             done.fail(new Error(`Unable to start application error: ${err}`));
         };
     });
@@ -33,17 +35,18 @@ describe('Tests for Resizing windows', () => {
     });
 
     /**
-     * Verify whether the main window can be minimized upto 300px
-     * TC-ID: 3028239
-     * Cover scenarios in AVT-768
+     * Verify the production logs exists when clicking on "Show logs in Explorer"
+     * TC-ID: 3935260
+     * Cover scenarios in AVT-1029
      */
-    it('Should be minimized up to 300px', async (done) => {
+    it('Verify the production logs exists when clicking on Show logs in Explorer', async (done) => {
         try {
-            await windowActions.resizeWindows(0, 0);
-            expect([ 300, 300 ]).toEqual(await windowActions.getCurrentSize());
+            await windowActions.openMenu(["Help", "Troubleshooting", "Show Logs in Explorer"]);
+            Utils.sleep(2000) //sleep for creating log
+            await windowActions.verifyLogExported();
             done();
         } catch (err) {
-            done.fail(new Error(`failed to minimize window to 300 px with error: ${err}`));
-        }
+            done.fail(new Error(`Fail to export production logs with error: ${err}`));
+        };
     });
-});
+}) : describe.skip();

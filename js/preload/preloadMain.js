@@ -26,10 +26,14 @@ const memoryMonitorInterval = 1000 * 60 * 60;
 const SnackBar = require('../snackBar').SnackBar;
 const KeyCodes = {
     Esc: 27,
+    Alt: 18,
 };
 
 let Search;
 let SearchUtils;
+let CryptoLib;
+let isAltKey = false;
+let isMenuOpen = false;
 
 try {
     Search = remote.require('swift-search').Search;
@@ -43,6 +47,14 @@ try {
 } catch (e) {
     // eslint-disable-next-line no-console
     console.warn("Failed to initialize swift search (Utils). You'll need to include the search dependency. Contact the developers for more details");
+}
+
+try {
+    CryptoLib = remote.require('./cryptoLib.js');
+} catch (e) {
+    CryptoLib = null;
+    // eslint-disable-next-line no-console
+    console.warn("Failed to initialize Crypto Lib. You'll need to include the Crypto library. Contact the developers for more details");
 }
 
 require('../downloadManager');
@@ -198,6 +210,11 @@ function createAPI() {
          * details in ./search/searchUtils.js & ./search/searchConfig.js
          */
         SearchUtils: SearchUtils || null,
+
+        /**
+         * Native encryption and decryption.
+         */
+        CryptoLib: CryptoLib,
 
         /**
          * Brings window forward and gives focus.
@@ -470,7 +487,6 @@ function createAPI() {
      * the window enters full screen
      */
     local.ipcRenderer.on('window-enter-full-screen', (event, arg) => {
-        window.addEventListener('keydown', throttledKeyDown, true);
         if (snackBar && typeof arg === 'object' && arg.snackBar) {
             setTimeout(() => snackBar.showSnackBar(arg.snackBar), 500);
         }
@@ -481,7 +497,6 @@ function createAPI() {
      * the window leave full screen
      */
     local.ipcRenderer.on('window-leave-full-screen', () => {
-        window.removeEventListener('keydown', throttledKeyDown, true);
         if (snackBar) {
             snackBar.removeSnackBar();
         }
@@ -498,22 +513,46 @@ function createAPI() {
     function sanitize() {
         local.ipcRenderer.send(apiName, {
             cmd: apiCmds.sanitize,
-            windowName: window.name
+            windowName: window.name || 'main'
         });
     }
 
-    const throttledKeyDown = throttle(1000, (event) => {
+    // Handle key down events
+    const throttledKeyDown = throttle(500, (event) => {
+        isAltKey = event.keyCode === KeyCodes.Alt;
         if (event.keyCode === KeyCodes.Esc) {
             local.ipcRenderer.send(apiName, {
                 cmd: apiCmds.keyPress,
-                keyCode: KeyCodes.Esc
+                keyCode: event.keyCode
             });
+        }
+    });
+
+    // Handle key up events
+    const throttledKeyUp = throttle(500, (event) => {
+        if (isAltKey && (event.keyCode === KeyCodes.Alt || KeyCodes.Esc)) {
+            isMenuOpen = !isMenuOpen;
+        }
+        if (isAltKey && isMenuOpen && event.keyCode === KeyCodes.Alt) {
+            local.ipcRenderer.send(apiName, {
+                cmd: apiCmds.keyPress,
+                keyCode: event.keyCode
+            });
+        }
+    });
+
+    const throttleMouseDown = throttle(500, () => {
+        if (isAltKey && isMenuOpen) {
+            isMenuOpen = !isMenuOpen;
         }
     });
 
     window.addEventListener('offline', updateOnlineStatus, false);
     window.addEventListener('online', updateOnlineStatus, false);
     window.addEventListener('beforeunload', sanitize, false);
+    window.addEventListener('keyup', throttledKeyUp, true);
+    window.addEventListener('keydown', throttledKeyDown, true);
+    window.addEventListener('mousedown', throttleMouseDown, { capture: true });
 
     updateOnlineStatus();
 }

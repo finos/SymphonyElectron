@@ -4,6 +4,7 @@ const fs = require('fs');
 const { isMac, isWindowsOS } = require('../../js/utils/misc');
 const ncp = require('ncp').ncp;
 const constants = require('./spectronConstants.js');
+const ui = require('./spectronInterfaces.js');
 
 class App {
 
@@ -26,22 +27,34 @@ class App {
             App.copyLibraries(constants.SEARCH_LIBRARY_PATH_WIN);
         }
 
-
         this.app = new Application(this.options);
     }
 
-    startApplication(configurations) {
-        return this.app.start().then((app) => {
-            if (configurations)
-            {
-                if (configurations.alwaysOnTop)  {
-                    app.browserWindow.setAlwaysOnTop(true);
+    async startApplication(configurations) {
+        try {
+            this.app = await this.app.start();
+            await this.app.client.waitForVisible(ui.SYM_LOGO, constants.TIMEOUT_PAGE_LOAD);
+            if (configurations) {
+                if (typeof configurations.alwaysOnTop !== "undefined") {
+                    await this.app.browserWindow.setAlwaysOnTop(configurations.alwaysOnTop);
+                }
+                if (configurations.testedHost) {
+                    await this.app.client.waitUntilWindowLoaded().url(configurations.testedHost);
                 }
             }
-            return app;
-        }).catch((err) => {
+
+            if ((typeof configurations === "undefined") || (typeof configurations.defaultSize === "undefined") || (configurations.defaultSize === true)) {
+                await this.app.browserWindow.setSize(900, 900);
+            }
+            if ((typeof configurations === "undefined") || (typeof configurations.defaultPosition === "undefined") || (configurations.defaultPosition === true)) {
+                await this.app.browserWindow.center();
+            }
+            await this.app.browserWindow.minimize();
+            await this.app.browserWindow.restore();
+            return this.app;
+        } catch (err) { 
             throw new Error("Unable to start application " + err);
-        });
+        };
     }
 
     static getAppPath() {
@@ -53,7 +66,7 @@ class App {
     }
 
     static getTimeOut() {
-        return 90000
+        return 90000;
     }
 
     static readConfig(configPath) {
@@ -116,7 +129,7 @@ class App {
             });
         });
     }
-
+     
 }
 
 module.exports = App;
