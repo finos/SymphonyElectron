@@ -13,7 +13,7 @@ const Utils = require('./spectronUtils');
 const ifc = require('./spectronInterfaces.js');
 let webActions, windowAction;
 
-!isMac? describe('Verify Flash notification in taskbar option when multiple applications are opened', () => {
+!isMac ? describe('Verify Flash notification in taskbar option when multiple applications are opened', () => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     beforeAll(async(done) => {
@@ -42,25 +42,32 @@ let webActions, windowAction;
     });
    /**
      * Verify Flash notification in taskbar option when multiple applications are opened
-     * TC-ID: 3395297
+     * TC-ID: 47308146
     * Cover scenarios in AVT-1083
     */
     it('Verify Flash notification in taskbar option when multiple applications are opened', async () => {
-
-        await webdriver.startDriver();
-        await webdriver.login(specconst.USER_A);
-        await webdriver.createIM(specconst.USER_B.username);
-        await webActions.login(specconst.USER_B);
-        await windowAction.reload();    
-        await app.client.waitForVisible(ifc.SETTTING_BUTTON, Utils.toMs(50));
-        await webActions.clickIfElementVisible(ifc.SETTTING_BUTTON);
-        await windowAction.pressCtrlM();    
-        await webdriver.clickLeftNavItem(specconst.USER_B.name);
-        var messages = [];
-        await messages.push(await Utils.randomString());
-        await messages.push(await Utils.randomString());
-        await messages.push(await Utils.randomString());     
-        await webdriver.sendMessagesAndVerifyToast(messages); 
+        if (isMac)
+        {
+            done();
+        }
+        else
+        {
+            await webdriver.startDriver();
+            await webdriver.login(specconst.USER_A);
+            await webdriver.createIM(specconst.USER_B.username);
+            await webActions.login(specconst.USER_B);
+            await windowAction.reload();    
+            await app.client.waitForVisible(ifc.SETTTING_BUTTON, Utils.toMs(50));
+            await webActions.clickIfElementVisible(ifc.SETTTING_BUTTON);
+            await windowAction.pressCtrlM();    
+            await webdriver.clickLeftNavItem(specconst.USER_B.name);
+            let messages = [];
+            await messages.push(await Utils.randomString());
+            await messages.push(await Utils.randomString());
+            await messages.push(await Utils.randomString());     
+            await webdriver.sendMessagesAndVerifyToast(messages); 
+        }
     });
   
-}):describe.skip();
+}): describe.skip();
+

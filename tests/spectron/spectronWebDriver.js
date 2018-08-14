@@ -31,20 +31,7 @@ class WebDriver {
         catch (err) {
             await assert.equal(result, false);
         }
-    }
-
-    async  waitElelmentIsVisible(xpath,timeout) {       
-        try {
-            const el = await this.driver.wait(
-                until.elementLocated(By.xpath(xpath)),
-                specconst.TIMEOUT_WAIT_ELEMENT
-            )
-            await this.driver.wait(until.elementIsVisible(el), timeout);          
-        }
-        catch (err) {
-           console.log("Error:"+err.messages);
-        }
-    }
+    }    
 
     async  waitElementVisibleAndGet(xpath) {
         const el = await this.driver.wait(
@@ -265,7 +252,7 @@ class WebDriver {
             await this.driver.wait(until.elementIsVisible(el), timeout);          
         }
         catch (err) {
-           console.log("Error:"+err.messages);
+            console.error(`Error wait element is visible: ${err}`);
         }
     }
 
@@ -278,11 +265,11 @@ class WebDriver {
 
     async sendMessagesAndVerifyToast(messages) {
         for (var i = 0; i < messages.length; i++) {
-            await this.sendMessage(messages[i]).then(async()=>
+            await this.sendMessage(messages[i]).then(async() =>
             {
                 await this.webAction.verifyToastNotificationShow(messages[i])
-            }).catch((err) => {
-                console.log("error:"+err.message);
+            }).catch((err) => {                
+                console.error(`Toast notification is not show: ${err}`);
             });         
         }
     }

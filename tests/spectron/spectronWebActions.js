@@ -82,27 +82,6 @@ class WebActions {
         return;
     }
 
-<<<<<<< 6dcc8089c70194c5740fcef5519d2aba70711cc9
-    async promiseTimeout(ms, promiseFunc) {
-        return new Promise(function (resolve, reject) {
-            // create a timeout to reject promise if not resolved
-            var timer = setTimeout(function () {
-                reject(new Error("promise timeout"));
-            }, ms);
-            promiseFunc
-                .then(function (res) {
-                    clearTimeout(timer);
-                    resolve(res);
-                })
-                .catch(function (err) {
-                    clearTimeout(timer);
-                    reject(err);
-                });
-        });
-    };
-
-=======
->>>>>>> AVT-1083 add new test
     async clickIfElementVisible(selector, timeOut = constants.TIMEOUT_WAIT_ELEMENT) {
         await this.app.client.waitForVisible(selector, timeOut)
             .click(selector)
