@@ -44,6 +44,7 @@ module.exports= {
     LAST_RULE_ROW: "//div[@class='react-signal__rules'][last()]",
     ENTER_KEYWORD_IN_LAST_INPUT: "//input",
     HEADER_MODULE: "//header[contains(@class,'module-header gs-draggable')]",
+    HEADER_MODULES: "(//header[contains(@class,'module-header gs-draggable')])[$$]",
     MENTION_USER_SUGGESTION: "//span[@class='draftJs__suggestionsEntryText' and text()='$$']",
     SUGGESTED_ENTITY_DROPDOWN: "//span[@class='draftJs__suggestionsEntryText']",
     CONFIRM_CREATE_ROOM_BUTTON: "//div[@class='modal-box__footer-buttons']//button[text()='Yes']",
@@ -51,12 +52,16 @@ module.exports= {
     SPINNER: ".spinner",
     SIGNOUT: ".sign-out",
     SIGNOUT_MODAL_BUTTON: "//div[@class='modal-content-buttons buttons']//button[contains(text(), 'Sign Out')]",
+    HEADER_MODULE_NAME: "//header[contains(@class,'module-header gs-draggable')]//span[contains(@class,'aliasable') and normalize-space()='$$']",
+    CLOSE_MODULE: "//button[contains(@class,'close-module')]",
+    CLOSE_MODULES: "(//button[contains(@class,'close-module')])[$$]",
 
     //Popin Popout
     POPOUT_BUTTON: ".enhanced-pop-out",
     POPOUT_INBOX_BUTTON: ".add-margin.popout",
     POPIN_BUTTON: "//*[contains(@class, 'enhanced-pop-in') or contains(@class, 'add-margin popin')]",
     PIN_CHAT_MOD: ".chat-module .pin-view",
+    PINNED_CHAT_MOD: ".chat-module .pinned",
 
     //Alert Settings
     MUTE_POPUP_ALERTS_CKB: ".field.field-notifications-on input",

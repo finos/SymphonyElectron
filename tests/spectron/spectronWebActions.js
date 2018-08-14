@@ -188,8 +188,6 @@ class WebActions {
         await this.clickIfElementVisible(ui.START_CHAT);
     }
 
-
-
     async logout()
     {
         await this.clickAndWaitElementVisible(ui.ADMIN_NAME, ui.ADMIN_LOG_OUT, constants.TIMEOUT_WAIT_ELEMENT);
@@ -228,6 +226,7 @@ class WebActions {
         await this.selectIMTab();
         await this.addParticipant(username);
         await this.clickDoneButton();
+        await this.verifyChatModuleVisible(username)
     }
 
     async clickPopOutIcon() {
@@ -238,6 +237,17 @@ class WebActions {
         let index = await windowsActions.getWindowCount() - 1;
         await windowsActions.windowByIndex(index);
         await this.waitElementNotVisible(ui.SPINNER, constants.TIMEOUT_PAGE_LOAD);
+    }
+
+    async clickPopInIcon(windowTitle) {
+        let windowsActions = await new WindowsActions(this.app);
+        let index = await windowsActions.getWindowIndexFromTitle(windowTitle);
+        await windowsActions.windowByIndex(index);
+        await this.mouseOver(ui.PIN_CHAT_MOD);
+        await Utils.sleep(2); //wait popin button clickable
+        await this.clickIfElementVisible(ui.POPIN_BUTTON);
+        await windowsActions.windowByIndex(0);
+        await this.waitElementVisible(ui.HEADER_MODULE);
     }
 
     async clickInboxPopOutIcon() {
@@ -254,6 +264,12 @@ class WebActions {
         await windowsActions.windowByIndex(index);
         await this.waitElementVisible(ui.POPIN_BUTTON, constants.TIMEOUT_WAIT_ELEMENT);
         await windowsActions.windowByIndex(0);
+    }
+
+    async verifyPopOutIconDisplay(){
+        await this.mouseOver(ui.PIN_CHAT_MOD);
+        await Utils.sleep(2); //wait popout button clickable
+        await this.waitElementVisible(ui.POPOUT_BUTTON, constants.TIMEOUT_WAIT_ELEMENT);
     }
 
     async clickInboxIcon() {
@@ -305,6 +321,34 @@ class WebActions {
             await this.clickIfElementVisible(selector);
             checked = await this.app.client.isSelected(selector);
         }
+    }
+    
+    async pinChat(){
+        await this.mouseOver(ui.PIN_CHAT_MOD);
+        await Utils.sleep(2); //wait popout button clickable
+        await this.clickIfElementVisible(ui.PIN_CHAT_MOD);
+        await this.waitElementVisible(ui.PINNED_CHAT_MOD);
+    }
+
+    async verifyChatModuleVisible(muduleName){
+        let locator = ui.HEADER_MODULE_NAME.replace("$$",muduleName); 
+        await this.waitElementVisible(locator);
+    }
+
+    async closeAllGridModules(){
+        let count = await this.getCount(ui.HEADER_MODULE);
+        for (let i=1; i<= count; i++){
+            let header = ui.HEADER_MODULES.replace("$$",1); 
+            let closeButton = ui.CLOSE_MODULES.replace("$$",1); 
+            await this.mouseOver(header);
+            await this.clickIfElementVisible(ui.PIN_CHAT_MOD);
+            await this.clickIfElementVisible(closeButton);
+        }
+    }
+
+    async getCount(locator){
+        let elements = await this.app.client.elements(locator);
+        return elements.value.length;
     }
 }
 
