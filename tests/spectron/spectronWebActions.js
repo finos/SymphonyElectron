@@ -19,7 +19,7 @@ class WebActions {
         })
     }
 
-    async clickMinimizeButton(){
+    async clickMinimizeButton() {
         await this.app.client.waitForVisible(ui.MINIMIZE_BTN, constants.TIMEOUT_WAIT_ELEMENT).click(ui.MINIMIZE_BTN);
     }
 
@@ -185,16 +185,14 @@ class WebActions {
         await this.clickAndWaitElementVisible(ui.SIGN_IN_BUTTON, ui.SETTTING_BUTTON, constants.TIMEOUT_PAGE_LOAD);
         await this.waitElementNotVisible(ui.SPINNER);
     }
-   
-    async persistToastIM()
-    {       
+
+    async persistToastIM() {
         await this.clickAndWaitElementVisible(ui.SETTTING_BUTTON, ui.ALERT_OPTION, constants.TIMEOUT_WAIT_ELEMENT);
-        await this.clickAndWaitElementVisible(ui.ALERT_OPTION, ui.ALERT_TAB,constants.TIMEOUT_WAIT_ELEMENT);
-        await this.clickAndWaitElementVisible(ui.PERSIS_NOTIFICATION_INPUT_IM,ui.PERSIS_NOTIFICATION_INPUT_IM, constants.TIMEOUT_WAIT_ELEMENT);
+        await this.clickAndWaitElementVisible(ui.ALERT_OPTION, ui.ALERT_TAB, constants.TIMEOUT_WAIT_ELEMENT);
+        await this.clickAndWaitElementVisible(ui.PERSIS_NOTIFICATION_INPUT_IM, ui.PERSIS_NOTIFICATION_INPUT_IM, constants.TIMEOUT_WAIT_ELEMENT);
     }
 
-    async openACP()
-    {       
+    async openACP() {
         await this.clickAndWaitElementVisible(ui.SETTTING_BUTTON, ui.GENERAL_OPTION, constants.TIMEOUT_WAIT_ELEMENT);
         await this.clickAndWaitElementVisible(ui.GENERAL_OPTION, ui.GENERAL_TAB,constants.TIMEOUT_WAIT_ELEMENT);
         await this.clickAndWaitElementVisible(ui.ACP_LINK,ui.IMG_ADMIN_LOGO, constants.TIMEOUT_WAIT_ELEMENT);
@@ -301,19 +299,17 @@ class WebActions {
     async logintoAdmin(user) {
         await this.inputText(ui.SIGN_IN_EMAIL, user.username);
         await this.inputText(ui.SIGN_IN_PASSWORD, user.password);
-        await this.clickAndWaitElementVisible(ui.SIGN_IN_BUTTON,ui.IMG_ADMIN_LOGO,constants.TIMEOUT_WAIT_ELEMENT*5);       
-      
+        await this.clickAndWaitElementVisible(ui.SIGN_IN_BUTTON, ui.IMG_ADMIN_LOGO, constants.TIMEOUT_WAIT_ELEMENT * 5);
+
     }
 
-    async sleepAndWaitForLoginForm()
-    {
-        let i = 0;       
-        while (i <= 400)
-        {
+    async sleepAndWaitForLoginForm() {
+        let i = 0;
+        while (i <= 400) {
             await Utils.sleep(2);
             i++;
-        }      
-        await this.app.client.waitForVisible(ui.SIGN_IN_BUTTON, constants.TIMEOUT_WAIT_ELEMENT);    
+        }
+        await this.app.client.waitForVisible(ui.SIGN_IN_BUTTON, constants.TIMEOUT_WAIT_ELEMENT);
     }
 
 }
