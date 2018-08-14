@@ -25,7 +25,7 @@ module.exports= {
     CREATE_IM_DONE_BTN: "//button[contains(@class,tempo-btn--good) and text()='Create']",
     START_CHAT: "//*[contains(@class, 'sym-menu-tooltip__option')]/*[text()='Start a Chat']",
     SIGNAL_OPTION: "//div[@class='sym-menu-tooltip__option']/*[text()='Create a Signal']", 
-    LEFT_NAV_SINGLE_ITEM: "//div[contains(@class, 'navigation-item-title')][.//span[@class='navigation-item-name' and normalize-space()='$$']]",
+    LEFT_NAV_SINGLE_ITEM: "//div[contains(@class, 'navigation-item-title')]//span[@class='navigation-item-name' and normalize-space()='$$']",
     CHAT_INPUT_TYPING: "//div[contains(@class,'public-DraftEditor-content')]",
     SETTTING_BUTTON: "//div[@class='toolbar-settings-text-container']",
     PERSIS_NOTIFICATION_INPUT_ROOM: "//div[@class='alerts-settings__notification-category']//h5[text()='Rooms:']/..//input[@class='persistent-notification']",
@@ -45,9 +45,25 @@ module.exports= {
     MENTION_USER_SUGGESTION: "//span[@class='draftJs__suggestionsEntryText' and text()='$$']",
     SUGGESTED_ENTITY_DROPDOWN: "//span[@class='draftJs__suggestionsEntryText']",
     CONFIRM_CREATE_ROOM_BUTTON: "//div[@class='modal-box__footer-buttons']//button[text()='Yes']",
+    MODULE_ON_GRID: "#simple_grid",
+    SPINNER: ".spinner",
+    SIGNOUT: ".sign-out",
+    SIGNOUT_MODAL_BUTTON: "//div[@class='modal-content-buttons buttons']//button[contains(text(), 'Sign Out')]",
+
+    //Popin Popout
+    POPOUT_BUTTON: ".enhanced-pop-out",
+    POPOUT_INBOX_BUTTON: ".add-margin.popout",
+    POPIN_BUTTON: "//*[contains(@class, 'enhanced-pop-in') or contains(@class, 'add-margin popin')]",
+    PIN_CHAT_MOD: ".chat-module .pin-view",
+
     //Alert Settings
     MUTE_POPUP_ALERTS_CKB: ".field.field-notifications-on input",
+    
     //Toast Message
     TOAST_MESSAGE_CONTENT: "#message",
+
+    //Inbox
+    INBOX_BUTTON: ".toolbar-btn-inbox",
+    INBOX_HEADER: ".inbox-header",
 };
 

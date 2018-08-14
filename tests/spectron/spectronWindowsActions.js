@@ -7,7 +7,6 @@ const WebActions = require('./spectronWebActions.js')
 class WindowsActions {
     constructor(app) {
         this.app = app;
-        this.webAction = new WebActions(app);
     }
 
     async getCurrentSize() {
@@ -68,6 +67,56 @@ class WindowsActions {
         })
     }
 
+    async menuSearch(element, namevalue) {
+        if (element.name == namevalue) {
+            return await element;
+        }
+        else if (element.items !== undefined) {
+            var result;
+            for (var i = 0; result == null && i < element.items.length; i++) {
+                result = await this.menuSearch(element.items[i], namevalue);
+                result;
+            }
+            return await result;
+        }
+        return await null;
+    }
+
+    async openMenu(arrMenu) {
+        var arrStep = [];
+        for (var i = 0; i < arrMenu.length; i++) {
+            var item = await this.menuSearch(constants.MENU.root, arrMenu[i]);
+            await arrStep.push(item);
+        }
+        await this.actionForMenus(arrStep);
+        return arrStep;
+    }
+
+    async actionForMenus(arrMenu) {
+        let webAction = await new WebActions(this.app);
+        await this.app.browserWindow.getBounds().then(async (bounds) => {
+            await robot.setMouseDelay(100);
+            let x = bounds.x + 95;
+            let y = bounds.y + 35;
+            await robot.moveMouseSmooth(x, y);
+            await robot.moveMouse(x, y);
+            await robot.mouseClick();
+            await webAction.openApplicationMenuByClick();
+            await robot.setKeyboardDelay(200);
+            await robot.keyTap('enter');
+            for (var i = 0; i < arrMenu.length; i++) {
+                for (var s = 0; s < arrMenu[i].step; s++) {
+                    await robot.keyTap('down');
+                }
+                if (arrMenu.length > 1 && i != arrMenu.length - 1) {
+                    //handle right keygen
+                    await robot.keyTap('right');
+                }
+            }
+            await robot.keyTap('enter');
+        });
+    }
+
     async verifyLogExported() {
         let expected = false;
         let path = await Utils.getFolderPath('Downloads');
@@ -112,6 +161,7 @@ class WindowsActions {
     }
 
     async selectMinimizeOnClose() {
+        let webAction = await new WebActions(this.app);
         await this.app.browserWindow.getBounds().then(async (bounds) => {
             await robot.setMouseDelay(100);
             let x = bounds.x + 95;
@@ -119,7 +169,7 @@ class WindowsActions {
             await robot.moveMouseSmooth(x, y);
             await robot.moveMouse(x, y);
             await robot.mouseClick();
-            await this.webAction.openApplicationMenuByClick();
+            await webAction.openApplicationMenuByClick();
             await robot.setKeyboardDelay(1000);
             await robot.keyTap('enter');
             await robot.keyTap('down');
@@ -132,22 +182,8 @@ class WindowsActions {
         });
     }
 
-    async menuSearch(element, namevalue) {
-        if (element.name == namevalue) {
-            return await element;
-        }
-        else if (element.items !== undefined) {
-            let result;
-            for (var i = 0; result == null && i < element.items.length; i++) {
-                result = await this.menuSearch(element.items[i], namevalue);
-                result;
-            }
-            return await result;
-        }
-        return await null;
-    }
-
-    async actionForMenus(arrMenu) {
+    async quitApp() {
+        let webAction = await new WebActions(this.app);
         await this.app.browserWindow.getBounds().then(async (bounds) => {
             await robot.setMouseDelay(100);
             let x = bounds.x + 95;
@@ -155,20 +191,22 @@ class WindowsActions {
             await robot.moveMouseSmooth(x, y);
             await robot.moveMouse(x, y);
             await robot.mouseClick();
-            await this.webAction.openApplicationMenuByClick();
-            await robot.setKeyboardDelay(200);
+            await webAction.openApplicationMenuByClick();
+            await robot.setKeyboardDelay(1000);
             await robot.keyTap('enter');
-            for (var i = 0; i < arrMenu.length; i++) {
-                for (var s = 0; s < arrMenu[i].step; s++) {
-                    await robot.keyTap('down');
-                }
-                if (arrMenu.length > 1 && i != arrMenu.length - 1) {
-                    //handle right keygen
-                    await robot.keyTap('right');
-                }
+            await robot.keyTap('down');
+            await robot.keyTap('down');
+            await robot.keyTap('right');
+            for (let i = 0; i < 6; i++) {
+                await robot.keyTap('down');
             }
             await robot.keyTap('enter');
         });
+    }
+
+    async pressCtrlW() {
+        await robot.keyToggle('w', 'down', ['control']);
+        await robot.keyToggle('w', 'up', ['control']);
     }
 
     async verifyMinimizeWindows() {
@@ -192,11 +230,6 @@ class WindowsActions {
         return rminimized;
     }
 
-    async pressCtrlW() {
-        await robot.keyToggle('w', 'down', ['control']);
-        await robot.keyToggle('w', 'up', ['control']);
-    }
-
     async pressCtrlM() {
         await robot.keyToggle('m', 'down', ['control']);
         await robot.keyToggle('m', 'up', ['control']);
@@ -210,16 +243,6 @@ class WindowsActions {
     async focusWindow() {
         this.app.browserWindow.focus();
         this.app.browserWindow.setAlwaysOnTop(true);
-    }
-
-    async openMenu(arrMenu) {
-        let arrStep = [];
-        for (var i = 0; i < arrMenu.length; i++) {
-            var item = await this.menuSearch(constants.MENU.root, arrMenu[i]);
-            await arrStep.push(item);
-        }
-        await this.actionForMenus(arrStep);
-        return arrStep;
     }
 
     async reload() {
@@ -337,6 +360,69 @@ class WindowsActions {
         await expect(expected).toBeTruthy();
     }
 
+    async getWindowIndexFromTitle(windowTitle) {
+        let winCount = await this.getWindowCount();
+        if (winCount > 1) {
+            for (let j = 1; j < winCount; j++) {
+                await this.windowByIndex(j);
+
+                //wait 120s for title loading
+                let title = await this.app.browserWindow.getTitle();
+                for (let i = 1; i <= 120; i++) {
+                    if (title != "Symphony") {
+                        break;
+                    }
+                    await Utils.sleep(1);
+                    title = await this.app.browserWindow.getTitle();;
+                }
+
+                if (title === windowTitle) {
+                    await this.windowByIndex(0);
+                    return j;
+                }
+            }
+        }
+        await this.windowByIndex(0);
+        return 0;
+    }
+
+    async windowByIndex(index) {
+        await this.app.client.windowByIndex(index);
+    }
+
+    async getWindowCount() {
+        return await this.app.client.getWindowCount();
+    }
+
+    async bringToFront(windowTitle) {
+        let index = await this.getWindowIndexFromTitle(windowTitle);
+        await this.windowByIndex(index);
+        await this.app.browserWindow.minimize();
+        await this.app.browserWindow.restore();
+    }
+
+    async verifyWindowFocus(windowTitle) {
+        let index = await this.getWindowIndexFromTitle(windowTitle);
+        await this.windowByIndex(index);
+        expect(await this.app.browserWindow.isFocused()).toBeTruthy();
+        await this.windowByIndex(0);
+    }
+
+    async verifyPopOutWindowAppear(windowTitle) {
+        let index = await this.getWindowIndexFromTitle(windowTitle);
+        expect(index).toBeGreaterThan(0);
+    }
+
+    async closeAllPopOutWindow() {
+        let winCount = await this.getWindowCount();
+        while (winCount > 1) {
+            await this.windowByIndex(winCount - 1);
+            await this.app.browserWindow.close();
+            await Utils.sleep(2);
+            winCount = await this.getWindowCount();
+        }
+        await this.windowByIndex(0);
+    }
 }
 
 module.exports = WindowsActions;
