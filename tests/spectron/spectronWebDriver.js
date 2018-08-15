@@ -31,8 +31,16 @@ class WebDriver {
         catch (err) {
             await assert.equal(result, false);
         }
-    }    
+    }
 
+    async waitElelmentIsVisible(xpath, timeout) {
+        const el = await this.driver.wait(
+            until.elementLocated(By.xpath(xpath)),
+            timeout
+        )
+        await this.driver.wait(until.elementIsVisible(el), timeout);
+    }
+    
     async  waitElementVisibleAndGet(xpath) {
         const el = await this.driver.wait(
             until.elementLocated(By.xpath(xpath)),
@@ -80,22 +88,20 @@ class WebDriver {
         await this.inputText(ui.SIGN_IN_EMAIL, user.username);
         await this.inputText(ui.SIGN_IN_PASSWORD, user.password);
         var singin = await this.getElementByXPath(ui.SIGN_IN_BUTTON);
-        await singin.click();       
-        await this.waitElelmentIsVisible(ui.SETTTING_BUTTON,specconst.TIMEOUT_PAGE_LOAD);
+        await singin.click();
+        await this.waitElelmentIsVisible(ui.SETTTING_BUTTON, specconst.TIMEOUT_PAGE_LOAD);
     }
 
-    async mentionUserOnChat(user)
-    {
-        await this.inputText(ui.CHAT_INPUT_TYPING, "@"+user.name);
-        var suggestion = ui.MENTION_USER_SUGGESTION.replace("$$",user.name);      
+    async mentionUserOnChat(user) {
+        await this.inputText(ui.CHAT_INPUT_TYPING, "@" + user.name);
+        var suggestion = ui.MENTION_USER_SUGGESTION.replace("$$", user.name);
         var el = await this.getElementByXPath(suggestion);
         await el.click();
-        await this.sendEnter(ui.CHAT_INPUT_TYPING);    
+        await this.sendEnter(ui.CHAT_INPUT_TYPING);
     }
 
-    async waitSuggestionShowOnlyOneItem(xpath)
-    {
-        if (this.driver.findElements(By.xpath(xpath)).length==1) {
+    async waitSuggestionShowOnlyOneItem(xpath) {
+        if (this.driver.findElements(By.xpath(xpath)).length == 1) {
             return result = true;
         }
         return false;
@@ -133,7 +139,7 @@ class WebDriver {
         await el.click();
         await this.waitElelmentIsNotVisible(ui.CREATE_IM_DONE_BTN);
     }
-    
+
     async clickConfirmCreateRoom() {
         var el = await this.getElementByXPath(ui.CONFIRM_CREATE_ROOM_BUTTON);
         await el.click();
@@ -176,13 +182,13 @@ class WebDriver {
     async selectPrivateRadioButton() {
         var el = await this.waitElementVisibleAndGet(ui.PRIVATE_ROOM_RADIO_BTN);
         await el.click();
-    } 
+    }
 
     async clickLeftNavItem(name) {
-        var xpath = await ui.LEFT_NAV_SINGLE_ITEM.replace("$$", name);      
+        var xpath = await ui.LEFT_NAV_SINGLE_ITEM.replace("$$", name);
         var el = await this.getElementByXPath(xpath);
         await el.click();
-        var eheader = await this.getElementByXPath(ui.HEADER_MODULE);       
+        var eheader = await this.getElementByXPath(ui.HEADER_MODULE);
         await this.driver.wait(until.elementIsVisible(eheader), specconst.TIMEOUT_WAIT_ELEMENT)
     }
 
@@ -205,12 +211,11 @@ class WebDriver {
         // await this.clickConfirmCreateRoom();
     }
 
-    async createSignal(signalName, hashTag)
-    {
+    async createSignal(signalName, hashTag) {
         await this.clickShowConversationCreationModal();
         await this.clickCreateSignal();
-        await this.inputText(ui.SIGNAL_NAME,signalName);
-        await this.inputText(ui.LAST_RULE_ROW+ui.ENTER_KEYWORD_IN_LAST_INPUT,hashTag);
+        await this.inputText(ui.SIGNAL_NAME, signalName);
+        await this.inputText(ui.LAST_RULE_ROW + ui.ENTER_KEYWORD_IN_LAST_INPUT, hashTag);
         await this.clickDoneButton();
     }
 
@@ -242,24 +247,11 @@ class WebDriver {
     async timeOut(secondSleep) {
         return secondSleep * 1000;
     }
-    
-    async waitElelmentIsVisible(xpath,timeout) {
-        try {
-            const el = await this.driver.wait(
-                until.elementLocated(By.xpath(xpath)),
-                specconst.TIMEOUT_WAIT_ELEMENT
-            )
-            await this.driver.wait(until.elementIsVisible(el), timeout);          
-        }
-        catch (err) {
-            console.error(`Error wait element is visible: ${err}`);
-        }
-    }
 
     async quit() {
         await this.driver.quit();
     }
-     async close() {
+    async close() {
         await this.driver.close();
     }
 
