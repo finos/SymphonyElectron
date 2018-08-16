@@ -235,6 +235,10 @@ class WindowsActions {
         await robot.keyToggle('m', 'up', ['control']);
     }
 
+    async pressF11() {
+        await robot.keyTap('f11');       
+    }
+
     async pressCtrlR() {
         await robot.keyToggle('r', 'down', ['control']);
         await robot.keyToggle('r', 'up', ['control']);

@@ -20,7 +20,7 @@ class WebActions {
     }
 
     async clickMinimizeButton() {
-        await this.app.client.waitForVisible(ui.MINIMIZE_BTN, 10000).click(ui.MINIMIZE_BTN);
+        await this.app.client.waitForVisible(ui.MINIMIZE_BTN, constants.TIMEOUT_WAIT_ELEMENT).click(ui.MINIMIZE_BTN);
     }
 
     async minimizeWindows() {
@@ -169,9 +169,15 @@ class WebActions {
     }
 
     async persistToastIM() {
-        await this.clickAndWaitElementVisible(ui.SETTTING_BUTTON, ui.ALERT_OPTION);
-        await this.clickAndWaitElementVisible(ui.ALERT_OPTION, ui.ALERT_TAB);
-        await this.clickAndWaitElementVisible(ui.PERSIS_NOTIFICATION_INPUT_IM, ui.PERSIS_NOTIFICATION_INPUT_IM);
+        await this.clickAndWaitElementVisible(ui.SETTTING_BUTTON, ui.ALERT_OPTION, constants.TIMEOUT_WAIT_ELEMENT);
+        await this.clickAndWaitElementVisible(ui.ALERT_OPTION, ui.ALERT_TAB, constants.TIMEOUT_WAIT_ELEMENT);
+        await this.clickAndWaitElementVisible(ui.PERSIS_NOTIFICATION_INPUT_IM, ui.PERSIS_NOTIFICATION_INPUT_IM, constants.TIMEOUT_WAIT_ELEMENT);
+    }
+
+    async openACP() {
+        await this.clickAndWaitElementVisible(ui.SETTTING_BUTTON, ui.GENERAL_OPTION, constants.TIMEOUT_WAIT_ELEMENT);
+        await this.clickAndWaitElementVisible(ui.GENERAL_OPTION, ui.GENERAL_TAB,constants.TIMEOUT_WAIT_ELEMENT);
+        await this.clickAndWaitElementVisible(ui.ACP_LINK,ui.IMG_ADMIN_LOGO, constants.TIMEOUT_WAIT_ELEMENT);
     }
 
     async clickPlusButton() {
@@ -180,6 +186,14 @@ class WebActions {
 
     async clickStartChat() {
         await this.clickIfElementVisible(ui.START_CHAT);
+    }
+
+
+
+    async logout()
+    {
+        await this.clickAndWaitElementVisible(ui.ADMIN_NAME, ui.ADMIN_LOG_OUT, constants.TIMEOUT_WAIT_ELEMENT);
+        await this.clickAndWaitElementVisible(ui.ADMIN_LOG_OUT, ui.SIGN_IN_BUTTON, constants.TIMEOUT_WAIT_ELEMENT);
     }
 
     async selectIMTab() {
@@ -256,6 +270,30 @@ class WebActions {
         await this.clickAndWaitElementVisible(ui.SIGNOUT, ui.SIGNOUT_MODAL_BUTTON);
         await this.clickAndWaitElementVisible(ui.SIGNOUT_MODAL_BUTTON, ui.SIGN_IN_BUTTON, constants.TIMEOUT_PAGE_LOAD);
     }
+
+    async verifyElementExist(findElement)
+    {
+        let obs = await this.app.client.elements(findElement);
+        let len = await obs.value.length;
+        await expect(len).toBe(1);
+    }
+
+    async logintoAdmin(user) {
+        await this.inputText(ui.SIGN_IN_EMAIL, user.username);
+        await this.inputText(ui.SIGN_IN_PASSWORD, user.password);
+        await this.clickAndWaitElementVisible(ui.SIGN_IN_BUTTON, ui.IMG_ADMIN_LOGO, constants.TIMEOUT_WAIT_ELEMENT * 5);
+
+    }
+
+    async sleepAndWaitForLoginForm() {
+        let i = 0;
+        while (i <= 400) {
+            await Utils.sleep(2);
+            i++;
+        }
+        await this.app.client.waitForVisible(ui.SIGN_IN_BUTTON, constants.TIMEOUT_WAIT_ELEMENT);
+    }
+
 }
 
 module.exports = WebActions;
