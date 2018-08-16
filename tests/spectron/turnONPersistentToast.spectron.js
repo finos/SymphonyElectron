@@ -2,10 +2,9 @@ const Application = require('./spectronSetup');
 const WebDriver = require('./spectronWebDriver');
 const { isMac } = require('../../js/utils/misc.js');
 const Utils = require('./spectronUtils');
-var app = new Application({
-  startTimeout: Application.getTimeOut(),
-  waitTimeout: Application.getTimeOut()
-});
+var app = new Application({});
+  
+
 var webdriver = new WebDriver({ browser: 'chrome' });
 const WindowsAction = require('./spectronWindowsActions');
 const WebActions = require('./spectronWebActions');
@@ -14,9 +13,7 @@ const specconst = require('./spectronConstants.js');
 let webActions, windowAction;
 
 !isMac ? describe('Verify toast notification when Persist Notification is ON', () => {
-    let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = specconst.TIMEOUT_TEST_SUITE;
-    
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 300000;   
     beforeAll(async(done) => {
         try
         {

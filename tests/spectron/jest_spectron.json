@@ -1,5 +1,7 @@
 {
-  "testMatch": ["**/minimize-on-close-icon.spectron.js"],
   "verbose": true,
-  "testResultsProcessor": "./node_modules/jest-html-reporter"
+  "testMatch": [
+    "**/*.spectron.js"
+  ],
+  "testResultsProcessor": "../../node_modules/jest-html-reporter" 
 }

@@ -2,7 +2,9 @@ const robot = require('robotjs');
 const constants = require('./spectronConstants.js');
 const Utils = require('./spectronUtils.js');
 const fs = require('fs');
-const WebActions = require('./spectronWebActions.js')
+const WebActions = require('./spectronWebActions.js');
+const { isMac, isWindowsOS } = require('../../js/utils/misc');
+const ui = require('./spectronInterfaces.js');
 
 class WindowsActions {
     constructor(app) {
@@ -15,6 +17,29 @@ class WindowsActions {
 
     async setSize(width, height) {
         await this.app.browserWindow.setSize(width, height);
+    }
+
+    async closeWindows() {
+        try {
+            if (this.app) {
+                let isRunning = await this.app.isRunning();
+                await this.app.stop();
+            }
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+
+    async isElectronProcessRunning() {
+        let ret = false;
+        if (isWindowsOS) {
+            let result = await Utils.execPromise("tasklist | find /i \"electron.exe\"");            
+            if (result && result.indexOf('electron.exe') > -1) {
+                ret = true;
+            }
+        }
+        return ret;
     }
 
     async resizeWindows(width, height) {
@@ -139,14 +164,6 @@ class WindowsActions {
         })
     }
 
-    async verifyMinimizeWindows() {
-        await this.app.browserWindow.isMinimized().then(async function (minimized) {
-            await expect(minimized).toBeTruthy();
-        }).catch((err) => {
-            console.log(err.name);
-        });;
-    }
-
     async isMinimizedWindows() {
         let rminimized = -1;
 
@@ -182,6 +199,21 @@ class WindowsActions {
         });
     }
 
+    async menuSearch(element, namevalue) {
+        if (element.name == namevalue) {
+            return await element;
+        }
+        else if (element.items !== undefined) {
+            var result;
+            for (var i = 0; result == null && i < element.items.length; i++) {
+                result = await this.menuSearch(element.items[i], namevalue);
+                result;
+            }
+            return await result;
+        }
+        return await null;
+    }
+
     async quitApp() {
         let webAction = await new WebActions(this.app);
         await this.app.browserWindow.getBounds().then(async (bounds) => {
@@ -210,11 +242,8 @@ class WindowsActions {
     }
 
     async verifyMinimizeWindows() {
-        await this.app.browserWindow.isMinimized().then(async function (minimized) {
-            await expect(minimized).toBeTruthy();
-        }).catch((err) => {
-            console.log("error:" + err.name);
-        });;
+        let isMinimized = await this.app.browserWindow.isMinimized();
+        await expect(isMinimized).toBeTruthy();
     }
 
     async isMinimizedWindows() {
@@ -242,7 +271,21 @@ class WindowsActions {
 
     async focusWindow() {
         this.app.browserWindow.focus();
-        this.app.browserWindow.setAlwaysOnTop(true);
+
+    }
+
+    async setAlwaysOnTop(value) {
+        this.app.browserWindow.setAlwaysOnTop(value);
+    }
+
+    async openMenu(arrMenu) {
+        var arrStep = [];
+        for (var i = 0; i < arrMenu.length; i++) {
+            var item = await this.menuSearch(constants.MENU.root, arrMenu[i]);
+            await arrStep.push(item);
+        }
+        await this.actionForMenus(arrStep);
+        return arrStep;
     }
 
     async reload() {
@@ -262,48 +305,43 @@ class WindowsActions {
         });
     }
 
-    async clickNotification() {
-        let screen = await this.app.electron.screen.getAllDisplays();
-        await this.app.browserWindow.getBounds().then(async (bounds) => {
-            await robot.setMouseDelay(50);
-            let x = screen[0].bounds.width - 50;
-            let y = screen[0].bounds.height - 100;
-            await robot.moveMouseSmooth(x, y);
-            await robot.moveMouse(x, y);
-            await robot.mouseClick();
-        });
+    async clickNotification(x,y) {   
+        await robot.setMouseDelay(100);   
+        await robot.moveMouseSmooth(x, y);
+        await robot.moveMouse(x, y);
+        await robot.mouseClick();      
     }
 
-    async mouseMoveNotification() {
-        let screen = await this.app.electron.screen.getAllDisplays();
-        await this.app.browserWindow.getBounds().then(async (bounds) => {
-            await robot.setMouseDelay(50);
-            let x = screen[0].bounds.width - 50;
-            let y = screen[0].bounds.height - 100;
-            await robot.moveMouseSmooth(x, y);
-            await robot.moveMouse(x, y);
-        });
+    async mouseMoveNotification(x,y) {
+        await robot.setMouseDelay(50);   
+        await robot.moveMouseSmooth(x, y);
+        await robot.moveMouse(x, y);      
     }
 
     async mouseMoveCenter() {
         let screen = await this.app.electron.screen.getAllDisplays();
         await this.app.browserWindow.getBounds().then(async (bounds) => {
             await robot.setMouseDelay(50);
-            let x = screen[0].bounds.width - 500;
-            let y = screen[0].bounds.height - 100;
+            let x = screen[0].bounds.width/2;
+            let y = screen[0].bounds.height/2;
             await robot.moveMouseSmooth(x, y);
             await robot.moveMouse(x, y);
         });
     }
 
     async veriryPersistToastNotification(message) {
-        let i = 0;
-        while (i < 6) {
+        var i = 0;
+        while (i < 7) {
             await Utils.sleep(1);
             await i++;
         }
+
+        let currentPosition = await this.getToastNotificationPosition(message);
+        let curentSize = await this.getToastNotificationSize(message);
         await this.webAction.verifyToastNotificationShow(message);
-        await this.clickNotification();
+        let x = await (currentPosition[0] + curentSize[0]/2);
+        let y = await (currentPosition[1] + curentSize[1]/2);        
+        await this.clickNotification(x,y);
         await this.mouseMoveCenter();
     }
 
@@ -320,44 +358,27 @@ class WindowsActions {
     }
 
     async verifyNotCloseToastWhenMouseOver(message) {
-        await this.mouseMoveNotification();
-        let i = 0;
-        while (i < 8) {
+        
+        var i = 0;
+        while (i < 6) {
             await Utils.sleep(1);
             await i++;
         }
+        let currentPosition = await this.getToastNotificationPosition(message);
+        let curentSize = await this.getToastNotificationSize(message);       
+        let x = await (currentPosition[0] + curentSize[0]/2);
+        let y = await (currentPosition[1] + curentSize[1]/2);        
+        await this.mouseMoveNotification(x,y);
         await this.webAction.verifyToastNotificationShow(message);
         await this.mouseMoveCenter();
     }
-
-    async getBadgeCount() {
-        let count = await this.app.electron.remote.app.getBadgeCount();
-        return count;
+    
+    async windowByIndex(index) {
+        await this.app.client.windowByIndex(index);
     }
 
-    async resetBadgeCount() {
-        await this.app.electron.remote.app.setBadgeCount(0);
-    }
-
-    async getBadgeCount() {
-        let count = await this.app.electron.remote.app.getBadgeCount();
-        return count;
-    }
-
-    async verifyCurrentBadgeCount(number) {
-        let expected = false;
-        let i = 0;
-        let count = await this.getBadgeCount();
-        while (i < 5) {
-            if (count == number) {
-                expected = true;
-                break;
-            }
-            await Utils.sleep(1);
-            count = await this.getBadgeCount();
-            await i++;
-        }
-        await expect(expected).toBeTruthy();
+    async getWindowCount() {
+        return await this.app.client.getWindowCount();
     }
 
     async getWindowIndexFromTitle(windowTitle) {
@@ -386,20 +407,81 @@ class WindowsActions {
         return 0;
     }
 
-    async windowByIndex(index) {
-        await this.app.client.windowByIndex(index);
-    }
-
-    async getWindowCount() {
-        return await this.app.client.getWindowCount();
-    }
-
     async bringToFront(windowTitle) {
         let index = await this.getWindowIndexFromTitle(windowTitle);
         await this.windowByIndex(index);
         await this.app.browserWindow.minimize();
         await this.app.browserWindow.restore();
     }
+        
+    async closeChrome()
+    {
+        Utils.killProcess("chromedriver.exe");
+    }
+    
+    async getToastNotificationIndex(message) {
+        for (let i = 0; i < 10; i++) {
+            let winCount = await this.app.client.getWindowCount();
+            if (winCount > 1) {
+                for (let j = 1; j < winCount; j++) {
+                    await this.app.client.windowByIndex(j);
+                    if (await this.app.client.getText(ui.TOAST_MESSAGE_CONTENT) === message) {
+                        return j;
+                    }
+                }
+            }
+            await Utils.sleep(1);
+        }
+        return 0;
+    }
+
+    async getToastNotificationPosition(message) {
+        let index = await this.getToastNotificationIndex(message);
+        await this.windowByIndex(index);
+        let currentPosition = await this.getCurrentPosition();
+        await this.windowByIndex(0);
+        return currentPosition;
+    }
+
+    async getToastNotificationSize(message) {
+        let index = await this.getToastNotificationIndex(message);
+        await this.windowByIndex(index);
+        let currentSize = await this.getCurrentSize();
+        await this.windowByIndex(0);
+        return currentSize;
+    }
+
+    async verifyToastNotificationPosition(message, expectedPosition) {
+        let screen = await this.app.electron.screen.getPrimaryDisplay();
+        let screenWidth = screen.size.width;
+        let screenHeight = screen.size.height;
+        let currentPosition = await this.getToastNotificationPosition(message);
+        let curentSize = await this.getToastNotificationSize(message);
+        switch (expectedPosition) {
+            case "lower-right":
+                expect(currentPosition[0] + curentSize[0]).toEqual(screenWidth);
+                expect(screenHeight - (currentPosition[1] + curentSize[1])).toBeLessThan(100);
+                break;
+            case "upper-right":
+                expect(currentPosition[0] + curentSize[0]).toEqual(screenWidth);
+                expect(currentPosition[1]).toEqual(0);
+                break;
+            case "upper-left":
+                expect(currentPosition[0]).toEqual(0);
+                expect(currentPosition[1]).toEqual(0);
+                break;
+            case "lower-left":
+                expect(currentPosition[0]).toEqual(0);
+                expect(screenHeight - (currentPosition[1] + curentSize[1])).toBeLessThan(100);
+                break;
+        }   
+        await this.windowByIndex(0);
+        return 0;
+    }    
+
+    async getWindowCount() {
+        return await this.app.client.getWindowCount();
+    }   
 
     async verifyWindowFocus(windowTitle) {
         let index = await this.getWindowIndexFromTitle(windowTitle);

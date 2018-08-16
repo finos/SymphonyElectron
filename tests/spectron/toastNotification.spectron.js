@@ -8,11 +8,14 @@ const ui = require('./spectronInterfaces.js');
 const Utils = require('./spectronUtils');
 
 let app, webDriver, webActions, windowsActions;
-
+app = new Application({
+    startTimeout: Application.getTimeOut(),
+    waitTimeout: Application.getTimeOut()
+  });
 describe('Tests for Toast Notification ', () => {
 
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = constants.TIMEOUT_PAGE_LOAD;
 
     beforeAll(async (done) => {
         try {
