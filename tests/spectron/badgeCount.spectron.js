@@ -13,7 +13,7 @@ const specconst = require('./spectronConstants.js');
 
 let webActions, windowAction;
 
-describe('Test for Badge Count on MAC', () => {
+!isMac ? describe('Test for Badge Count on MAC', () => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     beforeAll(async (done) => {
@@ -45,25 +45,20 @@ describe('Test for Badge Count on MAC', () => {
        */
     it('Show 1 in tray icon when unread message = 1', async (done) => {
         try {
-            if (isMac) {
-                let message = await Utils.randomString();
-                await webdriver.startDriver();
-                await webdriver.login(specconst.USER_A);
-                await webdriver.createIM(specconst.USER_B.username);
-                await webActions.login(specconst.USER_B);
-                await webActions.clickLeftNavItem(specconst.USER_A.name);
-                await webActions.openAlertsSettings();
-                let currentBadgeCount = await windowAction.getBadgeCount();
-                await webdriver.sendMessage(message);
-                await windowAction.verifyCurrentBadgeCount(currentBadgeCount + 1);
-                done();
-            }
-            else {
-                done();
-            }
+            let message = await Utils.randomString();
+            await webdriver.startDriver();
+            await webdriver.login(specconst.USER_A);
+            await webdriver.createIM(specconst.USER_B.username);
+            await webActions.login(specconst.USER_B);
+            await webActions.clickLeftNavItem(specconst.USER_A.name);
+            await webActions.openAlertsSettings();
+            let currentBadgeCount = await windowAction.getBadgeCount();
+            await webdriver.sendMessage(message);
+            await windowAction.verifyCurrentBadgeCount(currentBadgeCount + 1);
+            done();
         } catch (err) {
             done.fail(new Error(`Show 1 in tray icon with error: ${err}`));
         }
     });
 
-})
+}) : describe.skip();
