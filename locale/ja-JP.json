@@ -102,6 +102,12 @@
   "Start Speaking": "スピーチを開始",
   "Stop Speaking": "スピーチを終了",
   "Symphony Help": "Symphonyのヘルプ",
+  "TitleBar": {
+    "Close": "閉じる",
+    "Maximize": "最大化する",
+    "Menu": "メニュー",
+    "Minimize": "最小化する"
+  },
   "Title Bar Style": "タイトルバーのスタイル",
   "Toggle Full Screen": "画面表示を切り替え",
   "Troubleshooting": "トラブルシューティング",

@@ -60,6 +60,11 @@ class TitleBar {
             default:
                 break;
         }
+        this.hamburgerMenuButton = document.getElementById('hamburger-menu-button');
+        this.minimizeButton = document.getElementById('title-bar-minimize-button');
+        this.maximizeButton = document.getElementById('title-bar-maximize-button');
+        this.closeButton = document.getElementById('title-bar-close-button');
+
         this.initiateEventListeners();
     }
 
@@ -67,16 +72,22 @@ class TitleBar {
      * Method that attaches Event Listeners for elements
      */
     initiateEventListeners() {
-        const hamburgerMenuButton = document.getElementById('hamburger-menu-button');
-        const minimizeButton = document.getElementById('title-bar-minimize-button');
-        const maximizeButton = document.getElementById('title-bar-maximize-button');
-        const closeButton = document.getElementById('title-bar-close-button');
-
         attachEventListeners(this.titleBar, 'dblclick', this.maximizeOrUnmaximize.bind(this));
-        attachEventListeners(hamburgerMenuButton, 'click', this.popupMenu.bind(this));
-        attachEventListeners(closeButton, 'click', this.closeWindow.bind(this));
-        attachEventListeners(maximizeButton, 'click', this.maximizeOrUnmaximize.bind(this));
-        attachEventListeners(minimizeButton, 'click', this.minimize.bind(this));
+        attachEventListeners(this.hamburgerMenuButton, 'click', this.popupMenu.bind(this));
+        attachEventListeners(this.closeButton, 'click', this.closeWindow.bind(this));
+        attachEventListeners(this.maximizeButton, 'click', this.maximizeOrUnmaximize.bind(this));
+        attachEventListeners(this.minimizeButton, 'click', this.minimize.bind(this));
+    }
+
+    /**
+     * Update button's title w.r.t current locale
+     * @param content {Object}
+     */
+    updateLocale(content) {
+        this.hamburgerMenuButton.title = content.Menu || 'Menu';
+        this.minimizeButton.title = content.Minimize || 'Minimize';
+        this.maximizeButton.title = content.Maximize || 'Maximize';
+        this.closeButton.title = content.Close || 'Close';
     }
 
     /**

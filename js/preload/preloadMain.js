@@ -484,6 +484,19 @@ function createAPI() {
 
     /**
      * an event triggered by the main process when
+     * the locale is changed
+     * @param dataObj {Object} - locale content
+     */
+    local.ipcRenderer.on('locale-changed', (event, dataObj) => {
+        if (dataObj && typeof dataObj === 'object') {
+            if (dataObj.titleBar) {
+                titleBar.updateLocale(dataObj.titleBar);
+            }
+        }
+    });
+
+    /**
+     * an event triggered by the main process when
      * the window enters full screen
      */
     local.ipcRenderer.on('window-enter-full-screen', (event, arg) => {

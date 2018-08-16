@@ -100,6 +100,12 @@
   "Start Speaking": "Start Speaking",
   "Stop Speaking": "Stop Speaking",
   "Symphony Help": "Symphony Help",
+  "TitleBar": {
+    "Close": "Close",
+    "Maximize": "Maximize",
+    "Menu": "Menu",
+    "Minimize": "Minimize"
+  },
   "Title Bar Style": "Title Bar Style",
   "Toggle Full Screen": "Toggle Full Screen",
   "Troubleshooting": "Troubleshooting",
