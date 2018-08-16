@@ -509,6 +509,73 @@ class WindowsActions {
         }
         await this.windowByIndex(0);
     }
+
+    async stopApp() {
+        if (this.app && this.app.isRunning()) {
+            await this.app.stop();
+        }
+    }
+    async isAppRunning() {
+        return this.app.isRunning();
+    }
+
+    async getToastNotificationIndex(message) {
+        for (let i = 0; i < 10; i++) {
+            let winCount = await this.app.client.getWindowCount();
+            if (winCount > 1) {
+                for (let j = 1; j < winCount; j++) {
+                    await this.app.client.windowByIndex(j);
+                    if (await this.app.client.getText(ui.TOAST_MESSAGE_CONTENT) === message) {
+                        return j;
+                    }
+                }
+            }
+            await Utils.sleep(1);
+        }
+        return 0;
+    }
+
+    async getToastNotificationPosition(message) {
+        let index = await this.getToastNotificationIndex(message);
+        await this.windowByIndex(index);
+        let currentPosition = await this.getCurrentPosition();
+        await this.windowByIndex(0);
+        return currentPosition;
+    }
+
+    async getToastNotificationSize(message) {
+        let index = await this.getToastNotificationIndex(message);
+        await this.windowByIndex(index);
+        let currentSize = await this.getCurrentSize();
+        await this.windowByIndex(0);
+        return currentSize;
+    }
+
+    async verifyToastNotificationPosition(message, expectedPosition) {
+        let screen = await this.app.electron.screen.getPrimaryDisplay();
+        let screenWidth = screen.size.width;
+        let screenHeight = screen.size.height;
+        let currentPosition = await this.getToastNotificationPosition(message);
+        let curentSize = await this.getToastNotificationSize(message);
+        switch (expectedPosition) {
+            case "lower-right":
+                expect(currentPosition[0] + curentSize[0]).toEqual(screenWidth);
+                expect(screenHeight - (currentPosition[1] + curentSize[1])).toBeLessThan(100);
+                break;
+            case "upper-right":
+                expect(currentPosition[0] + curentSize[0]).toEqual(screenWidth);
+                expect(currentPosition[1]).toEqual(0);
+                break;
+            case "upper-left":
+                expect(currentPosition[0]).toEqual(0);
+                expect(currentPosition[1]).toEqual(0);
+                break;
+            case "lower-left":
+                expect(currentPosition[0]).toEqual(0);
+                expect(screenHeight - (currentPosition[1] + curentSize[1])).toBeLessThan(100);
+                break;
+        }
+    }
 }
 
 module.exports = WindowsActions;

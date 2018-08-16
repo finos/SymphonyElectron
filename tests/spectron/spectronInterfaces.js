@@ -60,6 +60,7 @@ module.exports= {
 
     //Alert Settings
     MUTE_POPUP_ALERTS_CKB: ".field.field-notifications-on input",
+    ALERT_POSITION: ".field-configure-desktop-alerts button",
     
     //Toast Message
     TOAST_MESSAGE_CONTENT: "#message",

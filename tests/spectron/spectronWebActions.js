@@ -248,7 +248,7 @@ class WebActions {
         await this.waitElementNotVisible(ui.SPINNER, constants.TIMEOUT_PAGE_LOAD);
     }
 
-    async verifyPopInIconDisplay(windowTitle){
+    async verifyPopInIconDisplay(windowTitle) {
         let windowsActions = await new WindowsActions(this.app);
         let index = await windowsActions.getWindowIndexFromTitle(windowTitle);
         await windowsActions.windowByIndex(index);
@@ -260,12 +260,12 @@ class WebActions {
         await this.clickIfElementVisible(ui.INBOX_BUTTON);
     }
 
-    async clickLeftNavItem(item){
-        let singleItemLocator = ui.LEFT_NAV_SINGLE_ITEM.replace("$$",item);  
+    async clickLeftNavItem(item) {
+        let singleItemLocator = ui.LEFT_NAV_SINGLE_ITEM.replace("$$", item);
         await this.clickIfElementVisible(singleItemLocator);
     }
 
-    async logout(){
+    async logout() {
         await this.openAlertsSettings();
         await this.clickAndWaitElementVisible(ui.SIGNOUT, ui.SIGNOUT_MODAL_BUTTON);
         await this.clickAndWaitElementVisible(ui.SIGNOUT_MODAL_BUTTON, ui.SIGN_IN_BUTTON, constants.TIMEOUT_PAGE_LOAD);
@@ -285,15 +285,27 @@ class WebActions {
 
     }
 
-    async sleepAndWaitForLoginForm() {
-        let i = 0;
-        while (i <= 400) {
-            await Utils.sleep(2);
-            i++;
-        }
-        await this.app.client.waitForVisible(ui.SIGN_IN_BUTTON, constants.TIMEOUT_WAIT_ELEMENT);
+    async openNotificationPosition() {
+        await this.clickIfElementVisible(ui.ALERT_POSITION);
     }
 
+    async adjustNotificationPosition(position) {
+        await this.openNotificationPosition();
+        let windowsActions = await new WindowsActions(this.app);
+        let winCount = await windowsActions.getWindowCount();
+        await windowsActions.windowByIndex(winCount - 1);
+        await this.clickIfElementVisible("#" + position);
+        await this.clickIfElementVisible("#ok-button");
+        await windowsActions.windowByIndex(0);
+    }
+
+    async checkBox(selector, value) {
+        var checked = await this.app.client.isSelected(selector);
+        while (checked != value) {
+            await this.clickIfElementVisible(selector);
+            checked = await this.app.client.isSelected(selector);
+        }
+    }
 }
 
 module.exports = WebActions;
