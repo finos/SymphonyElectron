@@ -231,3 +231,20 @@ function reset() {
 ipc.on('electron-notify-set-contents', setContents);
 ipc.on('electron-notify-load-config', loadConfig);
 ipc.on('electron-notify-reset', reset);
+
+// note: this is a workaround until
+// https://github.com/electron/electron/issues/8841
+// is fixed on the electron. where 'will-navigate'
+// is never fired in sandbox mode
+//
+// This is required in order to prevent from loading
+// dropped content
+window.addEventListener('drop', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+});
+
+window.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+});

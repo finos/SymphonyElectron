@@ -496,6 +496,11 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                             };
 
                             browserWin.webContents.on('crashed', handleChildWindowCrashEvent);
+                            browserWin.webContents.on('will-navigate', (e, navigatedURL) => {
+                                if (!navigatedURL.startsWith('http' || 'https')) {
+                                    e.preventDefault();
+                                }
+                            });
 
                             // In case we navigate to an external link from inside a pop-out,
                             // we open that link in an external browser rather than creating
@@ -575,6 +580,12 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
     // whenever the main window is navigated for ex: window.location.href or url redirect
     mainWindow.webContents.on('will-navigate', function (event, navigatedURL) {
+
+        if (!navigatedURL.startsWith('http' || 'https')) {
+            event.preventDefault();
+            return;
+        }
+
         isWhitelisted(navigatedURL)
             .catch(() => {
                 event.preventDefault();

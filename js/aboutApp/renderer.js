@@ -31,3 +31,20 @@ ipcRenderer.on('register-crash-reporter', (event, arg) => {
         crashReporter.start(arg);
     }
 });
+
+// note: this is a workaround until
+// https://github.com/electron/electron/issues/8841
+// is fixed on the electron. where 'will-navigate'
+// is never fired in sandbox mode
+//
+// This is required in order to prevent from loading
+// dropped content
+window.addEventListener('drop', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+});
+
+window.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+});
