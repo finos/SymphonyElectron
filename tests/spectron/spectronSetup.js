@@ -24,7 +24,7 @@ class App {
 
         if (isWindowsOS) {
             App.copyConfigPath(constants.ELECTRON_GLOBAL_CONFIG_PATH_WIN);
-            App.copyLibraries(constants.SEARCH_LIBRARY_PATH_WIN);
+            //App.copyLibraries(constants.SEARCH_LIBRARY_PATH_WIN);
         }
 
         this.app = new Application(this.options);
@@ -66,7 +66,7 @@ class App {
     }
 
     static getTimeOut() {
-        return 90000;
+        return 120000;
     }
 
     static readConfig(configPath) {
