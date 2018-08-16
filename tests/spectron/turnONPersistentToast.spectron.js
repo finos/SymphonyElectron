@@ -2,9 +2,7 @@ const Application = require('./spectronSetup');
 const WebDriver = require('./spectronWebDriver');
 const { isMac } = require('../../js/utils/misc.js');
 const Utils = require('./spectronUtils');
-var app = new Application({});
-  
-
+var app = new Application({}); 
 var webdriver = new WebDriver({ browser: 'chrome' });
 const WindowsAction = require('./spectronWindowsActions');
 const WebActions = require('./spectronWebActions');

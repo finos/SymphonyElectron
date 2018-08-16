@@ -133,4 +133,4 @@ let app = new Application({});
         });
     });
 
-}):describe.skip();
+}) : describe.skip();

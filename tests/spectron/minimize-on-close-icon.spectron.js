@@ -140,4 +140,4 @@ let app, wActions, config;
             await done();
         }
     });
-}):describe.skip();
+}) : describe.skip();

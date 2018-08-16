@@ -111,4 +111,4 @@ let  mainApp = new Application({});
         };   
     });
 
-}):describe.skip();
+}) : describe.skip();
