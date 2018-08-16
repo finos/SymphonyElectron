@@ -16,7 +16,6 @@ let app, webDriver, webActions, windowsActions;
         try {
             webDriver = await new WebDriver({ browser: 'chrome' });
             app = await new Application({}).startApplication({ testedHost: constants.TESTED_HOST, alwaysOnTop: true });
-            let screen = await app.electron.screen.getPrimaryDisplay();
             webActions = await new WebActions(app);
             windowsActions = await new WindowsActions(app);
             await webDriver.startDriver();
