@@ -70,11 +70,11 @@ const ipcRenderer = {
 };
 
 module.exports = {
-  require: jest.genMockFunction(),
-  match: jest.genMockFunction(),
-  app: jest.genMockFunction(),
+  require: jest.fn(),
+  match: jest.fn(),
+  app: jest.fn(),
   ipcMain: ipcMain,
   ipcRenderer: ipcRenderer,
-  remote: jest.genMockFunction(),
-  dialog: jest.genMockFunction()
+  remote: jest.fn(),
+  dialog: jest.fn()
 };
