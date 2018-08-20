@@ -79,6 +79,10 @@ function openScreenPickerWindow(eventSender, sources, id) {
             windowConfig.x = Math.round(centerX - (windowWidth / 2.0));
             windowConfig.y = Math.round(centerY - (windowHeight / 2.0));
         }
+
+        if (isWindowsOS) {
+            windowConfig.parent = focusedWindow;
+        }
     }
 
     // Store the window ref to send event
