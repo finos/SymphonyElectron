@@ -165,6 +165,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         webPreferences: {
             sandbox: sandboxed,
             nodeIntegration: isNodeEnv,
+            contextIsolation: true,
             preload: preloadMainScript,
             nativeWindowOpen: true
         }
