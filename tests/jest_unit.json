@@ -1,6 +1,6 @@
 {
     "testMatch": ["**/*.test.js"],
     "verbose": true,
-    "testResultsProcessor": "./node_modules/jest-html-reporter"
+    "testResultsProcessor": "../node_modules/jest-html-reporter"
   }
   
