@@ -41,7 +41,7 @@ let boundsChangeWindow;
 let alwaysOnTop = false;
 let position = 'lower-right';
 let display;
-let sandboxed = false;
+let sandboxed = true;
 let isAutoReload = false;
 let devToolsEnabled = true;
 let isCustomTitleBarEnabled = true;
@@ -654,7 +654,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                             const fullMessage = `${i18n.getMessageFor('Your administrator has disabled')} ${message}. ${i18n.getMessageFor('Please contact your admin for help')}`;
                             const browserWindow = BrowserWindow.getFocusedWindow();
                             if (browserWindow && !browserWindow.isDestroyed()) {
-                                electron.dialog.showMessageBox(browserWindow, {type: 'error', title: `${i18n.getMessageFor('Permission Denied')}!`, message: fullMessage});
+                                electron.dialog.showMessageBox(browserWindow, { type: 'error', title: `${i18n.getMessageFor('Permission Denied')}!`, message: fullMessage });
                             }
                         }
 

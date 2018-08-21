@@ -1,6 +1,6 @@
 const electron = require('electron');
 const app = electron.app;
-const ffi = require('ffi');
+const ffi = require('ffi-napi');
 const ref = require('ref');
 const path = require('path');
 const execPath = path.dirname(app.getPath('exe'));
@@ -96,7 +96,7 @@ const library = new ffi.Library((cryptoLibPath), {
  * @return {*}
  * @constructor
  */
-const AESGCMEncrypt = function(Base64IV, Base64AAD, Base64Key, Base64In) {
+const AESGCMEncrypt = function (Base64IV, Base64AAD, Base64Key, Base64In) {
     return EncryptDecrypt('AESGCMEncrypt', Base64IV, Base64AAD, Base64Key, Base64In);
 };
 
@@ -109,7 +109,7 @@ const AESGCMEncrypt = function(Base64IV, Base64AAD, Base64Key, Base64In) {
  * @return {*}
  * @constructor
  */
-const AESGCMDecrypt = function(Base64IV, Base64AAD, Base64Key, Base64In) {
+const AESGCMDecrypt = function (Base64IV, Base64AAD, Base64Key, Base64In) {
     return EncryptDecrypt('AESGCMDecrypt', Base64IV, Base64AAD, Base64Key, Base64In);
 };
 
@@ -123,7 +123,7 @@ const AESGCMDecrypt = function(Base64IV, Base64AAD, Base64Key, Base64In) {
  * @return {*}
  * @constructor
  */
-const EncryptDecrypt = function(name, Base64IV, Base64AAD, Base64Key, Base64In) {
+const EncryptDecrypt = function (name, Base64IV, Base64AAD, Base64Key, Base64In) {
     let base64In = Base64In;
 
     if (!base64In) {

@@ -270,7 +270,7 @@ describe('read/write config tests', function() {
 
             return updateConfigField('url2', 'hello world')
                 .catch(function (err) {
-                    expect(err.message).toBe('Path must be a string. Received null');
+                    expect(err.message).toBe('The "path" argument must be of type string. Received type object');
                 });
 
         });
@@ -309,7 +309,7 @@ describe('read/write config tests', function() {
 
             return saveUserConfig('url2', 'hello world')
                 .catch(function (err) {
-                    expect(err.message).toBe('Path must be a string. Received null');
+                    expect(err.message).toBe('The "path" argument must be of type string. Received type object');
                 });
         });
 

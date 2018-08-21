@@ -84,14 +84,14 @@ const local = {
 };
 
 // throttle calls to this func to at most once per sec, called on leading edge.
-const throttledSetBadgeCount = throttle(1000, function(count) {
+const throttledSetBadgeCount = throttle(1000, function (count) {
     local.ipcRenderer.send(apiName, {
         cmd: apiCmds.setBadgeCount,
         count: count
     });
 });
 
-const throttledSetIsInMeetingStatus = throttle(1000, function(isInMeeting) {
+const throttledSetIsInMeetingStatus = throttle(1000, function (isInMeeting) {
     local.ipcRenderer.send(apiName, {
         cmd: apiCmds.setIsInMeeting,
         isInMeeting
@@ -106,14 +106,14 @@ local.ipcRenderer.on('on-page-load', () => {
     snackBar = new SnackBar();
 });
 
-const throttledActivate = throttle(1000, function(windowName) {
+const throttledActivate = throttle(1000, function (windowName) {
     local.ipcRenderer.send(apiName, {
         cmd: apiCmds.activate,
         windowName: windowName
     });
 });
 
-const throttledBringToFront = throttle(1000, function(windowName, reason) {
+const throttledBringToFront = throttle(1000, function (windowName, reason) {
     local.ipcRenderer.send(apiName, {
         cmd: apiCmds.bringToFront,
         windowName: windowName,
@@ -121,7 +121,7 @@ const throttledBringToFront = throttle(1000, function(windowName, reason) {
     });
 });
 
-const throttledSetLocale = throttle(1000, function(locale) {
+const throttledSetLocale = throttle(1000, function (locale) {
     local.ipcRenderer.send(apiName, {
         cmd: apiCmds.setLocale,
         locale,
@@ -158,8 +158,8 @@ function createAPI() {
     // API exposed to renderer process.
     //
     window.ssf = {
-        getVersionInfo: function() {
-            return new Promise(function(resolve) {
+        getVersionInfo: function () {
+            return new Promise(function (resolve) {
                 let appName = remote.app.getName();
                 let appVer = remote.app.getVersion();
 
@@ -181,7 +181,7 @@ function createAPI() {
          * note: for mac the number displayed will be 1 to infinity
          * note: for windws the number displayed will be 1 to 99 and 99+
          */
-        setBadgeCount: function(count) {
+        setBadgeCount: function (count) {
             throttledSetBadgeCount(count);
         },
 
@@ -220,7 +220,7 @@ function createAPI() {
          * Brings window forward and gives focus.
          * @param  {String} windowName Name of window. Note: main window name is 'main'
          */
-        activate: function(windowName) {
+        activate: function (windowName) {
             if (typeof windowName === 'string') {
                 throttledActivate(windowName);
             }
@@ -231,7 +231,7 @@ function createAPI() {
          * @param  {String} windowName Name of window. Note: main window name is 'main'
          * @param {String} reason, The reason for which the window is to be activated
          */
-        bringToFront: function(windowName, reason) {
+        bringToFront: function (windowName, reason) {
             if (typeof windowName === 'string') {
                 throttledBringToFront(windowName, reason);
             }
@@ -244,7 +244,7 @@ function createAPI() {
          * only one window can register for bounds change.
          * @param  {Function} callback Function invoked when bounds changes.
          */
-        registerBoundsChange: function(callback) {
+        registerBoundsChange: function (callback) {
             if (typeof callback === 'function') {
                 local.boundsChangeCallback = callback;
                 local.ipcRenderer.send(apiName, {
@@ -261,7 +261,7 @@ function createAPI() {
          *  logDetails: String
          *  }
          */
-        registerLogger: function(logger) {
+        registerLogger: function (logger) {
             if (typeof logger === 'function') {
                 local.logger = logger;
 
@@ -287,7 +287,7 @@ function createAPI() {
          * this registration func is invoked then the protocolHandler callback
          * will be immediately called.
          */
-        registerProtocolHandler: function(protocolHandler) {
+        registerProtocolHandler: function (protocolHandler) {
             if (typeof protocolHandler === 'function') {
 
                 local.processProtocolAction = protocolHandler;
@@ -308,7 +308,7 @@ function createAPI() {
          *  systemIdleTime: Number
          *  }
          */
-        registerActivityDetection: function(period, activityDetection) {
+        registerActivityDetection: function (period, activityDetection) {
             if (typeof activityDetection === 'function') {
                 local.activityDetection = activityDetection;
 
@@ -344,7 +344,7 @@ function createAPI() {
         /**
          * Opens a modal window to configure notification preference.
          */
-        showNotificationSettings: function() {
+        showNotificationSettings: function () {
             let windowName = remote.getCurrentWindow().winName;
             local.ipcRenderer.send(apiName, {
                 cmd: apiCmds.showNotificationSettings,
