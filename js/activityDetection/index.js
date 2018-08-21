@@ -4,6 +4,7 @@ const systemIdleTime = require('@paulcbetts/system-idle-time');
 const throttle = require('../utils/throttle');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
+const { getIsOnline } = require('../windowMgr');
 
 let setIsAutoReload;
 if (!process.env.ELECTRON_QA) {
@@ -55,7 +56,7 @@ function monitorUserActivity() {
     intervalId = setInterval(monitor, 1000);
 
     function monitor() {
-        if (systemIdleTime.getIdleTime() < maxIdleTime) {
+        if (systemIdleTime.getIdleTime() < maxIdleTime && getIsOnline()) {
             // If system is active, send an update to the app bridge and clear the timer
             sendActivity();
             if (typeof setIsAutoReload === 'function') {
