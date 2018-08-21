@@ -32,6 +32,7 @@ const KeyCodes = {
 let Search;
 let SearchUtils;
 let CryptoLib;
+let spellChecker;
 let isAltKey = false;
 let isMenuOpen = false;
 
@@ -69,7 +70,7 @@ function loadSpellChecker() {
         const SpellCheckerHelper = require('../spellChecker').SpellCheckHelper;
         /* eslint-enable global-require */
         // Method to initialize spell checker
-        const spellChecker = new SpellCheckerHelper();
+        spellChecker = new SpellCheckerHelper();
         spellChecker.initializeSpellChecker();
     } catch (err) {
         /* eslint-disable no-console */
@@ -491,6 +492,10 @@ function createAPI() {
         if (dataObj && typeof dataObj === 'object') {
             if (dataObj.titleBar) {
                 titleBar.updateLocale(dataObj.titleBar);
+            }
+
+            if (dataObj.contextMenu && spellChecker) {
+                spellChecker.updateContextMenuLocale(dataObj.contextMenu);
             }
         }
     });

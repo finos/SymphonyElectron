@@ -994,15 +994,17 @@ function setLocale(browserWindow, opts) {
         menu = electron.Menu.buildFromTemplate(getTemplate(app));
         electron.Menu.setApplicationMenu(menu);
 
+        const localeContent = {};
         if (isWindows10()) {
             browserWindow.setMenuBarVisibility(false);
 
             // update locale for custom title bar
             if (isCustomTitleBarEnabled) {
-                const titleBarContent = i18n.getMessageFor('TitleBar');
-                browserWindow.webContents.send('locale-changed', { titleBar: titleBarContent });
+                localeContent.titleBar = i18n.getMessageFor('TitleBar');
             }
         }
+        localeContent.contextMenu = i18n.getMessageFor('ContextMenu');
+        browserWindow.webContents.send('locale-changed', localeContent);
     }
 
     updateConfigField('locale', language);
