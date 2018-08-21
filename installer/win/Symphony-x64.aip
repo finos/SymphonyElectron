@@ -174,7 +174,7 @@
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
     <ROW File="CODE_OF_CONDUCT.md" Component_="npmignore" FileName="CODE_O~1.MD|CODE_OF_CONDUCT.md" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\CODE_OF_CONDUCT.md" SelfReg="false" NextFile="COPYING"/>
     <ROW File="COPYING" Component_="npmignore" FileName="COPYING" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\COPYING" SelfReg="false" NextFile="esdoc.json"/>
-    <ROW File="FreeDiskSpace.exe" Component_="FreeDiskSpace.exe" FileName="FREEDI~1.EXE|FreeDiskSpace.exe" Attributes="0" SourcePath="..\..\node_modules\electron-utils\FreeDiskSpace\bin\Release\FreeDiskSpace.exe" SelfReg="false" DigSign="true"/>
+    <ROW File="FreeDiskSpace.exe" Component_="FreeDiskSpace.exe" FileName="FREEDI~1.EXE|FreeDiskSpace.exe" Attributes="0" SourcePath="..\..\node_modules\electron-utils\FreeDiskSpace\bin\Release\FreeDiskSpace.exe" SelfReg="false" NextFile="v8_context_snapshot.bin" DigSign="true"/>
     <ROW File="Jobber.exe" Component_="Jobber.exe" FileName="Jobber.exe" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\vendor\jobber\Jobber.exe" SelfReg="false" NextFile="cld.node" DigSign="true"/>
     <ROW File="LICENSE.electron.txt" Component_="blink_image_resources_200_percent.pak" FileName="LICENS~1.TXT|LICENSE.electron.txt" Attributes="0" SourcePath="..\..\dist\win-unpacked\LICENSE.electron.txt" SelfReg="false" NextFile="LICENSES.chromium.html"/>
     <ROW File="LICENSES.chromium.html" Component_="blink_image_resources_200_percent.pak" FileName="LICENS~1.HTM|LICENSES.chromium.html" Attributes="0" SourcePath="..\..\dist\win-unpacked\LICENSES.chromium.html" SelfReg="false" NextFile="natives_blob.bin"/>
@@ -283,7 +283,7 @@
     <ROW File="natives_blob.bin" Component_="blink_image_resources_200_percent.pak" FileName="NATIVE~1.BIN|natives_blob.bin" Attributes="0" SourcePath="..\..\dist\win-unpacked\natives_blob.bin" SelfReg="false" NextFile="node.dll"/>
     <ROW File="nb.pak" Component_="am.pak" FileName="nb.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\nb.pak" SelfReg="false" NextFile="nl.pak"/>
     <ROW File="nl.pak" Component_="am.pak" FileName="nl.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\nl.pak" SelfReg="false" NextFile="pl.pak"/>
-    <ROW File="node.dll" Component_="node.dll" FileName="node.dll" Attributes="0" SourcePath="..\..\dist\win-unpacked\node.dll" SelfReg="false" NextFile="snapshot_blob.bin"/>
+    <ROW File="node.dll" Component_="node.dll" FileName="node.dll" Attributes="0" SourcePath="..\..\dist\win-unpacked\node.dll" SelfReg="false" NextFile="Symphony.exe"/>
     <ROW File="package.json" Component_="npmignore" FileName="PACKAG~1.JSO|package.json" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\package.json" SelfReg="false" NextFile="index.ts"/>
     <ROW File="pl.pak" Component_="am.pak" FileName="pl.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\pl.pak" SelfReg="false" NextFile="ptBR.pak"/>
     <ROW File="ptBR.pak" Component_="am.pak" FileName="pt-BR.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\pt-BR.pak" SelfReg="false" NextFile="ptPT.pak"/>
@@ -292,7 +292,6 @@
     <ROW File="ru.pak" Component_="am.pak" FileName="ru.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\ru.pak" SelfReg="false" NextFile="sk.pak"/>
     <ROW File="sk.pak" Component_="am.pak" FileName="sk.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\sk.pak" SelfReg="false" NextFile="sl.pak"/>
     <ROW File="sl.pak" Component_="am.pak" FileName="sl.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\sl.pak" SelfReg="false" NextFile="sr.pak"/>
-    <ROW File="snapshot_blob.bin" Component_="blink_image_resources_200_percent.pak" FileName="SNAPSH~1.BIN|snapshot_blob.bin" Attributes="0" SourcePath="..\..\dist\win-unpacked\snapshot_blob.bin" SelfReg="false" NextFile="Symphony.exe"/>
     <ROW File="sr.pak" Component_="am.pak" FileName="sr.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\sr.pak" SelfReg="false" NextFile="sv.pak"/>
     <ROW File="sv.pak" Component_="am.pak" FileName="sv.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\sv.pak" SelfReg="false" NextFile="sw.pak"/>
     <ROW File="sw.pak" Component_="am.pak" FileName="sw.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\sw.pak" SelfReg="false" NextFile="ta.pak"/>
@@ -306,6 +305,7 @@
     <ROW File="ucrtbase.dll" Component_="ucrtbase.dll" FileName="ucrtbase.dll" Attributes="0" SourcePath="..\..\dist\win-unpacked\ucrtbase.dll" SelfReg="false" NextFile="vcruntime140.dll"/>
     <ROW File="ui_resources_200_percent.pak" Component_="blink_image_resources_200_percent.pak" FileName="UI_RES~1.PAK|ui_resources_200_percent.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\ui_resources_200_percent.pak" SelfReg="false" NextFile="views_resources_200_percent.pak"/>
     <ROW File="uk.pak" Component_="am.pak" FileName="uk.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\uk.pak" SelfReg="false" NextFile="vi.pak"/>
+    <ROW File="v8_context_snapshot.bin" Component_="blink_image_resources_200_percent.pak" FileName="V8_CON~1.BIN|v8_context_snapshot.bin" Attributes="0" SourcePath="..\..\dist\win-unpacked\v8_context_snapshot.bin" SelfReg="false"/>
     <ROW File="vcruntime140.dll" Component_="vcruntime140.dll" FileName="VCRUNT~1.DLL|vcruntime140.dll" Attributes="0" SourcePath="..\..\dist\win-unpacked\vcruntime140.dll" SelfReg="false" NextFile="build.cmd"/>
     <ROW File="vi.pak" Component_="am.pak" FileName="vi.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\vi.pak" SelfReg="false" NextFile="zhCN.pak"/>
     <ROW File="views_resources_200_percent.pak" Component_="blink_image_resources_200_percent.pak" FileName="VIEWS_~1.PAK|views_resources_200_percent.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\views_resources_200_percent.pak" SelfReg="false" NextFile="am.pak"/>
