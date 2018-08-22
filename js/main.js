@@ -177,13 +177,19 @@ function setChromeFlagsFromCommandLine() {
             continue;
         }
 
+        if (!flags[key]) {
+            return;
+        }
+
         let flagArray = flags[key].split(':');
 
-        let chromeFlagKey = flagArray[0];
-        let chromeFlagValue = flagArray[1];
+        if (flagArray && Array.isArray(flagArray) && flagArray.length > 0) {
+            let chromeFlagKey = flagArray[0];
+            let chromeFlagValue = flagArray[1];
+            log.send(logLevels.INFO, `Setting chrome flag ${chromeFlagKey} to ${chromeFlagValue}`);
+            app.commandLine.appendSwitch(chromeFlagKey, chromeFlagValue);
+        }
 
-        log.send(logLevels.INFO, `Setting chrome flag ${chromeFlagKey} to ${chromeFlagValue}`);
-        app.commandLine.appendSwitch(chromeFlagKey, chromeFlagValue);
     }
 
 }
