@@ -987,22 +987,26 @@ eventEmitter.on('notificationSettings', (notificationSettings) => {
  */
 function setLocale(browserWindow, opts) {
     const language = opts && opts.language || app.getLocale();
+    const localeContent = {};
     log.send(logLevels.INFO, `language changed to ${language}. Updating menu and user config`);
 
     setLanguage(language);
-    if (browserWindow && isMainWindow(browserWindow)) {
-        menu = electron.Menu.buildFromTemplate(getTemplate(app));
-        electron.Menu.setApplicationMenu(menu);
+    if (browserWindow && !browserWindow.isDestroyed()) {
+        if (isMainWindow(browserWindow)) {
 
-        const localeContent = {};
-        if (isWindows10()) {
-            browserWindow.setMenuBarVisibility(false);
+            menu = electron.Menu.buildFromTemplate(getTemplate(app));
+            electron.Menu.setApplicationMenu(menu);
 
-            // update locale for custom title bar
-            if (isCustomTitleBarEnabled) {
-                localeContent.titleBar = i18n.getMessageFor('TitleBar');
+            if (isWindows10()) {
+                browserWindow.setMenuBarVisibility(false);
+
+                // update locale for custom title bar
+                if (isCustomTitleBarEnabled) {
+                    localeContent.titleBar = i18n.getMessageFor('TitleBar');
+                }
             }
         }
+
         localeContent.contextMenu = i18n.getMessageFor('ContextMenu');
         browserWindow.webContents.send('locale-changed', localeContent);
     }
