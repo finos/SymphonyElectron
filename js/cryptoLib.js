@@ -1,7 +1,7 @@
 const electron = require('electron');
 const app = electron.app;
-const ffi = require('ffi-napi');
-const ref = require('ref-napi');
+const ffi = require('ffi');
+const ref = require('ref');
 const path = require('path');
 const execPath = path.dirname(app.getPath('exe'));
 
