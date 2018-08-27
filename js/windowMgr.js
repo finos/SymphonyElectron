@@ -41,7 +41,7 @@ let boundsChangeWindow;
 let alwaysOnTop = false;
 let position = 'lower-right';
 let display;
-let sandboxed = false;
+let sandboxed = true;
 let isAutoReload = false;
 let devToolsEnabled = true;
 let isCustomTitleBarEnabled = true;
@@ -465,11 +465,6 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                         if (browserWin) {
                             log.send(logLevels.INFO, 'loaded pop-out window url: ' + newWinParsedUrl);
 
-                            if (!isMac) {
-                                // Removes the menu bar from the pop-out window
-                                // setMenu is currently only supported on Windows and Linux
-                                browserWin.setMenu(null);
-                            }
                             browserWin.webContents.send('on-page-load');
                             // applies styles required for snack bar
                             browserWin.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/snackBar/style.css'), 'utf8').toString());
@@ -501,6 +496,11 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                             };
 
                             browserWin.webContents.on('crashed', handleChildWindowCrashEvent);
+                            browserWin.webContents.on('will-navigate', (e, navigatedURL) => {
+                                if (!navigatedURL.startsWith('http' || 'https')) {
+                                    e.preventDefault();
+                                }
+                            });
 
                             // In case we navigate to an external link from inside a pop-out,
                             // we open that link in an external browser rather than creating
@@ -580,6 +580,12 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
     // whenever the main window is navigated for ex: window.location.href or url redirect
     mainWindow.webContents.on('will-navigate', function (event, navigatedURL) {
+
+        if (!navigatedURL.startsWith('http' || 'https')) {
+            event.preventDefault();
+            return;
+        }
+
         isWhitelisted(navigatedURL)
             .catch(() => {
                 event.preventDefault();
@@ -648,7 +654,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                             const fullMessage = `${i18n.getMessageFor('Your administrator has disabled')} ${message}. ${i18n.getMessageFor('Please contact your admin for help')}`;
                             const browserWindow = BrowserWindow.getFocusedWindow();
                             if (browserWindow && !browserWindow.isDestroyed()) {
-                                electron.dialog.showMessageBox(browserWindow, {type: 'error', title: `${i18n.getMessageFor('Permission Denied')}!`, message: fullMessage});
+                                electron.dialog.showMessageBox(browserWindow, { type: 'error', title: `${i18n.getMessageFor('Permission Denied')}!`, message: fullMessage });
                             }
                         }
 
@@ -981,16 +987,28 @@ eventEmitter.on('notificationSettings', (notificationSettings) => {
  */
 function setLocale(browserWindow, opts) {
     const language = opts && opts.language || app.getLocale();
+    const localeContent = {};
     log.send(logLevels.INFO, `language changed to ${language}. Updating menu and user config`);
 
     setLanguage(language);
-    if (browserWindow && isMainWindow(browserWindow)) {
-        menu = electron.Menu.buildFromTemplate(getTemplate(app));
-        electron.Menu.setApplicationMenu(menu);
+    if (browserWindow && !browserWindow.isDestroyed()) {
+        if (isMainWindow(browserWindow)) {
 
-        if (isWindows10()) {
-            browserWindow.setMenuBarVisibility(false);
+            menu = electron.Menu.buildFromTemplate(getTemplate(app));
+            electron.Menu.setApplicationMenu(menu);
+
+            if (isWindows10()) {
+                browserWindow.setMenuBarVisibility(false);
+
+                // update locale for custom title bar
+                if (isCustomTitleBarEnabled) {
+                    localeContent.titleBar = i18n.getMessageFor('TitleBar');
+                }
+            }
         }
+
+        localeContent.contextMenu = i18n.getMessageFor('ContextMenu');
+        browserWindow.webContents.send('locale-changed', localeContent);
     }
 
     updateConfigField('locale', language);

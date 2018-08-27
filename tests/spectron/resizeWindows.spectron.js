@@ -5,7 +5,7 @@ const WindowsActions = require('./spectronWindowsActions');
 let app = new Application({});
 let windowActions;
 
-!isMac ? describe('Tests for Resizing windows', () => {
+describe('Tests for Resizing windows', () => {
 
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
@@ -46,4 +46,4 @@ let windowActions;
             done.fail(new Error(`failed to minimize window to 300 px with error: ${err}`));
         }
     });
-}) : describe.skip();
+});

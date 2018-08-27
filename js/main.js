@@ -19,7 +19,7 @@ const {
     updateUserConfigOnLaunch,
     getUserConfigField
 } = require('./config.js');
-const {setCheckboxValues} = require('./menus/menuTemplate.js');
+const { setCheckboxValues } = require('./menus/menuTemplate.js');
 const { isMac, isDevEnv } = require('./utils/misc.js');
 const protocolHandler = require('./protocolHandler');
 const getCmdLineArg = require('./utils/getCmdLineArg.js');
@@ -67,7 +67,7 @@ function initializeCrashReporter(podUrl) {
 
     getConfigField('crashReporter')
         .then((crashReporterConfig) => {
-            crashReporter.start({companyName: crashReporterConfig.companyName, submitURL: crashReporterConfig.submitURL, uploadToServer: crashReporterConfig.uploadToServer, extra: {'process': 'main', podUrl: podUrl}});
+            crashReporter.start({ companyName: crashReporterConfig.companyName, submitURL: crashReporterConfig.submitURL, uploadToServer: crashReporterConfig.uploadToServer, extra: { 'process': 'main', podUrl: podUrl } });
             log.send(logLevels.INFO, 'initialized crash reporter on the main process!');
         })
         .catch((err) => {
@@ -120,9 +120,6 @@ function setChromeFlags() {
             app.commandLine.appendSwitch('auth-negotiate-delegate-whitelist', config.customFlags.authNegotiateDelegateWhitelist);
         }
 
-        // ELECTRON-261: Windows 10 Screensharing issues. We set chrome flags
-        // to disable gpu which fixes the black screen issue observed on
-        // multiple monitors
         if (config.customFlags.disableGpu) {
             log.send(logLevels.INFO, 'Setting disable gpu, gpu compositing and d3d11 flags to true');
             app.commandLine.appendSwitch("disable-gpu", true);
@@ -133,6 +130,53 @@ function setChromeFlags() {
     }
 
     app.commandLine.appendSwitch("disable-background-timer-throttling", true);
+
+    if (isDevEnv) {
+        setChromeFlagsFromCommandLine();
+    }
+
+}
+
+function setChromeFlagsFromCommandLine() {
+
+    log.send(logLevels.INFO, 'Setting chrome flags from command line arguments!');
+
+    let chromeFlagsFromCmd = getCmdLineArg(process.argv, '--chrome-flags=', false);
+    if (!chromeFlagsFromCmd) {
+        return;
+    }
+
+    let chromeFlagsArgs = chromeFlagsFromCmd.substr(15);
+    if (!chromeFlagsArgs) {
+        return;
+    }
+
+    let flags = chromeFlagsArgs.split(',');
+    if (!flags || !Array.isArray(flags)) {
+        return;
+    }
+
+    for (let key in flags) {
+
+        if (!Object.prototype.hasOwnProperty.call(flags, key)) {
+            continue;
+        }
+
+        if (!flags[key]) {
+            return;
+        }
+
+        let flagArray = flags[key].split(':');
+
+        if (flagArray && Array.isArray(flagArray) && flagArray.length > 0) {
+            let chromeFlagKey = flagArray[0];
+            let chromeFlagValue = flagArray[1];
+            log.send(logLevels.INFO, `Setting chrome flag ${chromeFlagKey} to ${chromeFlagValue}`);
+            app.commandLine.appendSwitch(chromeFlagKey, chromeFlagValue);
+        }
+
+    }
+
 }
 
 // Set the chrome flags
@@ -152,14 +196,14 @@ app.on('ready', () => {
  * Is triggered when all the windows are closed
  * In which case we quit the app
  */
-app.on('window-all-closed', function() {
+app.on('window-all-closed', function () {
     app.quit();
 });
 
 /**
  * Is triggered when the app is up & running
  */
-app.on('activate', function() {
+app.on('activate', function () {
     if (windowMgr.isMainWindow(null)) {
         setupThenOpenMainWindow();
     } else {
@@ -177,7 +221,7 @@ app.setAsDefaultProtocolClient('symphony');
  * at this moment, support for windows
  * is in pipeline (https://github.com/electron/electron/pull/8052)
  */
-app.on('open-url', function(event, url) {
+app.on('open-url', function (event, url) {
     handleProtocolAction(url);
 });
 
@@ -306,7 +350,7 @@ function getUrlAndCreateMainWindow() {
     }
 
     getConfigField('url')
-        .then(createWin).catch(function(err) {
+        .then(createWin).catch(function (err) {
             log.send(logLevels.ERROR, `unable to create main window -> ${err}`);
             app.quit();
         });

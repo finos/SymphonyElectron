@@ -2,6 +2,7 @@ const childProcess = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
+
 class Utils {
     static async openAppInMaximize(appPath) {
         await childProcess.exec('start /MAX ' + appPath);
@@ -38,6 +39,14 @@ class Utils {
             randomstring += await chars.substring(rnum, rnum + 1);
         }
         return randomstring;
+    }
+
+    static execPromise(command) {
+        return new Promise(function(resolve, reject) {
+            childProcess.exec(command, (error, stdout, stderr) => {    
+                resolve(stdout.trim());
+            });
+        });
     }
 }
 

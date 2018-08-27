@@ -24,7 +24,7 @@ class App {
 
         if (isWindowsOS) {
             App.copyConfigPath(constants.ELECTRON_GLOBAL_CONFIG_PATH_WIN);
-            App.copyLibraries(constants.SEARCH_LIBRARY_PATH_WIN);
+            //App.copyLibraries(constants.SEARCH_LIBRARY_PATH_WIN);
         }
 
         this.app = new Application(this.options);
@@ -34,8 +34,6 @@ class App {
         try {
             this.app = await this.app.start();
             await this.app.client.waitForVisible(ui.SYM_LOGO, constants.TIMEOUT_PAGE_LOAD);
-            await this.app.browserWindow.minimize();
-            await this.app.browserWindow.restore();
             if (configurations) {
                 if (typeof configurations.alwaysOnTop !== "undefined") {
                     await this.app.browserWindow.setAlwaysOnTop(configurations.alwaysOnTop);
@@ -51,6 +49,8 @@ class App {
             if ((typeof configurations === "undefined") || (typeof configurations.defaultPosition === "undefined") || (configurations.defaultPosition === true)) {
                 await this.app.browserWindow.center();
             }
+            await this.app.browserWindow.minimize();
+            await this.app.browserWindow.restore();
             return this.app;
         } catch (err) { 
             throw new Error("Unable to start application " + err);
@@ -66,7 +66,7 @@ class App {
     }
 
     static getTimeOut() {
-        return 90000;
+        return 120000;
     }
 
     static readConfig(configPath) {
