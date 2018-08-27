@@ -7,6 +7,9 @@ const local = {
     downloadItems: []
 };
 
+let showInFolderText = "Show in Folder";
+let openText = "Open";
+
 // listen for file download complete event
 local.ipcRenderer.on('downloadCompleted', (event, arg) => {
     createDOM(arg);
@@ -15,6 +18,20 @@ local.ipcRenderer.on('downloadCompleted', (event, arg) => {
 // listen for file download progress event
 local.ipcRenderer.on('downloadProgress', () => {
     initiate();
+});
+
+// listen for locale change and update
+local.ipcRenderer.on('locale-changed', (event, data) => {
+
+    if (data && typeof data === 'object') {
+
+        if (data.downloadManager) {
+            showInFolderText = data.downloadManager['Show in Folder'];
+            openText = data.downloadManager.Open;
+        }
+
+    }
+
 });
 
 /**
@@ -137,7 +154,7 @@ function createDOM(arg) {
 
             let caretLiOpen = document.createElement('li');
             caretLiOpen.id = 'download-open';
-            caretLiOpen.innerHTML = 'Open';
+            caretLiOpen.innerHTML = openText;
             caretUL.appendChild(caretLiOpen);
             let openFileDocument = document.getElementById('download-open');
             openFileDocument.addEventListener('click', () => {
@@ -147,7 +164,7 @@ function createDOM(arg) {
 
             let caretLiShow = document.createElement('li');
             caretLiShow.id = 'download-show-in-folder';
-            caretLiShow.innerHTML = 'Show in Folder';
+            caretLiShow.innerHTML = showInFolderText;
             caretUL.appendChild(caretLiShow);
             let showInFinderDocument = document.getElementById('download-show-in-folder');
             showInFinderDocument.addEventListener('click', () => {

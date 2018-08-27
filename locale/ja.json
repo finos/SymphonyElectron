@@ -32,6 +32,11 @@
     "Reload": "リロード",
     "Search with Google": "Googleで検索"
   },
+  "DownloadManager": {
+    "Show in Folder": "フォルダで見て",
+    "Reveal in Finder": "Finderで明らかにする",
+    "Open": "開いた"
+  },
   "Copy": "コピー",
   "Custom": "カスタム",
   "Cut": "切り取り",
