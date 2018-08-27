@@ -880,7 +880,7 @@ function activate(windowName, shouldFocus = true) {
                 return window.restore();
             }
 
-            return window.show();
+            return window.focus();
         }
     }
     return null;
