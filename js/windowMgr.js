@@ -1008,6 +1008,12 @@ function setLocale(browserWindow, opts) {
         }
 
         localeContent.contextMenu = i18n.getMessageFor('ContextMenu');
+
+        localeContent.downloadManager = i18n.getMessageFor('DownloadManager');
+        if (isMac) {
+            localeContent.downloadManager['Show in Folder'] = localeContent.downloadManager['Reveal in Finder'];
+        }
+
         browserWindow.webContents.send('locale-changed', localeContent);
     }
 

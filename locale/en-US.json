@@ -32,6 +32,11 @@
     "Reload": "Reload",
     "Search with Google": "Search with Google"
   },
+  "DownloadManager": {
+    "Show in Folder": "Show in Folder",
+    "Reveal in Finder": "Reveal in Finder",
+    "Open": "Open"
+  },
   "Copy": "Copy",
   "Custom": "Custom",
   "Cut": "Cut",
