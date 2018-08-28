@@ -32,19 +32,18 @@ class TitleBar {
         }
 
         const updateIcon = TitleBar.updateIcons;
-        const updateTitleBar = TitleBar.updateTitleBar;
 
         // Event to capture and update icons
         this.window.on('maximize', updateIcon.bind(this, true));
         this.window.on('unmaximize', updateIcon.bind(this, false));
-        this.window.on('enter-full-screen', updateTitleBar.bind(this, true));
-        this.window.on('leave-full-screen', updateTitleBar.bind(this, false));
+        this.window.on('enter-full-screen', this.updateTitleBar.bind(this, true));
+        this.window.on('leave-full-screen', this.updateTitleBar.bind(this, false));
 
         window.addEventListener('beforeunload', () => {
             this.window.removeListener('maximize', updateIcon);
             this.window.removeListener('unmaximize', updateIcon);
-            this.window.removeListener('enter-full-screen', updateTitleBar);
-            this.window.removeListener('leave-full-screen', updateTitleBar);
+            this.window.removeListener('enter-full-screen', this.updateTitleBar);
+            this.window.removeListener('leave-full-screen', this.updateTitleBar);
         });
 
         document.body.appendChild(this.titleBar);
@@ -66,6 +65,8 @@ class TitleBar {
         this.closeButton = document.getElementById('title-bar-close-button');
 
         this.initiateEventListeners();
+        
+        this.updateTitleBar(this.window.isFullScreen());
     }
 
     /**
@@ -154,7 +155,7 @@ class TitleBar {
      * based on the full screen event
      * @param isFullScreen {Boolean}
      */
-    static updateTitleBar(isFullScreen) {
+    updateTitleBar(isFullScreen) {
         if (isFullScreen) {
             this.titleBar.style.display = 'none';
             updateContentHeight('0px');
@@ -266,6 +267,5 @@ function updateContentHeight(height = titleBarHeight) {
 }
 
 module.exports = {
-    TitleBar,
-    updateContentHeight
+    TitleBar
 };
