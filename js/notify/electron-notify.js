@@ -19,7 +19,7 @@ const ipc = electron.ipcMain;
 const { isMac, isNodeEnv } = require('../utils/misc');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
-
+const i18n = require('../translation/i18n');
 // maximum number of notifications that can be queued, after limit is
 // reached then error func callback will be invoked.
 const MAX_QUEUE_SIZE = 30;
@@ -464,11 +464,15 @@ function setNotificationContents(notfWindow, notfObj) {
     } else {
         delete updatedNotificationWindow.electronNotifyOnCloseFunc;
     }
+    // Set strings about i18n
+    const translation = {};
+    translation.close = i18n.getMessageFor('Close');
 
     const windowId = notfWindow.id;
+
     // Set contents, ...
     updatedNotificationWindow.webContents.send('electron-notify-set-contents',
-        Object.assign({ windowId: windowId}, notfObj));
+        Object.assign({ windowId: windowId, i18n: translation}, notfObj));
     // Show window
     updatedNotificationWindow.showInactive();
 
