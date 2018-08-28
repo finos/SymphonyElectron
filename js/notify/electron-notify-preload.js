@@ -89,6 +89,7 @@ function setContents(event, notificationObj) {
     let messageDoc = notiDoc.getElementById('message');
     let imageDoc = notiDoc.getElementById('image');
     let closeButton = notiDoc.getElementById('close');
+    closeButton.title = notificationObj.i18n.close;
 
     if (notificationObj.color) {
         container.style.backgroundColor = notificationObj.color;

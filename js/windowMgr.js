@@ -846,6 +846,14 @@ function setIsOnline(status) {
 }
 
 /**
+ * Returns user's online status
+ * @return {boolean}
+ */
+function getIsOnline() {
+    return isOnline;
+}
+
+/**
  * Tries finding a window we have created with given name.  If found, then
  * brings to front and gives focus.
  * @param  {String} windowName   Name of target window. Note: main window has
@@ -1212,4 +1220,5 @@ module.exports = {
     handleKeyPress: handleKeyPress,
     cleanUpChildWindows: cleanUpChildWindows,
     setLocale: setLocale,
+    getIsOnline: getIsOnline,
 };
