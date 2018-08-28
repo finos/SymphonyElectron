@@ -2,6 +2,7 @@ const { remote } = require('electron');
 const { MenuItem } = remote;
 const { isMac } = require('./../utils/misc');
 const { SpellCheckHandler, ContextMenuListener, ContextMenuBuilder } = require('electron-spellchecker');
+const stringFormat = require('./../utils/stringFormat');
 
 class SpellCheckHelper {
 
@@ -59,8 +60,8 @@ class SpellCheckHelper {
             copyImage: () => content['Copy Image'] || 'Copy Image',
             addToDictionary: () => content['Add to Dictionary'] || 'Add to Dictionary',
             lookUpDefinition: (lookup) => {
-                const lookUp = content['Look Up '] || 'Look Up ';
-                return `${lookUp}"${lookup.word}"`;
+                const formattedString = stringFormat(content['Look Up {searchText}'], { searchText: lookup.word });
+                return formattedString || `Look Up ${lookup.word}`;
             },
             searchGoogle: () => content['Search with Google'] || 'Search with Google',
             cut: () => content.Cut || 'Cut',
