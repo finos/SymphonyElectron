@@ -38,9 +38,10 @@ function init() {
                 path: process.execPath,
             });
         } else {
+            const escapedPath = path.replace('/\\/g', '\\');
             symphonyAutoLauncher = new AutoLaunch({
                 name: 'Symphony',
-                path: path,
+                path: escapedPath,
             });
         }
     }
