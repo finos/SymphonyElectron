@@ -5,10 +5,13 @@ const throttle = require('../utils/throttle');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 
-let setIsAutoReload;
+let setIsAutoReloadFnc;
+let getIsOnlineFnc;
 if (!process.env.ELECTRON_QA) {
     /* eslint-disable global-require */
-    setIsAutoReload = require('../windowMgr').setIsAutoReload;
+    const { getIsOnline, setIsAutoReload } = require('../windowMgr');
+    getIsOnlineFnc = getIsOnline;
+    setIsAutoReloadFnc = setIsAutoReload;
     /* eslint-enable global-require */
 }
 
@@ -55,11 +58,11 @@ function monitorUserActivity() {
     intervalId = setInterval(monitor, 1000);
 
     function monitor() {
-        if (systemIdleTime.getIdleTime() < maxIdleTime) {
+        if (systemIdleTime.getIdleTime() < maxIdleTime && typeof getIsOnlineFnc === 'function' && getIsOnlineFnc()) {
             // If system is active, send an update to the app bridge and clear the timer
             sendActivity();
-            if (typeof setIsAutoReload === 'function') {
-                setIsAutoReload(false);
+            if (typeof setIsAutoReloadFnc === 'function') {
+                setIsAutoReloadFnc(false);
             }
             clearInterval(intervalId);
             intervalId = undefined;
