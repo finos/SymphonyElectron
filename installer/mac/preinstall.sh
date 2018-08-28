@@ -3,6 +3,12 @@
 # Kill the existing running instance
 sudo killall Symphony
 
+delete_app()
+{
+    # Delete the installed version only if it is older than the installing version
+    sudo rm -rf /Applications/Symphony.app
+}
+
 compare_versions()
 {
     # Get the installer version:
@@ -43,18 +49,18 @@ compare_versions()
         exit 1
     fi
 
-    if [ ${minor1} -lt ${minor2} ]; then
+    if [ ${major1} -eq ${major2} -a ${minor1} -lt ${minor2} ]; then
         echo "Installed version is newer than this version, exiting installation"
         exit 1
     fi
 
-    if [ ${patch1} -lt ${patch2} ]; then
+    if [ ${major1} -eq ${major2} -a ${minor1} -eq ${minor2} -a ${patch1} -lt ${patch2} ]; then
         echo "Installed version is newer than this version, exiting installation"
         exit 1
     fi
 
-    # Delete the installed version only if it is older than the installing version
-    sudo rm -rf /Applications/Symphony.app
+    delete_app
+
 }
 
 compare_versions
