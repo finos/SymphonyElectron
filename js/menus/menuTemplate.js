@@ -14,8 +14,6 @@ const titleBarStyles = require('../enums/titleBarStyles');
 const i18n = require('../translation/i18n');
 const autoLaunch = require('../autoLaunch');
 
-autoLaunch.init();
-
 const configFields = [
     'minimizeOnClose',
     'launchOnStartup',

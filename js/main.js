@@ -27,8 +27,6 @@ const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
 const autoLaunch = require('./autoLaunch');
 
-autoLaunch.init();
-
 require('electron-dl')();
 
 //setting the env path child_process issue https://github.com/electron/electron/issues/7688
