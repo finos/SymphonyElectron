@@ -14,7 +14,6 @@ const compareSemVersions = require('./utils/compareSemVersions.js');
 // Local Dependencies
 const {
     getConfigField,
-    getGlobalConfigField,
     readConfigFileSync,
     updateUserConfigOnLaunch,
     getUserConfigField
@@ -187,7 +186,8 @@ setChromeFlags();
  */
 app.on('ready', () => {
     checkFirstTimeLaunch()
-        .then(readConfigThenOpenMainWindow);
+        .then(readConfigThenOpenMainWindow)
+        .catch(readConfigThenOpenMainWindow);
 });
 
 /**
@@ -265,31 +265,23 @@ function setupThenOpenMainWindow() {
 }
 
 function checkFirstTimeLaunch() {
+    return getUserConfigField('configVersion')
+        .then((configVersion) => {
+            const appVersionString = app.getVersion().toString();
+            const execPath = nodePath.dirname(app.getPath('exe'));
+            const shouldUpdateUserConfig = execPath.indexOf('AppData/Local/Programs') !== -1 || isMac;
 
-    return new Promise((resolve) => {
-
-        getUserConfigField('version')
-            .then((configVersion) => {
-
-                const appVersionString = app.getVersion().toString();
-
-                const execPath = nodePath.dirname(app.getPath('exe'));
-                const shouldUpdateUserConfig = execPath.indexOf('AppData/Local/Programs') !== -1 || isMac;
-
-                if (!(configVersion
-                    && typeof configVersion === 'string'
-                    && (compareSemVersions.check(appVersionString, configVersion) !== 1)) && shouldUpdateUserConfig) {
-                    return setupFirstTimeLaunch();
-                }
-
-                return resolve();
-            })
-            .catch(() => {
+            if (!(configVersion
+                && typeof configVersion === 'string'
+                && (compareSemVersions.check(appVersionString, configVersion) !== 1)) && shouldUpdateUserConfig) {
                 return setupFirstTimeLaunch();
-            });
-        return resolve();
-    });
-
+            }
+            log.send(logLevels.INFO, 'not a first-time launch');
+            return Promise.resolve();
+        })
+        .catch(() => {
+            return setupFirstTimeLaunch();
+        });
 }
 
 /**
@@ -299,20 +291,10 @@ function checkFirstTimeLaunch() {
  * @return {Promise<any>}
  */
 function setupFirstTimeLaunch() {
-    return new Promise(resolve => {
-        log.send(logLevels.INFO, 'setting first time launch config');
-        getGlobalConfigField('launchOnStartup')
-            .then(setStartup)
-            .then(updateUserConfigOnLaunch)
-            .then(() => {
-                log.send(logLevels.INFO, 'first time launch config changes succeeded -> ');
-                return resolve();
-            })
-            .catch((err) => {
-                log.send(logLevels.ERROR, 'first time launch config changes failed -> ' + err);
-                return resolve();
-            });
-    });
+    log.send(logLevels.INFO, 'setting first time launch config');
+    return getConfigField('launchOnStartup')
+        .then(setStartup)
+        .then(updateUserConfigOnLaunch);
 }
 
 /**
