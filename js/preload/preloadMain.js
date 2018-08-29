@@ -19,7 +19,7 @@ const apiCmds = apiEnums.cmds;
 const apiName = apiEnums.apiName;
 const getMediaSources = require('../desktopCapturer/getSources');
 const getMediaSource = require('../desktopCapturer/getSource');
-const { TitleBar, updateContentHeight } = require('../windowsTitlebar');
+const { TitleBar } = require('../windowsTitlebar');
 const titleBar = new TitleBar();
 const { buildNumber } = require('../../package.json');
 const memoryMonitorInterval = 1000 * 60 * 60;
@@ -479,7 +479,6 @@ function createAPI() {
     local.ipcRenderer.on('initiate-windows-title-bar', (event, arg) => {
         if (arg && typeof arg === 'string') {
             titleBar.initiateWindowsTitleBar(arg);
-            updateContentHeight();
         }
     });
 

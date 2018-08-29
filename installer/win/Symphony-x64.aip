@@ -18,7 +18,7 @@
     <ROW Property="ARPPRODUCTICON" Value="icon.exe" Type="8"/>
     <ROW Property="ARPSYSTEMCOMPONENT" Value="1"/>
     <ROW Property="ARPURLINFOABOUT" Value="http://www.symphony.com"/>
-    <ROW Property="AUTO_LAUNCH_PATH" Value="&quot;&quot;"/>
+    <ROW Property="AUTO_LAUNCH_PATH" Value="{}"/>
     <ROW Property="AUTO_START" Value="true" Type="4"/>
     <ROW Property="AUTO_START_CB" Value="true" Type="4"/>
     <ROW Property="BRING_TO_FRONT" Value="false" Type="4"/>

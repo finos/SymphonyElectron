@@ -66,6 +66,8 @@ class TitleBar {
         this.closeButton = document.getElementById('title-bar-close-button');
 
         this.initiateEventListeners();
+
+        updateTitleBar(this.window.isFullScreen());
     }
 
     /**
