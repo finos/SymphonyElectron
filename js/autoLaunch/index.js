@@ -15,7 +15,7 @@ const props = isMac ? {
     path: process.execPath,
 } : {
     name: 'Symphony',
-    path: globalConfigData && globalConfigData.autoLaunchPath || process.execPath,
+    path: getAutoLaunchPath() || process.execPath,
 };
 
 class AutoLaunchController extends AutoLaunch {
@@ -41,6 +41,15 @@ class AutoLaunchController extends AutoLaunch {
         log.send(logLevels.INFO, `Disabling auto launch!`);
         return this.disable();
     }
+}
+
+/**
+ * Replace forward slash in the path to backward slash
+ * @return {any}
+ */
+function getAutoLaunchPath() {
+    const autoLaunchPath = globalConfigData && globalConfigData.autoLaunchPath || null;
+    return autoLaunchPath ? autoLaunchPath.replace(/\//g, '\\') : null;
 }
 
 const autoLaunchInstance = new AutoLaunchController(props);
