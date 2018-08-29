@@ -32,7 +32,7 @@ class TitleBar {
         }
 
         const updateIcon = TitleBar.updateIcons;
-        const updateTitleBar = TitleBar.updateTitleBar;
+        const updateTitleBar = this.updateTitleBar;
 
         // Event to capture and update icons
         this.window.on('maximize', updateIcon.bind(this, true));
@@ -67,7 +67,7 @@ class TitleBar {
 
         this.initiateEventListeners();
 
-        updateTitleBar(this.window.isFullScreen());
+        this.updateTitleBar(this.window.isFullScreen());
     }
 
     /**
@@ -151,7 +151,7 @@ class TitleBar {
      * based on the full screen event
      * @param isFullScreen {Boolean}
      */
-    static updateTitleBar(isFullScreen) {
+    updateTitleBar(isFullScreen) {
         if (isFullScreen) {
             this.titleBar.style.display = 'none';
             updateContentHeight('0px');
