@@ -1,75 +1,47 @@
 const Application = require('./spectronSetup');
+const WebActions = require('./spectronWebActions');
+const WindowsActions = require('./spectronWindowsActions');
+const constants = require('./spectronConstants.js');
 const path = require('path');
-const { buildNumber } = require('../../package');
-const electronVersion = require('../../package').devDependencies.electron;
-const bluebird = require('bluebird');
+const ui = require('./spectronInterfaces.js');
 
-const API_VERSION = '2.0.0';
-const SEARCH_API_VERSION = '3.0.0';
-
-let app = new Application({});
+let app, windowsActions;
 
 describe('Tests for getVersionInfo API', () => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = constants.TIMEOUT_TEST_SUITE;
 
-    let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
-
-    beforeAll((done) => {
-        return app.startApplication().then((startedApp) => {
-            app = startedApp;
+    beforeAll(async (done) => {
+        try {
+            app = await new Application({}).startApplication({ testedHost: constants.TESTED_HOST, alwaysOnTop: true });
+            webActions = await new WebActions(app);
+            windowsActions = await new WindowsActions(app);
             done();
-        }).catch((err) => {
+        } catch (err) {
+            await windowsActions.stopApp();
             done.fail(new Error(`Unable to start application error: ${err}`));
-        });
+        };
     });
 
-    afterAll((done) => {
-        if (app && app.isRunning()) {
-            jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
-            app.stop().then(() => {
-                done();
-            }).catch((err) => {
-                done();
-            });
-        }
-    });
-
-    it('should launch the app', (done) => {
-        return app.client.waitUntilWindowLoaded().then(() => {
-            return app.client.getWindowCount().then((count) => {
-                expect(count === 1).toBeTruthy();
-                done();
-            }).catch((err) => {
-                done.fail(new Error(`getVersionInfo failed in getWindowCount with error: ${err}`));
-            });
-        }).catch((err) => {
-            done.fail(new Error(`getVersionInfo failed in waitUntilWindowLoaded with error: ${err}`));
-        });
-    });
-
-    it('should load demo html page', () => {
-        return app.client.url('file:///' + path.join(__dirname, '..', '..', 'demo/index.html'));
-    });
-
-    it('should verify if the version numbers are correct', function (done) {
-        app.client.waitForExist('#get-version', 2000);
-        app.client.click('#get-version');
-
-        bluebird.all([
-            '#api-version',
-            '#container-identifier',
-            '#container-ver',
-            '#build-number',
-            '#search-api-ver'
-        ]).mapSeries((string) => {
-            return app.client.getText(string)
-        }).then((values) => {
-            expect(values[ 0 ]).toBe(API_VERSION);
-            expect(values[ 1 ]).toBe('Electron');
-            expect(values[ 2 ]).toBe(electronVersion);
-            expect(values[ 3 ]).toBe(buildNumber);
-            expect(values[ 4 ]).toBe(SEARCH_API_VERSION);
+    afterAll(async (done) => {
+        try {
+            await windowsActions.stopApp();
             done();
-        });
+        } catch (err) {
+            done.fail(new Error(`Failed at post-condition: ${err}`));
+        };
+    });
+
+    it('Should verify if the version numbers are correct', async (done) => {
+        try {
+            if (await windowsActions.isAppRunning()) {
+                await webActions.navigateURL('file:///' + path.join(__dirname, '..', '..', 'demo/index.html'));
+                await windowsActions.bringToFront("Symphony");
+                await webActions.clickIfElementVisible(ui.GET_VERSION_BUTTON);
+                await webActions.verifyVersionInfo();
+            }
+            done();
+        } catch (err) {
+            done.fail(new Error(`Fail to verify the version numbers: ${err}`));
+        };
     });
 });
