@@ -17,7 +17,7 @@
     "demo-win": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file:///demo/index.html",
     "demo-mac": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/demo/index.html",
     "unpacked-mac": "npm run prebuild && npm run test && build --mac --dir",
-    "packed-mac": "npm run unpacked-mac && packagesbuild -v installer/mac/symphony-mac-packager.pkgproj",
+    "packed-mac": "sh installer/mac/version_handler.sh && npm run unpacked-mac && packagesbuild -v installer/mac/symphony-mac-packager.pkgproj",
     "unpacked-win": "npm run prebuild && npm run test && build --win --x64 --dir",
     "unpacked-win-x86": "npm run prebuild && npm run test && build --win --ia32 --dir"
   },
