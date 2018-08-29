@@ -98,8 +98,8 @@ function setContents(event, notificationObj) {
         if (notificationObj.color.match(whiteColorRegExp)) {
             logo.src = './assets/symphony-logo-black.png';
         } else {
-            messageDoc.style.color = '#ffffff';
-            titleDoc.style.color = '#ffffff';
+            messageDoc.style.color = '#000000';
+            titleDoc.style.color = '#000000';
             companyDoc.style.color = notificationObj.color;
             logo.src = './assets/symphony-logo-white.png';
         }
