@@ -7,7 +7,6 @@ const crashReporter = electron.crashReporter;
 const nodeURL = require('url');
 const shellPath = require('shell-path');
 const squirrelStartup = require('electron-squirrel-startup');
-const AutoLaunch = require('auto-launch');
 const urlParser = require('url');
 const nodePath = require('path');
 const compareSemVersions = require('./utils/compareSemVersions.js');
@@ -15,7 +14,6 @@ const compareSemVersions = require('./utils/compareSemVersions.js');
 // Local Dependencies
 const {
     getConfigField,
-    getGlobalConfigField,
     readConfigFileSync,
     updateUserConfigOnLaunch,
     getUserConfigField
@@ -26,6 +24,7 @@ const protocolHandler = require('./protocolHandler');
 const getCmdLineArg = require('./utils/getCmdLineArg.js');
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
+const autoLaunch = require('./autoLaunch');
 
 require('electron-dl')();
 
@@ -93,23 +92,6 @@ let allowMultiInstance = getCmdLineArg(process.argv, '--multiInstance', true) ||
 // quit if another instance is already running, ignore for dev env or if app was started with multiInstance flag
 if (!allowMultiInstance && shouldQuit) {
     app.quit();
-}
-
-let symphonyAutoLauncher;
-
-if (isMac) {
-    symphonyAutoLauncher = new AutoLaunch({
-        name: 'Symphony',
-        mac: {
-            useLaunchAgent: true,
-        },
-        path: process.execPath,
-    });
-} else {
-    symphonyAutoLauncher = new AutoLaunch({
-        name: 'Symphony',
-        path: process.execPath,
-    });
 }
 
 /**
@@ -204,7 +186,8 @@ setChromeFlags();
  */
 app.on('ready', () => {
     checkFirstTimeLaunch()
-        .then(readConfigThenOpenMainWindow);
+        .then(readConfigThenOpenMainWindow)
+        .catch(readConfigThenOpenMainWindow);
 });
 
 /**
@@ -282,31 +265,23 @@ function setupThenOpenMainWindow() {
 }
 
 function checkFirstTimeLaunch() {
+    return getUserConfigField('configVersion')
+        .then((configVersion) => {
+            const appVersionString = app.getVersion().toString();
+            const execPath = nodePath.dirname(app.getPath('exe'));
+            const shouldUpdateUserConfig = execPath.indexOf('AppData/Local/Programs') !== -1 || isMac;
 
-    return new Promise((resolve) => {
-
-        getUserConfigField('version')
-            .then((configVersion) => {
-
-                const appVersionString = app.getVersion().toString();
-
-                const execPath = nodePath.dirname(app.getPath('exe'));
-                const shouldUpdateUserConfig = execPath.indexOf('AppData/Local/Programs') !== -1 || isMac;
-
-                if (!(configVersion
-                    && typeof configVersion === 'string'
-                    && (compareSemVersions.check(appVersionString, configVersion) !== 1)) && shouldUpdateUserConfig) {
-                    return setupFirstTimeLaunch();
-                }
-
-                return resolve();
-            })
-            .catch(() => {
+            if (!(configVersion
+                && typeof configVersion === 'string'
+                && (compareSemVersions.check(appVersionString, configVersion) !== 1)) && shouldUpdateUserConfig) {
                 return setupFirstTimeLaunch();
-            });
-        return resolve();
-    });
-
+            }
+            log.send(logLevels.INFO, 'not a first-time launch');
+            return Promise.resolve();
+        })
+        .catch(() => {
+            return setupFirstTimeLaunch();
+        });
 }
 
 /**
@@ -316,20 +291,10 @@ function checkFirstTimeLaunch() {
  * @return {Promise<any>}
  */
 function setupFirstTimeLaunch() {
-    return new Promise(resolve => {
-        log.send(logLevels.INFO, 'setting first time launch config');
-        getGlobalConfigField('launchOnStartup')
-            .then(setStartup)
-            .then(updateUserConfigOnLaunch)
-            .then(() => {
-                log.send(logLevels.INFO, 'first time launch config changes succeeded -> ');
-                return resolve();
-            })
-            .catch((err) => {
-                log.send(logLevels.ERROR, 'first time launch config changes failed -> ' + err);
-                return resolve();
-            });
-    });
+    log.send(logLevels.INFO, 'setting first time launch config');
+    return getConfigField('launchOnStartup')
+        .then(setStartup)
+        .then(updateUserConfigOnLaunch);
 }
 
 /**
@@ -344,10 +309,10 @@ function setStartup(lStartup) {
         log.send(logLevels.INFO, `launchOnStartup value is ${launchOnStartup}`);
         if (launchOnStartup) {
             log.send(logLevels.INFO, `enabling launch on startup`);
-            symphonyAutoLauncher.enable();
+            autoLaunch.enable();
             return resolve();
         }
-        symphonyAutoLauncher.disable();
+        autoLaunch.disable();
         return resolve();
     });
 }

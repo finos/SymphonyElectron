@@ -17,10 +17,15 @@ let userConfigDir;
 jest.mock('electron', function() {
     return {
         app: {
-            getPath: mockedGetPath
+            getPath: mockedGetPath,
+            getVersion: mockedGetVersion
         }
     }
 });
+
+function mockedGetVersion() {
+    return '3.1.0';
+}
 
 function mockedGetPath(type) {
     if (type === 'exe') {
