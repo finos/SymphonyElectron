@@ -1,7 +1,6 @@
 'use strict';
 
 const fs = require('fs');
-const AutoLaunch = require('auto-launch');
 const electron = require('electron');
 
 const { updateConfigField, getMultipleConfigField } = require('../config.js');
@@ -13,6 +12,7 @@ const eventEmitter = require('../eventEmitter');
 const aboutApp = require('../aboutApp');
 const titleBarStyles = require('../enums/titleBarStyles');
 const i18n = require('../translation/i18n');
+const autoLaunch = require('../autoLaunch');
 
 const configFields = [
     'minimizeOnClose',
@@ -31,8 +31,6 @@ let bringToFront = false;
 let memoryRefresh = false;
 let titleBarStyle = titleBarStyles.CUSTOM;
 
-let symphonyAutoLauncher;
-
 const windowsAccelerator = Object.assign({
     undo: 'Ctrl+Z',
     redo: 'Ctrl+Y',
@@ -48,21 +46,6 @@ const windowsAccelerator = Object.assign({
     minimize: 'Ctrl+M',
     close: 'Ctrl+W',
 });
-
-if (isMac) {
-    symphonyAutoLauncher = new AutoLaunch({
-        name: 'Symphony',
-        mac: {
-            useLaunchAgent: true,
-        },
-        path: process.execPath,
-    });
-} else {
-    symphonyAutoLauncher = new AutoLaunch({
-        name: 'Symphony',
-        path: process.execPath,
-    });
-}
 
 function getTemplate(app) {
 
@@ -306,7 +289,7 @@ function getTemplate(app) {
         checked: launchOnStartup,
         click: function (item, focusedWindow) {
             if (item.checked) {
-                symphonyAutoLauncher.enable()
+                autoLaunch.enable()
                     .catch(function (err) {
                         let title = 'Error setting AutoLaunch configuration';
                         log.send(logLevels.ERROR, 'MenuTemplate: ' + title + ': auto launch error ' + err);
@@ -319,7 +302,7 @@ function getTemplate(app) {
                         }
                     });
             } else {
-                symphonyAutoLauncher.disable()
+                autoLaunch.disable()
                     .catch(function (err) {
                         let title = 'Error setting AutoLaunch configuration';
                         log.send(logLevels.ERROR, 'MenuTemplate: ' + title + ': auto launch error ' + err);

@@ -76,9 +76,7 @@ function getUserConfigField(fieldName) {
  * @returns {Promise}
  */
 function readUserConfig(customConfigPath) {
-    
-    log.send(logLevels.INFO, `custom config path ${customConfigPath}`);
-    
+
     return new Promise((resolve, reject) => {
         
         if (userConfig) {
@@ -197,7 +195,7 @@ function updateConfigField(fieldName, newValue) {
             // add configVersion - just in case in future we need to provide
             // upgrade capabilities.
             return saveUserConfig(fieldName, newValue, {
-                configVersion: '1.0.0'
+                configVersion: app.getVersion().toString(),
             });
         });
 }
@@ -258,14 +256,18 @@ function updateUserConfig(oldUserConfig) {
         userConfigFile = path.join(app.getPath('userData'), configFileName);
 
         if (!userConfigFile) {
-            return reject(`user config file doesn't exist`);
+            reject(`user config file doesn't exist`);
+            return;
         }
 
         // write the new user config changes to the user config file
-        fs.writeFileSync(userConfigFile, newUserConfigString, 'utf-8');
-
-        return resolve();
-
+        fs.writeFile(userConfigFile, newUserConfigString, 'utf-8', (err) => {
+            if (err) {
+                reject(`Failed to update user config error: ${err}`);
+                return;
+            }
+            resolve();
+        });
     });
 
 }
@@ -275,33 +277,27 @@ function updateUserConfig(oldUserConfig) {
  * @returns {Promise}
  */
 function updateUserConfigOnLaunch() {
+    // we get the user config path using electron
+    const userConfigFile = path.join(app.getPath('userData'), configFileName);
 
-    return new Promise((resolve, reject) => {
+    // if it's not a per user installation or if the
+    // user config file doesn't exist, we simple move on
+    if (!fs.existsSync(userConfigFile)) {
+        log.send(logLevels.WARN, 'config: Could not find the user config file!');
+        return Promise.reject('config: Could not find the user config file!');
+    }
 
-        // we get the user config path using electron
-        const userConfigFile = path.join(app.getPath('userData'), configFileName);
+    // In case the file exists, we remove it so that all the
+    // values are fetched from the global config
+    // https://perzoinc.atlassian.net/browse/ELECTRON-126
+    return readUserConfig(userConfigFile).then((data) => {
+        // Add version info to the user config data
+        const version = app.getVersion().toString() || '1.0.0';
+        const updatedData = Object.assign(data || {}, { configVersion: version });
 
-        // if it's not a per user installation or if the
-        // user config file doesn't exist, we simple move on
-        if (!fs.existsSync(userConfigFile)) {
-            log.send(logLevels.WARN, 'config: Could not find the user config file!');
-            reject();
-            return;
-        }
-
-        // In case the file exists, we remove it so that all the
-        // values are fetched from the global config
-        // https://perzoinc.atlassian.net/browse/ELECTRON-126
-        readUserConfig(userConfigFile).then((data) => {
-            // Add version info to the user config data
-            const version = app.getVersion().toString();
-            const updatedData = Object.assign(data, { version });
-
-            resolve(updateUserConfig(updatedData));
-        }).catch((err) => {
-            reject(err);
-        });
-
+        return updateUserConfig(updatedData);
+    }).catch((err) => {
+        return Promise.reject(err);
     });
 
 }
