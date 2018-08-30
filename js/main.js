@@ -269,14 +269,15 @@ function checkFirstTimeLaunch() {
         .then((configVersion) => {
             const appVersionString = app.getVersion().toString();
             const execPath = nodePath.dirname(app.getPath('exe'));
-            const shouldUpdateUserConfig = execPath.indexOf('AppData/Local/Programs') !== -1 || isMac;
+            const shouldUpdateUserConfig = execPath.indexOf('AppData\\Local\\Programs') !== -1 || isMac;
 
             if (!(configVersion
                 && typeof configVersion === 'string'
                 && (compareSemVersions.check(appVersionString, configVersion) !== 1)) && shouldUpdateUserConfig) {
                 return setupFirstTimeLaunch();
             }
-            log.send(logLevels.INFO, 'not a first-time launch');
+            log.send(logLevels.INFO, `not a first-time launch as 
+            configVersion: ${configVersion} appVersion: ${appVersionString} shouldUpdateUserConfig: ${shouldUpdateUserConfig}`);
             return Promise.resolve();
         })
         .catch(() => {
