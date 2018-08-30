@@ -549,8 +549,7 @@ function titleBarActions(app) {
         message: i18n.getMessageFor('Updating Title bar style requires Symphony to relaunch'),
         buttons: ['Relaunch', 'Cancel']
     };
-
-    electron.dialog.showMessageBox(options, function (index) {
+    electron.dialog.showMessageBox(electron.BrowserWindow.getFocusedWindow(), options, function (index) {
         if (index === 0) {
             app.relaunch();
             app.exit();
