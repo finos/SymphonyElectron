@@ -94,103 +94,104 @@ function getTemplate(app) {
         role: 'help',
         label: i18n.getMessageFor('Help'),
         submenu:
-        [
-            {
-                label: i18n.getMessageFor('Symphony Help'),
-                click() {
-                    electron.shell.openExternal('https://support.symphony.com');
-                }
-            },
-            {
-                label: i18n.getMessageFor('Learn More'),
-                click() {
-                    electron.shell.openExternal('https://www.symphony.com');
-                }
-            },
-            {
-                label: i18n.getMessageFor('Troubleshooting'),
-                submenu: [
-                    {
-                        label: isMac ? i18n.getMessageFor('Show Logs in Finder') : i18n.getMessageFor('Show Logs in Explorer'),
-                        click(item, focusedWindow) {
-
-                            const FILE_EXTENSIONS = ['.log'];
-                            const MAC_LOGS_PATH = '/Library/Logs/Symphony/';
-                            const WINDOWS_LOGS_PATH = '\\AppData\\Roaming\\Symphony\\logs';
-
-                            let logsPath = isMac ? MAC_LOGS_PATH : WINDOWS_LOGS_PATH;
-                            let source = electron.app.getPath('home') + logsPath;
-
-                            if (!fs.existsSync(source) && focusedWindow && !focusedWindow.isDestroyed()) {
-                                electron.dialog.showMessageBox(focusedWindow, {
-                                    type: 'error',
-                                    title: i18n.getMessageFor('Failed!'),
-                                    message: i18n.getMessageFor('No logs are available to share')
-                                });
-                                return;
-                            }
-
-                            let destPath = isMac ? '/logs_symphony_' : '\\logs_symphony_';
-                            let timestamp = new Date().getTime();
-
-                            let destination = electron.app.getPath('downloads') + destPath + timestamp + '.zip';
-
-                            archiveHandler.generateArchiveForDirectory(source, destination, FILE_EXTENSIONS)
-                                .then(() => {
-                                    electron.shell.showItemInFolder(destination);
-                                })
-                                .catch((err) => {
-                                    if (focusedWindow && !focusedWindow.isDestroyed()) {
-                                        electron.dialog.showMessageBox(focusedWindow, {
-                                            type: 'error',
-                                            title: i18n.getMessageFor('Failed!'),
-                                            message: i18n.getMessageFor('Unable to generate logs due to ') + err
-                                        });
-                                    }
-                                });
-
-                        }
-                    },
-                    {
-                        label: isMac ? i18n.getMessageFor('Show crash dump in Finder') : i18n.getMessageFor('Show crash dump in Explorer'),
-                        click(item, focusedWindow) {
-                            const FILE_EXTENSIONS = isMac ? ['.dmp'] : ['.dmp', '.txt'];
-                            const crashesDirectory = electron.crashReporter.getCrashesDirectory();
-                            let source = isMac ? crashesDirectory + '/completed' : crashesDirectory;
-
-                            // TODO: Add support to get diagnostic reports from ~/Library/Logs/DiagnosticReports
-                            if (!fs.existsSync(source) || fs.readdirSync(source).length === 0 && focusedWindow && !focusedWindow.isDestroyed()) {
-                                electron.dialog.showMessageBox(focusedWindow, {
-                                    type: 'error',
-                                    title: i18n.getMessageFor('Failed!'),
-                                    message: i18n.getMessageFor('No crashes available to share')
-                                });
-                                return;
-                            }
-
-                            let destPath = isMac ? '/crashes_symphony_' : '\\crashes_symphony_';
-                            let timestamp = new Date().getTime();
-
-                            let destination = electron.app.getPath('downloads') + destPath + timestamp + '.zip';
-
-                            archiveHandler.generateArchiveForDirectory(source, destination, FILE_EXTENSIONS)
-                                .then(() => {
-                                    electron.shell.showItemInFolder(destination);
-                                })
-                                .catch((err) => {
-                                    if (focusedWindow && !focusedWindow.isDestroyed()) {
-                                        electron.dialog.showMessageBox(focusedWindow, {
-                                            type: 'error',
-                                            title: i18n.getMessageFor('Failed!'),
-                                            message: i18n.getMessageFor('Unable to generate crash reports due to ') + err
-                                        });
-                                    }
-                                });
-                        }
+            [
+                {
+                    label: i18n.getMessageFor('Symphony Help'),
+                    click() {
+                        let helpUrl = i18n.getMessageFor('Help Url');
+                        electron.shell.openExternal(helpUrl);
                     }
-                ]
-            }
-        ]
+                },
+                {
+                    label: i18n.getMessageFor('Learn More'),
+                    click() {
+                        electron.shell.openExternal('https://www.symphony.com');
+                    }
+                },
+                {
+                    label: i18n.getMessageFor('Troubleshooting'),
+                    submenu: [
+                        {
+                            label: isMac ? i18n.getMessageFor('Show Logs in Finder') : i18n.getMessageFor('Show Logs in Explorer'),
+                            click(item, focusedWindow) {
+
+                                const FILE_EXTENSIONS = ['.log'];
+                                const MAC_LOGS_PATH = '/Library/Logs/Symphony/';
+                                const WINDOWS_LOGS_PATH = '\\AppData\\Roaming\\Symphony\\logs';
+
+                                let logsPath = isMac ? MAC_LOGS_PATH : WINDOWS_LOGS_PATH;
+                                let source = electron.app.getPath('home') + logsPath;
+
+                                if (!fs.existsSync(source) && focusedWindow && !focusedWindow.isDestroyed()) {
+                                    electron.dialog.showMessageBox(focusedWindow, {
+                                        type: 'error',
+                                        title: i18n.getMessageFor('Failed!'),
+                                        message: i18n.getMessageFor('No logs are available to share')
+                                    });
+                                    return;
+                                }
+
+                                let destPath = isMac ? '/logs_symphony_' : '\\logs_symphony_';
+                                let timestamp = new Date().getTime();
+
+                                let destination = electron.app.getPath('downloads') + destPath + timestamp + '.zip';
+
+                                archiveHandler.generateArchiveForDirectory(source, destination, FILE_EXTENSIONS)
+                                    .then(() => {
+                                        electron.shell.showItemInFolder(destination);
+                                    })
+                                    .catch((err) => {
+                                        if (focusedWindow && !focusedWindow.isDestroyed()) {
+                                            electron.dialog.showMessageBox(focusedWindow, {
+                                                type: 'error',
+                                                title: i18n.getMessageFor('Failed!'),
+                                                message: i18n.getMessageFor('Unable to generate logs due to ') + err
+                                            });
+                                        }
+                                    });
+
+                            }
+                        },
+                        {
+                            label: isMac ? i18n.getMessageFor('Show crash dump in Finder') : i18n.getMessageFor('Show crash dump in Explorer'),
+                            click(item, focusedWindow) {
+                                const FILE_EXTENSIONS = isMac ? ['.dmp'] : ['.dmp', '.txt'];
+                                const crashesDirectory = electron.crashReporter.getCrashesDirectory();
+                                let source = isMac ? crashesDirectory + '/completed' : crashesDirectory;
+
+                                // TODO: Add support to get diagnostic reports from ~/Library/Logs/DiagnosticReports
+                                if (!fs.existsSync(source) || fs.readdirSync(source).length === 0 && focusedWindow && !focusedWindow.isDestroyed()) {
+                                    electron.dialog.showMessageBox(focusedWindow, {
+                                        type: 'error',
+                                        title: i18n.getMessageFor('Failed!'),
+                                        message: i18n.getMessageFor('No crashes available to share')
+                                    });
+                                    return;
+                                }
+
+                                let destPath = isMac ? '/crashes_symphony_' : '\\crashes_symphony_';
+                                let timestamp = new Date().getTime();
+
+                                let destination = electron.app.getPath('downloads') + destPath + timestamp + '.zip';
+
+                                archiveHandler.generateArchiveForDirectory(source, destination, FILE_EXTENSIONS)
+                                    .then(() => {
+                                        electron.shell.showItemInFolder(destination);
+                                    })
+                                    .catch((err) => {
+                                        if (focusedWindow && !focusedWindow.isDestroyed()) {
+                                            electron.dialog.showMessageBox(focusedWindow, {
+                                                type: 'error',
+                                                title: i18n.getMessageFor('Failed!'),
+                                                message: i18n.getMessageFor('Unable to generate crash reports due to ') + err
+                                            });
+                                        }
+                                    });
+                            }
+                        }
+                    ]
+                }
+            ]
     }
     ];
 
@@ -547,7 +548,7 @@ function titleBarActions(app) {
         type: 'question',
         title: i18n.getMessageFor('Relaunch Application'),
         message: i18n.getMessageFor('Updating Title bar style requires Symphony to relaunch'),
-        buttons: ['Relaunch', 'Cancel']
+        buttons: [i18n.getMessageFor('Relaunch'), i18n.getMessageFor('Cancel')]
     };
     electron.dialog.showMessageBox(electron.BrowserWindow.getFocusedWindow(), options, function (index) {
         if (index === 0) {
