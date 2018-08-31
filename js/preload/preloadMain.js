@@ -22,7 +22,6 @@ const getMediaSource = require('../desktopCapturer/getSource');
 const { TitleBar } = require('../windowsTitlebar');
 const titleBar = new TitleBar();
 const { buildNumber } = require('../../package.json');
-const memoryMonitorInterval = 1000 * 60 * 60;
 const SnackBar = require('../snackBar').SnackBar;
 const KeyCodes = {
     Esc: 27,
@@ -105,6 +104,13 @@ const throttledSetIsInMeetingStatus = throttle(1000, function (isInMeeting) {
 local.ipcRenderer.on('on-page-load', () => {
     loadSpellChecker();
     snackBar = new SnackBar();
+
+    // only registers main window's preload
+    if (window.name === 'main') {
+        local.ipcRenderer.send(apiName, {
+            cmd: apiCmds.optimizeMemoryRegister,
+        });
+    }
 });
 
 const throttledActivate = throttle(1000, function (windowName) {
@@ -128,17 +134,6 @@ const throttledSetLocale = throttle(1000, function (locale) {
         locale,
     });
 });
-
-// Gathers renderer process memory
-setInterval(() => {
-    const memory = process.getProcessMemoryInfo();
-    const cpuUsage = process.getCPUUsage();
-    local.ipcRenderer.send(apiName, {
-        cmd: apiCmds.optimizeMemoryConsumption,
-        memory: memory,
-        cpuUsage: cpuUsage
-    });
-}, memoryMonitorInterval);
 
 createAPI();
 
@@ -516,6 +511,18 @@ function createAPI() {
     local.ipcRenderer.on('window-leave-full-screen', () => {
         if (snackBar) {
             snackBar.removeSnackBar();
+        }
+    });
+
+    local.ipcRenderer.on('memory-info-request', () => {
+        if (window.name === 'main') {
+            const memory = process.getProcessMemoryInfo();
+            const cpuUsage = process.getCPUUsage();
+            local.ipcRenderer.send(apiName, {
+                cmd: apiCmds.optimizeMemoryConsumption,
+                memory: memory,
+                cpuUsage: cpuUsage
+            });
         }
     });
 

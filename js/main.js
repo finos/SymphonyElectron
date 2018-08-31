@@ -10,6 +10,7 @@ const squirrelStartup = require('electron-squirrel-startup');
 const urlParser = require('url');
 const nodePath = require('path');
 const compareSemVersions = require('./utils/compareSemVersions.js');
+const eventEmitter = require('./eventEmitter');
 
 // Local Dependencies
 const {
@@ -185,6 +186,12 @@ setChromeFlags();
  * Some APIs can only be used after this event occurs.
  */
 app.on('ready', () => {
+    electron.powerMonitor.on('lock-screen', () => {
+        eventEmitter.emit('sys-locked');
+    });
+    electron.powerMonitor.on('unlock-screen', () => {
+        eventEmitter.emit('sys-unlocked');
+    });
     checkFirstTimeLaunch()
         .then(readConfigThenOpenMainWindow)
         .catch(readConfigThenOpenMainWindow);

@@ -216,6 +216,12 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         // event sent to renderer process to remove snack bar
         mainWindow.webContents.send('window-leave-full-screen');
     });
+    mainWindow.on('minimize', () => {
+        eventEmitter.emit('appMinimized');
+    });
+    mainWindow.on('restore', () => {
+        eventEmitter.emit('appRestored');
+    });
 
     if (initialBounds) {
         // maximizes the application if previously maximized
