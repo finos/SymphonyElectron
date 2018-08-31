@@ -17,6 +17,7 @@
   "Bring to Front on Notifications": "通知時に前面に表示",
   "Certificate Error": "証明書のエラー",
   "Close": "閉じる",
+  "Cancel": "キャンセル",
   "ContextMenu": {
     "Add to Dictionary": "辞書に追加",
     "Copy": "コピー",
@@ -51,6 +52,7 @@
   "Failed!": "問題が起きました！",
   "Flash Notification in Taskbar": "タスクバーの通知を点滅",
   "Help": "ヘルプ",
+  "Help Url": "https://support.symphony.com/hc/ja",
   "Hide Others": "他を隠す",
   "Hide Symphony": "Symphonyを隠す",
   "Learn More": "詳細",
@@ -85,6 +87,7 @@
   "Redo": "やり直し",
   "Refresh app when idle": "アイドル時にアプリを再表示",
   "Relaunch Application": "アプリケーションの再起動",
+  "Relaunch": "起動",
   "Reload": "再読み込み",
   "Renderer Process Crashed": "レンダラープロセスがクラッシュしました",
   "ScreenPicker": {
