@@ -7,7 +7,7 @@ const logLevels = require('./enums/logLevels.js');
 const { getMainWindow, setIsAutoReload, getIsOnline } = require('./windowMgr');
 const { getConfigField } = require('./config');
 
-const maxMemory = 10;
+const maxMemory = 800;
 const defaultInterval = 30 * 1000;
 const memoryRefreshThreshold = 60 * 60 * 1000;
 const cpuUsageThreshold = 5;
