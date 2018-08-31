@@ -554,10 +554,6 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                             if (!isDevEnv) {
                                 browserWin.webContents.session.setCertificateVerifyProc(handleCertificateTransparencyChecks);
                             }
-
-                            browserWin.webContents.on('devtools-opened', () => {
-                                handleDevTools(browserWin);
-                            });
                         }
                     });
                 } else {
@@ -598,10 +594,6 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
             });
     });
 
-    mainWindow.webContents.on('devtools-opened', () => {
-        handleDevTools(mainWindow);
-    });
-
     /**
      * Register shortcuts for the app
      */
@@ -610,8 +602,20 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         function devTools() {
             const focusedWindow = BrowserWindow.getFocusedWindow();
 
+            
             if (focusedWindow && !focusedWindow.isDestroyed()) {
-                focusedWindow.webContents.toggleDevTools();
+                if (devToolsEnabled) {
+                    focusedWindow.webContents.toggleDevTools();
+                } else {
+                    log.send(logLevels.INFO, `dev tools disabled for ${focusedWindow.winName} window`);
+                    focusedWindow.webContents.closeDevTools();
+                    electron.dialog.showMessageBox(focusedWindow, {
+                        type: 'warning',
+                        buttons: ['Ok'],
+                        title: i18n.getMessageFor('Dev Tools disabled'),
+                        message: i18n.getMessageFor('Dev Tools has been disabled! Please contact your system administrator to enable it!'),
+                    });
+                }
             }
         }
 
@@ -721,21 +725,6 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         }
 
         return callback(-2);
-    }
-
-    function handleDevTools(browserWindow) {
-
-        if (!devToolsEnabled) {
-            log.send(logLevels.INFO, `dev tools disabled for ${browserWindow.winName} window`);
-            browserWindow.webContents.closeDevTools();
-            electron.dialog.showMessageBox(browserWindow, {
-                type: 'warning',
-                buttons: ['Ok'],
-                title: i18n.getMessageFor('Dev Tools disabled'),
-                message: i18n.getMessageFor('Dev Tools has been disabled! Please contact your system administrator to enable it!'),
-            });
-        }
-
     }
 
 }
