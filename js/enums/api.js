@@ -21,6 +21,7 @@ const cmds = keyMirror({
     openScreenPickerWindow: null,
     popupMenu: null,
     optimizeMemoryConsumption: null,
+    optimizeMemoryRegister: null,
     setIsInMeeting: null,
     setLocale: null,
     keyPress: null,
