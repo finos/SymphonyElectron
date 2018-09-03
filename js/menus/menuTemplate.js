@@ -527,7 +527,7 @@ function titleBarActions(app, isNativeStyle) {
                     app.relaunch();
                     app.exit();
                 }).catch((e) => {
-                    log.send(logLevels.ERROR, `Unable to update custom title bar settings error: ${e}`);
+                    log.send(logLevels.ERROR, `Unable to disable / enable hamburger menu due to error: ${e}`);
                 });
         }
     });
