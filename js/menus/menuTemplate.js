@@ -4,7 +4,7 @@ const fs = require('fs');
 const electron = require('electron');
 
 const { updateConfigField, getMultipleConfigField } = require('../config.js');
-const { isMac, isWindowsOS, isWindows10 } = require('../utils/misc.js');
+const { isMac, isWindowsOS } = require('../utils/misc.js');
 const archiveHandler = require('../utils/archiveHandler');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
@@ -376,54 +376,51 @@ function getTemplate(app) {
     });
 
     if (!isMac) {
+        /* eslint-disable no-param-reassign */
+        template[index].submenu.push({
+            label: i18n.getMessageFor('Title Bar Style'),
+            submenu: [
+                {
+                    label: i18n.getMessageFor('Native'),
+                    type: 'checkbox',
+                    checked: titleBarStyle === titleBarStyles.NATIVE,
+                    enabled: titleBarStyle !== titleBarStyles.NATIVE,
+                    click: function (item) {
+                        const isNativeStyle = titleBarStyle === titleBarStyles.NATIVE;
+                        item.menu.items[1].checked = isNativeStyle;
 
-        if (isWindows10()) {
-            /* eslint-disable no-param-reassign */
-            template[index].submenu.push({
-                label: i18n.getMessageFor('Title Bar Style'),
-                submenu: [
-                    {
-                        label: i18n.getMessageFor('Native'),
-                        type: 'checkbox',
-                        checked: titleBarStyle === titleBarStyles.NATIVE,
-                        enabled: titleBarStyle !== titleBarStyles.NATIVE,
-                        click: function (item) {
-                            const isNativeStyle = titleBarStyle === titleBarStyles.NATIVE;
-                            item.menu.items[1].checked = isNativeStyle;
+                        // Disable menu item accordingly
+                        item.menu.items[0].enabled = isNativeStyle;
+                        item.menu.items[1].enabled = !isNativeStyle;
 
-                            // Disable menu item accordingly
-                            item.menu.items[0].enabled = isNativeStyle;
-                            item.menu.items[1].enabled = !isNativeStyle;
-
-                            titleBarStyle = titleBarStyles.NATIVE;
-                            updateConfigField('isCustomTitleBar', false);
-                            titleBarActions(app);
-                        }
-                    },
-                    {
-                        label: i18n.getMessageFor('Custom'),
-                        type: 'checkbox',
-                        checked: titleBarStyle === titleBarStyles.CUSTOM,
-                        enabled: titleBarStyle !== titleBarStyles.CUSTOM,
-                        click: function (item) {
-                            const isCustomStyle = titleBarStyle === titleBarStyles.CUSTOM;
-                            item.menu.items[0].checked = isCustomStyle;
-
-                            // Disable menu item accordingly
-                            item.menu.items[1].enabled = isCustomStyle;
-                            item.menu.items[0].enabled = !isCustomStyle;
-
-                            titleBarStyle = titleBarStyles.CUSTOM;
-                            updateConfigField('isCustomTitleBar', true);
-                            titleBarActions(app);
-                        }
+                        titleBarStyle = titleBarStyles.NATIVE;
+                        updateConfigField('isCustomTitleBar', false);
+                        titleBarActions(app);
                     }
-                ]
-            }, {
-                type: 'separator'
-            });
-            /* eslint-enable no-param-reassign */
-        }
+                },
+                {
+                    label: i18n.getMessageFor('Custom'),
+                    type: 'checkbox',
+                    checked: titleBarStyle === titleBarStyles.CUSTOM,
+                    enabled: titleBarStyle !== titleBarStyles.CUSTOM,
+                    click: function (item) {
+                        const isCustomStyle = titleBarStyle === titleBarStyles.CUSTOM;
+                        item.menu.items[0].checked = isCustomStyle;
+
+                        // Disable menu item accordingly
+                        item.menu.items[1].enabled = isCustomStyle;
+                        item.menu.items[0].enabled = !isCustomStyle;
+
+                        titleBarStyle = titleBarStyles.CUSTOM;
+                        updateConfigField('isCustomTitleBar', true);
+                        titleBarActions(app);
+                    }
+                }
+            ]
+        }, {
+            type: 'separator'
+        });
+        /* eslint-enable no-param-reassign */
 
         template[index].submenu.push({
             label: i18n.getMessageFor('Quit Symphony'),
