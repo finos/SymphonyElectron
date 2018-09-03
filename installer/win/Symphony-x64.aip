@@ -507,8 +507,8 @@
     <ROW Dialog_="SettingsDlg" Control="Description" Type="Text" X="17" Y="21" Width="272" Height="14" Attributes="196611" Text="Select features for your users." Order="1900" TextLocId="Control.Text.FolderDlg#Description"/>
     <ROW Dialog_="SettingsDlg" Control="PushButton_1" Type="PushButton" X="33" Y="243" Width="92" Height="17" Attributes="3" Text="Advance Settings" Order="2000"/>
     <ROW Dialog_="SettingsDlg" Control="CustomTitleBarCheckBox" Type="CheckBox" X="33" Y="211" Width="98" Height="13" Attributes="3" Property="CUSTOM_TITLE_BAR_CB" Text="Enable" Order="2100"/>
-    <ROW Dialog_="SettingsDlg" Control="Text_9" Type="Text" X="33" Y="181" Width="117" Height="11" Attributes="65539" Property="TEXT_3_PROP_5_1" Text="Custom Title Bar" TextStyle="DlgFontBold8_DlgFontBold8" Order="2200"/>
-    <ROW Dialog_="SettingsDlg" Control="Text_10" Type="Text" X="33" Y="196" Width="147" Height="11" Attributes="65539" Property="TEXT_4_PROP_3_1" Text="Applies custom title bar style" Order="2300"/>
+    <ROW Dialog_="SettingsDlg" Control="Text_9" Type="Text" X="33" Y="181" Width="117" Height="11" Attributes="65539" Property="TEXT_3_PROP_5_1" Text="Enable Hamburger Menu" TextStyle="DlgFontBold8_DlgFontBold8" Order="2200"/>
+    <ROW Dialog_="SettingsDlg" Control="Text_10" Type="Text" X="33" Y="196" Width="147" Height="11" Attributes="65539" Property="TEXT_4_PROP_3_1" Text="Applies Hamburger style menu" Order="2300"/>
     <ROW Dialog_="SettingsDlg" Control="DevToolsCheckBox" Type="CheckBox" X="185" Y="211" Width="98" Height="13" Attributes="3" Property="DEV_TOOLS_CB" Text="Enable" Order="2400"/>
     <ROW Dialog_="SettingsDlg" Control="Text_11" Type="Text" X="185" Y="181" Width="117" Height="11" Attributes="65539" Property="TEXT_3_PROP_5_1_1" Text="Enable Dev Tools" TextStyle="DlgFontBold8_DlgFontBold8" Order="2500"/>
     <ROW Dialog_="SettingsDlg" Control="Text_12" Type="Text" X="185" Y="196" Width="147" Height="11" Attributes="65539" Property="TEXT_4_PROP_3_1_1" Text="Enable dev tools for troubleshooting" Order="2600"/>

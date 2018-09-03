@@ -21,7 +21,7 @@ const notify = require('./notify/electron-notify.js');
 const eventEmitter = require('./eventEmitter');
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField, readConfigFileSync, getMultipleConfigField } = require('./config.js');
-const { isMac, isNodeEnv, isWindows10, isWindowsOS, isDevEnv } = require('./utils/misc');
+const { isMac, isNodeEnv, isWindowsOS, isDevEnv } = require('./utils/misc');
 const { isWhitelisted, parseDomain } = require('./utils/whitelistHandler');
 const { initCrashReporterMain, initCrashReporterRenderer } = require('./crashReporter.js');
 const i18n = require('./translation/i18n');
@@ -136,7 +136,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     // condition whether to enable custom Windows 10 title bar
     isCustomTitleBarEnabled = typeof isCustomTitleBar === 'boolean'
         && isCustomTitleBar
-        && isWindows10();
+        && isWindowsOS;
     log.send(logLevels.INFO, `we are configuring a custom title bar for windows -> ${isCustomTitleBarEnabled}`);
 
     ctWhitelist = config && config.ctWhitelist;
@@ -248,7 +248,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
     // Event needed to hide native menu bar on Windows 10 as we use custom menu bar
     mainWindow.webContents.once('did-start-loading', () => {
-        if ((isCustomTitleBarEnabled || isWindows10()) && mainWindow && !mainWindow.isDestroyed()) {
+        if ((isCustomTitleBarEnabled || isWindowsOS) && mainWindow && !mainWindow.isDestroyed()) {
             mainWindow.setMenuBarVisibility(false);
         }
     });
@@ -1011,7 +1011,7 @@ function setLocale(browserWindow, opts) {
             menu = electron.Menu.buildFromTemplate(getTemplate(app));
             electron.Menu.setApplicationMenu(menu);
 
-            if (isWindows10()) {
+            if (isWindowsOS) {
                 browserWindow.setMenuBarVisibility(false);
 
                 // update locale for custom title bar
@@ -1168,7 +1168,7 @@ function handleKeyPress(keyCode) {
             break;
         }
         case KeyCodes.Alt:
-            if (isWindows10() && !isCustomTitleBarEnabled) {
+            if (isWindowsOS && !isCustomTitleBarEnabled) {
                 popupMenu();
             }
             break;
