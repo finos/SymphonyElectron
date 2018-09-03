@@ -422,6 +422,14 @@ function setNotificationContents(notfWindow, notfObj) {
     // Display time per notification basis.
     let displayTime = notfObj.displayTime ? notfObj.displayTime : config.displayTime;
 
+    let browserWindows = BrowserWindow.getAllWindows();
+    const mainWindow = browserWindows.find((window) => { return window.winName === 'main' });
+    if (mainWindow && !mainWindow.isDestroyed()) {
+        if (mainWindow.isAlwaysOnTop()) {
+            notfWindow.setAlwaysOnTop(true);
+        }
+    }
+
     if (notfWindow.displayTimer) {
         clearTimeout(notfWindow.displayTimer);
     }
