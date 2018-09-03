@@ -378,45 +378,15 @@ function getTemplate(app) {
     if (!isMac) {
         /* eslint-disable no-param-reassign */
         template[index].submenu.push({
-            label: i18n.getMessageFor('Title Bar Style'),
-            submenu: [
-                {
-                    label: i18n.getMessageFor('Native'),
-                    type: 'checkbox',
-                    checked: titleBarStyle === titleBarStyles.NATIVE,
-                    enabled: titleBarStyle !== titleBarStyles.NATIVE,
-                    click: function (item) {
-                        const isNativeStyle = titleBarStyle === titleBarStyles.NATIVE;
-                        item.menu.items[1].checked = isNativeStyle;
+            label: titleBarStyle === titleBarStyles.NATIVE ?
+                i18n.getMessageFor('Enable Hamburger menu') :
+                i18n.getMessageFor('Disable Hamburger menu'),
+            click: function () {
+                const isNativeStyle = titleBarStyle === titleBarStyles.NATIVE;
 
-                        // Disable menu item accordingly
-                        item.menu.items[0].enabled = isNativeStyle;
-                        item.menu.items[1].enabled = !isNativeStyle;
-
-                        titleBarStyle = titleBarStyles.NATIVE;
-                        updateConfigField('isCustomTitleBar', false);
-                        titleBarActions(app);
-                    }
-                },
-                {
-                    label: i18n.getMessageFor('Custom'),
-                    type: 'checkbox',
-                    checked: titleBarStyle === titleBarStyles.CUSTOM,
-                    enabled: titleBarStyle !== titleBarStyles.CUSTOM,
-                    click: function (item) {
-                        const isCustomStyle = titleBarStyle === titleBarStyles.CUSTOM;
-                        item.menu.items[0].checked = isCustomStyle;
-
-                        // Disable menu item accordingly
-                        item.menu.items[1].enabled = isCustomStyle;
-                        item.menu.items[0].enabled = !isCustomStyle;
-
-                        titleBarStyle = titleBarStyles.CUSTOM;
-                        updateConfigField('isCustomTitleBar', true);
-                        titleBarActions(app);
-                    }
-                }
-            ]
+                titleBarStyle = isNativeStyle ? titleBarStyles.NATIVE : titleBarStyles.CUSTOM;
+                titleBarActions(app, isNativeStyle);
+            }
         }, {
             type: 'separator'
         });
@@ -539,19 +509,26 @@ function getTitleBarStyle() {
  * to relaunch application
  *
  * @param app
+ * @param isNativeStyle
  */
-function titleBarActions(app) {
+function titleBarActions(app, isNativeStyle) {
     const options = {
         type: 'question',
         title: i18n.getMessageFor('Relaunch Application'),
-        message: i18n.getMessageFor('Updating Title bar style requires Symphony to relaunch'),
+        message: i18n.getMessageFor('Updating Title bar style requires Symphony to relaunch.'),
+        detail: i18n.getMessageFor('Note: When Hamburger menu is disabled, you can trigger the main menu by pressing the Alt key.'),
         buttons: [i18n.getMessageFor('Relaunch'), i18n.getMessageFor('Cancel')],
         cancelId: 1
     };
     electron.dialog.showMessageBox(electron.BrowserWindow.getFocusedWindow(), options, function (index) {
         if (index === 0) {
-            app.relaunch();
-            app.exit();
+            updateConfigField('isCustomTitleBar', !!isNativeStyle)
+                .then(() => {
+                    app.relaunch();
+                    app.exit();
+                }).catch((e) => {
+                    log.send(logLevels.ERROR, `Unable to update custom title bar settings error: ${e}`);
+                });
         }
     });
 }
