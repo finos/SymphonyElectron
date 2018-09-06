@@ -49,12 +49,14 @@ function optimizeMemory() {
 
     const memoryConsumed = (preloadMemory.memoryInfo && preloadMemory.memoryInfo.workingSetSize / 1024) || 0;
     const cpuUsagePercentage = preloadMemory.cpuUsage.percentCPUUsage;
+    const activeNetworkRequest = preloadMemory.activeRequests === 0;
 
     if (memoryConsumed > maxMemory
         && cpuUsagePercentage <= cpuUsageThreshold
         && !isInMeeting
         && getIsOnline()
         && canReload
+        && activeNetworkRequest
     ) {
         getConfigField('memoryRefresh')
             .then((enabled) => {
@@ -67,6 +69,7 @@ function optimizeMemory() {
                         memory consumption was ${memoryConsumed} 
                         CPU usage percentage was ${preloadMemory.cpuUsage.percentCPUUsage} 
                         user was in a meeting? ${isInMeeting}
+                        pending network request on the client was ${preloadMemory.activeRequests}
                         is network online? ${getIsOnline()}`);
                         mainWindow.reload();
 
@@ -85,6 +88,7 @@ function optimizeMemory() {
                         memory consumption was ${memoryConsumed} 
                         CPU usage percentage was ${preloadMemory.cpuUsage.percentCPUUsage} 
                         user was in a meeting? ${isInMeeting}
+                        pending network request on the client was ${preloadMemory.activeRequests}
                         is network online? ${getIsOnline()}`);
     }
 }
@@ -100,12 +104,13 @@ function setIsInMeeting(meetingStatus) {
 /**
  * Sets preload memory info and calls optimize memory func
  *
- * @param memoryInfo
- * @param cpuUsage
+ * @param memoryInfo - memory consumption of the preload main script
+ * @param cpuUsage - CPU usage of the preload main script
+ * @param activeRequests - pending active network requests on the client
  */
-function setPreloadMemoryInfo(memoryInfo, cpuUsage) {
+function setPreloadMemoryInfo(memoryInfo, cpuUsage, activeRequests) {
     log.send(logLevels.INFO, 'Memory info received from preload process now running optimize memory logic');
-    preloadMemory = { memoryInfo, cpuUsage };
+    preloadMemory = { memoryInfo, cpuUsage, activeRequests };
     optimizeMemory();
 }
 
@@ -131,6 +136,7 @@ eventEmitter.on('appMinimized', () => {
  */
 eventEmitter.on('appRestored', () => {
     log.send(logLevels.INFO, 'Application was restored from minimized state');
+    setIsAutoReload(false);
     if (appMinimizedTimer) {
         clearTimeout(appMinimizedTimer);
     }
@@ -156,6 +162,7 @@ eventEmitter.on('sys-locked', () => {
  */
 eventEmitter.on('sys-unlocked', () => {
     log.send(logLevels.INFO, 'System screen was unlocked');
+    setIsAutoReload(false);
     if (powerMonitorTimer) {
         clearTimeout(powerMonitorTimer);
     }
