@@ -161,4 +161,19 @@
     
 }
 
+- (IBAction)handleSSOCheckboxStateChange:(id)sender {
+    
+    NSString *podUrl = [_podUrlTextBox stringValue];
+    
+    NSString *ssoUrl = @"/login/sso/initsso";
+    if ([_ssoCheckBox state] == 1) {
+        podUrl = [podUrl stringByAppendingString:ssoUrl];
+        [_podUrlTextBox setStringValue:podUrl];
+    } else {
+        podUrl = [podUrl substringToIndex:podUrl.length - ssoUrl.length];
+        [_podUrlTextBox setStringValue:podUrl];
+    }
+    
+}
+
 @end
