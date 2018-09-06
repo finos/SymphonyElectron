@@ -81,8 +81,8 @@
 - [Jest framework](http://facebook.github.io/jest/) is used to run tests
 - Use `npm test` to run unit tests
 - Use `npm run spectron-test` to run UI tests
-- Code coverage reports are placed in [coverage](./coverage) directory
-- To check the test run report, see the [dist](./dist) directory
+- Code coverage reports are placed in [coverage](./out/coverage) directory
+- To check the test run report, see the [dist](./out) directory
 - See the [tests](./tests) directory to find all the unit tests
 - See the [spectron](./tests/spectron) directory to find all the unit tests
 

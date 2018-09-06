@@ -6,7 +6,6 @@ const app = electron.app;
 const crashReporter = electron.crashReporter;
 const nodeURL = require('url');
 const shellPath = require('shell-path');
-const squirrelStartup = require('electron-squirrel-startup');
 const urlParser = require('url');
 const nodePath = require('path');
 const compareSemVersions = require('./utils/compareSemVersions.js');
@@ -44,11 +43,6 @@ shellPath()
 
 // used to check if a url was opened when the app was already open
 let isAppAlreadyOpen = false;
-
-// exit early for squirrel installer
-if (squirrelStartup) {
-    return;
-}
 
 require('./mainApiMgr.js');
 

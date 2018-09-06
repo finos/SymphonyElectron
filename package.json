@@ -12,26 +12,14 @@
     "browserify-preload": "browserify -o js/preload/_preloadMain.js -x electron --insert-global-vars=__filename,__dirname js/preload/preloadMain.js  --exclude electron-spellchecker",
     "rebuild": "electron-rebuild -f",
     "dev": "npm run prebuild && cross-env ELECTRON_DEV=true electron .",
-    "test": "npm run lint && npm rebuild --build-from-source && cross-env ELECTRON_QA=true jest --config tests/jest_unit.json --runInBand && npm run rebuild",
-    "spectron-test": "npm run lint && npm rebuild --build-from-source robotjs && cross-env ELECTRON_QA=true jest --config tests/spectron/jest_spectron.json --runInBand --detectOpenHandles",
+    "test": "npm run lint && npm rebuild --build-from-source && cross-env ELECTRON_QA=true jest --config jest.unit.config.json --runInBand && npm run rebuild",
+    "spectron-test": "npm run lint && npm rebuild --build-from-source robotjs && cross-env ELECTRON_QA=true jest --config jest.spectron.config.json --runInBand --detectOpenHandles",
     "demo-win": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file:///demo/index.html",
     "demo-mac": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/demo/index.html",
     "unpacked-mac": "npm run prebuild && npm run test && build --mac --dir",
     "packed-mac": "sh installer/mac/version_handler.sh && npm run unpacked-mac && packagesbuild -v installer/mac/symphony-mac-packager.pkgproj",
     "unpacked-win": "npm run prebuild && npm run test && build --win --x64 --dir",
     "unpacked-win-x86": "npm run prebuild && npm run test && build --win --ia32 --dir"
-  },
-  "jest": {
-    "collectCoverage": true,
-    "transformIgnorePatterns": []
-  },
-  "jest-html-reporter": {
-    "pageTitle": "Symphony Electron Test Result",
-    "includeFailureMsg": true,
-    "includeConsoleLog": true,
-    "theme": "lightTheme",
-    "outputPath": "./dist/Jest Test Report.html",
-    "sort": "status"
   },
   "build": {
     "asarUnpack": [
@@ -120,7 +108,6 @@
     "electron-dl": "1.12.0",
     "electron-log": "2.2.15",
     "electron-spellchecker": "1.1.2",
-    "electron-squirrel-startup": "1.0.0",
     "ffi": "git+https://github.com/keerthi16/node-ffi.git#v1.2.8",
     "filesize": "3.6.1",
     "keymirror": "0.1.1",

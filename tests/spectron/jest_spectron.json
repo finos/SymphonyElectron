@@ -1,7 +1,0 @@
-{
-  "verbose": true,
-  "testMatch": [
-    "**/*.spectron.js"
-  ],
-  "testResultsProcessor": "../../node_modules/jest-html-reporter" 
-}

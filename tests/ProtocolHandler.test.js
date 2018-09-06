@@ -104,4 +104,15 @@ describe('protocol handler', function () {
 
     });
 
+    it('should cache the protocol url if the protocol window is not defined yet', (done) => {
+        protocolHandler.setProtocolWindow(null);
+        const setSpy = jest.spyOn(protocolHandler, 'setProtocolUrl');
+        protocolHandler.setProtocolUrl(url);
+
+        protocolHandler.checkProtocolAction();
+        expect(setSpy).toHaveBeenCalled();
+
+        done();
+    });
+
 });
