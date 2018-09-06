@@ -22,11 +22,6 @@ class App {
             App.copyLibraries(constants.SEARCH_LIBRARY_PATH_MAC);
         }
 
-        if (isWindowsOS) {
-            App.copyConfigPath(constants.ELECTRON_GLOBAL_CONFIG_PATH_WIN);
-            //App.copyLibraries(constants.SEARCH_LIBRARY_PATH_WIN);
-        }
-
         this.app = new Application(this.options);
     }
 

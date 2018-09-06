@@ -2,6 +2,7 @@ const ui = require('./spectronInterfaces.js');
 const constants = require('./spectronConstants.js');
 const Utils = require('./spectronUtils');
 const WindowsActions = require('./spectronWindowsActions');
+const { isMac } = require('../../js/utils/misc');
 
 class WebActions {
     constructor(app) {
@@ -24,10 +25,10 @@ class WebActions {
     }
 
     async minimizeWindows() {
-        await this.clickMinimizeButton();
+        await this.app.browserWindow.minimize();
         await this.app.browserWindow.isMinimized().then(function (isMinimized) {
             expect(isMinimized).toBeTruthy();
-        })
+        });
     }
 
     async minimizeWindowByClick() {
