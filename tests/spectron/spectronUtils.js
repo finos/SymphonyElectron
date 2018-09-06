@@ -1,15 +1,25 @@
 const childProcess = require('child_process');
 const path = require('path');
 const fs = require('fs');
-
+const { isMac } = require('../../js/utils/misc');
 
 class Utils {
     static async openAppInMaximize(appPath) {
-        await childProcess.exec('start /MAX ' + appPath);
+        if (isMac) {
+            const osascript = require('node-osascript');
+            await osascript.execute('if application "' + appPath + '" is running then \n do shell script ("pkill -9 ' + appPath + '*") \n end if \n delay 5 \n tell application "' + appPath + '" \n activate \n tell window 1 \n set zoomed to true \n end tell \n end tell');
+        } else {
+            await childProcess.exec('start /MAX ' + appPath);
+        }
     }
 
     static async killProcess(processName) {
-        await childProcess.exec('taskkill /f /t /im ' + processName);
+        if (isMac) {
+            const osascript = require('node-osascript');
+            await osascript.execute('if application "' + processName + '" is running then \n do shell script ("pkill -9 ' + processName + '*") \n end if \n delay 5');
+        } else {
+            await childProcess.exec('taskkill /f /t /im ' + processName);
+        }
     }
 
     static async sleep(second) {
@@ -42,8 +52,8 @@ class Utils {
     }
 
     static execPromise(command) {
-        return new Promise(function(resolve, reject) {
-            childProcess.exec(command, (error, stdout, stderr) => {    
+        return new Promise(function (resolve, reject) {
+            childProcess.exec(command, (error, stdout, stderr) => {
                 resolve(stdout.trim());
             });
         });

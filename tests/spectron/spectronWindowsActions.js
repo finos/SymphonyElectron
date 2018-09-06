@@ -34,7 +34,7 @@ class WindowsActions {
     async isElectronProcessRunning() {
         let ret = false;
         if (isWindowsOS) {
-            let result = await Utils.execPromise("tasklist | find /i \"electron.exe\"");            
+            let result = await Utils.execPromise("tasklist | find /i \"electron.exe\"");
             if (result && result.indexOf('electron.exe') > -1) {
                 ret = true;
             }
@@ -76,20 +76,22 @@ class WindowsActions {
 
     async showWindow() {
         await this.app.browserWindow.restore();
-        await this.app.browserWindow.setAlwaysOnTop(true);
     }
 
     async clickOutsideWindow() {
         await this.setPosition(0, 0);
         let currentSize = await this.getCurrentSize();
-        await robot.moveMouse(currentSize[0] + 20, currentSize[1] + 20);
+        await robot.moveMouse(currentSize[0] + 20, currentSize[1] - 50);
         await robot.mouseClick();
     }
 
-    async verifyWindowsOnTop() {
-        await this.app.browserWindow.isAlwaysOnTop().then(function (isAlwaysOnTop) {
-            expect(isAlwaysOnTop).toBeTruthy();
-        })
+    async verifyWindowsOnTop(value) {
+        let isAlwaysOnTop = await this.app.browserWindow.isAlwaysOnTop();
+        if (value) {
+            await expect(isAlwaysOnTop).toBeTruthy();
+        } else {
+            await expect(isAlwaysOnTop).toBeFalsy();
+        } 
     }
 
     async menuSearch(element, namevalue) {
@@ -108,6 +110,7 @@ class WindowsActions {
     }
 
     async openMenu(arrMenu) {
+        await Utils.sleep(3);
         var arrStep = [];
         for (var i = 0; i < arrMenu.length; i++) {
             var item = await this.menuSearch(constants.MENU.root, arrMenu[i]);
@@ -120,7 +123,7 @@ class WindowsActions {
     async actionForMenus(arrMenu) {
         let webAction = await new WebActions(this.app);
         await this.app.browserWindow.getBounds().then(async (bounds) => {
-            await robot.setMouseDelay(100);
+            await robot.setMouseDelay(500);
             let x = bounds.x + 95;
             let y = bounds.y + 35;
             await robot.moveMouseSmooth(x, y);
@@ -265,7 +268,7 @@ class WindowsActions {
     }
 
     async pressF11() {
-        await robot.keyTap('f11');       
+        await robot.keyTap('f11');
     }
 
     async pressCtrlR() {
@@ -309,25 +312,25 @@ class WindowsActions {
         });
     }
 
-    async clickNotification(x,y) {   
-        await robot.setMouseDelay(100);   
+    async clickNotification(x, y) {
+        await robot.setMouseDelay(100);
         await robot.moveMouseSmooth(x, y);
         await robot.moveMouse(x, y);
-        await robot.mouseClick();      
+        await robot.mouseClick();
     }
 
-    async mouseMoveNotification(x,y) {
-        await robot.setMouseDelay(50);   
+    async mouseMoveNotification(x, y) {
+        await robot.setMouseDelay(50);
         await robot.moveMouseSmooth(x, y);
-        await robot.moveMouse(x, y);      
+        await robot.moveMouse(x, y);
     }
 
     async mouseMoveCenter() {
         let screen = await this.app.electron.screen.getAllDisplays();
         await this.app.browserWindow.getBounds().then(async (bounds) => {
             await robot.setMouseDelay(50);
-            let x = screen[0].bounds.width/2;
-            let y = screen[0].bounds.height/2;
+            let x = screen[0].bounds.width / 2;
+            let y = screen[0].bounds.height / 2;
             await robot.moveMouseSmooth(x, y);
             await robot.moveMouse(x, y);
         });
@@ -343,9 +346,9 @@ class WindowsActions {
         let currentPosition = await this.getToastNotificationPosition(message);
         let curentSize = await this.getToastNotificationSize(message);
         await this.webAction.verifyToastNotificationShow(message);
-        let x = await (currentPosition[0] + curentSize[0]/2);
-        let y = await (currentPosition[1] + curentSize[1]/2);        
-        await this.clickNotification(x,y);
+        let x = await (currentPosition[0] + curentSize[0] / 2);
+        let y = await (currentPosition[1] + curentSize[1] / 2);
+        await this.clickNotification(x, y);
         await this.mouseMoveCenter();
     }
 
@@ -362,21 +365,21 @@ class WindowsActions {
     }
 
     async verifyNotCloseToastWhenMouseOver(message) {
-        
+
         var i = 0;
         while (i < 6) {
             await Utils.sleep(1);
             await i++;
         }
         let currentPosition = await this.getToastNotificationPosition(message);
-        let curentSize = await this.getToastNotificationSize(message);       
-        let x = await (currentPosition[0] + curentSize[0]/2);
-        let y = await (currentPosition[1] + curentSize[1]/2);        
-        await this.mouseMoveNotification(x,y);
+        let curentSize = await this.getToastNotificationSize(message);
+        let x = await (currentPosition[0] + curentSize[0] / 2);
+        let y = await (currentPosition[1] + curentSize[1] / 2);
+        await this.mouseMoveNotification(x, y);
         await this.webAction.verifyToastNotificationShow(message);
         await this.mouseMoveCenter();
     }
-    
+
     async windowByIndex(index) {
         await this.app.client.windowByIndex(index);
     }
@@ -417,12 +420,11 @@ class WindowsActions {
         await this.app.browserWindow.minimize();
         await this.app.browserWindow.restore();
     }
-        
-    async closeChrome()
-    {
+
+    async closeChrome() {
         Utils.killProcess("chromedriver.exe");
     }
-    
+
     async getToastNotificationIndex(message) {
         for (let i = 0; i < 10; i++) {
             let winCount = await this.app.client.getWindowCount();
@@ -478,14 +480,14 @@ class WindowsActions {
                 expect(currentPosition[0]).toEqual(0);
                 expect(screenHeight - (currentPosition[1] + curentSize[1])).toBeLessThan(100);
                 break;
-        }   
+        }
         await this.windowByIndex(0);
         return 0;
-    }    
+    }
 
     async getWindowCount() {
         return await this.app.client.getWindowCount();
-    }   
+    }
 
     async verifyWindowFocus(windowTitle) {
         let index = await this.getWindowIndexFromTitle(windowTitle);
@@ -574,6 +576,34 @@ class WindowsActions {
                 expect(currentPosition[0]).toEqual(0);
                 expect(screenHeight - (currentPosition[1] + curentSize[1])).toBeLessThan(100);
                 break;
+        }
+    }
+
+    async doAlwaysOnTopOnMac() {
+        await robot.setMouseDelay(500);
+        await robot.moveMouse(190, 0);
+        await robot.mouseClick();
+        // Key tap 7 times as "Always on Top" is in the
+        // 7th position under view menu item
+        for (let i = 0; i < 7; i++) {
+            await robot.keyTap('down');
+        }
+        await robot.keyTap('enter');
+    }
+
+    async setAlwaysOnTop(value) {
+        if (isMac) {
+            await this.doAlwaysOnTopOnMac();
+        } else {
+            await this.openMenu(["Window", "Always on Top"]);
+        }
+        let isAlwaysOnTop = await this.app.browserWindow.isAlwaysOnTop();
+        if (value !== isAlwaysOnTop) {
+            if (isMac) {
+                await this.doAlwaysOnTopOnMac();
+            } else {
+                await this.openMenu(["Window", "Always on Top"]);
+            }
         }
     }
 }
