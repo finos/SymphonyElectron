@@ -2,35 +2,36 @@ const Application = require('./spectronSetup');
 const WindowsActions = require('./spectronWindowsActions');
 const WebActions = require('./spectronWebActions');
 const Utils = require('./spectronUtils');
-const {isMac} = require('../../js/utils/misc');
+const { isMac } = require('../../js/utils/misc');
 
 let app;
 let windowActions;
 let webActions;
 
-!isMac ? describe('Tests for always on top with mult-apps are opened', () => {
-
-    let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+describe('Tests for always on top with mult-apps are opened', () => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
 
     beforeAll(async (done) => {
         try {
-            app = await new Application({}).startApplication({alwaysOnTop: false});
+            app = await new Application({}).startApplication({ alwaysOnTop: false });
             windowActions = await new WindowsActions(app);
             webActions = await new WebActions(app);
             done();
-        } catch(err) {
+        } catch (err) {
             done.fail(new Error(`Unable to start application error: ${err}`));
         };
     });
 
     afterAll(async (done) => {
         try {
-            await Utils.killProcess("notepad.exe");
-            await Utils.killProcess("mspaint.exe");
-            await windowActions.openMenu(["Window","Always on Top"]);
+            if (isMac) {
+                await Utils.killProcess("Notes");
+                await Utils.killProcess("Reminders");
+            } else {
+                await Utils.killProcess("notepad.exe");
+                await Utils.killProcess("mspaint.exe");
+            }
             if (app && app.isRunning()) {
-                jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
                 await app.stop();
                 done();
             }
@@ -46,13 +47,19 @@ let webActions;
      */
     it('Verify Always on Top options when multiple applications are opened', async (done) => {
         try {
-            await windowActions.openMenu(["Window","Always on Top"]);
+            await windowActions.setAlwaysOnTop(true);
             await webActions.minimizeWindows();
-            await Utils.openAppInMaximize("C:\\Windows\\notepad.exe");
-            await Utils.openAppInMaximize("C:\\Windows\\system32\\mspaint.exe");
+            if (isMac) {
+                await Utils.openAppInMaximize("Notes");
+                await Utils.openAppInMaximize("Reminders");
+                await Utils.sleep(10);
+            } else {
+                await Utils.openAppInMaximize("notepad.exe");
+                await Utils.openAppInMaximize("mspaint.exe");
+            }
             await windowActions.showWindow();
             await windowActions.clickOutsideWindow();
-            await windowActions.verifyWindowsOnTop();
+            await windowActions.verifyWindowsOnTop(true);
 
             //Close and open app again, make sure it's always on top
             await app.stop();
@@ -60,10 +67,10 @@ let webActions;
             windowActions = await new WindowsActions(app);
             webActions = await new WebActions(app);
             await windowActions.clickOutsideWindow();
-            await windowActions.verifyWindowsOnTop();
+            await windowActions.verifyWindowsOnTop(true);
             done();
-        } catch(err) {
+        } catch (err) {
             done.fail(new Error(`Fail to keep Always on Top options when multiple applications are opened with error: ${err}`));
         };
     });
-}): describe.skip();
+});
