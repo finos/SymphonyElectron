@@ -285,16 +285,6 @@ class WindowsActions {
         this.app.browserWindow.setAlwaysOnTop(value);
     }
 
-    async openMenu(arrMenu) {
-        var arrStep = [];
-        for (var i = 0; i < arrMenu.length; i++) {
-            var item = await this.menuSearch(constants.MENU.root, arrMenu[i]);
-            await arrStep.push(item);
-        }
-        await this.actionForMenus(arrStep);
-        return arrStep;
-    }
-
     async reload() {
         await this.app.browserWindow.getBounds().then(async (bounds) => {
             await robot.setMouseDelay(100);
@@ -605,6 +595,24 @@ class WindowsActions {
                 await this.openMenu(["Window", "Always on Top"]);
             }
         }
+    }
+    
+    async verifyAppFullScreen() {
+        let actual = await this.app.browserWindow.isFullScreen();
+        await expect(actual).toBeTruthy();
+    }
+
+    async fullScreenOnMac() {
+        await robot.setMouseDelay(100);
+        await robot.moveMouseSmooth(205, 10);
+        await robot.mouseClick();
+        await robot.setKeyboardDelay(100);
+        // Key tap 5 times as "Enter Full Screen" is in the
+        // 5th position under view menu item
+        for (let i = 0; i < 5; i++) {
+            await robot.keyTap('down');
+        }
+        await robot.keyTap('enter');
     }
 }
 
