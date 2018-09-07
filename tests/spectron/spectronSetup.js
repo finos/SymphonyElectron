@@ -39,15 +39,20 @@ class App {
             }
 
             if ((typeof configurations === "undefined") || (typeof configurations.defaultSize === "undefined") || (configurations.defaultSize === true)) {
+                await this.app.browserWindow.setFullScreen(false);
                 await this.app.browserWindow.setSize(900, 900);
             }
+
             if ((typeof configurations === "undefined") || (typeof configurations.defaultPosition === "undefined") || (configurations.defaultPosition === true)) {
                 await this.app.browserWindow.center();
             }
-            await this.app.browserWindow.minimize();
-            await this.app.browserWindow.restore();
+
+            if (isWindowsOS) {
+                await this.app.browserWindow.minimize();
+                await this.app.browserWindow.restore();
+            }
             return this.app;
-        } catch (err) { 
+        } catch (err) {
             throw new Error("Unable to start application " + err);
         };
     }
@@ -124,7 +129,7 @@ class App {
             });
         });
     }
-     
+
 }
 
 module.exports = App;

@@ -93,7 +93,7 @@ class WindowsActions {
             await expect(isAlwaysOnTop).toBeTruthy();
         } else {
             await expect(isAlwaysOnTop).toBeFalsy();
-        } 
+        }
     }
 
     async menuSearch(element, namevalue) {
@@ -527,6 +527,7 @@ class WindowsActions {
             await this.app.stop();
         }
     }
+    
     async isAppRunning() {
         return this.app.isRunning();
     }
