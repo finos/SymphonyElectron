@@ -1,6 +1,5 @@
 const Application = require('./spectronSetup');
 const WebDriver = require('./spectronWebDriver');
-const {  } = require('../../js/utils/misc.js');
 const Utils = require('./spectronUtils');
 let app = new Application({
     startTimeout: Application.getTimeOut(),

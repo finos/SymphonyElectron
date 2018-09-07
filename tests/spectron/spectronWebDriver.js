@@ -133,11 +133,6 @@ class WebDriver {
     async clickDoneButton() {
         var el = await this.getElementByXPath(ui.CREATE_IM_DONE_BTN);
         await el.click();
-    }
-
-    async clickDoneButton() {
-        var el = await this.getElementByXPath(ui.CREATE_IM_DONE_BTN);
-        await el.click();
         await this.waitElelmentIsNotVisible(ui.CREATE_IM_DONE_BTN);
     }
 
