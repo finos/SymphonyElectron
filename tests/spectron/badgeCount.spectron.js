@@ -1,6 +1,6 @@
 const Application = require('./spectronSetup');
 const WebDriver = require('./spectronWebDriver');
-const { isMac } = require('../../js/utils/misc.js');
+const {  } = require('../../js/utils/misc.js');
 const Utils = require('./spectronUtils');
 let app = new Application({
     startTimeout: Application.getTimeOut(),
@@ -10,10 +10,10 @@ let webdriver = new WebDriver({ browser: 'chrome' });
 const WindowsAction = require('./spectronWindowsActions');
 const WebActions = require('./spectronWebActions');
 const specconst = require('./spectronConstants.js');
-
+const {isWindowsOS } = require('../../js/utils/misc');
 let webActions, windowAction;
 
-!isMac ? describe('Test for Badge Count on MAC', () => {
+!isWindowsOS ? describe('Test for Badge Count on MAC', () => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     beforeAll(async (done) => {
@@ -38,8 +38,9 @@ let webActions, windowAction;
             done.fail(new Error(`Failed at post-condition: ${err}`));
         };
     });
+
     /**
-       * Show 1 in tray icon when unread message = 1
+       * Show 1 in tray icon when unread message = 1 (Support MAC only)
        * TC-ID: 2906586
        * Cover scenarios in AVT-1095
        */
@@ -60,5 +61,4 @@ let webActions, windowAction;
             done.fail(new Error(`Show 1 in tray icon with error: ${err}`));
         }
     });
-
 }) : describe.skip();

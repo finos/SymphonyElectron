@@ -328,8 +328,7 @@ class WebActions {
     async logintoAdmin(user) {
         await this.inputText(ui.SIGN_IN_EMAIL, user.username);
         await this.inputText(ui.SIGN_IN_PASSWORD, user.password);
-        await this.clickAndWaitElementVisible(ui.SIGN_IN_BUTTON, ui.IMG_ADMIN_LOGO, constants.TIMEOUT_WAIT_ELEMENT * 5);
-
+        await this.clickAndWaitElementVisible(ui.SIGN_IN_BUTTON, ui.IMG_ADMIN_LOGO, constants.TIMEOUT_PAGE_LOAD);
     }
 
     async openNotificationPosition() {
@@ -434,10 +433,6 @@ class WebActions {
         await expect(values[ 2 ]).toBe(electronVersion);
         await expect(values[ 3 ]).toBe(buildNumber);
         await expect(values[ 4 ]).toBe(SEARCH_API_VERSION);
-    }
-
-    async navigateURL(url) {
-        return this.app.client.url(url);
     }
 }
 

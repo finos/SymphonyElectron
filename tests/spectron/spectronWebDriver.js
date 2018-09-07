@@ -1,4 +1,4 @@
-const { Builder, By, Key, until,Actions } = require('selenium-webdriver')
+const { Builder, By, Key, until, Actions } = require('selenium-webdriver')
 require('selenium-webdriver/chrome');
 require('chromedriver');
 const Utils = require('./spectronUtils');
@@ -41,7 +41,7 @@ class WebDriver {
         )
         await this.driver.wait(until.elementIsVisible(el), timeout);
     }
-    
+
     async  waitElementVisibleAndGet(xpath) {
         const el = await this.driver.wait(
             until.elementLocated(By.xpath(xpath)),
@@ -257,41 +257,39 @@ class WebDriver {
     }
 
     async sendMessagesAndVerifyToast(messages) {
-        
-        for (var i = 0; i < messages.length; i++) {          
+        for (var i = 0; i < messages.length; i++) {
             await this.webActions.clickPlusButton();
-            await this.windowAction.pressCtrlM(); 
-            await this.sendMessage(messages[i]).then(async ()=>
-            {
+            await this.windowAction.pressCtrlM();
+            await this.sendMessage(messages[i]).then(async () => {
                 await this.windowAction.verifyPersistToastNotification(messages[i]);
-            });   
+            });
         }
     }
-    async closeAllGridModules(){
+    async closeAllGridModules() {
         let count = await this.getCount(ui.HEADER_MODULE);
-        for (let i=1; i<= count; i++){
-            let header = ui.HEADER_MODULES.replace("$$",1); 
-            let closeButton = ui.CLOSE_MODULES.replace("$$",1);
-            let pinButton = ui.PIN_CHAT_MODS.replace("$$",1);
-            await this.clickIfElementVisible(header);            
+        for (let i = 1; i <= count; i++) {
+            let header = ui.HEADER_MODULES.replace("$$", 1);
+            let closeButton = ui.CLOSE_MODULES.replace("$$", 1);
+            let pinButton = ui.PIN_CHAT_MODS.replace("$$", 1);
+            await this.clickIfElementVisible(header);
             await this.clickIfElementVisible(pinButton);
             await this.clickIfElementVisible(closeButton);
         }
     }
-    
+
     async clickIfElementVisible(selector) {
         let el = await this.getElementByXPath(selector);
         await el.click();
     }
 
-    async getCount(locator){
-        let elements = await this.driver.findElements(By.xpath(locator));      
+    async getCount(locator) {
+        let elements = await this.driver.findElements(By.xpath(locator));
         return elements.length;
     }
 
     async mouseOver(locator) {
         let el = await this.getElementByXPath(locator);
-        let builder = await new Actions(this.driver);   
+        let builder = await new Actions(this.driver);
         builder.moveToElement(el, 20, 20).click().build().perform();
     }
 }

@@ -82,7 +82,7 @@ class WindowsActions {
     async clickOutsideWindow() {
         await this.setPosition(0, 0);
         let currentSize = await this.getCurrentSize();
-        await robot.setMouseDelay(100);        
+        await robot.setMouseDelay(100);
         await robot.moveMouse(currentSize[0] + 20, currentSize[1] + 20);
         await robot.mouseClick();
     }
@@ -158,35 +158,33 @@ class WindowsActions {
     }
 
     async actionForMenusOnMac(arrMenu) {
-        let webAction = await new WebActions(this.app);    
-            await robot.setMouseDelay(2000);
-            let x = 5;
-            let y = 5;
-            await robot.moveMouseSmooth(x, y);
-            await robot.moveMouse(x, y);
-            await robot.mouseClick();           
-            await robot.setKeyboardDelay(100);            
-            for (var i = 0; i < arrMenu.length; i++) {
-                if (i==0)
-                {
-                    for (var s = 0; s < arrMenu[i].step; s++) {
-                        
-                        await robot.keyTap('right');
-                    }
-                }
-                else
-                {
-                    for (var s = 0; s < arrMenu[i].step; s++) {
-                        
-                        await robot.keyTap('down');
-                    }
-                }
-                if (arrMenu.length > 1 && i != arrMenu.length - 1) {
-                    //handle right keygen
+        let webAction = await new WebActions(this.app);
+        await robot.setMouseDelay(2000);
+        let x = 5;
+        let y = 5;
+        await robot.moveMouseSmooth(x, y);
+        await robot.moveMouse(x, y);
+        await robot.mouseClick();
+        await robot.setKeyboardDelay(100);
+        for (var i = 0; i < arrMenu.length; i++) {
+            if (i == 0) {
+                for (var s = 0; s < arrMenu[i].step; s++) {
+
                     await robot.keyTap('right');
                 }
             }
-            await robot.keyTap('enter');       
+            else {
+                for (var s = 0; s < arrMenu[i].step; s++) {
+
+                    await robot.keyTap('down');
+                }
+            }
+            if (arrMenu.length > 1 && i != arrMenu.length - 1) {
+                //handle right keygen
+                await robot.keyTap('right');
+            }
+        }
+        await robot.keyTap('enter');
     }
 
     async verifyLogExported() {
@@ -262,7 +260,7 @@ class WindowsActions {
     }
 
     async verifyMinimizeWindows() {
-        
+
         let isMinimized = await this.app.browserWindow.isMinimized();
         await expect(isMinimized).toBeTruthy();
     }
@@ -326,15 +324,15 @@ class WindowsActions {
         });
     }
 
-    async clickNotification(x,y) {   
-        await robot.setMouseDelay(500);   
+    async clickNotification(x, y) {
+        await robot.setMouseDelay(500);
         await robot.moveMouseSmooth(x, y);
         await robot.moveMouse(x, y);
         await robot.mouseClick();
     }
 
-    async mouseMoveNotification(x,y) {
-        await robot.setMouseDelay(500);   
+    async mouseMoveNotification(x, y) {
+        await robot.setMouseDelay(500);
         await robot.moveMouseSmooth(x, y);
         await robot.moveMouse(x, y);
     }
@@ -350,28 +348,28 @@ class WindowsActions {
         });
     }
 
-    async verifyPersistToastNotification(message) {      
+    async verifyPersistToastNotification(message) {
         let webAction = await new WebActions(this.app);
         let currentPosition = await this.getToastNotificationPosition(message);
-        let curentSize = await this.getToastNotificationSize(message);       
+        let curentSize = await this.getToastNotificationSize(message);
         await webAction.verifyToastNotificationShow(message);
-        let x = await (currentPosition[0] + curentSize[0]/2);
-        let y = await (currentPosition[1] + curentSize[1]/2);  
-        await this.clickNotification(x,y);        
+        let x = await (currentPosition[0] + curentSize[0] / 2);
+        let y = await (currentPosition[1] + curentSize[1] / 2);
+        await this.clickNotification(x, y);
         await this.mouseMoveCenter();
     }
 
     async verifyNotPersistToastNotification() {
-        let i = 0;          
+        let i = 0;
         while (i < 3) {
             await Utils.sleep(1);
             await i++;
-        }       
-        await this.webAction.verifyNoToastNotificationShow();       
+        }
+        await this.webAction.verifyNoToastNotificationShow();
         await this.mouseMoveCenter();
     }
 
-    async verifyNotCloseToastWhenMouseOver(message) {        
+    async verifyNotCloseToastWhenMouseOver(message) {
         var i = 0;
         while (i < 3) {
             await Utils.sleep(1);
@@ -379,17 +377,17 @@ class WindowsActions {
         }
         let webAction = await new WebActions(this.app);
         let currentPosition = await this.getToastNotificationPosition(message);
-        let curentSize = await this.getToastNotificationSize(message);       
-        let x = await (currentPosition[0] + curentSize[0]/2);
-        let y = await (currentPosition[1] + curentSize[1]/2);        
-        await this.mouseMoveNotification(x,y);
+        let curentSize = await this.getToastNotificationSize(message);
+        let x = await (currentPosition[0] + curentSize[0] / 2);
+        let y = await (currentPosition[1] + curentSize[1] / 2);
+        await this.mouseMoveNotification(x, y);
         await webAction.verifyToastNotificationShow(message);
         await this.mouseMoveCenter();
     }
 
     async windowByIndex(index) {
         await this.app.client.windowByIndex(index);
-    } 
+    }
 
     async getWindowIndexFromTitle(windowTitle) {
         let winCount = await this.getWindowCount();
@@ -423,14 +421,12 @@ class WindowsActions {
         await this.app.browserWindow.minimize();
         await this.app.browserWindow.restore();
     }
-        
-    async closeChromeDriver()
-    {
+
+    async closeChromeDriver() {
         Utils.killProcess("chromedriver");
     }
 
-    async closeChromeDriverOnMac()
-    {
+    async closeChromeDriverOnMac() {
         Utils.killProcessOnMac("Electron");
     }
 
@@ -501,7 +497,7 @@ class WindowsActions {
     async verifyWindowFocus(windowTitle) {
         let index = await this.getWindowIndexFromTitle(windowTitle);
         await this.windowByIndex(index);
-        let isFocused = await this.app.browserWindow.isFocused();        
+        let isFocused = await this.app.browserWindow.isFocused();
         expect(isFocused === true).toBeTruthy();
         await this.windowByIndex(0);
     }
@@ -527,20 +523,28 @@ class WindowsActions {
             await this.app.stop();
         }
     }
-    
+
     async isAppRunning() {
         return this.app.isRunning();
     }
 
-    async generateLog(downloadsPath)
-    {
-        let zip = new JSZip();       
+    async generateLog(downloadsPath) {
+        let zip = new JSZip();
         zip.file("Hello.txt", "Hello World\n");
-        zip.generateNodeStream({type:'nodebuffer',streamFiles:true})
-        .pipe(fs.createWriteStream(downloadsPath+'/logs_symphony_1.zip'))
-        .on('finish', function () {            
-            console.log("logs_symphony written.");
-            });      
+        zip.generateNodeStream({ type: 'nodebuffer', streamFiles: true })
+            .pipe(fs.createWriteStream(downloadsPath + '/logs_symphony_1.zip'))
+            .on('finish', function () {
+                console.log("logs_symphony written.");
+            });
+    }
+
+    async windowReload() {
+        await this.app.browserWindow.reload();
+    }
+
+    async verifyWindowCount(expected) {
+        let count = await this.app.client.getWindowCount()
+        await expect(count === expected).toBeTruthy();
     }
 
     async doAlwaysOnTopOnMac() {
@@ -570,7 +574,7 @@ class WindowsActions {
             }
         }
     }
-    
+
     async verifyAppFullScreen() {
         let actual = await this.app.browserWindow.isFullScreen();
         await expect(actual).toBeTruthy();
@@ -593,6 +597,31 @@ class WindowsActions {
         await robot.setMouseDelay(200);
         await robot.moveMouse(0, 100);
         await robot.mouseClick();
+    }
+
+    async resetBadgeCount() {
+        await this.app.electron.remote.app.setBadgeCount(0);
+    }
+
+    async getBadgeCount() {
+        let count = await this.app.electron.remote.app.getBadgeCount();
+        return count;
+    }
+
+    async verifyCurrentBadgeCount(number) {
+        let expected = false;
+        var i = 0;
+        var count = await this.getBadgeCount();
+        while (i < 5) {
+            if (count == number) {
+                expected = true;
+                break;
+            }
+            await Utils.sleep(1);
+            count = await this.getBadgeCount();
+            await i++;
+        }
+        await expect(expected).toBeTruthy();
     }
 }
 
