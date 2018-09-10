@@ -7,7 +7,7 @@ const Utils = require('./spectronUtils');
 
 let app, webActions, windowsActions;
 
-!isMac ? describe('Tests for Pop-Outs', () => {
+describe('Tests for Pop-Outs', () => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = constants.TIMEOUT_TEST_SUITE;
 
     beforeAll(async (done) => {
@@ -70,6 +70,7 @@ let app, webActions, windowsActions;
                 await windowsActions.verifyWindowFocus("Inbox");
 
                 await windowsActions.bringToFront("Symphony");
+                await webActions.createIM(constants.USER_C.name); //work arround to move focus to userC
                 await webActions.clickLeftNavItem(constants.USER_B.name);
                 await Utils.sleep(1); //wait for popout overlaying completely
                 await windowsActions.verifyWindowFocus(constants.USER_B.name);
@@ -79,7 +80,6 @@ let app, webActions, windowsActions;
                 await webActions.login(constants.USER_A);
                 await windowsActions.verifyPopOutWindowAppear(constants.USER_B.name);
                 await windowsActions.verifyPopOutWindowAppear("Inbox");
-                done();
             }
             done();
         } catch (err) {
@@ -100,15 +100,14 @@ let app, webActions, windowsActions;
                 await webActions.clickPopOutIcon();
                 await webActions.clickPopInIcon(constants.USER_B.name);
                 await webActions.verifyPopOutIconDisplay();
-
+                
                 //Verify pinned module is persisted on grid
                 await webActions.createIM(constants.USER_C.name);
                 await webActions.verifyChatModuleVisible(constants.USER_B.name);
-                done();
             }
             done();
         } catch (err) {
             done.fail(new Error(`Fail to verify Pop-in popped-out chat: ${err}`));
         };
     });
-}) : describe.skip();
+});
