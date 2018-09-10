@@ -174,7 +174,7 @@ class WindowsActions {
                 }
             }
             else {
-                for (var s = 0; s < arrMenu[i].step; s++) {
+                for (var s = 0; s <= arrMenu[i].step; s++) {
 
                     await robot.keyTap('down');
                 }
@@ -257,6 +257,11 @@ class WindowsActions {
     async pressCtrlW() {
         await robot.keyToggle('w', 'down', ['control']);
         await robot.keyToggle('w', 'up', ['control']);
+    }
+
+    async pressCtrlWOnMac() {
+        await robot.keyToggle('w', 'down', ['command']);
+        await robot.keyToggle('w', 'up', ['command']);
     }
 
     async verifyMinimizeWindows() {

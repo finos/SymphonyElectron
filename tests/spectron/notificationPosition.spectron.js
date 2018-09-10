@@ -2,20 +2,22 @@ const Application = require('./spectronSetup');
 const path = require('path');
 const { isMac } = require('../../js/utils/misc');
 
-let app = new Application({});
+let mainApp = new Application({});
+let app;
 
 describe('Tests for Notification position', () => {
 
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
 
-    beforeAll((done) => {
-        return app.startApplication().then((startedApp) => {
-            app = startedApp;
-            done();
-        }).catch((err) => {
+    beforeAll(async (done) => {
+        try {
+            let testHost = await 'file:///' + path.join(__dirname, '..', '..', 'demo/index.html')
+            app = await mainApp.startApplication({testedHost:testHost, alwaysOnTop: false })
+            await done();
+        } catch (err) {
             done.fail(new Error(`Unable to start application error: ${err}`));
-        });
+        };
     });
 
     afterAll((done) => {
@@ -28,37 +30,7 @@ describe('Tests for Notification position', () => {
             });
         }
     });
-
-    it('should launch the app', (done) => {
-        return app.client.waitUntilWindowLoaded().then(() => {
-            return app.client.getWindowCount().then((count) => {
-                expect(count === 1).toBeTruthy();
-                done();
-            }).catch((err) => {
-                done.fail(new Error(`notificationPosition failed in getWindowCount with error: ${err}`));
-            });
-        }).catch((err) => {
-            done.fail(new Error(`notificationPosition failed in waitUntilWindowLoaded with error: ${err}`));
-        });
-    });
-
-    it('should load demo html page', () => {
-        return app.client.url('file:///' + path.join(__dirname, '..', '..', 'demo/index.html'));
-    });
-
-    it('should load demo html', (done) => {
-        return app.client.waitUntilWindowLoaded().then(() => {
-            return app.client.getTitle().then((title) => {
-                expect(title === '').toBeTruthy();
-                done();
-            }).catch((err) => {
-                done.fail(new Error(`notificationPosition failed in getTitle with error: ${err}`));
-            });
-        }).catch((err) => {
-            done.fail(new Error(`notificationPosition failed in waitUntilWindowLoaded with error: ${err}`));
-        });
-    });
-
+   
     it('should open notification configure window', () => {
         return app.client
             .click('#open-config-win')
