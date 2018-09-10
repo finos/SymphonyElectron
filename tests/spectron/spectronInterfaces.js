@@ -92,6 +92,7 @@ module.exports= {
 
     //Symphony Electron API Demo
     GET_VERSION_BUTTON: "#get-version",
+    OPEN_WINDOW_BUTTON: "#open-win",
 
     //Symphony Electron API Demo
     TAG_TEXTBOX: "#tag"

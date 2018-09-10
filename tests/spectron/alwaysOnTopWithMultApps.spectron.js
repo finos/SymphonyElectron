@@ -52,7 +52,7 @@ describe('Tests for always on top with mult-apps are opened', () => {
             if (isMac) {
                 await Utils.openAppInMaximize("Notes");
                 await Utils.openAppInMaximize("Reminders");
-                await Utils.sleep(10);
+                await Utils.sleep(10); //Sleep 10secs for waiting app opening completely.
             } else {
                 await Utils.openAppInMaximize("notepad.exe");
                 await Utils.openAppInMaximize("mspaint.exe");
@@ -60,7 +60,7 @@ describe('Tests for always on top with mult-apps are opened', () => {
             await windowActions.showWindow();
             await windowActions.clickOutsideWindow();
             await windowActions.verifyWindowsOnTop(true);
-
+            
             //Close and open app again, make sure it's always on top
             await app.stop();
             app = await new Application({}).startApplication();
