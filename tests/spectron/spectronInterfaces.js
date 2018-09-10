@@ -91,5 +91,8 @@ module.exports= {
     INPUT_SEARCH_ENTITIES: "//input[@id='search-entities']",
 
     //Symphony Electron API Demo
+    GET_VERSION_BUTTON: "#get-version",
+
+    //Symphony Electron API Demo
     TAG_TEXTBOX: "#tag"
 };

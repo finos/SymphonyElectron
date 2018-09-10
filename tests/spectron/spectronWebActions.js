@@ -413,6 +413,32 @@ class WebActions {
         }
         await robot.keyTap('enter');
     }
+    
+    async verifyVersionInfo(){
+        const { buildNumber } = require('../../package');
+        const electronVersion = require('../../package').devDependencies.electron;
+        const bluebird = require('bluebird');
+        const API_VERSION = '2.0.0';
+        const SEARCH_API_VERSION = '3.0.0';
+
+        let values = await bluebird.all([
+            '#api-version',
+            '#container-identifier',
+            '#container-ver',
+            '#build-number',
+            '#search-api-ver'
+        ]).mapSeries((string) => {return this.app.client.getText(string)})
+        
+        await expect(values[ 0 ]).toBe(API_VERSION);
+        await expect(values[ 1 ]).toBe('Electron');
+        await expect(values[ 2 ]).toBe(electronVersion);
+        await expect(values[ 3 ]).toBe(buildNumber);
+        await expect(values[ 4 ]).toBe(SEARCH_API_VERSION);
+    }
+
+    async navigateURL(url) {
+        return this.app.client.url(url);
+    }
 }
 
 module.exports = WebActions;
