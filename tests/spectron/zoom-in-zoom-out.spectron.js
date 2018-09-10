@@ -1,31 +1,29 @@
 const Application = require('./spectronSetup');
 const { isMac } = require('../../js/utils/misc');
 const robot = require('robotjs');
-
-let configPath;
-
-let app = new Application({});
+const WindowsActions = require('./spectronWindowsActions');
+let app, config,wActions;
+let mainApp = new Application({});
+const Utils = require('./spectronUtils');
 
 describe('Tests for Zoom in and Zoom out', () => {
 
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
 
-    beforeAll((done) => {
-        return app.startApplication().then((startedApp) => {
-            app = startedApp;
-            getConfigPath().then((config) => {
-                configPath = config;
-                done();
-            }).catch((err) => {
-                done.fail(new Error(`Unable to start application error: ${err}`));
-            });
-        }).catch((err) => {
+    beforeAll(async (done) => {
+        try {
+            app = await mainApp.startApplication({ alwaysOnTop: false });
+            await Utils.sleep(2);
+            wActions = await new WindowsActions(app);
+            config = await getConfigPath(app);
+            await done();
+        } catch (err) {
             done.fail(new Error(`Unable to start application error: ${err}`));
-        });
+        };
     });
 
-    function getConfigPath() {
+    function getConfigPath(app) {
         return new Promise(function (resolve, reject) {
             app.client.addCommand('getUserDataPath', function () {
                 return this.execute(function () {
@@ -41,7 +39,7 @@ describe('Tests for Zoom in and Zoom out', () => {
     }
 
     afterAll((done) => {
-        // Get it back normal size
+        // Get it back normal size      
         if (!isMac) {
             for (let i = 0; i < 4; i++) {
                 robot.keyToggle('+', 'down', ['control', 'shift']);
@@ -109,100 +107,83 @@ describe('Tests for Zoom in and Zoom out', () => {
         });
     });
 
-    it('should zoom in the app and check whether it is zoomed in', (done) => {
-        robot.setKeyboardDelay(500);
-        if (isMac) {
+    it('should zoom in the app and check whether it is zoomed in', async (done) => {
+        if (!isMac) {
+            await robot.setKeyboardDelay(500);
+            let bounds = await app.browserWindow.getBounds();            
+            await robot.setMouseDelay(100);
+            let x = await bounds.x + 200;
+            let y = await bounds.y + 200;
+            await robot.moveMouse(x, y);
+            await robot.mouseClick();
 
-            robot.keyToggle('0', 'down', ['command']);
-            robot.keyToggle('0', 'up');
-            robot.keyToggle('command', 'up');
+            await robot.keyToggle('0', 'down', ['control']);
+            await robot.keyToggle('0', 'up',['control']);          
 
             for (let i = 0; i < 4; i++) {
-                robot.keyToggle('+', 'down', ['command']);
+                await robot.keyToggle('+', 'down', ['control', 'shift']);
+                await robot.keyToggle('+', 'up', ['control', 'shift']);
+            }           
+            let zoomFactor = await app.electron.webFrame.getZoomFactor()
+            await expect(zoomFactor > 1).toBeTruthy();
+            await done();
+        }
+        else {          
+            let x = 200;
+            let y = 200;
+            await robot.moveMouse(x, y);
+            await robot.mouseClick();
+            await robot.keyToggle('0', 'down', ['command']);
+            await robot.keyToggle('0', 'up', ['command']);
+            for (let i = 0; i < 4; i++) {
+                await robot.keyToggle('+', 'down', ['command']);
+                await robot.keyToggle('+', 'up', ['command']);
             }
-            robot.keyToggle('+', 'up');
-            robot.keyToggle('command', 'up');
-
-            return app.electron.webFrame.getZoomFactor().then((zoomFactor) => {
-                expect(zoomFactor > 1).toBeTruthy();
-                done();
-            }).catch((err) => {
-                done.fail(new Error(`zoom-in-zoom-out failed in getZoomFactor with error: ${err}`));
-            })
-        } else {
-            return app.browserWindow.getBounds().then((bounds) => {
-                robot.setMouseDelay(100);
-                let x = bounds.x + 200;
-                let y = bounds.y + 200;
-                robot.moveMouse(x, y);
-                robot.mouseClick();
-
-                robot.keyToggle('0', 'down', ['control']);
-                robot.keyToggle('0', 'up');
-                robot.keyToggle('control', 'up');
-
-                for (let i = 0; i < 4; i++) {
-                    robot.keyToggle('+', 'down', ['control', 'shift']);
-                }
-                robot.keyToggle('+', 'up');
-                robot.keyToggle('control', 'up');
-                robot.keyToggle('shift', 'up');
-
-                return app.electron.webFrame.getZoomFactor().then((zoomFactor) => {
-                    expect(zoomFactor > 1).toBeTruthy();
-                    done();
-                }).catch((err) => {
-                    done.fail(new Error(`zoom-in-zoom-out failed in getBounds with error: ${err}`));
-                })
-            });
+            let zoomFactor = await app.electron.webFrame.getZoomFactor()
+            await expect(zoomFactor > 1).toBeTruthy();
+            await done();
         }
     });
 
 
-    it('should zoom out the app and check whether it is zoomed out', () => {
-        robot.setKeyboardDelay(500);
-        if (isMac) {
+    it('should zoom out the app and check whether it is zoomed out', async (done) => {
+        if (!isMac) {
+            await robot.setKeyboardDelay(500);
+            let bounds = await app.browserWindow.getBounds();
+            await robot.setMouseDelay(100);
+            let x = await bounds.x + 200;
+            let y = await bounds.y + 200;
+            await robot.moveMouse(x, y);
+            await robot.mouseClick();
 
-            robot.keyToggle('0', 'down', ['command']);
-            robot.keyToggle('0', 'up');
-            robot.keyToggle('command', 'up');
+            await robot.keyToggle('0', 'down', ['control']);
+            await robot.keyToggle('0', 'up');
+            await robot.keyToggle('control', 'up');
 
             for (let i = 0; i < 4; i++) {
-                robot.keyToggle('-', 'down', ['command']);
+                await robot.keyToggle('-', 'down', ['control']);
             }
-            robot.keyToggle('-', 'up');
-            robot.keyToggle('command', 'up');
+            await robot.keyToggle('-', 'up');
+            await robot.keyToggle('control', 'up');
 
-            return app.electron.webFrame.getZoomFactor().then((zoomFactor) => {
-
-                expect(zoomFactor < 1).toBeTruthy();
-            }).catch((err) => {
-                expect(err).toBeNull();
-            })
-        } else {
-            return app.browserWindow.getBounds().then((bounds) => {
-                robot.setMouseDelay(100);
-                let x = bounds.x + 200;
-                let y = bounds.y + 200;
-                robot.moveMouse(x, y);
-                robot.mouseClick();
-
-                robot.keyToggle('0', 'down', ['control']);
-                robot.keyToggle('0', 'up');
-                robot.keyToggle('control', 'up');
-
-                for (let i = 0; i < 4; i++) {
-                    robot.keyToggle('-', 'down', ['control']);
-                }
-                robot.keyToggle('-', 'up');
-                robot.keyToggle('control', 'up');
-
-                return app.electron.webFrame.getZoomFactor().then((zoomFactor) => {
-                    expect(zoomFactor < 1).toBeTruthy();
-                }).catch((err) => {
-                    expect(err).toBeNull();
-                })
-            });
+            let zoomFactor = await app.electron.webFrame.getZoomFactor()
+            await expect(zoomFactor < 1).toBeTruthy();
+            await done();
+        }
+        else {
+            let x = 200;
+            let y = 200;
+            await robot.moveMouse(x, y);
+            await robot.mouseClick();
+            await robot.keyToggle('0', 'down', ['command']);
+            await robot.keyToggle('0', 'up', ['command']);
+            for (let i = 0; i < 4; i++) {
+                await robot.keyToggle('-', 'down', ['command']);
+                await robot.keyToggle('-', 'up', ['command']);
+            }
+            let zoomFactor = await app.electron.webFrame.getZoomFactor()
+            await expect(zoomFactor < 1).toBeTruthy();
+            await done();
         }
     });
 });
