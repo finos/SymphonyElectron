@@ -6,6 +6,7 @@ module.exports= {
     CLOSE_BUTTON: "button#title-bar-close-button",
     MAIN_MENU_ITEM: "#hamburger-menu-button",
     SYM_LOGO: "#logo",
+    MINIMIZE_BTN: "#title-bar-minimize-button",
 
     //Sign In
     SIGN_IN_BUTTON: "//button[@name='signin-submit']",
@@ -56,6 +57,7 @@ module.exports= {
     HEADER_MODULE_NAME: "//header[contains(@class,'module-header gs-draggable')]//span[contains(@class,'aliasable') and normalize-space()='$$']",
     CLOSE_MODULE: "//button[contains(@class,'close-module')]",
     CLOSE_MODULES: "(//button[contains(@class,'close-module')])[$$]",
+    PIN_CHAT_MODS:  "(//button[contains(@class,'pin-view')])[$$]",
 
     //Popin Popout
     POPOUT_BUTTON: ".enhanced-pop-out",
@@ -76,7 +78,7 @@ module.exports= {
     INBOX_HEADER: ".inbox-header",
 
     //ACP
-    ACP_LINK: "//button[@class='show-admin-link left-action button-reset']",
+    ACP_LINK: "//*[contains(@class,'show-admin-link')]",
     IMG_ADMIN_LOGO: "//img[@src='./img/nav_admin_logo.png']",
 
     //LOG OUT
@@ -91,4 +93,3 @@ module.exports= {
     //Symphony Electron API Demo
     TAG_TEXTBOX: "#tag"
 };
-
