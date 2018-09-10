@@ -1,6 +1,6 @@
 {
   "testMatch": [
-    "**/*.spectron.js"
+    "**/zoom-in-zoom-out.spectron.js"
   ],
   "verbose": true,
   "collectCoverage": true,
