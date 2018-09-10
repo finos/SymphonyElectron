@@ -87,10 +87,13 @@ class WindowsActions {
         await robot.mouseClick();
     }
 
-    async verifyWindowsOnTop() {
-        let isAlwaysOnTop = await this.app.browserWindow.isAlwaysOnTop();      
-        await expect(isAlwaysOnTop === true).toBeTruthy();
-        
+    async verifyWindowsOnTop(value) {
+        let isAlwaysOnTop = await this.app.browserWindow.isAlwaysOnTop();
+        if (value) {
+            await expect(isAlwaysOnTop).toBeTruthy();
+        } else {
+            await expect(isAlwaysOnTop).toBeFalsy();
+        } 
     }
 
     async menuSearch(element, namevalue) {
@@ -155,17 +158,14 @@ class WindowsActions {
     }
 
     async actionForMenusOnMac(arrMenu) {
-        let webAction = await new WebActions(this.app);
-        //await this.app.browserWindow.getBounds().then(async (bounds) => {
+        let webAction = await new WebActions(this.app);    
             await robot.setMouseDelay(2000);
             let x = 5;
             let y = 5;
             await robot.moveMouseSmooth(x, y);
             await robot.moveMouse(x, y);
-            await robot.mouseClick();
-            //await webAction.openApplicationMenuByClick();
-            await robot.setKeyboardDelay(100);
-            
+            await robot.mouseClick();           
+            await robot.setKeyboardDelay(100);            
             for (var i = 0; i < arrMenu.length; i++) {
                 if (i==0)
                 {
@@ -186,8 +186,7 @@ class WindowsActions {
                     await robot.keyTap('right');
                 }
             }
-            await robot.keyTap('enter');
-        //});
+            await robot.keyTap('enter');       
     }
 
     async verifyLogExported() {
@@ -587,6 +586,12 @@ class WindowsActions {
             await robot.keyTap('down');
         }
         await robot.keyTap('enter');
+    }
+
+    async blurBrowserWindow() {
+        await robot.setMouseDelay(200);
+        await robot.moveMouse(0, 100);
+        await robot.mouseClick();
     }
 }
 
