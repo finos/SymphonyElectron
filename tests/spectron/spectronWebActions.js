@@ -55,7 +55,7 @@ class WebActions {
     }
 
     async inputText(el, data) {
-        var obj = await this.getElementByXPath(el);
+        let obj = await this.getElementByXPath(el);
         if (obj != null)
             await this.app.client.setValue(el, data);
     }
@@ -122,6 +122,7 @@ class WebActions {
                     await this.app.client.windowByIndex(j);
                     if (await this.app.client.getText(ui.TOAST_MESSAGE_CONTENT) === message) {
                         show = true;
+                        break;
                     }
                 }
                 if (show) {
@@ -134,26 +135,26 @@ class WebActions {
         await this.app.client.windowByIndex(0);
     }
 
-    async verifyNoToastNotificationShow(message) {
-        let noShow;
-        for (let i = 0; i < 10; i++) {
-            let winCount = await this.app.client.getWindowCount();
-            if (winCount > 1) {
-                for (let j = 1; j < winCount; j++) {
-                    await this.app.client.windowByIndex(j);
-                    if (await this.app.client.getText(ui.TOAST_MESSAGE_CONTENT) !== message) {
-                        noShow = true;
-                    }
-                    else {
-                        noShow = false;
-                    }
-                }
-                if (noShow === false) {
-                    break;
-                }
+    async verifyNoToastNotificationShow() {
+        let noShow = false;
+        let title = '';        
+        for (let i = 0; i < 5; i++) {
+            await Utils.sleep(1); 
+            await this.app.client.windowByIndex(1);
+            title = await this.app.client.getText(ui.TOAST_MESSAGE_CONTENT)
+            if (title !== '')
+            {
+                noShow = true;
+                break;
             }
-            await Utils.sleep(1);
         }
+        for (let j = 0; j < 15; j++) {
+            await Utils.sleep(1); 
+        }        
+        if (title !== '')
+        {
+            noShow = true;
+        }   
         await expect(noShow).toBeTruthy();
         await this.app.client.windowByIndex(0);
     }
@@ -184,21 +185,31 @@ class WebActions {
 
     async login(user) {
         await this.inputText(ui.SIGN_IN_EMAIL, user.username);
-        await this.inputText(ui.SIGN_IN_PASSWORD, user.password);
+        await this.inputText(ui.SIGN_IN_PASSWORD, user.password);        
+        await this.clickIfElementVisible(ui.SIGN_IN_BUTTON);
         await this.clickAndWaitElementVisible(ui.SIGN_IN_BUTTON, ui.SETTTING_BUTTON, constants.TIMEOUT_PAGE_LOAD);
-        await this.waitElementNotVisible(ui.SPINNER);
+        //await this.waitElementNotVisible(ui.SPINNER);
     }
 
-    async persistToastIM() {
+    async persistToastIM(isPersistance) {
         await this.clickAndWaitElementVisible(ui.SETTTING_BUTTON, ui.ALERT_OPTION, constants.TIMEOUT_WAIT_ELEMENT);
         await this.clickAndWaitElementVisible(ui.ALERT_OPTION, ui.ALERT_TAB, constants.TIMEOUT_WAIT_ELEMENT);
-        await this.clickAndWaitElementVisible(ui.PERSIS_NOTIFICATION_INPUT_IM, ui.PERSIS_NOTIFICATION_INPUT_IM, constants.TIMEOUT_WAIT_ELEMENT);
+        let ischeck = await this.app.client.element(ui.PERSIS_NOTIFICATION_INPUT_IM).getAttribute("checked");
+
+        if (isPersistance === true && (ischeck === false || ischeck === null)) {
+            await this.clickAndWaitElementVisible(ui.PERSIS_NOTIFICATION_INPUT_IM, ui.PERSIS_NOTIFICATION_INPUT_IM, constants.TIMEOUT_WAIT_ELEMENT);
+        }
+        else if (isPersistance === false) {
+            await this.scrollAndClick(ui.SCROLL_TAB_ACTIVE, ui.PERSIS_NOTIFICATION_INPUT_IM);
+         
+        }
     }
 
     async openACP() {
         await this.clickAndWaitElementVisible(ui.SETTTING_BUTTON, ui.GENERAL_OPTION, constants.TIMEOUT_WAIT_ELEMENT);
         await this.clickAndWaitElementVisible(ui.GENERAL_OPTION, ui.GENERAL_TAB, constants.TIMEOUT_WAIT_ELEMENT);
-        await this.clickAndWaitElementVisible(ui.ACP_LINK, ui.IMG_ADMIN_LOGO, constants.TIMEOUT_WAIT_ELEMENT);
+        await this.clickAndWaitElementVisible(ui.ACP_LINK, ui.IMG_ADMIN_LOGO, constants.TIMEOUT_WAIT_ELEMENT * 10);
+
     }
 
     async clickPlusButton() {
@@ -206,7 +217,7 @@ class WebActions {
     }
 
     async clickStartChat() {
-        await this.clickIfElementVisible(ui.START_CHAT);
+        await this.clickIfElementVisible(ui.START_CHAT, constants.TIMEOUT_WAIT_ELEMENT * 5);
     }
 
     async logout() {
@@ -225,7 +236,7 @@ class WebActions {
 
     async clickDoneButton() {
         await this.clickIfElementVisible(ui.CREATE_IM_DONE_BTN);
-        await this.waitElementVisible(ui.HEADER_MODULE);
+        await this.waitElementVisible(ui.HEADER_MODULE, constants.TIMEOUT_WAIT_ELEMENT * 5);
     }
 
     async waitElementNotVisible(locator, timeOut = constants.TIMEOUT_WAIT_ELEMENT) {
@@ -287,10 +298,10 @@ class WebActions {
         await windowsActions.windowByIndex(0);
     }
 
-    async verifyPopOutIconDisplay(){
+    async verifyPopOutIconDisplay() {
         await this.mouseOver(ui.PIN_CHAT_MOD);
         await Utils.sleep(2); //wait popout button clickable
-        await this.waitElementVisible(ui.POPOUT_BUTTON, constants.TIMEOUT_WAIT_ELEMENT);
+        await this.waitElementVisible(ui.POPOUT_BUTTON, constants.TIMEOUT_WAIT_ELEMENT * 5);
     }
 
     async clickInboxIcon() {
@@ -342,31 +353,31 @@ class WebActions {
             checked = await this.app.client.isSelected(selector);
         }
     }
-    
-    async pinChat(){
+
+    async pinChat() {
         await this.mouseOver(ui.PIN_CHAT_MOD);
         await Utils.sleep(2); //wait popout button clickable
         await this.clickIfElementVisible(ui.PIN_CHAT_MOD);
         await this.waitElementVisible(ui.PINNED_CHAT_MOD);
     }
 
-    async verifyChatModuleVisible(muduleName){
-        let locator = ui.HEADER_MODULE_NAME.replace("$$",muduleName); 
-        await this.waitElementVisible(locator);
+    async verifyChatModuleVisible(muduleName) {
+        let locator = ui.HEADER_MODULE_NAME.replace("$$", muduleName);
+        await this.waitElementVisible(locator, constants.TIMEOUT_WAIT_ELEMENT * 5);
     }
 
-    async closeAllGridModules(){
+    async closeAllGridModules() {
         let count = await this.getCount(ui.HEADER_MODULE);
-        for (let i=1; i<= count; i++){
-            let header = ui.HEADER_MODULES.replace("$$",1); 
-            let closeButton = ui.CLOSE_MODULES.replace("$$",1); 
+        for (let i = 1; i <= count; i++) {
+            let header = ui.HEADER_MODULES.replace("$$", 1);
+            let closeButton = ui.CLOSE_MODULES.replace("$$", 1);
             await this.mouseOver(header);
             await this.clickIfElementVisible(ui.PIN_CHAT_MOD);
             await this.clickIfElementVisible(closeButton);
         }
     }
 
-    async getCount(locator){
+    async getCount(locator) {
         let elements = await this.app.client.elements(locator);
         return elements.value.length;
     }
