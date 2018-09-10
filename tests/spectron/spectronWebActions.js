@@ -2,7 +2,8 @@ const ui = require('./spectronInterfaces.js');
 const constants = require('./spectronConstants.js');
 const Utils = require('./spectronUtils');
 const WindowsActions = require('./spectronWindowsActions');
-const { isMac } = require('../../js/utils/misc');
+const robot = require('robotjs');
+const { isMac, isWindowsOS } = require('../../js/utils/misc');
 
 class WebActions {
     constructor(app) {
@@ -52,11 +53,25 @@ class WebActions {
         }
         return null;
     }
+
     async inputText(el, data) {
         var obj = await this.getElementByXPath(el);
         if (obj != null)
             await this.app.client.setValue(el, data);
     }
+
+    async getText(element) {
+        return await this.app.client.getText(element);
+    }
+
+    async getValue(element) {
+        return await this.app.client.getValue(element);
+    }
+
+    async getLocation(element) {
+        return await this.app.client.getLocation(element);
+    }
+
     async clickAndWaitElementVisible(xpath, elementToVisible, timeOut = constants.TIMEOUT_WAIT_ELEMENT) {
         await this.app.client.click(xpath).then(async () => {
             await this.app.client.waitForVisible(elementToVisible, timeOut);
@@ -86,6 +101,11 @@ class WebActions {
     async clickIfElementVisible(selector, timeOut = constants.TIMEOUT_WAIT_ELEMENT) {
         await this.app.client.waitForVisible(selector, timeOut)
             .click(selector)
+    }
+
+    async rightClickIfElementVisible(selector, timeOut = constants.TIMEOUT_WAIT_ELEMENT) {
+        await this.app.client.waitForVisible(selector, timeOut)
+            .rightClick(selector, 10, 10)
     }
 
     async openAlertsSettings() {
@@ -177,8 +197,8 @@ class WebActions {
 
     async openACP() {
         await this.clickAndWaitElementVisible(ui.SETTTING_BUTTON, ui.GENERAL_OPTION, constants.TIMEOUT_WAIT_ELEMENT);
-        await this.clickAndWaitElementVisible(ui.GENERAL_OPTION, ui.GENERAL_TAB,constants.TIMEOUT_WAIT_ELEMENT);
-        await this.clickAndWaitElementVisible(ui.ACP_LINK,ui.IMG_ADMIN_LOGO, constants.TIMEOUT_WAIT_ELEMENT);
+        await this.clickAndWaitElementVisible(ui.GENERAL_OPTION, ui.GENERAL_TAB, constants.TIMEOUT_WAIT_ELEMENT);
+        await this.clickAndWaitElementVisible(ui.ACP_LINK, ui.IMG_ADMIN_LOGO, constants.TIMEOUT_WAIT_ELEMENT);
     }
 
     async clickPlusButton() {
@@ -189,8 +209,7 @@ class WebActions {
         await this.clickIfElementVisible(ui.START_CHAT);
     }
 
-    async logout()
-    {
+    async logout() {
         await this.clickAndWaitElementVisible(ui.ADMIN_NAME, ui.ADMIN_LOG_OUT, constants.TIMEOUT_WAIT_ELEMENT);
         await this.clickAndWaitElementVisible(ui.ADMIN_LOG_OUT, ui.SIGN_IN_BUTTON, constants.TIMEOUT_WAIT_ELEMENT);
     }
@@ -218,6 +237,7 @@ class WebActions {
     }
 
     async mouseOver(locator) {
+        await this.waitElementVisible(locator);
         await this.app.client.moveToObject(locator);
     }
 
@@ -288,8 +308,7 @@ class WebActions {
         await this.clickAndWaitElementVisible(ui.SIGNOUT_MODAL_BUTTON, ui.SIGN_IN_BUTTON, constants.TIMEOUT_PAGE_LOAD);
     }
 
-    async verifyElementExist(findElement)
-    {
+    async verifyElementExist(findElement) {
         let obs = await this.app.client.elements(findElement);
         let len = await obs.value.length;
         await expect(len).toBe(1);
@@ -350,6 +369,38 @@ class WebActions {
     async getCount(locator){
         let elements = await this.app.client.elements(locator);
         return elements.value.length;
+    }
+    
+    async navigateURL(url) {
+        return this.app.client.url(url)
+    }
+
+    async verifySpellCheckerWorking(locator, previous) {
+        let current = await this.getValue(locator);
+        await expect(current !== previous).toBeTruthy();
+    }
+
+    async openContextMenu(locator) {
+        if (isWindowsOS) {
+            let position = await this.getLocation(locator);
+            await robot.setMouseDelay(500);
+            await robot.moveMouse(position.x + 20, position.y + 5);
+            await robot.mouseToggle("down", "right");
+            await robot.mouseToggle("up", "right");
+        } else {
+            await this.mouseOver(locator);
+            //right click twice to make it work on MAC
+            await this.rightClickIfElementVisible(locator);
+            await this.rightClickIfElementVisible(locator);
+        }
+    }
+
+    async selectItemOnContextMenu(number) {
+        await robot.setKeyboardDelay(1000);
+        for (let i = 1; i <= number; i++) {
+            await robot.keyTap('down');
+        }
+        await robot.keyTap('enter');
     }
 }
 

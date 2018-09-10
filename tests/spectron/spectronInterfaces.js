@@ -74,15 +74,21 @@ module.exports= {
     //Inbox
     INBOX_BUTTON: ".toolbar-btn-inbox",
     INBOX_HEADER: ".inbox-header",
+
     //ACP
     ACP_LINK: "//button[@class='show-admin-link left-action button-reset']",
     IMG_ADMIN_LOGO: "//img[@src='./img/nav_admin_logo.png']",
+
     //LOG OUT
     LOGOUT_DROPDOWN: "//div[@class='header-account']",
     ADMIN_NAME: "//*[@class='account-name']",
     ADMIN_LOG_OUT: "//*[text()[contains(.,'Log out')]]",
     ADMIN_PAGE_TITLE: "//h2[@class='page-title']",
+
     //INPUT SEARCH
-    INPUT_SEARCH_ENTITIES: "//input[@id='search-entities']"
+    INPUT_SEARCH_ENTITIES: "//input[@id='search-entities']",
+
+    //Symphony Electron API Demo
+    TAG_TEXTBOX: "#tag"
 };
 
