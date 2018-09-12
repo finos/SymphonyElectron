@@ -277,7 +277,7 @@ class WebActions {
         let windowsActions = await new WindowsActions(this.app);
         let index = await windowsActions.getWindowIndexFromTitle(windowTitle);
         await windowsActions.windowByIndex(index);
-        await this.mouseOver(ui.PIN_CHAT_MOD);
+        await this.mouseOver(ui.HEADER_MODULE);
         await Utils.sleep(2); //wait popin button clickable
         await this.clickIfElementVisible(ui.POPIN_BUTTON);
         await windowsActions.windowByIndex(0);
@@ -417,7 +417,6 @@ class WebActions {
     
     async verifyVersionInfo(){
         const { buildNumber } = require('../../package');
-        const electronVersion = require('../../package').devDependencies.electron;
         const bluebird = require('bluebird');
         const API_VERSION = '2.0.0';
         const SEARCH_API_VERSION = '3.0.0';
@@ -429,7 +428,6 @@ class WebActions {
             '#build-number',
             '#search-api-ver'
         ]).mapSeries((string) => {return this.app.client.getText(string)});       
-        await console.log(values);
         await expect(values[ 0 ]).toBe(API_VERSION);
         await expect(values[ 1 ]).toBe('Electron');
         await expect(values[ 2 ]).toBe(ELECTRON_VERSION);
