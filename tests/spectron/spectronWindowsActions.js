@@ -174,7 +174,7 @@ class WindowsActions {
                 }
             }
             else {
-                for (var s = 0; s < arrMenu[i].step; s++) {
+                for (var s = 0; s <= arrMenu[i].step; s++) {
 
                     await robot.keyTap('down');
                 }
@@ -257,6 +257,11 @@ class WindowsActions {
     async pressCtrlW() {
         await robot.keyToggle('w', 'down', ['control']);
         await robot.keyToggle('w', 'up', ['control']);
+    }
+
+    async pressCtrlWOnMac() {
+        await robot.keyToggle('w', 'down', ['command']);
+        await robot.keyToggle('w', 'up', ['command']);
     }
 
     async verifyMinimizeWindows() {
@@ -622,6 +627,28 @@ class WindowsActions {
             await i++;
         }
         await expect(expected).toBeTruthy();
+    }
+
+    async openMinimizeAndClose(minimizeTimes,closeTimes)
+    {
+        for (let i = 0; i < minimizeTimes; i++) {     
+            if (!isMac) {
+                await this.openMenu(["Window", "Minimize on Close"]);
+            }      
+            else
+            {
+                await this.openMenuOnMac(["View", "Minimize on Close"]);
+            }
+        }
+        for (let j = 0; j < closeTimes; j++) {     
+            if (!isMac) {
+                await this.openMenu(["Window", "Close"]);
+            }      
+            else
+            {
+                await this.openMenuOnMac(["Window", "Close"]);
+            }
+        }
     }
 }
 

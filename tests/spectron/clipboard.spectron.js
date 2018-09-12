@@ -1,20 +1,25 @@
 const Application = require('./spectronSetup');
 const path = require('path');
-
-let app = new Application({});
+const WebActions = require('./spectronWebActions');
+const ifc = require('./spectronInterfaces.js');
+let mainApp = new Application({});
+let app,webActions;
 
 describe('Tests for clipboard', () => {
 
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();
 
-    beforeAll((done) => {
-        return app.startApplication().then((startedApp) => {
-            app = startedApp;
-            done();
-        }).catch((err) => {
+    beforeAll(async (done) => {
+        try {
+            let testHost = await 'file:///' + path.join(__dirname, '..', '..', 'demo/index.html');
+            app = await mainApp.startApplication({testedHost:testHost, alwaysOnTop: false });
+            webActions = await new WebActions(app);
+            webActions.fillTagText("Test")
+            await done();
+        } catch (err) {
             done.fail(new Error(`Unable to start application error: ${err}`));
-        });
+        };
     });
 
     afterAll((done) => {
@@ -28,48 +33,17 @@ describe('Tests for clipboard', () => {
         }
     });
 
-    it('should launch the app', (done) => {
-        return app.client.waitUntilWindowLoaded().then(() => {
-            return app.client.getWindowCount().then((count) => {
-                expect(count === 1).toBeTruthy();
-                done();
-            }).catch((err) => {
-                done.fail(new Error(`clipboard failed in getWindowCount with error: ${err}`));
-            });
-        }).catch((err) => {
-            done.fail(new Error(`clipboard failed in waitUntilWindowLoaded with error: ${err}`));
-        });
-    });
-
-    it('should check window count', () => {
-        return app.client.url('file:///' + path.join(__dirname, '..', '..', 'demo/index.html'));
-    });
-
-    it('should set the username field', () => {
-        return app.client
-            .windowByIndex(0)
-            .setValue('#tag', 'Test')
-            .getValue('#tag').then((value) => {
-                expect(value === 'Test').toBeTruthy();
-            });
-    });
-
-    it('should verify electron clipboard', () => {
-        return app.client
-            .getValue('#tag').then((value) => {
-                return app.electron.clipboard.writeText(value)
-                    .electron.clipboard.readText().then((clipboardText) => {
-                        expect(clipboardText === 'Test').toBeTruthy();
-                    });
-            });
-    });
-
-    it('should verify electron clipboard copy', () => {
-        return app.electron.clipboard.writeText('Testing copy')
-            .electron.clipboard.readText().then((clipboardText) => {
-                return app.client.setValue('#tag', clipboardText).getValue('#tag').then((value) => {
-                    expect(value === 'Testing copy').toBeTruthy();
-                });
-            });
-    });
+    it('should verify electron clipboard', async () => {
+        let valueTag = await app.client.getValue(ifc.TAG_TEXTBOX);
+        await app.electron.clipboard.writeText(valueTag);
+        let clipboardText = await app.electron.clipboard.readText();
+        expect(clipboardText === valueTag).toBeTruthy();
+        let tempText = "Testing copy";
+        await app.electron.clipboard.writeText(tempText);
+        clipboardText = await app.electron.clipboard.readText();
+        await  app.client.setValue(ifc.TAG_TEXTBOX, clipboardText);  
+        valueTag = await app.client.getValue(ifc.TAG_TEXTBOX);
+        expect(clipboardText === valueTag).toBeTruthy();
+     
+    });  
 });

@@ -1,7 +1,7 @@
-module.exports= {    
+module.exports = {
     // Title bar
     TITLE_BAR: "#title-bar",
-    MAXIMIZE_BTN: "#title-bar-maximize-button", 
+    MAXIMIZE_BTN: "#title-bar-maximize-button",
     MINIMIZE_BTN: "#title-bar-minimize-button",
     CLOSE_BUTTON: "button#title-bar-close-button",
     MAIN_MENU_ITEM: "#hamburger-menu-button",
@@ -26,7 +26,7 @@ module.exports= {
     PUBLIC_ROOM_RADIO_BTN: "//form[@class='create-chatroom']//input[@value='PUBLIC']",
     CREATE_IM_DONE_BTN: "//button[contains(@class,tempo-btn--good) and text()='Create']",
     START_CHAT: "//*[contains(@class, 'sym-menu-tooltip__option')]/*[text()='Start a Chat']",
-    SIGNAL_OPTION: "//div[@class='sym-menu-tooltip__option']/*[text()='Create a Signal']", 
+    SIGNAL_OPTION: "//div[@class='sym-menu-tooltip__option']/*[text()='Create a Signal']",
     LEFT_NAV_SINGLE_ITEM: "//div[contains(@class, 'navigation-item-title')]//span[@class='navigation-item-name' and normalize-space()='$$']",
     CHAT_INPUT_TYPING: "//div[contains(@class,'public-DraftEditor-content')]",
     SETTTING_BUTTON: "//div[@class='toolbar-settings-text-container']",
@@ -57,7 +57,7 @@ module.exports= {
     HEADER_MODULE_NAME: "//header[contains(@class,'module-header gs-draggable')]//span[contains(@class,'aliasable') and normalize-space()='$$']",
     CLOSE_MODULE: "//button[contains(@class,'close-module')]",
     CLOSE_MODULES: "(//button[contains(@class,'close-module')])[$$]",
-    PIN_CHAT_MODS:  "(//button[contains(@class,'pin-view')])[$$]",
+    PIN_CHAT_MODS: "(//button[contains(@class,'pin-view')])[$$]",
 
     //Popin Popout
     POPOUT_BUTTON: ".enhanced-pop-out",
@@ -69,7 +69,7 @@ module.exports= {
     //Alert Settings
     MUTE_POPUP_ALERTS_CKB: ".field.field-notifications-on input",
     ALERT_POSITION: ".field-configure-desktop-alerts button",
-    
+
     //Toast Message
     TOAST_MESSAGE_CONTENT: "#message",
 
@@ -94,6 +94,6 @@ module.exports= {
     GET_VERSION_BUTTON: "#get-version",
     OPEN_WINDOW_BUTTON: "#open-win",
 
-    //Symphony Electron API Demo
+    //Symphony Electron API Demo    
     TAG_TEXTBOX: "#tag"
 };
