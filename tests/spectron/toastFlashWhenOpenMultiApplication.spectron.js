@@ -53,7 +53,6 @@ let TIMEOUT_TEST_SUITE = parseInt(specconst.TIMEOUT_TEST_SUITE, 10);
         await webdriver.createIM(specconst.USER_B.username);
         await webdriver.createMIM([specconst.USER_B.username, specconst.USER_C.username]);
         await webActions.login(specconst.USER_B);
-        await windowAction.reload();
         await app.client.waitForVisible(ifc.SETTTING_BUTTON, Utils.toMs(50));      
         await windowAction.pressCtrlM();
         await webdriver.clickLeftNavItem(specconst.USER_B.name);
