@@ -4,6 +4,8 @@ const Utils = require('./spectronUtils');
 const WindowsActions = require('./spectronWindowsActions');
 const robot = require('robotjs');
 const { isMac, isWindowsOS } = require('../../js/utils/misc');
+let TIMEOUT_WAIT_ELEMENT = parseInt(constants.TIMEOUT_WAIT_ELEMENT, 10);
+let TIMEOUT_PAGE_LOAD = parseInt(constants.TIMEOUT_PAGE_LOAD, 10);
 
 class WebActions {
     constructor(app) {
@@ -11,7 +13,7 @@ class WebActions {
     }
 
     async maximizeButtonByClick() {
-        await this.app.client.waitForVisible(ui.MAXIMIZE_BTN, constants.TIMEOUT_WAIT_ELEMENT).click(ui.MAXIMIZE_BTN);
+        await this.app.client.waitForVisible(ui.MAXIMIZE_BTN, TIMEOUT_WAIT_ELEMENT).click(ui.MAXIMIZE_BTN);
     }
 
     async maximizeWindows() {
@@ -22,7 +24,7 @@ class WebActions {
     }
 
     async clickMinimizeButton() {
-        await this.app.client.waitForVisible(ui.MINIMIZE_BTN, constants.TIMEOUT_WAIT_ELEMENT).click(ui.MINIMIZE_BTN);
+        await this.app.client.waitForVisible(ui.MINIMIZE_BTN, TIMEOUT_WAIT_ELEMENT).click(ui.MINIMIZE_BTN);
     }
 
     async minimizeWindows() {
@@ -46,7 +48,7 @@ class WebActions {
     }
 
     async getElementByXPath(xpath) {
-        await this.app.client.waitForVisible(xpath, constants.TIMEOUT_WAIT_ELEMENT);
+        await this.app.client.waitForVisible(xpath, TIMEOUT_WAIT_ELEMENT);
         var elem = this.app.client.element(xpath);
         if (elem.isVisible()) {
             return elem;
@@ -72,7 +74,7 @@ class WebActions {
         return await this.app.client.getLocation(element);
     }
 
-    async clickAndWaitElementVisible(xpath, elementToVisible, timeOut = constants.TIMEOUT_WAIT_ELEMENT) {
+    async clickAndWaitElementVisible(xpath, elementToVisible, timeOut = TIMEOUT_WAIT_ELEMENT) {
         await this.app.client.click(xpath).then(async () => {
             await this.app.client.waitForVisible(elementToVisible, timeOut);
         });
@@ -98,12 +100,12 @@ class WebActions {
         return;
     }
 
-    async clickIfElementVisible(selector, timeOut = constants.TIMEOUT_WAIT_ELEMENT) {
+    async clickIfElementVisible(selector, timeOut = TIMEOUT_WAIT_ELEMENT) {
         await this.app.client.waitForVisible(selector, timeOut)
             .click(selector)
     }
 
-    async rightClickIfElementVisible(selector, timeOut = constants.TIMEOUT_WAIT_ELEMENT) {
+    async rightClickIfElementVisible(selector, timeOut = TIMEOUT_WAIT_ELEMENT) {
         await this.app.client.waitForVisible(selector, timeOut)
             .rightClick(selector, 10, 10)
     }
@@ -173,12 +175,12 @@ class WebActions {
             await this.app.client.setValue(el, data);
     }
 
-    async clickAndWaitElementVisible(xpath, elementToVisible, timeOut = constants.TIMEOUT_WAIT_ELEMENT) {
+    async clickAndWaitElementVisible(xpath, elementToVisible, timeOut = TIMEOUT_WAIT_ELEMENT) {
         await this.app.client.click(xpath);
         await this.app.client.waitForVisible(elementToVisible, timeOut);
     }
 
-    async clickIfElementVisible(xpath, timeOut = constants.TIMEOUT_WAIT_ELEMENT) {
+    async clickIfElementVisible(xpath, timeOut = TIMEOUT_WAIT_ELEMENT) {
         await this.app.client.waitForVisible(xpath, timeOut)
             .click(xpath)
     }
@@ -187,17 +189,17 @@ class WebActions {
         await this.inputText(ui.SIGN_IN_EMAIL, user.username);
         await this.inputText(ui.SIGN_IN_PASSWORD, user.password);        
         await this.clickIfElementVisible(ui.SIGN_IN_BUTTON);
-        await this.clickAndWaitElementVisible(ui.SIGN_IN_BUTTON, ui.SETTTING_BUTTON, constants.TIMEOUT_PAGE_LOAD);
+        await this.clickAndWaitElementVisible(ui.SIGN_IN_BUTTON, ui.SETTTING_BUTTON, TIMEOUT_PAGE_LOAD);
         //await this.waitElementNotVisible(ui.SPINNER);
     }
 
     async persistToastIM(isPersistance) {
-        await this.clickAndWaitElementVisible(ui.SETTTING_BUTTON, ui.ALERT_OPTION, constants.TIMEOUT_WAIT_ELEMENT);
-        await this.clickAndWaitElementVisible(ui.ALERT_OPTION, ui.ALERT_TAB, constants.TIMEOUT_WAIT_ELEMENT);
+        await this.clickAndWaitElementVisible(ui.SETTTING_BUTTON, ui.ALERT_OPTION, TIMEOUT_WAIT_ELEMENT);
+        await this.clickAndWaitElementVisible(ui.ALERT_OPTION, ui.ALERT_TAB, TIMEOUT_WAIT_ELEMENT);
         let ischeck = await this.app.client.element(ui.PERSIS_NOTIFICATION_INPUT_IM).getAttribute("checked");
 
         if (isPersistance === true && (ischeck === false || ischeck === null)) {
-            await this.clickAndWaitElementVisible(ui.PERSIS_NOTIFICATION_INPUT_IM, ui.PERSIS_NOTIFICATION_INPUT_IM, constants.TIMEOUT_WAIT_ELEMENT);
+            await this.clickAndWaitElementVisible(ui.PERSIS_NOTIFICATION_INPUT_IM, ui.PERSIS_NOTIFICATION_INPUT_IM, TIMEOUT_WAIT_ELEMENT);
         }
         else if (isPersistance === false) {
             await this.scrollAndClick(ui.SCROLL_TAB_ACTIVE, ui.PERSIS_NOTIFICATION_INPUT_IM);
@@ -206,9 +208,9 @@ class WebActions {
     }
 
     async openACP() {
-        await this.clickAndWaitElementVisible(ui.SETTTING_BUTTON, ui.GENERAL_OPTION, constants.TIMEOUT_WAIT_ELEMENT);
-        await this.clickAndWaitElementVisible(ui.GENERAL_OPTION, ui.GENERAL_TAB, constants.TIMEOUT_WAIT_ELEMENT);
-        await this.clickAndWaitElementVisible(ui.ACP_LINK, ui.IMG_ADMIN_LOGO, constants.TIMEOUT_WAIT_ELEMENT * 10);
+        await this.clickAndWaitElementVisible(ui.SETTTING_BUTTON, ui.GENERAL_OPTION, TIMEOUT_WAIT_ELEMENT);
+        await this.clickAndWaitElementVisible(ui.GENERAL_OPTION, ui.GENERAL_TAB, TIMEOUT_WAIT_ELEMENT);
+        await this.clickAndWaitElementVisible(ui.ACP_LINK, ui.IMG_ADMIN_LOGO, TIMEOUT_WAIT_ELEMENT * 10);
 
     }
 
@@ -217,12 +219,12 @@ class WebActions {
     }
 
     async clickStartChat() {
-        await this.clickIfElementVisible(ui.START_CHAT, constants.TIMEOUT_WAIT_ELEMENT * 5);
+        await this.clickIfElementVisible(ui.START_CHAT, TIMEOUT_WAIT_ELEMENT * 5);
     }
 
     async logout() {
-        await this.clickAndWaitElementVisible(ui.ADMIN_NAME, ui.ADMIN_LOG_OUT, constants.TIMEOUT_WAIT_ELEMENT);
-        await this.clickAndWaitElementVisible(ui.ADMIN_LOG_OUT, ui.SIGN_IN_BUTTON, constants.TIMEOUT_WAIT_ELEMENT);
+        await this.clickAndWaitElementVisible(ui.ADMIN_NAME, ui.ADMIN_LOG_OUT, TIMEOUT_WAIT_ELEMENT);
+        await this.clickAndWaitElementVisible(ui.ADMIN_LOG_OUT, ui.SIGN_IN_BUTTON, TIMEOUT_WAIT_ELEMENT);
     }
 
     async selectIMTab() {
@@ -236,14 +238,14 @@ class WebActions {
 
     async clickDoneButton() {
         await this.clickIfElementVisible(ui.CREATE_IM_DONE_BTN);
-        await this.waitElementVisible(ui.HEADER_MODULE, constants.TIMEOUT_WAIT_ELEMENT * 5);
+        await this.waitElementVisible(ui.HEADER_MODULE, TIMEOUT_WAIT_ELEMENT * 5);
     }
 
-    async waitElementNotVisible(locator, timeOut = constants.TIMEOUT_WAIT_ELEMENT) {
+    async waitElementNotVisible(locator, timeOut = TIMEOUT_WAIT_ELEMENT) {
         return await this.app.client.waitForVisible(locator, timeOut, true);
     }
 
-    async waitElementVisible(locator, timeOut = constants.TIMEOUT_WAIT_ELEMENT) {
+    async waitElementVisible(locator, timeOut = TIMEOUT_WAIT_ELEMENT) {
         return await this.app.client.waitForVisible(locator, timeOut);
     }
 
@@ -268,7 +270,7 @@ class WebActions {
         await this.clickIfElementVisible(ui.POPOUT_BUTTON);
         let index = await windowsActions.getWindowCount() - 1;
         await windowsActions.windowByIndex(index);
-        await this.waitElementNotVisible(ui.SPINNER, constants.TIMEOUT_PAGE_LOAD);
+        await this.waitElementNotVisible(ui.SPINNER, TIMEOUT_PAGE_LOAD);
     }
 
     async clickPopInIcon(windowTitle) {
@@ -287,21 +289,21 @@ class WebActions {
         await this.clickIfElementVisible(ui.POPOUT_INBOX_BUTTON);
         let index = await windowsActions.getWindowCount() - 1;
         await windowsActions.windowByIndex(index);
-        await this.waitElementNotVisible(ui.SPINNER, constants.TIMEOUT_PAGE_LOAD);
+        await this.waitElementNotVisible(ui.SPINNER, TIMEOUT_PAGE_LOAD);
     }
 
     async verifyPopInIconDisplay(windowTitle) {
         let windowsActions = await new WindowsActions(this.app);
         let index = await windowsActions.getWindowIndexFromTitle(windowTitle);
         await windowsActions.windowByIndex(index);
-        await this.waitElementVisible(ui.POPIN_BUTTON, constants.TIMEOUT_WAIT_ELEMENT);
+        await this.waitElementVisible(ui.POPIN_BUTTON, TIMEOUT_WAIT_ELEMENT);
         await windowsActions.windowByIndex(0);
     }
 
     async verifyPopOutIconDisplay() {
         await this.mouseOver(ui.PIN_CHAT_MOD);
         await Utils.sleep(2); //wait popout button clickable
-        await this.waitElementVisible(ui.POPOUT_BUTTON, constants.TIMEOUT_WAIT_ELEMENT * 5);
+        await this.waitElementVisible(ui.POPOUT_BUTTON, TIMEOUT_WAIT_ELEMENT * 5);
     }
 
     async clickInboxIcon() {
@@ -316,7 +318,7 @@ class WebActions {
     async logout() {
         await this.openAlertsSettings();
         await this.clickAndWaitElementVisible(ui.SIGNOUT, ui.SIGNOUT_MODAL_BUTTON);
-        await this.clickAndWaitElementVisible(ui.SIGNOUT_MODAL_BUTTON, ui.SIGN_IN_BUTTON, constants.TIMEOUT_PAGE_LOAD);
+        await this.clickAndWaitElementVisible(ui.SIGNOUT_MODAL_BUTTON, ui.SIGN_IN_BUTTON, TIMEOUT_PAGE_LOAD);
     }
 
     async verifyElementExist(findElement) {
@@ -328,7 +330,7 @@ class WebActions {
     async logintoAdmin(user) {
         await this.inputText(ui.SIGN_IN_EMAIL, user.username);
         await this.inputText(ui.SIGN_IN_PASSWORD, user.password);
-        await this.clickAndWaitElementVisible(ui.SIGN_IN_BUTTON, ui.IMG_ADMIN_LOGO, constants.TIMEOUT_PAGE_LOAD);
+        await this.clickAndWaitElementVisible(ui.SIGN_IN_BUTTON, ui.IMG_ADMIN_LOGO, TIMEOUT_PAGE_LOAD);
     }
 
     async openNotificationPosition() {
@@ -362,7 +364,7 @@ class WebActions {
 
     async verifyChatModuleVisible(muduleName) {
         let locator = ui.HEADER_MODULE_NAME.replace("$$", muduleName);
-        await this.waitElementVisible(locator, constants.TIMEOUT_WAIT_ELEMENT * 5);
+        await this.waitElementVisible(locator, TIMEOUT_WAIT_ELEMENT * 5);
     }
 
     async closeAllGridModules() {

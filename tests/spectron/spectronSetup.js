@@ -5,6 +5,7 @@ const { isMac, isWindowsOS } = require('../../js/utils/misc');
 const ncp = require('ncp').ncp;
 const constants = require('./spectronConstants.js');
 const ui = require('./spectronInterfaces.js');
+const Utils = require('./spectronUtils');
 
 class App {
 
@@ -27,6 +28,8 @@ class App {
 
     async startApplication(configurations) {
         try {
+            await Utils.killProcess("electron.exe");
+            await Utils.killProcess("chromedriver.exe");
             this.app = await this.app.start();
             await this.app.client.waitForVisible(ui.SYM_LOGO, constants.TIMEOUT_PAGE_LOAD);
             if (configurations) {

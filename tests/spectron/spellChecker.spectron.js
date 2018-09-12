@@ -5,10 +5,11 @@ const constants = require('./spectronConstants.js');
 const path = require('path');
 const ui = require('./spectronInterfaces.js');
 const { isWindowsOS } = require('../../js/utils/misc.js');
+let TIMEOUT_TEST_SUITE = parseInt(constants.TIMEOUT_TEST_SUITE, 10);
 let app, windowsActions, webActions;
 
 describe('Tests for spellChecker', () => {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = constants.TIMEOUT_TEST_SUITE;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_TEST_SUITE;
 
     beforeAll(async (done) => {
         try {

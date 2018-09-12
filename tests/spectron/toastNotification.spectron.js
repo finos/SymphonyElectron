@@ -6,12 +6,11 @@ const { isMac } = require('../../js/utils/misc.js');
 const constants = require('./spectronConstants.js');
 const ui = require('./spectronInterfaces.js');
 const Utils = require('./spectronUtils');
-
+let TIMEOUT_TEST_SUITE = parseInt(constants.TIMEOUT_TEST_SUITE, 10);
 let app, webDriver, webActions, windowsActions;
 
 !isMac ? describe('Tests for Toast Notification ', () => {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = constants.TIMEOUT_TEST_SUITE;
-    let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_TEST_SUITE;
 
     beforeAll(async (done) => {
         try {
@@ -22,7 +21,6 @@ let app, webDriver, webActions, windowsActions;
             await webDriver.startDriver();
             await webActions.login(constants.USER_A);
             await windowsActions.bringToFront("Symphony");
-            await windowsActions.reload(); //workaround to show topbar menu
             await webDriver.login(constants.USER_B);
             done();
         } catch (err) {

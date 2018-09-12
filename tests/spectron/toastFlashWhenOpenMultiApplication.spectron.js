@@ -11,9 +11,10 @@ const WebActions = require('./spectronWebActions');
 const specconst = require('./spectronConstants.js');
 const Utils = require('./spectronUtils');
 const ifc = require('./spectronInterfaces.js');
+let TIMEOUT_TEST_SUITE = parseInt(specconst.TIMEOUT_TEST_SUITE, 10);
 
 !isMac ? describe('Verify Flash notification in taskbar option when multiple applications are opened', () => {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = specconst.TIMEOUT_TEST_SUITE;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_TEST_SUITE;
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     beforeAll(async (done) => {
         try {

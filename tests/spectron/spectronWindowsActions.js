@@ -365,6 +365,7 @@ class WindowsActions {
     }
 
     async verifyNotPersistToastNotification() {
+        let webAction = await new WebActions(this.app);
         let i = 0;
         while (i < 3) {
             await Utils.sleep(1);

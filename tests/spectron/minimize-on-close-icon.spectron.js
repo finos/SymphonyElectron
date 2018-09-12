@@ -41,19 +41,12 @@ describe('Add Test To Verify Minimize on Close', () => {
 
     afterAll(async (done) => {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
-        try {
-            if (app && app.isRunning()) {
-                if (isMac) {                    
-                    await app.stop();
-                }
-                else {
-                    await wActions.closeChromeDriver();
-                }
-                await done();
-            }
-        } catch (error) {
-            done.fail(new Error(`After all: ${error}`));
-
+        try {            
+            await Utils.killProcess("chromedriver.exe");
+            await Utils.killProcess("electron.exe");   
+            done();              
+        } catch (error) {         
+          done.fail(new Error(`After all: ${error}`));           
         }
     });
 
