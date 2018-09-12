@@ -29,12 +29,11 @@ describe('Tests for Close', () => {
         }
     });
 
-    it('should close the app', () => {
-        return app.stop();
-    });
-
-    it('should check whether the app is running', () => {
-        expect(app.isRunning()).toBe(false);
+    it('should check whether the app is running', async (done) => {
+        await app.stop();
+        let isRun  = await app.isRunning();
+        await expect(isRun).toBe(false);
+        await done();
     });
 
 });

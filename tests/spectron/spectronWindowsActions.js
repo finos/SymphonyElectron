@@ -628,6 +628,28 @@ class WindowsActions {
         }
         await expect(expected).toBeTruthy();
     }
+
+    async openMinimizeAndClose(minimizeTimes,closeTimes)
+    {
+        for (let i = 0; i < minimizeTimes; i++) {     
+            if (!isMac) {
+                await this.openMenu(["Window", "Minimize on Close"]);
+            }      
+            else
+            {
+                await this.openMenuOnMac(["View", "Minimize on Close"]);
+            }
+        }
+        for (let j = 0; j < closeTimes; j++) {     
+            if (!isMac) {
+                await this.openMenu(["Window", "Close"]);
+            }      
+            else
+            {
+                await this.openMenuOnMac(["Window", "Close"]);
+            }
+        }
+    }
 }
 
 module.exports = WindowsActions;

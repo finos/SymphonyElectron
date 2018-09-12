@@ -11,6 +11,7 @@ let app, webDriver, webActions, windowsActions;
 
 !isMac ? describe('Tests for Toast Notification ', () => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = constants.TIMEOUT_TEST_SUITE;
+    let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
     beforeAll(async (done) => {
         try {
@@ -33,6 +34,7 @@ let app, webDriver, webActions, windowsActions;
 
     afterAll(async (done) => {
         try {
+            jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
             await windowsActions.stopApp();
             await webDriver.quit();
             done();

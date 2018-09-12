@@ -12,8 +12,8 @@ describe('Tests for Notification position', () => {
 
     beforeAll(async (done) => {
         try {
-            let testHost = await 'file:///' + path.join(__dirname, '..', '..', 'demo/index.html')
-            app = await mainApp.startApplication({testedHost:testHost, alwaysOnTop: false })
+            let testHost = await 'file:///' + path.join(__dirname, '..', '..', 'demo/index.html');
+            app = await mainApp.startApplication({testedHost:testHost, alwaysOnTop: false });
             await done();
         } catch (err) {
             done.fail(new Error(`Unable to start application error: ${err}`));
