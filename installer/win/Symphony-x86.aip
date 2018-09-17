@@ -362,6 +362,7 @@
     <ROW Property="OPEN_EXTERNAL_CB" Value="true"/>
     <ROW Property="CUSTOM_TITLE_BAR_CB" Value="true"/>
     <ROW Property="DEV_TOOLS_CB" Value="true"/>
+    <ROW Property="SSO_CHECKBOX" Value="CheckBox"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlComponent">
     <ROW Dialog_="AdminBrowseDlg" Control="Logo" Type="Text" X="4" Y="228" Width="38" Height="12" Attributes="1" Text="Symphony" Order="300" TextLocId="Control.Text.AdminBrowseDlg#Logo" MsiKey="AdminBrowseDlg#Logo"/>
@@ -437,9 +438,11 @@
     <ROW Dialog_="InstallationDlg" Control="FolderEdit" Type="PathEdit" X="129" Y="106" Width="134" Height="18" Attributes="7" Property="APPDIR" Help="|" Order="600" HelpLocId="Control.Help.FolderDlg#FolderEdit"/>
     <ROW Dialog_="InstallationDlg" Control="Browse" Type="PushButton" X="269" Y="106" Width="90" Height="18" Attributes="3" Text="[ButtonText_Browse]" Help="|" Order="700" TextLocId="-" HelpLocId="Control.Help.FolderDlg#Browse"/>
     <ROW Dialog_="InstallationDlg" Control="Edit_POD_URL" Type="Edit" X="128" Y="157" Width="231" Height="18" Attributes="3" Property="POD_URL" Text="{260}" Order="800"/>
-    <ROW Dialog_="InstallationDlg" Control="Text_2" Type="Text" X="129" Y="142" Width="131" Height="11" Attributes="65539" Property="TEXT_2_PROP_1" Text="[ProductName] Pod URL:" Order="900"/>
-    <ROW Dialog_="InstallationDlg" Control="Text_1" Type="Text" X="129" Y="52" Width="230" Height="23" Attributes="65539" Property="TEXT_1_PROP_3" Text="Click Install to install [ProductName] in the folder below. To install to a different folder, enter it below or click Browse." Order="1000"/>
-    <ROW Dialog_="InstallationDlg" Control="Text_3" Type="Text" X="129" Y="90" Width="75" Height="11" Attributes="65539" Property="TEXT_3_PROP_4" Text="&amp;Folder:" Order="1100"/>
+    <ROW Dialog_="InstallationDlg" Control="Text_2" Type="Text" X="129" Y="142" Width="131" Height="11" Attributes="65539" Text="[ProductName] Pod URL:" Order="900"/>
+    <ROW Dialog_="InstallationDlg" Control="Text_1" Type="Text" X="129" Y="52" Width="230" Height="23" Attributes="65539" Text="Click Install to install [ProductName] in the folder below. To install to a different folder, enter it below or click Browse." Order="1000"/>
+    <ROW Dialog_="InstallationDlg" Control="Text_3" Type="Text" X="129" Y="90" Width="75" Height="11" Attributes="65539" Text="&amp;Folder:" Order="1100"/>
+    <ROW Dialog_="InstallationDlg" Control="SsoCheckbox" Type="CheckBox" X="129" Y="186" Width="10" Height="12" Attributes="3" Property="SSO_CHECKBOX" Help="Enable SSO|" Order="1200"/>
+    <ROW Dialog_="InstallationDlg" Control="Text_4" Type="Text" X="142" Y="187" Width="50" Height="12" Attributes="65539" Text="Enable SSO" Order="1300"/>
     <ROW Dialog_="MaintenanceTypeDlg" Control="ChangeLabel" Type="Text" X="105" Y="65" Width="100" Height="10" Attributes="2" Text="&amp;Modify" TextStyle="[DlgTitleFont]" Order="100" TextLocId="Control.Text.MaintenanceTypeDlg#ChangeLabel" MsiKey="MaintenanceTypeDlg#ChangeLabel"/>
     <ROW Dialog_="MaintenanceTypeDlg" Control="ChangeButton" Type="PushButton" X="50" Y="65" Width="38" Height="38" Attributes="5767170" Text="[CustomSetupIcon]" Help="Modify Installation|" Order="200" HelpLocId="Control.Help.MaintenanceTypeDlg#ChangeButton" MsiKey="MaintenanceTypeDlg#ChangeButton"/>
     <ROW Dialog_="MaintenanceTypeDlg" Control="RepairLabel" Type="Text" X="105" Y="92" Width="100" Height="10" Attributes="3" Text="Re&amp;pair" TextStyle="[DlgTitleFont]" Order="300" TextLocId="Control.Text.MaintenanceTypeDlg#RepairLabel" MsiKey="MaintenanceTypeDlg#RepairLabel"/>
@@ -639,6 +642,9 @@
     <ROW Dialog_="VerifyRepairDlg" Control_="Repair" Event="EnableRollback" Argument="False" Condition="OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST=&quot;D&quot;" Ordering="600" MsiKey="VerifyRepairDlg#Repair#EnableRollback#False#OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST=&quot;D&quot;"/>
     <ROW Dialog_="VerifyRepairDlg" Control_="Repair" Event="Reinstall" Argument="All" Condition="OutOfDiskSpace &lt;&gt; 1" Ordering="200" MsiKey="VerifyRepairDlg#Repair#Reinstall#All#OutOfDiskSpace &lt;&gt; 1"/>
     <ROW Dialog_="VerifyRepairDlg" Control_="Repair" Event="ReinstallMode" Argument="ecmus" Condition="OutOfDiskSpace &lt;&gt; 1" Ordering="100" MsiKey="VerifyRepairDlg#Repair#ReinstallMode#ecmus#OutOfDiskSpace &lt;&gt; 1"/>
+    <ROW Dialog_="InstallationDlg" Control_="SsoCheckbox" Event="[POD_URL]" Argument="[POD_URL]/login/sso/initsso" Condition="AI_INSTALL AND ( SSO_CHECKBOX )" Ordering="0"/>
+    <ROW Dialog_="InstallationDlg" Control_="SsoCheckbox" Event="DoAction" Argument="SsoCheckbox" Condition="AI_INSTALL AND ( NOT SSO_CHECKBOX )" Ordering="1"/>
+    <ROW Dialog_="InstallationDlg" Control_="SsoCheckbox" Event="[AiRefreshDlg]" Argument="1" Condition="AI_INSTALL AND ( NOT SSO_CHECKBOX )" Ordering="2"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCreateFolderComponent">
     <ROW Directory_="Symphony_Dir" Component_="Symphony" ManualDelete="false"/>
@@ -668,6 +674,7 @@
     <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:[AI_UserProgramFiles][Manufacturer]\[ProductName]"/>
     <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
     <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
+    <ROW Action="SsoCheckbox" Type="37" Target="var ssoUrl = &quot;/login/sso/initsso&quot;;&#13;&#10;Session.Property(&quot;POD_URL&quot;) = Session.Property(&quot;POD_URL&quot;).substr(0, Session.Property(&quot;POD_URL&quot;).length - ssoUrl.length);" TargetUnformatted="var ssoUrl = &quot;/login/sso/initsso&quot;;&#13;&#10;Session.Property(&quot;POD_URL&quot;) = Session.Property(&quot;POD_URL&quot;).substr(0, Session.Property(&quot;POD_URL&quot;).length - ssoUrl.length);" WithoutSeq="true"/>
     <ROW Action="UninstallPreviousVersions" Type="1" Source="aicustact.dll" Target="UninstallPreviousVersions" Options="1"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiDialogComponent">

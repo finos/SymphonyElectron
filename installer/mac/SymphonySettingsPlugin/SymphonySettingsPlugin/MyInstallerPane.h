@@ -26,4 +26,6 @@
 @property (weak) IBOutlet NSButton *openExternalAppCheckBox;
 @property (weak) IBOutlet NSButton *midiSysexCheckBox;
 
+@property (weak) IBOutlet NSButton *ssoCheckBox;
+
 @end
