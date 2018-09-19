@@ -2,10 +2,11 @@ const Application = require('./spectronSetup');
 const WindowsActions = require('./spectronWindowsActions');
 const constants = require('./spectronConstants.js');
 const {isMac} = require('../../js/utils/misc');
+let TIMEOUT_TEST_SUITE = parseInt(constants.TIMEOUT_TEST_SUITE, 10);
 let app, windowsActions;
 
 describe('Tests for fullscreen', () => {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = constants.TIMEOUT_TEST_SUITE;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_TEST_SUITE;
 
     beforeAll(async (done) => {
         try {

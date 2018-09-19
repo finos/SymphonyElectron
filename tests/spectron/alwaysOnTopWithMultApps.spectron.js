@@ -4,9 +4,7 @@ const WebActions = require('./spectronWebActions');
 const Utils = require('./spectronUtils');
 const { isMac } = require('../../js/utils/misc');
 
-let app;
-let windowActions;
-let webActions;
+let app, windowActions, webActions;
 
 describe('Tests for always on top with mult-apps are opened', () => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = Application.getTimeOut();

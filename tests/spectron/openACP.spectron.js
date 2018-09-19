@@ -38,7 +38,7 @@ let webActions, windowAction;
 
     /**
     * The user is directed to the ACP inside Electron and does not login again
-    * TC-ID: 3308790
+    * TC-ID: 131251
     * Cover scenarios in AVT-1107
     */
     it('The user is directed to the ACP inside Electron and does not login again', async (done) => {

@@ -13,7 +13,7 @@ describe('Tests for Zoom in and Zoom out', () => {
 
     beforeAll(async (done) => {
         try {
-            app = await mainApp.startApplication({ alwaysOnTop: false });
+            app = await mainApp.startApplication({ alwaysOnTop: true });
             await Utils.sleep(2);
             wActions = await new WindowsActions(app);
             config = await getConfigPath(app);
@@ -65,46 +65,6 @@ describe('Tests for Zoom in and Zoom out', () => {
         } else {
             done();
         }
-    });
-
-    it('should launch the app', (done) => {
-        return app.client.waitUntilWindowLoaded().then(() => {
-            return app.client.getWindowCount().then((count) => {
-                expect(count === 1).toBeTruthy();
-                done();
-            }).catch((err) => {
-                done.fail(new Error(`zoom-in-zoom-out failed in getWindowCount with error: ${err}`));
-            });
-        }).catch((err) => {
-            done.fail(new Error(`zoom-in-zoom-out failed in waitUntilWindowLoaded with error: ${err}`));
-        });
-    });
-
-    it('should check window count', (done) => {
-        return app.client.getWindowCount().then((count) => {
-            expect(count === 1).toBeTruthy();
-            done();
-        }).catch((err) => {
-            done.fail(new Error(`zoom-in-zoom-out failed in waitUntilWindowLoaded with error: ${err}`));
-        });
-    });
-
-    it('should check browser window visibility', (done) => {
-        return app.browserWindow.isVisible().then((isVisible) => {
-            expect(isVisible).toBeTruthy();
-            done();
-        }).catch((err) => {
-            done.fail(new Error(`zoom-in-zoom-out failed in isVisible with error: ${err}`));
-        });
-    });
-
-    it('should bring the app to top', () => {
-        app.browserWindow.focus();
-        return app.browserWindow.setAlwaysOnTop(true).then(() => {
-            return app.browserWindow.isAlwaysOnTop().then((isOnTop) => {
-                expect(isOnTop).toBeTruthy();
-            });
-        });
     });
 
     it('should zoom in the app and check whether it is zoomed in', async (done) => {

@@ -4,11 +4,11 @@ const WindowsActions = require('./spectronWindowsActions');
 const { isMac } = require('../../js/utils/misc.js');
 const constants = require('./spectronConstants.js');
 const Utils = require('./spectronUtils');
-
+let TIMEOUT_TEST_SUITE = parseInt(constants.TIMEOUT_TEST_SUITE, 10);
 let app, webActions, windowsActions;
 
 describe('Tests for Pop-Outs', () => {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = constants.TIMEOUT_TEST_SUITE;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_TEST_SUITE;
 
     beforeAll(async (done) => {
         try {

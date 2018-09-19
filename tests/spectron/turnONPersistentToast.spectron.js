@@ -8,9 +8,10 @@ const WindowsAction = require('./spectronWindowsActions');
 const WebActions = require('./spectronWebActions');
 const ifc = require('./spectronInterfaces.js');
 const specconst = require('./spectronConstants.js');
+let TIMEOUT_TEST_SUITE = parseInt(specconst.TIMEOUT_TEST_SUITE, 10);
 
 !isMac ? describe('Verify toast notification when Persist Notification is ON', () => {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = specconst.TIMEOUT_TEST_SUITE;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_TEST_SUITE;
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     beforeAll(async(done) => {
         try
@@ -51,7 +52,6 @@ const specconst = require('./spectronConstants.js');
         await webdriver.createIM(specconst.USER_B.username);       
         await webActions.login(specconst.USER_B);
         
-        await windowAction.reload(); 
         await app.client.waitForVisible(ifc.SETTTING_BUTTON, Utils.toMs(30));       
         await webActions.persistToastIM(true);
     

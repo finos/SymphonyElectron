@@ -8,10 +8,11 @@ const WebActions = require('./spectronWebActions');
 const specconst = require('./spectronConstants.js');
 const Utils = require('./spectronUtils');
 const ifc = require('./spectronInterfaces.js');
+let TIMEOUT_TEST_SUITE = parseInt(specconst.TIMEOUT_TEST_SUITE, 10);
 
 !isMac ? describe('Verify toast notification for IMs', () => {
   let originalTimeout = specconst.DEFAULT_TIMEOUT_INTERVAL;
-  jasmine.DEFAULT_TIMEOUT_INTERVAL = specconst.TIMEOUT_TEST_SUITE;
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_TEST_SUITE;
 
   beforeAll(async (done) => {
     try {
@@ -49,7 +50,6 @@ const ifc = require('./spectronInterfaces.js');
       await webdriver.closeAllGridModules();
       await webdriver.createIM(specconst.USER_B.username);
       await webActions.login(specconst.USER_B);
-      await windowAction.reload();
       await app.client.waitForVisible(ifc.SETTTING_BUTTON, Utils.toMs(30));
       await webActions.persistToastIM(false);
       await windowAction.pressCtrlM();

@@ -11,9 +11,10 @@ const WebActions = require('./spectronWebActions');
 const specconst = require('./spectronConstants.js');
 const Utils = require('./spectronUtils');
 const ifc = require('./spectronInterfaces.js');
+let TIMEOUT_TEST_SUITE = parseInt(specconst.TIMEOUT_TEST_SUITE, 10);
 
 !isMac ? describe('Verify Flash notification in taskbar option when multiple applications are opened', () => {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = specconst.TIMEOUT_TEST_SUITE;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_TEST_SUITE;
     let originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     beforeAll(async (done) => {
         try {
@@ -52,7 +53,6 @@ const ifc = require('./spectronInterfaces.js');
         await webdriver.createIM(specconst.USER_B.username);
         await webdriver.createMIM([specconst.USER_B.username, specconst.USER_C.username]);
         await webActions.login(specconst.USER_B);
-        await windowAction.reload();
         await app.client.waitForVisible(ifc.SETTTING_BUTTON, Utils.toMs(50));      
         await windowAction.pressCtrlM();
         await webdriver.clickLeftNavItem(specconst.USER_B.name);
