@@ -20,6 +20,7 @@ let windowConfig = {
     autoHideMenuBar: true,
     titleBarStyle: true,
     resizable: false,
+    fullscreenable: false,
     webPreferences: {
         preload: path.join(__dirname, 'renderer.js'),
         sandbox: true,
