@@ -10,7 +10,6 @@ const urlParser = require('url');
 const nodePath = require('path');
 const compareSemVersions = require('./utils/compareSemVersions.js');
 const eventEmitter = require('./eventEmitter');
-const fs = require('fs');
 
 // Local Dependencies
 const {
@@ -26,12 +25,9 @@ const getCmdLineArg = require('./utils/getCmdLineArg.js');
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
 const autoLaunch = require('./autoLaunch');
+const { handleCacheFailureCheckOnStartup, handleCacheFailureCheckOnExit} = require('./cacheHandler');
 
 require('electron-dl')();
-
-let cacheCheckFilename = 'CacheCheck';
-let cacheCheckFilePath = nodePath.join(app.getPath('userData'), cacheCheckFilename);
-let cacheDirectoryPath = nodePath.join(app.getPath('userData'), 'Cache');
 
 //setting the env path child_process issue https://github.com/electron/electron/issues/7688
 shellPath()
@@ -185,16 +181,21 @@ setChromeFlags();
  * Some APIs can only be used after this event occurs.
  */
 app.on('ready', () => {
-    handleCacheFailureCheckOnStartup();
-    electron.powerMonitor.on('lock-screen', () => {
-        eventEmitter.emit('sys-locked');
-    });
-    electron.powerMonitor.on('unlock-screen', () => {
-        eventEmitter.emit('sys-unlocked');
-    });
-    checkFirstTimeLaunch()
-        .then(readConfigThenOpenMainWindow)
-        .catch(readConfigThenOpenMainWindow);
+    handleCacheFailureCheckOnStartup()
+        .then(() => {
+            electron.powerMonitor.on('lock-screen', () => {
+                eventEmitter.emit('sys-locked');
+            });
+            electron.powerMonitor.on('unlock-screen', () => {
+                eventEmitter.emit('sys-unlocked');
+            });
+            checkFirstTimeLaunch()
+                .then(readConfigThenOpenMainWindow)
+                .catch(readConfigThenOpenMainWindow);
+        })
+        .catch((err) => {
+            log.send(logLevels.INFO, `Couldn't clear cache and refresh -> ${err}`);
+        });
 });
 
 /**
@@ -412,37 +413,5 @@ function handleProtocolAction(uri) {
         // app is already open, so, just trigger the protocol action method
         log.send(logLevels.INFO, `App opened by protocol url ${uri}`);
         protocolHandler.processProtocolAction(uri);
-    }
-}
-
-function handleCacheFailureCheckOnStartup() {
-
-    if (fs.existsSync(cacheCheckFilePath)) {
-        log.send(logLevels.INFO, `Cache check file exists, we had a clean shutdown last time! So, not removing the cache directory!`);
-        fs.unlinkSync(cacheCheckFilePath);
-        return;
-    }
-
-    log.send(logLevels.INFO, `Cache check file does not exist, we are deleting the cache directory!`);
-    deleteFolderRecursive(cacheDirectoryPath);
-
-}
-
-function handleCacheFailureCheckOnExit() {
-    log.send(logLevels.INFO, `Clean exit! Creating cache check file!`);
-    fs.writeFileSync(cacheCheckFilePath, "");
-}
-
-function deleteFolderRecursive(path) {
-    if (fs.existsSync(path)) {
-        fs.readdirSync(path).forEach(function(file){
-            let curPath = nodePath.join(path, file);
-            if (fs.lstatSync(curPath).isDirectory()) {
-                deleteFolderRecursive(curPath);
-            } else {
-                fs.unlinkSync(curPath);
-            }
-        });
-        fs.rmdirSync(path);
     }
 }
