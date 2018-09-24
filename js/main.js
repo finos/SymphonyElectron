@@ -183,19 +183,28 @@ setChromeFlags();
 app.on('ready', () => {
     handleCacheFailureCheckOnStartup()
         .then(() => {
-            electron.powerMonitor.on('lock-screen', () => {
-                eventEmitter.emit('sys-locked');
-            });
-            electron.powerMonitor.on('unlock-screen', () => {
-                eventEmitter.emit('sys-unlocked');
-            });
-            checkFirstTimeLaunch()
-                .then(readConfigThenOpenMainWindow)
-                .catch(readConfigThenOpenMainWindow);
+            initiateApp();
         })
         .catch((err) => {
             log.send(logLevels.INFO, `Couldn't clear cache and refresh -> ${err}`);
+            initiateApp();
         });
+
+    function initiateApp() {
+
+        electron.powerMonitor.on('lock-screen', () => {
+            eventEmitter.emit('sys-locked');
+        });
+
+        electron.powerMonitor.on('unlock-screen', () => {
+            eventEmitter.emit('sys-unlocked');
+        });
+
+        checkFirstTimeLaunch()
+            .then(readConfigThenOpenMainWindow)
+            .catch(readConfigThenOpenMainWindow);
+
+    }
 });
 
 /**
