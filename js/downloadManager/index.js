@@ -7,8 +7,11 @@ const local = {
     downloadItems: []
 };
 
-let showInFolderText = "Show in Folder";
-let openText = "Open";
+let showInFolderText = 'Show in Folder';
+let openText = 'Open';
+let downloadedText = 'Downloaded';
+let fileNotFoundTitle = 'File not Found';
+let fileNotFoundMessage = 'The file you are trying to open cannot be found in the specified path.';
 
 // listen for file download complete event
 local.ipcRenderer.on('downloadCompleted', (event, arg) => {
@@ -26,8 +29,12 @@ local.ipcRenderer.on('locale-changed', (event, data) => {
     if (data && typeof data === 'object') {
 
         if (data.downloadManager) {
-            showInFolderText = data.downloadManager['Show in Folder'];
             openText = data.downloadManager.Open;
+            downloadedText = data.downloadManager.Downloaded;
+
+            showInFolderText = data.downloadManager['Show in Folder'];
+            fileNotFoundTitle = data.downloadManager['File not Found'];
+            fileNotFoundMessage = data.downloadManager['The file you are trying to open cannot be found in the specified path.'];
         }
 
     }
@@ -46,7 +53,7 @@ function openFile(id) {
         let openResponse = remote.shell.openExternal(`file:///${local.downloadItems[fileIndex].savedPath}`);
         let focusedWindow = remote.BrowserWindow.getFocusedWindow();
         if (!openResponse && focusedWindow && !focusedWindow.isDestroyed()) {
-            remote.dialog.showMessageBox(focusedWindow, {type: 'error', title: 'File not found', message: 'The file you are trying to open cannot be found in the specified path.'});
+            remote.dialog.showMessageBox(focusedWindow, {type: 'error', title: fileNotFoundTitle, message: fileNotFoundMessage});
         }
     }
 }
@@ -63,7 +70,7 @@ function showInFinder(id) {
         let showResponse = remote.shell.showItemInFolder(local.downloadItems[showFileIndex].savedPath);
         let focusedWindow = remote.BrowserWindow.getFocusedWindow();
         if (!showResponse && focusedWindow && !focusedWindow.isDestroyed()) {
-            remote.dialog.showMessageBox(focusedWindow, {type: 'error', title: 'File not found', message: 'The file you are trying to open cannot be found in the specified path.'});
+            remote.dialog.showMessageBox(focusedWindow, {type: 'error', title: fileNotFoundTitle, message: fileNotFoundMessage});
         }
     }
 }
@@ -133,7 +140,7 @@ function createDOM(arg) {
 
             let fileProgressTitle = document.createElement('span');
             fileProgressTitle.id = 'per';
-            fileProgressTitle.innerHTML = arg.total + ' Downloaded';
+            fileProgressTitle.innerHTML = `${arg.total} ${downloadedText}`;
             fileNameDiv.appendChild(fileProgressTitle);
 
             let caret = document.createElement('div');

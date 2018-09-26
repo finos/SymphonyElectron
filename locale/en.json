@@ -36,7 +36,10 @@
   "DownloadManager": {
     "Show in Folder": "Show in Folder",
     "Reveal in Finder": "Reveal in Finder",
-    "Open": "Open"
+    "Open": "Open",
+    "Downloaded": "Downloaded",
+    "File not Found": "File not Found",
+    "The file you are trying to open cannot be found in the specified path.": "The file you are trying to open cannot be found in the specified path."
   },
   "Copy": "Copy",
   "Custom": "Custom",
