@@ -375,6 +375,18 @@ function getTemplate(app) {
         }
     });
 
+    // Window - View menu -> Clear Cache
+    template[index].submenu.push({
+        label: i18n.getMessageFor('Clear cache and Reload'),
+        click: function (item, focusedWindow) {
+            if (focusedWindow && !focusedWindow.isDestroyed()) {
+                electron.session.defaultSession.clearCache(() => {
+                    focusedWindow.reload();
+                });
+            }
+        }
+    });
+
     if (!isMac) {
         /* eslint-disable no-param-reassign */
         template[index].submenu.push({

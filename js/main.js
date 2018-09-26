@@ -25,6 +25,7 @@ const getCmdLineArg = require('./utils/getCmdLineArg.js');
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
 const autoLaunch = require('./autoLaunch');
+const { handleCacheFailureCheckOnStartup, handleCacheFailureCheckOnExit} = require('./cacheHandler');
 
 require('electron-dl')();
 
@@ -180,15 +181,30 @@ setChromeFlags();
  * Some APIs can only be used after this event occurs.
  */
 app.on('ready', () => {
-    electron.powerMonitor.on('lock-screen', () => {
-        eventEmitter.emit('sys-locked');
-    });
-    electron.powerMonitor.on('unlock-screen', () => {
-        eventEmitter.emit('sys-unlocked');
-    });
-    checkFirstTimeLaunch()
-        .then(readConfigThenOpenMainWindow)
-        .catch(readConfigThenOpenMainWindow);
+    handleCacheFailureCheckOnStartup()
+        .then(() => {
+            initiateApp();
+        })
+        .catch((err) => {
+            log.send(logLevels.INFO, `Couldn't clear cache and refresh -> ${err}`);
+            initiateApp();
+        });
+
+    function initiateApp() {
+
+        electron.powerMonitor.on('lock-screen', () => {
+            eventEmitter.emit('sys-locked');
+        });
+
+        electron.powerMonitor.on('unlock-screen', () => {
+            eventEmitter.emit('sys-unlocked');
+        });
+
+        checkFirstTimeLaunch()
+            .then(readConfigThenOpenMainWindow)
+            .catch(readConfigThenOpenMainWindow);
+
+    }
 });
 
 /**
@@ -197,6 +213,10 @@ app.on('ready', () => {
  */
 app.on('window-all-closed', function () {
     app.quit();
+});
+
+app.on('quit', function () {
+    handleCacheFailureCheckOnExit();
 });
 
 /**
