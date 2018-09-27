@@ -105,7 +105,8 @@ function getTemplate(app) {
                 {
                     label: i18n.getMessageFor('Learn More'),
                     click() {
-                        electron.shell.openExternal('https://www.symphony.com');
+                        let symUrl = i18n.getMessageFor('Symphony Url');
+                        electron.shell.openExternal(symUrl);
                     }
                 },
                 {
