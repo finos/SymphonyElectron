@@ -1,5 +1,6 @@
 'use strict';
 
+const { session } = require('electron');
 const eventEmitter = require('./eventEmitter');
 
 const log = require('./log.js');
@@ -18,6 +19,7 @@ let appMinimizedTimer;
 let powerMonitorTimer;
 let preloadMemory;
 let preloadWindow;
+let networkRequestCount = 0;
 
 // once a minute
 setInterval(gatherMemory, 1000 * 60);
@@ -49,14 +51,13 @@ function optimizeMemory() {
 
     const memoryConsumed = (preloadMemory.memoryInfo && preloadMemory.memoryInfo.workingSetSize / 1024) || 0;
     const cpuUsagePercentage = preloadMemory.cpuUsage.percentCPUUsage;
-    const activeNetworkRequest = preloadMemory.activeRequests === 0;
 
     if (memoryConsumed > maxMemory
         && cpuUsagePercentage <= cpuUsageThreshold
         && !isInMeeting
         && getIsOnline()
         && canReload
-        && activeNetworkRequest
+        && networkRequestCount <= 0
     ) {
         getConfigField('memoryRefresh')
             .then((enabled) => {
@@ -69,7 +70,7 @@ function optimizeMemory() {
                         memory consumption was ${memoryConsumed} 
                         CPU usage percentage was ${preloadMemory.cpuUsage.percentCPUUsage} 
                         user was in a meeting? ${isInMeeting}
-                        pending network request on the client was ${preloadMemory.activeRequests}
+                        pending network request on the client was ${networkRequestCount}
                         is network online? ${getIsOnline()}`);
                         mainWindow.reload();
 
@@ -88,7 +89,7 @@ function optimizeMemory() {
                         memory consumption was ${memoryConsumed} 
                         CPU usage percentage was ${preloadMemory.cpuUsage.percentCPUUsage} 
                         user was in a meeting? ${isInMeeting}
-                        pending network request on the client was ${preloadMemory.activeRequests}
+                        pending network request on the client was ${networkRequestCount}
                         is network online? ${getIsOnline()}`);
     }
 }
@@ -106,11 +107,10 @@ function setIsInMeeting(meetingStatus) {
  *
  * @param memoryInfo - memory consumption of the preload main script
  * @param cpuUsage - CPU usage of the preload main script
- * @param activeRequests - pending active network requests on the client
  */
-function setPreloadMemoryInfo(memoryInfo, cpuUsage, activeRequests) {
+function setPreloadMemoryInfo(memoryInfo, cpuUsage) {
     log.send(logLevels.INFO, 'Memory info received from preload process now running optimize memory logic');
-    preloadMemory = { memoryInfo, cpuUsage, activeRequests };
+    preloadMemory = { memoryInfo, cpuUsage };
     optimizeMemory();
 }
 
@@ -189,8 +189,44 @@ function requestMemoryInfo() {
     }
 }
 
+/**
+ * Monitors and Keeps track of active network requests
+ */
+function monitorNetworkRequest() {
+    let ids = [];
+
+    // network request started
+    session.defaultSession.webRequest.onSendHeaders((details) => {
+        networkRequestCount++;
+        ids.push(details.id);
+    });
+
+    // decrease network request count on complete
+    session.defaultSession.webRequest.onCompleted((details) => {
+        if (ids.includes(details.id)) {
+            networkRequestCount--;
+            ids = ids.filter((value) => value !== details.id);
+        }
+    });
+
+    // decrease network request count on error
+    session.defaultSession.webRequest.onErrorOccurred((details) => {
+        if (ids.includes(details.id)) {
+            networkRequestCount--;
+            ids = ids.filter((value) => value !== details.id);
+        }
+    });
+
+    // Resets network request on redirect
+    session.defaultSession.webRequest.onBeforeRedirect(() => {
+        networkRequestCount = 0;
+        ids = [];
+    });
+}
+
 module.exports = {
     setIsInMeeting,
     setPreloadMemoryInfo,
     setPreloadWindow,
+    monitorNetworkRequest,
 };

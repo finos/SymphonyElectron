@@ -366,18 +366,6 @@ function createAPI() {
                 throttledSetLocale(locale);
             }
         },
-
-        /**
-         * Allows JS to register activeRequests that can be used by electron to
-         * get the active network request from the client
-         *
-         * @param activeRequests
-         */
-        registerActiveRequests: function (activeRequests) {
-            if (typeof activeRequests === 'function') {
-                local.activeRequests = activeRequests;
-            }
-        },
     };
 
     // add support for both ssf and SYM_API name-space.
@@ -530,12 +518,10 @@ function createAPI() {
         if (window.name === 'main') {
             const memory = process.getProcessMemoryInfo();
             const cpuUsage = process.getCPUUsage();
-            const activeRequests = local.activeRequests();
             local.ipcRenderer.send(apiName, {
                 cmd: apiCmds.optimizeMemoryConsumption,
                 memory,
                 cpuUsage,
-                activeRequests,
             });
         }
     });
