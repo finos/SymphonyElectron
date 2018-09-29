@@ -56,7 +56,7 @@ let config = {
     // upper-right, upper-left, lower-right, lower-left
     startCorner: 'upper-right',
     width: 380,
-    height: 70,
+    height: 100,
     borderRadius: 5,
     displayTime: 5000,
     animationSteps: 5,
@@ -76,18 +76,25 @@ let config = {
     defaultStyleHeader: {
         width: 245,
         minWidth: 230,
-        margin: "10px 10px"
+        margin: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+    },
+    defaultStyleImageContainer: {
+        alignItems: 'center',
+        display: 'flex',
     },
     defaultStyleImage: {
         height: 43,
         borderRadius: 4,
-        marginTop: 12,
         width: 43
     },
     defaultStyleClose: {
         width: 16,
-        height: 16,
-        margin: "10px 8px 0 8px",
+        height: 80,
+        display: 'flex',
+        margin: 'auto',
         opacity: 0.54,
         fontSize: 12,
         color: '#CCC'
@@ -119,13 +126,19 @@ let config = {
         marginTop: 5,
         overflow: 'hidden',
         display: '-webkit-box',
-        webkitLineClamp: 1,
+        webkitLineClamp: 3,
         webkitBoxOrient: 'vertical',
-        cursor: 'default'
+        cursor: 'default',
+        textOverflow: 'ellipsis',
+    },
+    defaultStyleLogoContainer: {
+        display: 'flex',
+        alignItems: 'center',
     },
     defaultStyleLogo: {
-        margin: "12px 0 0 -12px",
+        marginLeft: '5px',
         opacity: 0.6,
+        width: '43px',
     },
     defaultWindow: {
         alwaysOnTop: true,
