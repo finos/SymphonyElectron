@@ -232,10 +232,13 @@ app.on('activate', function () {
     }
 });
 
-// adds 'symphony' as a protocol
-// in the system. plist file in macOS
-// and registry keys in windows
-app.setAsDefaultProtocolClient('symphony');
+// adds 'symphony' as a protocol in the system. plist file in macOS
+
+// on windows, we create the protocol handler via the installer
+// because electron leaves registry traces upon uninstallation
+if (isMac) {
+    app.setAsDefaultProtocolClient('symphony');
+}
 
 /**
  * This event is emitted only on macOS
