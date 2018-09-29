@@ -128,17 +128,6 @@ function setContents(event, notificationObj) {
     // message
     messageDoc.innerText = notificationObj.text || '';
 
-    const messageLength = notificationObj.text.length;
-    if (messageLength > 96) {
-        setStyleOnDomElement({ webkitLineClamp: 3}, messageDoc);
-    } else if (messageLength > 56) {
-        setStyleOnDomElement({ webkitLineClamp: 2}, messageDoc);
-    } else if (messageLength > 26) {
-        setStyleOnDomElement({ webkitLineClamp: 1}, messageDoc);
-    } else {
-        setStyleOnDomElement({ webkitLineClamp: 1}, messageDoc);
-    }
-
     // Image
     if (notificationObj.image) {
         imageDoc.src = notificationObj.image;
