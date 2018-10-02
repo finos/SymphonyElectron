@@ -57,7 +57,7 @@ describe('Tests for getRegistry', function() {
 
                 function reject(err) {
                     expect(err).toBeTruthy();
-                    expect(err).toBe('Cannot find PodUrl Registry. Using default url.');
+                    expect(err.message).toBe('Cannot find PodUrl Registry. Using default url.');
                     done();
                 }
 
