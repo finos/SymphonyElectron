@@ -264,7 +264,7 @@ describe('read/write config tests', function() {
             createTempUserConfig(userConfig);
 
             return updateConfigField('', 'hello word').catch(function (err) {
-                expect(err).toBe('can not save config, invalid input');
+                expect(err.message).toBe('can not save config, invalid input');
             });
 
         });
@@ -290,7 +290,7 @@ describe('read/write config tests', function() {
 
             return saveUserConfig(undefined, 'something', 'oldConfig')
                 .catch(function (reject) {
-                    expect(reject).toBe('can not save config, invalid input');
+                    expect(reject.message).toBe('can not save config, invalid input');
                 });
         });
 
@@ -304,7 +304,7 @@ describe('read/write config tests', function() {
 
             return saveUserConfig('url2', 'something', undefined)
                 .catch(function (reject) {
-                    expect(reject).toBe('can not save config, invalid input');
+                    expect(reject.message).toBe('can not save config, invalid input');
                 });
         });
 

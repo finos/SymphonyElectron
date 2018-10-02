@@ -26,7 +26,7 @@ function getCrashReporterConfig(extras) {
             .then((data) => {
 
                 if (!data && !data.crashReporter && !data.crashReporter.companyName) {
-                    reject('Company name cannot be empty');
+                    reject(new Error('Company name cannot be empty'));
                     return;
                 }
 

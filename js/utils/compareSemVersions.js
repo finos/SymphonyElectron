@@ -17,7 +17,7 @@ function split(v) {
 }
 
 function tryParse(v) {
-    return isNaN(Number(v)) ? v : Number(v);
+    return Number.isNaN(Number(v)) ? v : Number(v);
 }
 
 /**

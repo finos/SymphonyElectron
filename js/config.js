@@ -96,7 +96,7 @@ function readUserConfig(customConfigPath) {
             
             if (err) {
                 log.send(logLevels.INFO, `cannot open user config file ${configPath}, error is ${err}`);
-                reject(`cannot open user config file ${configPath}, error is ${err}`);
+                reject(new Error(`cannot open user config file ${configPath}, error is ${err}`));
                 return;
             }
             
@@ -107,7 +107,7 @@ function readUserConfig(customConfigPath) {
                 resolve(userConfig);
             } catch (e) {
                 log.send(logLevels.INFO, `cannot parse user config data ${data}, error is ${e}`);
-                reject(`cannot parse user config data ${data}, error is ${e}`);
+                reject(new Error(`cannot parse user config data ${data}, error is ${e}`));
             }
             
         });
@@ -160,13 +160,13 @@ function readGlobalConfig() {
 
         fs.readFile(configPath, 'utf8', (err, data) => {
             if (err) {
-                reject('cannot open global config file: ' + configPath + ', error: ' + err);
+                reject(new Error('cannot open global config file: ' + configPath + ', error: ' + err));
             } else {
                 try {
                     // data is the contents of the text file we just read
                     globalConfig = JSON.parse(data);
                 } catch (e) {
-                    reject('can not parse config file data: ' + data + ', error: ' + err);
+                    reject(new Error('can not parse config file data: ' + data + ', error: ' + err));
                 }
                 getRegistry('PodUrl')
                     .then((url) => {
@@ -212,7 +212,7 @@ function saveUserConfig(fieldName, newValue, oldConfig) {
         let configPath = path.join(app.getPath('userData'), configFileName);
 
         if (!oldConfig || !fieldName) {
-            reject('can not save config, invalid input');
+            reject(new Error('can not save config, invalid input'));
             return;
         }
 
@@ -256,14 +256,14 @@ function updateUserConfig(oldUserConfig) {
         userConfigFile = path.join(app.getPath('userData'), configFileName);
 
         if (!userConfigFile) {
-            reject(`user config file doesn't exist`);
+            reject(new Error(`user config file doesn't exist`));
             return;
         }
 
         // write the new user config changes to the user config file
         fs.writeFile(userConfigFile, newUserConfigString, 'utf-8', (err) => {
             if (err) {
-                reject(`Failed to update user config error: ${err}`);
+                reject(new Error(`Failed to update user config error: ${err}`));
                 return;
             }
             resolve();
@@ -284,7 +284,7 @@ function updateUserConfigOnLaunch() {
     // user config file doesn't exist, we simple move on
     if (!fs.existsSync(userConfigFile)) {
         log.send(logLevels.WARN, 'config: Could not find the user config file!');
-        return Promise.reject('config: Could not find the user config file!');
+        return Promise.reject(new Error('config: Could not find the user config file!'));
     }
 
     // In case the file exists, we remove it so that all the
@@ -314,7 +314,7 @@ function getMultipleConfigField(fieldNames) {
         let userConfigData;
 
         if (!fieldNames && fieldNames.length < 0) {
-            reject('cannot read config file, invalid fields');
+            reject(new Error('cannot read config file, invalid fields'));
             return;
         }
 

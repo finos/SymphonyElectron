@@ -143,7 +143,7 @@ function readResult(outputFileName, resolve, reject, childProcessErr) {
 
         try {
             // convert binary data to base64 encoded string
-            let output = Buffer(data).toString('base64');
+            let output = Buffer.from(data).toString('base64');
             resolve({
                 type: 'image/jpg;base64',
                 data: output
