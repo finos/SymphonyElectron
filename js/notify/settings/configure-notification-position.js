@@ -12,6 +12,7 @@ const notify = require('./../electron-notify');
 const eventEmitter = require('./../../eventEmitter');
 const { updateConfigField } = require('../../config');
 const i18n = require('../../translation/i18n');
+const { isMac } = require('../../utils/misc');
 
 let configurationWindow;
 let screens;
@@ -129,6 +130,10 @@ function openConfigurationWindow(windowName) {
             configurationWindow.webContents.send('screens', screens);
         }
         configurationWindow.webContents.send('notificationSettings', {position: position, display: display});
+        if (!isMac) {
+            // prevents from displaying menu items when "alt" key is pressed
+            configurationWindow.setMenu(null);
+        }
     });
 
     configurationWindow.on('close', () => {

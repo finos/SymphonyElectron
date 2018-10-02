@@ -105,6 +105,10 @@ function openBasicAuthWindow(windowName, hostname, isValidCredentials, clearSett
         initCrashReporterRenderer(basicAuthWindow, { process: 'render | basic auth window' });
         basicAuthWindow.webContents.send('hostname', hostname);
         basicAuthWindow.webContents.send('isValidCredentials', isValidCredentials);
+        if (!isMac) {
+            // prevents from displaying menu items when "alt" key is pressed
+            basicAuthWindow.setMenu(null);
+        }
     });
 
     basicAuthWindow.webContents.on('crashed', function () {

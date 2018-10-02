@@ -9,6 +9,7 @@ const logLevels = require('../enums/logLevels.js');
 const { version, clientVersion, buildNumber } = require('../../package.json');
 const { initCrashReporterMain, initCrashReporterRenderer } = require('../crashReporter.js');
 const i18n = require('../translation/i18n');
+const { isMac } = require('../utils/misc');
 
 let aboutWindow;
 
@@ -88,6 +89,10 @@ function openAboutWindow(windowName) {
         initCrashReporterMain({ process: 'about app window' });
         initCrashReporterRenderer(aboutWindow, { process: 'render | about app window' });
         aboutWindow.webContents.send('versionInfo', { version, clientVersion, buildNumber });
+        if (!isMac) {
+            // prevents from displaying menu items when "alt" key is pressed
+            aboutWindow.setMenu(null);
+        }
     });
 
     aboutWindow.webContents.on('crashed', function () {
