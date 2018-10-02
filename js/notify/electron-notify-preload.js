@@ -20,15 +20,17 @@ let onMouseOverFunc;
  */
 function setStyle(config) {
     // Style it
-    let notiDoc = window.document;
-    let container = notiDoc.getElementById('container');
-    let header = notiDoc.getElementById('header');
-    let image = notiDoc.getElementById('image');
-    let logo = notiDoc.getElementById('symphony-logo');
-    let title = notiDoc.getElementById('title');
-    let company = notiDoc.getElementById('company');
-    let message = notiDoc.getElementById('message');
-    let close = notiDoc.getElementById('close');
+    const notiDoc = window.document;
+    const container = notiDoc.getElementById('container');
+    const header = notiDoc.getElementById('header');
+    const image = notiDoc.getElementById('image');
+    const logo = notiDoc.getElementById('symphony-logo');
+    const title = notiDoc.getElementById('title');
+    const company = notiDoc.getElementById('company');
+    const message = notiDoc.getElementById('message');
+    const close = notiDoc.getElementById('close');
+    const picture = notiDoc.getElementById('picture');
+    const logoContainer = notiDoc.getElementById('logo-container');
 
     // Default style
     setStyleOnDomElement(config.defaultStyleContainer, container);
@@ -53,6 +55,10 @@ function setStyle(config) {
     setStyleOnDomElement(config.defaultStyleText, message);
 
     setStyleOnDomElement(config.defaultStyleClose, close);
+
+    setStyleOnDomElement(config.defaultStyleImageContainer, picture);
+
+    setStyleOnDomElement(config.defaultStyleLogoContainer, logoContainer);
 }
 
 /**
@@ -80,15 +86,15 @@ function setContents(event, notificationObj) {
         }
     }
 
-    let notiDoc = window.document;
+    const notiDoc = window.document;
 
     // All the required DOM elements to update the content
-    let container = notiDoc.getElementById('container');
-    let titleDoc = notiDoc.getElementById('title');
-    let companyDoc = notiDoc.getElementById('company');
-    let messageDoc = notiDoc.getElementById('message');
-    let imageDoc = notiDoc.getElementById('image');
-    let closeButton = notiDoc.getElementById('close');
+    const container = notiDoc.getElementById('container');
+    const titleDoc = notiDoc.getElementById('title');
+    const companyDoc = notiDoc.getElementById('company');
+    const messageDoc = notiDoc.getElementById('message');
+    const imageDoc = notiDoc.getElementById('image');
+    const closeButton = notiDoc.getElementById('close');
     closeButton.title = notificationObj.i18n.close;
 
     if (notificationObj.color) {
