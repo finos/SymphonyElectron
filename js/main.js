@@ -26,7 +26,6 @@ const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
 const autoLaunch = require('./autoLaunch');
 const { handleCacheFailureCheckOnStartup, handleCacheFailureCheckOnExit} = require('./cacheHandler');
-const { monitorNetworkRequest } = require('./memoryMonitor');
 
 require('electron-dl')();
 
@@ -200,8 +199,7 @@ app.on('ready', () => {
         electron.powerMonitor.on('unlock-screen', () => {
             eventEmitter.emit('sys-unlocked');
         });
-        // Keeps track of active network request
-        monitorNetworkRequest();
+
         checkFirstTimeLaunch()
             .then(readConfigThenOpenMainWindow)
             .catch(readConfigThenOpenMainWindow);
