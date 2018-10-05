@@ -1,14 +1,17 @@
 {
   "name": "Symphony",
-  "productName": "Symphony",
+  "productName": "Symphony-dev",
   "version": "4.5.0",
   "clientVersion": "1.55.0",
   "buildNumber": "0",
   "description": "Symphony desktop app (Foundation ODP)",
   "author": "Symphony",
-  "main": "js/main.js",
+  "main": "src/browser/main.js",
+  "types": "src/browser/main.d.ts",
   "scripts": {
-    "lint": "eslint --ext .js js/",
+    "tsc": "git clean -xdf ./lib && npm run lint && tsc",
+    "lint": "tslint --project tsconfig.json",
+    "start": "npm run tsc && electron .",
     "prebuild": "npm run rebuild && npm run browserify-preload",
     "browserify-preload": "browserify -o js/preload/_preloadMain.js -x electron --insert-global-vars=__filename,__dirname js/preload/preloadMain.js  --exclude electron-spellchecker",
     "rebuild": "electron-rebuild -f",
@@ -76,6 +79,9 @@
     "url": "https://support.symphony.com"
   },
   "devDependencies": {
+    "@types/auto-launch": "^5.0.0",
+    "@types/lodash.omit": "^4.5.4",
+    "@types/node": "10.11.4",
     "babel-cli": "6.26.0",
     "babel-eslint": "7.2.3",
     "babel-plugin-transform-async-to-generator": "6.24.1",
@@ -103,6 +109,9 @@
     "ncp": "2.0.0",
     "robotjs": "0.5.1",
     "selenium-webdriver": "3.6.0",
+    "spectron": "5.0.0",
+    "tslint": "5.11.0",
+    "typescript": "3.1.1",
     "wdio-selenium-standalone-service": "0.0.12"
   },
   "dependencies": {

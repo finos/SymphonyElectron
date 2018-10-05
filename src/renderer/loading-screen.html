@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>About Symphony</title>
+    <style>
+        html, body {
+            margin: 0;
+            height: 100%;
+            font-family: sans-serif;
+        }
+        .name {
+            flex: 1;
+            font-size: 1.3em;
+            padding: 10px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .version-text {
+            flex: 1;
+            font-size: 1em;
+            color: #2f2f2f;
+        }
+
+        .copyright-text {
+            flex: 1;
+            padding: 10px;
+            font-size: 0.6em;
+            color: #7f7f7f;
+        }
+
+        .content {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            padding-top: 20px;
+            background: url(symphony-background.jpg) no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        .logo {
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="content">
+    <img class="logo" src="symphony-logo.png">
+    <span id="app-name" class="name">Symphony</span>
+    <span id="version" class="version-text"></span>
+    <span id="copyright" class="copyright-text"></span>
+</div>
+</body>
+</html>
