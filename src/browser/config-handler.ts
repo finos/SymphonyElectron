@@ -4,6 +4,7 @@ import * as path from 'path';
 
 import { omit } from 'lodash';
 import compareSemVersions from '../common/compare-sem-versions';
+import { logger } from '../common/logger';
 import { isDevEnv, isMac } from '../common/mics';
 import pick from '../common/pick';
 
@@ -181,6 +182,7 @@ class Config {
      * Verifies if the application is launched for the first time
      */
     private checkFirstTimeLaunch() {
+        logger.info('checking first launch');
         const appVersionString = app.getVersion().toString();
         const execPath = path.dirname(this.appPath);
         const shouldUpdateUserConfig = execPath.indexOf('AppData\\Local\\Programs') !== -1 || isMac;
@@ -195,7 +197,9 @@ class Config {
             && typeof userConfigVersion === 'string'
             && (compareSemVersions(appVersionString, userConfigVersion) !== 1)) && shouldUpdateUserConfig) {
             this.isFirstTime = true;
+            return;
         }
+        this.isFirstTime = false;
     }
 }
 

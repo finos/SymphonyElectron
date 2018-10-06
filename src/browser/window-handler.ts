@@ -17,6 +17,7 @@ export class WindowHandler {
             webPreferences: {
                 nativeWindowOpen: true,
                 nodeIntegration: false,
+                preload: path.join(__dirname, '../renderer/preload'),
                 sandbox: false,
             },
         };
@@ -49,15 +50,8 @@ export class WindowHandler {
         this.globalConfig = config.getGlobalConfigFields([ 'url', 'crashReporter' ]);
 
         try {
-            crashReporter.start({
-                companyName: this.globalConfig!.crashReporter!.companyName,
-                extra: {
-                    podUrl: this.globalConfig.url,
-                    process: 'main',
-                },
-                submitURL: this.globalConfig!.crashReporter!.submitURL,
-                uploadToServer: this.globalConfig!.crashReporter!.uploadToServer,
-            });
+            const extra = { podUrl: this.globalConfig.url, process: 'main' };
+            crashReporter.start({ ...this.globalConfig.crashReporter, ...extra });
         } catch (e) {
             throw new Error('failed to init crash report');
         }
@@ -67,15 +61,14 @@ export class WindowHandler {
         this.mainWindow = new BrowserWindow(this.windowOpts);
 
         const urlFromCmd = getCmdLineArg(process.argv, '--url=', false);
-
         this.mainWindow.loadURL(urlFromCmd && urlFromCmd.substr(6) || this.validateURL(this.globalConfig.url));
         this.mainWindow.webContents.on('did-finish-load', () => {
             if (this.loadingWindow) {
                 this.loadingWindow.destroy();
+                this.loadingWindow = null;
             }
             if (this.mainWindow) this.mainWindow.show();
         });
-
         return this.mainWindow;
     }
 
