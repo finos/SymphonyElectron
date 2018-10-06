@@ -1,6 +1,7 @@
 import { app } from 'electron';
 
 import getCmdLineArg from '../common/get-command-line-args';
+import { logger } from '../common/logger';
 import { isDevEnv } from '../common/mics';
 import { cleanUpAppCache, createAppCacheFile } from './app-cache-handler';
 import { autoLaunchInstance } from './auto-launch-controller';
@@ -24,6 +25,7 @@ async function main() {
     windowHandler.createApplication();
 
     if (config.isFirstTimeLaunch()) {
+        logger.info('first time launch');
         await config.setUpFirstTimeLaunch();
 
         /**
