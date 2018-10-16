@@ -11,7 +11,7 @@
 // also to bring pieces of node.js:
 // https://github.com/electron/electron/issues/2984
 //
-const { ipcRenderer, remote, crashReporter } = require('electron');
+const { ipcRenderer, remote, crashReporter, webFrame } = require('electron');
 
 const throttle = require('../utils/throttle.js');
 const apiEnums = require('../enums/api.js');
@@ -31,7 +31,6 @@ const KeyCodes = {
 let Search;
 let SearchUtils;
 let CryptoLib;
-let spellChecker;
 let isAltKey = false;
 let isMenuOpen = false;
 
@@ -65,12 +64,14 @@ let snackBar;
  */
 function loadSpellChecker() {
     try {
-        /* eslint-disable global-require */
-        const SpellCheckerHelper = require('../spellChecker').SpellCheckHelper;
-        /* eslint-enable global-require */
-        // Method to initialize spell checker
-        spellChecker = new SpellCheckerHelper();
-        spellChecker.initializeSpellChecker();
+        local.webFrame.setSpellCheckProvider('en-US', true, {
+            spellCheck (text) {
+                return !local.ipcRenderer.sendSync(apiName, {
+                    cmd: apiCmds.isMisspelled,
+                    text
+                });
+            }
+        });
     } catch (err) {
         /* eslint-disable no-console */
         console.error('unable to load the spell checker module, hence, skipping the spell check feature ' + err);
@@ -80,7 +81,8 @@ function loadSpellChecker() {
 
 // hold ref so doesn't get GC'ed
 const local = {
-    ipcRenderer: ipcRenderer
+    ipcRenderer: ipcRenderer,
+    webFrame: webFrame
 };
 
 // throttle calls to this func to at most once per sec, called on leading edge.
@@ -498,10 +500,6 @@ function createAPI() {
         if (dataObj && typeof dataObj === 'object') {
             if (dataObj.titleBar) {
                 titleBar.updateLocale(dataObj.titleBar);
-            }
-
-            if (dataObj.contextMenu && spellChecker) {
-                spellChecker.updateContextMenuLocale(dataObj.contextMenu);
             }
         }
     });

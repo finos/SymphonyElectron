@@ -178,6 +178,13 @@ electron.ipcMain.on(apiName, (event, arg) => {
                 windowMgr.handleKeyPress(arg.keyCode);
             }
             break;
+        case apiCmds.isMisspelled:
+            if (typeof arg.text === 'string') {
+                /* eslint-disable no-param-reassign */
+                event.returnValue = windowMgr.isMisspelled(arg.text);
+                /* eslint-enable no-param-reassign */
+            }
+            break;
         default:
     }
 

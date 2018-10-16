@@ -1,7 +1,6 @@
-const { remote } = require('electron');
-const { MenuItem } = remote;
+const { app, MenuItem } = require('electron');
 const { isMac } = require('./../utils/misc');
-const { SpellCheckHandler, ContextMenuListener, ContextMenuBuilder } = require('electron-spellchecker');
+const { SpellCheckHandler } = require('electron-spellchecker');
 const stringFormat = require('./../utils/stringFormat');
 
 class SpellCheckHelper {
@@ -26,14 +25,9 @@ class SpellCheckHelper {
         // In windows we need to implement RxJS observable
         // in order to switch language dynamically
         if (!isMac) {
-            const sysLocale = remote.app.getLocale() || 'en-US';
+            const sysLocale = app.getLocale() || 'en-US';
             this.spellCheckHandler.switchLanguage(sysLocale);
         }
-
-        this.contextMenuBuilder = new ContextMenuBuilder(this.spellCheckHandler, null, false, this.processMenu.bind(this));
-        this.contextMenuListener = new ContextMenuListener((info) => {
-            this.contextMenuBuilder.showPopupMenu(info);
-        });
     }
 
     /**
@@ -42,7 +36,6 @@ class SpellCheckHelper {
      */
     updateContextMenuLocale(content) {
         this.localeContent = content;
-        this.contextMenuBuilder.setAlternateStringFormatter(SpellCheckHelper.getStringTable(content));
     }
 
     /**
@@ -51,7 +44,8 @@ class SpellCheckHelper {
      * @param content {Object} - locale content for context menu
      * @return {Object} - String table for context menu
      */
-    static getStringTable(content) {
+    // eslint-disable-next-line class-methods-use-this
+    getStringTable(content) {
         return {
             copyMail: () => content['Copy Email Address'] || `Copy Email Address`,
             copyLinkUrl: () => content['Copy Link'] || 'Copy Link',
@@ -100,6 +94,10 @@ class SpellCheckHelper {
             }));
         }
         return menu;
+    }
+
+    isMisspelled(text) {
+        return this.spellCheckHandler.isMisspelled(text);
     }
 
 }

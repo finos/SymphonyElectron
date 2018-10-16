@@ -21,11 +21,14 @@ const notify = require('./notify/electron-notify.js');
 const eventEmitter = require('./eventEmitter');
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField, readConfigFileSync, getMultipleConfigField } = require('./config.js');
-const { isMac, isNodeEnv, isWindowsOS, isDevEnv } = require('./utils/misc');
+const { isMac, isWindowsOS, isDevEnv } = require('./utils/misc');
 const { isWhitelisted, parseDomain } = require('./utils/whitelistHandler');
 const { initCrashReporterMain, initCrashReporterRenderer } = require('./crashReporter.js');
 const i18n = require('./translation/i18n');
 const getCmdLineArg = require('./utils/getCmdLineArg');
+const SpellChecker = require('./spellChecker').SpellCheckHelper;
+const spellchecker = new SpellChecker();
+const { ContextMenuBuilder } = require('electron-spellchecker');
 
 // show dialog when certificate errors occur
 require('./dialogs/showCertError.js');
@@ -41,7 +44,6 @@ let boundsChangeWindow;
 let alwaysOnTop = false;
 let position = 'lower-right';
 let display;
-let sandboxed = false;
 let isAutoReload = false;
 let devToolsEnabled = true;
 let isCustomTitleBarEnabled = true;
@@ -163,10 +165,9 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         frame: !isCustomTitleBarEnabled,
         alwaysOnTop: false,
         webPreferences: {
-            sandbox: sandboxed,
-            nodeIntegration: isNodeEnv,
+            sandbox: true,
+            nodeIntegration: false,
             preload: preloadMainScript,
-            nativeWindowOpen: true
         }
     };
 
@@ -259,6 +260,13 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         // Initialize crash reporter
         initCrashReporterMain({ process: 'main window' });
         initCrashReporterRenderer(mainWindow, { process: 'render | main window' });
+        spellchecker.initializeSpellChecker();
+        const contextMenuBuilder = new ContextMenuBuilder(spellchecker.spellCheckHandler, null, false, spellchecker.processMenu.bind(this));
+        contextMenuBuilder.setAlternateStringFormatter(spellchecker.getStringTable(i18n.getMessageFor('ContextMenu')));
+
+        mainWindow.webContents.on('context-menu', (e, info) => {
+            contextMenuBuilder.showPopupMenu(info);
+        });
 
         url = mainWindow.webContents.getURL();
         mainWindow.webContents.send('on-page-load');
@@ -470,6 +478,12 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
                         if (browserWin) {
                             log.send(logLevels.INFO, 'loaded pop-out window url: ' + newWinParsedUrl);
+                            const contextMenuBuilder = new ContextMenuBuilder(spellchecker.spellCheckHandler, null, false, spellchecker.processMenu.bind(this));
+                            contextMenuBuilder.setAlternateStringFormatter(spellchecker.getStringTable(i18n.getMessageFor('ContextMenu')));
+
+                            browserWin.webContents.on('context-menu', (e, info) => {
+                                contextMenuBuilder.showPopupMenu(info);
+                            });
 
                             browserWin.webContents.send('on-page-load');
                             // applies styles required for snack bar
@@ -1017,6 +1031,7 @@ function setLocale(browserWindow, opts) {
             localeContent.downloadManager['Show in Folder'] = localeContent.downloadManager['Reveal in Finder'];
         }
 
+        spellchecker.updateContextMenuLocale(localeContent.contextMenu);
         browserWindow.webContents.send('locale-changed', localeContent);
     }
 
@@ -1199,6 +1214,10 @@ function popupMenu() {
     }
 }
 
+function isMisspelled(text) {
+    return spellchecker.isMisspelled(text);
+}
+
 
 module.exports = {
     createMainWindow: createMainWindow,
@@ -1216,4 +1235,5 @@ module.exports = {
     cleanUpChildWindows: cleanUpChildWindows,
     setLocale: setLocale,
     getIsOnline: getIsOnline,
+    isMisspelled: isMisspelled,
 };
