@@ -17,7 +17,6 @@ class SpellCheckHelper {
      */
     initializeSpellChecker() {
         this.spellCheckHandler.automaticallyIdentifyLanguages = false;
-        this.spellCheckHandler.attachToInput();
 
         // This is only for window as in mac the
         // language is switched w.r.t to the current system language.
