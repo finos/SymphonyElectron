@@ -106,7 +106,6 @@ const EncryptDecrypt = function (name, Base64IV, Base64AAD, Base64Key, Base64In)
         if (resultCode < 0) {
             log.send(logLevels.ERROR, `AESEncryptGCM, Failed to encrypt with exit code ${resultCode}`);
         }
-        log.send(logLevels.INFO, `Output from AESEncryptGCM ${resultCode}`);
         const bufferArray = [OutPtr, Tag];
         return Buffer.concat(bufferArray).toString('base64');
     }
@@ -121,7 +120,6 @@ const EncryptDecrypt = function (name, Base64IV, Base64AAD, Base64Key, Base64In)
         if (resultCode < 0) {
             log.send(logLevels.ERROR, `AESDecryptGCM, Failed to decrypt with exit code ${resultCode}`);
         }
-        log.send(logLevels.INFO, `Output from AESDecryptGCM ${resultCode}`);
         return OutPtr.toString('base64');
     }
 
