@@ -26,7 +26,6 @@ const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
 const autoLaunch = require('./autoLaunch');
 const { handleCacheFailureCheckOnStartup, handleCacheFailureCheckOnExit} = require('./cacheHandler');
-const { monitorNetworkRequest } = require('./memoryMonitor');
 
 require('electron-dl')();
 
@@ -52,6 +51,10 @@ require('./mainApiMgr.js');
 require('./memoryMonitor.js');
 
 const windowMgr = require('./windowMgr.js');
+const SpellChecker = require('./spellChecker').SpellCheckHelper;
+const spellchecker = new SpellChecker();
+const { ContextMenuBuilder } = require('electron-spellchecker');
+const i18n = require('./translation/i18n');
 
 getConfigField('url')
     .then(initializeCrashReporter)
@@ -200,8 +203,7 @@ app.on('ready', () => {
         electron.powerMonitor.on('unlock-screen', () => {
             eventEmitter.emit('sys-unlocked');
         });
-        // Keeps track of active network request
-        monitorNetworkRequest();
+
         checkFirstTimeLaunch()
             .then(readConfigThenOpenMainWindow)
             .catch(readConfigThenOpenMainWindow);
@@ -248,6 +250,32 @@ if (isMac) {
 app.on('open-url', function (event, url) {
     handleProtocolAction(url);
 });
+
+app.on('web-contents-created', function (event, webContents) {
+    onWebContent(webContents);
+});
+
+function onWebContent(webContents) {
+    spellchecker.initializeSpellChecker();
+    spellchecker.updateContextMenuLocale(i18n.getMessageFor('ContextMenu'));
+    const contextMenuBuilder = new ContextMenuBuilder(spellchecker.spellCheckHandler, webContents, false, spellchecker.processMenu.bind(spellchecker));
+    let currentLocale = i18n.getLanguage();
+
+    const contextMenuListener = (event, info) => {
+        if (currentLocale !== i18n.getLanguage()) {
+            contextMenuBuilder.setAlternateStringFormatter(spellchecker.getStringTable(i18n.getMessageFor('ContextMenu')));
+            spellchecker.updateContextMenuLocale(i18n.getMessageFor('ContextMenu'));
+            currentLocale = i18n.getLanguage();
+        }
+        contextMenuBuilder.showPopupMenu(info);
+    };
+
+    webContents.on('context-menu', contextMenuListener);
+
+    webContents.once('destroyed', () => {
+        webContents.removeListener('context-menu', contextMenuListener);
+    });
+}
 
 /**
  * Reads the config fields that are required for the menu items

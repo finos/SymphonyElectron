@@ -21,7 +21,7 @@ const notify = require('./notify/electron-notify.js');
 const eventEmitter = require('./eventEmitter');
 const throttle = require('./utils/throttle.js');
 const { getConfigField, updateConfigField, readConfigFileSync, getMultipleConfigField } = require('./config.js');
-const { isMac, isNodeEnv, isWindowsOS, isDevEnv } = require('./utils/misc');
+const { isMac, isWindowsOS, isDevEnv } = require('./utils/misc');
 const { isWhitelisted, parseDomain } = require('./utils/whitelistHandler');
 const { initCrashReporterMain, initCrashReporterRenderer } = require('./crashReporter.js');
 const i18n = require('./translation/i18n');
@@ -41,7 +41,6 @@ let boundsChangeWindow;
 let alwaysOnTop = false;
 let position = 'lower-right';
 let display;
-let sandboxed = false;
 let isAutoReload = false;
 let devToolsEnabled = true;
 let isCustomTitleBarEnabled = true;
@@ -163,10 +162,9 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         frame: !isCustomTitleBarEnabled,
         alwaysOnTop: false,
         webPreferences: {
-            sandbox: sandboxed,
-            nodeIntegration: isNodeEnv,
+            sandbox: true,
+            nodeIntegration: false,
             preload: preloadMainScript,
-            nativeWindowOpen: true
         }
     };
 

@@ -31,7 +31,6 @@ const KeyCodes = {
 let Search;
 let SearchUtils;
 let CryptoLib;
-let spellChecker;
 let isAltKey = false;
 let isMenuOpen = false;
 
@@ -60,24 +59,6 @@ try {
 require('../downloadManager');
 let snackBar;
 
-/**
- * Loads up the spell checker module
- */
-function loadSpellChecker() {
-    try {
-        /* eslint-disable global-require */
-        const SpellCheckerHelper = require('../spellChecker').SpellCheckHelper;
-        /* eslint-enable global-require */
-        // Method to initialize spell checker
-        spellChecker = new SpellCheckerHelper();
-        spellChecker.initializeSpellChecker();
-    } catch (err) {
-        /* eslint-disable no-console */
-        console.error('unable to load the spell checker module, hence, skipping the spell check feature ' + err);
-        /* eslint-enable no-console */
-    }
-}
-
 // hold ref so doesn't get GC'ed
 const local = {
     ipcRenderer: ipcRenderer
@@ -102,7 +83,6 @@ const throttledSetIsInMeetingStatus = throttle(1000, function (isInMeeting) {
  * an event triggered by the main process onload event
  */
 local.ipcRenderer.on('on-page-load', () => {
-    loadSpellChecker();
     snackBar = new SnackBar();
 
     // only registers main window's preload
@@ -366,6 +346,18 @@ function createAPI() {
                 throttledSetLocale(locale);
             }
         },
+
+        /**
+         * Allows JS to register activeRequests that can be used by electron to
+         * get the active network request from the client
+         *
+         * @param activeRequests
+         */
+        registerActiveRequests: function (activeRequests) {
+            if (typeof activeRequests === 'function') {
+                local.activeRequests = activeRequests;
+            }
+        },
     };
 
     // add support for both ssf and SYM_API name-space.
@@ -487,10 +479,6 @@ function createAPI() {
             if (dataObj.titleBar) {
                 titleBar.updateLocale(dataObj.titleBar);
             }
-
-            if (dataObj.contextMenu && spellChecker) {
-                spellChecker.updateContextMenuLocale(dataObj.contextMenu);
-            }
         }
     });
 
@@ -518,10 +506,12 @@ function createAPI() {
         if (window.name === 'main') {
             const memory = process.getProcessMemoryInfo();
             const cpuUsage = process.getCPUUsage();
+            const activeRequests = local.activeRequests();
             local.ipcRenderer.send(apiName, {
                 cmd: apiCmds.optimizeMemoryConsumption,
                 memory,
                 cpuUsage,
+                activeRequests,
             });
         }
     });
