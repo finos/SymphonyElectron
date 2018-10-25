@@ -1,6 +1,6 @@
 'use strict';
 
-const eventEmitter = require('./eventEmitter');
+const systemIdleTime = require('@paulcbetts/system-idle-time');
 
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
@@ -8,15 +8,13 @@ const { getMainWindow, setIsAutoReload, getIsOnline } = require('./windowMgr');
 const { getConfigField } = require('./config');
 
 const maxMemory = 800;
-const defaultInterval = 30 * 1000;
-const defaultIntervalSymLock = 10 * 1000;
 const memoryRefreshThreshold = 60 * 60 * 1000;
+const maxIdleTime = 4 * 60 * 60 * 1000;
+const memoryRefreshInterval = 1000;
 const cpuUsageThreshold = 5;
 
 let isInMeeting = false;
 let canReload = true;
-let appMinimizedTimer;
-let powerMonitorTimer;
 let preloadMemory;
 let preloadWindow;
 
@@ -57,6 +55,7 @@ function optimizeMemory() {
         && !isInMeeting
         && getIsOnline()
         && canReload
+        && systemIdleTime.getIdleTime() > maxIdleTime
         && activeNetworkRequest
     ) {
         getConfigField('memoryRefresh')
@@ -117,61 +116,6 @@ function setPreloadMemoryInfo(memoryInfo, activeRequests) {
 }
 
 /**
- * Called whenever the application is minimized
- * and waits for 30s to optimize memory
- */
-eventEmitter.on('appMinimized', () => {
-    log.send(logLevels.INFO, 'Application was minimised');
-    appMinimizedTimer = setTimeout(() => {
-        const mainWindow = getMainWindow();
-        if (mainWindow && !mainWindow.isDestroyed() && mainWindow.isMinimized()) {
-            log.send(logLevels.INFO, 'Application is minimised for more than 30s so calling requestMemoryInfo');
-            requestMemoryInfo();
-        }
-    }, defaultInterval);
-});
-
-/**
- * Called whenever the application is restored from minimized state
- *
- * Clears appMinimizedTimer if the app is restored within 30s
- * from minimized state
- */
-eventEmitter.on('appRestored', () => {
-    log.send(logLevels.INFO, 'Application was restored from minimized state');
-    setIsAutoReload(false);
-    if (appMinimizedTimer) {
-        clearTimeout(appMinimizedTimer);
-    }
-});
-
-/**
- * Called whenever the system in locked
- * and waits for 30s to optimize memory
- */
-eventEmitter.on('sys-locked', () => {
-    log.send(logLevels.INFO, 'System screen was locked');
-    powerMonitorTimer = setTimeout(() => {
-        log.send(logLevels.INFO, 'System screen was locked for more than 30s so calling requestMemoryInfo');
-        requestMemoryInfo();
-    }, defaultIntervalSymLock);
-});
-
-/**
- * Called whenever the system in locked
- *
- * Clears powerMonitorTimer if the system is unlocked within 30s
- * from locked state
- */
-eventEmitter.on('sys-unlocked', () => {
-    log.send(logLevels.INFO, 'System screen was unlocked');
-    setIsAutoReload(false);
-    if (powerMonitorTimer) {
-        clearTimeout(powerMonitorTimer);
-    }
-});
-
-/**
  * Sets the preload window
  *
  * @param win - preload window
@@ -191,6 +135,13 @@ function requestMemoryInfo() {
         preloadWindow.send('memory-info-request');
     }
 }
+
+/**
+ * Requests memory info from the renderer every 4 hrs
+ */
+setInterval(() => {
+    requestMemoryInfo();
+}, memoryRefreshInterval);
 
 module.exports = {
     setIsInMeeting,
