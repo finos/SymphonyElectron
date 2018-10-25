@@ -9,7 +9,6 @@ const shellPath = require('shell-path');
 const urlParser = require('url');
 const nodePath = require('path');
 const compareSemVersions = require('./utils/compareSemVersions.js');
-const eventEmitter = require('./eventEmitter');
 
 // Local Dependencies
 const {
@@ -195,15 +194,6 @@ app.on('ready', () => {
         });
 
     function initiateApp() {
-
-        electron.powerMonitor.on('lock-screen', () => {
-            eventEmitter.emit('sys-locked');
-        });
-
-        electron.powerMonitor.on('unlock-screen', () => {
-            eventEmitter.emit('sys-unlocked');
-        });
-
         checkFirstTimeLaunch()
             .then(readConfigThenOpenMainWindow)
             .catch(readConfigThenOpenMainWindow);
