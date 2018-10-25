@@ -9,6 +9,7 @@ const { getConfigField } = require('./config');
 
 const maxMemory = 800;
 const defaultInterval = 30 * 1000;
+const defaultIntervalSymLock = 10 * 1000;
 const memoryRefreshThreshold = 60 * 60 * 1000;
 const cpuUsageThreshold = 5;
 
@@ -84,7 +85,8 @@ function optimizeMemory() {
                 }
             });
     } else {
-        log.send(logLevels.INFO, `Not Reloading the app as 
+        log.send(logLevels.INFO, `Not Reloading the app as
+                        application was refreshed less than a hour ago? ${canReload ? 'no' : 'yes'}
                         memory consumption was ${memoryConsumed} 
                         CPU usage percentage was ${preloadMemory.cpuUsage.percentCPUUsage} 
                         user was in a meeting? ${isInMeeting}
@@ -105,11 +107,11 @@ function setIsInMeeting(meetingStatus) {
  * Sets preload memory info and calls optimize memory func
  *
  * @param memoryInfo - memory consumption of the preload main script
- * @param cpuUsage - CPU usage of the preload main script
  * @param activeRequests - pending active network requests on the client
  */
-function setPreloadMemoryInfo(memoryInfo, cpuUsage, activeRequests) {
+function setPreloadMemoryInfo(memoryInfo, activeRequests) {
     log.send(logLevels.INFO, 'Memory info received from preload process now running optimize memory logic');
+    const cpuUsage = process.getCPUUsage();
     preloadMemory = { memoryInfo, cpuUsage, activeRequests };
     optimizeMemory();
 }
@@ -119,6 +121,7 @@ function setPreloadMemoryInfo(memoryInfo, cpuUsage, activeRequests) {
  * and waits for 30s to optimize memory
  */
 eventEmitter.on('appMinimized', () => {
+    log.send(logLevels.INFO, 'Application was minimised');
     appMinimizedTimer = setTimeout(() => {
         const mainWindow = getMainWindow();
         if (mainWindow && !mainWindow.isDestroyed() && mainWindow.isMinimized()) {
@@ -151,7 +154,7 @@ eventEmitter.on('sys-locked', () => {
     powerMonitorTimer = setTimeout(() => {
         log.send(logLevels.INFO, 'System screen was locked for more than 30s so calling requestMemoryInfo');
         requestMemoryInfo();
-    }, defaultInterval);
+    }, defaultIntervalSymLock);
 });
 
 /**

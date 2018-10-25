@@ -505,12 +505,10 @@ function createAPI() {
     local.ipcRenderer.on('memory-info-request', () => {
         if (window.name === 'main') {
             const memory = process.getProcessMemoryInfo();
-            const cpuUsage = process.getCPUUsage();
-            const activeRequests = local.activeRequests();
+            const activeRequests = typeof local.activeRequests === 'function' ? local.activeRequests() : 0;
             local.ipcRenderer.send(apiName, {
                 cmd: apiCmds.optimizeMemoryConsumption,
                 memory,
-                cpuUsage,
                 activeRequests,
             });
         }
