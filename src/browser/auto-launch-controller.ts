@@ -1,6 +1,6 @@
 import AutoLaunch = require('auto-launch');
 
-import { isMac } from '../common/mics';
+import { isMac } from '../common/env';
 import { config, IConfig } from './config-handler';
 
 const { autoLaunchPath }: IConfig = config.getGlobalConfigFields([ 'autoLaunchPath' ]);

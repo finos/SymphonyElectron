@@ -61,6 +61,7 @@
       "check-decl",
       "check-operator",
       "check-type"
-    ]
+    ],
+    "completed-docs": [true, "functions", "methods"]
   }
 }

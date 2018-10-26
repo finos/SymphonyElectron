@@ -1,16 +1,16 @@
 import { app } from 'electron';
 
-import getCmdLineArg from '../common/get-command-line-args';
+import { isDevEnv } from '../common/env';
 import { logger } from '../common/logger';
-import { isDevEnv } from '../common/mics';
+import {getCommandLineArgs} from '../common/utils';
 import { cleanUpAppCache, createAppCacheFile } from './app-cache-handler';
 import { autoLaunchInstance } from './auto-launch-controller';
 import setChromeFlags from './chrome-flags';
 import { config } from './config-handler';
 import { windowHandler } from './window-handler';
 
-const allowMultiInstance: string | boolean = getCmdLineArg(process.argv, '--multiInstance', true) || isDevEnv;
-const singleInstanceLock: boolean = allowMultiInstance ? false : app.requestSingleInstanceLock();
+const allowMultiInstance: string | boolean = getCommandLineArgs(process.argv, '--multiInstance', true) || isDevEnv;
+const singleInstanceLock: boolean = allowMultiInstance ? true : app.requestSingleInstanceLock();
 
 if (!singleInstanceLock) {
     app.quit();
@@ -19,7 +19,7 @@ if (!singleInstanceLock) {
 }
 
 async function main() {
-    await appReady();
+    await app.whenReady();
     createAppCacheFile();
     windowHandler.showLoadingScreen();
     windowHandler.createApplication();
@@ -38,10 +38,6 @@ async function main() {
      * Sets chrome flags from global config
      */
     setChromeFlags();
-}
-
-async function appReady(): Promise<any> {
-    await new Promise((res) => app.once('ready', res));
 }
 
 /**

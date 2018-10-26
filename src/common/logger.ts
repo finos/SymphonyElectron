@@ -2,9 +2,9 @@ import { app } from 'electron';
 import electronLog, { LogLevel, transports } from 'electron-log';
 import * as path from 'path';
 
-import getCmdLineArg from './get-command-line-args';
-import { isElectronQA } from './mics';
-import stringFormat from './string-format';
+import { isElectronQA } from './env';
+import { getCommandLineArgs } from './utils';
+import { formatString } from './utils';
 
 interface ILogMsg {
     level: LogLevel;
@@ -28,8 +28,10 @@ export class Logger {
     private loggerWindow: Electron.WebContents | null;
 
     constructor() {
+
         this.loggerWindow = null;
         this.logQueue = [];
+
         if (!isElectronQA) {
             transports.file.file = path.join(app.getPath('logs'), 'app.log');
             transports.file.level = 'debug';
@@ -38,7 +40,7 @@ export class Logger {
             transports.file.appName = 'Symphony';
         }
 
-        const logLevel = getCmdLineArg(process.argv, '--logLevel=', false);
+        const logLevel = getCommandLineArgs(process.argv, '--logLevel=', false);
         if (logLevel) {
             const level = logLevel.split('=')[1];
             if (level) {
@@ -46,7 +48,7 @@ export class Logger {
             }
         }
 
-        if (getCmdLineArg(process.argv, '--enableConsoleLogging', false)) {
+        if (getCommandLineArgs(process.argv, '--enableConsoleLogging', false)) {
             this.showInConsole = true;
         }
     }
@@ -87,7 +89,7 @@ export class Logger {
     }
 
     private log(logLevel: LogLevel, message: string, data?: object): void {
-        message = stringFormat(message, data);
+        message = formatString(message, data);
         if (!isElectronQA) {
             switch (logLevel) {
                 case 'error': electronLog.error(message); break;
