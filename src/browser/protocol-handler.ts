@@ -2,8 +2,8 @@ import * as url from 'url';
 
 // import log from '../logs';
 // import { LogLevels } from '../logs/interface';
-import getCmdLineArg from '../common/get-command-line-args';
-import { isMac } from '../common/mics';
+import { isMac } from '../common/env';
+import { getCommandLineArgs } from '../common/utils';
 import { windowHandler } from './window-handler';
 
 let protocolWindow: Electron.WebContents;
@@ -39,7 +39,7 @@ export function processProtocolArgv(argv: string[], isAppAlreadyOpen: boolean): 
         return;
     }
 
-    const protocolUri = getCmdLineArg(argv, 'symphony://', false);
+    const protocolUri = getCommandLineArgs(argv, 'symphony://', false);
     // log.send(LogLevels.INFO, `Trying to process a protocol action for uri ${protocolUri}`);
 
     if (protocolUri) {

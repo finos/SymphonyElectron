@@ -11,7 +11,7 @@
   "scripts": {
     "tsc": "git clean -xdf ./lib && npm run lint && tsc",
     "lint": "tslint --project tsconfig.json",
-    "start": "npm run tsc && electron .",
+    "start": "npm run tsc && cross-env ELECTRON_DEV=true electron .",
     "prebuild": "npm run rebuild && npm run browserify-preload",
     "browserify-preload": "browserify -o js/preload/_preloadMain.js -x electron --insert-global-vars=__filename,__dirname js/preload/preloadMain.js  --exclude electron-spellchecker",
     "rebuild": "electron-rebuild -f",
