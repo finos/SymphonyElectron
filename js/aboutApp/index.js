@@ -6,7 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
-const buildNumber = require('../../package.json').buildNumber;
+const { version, clientVersion, buildNumber } = require('../../package.json');
 const { initCrashReporterMain, initCrashReporterRenderer } = require('../crashReporter.js');
 const i18n = require('../translation/i18n');
 
@@ -87,7 +87,7 @@ function openAboutWindow(windowName) {
         // initialize crash reporter
         initCrashReporterMain({ process: 'about app window' });
         initCrashReporterRenderer(aboutWindow, { process: 'render | about app window' });
-        aboutWindow.webContents.send('buildNumber', buildNumber || '0');
+        aboutWindow.webContents.send('versionInfo', { version, clientVersion, buildNumber });
     });
 
     aboutWindow.webContents.on('crashed', function () {
