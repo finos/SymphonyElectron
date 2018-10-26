@@ -9,6 +9,7 @@ const shellPath = require('shell-path');
 const urlParser = require('url');
 const nodePath = require('path');
 const compareSemVersions = require('./utils/compareSemVersions.js');
+const { version, clientVersion, buildNumber } = require('../package.json');
 
 // Local Dependencies
 const {
@@ -244,6 +245,9 @@ app.on('open-url', function (event, url) {
 app.on('web-contents-created', function (event, webContents) {
     onWebContent(webContents);
 });
+
+// Sets application version info that will be displayed in about app panel
+app.setAboutPanelOptions({ applicationVersion: `${clientVersion}-${version}`, version: buildNumber });
 
 function onWebContent(webContents) {
     spellchecker.initializeSpellChecker();
