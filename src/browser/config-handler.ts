@@ -3,10 +3,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { omit } from 'lodash';
-import compareSemVersions from '../common/compare-sem-versions';
+import { isDevEnv, isMac } from '../common/env';
 import { logger } from '../common/logger';
-import { isDevEnv, isMac } from '../common/mics';
-import pick from '../common/pick';
+import { compareVersions, pick } from '../common/utils';
 
 const ignoreSettings =  [
     'minimizeOnClose',
@@ -195,7 +194,7 @@ class Config {
 
         if (!(userConfigVersion
             && typeof userConfigVersion === 'string'
-            && (compareSemVersions(appVersionString, userConfigVersion) !== 1)) && shouldUpdateUserConfig) {
+            && (compareVersions(appVersionString, userConfigVersion) !== 1)) && shouldUpdateUserConfig) {
             this.isFirstTime = true;
             return;
         }

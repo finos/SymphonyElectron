@@ -1,7 +1,7 @@
 import { app } from 'electron';
 
-import getCmdLineArg from '../common/get-command-line-args';
-import { isDevEnv } from '../common/mics';
+import { isDevEnv } from '../common/env';
+import { getCommandLineArgs } from '../common/utils';
 import { config, IConfig } from './config-handler';
 
 export default function setChromeFlags() {
@@ -26,7 +26,7 @@ export default function setChromeFlags() {
     }
 
     if (isDevEnv) {
-        const chromeFlagsFromCmd = getCmdLineArg(process.argv, '--chrome-flags=', false);
+        const chromeFlagsFromCmd = getCommandLineArgs(process.argv, '--chrome-flags=', false);
         if (!chromeFlagsFromCmd) {
             return;
         }
@@ -56,7 +56,6 @@ export default function setChromeFlags() {
             if (flagArray && Array.isArray(flagArray) && flagArray.length > 0) {
                 const chromeFlagKey = flagArray[0];
                 const chromeFlagValue = flagArray[1];
-                // log.send(logLevels.INFO, `Setting chrome flag ${chromeFlagKey} to ${chromeFlagValue}`);
                 app.commandLine.appendSwitch(chromeFlagKey, chromeFlagValue);
             }
         }
