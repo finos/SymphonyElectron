@@ -2,10 +2,11 @@ import { BrowserWindow, crashReporter } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 
-import getCmdLineArg from '../common/get-command-line-args';
+import { getCommandLineArgs } from '../common/utils';
 import { config, IConfig } from './config-handler';
 
 export class WindowHandler {
+
     private static getMainWindowOpts() {
         return {
             alwaysOnTop: false,
@@ -38,6 +39,16 @@ export class WindowHandler {
         };
     }
 
+    private static validateURL(configURL: string): string {
+        const parsedUrl = url.parse(configURL);
+
+        if (!parsedUrl.protocol || parsedUrl.protocol !== 'https') {
+            parsedUrl.protocol = 'https:';
+            parsedUrl.slashes = true;
+        }
+        return url.format(parsedUrl);
+    }
+
     private readonly windowOpts: Electron.BrowserWindowConstructorOptions;
     private readonly globalConfig: IConfig;
     private mainWindow: Electron.BrowserWindow | null;
@@ -60,8 +71,8 @@ export class WindowHandler {
     public createApplication() {
         this.mainWindow = new BrowserWindow(this.windowOpts);
 
-        const urlFromCmd = getCmdLineArg(process.argv, '--url=', false);
-        this.mainWindow.loadURL(urlFromCmd && urlFromCmd.substr(6) || this.validateURL(this.globalConfig.url));
+        const urlFromCmd = getCommandLineArgs(process.argv, '--url=', false);
+        this.mainWindow.loadURL(urlFromCmd && urlFromCmd.substr(6) || WindowHandler.validateURL(this.globalConfig.url));
         this.mainWindow.webContents.on('did-finish-load', () => {
             if (this.loadingWindow) {
                 this.loadingWindow.destroy();
@@ -74,16 +85,6 @@ export class WindowHandler {
 
     public getMainWindow(): Electron.BrowserWindow | null {
         return this.mainWindow;
-    }
-
-    public validateURL(configURL: string): string {
-        const parsedUrl = url.parse(configURL);
-
-        if (!parsedUrl.protocol || parsedUrl.protocol !== 'https') {
-            parsedUrl.protocol = 'https:';
-            parsedUrl.slashes = true;
-        }
-        return url.format(parsedUrl);
     }
 
     /**
