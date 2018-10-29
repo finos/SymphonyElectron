@@ -4,6 +4,9 @@ import * as url from 'url';
 
 import { getCommandLineArgs } from '../common/utils';
 import { config, IConfig } from './config-handler';
+import { createComponentWindow } from './window-utils';
+
+const { buildNumber, clientVersion, version } = require('../../package.json');// tslint:disable-line:no-var-requires
 
 export class WindowHandler {
 
@@ -63,13 +66,16 @@ export class WindowHandler {
 
     private readonly windowOpts: Electron.BrowserWindowConstructorOptions;
     private readonly globalConfig: IConfig;
+    // Window reference
     private mainWindow: Electron.BrowserWindow | null;
     private loadingWindow: Electron.BrowserWindow | null;
+    private aboutAppWindow: Electron.BrowserWindow | null;
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         this.windowOpts = { ... WindowHandler.getMainWindowOpts(), ...opts };
         this.mainWindow = null;
         this.loadingWindow = null;
+        this.aboutAppWindow = null;
         this.globalConfig = config.getGlobalConfigFields([ 'url', 'crashReporter' ]);
 
         try {
@@ -94,6 +100,7 @@ export class WindowHandler {
                 this.loadingWindow = null;
             }
             if (this.mainWindow) this.mainWindow.show();
+            this.createAboutAppWindow();
         });
         return this.mainWindow;
     }
@@ -115,6 +122,18 @@ export class WindowHandler {
         this.loadingWindow.loadURL(`file://${path.join(__dirname, '../renderer/loading-screen.html')}`);
         this.loadingWindow.setMenu(null as any);
         this.loadingWindow.once('closed', () => this.loadingWindow = null);
+    }
+
+    /**
+     * creates a about app window
+     */
+    public createAboutAppWindow() {
+        this.aboutAppWindow = createComponentWindow('about-app');
+            this.aboutAppWindow.webContents.once('did-finish-load', () => {
+                if (this.aboutAppWindow) {
+                    this.aboutAppWindow.webContents.send('data', { buildNumber, clientVersion, version });
+                }
+            });
     }
 }
 

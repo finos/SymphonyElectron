@@ -23,17 +23,4 @@
 <body style="overflow: hidden; background-color: white; margin: 0">
     <div id="Root"></div>
 </body>
-<script>
-    import * as React from 'react';
-    import * as ReactDOM from 'react-dom';
-    import { URL } from 'url';
-
-    const query = new URL(window.location.href).searchParams;
-    const componentName = query.get('component');
-    const componentPath = `../renderer/${componentName}`;
-
-    const component = require(componentPath)[componentName];
-    const element = React.createElement(component);
-    ReactDOM.render(element, document.getElementById('Root'));
-</script>
 </html>
