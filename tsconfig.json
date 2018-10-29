@@ -3,6 +3,7 @@
     "module": "commonjs",
     "pretty": true,
     "target": "ES2016",
+    "jsx": "react",
     "lib": [
       "es2016",
       "dom"
@@ -13,7 +14,7 @@
     "preserveConstEnums": true,
     "sourceMap": true,
     "declaration": true,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "noImplicitReturns": true,
     "suppressImplicitAnyIndexErrors": true,
     "strictNullChecks": true,
