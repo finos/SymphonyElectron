@@ -1,8 +1,7 @@
 import * as url from 'url';
 
-// import log from '../logs';
-// import { LogLevels } from '../logs/interface';
 import { isMac } from '../common/env';
+import {logger} from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
 import { windowHandler } from './window-handler';
 
@@ -10,56 +9,63 @@ let protocolWindow: Electron.WebContents;
 let protocolUrl: string | undefined;
 
 /**
- * processes a protocol uri
- * @param {String} uri - the uri opened in the format 'symphony://...'
+ * Processes a protocol uri
+ * @param {String} uri - the uri opened in the format 'symphony://abc?def=ghi'
  */
-export function processProtocolUri(uri: string): void {
-    // log.send(LogLevels.INFO, `protocol action, uri ${uri}`);
+const processProtocolUri = (uri: string): void => {
+
+    logger.info(`Processing protocol action, uri ${uri}`);
     if (!protocolWindow) {
-        // log.send(LogLevels.INFO, `protocol window not yet initialized, caching the uri ${uri}`);
+        logger.info(`protocol window not yet initialized, caching the uri ${uri}`);
         setProtocolUrl(uri);
         return;
     }
 
     if (uri && uri.startsWith('symphony://')) {
+        logger.info(`triggering the protocol action for the uri ${uri}`);
         protocolWindow.send('protocol-action', uri);
     }
-}
+};
 
 /**
- * processes protocol action for windows clients
+ * Processes protocol action for windows clients
  * @param argv {Array} an array of command line arguments
  * @param isAppAlreadyOpen {Boolean} whether the app is already open
  */
-export function processProtocolArgv(argv: string[], isAppAlreadyOpen: boolean): void {
+const processProtocolArgv = (argv: string[], isAppAlreadyOpen: boolean): void => {
+
     // In case of windows, we need to handle protocol handler
     // manually because electron doesn't emit
     // 'open-url' event on windows
     if (!(process.platform === 'win32')) {
+        logger.info('This is windows, not processing protocol url through arguments');
         return;
     }
 
     const protocolUri = getCommandLineArgs(argv, 'symphony://', false);
-    // log.send(LogLevels.INFO, `Trying to process a protocol action for uri ${protocolUri}`);
+    logger.info(`Trying to process a protocol action for uri ${protocolUri}`);
 
     if (protocolUri) {
         const parsedURL = url.parse(protocolUri);
         if (!parsedURL.protocol || !parsedURL.slashes) {
             return;
         }
-        // log.send(LogLevels.INFO, `Parsing protocol url successful for ${parsedURL}`);
+        logger.info(`Successfully parsed protocol url for ${parsedURL}`);
         handleProtocolAction(protocolUri, isAppAlreadyOpen);
     }
-}
+};
 
 /**
  * Handles a protocol action based on the current state of the app
  * @param uri
  * @param isAppAlreadyOpen {Boolean} whether the app is already open
  */
-export function handleProtocolAction(uri: string, isAppAlreadyOpen: boolean): void {
+const handleProtocolAction = (uri: string, isAppAlreadyOpen: boolean): void => {
+
     if (!isAppAlreadyOpen) {
-        // log.send(LogLevels.INFO, `App started by protocol url ${uri}. We are caching this to be processed later!`);
+
+        logger.info(`App started by protocol url ${uri}. We are caching this to be processed later!`);
+
         // app is opened by the protocol url, cache the protocol url to be used later
         setProtocolUrl(uri);
         return;
@@ -68,48 +74,56 @@ export function handleProtocolAction(uri: string, isAppAlreadyOpen: boolean): vo
     // This is needed for mac OS as it brings pop-outs to foreground
     // (if it has been previously focused) instead of main window
     if (isMac) {
+        logger.info('Bringing the main window to foreground for focus and processing the protocol url (macOS)');
         const mainWindow = windowHandler.getMainWindow();
         if (mainWindow && !mainWindow.isDestroyed()) {
             // windowMgr.activate(mainWindow.winName);
         }
     }
+
     // app is already open, so, just trigger the protocol action method
-    // log.send(LogLevels.INFO, `App opened by protocol url ${uri}`);
+    logger.info(`App opened by protocol url ${uri}`);
     processProtocolUri(uri);
-}
+};
 
 /**
- * sets the protocol window
+ * Sets the protocol window
  * @param {Object} win - the renderer window
  */
-export function setProtocolWindow(win: Electron.WebContents): void {
+const setProtocolWindow = (win: Electron.WebContents): void => {
+    logger.info(`Setting protocol window ${win}`);
     protocolWindow = win;
-}
+};
 
 /**
- * checks to see if the app was opened by a uri
+ * Checks to see if the app was opened by a uri
  */
-export function checkProtocolAction(): void {
-    // log.send(LogLevels.INFO, `checking if we have a cached protocol url`);
+const checkProtocolAction = (): void => {
+    logger.info('Checking if we have a cached protocol url');
     if (protocolUrl) {
-        // log.send(LogLevels.INFO, `found a cached protocol url, processing it!`);
+        logger.info(`Found a cached protocol url (${protocolUrl}), processing it`);
         processProtocolUri(protocolUrl);
+        logger.info('Resetting the protocol url to undefined post processing it');
         protocolUrl = undefined;
     }
-}
+};
 
 /**
- * caches the protocol uri
+ * Caches the protocol uri
  * @param {String} uri - the uri opened in the format 'symphony://...'
  */
-export function setProtocolUrl(uri: string): void {
+const setProtocolUrl = (uri: string): void => {
+    logger.info(`Setting the property protocol url to ${uri}`);
     protocolUrl = uri;
-}
+};
 
 /**
- * gets the protocol url set against an instance
+ * Gets the protocol url set against an instance
  * @returns {*}
  */
-export function getProtocolUrl(): string | undefined {
+const getProtocolUrl = (): string | undefined => {
+    logger.info(`Getting the property protocol url ${protocolUrl}`);
     return protocolUrl;
-}
+};
+
+export {processProtocolUri, processProtocolArgv, setProtocolWindow, checkProtocolAction, getProtocolUrl};
