@@ -7,6 +7,9 @@ import { config, IConfig } from './config-handler';
 
 export class WindowHandler {
 
+    /**
+     * Main window opts
+     */
     private static getMainWindowOpts() {
         return {
             alwaysOnTop: false,
@@ -24,6 +27,9 @@ export class WindowHandler {
         };
     }
 
+    /**
+     * Loading window opts
+     */
     private static getLoadingWindowOpts() {
         return {
             alwaysOnTop: false,
@@ -39,6 +45,12 @@ export class WindowHandler {
         };
     }
 
+    /**
+     * Verifies if the url is valid and
+     * forcefully appends https if not present
+     *
+     * @param configURL {string}
+     */
     private static validateURL(configURL: string): string {
         const parsedUrl = url.parse(configURL);
 
@@ -68,6 +80,9 @@ export class WindowHandler {
         }
     }
 
+    /**
+     * Starting point of the app
+     */
     public createApplication() {
         this.mainWindow = new BrowserWindow(this.windowOpts);
 
@@ -83,6 +98,9 @@ export class WindowHandler {
         return this.mainWindow;
     }
 
+    /**
+     * Gets the main window
+     */
     public getMainWindow(): Electron.BrowserWindow | null {
         return this.mainWindow;
     }

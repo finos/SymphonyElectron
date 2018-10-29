@@ -2,7 +2,7 @@ import { app } from 'electron';
 
 import { isDevEnv } from '../common/env';
 import { logger } from '../common/logger';
-import {getCommandLineArgs} from '../common/utils';
+import { getCommandLineArgs } from '../common/utils';
 import { cleanUpAppCache, createAppCacheFile } from './app-cache-handler';
 import { autoLaunchInstance } from './auto-launch-controller';
 import setChromeFlags from './chrome-flags';
@@ -18,6 +18,9 @@ if (!singleInstanceLock) {
     main();
 }
 
+/**
+ * Main function that init the application
+ */
 async function main() {
     await app.whenReady();
     createAppCacheFile();
