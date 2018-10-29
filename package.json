@@ -82,6 +82,8 @@
     "@types/auto-launch": "^5.0.0",
     "@types/lodash.omit": "^4.5.4",
     "@types/node": "10.11.4",
+    "@types/react": "16.4.18",
+    "@types/react-dom": "16.0.9",
     "babel-cli": "6.26.0",
     "babel-eslint": "7.2.3",
     "babel-plugin-transform-async-to-generator": "6.24.1",
