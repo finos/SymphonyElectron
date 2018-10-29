@@ -1,4 +1,5 @@
 import { BrowserWindow } from 'electron';
+import * as path from 'path';
 import * as url from 'url';
 import { windowHandler } from './window-handler';
 
@@ -23,6 +24,9 @@ export function createComponentWindow(
         show: false,
         width: 300,
         ...opts,
+        webPreferences: {
+            preload: path.join(__dirname, '../renderer/preload-component'),
+        },
     };
 
     const browserWindow = new BrowserWindow(options);
