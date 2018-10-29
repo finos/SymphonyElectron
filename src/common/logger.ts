@@ -53,30 +53,71 @@ export class Logger {
         }
     }
 
+    /**
+     * Log error
+     *
+     * @param message {string} - message to be logged
+     * @param data {object} - extra data that needs to be logged
+     */
     public error(message: string, data?: object): void {
         this.log('error', message, data);
     }
 
+    /**
+     * Log warn
+     *
+     * @param message {string} - message to be logged
+     * @param data {object} - extra data that needs to be logged
+     */
     public warn(message: string, data?: object): void {
         this.log('warn', message, data);
     }
 
+    /**
+     * Log info
+     *
+     * @param message {string} - message to be logged
+     * @param data {object} - extra data that needs to be logged
+     */
     public info(message: string, data?: object): void {
         this.log('info', message, data);
     }
 
+    /**
+     * Log verbose
+     *
+     * @param message {string} - message to be logged
+     * @param data {object} - extra data that needs to be logged
+     */
     public verbose(message: string, data?: object): void {
         this.log('verbose', message, data);
     }
 
+    /**
+     * Log debug
+     *
+     * @param message {string} - message to be logged
+     * @param data {object} - extra data that needs to be logged
+     */
     public debug(message: string, data?: object): void {
         this.log('debug', message, data);
     }
 
+    /**
+     * Log silly
+     *
+     * @param message {string} - message to be logged
+     * @param data {object} - extra data that needs to be logged
+     */
     public silly(message: string, data?: object): void {
         this.log('silly', message, data);
     }
 
+    /**
+     * Sets the renderer window for sending logs to the client
+     *
+     * @param window {WebContents} - renderer window
+     */
     public setLoggerWindow(window: Electron.WebContents): void {
         this.loggerWindow = window;
 
@@ -88,6 +129,13 @@ export class Logger {
         }
     }
 
+    /**
+     * Main instance of the logger method
+     *
+     * @param logLevel {LogLevel} - Different type of log levels
+     * @param message {string} - Log message
+     * @param data {object} - extra data to be logged
+     */
     private log(logLevel: LogLevel, message: string, data?: object): void {
         message = formatString(message, data);
         if (!isElectronQA) {
@@ -104,6 +152,13 @@ export class Logger {
         this.sendToCloud(this.formatLogMsg(logLevel, message));
     }
 
+    /**
+     * Formats the logs in the format that required
+     * to send to the client
+     *
+     * @param level {LogLevel} - Different type of log levels
+     * @param details {any} - log format that required to send to client
+     */
     private formatLogMsg(level: LogLevel, details: any): ILogMsg {
         return {
             details,
