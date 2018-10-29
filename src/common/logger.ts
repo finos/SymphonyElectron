@@ -4,7 +4,6 @@ import * as path from 'path';
 
 import { isElectronQA } from './env';
 import { getCommandLineArgs } from './utils';
-import { formatString } from './utils';
 
 interface ILogMsg {
     level: LogLevel;
@@ -57,9 +56,9 @@ export class Logger {
      * Log error
      *
      * @param message {string} - message to be logged
-     * @param data {object} - extra data that needs to be logged
+     * @param data {any} - extra data that needs to be logged
      */
-    public error(message: string, data?: object): void {
+    public error(message: string, ...data: any[]): void {
         this.log('error', message, data);
     }
 
@@ -67,9 +66,9 @@ export class Logger {
      * Log warn
      *
      * @param message {string} - message to be logged
-     * @param data {object} - extra data that needs to be logged
+     * @param data {any} - extra data that needs to be logged
      */
-    public warn(message: string, data?: object): void {
+    public warn(message: string, ...data: any[]): void {
         this.log('warn', message, data);
     }
 
@@ -77,9 +76,9 @@ export class Logger {
      * Log info
      *
      * @param message {string} - message to be logged
-     * @param data {object} - extra data that needs to be logged
+     * @param data {any} - extra data that needs to be logged
      */
-    public info(message: string, data?: object): void {
+    public info(message: string, ...data: any[]): void {
         this.log('info', message, data);
     }
 
@@ -87,9 +86,9 @@ export class Logger {
      * Log verbose
      *
      * @param message {string} - message to be logged
-     * @param data {object} - extra data that needs to be logged
+     * @param data {array} - extra data that needs to be logged
      */
-    public verbose(message: string, data?: object): void {
+    public verbose(message: string, ...data: any[]): void {
         this.log('verbose', message, data);
     }
 
@@ -97,9 +96,9 @@ export class Logger {
      * Log debug
      *
      * @param message {string} - message to be logged
-     * @param data {object} - extra data that needs to be logged
+     * @param data {any} - extra data that needs to be logged
      */
-    public debug(message: string, data?: object): void {
+    public debug(message: string, ...data: any[]): void {
         this.log('debug', message, data);
     }
 
@@ -107,9 +106,9 @@ export class Logger {
      * Log silly
      *
      * @param message {string} - message to be logged
-     * @param data {object} - extra data that needs to be logged
+     * @param data {any} - extra data that needs to be logged
      */
-    public silly(message: string, data?: object): void {
+    public silly(message: string, ...data: any[]): void {
         this.log('silly', message, data);
     }
 
@@ -134,10 +133,14 @@ export class Logger {
      *
      * @param logLevel {LogLevel} - Different type of log levels
      * @param message {string} - Log message
-     * @param data {object} - extra data to be logged
+     * @param data {array} - extra data to be logged
      */
-    private log(logLevel: LogLevel, message: string, data?: object): void {
-        message = formatString(message, data);
+    private log(logLevel: LogLevel, message: string, data: any[] = []): void {
+        if (data && data.length > 0) {
+            data.forEach((param) => {
+                message += `, '${param && typeof param}': ${JSON.stringify(param)}`;
+            });
+        }
         if (!isElectronQA) {
             switch (logLevel) {
                 case 'error': electronLog.error(message); break;
