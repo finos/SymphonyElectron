@@ -126,6 +126,10 @@ class Config {
         fs.writeFileSync(this.userConfigPath, JSON.stringify(this.userConfig), { encoding: 'utf8' });
     }
 
+    /**
+     * Return true if the app is launched for the first time
+     * otherwise false
+     */
     public isFirstTimeLaunch(): boolean {
         return this.isFirstTime;
     }

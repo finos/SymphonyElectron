@@ -4,6 +4,9 @@ import { isDevEnv } from '../common/env';
 import { getCommandLineArgs } from '../common/utils';
 import { config, IConfig } from './config-handler';
 
+/**
+ * Sets chrome flags
+ */
 export default function setChromeFlags() {
     const { customFlags } = config.getGlobalConfigFields([ 'customFlags' ]) as IConfig;
 
