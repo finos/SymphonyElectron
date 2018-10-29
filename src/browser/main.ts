@@ -8,6 +8,7 @@ import { autoLaunchInstance } from './auto-launch-controller';
 import setChromeFlags from './chrome-flags';
 import { config } from './config-handler';
 import { windowHandler } from './window-handler';
+import { createComponentWindow } from './window-utils';
 
 const allowMultiInstance: string | boolean = getCommandLineArgs(process.argv, '--multiInstance', true) || isDevEnv;
 const singleInstanceLock: boolean = allowMultiInstance ? true : app.requestSingleInstanceLock();
@@ -36,6 +37,8 @@ async function main() {
          */
         await autoLaunchInstance.handleAutoLaunch();
     }
+
+    createComponentWindow('about-app');
 
     /**
      * Sets chrome flags from global config
