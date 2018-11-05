@@ -1,0 +1,68 @@
+{
+  "env": {
+    "development": {
+      "text/jade": {
+        "isProduction": false
+      },
+      "text/less": {
+        "dumpLineNumbers": "comments"
+      },
+      "text/typescript": {
+        "removeComments": false,
+        "preserveConstEnums": true,
+        "declaration": true,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "suppressImplicitAnyIndexErrors": true,
+        "strictNullChecks": true,
+        "noUnusedLocals": true,
+        "noImplicitThis": true,
+        "noUnusedParameters": true,
+        "inlineSourceMap": true,
+        "inlineSources": true,
+        "importHelpers": true,
+        "noEmitHelpers": true,
+        "module": "commonjs",
+        "target": "es2016",
+        "presets": ["es2016-node5", "react"],
+        "plugins": ["transform-class-properties", "transform-async-to-generator", "transform-runtime"],
+        "sourceMaps": "inline",
+        "jsx": "react",
+        "lib": [
+          "es2016",
+          "dom"
+        ]
+      }
+    },
+    "production": {
+      "text/jade": {
+        "isProduction": true
+      },
+      "text/typescript": {
+        "removeComments": false,
+        "preserveConstEnums": true,
+        "declaration": true,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "suppressImplicitAnyIndexErrors": true,
+        "strictNullChecks": true,
+        "noUnusedLocals": true,
+        "noImplicitThis": true,
+        "noUnusedParameters": true,
+        "sourceMap": false,
+        "importHelpers": true,
+        "noEmitHelpers": true,
+        "module": "commonjs",
+        "target": "es2016",
+        "presets": ["es2016-node5", "react"],
+        "plugins": ["transform-class-properties", "transform-async-to-generator", "transform-runtime"],
+        "sourceMaps": false,
+        "jsx": "react",
+        "lib": [
+          "es2016",
+          "dom"
+        ]
+      }
+    }
+  }
+}

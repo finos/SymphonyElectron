@@ -1,0 +1,43 @@
+@white: rgb(255, 255, 255, 1);
+@version-text-color: rgb(47, 47, 47, 1);
+@copyright-text-color: rgb(127, 127, 127, 1);
+@font-family: sans-serif;
+@text-padding: 10px;
+
+html, body {
+  margin: 0;
+  height: 100%;
+  font-family: @font-family;
+}
+
+.name {
+  flex: 1;
+  font-size: 1.3em;
+  padding: @text-padding;
+  font-weight: bold;
+  color: white;
+}
+
+.version-text {
+  flex: 1;
+  font-size: 1em;
+  color: @version-text-color;
+}
+
+.copyright-text {
+  flex: 1;
+  padding: @text-padding;
+  font-size: 0.6em;
+  color: @copyright-text-color;
+}
+
+.content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  padding-top: 20px
+}
+
+.logo {
+  margin: auto;
+}

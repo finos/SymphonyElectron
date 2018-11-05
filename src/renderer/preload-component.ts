@@ -1,6 +1,9 @@
+import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+
 import AboutBox from './about-app';
+import LoadingScreen from './loading-screen';
 
 document.addEventListener('DOMContentLoaded', load);
 
@@ -16,7 +19,13 @@ export function load() {
         case 'about-app':
             component = AboutBox;
             break;
+        case 'loading-screen':
+            component = LoadingScreen;
+            break;
     }
-    const element = React.createElement(component);
-    ReactDOM.render(element, document.getElementById('Root'));
+
+    ipcRenderer.on('data', (__: Electron.Event, args) => {
+        const element = React.createElement(component, args);
+        ReactDOM.render(element, document.getElementById('Root'));
+    });
 }
