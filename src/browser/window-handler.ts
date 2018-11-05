@@ -117,10 +117,13 @@ export class WindowHandler {
      * application is loaded
      */
     public showLoadingScreen() {
-        this.loadingWindow = new BrowserWindow(WindowHandler.getLoadingWindowOpts());
-        this.loadingWindow.once('ready-to-show', () => this.loadingWindow ? this.loadingWindow.show() : null);
-        this.loadingWindow.loadURL(`file://${path.join(__dirname, '../renderer/loading-screen.html')}`);
-        this.loadingWindow.setMenu(null as any);
+        this.loadingWindow = createComponentWindow('loading-screen', WindowHandler.getLoadingWindowOpts());
+        this.loadingWindow.webContents.once('did-finish-load', () => {
+            if (this.loadingWindow) {
+                this.loadingWindow.webContents.send('data');
+            }
+        });
+
         this.loadingWindow.once('closed', () => this.loadingWindow = null);
     }
 
