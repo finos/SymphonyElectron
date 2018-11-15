@@ -80,7 +80,7 @@ export class WindowHandler {
 
         try {
             const extra = { podUrl: this.globalConfig.url, process: 'main' };
-            crashReporter.start({ ...this.globalConfig.crashReporter, ...extra });
+            crashReporter.start({ ...this.globalConfig.crashReporter, extra });
         } catch (e) {
             throw new Error('failed to init crash report');
         }
