@@ -9,6 +9,15 @@ let protocolWindow: Electron.WebContents;
 let protocolUrl: string | undefined;
 
 /**
+ * Caches the protocol uri
+ * @param {String} uri - the uri opened in the format 'symphony://...'
+ */
+const setProtocolUrl = (uri: string): void => {
+    logger.info(`Setting the property protocol url to ${uri}`);
+    protocolUrl = uri;
+};
+
+/**
  * Processes a protocol uri
  * @param {String} uri - the uri opened in the format 'symphony://abc?def=ghi'
  */
@@ -24,34 +33,6 @@ const processProtocolUri = (uri: string): void => {
     if (uri && uri.startsWith('symphony://')) {
         logger.info(`triggering the protocol action for the uri ${uri}`);
         protocolWindow.send('protocol-action', uri);
-    }
-};
-
-/**
- * Processes protocol action for windows clients
- * @param argv {Array} an array of command line arguments
- * @param isAppAlreadyOpen {Boolean} whether the app is already open
- */
-const processProtocolArgv = (argv: string[], isAppAlreadyOpen: boolean): void => {
-
-    // In case of windows, we need to handle protocol handler
-    // manually because electron doesn't emit
-    // 'open-url' event on windows
-    if (!(process.platform === 'win32')) {
-        logger.info('This is windows, not processing protocol url through arguments');
-        return;
-    }
-
-    const protocolUri = getCommandLineArgs(argv, 'symphony://', false);
-    logger.info(`Trying to process a protocol action for uri ${protocolUri}`);
-
-    if (protocolUri) {
-        const parsedURL = url.parse(protocolUri);
-        if (!parsedURL.protocol || !parsedURL.slashes) {
-            return;
-        }
-        logger.info(`Successfully parsed protocol url for ${parsedURL}`);
-        handleProtocolAction(protocolUri, isAppAlreadyOpen);
     }
 };
 
@@ -87,6 +68,34 @@ const handleProtocolAction = (uri: string, isAppAlreadyOpen: boolean): void => {
 };
 
 /**
+ * Processes protocol action for windows clients
+ * @param argv {Array} an array of command line arguments
+ * @param isAppAlreadyOpen {Boolean} whether the app is already open
+ */
+const processProtocolArgv = (argv: string[], isAppAlreadyOpen: boolean): void => {
+
+    // In case of windows, we need to handle protocol handler
+    // manually because electron doesn't emit
+    // 'open-url' event on windows
+    if (!(process.platform === 'win32')) {
+        logger.info('This is windows, not processing protocol url through arguments');
+        return;
+    }
+
+    const protocolUri = getCommandLineArgs(argv, 'symphony://', false);
+    logger.info(`Trying to process a protocol action for uri ${protocolUri}`);
+
+    if (protocolUri) {
+        const parsedURL = url.parse(protocolUri);
+        if (!parsedURL.protocol || !parsedURL.slashes) {
+            return;
+        }
+        logger.info(`Successfully parsed protocol url for ${parsedURL}`);
+        handleProtocolAction(protocolUri, isAppAlreadyOpen);
+    }
+};
+
+/**
  * Sets the protocol window
  * @param {Object} win - the renderer window
  */
@@ -106,15 +115,6 @@ const checkProtocolAction = (): void => {
         logger.info('Resetting the protocol url to undefined post processing it');
         protocolUrl = undefined;
     }
-};
-
-/**
- * Caches the protocol uri
- * @param {String} uri - the uri opened in the format 'symphony://...'
- */
-const setProtocolUrl = (uri: string): void => {
-    logger.info(`Setting the property protocol url to ${uri}`);
-    protocolUrl = uri;
 };
 
 /**
