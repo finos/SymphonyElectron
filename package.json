@@ -38,7 +38,14 @@
       "config/Symphony.config",
       "library/libsymphonysearch.dylib",
       "library/cryptoLib.dylib",
-      "library/lz4.exec"
+      "library/lz4.exec",
+      {
+        "from": "./node_modules/screen-snippet/bin/Release/",
+        "to": ".",
+        "filter": [
+          "!ScreenSnippet.pdb"
+        ]
+      }
     ],
     "appId": "com.symphony.electron-desktop",
     "mac": {
