@@ -1,34 +1,60 @@
-import { remote } from 'electron';
+import { ipcRenderer, remote } from 'electron';
 import * as React from 'react';
 
-interface IProps {
-    appName: string | undefined;
-    copyWrite: string | undefined;
-    clientVersion: string | undefined;
-    buildNumber: string | undefined;
-    version: string | undefined;
+interface IState {
+    appName: string;
+    copyWrite?: string;
+    clientVersion: string;
+    buildNumber: string;
+    version: string;
 }
 
 /**
  * Window that display app version and copyright info
  */
-export default class AboutBox extends React.PureComponent<IProps, {}> {
+export default class AboutApp extends React.Component<{}, IState> {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            appName: 'Symphony',
+            buildNumber: '',
+            clientVersion: '0',
+            version: 'N/A',
+        };
+    }
     /**
      * main render function
      */
     public render() {
-        const { clientVersion, version, buildNumber } = this.props;
+        const { clientVersion, version, buildNumber } = this.state;
         const appName = remote.app.getName() || 'Symphony';
         const versionString = `Version ${clientVersion}-${version} (${buildNumber})`;
         const copyright = `Copyright \xA9 ${new Date().getFullYear()} ${appName}`;
         return (
-            <div className='content'>
-                <img className='logo' src='assets/symphony-logo.png'/>
-                <span id='app-name' className='name'>{appName}</span>
-                <span id='version' className='version-text'>{versionString}</span>
-                <span id='copyright' className='copyright-text'>{copyright}</span>
+            <div className='AboutApp'>
+                <img className='AboutApp-logo' src='assets/symphony-logo.png'/>
+                <span className='AboutApp-name'>{appName}</span>
+                <span className='AboutApp-versionText'>{versionString}</span>
+                <span className='AboutApp-copyrightText'>{copyright}</span>
             </div>
         );
+    }
+
+    public componentDidMount(): void {
+        ipcRenderer.on('about-app-data', this.updateState.bind(this));
+    }
+
+    public componentWillUnmount() {
+        ipcRenderer.removeListener('open-file-reply', this.updateState);
+    }
+
+    /**
+     * Sets the About app state
+     * @param _event
+     * @param data {Object} { buildNumber, clientVersion, version }
+     */
+    private updateState(_event, data) {
+        this.setState(data as IState);
     }
 }
