@@ -1,4 +1,4 @@
-import {remote} from 'electron';
+import { remote } from 'electron';
 import * as React from 'react';
 
 /**
@@ -12,11 +12,9 @@ export default class LoadingScreen extends React.PureComponent {
     public render() {
         const appName = remote.app.getName() || 'Symphony';
         return (
-            <div className='content'>
-                <img className='logo' src='assets/symphony-logo.png' />
-                    <span id='app-name' className='name'>{appName}</span>
-                    <span id='version' className='version-text'/>
-                    <span id='copyright' className='copyright-text'/>
+            <div className='LoadingScreen'>
+                <img className='LoadingScreen-logo' src='assets/symphony-logo.png' />
+                    <span id='LoadingScreen-appName' className='name'>{appName}</span>
             </div>
         );
     }

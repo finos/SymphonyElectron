@@ -1,7 +1,7 @@
 import * as url from 'url';
 
 import { isMac } from '../common/env';
-import {logger} from '../common/logger';
+import { logger } from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
 import { windowHandler } from './window-handler';
 
