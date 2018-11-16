@@ -4,40 +4,35 @@
 @font-family: sans-serif;
 @text-padding: 10px;
 
-html, body {
-  margin: 0;
-  height: 100%;
-  font-family: @font-family;
-}
-
-.name {
-  flex: 1;
-  font-size: 1.3em;
-  padding: @text-padding;
-  font-weight: bold;
-  color: white;
-}
-
-.version-text {
-  flex: 1;
-  font-size: 1em;
-  color: @version-text-color;
-}
-
-.copyright-text {
-  flex: 1;
-  padding: @text-padding;
-  font-size: 0.6em;
-  color: @copyright-text-color;
-}
-
-.content {
+.AboutApp {
   text-align: center;
   display: flex;
   flex-direction: column;
-  padding-top: 20px
+  padding-top: 20px;
+
+  &-name {
+    flex: 1;
+    font-size: 1.3em;
+    padding: @text-padding;
+    font-weight: bold;
+    color: white;
+  }
+
+  &-versionText {
+    flex: 1;
+    font-size: 1em;
+    color: @version-text-color;
+  }
+
+  &-copyrightText {
+    flex: 1;
+    padding: @text-padding;
+    font-size: 0.6em;
+    color: @copyright-text-color;
+  }
+
+  &-logo {
+    margin: auto;
+  }
 }
 
-.logo {
-  margin: auto;
-}

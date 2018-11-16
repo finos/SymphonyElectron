@@ -24,7 +24,7 @@ export class WindowHandler {
             webPreferences: {
                 nativeWindowOpen: true,
                 nodeIntegration: false,
-                preload: path.join(__dirname, '../renderer/preload'),
+                preload: path.join(__dirname, '../renderer/preload-main'),
                 sandbox: false,
             },
         };
@@ -134,7 +134,7 @@ export class WindowHandler {
         this.aboutAppWindow = createComponentWindow('about-app');
             this.aboutAppWindow.webContents.once('did-finish-load', () => {
                 if (this.aboutAppWindow) {
-                    this.aboutAppWindow.webContents.send('data', { buildNumber, clientVersion, version });
+                    this.aboutAppWindow.webContents.send('about-app-data', { buildNumber, clientVersion, version });
                 }
             });
     }

@@ -11,7 +11,8 @@
   "scripts": {
     "tsc": "git clean -xdf ./lib && npm run lint && tsc",
     "lint": "tslint --project tsconfig.json",
-    "start": "cross-env ELECTRON_DEV=true electron .",
+    "start": "npm run compile-css && cross-env ELECTRON_DEV=true electron .",
+    "compile-css": "lessc src/renderer/styles/main.less src/renderer/styles/main.css",
     "prebuild": "npm run rebuild && npm run browserify-preload",
     "browserify-preload": "browserify -o js/preload/_preloadMain.js -x electron --insert-global-vars=__filename,__dirname js/preload/preloadMain.js  --exclude electron-spellchecker",
     "rebuild": "electron-rebuild -f",
@@ -108,6 +109,7 @@
     "glob": "7.1.3",
     "jest": "23.6.0",
     "jest-html-reporter": "2.4.2",
+    "less": "3.8.1",
     "ncp": "2.0.0",
     "react": "^16.6.0",
     "robotjs": "0.5.1",
