@@ -21,6 +21,7 @@
     "no-trailing-whitespace": true,
     "no-duplicate-variable": true,
     "no-var-keyword": true,
+    "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"],
     "no-empty": true,
     "no-unused-expression": true,
     "no-use-before-declare": true,
@@ -60,7 +61,8 @@
       "check-branch",
       "check-decl",
       "check-operator",
-      "check-type"
+      "check-type",
+      "check-module"
     ],
     "completed-docs": [true, "functions", "methods"]
   }
