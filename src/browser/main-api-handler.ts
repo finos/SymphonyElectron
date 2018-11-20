@@ -1,47 +1,7 @@
 import { ipcMain } from 'electron';
+
+import { apiCmds, apiName, IApiArgs } from '../common/api-interface';
 import { logger } from '../common/logger';
-
-export enum ApiCmds {
-    isOnline,
-    registerLogger,
-    setBadgeCount,
-    badgeDataUrl,
-    activate,
-    registerBoundsChange,
-    registerProtocolHandler,
-    registerActivityDetection,
-    showNotificationSettings,
-    sanitize,
-    bringToFront,
-    openScreenPickerWindow,
-    popupMenu,
-    optimizeMemoryConsumption,
-    optimizeMemoryRegister,
-    setIsInMeeting,
-    setLocale,
-    keyPress,
-}
-
-export enum apiName {
-    symphonyApi = 'symphony-api',
-}
-
-export interface IApiArgs {
-    cmd: ApiCmds;
-    isOnline: boolean;
-    count: number;
-    dataUrl: string;
-    windowName: string;
-    period: number;
-    reason: string;
-    sources: Electron.DesktopCapturerSource[];
-    id: number;
-    memory: Electron.ProcessMemoryInfo;
-    cpuUsage: Electron.CPUUsage;
-    isInMeeting: boolean;
-    locale: string;
-    keyCode: number;
-}
 
 /**
  * Ensure events comes from a window that we have created.
@@ -108,7 +68,7 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
         case ApiCmds.registerBoundsChange:
             windowMgr.setBoundsChangeWindow(event.sender);
             break;*/
-        case ApiCmds.registerLogger:
+        case apiCmds.registerLogger:
             // renderer window that has a registered logger from JS.
             logger.setLoggerWindow(event.sender);
             break;
