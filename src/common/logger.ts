@@ -197,6 +197,4 @@ export class Logger {
 
 const logger = new Logger();
 
-export {
-    logger,
-};
+export { logger };

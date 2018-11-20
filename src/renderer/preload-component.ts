@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', load);
 /**
  * Loads the appropriate component
  */
-export function load() {
+function load() {
     const query = new URL(window.location.href).searchParams;
     const componentName = query.get('componentName');
 
