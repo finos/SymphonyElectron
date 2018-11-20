@@ -26,7 +26,7 @@ export default class AboutApp extends React.Component<{}, IState> {
     /**
      * main render function
      */
-    public render() {
+    public render(): JSX.Element {
         const { clientVersion, version, buildNumber } = this.state;
         const appName = remote.app.getName() || 'Symphony';
         const versionString = `Version ${clientVersion}-${version} (${buildNumber})`;
@@ -45,7 +45,7 @@ export default class AboutApp extends React.Component<{}, IState> {
         ipcRenderer.on('about-app-data', this.updateState.bind(this));
     }
 
-    public componentWillUnmount() {
+    public componentWillUnmount(): void {
         ipcRenderer.removeListener('open-file-reply', this.updateState);
     }
 
@@ -54,7 +54,7 @@ export default class AboutApp extends React.Component<{}, IState> {
      * @param _event
      * @param data {Object} { buildNumber, clientVersion, version }
      */
-    private updateState(_event, data) {
+    private updateState(_event, data): void {
         this.setState(data as IState);
     }
 }
