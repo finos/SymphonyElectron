@@ -9,7 +9,7 @@ export default class LoadingScreen extends React.PureComponent {
     /**
      * main render function
      */
-    public render() {
+    public render(): JSX.Element {
         const appName = remote.app.getName() || 'Symphony';
         return (
             <div className='LoadingScreen'>

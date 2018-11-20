@@ -1,4 +1,5 @@
 import { BrowserWindow, crashReporter } from 'electron';
+import * as fs from 'fs';
 import * as path from 'path';
 import * as url from 'url';
 
@@ -99,7 +100,12 @@ export class WindowHandler {
                 this.loadingWindow.destroy();
                 this.loadingWindow = null;
             }
-            if (this.mainWindow) this.mainWindow.show();
+            if (this.mainWindow) {
+                this.mainWindow.webContents.insertCSS(
+                    fs.readFileSync(path.join(__dirname, '..', '/renderer/styles/title-bar.css'), 'utf8').toString(),
+                );
+                this.mainWindow.show();
+            }
             this.createAboutAppWindow();
         });
         return this.mainWindow;
