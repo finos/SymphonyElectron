@@ -29,6 +29,13 @@ class Translation {
     }
 
     /**
+     * Gets the current locale
+     */
+    public getLocale(): localeType {
+        return this.locale;
+    }
+
+    /**
      * fetches and returns the translated value
      * @param value {string}
      * @param data {object}
