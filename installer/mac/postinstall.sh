@@ -16,7 +16,7 @@ bring_to_front=$(sed -n '5p' ${settingsFilePath});
 dev_tools_enabled=$(sed -n '6p' ${settingsFilePath});
 
 if [ "$pod_url" == "" ]; then
-    pod_url="https://corporate.symphony.com"
+    pod_url="https://my.symphony.com"
 fi
 
 if [ "$minimize_on_close" == "" ]; then
