@@ -8,26 +8,25 @@ const nodeURL = require('url');
 const shellPath = require('shell-path');
 const urlParser = require('url');
 const nodePath = require('path');
-const compareSemVersions = require('./utils/compareSemVersions.js');
-const { version, clientVersion, buildNumber } = require('../package.json');
+require('electron-dl')();
 
-// Local Dependencies
-const {
-    getConfigField,
-    readConfigFileSync,
-    updateUserConfigOnLaunch,
-    getUserConfigField
-} = require('./config.js');
-const { setCheckboxValues } = require('./menus/menuTemplate.js');
-const { isMac, isDevEnv } = require('./utils/misc.js');
-const protocolHandler = require('./protocolHandler');
-const getCmdLineArg = require('./utils/getCmdLineArg.js');
+const { version, clientVersion, buildNumber } = require('../package.json');
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
+
+log.send(logLevels.INFO, `-----------------Starting the app-----------------`);
+
+// Local Dependencies
+require('./stats');
+const { getConfigField, readConfigFileSync, updateUserConfigOnLaunch, getUserConfigField } = require('./config.js');
+const protocolHandler = require('./protocolHandler');
+const { setCheckboxValues } = require('./menus/menuTemplate.js');
 const autoLaunch = require('./autoLaunch');
 const { handleCacheFailureCheckOnStartup, handleCacheFailureCheckOnExit} = require('./cacheHandler');
 
-require('electron-dl')();
+const compareSemVersions = require('./utils/compareSemVersions.js');
+const { isMac, isDevEnv } = require('./utils/misc.js');
+const getCmdLineArg = require('./utils/getCmdLineArg.js');
 
 //setting the env path child_process issue https://github.com/electron/electron/issues/7688
 shellPath()
@@ -105,7 +104,7 @@ function setChromeFlags() {
     let config = readConfigFileSync();
 
     // If we cannot find any config, just skip setting any flags
-    if (config && config !== null && config.customFlags) {
+    if (config && config.customFlags) {
 
         if (config.customFlags.authServerWhitelist && config.customFlags.authServerWhitelist !== "") {
             log.send(logLevels.INFO, 'Setting auth server whitelist flag');
@@ -212,6 +211,7 @@ app.on('window-all-closed', function () {
 
 app.on('quit', function () {
     handleCacheFailureCheckOnExit();
+    log.send(logLevels.INFO, `-----------------Quitting the app-----------------`);
 });
 
 /**

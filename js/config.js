@@ -103,7 +103,6 @@ function readUserConfig(customConfigPath) {
             try {
                 // data is the contents of the text file we just read
                 userConfig = JSON.parse(data);
-                log.send(logLevels.INFO, `user config data is ${JSON.stringify(userConfig)}`);
                 resolve(userConfig);
             } catch (e) {
                 log.send(logLevels.INFO, `cannot parse user config data ${data}, error is ${e}`);

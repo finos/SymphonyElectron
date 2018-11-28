@@ -136,19 +136,14 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     isCustomTitleBarEnabled = typeof isCustomTitleBar === 'boolean'
         && isCustomTitleBar
         && isWindowsOS;
-    log.send(logLevels.INFO, `we are configuring a custom title bar for windows -> ${isCustomTitleBarEnabled}`);
 
     ctWhitelist = config && config.ctWhitelist;
-    log.send(logLevels.INFO, `we are configuring certificate transparency whitelist for the domains -> ${ctWhitelist}`);
 
     log.send(logLevels.INFO, `creating main window for ${url}`);
 
-    if (config && config !== null && config.customFlags) {
-
-        log.send(logLevels.INFO, 'Chrome flags config found!');
+    if (config && config.customFlags) {
 
         if (config.customFlags.authServerWhitelist && config.customFlags.authServerWhitelist !== "") {
-            log.send(logLevels.INFO, 'setting ntlm domains');
             electronSession.defaultSession.allowNTLMCredentialsForDomains(config.customFlags.authServerWhitelist);
         }
 
