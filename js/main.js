@@ -72,25 +72,30 @@ function initializeCrashReporter(podUrl) {
 
 }
 
-// only allow a single instance of app.
-const shouldQuit = app.makeSingleInstance((argv) => {
-    // Someone tried to run a second instance, we should focus our window.
-    let mainWin = windowMgr.getMainWindow();
-    if (mainWin) {
-        isAppAlreadyOpen = true;
-        if (mainWin.isMinimized()) {
-            mainWin.restore();
-        }
-        mainWin.focus();
-    }
-    processProtocolAction(argv);
-});
-
 let allowMultiInstance = getCmdLineArg(process.argv, '--multiInstance', true) || isDevEnv;
 
-// quit if another instance is already running, ignore for dev env or if app was started with multiInstance flag
-if (!allowMultiInstance && shouldQuit) {
-    app.quit();
+if (!allowMultiInstance) {
+    const gotTheLock = app.requestSingleInstanceLock();
+
+    // quit if another instance is already running, ignore for dev env or if app was started with multiInstance flag
+    if (!gotTheLock) {
+        app.quit()
+    } else {
+        app.on('second-instance', (event, argv) => {
+            // Someone tried to run a second instance, we should focus our window.
+            let mainWin = windowMgr.getMainWindow();
+            if (mainWin) {
+                isAppAlreadyOpen = true;
+                if (mainWin.isMinimized()) {
+                    mainWin.restore();
+                }
+                mainWin.focus();
+            }
+            processProtocolAction(argv);
+        });
+    }
+} else {
+    app.releaseSingleInstanceLock();
 }
 
 /**
