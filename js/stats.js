@@ -56,14 +56,14 @@ const logAppEvents = () => {
 
     const events = [
         'will-finish-launching', 'ready', 'window-all-closed', 'before-quit', 'will-quit', 'quit',
-        'open-file', 'open-url', 'activate', 'browser-window-blur', 'browser-window-focus',
+        'open-file', 'open-url', 'activate',
         'browser-window-created', 'web-contents-created', 'certificate-error', 'login', 'gpu-process-crashed',
         'accessibility-support-changed', 'session-created', 'second-instance'
     ];
 
     events.forEach((appEvent) => {
         app.on(appEvent, () => {
-            log.send(logLevels.INFO, `Event Occurred: ${appEvent}`)
+            log.send(logLevels.INFO, `App Event Occurred: ${appEvent}`)
         });
     });
 };

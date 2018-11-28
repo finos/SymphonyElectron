@@ -31,7 +31,7 @@ function gatherMemory() {
         ' peakWorkingSetSize: ' + memory.peakWorkingSetSize +
         ' privatesBytes: ' + memory.privatesBytes +
         ' sharedBytes: ' + memory.sharedBytes;
-    log.send(logLevels.INFO, details);
+    log.send(logLevels.INFO, `Current Memory Stats -> ${details}`);
 }
 
 /**

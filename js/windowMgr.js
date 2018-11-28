@@ -196,6 +196,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
     mainWindow = new BrowserWindow(newWinOpts);
     mainWindow.winName = 'main';
+    logBrowserWindowEvents(mainWindow, mainWindow.winName);
 
     let throttledMainWinBoundsChange = throttle(1000, saveMainWinBounds);
     mainWindow.on('move', throttledMainWinBoundsChange);
@@ -456,7 +457,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                         let browserWin = BrowserWindow.fromWebContents(childWebContents);
 
                         if (browserWin) {
-                            log.send(logLevels.INFO, 'loaded pop-out window url: ' + newWinParsedUrl);
+                            log.send(logLevels.INFO, `loaded pop-out window url: ${JSON.stringify(newWinParsedUrl)}`);
 
                             browserWin.webContents.send('on-page-load');
                             // applies styles required for snack bar
@@ -467,6 +468,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
                             browserWin.winName = frameName;
                             browserWin.setAlwaysOnTop(alwaysOnTop);
+                            logBrowserWindowEvents(browserWin, browserWin.winName);
 
                             let handleChildWindowCrashEvent = (e) => {
                                 const options = {
@@ -1187,6 +1189,44 @@ function popupMenu() {
     }
 }
 
+const logBrowserWindowEvents = (browserWindow, windowName) => {
+
+    const events = [
+        'page-title-updated', 'close', 'closed', 'session-end', 'unresponsive', 'responsive', 'blur', 'focus',
+        'show', 'hide', 'ready-to-show', 'maximize', 'unmaximize', 'minimize', 'restore', 'resize', 'move', 'moved',
+        'enter-full-screen', 'leave-full-screen', 'enter-html-full-screen', 'leave-html-full-screen', 'app-command'
+    ];
+
+    events.forEach((browserWindowEvent) => {
+        browserWindow.on(browserWindowEvent, () => {
+            log.send(logLevels.INFO, `Browser Window Event Occurred for window (${windowName}) -> ${browserWindowEvent}`);
+        });
+    });
+
+    logBrowserWindowWebContentEvents(browserWindow.webContents, windowName);
+
+};
+
+const logBrowserWindowWebContentEvents = (webContent, windowName) => {
+
+    const events = [
+        'did-finish-load', 'did-fail-load', 'did-frame-finish-load', 'did-start-loading', 'did-stop-loading',
+        'dom-ready', 'page-favicon-updated', 'new-window', 'will-navigate', 'did-start-navigation', 'did-navigate',
+        'did-frame-navigate', 'did-navigate-in-page', 'will-prevent-unload', 'crashed', 'unresponsive', 'responsive',
+        'plugin-crashed', 'destroyed', 'before-input-event', 'devtools-opened', 'devtools-closed', 'devtools-focused',
+        'certificate-error', 'select-client-certificate', 'login', 'found-in-page', 'media-started-playing',
+        'media-paused', 'did-change-theme-color', 'update-target-url', 'cursor-changed', 'context-menu',
+        'select-bluetooth-device', 'paint', 'devtools-reload-page', 'will-attach-webview', 'did-attach-webview',
+        'console-message'
+    ];
+
+    events.forEach((webContentEvent) => {
+        webContent.on(webContentEvent, () => {
+            log.send(logLevels.INFO, `Web Content Event Occurred for window (${windowName}) -> ${webContentEvent}`);
+        });
+    });
+
+};
 
 module.exports = {
     createMainWindow: createMainWindow,
