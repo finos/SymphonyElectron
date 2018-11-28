@@ -28,6 +28,12 @@ const compareSemVersions = require('./utils/compareSemVersions.js');
 const { isMac, isDevEnv } = require('./utils/misc.js');
 const getCmdLineArg = require('./utils/getCmdLineArg.js');
 
+const symDebug = getCmdLineArg(process.argv, '--sym-debug', true) || isDevEnv;
+if (symDebug) {
+    log.send(logLevels.INFO, `-----------------DEBUG MODE-----------------`);
+    process.env.ELECTRON_ENABLE_LOGGING = true;
+}
+
 //setting the env path child_process issue https://github.com/electron/electron/issues/7688
 shellPath()
     .then((path) => {
@@ -72,7 +78,7 @@ function initializeCrashReporter(podUrl) {
 
 }
 
-let allowMultiInstance = getCmdLineArg(process.argv, '--multiInstance', true) || isDevEnv;
+const allowMultiInstance = getCmdLineArg(process.argv, '--multiInstance', true) || isDevEnv;
 
 if (!allowMultiInstance) {
     const gotTheLock = app.requestSingleInstanceLock();
@@ -83,6 +89,7 @@ if (!allowMultiInstance) {
     } else {
         app.on('second-instance', (event, argv) => {
             // Someone tried to run a second instance, we should focus our window.
+            log.send(logLevels.INFO, `Second instance created with args ${argv}`);
             let mainWin = windowMgr.getMainWindow();
             if (mainWin) {
                 isAppAlreadyOpen = true;
@@ -101,9 +108,7 @@ if (!allowMultiInstance) {
 /**
  * Sets chrome authentication flags in electron
  */
-function setChromeFlags() {
-
-    log.send(logLevels.INFO, 'setting chrome flags!');
+function setChromeFlags() {    
 
     // Read the config parameters synchronously
     let config = readConfigFileSync();
@@ -111,18 +116,15 @@ function setChromeFlags() {
     // If we cannot find any config, just skip setting any flags
     if (config && config.customFlags) {
 
-        if (config.customFlags.authServerWhitelist && config.customFlags.authServerWhitelist !== "") {
-            log.send(logLevels.INFO, 'Setting auth server whitelist flag');
+        if (config.customFlags.authServerWhitelist && config.customFlags.authServerWhitelist !== "") {            
             app.commandLine.appendSwitch('auth-server-whitelist', config.customFlags.authServerWhitelist);
         }
 
-        if (config.customFlags.authNegotiateDelegateWhitelist && config.customFlags.authNegotiateDelegateWhitelist !== "") {
-            log.send(logLevels.INFO, 'Setting auth negotiate delegate whitelist flag');
+        if (config.customFlags.authNegotiateDelegateWhitelist && config.customFlags.authNegotiateDelegateWhitelist !== "") {            
             app.commandLine.appendSwitch('auth-negotiate-delegate-whitelist', config.customFlags.authNegotiateDelegateWhitelist);
         }
 
-        if (config.customFlags.disableGpu) {
-            log.send(logLevels.INFO, 'Setting disable gpu, gpu compositing and d3d11 flags to true');
+        if (config.customFlags.disableGpu) {            
             app.commandLine.appendSwitch("disable-gpu", true);
             app.commandLine.appendSwitch("disable-gpu-compositing", true);
             app.commandLine.appendSwitch("disable-d3d11", true);
@@ -132,52 +134,46 @@ function setChromeFlags() {
 
     app.commandLine.appendSwitch("disable-background-timer-throttling", true);
 
-    if (isDevEnv) {
-        setChromeFlagsFromCommandLine();
-    }
+    setChromeFlagsFromCommandLine();
 
 }
 
+/**
+ * Parse arguments from command line 
+ * and set as chrome flags if applicable
+ */
 function setChromeFlagsFromCommandLine() {
+    log.send(logLevels.INFO, 'Setting chrome flags from command line args!');
 
-    log.send(logLevels.INFO, 'Setting chrome flags from command line arguments!');
-
-    let chromeFlagsFromCmd = getCmdLineArg(process.argv, '--chrome-flags=', false);
-    if (!chromeFlagsFromCmd) {
-        return;
-    }
-
-    let chromeFlagsArgs = chromeFlagsFromCmd.substr(15);
-    if (!chromeFlagsArgs) {
-        return;
-    }
-
-    let flags = chromeFlagsArgs.split(',');
-    if (!flags || !Array.isArray(flags)) {
-        return;
-    }
-
-    for (let key in flags) {
-
-        if (!Object.prototype.hasOwnProperty.call(flags, key)) {
-            continue;
-        }
-
-        if (!flags[key]) {
+    // Special args that need to be excluded as part of the chrome command line switch
+    let specialArgs = ['--url', '--multiInstance', '--userDataPath=', 'symphony://', '--inspect-brk', '--inspect'];
+    
+    const cmdArgs = process.argv;
+    cmdArgs.forEach((arg) => {
+        // We need to check if the argument key matches the one
+        // in the special args array and return if it does match
+        const argKey = arg.split('=')[0];
+        if (arg.startsWith('--') && specialArgs.includes(argKey)) {
             return;
         }
 
-        let flagArray = flags[key].split(':');
-
-        if (flagArray && Array.isArray(flagArray) && flagArray.length > 0) {
-            let chromeFlagKey = flagArray[0];
-            let chromeFlagValue = flagArray[1];
-            log.send(logLevels.INFO, `Setting chrome flag ${chromeFlagKey} to ${chromeFlagValue}`);
-            app.commandLine.appendSwitch(chromeFlagKey, chromeFlagValue);
+        // All the chrome flags starts with --
+        // So, any other arg (like 'electron' or '.')
+        // need to be skipped
+        if (arg.startsWith('--')) {
+            // Since chrome takes values after an equals
+            // We split the arg and set it either as 
+            // just a key, or as a key-value pair
+            const argSplit = arg.split('=');
+            if (argSplit.length > 1) {
+                app.commandLine.appendSwitch(argSplit[0].substr(2), argSplit[1]);
+            } else {
+                app.commandLine.appendSwitch(argSplit[0].substr(2));
+            }
+            log.send(logLevels.INFO, `Appended chrome command line switch ${argSplit[0]}`);
         }
 
-    }
-
+    });
 }
 
 // Set the chrome flags
@@ -189,6 +185,8 @@ setChromeFlags();
  * Some APIs can only be used after this event occurs.
  */
 app.on('ready', () => {
+    log.send(logLevels.INFO, `App is ready, proceeding to load the POD`);
+    handlePowerEvents();
     handleCacheFailureCheckOnStartup()
         .then(() => {
             initiateApp();
@@ -211,6 +209,7 @@ app.on('ready', () => {
  * In which case we quit the app
  */
 app.on('window-all-closed', function () {
+    log.send(logLevels.INFO, `All windows closed, quitting the app`);
     app.quit();
 });
 
@@ -223,9 +222,12 @@ app.on('quit', function () {
  * Is triggered when the app is up & running
  */
 app.on('activate', function () {
+    log.send(logLevels.INFO, `SDA is activated again`);
     if (windowMgr.isMainWindow(null)) {
+        log.send(logLevels.INFO, `Main window instance is null, creating new instance`);
         setupThenOpenMainWindow();
     } else {
+        log.send(logLevels.INFO, `Main window instance is available, showing it`);
         windowMgr.showMainWindow();
     }
 });
@@ -246,6 +248,7 @@ if (isMac) {
  * is in pipeline (https://github.com/electron/electron/pull/8052)
  */
 app.on('open-url', function (event, url) {
+    log.send(logLevels.INFO, `Open URL event triggered with url ${JSON.stringify(url)}`);
     handleProtocolAction(url);
 });
 
@@ -260,6 +263,7 @@ function onWebContent(webContents) {
     let currentLocale = i18n.getLanguage();
 
     const contextMenuListener = (event, info) => {
+        log.send(logLevels.INFO, `Context menu event triggered for web contents with info ${JSON.stringify(info)}`);
         if (currentLocale !== i18n.getLanguage()) {
             contextMenuBuilder.setAlternateStringFormatter(spellchecker.getStringTable(i18n.getMessageFor('ContextMenu')));
             spellchecker.updateContextMenuLocale(i18n.getMessageFor('ContextMenu'));
@@ -454,4 +458,17 @@ function handleProtocolAction(uri) {
         log.send(logLevels.INFO, `App opened by protocol url ${uri}`);
         protocolHandler.processProtocolAction(uri);
     }
+}
+
+const handlePowerEvents = () => {
+    
+    const events = [
+        'suspend', 'resume', 'on-ac', 'on-battery', 'shutdown', 'lock-screen', 'unlock-screen'
+    ];
+
+    events.forEach((appEvent) => {
+        electron.powerMonitor.on(appEvent, () => {
+            log.send(logLevels.INFO, `Power Monitor Event Occurred: ${appEvent}`)
+        });
+    });
 }

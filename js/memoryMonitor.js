@@ -25,7 +25,7 @@ setInterval(gatherMemory, 1000 * 60);
  */
 function gatherMemory() {
     let appMetrics = app.getAppMetrics();
-    log.send(logLevels.INFO, `Current Memory Stats -> ${appMetrics}`);
+    log.send(logLevels.INFO, `Current App Metrics -> ${JSON.stringify(appMetrics)}`);
 }
 
 /**

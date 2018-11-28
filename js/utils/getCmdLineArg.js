@@ -9,7 +9,7 @@ const logLevels = require('../enums/logLevels.js');
  * @param  {String} argName   Arg name to search for.
  * @param  {Boolean} exactMatch  If true then look for exact match otherwise
  * try finding arg that starts with argName.
- * @return {String}           If found, returns the arg, otherwise null.
+ * @return {Array}           If found, returns the arg, otherwise null.
  */
 function getCmdLineArg(argv, argName, exactMatch) {
     if (!Array.isArray(argv)) {

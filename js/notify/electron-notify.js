@@ -261,6 +261,8 @@ function calcDimensions() {
  * Setup the notification config
  */
 function setupConfig() {
+    
+    log.send(logLevels.INFO, `Either a display was added / removed / the metrics were changed`);
 
     // This feature only applies to windows
     if (!isMac) {
@@ -573,11 +575,13 @@ function buildCloseNotificationSafely(closeFunc) {
 }
 
 ipc.on('electron-notify-close', function (event, winId, notificationObj) {
+    log.send(logLevels.INFO, `Closing notification for ${winId}}`);
     let closeFunc = buildCloseNotification(BrowserWindow.fromId(winId), notificationObj);
     buildCloseNotificationSafely(closeFunc)('close');
 });
 
 ipc.on('electron-notify-click', function (event, winId, notificationObj) {
+    log.send(logLevels.INFO, `Notification click event triggered for ${winId}}`);
     let notificationWindow = BrowserWindow.fromId(winId);
     if (notificationWindow && notificationWindow.electronNotifyOnClickFunc) {
         let closeFunc = buildCloseNotification(notificationWindow, notificationObj);
@@ -802,8 +806,9 @@ function resetAnimationQueue() {
  * @param winId
  * @param notificationObj
  */
-function onMouseLeave(event, winId, notificationObj) {
+function onMouseLeave(event, winId, notificationObj) {    
     if (winId) {
+        log.send(logLevels.INFO, `Mouse was removed from the notification ${winId}`);
         const notificationWindow = BrowserWindow.fromId(winId);
         if (notificationWindow && !notificationWindow.isDestroyed()) {
             notificationWindow.displayTimer = setTimeout(function () {
@@ -819,8 +824,9 @@ function onMouseLeave(event, winId, notificationObj) {
  * @param event
  * @param winId
  */
-function onMouseOver(event, winId) {
+function onMouseOver(event, winId) {    
     if (winId) {
+        log.send(logLevels.INFO, `Mouse hover on notification ${winId}`);
         const notificationWindow = BrowserWindow.fromId(winId);
         if (notificationWindow) {
             clearTimeout(notificationWindow.displayTimer);

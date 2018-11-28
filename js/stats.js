@@ -8,7 +8,7 @@ const logLevels = require('./enums/logLevels.js');
 
 const MB_IN_BYTES = 1048576;
 
-const getSystemStats = () => {
+const logSystemStats = () => {
     log.send(logLevels.INFO, `-----------------Gathering system information-----------------`);
     log.send(logLevels.INFO, `Network Info -> ${JSON.stringify(os.networkInterfaces())}`);
     log.send(logLevels.INFO, `CPU Info -> ${JSON.stringify(os.cpus())}`);
@@ -25,12 +25,12 @@ const getSystemStats = () => {
     log.send(logLevels.INFO, `User Info (OS Returned) -> ${JSON.stringify(os.userInfo())}`);
 };
 
-const getGPUStats = () => {
+const logGPUStats = () => {
     log.send(logLevels.INFO, `-----------------Gathering GPU information-----------------`);
     log.send(logLevels.INFO, `GPU Feature Status -> ${JSON.stringify(app.getGPUFeatureStatus())}`);    
 };
 
-const getPodStats = () => {
+const logPodStats = () => {
     const fields = ['url', 'minimizeOnClose', 'launchOnStartup', 'alwaysOnTop', 'bringToFront', 'whitelistUrl', 'isCustomTitleBar', 'memoryRefresh', 'devToolsEnabled', 'ctWhitelist', 'notificationSettings', 'crashReporter', 'customFlags', 'permissions', 'autoLaunchPath'];
     config.getMultipleConfigField(fields)
         .then((data) => {
@@ -44,7 +44,7 @@ const getPodStats = () => {
         });
 };
 
-const getAppMetrics = () => {
+const logAppMetrics = () => {
     log.send(logLevels.INFO, `-----------------Gathering App Metrics-----------------`);
     const metrics = app.getAppMetrics();
     metrics.forEach((metric) => {
@@ -68,15 +68,27 @@ const logAppEvents = () => {
     });
 };
 
-getSystemStats();
-getGPUStats();
-getPodStats();
-getAppMetrics();
+const logProcessInfo = () => {
+    log.send(logLevels.INFO, `Is default app? ${process.defaultApp}`);
+    log.send(logLevels.INFO, `Is Mac Store app? ${process.mas}`);
+    log.send(logLevels.INFO, `Is Windows Store app? ${process.windowsStore}`);
+    log.send(logLevels.INFO, `Resources Path? ${process.resourcesPath}`);
+    log.send(logLevels.INFO, `Sandboxed? ${process.sandboxed}`);
+    log.send(logLevels.INFO, `Chrome Version? ${process.versions.chrome}`);
+    log.send(logLevels.INFO, `Electron Version? ${process.versions.electron}`);
+    log.send(logLevels.INFO, `Creation Time? ${process.getCreationTime()}`);
+}
+
+logSystemStats();
+logGPUStats();
+logPodStats();
+logAppMetrics();
 logAppEvents();
+logProcessInfo();
 
 module.exports = {
-    getSystemStats: getSystemStats,
-    getGPUStats: getGPUStats,
-    getPodStats: getPodStats,
-    getAppMetrics: getAppMetrics
+    getSystemStats: logSystemStats,
+    getGPUStats: logGPUStats,
+    getPodStats: logPodStats,
+    getAppMetrics: logAppMetrics
 };

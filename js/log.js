@@ -1,5 +1,8 @@
 'use strict';
 
+const fs = require('fs');
+const util = require('util');
+
 const {app} = require('electron');
 const path = require('path');
 const getCmdLineArg = require('./utils/getCmdLineArg.js');
@@ -104,11 +107,33 @@ let loggerInstance = new Logger();
 function initializeLocalLogger() {
 // eslint-disable-next-line global-require
     electronLog = require('electron-log');
-    electronLog.transports.file.file = path.join(app.getPath('logs'), 'app.log');
+    const logPath = app.getPath('logs');
+    cleanupOldLogs(logPath);
+    electronLog.transports.file.file = path.join(logPath, 'app.log');
     electronLog.transports.file.level = 'debug';
-    electronLog.transports.file.format = '{h}:{i}:{s}:{ms} {text}';
-    electronLog.transports.file.maxSize = 10 * 1024 * 1024;
+    electronLog.transports.file.format = '{y}-{m}-{d} {h}:{i}:{s}:{ms} {z} | {level} | {text}';
+    electronLog.transports.file.maxSize = 10 * 10 * 1024;
     electronLog.transports.file.appName = 'Symphony';
+}
+
+/**
+ * Cleans up old log files in the given path
+ * @param {String} logPath Path of the log files
+ */
+function cleanupOldLogs(logPath) {
+    let files = fs.readdirSync(logPath);
+    const deleteTimeStamp = new Date().getTime() + (10 * 24 * 60 * 60 * 1000)
+    files.forEach((file) => {
+        if (file === '.DS_Store' || file === 'app.log') {
+            return;
+        }
+        const filePath = path.join(logPath, file);
+        const stat = fs.statSync(filePath);
+        const fileTimestamp = new Date(util.inspect(stat.mtime)).getTime();
+        if (fileTimestamp > deleteTimeStamp) {
+            fs.unlinkSync(filePath);
+        }
+    });
 }
 
 /**

@@ -46,6 +46,7 @@ app.on('ready', () => {
  * Update all the screens
  */
 function updateScreens() {
+    log.send(logLevels.INFO, `Updating screens as there is change in display connections`);
     screens = electron.screen.getAllDisplays();
 
     // Notifying renderer when a display is added/removed
@@ -149,6 +150,7 @@ function openConfigurationWindow(windowName) {
  * Destroys a window
  */
 function destroyWindow() {
+    log.send(logLevels.INFO, `Closing notification configure window`);
     configurationWindow = null;
 }
 
@@ -162,6 +164,7 @@ function updateConfig() {
     };
     updateConfigField('notificationSettings', settings);
     updateNotification(position, display);
+    log.send(logLevels.INFO, `Updating notification position on screen`);
 }
 
 /**

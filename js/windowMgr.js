@@ -370,6 +370,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     const enforceInheritance = (topWebContents) => {
         const handleNewWindow = (webContents) => {
             webContents.on('new-window', (event, newWinUrl, frameName, disposition, newWinOptions) => {
+                log.send(logLevels.INFO, `Creating a pop-out window for the url ${newWinUrl} with frame name ${frameName}, disposition ${disposition} and options ${newWinOptions}`);
                 if (!newWinOptions.webPreferences) {
                     // eslint-disable-next-line no-param-reassign
                     newWinOptions.webPreferences = {};
@@ -471,6 +472,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                             logBrowserWindowEvents(browserWin, browserWin.winName);
 
                             let handleChildWindowCrashEvent = (e) => {
+                                log.send(logLevels.INFO, `Child Window crashed!`);
                                 const options = {
                                     type: 'error',
                                     title: i18n.getMessageFor('Renderer Process Crashed'),
@@ -960,8 +962,9 @@ function isAlwaysOnTop(boolean, shouldActivateMainWindow = true) {
 }
 
 // node event emitter to update always on top
-eventEmitter.on('isAlwaysOnTop', (params) => {
+eventEmitter.on('isAlwaysOnTop', (params) => {    
     isAlwaysOnTop(params.isAlwaysOnTop, params.shouldActivateMainWindow);
+    log.send(logLevels.INFO, `Updating settings for always on top ${params}`);
 });
 
 // node event emitter for notification settings
@@ -1026,6 +1029,7 @@ function setLanguage(language) {
  */
 function verifyDisplays() {
 
+    log.send(logLevels.INFO, `Display removed`);
     // This is only for Windows, macOS handles this by itself
     if (!mainWindow || isMac) {
         return;
@@ -1200,29 +1204,6 @@ const logBrowserWindowEvents = (browserWindow, windowName) => {
     events.forEach((browserWindowEvent) => {
         browserWindow.on(browserWindowEvent, () => {
             log.send(logLevels.INFO, `Browser Window Event Occurred for window (${windowName}) -> ${browserWindowEvent}`);
-        });
-    });
-
-    logBrowserWindowWebContentEvents(browserWindow.webContents, windowName);
-
-};
-
-const logBrowserWindowWebContentEvents = (webContent, windowName) => {
-
-    const events = [
-        'did-finish-load', 'did-fail-load', 'did-frame-finish-load', 'did-start-loading', 'did-stop-loading',
-        'dom-ready', 'page-favicon-updated', 'new-window', 'will-navigate', 'did-start-navigation', 'did-navigate',
-        'did-frame-navigate', 'did-navigate-in-page', 'will-prevent-unload', 'crashed', 'unresponsive', 'responsive',
-        'plugin-crashed', 'destroyed', 'before-input-event', 'devtools-opened', 'devtools-closed', 'devtools-focused',
-        'certificate-error', 'select-client-certificate', 'login', 'found-in-page', 'media-started-playing',
-        'media-paused', 'did-change-theme-color', 'update-target-url', 'cursor-changed', 'context-menu',
-        'select-bluetooth-device', 'paint', 'devtools-reload-page', 'will-attach-webview', 'did-attach-webview',
-        'console-message'
-    ];
-
-    events.forEach((webContentEvent) => {
-        webContent.on(webContentEvent, () => {
-            log.send(logLevels.INFO, `Web Content Event Occurred for window (${windowName}) -> ${webContentEvent}`);
         });
     });
 

@@ -4,6 +4,9 @@ const fs = require('fs');
 const path = require('path');
 const archiver = require('archiver');
 
+const log = require('../log.js');
+const logLevels = require('../enums/logLevels.js');
+
 /**
  * Archives files in the source directory
  * that matches the given file extension
@@ -21,10 +24,12 @@ function generateArchiveForDirectory(source, destination, fileExtensions) {
         let archive = archiver('zip', {zlib: {level: 9}});
 
         output.on('close', function () {
+            log.send(logLevels.INFO, `Successfully archived the files`);
             resolve();
         });
     
         archive.on('error', function(err){
+            log.send(logLevels.INFO, `Error archiving ${JSON.stringify(err)}`);
             reject(err);
         });
         
