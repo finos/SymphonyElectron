@@ -152,11 +152,9 @@ electron.ipcMain.on(apiName, (event, arg) => {
             break;
         }
         case apiCmds.optimizeMemoryConsumption:
-            if (typeof arg.memory === 'object'
-                && typeof arg.memory.workingSetSize === 'number'
-                && typeof arg.activeRequests === 'number') {
-                log.send(logLevels.INFO, 'Received memory info from renderer');
-                setPreloadMemoryInfo(arg.memory, arg.activeRequests);
+            if (typeof arg.activeRequests === 'number') {
+                log.send(logLevels.INFO, 'Received active network request from renderer processes');
+                setPreloadMemoryInfo(arg.activeRequests);
             }
             break;
         case apiCmds.optimizeMemoryRegister:
