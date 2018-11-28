@@ -1,5 +1,5 @@
 'use strict';
-
+const { app } = require('electron');
 const systemIdleTime = require('@paulcbetts/system-idle-time');
 
 const log = require('./log.js');
@@ -7,7 +7,6 @@ const logLevels = require('./enums/logLevels.js');
 const { getMainWindow, setIsAutoReload, getIsOnline } = require('./windowMgr');
 const { getConfigField } = require('./config');
 
-const maxMemory = 800;
 const memoryRefreshThreshold = 60 * 60 * 1000;
 const maxIdleTime = 4 * 60 * 60 * 1000;
 const memoryRefreshInterval = 60 * 60 * 1000;
@@ -25,13 +24,8 @@ setInterval(gatherMemory, 1000 * 60);
  * Gathers system memory and logs it to the remote system
  */
 function gatherMemory() {
-    let memory = process.getProcessMemoryInfo();
-    let details =
-        'workingSetSize: ' + memory.workingSetSize +
-        ' peakWorkingSetSize: ' + memory.peakWorkingSetSize +
-        ' privatesBytes: ' + memory.privatesBytes +
-        ' sharedBytes: ' + memory.sharedBytes;
-    log.send(logLevels.INFO, details);
+    let appMetrics = app.getAppMetrics();
+    log.send(logLevels.INFO, appMetrics);
 }
 
 /**
@@ -41,17 +35,15 @@ function gatherMemory() {
  */
 function optimizeMemory() {
 
-    if (!preloadMemory || !preloadMemory.memoryInfo || !preloadMemory.cpuUsage) {
-        log.send(logLevels.INFO, `Memory info not available`);
+    if (!preloadMemory.cpuUsage) {
+        log.send(logLevels.INFO, `cpu usage not available`);
         return;
     }
 
-    const memoryConsumed = (preloadMemory.memoryInfo && preloadMemory.memoryInfo.workingSetSize / 1024) || 0;
     const cpuUsagePercentage = preloadMemory.cpuUsage.percentCPUUsage;
     const activeNetworkRequest = preloadMemory.activeRequests === 0;
 
-    if (memoryConsumed > maxMemory
-        && cpuUsagePercentage <= cpuUsageThreshold
+    if (cpuUsagePercentage <= cpuUsageThreshold
         && !isInMeeting
         && getIsOnline()
         && canReload
@@ -66,7 +58,7 @@ function optimizeMemory() {
                     if (mainWindow && !mainWindow.isDestroyed()) {
                         setIsAutoReload(true);
                         log.send(logLevels.INFO, `Reloading the app to optimize memory usage as 
-                        memory consumption was ${memoryConsumed} 
+                        memory consumption is no longer detectable 
                         CPU usage percentage was ${preloadMemory.cpuUsage.percentCPUUsage} 
                         user was in a meeting? ${isInMeeting}
                         pending network request on the client was ${preloadMemory.activeRequests}
@@ -86,7 +78,7 @@ function optimizeMemory() {
     } else {
         log.send(logLevels.INFO, `Not Reloading the app as
                         application was refreshed less than a hour ago? ${canReload ? 'no' : 'yes'}
-                        memory consumption was ${memoryConsumed} 
+                        memory consumption is no longer detectable
                         CPU usage percentage was ${preloadMemory.cpuUsage.percentCPUUsage} 
                         user was in a meeting? ${isInMeeting}
                         pending network request on the client was ${preloadMemory.activeRequests}
@@ -105,13 +97,12 @@ function setIsInMeeting(meetingStatus) {
 /**
  * Sets preload memory info and calls optimize memory func
  *
- * @param memoryInfo - memory consumption of the preload main script
  * @param activeRequests - pending active network requests on the client
  */
-function setPreloadMemoryInfo(memoryInfo, activeRequests) {
+function setPreloadMemoryInfo(activeRequests) {
     log.send(logLevels.INFO, 'Memory info received from preload process now running optimize memory logic');
     const cpuUsage = process.getCPUUsage();
-    preloadMemory = { memoryInfo, cpuUsage, activeRequests };
+    preloadMemory = { cpuUsage, activeRequests };
     optimizeMemory();
 }
 
