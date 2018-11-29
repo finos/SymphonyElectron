@@ -14,7 +14,7 @@ const { version, clientVersion, buildNumber } = require('../package.json');
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
 
-log.send(logLevels.INFO, `-----------------Starting the app-----------------`);
+log.send(logLevels.INFO, `-----------------Starting the app with version ${version}-----------------`);
 
 // Local Dependencies
 require('./stats');
@@ -27,12 +27,6 @@ const { handleCacheFailureCheckOnStartup, handleCacheFailureCheckOnExit} = requi
 const compareSemVersions = require('./utils/compareSemVersions.js');
 const { isMac, isDevEnv } = require('./utils/misc.js');
 const getCmdLineArg = require('./utils/getCmdLineArg.js');
-
-const symDebug = getCmdLineArg(process.argv, '--sym-debug', true) || isDevEnv;
-if (symDebug) {
-    log.send(logLevels.INFO, `-----------------DEBUG MODE-----------------`);
-    process.env.ELECTRON_ENABLE_LOGGING = true;
-}
 
 //setting the env path child_process issue https://github.com/electron/electron/issues/7688
 shellPath()
@@ -471,4 +465,4 @@ const handlePowerEvents = () => {
             log.send(logLevels.INFO, `Power Monitor Event Occurred: ${appEvent}`)
         });
     });
-}
+};

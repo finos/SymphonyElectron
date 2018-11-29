@@ -1,7 +1,7 @@
 {
   "name": "Symphony",
   "productName": "Symphony",
-  "version": "3.5.0",
+  "version": "4.0.0-beta.1",
   "clientVersion": "1.53",
   "buildNumber": "0",
   "description": "Symphony desktop app (Foundation ODP)",

@@ -10,6 +10,7 @@ const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 const eventEmitter = require('../eventEmitter');
 const aboutApp = require('../aboutApp');
+const moreInfo = require('../moreInfo');
 const titleBarStyles = require('../enums/titleBarStyles');
 const i18n = require('../translation/i18n');
 const autoLaunch = require('../autoLaunch');
@@ -188,6 +189,13 @@ function getTemplate(app) {
                                             });
                                         }
                                     });
+                            }
+                        },
+                        {
+                            label: i18n.getMessageFor('More Information'),
+                            click(item, focusedWindow) {
+                                let windowName = focusedWindow ? focusedWindow.name : '';
+                                moreInfo.openMoreInfoWindow(windowName);
                             }
                         }
                     ]
