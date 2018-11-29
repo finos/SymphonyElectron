@@ -1,3 +1,17 @@
+
+/*---
+title:   Tile bar
+section: div
+---
+
+Use this Id for setting the background image.
+Typically you'll want to set background-image: url(""); and background-size: cover;
+
+```example:html
+<div id="title-bar">
+```
+
+*/
 #title-bar {
     display: flex;
     position: fixed;
@@ -15,12 +29,45 @@
     z-index: 1000;
 }
 
+/*---
+title:   @media
+section: title-bar
+---
+@media screen and (min-width: 400px) {
+    #title-bar {
+        background-url: url("big");
+    }
+}
+
+@media screen and (max-width: 600px) {
+    #title-bar {
+        background-color: url("small");
+    }
+}
+*/
+
+/*---
+title:   Branding logo
+section: div
+---
+
+Use this class for the branding logo.
+Typically you'll want to set content: url("") and adjust the width property
+
+```example:html
+<div id="branding-logo" align="right" />
+```
+*/
+.branding-logo {
+    height: 32px;
+}
+
 #hamburger-menu-button {
     color: rgba(255,255,255,1);
     text-align: center;
     width: 40px;
     height: 32px;
-    background: none;
+    background: center;
     border: none;
     border-image: initial;
     display: inline-grid;
@@ -61,7 +108,6 @@
     text-align: center;
     width: 45px;
     height: 32px;
-    background: rgba(74,74,74,1);
     margin: 0;
     box-sizing: border-box !important;
     cursor: default;
@@ -72,7 +118,7 @@
     text-align: center;
     width: 45px;
     height: 32px;
-    background: none;
+    background: center;
     border: none;
     border-image: initial;
     display: inline-grid;
@@ -82,7 +128,7 @@
 }
 
 .title-bar-button:hover {
-    background-color: rgba(51,51,51,1);
+    background-color: rgba(255,255,255,0.2);
 }
 
 .title-bar-button:focus {
@@ -90,7 +136,7 @@
 }
 
 .title-bar-button-container:hover {
-    background-color: rgba(51,51,51,1);
+    background-color: rgba(255,255,255,0.2);
 }
 
 .window-border {

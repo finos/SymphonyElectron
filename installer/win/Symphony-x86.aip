@@ -156,7 +156,7 @@
     <ROW File="VkLayer_object_tracker.dll" Component_="VkLayer_object_tracker.dll" FileName="VKLAYE~2.DLL|VkLayer_object_tracker.dll" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\VkLayer_object_tracker.dll" SelfReg="false" NextFile="VkLayer_parameter_validation.dll"/>
     <ROW File="VkLayer_parameter_validation.dll" Component_="VkLayer_parameter_validation.dll" FileName="VKLAYE~3.DLL|VkLayer_parameter_validation.dll" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\VkLayer_parameter_validation.dll" SelfReg="false" NextFile="VkLayer_threading.dll"/>
     <ROW File="VkLayer_threading.dll" Component_="VkLayer_threading.dll" FileName="VKLAYE~4.DLL|VkLayer_threading.dll" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\VkLayer_threading.dll" SelfReg="false" NextFile="VkLayer_unique_objects.dll"/>
-    <ROW File="VkLayer_unique_objects.dll" Component_="VkLayer_unique_objects.dll" FileName="VKLAYE~5.DLL|VkLayer_unique_objects.dll" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\VkLayer_unique_objects.dll" SelfReg="false"/>
+    <ROW File="VkLayer_unique_objects.dll" Component_="VkLayer_unique_objects.dll" FileName="VKLAYE~5.DLL|VkLayer_unique_objects.dll" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\VkLayer_unique_objects.dll" SelfReg="false" NextFile="titleBarStyles.css"/>
     <ROW File="am.pak" Component_="am.pak" FileName="am.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\am.pak" SelfReg="false" NextFile="ar.pak"/>
     <ROW File="app.asar" Component_="appupdate.yml" FileName="APP~1.ASA|app.asar" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\resources\app.asar" SelfReg="false" NextFile="cld.node"/>
     <ROW File="ar.pak" Component_="am.pak" FileName="ar.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\ar.pak" SelfReg="false" NextFile="bg.pak"/>
@@ -231,6 +231,7 @@
     <ROW File="tarwin.exe" Component_="tarwin.exe" FileName="tar-win.exe" Attributes="0" SourcePath="..\..\library\tar-win.exe" SelfReg="false" NextFile="ScreenSnippet.exe" DigSign="true"/>
     <ROW File="te.pak" Component_="am.pak" FileName="te.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\te.pak" SelfReg="false" NextFile="th.pak"/>
     <ROW File="th.pak" Component_="am.pak" FileName="th.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\th.pak" SelfReg="false" NextFile="tr.pak"/>
+    <ROW File="titleBarStyles.css" Component_="Symphony.config" FileName="TITLEB~1.CSS|titleBarStyles.css" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\config\titleBarStyles.css" SelfReg="false"/>
     <ROW File="tr.pak" Component_="am.pak" FileName="tr.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\tr.pak" SelfReg="false" NextFile="uk.pak"/>
     <ROW File="tsconfig.json" Component_="npmignore" FileName="TSCONF~1.JSO|tsconfig.json" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\tsconfig.json" SelfReg="false" NextFile="tslint.json"/>
     <ROW File="tslint.json" Component_="npmignore" FileName="TSLINT~1.JSO|tslint.json" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\tslint.json" SelfReg="false" NextFile="Jobber.exe"/>

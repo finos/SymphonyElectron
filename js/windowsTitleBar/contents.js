@@ -81,6 +81,7 @@ const titleBar = (`
 
         <p id="title-bar-title">Symphony</p>
     </div>
+    <div class="branding-logo" align="right" />
 </div>
 `);
 

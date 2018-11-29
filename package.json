@@ -36,6 +36,7 @@
     ],
     "extraFiles": [
       "config/Symphony.config",
+      "config/titleBarStyles.css",
       "library/libsymphonysearch.dylib",
       "library/cryptoLib.dylib",
       "library/lz4.exec"
