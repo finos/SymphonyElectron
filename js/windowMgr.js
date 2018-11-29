@@ -263,7 +263,11 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                     const execPath = path.dirname(app.getPath('exe'));
                     titleBarStylesPath = path.join(execPath, stylesFileName);
                 }
-                titleBarStyles = fs.readFileSync(titleBarStylesPath, 'utf8').toString();
+                if (fs.existsSync(titleBarStylesPath)) {
+                    titleBarStyles = fs.readFileSync(titleBarStylesPath, 'utf8').toString();
+                } else {
+                    titleBarStyles = fs.readFileSync(path.join(__dirname, '/windowsTitleBar/style.css'), 'utf8').toString();
+                }
             }
             mainWindow.webContents.insertCSS(titleBarStyles);
             // This is required to initiate Windows title bar only after insertCSS
