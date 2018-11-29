@@ -44,6 +44,7 @@ let display;
 let isAutoReload = false;
 let devToolsEnabled = true;
 let isCustomTitleBarEnabled = true;
+let titleBarStyles;
 
 const KeyCodes = {
     Esc: 27,
@@ -253,7 +254,22 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         // initializes and applies styles required for snack bar
         mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/snackBar/style.css'), 'utf8').toString());
         if (isCustomTitleBarEnabled) {
-            mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/windowsTitleBar/style.css'), 'utf8').toString());
+            if (!titleBarStyles) {
+                let titleBarStylesPath;
+                let stylesFileName = path.join('config', 'titleBarStyles.css');
+                if (isDevEnv) {
+                    titleBarStylesPath = path.join(app.getAppPath(), stylesFileName);
+                } else {
+                    const execPath = path.dirname(app.getPath('exe'));
+                    titleBarStylesPath = path.join(execPath, stylesFileName);
+                }
+                if (fs.existsSync(titleBarStylesPath)) {
+                    titleBarStyles = fs.readFileSync(titleBarStylesPath, 'utf8').toString();
+                } else {
+                    titleBarStyles = fs.readFileSync(path.join(__dirname, '/windowsTitleBar/style.css'), 'utf8').toString();
+                }
+            }
+            mainWindow.webContents.insertCSS(titleBarStyles);
             // This is required to initiate Windows title bar only after insertCSS
             const titleBarStyle = getTitleBarStyle();
             mainWindow.webContents.send('initiate-windows-title-bar', titleBarStyle);

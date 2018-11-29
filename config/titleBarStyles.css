@@ -1,3 +1,17 @@
+
+/*---
+title:   Tile bar
+section: div
+---
+
+Use this Id for setting the background image.
+Typically you'll want to set background-image: url(""); and background-size: cover;
+
+```example:html
+<div id="title-bar">
+```
+
+*/
 #title-bar {
     display: flex;
     position: fixed;
@@ -13,6 +27,39 @@
     -webkit-user-select: none;
     box-sizing: content-box;
     z-index: 1000;
+}
+
+/*---
+title:   @media
+section: title-bar
+---
+@media screen and (min-width: 400px) {
+    #title-bar {
+        background-url: url("big");
+    }
+}
+
+@media screen and (max-width: 600px) {
+    #title-bar {
+        background-color: url("small");
+    }
+}
+*/
+
+/*---
+title:   Branding logo
+section: div
+---
+
+Use this class for the branding logo.
+Typically you'll want to set content: url("") and adjust the width property
+
+```example:html
+<div id="branding-logo" align="right" />
+```
+*/
+.branding-logo {
+    height: 32px;
 }
 
 #hamburger-menu-button {
