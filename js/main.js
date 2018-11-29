@@ -146,7 +146,9 @@ function setChromeFlagsFromCommandLine() {
     cmdArgs.forEach((arg) => {
         // We need to check if the argument key matches the one
         // in the special args array and return if it does match
-        const argKey = arg.split('=')[0];
+        const argSplit = arg.split('=');
+        const argKey = argSplit[0];
+        const argValue = argSplit[1] && arg.substring(arg.indexOf('=')+1);
         if (arg.startsWith('--') && specialArgs.includes(argKey)) {
             return;
         }
@@ -157,14 +159,13 @@ function setChromeFlagsFromCommandLine() {
         if (arg.startsWith('--')) {
             // Since chrome takes values after an equals
             // We split the arg and set it either as 
-            // just a key, or as a key-value pair
-            const argSplit = arg.split('=');
-            if (argSplit.length > 1) {
-                app.commandLine.appendSwitch(argSplit[0].substr(2), argSplit[1]);
+            // just a key, or as a key-value pair            
+            if (argKey && argValue) {
+                app.commandLine.appendSwitch(argKey.substr(2), argValue);
             } else {
-                app.commandLine.appendSwitch(argSplit[0].substr(2));
+                app.commandLine.appendSwitch(argKey);
             }
-            log.send(logLevels.INFO, `Appended chrome command line switch ${argSplit[0]}`);
+            log.send(logLevels.INFO, `Appended chrome command line switch ${argKey} with value ${argValue}`);
         }
 
     });
