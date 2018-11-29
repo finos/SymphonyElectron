@@ -1,7 +1,6 @@
 'use strict';
-const { app } = require('electron');
-const systemIdleTime = require('@paulcbetts/system-idle-time');
-
+const electron = require('electron');
+const app = electron.app; 
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
 const { getMainWindow, setIsAutoReload, getIsOnline } = require('./windowMgr');
@@ -43,47 +42,50 @@ function optimizeMemory() {
     const cpuUsagePercentage = preloadMemory.cpuUsage.percentCPUUsage;
     const activeNetworkRequest = preloadMemory.activeRequests === 0;
 
-    if (cpuUsagePercentage <= cpuUsageThreshold
-        && !isInMeeting
-        && getIsOnline()
-        && canReload
-        && systemIdleTime.getIdleTime() > maxIdleTime
-        && activeNetworkRequest
-    ) {
-        getConfigField('memoryRefresh')
-            .then((enabled) => {
-                if (enabled) {
-                    const mainWindow = getMainWindow();
-
-                    if (mainWindow && !mainWindow.isDestroyed()) {
-                        setIsAutoReload(true);
-                        log.send(logLevels.INFO, `Reloading the app to optimize memory usage as 
-                        memory consumption is no longer detectable 
-                        CPU usage percentage was ${preloadMemory.cpuUsage.percentCPUUsage} 
-                        user was in a meeting? ${isInMeeting}
-                        pending network request on the client was ${preloadMemory.activeRequests}
-                        is network online? ${getIsOnline()}`);
-                        mainWindow.reload();
-
-                        // do not refresh for another 1hrs
-                        canReload = false;
-                        setTimeout(() => {
-                            canReload = true;
-                        }, memoryRefreshThreshold);
+    electron.powerMonitor.querySystemIdleTime((time) => {
+        const idleTime = time * 1000;
+        if (cpuUsagePercentage <= cpuUsageThreshold
+            && !isInMeeting
+            && getIsOnline()
+            && canReload
+            && idleTime > maxIdleTime
+            && activeNetworkRequest
+        ) {
+            getConfigField('memoryRefresh')
+                .then((enabled) => {
+                    if (enabled) {
+                        const mainWindow = getMainWindow();
+    
+                        if (mainWindow && !mainWindow.isDestroyed()) {
+                            setIsAutoReload(true);
+                            log.send(logLevels.INFO, `Reloading the app to optimize memory usage as 
+                            memory consumption is no longer detectable 
+                            CPU usage percentage was ${preloadMemory.cpuUsage.percentCPUUsage} 
+                            user was in a meeting? ${isInMeeting}
+                            pending network request on the client was ${preloadMemory.activeRequests}
+                            is network online? ${getIsOnline()}`);
+                            mainWindow.reload();
+    
+                            // do not refresh for another 1hrs
+                            canReload = false;
+                            setTimeout(() => {
+                                canReload = true;
+                            }, memoryRefreshThreshold);
+                        }
+                    } else {
+                        log.send(logLevels.INFO, `Memory refresh not enabled by the user so Not Reloading the app`);
                     }
-                } else {
-                    log.send(logLevels.INFO, `Memory refresh not enabled by the user so Not Reloading the app`);
-                }
-            });
-    } else {
-        log.send(logLevels.INFO, `Not Reloading the app as
-                        application was refreshed less than a hour ago? ${canReload ? 'no' : 'yes'}
-                        memory consumption is no longer detectable
-                        CPU usage percentage was ${preloadMemory.cpuUsage.percentCPUUsage} 
-                        user was in a meeting? ${isInMeeting}
-                        pending network request on the client was ${preloadMemory.activeRequests}
-                        is network online? ${getIsOnline()}`);
-    }
+                });
+        } else {
+            log.send(logLevels.INFO, `Not Reloading the app as
+                            application was refreshed less than a hour ago? ${canReload ? 'no' : 'yes'}
+                            memory consumption is no longer detectable
+                            CPU usage percentage was ${preloadMemory.cpuUsage.percentCPUUsage} 
+                            user was in a meeting? ${isInMeeting}
+                            pending network request on the client was ${preloadMemory.activeRequests}
+                            is network online? ${getIsOnline()}`);
+        }
+    });  
 }
 
 /**

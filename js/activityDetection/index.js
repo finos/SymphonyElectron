@@ -1,6 +1,6 @@
 'use strict';
-
-const systemIdleTime = require('@paulcbetts/system-idle-time');
+const electron = require('electron');
+const { app } = electron;
 const throttle = require('../utils/throttle');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
@@ -19,21 +19,33 @@ let maxIdleTime;
 let activityWindow;
 let intervalId;
 let throttleActivity;
-
 /**
  * Check if the user is idle
  */
 function activityDetection() {
-    // Get system idle status and idle time from PaulCBetts package
-    if (systemIdleTime.getIdleTime() < maxIdleTime) {
-        return { isUserIdle: false, systemIdleTime: systemIdleTime.getIdleTime() };
-    }
 
-    // If idle for more than 4 mins, monitor system idle status every second
-    if (!intervalId) {
-        monitorUserActivity();
+    if (app.isReady()) {
+
+        electron.powerMonitor.querySystemIdleTime((time) => {
+            // sent Idle time in milliseconds
+            let idleTime = time * 1000 + 1; //ensuring that zero wont be sent
+            if (idleTime != null && idleTime !== undefined) {
+
+                if (idleTime < maxIdleTime) {
+
+                    let systemActivity = { isUserIdle: false, systemIdleTime: idleTime };
+                    if (systemActivity && !systemActivity.isUserIdle && typeof systemActivity.systemIdleTime === 'number') {
+                        return self.send({ systemIdleTime: systemActivity.systemIdleTime });
+                    }
+                }
+            }
+            // If idle for more than 4 mins, monitor system idle status every second
+            if (!intervalId) {
+                self.monitorUserActivity();
+            }
+            return null;
+        })
     }
-    return null;
 }
 
 /**
@@ -43,12 +55,10 @@ function activityDetection() {
 function initiateActivityDetection() {
 
     if (!throttleActivity) {
-        throttleActivity = throttle(maxIdleTime, sendActivity);
+        throttleActivity = throttle(maxIdleTime, activityDetection);
         setInterval(throttleActivity, maxIdleTime);
     }
-
-    sendActivity();
-
+    self.activityDetection();
 }
 
 /**
@@ -58,27 +68,24 @@ function monitorUserActivity() {
     intervalId = setInterval(monitor, 1000);
 
     function monitor() {
-        if (systemIdleTime.getIdleTime() < maxIdleTime && typeof getIsOnlineFnc === 'function' && getIsOnlineFnc()) {
-            // If system is active, send an update to the app bridge and clear the timer
-            sendActivity();
-            if (typeof setIsAutoReloadFnc === 'function') {
-                setIsAutoReloadFnc(false);
-            }
-            clearInterval(intervalId);
-            intervalId = undefined;
+        if (app.isReady()) {
+            electron.powerMonitor.querySystemIdleTime((time) => {
+                // sent Idle time in milliseconds
+                let idleTime = time * 1000 + 1; //ensuring that zero wont be sent
+                if (idleTime != null && idleTime !== undefined) {
+                    if (idleTime < maxIdleTime && typeof getIsOnlineFnc === 'function' && getIsOnlineFnc()) {
+                        // If system is active, send an update to the app bridge and clear the timer
+                        self.activityDetection();
+                        if (typeof setIsAutoReloadFnc === 'function') {
+                            setIsAutoReloadFnc(false);
+                        }
+                        clearInterval(intervalId);
+                        intervalId = undefined;
+                    }
+                }
+            });
         }
-    }
 
-}
-
-/**
- * Send user activity status to the app bridge
- * to be updated across all clients
- */
-function sendActivity() {
-    let systemActivity = activityDetection();
-    if (systemActivity && !systemActivity.isUserIdle && systemActivity.systemIdleTime) {
-        send({ systemIdleTime: systemActivity.systemIdleTime });
     }
 }
 
@@ -109,9 +116,11 @@ function setActivityWindow(period, win) {
     initiateActivityDetection();
 }
 
-module.exports = {
+// Exporting this for unit tests
+const self = {
     send: send,
     setActivityWindow: setActivityWindow,
     activityDetection: activityDetection,
-    monitorUserActivity: monitorUserActivity, // Exporting this for unit tests
+    monitorUserActivity: monitorUserActivity, 
 };
+module.exports = self;
