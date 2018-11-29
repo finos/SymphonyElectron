@@ -260,8 +260,8 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                 if (isDevEnv) {
                     titleBarStylesPath = path.join(app.getAppPath(), stylesFileName);
                 } else {
-                    let execPath = path.dirname(app.getPath('exe'));
-                    titleBarStylesPath = path.join(execPath, isMac ? '..' : '', stylesFileName);
+                    const execPath = path.dirname(app.getPath('exe'));
+                    titleBarStylesPath = path.join(execPath, stylesFileName);
                 }
                 titleBarStyles = fs.readFileSync(titleBarStylesPath, 'utf8').toString();
             }
