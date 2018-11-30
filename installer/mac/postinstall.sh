@@ -36,7 +36,7 @@ if [ "$bring_to_front" == "" ]; then
 fi
 
 if [ "$dev_tools_enabled" == "" ]; then
-    dev_tools_enabled=false;
+    dev_tools_enabled=true;
 fi
 
 pod_url_escaped=$(sed 's#[&/\]#\\&#g' <<<"$pod_url")
