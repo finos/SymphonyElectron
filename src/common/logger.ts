@@ -1,6 +1,8 @@
 import { app } from 'electron';
 import electronLog, { LogLevel, transports } from 'electron-log';
+import * as fs from 'fs';
 import * as path from 'path';
+import * as util from 'util';
 
 import { isElectronQA } from './env';
 import { getCommandLineArgs } from './utils';
@@ -24,15 +26,17 @@ export class Logger {
     private readonly showInConsole: boolean = false;
     private readonly desiredLogLevel?: LogLevel;
     private readonly logQueue: ILogMsg[];
+    private readonly logPath: string;
     private loggerWindow: Electron.WebContents | null;
 
     constructor() {
 
         this.loggerWindow = null;
         this.logQueue = [];
+        this.logPath = app.getPath('logs');
 
         if (!isElectronQA) {
-            transports.file.file = path.join(app.getPath('logs'), 'app.log');
+            transports.file.file = path.join(this.logPath, 'app.log');
             transports.file.level = 'debug';
             transports.file.format = '{h}:{i}:{s}:{ms} {text}';
             transports.file.maxSize = 10 * 1024 * 1024;
@@ -50,6 +54,9 @@ export class Logger {
         if (getCommandLineArgs(process.argv, '--enableConsoleLogging', false)) {
             this.showInConsole = true;
         }
+
+        // cleans up old logs if there are any
+        this.cleanupOldLogs();
     }
 
     /**
@@ -177,7 +184,7 @@ export class Logger {
      *
      * @param logMsg {ILogMsg}
      */
-    private sendToCloud(logMsg: ILogMsg) {
+    private sendToCloud(logMsg: ILogMsg): void {
         // don't send logs if it is not desired by the user
         if (this.desiredLogLevel && this.desiredLogLevel !== logMsg.level) {
             return;
@@ -192,6 +199,25 @@ export class Logger {
                 this.logQueue.shift();
             }
         }
+    }
+
+    /**
+     * Cleans up logs older than a day
+     */
+    private cleanupOldLogs(): void {
+        const files = fs.readdirSync(this.logPath);
+        const deleteTimeStamp = new Date().getTime() + (10 * 24 * 60 * 60 * 1000);
+        files.forEach((file) => {
+            if (file === '.DS_Store' || file === 'app.log') {
+                return;
+            }
+            const filePath = path.join(this.logPath, file);
+            const stat = fs.statSync(filePath);
+            const fileTimestamp = new Date(util.inspect(stat.mtime)).getTime();
+            if (fileTimestamp > deleteTimeStamp) {
+                fs.unlinkSync(filePath);
+            }
+        });
     }
 }
 
