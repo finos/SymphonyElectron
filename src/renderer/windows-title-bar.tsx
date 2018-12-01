@@ -86,7 +86,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
                     </button>
                 </div>
                 <div className='title-container'>
-                    <img src='./assets/symphony-title-bar-logo.png'/>
+                    <img className='symphony-logo'/>
                     <p className='title-bar-title'>{document.title || 'Symphony'}</p>
                 </div>
                 <div className='title-bar-button-container'>

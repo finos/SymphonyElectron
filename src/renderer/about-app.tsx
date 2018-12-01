@@ -46,7 +46,7 @@ export default class AboutApp extends React.Component<{}, IState> {
     }
 
     public componentWillUnmount(): void {
-        ipcRenderer.removeListener('open-file-reply', this.updateState);
+        ipcRenderer.removeListener('about-app-data', this.updateState);
     }
 
     /**
