@@ -179,7 +179,7 @@ const formatString = (str: string, data?: object): string => {
  * @param wait
  * @example const throttled = throttle(anyFunc, 500);
  */
-const throttle = (func: () => void, wait: number): () => void => {
+const throttle = (func: (...args) => void, wait: number): (...args) => void => {
     if (wait <= 0) {
         throw Error('throttle: invalid throttleTime arg, must be a number: ' + wait);
     }

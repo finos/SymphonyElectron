@@ -7,6 +7,7 @@ import { cleanUpAppCache, createAppCacheFile } from './app-cache-handler';
 import { autoLaunchInstance } from './auto-launch-controller';
 import setChromeFlags from './chrome-flags';
 import { config } from './config-handler';
+import './main-api-handler';
 import { windowHandler } from './window-handler';
 
 const allowMultiInstance: string | boolean = getCommandLineArgs(process.argv, '--multiInstance', true) || isDevEnv;

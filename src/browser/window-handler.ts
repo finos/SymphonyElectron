@@ -3,11 +3,15 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as url from 'url';
 
-import { getCommandLineArgs } from '../common/utils';
+import { getCommandLineArgs, getGuid } from '../common/utils';
 import { config, IConfig } from './config-handler';
 import { createComponentWindow } from './window-utils';
 
-const { buildNumber, clientVersion, version } = require('../../package.json');// tslint:disable-line:no-var-requires
+const { buildNumber, clientVersion, version } = require('../../package.json'); // tslint:disable-line:no-var-requires
+
+interface ICustomBrowserWindowConstructorOpts extends Electron.BrowserWindowConstructorOptions {
+    winKey: string;
+}
 
 export class WindowHandler {
 
@@ -28,6 +32,7 @@ export class WindowHandler {
                 preload: path.join(__dirname, '../renderer/preload-main'),
                 sandbox: false,
             },
+            winKey: getGuid(),
         };
     }
 
@@ -65,15 +70,17 @@ export class WindowHandler {
         return url.format(parsedUrl);
     }
 
-    private readonly windowOpts: Electron.BrowserWindowConstructorOptions;
+    private readonly windowOpts: ICustomBrowserWindowConstructorOpts;
     private readonly globalConfig: IConfig;
     // Window reference
+    private readonly windows: object;
     private mainWindow: Electron.BrowserWindow | null;
     private loadingWindow: Electron.BrowserWindow | null;
     private aboutAppWindow: Electron.BrowserWindow | null;
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
-        this.windowOpts = { ... WindowHandler.getMainWindowOpts(), ...opts };
+        this.windows = {};
+        this.windowOpts = { ...WindowHandler.getMainWindowOpts(), ...opts };
         this.mainWindow = null;
         this.loadingWindow = null;
         this.aboutAppWindow = null;
@@ -108,6 +115,7 @@ export class WindowHandler {
             }
             this.createAboutAppWindow();
         });
+        this.addWindow(this.windowOpts.winKey, this.mainWindow);
         return this.mainWindow;
     }
 
@@ -116,6 +124,16 @@ export class WindowHandler {
      */
     public getMainWindow(): Electron.BrowserWindow | null {
         return this.mainWindow;
+    }
+
+    /**
+     * Checks if the window and a key has a window
+     * @param key {string}
+     * @param window {Electron.BrowserWindow}
+     */
+    public hasWindow(key: string, window: Electron.BrowserWindow): boolean {
+        const browserWindow = this.windows[key];
+        return browserWindow && window === browserWindow;
     }
 
     /**
@@ -138,11 +156,20 @@ export class WindowHandler {
      */
     public createAboutAppWindow() {
         this.aboutAppWindow = createComponentWindow('about-app');
-            this.aboutAppWindow.webContents.once('did-finish-load', () => {
-                if (this.aboutAppWindow) {
-                    this.aboutAppWindow.webContents.send('about-app-data', { buildNumber, clientVersion, version });
-                }
-            });
+        this.aboutAppWindow.webContents.once('did-finish-load', () => {
+            if (this.aboutAppWindow) {
+                this.aboutAppWindow.webContents.send('about-app-data', { buildNumber, clientVersion, version });
+            }
+        });
+    }
+
+    /**
+     * Stores information of all the window we have created
+     * @param key {string}
+     * @param browserWindow {Electron.BrowserWindow}
+     */
+    private addWindow(key: string, browserWindow: Electron.BrowserWindow): void {
+        this.windows[key] = browserWindow;
     }
 }
 

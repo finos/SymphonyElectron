@@ -105,3 +105,7 @@
     z-index: 3000;
     bottom: 0;
 }
+
+.symphony-logo {
+    content: url("../src/renderer/assets/symphony-title-bar-logo.png");
+}

@@ -1,27 +1,33 @@
-import { ipcMain } from 'electron';
+import { BrowserWindow, ipcMain } from 'electron';
 
 import { apiCmds, apiName, IApiArgs } from '../common/api-interface';
 import { logger } from '../common/logger';
+import { windowHandler } from './window-handler';
+import { setDataUrl, showBadgeCount } from './window-utils';
+
+const checkValidWindow = true;
 
 /**
  * Ensure events comes from a window that we have created.
  * @param  {EventEmitter} event  node emitter event to be tested
  * @return {Boolean} returns true if exists otherwise false
  */
-function isValidWindow(event: Electron.Event) {
-    /*if (!checkValidWindow) {
+function isValidWindow(event: Electron.Event): boolean {
+    if (!checkValidWindow) {
         return true;
-    }*/
-    const result = false;
+    }
+    let result = false;
     if (event && event.sender) {
         // validate that event sender is from window we created
-        // const browserWin = BrowserWindow.fromWebContents(event.sender);
+        const browserWin = BrowserWindow.fromWebContents(event.sender);
+        // @ts-ignore
+        const winKey = event.sender.browserWindowOptions && event.sender.browserWindowOptions.winKey;
 
-        // result = windowMgr.hasWindow(browserWin, event.sender.id);
+        result = windowHandler.hasWindow(winKey, browserWin);
     }
 
     if (!result) {
-       // log.send(logLevels.WARN, 'invalid window try to perform action, ignoring action');
+       logger.warn('invalid window try to perform action, ignoring action', event.sender);
     }
 
     return result;
@@ -45,22 +51,23 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
             if (typeof arg.isOnline === 'boolean') {
                 windowMgr.setIsOnline(arg.isOnline);
             }
-            break;
-        case ApiCmds.setBadgeCount:
+            break;*/
+        case apiCmds.setBadgeCount:
             if (typeof arg.count === 'number') {
-                badgeCount.show(arg.count);
+                console.log(arg.count);
+                showBadgeCount(arg.count);
             }
             break;
-        case ApiCmds.registerProtocolHandler:
+        /*case ApiCmds.registerProtocolHandler:
             protocolHandler.setProtocolWindow(event.sender);
             protocolHandler.checkProtocolAction();
-            break;
-        case ApiCmds.badgeDataUrl:
+            break;*/
+        case apiCmds.badgeDataUrl:
             if (typeof arg.dataUrl === 'string' && typeof arg.count === 'number') {
-                badgeCount.setDataUrl(arg.dataUrl, arg.count);
+                setDataUrl(arg.dataUrl, arg.count);
             }
             break;
-        case ApiCmds.activate:
+        /*case ApiCmds.activate:
             if (typeof arg.windowName === 'string') {
                 windowMgr.activate(arg.windowName);
             }
