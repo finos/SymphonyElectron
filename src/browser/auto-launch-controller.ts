@@ -1,6 +1,9 @@
 import AutoLaunch = require('auto-launch');
+import { BrowserWindow, dialog } from 'electron';
 
 import { isMac } from '../common/env';
+import { i18n } from '../common/i18n';
+import { logger } from '../common/logger';
 import { config, IConfig } from './config-handler';
 
 const { autoLaunchPath }: IConfig = config.getGlobalConfigFields([ 'autoLaunchPath' ]);
@@ -34,23 +37,47 @@ class AutoLaunchController extends AutoLaunch {
     }
 
     /**
-     * Enable auto launch
+     * Enable auto launch and displays error dialog on failure
      *
      * @return {Promise<void>}
      */
     public async enableAutoLaunch(): Promise<void> {
-        // log.send(logLevels.INFO, `Enabling auto launch!`);
-        return await this.enable();
+        logger.info(`Enabling auto launch!`);
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+        await this.enable()
+            .catch((err) => {
+                const title = 'Error setting AutoLaunch configuration';
+                logger.error(`auto-launch-controller: ${title}: failed to enable auto launch error: ${err}`);
+                if (focusedWindow && !focusedWindow.isDestroyed()) {
+                    dialog.showMessageBox(focusedWindow, {
+                        message: i18n.t(title) + ': ' + err,
+                        title: i18n.t(title),
+                        type: 'error',
+                    });
+                }
+            });
     }
 
     /**
-     * Disable auto launch
+     * Disable auto launch and displays error dialog on failure
      *
      * @return {Promise<void>}
      */
     public async disableAutoLaunch(): Promise<void> {
-        // log.send(logLevels.INFO, `Disabling auto launch!`);
-        return await this.disable();
+        logger.info(`Disabling auto launch!`);
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+        await this.disable()
+            .catch((err) => {
+            const title = 'Error setting AutoLaunch configuration';
+            logger.error(`auto-launch-controller: ${title}: failed to disable auto launch error: ${err}`);
+            if (focusedWindow && !focusedWindow.isDestroyed()) {
+                dialog.showMessageBox(focusedWindow, {
+                    message: i18n.t(title) + ': ' + err,
+                    title: i18n.t(title),
+                    type: 'error',
+                });
+            }
+        });
     }
 
     /**
