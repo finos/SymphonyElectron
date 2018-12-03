@@ -41,7 +41,6 @@ class Translation {
      * @param data {object}
      */
     public t(value: string, data?: object): string {
-        console.log(process.type);
         if (this.loadedResource && this.loadedResource[this.locale]) {
             return formatString(Translation.translate(value, this.loadedResource[this.locale]));
         }

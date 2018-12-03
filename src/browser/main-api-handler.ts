@@ -3,42 +3,14 @@ import { BrowserWindow, ipcMain } from 'electron';
 import { apiCmds, apiName, IApiArgs } from '../common/api-interface';
 import { logger } from '../common/logger';
 import { windowHandler } from './window-handler';
-import { setDataUrl, showBadgeCount } from './window-utils';
-
-const checkValidWindow = true;
-
-/**
- * Ensure events comes from a window that we have created.
- * @param  {EventEmitter} event  node emitter event to be tested
- * @return {Boolean} returns true if exists otherwise false
- */
-function isValidWindow(event: Electron.Event): boolean {
-    if (!checkValidWindow) {
-        return true;
-    }
-    let result = false;
-    if (event && event.sender) {
-        // validate that event sender is from window we created
-        const browserWin = BrowserWindow.fromWebContents(event.sender);
-        // @ts-ignore
-        const winKey = event.sender.browserWindowOptions && event.sender.browserWindowOptions.winKey;
-
-        result = windowHandler.hasWindow(winKey, browserWin);
-    }
-
-    if (!result) {
-       logger.warn('invalid window try to perform action, ignoring action', event.sender);
-    }
-
-    return result;
-}
+import { isValidWindow, setDataUrl, showBadgeCount } from './window-utils';
 
 /**
  * Handle API related ipc messages from renderers. Only messages from windows
  * we have created are allowed.
  */
 ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
-    if (!isValidWindow(event)) {
+    if (!isValidWindow(BrowserWindow.fromWebContents(event.sender))) {
         return;
     }
 
@@ -105,15 +77,16 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
             if (Array.isArray(arg.sources) && typeof arg.id === 'number') {
                 openScreenPickerWindow(event.sender, arg.sources, arg.id);
             }
-            break;
-        case ApiCmds.popupMenu: {
-            let browserWin = electron.BrowserWindow.fromWebContents(event.sender);
+            break;*/
+        case apiCmds.popupMenu: {
+            const browserWin = BrowserWindow.fromWebContents(event.sender);
             if (browserWin && !browserWin.isDestroyed()) {
-                windowMgr.getMenu().popup(browserWin, {x: 20, y: 15, async: true});
+                const appMenu = windowHandler.getApplicationMenu();
+                if (appMenu) appMenu.popupMenu(browserWin);
             }
             break;
         }
-        case ApiCmds.optimizeMemoryConsumption:
+        /*case ApiCmds.optimizeMemoryConsumption:
             if (typeof arg.memory === 'object'
                 && typeof arg.cpuUsage === 'object'
                 && typeof arg.memory.workingSetSize === 'number') {

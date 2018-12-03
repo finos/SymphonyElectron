@@ -3,7 +3,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as url from 'url';
 
+import { isWindowsOS } from '../common/env';
 import { getCommandLineArgs, getGuid } from '../common/utils';
+import { AppMenu } from './app-menu';
 import { config, IConfig } from './config-handler';
 import { createComponentWindow } from './window-utils';
 
@@ -11,6 +13,11 @@ const { buildNumber, clientVersion, version } = require('../../package.json'); /
 
 interface ICustomBrowserWindowConstructorOpts extends Electron.BrowserWindowConstructorOptions {
     winKey: string;
+}
+
+export interface ICustomBrowserWindow extends Electron.BrowserWindow {
+    winName: string;
+    notificationObj?: object;
 }
 
 export class WindowHandler {
@@ -70,20 +77,27 @@ export class WindowHandler {
         return url.format(parsedUrl);
     }
 
+    private appMenu: AppMenu | null;
     private readonly windowOpts: ICustomBrowserWindowConstructorOpts;
     private readonly globalConfig: IConfig;
     // Window reference
     private readonly windows: object;
-    private mainWindow: Electron.BrowserWindow | null;
+    private mainWindow: ICustomBrowserWindow | null;
     private loadingWindow: Electron.BrowserWindow | null;
     private aboutAppWindow: Electron.BrowserWindow | null;
+    private moreInfoWindow: Electron.BrowserWindow | null;
+    private isAutoReload: boolean;
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         this.windows = {};
         this.windowOpts = { ...WindowHandler.getMainWindowOpts(), ...opts };
+        this.isAutoReload = false;
+        this.appMenu = null;
+        // Window references
         this.mainWindow = null;
         this.loadingWindow = null;
         this.aboutAppWindow = null;
+        this.moreInfoWindow = null;
         this.globalConfig = config.getGlobalConfigFields([ 'url', 'crashReporter' ]);
 
         try {
@@ -98,7 +112,8 @@ export class WindowHandler {
      * Starting point of the app
      */
     public createApplication() {
-        this.mainWindow = new BrowserWindow(this.windowOpts);
+        this.mainWindow = new BrowserWindow(this.windowOpts) as ICustomBrowserWindow;
+        this.mainWindow.winName = 'main';
 
         const urlFromCmd = getCommandLineArgs(process.argv, '--url=', false);
         this.mainWindow.loadURL(urlFromCmd && urlFromCmd.substr(6) || WindowHandler.validateURL(this.globalConfig.url));
@@ -107,12 +122,15 @@ export class WindowHandler {
                 this.loadingWindow.destroy();
                 this.loadingWindow = null;
             }
-            if (this.mainWindow) {
+            if (!this.mainWindow) return;
+            if (isWindowsOS && this.mainWindow && config.getConfigFields([ 'isCustomTitleBar' ])) {
                 this.mainWindow.webContents.insertCSS(
                     fs.readFileSync(path.join(__dirname, '..', '/renderer/styles/title-bar.css'), 'utf8').toString(),
                 );
-                this.mainWindow.show();
+                this.mainWindow.webContents.send('initiate-custom-title-bar');
             }
+            this.mainWindow.show();
+            this.appMenu = new AppMenu();
             this.createAboutAppWindow();
         });
         this.addWindow(this.windowOpts.winKey, this.mainWindow);
@@ -122,8 +140,44 @@ export class WindowHandler {
     /**
      * Gets the main window
      */
-    public getMainWindow(): Electron.BrowserWindow | null {
+    public getMainWindow(): ICustomBrowserWindow | null {
         return this.mainWindow;
+    }
+
+    /**
+     * Gets all the window that we have created
+     *
+     * @return {Electron.BrowserWindow}
+     *
+     */
+    public getAllWindows(): object {
+        return this.windows;
+    }
+
+    /**
+     * Gets the application menu
+     */
+    public getApplicationMenu(): AppMenu | null {
+        return this.appMenu;
+    }
+
+    /**
+     * Sets is auto reload when the application
+     * is auto reloaded for optimizing memory
+     *
+     * @param shouldAutoReload {boolean}
+     */
+    public setIsAutoReload(shouldAutoReload: boolean) {
+        this.isAutoReload = shouldAutoReload;
+    }
+
+    /**
+     * Gets is auto reload
+     *
+     * @return isAutoReload {boolean}
+     */
+    public getIsAutoReload(): boolean {
+        return this.isAutoReload;
     }
 
     /**
@@ -152,13 +206,25 @@ export class WindowHandler {
     }
 
     /**
-     * creates a about app window
+     * Creates a about app window
      */
     public createAboutAppWindow() {
         this.aboutAppWindow = createComponentWindow('about-app');
         this.aboutAppWindow.webContents.once('did-finish-load', () => {
             if (this.aboutAppWindow) {
                 this.aboutAppWindow.webContents.send('about-app-data', { buildNumber, clientVersion, version });
+            }
+        });
+    }
+
+    /**
+     * Creates a more info window
+     */
+    public createMoreInfoWindow() {
+        this.moreInfoWindow = createComponentWindow('more-info-window');
+        this.moreInfoWindow.webContents.once('did-finish-load', () => {
+            if (this.aboutAppWindow) {
+                this.aboutAppWindow.webContents.send('more-info-window');
             }
         });
     }
