@@ -1,18 +1,9 @@
+import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import WindowsTitleBar from '../renderer/windows-title-bar';
 import { SSFApi } from './ssf-api';
-
-document.addEventListener('DOMContentLoaded', load);
-
-/**
- * Injects custom title bar to the document body
- */
-function load() {
-    const element = React.createElement(WindowsTitleBar);
-    ReactDOM.render(element, document.body);
-}
 
 createAPI();
 
@@ -36,3 +27,15 @@ function createAPI() {
     // @ts-ignore
     window.ssf = new SSFApi();
 }
+
+// When the window is completely loaded
+ipcRenderer.on('page-load', () => {
+    const element = React.createElement(WindowsTitleBar);
+    ReactDOM.render(element, document.body);
+});
+
+// Creates a custom tile bar for Windows
+ipcRenderer.on('initiate-custom-title-bar', () => {
+    const element = React.createElement(WindowsTitleBar);
+    ReactDOM.render(element, document.body);
+});

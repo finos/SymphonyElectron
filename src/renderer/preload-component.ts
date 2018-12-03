@@ -3,6 +3,7 @@ import * as ReactDOM from 'react-dom';
 
 import AboutBox from './about-app';
 import LoadingScreen from './loading-screen';
+import MoreInfo from './more-info';
 
 document.addEventListener('DOMContentLoaded', load);
 
@@ -20,6 +21,9 @@ function load() {
             break;
         case 'loading-screen':
             component = LoadingScreen;
+            break;
+        case 'more-info-window':
+            component = MoreInfo;
             break;
     }
     const element = React.createElement(component);

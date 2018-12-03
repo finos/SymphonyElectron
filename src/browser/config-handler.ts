@@ -121,8 +121,8 @@ class Config {
      *
      * @param data {IConfig}
      */
-    public updateUserConfig(data: IConfig): void {
-        this.userConfig = { ...data, ...this.userConfig };
+    public updateUserConfig(data: Partial<IConfig>): void {
+        this.userConfig = { ...this.userConfig, ...data };
         fs.writeFileSync(this.userConfigPath, JSON.stringify(this.userConfig), { encoding: 'utf8' });
     }
 

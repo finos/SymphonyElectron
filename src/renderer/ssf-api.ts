@@ -26,7 +26,6 @@ export class SSFApi {
      * note: for windws the number displayed will be 1 to 99 and 99+
      */
     public setBadgeCount(count: number): void {
-        console.log(count);
         throttleSetBadgeCount(count);
     }
 
