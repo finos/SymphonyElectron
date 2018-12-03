@@ -2,9 +2,11 @@ import { app, BrowserWindow, nativeImage } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 
-import { isMac } from '../common/env';
+import { isMac, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
-import { windowHandler } from './window-handler';
+import { ICustomBrowserWindow, windowHandler } from './window-handler';
+
+const checkValidWindow = true;
 
 /**
  * Creates components windows
@@ -50,6 +52,7 @@ export function createComponentWindow(
 
 /**
  * Prevents window from navigating
+ *
  * @param browserWindow
  */
 export function preventWindowNavigation(browserWindow: Electron.BrowserWindow) {
@@ -65,6 +68,7 @@ export function preventWindowNavigation(browserWindow: Electron.BrowserWindow) {
 
 /**
  * Shows the badge count
+ *
  * @param count {number}
  */
 export function showBadgeCount(count: number): void {
@@ -95,6 +99,7 @@ export function showBadgeCount(count: number): void {
 
 /**
  * Sets the data url
+ *
  * @param dataUrl
  * @param count
  */
@@ -106,4 +111,83 @@ export function setDataUrl(dataUrl: string, count: number): void {
         const desc = 'Symphony has ' + count + ' unread messages';
         mainWindow.setOverlayIcon(img, desc);
     }
+}
+
+/**
+ * Sets always on top property based on isAlwaysOnTop
+ *
+ * @param isAlwaysOnTop
+ * @param shouldActivateMainWindow
+ */
+export function updateAlwaysOnTop(isAlwaysOnTop: boolean, shouldActivateMainWindow: boolean = true) {
+    const browserWins: ICustomBrowserWindow[] = BrowserWindow.getAllWindows() as ICustomBrowserWindow[];
+    if (browserWins.length > 0) {
+        browserWins
+            .filter((browser) => typeof browser.notificationObj !== 'object')
+            .forEach((browser) => browser.setAlwaysOnTop(isAlwaysOnTop));
+
+        // An issue where changing the alwaysOnTop property
+        // focus the pop-out window
+        // Issue - Electron-209/470
+        const mainWindow = windowHandler.getMainWindow();
+        if (mainWindow && mainWindow.winName && shouldActivateMainWindow) {
+            activate(mainWindow.winName);
+        }
+    }
+}
+
+/**
+ * Tries finding a window we have created with given name.  If found, then
+ * brings to front and gives focus.
+ *
+ * @param  {string} windowName   Name of target window. Note: main window has
+ * name 'main'.
+ * @param {Boolean} shouldFocus  whether to get window to focus or just show
+ * without giving focus
+ */
+function activate(windowName: string, shouldFocus: boolean = true): void {
+
+    // Electron-136: don't activate when the app is reloaded programmatically
+    if (windowHandler.getIsAutoReload()) return;
+
+    const windows = windowHandler.getAllWindows();
+    for (const key in windows) {
+        if (windows.hasOwnProperty(key)) {
+            const window = windows[ key ];
+            if (window && !window.isDestroyed() && window.winName === windowName) {
+
+                // Bring the window to the top without focusing
+                // Flash task bar icon in Windows for windows
+                if (!shouldFocus) {
+                    window.moveTop();
+                    return isWindowsOS ? window.flashFrame(true) : null;
+                }
+
+                return window.isMinimized() ? window.restore() : window.show();
+            }
+        }
+    }
+}
+
+/**
+ * Ensure events comes from a window that we have created.
+ * @param  {BrowserWindow} browserWin  node emitter event to be tested
+ * @return {Boolean} returns true if exists otherwise false
+ */
+export function isValidWindow(browserWin: Electron.BrowserWindow): boolean {
+    if (!checkValidWindow) {
+        return true;
+    }
+    let result: boolean = false;
+    if (browserWin && !browserWin.isDestroyed()) {
+        // @ts-ignore
+        const winKey = browserWin.webContents.browserWindowOptions && browserWin.webContents.browserWindowOptions.winKey;
+        result = windowHandler.hasWindow(winKey, browserWin);
+    }
+
+    if (!result) {
+        logger.warn('invalid window try to perform action, ignoring action');
+    }
+
+    return result;
 }

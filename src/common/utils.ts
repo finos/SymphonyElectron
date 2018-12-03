@@ -1,5 +1,9 @@
 // regex match the semver (semantic version) this checks for the pattern X.Y.Z
 // ex-valid  v1.2.0, 1.2.0, 2.3.4-r51
+import archiver from 'archiver';
+import * as fs from 'fs';
+import * as path from 'path';
+
 const semver = /^v?(?:\d+)(\.(?:[x*]|\d+)(\.(?:[x*]|\d+)(?:-[\da-z-]+(?:\.[\da-z-]+)*)?(?:\+[\da-z-]+(?:\.[\da-z-]+)*)?)?)?$/i;
 const patch = /-([0-9A-Za-z-.]+)/;
 
@@ -195,4 +199,50 @@ const throttle = (func: (...args) => void, wait: number): (...args) => void => {
     };
 };
 
-export { compareVersions, getCommandLineArgs, getGuid, pick, formatString, throttle };
+/**
+ * Archives files in the source directory
+ * that matches the given file extension
+ *
+ * @param source {String} source path
+ * @param destination {String} destination path
+ * @param fileExtensions {Array} array of file ext
+ * @return {Promise<void>}
+ */
+const generateArchiveForDirectory = (source: string, destination: string, fileExtensions: string[]): Promise<void> => {
+
+    return new Promise((resolve, reject) => {
+        const output = fs.createWriteStream(destination);
+        const archive = archiver('zip', { zlib: { level: 9 } });
+
+        output.on('close', () => {
+            return resolve();
+        });
+
+        archive.on('error', (err) => {
+            return reject(err);
+        });
+
+        archive.pipe(output);
+
+        const files = fs.readdirSync(source);
+        files
+            .filter((file) => fileExtensions.indexOf(path.extname(file)) !== -1)
+            .forEach((file) => {
+                switch (path.extname(file)) {
+                    case '.log':
+                        archive.file(source + '/' + file, { name: 'logs/' + file });
+                        break;
+                    case '.dmp':
+                    case '.txt': // on Windows .txt files will be created as part of crash dump
+                        archive.file(source + '/' + file, { name: 'crashes/' + file });
+                        break;
+                    default:
+                        break;
+                }
+            });
+
+        archive.finalize();
+    });
+};
+
+export { compareVersions, getCommandLineArgs, getGuid, pick, formatString, throttle, generateArchiveForDirectory };
