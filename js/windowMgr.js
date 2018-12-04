@@ -295,7 +295,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
         if (config && config.permissions) {
             const permission = ' screen sharing';
-            const fullMessage = i18n.getMessageFor('Your administrator has disabled') + permission + '. ' + i18n.getMessageFor('Please contact your admin for help');
+            const fullMessage = i18n.getMessageFor('Your administrator has disabled ') + permission + '. ' + i18n.getMessageFor('Please contact your admin for help');
             const dialogContent = { type: 'error', title: i18n.getMessageFor('Permission Denied') + '!', message: fullMessage };
             mainWindow.webContents.send('is-screen-share-enabled', config.permissions.media, dialogContent);
         }
