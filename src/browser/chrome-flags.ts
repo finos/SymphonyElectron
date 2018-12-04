@@ -7,7 +7,7 @@ import { config, IConfig } from './config-handler';
 /**
  * Sets chrome flags
  */
-export default function setChromeFlags() {
+export const setChromeFlags = () => {
     const { customFlags } = config.getGlobalConfigFields([ 'customFlags' ]) as IConfig;
 
     const configFlags: object = {
@@ -63,4 +63,4 @@ export default function setChromeFlags() {
             }
         }
     }
-}
+};
