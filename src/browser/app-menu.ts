@@ -1,7 +1,7 @@
 import { app, Menu, session, shell } from 'electron';
 
 import { isMac, isWindowsOS } from '../common/env';
-import { i18n } from '../common/i18n';
+import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { autoLaunchInstance as autoLaunch } from './auto-launch-controller';
 import { config, IConfig } from './config-handler';
@@ -55,9 +55,11 @@ const menuItemsArray = Object.keys(menuSections)
 export class AppMenu {
     private menu: Electron.Menu | undefined;
     private menuList: Electron.MenuItemConstructorOptions[];
+    private readonly locale: LocaleType;
 
     constructor() {
         this.menuList = [];
+        this.locale = i18n.getLocale();
         this.buildMenu();
     }
 
@@ -75,6 +77,15 @@ export class AppMenu {
 
         this.menu = Menu.buildFromTemplate(template);
         Menu.setApplicationMenu(this.menu);
+    }
+
+    /**
+     * Rebuilds the application menu on locale changes
+     *
+     * @param locale {LocaleType}
+     */
+    public update(locale: LocaleType): void {
+        if (this.locale !== locale) this.buildMenu();
     }
 
     /**

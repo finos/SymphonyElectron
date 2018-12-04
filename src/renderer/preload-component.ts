@@ -5,12 +5,10 @@ import AboutBox from './about-app';
 import LoadingScreen from './loading-screen';
 import MoreInfo from './more-info';
 
-document.addEventListener('DOMContentLoaded', load);
-
 /**
  * Loads the appropriate component
  */
-function load() {
+const load = () => {
     const query = new URL(window.location.href).searchParams;
     const componentName = query.get('componentName');
 
@@ -28,4 +26,6 @@ function load() {
     }
     const element = React.createElement(component);
     ReactDOM.render(element, document.getElementById('Root'));
-}
+};
+
+document.addEventListener('DOMContentLoaded', load);

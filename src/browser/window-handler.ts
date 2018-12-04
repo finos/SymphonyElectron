@@ -25,7 +25,7 @@ export class WindowHandler {
     /**
      * Main window opts
      */
-    private static getMainWindowOpts() {
+    private static getMainWindowOpts(): ICustomBrowserWindowConstructorOpts {
         return {
             alwaysOnTop: false,
             frame: true,
@@ -46,7 +46,7 @@ export class WindowHandler {
     /**
      * Loading window opts
      */
-    private static getLoadingWindowOpts() {
+    private static getLoadingWindowOpts(): Electron.BrowserWindowConstructorOptions {
         return {
             alwaysOnTop: false,
             center: true,
@@ -77,7 +77,9 @@ export class WindowHandler {
         return url.format(parsedUrl);
     }
 
-    private appMenu: AppMenu | null;
+    public appMenu: AppMenu | null;
+    public isAutoReload: boolean;
+
     private readonly windowOpts: ICustomBrowserWindowConstructorOpts;
     private readonly globalConfig: IConfig;
     // Window reference
@@ -86,7 +88,6 @@ export class WindowHandler {
     private loadingWindow: Electron.BrowserWindow | null;
     private aboutAppWindow: Electron.BrowserWindow | null;
     private moreInfoWindow: Electron.BrowserWindow | null;
-    private isAutoReload: boolean;
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         this.windows = {};
@@ -129,6 +130,7 @@ export class WindowHandler {
                 );
                 this.mainWindow.webContents.send('initiate-custom-title-bar');
             }
+            this.mainWindow.webContents.toggleDevTools();
             this.mainWindow.show();
             this.appMenu = new AppMenu();
             this.createAboutAppWindow();
@@ -155,13 +157,6 @@ export class WindowHandler {
     }
 
     /**
-     * Gets the application menu
-     */
-    public getApplicationMenu(): AppMenu | null {
-        return this.appMenu;
-    }
-
-    /**
      * Sets is auto reload when the application
      * is auto reloaded for optimizing memory
      *
@@ -169,15 +164,6 @@ export class WindowHandler {
      */
     public setIsAutoReload(shouldAutoReload: boolean) {
         this.isAutoReload = shouldAutoReload;
-    }
-
-    /**
-     * Gets is auto reload
-     *
-     * @return isAutoReload {boolean}
-     */
-    public getIsAutoReload(): boolean {
-        return this.isAutoReload;
     }
 
     /**
