@@ -5,12 +5,10 @@ import * as ReactDOM from 'react-dom';
 import WindowsTitleBar from '../renderer/windows-title-bar';
 import { SSFApi } from './ssf-api';
 
-createAPI();
-
 /**
  * creates API exposed from electron.
  */
-function createAPI() {
+const createAPI = () => {
     // iframes (and any other non-top level frames) get no api access
     // http://stackoverflow.com/questions/326069/how-to-identify-if-a-webpage-is-being-loaded-inside-an-iframe-or-directly-into-t/326076
     if (window.self !== window.top) {
@@ -26,7 +24,9 @@ function createAPI() {
     //
     // @ts-ignore
     window.ssf = new SSFApi();
-}
+};
+
+createAPI();
 
 // When the window is completely loaded
 ipcRenderer.on('page-load', () => {

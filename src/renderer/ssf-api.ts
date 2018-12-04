@@ -8,12 +8,17 @@ const local = {
 };
 
 // Throttle func
-const throttleSetBadgeCount = throttle((count) => {
-    console.log(count);
-    console.log(apiCmds.setBadgeCount);
+const throttledSetBadgeCount = throttle((count) => {
     local.ipcRenderer.send(apiName.symphonyApi, {
         cmd: apiCmds.setBadgeCount,
         count,
+    });
+}, 1000);
+
+const throttledSetLocale = throttle((locale) => {
+    local.ipcRenderer.send(apiName.symphonyApi, {
+        cmd: apiCmds.setLocale,
+        locale,
     });
 }, 1000);
 
@@ -26,7 +31,18 @@ export class SSFApi {
      * note: for windws the number displayed will be 1 to 99 and 99+
      */
     public setBadgeCount(count: number): void {
-        throttleSetBadgeCount(count);
+        throttledSetBadgeCount(count);
+    }
+
+    /**
+     * Sets the language which updates the application locale
+     * @param {string} locale - language identifier and a region identifier
+     * Ex: en-US, ja-JP
+     */
+    public setLocale(locale): void {
+        if (typeof locale === 'string') {
+            throttledSetLocale(locale);
+        }
     }
 
 }

@@ -9,17 +9,17 @@ const cacheCheckFilePath: string = path.join(app.getPath('userData'), 'CacheChec
  * Deletes app cache file if exists or clears
  * the cache for the session
  */
-export async function cleanUpAppCache(): Promise<void> {
+export const cleanUpAppCache = async (): Promise<void> => {
     if (fs.existsSync(cacheCheckFilePath)) {
         await fs.unlinkSync(cacheCheckFilePath);
         return;
     }
     await new Promise((resolve) => session.defaultSession ? session.defaultSession.clearCache(resolve) : null);
-}
+};
 
 /**
  * Creates a new file cache file on app exit
  */
-export function createAppCacheFile(): void {
+export const createAppCacheFile = (): void => {
     fs.writeFileSync(cacheCheckFilePath, '');
-}
+};
