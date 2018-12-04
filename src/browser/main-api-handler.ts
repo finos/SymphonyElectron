@@ -3,8 +3,13 @@ import { BrowserWindow, ipcMain } from 'electron';
 import { apiCmds, apiName, IApiArgs } from '../common/api-interface';
 import { LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
-import { windowHandler } from './window-handler';
-import { isValidWindow, setDataUrl, showBadgeCount, updateLocale } from './window-utils';
+import {
+    isValidWindow,
+    setDataUrl,
+    showBadgeCount,
+    showPopupMenu,
+    updateLocale,
+} from './window-utils';
 
 /**
  * Handle API related ipc messages from renderers. Only messages from windows
@@ -82,8 +87,7 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
         case apiCmds.popupMenu: {
             const browserWin = BrowserWindow.fromWebContents(event.sender);
             if (browserWin && !browserWin.isDestroyed()) {
-                const appMenu = windowHandler.appMenu;
-                if (appMenu) appMenu.popupMenu(browserWin);
+                showPopupMenu({ window: browserWin });
             }
             break;
         }
