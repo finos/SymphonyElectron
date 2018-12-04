@@ -192,7 +192,7 @@ function getTemplate(app) {
                             }
                         },
                         {
-                            label: 'Toggle Developer Tools',
+                            label: i18n.getMessageFor('Toggle Developer Tools'),
                             accelerator: isMac ? 'Alt+Command+I' : 'Ctrl+Shift+I',
                             click(item, focusedWindow) {
                                 let devToolsEnabled = readConfigFromFile('devToolsEnabled');
