@@ -91,11 +91,11 @@ export class AppMenu {
     /**
      * Displays popup application at the x,y coordinates
      *
-     * @param window {Electron.BrowserWindow}
+     * @param opts {Electron.PopupOptions}
      */
-    public popupMenu(window: Electron.BrowserWindow): void {
+    public popupMenu(opts: Electron.PopupOptions): void {
         if (this.menu) {
-            this.menu.popup({ window, x: 20, y: 15 });
+            this.menu.popup(opts);
         } else {
             logger.error(`app-menu: tried popup menu, but failed menu not defined`);
         }

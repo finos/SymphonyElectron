@@ -3,6 +3,7 @@ import * as React from 'react';
 
 import { apiCmds, apiName } from '../common/api-interface';
 import { i18n } from '../common/i18n';
+import { throttle } from '../common/utils';
 
 interface IState {
     isMaximized: boolean;
@@ -10,8 +11,13 @@ interface IState {
     titleBarHeight: string;
 }
 
+const enum KeyCodes {
+    Esc = 27,
+    Alt = 18,
+}
+
 export default class WindowsTitleBar extends React.Component<{}, IState> {
-    private window: Electron.BrowserWindow;
+    private readonly window: Electron.BrowserWindow;
     private readonly eventHandlers = {
         onClose: () => this.close(),
         onMaximize: () => this.maximize(),
@@ -19,10 +25,14 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
         onShowMenu: () => this.showMenu(),
         onUnmaximize: () => this.unmaximize(),
     };
+    private isAltKey: boolean;
+    private isMenuOpen: boolean;
 
     constructor(props) {
         super(props);
         this.window = remote.getCurrentWindow();
+        this.isAltKey = false;
+        this.isMenuOpen = false;
         this.state = {
             isFullScreen: this.window.isFullScreen(),
             isMaximized: this.window.isMaximized(),
@@ -37,6 +47,32 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
         this.window.on('unmaximize', () => this.updateState({ isMaximized: false }));
         this.window.on('enter-full-screen', () =>  this.updateState({ isFullScreen: true }));
         this.window.on('leave-full-screen', () => this.updateState({ isFullScreen: false }));
+
+        // Handle key down events
+        const throttledKeyDown = throttle( (event) => {
+            this.isAltKey = event.keyCode === KeyCodes.Alt;
+        }, 500);
+
+        // Handle key up events
+        const throttledKeyUp = throttle( (event) => {
+            if (this.isAltKey && (event.keyCode === KeyCodes.Alt || KeyCodes.Esc)) {
+                this.isMenuOpen = !this.isMenuOpen;
+            }
+            if (this.isAltKey && this.isMenuOpen && event.keyCode === KeyCodes.Alt) {
+                this.showMenu();
+            }
+        }, 500);
+
+        // Handle mouse down event
+        const throttleMouseDown = throttle(() => {
+            if (this.isAltKey && this.isMenuOpen) {
+                this.isMenuOpen = !this.isMenuOpen;
+            }
+        }, 500);
+
+        window.addEventListener('keyup', throttledKeyUp, true);
+        window.addEventListener('keydown', throttledKeyDown, true);
+        window.addEventListener('mousedown', throttleMouseDown, { capture: true });
     }
 
     public componentDidMount() {
