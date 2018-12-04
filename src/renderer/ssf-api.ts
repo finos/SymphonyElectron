@@ -3,7 +3,12 @@ import { ipcRenderer } from 'electron';
 import { apiCmds, apiName } from '../common/api-interface';
 import { throttle } from '../common/utils';
 
-const local = {
+interface ILocalObject {
+    ipcRenderer;
+    activityDetection?: () => void;
+}
+
+const local: ILocalObject = {
     ipcRenderer,
 };
 
@@ -23,12 +28,32 @@ const throttledSetLocale = throttle((locale) => {
 }, 1000);
 
 export class SSFApi {
+
+    /**
+     * allows JS to register a activity detector that can be used by electron main process.
+     *
+     * @param  {Object} period - minimum user idle time in millisecond
+     * @param  {Object} activityDetection - function that can be called accepting
+     * @example registerActivityDetection(40000, func)
+     */
+    public registerActivityDetection(period, activityDetection) {
+        if (typeof activityDetection === 'function') {
+            local.activityDetection = activityDetection;
+
+            // only main window can register
+            local.ipcRenderer.send(apiName.symphonyApi, {
+                cmd: apiCmds.registerActivityDetection,
+                period,
+            });
+        }
+    }
     /**
      * sets the count on the tray icon to the given number.
+     *
      * @param {number} count  count to be displayed
      * note: count of 0 will remove the displayed count.
      * note: for mac the number displayed will be 1 to infinity
-     * note: for windws the number displayed will be 1 to 99 and 99+
+     * note: for windows the number displayed will be 1 to 99 and 99+
      */
     public setBadgeCount(count: number): void {
         throttledSetBadgeCount(count);
@@ -36,8 +61,9 @@ export class SSFApi {
 
     /**
      * Sets the language which updates the application locale
+     *
      * @param {string} locale - language identifier and a region identifier
-     * Ex: en-US, ja-JP
+     * @example: setLocale(en-US | ja-JP)
      */
     public setLocale(locale): void {
         if (typeof locale === 'string') {
