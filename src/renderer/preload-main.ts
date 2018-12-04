@@ -5,6 +5,12 @@ import * as ReactDOM from 'react-dom';
 import WindowsTitleBar from '../renderer/windows-title-bar';
 import { SSFApi } from './ssf-api';
 
+interface ISSFWindow extends Window {
+    ssf?: SSFApi;
+}
+
+const ssfWindow: ISSFWindow = window;
+
 /**
  * creates API exposed from electron.
  */
@@ -23,7 +29,8 @@ const createAPI = () => {
     // API exposed to renderer process.
     //
     // @ts-ignore
-    window.ssf = new SSFApi();
+    ssfWindow.ssf = new SSFApi();
+    Object.freeze(ssfWindow.ssf);
 };
 
 createAPI();
