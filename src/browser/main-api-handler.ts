@@ -3,6 +3,7 @@ import { BrowserWindow, ipcMain } from 'electron';
 import { apiCmds, apiName, IApiArgs } from '../common/api-interface';
 import { LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
+import { activityDetection } from './activity-detection';
 import {
     isValidWindow,
     setDataUrl,
@@ -57,13 +58,13 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
             // renderer window that has a registered logger from JS.
             logger.setLoggerWindow(event.sender);
             break;
-        /*case ApiCmds.registerActivityDetection:
+        case apiCmds.registerActivityDetection:
             if (typeof arg.period === 'number') {
                 // renderer window that has a registered activity detection from JS.
-                activityDetection.setActivityWindow(arg.period, event.sender);
+                activityDetection.setWindowAndThreshold(event.sender, arg.period);
             }
             break;
-        case ApiCmds.showNotificationSettings:
+        /*case ApiCmds.showNotificationSettings:
             if (typeof arg.windowName === 'string') {
                 configureNotification.openConfigurationWindow(arg.windowName);
             }
