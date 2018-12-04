@@ -20,7 +20,7 @@ const logLevels = require('./enums/logLevels.js');
 const notify = require('./notify/electron-notify.js');
 const eventEmitter = require('./eventEmitter');
 const throttle = require('./utils/throttle.js');
-const { getConfigField, updateConfigField, readConfigFileSync, getMultipleConfigField } = require('./config.js');
+const { getConfigField, updateConfigField, readConfigFileSync, getMultipleConfigField, readConfigFromFile } = require('./config.js');
 const { isMac, isWindowsOS, isDevEnv } = require('./utils/misc');
 const { isWhitelisted, parseDomain } = require('./utils/whitelistHandler');
 const { initCrashReporterMain, initCrashReporterRenderer } = require('./crashReporter.js');
@@ -614,8 +614,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
         function devTools() {
             const focusedWindow = BrowserWindow.getFocusedWindow();
-
-            
+            devToolsEnabled = readConfigFromFile('devToolsEnabled');
             if (focusedWindow && !focusedWindow.isDestroyed()) {
                 if (devToolsEnabled) {
                     focusedWindow.webContents.toggleDevTools();

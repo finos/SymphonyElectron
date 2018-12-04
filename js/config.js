@@ -395,6 +395,11 @@ function readConfigFileSync() {
     
 }
 
+const readConfigFromFile = (key) => {
+    let data = readConfigFileSync();
+    return data[key];
+}
+
 module.exports = {
 
     configFileName,
@@ -411,6 +416,7 @@ module.exports = {
     clearCachedConfigs,
     
     readConfigFileSync,
+    readConfigFromFile,
 
     // use only if you specifically need to read global config fields
     getGlobalConfigField,
