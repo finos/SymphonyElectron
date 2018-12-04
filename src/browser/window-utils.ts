@@ -3,10 +3,27 @@ import * as path from 'path';
 import * as url from 'url';
 
 import { isMac, isWindowsOS } from '../common/env';
+import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
 const checkValidWindow = true;
+
+/**
+ * Prevents window from navigating
+ *
+ * @param browserWindow
+ */
+export const preventWindowNavigation = (browserWindow: Electron.BrowserWindow): void => {
+    const listener = (e: Electron.Event, winUrl: string) => {
+        if (browserWindow.isDestroyed()
+            || browserWindow.webContents.isDestroyed()
+            || winUrl === browserWindow.webContents.getURL()) return;
+        e.preventDefault();
+    };
+
+    browserWindow.webContents.on('will-navigate', listener);
+};
 
 /**
  * Creates components windows
@@ -14,9 +31,9 @@ const checkValidWindow = true;
  * @param componentName
  * @param opts
  */
-export function createComponentWindow(
+export const createComponentWindow = (
     componentName: string,
-    opts?: Electron.BrowserWindowConstructorOptions): BrowserWindow {
+    opts?: Electron.BrowserWindowConstructorOptions): BrowserWindow => {
 
     const parent = windowHandler.getMainWindow() || undefined;
     const options = {
@@ -48,30 +65,14 @@ export function createComponentWindow(
     browserWindow.loadURL(targetUrl);
     preventWindowNavigation(browserWindow);
     return browserWindow;
-}
-
-/**
- * Prevents window from navigating
- *
- * @param browserWindow
- */
-export function preventWindowNavigation(browserWindow: Electron.BrowserWindow) {
-    const listener = (e: Electron.Event, winUrl: string) => {
-        if (browserWindow.isDestroyed()
-            || browserWindow.webContents.isDestroyed()
-            || winUrl === browserWindow.webContents.getURL()) return;
-        e.preventDefault();
-    };
-
-    browserWindow.webContents.on('will-navigate', listener);
-}
+};
 
 /**
  * Shows the badge count
  *
  * @param count {number}
  */
-export function showBadgeCount(count: number): void {
+export const showBadgeCount = (count: number): void => {
     if (typeof count !== 'number') {
         logger.warn(`badgeCount: invalid func arg, must be a number: ${count}`);
         return;
@@ -95,7 +96,7 @@ export function showBadgeCount(count: number): void {
             mainWindow.setOverlayIcon(null, '');
         }
     }
-}
+};
 
 /**
  * Sets the data url
@@ -103,7 +104,7 @@ export function showBadgeCount(count: number): void {
  * @param dataUrl
  * @param count
  */
-export function setDataUrl(dataUrl: string, count: number): void {
+export const setDataUrl = (dataUrl: string, count: number): void => {
     const mainWindow = windowHandler.getMainWindow();
     if (mainWindow && dataUrl && count) {
         const img = nativeImage.createFromDataURL(dataUrl);
@@ -111,30 +112,7 @@ export function setDataUrl(dataUrl: string, count: number): void {
         const desc = 'Symphony has ' + count + ' unread messages';
         mainWindow.setOverlayIcon(img, desc);
     }
-}
-
-/**
- * Sets always on top property based on isAlwaysOnTop
- *
- * @param isAlwaysOnTop
- * @param shouldActivateMainWindow
- */
-export function updateAlwaysOnTop(isAlwaysOnTop: boolean, shouldActivateMainWindow: boolean = true) {
-    const browserWins: ICustomBrowserWindow[] = BrowserWindow.getAllWindows() as ICustomBrowserWindow[];
-    if (browserWins.length > 0) {
-        browserWins
-            .filter((browser) => typeof browser.notificationObj !== 'object')
-            .forEach((browser) => browser.setAlwaysOnTop(isAlwaysOnTop));
-
-        // An issue where changing the alwaysOnTop property
-        // focus the pop-out window
-        // Issue - Electron-209/470
-        const mainWindow = windowHandler.getMainWindow();
-        if (mainWindow && mainWindow.winName && shouldActivateMainWindow) {
-            activate(mainWindow.winName);
-        }
-    }
-}
+};
 
 /**
  * Tries finding a window we have created with given name.  If found, then
@@ -145,10 +123,10 @@ export function updateAlwaysOnTop(isAlwaysOnTop: boolean, shouldActivateMainWind
  * @param {Boolean} shouldFocus  whether to get window to focus or just show
  * without giving focus
  */
-function activate(windowName: string, shouldFocus: boolean = true): void {
+export const activate = (windowName: string, shouldFocus: boolean = true): void => {
 
     // Electron-136: don't activate when the app is reloaded programmatically
-    if (windowHandler.getIsAutoReload()) return;
+    if (windowHandler.isAutoReload) return;
 
     const windows = windowHandler.getAllWindows();
     for (const key in windows) {
@@ -167,14 +145,38 @@ function activate(windowName: string, shouldFocus: boolean = true): void {
             }
         }
     }
-}
+};
+
+/**
+ * Sets always on top property based on isAlwaysOnTop
+ *
+ * @param isAlwaysOnTop
+ * @param shouldActivateMainWindow
+ */
+export const updateAlwaysOnTop = (isAlwaysOnTop: boolean, shouldActivateMainWindow: boolean = true): void => {
+    const browserWins: ICustomBrowserWindow[] = BrowserWindow.getAllWindows() as ICustomBrowserWindow[];
+    if (browserWins.length > 0) {
+        browserWins
+            .filter((browser) => typeof browser.notificationObj !== 'object')
+            .forEach((browser) => browser.setAlwaysOnTop(isAlwaysOnTop));
+
+        // An issue where changing the alwaysOnTop property
+        // focus the pop-out window
+        // Issue - Electron-209/470
+        const mainWindow = windowHandler.getMainWindow();
+        if (mainWindow && mainWindow.winName && shouldActivateMainWindow) {
+            activate(mainWindow.winName);
+        }
+    }
+};
 
 /**
  * Ensure events comes from a window that we have created.
+ *
  * @param  {BrowserWindow} browserWin  node emitter event to be tested
  * @return {Boolean} returns true if exists otherwise false
  */
-export function isValidWindow(browserWin: Electron.BrowserWindow): boolean {
+export const isValidWindow = (browserWin: Electron.BrowserWindow): boolean => {
     if (!checkValidWindow) {
         return true;
     }
@@ -190,4 +192,16 @@ export function isValidWindow(browserWin: Electron.BrowserWindow): boolean {
     }
 
     return result;
-}
+};
+
+/**
+ * Updates the locale and rebuilds the entire application menu
+ *
+ * @param locale {LocaleType}
+ */
+export const updateLocale = (locale: LocaleType): void => {
+    // sets the new locale
+    i18n.setLocale(locale);
+    const appMenu = windowHandler.appMenu;
+    if (appMenu) appMenu.update(locale);
+};

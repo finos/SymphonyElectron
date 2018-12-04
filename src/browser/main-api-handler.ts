@@ -1,9 +1,10 @@
 import { BrowserWindow, ipcMain } from 'electron';
 
 import { apiCmds, apiName, IApiArgs } from '../common/api-interface';
+import { LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { windowHandler } from './window-handler';
-import { isValidWindow, setDataUrl, showBadgeCount } from './window-utils';
+import { isValidWindow, setDataUrl, showBadgeCount, updateLocale } from './window-utils';
 
 /**
  * Handle API related ipc messages from renderers. Only messages from windows
@@ -81,7 +82,7 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
         case apiCmds.popupMenu: {
             const browserWin = BrowserWindow.fromWebContents(event.sender);
             if (browserWin && !browserWin.isDestroyed()) {
-                const appMenu = windowHandler.getApplicationMenu();
+                const appMenu = windowHandler.appMenu;
                 if (appMenu) appMenu.popupMenu(browserWin);
             }
             break;
@@ -100,14 +101,13 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
             if (typeof arg.isInMeeting === 'boolean') {
                 setIsInMeeting(arg.isInMeeting);
             }
-            break;
-        case ApiCmds.setLocale:
+            break;*/
+        case apiCmds.setLocale:
             if (typeof arg.locale === 'string') {
-                let browserWin = electron.BrowserWindow.fromWebContents(event.sender);
-                windowMgr.setLocale(browserWin, { language: arg.locale });
+                updateLocale(arg.locale as LocaleType);
             }
             break;
-        case ApiCmds.keyPress:
+        /*case ApiCmds.keyPress:
             if (typeof arg.keyCode === 'number') {
                 windowMgr.handleKeyPress(arg.keyCode);
             }

@@ -1,42 +1,41 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-// import { logger } from './logger';
 import { formatString } from './utils';
 
 const localeCodeRegex = /^([a-z]{2})-([A-Z]{2})$/;
 
-export type localeType = 'en-US' | 'ja-JP';
+export type LocaleType = 'en-US' | 'ja-JP';
 
 class Translation {
     private static translate = (value: string, resource) => resource[value];
-    private locale: localeType = 'en-US';
+    private locale: LocaleType = 'en-US';
     private loadedResource: object = {};
 
     /**
      * Apply the locale for translation
+     *
      * @param locale
      */
-    public setLocale(locale: localeType): void {
+    public setLocale(locale: LocaleType): void {
         const localeMatch: string[] | null = locale.match(localeCodeRegex);
         if (!locale && (!localeMatch || localeMatch.length < 1)) {
-            // logger.error(`Translation: invalid locale ${locale} found`);
             return;
         }
 
         this.locale = locale;
-        // logger.info(`Translation: locale updated with ${locale}`);
     }
 
     /**
      * Gets the current locale
      */
-    public getLocale(): localeType {
+    public getLocale(): LocaleType {
         return this.locale;
     }
 
     /**
      * fetches and returns the translated value
+     *
      * @param value {string}
      * @param data {object}
      */
@@ -50,9 +49,10 @@ class Translation {
 
     /**
      * Reads the resources dir and returns the data
+     *
      * @param locale
      */
-    public loadResource(locale: localeType): object | null {
+    public loadResource(locale: LocaleType): object | null {
         const resourcePath = path.resolve(__dirname, '..', 'locale', `${locale}.json`);
 
         if (!fs.existsSync(resourcePath)) {

@@ -5,7 +5,7 @@ import { logger } from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
 import { cleanUpAppCache, createAppCacheFile } from './app-cache-handler';
 import { autoLaunchInstance } from './auto-launch-controller';
-import setChromeFlags from './chrome-flags';
+import { setChromeFlags } from './chrome-flags';
 import { config } from './config-handler';
 import './main-api-handler';
 import { windowHandler } from './window-handler';
@@ -13,16 +13,10 @@ import { windowHandler } from './window-handler';
 const allowMultiInstance: string | boolean = getCommandLineArgs(process.argv, '--multiInstance', true) || isDevEnv;
 const singleInstanceLock: boolean = allowMultiInstance ? true : app.requestSingleInstanceLock();
 
-if (!singleInstanceLock) {
-    app.quit();
-} else {
-    main();
-}
-
 /**
  * Main function that init the application
  */
-async function main() {
+const main = async () => {
     await app.whenReady();
     createAppCacheFile();
     windowHandler.showLoadingScreen();
@@ -42,6 +36,12 @@ async function main() {
      * Sets chrome flags from global config
      */
     setChromeFlags();
+};
+
+if (!singleInstanceLock) {
+    app.quit();
+} else {
+    main();
 }
 
 /**
