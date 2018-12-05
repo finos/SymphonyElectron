@@ -1,11 +1,18 @@
 import { ipcRenderer } from 'electron';
 
-import { apiCmds, apiName } from '../common/api-interface';
+import {
+    apiCmds,
+    apiName,
+    IActivityDetection,
+    IBadgeCount,
+    IScreenSnippet,
+} from '../common/api-interface';
 import { throttle } from '../common/utils';
 
 interface ILocalObject {
     ipcRenderer;
-    activityDetection?: () => void;
+    activityDetection?: (arg: IActivityDetection) => void;
+    screenSnippet?: (arg: IScreenSnippet) => void;
 }
 
 const local: ILocalObject = {
@@ -36,7 +43,7 @@ export class SSFApi {
      * @param  {Object} activityDetection - function that can be called accepting
      * @example registerActivityDetection(40000, func)
      */
-    public registerActivityDetection(period, activityDetection) {
+    public registerActivityDetection(period: number, activityDetection: Partial<ILocalObject>): void {
         if (typeof activityDetection === 'function') {
             local.activityDetection = activityDetection;
 
@@ -47,6 +54,22 @@ export class SSFApi {
             });
         }
     }
+
+    /**
+     * Allow user to capture portion of screen
+     *
+     * @param screenSnippet {function}
+     */
+    public openScreenSnippet(screenSnippet: Partial<IScreenSnippet>): void {
+        if (typeof screenSnippet === 'function') {
+            local.screenSnippet = screenSnippet;
+
+            local.ipcRenderer.send(apiName.symphonyApi, {
+                cmd: apiCmds.openScreenSnippet,
+            });
+        }
+    }
+
     /**
      * sets the count on the tray icon to the given number.
      *
@@ -78,7 +101,7 @@ export class SSFApi {
  */
 
 // Creates a data url
-ipcRenderer.on('create-badge-data-url', (arg) => {
+ipcRenderer.on('create-badge-data-url', (_event: Event, arg: IBadgeCount) => {
     const count = arg && arg.count || 0;
 
     // create 32 x 32 img
@@ -114,5 +137,17 @@ ipcRenderer.on('create-badge-data-url', (arg) => {
             count,
             dataUrl,
         });
+    }
+});
+
+ipcRenderer.on('screen-snippet-data', (_event: Event, arg: IScreenSnippet) => {
+    if (typeof arg === 'object' && typeof local.screenSnippet === 'function') {
+        local.screenSnippet(arg);
+    }
+});
+
+ipcRenderer.on('activity', (_event: Event, arg: IActivityDetection) => {
+    if (typeof arg === 'object' && typeof local.activityDetection === 'function') {
+        local.activityDetection(arg);
     }
 });

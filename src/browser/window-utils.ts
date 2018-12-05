@@ -150,15 +150,15 @@ export const activate = (windowName: string, shouldFocus: boolean = true): void 
 /**
  * Sets always on top property based on isAlwaysOnTop
  *
- * @param isAlwaysOnTop
+ * @param shouldSetAlwaysOnTop
  * @param shouldActivateMainWindow
  */
-export const updateAlwaysOnTop = (isAlwaysOnTop: boolean, shouldActivateMainWindow: boolean = true): void => {
+export const updateAlwaysOnTop = (shouldSetAlwaysOnTop: boolean, shouldActivateMainWindow: boolean = true): void => {
     const browserWins: ICustomBrowserWindow[] = BrowserWindow.getAllWindows() as ICustomBrowserWindow[];
     if (browserWins.length > 0) {
         browserWins
             .filter((browser) => typeof browser.notificationObj !== 'object')
-            .forEach((browser) => browser.setAlwaysOnTop(isAlwaysOnTop));
+            .forEach((browser) => browser.setAlwaysOnTop(shouldSetAlwaysOnTop));
 
         // An issue where changing the alwaysOnTop property
         // focus the pop-out window

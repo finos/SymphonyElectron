@@ -3,6 +3,6 @@ export const isDevEnv = process.env.ELECTRON_DEV ?
 export const isElectronQA = !!process.env.ELECTRON_QA;
 
 export const isMac = (process.platform === 'darwin');
-export const isWindowsOS = true;
+export const isWindowsOS = (process.platform === 'win32');
 
 export const isNodeEnv = !!process.env.NODE_ENV;
