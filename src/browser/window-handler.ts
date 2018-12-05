@@ -130,11 +130,10 @@ export class WindowHandler {
                 );
                 this.mainWindow.webContents.send('initiate-custom-title-bar');
             }
-            this.mainWindow.webContents.toggleDevTools();
             this.mainWindow.show();
             this.appMenu = new AppMenu();
-            this.createAboutAppWindow();
         });
+        this.mainWindow.webContents.toggleDevTools();
         this.addWindow(this.windowOpts.winKey, this.mainWindow);
         return this.mainWindow;
     }
