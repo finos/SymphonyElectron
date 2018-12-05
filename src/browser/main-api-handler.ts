@@ -4,13 +4,8 @@ import { apiCmds, apiName, IApiArgs } from '../common/api-interface';
 import { LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { activityDetection } from './activity-detection';
-import {
-    isValidWindow,
-    setDataUrl,
-    showBadgeCount,
-    showPopupMenu,
-    updateLocale,
-} from './window-utils';
+import { screenSnippet } from './screen-snippet';
+import { isValidWindow, setDataUrl, showBadgeCount, showPopupMenu, updateLocale } from './window-utils';
 
 /**
  * Handle API related ipc messages from renderers. Only messages from windows
@@ -117,6 +112,8 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
                 windowMgr.handleKeyPress(arg.keyCode);
             }
             break;*/
+        case apiCmds.openScreenSnippet:
+            screenSnippet.capture(event.sender);
         default:
     }
 
