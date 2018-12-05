@@ -16,6 +16,7 @@ export enum apiCmds {
     optimizeMemoryRegister = 'optimize-memory-register',
     setIsInMeeting = 'set-is-in-meeting',
     setLocale = 'set-locale',
+    openScreenSnippet = 'open-screen-snippet',
     keyPress = 'key-press',
 }
 
@@ -37,4 +38,25 @@ export interface IApiArgs {
     isInMeeting: boolean;
     locale: string;
     keyCode: number;
+}
+
+/**
+ * Activity detection
+ */
+export interface IActivityDetection {
+    idleTime: number;
+}
+
+export interface IBadgeCount {
+    count: number;
+}
+
+/**
+ * Screen snippet
+ */
+export type ScreenSnippetDataType = 'ERROR' | 'image/jpg;base64';
+export interface IScreenSnippet {
+    data?: string;
+    message?: string;
+    type: ScreenSnippetDataType;
 }
