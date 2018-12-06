@@ -55,11 +55,20 @@ class ScreenSnippet {
         // only allow one screen capture at a time.
         if (this.child) this.child.kill();
         try {
-            this.child = await this.execCmd(this.captureUtil, this.captureUtilArgs);
+            await this.execCmd(this.captureUtil, this.captureUtilArgs);
             const { message, data, type } = await this.convertFileToData();
             webContents.send('screen-snippet-data', { message, data, type });
         } catch (error) {
             logger.error(`screen-snippet: screen snippet process was killed`, error);
+        }
+    }
+
+    /**
+     * Kills the child process when the application is reloaded
+     */
+    public killChildProcess(): void {
+        if (this.child && typeof this.child.kill === 'function') {
+            this.child.kill();
         }
     }
 
@@ -76,7 +85,7 @@ class ScreenSnippet {
      */
     private execCmd(captureUtil: string, captureUtilArgs: ReadonlyArray<string>): Promise<ChildProcess> {
         return new Promise<ChildProcess>((resolve, reject) => {
-            return execFile(captureUtil, captureUtilArgs, (error: ExecException | null) => {
+            return this.child = execFile(captureUtil, captureUtilArgs, (error: ExecException | null) => {
                 if (this.isAlwaysOnTop) updateAlwaysOnTop(true, false);
                 if (error && error.killed) {
                     // processs was killed, just resolve with no data.
