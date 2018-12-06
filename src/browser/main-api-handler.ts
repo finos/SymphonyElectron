@@ -5,7 +5,14 @@ import { LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { activityDetection } from './activity-detection';
 import { screenSnippet } from './screen-snippet';
-import { isValidWindow, setDataUrl, showBadgeCount, showPopupMenu, updateLocale } from './window-utils';
+import {
+    isValidWindow,
+    sanitize,
+    setDataUrl,
+    showBadgeCount,
+    showPopupMenu,
+    updateLocale,
+} from './window-utils';
 
 /**
  * Handle API related ipc messages from renderers. Only messages from windows
@@ -64,12 +71,12 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
                 configureNotification.openConfigurationWindow(arg.windowName);
             }
             break;
-        case ApiCmds.sanitize:
+        */case apiCmds.sanitize:
             if (typeof arg.windowName === 'string') {
                 sanitize(arg.windowName);
             }
             break;
-        case ApiCmds.bringToFront:
+        /*case ApiCmds.bringToFront:
             // validates the user bring to front config and activates the wrapper
             if (typeof arg.reason === 'string' && arg.reason === 'notification') {
                 bringToFront(arg.windowName, arg.reason);

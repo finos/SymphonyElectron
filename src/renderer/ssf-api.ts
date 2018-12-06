@@ -151,3 +151,17 @@ ipcRenderer.on('activity', (_event: Event, arg: IActivityDetection) => {
         local.activityDetection(arg);
     }
 });
+
+// Invoked whenever the app is reloaded/navigated
+const sanitize = (): void => {
+    local.ipcRenderer.send(apiName, {
+        cmd: apiCmds.sanitize,
+        windowName: window.name || 'main',
+    });
+};
+
+/**
+ * Window Events
+ */
+
+window.addEventListener('beforeunload', sanitize, false);

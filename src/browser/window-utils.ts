@@ -5,6 +5,7 @@ import * as url from 'url';
 import { isMac, isWindowsOS } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
+import { screenSnippet } from './screen-snippet';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
 const checkValidWindow = true;
@@ -216,5 +217,28 @@ export const showPopupMenu = (opts: Electron.PopupOptions): void => {
         const popupOpts = { window: mainWindow, x, y };
         const appMenu = windowHandler.appMenu;
         if (appMenu) appMenu.popupMenu({ ...popupOpts, ...opts });
+    }
+};
+
+/**
+ * Method that is invoked when the application is reloaded/navigated
+ * window.addEventListener('beforeunload')
+ *
+ * @param windowName {string}
+ */
+export const sanitize = (windowName: string): void => {
+    // To make sure the reload event is from the main window
+    const mainWindow = windowHandler.getMainWindow();
+    if (mainWindow && windowName === mainWindow.winName) {
+        // reset the badge count whenever an user refreshes the electron client
+        showBadgeCount(0);
+
+        // Terminates the screen snippet process on reload
+        if (!isMac) {
+            screenSnippet.killChildProcess();
+        }
+        // TODO: write method to clean up child window
+        // Closes all the child windows
+        // windowMgr.cleanUpChildWindows();
     }
 };
