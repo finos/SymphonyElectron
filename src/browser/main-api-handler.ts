@@ -35,7 +35,6 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
             break;*/
         case apiCmds.setBadgeCount:
             if (typeof arg.count === 'number') {
-                console.log(arg.count);
                 showBadgeCount(arg.count);
             }
             break;

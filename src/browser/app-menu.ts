@@ -55,7 +55,7 @@ const menuItemsArray = Object.keys(menuSections)
 export class AppMenu {
     private menu: Electron.Menu | undefined;
     private menuList: Electron.MenuItemConstructorOptions[];
-    private readonly locale: LocaleType;
+    private locale: LocaleType;
 
     constructor() {
         this.menuList = [];
@@ -85,7 +85,10 @@ export class AppMenu {
      * @param locale {LocaleType}
      */
     public update(locale: LocaleType): void {
-        if (this.locale !== locale) this.buildMenu();
+        if (this.locale !== locale) {
+            this.buildMenu();
+            this.locale = locale;
+        }
     }
 
     /**
@@ -131,15 +134,15 @@ export class AppMenu {
             id: menuSections.about,
             label: app.getName(),
             submenu: [
-                { label: i18n.t('About Symphony'), role: 'about' },
+                { label: i18n.t('About Symphony')(), role: 'about' },
                 this.buildSeparator(),
-                { label: i18n.t('Services'), role: 'services' },
+                { label: i18n.t('Services')(), role: 'services' },
                 this.buildSeparator(),
-                { label: i18n.t('Hide Symphony'), role: 'hide' },
-                { label: i18n.t('Hide Others'), role: 'hideothers' },
-                { label: i18n.t('Show All'), role: 'unhide' },
+                { label: i18n.t('Hide Symphony')(), role: 'hide' },
+                { label: i18n.t('Hide Others')(), role: 'hideothers' },
+                { label: i18n.t('Show All')(), role: 'unhide' },
                 this.buildSeparator(),
-                { label: i18n.t('Quit Symphony'), role: 'quit' },
+                { label: i18n.t('Quit Symphony')(), role: 'quit' },
             ],
         };
     }
@@ -149,27 +152,27 @@ export class AppMenu {
      */
     private buildEditMenu(): Electron.MenuItemConstructorOptions {
         const menu = {
-            label: i18n.t('Edit'),
+            label: i18n.t('Edit')(),
             submenu:
                 [
-                    this.assignRoleOrLabel('undo', i18n.t('Undo')),
-                    this.assignRoleOrLabel('redo', i18n.t('Redo')),
+                    this.assignRoleOrLabel('undo', i18n.t('Undo')()),
+                    this.assignRoleOrLabel('redo', i18n.t('Redo')()),
                     this.buildSeparator(),
-                    this.assignRoleOrLabel('cut', i18n.t('Cut')),
-                    this.assignRoleOrLabel('copy', i18n.t('Copy')),
-                    this.assignRoleOrLabel('paste', i18n.t('Paste')),
-                    this.assignRoleOrLabel('pasteandmatchstyle', i18n.t('Paste and Match Style')),
-                    this.assignRoleOrLabel('delete', i18n.t('Delete')),
-                    this.assignRoleOrLabel('selectall', i18n.t('Select All')),
+                    this.assignRoleOrLabel('cut', i18n.t('Cut')()),
+                    this.assignRoleOrLabel('copy', i18n.t('Copy')()),
+                    this.assignRoleOrLabel('paste', i18n.t('Paste')()),
+                    this.assignRoleOrLabel('pasteandmatchstyle', i18n.t('Paste and Match Style')()),
+                    this.assignRoleOrLabel('delete', i18n.t('Delete')()),
+                    this.assignRoleOrLabel('selectall', i18n.t('Select All')()),
                 ],
         };
 
         if (isMac) {
             menu.submenu.push(this.buildSeparator(), {
-                label: i18n.t('Speech'),
+                label: i18n.t('Speech')(),
                 submenu: [
-                    { label: i18n.t('Start Speaking'), role: 'startspeaking' },
-                    { label: i18n.t('Stop Speaking'), role: 'stopspeaking' },
+                    { label: i18n.t('Start Speaking')(), role: 'startspeaking' },
+                    { label: i18n.t('Stop Speaking')(), role: 'stopspeaking' },
                 ],
             });
         }
@@ -181,18 +184,18 @@ export class AppMenu {
      */
     private buildViewMenu(): Electron.MenuItemConstructorOptions {
         return {
-            label: i18n.t('View'),
+            label: i18n.t('View')(),
             submenu: [ {
                 accelerator: 'CmdOrCtrl+R',
                 click: (_item, focusedWindow) => focusedWindow ? focusedWindow.reload() : null,
-                label: i18n.t('Reload'),
+                label: i18n.t('Reload')(),
             },
                 this.buildSeparator(),
-                this.assignRoleOrLabel('resetzoom', i18n.t('Actual Size')),
-                this.assignRoleOrLabel('zoomin', i18n.t('Zoom In')),
-                this.assignRoleOrLabel('zoomout', i18n.t('Zoom Out')),
+                this.assignRoleOrLabel('resetzoom', i18n.t('Actual Size')()),
+                this.assignRoleOrLabel('zoomin', i18n.t('Zoom In')()),
+                this.assignRoleOrLabel('zoomout', i18n.t('Zoom Out')()),
                 this.buildSeparator(),
-                this.assignRoleOrLabel('togglefullscreen', i18n.t('Toggle Full Screen')),
+                this.assignRoleOrLabel('togglefullscreen', i18n.t('Toggle Full Screen')()),
             ],
         };
     }
@@ -202,11 +205,11 @@ export class AppMenu {
      */
     private buildWindowMenu(): Electron.MenuItemConstructorOptions {
         return {
-            label: i18n.t('Window'),
+            label: i18n.t('Window')(),
             role: 'window',
             submenu: [
-                this.assignRoleOrLabel('minimize', i18n.t('Minimize')),
-                this.assignRoleOrLabel('close', i18n.t('Close')),
+                this.assignRoleOrLabel('minimize', i18n.t('Minimize')()),
+                this.assignRoleOrLabel('close', i18n.t('Close')()),
                 this.buildSeparator(),
                 {
                     checked: launchOnStartup,
@@ -217,49 +220,49 @@ export class AppMenu {
                             await autoLaunch.disableAutoLaunch();
                         }
                         launchOnStartup = item.checked;
-                        config.updateUserConfig({ launchOnStartup });
+                        await config.updateUserConfig({ launchOnStartup });
                     },
-                    label: i18n.t('Auto Launch On Startup'),
+                    label: i18n.t('Auto Launch On Startup')(),
                     type: 'checkbox',
                 },
                 {
                     checked: isAlwaysOnTop,
-                    click: (item) => {
+                    click: async (item) => {
                         isAlwaysOnTop = item.checked;
                         updateAlwaysOnTop(item.checked, true);
-                        config.updateUserConfig({ alwaysOnTop: item.checked });
+                        await config.updateUserConfig({ alwaysOnTop: item.checked });
                     },
-                    label: i18n.t('Always on Top'),
+                    label: i18n.t('Always on Top')(),
                     type: 'checkbox',
                 },
                 {
                     checked: minimizeOnClose,
-                    click: (item) => {
+                    click: async (item) => {
                         minimizeOnClose = item.checked;
-                        config.updateUserConfig({ minimizeOnClose });
+                        await config.updateUserConfig({ minimizeOnClose });
                     },
-                    label: i18n.t('Minimize on Close'),
+                    label: i18n.t('Minimize on Close')(),
                     type: 'checkbox',
                 },
                 {
                     checked: bringToFront,
-                    click: (item) => {
+                    click: async (item) => {
                         bringToFront = item.checked;
-                        config.updateUserConfig({ bringToFront });
+                        await config.updateUserConfig({ bringToFront });
                     },
                     label: isWindowsOS
-                        ? i18n.t('Flash Notification in Taskbar')
-                        : i18n.t('Bring to Front on Notifications'),
+                        ? i18n.t('Flash Notification in Taskbar')()
+                        : i18n.t('Bring to Front on Notifications')(),
                     type: 'checkbox',
                 },
                 this.buildSeparator(),
                 {
                     checked: memoryRefresh,
-                    click: (item) => {
+                    click: async (item) => {
                         memoryRefresh = item.checked;
-                        config.updateUserConfig({ memoryRefresh });
+                        await config.updateUserConfig({ memoryRefresh });
                     },
-                    label: i18n.t('Refresh app when idle'),
+                    label: i18n.t('Refresh app when idle')(),
                     type: 'checkbox',
                 },
                 {
@@ -273,7 +276,7 @@ export class AppMenu {
                             }
                         }
                     },
-                    label: i18n.t('Clear cache and Reload'),
+                    label: i18n.t('Clear cache and Reload')(),
                 },
             ],
         };
@@ -284,26 +287,26 @@ export class AppMenu {
      */
     private buildHelpMenu(): Electron.MenuItemConstructorOptions {
         return {
-            label: i18n.t('Help'),
+            label: i18n.t('Help')(),
             role: 'help',
             submenu:
                 [ {
-                    click: () => shell.openExternal(i18n.t('Help Url')),
-                    label: i18n.t('Symphony Help'),
+                    click: () => shell.openExternal(i18n.t('Help Url')()),
+                    label: i18n.t('Symphony Help')(),
                 }, {
-                    click: () => shell.openExternal(i18n.t('Symphony Url')),
-                    label: i18n.t('Learn More'),
+                    click: () => shell.openExternal(i18n.t('Symphony Url')()),
+                    label: i18n.t('Learn More')(),
                 }, {
-                    label: i18n.t('Troubleshooting'),
+                    label: i18n.t('Troubleshooting')(),
                     submenu: [ {
                         click: async () => exportLogs(),
-                        label: isMac ? i18n.t('Show Logs in Finder') : i18n.t('Show Logs in Explorer'),
+                        label: isMac ? i18n.t('Show Logs in Finder')() : i18n.t('Show Logs in Explorer')(),
                     }, {
                         click: () => exportCrashDumps(),
-                        label: isMac ? i18n.t('Show crash dump in Finder') : i18n.t('Show crash dump in Explorer'),
+                        label: isMac ? i18n.t('Show crash dump in Finder')() : i18n.t('Show crash dump in Explorer')(),
                     }, {
                         click: () => windowHandler.createMoreInfoWindow(),
-                        label: i18n.t('More Information'),
+                        label: i18n.t('More Information')(),
                     } ],
                 } ],
         };

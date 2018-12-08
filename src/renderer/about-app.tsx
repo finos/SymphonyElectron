@@ -22,7 +22,9 @@ export default class AboutApp extends React.Component<{}, IState> {
             clientVersion: '0',
             version: 'N/A',
         };
+        this.updateState = this.updateState.bind(this);
     }
+
     /**
      * main render function
      */
@@ -42,7 +44,7 @@ export default class AboutApp extends React.Component<{}, IState> {
     }
 
     public componentDidMount(): void {
-        ipcRenderer.on('about-app-data', this.updateState.bind(this));
+        ipcRenderer.on('about-app-data', this.updateState);
     }
 
     public componentWillUnmount(): void {
@@ -51,6 +53,7 @@ export default class AboutApp extends React.Component<{}, IState> {
 
     /**
      * Sets the About app state
+     *
      * @param _event
      * @param data {Object} { buildNumber, clientVersion, version }
      */
