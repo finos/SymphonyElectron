@@ -3,6 +3,7 @@
     "module": "commonjs",
     "pretty": true,
     "target": "ES2016",
+    "resolveJsonModule": true,
     "jsx": "react",
     "lib": [
       "es2016",

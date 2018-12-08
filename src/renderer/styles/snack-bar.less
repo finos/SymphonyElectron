@@ -1,0 +1,52 @@
+@white: rgba(255,255,255, 1);
+@grey: rgba(51,51,51, 1);
+
+@-webkit-keyframes fadein {
+  from {
+    top: 0;
+    opacity: 0;
+  }
+  to {
+    top: 30px;
+    opacity: 1;
+  }
+}
+@-webkit-keyframes fadeout {
+  from {
+    top: 30px;
+    opacity: 1;
+  }
+  to {
+    top: 0;
+    opacity: 0;
+  }
+}
+.snackbar {
+  visibility: hidden;
+  min-width: 250px;
+  margin-left: -135px;
+  background-color: @grey;
+  color: @white;
+  text-align: center;
+  border-radius: 2px;
+  padding: 16px;
+  position: fixed;
+  z-index: 2147483647;
+  left: 50%;
+  top: 30px;
+  font-size: 14px;
+  font-style: normal;
+
+  &-esc {
+    padding: 5px;
+    border-radius: 3px;
+    border: 2px solid @white;
+    background-color: @grey;
+  }
+
+  &-show {
+    visibility: visible;
+    -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  }
+}

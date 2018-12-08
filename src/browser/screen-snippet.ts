@@ -56,7 +56,7 @@ class ScreenSnippet {
         if (this.child) this.child.kill();
         try {
             await this.execCmd(this.captureUtil, this.captureUtilArgs);
-            const { message, data, type } = await this.convertFileToData();
+            const { message, data, type }: IScreenSnippet = await this.convertFileToData();
             webContents.send('screen-snippet-data', { message, data, type });
         } catch (error) {
             logger.error(`screen-snippet: screen snippet process was killed`, error);

@@ -1,11 +1,14 @@
-import { app } from 'electron';
+import { app, dialog } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 
 import { omit } from 'lodash';
+import * as util from 'util';
 import { isDevEnv, isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { compareVersions, pick } from '../common/utils';
+
+const writeFile = util.promisify(fs.writeFile);
 
 const ignoreSettings =  [
     'minimizeOnClose',
@@ -34,6 +37,7 @@ export interface IConfig {
     permissions: IPermission;
     customFlags: ICustomFlag;
     crashReporter: ICrashReporter;
+    mainWinPos: ICustomRectangle;
 }
 
 export interface IPermission {
@@ -61,6 +65,11 @@ export interface ICrashReporter {
 export interface INotificationSetting {
     position: string;
     display: string;
+}
+
+export interface ICustomRectangle extends Electron.Rectangle {
+    isMaximized: boolean;
+    isFullScreen: boolean;
 }
 
 class Config {
@@ -121,9 +130,14 @@ class Config {
      *
      * @param data {IConfig}
      */
-    public updateUserConfig(data: Partial<IConfig>): void {
+    public async updateUserConfig(data: Partial<IConfig>): Promise<void> {
         this.userConfig = { ...this.userConfig, ...data };
-        fs.writeFileSync(this.userConfigPath, JSON.stringify(this.userConfig), { encoding: 'utf8' });
+        try {
+            await writeFile(this.userConfigPath, JSON.stringify(this.userConfig), { encoding: 'utf8' });
+        } catch (error) {
+            logger.error(`config-handler: failed to update user config file with ${data}`, error);
+            dialog.showErrorBox('Error updating user config file', 'failed to write user config file with ${}');
+        }
     }
 
     /**
@@ -167,9 +181,9 @@ class Config {
      * If user config doesn't exits?
      * this creates a new one with { configVersion: current_app_version }
      */
-    private readUserConfig() {
+    private async readUserConfig() {
         if (!fs.existsSync(this.userConfigPath)) {
-            this.updateUserConfig({ configVersion: app.getVersion().toString() } as IConfig);
+            await this.updateUserConfig({ configVersion: app.getVersion().toString() } as IConfig);
         }
         this.userConfig = this.parseConfigData(fs.readFileSync(this.userConfigPath, 'utf8'));
     }

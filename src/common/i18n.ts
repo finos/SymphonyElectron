@@ -7,8 +7,20 @@ const localeCodeRegex = /^([a-z]{2})-([A-Z]{2})$/;
 
 export type LocaleType = 'en-US' | 'ja-JP';
 
+type formaterFunction = (...args: any[]) => string;
+
 class Translation {
-    private static translate = (value: string, resource) => resource[value];
+    /**
+     * Returns translated string with respect to value, resource & name space
+     *
+     * @param value {string} key field in the resources
+     * @param resource {string} current locale resource
+     * @param namespace {string} name space in the resource
+     */
+    private static translate(value: string, resource: JSON | null, namespace: string | undefined): string {
+        return resource ? Translation.getResource(resource, namespace)[value] : null;
+    }
+    private static getResource = (resource: JSON, namespace: string | undefined): JSON => namespace ? resource[namespace] : resource;
     private locale: LocaleType = 'en-US';
     private loadedResource: object = {};
 
@@ -37,14 +49,18 @@ class Translation {
      * fetches and returns the translated value
      *
      * @param value {string}
-     * @param data {object}
+     * @param namespace {string}
+     * @example t('translate and formats {data} ', namespace)({ data: 'string' })
+     * @returns translate and formats string
      */
-    public t(value: string, data?: object): string {
-        if (this.loadedResource && this.loadedResource[this.locale]) {
-            return formatString(Translation.translate(value, this.loadedResource[this.locale]));
-        }
-        const resource = this.loadResource(this.locale);
-        return formatString(resource ? resource[value] : value || value, data);
+    public t(value: string, namespace?: string): formaterFunction {
+        return (...args: any[]): string => {
+            if (this.loadedResource && this.loadedResource[this.locale]) {
+                return formatString(Translation.translate(value, this.loadedResource[this.locale], namespace), args);
+            }
+            const resource = this.loadResource(this.locale);
+            return formatString(Translation.translate(value, resource, namespace) || value, args);
+        };
     }
 
     /**
@@ -52,11 +68,10 @@ class Translation {
      *
      * @param locale
      */
-    public loadResource(locale: LocaleType): object | null {
+    public loadResource(locale: LocaleType): JSON | null {
         const resourcePath = path.resolve(__dirname, '..', 'locale', `${locale}.json`);
 
         if (!fs.existsSync(resourcePath)) {
-            // logger.error(`Translation: locale resource path does not exits ${resourcePath}`);
             return null;
         }
 

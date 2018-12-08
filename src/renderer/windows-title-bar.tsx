@@ -109,7 +109,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
             >
                 <div className='title-bar-button-container'>
                     <button
-                        title={i18n.t('Menu')}
+                        title={i18n.t('Menu')()}
                         className='hamburger-menu-button'
                         onClick={this.eventHandlers.onShowMenu}
                         onMouseDown={this.handleMouseDown}
@@ -128,7 +128,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
                 <div className='title-bar-button-container'>
                     <button
                         className='title-bar-button'
-                        title={i18n.t('Minimize')}
+                        title={i18n.t('Minimize')()}
                         onClick={this.eventHandlers.onMinimize}
                         onMouseDown={this.handleMouseDown}
                     >
@@ -143,7 +143,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
                 <div className='title-bar-button-container'>
                     <button
                         className='title-bar-button'
-                        title={i18n.t('Close')}
+                        title={i18n.t('Close')()}
                         onClick={this.eventHandlers.onClose}
                         onMouseDown={this.handleMouseDown}
                     >
@@ -169,7 +169,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
             return (
                 <button
                     className='title-bar-button'
-                    title={i18n.t('Maximize')}
+                    title={i18n.t('Maximize')()}
                     onClick={this.eventHandlers.onUnmaximize}
                     onMouseDown={this.handleMouseDown}
                 >
@@ -185,7 +185,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
             return (
                 <button
                     className='title-bar-button'
-                    title={i18n.t('unMaximize')}
+                    title={i18n.t('unMaximize')()}
                     onClick={this.eventHandlers.onMaximize  }
                     onMouseDown={this.handleMouseDown}
                 >
@@ -223,7 +223,6 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
      */
     public maximize(): void {
         if (this.isValidWindow()) {
-            console.log(this.window.maximize());
             this.window.maximize();
             this.setState({ isMaximized: true });
         }

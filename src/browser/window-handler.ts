@@ -1,15 +1,16 @@
+import * as electron from 'electron';
 import { BrowserWindow, crashReporter } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as url from 'url';
 
+import { buildNumber, clientVersion, version } from '../../package.json';
 import { isWindowsOS } from '../common/env';
 import { getCommandLineArgs, getGuid } from '../common/utils';
 import { AppMenu } from './app-menu';
 import { config, IConfig } from './config-handler';
+import { enterFullScreen, leaveFullScreen, throttledWindowChanges } from './window-actions';
 import { createComponentWindow } from './window-utils';
-
-const { buildNumber, clientVersion, version } = require('../../package.json'); // tslint:disable-line:no-var-requires
 
 interface ICustomBrowserWindowConstructorOpts extends Electron.BrowserWindowConstructorOptions {
     winKey: string;
@@ -20,28 +21,11 @@ export interface ICustomBrowserWindow extends Electron.BrowserWindow {
     notificationObj?: object;
 }
 
-export class WindowHandler {
+// Default window width & height
+const DEFAULT_WIDTH: number = 900;
+const DEFAULT_HEIGHT: number = 900;
 
-    /**
-     * Main window opts
-     */
-    private static getMainWindowOpts(): ICustomBrowserWindowConstructorOpts {
-        return {
-            alwaysOnTop: false,
-            frame: true,
-            minHeight: 300,
-            minWidth: 400,
-            show: false,
-            title: 'Symphony',
-            webPreferences: {
-                nativeWindowOpen: true,
-                nodeIntegration: false,
-                preload: path.join(__dirname, '../renderer/preload-main'),
-                sandbox: false,
-            },
-            winKey: getGuid(),
-        };
-    }
+export class WindowHandler {
 
     /**
      * Loading window opts
@@ -82,6 +66,7 @@ export class WindowHandler {
 
     private readonly windowOpts: ICustomBrowserWindowConstructorOpts;
     private readonly globalConfig: IConfig;
+    private readonly config: IConfig;
     // Window reference
     private readonly windows: object;
     private mainWindow: ICustomBrowserWindow | null;
@@ -90,8 +75,12 @@ export class WindowHandler {
     private moreInfoWindow: Electron.BrowserWindow | null;
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
+        // Settings
+        this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos' ]);
+        this.globalConfig = config.getGlobalConfigFields([ 'url', 'crashReporter' ]);
+
         this.windows = {};
-        this.windowOpts = { ...WindowHandler.getMainWindowOpts(), ...opts };
+        this.windowOpts = { ...this.getMainWindowOpts(), ...opts };
         this.isAutoReload = false;
         this.appMenu = null;
         // Window references
@@ -99,7 +88,6 @@ export class WindowHandler {
         this.loadingWindow = null;
         this.aboutAppWindow = null;
         this.moreInfoWindow = null;
-        this.globalConfig = config.getGlobalConfigFields([ 'url', 'crashReporter' ]);
 
         try {
             const extra = { podUrl: this.globalConfig.url, process: 'main' };
@@ -113,25 +101,46 @@ export class WindowHandler {
      * Starting point of the app
      */
     public createApplication() {
-        this.mainWindow = new BrowserWindow(this.windowOpts) as ICustomBrowserWindow;
+        // set window opts with additional config
+        this.mainWindow = new BrowserWindow({
+            ...this.windowOpts, ...this.getBounds(this.config.mainWinPos),
+        }) as ICustomBrowserWindow;
         this.mainWindow.winName = 'main';
+
+        // Event needed to hide native menu bar on Windows 10 as we use custom menu bar
+        this.mainWindow.webContents.once('did-start-loading', () => {
+            if ((this.config.isCustomTitleBar || isWindowsOS) && this.mainWindow && !this.mainWindow.isDestroyed()) {
+                this.mainWindow.setMenuBarVisibility(false);
+            }
+        });
 
         const urlFromCmd = getCommandLineArgs(process.argv, '--url=', false);
         this.mainWindow.loadURL(urlFromCmd && urlFromCmd.substr(6) || WindowHandler.validateURL(this.globalConfig.url));
         this.mainWindow.webContents.on('did-finish-load', () => {
+            // close the loading window when
+            // the main windows finished loading
             if (this.loadingWindow) {
                 this.loadingWindow.destroy();
                 this.loadingWindow = null;
             }
-            if (!this.mainWindow) return;
-            if (isWindowsOS && this.mainWindow && config.getConfigFields([ 'isCustomTitleBar' ])) {
+            // early exit if the window has already been destroyed
+            if (!this.mainWindow || this.mainWindow.isDestroyed()) return;
+
+            // Injects custom title bar css into the webContents
+            if (isWindowsOS && this.mainWindow && this.config.isCustomTitleBar) {
                 this.mainWindow.webContents.insertCSS(
                     fs.readFileSync(path.join(__dirname, '..', '/renderer/styles/title-bar.css'), 'utf8').toString(),
                 );
                 this.mainWindow.webContents.send('initiate-custom-title-bar');
             }
-            this.mainWindow.show();
+            this.mainWindow.webContents.insertCSS(
+                fs.readFileSync(path.join(__dirname, '..', '/renderer/styles/snack-bar.css'), 'utf8').toString(),
+            );
+            this.mainWindow.webContents.send('page-load');
             this.appMenu = new AppMenu();
+            this.monitorWindowActions();
+            // Ready to show the window
+            this.mainWindow.show();
         });
         this.mainWindow.webContents.toggleDevTools();
         this.addWindow(this.windowOpts.winKey, this.mainWindow);
@@ -171,7 +180,7 @@ export class WindowHandler {
      * @param window {Electron.BrowserWindow}
      */
     public hasWindow(key: string, window: Electron.BrowserWindow): boolean {
-        const browserWindow = this.windows[key];
+        const browserWindow = this.windows[ key ];
         return browserWindow && window === browserWindow;
     }
 
@@ -220,7 +229,68 @@ export class WindowHandler {
      * @param browserWindow {Electron.BrowserWindow}
      */
     private addWindow(key: string, browserWindow: Electron.BrowserWindow): void {
-        this.windows[key] = browserWindow;
+        this.windows[ key ] = browserWindow;
+    }
+
+    /**
+     * Saves the main window bounds
+     */
+    private monitorWindowActions(): void {
+            const eventNames = [ 'move', 'resize', 'maximize', 'unmaximize' ];
+            eventNames.forEach((event: string) => {
+                // @ts-ignore
+                if (this.mainWindow) this.mainWindow.on(event, throttledWindowChanges);
+            });
+            if (this.mainWindow) {
+                this.mainWindow.on('enter-full-screen', enterFullScreen);
+                this.mainWindow.on('leave-full-screen', leaveFullScreen);
+            }
+    }
+
+    /**
+     * Returns the config stored rectangle if it is contained within the workArea of at
+     * least one of the screens else returns the default rectangle value with out x, y
+     * as the default is to center the window
+     *
+     * @param mainWinPos {Electron.Rectangle}
+     * @return {x?: Number, y?: Number, width: Number, height: Number}
+     */
+    private getBounds(mainWinPos): Partial<Electron.Rectangle> {
+        if (!mainWinPos) return { width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT };
+        const displays = electron.screen.getAllDisplays();
+
+        for (let i = 0, len = displays.length; i < len; i++) {
+            const workArea = displays[ i ].workArea;
+            if (mainWinPos.x >= workArea.x && mainWinPos.y >= workArea.y &&
+                ((mainWinPos.x + mainWinPos.width) <= (workArea.x + workArea.width)) &&
+                ((mainWinPos.y + mainWinPos.height) <= (workArea.y + workArea.height))) {
+                return mainWinPos;
+            }
+        }
+        return { width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT };
+    }
+
+    /**
+     * Main window opts
+     */
+    private getMainWindowOpts(): ICustomBrowserWindowConstructorOpts {
+        // config fields
+        const { isCustomTitleBar } = this.config;
+        return {
+            alwaysOnTop: false,
+            frame: !(isCustomTitleBar && isWindowsOS),
+            minHeight: 300,
+            minWidth: 300,
+            show: false,
+            title: 'Symphony',
+            webPreferences: {
+                nativeWindowOpen: true,
+                nodeIntegration: false,
+                preload: path.join(__dirname, '../renderer/preload-main'),
+                sandbox: false,
+            },
+            winKey: getGuid(),
+        };
     }
 }
 

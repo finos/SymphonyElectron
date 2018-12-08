@@ -17,8 +17,8 @@ export const exportLogs = (): void => {
 
     if (!fs.existsSync(source) && focusedWindow && !focusedWindow.isDestroyed()) {
         dialog.showMessageBox(focusedWindow, {
-            message: i18n.t('No logs are available to share'),
-            title: i18n.t('Failed!'),
+            message: i18n.t('No logs are available to share')(),
+            title: i18n.t('Failed!')(),
             type: 'error',
         });
         return;
@@ -34,8 +34,8 @@ export const exportLogs = (): void => {
         .catch((err) => {
             if (focusedWindow && !focusedWindow.isDestroyed()) {
                 dialog.showMessageBox(focusedWindow, {
-                    message: `${i18n.t('Unable to generate logs due to ')} ${err}`,
-                    title: i18n.t('Failed!'),
+                    message: `${i18n.t('Unable to generate logs due to ')()} ${err}`,
+                    title: i18n.t('Failed!')(),
                     type: 'error',
                 });
             }
@@ -50,8 +50,8 @@ export const exportCrashDumps = (): void => {
 
     if (!fs.existsSync(source) || fs.readdirSync(source).length === 0 && focusedWindow && !focusedWindow.isDestroyed()) {
         electron.dialog.showMessageBox(focusedWindow as BrowserWindow, {
-            message: i18n.t('No crashes available to share'),
-            title: i18n.t('Failed!'),
+            message: i18n.t('No crashes available to share')(),
+            title: i18n.t('Failed!')(),
             type: 'error',
         });
         return;
@@ -69,8 +69,8 @@ export const exportCrashDumps = (): void => {
         .catch((err) => {
             if (focusedWindow && !focusedWindow.isDestroyed()) {
                 electron.dialog.showMessageBox(focusedWindow, {
-                    message: `${i18n.t('Unable to generate crash reports due to ')} ${err}`,
-                    title: i18n.t('Failed!'),
+                    message: `${i18n.t('Unable to generate crash reports due to ')()} ${err}`,
+                    title: i18n.t('Failed!')(),
                     type: 'error',
                 });
             }
