@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import WindowsTitleBar from '../renderer/windows-title-bar';
+import SnackBar from './snack-bar';
 import { SSFApi } from './ssf-api';
 
 interface ISSFWindow extends Window {
@@ -37,8 +38,13 @@ createAPI();
 
 // When the window is completely loaded
 ipcRenderer.on('page-load', () => {
-    const element = React.createElement(WindowsTitleBar);
-    ReactDOM.render(element, document.body);
+    // injects custom window title bar
+    const titleBar = React.createElement(WindowsTitleBar);
+    ReactDOM.render(titleBar, document.body.appendChild(document.createElement( 'div' )));
+
+    // injects snack bar
+    const snackBar = React.createElement(SnackBar);
+    ReactDOM.render(snackBar, document.body.appendChild(document.createElement( 'div' )));
 });
 
 // Creates a custom tile bar for Windows

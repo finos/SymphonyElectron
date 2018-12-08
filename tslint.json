@@ -2,6 +2,11 @@
   "extends": [
     "tslint:recommended"
   ],
+  "linterOptions": {
+    "exclude": [
+      "**/*.json"
+    ]
+  },
   "rules": {
     "curly": false,
     "eofline": false,
@@ -28,7 +33,7 @@
     "no-var-requires": true,
     "only-arrow-functions": true,
     "no-console": [
-      false,
+      true,
       "log",
       "error"
     ],
