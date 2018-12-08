@@ -7,6 +7,7 @@ import {
     IBadgeCount,
     IScreenSnippet,
 } from '../common/api-interface';
+import { i18n, LocaleType } from '../common/i18n';
 import { throttle } from '../common/utils';
 
 interface ILocalObject {
@@ -90,6 +91,7 @@ export class SSFApi {
      */
     public setLocale(locale): void {
         if (typeof locale === 'string') {
+            i18n.setLocale(locale as LocaleType);
             throttledSetLocale(locale);
         }
     }

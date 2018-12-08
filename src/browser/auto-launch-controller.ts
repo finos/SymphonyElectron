@@ -50,8 +50,8 @@ class AutoLaunchController extends AutoLaunch {
                 logger.error(`auto-launch-controller: ${title}: failed to enable auto launch error: ${err}`);
                 if (focusedWindow && !focusedWindow.isDestroyed()) {
                     dialog.showMessageBox(focusedWindow, {
-                        message: i18n.t(title) + ': ' + err,
-                        title: i18n.t(title),
+                        message: i18n.t(title)() + ': ' + err,
+                        title: i18n.t(title)(),
                         type: 'error',
                     });
                 }
@@ -72,8 +72,8 @@ class AutoLaunchController extends AutoLaunch {
             logger.error(`auto-launch-controller: ${title}: failed to disable auto launch error: ${err}`);
             if (focusedWindow && !focusedWindow.isDestroyed()) {
                 dialog.showMessageBox(focusedWindow, {
-                    message: i18n.t(title) + ': ' + err,
-                    title: i18n.t(title),
+                    message: i18n.t(title)() + ': ' + err,
+                    title: i18n.t(title)(),
                     type: 'error',
                 });
             }
