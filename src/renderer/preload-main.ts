@@ -37,10 +37,12 @@ const createAPI = () => {
 createAPI();
 
 // When the window is completely loaded
-ipcRenderer.on('page-load', () => {
-    // injects custom window title bar
-    const titleBar = React.createElement(WindowsTitleBar);
-    ReactDOM.render(titleBar, document.body.appendChild(document.createElement( 'div' )));
+ipcRenderer.on('page-load', (_event, { isWindowsOS }) => {
+    if (isWindowsOS) {
+        // injects custom window title bar
+        const titleBar = React.createElement(WindowsTitleBar);
+        ReactDOM.render(titleBar, document.body.appendChild(document.createElement( 'div' )));
+    }
 
     // injects snack bar
     const snackBar = React.createElement(SnackBar);
