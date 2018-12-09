@@ -120,6 +120,7 @@
     "wdio-selenium-standalone-service": "0.0.12"
   },
   "dependencies": {
+    "@types/ffi": "0.2.1",
     "archiver": "3.0.0",
     "async.map": "0.5.2",
     "async.mapseries": "0.5.2",

@@ -69,6 +69,8 @@ export class WindowHandler {
     private readonly config: IConfig;
     // Window reference
     private readonly windows: object;
+    private readonly isCustomTitleBarAndWindowOS: boolean;
+
     private mainWindow: ICustomBrowserWindow | null;
     private loadingWindow: Electron.BrowserWindow | null;
     private aboutAppWindow: Electron.BrowserWindow | null;
@@ -82,6 +84,8 @@ export class WindowHandler {
         this.windows = {};
         this.windowOpts = { ...this.getMainWindowOpts(), ...opts };
         this.isAutoReload = false;
+        this.isCustomTitleBarAndWindowOS = isWindowsOS && this.config.isCustomTitleBar;
+
         this.appMenu = null;
         // Window references
         this.mainWindow = null;
@@ -127,7 +131,7 @@ export class WindowHandler {
             if (!this.mainWindow || this.mainWindow.isDestroyed()) return;
 
             // Injects custom title bar css into the webContents
-            if (isWindowsOS && this.mainWindow && this.config.isCustomTitleBar) {
+            if (this.mainWindow && this.isCustomTitleBarAndWindowOS) {
                 this.mainWindow.webContents.insertCSS(
                     fs.readFileSync(path.join(__dirname, '..', '/renderer/styles/title-bar.css'), 'utf8').toString(),
                 );
@@ -136,7 +140,7 @@ export class WindowHandler {
             this.mainWindow.webContents.insertCSS(
                 fs.readFileSync(path.join(__dirname, '..', '/renderer/styles/snack-bar.css'), 'utf8').toString(),
             );
-            this.mainWindow.webContents.send('page-load');
+            this.mainWindow.webContents.send('page-load', { isWindowsOS });
             this.appMenu = new AppMenu();
             this.monitorWindowActions();
             // Ready to show the window
@@ -274,11 +278,9 @@ export class WindowHandler {
      * Main window opts
      */
     private getMainWindowOpts(): ICustomBrowserWindowConstructorOpts {
-        // config fields
-        const { isCustomTitleBar } = this.config;
         return {
             alwaysOnTop: false,
-            frame: !(isCustomTitleBar && isWindowsOS),
+            frame: !this.isCustomTitleBarAndWindowOS,
             minHeight: 300,
             minWidth: 300,
             show: false,

@@ -22,27 +22,12 @@ export default class SnackBar extends React.Component<{}, IState> {
         this.removeSnackBar = this.removeSnackBar.bind(this);
     }
 
-    /**
-     * Renders the custom title bar
-     */
-    public render(): JSX.Element | undefined {
-        const { show } = this.state;
-
-        return show ? (
-            <div className='SnackBar SnackBar-show'>
-                <span >{i18n.t('Press ', SNACKBAR_NAMESPACE)()}</span>
-                <span className='SnackBar-esc'>{i18n.t('esc', SNACKBAR_NAMESPACE)()}</span>
-                <span >{i18n.t(' to exit full screen', SNACKBAR_NAMESPACE)()}</span>
-            </div>
-        ) : <div>&nbsp;</div>;
-    }
-
     public componentDidMount(): void {
         ipcRenderer.on('window-enter-full-screen', this.showSnackBar);
         ipcRenderer.on('window-leave-full-screen', this.removeSnackBar);
     }
 
-    public componentWillMount(): void {
+    public componentWillUnmount(): void {
         ipcRenderer.removeListener('window-enter-full-screen', this.showSnackBar);
         ipcRenderer.removeListener('window-leave-full-screen', this.removeSnackBar);
     }
@@ -65,5 +50,20 @@ export default class SnackBar extends React.Component<{}, IState> {
         if (this.snackBarTimer) {
             clearTimeout(this.snackBarTimer);
         }
+    }
+
+    /**
+     * Renders the custom title bar
+     */
+    public render(): JSX.Element | null {
+        const { show } = this.state;
+
+        return show ? (
+            <div className='SnackBar SnackBar-show'>
+                <span >{i18n.t('Press ', SNACKBAR_NAMESPACE)()}</span>
+                <span className='SnackBar-esc'>{i18n.t('esc', SNACKBAR_NAMESPACE)()}</span>
+                <span >{i18n.t(' to exit full screen', SNACKBAR_NAMESPACE)()}</span>
+            </div>
+        ) : <div />;
     }
 }
