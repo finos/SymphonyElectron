@@ -1,5 +1,6 @@
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, remote } from 'electron';
 
+import { ICryptoLib } from '../browser/crypto-library-handler';
 import {
     apiCmds,
     apiName,
@@ -35,10 +36,24 @@ const throttledSetLocale = throttle((locale) => {
     });
 }, 1000);
 
+let cryptoLib: ICryptoLib | null;
+try {
+    cryptoLib = remote.require('../browser/crypto-library-handler.js').cryptoLibrary;
+} catch (e) {
+    cryptoLib = null;
+    // tslint:disable-next-line
+    console.warn('Failed to initialize Crypto Lib. You\'ll need to include the Crypto library. Contact the developers for more details');
+}
+
 export class SSFApi {
 
     /**
-     * allows JS to register a activity detector that can be used by electron main process.
+     * Native encryption and decryption.
+     */
+    public CryptoLib: ICryptoLib | null = cryptoLib; // tslint:disable-line
+
+    /**
+     * Allows JS to register a activity detector that can be used by electron main process.
      *
      * @param  {Object} period - minimum user idle time in millisecond
      * @param  {Object} activityDetection - function that can be called accepting
@@ -72,7 +87,7 @@ export class SSFApi {
     }
 
     /**
-     * sets the count on the tray icon to the given number.
+     * Sets the count on the tray icon to the given number.
      *
      * @param {number} count  count to be displayed
      * note: count of 0 will remove the displayed count.
