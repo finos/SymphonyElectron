@@ -122,6 +122,25 @@ function createMainWindow(initialUrl) {
 }
 
 /**
+ * ELECTRON-955: Always on Top - Toast notification does not show on top (front) of the Electron app after it is minimized and maximized again
+ * Bring to front all notification windows
+ */
+function bringToFrontNotification() {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+        let allBrowserWindows = BrowserWindow.getAllWindows();
+        const notificationWindow = allBrowserWindows.filter((item) => item.winName === 'notification-window');
+        if (mainWindow.isAlwaysOnTop()) {
+            notificationWindow.forEach((item) => {
+                if (item && !item.isDestroyed()) {
+                    item.setAlwaysOnTop(true);
+                }
+            });
+        }
+    }
+}
+
+
+/**
  * Creates the main window with bounds
  * @param initialUrl
  * @param initialBounds
@@ -758,6 +777,7 @@ function saveMainWinBounds() {
     if (mainWindow && !mainWindow.isDestroyed()) {
         newBounds.isMaximized = mainWindow.isMaximized();
         newBounds.isFullScreen = mainWindow.isFullScreen();
+        bringToFrontNotification();
     }
 
     if (newBounds) {
