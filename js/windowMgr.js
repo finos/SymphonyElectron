@@ -504,6 +504,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                     newWinOptions.minHeight = MIN_HEIGHT;
                     newWinOptions.alwaysOnTop = alwaysOnTop;
                     newWinOptions.frame = true;
+                    newWinOptions.parent = null;
 
                     let newWinKey = getGuid();
 
@@ -794,6 +795,19 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     }
 
 }
+
+/**
+ * ELECTRON-956: App is not minimized upon "Configure Desktop Alert Position" modal when "Always on Top" = True
+ */
+app.on('browser-window-created', (event, window) => {
+    const parentWindow = window.getParentWindow();
+    if (parentWindow && !parentWindow.isDestroyed()) {
+        if (parentWindow.winName === 'main') {
+            window.setMinimizable(false);
+            window.setMaximizable(false);
+        }
+    }
+});
 
 /**
  * Handles the event before-quit emitted by electron
