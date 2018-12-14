@@ -116,7 +116,7 @@
     "electron-dl": "1.12.0",
     "electron-log": "2.2.17",
     "electron-spellchecker": "git+https://github.com/KiranNiranjan/electron-spellchecker.git#v3.0.6",
-    "ffi": "git+https://github.com/keerthi16/node-ffi.git#v1.2.8",
+    "ffi": "git+https://github.com/symphonyoss/node-ffi.git#v1.2.8",
     "filesize": "3.6.1",
     "keymirror": "0.1.1",
     "lodash.difference": "4.5.0",
@@ -130,6 +130,6 @@
   },
   "optionalDependencies": {
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.3",
-    "swift-search": "2.0.2"
+    "swift-search": "2.0.3"
   }
 }
