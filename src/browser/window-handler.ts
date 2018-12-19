@@ -86,6 +86,7 @@ export class WindowHandler {
 
     public appMenu: AppMenu | null;
     public isAutoReload: boolean;
+    public isOnline: boolean;
 
     private readonly windowOpts: ICustomBrowserWindowConstructorOpts;
     private readonly globalConfig: IConfig;
@@ -108,6 +109,7 @@ export class WindowHandler {
         this.windows = {};
         this.windowOpts = { ...this.getMainWindowOpts(), ...opts };
         this.isAutoReload = false;
+        this.isOnline = true;
         this.isCustomTitleBarAndWindowOS = isWindowsOS && this.config.isCustomTitleBar;
 
         this.appMenu = null;

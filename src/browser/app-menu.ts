@@ -6,8 +6,8 @@ import { logger } from '../common/logger';
 import { autoLaunchInstance as autoLaunch } from './auto-launch-controller';
 import { config, IConfig } from './config-handler';
 import { exportCrashDumps, exportLogs } from './reports';
+import { updateAlwaysOnTop } from './window-actions';
 import { windowHandler } from './window-handler';
-import { updateAlwaysOnTop } from './window-utils';
 
 export const menuSections = {
     about: 'about',
