@@ -5,6 +5,7 @@ import { LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { activityDetection } from './activity-detection';
 import { screenSnippet } from './screen-snippet';
+import { windowHandler } from './window-handler';
 import {
     isValidWindow,
     sanitize,
@@ -80,12 +81,12 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
             if (typeof arg.reason === 'string' && arg.reason === 'notification') {
                 bringToFront(arg.windowName, arg.reason);
             }
-            break;
-        case ApiCmds.openScreenPickerWindow:
-            if (Array.isArray(arg.sources) && typeof arg.id === 'number') {
-                openScreenPickerWindow(event.sender, arg.sources, arg.id);
-            }
             break;*/
+        case apiCmds.openScreenPickerWindow:
+            if (Array.isArray(arg.sources) && typeof arg.id === 'number') {
+                windowHandler.createScreenPickerWindow(event.sender, arg.sources, arg.id);
+            }
+            break;
         case apiCmds.popupMenu: {
             const browserWin = BrowserWindow.fromWebContents(event.sender);
             if (browserWin && !browserWin.isDestroyed()) {
@@ -120,6 +121,10 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
             break;*/
         case apiCmds.openScreenSnippet:
             screenSnippet.capture(event.sender);
+            break;
+        case apiCmds.closeWindow:
+            windowHandler.closeWindow(arg.windowType);
+            break;
         default:
     }
 

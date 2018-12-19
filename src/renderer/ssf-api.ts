@@ -10,6 +10,7 @@ import {
 } from '../common/api-interface';
 import { i18n, LocaleType } from '../common/i18n';
 import { throttle } from '../common/utils';
+import { getSource } from './desktop-capturer';
 
 interface ILocalObject {
     ipcRenderer;
@@ -51,6 +52,17 @@ export class SSFApi {
      * Native encryption and decryption.
      */
     public CryptoLib: ICryptoLib | null = cryptoLib; // tslint:disable-line
+
+    /**
+     * Implements equivalent of desktopCapturer.getSources - that works in
+     * a sandboxed renderer process.
+     * see: https://electron.atom.io/docs/api/desktop-capturer/
+     * for interface: see documentation in desktopCapturer/getSource.js
+     *
+     * This opens a window and displays all the desktop sources
+     * and returns selected source
+     */
+    public getMediaSource = getSource;
 
     /**
      * Allows JS to register a activity detector that can be used by electron main process.
