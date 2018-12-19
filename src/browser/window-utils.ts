@@ -2,11 +2,11 @@ import { app, BrowserWindow, nativeImage } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 
-import { isMac, isWindowsOS } from '../common/env';
+import { isMac } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { screenSnippet } from './screen-snippet';
-import { ICustomBrowserWindow, windowHandler } from './window-handler';
+import { windowHandler } from './window-handler';
 
 const checkValidWindow = true;
 
@@ -113,62 +113,6 @@ export const setDataUrl = (dataUrl: string, count: number): void => {
         // for accessibility screen readers
         const desc = 'Symphony has ' + count + ' unread messages';
         mainWindow.setOverlayIcon(img, desc);
-    }
-};
-
-/**
- * Tries finding a window we have created with given name.  If found, then
- * brings to front and gives focus.
- *
- * @param  {string} windowName   Name of target window. Note: main window has
- * name 'main'.
- * @param {Boolean} shouldFocus  whether to get window to focus or just show
- * without giving focus
- */
-export const activate = (windowName: string, shouldFocus: boolean = true): void => {
-
-    // Electron-136: don't activate when the app is reloaded programmatically
-    if (windowHandler.isAutoReload) return;
-
-    const windows = windowHandler.getAllWindows();
-    for (const key in windows) {
-        if (windows.hasOwnProperty(key)) {
-            const window = windows[ key ];
-            if (window && !window.isDestroyed() && window.winName === windowName) {
-
-                // Bring the window to the top without focusing
-                // Flash task bar icon in Windows for windows
-                if (!shouldFocus) {
-                    window.moveTop();
-                    return isWindowsOS ? window.flashFrame(true) : null;
-                }
-
-                return window.isMinimized() ? window.restore() : window.show();
-            }
-        }
-    }
-};
-
-/**
- * Sets always on top property based on isAlwaysOnTop
- *
- * @param shouldSetAlwaysOnTop
- * @param shouldActivateMainWindow
- */
-export const updateAlwaysOnTop = (shouldSetAlwaysOnTop: boolean, shouldActivateMainWindow: boolean = true): void => {
-    const browserWins: ICustomBrowserWindow[] = BrowserWindow.getAllWindows() as ICustomBrowserWindow[];
-    if (browserWins.length > 0) {
-        browserWins
-            .filter((browser) => typeof browser.notificationObj !== 'object')
-            .forEach((browser) => browser.setAlwaysOnTop(shouldSetAlwaysOnTop));
-
-        // An issue where changing the alwaysOnTop property
-        // focus the pop-out window
-        // Issue - Electron-209/470
-        const mainWindow = windowHandler.getMainWindow();
-        if (mainWindow && mainWindow.winName && shouldActivateMainWindow) {
-            activate(mainWindow.winName);
-        }
     }
 };
 

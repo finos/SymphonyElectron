@@ -6,16 +6,21 @@ import {
     apiName,
     IActivityDetection,
     IBadgeCount,
-    IScreenSnippet,
+    IBoundsChange,
+    IScreenSnippet, KeyCodes,
 } from '../common/api-interface';
 import { i18n, LocaleType } from '../common/i18n';
 import { throttle } from '../common/utils';
 import { getSource } from './desktop-capturer';
 
+let isAltKey = false;
+let isMenuOpen = false;
+
 interface ILocalObject {
     ipcRenderer;
-    activityDetection?: (arg: IActivityDetection) => void;
-    screenSnippet?: (arg: IScreenSnippet) => void;
+    activityDetectionCallback?: (arg: IActivityDetection) => void;
+    screenSnippetCallback?: (arg: IScreenSnippet) => void;
+    boundsChangeCallback?: (arg: IBoundsChange) => void;
 }
 
 const local: ILocalObject = {
@@ -68,12 +73,12 @@ export class SSFApi {
      * Allows JS to register a activity detector that can be used by electron main process.
      *
      * @param  {Object} period - minimum user idle time in millisecond
-     * @param  {Object} activityDetection - function that can be called accepting
+     * @param  {Object} activityDetectionCallback - function that can be called accepting
      * @example registerActivityDetection(40000, func)
      */
-    public registerActivityDetection(period: number, activityDetection: Partial<ILocalObject>): void {
-        if (typeof activityDetection === 'function') {
-            local.activityDetection = activityDetection;
+    public registerActivityDetection(period: number, activityDetectionCallback: Partial<ILocalObject>): void {
+        if (typeof activityDetectionCallback === 'function') {
+            local.activityDetectionCallback = activityDetectionCallback;
 
             // only main window can register
             local.ipcRenderer.send(apiName.symphonyApi, {
@@ -84,13 +89,26 @@ export class SSFApi {
     }
 
     /**
+     * Allows JS to register a callback to be invoked when size/positions
+     * changes for any pop-out window (i.e., window.open). The main
+     * process will emit IPC event 'boundsChange' (see below). Currently
+     * only one window can register for bounds change.
+     * @param  {Function} callback Function invoked when bounds changes.
+     */
+    public registerBoundsChange(callback: () => void): void {
+        if (typeof callback === 'function') {
+            local.boundsChangeCallback = callback;
+        }
+    }
+
+    /**
      * Allow user to capture portion of screen
      *
-     * @param screenSnippet {function}
+     * @param screenSnippetCallback {function}
      */
-    public openScreenSnippet(screenSnippet: Partial<IScreenSnippet>): void {
-        if (typeof screenSnippet === 'function') {
-            local.screenSnippet = screenSnippet;
+    public openScreenSnippet(screenSnippetCallback: Partial<IScreenSnippet>): void {
+        if (typeof screenSnippetCallback === 'function') {
+            local.screenSnippetCallback = screenSnippetCallback;
 
             local.ipcRenderer.send(apiName.symphonyApi, {
                 cmd: apiCmds.openScreenSnippet,
@@ -130,7 +148,7 @@ export class SSFApi {
  */
 
 // Creates a data url
-ipcRenderer.on('create-badge-data-url', (_event: Event, arg: IBadgeCount) => {
+local.ipcRenderer.on('create-badge-data-url', (_event: Event, arg: IBadgeCount) => {
     const count = arg && arg.count || 0;
 
     // create 32 x 32 img
@@ -169,28 +187,80 @@ ipcRenderer.on('create-badge-data-url', (_event: Event, arg: IBadgeCount) => {
     }
 });
 
-ipcRenderer.on('screen-snippet-data', (_event: Event, arg: IScreenSnippet) => {
-    if (typeof arg === 'object' && typeof local.screenSnippet === 'function') {
-        local.screenSnippet(arg);
+local.ipcRenderer.on('screen-snippet-data', (_event: Event, arg: IScreenSnippet) => {
+    if (typeof arg === 'object' && typeof local.screenSnippetCallback === 'function') {
+        local.screenSnippetCallback(arg);
     }
 });
 
-ipcRenderer.on('activity', (_event: Event, arg: IActivityDetection) => {
-    if (typeof arg === 'object' && typeof local.activityDetection === 'function') {
-        local.activityDetection(arg);
+local.ipcRenderer.on('activity', (_event: Event, arg: IActivityDetection) => {
+    if (typeof arg === 'object' && typeof local.activityDetectionCallback === 'function') {
+        local.activityDetectionCallback(arg);
+    }
+});
+
+// listen for notifications that some window size/position has changed
+local.ipcRenderer.on('boundsChange', (_event, arg: IBoundsChange): void => {
+    const { x, y, height, width, windowName } = arg;
+    if (x && y && height && width && windowName && typeof local.boundsChangeCallback === 'function') {
+        local.boundsChangeCallback({
+            x,
+            y,
+            height,
+            width,
+            windowName,
+        });
     }
 });
 
 // Invoked whenever the app is reloaded/navigated
 const sanitize = (): void => {
-    local.ipcRenderer.send(apiName, {
+    local.ipcRenderer.send(apiName.symphonyApi, {
         cmd: apiCmds.sanitize,
         windowName: window.name || 'main',
     });
 };
+
+// listens for the online/offline events and updates the main process
+const updateOnlineStatus = (): void => {
+    local.ipcRenderer.send(apiName.symphonyApi, {
+        cmd: apiCmds.isOnline,
+        isOnline: window.navigator.onLine,
+    });
+};
+
+// Handle key down events
+const throttledKeyDown = throttle( (event) => {
+    isAltKey = event.keyCode === KeyCodes.Alt;
+}, 500);
+
+// Handle key up events
+const throttledKeyUp = throttle( (event) => {
+    if (isAltKey && (event.keyCode === KeyCodes.Alt || KeyCodes.Esc)) {
+        isMenuOpen = !isMenuOpen;
+    }
+    if (isAltKey && isMenuOpen && event.keyCode === KeyCodes.Alt) {
+        local.ipcRenderer.send(apiName.symphonyApi, {
+            cmd: apiCmds.keyPress,
+            keyCode: event.keyCode,
+        });
+    }
+}, 500);
+
+// Handle mouse down event
+const throttleMouseDown = throttle(() => {
+    if (isAltKey && isMenuOpen) {
+        isMenuOpen = !isMenuOpen;
+    }
+}, 500);
 
 /**
  * Window Events
  */
 
 window.addEventListener('beforeunload', sanitize, false);
+window.addEventListener('offline', updateOnlineStatus, false);
+window.addEventListener('online', updateOnlineStatus, false);
+window.addEventListener('keyup', throttledKeyUp, true);
+window.addEventListener('keydown', throttledKeyDown, true);
+window.addEventListener('mousedown', throttleMouseDown, { capture: true });
