@@ -9,8 +9,8 @@ import { IScreenSnippet } from '../common/api-interface';
 import { isDevEnv, isMac } from '../common/env';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
+import { updateAlwaysOnTop } from './window-actions';
 import { windowHandler } from './window-handler';
-import { updateAlwaysOnTop } from './window-utils';
 
 const readFile = util.promisify(fs.readFile);
 

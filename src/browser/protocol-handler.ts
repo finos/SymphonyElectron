@@ -21,7 +21,7 @@ const setProtocolUrl = (uri: string): void => {
  * Processes a protocol uri
  * @param {String} uri - the uri opened in the format 'symphony://abc?def=ghi'
  */
-const processProtocolUri = (uri: string): void => {
+export const processProtocolUri = (uri: string): void => {
 
     logger.info(`Processing protocol action, uri ${uri}`);
     if (!protocolWindow) {
@@ -41,7 +41,7 @@ const processProtocolUri = (uri: string): void => {
  * @param uri
  * @param isAppAlreadyOpen {Boolean} whether the app is already open
  */
-const handleProtocolAction = (uri: string, isAppAlreadyOpen: boolean): void => {
+export const handleProtocolAction = (uri: string, isAppAlreadyOpen: boolean): void => {
 
     if (!isAppAlreadyOpen) {
 
@@ -72,7 +72,7 @@ const handleProtocolAction = (uri: string, isAppAlreadyOpen: boolean): void => {
  * @param argv {Array} an array of command line arguments
  * @param isAppAlreadyOpen {Boolean} whether the app is already open
  */
-const processProtocolArgv = (argv: string[], isAppAlreadyOpen: boolean): void => {
+export const processProtocolArgv = (argv: string[], isAppAlreadyOpen: boolean): void => {
 
     // In case of windows, we need to handle protocol handler
     // manually because electron doesn't emit
@@ -99,7 +99,7 @@ const processProtocolArgv = (argv: string[], isAppAlreadyOpen: boolean): void =>
  * Sets the protocol window
  * @param {Object} win - the renderer window
  */
-const setProtocolWindow = (win: Electron.WebContents): void => {
+export const setProtocolWindow = (win: Electron.WebContents): void => {
     logger.info(`Setting protocol window ${win}`);
     protocolWindow = win;
 };
@@ -107,7 +107,7 @@ const setProtocolWindow = (win: Electron.WebContents): void => {
 /**
  * Checks to see if the app was opened by a uri
  */
-const checkProtocolAction = (): void => {
+export const checkProtocolAction = (): void => {
     logger.info('Checking if we have a cached protocol url');
     if (protocolUrl) {
         logger.info(`Found a cached protocol url (${protocolUrl}), processing it`);
@@ -121,9 +121,7 @@ const checkProtocolAction = (): void => {
  * Gets the protocol url set against an instance
  * @returns {*}
  */
-const getProtocolUrl = (): string | undefined => {
+export const getProtocolUrl = (): string | undefined => {
     logger.info(`Getting the property protocol url ${protocolUrl}`);
     return protocolUrl;
 };
-
-export {processProtocolUri, processProtocolArgv, setProtocolWindow, checkProtocolAction, getProtocolUrl};
