@@ -64,3 +64,12 @@ export interface IScreenSnippet {
     message?: string;
     type: ScreenSnippetDataType;
 }
+
+export interface IBoundsChange extends Electron.Rectangle {
+    windowName: string;
+}
+
+export enum KeyCodes {
+    Esc = 27,
+    Alt = 18,
+}

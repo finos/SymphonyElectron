@@ -4,7 +4,10 @@ import { apiCmds, apiName, IApiArgs } from '../common/api-interface';
 import { LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { activityDetection } from './activity-detection';
+import { config } from './config-handler';
+import { checkProtocolAction, setProtocolWindow } from './protocol-handler';
 import { screenSnippet } from './screen-snippet';
+import { activate, handleKeyPress } from './window-actions';
 import { windowHandler } from './window-handler';
 import {
     isValidWindow,
@@ -29,33 +32,30 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
     }
 
     switch (arg.cmd) {
-        /*case ApiCmds.isOnline:
+        case apiCmds.isOnline:
             if (typeof arg.isOnline === 'boolean') {
-                windowMgr.setIsOnline(arg.isOnline);
+                windowHandler.isOnline = arg.isOnline;
             }
-            break;*/
+            break;
         case apiCmds.setBadgeCount:
             if (typeof arg.count === 'number') {
                 showBadgeCount(arg.count);
             }
             break;
-        /*case ApiCmds.registerProtocolHandler:
-            protocolHandler.setProtocolWindow(event.sender);
-            protocolHandler.checkProtocolAction();
-            break;*/
+        case apiCmds.registerProtocolHandler:
+            setProtocolWindow(event.sender);
+            checkProtocolAction();
+            break;
         case apiCmds.badgeDataUrl:
             if (typeof arg.dataUrl === 'string' && typeof arg.count === 'number') {
                 setDataUrl(arg.dataUrl, arg.count);
             }
             break;
-        /*case ApiCmds.activate:
+        case apiCmds.activate:
             if (typeof arg.windowName === 'string') {
-                windowMgr.activate(arg.windowName);
+                activate(arg.windowName);
             }
             break;
-        case ApiCmds.registerBoundsChange:
-            windowMgr.setBoundsChangeWindow(event.sender);
-            break;*/
         case apiCmds.registerLogger:
             // renderer window that has a registered logger from JS.
             logger.setLoggerWindow(event.sender);
@@ -76,12 +76,13 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
                 sanitize(arg.windowName);
             }
             break;
-        /*case ApiCmds.bringToFront:
+        case apiCmds.bringToFront:
             // validates the user bring to front config and activates the wrapper
             if (typeof arg.reason === 'string' && arg.reason === 'notification') {
-                bringToFront(arg.windowName, arg.reason);
+                const shouldBringToFront = config.getConfigFields([ 'bringToFront' ]);
+                if (shouldBringToFront) activate(arg.windowName, false);
             }
-            break;*/
+            break;
         case apiCmds.openScreenPickerWindow:
             if (Array.isArray(arg.sources) && typeof arg.id === 'number') {
                 windowHandler.createScreenPickerWindow(event.sender, arg.sources, arg.id);
@@ -114,11 +115,11 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
                 updateLocale(arg.locale as LocaleType);
             }
             break;
-        /*case ApiCmds.keyPress:
+        case apiCmds.keyPress:
             if (typeof arg.keyCode === 'number') {
-                windowMgr.handleKeyPress(arg.keyCode);
+                handleKeyPress(arg.keyCode);
             }
-            break;*/
+            break;
         case apiCmds.openScreenSnippet:
             screenSnippet.capture(event.sender);
             break;
