@@ -1,9 +1,9 @@
 import { ipcRenderer, remote } from 'electron';
 import * as React from 'react';
 
-import { apiCmds, apiName } from '../common/api-interface';
-import { i18n } from '../common/i18n';
-import { throttle } from '../common/utils';
+import { apiCmds, apiName } from '../../common/api-interface';
+import { i18n } from '../../common/i18n';
+import { throttle } from '../../common/utils';
 
 interface IState {
     isMaximized: boolean;

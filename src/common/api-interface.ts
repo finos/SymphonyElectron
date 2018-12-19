@@ -18,6 +18,7 @@ export enum apiCmds {
     setLocale = 'set-locale',
     openScreenSnippet = 'open-screen-snippet',
     keyPress = 'key-press',
+    closeWindow = 'close-window',
 }
 
 export enum apiName {
@@ -38,7 +39,10 @@ export interface IApiArgs {
     isInMeeting: boolean;
     locale: string;
     keyCode: number;
+    windowType: WindowTypes;
 }
+
+export type WindowTypes = 'screen-picker';
 
 /**
  * Activity detection

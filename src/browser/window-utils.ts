@@ -54,6 +54,7 @@ export const createComponentWindow = (
 
     const browserWindow = new BrowserWindow(options);
     browserWindow.on('ready-to-show', () => browserWindow.show());
+    browserWindow.webContents.toggleDevTools();
     browserWindow.setMenu(null as any);
 
     const targetUrl = url.format({

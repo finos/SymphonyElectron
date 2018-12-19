@@ -1,0 +1,236 @@
+@close-button-color: rgba(221, 221, 221, 1);
+@label-color: rgba(187, 187, 187, 1);
+@input-label-color: rgba(61, 162, 253, 1);
+@title-color: grey;
+@cancel-button-color: rgba(0, 0, 0, 0.38);
+@cancel-button-hover-color: black;
+@share-button-color: rgba(255, 255, 255, 1);
+@share-button-disabled-color: rgba(148, 148, 148, 1);
+
+@font-family: "system";
+
+@cancel-button-bg-color: rgba(255, 255, 255, 0);
+@share-button-enabled-bg-color: rgba(61, 162, 253, 1);
+@share-button-disabled-bg-color: rgba(221, 221, 221, 1);
+@border-color: rgba(61, 162, 253, 1);
+
+@font-face {
+  font-family: system;
+  font-style: normal;
+  src: local(".SFNSText-Light"), local(".HelveticaNeueDeskInterface-Light"), local(".LucidaGrandeUI"), local("Ubuntu Light"), local("Segoe UI Light"), local("Roboto-Light"), local("DroidSans"), local("Tahoma");
+}
+
+
+
+.ScreenPicker {
+  margin: 0 auto;
+  overflow: hidden;
+  font-family: @font-family;
+
+  &-window-border {
+    border: 2px solid rgba(68, 68, 68, 1);
+  }
+
+  &-content {
+    margin: 0 auto;
+    background: rgba(249, 249, 250, 1);
+    text-align: center;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  &-title {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 16px 30px;
+    font-size: 1.2rem;
+    line-height: 1.3;
+    text-align: left;
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
+  }
+
+  &-x-button {
+    width: 20px;
+    color: @close-button-color;
+    -webkit-app-region: no-drag;
+    cursor: pointer;
+
+    span {
+      font-style: normal;
+      margin: 0 0 0 4px;
+      font-size: 1.2rem;
+      min-height: 13px;
+    }
+  }
+
+  input {
+    display: none;
+
+    &:checked {
+      & + label {
+        color: @input-label-color;
+        border-bottom: 4px solid rgba(61, 162, 253, 1);
+      }
+    }
+  }
+
+  label {
+    display: inline-block;
+    padding: 5px 25px;
+    font-size: 0.8em;
+    letter-spacing: 1px;
+    text-align: center;
+    color: @label-color;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+    -webkit-user-select: none;
+  }
+
+  section {
+    display: none;
+    height: 331px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    padding: 20px 0 0;
+    border-top: 1px solid rgba(221, 221, 221, 1);
+    flex-flow: row wrap;
+    text-align: center;
+    justify-content: center;
+  }
+
+  &-screen-tab {
+    &:checked {
+      & ~ #screen-contents {
+        display: flex;
+      }
+    }
+  }
+
+  &-application-tab {
+    &:checked {
+      & ~ #application-contents {
+        display: flex;
+      }
+    }
+  }
+
+  &-main-content {
+    display: block;
+  }
+
+  &-item-container {
+    background: rgba(255, 255, 255, 1);
+    border-radius: 2px;
+    display: inline-block;
+    height: 150px;
+    margin: 5px;
+    position: relative;
+    width: 40%;
+    border: 1px solid rgba(0, 0, 0, .1);
+
+    &:hover {
+      box-shadow: 0 1px 5px rgba(0, 0, 0, .1), 0 5px 5px rgba(0, 0, 0, .1);
+      cursor: pointer;
+    }
+  }
+
+  &-screen-section-box {
+    -webkit-transition: all 1.0s ease;
+    width: 100%;
+    height: 100px;
+    overflow: hidden;
+    margin: 10px auto;
+  }
+
+  &-img-wrapper {
+    max-height: 200px;
+    width: auto;
+  }
+
+  &-screen-source-title {
+    white-space: nowrap;
+    width: 70%;
+    overflow: hidden;
+    font-size: 0.8rem;
+    color: @title-color;
+    margin: auto;
+    text-overflow: ellipsis;
+  }
+
+  &-selected {
+    border-color: @border-color;
+    border-bottom-style: solid;
+  }
+
+  footer {
+    padding: 10px 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.10);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  button {
+    box-shadow: none;
+    border: none;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    text-align: center;
+    padding: 8px 32px;
+    margin: 8px 8px 8px 0;
+    display: inline-block;
+    text-decoration: none;
+    line-height: 12px;
+
+    &:focus {
+      box-shadow: 0 0 10px rgba(61, 162, 253, 1);
+      outline: none;
+    }
+  }
+
+  &-cancel-button {
+    color: @cancel-button-color;
+    background-color: @cancel-button-bg-color;
+    text-transform: uppercase;
+    padding: 8px 16px;
+
+    &:hover {
+      background-color: @cancel-button-bg-color;
+      color: @cancel-button-hover-color;
+      cursor: pointer;
+    }
+  }
+
+  &-share-button {
+    background-color: @share-button-enabled-bg-color;
+    color: @share-button-color;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: none;
+  }
+
+  &-share-button-disable {
+    background-color: @share-button-disabled-bg-color;
+    color: @share-button-disabled-color;
+    text-transform: uppercase;
+    cursor: default;
+    box-shadow: none;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  &-error-content {
+    display: none;
+    padding: 180px 0 180px;
+    border-top: 1px solid rgba(221, 221, 221, 1);
+
+    span {
+      color: @cancel-button-color;
+    }
+  }
+}

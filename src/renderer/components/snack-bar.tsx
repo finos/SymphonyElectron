@@ -2,7 +2,7 @@ import { ipcRenderer } from 'electron';
 import * as React from 'react';
 
 import Timer = NodeJS.Timer;
-import { i18n } from '../common/i18n';
+import { i18n } from '../../common/i18n';
 
 interface IState {
     show: boolean;
