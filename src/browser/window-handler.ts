@@ -1,11 +1,13 @@
 import * as electron from 'electron';
-import { BrowserWindow, crashReporter } from 'electron';
+import { BrowserWindow, crashReporter, ipcMain, webContents } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as url from 'url';
 
 import { buildNumber, clientVersion, version } from '../../package.json';
-import { isWindowsOS } from '../common/env';
+import DesktopCapturerSource = Electron.DesktopCapturerSource;
+import { WindowTypes } from '../common/api-interface';
+import { isMac, isWindowsOS } from '../common/env';
 import { getCommandLineArgs, getGuid } from '../common/utils';
 import { AppMenu } from './app-menu';
 import { config, IConfig } from './config-handler';
@@ -46,6 +48,27 @@ export class WindowHandler {
     }
 
     /**
+     * Screen picker window opts
+     */
+    private static getScreenPickerWindowOpts(): ICustomBrowserWindowConstructorOpts {
+        return {
+            alwaysOnTop: true,
+            autoHideMenuBar: true,
+            frame: false,
+            height: isMac ? 519 : 523,
+            width: 580,
+            modal: false,
+            resizable: true,
+            show: false,
+            webPreferences: {
+                nodeIntegration: false,
+                sandbox: true,
+            },
+            winKey: getGuid(),
+        };
+    }
+
+    /**
      * Verifies if the url is valid and
      * forcefully appends https if not present
      *
@@ -75,6 +98,7 @@ export class WindowHandler {
     private loadingWindow: Electron.BrowserWindow | null;
     private aboutAppWindow: Electron.BrowserWindow | null;
     private moreInfoWindow: Electron.BrowserWindow | null;
+    private screenPickerWindow: Electron.BrowserWindow | null;
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Settings
@@ -92,6 +116,7 @@ export class WindowHandler {
         this.loadingWindow = null;
         this.aboutAppWindow = null;
         this.moreInfoWindow = null;
+        this.screenPickerWindow = null;
 
         try {
             const extra = { podUrl: this.globalConfig.url, process: 'main' };
@@ -169,6 +194,18 @@ export class WindowHandler {
     }
 
     /**
+     * Closes the window from an event emitted by the render processes
+     *
+     * @param windowType
+     */
+    public closeWindow(windowType: WindowTypes) {
+        switch (windowType) {
+            case 'screen-picker':
+                if (this.screenPickerWindow && !this.screenPickerWindow.isDestroyed()) this.screenPickerWindow.close();
+        }
+    }
+
+    /**
      * Sets is auto reload when the application
      * is auto reloaded for optimizing memory
      *
@@ -180,6 +217,7 @@ export class WindowHandler {
 
     /**
      * Checks if the window and a key has a window
+     *
      * @param key {string}
      * @param window {Electron.BrowserWindow}
      */
@@ -222,18 +260,50 @@ export class WindowHandler {
         this.moreInfoWindow = createComponentWindow('more-info-window');
         this.moreInfoWindow.webContents.once('did-finish-load', () => {
             if (this.aboutAppWindow) {
-                this.aboutAppWindow.webContents.send('more-info-window');
+                this.aboutAppWindow.webContents.send('more-info-data');
+            }
+        });
+    }
+
+    /**
+     * Creates a screen picker window
+     */
+    public createScreenPickerWindow(win: webContents, sources: DesktopCapturerSource[], id: number) {
+        const opts = WindowHandler.getScreenPickerWindowOpts();
+        this.screenPickerWindow = createComponentWindow('screen-picker-window', opts);
+        this.screenPickerWindow.webContents.once('did-finish-load', () => {
+            if (this.screenPickerWindow) {
+                this.screenPickerWindow.webContents.send('screen-picker-data', { sources, id });
+                this.addWindow(opts.winKey, this.screenPickerWindow);
+                this.screenPickerWindow.once('closed', () => {
+                    this.removeWindow(opts.winKey);
+                    this.screenPickerWindow = null;
+                });
+
+                ipcMain.once('screen-source-selected', (_event, source) => {
+                    win.send('start-share' + id, source);
+                });
             }
         });
     }
 
     /**
      * Stores information of all the window we have created
+     *
      * @param key {string}
      * @param browserWindow {Electron.BrowserWindow}
      */
     private addWindow(key: string, browserWindow: Electron.BrowserWindow): void {
         this.windows[ key ] = browserWindow;
+    }
+
+    /**
+     * Removes the window reference
+     *
+     * @param key {string}
+     */
+    private removeWindow(key): void {
+        delete this.windows[ key ];
     }
 
     /**

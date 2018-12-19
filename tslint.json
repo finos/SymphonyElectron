@@ -32,6 +32,7 @@
     "no-use-before-declare": true,
     "no-var-requires": true,
     "only-arrow-functions": true,
+    "object-literal-sort-keys": false,
     "no-console": [
       true,
       "log",

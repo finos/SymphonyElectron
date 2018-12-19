@@ -1,9 +1,10 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import AboutBox from './about-app';
-import LoadingScreen from './loading-screen';
-import MoreInfo from './more-info';
+import AboutBox from './components/about-app';
+import LoadingScreen from './components/loading-screen';
+import MoreInfo from './components/more-info';
+import ScreenPicker from './components/screen-picker';
 
 /**
  * Loads the appropriate component
@@ -22,6 +23,9 @@ const load = () => {
             break;
         case 'more-info-window':
             component = MoreInfo;
+            break;
+        case 'screen-picker-window':
+            component = ScreenPicker;
             break;
     }
     const element = React.createElement(component);

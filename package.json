@@ -125,6 +125,7 @@
     "async.map": "0.5.2",
     "async.mapseries": "0.5.2",
     "auto-launch": "5.0.5",
+    "classnames": "2.2.6",
     "electron-dl": "1.12.0",
     "electron-log": "2.2.17",
     "electron-spellchecker": "git+https://github.com/KiranNiranjan/electron-spellchecker.git#v3.0.6",

@@ -2,8 +2,8 @@ import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import WindowsTitleBar from '../renderer/windows-title-bar';
-import SnackBar from './snack-bar';
+import SnackBar from './components/snack-bar';
+import WindowsTitleBar from './components/windows-title-bar';
 import { SSFApi } from './ssf-api';
 
 interface ISSFWindow extends Window {
