@@ -209,8 +209,8 @@ app.on('window-all-closed', function () {
 });
 
 app.on('quit', function () {
-    handleCacheFailureCheckOnExit();
     log.send(logLevels.INFO, `-----------------Quitting the app-----------------`);
+    handleCacheFailureCheckOnExit();    
 });
 
 /**
