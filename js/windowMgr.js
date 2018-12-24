@@ -20,7 +20,7 @@ const logLevels = require('./enums/logLevels.js');
 const notify = require('./notify/electron-notify.js');
 const eventEmitter = require('./eventEmitter');
 const throttle = require('./utils/throttle.js');
-const { getConfigField, updateConfigField, readConfigFileSync, getMultipleConfigField } = require('./config.js');
+const { getConfigField, updateConfigField, readConfigFileSync, getMultipleConfigField, readConfigFromFile } = require('./config.js');
 const { isMac, isWindowsOS, isDevEnv } = require('./utils/misc');
 const { isWhitelisted, parseDomain } = require('./utils/whitelistHandler');
 const { initCrashReporterMain, initCrashReporterRenderer } = require('./crashReporter.js');
@@ -120,6 +120,25 @@ function createMainWindow(initialUrl) {
             doCreateMainWindow(initialUrl, null, false);
         });
 }
+
+/**
+ * ELECTRON-955: Always on Top - Toast notification does not show on top (front) of the Electron app after it is minimized and maximized again
+ * Bring to front all notification windows
+ */
+function bringToFrontNotification() {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+        let allBrowserWindows = BrowserWindow.getAllWindows();
+        const notificationWindow = allBrowserWindows.filter((item) => item.winName === 'notification-window');
+        if (mainWindow.isAlwaysOnTop()) {
+            notificationWindow.forEach((item) => {
+                if (item && !item.isDestroyed()) {
+                    item.setAlwaysOnTop(true);
+                }
+            });
+        }
+    }
+}
+
 
 /**
  * Creates the main window with bounds
@@ -295,7 +314,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
         if (config && config.permissions) {
             const permission = ' screen sharing';
-            const fullMessage = i18n.getMessageFor('Your administrator has disabled') + permission + '. ' + i18n.getMessageFor('Please contact your admin for help');
+            const fullMessage = i18n.getMessageFor('Your administrator has disabled ') + permission + '. ' + i18n.getMessageFor('Please contact your admin for help');
             const dialogContent = { type: 'error', title: i18n.getMessageFor('Permission Denied') + '!', message: fullMessage };
             mainWindow.webContents.send('is-screen-share-enabled', config.permissions.media, dialogContent);
         }
@@ -614,8 +633,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
         function devTools() {
             const focusedWindow = BrowserWindow.getFocusedWindow();
-
-            
+            devToolsEnabled = readConfigFromFile('devToolsEnabled');
             if (focusedWindow && !focusedWindow.isDestroyed()) {
                 if (devToolsEnabled) {
                     focusedWindow.webContents.toggleDevTools();
@@ -759,6 +777,7 @@ function saveMainWinBounds() {
     if (mainWindow && !mainWindow.isDestroyed()) {
         newBounds.isMaximized = mainWindow.isMaximized();
         newBounds.isFullScreen = mainWindow.isFullScreen();
+        bringToFrontNotification();
     }
 
     if (newBounds) {

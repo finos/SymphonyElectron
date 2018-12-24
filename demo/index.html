@@ -61,6 +61,7 @@
         <p>Change language:<p>
             <button id='set-locale-en-US'>Change language to English - US</button>
             <button id='set-locale-ja-JP'>Change language to Japanese</button>
+            <button id='set-locale-fr-FR'>Change language to French</button>
             <br>
         <hr>
         <p>Badge Count:<p>
@@ -275,6 +276,11 @@
         var setLocaleToJa = document.getElementById('set-locale-ja-JP');
         setLocaleToJa.addEventListener('click', function () {
             ssf.setLocale('ja-JP');
+            document.location.reload();
+        });
+        var setLocaleToFr = document.getElementById('set-locale-fr-FR');
+        setLocaleToFr.addEventListener('click', function () {
+            ssf.setLocale('fr-FR');
             document.location.reload();
         });
 

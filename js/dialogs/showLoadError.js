@@ -32,7 +32,7 @@ function showLoadFailure(win, url, errorDesc, errorCode, retryCallback, showDial
     if (showDialog) {
         electron.dialog.showMessageBox(win, {
             type: 'error',
-            buttons: ['Reload', 'Ignore'],
+            buttons: [i18n.getMessageFor('Reload'), i18n.getMessageFor('Ignore')],
             defaultId: 0,
             cancelId: 1,
             noLink: true,
@@ -60,7 +60,7 @@ function showLoadFailure(win, url, errorDesc, errorCode, retryCallback, showDial
  * @param  {function} retryCallback  Callback when user clicks reload
  */
 function showNetworkConnectivityError(win, url, retryCallback) {
-    let errorDesc = 'Network connectivity has been lost, check your internet connection.';
+    let errorDesc = i18n.getMessageFor('Network connectivity has been lost. Check your internet connection.');
     showLoadFailure(win, url, errorDesc, 0, retryCallback, true);
 }
 

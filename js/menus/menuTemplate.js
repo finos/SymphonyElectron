@@ -3,7 +3,7 @@
 const fs = require('fs');
 const electron = require('electron');
 
-const { updateConfigField, getMultipleConfigField } = require('../config.js');
+const { updateConfigField, getMultipleConfigField, readConfigFromFile } = require('../config.js');
 const { isMac, isWindowsOS } = require('../utils/misc.js');
 const archiveHandler = require('../utils/archiveHandler');
 const log = require('../log.js');
@@ -189,6 +189,24 @@ function getTemplate(app) {
                                             });
                                         }
                                     });
+                            }
+                        },
+                        {
+                            label: i18n.getMessageFor('Toggle Developer Tools'),
+                            accelerator: isMac ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+                            click(item, focusedWindow) {
+                                let devToolsEnabled = readConfigFromFile('devToolsEnabled');
+                                if (focusedWindow && devToolsEnabled) {
+                                    focusedWindow.webContents.toggleDevTools();
+                                } else {
+                                    log.send(logLevels.INFO, `dev tools disabled for ${focusedWindow.winName} window`);                                    
+                                    electron.dialog.showMessageBox(focusedWindow, {
+                                        type: 'warning',
+                                        buttons: ['Ok'],
+                                        title: i18n.getMessageFor('Dev Tools disabled'),
+                                        message: i18n.getMessageFor('Dev Tools has been disabled! Please contact your system administrator to enable it!'),
+                                    });
+                                }
                             }
                         },
                         {
