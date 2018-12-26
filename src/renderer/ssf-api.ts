@@ -10,7 +10,7 @@ import {
     IScreenSnippet, KeyCodes,
 } from '../common/api-interface';
 import { i18n, LocaleType } from '../common/i18n';
-import { throttle } from '../common/utils';
+import { throttle } from '../common/throttle';
 import { getSource } from './desktop-capturer';
 
 let isAltKey = false;

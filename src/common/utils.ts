@@ -1,9 +1,9 @@
-// regex match the semver (semantic version) this checks for the pattern X.Y.Z
-// ex-valid  v1.2.0, 1.2.0, 2.3.4-r51
-import archiver from 'archiver';
+import * as archiver from 'archiver';
 import * as fs from 'fs';
 import * as path from 'path';
 
+// regex match the semver (semantic version) this checks for the pattern X.Y.Z
+// ex-valid  v1.2.0, 1.2.0, 2.3.4-r51
 const semver = /^v?(?:\d+)(\.(?:[x*]|\d+)(\.(?:[x*]|\d+)(?:-[\da-z-]+(?:\.[\da-z-]+)*)?(?:\+[\da-z-]+(?:\.[\da-z-]+)*)?)?)?$/i;
 const patch = /-([0-9A-Za-z-.]+)/;
 
@@ -146,60 +146,6 @@ const pick = (object: object, fields: string[]) => {
 };
 
 /**
- * Formats a string with dynamic values
- * @param str {String} String to be formatted
- * @param data {Object} - Data to be added
- *
- * @example
- * StringFormat(this will log {time}`, { time: '1234' })
- *
- * result:
- * this will log 1234
- *
- * @return {*}
- */
-const formatString = (str: string, data?: object): string => {
-
-    if (!str || !data) return str;
-
-    for (const key in data) {
-        if (Object.prototype.hasOwnProperty.call(data, key)) {
-            return str.replace(/({([^}]+)})/g,  (i) => {
-                const replacedKey = i.replace(/{/, '').replace(/}/, '');
-                if (!data[replacedKey]) {
-                    return i;
-                }
-                return data[replacedKey];
-            });
-        }
-    }
-    return str;
-};
-
-/**
- * Limits your function to be called at most every milliseconds
- *
- * @param func
- * @param wait
- * @example const throttled = throttle(anyFunc, 500);
- */
-const throttle = (func: (...args) => void, wait: number): (...args) => void => {
-    if (wait <= 0) {
-        throw Error('throttle: invalid throttleTime arg, must be a number: ' + wait);
-    }
-
-    let isCalled: boolean = false;
-
-    return (...args) => {
-        if (!isCalled) {
-            func(...args);
-            isCalled = true;
-            setTimeout(() => isCalled = false, wait);
-        }
-    };
-};
-
-/**
  * Archives files in the source directory
  * that matches the given file extension
  *
@@ -245,4 +191,4 @@ const generateArchiveForDirectory = (source: string, destination: string, fileEx
     });
 };
 
-export { compareVersions, getCommandLineArgs, getGuid, pick, formatString, throttle, generateArchiveForDirectory };
+export { compareVersions, getCommandLineArgs, getGuid, pick, generateArchiveForDirectory };
