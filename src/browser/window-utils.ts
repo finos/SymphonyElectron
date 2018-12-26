@@ -1,3 +1,4 @@
+import * as electron from 'electron';
 import { app, BrowserWindow, nativeImage } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
@@ -14,16 +15,27 @@ const checkValidWindow = true;
  * Prevents window from navigating
  *
  * @param browserWindow
+ * @param isPopOutWindow
  */
-export const preventWindowNavigation = (browserWindow: Electron.BrowserWindow): void => {
+export const preventWindowNavigation = (browserWindow: Electron.BrowserWindow, isPopOutWindow: boolean = false): void => {
     const listener = (e: Electron.Event, winUrl: string) => {
+        if (isPopOutWindow && !winUrl.startsWith('http' || 'https')) {
+            e.preventDefault();
+            return;
+        }
+
         if (browserWindow.isDestroyed()
             || browserWindow.webContents.isDestroyed()
             || winUrl === browserWindow.webContents.getURL()) return;
+
         e.preventDefault();
     };
 
     browserWindow.webContents.on('will-navigate', listener);
+
+    browserWindow.once('close', () => {
+        browserWindow.webContents.removeListener('will-navigate', listener);
+    });
 };
 
 /**
@@ -186,4 +198,29 @@ export const sanitize = (windowName: string): void => {
         // Closes all the child windows
         // windowMgr.cleanUpChildWindows();
     }
+};
+
+/**
+ * Returns the config stored rectangle if it is contained within the workArea of at
+ * least one of the screens else returns the default rectangle value with out x, y
+ * as the default is to center the window
+ *
+ * @param winPos {Electron.Rectangle}
+ * @param defaultWidth
+ * @param defaultHeight
+ * @return {x?: Number, y?: Number, width: Number, height: Number}
+ */
+export const getBounds = (winPos: Electron.Rectangle, defaultWidth: number, defaultHeight: number): Partial<Electron.Rectangle> => {
+    if (!winPos) return { width: defaultWidth, height: defaultHeight };
+    const displays = electron.screen.getAllDisplays();
+
+    for (let i = 0, len = displays.length; i < len; i++) {
+        const workArea = displays[ i ].workArea;
+        if (winPos.x >= workArea.x && winPos.y >= workArea.y &&
+            ((winPos.x + winPos.width) <= (workArea.x + workArea.width)) &&
+            ((winPos.y + winPos.height) <= (workArea.y + workArea.height))) {
+            return winPos;
+        }
+    }
+    return { width: defaultWidth, height: defaultHeight };
 };
