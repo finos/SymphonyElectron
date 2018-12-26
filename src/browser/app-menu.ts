@@ -1,4 +1,4 @@
-import { app, Menu, session, shell } from 'electron';
+import { app, dialog, Menu, session, shell } from 'electron';
 
 import { isMac, isWindowsOS } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
@@ -305,9 +305,25 @@ export class AppMenu {
                         click: () => exportCrashDumps(),
                         label: isMac ? i18n.t('Show crash dump in Finder')() : i18n.t('Show crash dump in Explorer')(),
                     }, {
-                        click: () => windowHandler.createMoreInfoWindow(),
-                        label: i18n.t('More Information')(),
-                    } ],
+                        label: i18n.t('Toggle Developer Tools')(),
+                        accelerator: isMac ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+                        click(_item, focusedWindow) {
+                            const devToolsEnabled = config.getGlobalConfigFields([ 'devToolsEnabled' ]);
+                            if (focusedWindow && devToolsEnabled) {
+                                focusedWindow.webContents.toggleDevTools();
+                            } else {
+                                dialog.showMessageBox(focusedWindow, {
+                                    type: 'warning',
+                                    buttons: [ 'Ok' ],
+                                    title: i18n.t('Dev Tools disabled')(),
+                                    message: i18n.t('Dev Tools has been disabled! Please contact your system administrator to enable it!')(),
+                                });
+                            }
+                        },
+                    },{
+                            click: () => windowHandler.createMoreInfoWindow(),
+                            label: i18n.t('More Information')(),
+                    }],
                 } ],
         };
     }
