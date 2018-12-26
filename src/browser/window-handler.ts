@@ -2,7 +2,7 @@ import * as electron from 'electron';
 import { BrowserWindow, crashReporter, ipcMain, webContents } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as url from 'url';
+import { format, parse } from 'url';
 
 import { buildNumber, clientVersion, version } from '../../package.json';
 import DesktopCapturerSource = Electron.DesktopCapturerSource;
@@ -11,8 +11,9 @@ import { isMac, isWindowsOS } from '../common/env';
 import { getCommandLineArgs, getGuid } from '../common/utils';
 import { AppMenu } from './app-menu';
 import { config, IConfig } from './config-handler';
+import { handleChildWindow } from './pop-out-window-handler';
 import { enterFullScreen, leaveFullScreen, throttledWindowChanges } from './window-actions';
-import { createComponentWindow } from './window-utils';
+import { createComponentWindow, getBounds } from './window-utils';
 
 interface ICustomBrowserWindowConstructorOpts extends Electron.BrowserWindowConstructorOptions {
     winKey: string;
@@ -74,19 +75,20 @@ export class WindowHandler {
      *
      * @param configURL {string}
      */
-    private static validateURL(configURL: string): string {
-        const parsedUrl = url.parse(configURL);
+    private static getValidUrl(configURL: string): string {
+        const parsedUrl = parse(configURL);
 
         if (!parsedUrl.protocol || parsedUrl.protocol !== 'https') {
             parsedUrl.protocol = 'https:';
             parsedUrl.slashes = true;
         }
-        return url.format(parsedUrl);
+        return format(parsedUrl);
     }
 
     public appMenu: AppMenu | null;
     public isAutoReload: boolean;
     public isOnline: boolean;
+    public url: string | undefined;
 
     private readonly windowOpts: ICustomBrowserWindowConstructorOpts;
     private readonly globalConfig: IConfig;
@@ -134,7 +136,7 @@ export class WindowHandler {
     public createApplication() {
         // set window opts with additional config
         this.mainWindow = new BrowserWindow({
-            ...this.windowOpts, ...this.getBounds(this.config.mainWinPos),
+            ...this.windowOpts, ...getBounds(this.config.mainWinPos, DEFAULT_WIDTH, DEFAULT_HEIGHT),
         }) as ICustomBrowserWindow;
         this.mainWindow.winName = 'main';
 
@@ -146,7 +148,8 @@ export class WindowHandler {
         });
 
         const urlFromCmd = getCommandLineArgs(process.argv, '--url=', false);
-        this.mainWindow.loadURL(urlFromCmd && urlFromCmd.substr(6) || WindowHandler.validateURL(this.globalConfig.url));
+        this.url = urlFromCmd && urlFromCmd.substr(6) || WindowHandler.getValidUrl(this.globalConfig.url);
+        this.mainWindow.loadURL(this.url);
         this.mainWindow.webContents.on('did-finish-load', () => {
             // close the loading window when
             // the main windows finished loading
@@ -175,6 +178,9 @@ export class WindowHandler {
         });
         this.mainWindow.webContents.toggleDevTools();
         this.addWindow(this.windowOpts.winKey, this.mainWindow);
+
+        // Handle pop-outs window
+        handleChildWindow(this.mainWindow.webContents);
         return this.mainWindow;
     }
 
@@ -290,12 +296,23 @@ export class WindowHandler {
     }
 
     /**
+     * Opens an external url in the system's default browser
+     *
+     * @param urlToOpen
+     */
+    public openUrlInDefaultBrowser(urlToOpen) {
+        if (urlToOpen) {
+            electron.shell.openExternal(urlToOpen);
+        }
+    }
+
+    /**
      * Stores information of all the window we have created
      *
      * @param key {string}
      * @param browserWindow {Electron.BrowserWindow}
      */
-    private addWindow(key: string, browserWindow: Electron.BrowserWindow): void {
+    public addWindow(key: string, browserWindow: Electron.BrowserWindow): void {
         this.windows[ key ] = browserWindow;
     }
 
@@ -304,7 +321,7 @@ export class WindowHandler {
      *
      * @param key {string}
      */
-    private removeWindow(key): void {
+    public removeWindow(key): void {
         delete this.windows[ key ];
     }
 
@@ -324,29 +341,6 @@ export class WindowHandler {
     }
 
     /**
-     * Returns the config stored rectangle if it is contained within the workArea of at
-     * least one of the screens else returns the default rectangle value with out x, y
-     * as the default is to center the window
-     *
-     * @param mainWinPos {Electron.Rectangle}
-     * @return {x?: Number, y?: Number, width: Number, height: Number}
-     */
-    private getBounds(mainWinPos): Partial<Electron.Rectangle> {
-        if (!mainWinPos) return { width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT };
-        const displays = electron.screen.getAllDisplays();
-
-        for (let i = 0, len = displays.length; i < len; i++) {
-            const workArea = displays[ i ].workArea;
-            if (mainWinPos.x >= workArea.x && mainWinPos.y >= workArea.y &&
-                ((mainWinPos.x + mainWinPos.width) <= (workArea.x + workArea.width)) &&
-                ((mainWinPos.y + mainWinPos.height) <= (workArea.y + workArea.height))) {
-                return mainWinPos;
-            }
-        }
-        return { width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT };
-    }
-
-    /**
      * Main window opts
      */
     private getMainWindowOpts(): ICustomBrowserWindowConstructorOpts {
@@ -358,10 +352,9 @@ export class WindowHandler {
             show: false,
             title: 'Symphony',
             webPreferences: {
-                nativeWindowOpen: true,
                 nodeIntegration: false,
-                preload: path.join(__dirname, '../renderer/preload-main'),
-                sandbox: false,
+                preload: path.join(__dirname, '../renderer/_preload-main.js'),
+                sandbox: true,
             },
             winKey: getGuid(),
         };
