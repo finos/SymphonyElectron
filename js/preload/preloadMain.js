@@ -23,6 +23,9 @@ const { TitleBar } = require('../windowsTitlebar');
 const titleBar = new TitleBar();
 const { buildNumber } = require('../../package.json');
 const SnackBar = require('../snackBar').SnackBar;
+const fs = remote.require('fs');
+const mime = require('mime-types');
+
 const KeyCodes = {
     Esc: 27,
     Alt: 18,
@@ -225,6 +228,36 @@ function createAPI() {
                 local.boundsChangeCallback = callback;
                 local.ipcRenderer.send(apiName, {
                     cmd: apiCmds.registerBoundsChange
+                });
+            }
+        },
+
+        /**
+         * Allows JS to open a file picker window
+         * @param options {Electron.OpenDialogOptions}
+         * @param callback
+         * @example
+         * openFilePicker({
+         *  type: 'openFile',
+         *  title: 'test',
+         *  multiSelect: true,
+         *  filters: filters: [{ name: 'test', extensions: ['JPG', 'TXT', 'ai'] }]
+         * })
+         */
+        openFilePicker: function (options, callback) {
+            if (options && typeof callback === 'function') {
+                const browserWindow = remote.getCurrentWindow();
+                const { type, title, defaultPath, multiSelect, filters } = options;
+                const properties = [ type ];
+                if (multiSelect) properties.push('multiSelections');
+                remote.dialog.showOpenDialog(browserWindow, { title, defaultPath, properties, filters }, (filePaths) => {
+                    if (!filePaths) return;
+                    const files = filePaths.map((file) => {
+                        const mimeType = mime.lookup(file);
+                        const filename = file.substring(file.lastIndexOf('/') + 1);
+                        return new File([ fs.readFileSync(file) ], filename, { type: mimeType });
+                    });
+                    callback(files);
                 });
             }
         },

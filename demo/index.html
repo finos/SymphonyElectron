@@ -70,6 +70,12 @@
         <button id='clear-badge'>clear badge count</button>
         <br>
         <hr>
+        <br>
+        <p> Native file picker modal</p>
+        <button id="file-picker">Choose a file</button>
+        <img id="test-image" width="150px" height="150px"/>
+        <hr>
+        <br>
         <p>Screen Snippet:</p>
         <button id='snippet'>get snippet</button>
         <p>snippet output:</p>
@@ -115,6 +121,19 @@
         openConfigWin.addEventListener('click', function() {
             ssf.showNotificationSettings();
         });
+
+        document.getElementById('file-picker').onclick = () => {
+            ssf.openFilePicker({
+                type: 'openFile',
+                title: 'test',
+                multiSelect: false,
+                filters: [{
+                    name: 'test',
+                    extensions: ['JPG', 'TXT', 'ai'] }]
+            }, (files) => {
+                document.getElementById('test-image').src = URL.createObjectURL(files[0]);
+            });
+        };
 
         var notfEl = document.getElementById('notf');
         var num = 0;
