@@ -8,6 +8,7 @@ import { autoLaunchInstance } from './auto-launch-controller';
 import { setChromeFlags } from './chrome-flags';
 import { config } from './config-handler';
 import './main-api-handler';
+import { SpellChecker } from './spell-checker-handler';
 import { windowHandler } from './window-handler';
 
 const allowMultiInstance: string | boolean = getCommandLineArgs(process.argv, '--multiInstance', true) || isDevEnv;
@@ -18,6 +19,8 @@ const singleInstanceLock: boolean = allowMultiInstance ? true : app.requestSingl
  */
 const main = async () => {
     await app.whenReady();
+    const spellchecker = new SpellChecker();
+    logger.info(`initialized spellchecker module with locale ${spellchecker.locale}`);
     createAppCacheFile();
     windowHandler.showLoadingScreen();
     windowHandler.createApplication();

@@ -6,7 +6,7 @@ import { logger } from '../common/logger';
 import { activityDetection } from './activity-detection';
 import { config } from './config-handler';
 import { checkProtocolAction, setProtocolWindow } from './protocol-handler';
-import { screenSnippet } from './screen-snippet';
+import { screenSnippet } from './screen-snippet-handler';
 import { activate, handleKeyPress } from './window-actions';
 import { windowHandler } from './window-handler';
 import {

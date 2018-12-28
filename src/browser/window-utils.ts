@@ -6,7 +6,7 @@ import * as url from 'url';
 import { isMac } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
-import { screenSnippet } from './screen-snippet';
+import { screenSnippet } from './screen-snippet-handler';
 import { windowHandler } from './window-handler';
 
 const checkValidWindow = true;
@@ -66,7 +66,6 @@ export const createComponentWindow = (
 
     const browserWindow = new BrowserWindow(options);
     browserWindow.on('ready-to-show', () => browserWindow.show());
-    browserWindow.webContents.toggleDevTools();
     browserWindow.setMenu(null as any);
 
     const targetUrl = url.format({
