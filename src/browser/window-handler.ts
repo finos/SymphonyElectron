@@ -6,7 +6,7 @@ import { format, parse } from 'url';
 
 import { buildNumber, clientVersion, version } from '../../package.json';
 import DesktopCapturerSource = Electron.DesktopCapturerSource;
-import { WindowTypes } from '../common/api-interface';
+import { apiName, WindowTypes } from '../common/api-interface';
 import { isMac, isWindowsOS } from '../common/env';
 import { getCommandLineArgs, getGuid } from '../common/utils';
 import { AppMenu } from './app-menu';
@@ -138,7 +138,7 @@ export class WindowHandler {
         this.mainWindow = new BrowserWindow({
             ...this.windowOpts, ...getBounds(this.config.mainWinPos, DEFAULT_WIDTH, DEFAULT_HEIGHT),
         }) as ICustomBrowserWindow;
-        this.mainWindow.winName = 'main';
+        this.mainWindow.winName = apiName.mainWindowName;
 
         // Event needed to hide native menu bar on Windows 10 as we use custom menu bar
         this.mainWindow.webContents.once('did-start-loading', () => {
@@ -180,7 +180,8 @@ export class WindowHandler {
             // Ready to show the window
             this.mainWindow.show();
         });
-        this.mainWindow.webContents.toggleDevTools();
+
+        // store window ref
         this.addWindow(this.windowOpts.winKey, this.mainWindow);
 
         // Handle pop-outs window

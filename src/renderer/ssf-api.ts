@@ -215,10 +215,12 @@ local.ipcRenderer.on('boundsChange', (_event, arg: IBoundsChange): void => {
 
 // Invoked whenever the app is reloaded/navigated
 const sanitize = (): void => {
-    local.ipcRenderer.send(apiName.symphonyApi, {
-        cmd: apiCmds.sanitize,
-        windowName: window.name || 'main',
-    });
+    if (window.name === apiName.mainWindowName) {
+        local.ipcRenderer.send(apiName.symphonyApi, {
+            cmd: apiCmds.sanitize,
+            windowName: window.name,
+        });
+    }
 };
 
 // listens for the online/offline events and updates the main process

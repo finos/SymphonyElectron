@@ -23,6 +23,7 @@ export enum apiCmds {
 
 export enum apiName {
     symphonyApi = 'symphony-api',
+    mainWindowName = 'main',
 }
 
 export interface IApiArgs {

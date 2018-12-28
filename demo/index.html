@@ -178,23 +178,19 @@
 
         var snippetButton = document.getElementById('snippet');
         snippetButton.addEventListener('click', function() {
-            let snippet = new ssf.ScreenSnippet();
-
-            snippet
-            .capture()
-            .then(gotSnippet)
-            .catch(snippetError);
+            window.ssf.openScreenSnippet(gotSnippet.bind(this));
 
             function gotSnippet(rsp) {
-                if (rsp && rsp.data && rsp.type) {
-                    var dataUrl = 'data:' + rsp.type + ',' + rsp.data;
-                    var img = document.getElementById('snippet-img');
-                    img.src = dataUrl;
+                if (rsp) {
+                    if (rsp.type && rsp.type === 'ERROR') {
+                        // called when some error occurs during capture
+                        alert('error getting snippet' + rsp.message);
+                    } else if (rsp.data && rsp.type === 'image/jpg;base64') {
+                        var dataUrl = 'data:' + rsp.type + ',' + rsp.data;
+                        var img = document.getElementById('snippet-img');
+                        img.src = dataUrl;
+                    }
                 }
-            }
-
-            function snippetError(err) {
-                alert('error getting snippet' + err.message);
             }
         });
 
