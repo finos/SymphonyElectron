@@ -11,10 +11,10 @@
   "scripts": {
     "tsc": "git clean -xdf ./lib && npm run lint && tsc",
     "lint": "tslint --project tsconfig.json",
-    "start": "npm run compile-css && cross-env ELECTRON_DEV=true electron .",
+    "start": "npm run compile-css && npm run browserify-preload && cross-env ELECTRON_DEV=true electron .",
     "compile-css": "lessc src/renderer/styles/main.less src/renderer/styles/main.css",
     "prebuild": "npm run rebuild && npm run browserify-preload",
-    "browserify-preload": "browserify -o js/preload/_preloadMain.js -x electron --insert-global-vars=__filename,__dirname js/preload/preloadMain.js  --exclude electron-spellchecker",
+    "browserify-preload": "browserify -o src/renderer/_preload-main.js -x electron --insert-global-vars=__filename,__dirname src/renderer/preload-main.js",
     "rebuild": "electron-rebuild -f",
     "dev": "npm run prebuild && cross-env ELECTRON_DEV=true electron .",
     "test": "npm run lint && npm rebuild --build-from-source && cross-env ELECTRON_QA=true jest --config jest.unit.config.json --runInBand && npm run rebuild",

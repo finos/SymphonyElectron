@@ -147,8 +147,11 @@ export class WindowHandler {
             }
         });
 
+        // Get url to load from cmd line or from global config file
         const urlFromCmd = getCommandLineArgs(process.argv, '--url=', false);
         this.url = urlFromCmd && urlFromCmd.substr(6) || WindowHandler.getValidUrl(this.globalConfig.url);
+
+        // loads the main window with url from config/cmd line
         this.mainWindow.loadURL(this.url);
         this.mainWindow.webContents.on('did-finish-load', () => {
             // close the loading window when
@@ -159,6 +162,7 @@ export class WindowHandler {
             }
             // early exit if the window has already been destroyed
             if (!this.mainWindow || this.mainWindow.isDestroyed()) return;
+            this.url = this.mainWindow.webContents.getURL();
 
             // Injects custom title bar css into the webContents
             if (this.mainWindow && this.isCustomTitleBarAndWindowOS) {
