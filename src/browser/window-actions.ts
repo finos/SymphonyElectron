@@ -1,6 +1,6 @@
 import { BrowserWindow } from 'electron';
 
-import { IBoundsChange, KeyCodes } from '../common/api-interface';
+import { apiName, IBoundsChange, KeyCodes } from '../common/api-interface';
 import { isWindowsOS } from '../common/env';
 import { throttle } from '../common/throttle';
 import { config } from './config-handler';
@@ -16,7 +16,7 @@ export const saveWindowSettings = (): void => {
         if (x && y && width && height) {
             browserWindow.webContents.send('boundChanges', { x, y, width, height, windowName: browserWindow.winName } as IBoundsChange);
 
-            if (browserWindow.winName === 'main') {
+            if (browserWindow.winName === apiName.mainWindowName) {
                 const isMaximized = browserWindow.isMaximized();
                 const isFullScreen = browserWindow.isFullScreen();
                 config.updateUserConfig({ mainWinPos: { x, y, width, height, isMaximized, isFullScreen } });
@@ -28,14 +28,14 @@ export const saveWindowSettings = (): void => {
 
 export const enterFullScreen = () => {
     const browserWindow = BrowserWindow.getFocusedWindow() as ICustomBrowserWindow;
-    if (browserWindow && !browserWindow.isDestroyed() && browserWindow.winName === 'main') {
+    if (browserWindow && !browserWindow.isDestroyed() && browserWindow.winName === apiName.mainWindowName) {
         browserWindow.webContents.send('window-enter-full-screen');
     }
 };
 
 export const leaveFullScreen = () => {
     const browserWindow = BrowserWindow.getFocusedWindow() as ICustomBrowserWindow;
-    if (browserWindow && !browserWindow.isDestroyed() && browserWindow.winName === 'main') {
+    if (browserWindow && !browserWindow.isDestroyed() && browserWindow.winName === apiName.mainWindowName) {
         browserWindow.webContents.send('window-leave-full-screen');
     }
 };
