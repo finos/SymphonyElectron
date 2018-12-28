@@ -1231,7 +1231,7 @@ function popupMenu() {
 const logBrowserWindowEvents = (browserWindow, windowName) => {
 
     const events = [
-        'page-title-updated', 'close', 'closed', 'session-end', 'unresponsive', 'responsive', 'blur', 'focus',
+        'page-title-updated', 'close', 'session-end', 'unresponsive', 'responsive', 'blur', 'focus',
         'show', 'hide', 'ready-to-show', 'maximize', 'unmaximize', 'minimize', 'restore', 'resize', 'move', 'moved',
         'enter-full-screen', 'leave-full-screen', 'enter-html-full-screen', 'leave-html-full-screen', 'app-command'
     ];
