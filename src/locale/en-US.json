@@ -110,6 +110,11 @@
     "Select Screen": "Select Screen",
     "Share": "Share"
   },
+  "ScreenSharingIndicator": {
+    "You are sharing your screen on ": "You are sharing your screen on ",
+    "Stop sharing": "Stop sharing",
+    "Hide": "Hide"
+  },
   "ScreenSnippet": {
     "Done": "Done",
     "Erase": "Erase",
