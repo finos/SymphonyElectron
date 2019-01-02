@@ -46,15 +46,14 @@ export const preventWindowNavigation = (browserWindow: Electron.BrowserWindow, i
  */
 export const createComponentWindow = (
     componentName: string,
-    opts?: Electron.BrowserWindowConstructorOptions): BrowserWindow => {
+    opts?: Electron.BrowserWindowConstructorOptions,
+): BrowserWindow => {
 
-    const parent = windowHandler.getMainWindow() || undefined;
-    const options = {
+    const options: Electron.BrowserWindowConstructorOptions = {
         center: true,
         height: 300,
         maximizable: false,
         minimizable: false,
-        parent,
         resizable: false,
         show: false,
         width: 300,
@@ -71,7 +70,10 @@ export const createComponentWindow = (
     const targetUrl = url.format({
         pathname: require.resolve('../renderer/react-window.html'),
         protocol: 'file',
-        query: { componentName },
+        query: {
+            componentName,
+            locale: i18n.getLocale(),
+        },
         slashes: true,
     });
 
