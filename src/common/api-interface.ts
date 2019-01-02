@@ -19,6 +19,7 @@ export enum apiCmds {
     openScreenSnippet = 'open-screen-snippet',
     keyPress = 'key-press',
     closeWindow = 'close-window',
+    openScreenSharingIndicator = 'open-screen-sharing-indicator',
 }
 
 export enum apiName {
@@ -41,6 +42,7 @@ export interface IApiArgs {
     locale: string;
     keyCode: number;
     windowType: WindowTypes;
+    displayId: string;
 }
 
 export type WindowTypes = 'screen-picker';
@@ -68,6 +70,14 @@ export interface IScreenSnippet {
 
 export interface IBoundsChange extends Electron.Rectangle {
     windowName: string;
+}
+
+/**
+ * Screen sharing indicator
+ */
+export interface IScreenSharingIndicator {
+    type: string;
+    reason?: string;
 }
 
 export enum KeyCodes {

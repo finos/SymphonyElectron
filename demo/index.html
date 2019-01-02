@@ -222,8 +222,8 @@
         var getSources = document.getElementById('get-sources');
         getSources.addEventListener('click', function() {
             ssf.getMediaSource({types: ['window', 'screen']}, function(error, source) {
-                if (error) throw error
-                  navigator.webkitGetUserMedia({
+                if (error) throw error;
+                navigator.webkitGetUserMedia({
                     audio: false,
                     video: {
                       mandatory: {
@@ -235,12 +235,24 @@
                         maxHeight: 720
                       }
                     }
-                  }, handleStream, handleError)
+                }, stream => {
+                    handleStream(stream, source.display_id);
+                }, handleError);
             });
         });
 
-        function handleStream (stream) {
-          document.querySelector('video').srcObject = stream
+        function handleStream(stream, displayId) {
+            document.getElementById('video').srcObject = stream;
+            ssf.showScreenSharingIndicator({
+                stream,
+                displayId
+            }, function (event) {
+                console.log('screen-sharing-indicator callback', event);
+                if (event.type === 'stopRequested') {
+                    stream.getVideoTracks().forEach(t => t.stop());
+                    document.getElementById('video').srcObject = null;
+                }
+            });
         }
 
         function handleError (e) {

@@ -1,5 +1,5 @@
 import * as electron from 'electron';
-import { BrowserWindow, crashReporter, ipcMain, webContents } from 'electron';
+import { BrowserWindow, crashReporter, ipcMain } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 import { format, parse } from 'url';
@@ -8,6 +8,7 @@ import { buildNumber, clientVersion, version } from '../../package.json';
 import DesktopCapturerSource = Electron.DesktopCapturerSource;
 import { apiName, WindowTypes } from '../common/api-interface';
 import { isMac, isWindowsOS } from '../common/env';
+import { i18n } from '../common/i18n';
 import { getCommandLineArgs, getGuid } from '../common/utils';
 import { AppMenu } from './app-menu';
 import { config, IConfig } from './config-handler';
@@ -45,6 +46,11 @@ export class WindowHandler {
             show: false,
             title: 'Symphony',
             width: 400,
+            webPreferences: {
+                sandbox: true,
+                nodeIntegration: false,
+                devTools: false,
+            },
         };
     }
 
@@ -64,6 +70,30 @@ export class WindowHandler {
             webPreferences: {
                 nodeIntegration: false,
                 sandbox: true,
+            },
+            winKey: getGuid(),
+        };
+    }
+
+    /**
+     * Screen sharing indicator window opts
+     */
+    private static getScreenSharingIndicatorOpts(): ICustomBrowserWindowConstructorOpts {
+        return {
+            width: 592,
+            height: 48,
+            show: false,
+            modal: true,
+            frame: false,
+            focusable: false,
+            transparent: true,
+            autoHideMenuBar: true,
+            resizable: false,
+            alwaysOnTop: true,
+            webPreferences: {
+                sandbox: true,
+                nodeIntegration: false,
+                devTools: false,
             },
             winKey: getGuid(),
         };
@@ -97,11 +127,12 @@ export class WindowHandler {
     private readonly windows: object;
     private readonly isCustomTitleBarAndWindowOS: boolean;
 
-    private mainWindow: ICustomBrowserWindow | null;
-    private loadingWindow: Electron.BrowserWindow | null;
-    private aboutAppWindow: Electron.BrowserWindow | null;
-    private moreInfoWindow: Electron.BrowserWindow | null;
-    private screenPickerWindow: Electron.BrowserWindow | null;
+    private mainWindow: ICustomBrowserWindow | null = null;
+    private loadingWindow: Electron.BrowserWindow | null = null;
+    private aboutAppWindow: Electron.BrowserWindow | null = null;
+    private moreInfoWindow: Electron.BrowserWindow | null = null;
+    private screenPickerWindow: Electron.BrowserWindow | null = null;
+    private screenSharingIndicatorWindow: Electron.BrowserWindow | null = null;
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Settings
@@ -115,12 +146,6 @@ export class WindowHandler {
         this.isCustomTitleBarAndWindowOS = isWindowsOS && this.config.isCustomTitleBar;
 
         this.appMenu = null;
-        // Window references
-        this.mainWindow = null;
-        this.loadingWindow = null;
-        this.aboutAppWindow = null;
-        this.moreInfoWindow = null;
-        this.screenPickerWindow = null;
 
         try {
             const extra = { podUrl: this.globalConfig.url, process: 'main' };
@@ -174,7 +199,7 @@ export class WindowHandler {
             this.mainWindow.webContents.insertCSS(
                 fs.readFileSync(path.join(__dirname, '..', '/renderer/styles/snack-bar.css'), 'utf8').toString(),
             );
-            this.mainWindow.webContents.send('page-load', { isWindowsOS });
+            this.mainWindow.webContents.send('page-load', { isWindowsOS, resources: i18n.loadedResources });
             this.appMenu = new AppMenu();
             this.monitorWindowActions();
             // Ready to show the window
@@ -211,7 +236,7 @@ export class WindowHandler {
      *
      * @param windowType
      */
-    public closeWindow(windowType: WindowTypes) {
+    public closeWindow(windowType: WindowTypes): void {
         switch (windowType) {
             case 'screen-picker':
                 if (this.screenPickerWindow && !this.screenPickerWindow.isDestroyed()) this.screenPickerWindow.close();
@@ -224,7 +249,7 @@ export class WindowHandler {
      *
      * @param shouldAutoReload {boolean}
      */
-    public setIsAutoReload(shouldAutoReload: boolean) {
+    public setIsAutoReload(shouldAutoReload: boolean): void {
         this.isAutoReload = shouldAutoReload;
     }
 
@@ -243,7 +268,7 @@ export class WindowHandler {
      * Displays a loading window until the main
      * application is loaded
      */
-    public showLoadingScreen() {
+    public showLoadingScreen(): void {
         this.loadingWindow = createComponentWindow('loading-screen', WindowHandler.getLoadingWindowOpts());
         this.loadingWindow.webContents.once('did-finish-load', () => {
             if (this.loadingWindow) {
@@ -257,7 +282,7 @@ export class WindowHandler {
     /**
      * Creates a about app window
      */
-    public createAboutAppWindow() {
+    public createAboutAppWindow(): void {
         this.aboutAppWindow = createComponentWindow('about-app');
         this.aboutAppWindow.webContents.once('did-finish-load', () => {
             if (this.aboutAppWindow) {
@@ -269,8 +294,8 @@ export class WindowHandler {
     /**
      * Creates a more info window
      */
-    public createMoreInfoWindow() {
-        this.moreInfoWindow = createComponentWindow('more-info-window');
+    public createMoreInfoWindow(): void {
+        this.moreInfoWindow = createComponentWindow('more-info');
         this.moreInfoWindow.webContents.once('did-finish-load', () => {
             if (this.aboutAppWindow) {
                 this.aboutAppWindow.webContents.send('more-info-data');
@@ -280,10 +305,14 @@ export class WindowHandler {
 
     /**
      * Creates a screen picker window
+     *
+     * @param win
+     * @param sources
+     * @param id
      */
-    public createScreenPickerWindow(win: webContents, sources: DesktopCapturerSource[], id: number) {
+    public createScreenPickerWindow(win: Electron.WebContents, sources: DesktopCapturerSource[], id: number): void {
         const opts = WindowHandler.getScreenPickerWindowOpts();
-        this.screenPickerWindow = createComponentWindow('screen-picker-window', opts);
+        this.screenPickerWindow = createComponentWindow('screen-picker', opts);
         this.screenPickerWindow.webContents.once('did-finish-load', () => {
             if (this.screenPickerWindow) {
                 this.screenPickerWindow.webContents.send('screen-picker-data', { sources, id });
@@ -296,6 +325,53 @@ export class WindowHandler {
                 ipcMain.once('screen-source-selected', (_event, source) => {
                     win.send('start-share' + id, source);
                 });
+            }
+        });
+    }
+
+    /**
+     * Creates a screen sharing indicator whenever uses start
+     * sharing the screen
+     *
+     * @param screenSharingWebContents {Electron.webContents}
+     * @param displayId {string}
+     * @param id {number}
+     */
+    public createScreenSharingIndicatorWindow(screenSharingWebContents: Electron.webContents, displayId: string, id: number): void {
+        const indicatorScreen = (displayId && electron.screen.getAllDisplays().filter((d) => displayId.includes(d.id.toString()))[0]) || electron.screen.getPrimaryDisplay();
+        const screenRect = indicatorScreen.workArea;
+        let opts = WindowHandler.getScreenSharingIndicatorOpts();
+        if (opts.width && opts.height) {
+            opts = Object.assign({}, opts, {
+                x: screenRect.x + Math.round((screenRect.width - opts.width) / 2),
+                y: screenRect.y + screenRect.height - opts.height,
+            });
+        }
+        this.screenSharingIndicatorWindow = createComponentWindow('screen-sharing-indicator', opts);
+        this.screenSharingIndicatorWindow.setVisibleOnAllWorkspaces(true);
+        this.screenSharingIndicatorWindow.webContents.once('did-finish-load', () => {
+            if (this.screenSharingIndicatorWindow) {
+                this.screenSharingIndicatorWindow.webContents.send('screen-sharing-indicator-data', { id });
+
+                const stopScreenSharing = (_event, indicatorId) => {
+                    if (id === indicatorId) {
+                        screenSharingWebContents.send('screen-sharing-stopped', id);
+                    }
+                };
+
+                const destroyScreenSharingIndicator = (_event, indicatorId) => {
+                    if (id === indicatorId && this.screenSharingIndicatorWindow && !this.screenSharingIndicatorWindow.isDestroyed()) {
+                        this.screenSharingIndicatorWindow.close();
+                    }
+                };
+
+                this.screenSharingIndicatorWindow.once('close', () => {
+                    ipcMain.removeListener('stop-screen-sharing', stopScreenSharing);
+                    ipcMain.removeListener('destroy-screen-sharing-indicator', destroyScreenSharingIndicator);
+                });
+
+                ipcMain.once('stop-screen-sharing', stopScreenSharing);
+                ipcMain.once('destroy-screen-sharing-indicator', destroyScreenSharingIndicator);
             }
         });
     }

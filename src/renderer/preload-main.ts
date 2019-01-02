@@ -2,6 +2,7 @@ import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
+import { i18n } from '../common/i18n-preload';
 import SnackBar from './components/snack-bar';
 import WindowsTitleBar from './components/windows-title-bar';
 import { SSFApi } from './ssf-api';
@@ -37,7 +38,10 @@ const createAPI = () => {
 createAPI();
 
 // When the window is completely loaded
-ipcRenderer.on('page-load', (_event, { isWindowsOS }) => {
+ipcRenderer.on('page-load', (_event, { isWindowsOS, resources }) => {
+
+    i18n.setResource(resources);
+
     if (isWindowsOS) {
         // injects custom window title bar
         const titleBar = React.createElement(WindowsTitleBar);

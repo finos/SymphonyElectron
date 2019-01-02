@@ -1,0 +1,86 @@
+@white: rgba(255,255,255, 1);
+@background: #6b717c;
+@button-color: #303237;
+@stop-sharing-background: #107ccc;
+@font: "system";
+
+@font-face {
+  font-family: system;
+  font-style: normal;
+  src: local(".SFNSText"), local(".HelveticaNeueDeskInterface"), local("Ubuntu Light"), local("Segoe UI"), local("Roboto"), local("Tahoma");
+}
+
+body {
+  font-family: @font;
+  font-size: 13px;
+  padding: 0;
+  margin: 10px;
+  user-select: none;
+  -webkit-app-region: drag;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.ScreenSharingIndicator {
+
+  .window-border {
+    border: 2px solid rgba(68, 68, 68, 1);
+  }
+
+  .buttons {
+    float: right;
+    font-size: 12px;
+    font-weight: bold;
+  }
+
+  .stop-sharing-button {
+    text-transform: uppercase;
+    background: @stop-sharing-background;
+    color: @white;
+    border: none;
+    font-size: inherit;
+    border-radius: 14px;
+    height: 28px;
+    padding: 6px 14px;
+    outline: none;
+    cursor: pointer;
+    -webkit-app-region: no-drag;
+  }
+
+  .hide-button {
+    text-decoration: none;
+    text-transform: uppercase;
+    color: @background;
+    margin-right: 29px;
+    -webkit-app-region: no-drag;
+  }
+
+  .text-label {
+    position: relative;
+    top: -2px;
+    left: 16px;
+    font-size: 14px;
+  }
+
+  .drag-area {
+    display: inline-block;
+    width: 8px;
+    height: 22px;
+    position: relative;
+    cursor: move;
+    top: 3px;
+    text-transform: uppercase;
+    background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, rgba(0, 0, 0, 0.12) 1px, rgba(0, 0, 0, 0.12) 2px);
+  }
+
+  .mac {
+    .hide-button {
+      color: @button-color;
+    }
+
+    .stop-sharing-button {
+      padding: 6px 18px;
+    }
+  }
+
+}
+
