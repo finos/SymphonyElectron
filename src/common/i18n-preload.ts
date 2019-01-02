@@ -1,6 +1,3 @@
-import * as fs from 'fs';
-import * as path from 'path';
-
 import { formatString } from './format-string';
 
 const localeCodeRegex = /^([a-z]{2})-([A-Z]{2})$/;
@@ -10,6 +7,7 @@ export type LocaleType = 'en-US' | 'ja-JP';
 type formaterFunction = (...args: any[]) => string;
 
 class Translation {
+
     /**
      * Returns translated string with respect to value, resource & name space
      *
@@ -21,8 +19,8 @@ class Translation {
         return resource ? Translation.getResource(resource, namespace)[value] : null;
     }
     private static getResource = (resource: JSON, namespace: string | undefined): JSON => namespace ? resource[namespace] : resource;
-    public loadedResources: object = {};
     private locale: LocaleType = 'en-US';
+    private loadedResources: object = {};
 
     /**
      * Apply the locale for translation
@@ -64,18 +62,21 @@ class Translation {
     }
 
     /**
+     * Keeps ref of loaded resources from the main process
+     *
+     * @param resource
+     */
+    public setResource(resource: JSON): void {
+        this.loadedResources = resource;
+    }
+
+    /**
      * Reads the resources dir and returns the data
      *
      * @param locale
      */
     private loadResource(locale: LocaleType): JSON | null {
-        const resourcePath = path.resolve(__dirname, '..', 'locale', `${locale}.json`);
-
-        if (!fs.existsSync(resourcePath)) {
-            return null;
-        }
-
-        return this.loadedResources[this.locale] = require(resourcePath);
+        return this.loadedResources[locale];
     }
 
 }

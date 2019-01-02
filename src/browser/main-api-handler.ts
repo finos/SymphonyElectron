@@ -126,6 +126,12 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
         case apiCmds.closeWindow:
             windowHandler.closeWindow(arg.windowType);
             break;
+        case apiCmds.openScreenSharingIndicator:
+            const { displayId, id } = arg;
+            if (typeof displayId === 'string' && typeof id === 'number') {
+                windowHandler.createScreenSharingIndicatorWindow(event.sender, displayId, id);
+            }
+             break;
         default:
     }
 

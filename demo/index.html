@@ -237,7 +237,7 @@
                     }
                 }, stream => {
                     handleStream(stream, source.display_id);
-                }, handleError)
+                }, handleError);
             });
         });
 
@@ -246,7 +246,7 @@
             ssf.showScreenSharingIndicator({
                 stream,
                 displayId
-            }, function(event) {
+            }, function (event) {
                 console.log('screen-sharing-indicator callback', event);
                 if (event.type === 'stopRequested') {
                     stream.getVideoTracks().forEach(t => t.stop());

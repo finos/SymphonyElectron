@@ -6,21 +6,23 @@ import {
     apiName,
     IActivityDetection,
     IBadgeCount,
-    IBoundsChange,
+    IBoundsChange, IScreenSharingIndicator,
     IScreenSnippet, KeyCodes,
 } from '../common/api-interface';
-import { i18n, LocaleType } from '../common/i18n';
+import { i18n, LocaleType } from '../common/i18n-preload';
 import { throttle } from '../common/throttle';
 import { getSource } from './desktop-capturer';
 
-let isAltKey = false;
-let isMenuOpen = false;
+let isAltKey: boolean = false;
+let isMenuOpen: boolean = false;
+let nextId = 0;
 
 interface ILocalObject {
     ipcRenderer;
     activityDetectionCallback?: (arg: IActivityDetection) => void;
     screenSnippetCallback?: (arg: IScreenSnippet) => void;
     boundsChangeCallback?: (arg: IBoundsChange) => void;
+    screenSharingIndicatorCallback?: (arg: IScreenSharingIndicator) => void;
 }
 
 const local: ILocalObject = {
@@ -141,6 +143,41 @@ export class SSFApi {
         }
     }
 
+    /**
+     * Shows a banner that informs user that the screen is being shared.
+     *
+     * @param options object with following fields:
+     *    - stream https://developer.mozilla.org/en-US/docs/Web/API/MediaStream/MediaStream object.
+     *             The indicator automatically destroys itself when stream becomes inactive (see MediaStream.active).
+     *    - displayId id of the display that is being shared or that contains the shared app
+     * @param callback callback function that will be called to handle events.
+     * Callback receives event object { type: string }. Types:
+     *    - 'error' - error occured. Event object contains 'reason' field.
+     *    - 'stopRequested' - user clicked "Stop Sharing" button.
+     */
+    public showScreenSharingIndicator(options, callback): void {
+        const { stream, displayId } = options;
+
+        if (typeof callback === 'function') {
+            if (!stream || !stream.active || stream.getVideoTracks().length !== 1) {
+                callback({ type: 'error', reason: 'bad stream' });
+                return;
+            }
+            if (displayId && typeof (displayId) !== 'string') {
+                callback({ type: 'error', reason: 'bad displayId' });
+                return;
+            }
+
+            local.screenSharingIndicatorCallback = callback;
+            const id = ++nextId;
+            ipcRenderer.send(apiName.symphonyApi, {
+                cmd: apiCmds.openScreenSharingIndicator,
+                displayId: options.displayId,
+                id,
+            });
+        }
+    }
+
 }
 
 /**
@@ -210,6 +247,12 @@ local.ipcRenderer.on('boundsChange', (_event, arg: IBoundsChange): void => {
             width,
             windowName,
         });
+    }
+});
+
+local.ipcRenderer.on('screen-sharing-stopped', () => {
+    if (typeof local.screenSharingIndicatorCallback === 'function') {
+        local.screenSharingIndicatorCallback({ type: 'stopRequested' });
     }
 });
 
