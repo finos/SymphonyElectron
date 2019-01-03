@@ -20,6 +20,9 @@ const baseWindowConfig = {
     transparent: true,
     autoHideMenuBar: true,
     resizable: false,
+    minimizable: false,
+    maximizable: false,
+    closable: true,
     alwaysOnTop: true,
     webPreferences: {
         preload: path.join(__dirname, 'renderer.js'),
