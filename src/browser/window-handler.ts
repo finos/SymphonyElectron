@@ -199,7 +199,7 @@ export class WindowHandler {
             this.mainWindow.webContents.insertCSS(
                 fs.readFileSync(path.join(__dirname, '..', '/renderer/styles/snack-bar.css'), 'utf8').toString(),
             );
-            this.mainWindow.webContents.send('page-load', { isWindowsOS, resources: i18n.loadedResources });
+            this.mainWindow.webContents.send('page-load', { isWindowsOS, locale: i18n.getLocale(), resources: i18n.loadedResources });
             this.appMenu = new AppMenu();
             this.monitorWindowActions();
             // Ready to show the window

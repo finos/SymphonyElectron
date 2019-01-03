@@ -64,9 +64,11 @@ class Translation {
     /**
      * Keeps ref of loaded resources from the main process
      *
-     * @param resource
+     * @param locale {LocaleType}
+     * @param resource {JSON}
      */
-    public setResource(resource: JSON): void {
+    public setResource(locale: LocaleType, resource: JSON): void {
+        this.locale = locale;
         this.loadedResources = resource;
     }
 
