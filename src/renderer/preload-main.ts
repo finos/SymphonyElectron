@@ -38,9 +38,9 @@ const createAPI = () => {
 createAPI();
 
 // When the window is completely loaded
-ipcRenderer.on('page-load', (_event, { isWindowsOS, resources }) => {
+ipcRenderer.on('page-load', (_event, { isWindowsOS, locale, resources }) => {
 
-    i18n.setResource(resources);
+    i18n.setResource(locale, resources);
 
     if (isWindowsOS) {
         // injects custom window title bar
