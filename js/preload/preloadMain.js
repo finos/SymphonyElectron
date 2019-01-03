@@ -249,15 +249,26 @@ function createAPI() {
                 const browserWindow = remote.getCurrentWindow();
                 const { type, title, defaultPath, multiSelect, filters } = options;
                 const properties = [ type ];
-                if (multiSelect) properties.push('multiSelections');
+                if (multiSelect) {
+                    properties.push('multiSelections');
+                }
                 remote.dialog.showOpenDialog(browserWindow, { title, defaultPath, properties, filters }, (filePaths) => {
-                    if (!filePaths) return;
+                    if (!filePaths) {
+                        return;
+                    }
                     const files = filePaths.map((file) => {
                         const mimeType = mime.lookup(file);
                         const filename = file.substring(file.lastIndexOf('/') + 1);
-                        return new File([ fs.readFileSync(file) ], filename, { type: mimeType });
+                        return readFile(file, filename, mimeType);
                     });
-                    callback(files);
+                    function readFile(file, filename, mimeType) {
+                        return new Promise(resolve => {
+                            return fs.readFile(file, (err, content) => {
+                                return resolve(new File([ content ], filename, { type: mimeType }))
+                            });
+                        });
+                    }
+                    Promise.all(files).then((fileObjects) => callback(fileObjects));
                 });
             }
         },
