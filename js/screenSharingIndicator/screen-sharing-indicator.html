@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title data-i18n-text="Screen Sharing"></title>
+    <style>
+        @font-face {
+            font-family: system;
+            font-style: normal;
+            src: local(".SFNSText"), local(".HelveticaNeueDeskInterface"), local("Ubuntu Light"), local("Segoe UI"), local("Roboto"), local("Tahoma");
+        }
+
+        body {
+            font-family: "system";
+            font-size: 13px;
+            padding: 0px;
+            margin: 0px;
+            user-select: none;
+            -webkit-app-region: drag;
+            border: none;
+        }
+
+        .container {
+            height: 100%;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.94);
+            border-radius: 4px;
+        }
+
+        body:not(.mac) .container {
+            border: 1px solid rgb(212, 212, 212);
+        }
+
+        .buttons {
+            float: right;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        #stop-sharing-button {
+            text-transform: uppercase;
+            background: #107ccc;
+            color: white;
+            border: none;
+            font-size: inherit;
+            border-radius: 14px;
+            height: 28px;
+            padding: 6px 14px;
+            outline: none;
+            cursor: pointer;
+            -webkit-app-region: no-drag;
+        }
+
+        #hide-button {
+            text-decoration: none;
+            text-transform: uppercase;
+            color: #6b717c;
+            margin-right: 29px;
+            -webkit-app-region: no-drag;
+        }
+
+        #text-label {
+            position: relative;
+            top: -2px;
+            left: 16px;
+            font-size: 14px;
+        }
+
+        #drag-area {
+            display: inline-block;
+            width: 8px;
+            height: 22px;
+            position: relative;
+            top: 3px;
+            text-transform: uppercase;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0),
+                rgba(0, 0, 0, 0) 1px,
+                rgba(0, 0, 0, 0.22) 1px,
+                rgba(0, 0, 0, 0.22) 2px
+            );
+        }
+
+        .mac #hide-button {
+            color: #303237;
+        }
+
+        .mac #stop-sharing-button {
+            padding: 6px 18px;
+        }
+    </style>
+</head>
+<body>
+	<div class="container">
+		<span id='drag-area'></span>
+		<span id='text-label'>You are sharing your screen on <b>Symphony</b></span>
+		<span class='buttons'>
+			<a id='hide-button' href='#'>Hide</a>
+			<button id='stop-sharing-button'>Stop sharing</button>
+		</span>
+	</div>
+</body>
+</html>

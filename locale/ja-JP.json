@@ -111,6 +111,11 @@
     "Select Screen": "画面を選択",
     "Share": "共有"
   },
+  "ScreenSharingIndicator": {
+    "You are sharing your screen on Symphony": "あなたはSymphony上であなたの画面を共有しています",
+    "Stop Sharing": "共有を停止",
+    "Hide": "非表示にする"
+  },
   "ScreenSnippet": {
     "Done": "完了",
     "Erase": "消去",

@@ -109,6 +109,11 @@
     "Select Screen":"Sélectionnez l'écran",
     "Share":"Partager"
   },
+  "ScreenSharingIndicator": {
+    "You are sharing your screen on Symphony": "Vous partagez votre écran sur Symphony",
+    "Stop sharing": "Arrêter le partage",
+    "Hide": "Masquer"
+  },
   "ScreenSnippet":{
     "Done":"Terminé",
     "Erase":"Effacer",

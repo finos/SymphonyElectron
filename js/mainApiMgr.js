@@ -17,6 +17,7 @@ const { bringToFront } = require('./bringToFront.js');
 const eventEmitter = require('./eventEmitter');
 const { isMac } = require('./utils/misc');
 const { openScreenPickerWindow } = require('./desktopCapturer');
+const { openScreenSharingIndicator } = require('./screenSharingIndicator');
 const { setPreloadMemoryInfo, setIsInMeeting, setPreloadWindow } = require('./memoryMonitor');
 
 const apiEnums = require('./enums/api.js');
@@ -177,6 +178,11 @@ electron.ipcMain.on(apiName, (event, arg) => {
         case apiCmds.keyPress:
             if (typeof arg.keyCode === 'number') {
                 windowMgr.handleKeyPress(arg.keyCode);
+            }
+            break;
+        case apiCmds.openScreenSharingIndicator:
+            if (typeof arg.displayId === 'string' && typeof arg.id === 'number') {
+                openScreenSharingIndicator(event.sender, arg.displayId, arg.id);
             }
             break;
         default:
