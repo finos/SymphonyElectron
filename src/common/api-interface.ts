@@ -20,6 +20,7 @@ export enum apiCmds {
     keyPress = 'key-press',
     closeWindow = 'close-window',
     openScreenSharingIndicator = 'open-screen-sharing-indicator',
+    downloadManagerAction = 'download-manager-action',
 }
 
 export enum apiName {
@@ -43,6 +44,8 @@ export interface IApiArgs {
     keyCode: number;
     windowType: WindowTypes;
     displayId: string;
+    path: string;
+    type: string;
 }
 
 export type WindowTypes = 'screen-picker';
