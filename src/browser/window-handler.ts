@@ -14,7 +14,7 @@ import { AppMenu } from './app-menu';
 import { config, IConfig } from './config-handler';
 import { handleChildWindow } from './pop-out-window-handler';
 import { enterFullScreen, leaveFullScreen, throttledWindowChanges } from './window-actions';
-import { createComponentWindow, getBounds } from './window-utils';
+import { createComponentWindow, getBounds, handleDownloadManager } from './window-utils';
 
 interface ICustomBrowserWindowConstructorOpts extends Electron.BrowserWindowConstructorOptions {
     winKey: string;
@@ -205,6 +205,9 @@ export class WindowHandler {
             // Ready to show the window
             this.mainWindow.show();
         });
+
+        // Download manager
+        this.mainWindow.webContents.session.on('will-download', handleDownloadManager);
 
         // store window ref
         this.addWindow(this.windowOpts.winKey, this.mainWindow);
