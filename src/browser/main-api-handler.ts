@@ -10,6 +10,7 @@ import { screenSnippet } from './screen-snippet-handler';
 import { activate, handleKeyPress } from './window-actions';
 import { windowHandler } from './window-handler';
 import {
+    downloadManagerAction,
     isValidWindow,
     sanitize,
     setDataUrl,
@@ -131,7 +132,12 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
             if (typeof displayId === 'string' && typeof id === 'number') {
                 windowHandler.createScreenSharingIndicatorWindow(event.sender, displayId, id);
             }
-             break;
+            break;
+        case apiCmds.downloadManagerAction:
+            if (typeof arg.path === 'string') {
+                downloadManagerAction(arg.type, arg.path);
+            }
+            break;
         default:
     }
 

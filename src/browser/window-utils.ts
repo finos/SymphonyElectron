@@ -1,11 +1,13 @@
 import * as electron from 'electron';
 import { app, BrowserWindow, nativeImage } from 'electron';
+import * as filesize from 'filesize';
 import * as path from 'path';
 import * as url from 'url';
 
 import { isMac } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
+import { getGuid } from '../common/utils';
 import { screenSnippet } from './screen-snippet-handler';
 import { windowHandler } from './window-handler';
 
@@ -224,4 +226,56 @@ export const getBounds = (winPos: Electron.Rectangle, defaultWidth: number, defa
         }
     }
     return { width: defaultWidth, height: defaultHeight };
+};
+
+/**
+ * Open downloaded file
+ * @param type
+ * @param filePath
+ */
+export const downloadManagerAction = (type, filePath) => {
+    if (type === 'open') {
+        const openResponse = electron.shell.openExternal(`file:///${filePath}`);
+        const focusedWindow = electron.BrowserWindow.getFocusedWindow();
+        if (!openResponse && focusedWindow && !focusedWindow.isDestroyed()) {
+            electron.dialog.showMessageBox(focusedWindow, {
+                message: i18n.t('The file you are trying to open cannot be found in the specified path.')(),
+                title: i18n.t('File not Found')(),
+                type: 'error',
+            });
+        }
+    } else {
+        const showResponse = electron.shell.showItemInFolder(filePath);
+        const focusedWindow = electron.BrowserWindow.getFocusedWindow();
+        if (!showResponse && focusedWindow && !focusedWindow.isDestroyed()) {
+            electron.dialog.showMessageBox(focusedWindow, {
+                message: i18n.t('The file you are trying to open cannot be found in the specified path.')(),
+                title: i18n.t('File not Found')(),
+                type: 'error',
+            });
+        }
+    }
+};
+
+/**
+ * Displays a UI with downloaded file similar to chrome
+ * Invoked by webContents session's will-download event
+ *
+ * @param _event
+ * @param item {Electron.DownloadItem}
+ * @param webContents {Electron.WebContents}
+ */
+export const handleDownloadManager = (_event, item: Electron.DownloadItem, webContents: Electron.WebContents) => {
+    // Send file path when download is complete
+    item.once('done', (_e, state) => {
+        if (state === 'completed') {
+            const data = {
+                _id: getGuid(),
+                savedPath: item.getSavePath() || '',
+                total: filesize(item.getTotalBytes() || 0),
+                fileName: item.getFilename() || 'No name',
+            };
+            webContents.send('downloadCompleted', data);
+        }
+    });
 };
