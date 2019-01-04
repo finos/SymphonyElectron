@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import { i18n } from '../common/i18n-preload';
+import DownloadManager from './components/download-manager';
 import SnackBar from './components/snack-bar';
 import WindowsTitleBar from './components/windows-title-bar';
 import { SSFApi } from './ssf-api';
@@ -51,6 +52,13 @@ ipcRenderer.on('page-load', (_event, { isWindowsOS, locale, resources }) => {
     // injects snack bar
     const snackBar = React.createElement(SnackBar);
     ReactDOM.render(snackBar, document.body.appendChild(document.createElement( 'div' )));
+
+    // injects download manager contents
+    const downloadManager = React.createElement(DownloadManager);
+    const footerSFE = document.getElementById('footer');
+    if (footerSFE) {
+        ReactDOM.render(downloadManager, footerSFE);
+    }
 });
 
 // Creates a custom tile bar for Windows
