@@ -3,7 +3,7 @@
 const fs = require('fs');
 const util = require('util');
 
-const {app} = require('electron');
+const { app } = require('electron');
 const path = require('path');
 const getCmdLineArg = require('./utils/getCmdLineArg.js');
 const logLevels = require('./enums/logLevels.js');
@@ -105,7 +105,15 @@ let loggerInstance = new Logger();
  * Initializes the electron logger for local logging
  */
 function initializeLocalLogger() {
-// eslint-disable-next-line global-require
+
+    // If the user has specified a custom log path use it.
+    let customLogPathArg = getCmdLineArg(process.argv, '--logPath=', false);
+    let customLogsFolder = customLogPathArg && customLogPathArg.substring(customLogPathArg.indexOf('=') + 1);
+
+    if (customLogsFolder && fs.existsSync(customLogsFolder)) {
+        app.setPath('logs', customLogsFolder);
+    }
+    // eslint-disable-next-line global-require
     electronLog = require('electron-log');
     const logPath = app.getPath('logs');
     cleanupOldLogs(logPath);
