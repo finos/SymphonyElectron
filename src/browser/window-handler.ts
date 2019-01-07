@@ -12,6 +12,7 @@ import { i18n } from '../common/i18n';
 import { getCommandLineArgs, getGuid } from '../common/utils';
 import { AppMenu } from './app-menu';
 import { config, IConfig } from './config-handler';
+import { showNetworkConnectivityError } from './dialog-handler';
 import { handleChildWindow } from './pop-out-window-handler';
 import { enterFullScreen, leaveFullScreen, throttledWindowChanges } from './window-actions';
 import { createComponentWindow, getBounds, handleDownloadManager } from './window-utils';
@@ -200,6 +201,15 @@ export class WindowHandler {
         // loads the main window with url from config/cmd line
         this.mainWindow.loadURL(this.url);
         this.mainWindow.webContents.on('did-finish-load', () => {
+
+            // Displays a dialog if network connectivity has been lost
+            const retry = () => {
+                if (!this.mainWindow) return;
+                if (!this.isOnline) showNetworkConnectivityError(this.mainWindow, this.url, retry);
+                this.mainWindow.webContents.reload();
+            };
+            if (!this.isOnline && this.mainWindow) showNetworkConnectivityError(this.mainWindow, this.url, retry);
+
             // close the loading window when
             // the main windows finished loading
             if (this.loadingWindow) {
