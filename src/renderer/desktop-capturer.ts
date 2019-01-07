@@ -8,7 +8,7 @@ import {
 
 import { apiCmds, apiName } from '../common/api-interface';
 import { isWindowsOS } from '../common/env';
-import { i18n } from '../common/i18n';
+import { i18n } from '../common/i18n-preload';
 
 const includes = [].includes;
 

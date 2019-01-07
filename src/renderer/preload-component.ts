@@ -1,8 +1,10 @@
+import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import { i18n, LocaleType } from '../common/i18n';
+import { i18n } from '../common/i18n-preload';
 import AboutBox from './components/about-app';
+import BasicAuth from './components/basic-auth';
 import LoadingScreen from './components/loading-screen';
 import MoreInfo from './components/more-info';
 import ScreenPicker from './components/screen-picker';
@@ -14,6 +16,7 @@ const enum components {
     moreInfo = 'more-info',
     screenPicker = 'screen-picker',
     screenSharingIndicator = 'screen-sharing-indicator',
+    basicAuth = 'basic-auth',
 }
 
 const loadStyle = (style) => {
@@ -30,8 +33,6 @@ const loadStyle = (style) => {
 const load = () => {
     const query = new URL(window.location.href).searchParams;
     const componentName = query.get('componentName');
-    const locale = query.get('locale');
-    i18n.setLocale(locale as LocaleType);
 
     let component;
     switch (componentName) {
@@ -55,9 +56,18 @@ const load = () => {
             loadStyle(components.screenSharingIndicator);
             component = ScreenSharingIndicator;
             break;
+        case components.basicAuth:
+            loadStyle(components.basicAuth);
+            component = BasicAuth;
+            break;
     }
     const element = React.createElement(component);
     ReactDOM.render(element, document.getElementById('Root'));
 };
 
 document.addEventListener('DOMContentLoaded', load);
+
+ipcRenderer.on('set-locale-resource', (_event, data) => {
+    const { locale, resource } = data;
+    i18n.setResource(locale, resource);
+});
