@@ -5,6 +5,7 @@ import { logger } from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
 import { cleanUpAppCache, createAppCacheFile } from './app-cache-handler';
 import { autoLaunchInstance } from './auto-launch-controller';
+import './basic-auth-handler';
 import { setChromeFlags } from './chrome-flags';
 import { config } from './config-handler';
 import './main-api-handler';
