@@ -100,6 +100,26 @@ export class WindowHandler {
     }
 
     /**
+     * Basic auth window opts
+     */
+    private static getBasicAuthOpts(): ICustomBrowserWindowConstructorOpts {
+        return {
+            width: 360,
+            height: isMac ? 270 : 295,
+            show: false,
+            modal: true,
+            autoHideMenuBar: true,
+            resizable: false,
+            webPreferences: {
+                sandbox: true,
+                nodeIntegration: false,
+                devTools: false,
+            },
+            winKey: getGuid(),
+        };
+    }
+
+    /**
      * Verifies if the url is valid and
      * forcefully appends https if not present
      *
@@ -133,6 +153,7 @@ export class WindowHandler {
     private moreInfoWindow: Electron.BrowserWindow | null = null;
     private screenPickerWindow: Electron.BrowserWindow | null = null;
     private screenSharingIndicatorWindow: Electron.BrowserWindow | null = null;
+    private basicAuthWindow: Electron.BrowserWindow | null = null;
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Settings
@@ -376,6 +397,51 @@ export class WindowHandler {
                 ipcMain.once('stop-screen-sharing', stopScreenSharing);
                 ipcMain.once('destroy-screen-sharing-indicator', destroyScreenSharingIndicator);
             }
+        });
+    }
+
+    /**
+     * Creates a Basic auth window whenever the network
+     * requires authentications
+     *
+     * Invoked by app.on('login')
+     *
+     * @param window
+     * @param hostname
+     * @param isMultipleTries
+     * @param clearSettings
+     * @param callback
+     */
+    public createBasicAuthWindow(window: ICustomBrowserWindow, hostname: string, isMultipleTries: boolean, clearSettings, callback): void {
+        const opts = WindowHandler.getBasicAuthOpts();
+        opts.parent = window;
+        this.basicAuthWindow = createComponentWindow('basic-auth', opts);
+        this.basicAuthWindow.setVisibleOnAllWorkspaces(true);
+        this.basicAuthWindow.webContents.once('did-finish-load', () => {
+            if (!this.basicAuthWindow) return;
+            this.basicAuthWindow.webContents.send('basic-auth-data', { hostname, isValidCredentials: isMultipleTries });
+
+            const closeBasicAuth = (shouldClearSettings = true) => {
+                if (shouldClearSettings) clearSettings();
+                if (this.basicAuthWindow && !this.basicAuthWindow.isDestroyed()) {
+                    this.basicAuthWindow.close();
+                    this.basicAuthWindow = null;
+                }
+            };
+
+            const login = (_event, arg) => {
+                const { username, password } = arg;
+                callback(username, password);
+                closeBasicAuth(false);
+            };
+
+            this.basicAuthWindow.on('close', () => {
+                ipcMain.removeListener('basic-auth-closed', closeBasicAuth);
+                ipcMain.removeListener('basic-auth-login', login);
+            });
+
+            ipcMain.once('basic-auth-closed', closeBasicAuth);
+            ipcMain.once('basic-auth-login', login);
         });
     }
 
