@@ -39,6 +39,47 @@ electron.app.on('login', (event, webContents, request, authInfo, callback) => {
     windowHandler.createBasicAuthWindow(browserWin, hostname, tries === 0, clearSettings, callback);
 });
 
+let ignoreAllCertErrors = false;
+
+/**
+ * If certificate error occurs allow user to deny or allow particular certificate
+ * error.  If user selects 'Ignore All', then all subsequent certificate errors
+ * will ignored during this session.
+ *
+ * Note: the dialog is synchronous so further processing is blocked until
+ * user provides a response.
+ */
+electron.app.on('certificate-error', (event, webContents, url, error, _certificate, callback) => {
+    // TODO: Add logic verify custom certificate
+
+    if (ignoreAllCertErrors) {
+        event.preventDefault();
+        callback(true);
+        return;
+    }
+
+    logger.warn(`Certificate error: ${error} for url: ${url}`);
+
+    const browserWin = electron.BrowserWindow.fromWebContents(webContents);
+    const buttonId = electron.dialog.showMessageBox(browserWin, {
+        type: 'warning',
+        buttons: [ 'Allow', 'Deny', 'Ignore All' ],
+        defaultId: 1,
+        cancelId: 1,
+        noLink: true,
+        title: i18n.t('Certificate Error')(),
+        message: `${i18n.t('Certificate Error')()}: ${error}\nURL: ${url}`,
+    });
+
+    event.preventDefault();
+
+    if (buttonId === 2) {
+        ignoreAllCertErrors = true;
+    }
+
+    callback(buttonId !== 1);
+});
+
 /**
  * Show dialog pinned to given window when loading error occurs
  *
