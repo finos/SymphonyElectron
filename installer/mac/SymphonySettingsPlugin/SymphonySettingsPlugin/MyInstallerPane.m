@@ -173,7 +173,8 @@
         podUrl = [podUrl substringToIndex:podUrl.length - ssoUrl.length];
         [_podUrlTextBox setStringValue:podUrl];
     }
-    
+        
+    [_ssoCheckBox setToolTip:@"Only check this option if your Symphony POD has been configured for SSO, in doubt do not check - contact your Symphony Admin"];
 }
 
 @end
