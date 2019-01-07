@@ -3,7 +3,7 @@ import { ipcRenderer, remote     } from 'electron';
 import * as React from 'react';
 
 import { isMac } from '../../common/env';
-import { i18n } from '../../common/i18n';
+import { i18n } from '../../common/i18n-preload';
 
 interface IState {
     id: number;

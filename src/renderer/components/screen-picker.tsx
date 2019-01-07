@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import { apiCmds, apiName } from '../../common/api-interface';
 import { isWindowsOS } from '../../common/env';
-import { i18n } from '../../common/i18n';
+import { i18n } from '../../common/i18n-preload';
 
 const screenRegExp = new RegExp(/^Screen \d+$/gmi);
 const SCREEN_PICKER_NAMESPACE = 'ScreenPicker';
