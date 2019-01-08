@@ -1,6 +1,6 @@
 {
   "name": "Symphony",
-  "productName": "Symphony-dev",
+  "productName": "Symphony",
   "version": "4.4.2",
   "clientVersion": "1.54",
   "buildNumber": "0",
@@ -12,7 +12,7 @@
     "compile": "npm run lint && gulp build",
     "lint": "tslint --project tsconfig.json",
     "start": "npm run compile && npm run browserify-preload && cross-env ELECTRON_DEV=true electron .",
-    "prebuild": "npm run rebuild && npm run browserify-preload",
+    "prebuild": "npm run compile && npm run rebuild && npm run browserify-preload",
     "browserify-preload": "browserify -o lib/src/renderer/_preload-main.js -x electron --insert-global-vars=__filename,__dirname lib/src/renderer/preload-main.js",
     "rebuild": "electron-rebuild -f",
     "dev": "npm run prebuild && cross-env ELECTRON_DEV=true electron .",

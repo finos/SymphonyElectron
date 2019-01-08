@@ -1,15 +1,16 @@
 import * as electron from 'electron';
 import { app, BrowserWindow, nativeImage } from 'electron';
 import * as filesize from 'filesize';
+import * as fs from 'fs';
 import * as path from 'path';
 import * as url from 'url';
 
-import { isMac } from '../common/env';
+import { isDevEnv, isMac } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { getGuid } from '../common/utils';
 import { screenSnippet } from './screen-snippet-handler';
-import { windowHandler } from './window-handler';
+import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
 const checkValidWindow = true;
 
@@ -65,9 +66,10 @@ export const createComponentWindow = (
         },
     };
 
-    const browserWindow = new BrowserWindow(options);
+    const browserWindow: ICustomBrowserWindow = new BrowserWindow(options) as ICustomBrowserWindow;
     browserWindow.on('ready-to-show', () => browserWindow.show());
     browserWindow.webContents.once('did-finish-load', () => {
+        if (!browserWindow || browserWindow.isDestroyed()) return;
         browserWindow.webContents.send('set-locale-resource', { locale: i18n.getLocale(), resource: i18n.loadedResources });
     });
     browserWindow.setMenu(null as any);
@@ -281,4 +283,47 @@ export const handleDownloadManager = (_event, item: Electron.DownloadItem, webCo
             webContents.send('downloadCompleted', data);
         }
     });
+};
+
+/**
+ * Inserts css in to the window
+ *
+ * @param window {BrowserWindow}
+ * @param paths {string[]}
+ */
+const readAndInsertCSS = async (window, paths): Promise<void> => {
+    return paths.map((filePath) => window.webContents.insertCSS(fs.readFileSync(filePath, 'utf8').toString()));
+};
+
+/**
+ * Inserts all the required css on to the specified windows
+ *
+ * @param mainWindow {BrowserWindow}
+ * @param isCustomTitleBarAndWindowOS {boolean} - whether custom title bar enabled
+ */
+export const injectStyles = async (mainWindow: BrowserWindow, isCustomTitleBarAndWindowOS: boolean): Promise<void> => {
+    const paths: string[] = [];
+    if (isCustomTitleBarAndWindowOS) {
+        let titleBarStylesPath;
+        const stylesFileName = path.join('config', 'titleBarStyles.css');
+        if (isDevEnv) {
+            titleBarStylesPath = path.join(app.getAppPath(), stylesFileName);
+        } else {
+            const execPath = path.dirname(app.getPath('exe'));
+            titleBarStylesPath = path.join(execPath, stylesFileName);
+        }
+        // Window custom title bar styles
+        if (fs.existsSync(titleBarStylesPath)) {
+            paths.push(titleBarStylesPath);
+        } else {
+            paths.push(path.join(__dirname, '..', '/renderer/styles/title-bar.css'));
+        }
+    } else {
+        paths.push(path.join(__dirname, '..', '/renderer/styles/title-bar.css'));
+    }
+
+    // Snack bar styles
+    paths.push(path.join(__dirname, '..', '/renderer/styles/snack-bar.css'));
+
+    return await readAndInsertCSS(mainWindow, paths);
 };

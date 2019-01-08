@@ -1,14 +1,12 @@
 import { BrowserWindow, WebContents } from 'electron';
-import * as fs from 'fs';
-import * as path from 'path';
 
 import { parse as parseQuerystring } from 'querystring';
 import { format, parse, Url } from 'url';
 import { isWindowsOS } from '../common/env';
 import { getGuid } from '../common/utils';
-import { enterFullScreen, leaveFullScreen, throttledWindowChanges } from './window-actions';
+import { monitorWindowActions, removeWindowEventListener } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
-import { getBounds, preventWindowNavigation } from './window-utils';
+import { getBounds, injectStyles, preventWindowNavigation } from './window-utils';
 
 const DEFAULT_POP_OUT_WIDTH = 300;
 const DEFAULT_POP_OUT_HEIGHT = 600;
@@ -95,7 +93,7 @@ export const handleChildWindow = (webContents: WebContents): void => {
             newWinOptions.frame = true;
             newWinOptions.winKey = newWinKey;
 
-            const childWebContents = newWinOptions.webContents;
+            const childWebContents: WebContents = newWinOptions.webContents;
             // Event needed to hide native menu bar
             childWebContents.once('did-start-loading', () => {
                 const browserWin = BrowserWindow.fromWebContents(childWebContents);
@@ -104,38 +102,25 @@ export const handleChildWindow = (webContents: WebContents): void => {
                 }
             });
 
-            childWebContents.once('did-finish-load', () => {
-                const browserWin = BrowserWindow.fromWebContents(childWebContents) as ICustomBrowserWindow;
+            childWebContents.once('did-finish-load', async () => {
+                const browserWin: ICustomBrowserWindow = BrowserWindow.fromWebContents(childWebContents) as ICustomBrowserWindow;
                 if (!browserWin) return;
                 windowHandler.addWindow(newWinKey, browserWin);
                 browserWin.webContents.send('page-load', { isWindowsOS });
-                browserWin.webContents.insertCSS(
-                    fs.readFileSync(path.join(__dirname, '..', '/renderer/styles/snack-bar.css'), 'utf8').toString(),
-                );
+                // Inserts css on to the window
+                await injectStyles(browserWin, false);
                 browserWin.winName = frameName;
                 browserWin.setAlwaysOnTop(mainWindow.isAlwaysOnTop());
 
                 // prevents window from navigating
                 preventWindowNavigation(browserWin, true);
-                // Monitor window for events
-                const eventNames = [ 'move', 'resize', 'maximize', 'unmaximize' ];
-                eventNames.forEach((e: string) => {
-                    // @ts-ignore
-                    if (this.mainWindow) this.mainWindow.on(e, throttledWindowChanges);
-                });
-                browserWin.on('enter-full-screen', enterFullScreen);
-                browserWin.on('leave-full-screen', leaveFullScreen);
 
-                // Remove the attached event listeners when the window is about to close
-                browserWin.once('close', () => {
-                    browserWin.removeListener('close', throttledWindowChanges);
-                    browserWin.removeListener('resize', throttledWindowChanges);
-                    browserWin.removeListener('maximize', throttledWindowChanges);
-                    browserWin.removeListener('unmaximize', throttledWindowChanges);
-                    browserWin.removeListener('enter-full-screen', leaveFullScreen);
-                    browserWin.removeListener('leave-full-screen', leaveFullScreen);
+                // Monitor window actions
+                monitorWindowActions(browserWin);
+                // Remove all attached event listeners
+                browserWin.on('close', () => {
+                    removeWindowEventListener(browserWin);
                 });
-
                 // TODO: handle Permission Requests & setCertificateVerifyProc
             });
         } else {

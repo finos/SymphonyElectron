@@ -123,3 +123,35 @@ export const handleKeyPress = (key: number): void => {
             break;
     }
 };
+
+/**
+ * Monitors window actions
+ *
+ * @param window {BrowserWindow}
+ */
+export const monitorWindowActions = (window: BrowserWindow): void => {
+    if (!window || window.isDestroyed()) return;
+    const eventNames = [ 'move', 'resize', 'maximize', 'unmaximize' ];
+    eventNames.forEach((event: string) => {
+        // @ts-ignore
+        if (window) window.on(event, throttledWindowChanges);
+    });
+    window.on('enter-full-screen', enterFullScreen);
+    window.on('leave-full-screen', leaveFullScreen);
+};
+
+/**
+ * Removes attached event listeners
+ *
+ * @param window
+ */
+export const removeWindowEventListener = (window: BrowserWindow): void => {
+    if (!window || window.isDestroyed()) return;
+    const eventNames = [ 'move', 'resize', 'maximize', 'unmaximize' ];
+    eventNames.forEach((event: string) => {
+        // @ts-ignore
+        if (window) window.removeListener(event, throttledWindowChanges);
+    });
+    window.removeListener('enter-full-screen', enterFullScreen);
+    window.removeListener('leave-full-screen', leaveFullScreen);
+};

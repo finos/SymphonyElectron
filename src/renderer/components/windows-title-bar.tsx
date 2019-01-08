@@ -119,6 +119,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
                         </svg>
                     </button>
                 </div>
+                <div className='branding-logo' />
             </div>
         );
     }
