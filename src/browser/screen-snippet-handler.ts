@@ -1,5 +1,5 @@
 import { app } from 'electron';
-import * as fs from 'fs-extra';
+import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
@@ -104,6 +104,9 @@ class ScreenSnippet {
      */
     private async convertFileToData(): Promise<IScreenSnippet> {
         try {
+            if (!this.outputFileName) {
+                return { message: 'output file name is required', type: 'ERROR' };
+            }
             const data = await readFile(this.outputFileName);
             if (!data) {
                 return { message: `no file data provided`, type: 'ERROR' };
@@ -122,13 +125,15 @@ class ScreenSnippet {
             }
         } finally {
             // remove tmp file (async)
-            fs.unlink(this.outputFileName, (removeErr) => {
-                // note: node complains if calling async
-                // func without callback.
-                if (removeErr) {
-                    logger.error(`ScreenSnippet: error removing temp snippet file: ${this.outputFileName}, err: ${removeErr}`);
-                }
-            });
+            if (this.outputFileName) {
+                fs.unlink(this.outputFileName, (removeErr) => {
+                    // note: node complains if calling async
+                    // func without callback.
+                    if (removeErr) {
+                        logger.error(`ScreenSnippet: error removing temp snippet file: ${this.outputFileName}, err: ${removeErr}`);
+                    }
+                });
+            }
         }
     }
 }

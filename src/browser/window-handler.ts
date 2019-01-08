@@ -1,6 +1,5 @@
 import * as electron from 'electron';
 import { BrowserWindow, crashReporter, ipcMain } from 'electron';
-import * as fs from 'fs';
 import * as path from 'path';
 import { format, parse } from 'url';
 
@@ -14,8 +13,8 @@ import { AppMenu } from './app-menu';
 import { config, IConfig } from './config-handler';
 import { showNetworkConnectivityError } from './dialog-handler';
 import { handleChildWindow } from './pop-out-window-handler';
-import { enterFullScreen, leaveFullScreen, throttledWindowChanges } from './window-actions';
-import { createComponentWindow, getBounds, handleDownloadManager } from './window-utils';
+import { monitorWindowActions } from './window-actions';
+import { createComponentWindow, getBounds, handleDownloadManager, injectStyles } from './window-utils';
 
 interface ICustomBrowserWindowConstructorOpts extends Electron.BrowserWindowConstructorOptions {
     winKey: string;
@@ -200,7 +199,7 @@ export class WindowHandler {
 
         // loads the main window with url from config/cmd line
         this.mainWindow.loadURL(this.url);
-        this.mainWindow.webContents.on('did-finish-load', () => {
+        this.mainWindow.webContents.on('did-finish-load', async () => {
 
             // Displays a dialog if network connectivity has been lost
             const retry = () => {
@@ -210,32 +209,33 @@ export class WindowHandler {
             };
             if (!this.isOnline && this.mainWindow) showNetworkConnectivityError(this.mainWindow, this.url, retry);
 
+            // early exit if the window has already been destroyed
+            if (!this.mainWindow || this.mainWindow.isDestroyed()) return;
+            this.url = this.mainWindow.webContents.getURL();
+
+            // Injects custom title bar css into the webContents
+            await injectStyles(this.mainWindow, this.isCustomTitleBarAndWindowOS);
+            this.mainWindow.webContents.send('initiate-custom-title-bar');
+            this.mainWindow.webContents.send('page-load', {
+                isWindowsOS,
+                locale: i18n.getLocale(),
+                resources: i18n.loadedResources,
+            });
+            this.appMenu = new AppMenu();
+
             // close the loading window when
             // the main windows finished loading
             if (this.loadingWindow) {
                 this.loadingWindow.destroy();
                 this.loadingWindow = null;
             }
-            // early exit if the window has already been destroyed
-            if (!this.mainWindow || this.mainWindow.isDestroyed()) return;
-            this.url = this.mainWindow.webContents.getURL();
 
-            // Injects custom title bar css into the webContents
-            if (this.mainWindow && this.isCustomTitleBarAndWindowOS) {
-                this.mainWindow.webContents.insertCSS(
-                    fs.readFileSync(path.join(__dirname, '..', '/renderer/styles/title-bar.css'), 'utf8').toString(),
-                );
-                this.mainWindow.webContents.send('initiate-custom-title-bar');
-            }
-            this.mainWindow.webContents.insertCSS(
-                fs.readFileSync(path.join(__dirname, '..', '/renderer/styles/snack-bar.css'), 'utf8').toString(),
-            );
-            this.mainWindow.webContents.send('page-load', { isWindowsOS, locale: i18n.getLocale(), resources: i18n.loadedResources });
-            this.appMenu = new AppMenu();
-            this.monitorWindowActions();
             // Ready to show the window
             this.mainWindow.show();
         });
+
+        // Start monitoring window actions
+        monitorWindowActions(this.mainWindow);
 
         // Download manager
         this.mainWindow.webContents.session.on('will-download', handleDownloadManager);
@@ -372,7 +372,7 @@ export class WindowHandler {
      * @param id {number}
      */
     public createScreenSharingIndicatorWindow(screenSharingWebContents: Electron.webContents, displayId: string, id: number): void {
-        const indicatorScreen = (displayId && electron.screen.getAllDisplays().filter((d) => displayId.includes(d.id.toString()))[0]) || electron.screen.getPrimaryDisplay();
+        const indicatorScreen = (displayId && electron.screen.getAllDisplays().filter((d) => displayId.includes(d.id.toString()))[ 0 ]) || electron.screen.getPrimaryDisplay();
         const screenRect = indicatorScreen.workArea;
         let opts = WindowHandler.getScreenSharingIndicatorOpts();
         if (opts.width && opts.height) {
@@ -483,21 +483,6 @@ export class WindowHandler {
      */
     public removeWindow(key): void {
         delete this.windows[ key ];
-    }
-
-    /**
-     * Saves the main window bounds
-     */
-    private monitorWindowActions(): void {
-            const eventNames = [ 'move', 'resize', 'maximize', 'unmaximize' ];
-            eventNames.forEach((event: string) => {
-                // @ts-ignore
-                if (this.mainWindow) this.mainWindow.on(event, throttledWindowChanges);
-            });
-            if (this.mainWindow) {
-                this.mainWindow.on('enter-full-screen', enterFullScreen);
-                this.mainWindow.on('leave-full-screen', leaveFullScreen);
-            }
     }
 
     /**

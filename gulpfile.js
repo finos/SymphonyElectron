@@ -28,7 +28,8 @@ gulp.task('less', function () {
 gulp.task('copy', function () {
     return gulp.src([
         './src/renderer/assets/*',
-        './src/renderer/*.html'
+        './src/renderer/*.html',
+        './src/locale/*'
     ], {
         "base": "./src"
     }).pipe(gulp.dest('lib/src'))
