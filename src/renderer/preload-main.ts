@@ -39,19 +39,15 @@ const createAPI = () => {
 createAPI();
 
 // When the window is completely loaded
-ipcRenderer.on('page-load', (_event, { isWindowsOS, locale, resources }) => {
+ipcRenderer.on('page-load', (_event, { locale, resources }) => {
 
     i18n.setResource(locale, resources);
 
-    if (isWindowsOS) {
-        // injects custom window title bar
-        const titleBar = React.createElement(WindowsTitleBar);
-        ReactDOM.render(titleBar, document.body.appendChild(document.createElement( 'div' )));
-    }
-
     // injects snack bar
     const snackBar = React.createElement(SnackBar);
-    ReactDOM.render(snackBar, document.body.appendChild(document.createElement( 'div' )));
+    const snackBarContainer = document.createElement( 'div' );
+    document.body.appendChild(snackBarContainer);
+    ReactDOM.render(snackBar, snackBarContainer);
 
     // injects download manager contents
     const downloadManager = React.createElement(DownloadManager);
@@ -64,5 +60,7 @@ ipcRenderer.on('page-load', (_event, { isWindowsOS, locale, resources }) => {
 // Creates a custom tile bar for Windows
 ipcRenderer.on('initiate-custom-title-bar', () => {
     const element = React.createElement(WindowsTitleBar);
-    ReactDOM.render(element, document.body);
+    const div = document.createElement( 'div' );
+    document.body.appendChild(div);
+    ReactDOM.render(element, div);
 });
