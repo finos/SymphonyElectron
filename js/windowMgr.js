@@ -890,26 +890,25 @@ function activate(windowName, shouldFocus = true) {
         return null;
     }
 
-    let keys = Object.keys(windows);
-    for (let i = 0, len = keys.length; i < len; i++) {
-        let window = windows[keys[i]];
-        if (window && !window.isDestroyed() && window.winName === windowName) {
+    for (const key in windows) {
+        if (Object.prototype.hasOwnProperty.call(windows, key)) {
+            const window = windows[ key ];
+            if (window && !window.isDestroyed() && window.winName === windowName) {
 
-            // Flash task bar icon in Windows
-            if (isWindowsOS && !shouldFocus) {
-                return window.flashFrame(true);
+                // Bring the window to the top without focusing
+                // Flash task bar icon in Windows for windows
+                if (!shouldFocus) {
+                    return isMac ? window.showInactive() : window.flashFrame(true);
+                }
+
+                // Note: On window just focusing will preserve window snapped state
+                // Hiding the window and just calling the focus() won't display the window
+                if (isWindowsOS) {
+                    return window.isMinimized() ? window.restore() : window.focus();
+                }
+
+                return window.isMinimized() ? window.restore() : window.show();
             }
-
-            // brings window without giving focus on mac
-            if (isMac && !shouldFocus) {
-                return window.showInactive();
-            }
-
-            if (window.isMinimized()) {
-                return window.restore();
-            }
-
-            return window.show();
         }
     }
     return null;
