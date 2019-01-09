@@ -106,7 +106,14 @@ function openScreenPickerWindow(eventSender, sources, id) {
         screenPickerWindow.webContents.send('desktop-capturer-sources', sources, isWindowsOS);
     });
 
-    screenPickerWindow.webContents.on('crashed', function () {
+    screenPickerWindow.webContents.on('crashed', function (event, killed) {
+
+        log.send(logLevels.INFO, `Screen Picker Window crashed! Killed? ${killed}`);
+
+        if (killed) {
+            return;
+        }
+
         const options = {
             type: 'error',
             title: i18n.getMessageFor('Renderer Process Crashed'),

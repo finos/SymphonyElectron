@@ -95,7 +95,14 @@ function openAboutWindow(windowName) {
         }
     });
 
-    aboutWindow.webContents.on('crashed', function () {
+    aboutWindow.webContents.on('crashed', function (event, killed) {
+
+        log.send(logLevels.INFO, `About Window crashed! Killed? ${killed}`);
+
+        if (killed) {
+            return;
+        }
+
         const options = {
             type: 'error',
             title: i18n.getMessageFor('Renderer Process Crashed'),
