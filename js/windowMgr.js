@@ -327,7 +327,14 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
     // In case a renderer process crashes, provide an
     // option for the user to either reload or close the window
-    mainWindow.webContents.on('crashed', function () {
+    mainWindow.webContents.on('crashed', function (event, killed) {
+
+        log.send(logLevels.INFO, `Main Window crashed! Killed? ${killed}`);
+
+        if (killed) {
+            return;
+        }
+
         const options = {
             type: 'error',
             title: i18n.getMessageFor('Renderer Process Crashed'),
@@ -506,8 +513,12 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                             browserWin.setAlwaysOnTop(alwaysOnTop);
                             logBrowserWindowEvents(browserWin, browserWin.winName);
 
-                            let handleChildWindowCrashEvent = (e) => {
-                                log.send(logLevels.INFO, `Child Window crashed!`);
+                            let handleChildWindowCrashEvent = (e, killed) => {
+                                log.send(logLevels.INFO, `Child Window crashed! Killed? ${killed}`);
+
+                                if (killed) {
+                                    return;
+                                }
                                 const options = {
                                     type: 'error',
                                     title: i18n.getMessageFor('Renderer Process Crashed'),
@@ -996,7 +1007,7 @@ function isAlwaysOnTop(boolean, shouldActivateMainWindow = true) {
 }
 
 // node event emitter to update always on top
-eventEmitter.on('isAlwaysOnTop', (params) => {    
+eventEmitter.on('isAlwaysOnTop', (params) => {
     isAlwaysOnTop(params.isAlwaysOnTop, params.shouldActivateMainWindow);
     log.send(logLevels.INFO, `Updating settings for always on top ${params}`);
 });
