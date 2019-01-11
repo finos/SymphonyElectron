@@ -569,6 +569,7 @@
     <ROW Dialog_="InstallationDlg" Control_="SsoCheckbox" Event="[POD_URL]" Argument="[POD_URL]/login/sso/initsso" Condition="AI_INSTALL AND ( SSO_CHECKBOX )" Ordering="0"/>
     <ROW Dialog_="InstallationDlg" Control_="SsoCheckbox" Event="DoAction" Argument="SsoCheckbox" Condition="AI_INSTALL AND ( NOT SSO_CHECKBOX )" Ordering="1"/>
     <ROW Dialog_="InstallationDlg" Control_="SsoCheckbox" Event="[AiRefreshDlg]" Argument="1" Condition="AI_INSTALL AND ( NOT SSO_CHECKBOX )" Ordering="2"/>
+    <ROW Dialog_="InstallationDlg" Control_="SsoCheckbox" Event="[AiRefreshDlg]" Argument="0" Condition="AI_INSTALL AND ( SSO_CHECKBOX )" Ordering="3"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCreateFolderComponent">
     <ROW Directory_="Symphony_Dir" Component_="Symphony" ManualDelete="false"/>
