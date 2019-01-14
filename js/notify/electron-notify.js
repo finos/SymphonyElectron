@@ -130,6 +130,8 @@ let config = {
         webkitBoxOrient: 'vertical',
         cursor: 'default',
         textOverflow: 'ellipsis',
+        width: '100%',
+        overflowWrap: 'break-word',
     },
     defaultStyleLogoContainer: {
         display: 'flex',
