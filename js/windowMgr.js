@@ -27,6 +27,9 @@ const { initCrashReporterMain, initCrashReporterRenderer } = require('./crashRep
 const i18n = require('./translation/i18n');
 const getCmdLineArg = require('./utils/getCmdLineArg');
 
+const SpellChecker = require('./spellChecker').SpellCheckHelper;
+const spellchecker = new SpellChecker();
+
 // show dialog when certificate errors occur
 require('./dialogs/showCertError.js');
 require('./dialogs/showBasicAuth.js');
@@ -98,6 +101,27 @@ function getParsedUrl(appUrl) {
     }
     let url = nodeURL.format(parsedUrl);
     return nodeURL.parse(url);
+}
+
+/**
+ * Returns the Spellchecker instance
+ * @returns {SpellCheckHelper}
+ */
+function getSpellchecker() {
+    return spellchecker;
+}
+
+/**
+ * Method that invokes native module that
+ * verifies missed spelled word
+ * @param text {string}
+ * @returns {*}
+ */
+function isMisspelled(text) {
+    if (!spellchecker) {
+        return false;
+    }
+    return spellchecker.isMisspelled(text);
 }
 
 /**
@@ -1270,4 +1294,6 @@ module.exports = {
     cleanUpChildWindows: cleanUpChildWindows,
     setLocale: setLocale,
     getIsOnline: getIsOnline,
+    getSpellchecker: getSpellchecker,
+    isMisspelled: isMisspelled,
 };
