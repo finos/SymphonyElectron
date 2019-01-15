@@ -441,8 +441,8 @@ function getTemplate(app) {
         // This adds About Symphony under help menu for windows
         template[3].submenu.push({
             label: i18n.getMessageFor('About Symphony'),
-            click(focusedWindow) {
-                let windowName = focusedWindow ? focusedWindow.name : '';
+            click(menuItem, focusedWindow) {
+                let windowName = focusedWindow ? focusedWindow.winName : '';
                 aboutApp.openAboutWindow(windowName);
             }
         });
