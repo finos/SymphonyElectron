@@ -364,6 +364,7 @@
     <ROW Dialog_="InstallationDlg" Control="Text_3" Type="Text" X="129" Y="90" Width="75" Height="11" Attributes="65539" Text="&amp;Folder:" Order="1100"/>
     <ROW Dialog_="InstallationDlg" Control="SsoCheckbox" Type="CheckBox" X="129" Y="186" Width="10" Height="12" Attributes="3" Property="SSO_CHECKBOX" Help="Enable SSO|" Order="1200"/>
     <ROW Dialog_="InstallationDlg" Control="Text_4" Type="Text" X="142" Y="187" Width="50" Height="12" Attributes="65539" Text="Enable SSO" Order="1300"/>
+    <ROW Dialog_="InstallationDlg" Control="Text_5" Type="Text" X="129" Y="200" Width="230" Height="31" Attributes="65539" Property="TEXT_5_PROP_2" Text="Only check this option if your Symphony POD has been configured for SSO, in doubt do not check - contact your Symphony Admin" Order="1400"/>
     <ROW Dialog_="MaintenanceTypeDlg" Control="ChangeLabel" Type="Text" X="105" Y="65" Width="100" Height="10" Attributes="2" Text="&amp;Modify" TextStyle="[DlgTitleFont]" Order="100" TextLocId="Control.Text.MaintenanceTypeDlg#ChangeLabel" MsiKey="MaintenanceTypeDlg#ChangeLabel"/>
     <ROW Dialog_="MaintenanceTypeDlg" Control="ChangeButton" Type="PushButton" X="50" Y="65" Width="38" Height="38" Attributes="5767170" Text="[CustomSetupIcon]" Help="Modify Installation|" Order="200" HelpLocId="Control.Help.MaintenanceTypeDlg#ChangeButton" MsiKey="MaintenanceTypeDlg#ChangeButton"/>
     <ROW Dialog_="MaintenanceTypeDlg" Control="RepairLabel" Type="Text" X="105" Y="92" Width="100" Height="10" Attributes="3" Text="Re&amp;pair" TextStyle="[DlgTitleFont]" Order="300" TextLocId="Control.Text.MaintenanceTypeDlg#RepairLabel" MsiKey="MaintenanceTypeDlg#RepairLabel"/>
@@ -448,6 +449,8 @@
     <ATTRIBUTE name="DeletedRows" value="ExitDialog#ViewReadmeText@InstallTypeDlg#BannerLine@InstallTypeDlg#Description@InstallTypeDlg#InstallTypeText@InstallTypeDlg#Logo@InstallTypeDlg#Title@ProgressDlg#Logo"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlConditionComponent">
+    <ROW Dialog_="InstallationDlg" Control_="Text_5" Action="Hide" Condition="NOT SSO_CHECKBOX"/>
+    <ROW Dialog_="InstallationDlg" Control_="Text_5" Action="Show" Condition="SSO_CHECKBOX"/>
     <ATTRIBUTE name="DeletedRows" value="ExitDialog#ViewReadmeText#Hide#((NOT AI_INSTALL) AND (NOT AI_PATCH)) OR ((CTRLS &lt;&gt; 1) AND (CTRLS &lt;&gt; 3))"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlEventComponent">
@@ -566,6 +569,7 @@
     <ROW Dialog_="InstallationDlg" Control_="SsoCheckbox" Event="[POD_URL]" Argument="[POD_URL]/login/sso/initsso" Condition="AI_INSTALL AND ( SSO_CHECKBOX )" Ordering="0"/>
     <ROW Dialog_="InstallationDlg" Control_="SsoCheckbox" Event="DoAction" Argument="SsoCheckbox" Condition="AI_INSTALL AND ( NOT SSO_CHECKBOX )" Ordering="1"/>
     <ROW Dialog_="InstallationDlg" Control_="SsoCheckbox" Event="[AiRefreshDlg]" Argument="1" Condition="AI_INSTALL AND ( NOT SSO_CHECKBOX )" Ordering="2"/>
+    <ROW Dialog_="InstallationDlg" Control_="SsoCheckbox" Event="[AiRefreshDlg]" Argument="0" Condition="AI_INSTALL AND ( SSO_CHECKBOX )" Ordering="3"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCreateFolderComponent">
     <ROW Directory_="Symphony_Dir" Component_="Symphony" ManualDelete="false"/>

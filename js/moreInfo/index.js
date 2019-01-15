@@ -95,7 +95,14 @@ function openMoreInfoWindow(windowName) {
         }
     });
 
-    moreInfoWindow.webContents.on('crashed', function () {
+    moreInfoWindow.webContents.on('crashed', function (event, killed) {
+
+        log.send(logLevels.INFO, `More Info Window crashed! Killed? ${killed}`);
+
+        if (killed) {
+            return;
+        }
+
         const options = {
             type: 'error',
             title: i18n.getMessageFor('Renderer Process Crashed'),

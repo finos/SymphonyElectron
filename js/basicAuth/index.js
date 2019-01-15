@@ -111,7 +111,14 @@ function openBasicAuthWindow(windowName, hostname, isValidCredentials, clearSett
         }
     });
 
-    basicAuthWindow.webContents.on('crashed', function () {
+    basicAuthWindow.webContents.on('crashed', function (event, killed) {
+
+        log.send(logLevels.INFO, `Basic Auth Window crashed! Killed? ${killed}`);
+
+        if (killed) {
+            return;
+        }
+
         const options = {
             type: 'error',
             title: i18n.getMessageFor('Renderer Process Crashed'),
