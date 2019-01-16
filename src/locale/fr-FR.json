@@ -110,7 +110,7 @@
     "Share":"Partager"
   },
   "ScreenSharingIndicator": {
-    "You are sharing your screen on Symphony": "Vous partagez votre écran sur Symphony",
+    "You are sharing your screen on {appName}": "Vous partagez votre écran sur {appName}",
     "Stop sharing": "Arrêter le partage",
     "Hide": "Masquer"
   },

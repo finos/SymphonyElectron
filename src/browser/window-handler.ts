@@ -217,6 +217,7 @@ export class WindowHandler {
             // only for Window and if it is enabled
             await injectStyles(this.mainWindow, this.isCustomTitleBarAndWindowOS);
             if (this.isCustomTitleBarAndWindowOS) this.mainWindow.webContents.send('initiate-custom-title-bar');
+
             this.mainWindow.webContents.send('page-load', {
                 isWindowsOS,
                 locale: i18n.getLocale(),
@@ -373,6 +374,12 @@ export class WindowHandler {
      * @param id {number}
      */
     public createScreenSharingIndicatorWindow(screenSharingWebContents: Electron.webContents, displayId: string, id: number): void {
+
+        if (this.screenSharingIndicatorWindow && !this.screenSharingIndicatorWindow.isDestroyed()) {
+            this.screenSharingIndicatorWindow.close();
+            this.screenSharingIndicatorWindow = null;
+        }
+
         const indicatorScreen = (displayId && electron.screen.getAllDisplays().filter((d) => displayId.includes(d.id.toString()))[ 0 ]) || electron.screen.getPrimaryDisplay();
         const screenRect = indicatorScreen.workArea;
         let opts = WindowHandler.getScreenSharingIndicatorOpts();
