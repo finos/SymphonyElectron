@@ -6,8 +6,8 @@
   "buildNumber": "0",
   "description": "Symphony desktop app (Foundation ODP)",
   "author": "Symphony",
-  "main": "lib/src/browser/main.js",
-  "types": "lib/src/browser/main.d.ts",
+  "main": "lib/src/app/main.js",
+  "types": "lib/src/app/main.d.ts",
   "scripts": {
     "compile": "npm run lint && gulp build",
     "lint": "tslint --project tsconfig.json",
