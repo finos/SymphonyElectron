@@ -1,6 +1,5 @@
 import { ipcRenderer, remote } from 'electron';
 
-import { ICryptoLib } from '../browser/crypto-library-handler';
 import {
     apiCmds,
     apiName,
@@ -10,12 +9,17 @@ import {
     IScreenSnippet, KeyCodes,
 } from '../common/api-interface';
 import { i18n, LocaleType } from '../common/i18n-preload';
-import { throttle } from '../common/throttle';
+import { throttle } from '../common/utils';
 import { getSource } from './desktop-capturer';
 
 let isAltKey: boolean = false;
 let isMenuOpen: boolean = false;
 let nextId = 0;
+
+interface ICryptoLib {
+    AESGCMEncrypt: (name: string, base64IV: string, base64AAD: string, base64Key: string, base64In: string) => string | null;
+    AESGCMDecrypt: (base64IV: string, base64AAD: string, base64Key: string, base64In: string) => string | null;
+}
 
 interface ILocalObject {
     ipcRenderer;
@@ -46,7 +50,7 @@ const throttledSetLocale = throttle((locale) => {
 
 let cryptoLib: ICryptoLib | null;
 try {
-    cryptoLib = remote.require('../browser/crypto-library-handler.js').cryptoLibrary;
+    cryptoLib = remote.require('../app/crypto-handler.js').cryptoLibrary;
 } catch (e) {
     cryptoLib = null;
     // tslint:disable-next-line

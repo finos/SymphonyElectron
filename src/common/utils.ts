@@ -1,7 +1,3 @@
-import * as archiver from 'archiver';
-import * as fs from 'fs';
-import * as path from 'path';
-
 // regex match the semver (semantic version) this checks for the pattern X.Y.Z
 // ex-valid  v1.2.0, 1.2.0, 2.3.4-r51
 const semver = /^v?(?:\d+)(\.(?:[x*]|\d+)(\.(?:[x*]|\d+)(?:-[\da-z-]+(?:\.[\da-z-]+)*)?(?:\+[\da-z-]+(?:\.[\da-z-]+)*)?)?)?$/i;
@@ -52,7 +48,7 @@ const validate = (version: string): number => {
  * @param v2
  * @returns {number}
  */
-const compareVersions = (v1: string, v2: string): number => {
+export const compareVersions = (v1: string, v2: string): number => {
     if (validate(v1) === -1 || validate(v2) === -1) {
         return -1;
     }
@@ -96,7 +92,7 @@ const compareVersions = (v1: string, v2: string): number => {
  * try finding arg that starts with argName.
  * @return {String}           If found, returns the arg, otherwise null.
  */
-const getCommandLineArgs = (argv: string[], argName: string, exactMatch: boolean): string | null => {
+export const getCommandLineArgs = (argv: string[], argName: string, exactMatch: boolean): string | null => {
     if (!Array.isArray(argv)) {
         throw new Error(`get-command-line-args: TypeError invalid func arg, must be an array: ${argv}`);
     }
@@ -120,7 +116,7 @@ const getCommandLineArgs = (argv: string[], argName: string, exactMatch: boolean
  *
  * @return {String} guid value in string
  */
-const getGuid = (): string => {
+export const getGuid = (): string => {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
         (c) => {
             const r = Math.random() * 16 | 0; // tslint:disable-line:no-bitwise
@@ -135,7 +131,7 @@ const getGuid = (): string => {
  * @param object Object to be filtered
  * @param fields Fields to be picked
  */
-const pick = (object: object, fields: string[]) => {
+export const pick = (object: object, fields: string[]) => {
     const obj = {};
     for (const field of fields) {
         if (object[field]) {
@@ -146,49 +142,55 @@ const pick = (object: object, fields: string[]) => {
 };
 
 /**
- * Archives files in the source directory
- * that matches the given file extension
+ * Limits your function to be called at most every milliseconds
  *
- * @param source {String} source path
- * @param destination {String} destination path
- * @param fileExtensions {Array} array of file ext
- * @return {Promise<void>}
+ * @param func
+ * @param wait
+ * @example const throttled = throttle(anyFunc, 500);
  */
-const generateArchiveForDirectory = (source: string, destination: string, fileExtensions: string[]): Promise<void> => {
+export const throttle = (func: (...args) => void, wait: number): (...args) => void => {
+    if (wait <= 0) {
+        throw Error('throttle: invalid throttleTime arg, must be a number: ' + wait);
+    }
 
-    return new Promise((resolve, reject) => {
-        const output = fs.createWriteStream(destination);
-        const archive = archiver('zip', { zlib: { level: 9 } });
+    let isCalled: boolean = false;
 
-        output.on('close', () => {
-            return resolve();
-        });
-
-        archive.on('error', (err) => {
-            return reject(err);
-        });
-
-        archive.pipe(output);
-
-        const files = fs.readdirSync(source);
-        files
-            .filter((file) => fileExtensions.indexOf(path.extname(file)) !== -1)
-            .forEach((file) => {
-                switch (path.extname(file)) {
-                    case '.log':
-                        archive.file(source + '/' + file, { name: 'logs/' + file });
-                        break;
-                    case '.dmp':
-                    case '.txt': // on Windows .txt files will be created as part of crash dump
-                        archive.file(source + '/' + file, { name: 'crashes/' + file });
-                        break;
-                    default:
-                        break;
-                }
-            });
-
-        archive.finalize();
-    });
+    return (...args) => {
+        if (!isCalled) {
+            func(...args);
+            isCalled = true;
+            setTimeout(() => isCalled = false, wait);
+        }
+    };
 };
 
-export { compareVersions, getCommandLineArgs, getGuid, pick, generateArchiveForDirectory };
+/**
+ * Formats a string with dynamic values
+ * @param str {String} String to be formatted
+ * @param data {Object} - Data to be added
+ *
+ * @example
+ * StringFormat(this will log {time}`, { time: '1234' })
+ *
+ * result:
+ * this will log 1234
+ *
+ * @return {*}
+ */
+export const formatString = (str: string, data?: object): string => {
+
+    if (!str || !data) return str;
+
+    for (const key in data) {
+        if (Object.prototype.hasOwnProperty.call(data, key)) {
+            return str.replace(/({([^}]+)})/g,  (i) => {
+                const replacedKey = i.replace(/{/, '').replace(/}/, '');
+                if (!data[key] || !data[key][replacedKey]) {
+                    return i;
+                }
+                return data[key][replacedKey];
+            });
+        }
+    }
+    return str;
+};

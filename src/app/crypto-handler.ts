@@ -46,7 +46,7 @@ const library = new Library((cryptoLibPath), {
     getVersion: [types.CString, []],
 });
 
-export interface ICryptoLib {
+interface ICryptoLib {
     AESGCMEncrypt: (name: string, base64IV: string, base64AAD: string, base64Key: string, base64In: string) => string | null;
     AESGCMDecrypt: (base64IV: string, base64AAD: string, base64Key: string, base64In: string) => string | null;
 }

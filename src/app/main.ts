@@ -9,7 +9,7 @@ import { setChromeFlags } from './chrome-flags';
 import { config } from './config-handler';
 import './dialog-handler';
 import './main-api-handler';
-import { SpellChecker } from './spell-checker-handler';
+import { SpellChecker } from './spell-check-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
 const allowMultiInstance: string | boolean = getCommandLineArgs(process.argv, '--multiInstance', true) || isDevEnv;
