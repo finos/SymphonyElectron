@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { formatString } from './format-string';
+import { formatString } from './utils';
 
 const localeCodeRegex = /^([a-z]{2})-([A-Z]{2})$/;
 

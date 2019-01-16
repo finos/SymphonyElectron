@@ -10,9 +10,9 @@ import { isMac, isWindowsOS } from '../common/env';
 import { i18n } from '../common/i18n';
 import { getCommandLineArgs, getGuid } from '../common/utils';
 import { AppMenu } from './app-menu';
+import { handleChildWindow } from './child-window-handler';
 import { config, IConfig } from './config-handler';
 import { showNetworkConnectivityError } from './dialog-handler';
-import { handleChildWindow } from './pop-out-window-handler';
 import { monitorWindowActions } from './window-actions';
 import { createComponentWindow, getBounds, handleDownloadManager, injectStyles } from './window-utils';
 
