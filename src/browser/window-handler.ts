@@ -1,5 +1,5 @@
 import * as electron from 'electron';
-import { BrowserWindow, crashReporter, ipcMain } from 'electron';
+import { app, BrowserWindow, crashReporter, ipcMain } from 'electron';
 import * as path from 'path';
 import { format, parse } from 'url';
 
@@ -139,6 +139,7 @@ export class WindowHandler {
     public isAutoReload: boolean;
     public isOnline: boolean;
     public url: string | undefined;
+    public willQuitApp: boolean = false;
 
     private readonly windowOpts: ICustomBrowserWindowConstructorOpts;
     private readonly globalConfig: IConfig;
@@ -157,7 +158,7 @@ export class WindowHandler {
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Settings
-        this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos' ]);
+        this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose' ]);
         this.globalConfig = config.getGlobalConfigFields([ 'url', 'crashReporter' ]);
 
         this.windows = {};
@@ -236,6 +237,20 @@ export class WindowHandler {
             this.mainWindow.show();
         });
 
+        // Handle main window close
+        this.mainWindow.on('close', (event) => {
+            if (!this.mainWindow || this.mainWindow.isDestroyed()) return;
+
+            if (this.willQuitApp) return this.destroyAllWindow();
+
+            if (this.config.minimizeOnClose) {
+                event.preventDefault();
+                isMac ? this.mainWindow.hide() : this.mainWindow.minimize();
+            } else {
+                app.quit();
+            }
+        });
+
         // Start monitoring window actions
         monitorWindowActions(this.mainWindow);
 
@@ -307,9 +322,8 @@ export class WindowHandler {
     public showLoadingScreen(): void {
         this.loadingWindow = createComponentWindow('loading-screen', WindowHandler.getLoadingWindowOpts());
         this.loadingWindow.webContents.once('did-finish-load', () => {
-            if (this.loadingWindow) {
-                this.loadingWindow.webContents.send('data');
-            }
+            if (!this.loadingWindow || this.loadingWindow.isDestroyed()) return;
+            this.loadingWindow.webContents.send('data');
         });
 
         this.loadingWindow.once('closed', () => this.loadingWindow = null);
@@ -321,9 +335,8 @@ export class WindowHandler {
     public createAboutAppWindow(): void {
         this.aboutAppWindow = createComponentWindow('about-app');
         this.aboutAppWindow.webContents.once('did-finish-load', () => {
-            if (this.aboutAppWindow) {
-                this.aboutAppWindow.webContents.send('about-app-data', { buildNumber, clientVersion, version });
-            }
+            if (!this.aboutAppWindow || this.aboutAppWindow.isDestroyed()) return;
+            this.aboutAppWindow.webContents.send('about-app-data', { buildNumber, clientVersion, version });
         });
     }
 
@@ -333,9 +346,8 @@ export class WindowHandler {
     public createMoreInfoWindow(): void {
         this.moreInfoWindow = createComponentWindow('more-info');
         this.moreInfoWindow.webContents.once('did-finish-load', () => {
-            if (this.aboutAppWindow) {
-                this.aboutAppWindow.webContents.send('more-info-data');
-            }
+            if (!this.moreInfoWindow || this.moreInfoWindow.isDestroyed()) return;
+            this.moreInfoWindow.webContents.send('more-info-data');
         });
     }
 
@@ -350,18 +362,17 @@ export class WindowHandler {
         const opts = WindowHandler.getScreenPickerWindowOpts();
         this.screenPickerWindow = createComponentWindow('screen-picker', opts);
         this.screenPickerWindow.webContents.once('did-finish-load', () => {
-            if (this.screenPickerWindow) {
-                this.screenPickerWindow.webContents.send('screen-picker-data', { sources, id });
-                this.addWindow(opts.winKey, this.screenPickerWindow);
-                this.screenPickerWindow.once('closed', () => {
-                    this.removeWindow(opts.winKey);
-                    this.screenPickerWindow = null;
-                });
+            if (!this.screenPickerWindow || this.screenPickerWindow.isDestroyed()) return;
+            this.screenPickerWindow.webContents.send('screen-picker-data', { sources, id });
+            this.addWindow(opts.winKey, this.screenPickerWindow);
+            this.screenPickerWindow.once('closed', () => {
+                this.removeWindow(opts.winKey);
+                this.screenPickerWindow = null;
+            });
 
-                ipcMain.once('screen-source-selected', (_event, source) => {
-                    win.send('start-share' + id, source);
-                });
-            }
+            ipcMain.once('screen-source-selected', (_event, source) => {
+                win.send('start-share' + id, source);
+            });
         });
     }
 
@@ -392,29 +403,28 @@ export class WindowHandler {
         this.screenSharingIndicatorWindow = createComponentWindow('screen-sharing-indicator', opts);
         this.screenSharingIndicatorWindow.setVisibleOnAllWorkspaces(true);
         this.screenSharingIndicatorWindow.webContents.once('did-finish-load', () => {
-            if (this.screenSharingIndicatorWindow) {
-                this.screenSharingIndicatorWindow.webContents.send('screen-sharing-indicator-data', { id });
+            if (!this.screenSharingIndicatorWindow || this.screenSharingIndicatorWindow.isDestroyed()) return;
+            this.screenSharingIndicatorWindow.webContents.send('screen-sharing-indicator-data', { id });
 
-                const stopScreenSharing = (_event, indicatorId) => {
-                    if (id === indicatorId) {
-                        screenSharingWebContents.send('screen-sharing-stopped', id);
-                    }
-                };
+            const stopScreenSharing = (_event, indicatorId) => {
+                if (id === indicatorId) {
+                    screenSharingWebContents.send('screen-sharing-stopped', id);
+                }
+            };
 
-                const destroyScreenSharingIndicator = (_event, indicatorId) => {
-                    if (id === indicatorId && this.screenSharingIndicatorWindow && !this.screenSharingIndicatorWindow.isDestroyed()) {
-                        this.screenSharingIndicatorWindow.close();
-                    }
-                };
+            const destroyScreenSharingIndicator = (_event, indicatorId) => {
+                if (id === indicatorId && this.screenSharingIndicatorWindow && !this.screenSharingIndicatorWindow.isDestroyed()) {
+                    this.screenSharingIndicatorWindow.close();
+                }
+            };
 
-                this.screenSharingIndicatorWindow.once('close', () => {
-                    ipcMain.removeListener('stop-screen-sharing', stopScreenSharing);
-                    ipcMain.removeListener('destroy-screen-sharing-indicator', destroyScreenSharingIndicator);
-                });
+            this.screenSharingIndicatorWindow.once('close', () => {
+                ipcMain.removeListener('stop-screen-sharing', stopScreenSharing);
+                ipcMain.removeListener('destroy-screen-sharing-indicator', destroyScreenSharingIndicator);
+            });
 
-                ipcMain.once('stop-screen-sharing', stopScreenSharing);
-                ipcMain.once('destroy-screen-sharing-indicator', destroyScreenSharingIndicator);
-            }
+            ipcMain.once('stop-screen-sharing', stopScreenSharing);
+            ipcMain.once('destroy-screen-sharing-indicator', destroyScreenSharingIndicator);
         });
     }
 
@@ -436,7 +446,7 @@ export class WindowHandler {
         this.basicAuthWindow = createComponentWindow('basic-auth', opts);
         this.basicAuthWindow.setVisibleOnAllWorkspaces(true);
         this.basicAuthWindow.webContents.once('did-finish-load', () => {
-            if (!this.basicAuthWindow) return;
+            if (!this.basicAuthWindow || this.basicAuthWindow.isDestroyed()) return;
             this.basicAuthWindow.webContents.send('basic-auth-data', { hostname, isValidCredentials: isMultipleTries });
 
             const closeBasicAuth = (shouldClearSettings = true) => {
@@ -489,8 +499,21 @@ export class WindowHandler {
      *
      * @param key {string}
      */
-    public removeWindow(key): void {
+    public removeWindow(key: string): void {
         delete this.windows[ key ];
+    }
+
+    /**
+     * Cleans up reference
+     */
+    private destroyAllWindow(): void {
+        for (const key in this.windows) {
+            if (Object.prototype.hasOwnProperty.call(this.windows, key)) {
+                const winKey = this.windows[key];
+                this.removeWindow(winKey);
+            }
+        }
+        this.mainWindow = null;
     }
 
     /**
