@@ -95,6 +95,16 @@ class SpellCheckHelper {
         return menu;
     }
 
+    /**
+     * Method that checks if a text is misspelled
+     *
+     * @param text {string}
+     * @returns {*}
+     */
+    isMisspelled(text) {
+        return this.spellCheckHandler.isMisspelled(text);
+    }
+
 }
 
 module.exports = {

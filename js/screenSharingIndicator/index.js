@@ -69,7 +69,14 @@ function openScreenSharingIndicator(eventSender, displayId, id) {
         });
     });
 
-    indicatorWindow.webContents.on('crashed', () => {
+    indicatorWindow.webContents.on('crashed', (event, killed) => {
+
+        log.send(logLevels.INFO, `Screen Sharing Indicator Window crashed! Killed? ${killed}`);
+
+        if (killed) {
+            return;
+        }
+
         const errorDialogOptions = {
             type: 'error',
             title: i18n.getMessageFor('Renderer Process Crashed'),
@@ -83,7 +90,7 @@ function openScreenSharingIndicator(eventSender, displayId, id) {
         if (indicatorId === id) {
             eventSender.send('stop-sharing-requested', id);
         }
-    }
+    };
 
     const handleDestroyScreensharingIndicator = (event, indicatorId) => {
         if (indicatorId === id) {

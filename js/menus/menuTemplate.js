@@ -441,8 +441,8 @@ function getTemplate(app) {
         // This adds About Symphony under help menu for windows
         template[3].submenu.push({
             label: i18n.getMessageFor('About Symphony'),
-            click(focusedWindow) {
-                let windowName = focusedWindow ? focusedWindow.name : '';
+            click(menuItem, focusedWindow) {
+                let windowName = focusedWindow ? focusedWindow.winName : '';
                 aboutApp.openAboutWindow(windowName);
             }
         });
@@ -528,8 +528,8 @@ function buildMenuItem(role, label) {
     }
 
     if (isWindowsOS) {
-        return label ? { role: role, label: label, accelerator: windowsAccelerator[role] || '' }
-            : { role: role, accelerator: windowsAccelerator[role] || '' }
+        return label ? { role: role, label: label, accelerator: windowsAccelerator[role] || '', registerAccelerator: true }
+            : { role: role, accelerator: windowsAccelerator[role] || '', registerAccelerator: true }
     }
 
     return label ? { role: role, label: label } : { role: role }

@@ -27,6 +27,9 @@ const { initCrashReporterMain, initCrashReporterRenderer } = require('./crashRep
 const i18n = require('./translation/i18n');
 const getCmdLineArg = require('./utils/getCmdLineArg');
 
+const SpellChecker = require('./spellChecker').SpellCheckHelper;
+const spellchecker = new SpellChecker();
+
 // show dialog when certificate errors occur
 require('./dialogs/showCertError.js');
 require('./dialogs/showBasicAuth.js');
@@ -98,6 +101,27 @@ function getParsedUrl(appUrl) {
     }
     let url = nodeURL.format(parsedUrl);
     return nodeURL.parse(url);
+}
+
+/**
+ * Returns the Spellchecker instance
+ * @returns {SpellCheckHelper}
+ */
+function getSpellchecker() {
+    return spellchecker;
+}
+
+/**
+ * Method that invokes native module that
+ * verifies missed spelled word
+ * @param text {string}
+ * @returns {*}
+ */
+function isMisspelled(text) {
+    if (!spellchecker) {
+        return false;
+    }
+    return spellchecker.isMisspelled(text);
 }
 
 /**
@@ -327,7 +351,14 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
     // In case a renderer process crashes, provide an
     // option for the user to either reload or close the window
-    mainWindow.webContents.on('crashed', function () {
+    mainWindow.webContents.on('crashed', function (event, killed) {
+
+        log.send(logLevels.INFO, `Main Window crashed! Killed? ${killed}`);
+
+        if (killed) {
+            return;
+        }
+
         const options = {
             type: 'error',
             title: i18n.getMessageFor('Renderer Process Crashed'),
@@ -473,6 +504,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                     newWinOptions.minHeight = MIN_HEIGHT;
                     newWinOptions.alwaysOnTop = alwaysOnTop;
                     newWinOptions.frame = true;
+                    newWinOptions.parent = null;
 
                     let newWinKey = getGuid();
 
@@ -506,8 +538,12 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                             browserWin.setAlwaysOnTop(alwaysOnTop);
                             logBrowserWindowEvents(browserWin, browserWin.winName);
 
-                            let handleChildWindowCrashEvent = (e) => {
-                                log.send(logLevels.INFO, `Child Window crashed!`);
+                            let handleChildWindowCrashEvent = (e, killed) => {
+                                log.send(logLevels.INFO, `Child Window crashed! Killed? ${killed}`);
+
+                                if (killed) {
+                                    return;
+                                }
                                 const options = {
                                     type: 'error',
                                     title: i18n.getMessageFor('Renderer Process Crashed'),
@@ -761,6 +797,19 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 }
 
 /**
+ * ELECTRON-956: App is not minimized upon "Configure Desktop Alert Position" modal when "Always on Top" = True
+ */
+app.on('browser-window-created', (event, window) => {
+    const parentWindow = window.getParentWindow();
+    if (parentWindow && !parentWindow.isDestroyed()) {
+        if (parentWindow.winName === 'main') {
+            window.setMinimizable(false);
+            window.setMaximizable(false);
+        }
+    }
+});
+
+/**
  * Handles the event before-quit emitted by electron
  */
 app.on('before-quit', function () {
@@ -890,26 +939,25 @@ function activate(windowName, shouldFocus = true) {
         return null;
     }
 
-    let keys = Object.keys(windows);
-    for (let i = 0, len = keys.length; i < len; i++) {
-        let window = windows[keys[i]];
-        if (window && !window.isDestroyed() && window.winName === windowName) {
+    for (const key in windows) {
+        if (Object.prototype.hasOwnProperty.call(windows, key)) {
+            const window = windows[ key ];
+            if (window && !window.isDestroyed() && window.winName === windowName) {
 
-            // Flash task bar icon in Windows
-            if (isWindowsOS && !shouldFocus) {
-                return window.flashFrame(true);
+                // Bring the window to the top without focusing
+                // Flash task bar icon in Windows for windows
+                if (!shouldFocus) {
+                    return isMac ? window.showInactive() : window.flashFrame(true);
+                }
+
+                // Note: On window just focusing will preserve window snapped state
+                // Hiding the window and just calling the focus() won't display the window
+                if (isWindowsOS) {
+                    return window.isMinimized() ? window.restore() : window.focus();
+                }
+
+                return window.isMinimized() ? window.restore() : window.show();
             }
-
-            // brings window without giving focus on mac
-            if (isMac && !shouldFocus) {
-                return window.showInactive();
-            }
-
-            if (window.isMinimized()) {
-                return window.restore();
-            }
-
-            return window.show();
         }
     }
     return null;
@@ -997,7 +1045,7 @@ function isAlwaysOnTop(boolean, shouldActivateMainWindow = true) {
 }
 
 // node event emitter to update always on top
-eventEmitter.on('isAlwaysOnTop', (params) => {    
+eventEmitter.on('isAlwaysOnTop', (params) => {
     isAlwaysOnTop(params.isAlwaysOnTop, params.shouldActivateMainWindow);
     log.send(logLevels.INFO, `Updating settings for always on top ${params}`);
 });
@@ -1260,4 +1308,6 @@ module.exports = {
     cleanUpChildWindows: cleanUpChildWindows,
     setLocale: setLocale,
     getIsOnline: getIsOnline,
+    getSpellchecker: getSpellchecker,
+    isMisspelled: isMisspelled,
 };
