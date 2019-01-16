@@ -5,7 +5,7 @@ import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { autoLaunchInstance as autoLaunch } from './auto-launch-controller';
 import { config, IConfig } from './config-handler';
-import { exportCrashDumps, exportLogs } from './reports';
+import { exportCrashDumps, exportLogs } from './reports-handler';
 import { updateAlwaysOnTop } from './window-actions';
 import { windowHandler } from './window-handler';
 

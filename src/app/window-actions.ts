@@ -2,7 +2,7 @@ import { BrowserWindow } from 'electron';
 
 import { apiName, IBoundsChange, KeyCodes } from '../common/api-interface';
 import { isWindowsOS } from '../common/env';
-import { throttle } from '../common/throttle';
+import { throttle } from '../common/utils';
 import { config } from './config-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 import { showPopupMenu } from './window-utils';
