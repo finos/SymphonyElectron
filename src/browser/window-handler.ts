@@ -214,8 +214,9 @@ export class WindowHandler {
             this.url = this.mainWindow.webContents.getURL();
 
             // Injects custom title bar css into the webContents
+            // only for Window and if it is enabled
             await injectStyles(this.mainWindow, this.isCustomTitleBarAndWindowOS);
-            this.mainWindow.webContents.send('initiate-custom-title-bar');
+            if (this.isCustomTitleBarAndWindowOS) this.mainWindow.webContents.send('initiate-custom-title-bar');
             this.mainWindow.webContents.send('page-load', {
                 isWindowsOS,
                 locale: i18n.getLocale(),
