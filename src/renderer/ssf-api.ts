@@ -277,6 +277,12 @@ const updateOnlineStatus = (): void => {
 // Handle key down events
 const throttledKeyDown = throttle( (event) => {
     isAltKey = event.keyCode === KeyCodes.Alt;
+    if (event.keyCode === KeyCodes.Esc) {
+        local.ipcRenderer.send(apiName.symphonyApi, {
+            cmd: apiCmds.keyPress,
+            keyCode: event.keyCode,
+        });
+    }
 }, 500);
 
 // Handle key up events
