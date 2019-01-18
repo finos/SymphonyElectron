@@ -30,13 +30,15 @@ const enum keyCode {
     escapeKey = 27,
 }
 
+type inputChangeEvent = React.ChangeEvent<HTMLInputElement>;
+
 export default class ScreenPicker extends React.Component<{}, IState> {
 
     private isScreensAvailable: boolean;
     private isApplicationsAvailable: boolean;
     private readonly eventHandlers = {
-        onSelect: (src) => this.select(src),
-        onToggle: (tab) => this.toggle(tab),
+        onSelect: (src: Electron.DesktopCapturerSource) => this.select(src),
+        onToggle: (tab: tabs) => (_event: inputChangeEvent) => this.toggle(tab),
         onClose: () => this.close(),
         onSubmit: () => this.submit(),
     };
@@ -183,7 +185,7 @@ export default class ScreenPicker extends React.Component<{}, IState> {
                     type='radio'
                     name='tabs'
                     checked={selectedTab === 'screens'}
-                    onChange={() => this.eventHandlers.onToggle('screens')}
+                    onChange={this.eventHandlers.onToggle('screens')}
                 />,
                 <label className={classNames('screens', { hidden: !this.isScreensAvailable })}
                        htmlFor='screen-tab'
@@ -196,7 +198,7 @@ export default class ScreenPicker extends React.Component<{}, IState> {
                     type='radio'
                     name='tabs'
                     checked={selectedTab === 'applications'}
-                    onChange={() => this.eventHandlers.onToggle('applications')}
+                    onChange={this.eventHandlers.onToggle('applications')}
                 />,
                 <label className={classNames('applications', { hidden: !this.isApplicationsAvailable })}
                        htmlFor='application-tab'
@@ -213,7 +215,7 @@ export default class ScreenPicker extends React.Component<{}, IState> {
                     type='radio'
                     name='tabs'
                     checked={true}
-                    onChange={() => this.eventHandlers.onToggle('screens')}
+                    onChange={this.eventHandlers.onToggle('screens')}
                 />,
                 <label className={classNames('screens', { hidden: !this.isScreensAvailable })}
                        htmlFor='screen-tab'
@@ -230,7 +232,7 @@ export default class ScreenPicker extends React.Component<{}, IState> {
                     type='radio'
                     name='tabs'
                     checked={true}
-                    onChange={() => this.eventHandlers.onToggle('applications')}
+                    onChange={this.eventHandlers.onToggle('applications')}
                 />,
                 <label className={classNames('applications', { hidden: !this.isApplicationsAvailable })}
                        htmlFor='application-tab'
@@ -274,6 +276,8 @@ export default class ScreenPicker extends React.Component<{}, IState> {
      * Closes the screen picker window
      */
     private close(): void {
+        // setting null will clean up listeners
+        ipcRenderer.send('screen-source-selected', null);
         ipcRenderer.send(apiName.symphonyApi, {
             cmd: apiCmds.closeWindow,
             windowType: 'screen-picker',
@@ -288,7 +292,6 @@ export default class ScreenPicker extends React.Component<{}, IState> {
         const { selectedSource } = this.state;
         if (selectedSource) {
             ipcRenderer.send('screen-source-selected', selectedSource);
-            this.eventHandlers.onClose();
         }
     }
 
