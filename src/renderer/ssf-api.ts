@@ -257,6 +257,11 @@ local.ipcRenderer.on('boundsChange', (_event, arg: IBoundsChange): void => {
 local.ipcRenderer.on('screen-sharing-stopped', () => {
     if (typeof local.screenSharingIndicatorCallback === 'function') {
         local.screenSharingIndicatorCallback({ type: 'stopRequested' });
+        // closes the screen sharing indicator
+        ipcRenderer.send(apiName.symphonyApi, {
+            cmd: apiCmds.closeWindow,
+            windowType: 'screen-sharing-indicator',
+        });
     }
 });
 

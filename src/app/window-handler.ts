@@ -189,7 +189,7 @@ export class WindowHandler {
 
         // Event needed to hide native menu bar on Windows 10 as we use custom menu bar
         this.mainWindow.webContents.once('did-start-loading', () => {
-            if ((this.config.isCustomTitleBar || isWindowsOS) && this.mainWindow && !this.mainWindow.isDestroyed()) {
+            if ((this.config.isCustomTitleBar || isWindowsOS) && this.mainWindow && this.windowExists(this.mainWindow)) {
                 this.mainWindow.setMenuBarVisibility(false);
             }
         });
@@ -211,7 +211,7 @@ export class WindowHandler {
             if (!this.isOnline && this.mainWindow) showNetworkConnectivityError(this.mainWindow, this.url, retry);
 
             // early exit if the window has already been destroyed
-            if (!this.mainWindow || this.mainWindow.isDestroyed()) return;
+            if (!this.mainWindow || !this.windowExists(this.mainWindow)) return;
             this.url = this.mainWindow.webContents.getURL();
 
             // Injects custom title bar css into the webContents
@@ -239,7 +239,7 @@ export class WindowHandler {
 
         // Handle main window close
         this.mainWindow.on('close', (event) => {
-            if (!this.mainWindow || this.mainWindow.isDestroyed()) return;
+            if (!this.mainWindow || !this.windowExists(this.mainWindow)) return;
 
             if (this.willQuitApp) return this.destroyAllWindow();
 
@@ -290,7 +290,14 @@ export class WindowHandler {
     public closeWindow(windowType: WindowTypes): void {
         switch (windowType) {
             case 'screen-picker':
-                if (this.screenPickerWindow && !this.screenPickerWindow.isDestroyed()) this.screenPickerWindow.close();
+                if (this.screenPickerWindow && this.windowExists(this.screenPickerWindow)) this.screenPickerWindow.close();
+                break;
+            case 'screen-sharing-indicator':
+                if (this.screenSharingIndicatorWindow
+                    && this.windowExists(this.screenSharingIndicatorWindow)) this.screenSharingIndicatorWindow.close();
+                break;
+            default:
+                break;
         }
     }
 
@@ -322,7 +329,7 @@ export class WindowHandler {
     public showLoadingScreen(): void {
         this.loadingWindow = createComponentWindow('loading-screen', WindowHandler.getLoadingWindowOpts());
         this.loadingWindow.webContents.once('did-finish-load', () => {
-            if (!this.loadingWindow || this.loadingWindow.isDestroyed()) return;
+            if (!this.loadingWindow || !this.windowExists(this.loadingWindow)) return;
             this.loadingWindow.webContents.send('data');
         });
 
@@ -335,7 +342,7 @@ export class WindowHandler {
     public createAboutAppWindow(): void {
         this.aboutAppWindow = createComponentWindow('about-app');
         this.aboutAppWindow.webContents.once('did-finish-load', () => {
-            if (!this.aboutAppWindow || this.aboutAppWindow.isDestroyed()) return;
+            if (!this.aboutAppWindow || !this.windowExists(this.aboutAppWindow)) return;
             this.aboutAppWindow.webContents.send('about-app-data', { buildNumber, clientVersion, version });
         });
     }
@@ -346,7 +353,7 @@ export class WindowHandler {
     public createMoreInfoWindow(): void {
         this.moreInfoWindow = createComponentWindow('more-info');
         this.moreInfoWindow.webContents.once('did-finish-load', () => {
-            if (!this.moreInfoWindow || this.moreInfoWindow.isDestroyed()) return;
+            if (!this.moreInfoWindow || !this.windowExists(this.moreInfoWindow)) return;
             this.moreInfoWindow.webContents.send('more-info-data');
         });
     }
@@ -354,25 +361,30 @@ export class WindowHandler {
     /**
      * Creates a screen picker window
      *
-     * @param win
+     * @param window
      * @param sources
      * @param id
      */
-    public createScreenPickerWindow(win: Electron.WebContents, sources: DesktopCapturerSource[], id: number): void {
+    public createScreenPickerWindow(window: Electron.WebContents, sources: DesktopCapturerSource[], id: number): void {
+
+        if (this.screenPickerWindow && this.windowExists(this.screenPickerWindow)) this.screenPickerWindow.close();
+
         const opts = WindowHandler.getScreenPickerWindowOpts();
         this.screenPickerWindow = createComponentWindow('screen-picker', opts);
         this.screenPickerWindow.webContents.once('did-finish-load', () => {
-            if (!this.screenPickerWindow || this.screenPickerWindow.isDestroyed()) return;
+            if (!this.screenPickerWindow || !this.windowExists(this.screenPickerWindow)) return;
             this.screenPickerWindow.webContents.send('screen-picker-data', { sources, id });
             this.addWindow(opts.winKey, this.screenPickerWindow);
-            this.screenPickerWindow.once('closed', () => {
-                this.removeWindow(opts.winKey);
-                this.screenPickerWindow = null;
-            });
-
-            ipcMain.once('screen-source-selected', (_event, source) => {
-                win.send('start-share' + id, source);
-            });
+        });
+        ipcMain.once('screen-source-selected', (_event, source) => {
+            window.send('start-share' + id, source);
+            if (this.screenPickerWindow && this.windowExists(this.screenPickerWindow)) {
+                this.screenPickerWindow.close();
+            }
+        });
+        this.screenPickerWindow.once('closed', () => {
+            this.removeWindow(opts.winKey);
+            this.screenPickerWindow = null;
         });
     }
 
@@ -386,12 +398,13 @@ export class WindowHandler {
      */
     public createScreenSharingIndicatorWindow(screenSharingWebContents: Electron.webContents, displayId: string, id: number): void {
 
-        if (this.screenSharingIndicatorWindow && !this.screenSharingIndicatorWindow.isDestroyed()) {
-            this.screenSharingIndicatorWindow.close();
-            this.screenSharingIndicatorWindow = null;
-        }
+        if (this.screenSharingIndicatorWindow
+            && this.windowExists(this.screenSharingIndicatorWindow)) this.screenSharingIndicatorWindow.close();
 
-        const indicatorScreen = (displayId && electron.screen.getAllDisplays().filter((d) => displayId.includes(d.id.toString()))[ 0 ]) || electron.screen.getPrimaryDisplay();
+        const indicatorScreen =
+            (displayId && electron.screen.getAllDisplays().filter((d) =>
+                displayId.includes(d.id.toString()))[ 0 ]) || electron.screen.getPrimaryDisplay();
+
         const screenRect = indicatorScreen.workArea;
         let opts = WindowHandler.getScreenSharingIndicatorOpts();
         if (opts.width && opts.height) {
@@ -403,29 +416,20 @@ export class WindowHandler {
         this.screenSharingIndicatorWindow = createComponentWindow('screen-sharing-indicator', opts);
         this.screenSharingIndicatorWindow.setVisibleOnAllWorkspaces(true);
         this.screenSharingIndicatorWindow.webContents.once('did-finish-load', () => {
-            if (!this.screenSharingIndicatorWindow || this.screenSharingIndicatorWindow.isDestroyed()) return;
+            if (!this.screenSharingIndicatorWindow || !this.windowExists(this.screenSharingIndicatorWindow)) return;
             this.screenSharingIndicatorWindow.webContents.send('screen-sharing-indicator-data', { id });
-
-            const stopScreenSharing = (_event, indicatorId) => {
-                if (id === indicatorId) {
-                    screenSharingWebContents.send('screen-sharing-stopped', id);
-                }
-            };
-
-            const destroyScreenSharingIndicator = (_event, indicatorId) => {
-                if (id === indicatorId && this.screenSharingIndicatorWindow && !this.screenSharingIndicatorWindow.isDestroyed()) {
-                    this.screenSharingIndicatorWindow.close();
-                }
-            };
-
-            this.screenSharingIndicatorWindow.once('close', () => {
-                ipcMain.removeListener('stop-screen-sharing', stopScreenSharing);
-                ipcMain.removeListener('destroy-screen-sharing-indicator', destroyScreenSharingIndicator);
-            });
-
-            ipcMain.once('stop-screen-sharing', stopScreenSharing);
-            ipcMain.once('destroy-screen-sharing-indicator', destroyScreenSharingIndicator);
         });
+        const stopScreenSharing = (_event, indicatorId) => {
+            if (id === indicatorId) {
+                screenSharingWebContents.send('screen-sharing-stopped', id);
+            }
+        };
+
+        this.screenSharingIndicatorWindow.once('close', () => {
+            ipcMain.removeListener('stop-screen-sharing', stopScreenSharing);
+        });
+
+        ipcMain.once('stop-screen-sharing', stopScreenSharing);
     }
 
     /**
@@ -446,31 +450,30 @@ export class WindowHandler {
         this.basicAuthWindow = createComponentWindow('basic-auth', opts);
         this.basicAuthWindow.setVisibleOnAllWorkspaces(true);
         this.basicAuthWindow.webContents.once('did-finish-load', () => {
-            if (!this.basicAuthWindow || this.basicAuthWindow.isDestroyed()) return;
+            if (!this.basicAuthWindow || !this.windowExists(this.basicAuthWindow)) return;
             this.basicAuthWindow.webContents.send('basic-auth-data', { hostname, isValidCredentials: isMultipleTries });
-
-            const closeBasicAuth = (shouldClearSettings = true) => {
-                if (shouldClearSettings) clearSettings();
-                if (this.basicAuthWindow && !this.basicAuthWindow.isDestroyed()) {
-                    this.basicAuthWindow.close();
-                    this.basicAuthWindow = null;
-                }
-            };
-
-            const login = (_event, arg) => {
-                const { username, password } = arg;
-                callback(username, password);
-                closeBasicAuth(false);
-            };
-
-            this.basicAuthWindow.on('close', () => {
-                ipcMain.removeListener('basic-auth-closed', closeBasicAuth);
-                ipcMain.removeListener('basic-auth-login', login);
-            });
-
-            ipcMain.once('basic-auth-closed', closeBasicAuth);
-            ipcMain.once('basic-auth-login', login);
         });
+        const closeBasicAuth = (shouldClearSettings = true) => {
+            if (shouldClearSettings) clearSettings();
+            if (this.basicAuthWindow && !this.windowExists(this.basicAuthWindow)) {
+                this.basicAuthWindow.close();
+                this.basicAuthWindow = null;
+            }
+        };
+
+        const login = (_event, arg) => {
+            const { username, password } = arg;
+            callback(username, password);
+            closeBasicAuth(false);
+        };
+
+        this.basicAuthWindow.on('close', () => {
+            ipcMain.removeListener('basic-auth-closed', closeBasicAuth);
+            ipcMain.removeListener('basic-auth-login', login);
+        });
+
+        ipcMain.once('basic-auth-closed', closeBasicAuth);
+        ipcMain.once('basic-auth-login', login);
     }
 
     /**
@@ -509,12 +512,20 @@ export class WindowHandler {
     private destroyAllWindow(): void {
         for (const key in this.windows) {
             if (Object.prototype.hasOwnProperty.call(this.windows, key)) {
-                const winKey = this.windows[key];
+                const winKey = this.windows[ key ];
                 this.removeWindow(winKey);
             }
         }
         this.mainWindow = null;
     }
+
+    /**
+     * Checks if window is valid and exists
+     *
+     * @param window
+     * @return boolean
+     */
+    private windowExists = (window: BrowserWindow): boolean => !!window && typeof window.isDestroyed === 'function' && !window.isDestroyed();
 
     /**
      * Main window opts
