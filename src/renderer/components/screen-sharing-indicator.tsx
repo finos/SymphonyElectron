@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import { ipcRenderer, remote     } from 'electron';
 import * as React from 'react';
 
+import { apiCmds, apiName } from '../../common/api-interface';
 import { isMac } from '../../common/env';
 import { i18n } from '../../common/i18n-preload';
 
@@ -9,14 +10,15 @@ interface IState {
     id: number;
 }
 
+type mouseEventButton = React.MouseEvent<HTMLButtonElement>;
 /**
  * Window that display a banner when the users starting sharing screen
  */
 export default class ScreenSharingIndicator extends React.Component<{}, IState> {
 
     private readonly eventHandlers = {
-        onStopScreenSharing: (id) => this.stopScreenShare(id),
-        onClose: (id) => this.close(id),
+        onStopScreenSharing: (id: number) => (_event: mouseEventButton) => this.stopScreenShare(id),
+        onClose: () => this.close(),
     };
 
     constructor(props) {
@@ -38,8 +40,8 @@ export default class ScreenSharingIndicator extends React.Component<{}, IState> 
                 <span className='drag-area'/>
                 <span className='text-label'>{i18n.t(`You are sharing your screen on {appName}`, namespace)({ appName: remote.app.getName() })}</span>
                 <span className='buttons'>
-                    <a className='hide-button' href='#' onClick={() => this.eventHandlers.onClose(id)}>{i18n.t('Hide', namespace)()}</a>
-                    <button className='stop-sharing-button' onClick={() => this.eventHandlers.onStopScreenSharing(id)}>
+                    <a className='hide-button' href='#' onClick={this.eventHandlers.onClose}>{i18n.t('Hide', namespace)()}</a>
+                    <button className='stop-sharing-button' onClick={this.eventHandlers.onStopScreenSharing(id)}>
                         {i18n.t('Stop sharing', namespace)()}
                     </button>
                 </span>
@@ -66,11 +68,12 @@ export default class ScreenSharingIndicator extends React.Component<{}, IState> 
 
     /**
      * Closes the screen sharing indicator window
-     *
-     * @param id
      */
-    private close(id): void {
-        ipcRenderer.send('destroy-screen-sharing-indicator', id);
+    private close(): void {
+        ipcRenderer.send(apiName.symphonyApi, {
+            cmd: apiCmds.closeWindow,
+            windowType: 'screen-sharing-indicator',
+        });
     }
 
     /**

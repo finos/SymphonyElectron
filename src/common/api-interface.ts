@@ -48,7 +48,7 @@ export interface IApiArgs {
     type: string;
 }
 
-export type WindowTypes = 'screen-picker';
+export type WindowTypes = 'screen-picker' | 'screen-sharing-indicator';
 
 /**
  * Activity detection
