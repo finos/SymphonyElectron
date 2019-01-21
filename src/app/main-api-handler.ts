@@ -5,7 +5,7 @@ import { LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { activityDetection } from './activity-detection';
 import { config } from './config-handler';
-import { checkProtocolAction, setProtocolWindow } from './protocol-handler';
+import { protocolHandler } from './protocol-handler';
 import { screenSnippet } from './screen-snippet-handler';
 import { activate, handleKeyPress } from './window-actions';
 import { windowHandler } from './window-handler';
@@ -44,8 +44,7 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
             }
             break;
         case apiCmds.registerProtocolHandler:
-            setProtocolWindow(event.sender);
-            checkProtocolAction();
+            protocolHandler.setPreloadWebContents(event.sender);
             break;
         case apiCmds.badgeDataUrl:
             if (typeof arg.dataUrl === 'string' && typeof arg.count === 'number') {

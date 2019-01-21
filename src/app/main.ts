@@ -1,5 +1,6 @@
 import { app } from 'electron';
 
+import { buildNumber, clientVersion, version } from '../../package.json';
 import { isDevEnv, isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
@@ -9,10 +10,19 @@ import { setChromeFlags } from './chrome-flags';
 import { config } from './config-handler';
 import './dialog-handler';
 import './main-api-handler';
+import { protocolHandler } from './protocol-handler';
 import { SpellChecker } from './spell-check-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
 const allowMultiInstance: string | boolean = getCommandLineArgs(process.argv, '--multiInstance', true) || isDevEnv;
+
+// on windows, we create the protocol handler via the installer
+// because electron leaves registry traces upon uninstallation
+if (isMac) {
+    app.setAsDefaultProtocolClient('symphony');
+    // Sets application version info that will be displayed in about app panel
+    app.setAboutPanelOptions({ applicationVersion: `${clientVersion}-${version}`, version: buildNumber });
+}
 
 /**
  * Main function that init the application
@@ -52,7 +62,7 @@ if (!allowMultiInstance) {
         app.quit();
     } else {
         logger.info('Creating the first instance of the application');
-        app.on('second-instance', (_event) => {
+        app.on('second-instance', (_event, argv) => {
             // Someone tried to run a second instance, we should focus our window.
             const mainWindow = windowHandler.getMainWindow();
             if (mainWindow && !mainWindow.isDestroyed()) {
@@ -61,7 +71,7 @@ if (!allowMultiInstance) {
                     mainWindow.restore();
                 }
                 mainWindow.focus();
-                // TODO: Handle protocol action
+                protocolHandler.processArgv(argv);
             }
         });
         startApplication();
@@ -87,6 +97,12 @@ app.on('quit',  () => cleanUpAppCache());
  */
 app.on('before-quit', () => windowHandler.willQuitApp = true);
 
+/**
+ * Is triggered when the application is launched
+ * or clicking the application's dock or taskbar icon
+ *
+ * This event is emitted only on macOS at this moment
+ */
 app.on('activate', () => {
     const mainWindow: ICustomBrowserWindow | null = windowHandler.getMainWindow();
     if (!mainWindow || mainWindow.isDestroyed()) {
@@ -95,3 +111,10 @@ app.on('activate', () => {
         mainWindow.show();
     }
 });
+
+/**
+ * Validates and Sends protocol action
+ *
+ * This event is emitted only on macOS at this moment
+ */
+app.on('open-url', (_event, url) => protocolHandler.sendProtocol(url));
