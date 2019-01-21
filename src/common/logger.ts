@@ -22,7 +22,7 @@ interface IClientLogMsg {
 
 const MAX_LOG_QUEUE_LENGTH = 100;
 
-export class Logger {
+class Logger {
     private readonly showInConsole: boolean = false;
     private readonly desiredLogLevel?: LogLevel;
     private readonly logQueue: ILogMsg[];
