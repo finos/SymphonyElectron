@@ -1,6 +1,18 @@
 {
-  "testMatch": [
-    "**/*.test.js"
+  "roots": [
+    "<rootDir>/spec"
+  ],
+  "transform": {
+    "^.+\\.tsx?$": "ts-jest"
+  },
+  "testRegex": "(test|spec)\\.tsx?$",
+  "moduleFileExtensions": [
+    "ts",
+    "tsx",
+    "js",
+    "jsx",
+    "json",
+    "node"
   ],
   "verbose": true,
   "collectCoverage": true,
