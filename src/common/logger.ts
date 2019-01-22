@@ -7,7 +7,7 @@ import * as util from 'util';
 import { isElectronQA } from './env';
 import { getCommandLineArgs } from './utils';
 
-interface ILogMsg {
+export interface ILogMsg {
     level: LogLevel;
     details: any;
     showInConsole: boolean;
@@ -57,6 +57,13 @@ class Logger {
 
         // cleans up old logs if there are any
         this.cleanupOldLogs();
+    }
+
+    /**
+     * get instance of logQueue
+     */
+    public getLogQueue(): ILogMsg[] {
+        return this.logQueue;
     }
 
     /**

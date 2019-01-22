@@ -81,6 +81,7 @@
   "devDependencies": {
     "@types/auto-launch": "^5.0.0",
     "@types/ffi": "0.2.1",
+    "@types/jest": "23.3.12",
     "@types/lodash.omit": "^4.5.4",
     "@types/node": "10.11.4",
     "@types/react": "16.4.18",
@@ -95,6 +96,7 @@
     "browserify": "16.2.3",
     "chromedriver": "2.45.0",
     "cross-env": "5.2.0",
+    "del": "3.0.0",
     "electron": "4.0.8",
     "electron-builder": "20.38.4",
     "electron-builder-squirrel-windows": "20.38.3",
@@ -118,10 +120,10 @@
     "robotjs": "0.5.1",
     "selenium-webdriver": "3.6.0",
     "spectron": "5.0.0",
+    "ts-jest": "23.10.5",
     "tslint": "5.11.0",
     "typescript": "3.1.1",
-    "wdio-selenium-standalone-service": "0.0.12",
-    "del": "latest"
+    "wdio-selenium-standalone-service": "0.0.12"
   },
   "dependencies": {
     "@types/ffi": "0.2.1",
