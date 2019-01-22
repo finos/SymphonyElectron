@@ -46,6 +46,8 @@
   "Cut":"Couper",
   "Delete":"Effacer",
   "Disable Hamburger menu":"Désactiver le menu Hamburger",
+  "Dev Tools disabled": "Outils de développement désactivés",
+  "Dev Tools has been disabled! Please contact your system administrator to enable it!": "Dev Tools a été désactivé ! Veuillez contacter votre administrateur système pour l’activer !",
   "Edit":"Modifier",
   "Enable Hamburger menu":"Activer le menu Hamburger",
   "Error loading configuration":"Erreur de chargement de la configuration",
