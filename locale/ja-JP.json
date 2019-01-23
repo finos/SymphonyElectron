@@ -16,6 +16,7 @@
   "Bring All to Front": "すべて前面に表示",
   "Bring to Front on Notifications": "通知時に前面に表示",
   "Certificate Error": "証明書のエラー",
+  "Cannot verify Root CA for the hostname": "ホスト名のルートCAを確認できません",
   "Close": "閉じる",
   "Cancel": "キャンセル",
   "ContextMenu": {
