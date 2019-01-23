@@ -343,6 +343,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
             const dialogContent = { type: 'error', title: i18n.getMessageFor('Permission Denied') + '!', message: fullMessage };
             mainWindow.webContents.send('is-screen-share-enabled', config.permissions.media, dialogContent);
         }
+        ignoreAllCertErrors = false;
     });
 
     mainWindow.webContents.on('did-fail-load', function (event, errorCode,
