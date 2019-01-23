@@ -78,6 +78,9 @@ class TitleBar {
         attachEventListeners(this.closeButton, 'click', this.closeWindow.bind(this));
         attachEventListeners(this.maximizeButton, 'click', this.maximizeOrUnmaximize.bind(this));
         attachEventListeners(this.minimizeButton, 'click', this.minimize.bind(this));
+        attachEventListeners(this.minimizeButton, 'contextmenu', this.removeContextMenu.bind(this));
+        attachEventListeners(this.maximizeButton, 'contextmenu', this.removeContextMenu.bind(this));
+        attachEventListeners(this.closeButton, 'contextmenu', this.removeContextMenu.bind(this));
 
         attachEventListeners(this.hamburgerMenuButton, 'mousedown', TitleBar.handleMouseDown.bind(this));
         attachEventListeners(this.closeButton, 'mousedown', TitleBar.handleMouseDown.bind(this));
@@ -94,6 +97,18 @@ class TitleBar {
         this.minimizeButton.title = content.Minimize || 'Minimize';
         this.maximizeButton.title = content.Maximize || 'Maximize';
         this.closeButton.title = content.Close || 'Close';
+    }
+
+    /**
+     * Method that remove context menu
+     * ELECTRON-769: Hamburger Menu - Copy/ Reload in menu context displays when right 
+     * clicking on minimize, maximize, close button of the hamburger menu
+     *
+     */
+    // eslint-disable-next-line class-methods-use-this
+    removeContextMenu(event) {
+        event.preventDefault();
+        return false;
     }
 
     /**
