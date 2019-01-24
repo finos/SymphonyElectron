@@ -124,6 +124,10 @@
     "Pen": "Stylo",
     "Snipping Tool": "Outil Capture"
   },
+  "AboutSymphony": {
+    "About Symphony": "À propos de Symphony",
+    "Version": "Version"
+  },
   "Select All": "Tout sélectionner",
   "Services": "Services",
   "Show All": "Tout afficher",
