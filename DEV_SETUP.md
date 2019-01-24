@@ -36,7 +36,7 @@
   * npm run unpacked-mac
   * The distributable is created in the `dist/mac` directory
 - to build mac package (installer):  
-  * npm run packages-mac
+  * npm run packed-mac
   * The .pkg file will be generated in the `installer/mac/build` directory
 
 ### Windows
