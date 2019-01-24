@@ -48,7 +48,7 @@
   "Delete": "Delete",
   "Disable Hamburger menu": "Disable Hamburger menu",
   "Dev Tools disabled": "Dev Tools disabled",
-  "Dev Tools has been disabled. Please contact your system administrator": "Dev Tools has been disabled. Please contact your system administrator",
+  "Dev Tools has been disabled! Please contact your system administrator to enable it!": "Dev Tools has been disabled! Please contact your system administrator to enable it!",
   "Edit": "Edit",
   "Enable Hamburger menu": "Enable Hamburger menu",
   "Error loading configuration": "Error loading configuration",
