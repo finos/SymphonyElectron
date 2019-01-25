@@ -1,7 +1,7 @@
 {
   "name": "Symphony",
   "productName": "Symphony",
-  "version": "4.3.0",
+  "version": "4.3.1",
   "clientVersion": "1.54",
   "buildNumber": "0",
   "description": "Symphony desktop app (Foundation ODP)",
@@ -96,7 +96,7 @@
     "browserify": "16.2.3",
     "chromedriver": "2.45.0",
     "cross-env": "5.2.0",
-    "electron": "4.0.1",
+    "electron": "4.0.2",
     "electron-builder": "20.38.4",
     "electron-builder-squirrel-windows": "20.38.3",
     "electron-chromedriver": "4.0.0-beta.1",
@@ -149,6 +149,6 @@
   },
   "optionalDependencies": {
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.3",
-    "swift-search": "2.0.3"
+    "swift-search": "3.0.0"
   }
 }

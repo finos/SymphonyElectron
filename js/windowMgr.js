@@ -70,6 +70,7 @@ const DEFAULT_HEIGHT = 600;
 
 // Certificate transparency whitelist
 let ctWhitelist = [];
+let ignoreAllCertErrors = false;
 
 /**
  * Adds a window key
@@ -342,6 +343,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
             const dialogContent = { type: 'error', title: i18n.getMessageFor('Permission Denied') + '!', message: fullMessage };
             mainWindow.webContents.send('is-screen-share-enabled', config.permissions.media, dialogContent);
         }
+        ignoreAllCertErrors = false;
     });
 
     mainWindow.webContents.on('did-fail-load', function (event, errorCode,
@@ -791,7 +793,28 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
             return callback(0);
         }
 
-        return callback(-2);
+        if (!ignoreAllCertErrors) {
+            const browserWin = electron.BrowserWindow.getFocusedWindow();
+            if (browserWin && !browserWin.isDestroyed()) {
+                const buttonId = electron.dialog.showMessageBox(browserWin, {
+                    type: 'warning',
+                    buttons: [ 'Allow', 'Deny', 'Ignore All' ],
+                    defaultId: 1,
+                    cancelId: 1,
+                    noLink: true,
+                    title: i18n.getMessageFor('Certificate Error'),
+                    message: `${i18n.getMessageFor('Certificate Error')}: ${i18n.getMessageFor('Cannot verify Root CA for the hostname')}: ${hostUrl}`,
+                });
+
+                if (buttonId === 2) {
+                    ignoreAllCertErrors = true;
+                }
+
+                return callback(buttonId === 1 ? -2 : 0);
+            }
+            return callback(-2);
+        }
+        return callback(0);
     }
 
 }
