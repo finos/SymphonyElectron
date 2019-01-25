@@ -19,10 +19,12 @@ function renderDom() {
 
 ipcRenderer.on('versionInfo', (event, versionInfo) => {
     const versionText = document.getElementById('version');
-    const { version, clientVersion, buildNumber } = versionInfo;
+    const { version, clientVersion, buildNumber, i18n } = versionInfo;
+
+    document.title = i18n['About Symphony'] || 'About Symphony';
 
     if (versionText) {
-        versionText.innerHTML = version ? `Version ${clientVersion}-${version} (${buildNumber})` : 'N/A';
+        versionText.innerHTML = version ? `${i18n.Version || 'Version'} ${clientVersion}-${version} (${buildNumber})` : 'N/A';
     }
 });
 

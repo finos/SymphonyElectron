@@ -124,6 +124,10 @@
     "Pen": "ペン",
     "Snipping Tool": "切り取りツール"
   },
+  "AboutSymphony": {
+    "About Symphony": "Symphonyについて",
+    "Version": "バージョン"
+  },
   "Select All": "すべてを選択",
   "Services": "サービス",
   "Show All": "すべてを表示",
