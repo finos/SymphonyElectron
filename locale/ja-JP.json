@@ -16,7 +16,6 @@
   "Bring All to Front": "すべて前面に表示",
   "Bring to Front on Notifications": "通知時に前面に表示",
   "Certificate Error": "証明書のエラー",
-  "Cannot verify Root CA for the hostname": "ホスト名のルートCAを確認できません",
   "Close": "閉じる",
   "Cancel": "キャンセル",
   "ContextMenu": {
@@ -45,7 +44,7 @@
   "Copy": "コピー",
   "Custom": "カスタム",
   "Cut": "切り取り",
-  "Delete": "削除",  
+  "Delete": "削除",
   "Disable Hamburger menu": "ハンバーガーメニューを無効にする",
   "Dev Tools disabled": "開発ツールが無効",
   "Dev Tools has been disabled! Please contact your system administrator to enable it!": "開発ツールが無効になっています。システム管理者に連絡して、有効にしてください。",
