@@ -856,7 +856,7 @@ function getMenu() {
  * @returns {*}
  */
 function getWindowSizeAndPosition(window) {
-    if (window) {
+    if (window && !window.isDestroyed()) {
         let newPos = window.getPosition();
         let newSize = window.getSize();
 
