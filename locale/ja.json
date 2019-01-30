@@ -34,9 +34,9 @@
     "Search with Google": "Googleで検索"
   },
   "DownloadManager": {
-    "Show in Folder": "フォルダで見て",
-    "Reveal in Finder": "Finderで明らかにする",
-    "Open": "開いた",
+    "Show in Folder": "フォルダーを開く",
+    "Reveal in Finder": "Finderで確認する",
+    "Open": "開く",
     "Downloaded": "ダウンロード済み",
     "File not Found": "ファイルが見つかりません",
     "The file you are trying to open cannot be found in the specified path.": "開こうとしているファイルが指定されたパスに見つかりません."
