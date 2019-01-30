@@ -35,7 +35,7 @@
   },
   "DownloadManager": {
     "Show in Folder": "フォルダーを開く",
-    "Reveal in Finder": "Finderで明らかにする",
+    "Reveal in Finder": "Finderで確認する",
     "Open": "開く",
     "Downloaded": "ダウンロード済み",
     "File not Found": "ファイルが見つかりません",
