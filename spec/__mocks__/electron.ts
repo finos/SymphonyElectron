@@ -2,12 +2,15 @@ import { EventEmitter } from 'events';
 import * as path from 'path';
 const ipcEmitter = new EventEmitter();
 
+const mockIdleTime: number = 15;
 const appName: string = 'Symphony';
-const executableName = '/Symphony.exe';
+const executableName: string = '/Symphony.exe';
+const isReady: boolean = true;
 interface IApp {
     getAppPath(): string;
     getPath(type: string): string;
     getName(): string;
+    isReady(): boolean;
 }
 interface IIpcMain {
     on(event: any, cb: any): void;
@@ -18,6 +21,9 @@ interface IIpcRenderer {
     on(eventName: any, cb: any): void;
     send(event: any, cb: any): void;
     removeListener(eventName: any, cb: any): void;
+}
+interface IPowerMonitor {
+    querySystemIdleTime(): void;
 }
 
 // use config provided by test framework
@@ -35,6 +41,7 @@ const app: IApp = {
         return pathToConfigDir();
     },
     getName: () => appName,
+    isReady: () => isReady,
 };
 
 // simple ipc mocks for render and main process ipc using
@@ -53,6 +60,10 @@ const ipcMain: IIpcMain = {
         };
         ipcEmitter.emit(event, senderEvent, args);
     },
+};
+
+const powerMonitor: IPowerMonitor = {
+    querySystemIdleTime: jest.fn().mockImplementation((cb) => cb(mockIdleTime)),
 };
 
 const ipcRenderer: IIpcRenderer = {
@@ -88,6 +99,7 @@ export = {
     app,
     ipcMain,
     ipcRenderer,
+    powerMonitor,
     require: jest.fn(),
     match: jest.fn(),
     remote: jest.fn(),
