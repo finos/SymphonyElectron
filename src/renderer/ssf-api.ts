@@ -1,12 +1,17 @@
 import { ipcRenderer, remote } from 'electron';
 
+import { buildNumber } from '../../package.json';
 import {
     apiCmds,
     apiName,
-    IActivityDetection,
     IBadgeCount,
-    IBoundsChange, IScreenSharingIndicator,
-    IScreenSnippet, KeyCodes,
+    IBoundsChange,
+    ILogMsg,
+    IScreenSharingIndicator,
+    IScreenSnippet,
+    IVersionInfo,
+    KeyCodes,
+    LogLevel,
 } from '../common/api-interface';
 import { i18n, LocaleType } from '../common/i18n-preload';
 import { throttle } from '../common/utils';
@@ -21,12 +26,14 @@ interface ICryptoLib {
     AESGCMDecrypt: (base64IV: string, base64AAD: string, base64Key: string, base64In: string) => string | null;
 }
 
-interface ILocalObject {
+export interface ILocalObject {
     ipcRenderer;
-    activityDetectionCallback?: (arg: IActivityDetection) => void;
+    logger?: (msg: ILogMsg, logLevel: LogLevel, showInConsole: boolean) => void;
+    activityDetectionCallback?: (arg: number) => void;
     screenSnippetCallback?: (arg: IScreenSnippet) => void;
     boundsChangeCallback?: (arg: IBoundsChange) => void;
     screenSharingIndicatorCallback?: (arg: IScreenSharingIndicator) => void;
+    protocolActionCallback?: (arg: string) => void;
 }
 
 const local: ILocalObject = {
@@ -45,6 +52,21 @@ const throttledSetLocale = throttle((locale) => {
     local.ipcRenderer.send(apiName.symphonyApi, {
         cmd: apiCmds.setLocale,
         locale,
+    });
+}, 1000);
+
+const throttledActivate = throttle((windowName) => {
+    local.ipcRenderer.send(apiName.symphonyApi, {
+        cmd: apiCmds.activate,
+        windowName,
+    });
+}, 1000);
+
+const throttledBringToFront = throttle((windowName, reason) => {
+    local.ipcRenderer.send(apiName.symphonyApi, {
+        cmd: apiCmds.bringToFront,
+        windowName,
+        reason,
     });
 }, 1000);
 
@@ -76,13 +98,52 @@ export class SSFApi {
     public getMediaSource = getSource;
 
     /**
+     * Brings window forward and gives focus.
+     *
+     * @param  {String} windowName - Name of window. Note: main window name is 'main'
+     */
+    public activate(windowName) {
+        if (typeof windowName === 'string') {
+            throttledActivate(windowName);
+        }
+    }
+
+    /**
+     * Brings window forward and gives focus.
+     *
+     * @param  {String} windowName Name of window. Note: main window name is 'main'
+     * @param {String} reason, The reason for which the window is to be activated
+     */
+    public bringToFront(windowName, reason) {
+        if (typeof windowName === 'string') {
+            throttledBringToFront(windowName, reason);
+        }
+    }
+
+    /**
+     * Method that returns various version info
+     */
+    public getVersionInfo(): IVersionInfo {
+        const appName = remote.app.getName();
+        const appVer = remote.app.getVersion();
+
+        return {
+            containerIdentifier: appName,
+            containerVer: appVer,
+            buildNumber,
+            apiVer: '2.0.0',
+            searchApiVer: '3.0.0',
+        };
+    }
+
+    /**
      * Allows JS to register a activity detector that can be used by electron main process.
      *
      * @param  {Object} period - minimum user idle time in millisecond
      * @param  {Object} activityDetectionCallback - function that can be called accepting
      * @example registerActivityDetection(40000, func)
      */
-    public registerActivityDetection(period: number, activityDetectionCallback: Partial<ILocalObject>): void {
+    public registerActivityDetection(period: number, activityDetectionCallback: (arg: number) => void): void {
         if (typeof activityDetectionCallback === 'function') {
             local.activityDetectionCallback = activityDetectionCallback;
 
@@ -101,9 +162,55 @@ export class SSFApi {
      * only one window can register for bounds change.
      * @param  {Function} callback Function invoked when bounds changes.
      */
-    public registerBoundsChange(callback: () => void): void {
+    public registerBoundsChange(callback: (arg: IBoundsChange) => void): void {
         if (typeof callback === 'function') {
             local.boundsChangeCallback = callback;
+        }
+    }
+
+    /**
+     * Allows JS to register a logger that can be used by electron main process.
+     * @param  {Object} logger  function that can be called accepting
+     * object: {
+     *  logLevel: 'ERROR'|'CONFLICT'|'WARN'|'ACTION'|'INFO'|'DEBUG',
+     *  logDetails: String
+     *  }
+     */
+    public registerLogger(logger) {
+        if (typeof logger === 'function') {
+            local.logger = logger;
+
+            // only main window can register
+            local.ipcRenderer.send(apiName.symphonyApi, {
+                cmd: apiCmds.registerLogger,
+            });
+        }
+    }
+
+    /**
+     * Allows JS to register a protocol handler that can be used by the
+     * electron main process.
+     *
+     * @param protocolHandler {Function} callback will be called when app is
+     * invoked with registered protocol (e.g., symphony). The callback
+     * receives a single string argument: full uri that the app was
+     * invoked with e.g., symphony://?streamId=xyz123&streamType=chatroom
+     *
+     * Note: this function should only be called after client app is fully
+     * able for protocolHandler callback to be invoked.  It is possible
+     * the app was started using protocol handler, in this case as soon as
+     * this registration func is invoked then the protocolHandler callback
+     * will be immediately called.
+     */
+    public registerProtocolHandler(protocolHandler) {
+        if (typeof protocolHandler === 'function') {
+
+            local.protocolActionCallback = protocolHandler;
+
+            local.ipcRenderer.send(apiName.symphonyApi, {
+                cmd: apiCmds.registerProtocolHandler,
+            });
+
         }
     }
 
@@ -112,7 +219,7 @@ export class SSFApi {
      *
      * @param screenSnippetCallback {function}
      */
-    public openScreenSnippet(screenSnippetCallback: Partial<IScreenSnippet>): void {
+    public openScreenSnippet(screenSnippetCallback: (arg: IScreenSnippet) => void): void {
         if (typeof screenSnippetCallback === 'function') {
             local.screenSnippetCallback = screenSnippetCallback;
 
@@ -188,7 +295,14 @@ export class SSFApi {
  * Ipc events
  */
 
-// Creates a data url
+/**
+ * An event triggered by the main process
+ * to construct a canvas for the Windows badge count image
+ *
+ * @param {IBadgeCount} arg {
+ *     count: number
+ * }
+ */
 local.ipcRenderer.on('create-badge-data-url', (_event: Event, arg: IBadgeCount) => {
     const count = arg && arg.count || 0;
 
@@ -228,19 +342,47 @@ local.ipcRenderer.on('create-badge-data-url', (_event: Event, arg: IBadgeCount) 
     }
 });
 
+/**
+ * An event triggered by the main process
+ * when the snippet is complete
+ *
+ * @param {IScreenSnippet} arg {
+ *     message: string,
+ *     data: base64,
+ *     type: 'ERROR' | 'image/jpg;base64',
+ * }
+ */
 local.ipcRenderer.on('screen-snippet-data', (_event: Event, arg: IScreenSnippet) => {
     if (typeof arg === 'object' && typeof local.screenSnippetCallback === 'function') {
         local.screenSnippetCallback(arg);
     }
 });
 
-local.ipcRenderer.on('activity', (_event: Event, arg: IActivityDetection) => {
-    if (typeof arg === 'object' && typeof local.activityDetectionCallback === 'function') {
-        local.activityDetectionCallback(arg);
+/**
+ * An event triggered by the main process
+ * for ever few minutes if the user is active
+ *
+ * @param {number} idleTime - current system idle tick
+ */
+local.ipcRenderer.on('activity', (_event: Event, idleTime: number) => {
+    if (typeof idleTime === 'number' && typeof local.activityDetectionCallback === 'function') {
+        local.activityDetectionCallback(idleTime);
     }
 });
 
-// listen for notifications that some window size/position has changed
+/**
+ * An event triggered by the main process
+ * Whenever some Window position or dimension changes
+ *
+ * @param {IBoundsChange} arg {
+ *     x: number,
+ *     y: number,
+ *     height: number,
+ *     width: number,
+ *     windowName: string
+ * }
+ *
+ */
 local.ipcRenderer.on('boundsChange', (_event, arg: IBoundsChange): void => {
     const { x, y, height, width, windowName } = arg;
     if (x && y && height && width && windowName && typeof local.boundsChangeCallback === 'function') {
@@ -254,6 +396,10 @@ local.ipcRenderer.on('boundsChange', (_event, arg: IBoundsChange): void => {
     }
 });
 
+/**
+ * An event triggered by the main process
+ * when the screen sharing has been stopper
+ */
 local.ipcRenderer.on('screen-sharing-stopped', () => {
     if (typeof local.screenSharingIndicatorCallback === 'function') {
         local.screenSharingIndicatorCallback({ type: 'stopRequested' });
@@ -262,6 +408,33 @@ local.ipcRenderer.on('screen-sharing-stopped', () => {
             cmd: apiCmds.closeWindow,
             windowType: 'screen-sharing-indicator',
         });
+    }
+});
+
+/**
+ * An event triggered by the main process
+ * for send logs on to web app
+ *
+ * @param {object} arg {
+ *      msgs: ILogMsg[],
+ *      logLevel: LogLevel,
+ *      showInConsole: boolean
+ * }
+ *
+ */
+local.ipcRenderer.on('log', (_event, arg) => {
+    if (arg && local.logger) {
+        local.logger(arg.msgs || [], arg.logLevel, arg.showInConsole);
+    }
+});
+
+/**
+ * An event triggered by the main process for processing protocol urls
+ * @param {String} arg - the protocol url
+ */
+local.ipcRenderer.on('protocol-action', (_event, arg: string) => {
+    if (typeof local.protocolActionCallback === 'function' && typeof arg === 'string') {
+        local.protocolActionCallback(arg);
     }
 });
 
@@ -284,7 +457,7 @@ const updateOnlineStatus = (): void => {
 };
 
 // Handle key down events
-const throttledKeyDown = throttle( (event) => {
+const throttledKeyDown = throttle((event) => {
     isAltKey = event.keyCode === KeyCodes.Alt;
     if (event.keyCode === KeyCodes.Esc) {
         local.ipcRenderer.send(apiName.symphonyApi, {
@@ -295,7 +468,7 @@ const throttledKeyDown = throttle( (event) => {
 }, 500);
 
 // Handle key up events
-const throttledKeyUp = throttle( (event) => {
+const throttledKeyUp = throttle((event) => {
     if (isAltKey && (event.keyCode === KeyCodes.Alt || KeyCodes.Esc)) {
         isMenuOpen = !isMenuOpen;
     }

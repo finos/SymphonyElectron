@@ -223,6 +223,7 @@ export class WindowHandler {
                 isWindowsOS,
                 locale: i18n.getLocale(),
                 resources: i18n.loadedResources,
+                origin: this.globalConfig.url,
             });
             this.appMenu = new AppMenu();
 
@@ -542,6 +543,7 @@ export class WindowHandler {
                 nodeIntegration: false,
                 preload: path.join(__dirname, '../renderer/_preload-main.js'),
                 sandbox: true,
+                contextIsolation: true,
             },
             winKey: getGuid(),
         };

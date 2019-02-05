@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import { i18n } from '../common/i18n-preload';
+import AppBridge from './app-bridge';
 import DownloadManager from './components/download-manager';
 import SnackBar from './components/snack-bar';
 import WindowsTitleBar from './components/windows-title-bar';
@@ -13,6 +14,7 @@ interface ISSFWindow extends Window {
 }
 
 const ssfWindow: ISSFWindow = window;
+const appBridge = new AppBridge();
 
 /**
  * creates API exposed from electron.
@@ -39,7 +41,9 @@ const createAPI = () => {
 createAPI();
 
 // When the window is completely loaded
-ipcRenderer.on('page-load', (_event, { locale, resources }) => {
+ipcRenderer.on('page-load', (_event, { locale, resources, origin }) => {
+    // origin for postMessage targetOrigin communication
+    if (origin) appBridge.origin = origin;
 
     i18n.setResource(locale, resources);
 

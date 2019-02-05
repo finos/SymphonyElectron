@@ -1,7 +1,7 @@
 import { BrowserWindow } from 'electron';
 
 import { apiName, IBoundsChange, KeyCodes } from '../common/api-interface';
-import { isWindowsOS } from '../common/env';
+import { isMac, isWindowsOS } from '../common/env';
 import { throttle } from '../common/utils';
 import { config } from './config-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
@@ -14,7 +14,7 @@ export const saveWindowSettings = (): void => {
         const [ x, y ] = browserWindow.getPosition();
         const [ width, height ] = browserWindow.getSize();
         if (x && y && width && height) {
-            browserWindow.webContents.send('boundChanges', { x, y, width, height, windowName: browserWindow.winName } as IBoundsChange);
+            browserWindow.webContents.send('boundsChange', { x, y, width, height, windowName: browserWindow.winName } as IBoundsChange);
 
             if (browserWindow.winName === apiName.mainWindowName) {
                 const isMaximized = browserWindow.isMaximized();
@@ -58,15 +58,20 @@ export const activate = (windowName: string, shouldFocus: boolean = true): void 
 
     const windows = windowHandler.getAllWindows();
     for (const key in windows) {
-        if (windows.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(windows, key)) {
             const window = windows[ key ];
             if (window && !window.isDestroyed() && window.winName === windowName) {
 
                 // Bring the window to the top without focusing
                 // Flash task bar icon in Windows for windows
                 if (!shouldFocus) {
-                    window.moveTop();
-                    return isWindowsOS ? window.flashFrame(true) : null;
+                    return isMac ? window.showInactive() : window.flashFrame(true);
+                }
+
+                // Note: On window just focusing will preserve window snapped state
+                // Hiding the window and just calling the focus() won't display the window
+                if (isWindowsOS) {
+                    return window.isMinimized() ? window.restore() : window.focus();
                 }
 
                 return window.isMinimized() ? window.restore() : window.show();

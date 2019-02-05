@@ -198,7 +198,7 @@ class Logger {
         }
 
         if (this.loggerWindow) {
-            this.loggerWindow.send('log', { msgs: [ logMsg ] });
+            this.loggerWindow.send('log', { msgs: [ logMsg ], logLevel: this.desiredLogLevel, showInConsole: this.showInConsole });
         } else {
             this.logQueue.push(logMsg);
             // don't store more than 100 msgs. keep most recent log msgs.

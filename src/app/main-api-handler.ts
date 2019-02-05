@@ -95,21 +95,6 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
             }
             break;
         }
-        /*case ApiCmds.optimizeMemoryConsumption:
-            if (typeof arg.memory === 'object'
-                && typeof arg.cpuUsage === 'object'
-                && typeof arg.memory.workingSetSize === 'number') {
-                setPreloadMemoryInfo(arg.memory, arg.cpuUsage);
-            }
-            break;
-        case ApiCmds.optimizeMemoryRegister:
-            setPreloadWindow(event.sender);
-            break;
-        case ApiCmds.setIsInMeeting:
-            if (typeof arg.isInMeeting === 'boolean') {
-                setIsInMeeting(arg.isInMeeting);
-            }
-            break;*/
         case apiCmds.setLocale:
             if (typeof arg.locale === 'string') {
                 updateLocale(arg.locale as LocaleType);

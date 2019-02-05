@@ -1,5 +1,6 @@
 export enum apiCmds {
     isOnline = 'is-online',
+    getVersionInfo = 'get-version-info',
     registerLogger = 'register-logger',
     setBadgeCount = 'set-badge-count',
     badgeDataUrl = 'badge-data-url',
@@ -50,13 +51,6 @@ export interface IApiArgs {
 
 export type WindowTypes = 'screen-picker' | 'screen-sharing-indicator';
 
-/**
- * Activity detection
- */
-export interface IActivityDetection {
-    idleTime: number;
-}
-
 export interface IBadgeCount {
     count: number;
 }
@@ -87,3 +81,20 @@ export enum KeyCodes {
     Esc = 27,
     Alt = 18,
 }
+
+export interface IVersionInfo {
+    containerIdentifier: string;
+    containerVer: string;
+    buildNumber: string;
+    apiVer: string;
+    searchApiVer: string;
+}
+
+export interface ILogMsg {
+    level: LogLevel;
+    details: any;
+    showInConsole: boolean;
+    startTime: number;
+}
+
+export type LogLevel = 'error' | 'warn' | 'info' | 'verbose' | 'debug' | 'silly';
