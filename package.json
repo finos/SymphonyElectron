@@ -128,7 +128,7 @@
     "winreg": "1.2.4"
   },
   "optionalDependencies": {
-    "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.4",
+    "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.5",
     "swift-search": "3.0.0"
   }
 }
