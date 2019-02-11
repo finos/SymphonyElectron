@@ -1,4 +1,4 @@
-import { parse } from 'url';
+import { DesktopCapturerSource } from 'electron';
 
 import {
     apiCmds,
@@ -8,10 +8,10 @@ import {
     IScreenSnippet,
     LogLevel,
 } from '../common/api-interface';
+import { IScreenSourceError } from './desktop-capturer';
 import { SSFApi } from './ssf-api';
 
 const ssf = new SSFApi();
-const hostNameRegex = /symphony.com(3)?$/;
 
 export default class AppBridge {
 
@@ -23,9 +23,7 @@ export default class AppBridge {
      */
     private static isValidEvent(event): boolean {
         if (!event) return false;
-        const origin = event.origin || event.originalEvent.origin;
-        const { hostname } = parse(origin);
-        return hostname ? hostNameRegex.test(hostname) : false;
+        return event.source && event.source === window;
     }
 
     public origin: string;
@@ -39,12 +37,17 @@ export default class AppBridge {
             this.registerLoggerCallback(msg, logLevel, showInConsole),
         onRegisterProtocolHandlerCallback: (uri: string) => this.protocolHandlerCallback(uri),
         onScreenSharingIndicatorCallback: (arg: IScreenSharingIndicator) => this.screenSharingIndicatorCallback(arg),
+        onMediaSourceCallback: (
+            requestId: number | undefined,
+            error: IScreenSourceError | null,
+            source: DesktopCapturerSource | undefined,
+        ): void => this.gotMediaSource(requestId, error, source),
     };
 
     constructor() {
         // starts with corporate pod and
         // will be updated with the global config url
-        this.origin = 'corporate.symphony.com';
+        this.origin = 'https://corporate.symphony.com';
         window.addEventListener('message', this.callbackHandlers.onMessage);
     }
 
@@ -97,6 +100,12 @@ export default class AppBridge {
             case apiCmds.openScreenSharingIndicator:
                 ssf.showScreenSharingIndicator(data, this.callbackHandlers.onScreenSharingIndicatorCallback);
                 break;
+            case apiCmds.closeScreenSharingIndicator:
+                ssf.closeScreenSharingIndicator();
+                break;
+            case apiCmds.getMediaSource:
+                ssf.getMediaSource(data, this.callbackHandlers.onMediaSourceCallback);
+                break;
         }
     }
 
@@ -143,13 +152,23 @@ export default class AppBridge {
     }
 
     /**
+     * Broadcast the user selected source
+     * @param requestId {number}
+     * @param error {Error}
+     * @param source {DesktopCapturerSource}
+     */
+    private gotMediaSource(requestId: number | undefined, error: IScreenSourceError | null, source: DesktopCapturerSource | undefined): void {
+        this.broadcastMessage('media-source-callback', { requestId, source, error });
+    }
+
+    /**
      * Method that broadcast messages to a specific origin via postMessage
      *
      * @param method {string}
      * @param data {any}
      */
     private broadcastMessage(method: string, data: any): void {
-        window.postMessage({ method, data }, `https://${this.origin}`);
+        window.postMessage({ method, data }, this.origin);
     }
 
 }

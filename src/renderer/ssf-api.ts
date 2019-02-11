@@ -19,7 +19,6 @@ import { getSource } from './desktop-capturer';
 
 let isAltKey: boolean = false;
 let isMenuOpen: boolean = false;
-let nextId = 0;
 
 interface ICryptoLib {
     AESGCMEncrypt: (name: string, base64IV: string, base64AAD: string, base64Key: string, base64In: string) => string | null;
@@ -67,6 +66,13 @@ const throttledBringToFront = throttle((windowName, reason) => {
         cmd: apiCmds.bringToFront,
         windowName,
         reason,
+    });
+}, 1000);
+
+const throttledCloseScreenShareIndicator = throttle(() => {
+    ipcRenderer.send(apiName.symphonyApi, {
+        cmd: apiCmds.closeWindow,
+        windowType: 'screen-sharing-indicator',
     });
 }, 1000);
 
@@ -267,26 +273,23 @@ export class SSFApi {
      *    - 'stopRequested' - user clicked "Stop Sharing" button.
      */
     public showScreenSharingIndicator(options, callback): void {
-        const { stream, displayId } = options;
+        const { displayId, requestId } = options;
 
         if (typeof callback === 'function') {
-            if (!stream || !stream.active || stream.getVideoTracks().length !== 1) {
-                callback({ type: 'error', reason: 'bad stream' });
-                return;
-            }
-            if (displayId && typeof (displayId) !== 'string') {
-                callback({ type: 'error', reason: 'bad displayId' });
-                return;
-            }
-
             local.screenSharingIndicatorCallback = callback;
-            const id = ++nextId;
             ipcRenderer.send(apiName.symphonyApi, {
                 cmd: apiCmds.openScreenSharingIndicator,
-                displayId: options.displayId,
-                id,
+                displayId,
+                id: requestId,
             });
         }
+    }
+
+    /**
+     * Closes the screen sharing indicator
+     */
+    public closeScreenSharingIndicator(): void {
+        throttledCloseScreenShareIndicator();
     }
 
 }
@@ -400,9 +403,9 @@ local.ipcRenderer.on('boundsChange', (_event, arg: IBoundsChange): void => {
  * An event triggered by the main process
  * when the screen sharing has been stopper
  */
-local.ipcRenderer.on('screen-sharing-stopped', () => {
+local.ipcRenderer.on('screen-sharing-stopped', (_event, id) => {
     if (typeof local.screenSharingIndicatorCallback === 'function') {
-        local.screenSharingIndicatorCallback({ type: 'stopRequested' });
+        local.screenSharingIndicatorCallback({ type: 'stopRequested', requestId: id });
         // closes the screen sharing indicator
         ipcRenderer.send(apiName.symphonyApi, {
             cmd: apiCmds.closeWindow,

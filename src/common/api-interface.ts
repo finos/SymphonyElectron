@@ -21,7 +21,9 @@ export enum apiCmds {
     keyPress = 'key-press',
     closeWindow = 'close-window',
     openScreenSharingIndicator = 'open-screen-sharing-indicator',
+    closeScreenSharingIndicator = 'close-screen-sharing-indicator',
     downloadManagerAction = 'download-manager-action',
+    getMediaSource = 'get-media-source',
 }
 
 export enum apiName {
@@ -74,6 +76,7 @@ export interface IBoundsChange extends Electron.Rectangle {
  */
 export interface IScreenSharingIndicator {
     type: string;
+    requestId: number;
     reason?: string;
 }
 
