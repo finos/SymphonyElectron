@@ -79,7 +79,7 @@ function sanitize(windowName) {
  */
 electron.ipcMain.on(apiName, (event, arg) => {
 
-    log.send(logLevels.INFO, `Processing event for API ${apiName} with arg ${JSON.stringify(arg)}`);
+    log.send(logLevels.INFO, `Processing event for API ${apiName}`);
 
     if (!isValidWindow(event)) {
         return;
