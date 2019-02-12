@@ -6,11 +6,13 @@ const mockIdleTime: number = 15;
 const appName: string = 'Symphony';
 const executableName: string = '/Symphony.exe';
 const isReady: boolean = true;
+const version: string = '4.0.0';
 interface IApp {
     getAppPath(): string;
     getPath(type: string): string;
     getName(): string;
     isReady(): boolean;
+    getVersion(): string;
 }
 interface IIpcMain {
     on(event: any, cb: any): void;
@@ -38,10 +40,14 @@ const app: IApp = {
         if (type === 'exe') {
             return path.join(pathToConfigDir(), executableName);
         }
+        if (type === 'userData') {
+            return path.join(pathToConfigDir(), '/../config');
+        }
         return pathToConfigDir();
     },
     getName: () => appName,
     isReady: () => isReady,
+    getVersion: () => version,
 };
 
 // simple ipc mocks for render and main process ipc using
