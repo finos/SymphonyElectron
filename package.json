@@ -1,7 +1,7 @@
 {
   "name": "Symphony",
   "productName": "Symphony",
-  "version": "4.3.3",
+  "version": "4.4.0",
   "clientVersion": "1.54",
   "buildNumber": "0",
   "description": "Symphony desktop app (Foundation ODP)",
@@ -87,7 +87,7 @@
     "browserify": "16.2.3",
     "chromedriver": "2.45.0",
     "cross-env": "5.2.0",
-    "electron": "4.0.2",
+    "electron": "4.0.4",
     "electron-builder": "20.38.4",
     "electron-builder-squirrel-windows": "20.38.3",
     "electron-chromedriver": "4.0.0-beta.1",

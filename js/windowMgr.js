@@ -204,6 +204,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
             sandbox: true,
             nodeIntegration: false,
             preload: preloadMainScript,
+            backgroundThrottling: false
         }
     };
 
@@ -505,6 +506,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                     newWinOptions.alwaysOnTop = alwaysOnTop;
                     newWinOptions.frame = true;
                     newWinOptions.parent = null;
+                    newWinOptions.webPreferences.backgroundThrottling = false;
 
                     let newWinKey = getGuid();
 
