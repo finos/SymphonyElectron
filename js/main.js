@@ -49,7 +49,8 @@ require('./mainApiMgr.js');
 // monitor memory of main process
 require('./memoryMonitor.js');
 
-// adds 'symphony' as a protocol in the system. plist file in macOS
+// adds 'symphony' as a protocol in the system.
+// plist file in macOS and registry entries on windows
 app.setAsDefaultProtocolClient('symphony');
 
 const windowMgr = require('./windowMgr.js');
