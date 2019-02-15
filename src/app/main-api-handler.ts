@@ -109,12 +109,12 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
             screenSnippet.capture(event.sender);
             break;
         case apiCmds.closeWindow:
-            windowHandler.closeWindow(arg.windowType);
+            windowHandler.closeWindow(arg.windowType, arg.winKey);
             break;
         case apiCmds.openScreenSharingIndicator:
-            const { displayId, id } = arg;
-            if (typeof displayId === 'string' && typeof id === 'number') {
-                windowHandler.createScreenSharingIndicatorWindow(event.sender, displayId, id);
+            const { displayId, id, streamId } = arg;
+            if (typeof displayId === 'string' && typeof id === 'number' && typeof streamId === 'string') {
+                windowHandler.createScreenSharingIndicatorWindow(event.sender, displayId, id, streamId);
             }
             break;
         case apiCmds.downloadManagerAction:

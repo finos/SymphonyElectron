@@ -69,10 +69,11 @@ const throttledBringToFront = throttle((windowName, reason) => {
     });
 }, 1000);
 
-const throttledCloseScreenShareIndicator = throttle(() => {
+const throttledCloseScreenShareIndicator = throttle((streamId) => {
     ipcRenderer.send(apiName.symphonyApi, {
         cmd: apiCmds.closeWindow,
         windowType: 'screen-sharing-indicator',
+        winKey: streamId,
     });
 }, 1000);
 
@@ -273,7 +274,7 @@ export class SSFApi {
      *    - 'stopRequested' - user clicked "Stop Sharing" button.
      */
     public showScreenSharingIndicator(options, callback): void {
-        const { displayId, requestId } = options;
+        const { displayId, requestId, streamId } = options;
 
         if (typeof callback === 'function') {
             local.screenSharingIndicatorCallback = callback;
@@ -281,6 +282,7 @@ export class SSFApi {
                 cmd: apiCmds.openScreenSharingIndicator,
                 displayId,
                 id: requestId,
+                streamId,
             });
         }
     }
@@ -288,8 +290,8 @@ export class SSFApi {
     /**
      * Closes the screen sharing indicator
      */
-    public closeScreenSharingIndicator(): void {
-        throttledCloseScreenShareIndicator();
+    public closeScreenSharingIndicator(winKey: string): void {
+        throttledCloseScreenShareIndicator(winKey);
     }
 
 }
@@ -406,11 +408,6 @@ local.ipcRenderer.on('boundsChange', (_event, arg: IBoundsChange): void => {
 local.ipcRenderer.on('screen-sharing-stopped', (_event, id) => {
     if (typeof local.screenSharingIndicatorCallback === 'function') {
         local.screenSharingIndicatorCallback({ type: 'stopRequested', requestId: id });
-        // closes the screen sharing indicator
-        ipcRenderer.send(apiName.symphonyApi, {
-            cmd: apiCmds.closeWindow,
-            windowType: 'screen-sharing-indicator',
-        });
     }
 });
 

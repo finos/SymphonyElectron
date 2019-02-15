@@ -8,6 +8,7 @@ import { i18n } from '../../common/i18n-preload';
 
 interface IState {
     id: number;
+    streamId: string;
 }
 
 type mouseEventButton = React.MouseEvent<HTMLButtonElement>;
@@ -25,6 +26,7 @@ export default class ScreenSharingIndicator extends React.Component<{}, IState> 
         super(props);
         this.state = {
             id: 0,
+            streamId: '',
         };
         this.updateState = this.updateState.bind(this);
     }
@@ -70,9 +72,11 @@ export default class ScreenSharingIndicator extends React.Component<{}, IState> 
      * Closes the screen sharing indicator window
      */
     private close(): void {
+        const { streamId } = this.state;
         ipcRenderer.send(apiName.symphonyApi, {
             cmd: apiCmds.closeWindow,
             windowType: 'screen-sharing-indicator',
+            winKey: streamId,
         });
     }
 

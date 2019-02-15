@@ -101,7 +101,7 @@ export default class AppBridge {
                 ssf.showScreenSharingIndicator(data, this.callbackHandlers.onScreenSharingIndicatorCallback);
                 break;
             case apiCmds.closeScreenSharingIndicator:
-                ssf.closeScreenSharingIndicator();
+                ssf.closeScreenSharingIndicator(data.streamId);
                 break;
             case apiCmds.getMediaSource:
                 ssf.getMediaSource(data, this.callbackHandlers.onMediaSourceCallback);

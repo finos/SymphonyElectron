@@ -286,16 +286,19 @@ export class WindowHandler {
     /**
      * Closes the window from an event emitted by the render processes
      *
-     * @param windowType
+     * @param windowType {WindowTypes}
+     * @param winKey {string} - Unique ID assigned to the window
      */
-    public closeWindow(windowType: WindowTypes): void {
+    public closeWindow(windowType: WindowTypes, winKey?: string): void {
         switch (windowType) {
             case 'screen-picker':
                 if (this.screenPickerWindow && this.windowExists(this.screenPickerWindow)) this.screenPickerWindow.close();
                 break;
             case 'screen-sharing-indicator':
-                if (this.screenSharingIndicatorWindow
-                    && this.windowExists(this.screenSharingIndicatorWindow)) this.screenSharingIndicatorWindow.close();
+                if (winKey) {
+                    const browserWindow = this.windows[ winKey ];
+                    if (browserWindow && this.windowExists(browserWindow)) browserWindow.close();
+                }
                 break;
             default:
                 break;
@@ -390,50 +393,6 @@ export class WindowHandler {
     }
 
     /**
-     * Creates a screen sharing indicator whenever uses start
-     * sharing the screen
-     *
-     * @param screenSharingWebContents {Electron.webContents}
-     * @param displayId {string}
-     * @param id {number}
-     */
-    public createScreenSharingIndicatorWindow(screenSharingWebContents: Electron.webContents, displayId: string, id: number): void {
-
-        if (this.screenSharingIndicatorWindow
-            && this.windowExists(this.screenSharingIndicatorWindow)) this.screenSharingIndicatorWindow.close();
-
-        const indicatorScreen =
-            (displayId && electron.screen.getAllDisplays().filter((d) =>
-                displayId.includes(d.id.toString()))[ 0 ]) || electron.screen.getPrimaryDisplay();
-
-        const screenRect = indicatorScreen.workArea;
-        let opts = WindowHandler.getScreenSharingIndicatorOpts();
-        if (opts.width && opts.height) {
-            opts = Object.assign({}, opts, {
-                x: screenRect.x + Math.round((screenRect.width - opts.width) / 2),
-                y: screenRect.y + screenRect.height - opts.height,
-            });
-        }
-        this.screenSharingIndicatorWindow = createComponentWindow('screen-sharing-indicator', opts);
-        this.screenSharingIndicatorWindow.setVisibleOnAllWorkspaces(true);
-        this.screenSharingIndicatorWindow.webContents.once('did-finish-load', () => {
-            if (!this.screenSharingIndicatorWindow || !this.windowExists(this.screenSharingIndicatorWindow)) return;
-            this.screenSharingIndicatorWindow.webContents.send('screen-sharing-indicator-data', { id });
-        });
-        const stopScreenSharing = (_event, indicatorId) => {
-            if (id === indicatorId) {
-                screenSharingWebContents.send('screen-sharing-stopped', id);
-            }
-        };
-
-        this.screenSharingIndicatorWindow.once('close', () => {
-            ipcMain.removeListener('stop-screen-sharing', stopScreenSharing);
-        });
-
-        ipcMain.once('stop-screen-sharing', stopScreenSharing);
-    }
-
-    /**
      * Creates a Basic auth window whenever the network
      * requires authentications
      *
@@ -475,6 +434,55 @@ export class WindowHandler {
 
         ipcMain.once('basic-auth-closed', closeBasicAuth);
         ipcMain.once('basic-auth-login', login);
+    }
+
+    /**
+     * Creates a screen sharing indicator whenever uses start
+     * sharing the screen
+     *
+     * @param screenSharingWebContents {Electron.webContents}
+     * @param displayId {string} - current display id
+     * @param id {number} - postMessage request id
+     * @param streamId {string} - MediaStream id
+     */
+    public createScreenSharingIndicatorWindow(
+        screenSharingWebContents: Electron.webContents,
+        displayId: string,
+        id: number,
+        streamId,
+    ): void {
+        const indicatorScreen =
+            (displayId && electron.screen.getAllDisplays().filter((d) =>
+                displayId.includes(d.id.toString()))[ 0 ]) || electron.screen.getPrimaryDisplay();
+
+        const screenRect = indicatorScreen.workArea;
+        let opts = { ...WindowHandler.getScreenSharingIndicatorOpts(), ...{ winKey: streamId } };
+        if (opts.width && opts.height) {
+            opts = Object.assign({}, opts, {
+                x: screenRect.x + Math.round((screenRect.width - opts.width) / 2),
+                y: screenRect.y + screenRect.height - opts.height,
+            });
+        }
+        this.screenSharingIndicatorWindow = createComponentWindow('screen-sharing-indicator', opts);
+        this.screenSharingIndicatorWindow.setVisibleOnAllWorkspaces(true);
+        this.screenSharingIndicatorWindow.webContents.once('did-finish-load', () => {
+            if (!this.screenSharingIndicatorWindow || !this.windowExists(this.screenSharingIndicatorWindow)) return;
+            this.screenSharingIndicatorWindow.webContents.send('screen-sharing-indicator-data', { id, streamId });
+        });
+        const stopScreenSharing = (_event, indicatorId) => {
+            if (id === indicatorId) {
+                screenSharingWebContents.send('screen-sharing-stopped', id);
+            }
+        };
+
+        this.addWindow(opts.winKey, this.screenSharingIndicatorWindow);
+
+        this.screenSharingIndicatorWindow.once('close', () => {
+            this.removeWindow(streamId);
+            ipcMain.removeListener('stop-screen-sharing', stopScreenSharing);
+        });
+
+        ipcMain.once('stop-screen-sharing', stopScreenSharing);
     }
 
     /**

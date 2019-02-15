@@ -46,6 +46,8 @@ export interface IApiArgs {
     locale: string;
     keyCode: number;
     windowType: WindowTypes;
+    winKey: string;
+    streamId: string;
     displayId: string;
     path: string;
     type: string;
