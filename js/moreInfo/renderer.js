@@ -17,6 +17,7 @@ function renderDom() {
         const uvV = document.getElementById('uv');
         const aresV = document.getElementById('ares');
         const httpparserV = document.getElementById('httpparser');
+        const versionInformation = document.getElementById('version-information');
 
         electronV.innerHTML = `<u>Electron</u> ${process.versions.electron}`;
         chromiumV.innerHTML = `<u>Chromium</u> ${process.versions.chrome}`;
@@ -27,6 +28,10 @@ function renderDom() {
         uvV.innerHTML = `<u>UV</u> ${process.versions.uv}`;
         aresV.innerHTML = `<u>Ares</u> ${process.versions.ares}`;
         httpparserV.innerHTML = `<u>HTTP Parser</u> ${process.versions.http_parser}`;
+        
+        ipcRenderer.on('more-info-inflate-dom', (event, arg) => {
+            versionInformation.innerHTML = `<b>${arg}</b>`;
+        });
     });
 }
 

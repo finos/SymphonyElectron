@@ -72,6 +72,7 @@ function openMoreInfoWindow(windowName) {
     moreInfoWindow = new BrowserWindow(windowConfig);
     moreInfoWindow.setVisibleOnAllWorkspaces(true);
     moreInfoWindow.loadURL(getTemplatePath());
+    moreInfoWindow.setTitle(i18n.getMessageFor('More Information'));
 
     // sets the AlwaysOnTop property for the about window
     // if the main window's AlwaysOnTop is true
@@ -85,10 +86,12 @@ function openMoreInfoWindow(windowName) {
     });
 
     moreInfoWindow.webContents.on('did-finish-load', () => {
+        const versionInfomationLabel = i18n.getMessageFor('Version Information');
         // initialize crash reporter
         initCrashReporterMain({ process: 'more info window' });
         initCrashReporterRenderer(moreInfoWindow, { process: 'render | more info window' });
         moreInfoWindow.webContents.send('versionInfo', { version, clientVersion, buildNumber });
+        moreInfoWindow.webContents.send('more-info-inflate-dom', versionInfomationLabel);
         if (!isMac) {
             // prevents from displaying menu items when "alt" key is pressed
             moreInfoWindow.setMenu(null);
