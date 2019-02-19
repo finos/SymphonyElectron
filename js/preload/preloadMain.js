@@ -86,14 +86,14 @@ const throttledSetIsInMeetingStatus = throttle(1000, function (isInMeeting) {
 local.ipcRenderer.on('on-page-load', () => {
     snackBar = new SnackBar();
 
-        webFrame.setSpellCheckProvider('en-US', true, {
-            spellCheck (text) {
-                return !local.ipcRenderer.sendSync(apiName, {
-                    cmd: apiCmds.isMisspelled,
-                    text
-                });
-            }
-        });
+    webFrame.setSpellCheckProvider('en-US', true, {
+        spellCheck(text) {
+            return !local.ipcRenderer.sendSync(apiName, {
+                cmd: apiCmds.isMisspelled,
+                text
+            });
+        }
+    });
 
     // only registers main window's preload
     if (window.name === 'main') {
