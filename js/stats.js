@@ -76,8 +76,7 @@ const logProcessInfo = () => {
     log.send(logLevels.INFO, `Sandboxed? ${process.sandboxed}`);
     log.send(logLevels.INFO, `Chrome Version? ${process.versions.chrome}`);
     log.send(logLevels.INFO, `Electron Version? ${process.versions.electron}`);
-    log.send(logLevels.INFO, `Creation Time? ${process.getCreationTime()}`);
-}
+};
 
 logSystemStats();
 logGPUStats();
