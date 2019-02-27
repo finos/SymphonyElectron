@@ -22,7 +22,7 @@
   ],
   "coverageDirectory": "out/coverage",
   "collectCoverageFrom": [
-    "js/**/*.js",
+    "src/**/*.{ts,tsx}",
     "!**/node_modules/**",
     "!**/vendor/**"
   ],
