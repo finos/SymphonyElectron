@@ -13,6 +13,7 @@ jest.mock('../src/common/utils', () => {
 jest.mock('../src/common/env', () => {
     return {
         isWindowsOS: false,
+        isMac: true
     };
 });
 
@@ -39,6 +40,31 @@ describe('protocol handler', () => {
         protocolHandlerInstance.sendProtocol(uri);
 
         expect(spy).toBeCalledWith(protocolAction, 'symphony://?userId=123456');
+    });
+
+    it('protocol activate should be called when uri is correct on macOS', () => {
+        const { activate } = require('../src/app/window-actions');
+
+        protocolHandlerInstance.preloadWebContents = { send: jest.fn() };
+        const uri: string = 'symphony://?userId=123456';
+
+        protocolHandlerInstance.sendProtocol(uri);
+
+        expect(activate).toBeCalledWith('main');
+    });
+
+    it('protocol activate should not be called when uri is correct on non macOS', () => {
+        const env = require('../src/common/env');
+        env.isMac = false;
+
+        const { activate } = require('../src/app/window-actions');
+
+        protocolHandlerInstance.preloadWebContents = { send: jest.fn() };
+        const uri: string = 'symphony://?userId=123456';
+
+        protocolHandlerInstance.sendProtocol(uri);
+
+        expect(activate).not.toBeCalled();
     });
 
     it('protocol action not should be called when uri is incorrect', () => {
