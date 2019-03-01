@@ -45,7 +45,9 @@ class ProtocolHandler {
         }
         // This is needed for mac OS as it brings pop-outs to foreground
         // (if it has been previously focused) instead of main window
-        if (isMac) activate(apiName.mainWindowName);
+        if (isMac) {
+            activate(apiName.mainWindowName);
+        }
 
         if (ProtocolHandler.isValidProtocolUri(uri)) {
             this.preloadWebContents.send('protocol-action', uri);
