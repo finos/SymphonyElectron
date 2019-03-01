@@ -86,19 +86,14 @@ const throttledSetIsInMeetingStatus = throttle(1000, function (isInMeeting) {
 local.ipcRenderer.on('on-page-load', () => {
     snackBar = new SnackBar();
 
-    // Enable spellchecker only for main window until
-    // the underline memory leak is fixed on electron
-    // https://github.com/electron/electron/issues/15459
-    if (window.name === 'main') {
-        webFrame.setSpellCheckProvider('en-US', true, {
-            spellCheck (text) {
-                return !local.ipcRenderer.sendSync(apiName, {
-                    cmd: apiCmds.isMisspelled,
-                    text
-                });
-            }
-        });
-    }
+    webFrame.setSpellCheckProvider('en-US', true, {
+        spellCheck(text) {
+            return !local.ipcRenderer.sendSync(apiName, {
+                cmd: apiCmds.isMisspelled,
+                text
+            });
+        }
+    });
 
     // only registers main window's preload
     if (window.name === 'main') {

@@ -97,7 +97,7 @@
 				TargetAttributes = {
 					3A10EBCE1ED4336D0083702F = {
 						CreatedOnToolsVersion = 8.3.2;
-						DevelopmentTeam = BUX8SV4LQA;
+						DevelopmentTeam = 7S74264P3V;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -283,10 +283,10 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = BUX8SV4LQA;
+				DEVELOPMENT_TEAM = 7S74264P3V;
 				INFOPLIST_FILE = SymphonySettingsPlugin/Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = com.symphony.SymphonySettingsPlugin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -299,10 +299,10 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = BUX8SV4LQA;
+				DEVELOPMENT_TEAM = 7S74264P3V;
 				INFOPLIST_FILE = SymphonySettingsPlugin/Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = com.symphony.SymphonySettingsPlugin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

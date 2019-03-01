@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Kill the existing running instance
 sudo killall Symphony
@@ -12,7 +12,7 @@ delete_app()
 compare_versions()
 {
     # Get the installer version:
-    CURRENT_VERSION=4.3.1
+    CURRENT_VERSION=APP_VERSION
 
     # Get the currently installed version:
     INSTALLED_VERSION=$(plutil -p /Applications/Symphony.app/Contents/Info.plist | awk '/CFBundleShortVersionString/ {print substr($3, 2, length($3)-2)}')

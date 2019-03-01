@@ -16,7 +16,6 @@
   "Bring All to Front": "すべて前面に表示",
   "Bring to Front on Notifications": "通知時に前面に表示",
   "Certificate Error": "証明書のエラー",
-  "Cannot verify Root CA for the hostname": "ホスト名のルートCAを確認できません",
   "Close": "閉じる",
   "Cancel": "キャンセル",
   "ContextMenu": {
@@ -35,9 +34,9 @@
     "Search with Google": "Googleで検索"
   },
   "DownloadManager": {
-    "Show in Folder": "フォルダで見て",
-    "Reveal in Finder": "Finderで明らかにする",
-    "Open": "開いた",
+    "Show in Folder": "フォルダーを開く",
+    "Reveal in Finder": "Finderで確認する",
+    "Open": "開く",
     "Downloaded": "ダウンロード済み",
     "File not Found": "ファイルが見つかりません",
     "The file you are trying to open cannot be found in the specified path.": "開こうとしているファイルが指定されたパスに見つかりません."
@@ -123,6 +122,10 @@
     "Highlight": "強調",
     "Pen": "ペン",
     "Snipping Tool": "切り取りツール"
+  },
+  "AboutSymphony": {
+    "About Symphony": "Symphonyについて",
+    "Version": "バージョン"
   },
   "Select All": "すべてを選択",
   "Services": "サービス",

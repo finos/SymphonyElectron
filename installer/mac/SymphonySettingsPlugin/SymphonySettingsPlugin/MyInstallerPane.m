@@ -16,7 +16,10 @@
 
 - (void)willEnterPane:(InstallerSectionDirection)dir {
     // By default, set the value of the error message textbox to an empty string
-    [_podUrlAlertTextBox setTitleWithMnemonic:@""];
+    _podUrlAlertTextBox.stringValue = @"";
+    [_podUrlTextBox setToolTip:@"Enter pod url in the format \"https://corporate.symphony.com\""];
+    
+    [_ssoCheckBox setToolTip:@"Only check this option if your Symphony POD has been configured for SSO, in doubt do not check - contact your Symphony Admin"];
 }
 
 - (BOOL)shouldExitPane:(InstallerSectionDirection)dir {
@@ -29,17 +32,28 @@
     NSPredicate *podUrlTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex];
     
     if (![podUrlTest evaluateWithObject:podUrl]) {
-        [_podUrlAlertTextBox setTitleWithMnemonic:@"Please enter a valid Pod url."];
+        _podUrlAlertTextBox.stringValue = @"Please enter a valid Pod url.";
+        return NO;
+    }
+    
+    if ([podUrl rangeOfString:@"[POD]"].location != NSNotFound) {
+        _podUrlAlertTextBox.stringValue = @"Please enter a valid Pod url.";
         return NO;
     }
     
     // Double confirmation for disabling media
     if ([_mediaCheckBox state] == 0) {
-        NSAlert *alert = [NSAlert alertWithMessageText: @"Are you sure you wish to disable the camera, microphone, and speakers?" defaultButton:@"No" alternateButton:@"Yes" otherButton:nil informativeTextWithFormat:@""];
+        
+        NSAlert *alert = [[NSAlert alloc] init];
+        [alert setMessageText: @"Are you sure you wish to disable the camera, microphone, and speakers?"];
+        [alert setInformativeText:@"Once disabled, users won't be able to participate in RTC calls effectively"];
+        [alert addButtonWithTitle:@"No"];
+        [alert addButtonWithTitle:@"Yes"];
+        [alert setAlertStyle:NSWarningAlertStyle];
         
         NSInteger button = [alert runModal];
         
-        if (button == NSAlertDefaultReturn) {
+        if (button == NSAlertFirstButtonReturn) {
             return NO;
         }
         
@@ -173,8 +187,7 @@
         podUrl = [podUrl substringToIndex:podUrl.length - ssoUrl.length];
         [_podUrlTextBox setStringValue:podUrl];
     }
-        
-    [_ssoCheckBox setToolTip:@"Only check this option if your Symphony POD has been configured for SSO, in doubt do not check - contact your Symphony Admin"];
+    
 }
 
 @end

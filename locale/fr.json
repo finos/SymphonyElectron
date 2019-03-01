@@ -16,7 +16,6 @@
   "Bring All to Front": "Amener tous au front",
   "Bring to Front on Notifications": "Mettre les notifications au premier plan",
   "Certificate Error": "Erreur de certificat",
-  "Cannot verify Root CA for the hostname": "Impossible de vérifier l'autorité de certification racine pour le nom d'hôte",
   "Close": "Fermer",
   "Cancel": "Annuler",
   "ContextMenu": {
@@ -123,6 +122,10 @@
     "Highlight": "Surligner",
     "Pen": "Stylo",
     "Snipping Tool": "Outil Capture"
+  },
+  "AboutSymphony": {
+    "About Symphony": "À propos de Symphony",
+    "Version": "Version"
   },
   "Select All": "Tout sélectionner",
   "Services": "Services",
