@@ -139,7 +139,6 @@ function setChromeFlags() {
  * and set as chrome flags if applicable
  */
 function setChromeFlagsFromCommandLine() {
-    log.send(logLevels.INFO, 'Setting chrome flags from command line args!');
 
     // Special args that need to be excluded as part of the chrome command line switch
     let specialArgs = ['--url', '--multiInstance', '--userDataPath=', 'symphony://', '--inspect-brk', '--inspect'];

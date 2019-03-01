@@ -117,10 +117,9 @@ function initializeLocalLogger() {
     electronLog = require('electron-log');
     const logPath = app.getPath('logs');
     cleanupOldLogs(logPath);
-    electronLog.transports.file.file = path.join(logPath, 'app.log');
+    electronLog.transports.file.file = path.join(logPath, `app_${Date.now()}.log`);
     electronLog.transports.file.level = 'debug';
     electronLog.transports.file.format = '{y}-{m}-{d} {h}:{i}:{s}:{ms} {z} | {level} | {text}';
-    electronLog.transports.file.maxSize = 10 * 10 * 1024;
     electronLog.transports.file.appName = 'Symphony';
 }
 
@@ -130,7 +129,7 @@ function initializeLocalLogger() {
  */
 function cleanupOldLogs(logPath) {
     let files = fs.readdirSync(logPath);
-    const deleteTimeStamp = new Date().getTime() + (10 * 24 * 60 * 60 * 1000)
+    const deleteTimeStamp = new Date().getTime() + (10 * 24 * 60 * 60 * 1000);
     files.forEach((file) => {
         if (file === '.DS_Store' || file === 'app.log') {
             return;
