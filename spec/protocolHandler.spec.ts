@@ -72,4 +72,24 @@ describe('protocol handler', () => {
         expect(spy).toBeCalled();
     });
 
+    it('should invoke `sendProtocol` when `setPreloadWebContents` is called and protocolUri is valid', () => {
+        protocolHandlerInstance.preloadWebContents = { send: jest.fn() };
+        protocolHandlerInstance.protocolUri = 'symphony://?userId=123456';
+
+        const spy: jest.SpyInstance = jest.spyOn(protocolHandlerInstance, 'sendProtocol');
+
+        protocolHandlerInstance.setPreloadWebContents({ send: jest.fn() });
+        expect(spy).toBeCalledWith('symphony://?userId=123456');
+    });
+
+    it('should not invoke `sendProtocol` when `setPreloadWebContents` is called and protocolUri is invalid', () => {
+        protocolHandlerInstance.preloadWebContents = { send: jest.fn() };
+        protocolHandlerInstance.protocolUri = null;
+
+        const spy: jest.SpyInstance = jest.spyOn(protocolHandlerInstance, 'sendProtocol');
+
+        protocolHandlerInstance.setPreloadWebContents({ send: jest.fn() });
+        expect(spy).not.toBeCalled();
+    });
+
 });

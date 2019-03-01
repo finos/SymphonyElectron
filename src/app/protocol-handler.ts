@@ -1,5 +1,3 @@
-import * as url from 'url';
-
 import { apiName } from '../common/api-interface';
 import { isMac, isWindowsOS } from '../common/env';
 import { getCommandLineArgs } from '../common/utils';
@@ -62,10 +60,6 @@ class ProtocolHandler {
     public processArgv(argv?: string[]): void {
         const protocolUriFromArgv = getCommandLineArgs(argv || process.argv, protocol.SymphonyProtocol, false);
         if (isWindowsOS && protocolUriFromArgv) {
-            const parsedURL = url.parse(protocolUriFromArgv);
-            if (!parsedURL.protocol || !parsedURL.slashes) {
-                return;
-            }
             this.sendProtocol(protocolUriFromArgv, false);
         }
     }
