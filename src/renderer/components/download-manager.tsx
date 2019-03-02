@@ -83,7 +83,7 @@ export default class DownloadManager extends React.Component<{}, IManagerState> 
         const fileDisplayName = this.getFileDisplayName(fileName);
         // TODO: fix flashing issue
         return (
-            <li id={_id} className='download-element'>
+            <li key={_id} id={_id} className='download-element'>
                 <div className='download-item' id='dl-item' onClick={this.eventHandlers.onOpenFile(_id)}>
                     <div className='file'>
                         <div id='download-progress' className='download-complete flash'>
