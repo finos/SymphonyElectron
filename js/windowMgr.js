@@ -454,7 +454,17 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                 let emptyUrlString = 'about:blank';
                 let dispositionWhitelist = ['new-window', 'foreground-tab'];
 
-                // only allow window.open to succeed is if coming from same hsot,
+                let fullMainUrl = `${mainWinParsedUrl.protocol}//${mainWinParsedUrl.host}/`;
+
+                // If the main url and new window url are the same,
+                // we open that in a browser rather than a separate window
+                if (newWinUrl === fullMainUrl) {
+                    event.preventDefault();
+                    openUrlInDefaultBrowser(newWinUrl);
+                    return;
+                }
+
+                // only allow window.open to succeed is if coming from same host,
                 // otherwise open in default browser.
                 if ((newWinHost === mainWinHost || newWinUrl === emptyUrlString) && dispositionWhitelist.includes(disposition)) {
                     // handle: window.open
