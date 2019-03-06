@@ -36,5 +36,8 @@
       "sort": "status",
       "outputPath": "./out/Unit Tests Report.html"
     }]
+  ],
+  "setupFiles": [
+    "./spec/setup/test-setup.js"
   ]
 }
