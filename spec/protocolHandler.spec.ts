@@ -13,7 +13,7 @@ jest.mock('../src/common/utils', () => {
 jest.mock('../src/common/env', () => {
     return {
         isWindowsOS: false,
-        isMac: true
+        isMac: true,
     };
 });
 
