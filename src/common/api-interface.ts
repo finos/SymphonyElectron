@@ -24,6 +24,7 @@ export enum apiCmds {
     closeScreenSharingIndicator = 'close-screen-sharing-indicator',
     downloadManagerAction = 'download-manager-action',
     getMediaSource = 'get-media-source',
+    notification = 'notification',
 }
 
 export enum apiName {

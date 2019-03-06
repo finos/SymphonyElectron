@@ -12,7 +12,7 @@ gulp.task('clean', function() {
 });
 
 gulp.task('compile', function() {
-    return gulp.src(['src/**/*.ts'])
+    return gulp.src(['src/**/*.ts', 'src/**/*.tsx'])
         .pipe(tsc({ project: './tsconfig.json' }))
         .pipe(gulp.dest('lib/'))
 });

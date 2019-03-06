@@ -46,10 +46,12 @@ export const preventWindowNavigation = (browserWindow: Electron.BrowserWindow, i
  *
  * @param componentName
  * @param opts
+ * @param shouldFocus {boolean}
  */
 export const createComponentWindow = (
     componentName: string,
     opts?: Electron.BrowserWindowConstructorOptions,
+    shouldFocus: boolean = true,
 ): BrowserWindow => {
 
     const options: Electron.BrowserWindowConstructorOptions = {
@@ -67,7 +69,9 @@ export const createComponentWindow = (
     };
 
     const browserWindow: ICustomBrowserWindow = new BrowserWindow(options) as ICustomBrowserWindow;
-    browserWindow.on('ready-to-show', () => browserWindow.show());
+    if (shouldFocus) {
+        browserWindow.once('ready-to-show', () => browserWindow.show());
+    }
     browserWindow.webContents.once('did-finish-load', () => {
         if (!browserWindow || browserWindow.isDestroyed()) return;
         browserWindow.webContents.send('set-locale-resource', { locale: i18n.getLocale(), resource: i18n.loadedResources });

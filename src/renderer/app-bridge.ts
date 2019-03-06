@@ -1,4 +1,4 @@
-import { DesktopCapturerSource } from 'electron';
+import { DesktopCapturerSource, remote } from 'electron';
 
 import {
     apiCmds,
@@ -12,6 +12,7 @@ import { IScreenSourceError } from './desktop-capturer';
 import { SSFApi } from './ssf-api';
 
 const ssf = new SSFApi();
+const notification = remote.require('../renderer/notification').notification;
 
 export default class AppBridge {
 
@@ -105,6 +106,9 @@ export default class AppBridge {
                 break;
             case apiCmds.getMediaSource:
                 ssf.getMediaSource(data, this.callbackHandlers.onMediaSourceCallback);
+                break;
+            case apiCmds.notification:
+                notification.showNotification(data);
                 break;
         }
     }
