@@ -34,7 +34,7 @@ const pathToConfigDir = (): string => {
 };
 
 // electron app mock...
-const app: IApp = {
+export const app: IApp = {
     getAppPath: pathToConfigDir,
     getPath: (type) => {
         if (type === 'exe') {
@@ -52,7 +52,7 @@ const app: IApp = {
 
 // simple ipc mocks for render and main process ipc using
 // nodes' EventEmitter
-const ipcMain: IIpcMain = {
+export const ipcMain: IIpcMain = {
     on: (event, cb) => {
         ipcEmitter.on(event, cb);
     },
@@ -68,11 +68,11 @@ const ipcMain: IIpcMain = {
     },
 };
 
-const powerMonitor: IPowerMonitor = {
+export const powerMonitor: IPowerMonitor = {
     querySystemIdleTime: jest.fn().mockImplementation((cb) => cb(mockIdleTime)),
 };
 
-const ipcRenderer: IIpcRenderer = {
+export const ipcRenderer: IIpcRenderer = {
     sendSync: (event, args) => {
         const listeners = ipcEmitter.listeners(event);
         if (listeners.length > 0) {
@@ -99,15 +99,4 @@ const ipcRenderer: IIpcRenderer = {
     removeListener: (eventName, cb) => {
         ipcEmitter.removeListener(eventName, cb);
     },
-};
-
-export = {
-    app,
-    ipcMain,
-    ipcRenderer,
-    powerMonitor,
-    require: jest.fn(),
-    match: jest.fn(),
-    remote: jest.fn(),
-    dialog: jest.fn(),
 };
