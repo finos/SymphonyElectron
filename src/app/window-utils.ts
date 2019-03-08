@@ -331,3 +331,11 @@ export const injectStyles = async (mainWindow: BrowserWindow, isCustomTitleBarAn
 
     return await readAndInsertCSS(mainWindow, paths);
 };
+
+/**
+ * Checks if window is valid and exists
+ *
+ * @param window {BrowserWindow}
+ * @return boolean
+ */
+export const windowExists = (window: BrowserWindow): boolean => !!window && typeof window.isDestroyed === 'function' && !window.isDestroyed();

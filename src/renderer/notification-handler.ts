@@ -1,6 +1,7 @@
 import * as asyncMap from 'async.map';
 import * as electron from 'electron';
 
+import { windowExists } from '../app/window-utils';
 import { isMac } from '../common/env';
 
 interface ISettings {
@@ -151,6 +152,8 @@ export default class NotificationHandler {
                     newY = this.settings.corner.y - (this.settings.totalHeight * (i + 1));
                     break;
             }
+
+            if (!windowExists(notificationWindow)) return;
 
             // Get startPos, calc step size and start animationInterval
             const startY = notificationWindow.getPosition()[1];

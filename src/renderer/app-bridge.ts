@@ -43,6 +43,7 @@ export default class AppBridge {
             error: IScreenSourceError | null,
             source: DesktopCapturerSource | undefined,
         ): void => this.gotMediaSource(requestId, error, source),
+        onNotificationCallback: (event, data) => this.notificationCallback(event, data),
     };
 
     constructor() {
@@ -108,7 +109,10 @@ export default class AppBridge {
                 ssf.getMediaSource(data, this.callbackHandlers.onMediaSourceCallback);
                 break;
             case apiCmds.notification:
-                notification.showNotification(data);
+                notification.showNotification(data, this.callbackHandlers.onNotificationCallback);
+                break;
+            case apiCmds.closeNotification:
+                notification.hideNotification(data);
                 break;
         }
     }
@@ -163,6 +167,16 @@ export default class AppBridge {
      */
     private gotMediaSource(requestId: number | undefined, error: IScreenSourceError | null, source: DesktopCapturerSource | undefined): void {
         this.broadcastMessage('media-source-callback', { requestId, source, error });
+    }
+
+    /**
+     * Broadcast notification events
+     *
+     * @param event {string}
+     * @param data {Object}
+     */
+    private notificationCallback(event, data) {
+        this.broadcastMessage(event, data);
     }
 
     /**

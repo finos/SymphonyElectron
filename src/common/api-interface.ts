@@ -25,6 +25,7 @@ export enum apiCmds {
     downloadManagerAction = 'download-manager-action',
     getMediaSource = 'get-media-source',
     notification = 'notification',
+    closeNotification = 'close-notification',
 }
 
 export enum apiName {

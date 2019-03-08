@@ -1,12 +1,34 @@
+@font-family: "Segoe UI", "Helvetica Neue", "Verdana", "Arial", sans-serif;
+
+.light {
+  --text-color: #4a4a4a;
+  --logo-bg: url('../assets/symphony-logo-black.png');
+}
+.dark {
+  --text-color: #ffffff;
+  --logo-bg: url('../assets/symphony-logo-white.png');
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  -webkit-user-select: none;
+  font-family: @font-family;
+}
+
 .container {
+  width: 380px;
+  height: 100px;
   display: flex;
   justify-content: center;
-  background-color: #f0f0f0;
+  background-color: #ffffff;
   overflow: hidden;
   position: relative;
   line-height: 15px;
   box-sizing: border-box;
+  border-radius: 5px;
 }
+
 .header {
   width: 245px;
   min-width: 230px;
@@ -35,13 +57,14 @@
   opacity: 0.54;
   font-size: 12px;
   color: #CCC;
+  cursor: pointer;
 }
 
 .title {
-  font-family: 'sans-serif';
+  font-family: @font-family;
   font-size: 14px;
   font-weight: 700;
-  color: #4a4a4a;
+  color: var(--text-color);
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -49,9 +72,8 @@
 }
 
 .company {
-  font-family: 'sans-serif';
+  font-family: @font-family;
   font-size: 11px;
-  color: #adadad;
   overflow: hidden;
   filter: brightness(70%);
   display: -webkit-box;
@@ -60,9 +82,10 @@
 }
 
 .message {
-  font-family: 'sans-serif';
+  font-family: @font-family;
+  width: 100%;
+  overflow-wrap: break-word;
   font-size: 12px;
-  color: #4a4a4a;
   margin-top: 5px;
   overflow: hidden;
   display: -webkit-box;
@@ -70,6 +93,7 @@
   -webkit-box-orient: vertical;
   cursor: default;
   text-overflow: ellipsis;
+  color: var(--text-color);
 }
 
 .logo-container {
@@ -81,4 +105,5 @@
   margin-left: 5px;
   opacity: 0.6;
   width: 43px;
+  content: var(--logo-bg);
 }

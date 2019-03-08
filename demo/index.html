@@ -133,6 +133,7 @@
             num++;
 
             var notf = {
+                id: num,
                 title,
                 body: (body + ' num=' + num + ' tag=' + tag),
                 image: imageUrl,
@@ -295,6 +296,8 @@
             ssf.setLocale('fr-FR');
             document.location.reload();
         });
+
+        window.addEventListener('message', (event) => console.log(event));
 
     </script>
 </html>

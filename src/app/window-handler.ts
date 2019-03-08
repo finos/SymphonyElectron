@@ -14,7 +14,7 @@ import { handleChildWindow } from './child-window-handler';
 import { config, IConfig } from './config-handler';
 import { showNetworkConnectivityError } from './dialog-handler';
 import { monitorWindowActions } from './window-actions';
-import { createComponentWindow, getBounds, handleDownloadManager, injectStyles } from './window-utils';
+import { createComponentWindow, getBounds, handleDownloadManager, injectStyles, windowExists } from './window-utils';
 
 interface ICustomBrowserWindowConstructorOpts extends Electron.BrowserWindowConstructorOptions {
     winKey: string;
@@ -189,7 +189,7 @@ export class WindowHandler {
 
         // Event needed to hide native menu bar on Windows 10 as we use custom menu bar
         this.mainWindow.webContents.once('did-start-loading', () => {
-            if ((this.config.isCustomTitleBar || isWindowsOS) && this.mainWindow && this.windowExists(this.mainWindow)) {
+            if ((this.config.isCustomTitleBar || isWindowsOS) && this.mainWindow && windowExists(this.mainWindow)) {
                 this.mainWindow.setMenuBarVisibility(false);
             }
         });
@@ -211,7 +211,7 @@ export class WindowHandler {
             if (!this.isOnline && this.mainWindow) showNetworkConnectivityError(this.mainWindow, this.url, retry);
 
             // early exit if the window has already been destroyed
-            if (!this.mainWindow || !this.windowExists(this.mainWindow)) return;
+            if (!this.mainWindow || !windowExists(this.mainWindow)) return;
             this.url = this.mainWindow.webContents.getURL();
 
             // Injects custom title bar css into the webContents
@@ -240,7 +240,7 @@ export class WindowHandler {
 
         // Handle main window close
         this.mainWindow.on('close', (event) => {
-            if (!this.mainWindow || !this.windowExists(this.mainWindow)) return;
+            if (!this.mainWindow || !windowExists(this.mainWindow)) return;
 
             if (this.willQuitApp) return this.destroyAllWindow();
 
@@ -292,12 +292,12 @@ export class WindowHandler {
     public closeWindow(windowType: WindowTypes, winKey?: string): void {
         switch (windowType) {
             case 'screen-picker':
-                if (this.screenPickerWindow && this.windowExists(this.screenPickerWindow)) this.screenPickerWindow.close();
+                if (this.screenPickerWindow && windowExists(this.screenPickerWindow)) this.screenPickerWindow.close();
                 break;
             case 'screen-sharing-indicator':
                 if (winKey) {
                     const browserWindow = this.windows[ winKey ];
-                    if (browserWindow && this.windowExists(browserWindow)) browserWindow.close();
+                    if (browserWindow && windowExists(browserWindow)) browserWindow.close();
                 }
                 break;
             default:
@@ -333,7 +333,7 @@ export class WindowHandler {
     public showLoadingScreen(): void {
         this.loadingWindow = createComponentWindow('loading-screen', WindowHandler.getLoadingWindowOpts());
         this.loadingWindow.webContents.once('did-finish-load', () => {
-            if (!this.loadingWindow || !this.windowExists(this.loadingWindow)) return;
+            if (!this.loadingWindow || !windowExists(this.loadingWindow)) return;
             this.loadingWindow.webContents.send('data');
         });
 
@@ -346,7 +346,7 @@ export class WindowHandler {
     public createAboutAppWindow(): void {
         this.aboutAppWindow = createComponentWindow('about-app');
         this.aboutAppWindow.webContents.once('did-finish-load', () => {
-            if (!this.aboutAppWindow || !this.windowExists(this.aboutAppWindow)) return;
+            if (!this.aboutAppWindow || !windowExists(this.aboutAppWindow)) return;
             this.aboutAppWindow.webContents.send('about-app-data', { buildNumber, clientVersion, version });
         });
     }
@@ -357,7 +357,7 @@ export class WindowHandler {
     public createMoreInfoWindow(): void {
         this.moreInfoWindow = createComponentWindow('more-info');
         this.moreInfoWindow.webContents.once('did-finish-load', () => {
-            if (!this.moreInfoWindow || !this.windowExists(this.moreInfoWindow)) return;
+            if (!this.moreInfoWindow || !windowExists(this.moreInfoWindow)) return;
             this.moreInfoWindow.webContents.send('more-info-data');
         });
     }
@@ -371,18 +371,18 @@ export class WindowHandler {
      */
     public createScreenPickerWindow(window: Electron.WebContents, sources: DesktopCapturerSource[], id: number): void {
 
-        if (this.screenPickerWindow && this.windowExists(this.screenPickerWindow)) this.screenPickerWindow.close();
+        if (this.screenPickerWindow && windowExists(this.screenPickerWindow)) this.screenPickerWindow.close();
 
         const opts = WindowHandler.getScreenPickerWindowOpts();
         this.screenPickerWindow = createComponentWindow('screen-picker', opts);
         this.screenPickerWindow.webContents.once('did-finish-load', () => {
-            if (!this.screenPickerWindow || !this.windowExists(this.screenPickerWindow)) return;
+            if (!this.screenPickerWindow || !windowExists(this.screenPickerWindow)) return;
             this.screenPickerWindow.webContents.send('screen-picker-data', { sources, id });
             this.addWindow(opts.winKey, this.screenPickerWindow);
         });
         ipcMain.once('screen-source-selected', (_event, source) => {
             window.send('start-share' + id, source);
-            if (this.screenPickerWindow && this.windowExists(this.screenPickerWindow)) {
+            if (this.screenPickerWindow && windowExists(this.screenPickerWindow)) {
                 this.screenPickerWindow.close();
             }
         });
@@ -410,12 +410,12 @@ export class WindowHandler {
         this.basicAuthWindow = createComponentWindow('basic-auth', opts);
         this.basicAuthWindow.setVisibleOnAllWorkspaces(true);
         this.basicAuthWindow.webContents.once('did-finish-load', () => {
-            if (!this.basicAuthWindow || !this.windowExists(this.basicAuthWindow)) return;
+            if (!this.basicAuthWindow || !windowExists(this.basicAuthWindow)) return;
             this.basicAuthWindow.webContents.send('basic-auth-data', { hostname, isValidCredentials: isMultipleTries });
         });
         const closeBasicAuth = (shouldClearSettings = true) => {
             if (shouldClearSettings) clearSettings();
-            if (this.basicAuthWindow && !this.windowExists(this.basicAuthWindow)) {
+            if (this.basicAuthWindow && !windowExists(this.basicAuthWindow)) {
                 this.basicAuthWindow.close();
                 this.basicAuthWindow = null;
             }
@@ -466,7 +466,7 @@ export class WindowHandler {
         this.screenSharingIndicatorWindow = createComponentWindow('screen-sharing-indicator', opts);
         this.screenSharingIndicatorWindow.setVisibleOnAllWorkspaces(true);
         this.screenSharingIndicatorWindow.webContents.once('did-finish-load', () => {
-            if (!this.screenSharingIndicatorWindow || !this.windowExists(this.screenSharingIndicatorWindow)) return;
+            if (!this.screenSharingIndicatorWindow || !windowExists(this.screenSharingIndicatorWindow)) return;
             this.screenSharingIndicatorWindow.webContents.send('screen-sharing-indicator-data', { id, streamId });
         });
         const stopScreenSharing = (_event, indicatorId) => {
@@ -527,14 +527,6 @@ export class WindowHandler {
         }
         this.mainWindow = null;
     }
-
-    /**
-     * Checks if window is valid and exists
-     *
-     * @param window
-     * @return boolean
-     */
-    private windowExists = (window: BrowserWindow): boolean => !!window && typeof window.isDestroyed === 'function' && !window.isDestroyed();
 
     /**
      * Main window opts
