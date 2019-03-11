@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 import * as path from 'path';
+import { isWindowsOS } from '../../src/common/env';
 const ipcEmitter = new EventEmitter();
 
 const mockIdleTime: number = 15;
@@ -28,9 +29,12 @@ interface IPowerMonitor {
     querySystemIdleTime(): void;
 }
 
-// use config provided by test framework
 const pathToConfigDir = (): string => {
-    return path.join(__dirname, '/..') as string;
+    if (isWindowsOS) {
+        return path.join(__dirname, '/../..') as string;
+    } else {
+        return path.join(__dirname, '/..') as string;
+    }
 };
 
 // electron app mock...
