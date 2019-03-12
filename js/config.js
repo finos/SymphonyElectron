@@ -265,6 +265,7 @@ function updateUserConfig(oldUserConfig) {
                 reject(new Error(`Failed to update user config error: ${err}`));
                 return;
             }
+            userConfig = newUserConfig;
             resolve();
         });
     });
