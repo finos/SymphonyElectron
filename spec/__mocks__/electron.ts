@@ -100,3 +100,7 @@ export const ipcRenderer: IIpcRenderer = {
         ipcEmitter.removeListener(eventName, cb);
     },
 };
+
+export const remote = {
+    app,
+};

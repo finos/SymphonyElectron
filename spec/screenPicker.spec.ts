@@ -257,7 +257,13 @@ describe('screen picker', () => {
     describe('tab titles', () => {
         it('should show `application-tab` when source name is not Entire screen', () => {
             const wrapper = shallow(React.createElement(ScreenPicker));
-            const applicationScreenStateMock = { sources: [{ display_id: '1', id: '1', name: 'Application screen', thumbnail: undefined }]};
+            const applicationScreenStateMock = {
+                sources: [
+                    { display_id: '1', id: '1', name: 'Application Screen', thumbnail: undefined },
+                    { display_id: '2', id: '2', name: 'Application Screen 2', thumbnail: undefined },
+                    { display_id: '3', id: '3', name: 'Application Screen 3', thumbnail: undefined },
+                ],
+            };
             wrapper.setState(applicationScreenStateMock);
             expect(wrapper.find(applicationTabCustomSelector)).toHaveLength(1);
             expect(wrapper.find(screenTabCustomSelector)).toHaveLength(0);
@@ -265,7 +271,13 @@ describe('screen picker', () => {
 
         it('should show `screen-tab` when source name is Entire screen', () => {
             const wrapper = shallow(React.createElement(ScreenPicker));
-            const entireScreenStateMock = { sources: [{ display_id: '1', id: '1', name: 'Entire screen', thumbnail: undefined }]};
+            const entireScreenStateMock = {
+                sources: [
+                    { display_id: '1', id: '1', name: 'Entire screen', thumbnail: undefined },
+                    { display_id: '2', id: '2', name: 'Screen 2', thumbnail: undefined },
+                    { display_id: '3', id: '3', name: 'screen 3', thumbnail: undefined },
+                ],
+            };
             wrapper.setState(entireScreenStateMock);
             expect(wrapper.find(screenTabCustomSelector)).toHaveLength(1);
             expect(wrapper.find(applicationTabCustomSelector)).toHaveLength(0);
