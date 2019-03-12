@@ -275,7 +275,7 @@ function updateUserConfig(oldUserConfig) {
  * Manipulates user config on first time launch
  * @returns {Promise}
  */
-function updateUserConfigOnLaunch() {
+function updateUserConfigOnLaunch(resolve, reject) {
     // we get the user config path using electron
     const userConfigFile = path.join(app.getPath('userData'), configFileName);
 
@@ -283,7 +283,7 @@ function updateUserConfigOnLaunch() {
     // user config file doesn't exist, we simple move on
     if (!fs.existsSync(userConfigFile)) {
         log.send(logLevels.WARN, 'config: Could not find the user config file!');
-        return Promise.reject(new Error('config: Could not find the user config file!'));
+        return reject(new Error('config: Could not find the user config file!'));
     }
 
     // In case the file exists, we remove it so that all the
@@ -294,9 +294,11 @@ function updateUserConfigOnLaunch() {
         const version = app.getVersion().toString() || '1.0.0';
         const updatedData = Object.assign(data || {}, { configVersion: version });
 
-        return updateUserConfig(updatedData);
+        updateUserConfig(updatedData)
+            .then(resolve)
+            .catch(reject);
     }).catch((err) => {
-        return Promise.reject(err);
+        return reject(err);
     });
 
 }

@@ -323,7 +323,7 @@ function checkFirstTimeLaunch() {
                 if (!(configVersion
                     && typeof configVersion === 'string'
                     && (compareSemVersions.check(appVersionString, configVersion) !== 1))) {
-                    return setupFirstTimeLaunch(reject, resolve, shouldUpdateUserConfig);
+                    return setupFirstTimeLaunch(resolve, reject, shouldUpdateUserConfig);
                 }
                 log.send(logLevels.INFO, `not a first-time launch as 
             configVersion: ${configVersion} appVersion: ${appVersionString} shouldUpdateUserConfig: ${shouldUpdateUserConfig}`);
@@ -331,7 +331,7 @@ function checkFirstTimeLaunch() {
             })
             .catch((e) => {
                 log.send(logLevels.ERROR, `Error reading configVersion error: ${e}`);
-                return setupFirstTimeLaunch(reject, resolve, false);
+                return setupFirstTimeLaunch(resolve, reject, false);
             });
     });
 }
@@ -342,15 +342,14 @@ function checkFirstTimeLaunch() {
  *
  * @return {Promise<any>}
  */
-function setupFirstTimeLaunch(reject, resolve, shouldUpdateUserConfig) {
+function setupFirstTimeLaunch(resolve, reject, shouldUpdateUserConfig) {
     log.send(logLevels.INFO, 'setting first time launch config');
     getConfigField('launchOnStartup')
         .then(setStartup)
         .then(() => {
             if (shouldUpdateUserConfig) {
-                return updateUserConfigOnLaunch()
-                    .then(resolve)
-                    .catch(reject)
+                log.send(logLevels.INFO, `Resetting user config data? ${shouldUpdateUserConfig}`);
+                return updateUserConfigOnLaunch(resolve, reject);
             }
             return resolve();
         })
