@@ -327,7 +327,7 @@ function checkFirstTimeLaunch() {
             })
             .catch((e) => {
                 log.send(logLevels.ERROR, `Error reading configVersion error: ${e}`);
-                return setupFirstTimeLaunch(resolve, reject, false);
+                return setupFirstTimeLaunch(resolve, reject, true);
             });
     });
 }
