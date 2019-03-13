@@ -100,7 +100,7 @@ describe('download manager', () => {
         const onLabelEvent: string = 'on';
         const removeListenerLabelEvent: string = 'removeListener';
 
-        it('should call the `downloadCompleted event when mount component', () => {
+        it('should call the `downloadCompleted event when component is mounted', () => {
             const spy: jest.SpyInstance = jest.spyOn(ipcRenderer, onLabelEvent);
 
             shallow(React.createElement(DownloadManager));
@@ -108,7 +108,7 @@ describe('download manager', () => {
             expect(spy).toBeCalledWith(downloadCompletedLabelEvent, expect.any(Function));
         });
 
-        it('should remove listen `downloadCompleted` when component is unmount', () => {
+        it('should remove listen `downloadCompleted` when component is unmounted', () => {
             const spyMount: jest.SpyInstance = jest.spyOn(ipcRenderer, onLabelEvent);
             const spyUnmount: jest.SpyInstance = jest.spyOn(ipcRenderer, removeListenerLabelEvent);
             const wrapper: ShallowWrapper = shallow(React.createElement(DownloadManager));
