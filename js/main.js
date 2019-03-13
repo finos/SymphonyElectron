@@ -24,7 +24,6 @@ const { setCheckboxValues } = require('./menus/menuTemplate.js');
 const autoLaunch = require('./autoLaunch');
 const { handleCacheFailureCheckOnStartup, handleCacheFailureCheckOnExit} = require('./cacheHandler');
 
-const compareSemVersions = require('./utils/compareSemVersions.js');
 const { isMac, isDevEnv } = require('./utils/misc.js');
 const getCmdLineArg = require('./utils/getCmdLineArg.js');
 
@@ -314,24 +313,21 @@ function setupThenOpenMainWindow() {
 
 function checkFirstTimeLaunch() {
     return new Promise((resolve, reject) => {
-        getUserConfigField('configVersion')
-            .then((configVersion) => {
-                const appVersionString = app.getVersion().toString();
+        getUserConfigField('configBuildNumber')
+            .then((configBuildNumber) => {
                 const execPath = nodePath.dirname(app.getPath('exe'));
                 const shouldUpdateUserConfig = execPath.indexOf('AppData\\Local\\Programs') !== -1 || isMac;
 
-                if (!(configVersion
-                    && typeof configVersion === 'string'
-                    && (compareSemVersions.check(appVersionString, configVersion) !== 1))) {
+                if (configBuildNumber && typeof configBuildNumber === 'string' && configBuildNumber !== buildNumber) {
                     return setupFirstTimeLaunch(resolve, reject, shouldUpdateUserConfig);
                 }
                 log.send(logLevels.INFO, `not a first-time launch as 
-            configVersion: ${configVersion} appVersion: ${appVersionString} shouldUpdateUserConfig: ${shouldUpdateUserConfig}`);
+            configBuildNumber: ${configBuildNumber} installerBuildNumber: ${buildNumber} shouldUpdateUserConfig: ${shouldUpdateUserConfig}`);
                 return resolve();
             })
             .catch((e) => {
                 log.send(logLevels.ERROR, `Error reading configVersion error: ${e}`);
-                return setupFirstTimeLaunch(resolve, reject, false);
+                return setupFirstTimeLaunch(resolve, reject, true);
             });
     });
 }
