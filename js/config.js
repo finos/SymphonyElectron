@@ -13,6 +13,7 @@ const isMac = require('./utils/misc.js').isMac;
 const getRegistry = require('./utils/getRegistry.js');
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
+const { buildNumber } = require('../package.json');
 
 const configFileName = 'Symphony.config';
 
@@ -191,10 +192,10 @@ function updateConfigField(fieldName, newValue) {
             return saveUserConfig(fieldName, newValue, config);
         }, () => {
             // in case config doesn't exist, can't read or is corrupted.
-            // add configVersion - just in case in future we need to provide
+            // add configBuildNumber - just in case in future we need to provide
             // upgrade capabilities.
             return saveUserConfig(fieldName, newValue, {
-                configVersion: app.getVersion().toString(),
+                configBuildNumber: buildNumber || '0',
             });
         });
 }
@@ -291,9 +292,8 @@ function updateUserConfigOnLaunch(resolve, reject) {
     // values are fetched from the global config
     // https://perzoinc.atlassian.net/browse/ELECTRON-126
     return readUserConfig(userConfigFile).then((data) => {
-        // Add version info to the user config data
-        const version = app.getVersion().toString() || '1.0.0';
-        const updatedData = Object.assign(data || {}, { configVersion: version });
+        // Add build number info to the user config data
+        const updatedData = Object.assign(data || {}, { configBuildNumber: buildNumber || '0' });
 
         updateUserConfig(updatedData)
             .then(resolve)
