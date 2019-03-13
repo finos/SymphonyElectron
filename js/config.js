@@ -281,13 +281,6 @@ function updateUserConfigOnLaunch(resolve, reject) {
     // we get the user config path using electron
     const userConfigFile = path.join(app.getPath('userData'), configFileName);
 
-    // if it's not a per user installation or if the
-    // user config file doesn't exist, we simple move on
-    if (!fs.existsSync(userConfigFile)) {
-        log.send(logLevels.WARN, 'config: Could not find the user config file!');
-        return reject(new Error('config: Could not find the user config file!'));
-    }
-
     // In case the file exists, we remove it so that all the
     // values are fetched from the global config
     // https://perzoinc.atlassian.net/browse/ELECTRON-126
