@@ -1,377 +1,50 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`loading screen should render correctly 1`] = `
-ShallowWrapper {
-  Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <LoadingScreen />,
-  Symbol(enzyme.__renderer__): Object {
-    "batchedUpdates": [Function],
-    "checkPropTypes": [Function],
-    "getNode": [Function],
-    "render": [Function],
-    "simulateError": [Function],
-    "simulateEvent": [Function],
-    "unmount": [Function],
-  },
-  Symbol(enzyme.__node__): Object {
-    "instance": null,
-    "key": undefined,
-    "nodeType": "host",
-    "props": Object {
-      "children": Array [
-        <img
-          className="LoadingScreen-logo"
-          src="../renderer/assets/symphony-logo.png"
-        />,
-        <span
-          className="LoadingScreen-name"
-        >
-          Symphony
-        </span>,
-        <svg
-          height="100%"
-          preserveAspectRatio="xMidYMid"
-          viewBox="0 0 100 200"
-          width="100%"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <circle
-            cx="50"
-            cy="50"
-            fill="none"
-            ng-attr-r="{{config.radius}}"
-            ng-attr-stroke="{{config.color}}"
-            ng-attr-stroke-dasharray="{{config.dasharray}}"
-            ng-attr-stroke-width="{{config.width}}"
-            r="35"
-            stroke="#ffffff"
-            stroke-dasharray="164.93361431346415 56.97787143782138"
-            stroke-width="10"
-            transform="rotate(59.6808 50 50)"
-          >
-            <animateTransform
-              attributeName="transform"
-              begin="0s"
-              calcMode="linear"
-              dur="1s"
-              keyTimes="0;1"
-              repeatCount="indefinite"
-              type="rotate"
-              values="0 50 50;360 50 50"
-            />
-          </circle>
-        </svg>,
-      ],
-      "className": "LoadingScreen",
-    },
-    "ref": null,
-    "rendered": Array [
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "className": "LoadingScreen-logo",
-          "src": "../renderer/assets/symphony-logo.png",
-        },
-        "ref": null,
-        "rendered": null,
-        "type": "img",
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": "Symphony",
-          "className": "LoadingScreen-name",
-        },
-        "ref": null,
-        "rendered": "Symphony",
-        "type": "span",
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": <circle
-            cx="50"
-            cy="50"
-            fill="none"
-            ng-attr-r="{{config.radius}}"
-            ng-attr-stroke="{{config.color}}"
-            ng-attr-stroke-dasharray="{{config.dasharray}}"
-            ng-attr-stroke-width="{{config.width}}"
-            r="35"
-            stroke="#ffffff"
-            stroke-dasharray="164.93361431346415 56.97787143782138"
-            stroke-width="10"
-            transform="rotate(59.6808 50 50)"
-          >
-            <animateTransform
-              attributeName="transform"
-              begin="0s"
-              calcMode="linear"
-              dur="1s"
-              keyTimes="0;1"
-              repeatCount="indefinite"
-              type="rotate"
-              values="0 50 50;360 50 50"
-            />
-          </circle>,
-          "height": "100%",
-          "preserveAspectRatio": "xMidYMid",
-          "viewBox": "0 0 100 200",
-          "width": "100%",
-          "xmlns": "http://www.w3.org/2000/svg",
-        },
-        "ref": null,
-        "rendered": Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": <animateTransform
-              attributeName="transform"
-              begin="0s"
-              calcMode="linear"
-              dur="1s"
-              keyTimes="0;1"
-              repeatCount="indefinite"
-              type="rotate"
-              values="0 50 50;360 50 50"
-            />,
-            "cx": "50",
-            "cy": "50",
-            "fill": "none",
-            "ng-attr-r": "{{config.radius}}",
-            "ng-attr-stroke": "{{config.color}}",
-            "ng-attr-stroke-dasharray": "{{config.dasharray}}",
-            "ng-attr-stroke-width": "{{config.width}}",
-            "r": "35",
-            "stroke": "#ffffff",
-            "stroke-dasharray": "164.93361431346415 56.97787143782138",
-            "stroke-width": "10",
-            "transform": "rotate(59.6808 50 50)",
-          },
-          "ref": null,
-          "rendered": Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "attributeName": "transform",
-              "begin": "0s",
-              "calcMode": "linear",
-              "dur": "1s",
-              "keyTimes": "0;1",
-              "repeatCount": "indefinite",
-              "type": "rotate",
-              "values": "0 50 50;360 50 50",
-            },
-            "ref": null,
-            "rendered": null,
-            "type": "animateTransform",
-          },
-          "type": "circle",
-        },
-        "type": "svg",
-      },
-    ],
-    "type": "div",
-  },
-  Symbol(enzyme.__nodes__): Array [
-    Object {
-      "instance": null,
-      "key": undefined,
-      "nodeType": "host",
-      "props": Object {
-        "children": Array [
-          <img
-            className="LoadingScreen-logo"
-            src="../renderer/assets/symphony-logo.png"
-          />,
-          <span
-            className="LoadingScreen-name"
-          >
-            Symphony
-          </span>,
-          <svg
-            height="100%"
-            preserveAspectRatio="xMidYMid"
-            viewBox="0 0 100 200"
-            width="100%"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle
-              cx="50"
-              cy="50"
-              fill="none"
-              ng-attr-r="{{config.radius}}"
-              ng-attr-stroke="{{config.color}}"
-              ng-attr-stroke-dasharray="{{config.dasharray}}"
-              ng-attr-stroke-width="{{config.width}}"
-              r="35"
-              stroke="#ffffff"
-              stroke-dasharray="164.93361431346415 56.97787143782138"
-              stroke-width="10"
-              transform="rotate(59.6808 50 50)"
-            >
-              <animateTransform
-                attributeName="transform"
-                begin="0s"
-                calcMode="linear"
-                dur="1s"
-                keyTimes="0;1"
-                repeatCount="indefinite"
-                type="rotate"
-                values="0 50 50;360 50 50"
-              />
-            </circle>
-          </svg>,
-        ],
-        "className": "LoadingScreen",
-      },
-      "ref": null,
-      "rendered": Array [
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "className": "LoadingScreen-logo",
-            "src": "../renderer/assets/symphony-logo.png",
-          },
-          "ref": null,
-          "rendered": null,
-          "type": "img",
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": "Symphony",
-            "className": "LoadingScreen-name",
-          },
-          "ref": null,
-          "rendered": "Symphony",
-          "type": "span",
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": <circle
-              cx="50"
-              cy="50"
-              fill="none"
-              ng-attr-r="{{config.radius}}"
-              ng-attr-stroke="{{config.color}}"
-              ng-attr-stroke-dasharray="{{config.dasharray}}"
-              ng-attr-stroke-width="{{config.width}}"
-              r="35"
-              stroke="#ffffff"
-              stroke-dasharray="164.93361431346415 56.97787143782138"
-              stroke-width="10"
-              transform="rotate(59.6808 50 50)"
-            >
-              <animateTransform
-                attributeName="transform"
-                begin="0s"
-                calcMode="linear"
-                dur="1s"
-                keyTimes="0;1"
-                repeatCount="indefinite"
-                type="rotate"
-                values="0 50 50;360 50 50"
-              />
-            </circle>,
-            "height": "100%",
-            "preserveAspectRatio": "xMidYMid",
-            "viewBox": "0 0 100 200",
-            "width": "100%",
-            "xmlns": "http://www.w3.org/2000/svg",
-          },
-          "ref": null,
-          "rendered": Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": <animateTransform
-                attributeName="transform"
-                begin="0s"
-                calcMode="linear"
-                dur="1s"
-                keyTimes="0;1"
-                repeatCount="indefinite"
-                type="rotate"
-                values="0 50 50;360 50 50"
-              />,
-              "cx": "50",
-              "cy": "50",
-              "fill": "none",
-              "ng-attr-r": "{{config.radius}}",
-              "ng-attr-stroke": "{{config.color}}",
-              "ng-attr-stroke-dasharray": "{{config.dasharray}}",
-              "ng-attr-stroke-width": "{{config.width}}",
-              "r": "35",
-              "stroke": "#ffffff",
-              "stroke-dasharray": "164.93361431346415 56.97787143782138",
-              "stroke-width": "10",
-              "transform": "rotate(59.6808 50 50)",
-            },
-            "ref": null,
-            "rendered": Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "attributeName": "transform",
-                "begin": "0s",
-                "calcMode": "linear",
-                "dur": "1s",
-                "keyTimes": "0;1",
-                "repeatCount": "indefinite",
-                "type": "rotate",
-                "values": "0 50 50;360 50 50",
-              },
-              "ref": null,
-              "rendered": null,
-              "type": "animateTransform",
-            },
-            "type": "circle",
-          },
-          "type": "svg",
-        },
-      ],
-      "type": "div",
-    },
-  ],
-  Symbol(enzyme.__options__): Object {
-    "adapter": ReactSixteenAdapter {
-      "options": Object {
-        "enableComponentDidUpdateOnSetState": true,
-        "legacyContextMode": "parent",
-        "lifecycles": Object {
-          "componentDidUpdate": Object {
-            "onSetState": true,
-          },
-          "getChildContext": Object {
-            "calledByRenderer": false,
-          },
-          "getDerivedStateFromProps": true,
-          "getSnapshotBeforeUpdate": true,
-          "setState": Object {
-            "skipsComponentDidUpdateOnNullish": true,
-          },
-        },
-      },
-    },
-  },
-  Symbol(enzyme.__childContext__): null,
-}
+<div
+  className="LoadingScreen"
+>
+  <img
+    className="LoadingScreen-logo"
+    src="../renderer/assets/symphony-logo.png"
+  />
+  <span
+    className="LoadingScreen-name"
+  >
+    Symphony
+  </span>
+  <svg
+    height="100%"
+    preserveAspectRatio="xMidYMid"
+    viewBox="0 0 100 200"
+    width="100%"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle
+      cx="50"
+      cy="50"
+      fill="none"
+      ng-attr-r="{{config.radius}}"
+      ng-attr-stroke="{{config.color}}"
+      ng-attr-stroke-dasharray="{{config.dasharray}}"
+      ng-attr-stroke-width="{{config.width}}"
+      r="35"
+      stroke="#ffffff"
+      stroke-dasharray="164.93361431346415 56.97787143782138"
+      stroke-width="10"
+      transform="rotate(59.6808 50 50)"
+    >
+      <animateTransform
+        attributeName="transform"
+        begin="0s"
+        calcMode="linear"
+        dur="1s"
+        keyTimes="0;1"
+        repeatCount="indefinite"
+        type="rotate"
+        values="0 50 50;360 50 50"
+      />
+    </circle>
+  </svg>
+</div>
 `;
