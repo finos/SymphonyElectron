@@ -1,203 +1,27 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`about app should render correctly 1`] = `
-ShallowWrapper {
-  Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <AboutApp />,
-  Symbol(enzyme.__renderer__): Object {
-    "batchedUpdates": [Function],
-    "checkPropTypes": [Function],
-    "getNode": [Function],
-    "render": [Function],
-    "simulateError": [Function],
-    "simulateEvent": [Function],
-    "unmount": [Function],
-  },
-  Symbol(enzyme.__node__): Object {
-    "instance": null,
-    "key": undefined,
-    "nodeType": "host",
-    "props": Object {
-      "children": Array [
-        <img
-          className="AboutApp-logo"
-          src="../assets/symphony-logo.png"
-        />,
-        <span
-          className="AboutApp-name"
-        >
-          Symphony
-        </span>,
-        <span
-          className="AboutApp-versionText"
-        >
-          Version 0-N/A ()
-        </span>,
-        <span
-          className="AboutApp-copyrightText"
-        >
-          Copyright © 2019 Symphony
-        </span>,
-      ],
-      "className": "AboutApp",
-    },
-    "ref": null,
-    "rendered": Array [
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "className": "AboutApp-logo",
-          "src": "../assets/symphony-logo.png",
-        },
-        "ref": null,
-        "rendered": null,
-        "type": "img",
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": "Symphony",
-          "className": "AboutApp-name",
-        },
-        "ref": null,
-        "rendered": "Symphony",
-        "type": "span",
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": "Version 0-N/A ()",
-          "className": "AboutApp-versionText",
-        },
-        "ref": null,
-        "rendered": "Version 0-N/A ()",
-        "type": "span",
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": "Copyright © 2019 Symphony",
-          "className": "AboutApp-copyrightText",
-        },
-        "ref": null,
-        "rendered": "Copyright © 2019 Symphony",
-        "type": "span",
-      },
-    ],
-    "type": "div",
-  },
-  Symbol(enzyme.__nodes__): Array [
-    Object {
-      "instance": null,
-      "key": undefined,
-      "nodeType": "host",
-      "props": Object {
-        "children": Array [
-          <img
-            className="AboutApp-logo"
-            src="../assets/symphony-logo.png"
-          />,
-          <span
-            className="AboutApp-name"
-          >
-            Symphony
-          </span>,
-          <span
-            className="AboutApp-versionText"
-          >
-            Version 0-N/A ()
-          </span>,
-          <span
-            className="AboutApp-copyrightText"
-          >
-            Copyright © 2019 Symphony
-          </span>,
-        ],
-        "className": "AboutApp",
-      },
-      "ref": null,
-      "rendered": Array [
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "className": "AboutApp-logo",
-            "src": "../assets/symphony-logo.png",
-          },
-          "ref": null,
-          "rendered": null,
-          "type": "img",
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": "Symphony",
-            "className": "AboutApp-name",
-          },
-          "ref": null,
-          "rendered": "Symphony",
-          "type": "span",
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": "Version 0-N/A ()",
-            "className": "AboutApp-versionText",
-          },
-          "ref": null,
-          "rendered": "Version 0-N/A ()",
-          "type": "span",
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": "Copyright © 2019 Symphony",
-            "className": "AboutApp-copyrightText",
-          },
-          "ref": null,
-          "rendered": "Copyright © 2019 Symphony",
-          "type": "span",
-        },
-      ],
-      "type": "div",
-    },
-  ],
-  Symbol(enzyme.__options__): Object {
-    "adapter": ReactSixteenAdapter {
-      "options": Object {
-        "enableComponentDidUpdateOnSetState": true,
-        "legacyContextMode": "parent",
-        "lifecycles": Object {
-          "componentDidUpdate": Object {
-            "onSetState": true,
-          },
-          "getChildContext": Object {
-            "calledByRenderer": false,
-          },
-          "getDerivedStateFromProps": true,
-          "getSnapshotBeforeUpdate": true,
-          "setState": Object {
-            "skipsComponentDidUpdateOnNullish": true,
-          },
-        },
-      },
-    },
-  },
-  Symbol(enzyme.__childContext__): null,
-}
+<div
+  className="AboutApp"
+>
+  <img
+    className="AboutApp-logo"
+    src="../assets/symphony-logo.png"
+  />
+  <span
+    className="AboutApp-name"
+  >
+    Symphony
+  </span>
+  <span
+    className="AboutApp-versionText"
+  >
+    Version 0-N/A ()
+  </span>
+  <span
+    className="AboutApp-copyrightText"
+  >
+    Copyright © 2019 Symphony
+  </span>
+</div>
 `;
