@@ -13,6 +13,7 @@ const isMac = require('./utils/misc.js').isMac;
 const getRegistry = require('./utils/getRegistry.js');
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
+const { buildNumber } = require('../package.json');
 
 const configFileName = 'Symphony.config';
 
@@ -191,10 +192,10 @@ function updateConfigField(fieldName, newValue) {
             return saveUserConfig(fieldName, newValue, config);
         }, () => {
             // in case config doesn't exist, can't read or is corrupted.
-            // add configVersion - just in case in future we need to provide
+            // add configBuildNumber - just in case in future we need to provide
             // upgrade capabilities.
             return saveUserConfig(fieldName, newValue, {
-                configVersion: app.getVersion().toString(),
+                configBuildNumber: buildNumber || '0',
             });
         });
 }
@@ -265,6 +266,7 @@ function updateUserConfig(oldUserConfig) {
                 reject(new Error(`Failed to update user config error: ${err}`));
                 return;
             }
+            userConfig = newUserConfig;
             resolve();
         });
     });
@@ -275,28 +277,22 @@ function updateUserConfig(oldUserConfig) {
  * Manipulates user config on first time launch
  * @returns {Promise}
  */
-function updateUserConfigOnLaunch() {
+function updateUserConfigOnLaunch(resolve, reject) {
     // we get the user config path using electron
     const userConfigFile = path.join(app.getPath('userData'), configFileName);
-
-    // if it's not a per user installation or if the
-    // user config file doesn't exist, we simple move on
-    if (!fs.existsSync(userConfigFile)) {
-        log.send(logLevels.WARN, 'config: Could not find the user config file!');
-        return Promise.reject(new Error('config: Could not find the user config file!'));
-    }
 
     // In case the file exists, we remove it so that all the
     // values are fetched from the global config
     // https://perzoinc.atlassian.net/browse/ELECTRON-126
     return readUserConfig(userConfigFile).then((data) => {
-        // Add version info to the user config data
-        const version = app.getVersion().toString() || '1.0.0';
-        const updatedData = Object.assign(data || {}, { configVersion: version });
+        // Add build number info to the user config data
+        const updatedData = Object.assign(data || {}, { configBuildNumber: buildNumber || '0' });
 
-        return updateUserConfig(updatedData);
+        updateUserConfig(updatedData)
+            .then(resolve)
+            .catch(reject);
     }).catch((err) => {
-        return Promise.reject(err);
+        return reject(err);
     });
 
 }

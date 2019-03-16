@@ -24,7 +24,6 @@ const { setCheckboxValues } = require('./menus/menuTemplate.js');
 const autoLaunch = require('./autoLaunch');
 const { handleCacheFailureCheckOnStartup, handleCacheFailureCheckOnExit} = require('./cacheHandler');
 
-const compareSemVersions = require('./utils/compareSemVersions.js');
 const { isMac, isDevEnv } = require('./utils/misc.js');
 const getCmdLineArg = require('./utils/getCmdLineArg.js');
 
@@ -313,24 +312,24 @@ function setupThenOpenMainWindow() {
 }
 
 function checkFirstTimeLaunch() {
-    return getUserConfigField('configVersion')
-        .then((configVersion) => {
-            const appVersionString = app.getVersion().toString();
-            const execPath = nodePath.dirname(app.getPath('exe'));
-            const shouldUpdateUserConfig = execPath.indexOf('AppData\\Local\\Programs') !== -1 || isMac;
+    return new Promise((resolve, reject) => {
+        getUserConfigField('configBuildNumber')
+            .then((configBuildNumber) => {
+                const execPath = nodePath.dirname(app.getPath('exe'));
+                const shouldUpdateUserConfig = execPath.indexOf('AppData\\Local\\Programs') !== -1 || isMac;
 
-            if (!(configVersion
-                && typeof configVersion === 'string'
-                && (compareSemVersions.check(appVersionString, configVersion) !== 1)) && shouldUpdateUserConfig) {
-                return setupFirstTimeLaunch();
-            }
-            log.send(logLevels.INFO, `not a first-time launch as 
-            configVersion: ${configVersion} appVersion: ${appVersionString} shouldUpdateUserConfig: ${shouldUpdateUserConfig}`);
-            return Promise.resolve();
-        })
-        .catch(() => {
-            return setupFirstTimeLaunch();
-        });
+                if (configBuildNumber && typeof configBuildNumber === 'string' && configBuildNumber !== buildNumber) {
+                    return setupFirstTimeLaunch(resolve, reject, shouldUpdateUserConfig);
+                }
+                log.send(logLevels.INFO, `not a first-time launch as 
+            configBuildNumber: ${configBuildNumber} installerBuildNumber: ${buildNumber} shouldUpdateUserConfig: ${shouldUpdateUserConfig}`);
+                return resolve();
+            })
+            .catch((e) => {
+                log.send(logLevels.ERROR, `Error reading configVersion error: ${e}`);
+                return setupFirstTimeLaunch(resolve, reject, true);
+            });
+    });
 }
 
 /**
@@ -339,11 +338,18 @@ function checkFirstTimeLaunch() {
  *
  * @return {Promise<any>}
  */
-function setupFirstTimeLaunch() {
+function setupFirstTimeLaunch(resolve, reject, shouldUpdateUserConfig) {
     log.send(logLevels.INFO, 'setting first time launch config');
-    return getConfigField('launchOnStartup')
+    getConfigField('launchOnStartup')
         .then(setStartup)
-        .then(updateUserConfigOnLaunch);
+        .then(() => {
+            if (shouldUpdateUserConfig) {
+                log.send(logLevels.INFO, `Resetting user config data? ${shouldUpdateUserConfig}`);
+                return updateUserConfigOnLaunch(resolve, reject);
+            }
+            return resolve();
+        })
+        .catch(reject);
 }
 
 /**
