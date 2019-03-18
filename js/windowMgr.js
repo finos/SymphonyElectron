@@ -10,9 +10,9 @@ const path = require('path');
 const nodeURL = require('url');
 const querystring = require('querystring');
 const filesize = require('filesize');
+const fetch = require('electron-fetch').default;
 
 const { getTemplate, getMinimizeOnClose, getTitleBarStyle } = require('./menus/menuTemplate.js');
-const loadErrors = require('./dialogs/showLoadError.js');
 const isInDisplayBounds = require('./utils/isInDisplayBounds.js');
 const getGuid = require('./utils/getGuid.js');
 const log = require('./log.js');
@@ -26,6 +26,7 @@ const { isWhitelisted, parseDomain } = require('./utils/whitelistHandler');
 const { initCrashReporterMain, initCrashReporterRenderer } = require('./crashReporter.js');
 const i18n = require('./translation/i18n');
 const getCmdLineArg = require('./utils/getCmdLineArg');
+const config = readConfigFileSync();
 
 const SpellChecker = require('./spellChecker').SpellCheckHelper;
 const spellchecker = new SpellChecker();
@@ -48,6 +49,7 @@ let isAutoReload = false;
 let devToolsEnabled = true;
 let isCustomTitleBarEnabled = true;
 let titleBarStyles;
+let networkStatusCheckIntervalId;
 
 const KeyCodes = {
     Esc: 27,
@@ -67,6 +69,12 @@ const MIN_HEIGHT = 300;
 // Default window size for pop-out windows
 const DEFAULT_WIDTH = 300;
 const DEFAULT_HEIGHT = 600;
+
+const IGNORE_ERROR_CODES = [
+    0,
+    -3,
+    -111
+];
 
 // Certificate transparency whitelist
 let ctWhitelist = [];
@@ -174,8 +182,6 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     let url = initialUrl;
     let key = getGuid();
 
-    const config = readConfigFileSync();
-
     // condition whether to enable custom Windows 10 title bar
     isCustomTitleBarEnabled = typeof isCustomTitleBar === 'boolean'
         && isCustomTitleBar
@@ -268,17 +274,6 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         }
     }
 
-    function retry() {
-        if (!isOnline) {
-            loadErrors.showNetworkConnectivityError(mainWindow, url, retry);
-            return;
-        }
-
-        if (mainWindow.webContents) {
-            mainWindow.webContents.reload();
-        }
-    }
-
     // Event needed to hide native menu bar on Windows 10 as we use custom menu bar
     mainWindow.webContents.once('did-start-loading', () => {
         if ((isCustomTitleBarEnabled || isWindowsOS) && mainWindow && !mainWindow.isDestroyed()) {
@@ -320,15 +315,13 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         }
 
         if (!isOnline) {
-            loadErrors.showNetworkConnectivityError(mainWindow, url, retry);
-        } else {
-            // updates the notify config with user preference
-            notify.updateConfig({ position: position, display: display });
-            // removes all existing notifications when main window reloads
-            notify.reset();
-            log.send(logLevels.INFO, 'loaded main window url: ' + url);
-
+            return;
         }
+        // updates the notify config with user preference
+        notify.updateConfig({ position: position, display: display });
+        // removes all existing notifications when main window reloads
+        notify.reset();
+        log.send(logLevels.INFO, 'loaded main window url: ' + url);
 
         // ELECTRON-540 - needed to automatically
         // select desktop capture source
@@ -345,9 +338,28 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
         }
     });
 
-    mainWindow.webContents.on('did-fail-load', function (event, errorCode,
-        errorDesc, validatedURL) {
-        loadErrors.showLoadFailure(mainWindow, validatedURL, errorDesc, errorCode, retry, false);
+    mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDesc, validatedURL) => {
+        // Verify error code and display appropriate error content
+        if (!IGNORE_ERROR_CODES.includes(parseInt(errorCode, 10))) {
+            const message = i18n.getMessageFor('NetworkError');
+            mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/networkError/style.css'), 'utf8').toString());
+            mainWindow.webContents.send('network-error', { message, error: errorDesc });
+            isSymphonyReachable(mainWindow, validatedURL);
+        }
+    });
+
+    mainWindow.webContents.on('did-stop-loading', () => {
+        // Verify if SDA ended up in a blank page
+        mainWindow.webContents.executeJavaScript('document.location.href').then((href) => {
+            if (href === 'data:text/html,chromewebdata') {
+                const message = i18n.getMessageFor('NetworkError');
+                mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/networkError/style.css'), 'utf8').toString());
+                mainWindow.webContents.send('network-error', { message, error: "stop loading"});
+                isSymphonyReachable(mainWindow, config.url);
+            }
+        }).catch((error) => {
+            log.send(logLevels.ERROR, `Could not read document.location error: ${error}`);
+        });
     });
 
     // In case a renderer process crashes, provide an
@@ -1304,6 +1316,43 @@ const logBrowserWindowEvents = (browserWindow, windowName) => {
 
 };
 
+/**
+ * Validates the network by fetching the pod url
+ * every 5sec, on active reloads the given window
+ *
+ * @param window
+ * @param url
+ */
+const isSymphonyReachable = (window, url) => {
+    if (!networkStatusCheckIntervalId) {
+        networkStatusCheckIntervalId = setInterval(() => {
+            fetch(config.url).then((rsp) => {
+                if (rsp.status === 200 && isOnline) {
+                    window.loadURL(url);
+                    if (networkStatusCheckIntervalId) {
+                        clearInterval(networkStatusCheckIntervalId);
+                        networkStatusCheckIntervalId = null;
+                    }
+                } else {
+                    log.send(logLevels.INFO, `Symphony down! statusCode: ${rsp.status} is online: ${isOnline}`);
+                }
+            }).catch((error) => {
+                log.send(logLevels.INFO, `Network status check: No active network connection ${error}`);
+            });
+        }, 5000);
+    }
+};
+
+/**
+ * Clears the network status check interval
+ */
+const cancelNetworkStatusCheck = () => {
+    if (networkStatusCheckIntervalId) {
+        clearInterval(networkStatusCheckIntervalId);
+        networkStatusCheckIntervalId = null;
+    }
+};
+
 module.exports = {
     createMainWindow: createMainWindow,
     getMainWindow: getMainWindow,
@@ -1322,4 +1371,5 @@ module.exports = {
     getIsOnline: getIsOnline,
     getSpellchecker: getSpellchecker,
     isMisspelled: isMisspelled,
+    cancelNetworkStatusCheck: cancelNetworkStatusCheck,
 };
