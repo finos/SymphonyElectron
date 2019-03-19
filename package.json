@@ -16,7 +16,7 @@
     "browserify-preload": "browserify -o lib/src/renderer/_preload-main.js -x electron --insert-global-vars=__filename,__dirname lib/src/renderer/preload-main.js",
     "rebuild": "electron-rebuild -f",
     "dev": "npm run prebuild && cross-env ELECTRON_DEV=true electron .",
-    "test": "npm run lint && npm rebuild --build-from-source && cross-env ELECTRON_QA=true jest --config jest.unit.config.json --runInBand && npm run rebuild",
+    "test": "npm run lint && cross-env ELECTRON_QA=true jest --config jest.unit.config.json --runInBand",
     "spectron-test": "npm run lint && npm rebuild --build-from-source robotjs && cross-env ELECTRON_QA=true jest --config jest.spectron.config.json --runInBand --detectOpenHandles",
     "demo-win": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file:///demo/index.html",
     "demo-mac": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/demo/index.html",
