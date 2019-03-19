@@ -33,6 +33,13 @@ class Logger {
 
         this.loggerWindow = null;
         this.logQueue = [];
+        // If the user has specified a custom log path use it.
+        const customLogPathArg = getCommandLineArgs(process.argv, '--logPath=', false);
+        const customLogsFolder = customLogPathArg && customLogPathArg.substring(customLogPathArg.indexOf('=') + 1);
+        if (customLogsFolder && fs.existsSync(customLogsFolder)) {
+            app.setPath('logs', customLogsFolder);
+        }
+
         this.logPath = app.getPath('logs');
 
         if (!isElectronQA) {
