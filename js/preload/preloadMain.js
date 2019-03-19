@@ -21,7 +21,9 @@ const getMediaSources = require('../desktopCapturer/getSources');
 const getMediaSource = require('../desktopCapturer/getSource');
 const showScreenSharingIndicator = require('../screenSharingIndicator/showScreenSharingIndicator');
 const { TitleBar } = require('../windowsTitlebar');
+const { NetworkError } = require('../networkError');
 const titleBar = new TitleBar();
+const networkError = new NetworkError();
 const { buildNumber } = require('../../package.json');
 const SnackBar = require('../snackBar').SnackBar;
 const KeyCodes = {
@@ -490,6 +492,13 @@ function createAPI() {
     local.ipcRenderer.on('initiate-windows-title-bar', (event, arg) => {
         if (arg && typeof arg === 'string') {
             titleBar.initiateWindowsTitleBar(arg);
+        }
+    });
+
+    // display network error info
+    local.ipcRenderer.on('network-error', (event, data) => {
+        if (data && typeof data === 'object') {
+            networkError.showError(data);
         }
     });
 

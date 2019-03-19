@@ -68,6 +68,12 @@
   "Minimize on Close": "閉じるで最小化",
   "Native": "Native",
   "Network connectivity has been lost. Check your internet connection.": "ネットワーク接続が失われました。インターネット接続を確認してください。",
+  "NetworkError": {
+    "Problem connecting to Symphony": "Symphonyへの接続に関する問題",
+    "Looks like you are not connected to the Internet. We'll try to reconnect automatically.": "インターネットに接続していないようです。 自動的に再接続します。",
+    "Cancel Retry": "再試行をキャンセル",
+    "Quit Symphony": "Symphonyを終了します"
+  },
   "No crashes available to share": "共有できるクラッシュはありません",
   "No logs are available to share": "共有できるログはありません",
   "Not Allowed": "許可されていませ｡",

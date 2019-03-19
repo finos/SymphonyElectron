@@ -25,7 +25,9 @@ const cmds = keyMirror({
     setIsInMeeting: null,
     setLocale: null,
     keyPress: null,
-    openScreenSharingIndicator: null
+    openScreenSharingIndicator: null,
+    cancelNetworkStatusCheck: null,
+    quitWindow: null,
 });
 
 module.exports = {
