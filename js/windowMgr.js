@@ -50,6 +50,7 @@ let devToolsEnabled = true;
 let isCustomTitleBarEnabled = true;
 let titleBarStyles;
 let networkStatusCheckIntervalId;
+const networkStatusCheckInterval = 5000;
 
 const KeyCodes = {
     Esc: 27,
@@ -1324,23 +1325,24 @@ const logBrowserWindowEvents = (browserWindow, windowName) => {
  * @param url
  */
 const isSymphonyReachable = (window, url) => {
-    if (!networkStatusCheckIntervalId) {
-        networkStatusCheckIntervalId = setInterval(() => {
-            fetch(config.url).then((rsp) => {
-                if (rsp.status === 200 && isOnline) {
-                    window.loadURL(url);
-                    if (networkStatusCheckIntervalId) {
-                        clearInterval(networkStatusCheckIntervalId);
-                        networkStatusCheckIntervalId = null;
-                    }
-                } else {
-                    log.send(logLevels.INFO, `Symphony down! statusCode: ${rsp.status} is online: ${isOnline}`);
-                }
-            }).catch((error) => {
-                log.send(logLevels.INFO, `Network status check: No active network connection ${error}`);
-            });
-        }, 5000);
+    if (networkStatusCheckIntervalId) {
+        return;
     }
+    networkStatusCheckIntervalId = setInterval(() => {
+        fetch(config.url).then((rsp) => {
+            if (rsp.status === 200 && isOnline) {
+                window.loadURL(url);
+                if (networkStatusCheckIntervalId) {
+                    clearInterval(networkStatusCheckIntervalId);
+                    networkStatusCheckIntervalId = null;
+                }
+            } else {
+                log.send(logLevels.INFO, `Symphony down! statusCode: ${rsp.status} is online: ${isOnline}`);
+            }
+        }).catch((error) => {
+            log.send(logLevels.INFO, `Network status check: No active network connection ${error}`);
+        });
+    }, networkStatusCheckInterval);
 };
 
 /**
