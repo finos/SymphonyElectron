@@ -33,8 +33,12 @@ const getParsedUrl = (configURL: string): Url => {
 export const handleChildWindow = (webContents: WebContents): void => {
     const childWindow = (event, newWinUrl, frameName, disposition, newWinOptions): void => {
         const mainWindow = windowHandler.getMainWindow();
-        if (!mainWindow || mainWindow.isDestroyed()) return;
-        if (!windowHandler.url) return;
+        if (!mainWindow || mainWindow.isDestroyed()) {
+            return;
+        }
+        if (!windowHandler.url) {
+            return;
+        }
 
         if (!newWinOptions.webPreferences) {
             newWinOptions.webPreferences = {};
@@ -104,7 +108,9 @@ export const handleChildWindow = (webContents: WebContents): void => {
 
             childWebContents.once('did-finish-load', async () => {
                 const browserWin: ICustomBrowserWindow = BrowserWindow.fromWebContents(childWebContents) as ICustomBrowserWindow;
-                if (!browserWin) return;
+                if (!browserWin) {
+                    return;
+                }
                 windowHandler.addWindow(newWinKey, browserWin);
                 browserWin.webContents.send('page-load', { isWindowsOS });
                 // Inserts css on to the window

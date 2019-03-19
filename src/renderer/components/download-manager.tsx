@@ -77,7 +77,9 @@ export default class DownloadManager extends React.Component<{}, IManagerState> 
      * @param item
      */
     private mapItems(item: IDownloadManager): JSX.Element | undefined {
-        if (!item) return;
+        if (!item) {
+            return;
+        }
         const { _id, total, fileName }: IDownloadManager = item;
 
         const fileDisplayName = this.getFileDisplayName(fileName);

@@ -66,7 +66,9 @@ if (!allowMultiInstance) {
             // Someone tried to run a second instance, we should focus our window.
             const mainWindow = windowHandler.getMainWindow();
             if (mainWindow && !mainWindow.isDestroyed()) {
-                if (isMac) return mainWindow.show();
+                if (isMac) {
+                    return mainWindow.show();
+                }
                 if (mainWindow.isMinimized()) {
                     mainWindow.restore();
                 }

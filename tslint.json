@@ -8,8 +8,8 @@
     ]
   },
   "rules": {
-    "curly": false,
-    "eofline": false,
+    "curly": true,
+    "eofline": true,
     "align": [
       true,
       "parameters"

@@ -132,7 +132,9 @@
 
             num++;
 
-            var notf = new ssf.Notification(title, {
+            var notf = {
+                id: num,
+                title,
                 body: (body + ' num=' + num + ' tag=' + tag),
                 image: imageUrl,
                 flash: shouldFlash,
@@ -142,24 +144,11 @@
                     hello: 'hello word'
                 },
                 tag: tag,
-                company: company
-            });
-
-            notf.addEventListener('click', onclick);
-            function onclick(event) {
-                event.target.close();
-                alert('notification clicked: ' + event.target.data.hello);
-            }
-
-            notf.addEventListener('close', onclose);
-            function onclose() {
-                alert('notification closed');
+                company: company,
+                method: 'notification',
             };
 
-            notf.addEventListener('error', onerror);
-            function onerror(event) {
-                alert('error=' + event.result);
-            };
+            window.postMessage({ method: 'notification', data: notf }, '*');
         });
 
         var badgeCount = 0;
@@ -291,6 +280,8 @@
             ssf.setLocale('fr-FR');
             document.location.reload();
         });
+
+        window.addEventListener('message', (event) => console.log(event));
 
     </script>
 </html>

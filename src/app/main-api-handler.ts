@@ -80,7 +80,9 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
             // validates the user bring to front config and activates the wrapper
             if (typeof arg.reason === 'string' && arg.reason === 'notification') {
                 const shouldBringToFront = config.getConfigFields([ 'bringToFront' ]);
-                if (shouldBringToFront) activate(arg.windowName, false);
+                if (shouldBringToFront) {
+                    activate(arg.windowName, false);
+                }
             }
             break;
         case apiCmds.openScreenPickerWindow:
@@ -95,21 +97,6 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
             }
             break;
         }
-        /*case ApiCmds.optimizeMemoryConsumption:
-            if (typeof arg.memory === 'object'
-                && typeof arg.cpuUsage === 'object'
-                && typeof arg.memory.workingSetSize === 'number') {
-                setPreloadMemoryInfo(arg.memory, arg.cpuUsage);
-            }
-            break;
-        case ApiCmds.optimizeMemoryRegister:
-            setPreloadWindow(event.sender);
-            break;
-        case ApiCmds.setIsInMeeting:
-            if (typeof arg.isInMeeting === 'boolean') {
-                setIsInMeeting(arg.isInMeeting);
-            }
-            break;*/
         case apiCmds.setLocale:
             if (typeof arg.locale === 'string') {
                 updateLocale(arg.locale as LocaleType);
@@ -124,12 +111,12 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
             screenSnippet.capture(event.sender);
             break;
         case apiCmds.closeWindow:
-            windowHandler.closeWindow(arg.windowType);
+            windowHandler.closeWindow(arg.windowType, arg.winKey);
             break;
         case apiCmds.openScreenSharingIndicator:
-            const { displayId, id } = arg;
-            if (typeof displayId === 'string' && typeof id === 'number') {
-                windowHandler.createScreenSharingIndicatorWindow(event.sender, displayId, id);
+            const { displayId, id, streamId } = arg;
+            if (typeof displayId === 'string' && typeof id === 'number' && typeof streamId === 'string') {
+                windowHandler.createScreenSharingIndicatorWindow(event.sender, displayId, id, streamId);
             }
             break;
         case apiCmds.downloadManagerAction:

@@ -33,13 +33,19 @@ class Logger {
 
         this.loggerWindow = null;
         this.logQueue = [];
+        // If the user has specified a custom log path use it.
+        const customLogPathArg = getCommandLineArgs(process.argv, '--logPath=', false);
+        const customLogsFolder = customLogPathArg && customLogPathArg.substring(customLogPathArg.indexOf('=') + 1);
+        if (customLogsFolder && fs.existsSync(customLogsFolder)) {
+            app.setPath('logs', customLogsFolder);
+        }
+
         this.logPath = app.getPath('logs');
 
         if (!isElectronQA) {
-            transports.file.file = path.join(this.logPath, 'app.log');
+            transports.file.file = path.join(this.logPath, `app_${Date.now()}.log`);
             transports.file.level = 'debug';
-            transports.file.format = '{h}:{i}:{s}:{ms} {text}';
-            transports.file.maxSize = 10 * 1024 * 1024;
+            transports.file.format = '{y}-{m}-{d} {h}:{i}:{s}:{ms} {z} | {level} | {text}';
             transports.file.appName = 'Symphony';
         }
 
@@ -136,9 +142,15 @@ class Logger {
 
         if (this.loggerWindow) {
             const logMsgs: IClientLogMsg = {};
-            if (this.logQueue.length) logMsgs.msgs = this.logQueue;
-            if (this.desiredLogLevel) logMsgs.logLevel = this.desiredLogLevel;
-            if (Object.keys(logMsgs).length) this.loggerWindow.send('log', logMsgs);
+            if (this.logQueue.length) {
+                logMsgs.msgs = this.logQueue;
+            }
+            if (this.desiredLogLevel) {
+                logMsgs.logLevel = this.desiredLogLevel;
+            }
+            if (Object.keys(logMsgs).length) {
+                this.loggerWindow.send('log', logMsgs);
+            }
         }
     }
 
@@ -198,7 +210,7 @@ class Logger {
         }
 
         if (this.loggerWindow) {
-            this.loggerWindow.send('log', { msgs: [ logMsg ] });
+            this.loggerWindow.send('log', { msgs: [ logMsg ], logLevel: this.desiredLogLevel, showInConsole: this.showInConsole });
         } else {
             this.logQueue.push(logMsg);
             // don't store more than 100 msgs. keep most recent log msgs.
