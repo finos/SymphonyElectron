@@ -68,6 +68,12 @@
   "Minimize on Close": "Minimize on Close",
   "Native": "Native",
   "Network connectivity has been lost. Check your internet connection.": "Network connectivity has been lost. Check your internet connection.",
+  "NetworkError": {
+    "Problem connecting to Symphony": "Problem connecting to Symphony",
+    "Looks like you are not connected to the Internet. We'll try to reconnect automatically.": "Looks like you are not connected to the Internet. We'll try to reconnect automatically.",
+    "Cancel Retry": "Cancel Retry",
+    "Quit Symphony": "Quit Symphony"
+  },
   "No crashes available to share": "No crashes available to share",
   "No logs are available to share": "No logs are available to share",
   "Not Allowed": "Not Allowed",
