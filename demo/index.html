@@ -149,22 +149,6 @@
             };
 
             window.postMessage({ method: 'notification', data: notf }, '*');
-
-            /*notf.addEventListener('click', onclick);
-            function onclick(event) {
-                event.target.close();
-                alert('notification clicked: ' + event.target.data.hello);
-            }
-
-            notf.addEventListener('close', onclose);
-            function onclose() {
-                alert('notification closed');
-            };
-
-            notf.addEventListener('error', onerror);
-            function onerror(event) {
-                alert('error=' + event.result);
-            };*/
         });
 
         var badgeCount = 0;

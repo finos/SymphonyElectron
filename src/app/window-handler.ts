@@ -488,6 +488,7 @@ export class WindowHandler {
                 displayId.includes(d.id.toString()))[ 0 ]) || electron.screen.getPrimaryDisplay();
 
         const screenRect = indicatorScreen.workArea;
+        // Set stream id as winKey to link stream to the window
         let opts = { ...WindowHandler.getScreenSharingIndicatorOpts(), ...{ winKey: streamId } };
         if (opts.width && opts.height) {
             opts = Object.assign({}, opts, {

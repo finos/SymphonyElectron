@@ -51,7 +51,7 @@ export default class NotificationHandler {
      * @param x {number}
      * @param y {number}
      */
-    public setWindowPosition(window: Electron.BrowserWindow, x: number, y: number) {
+    public setWindowPosition(window: Electron.BrowserWindow, x: number = 0, y: number = 0) {
         if (window && !window.isDestroyed()) {
             window.setPosition(parseInt(String(x), 10), parseInt(String(y), 10));
         }
@@ -62,14 +62,15 @@ export default class NotificationHandler {
      */
     public setupNotificationPosition() {
         // This feature only applies to windows
-        if (!isMac) {
-            const screens = electron.screen.getAllDisplays();
-            if (screens && screens.length >= 0) {
-                this.externalDisplay = screens.find((screen) => {
-                    const screenId = screen.id.toString();
-                    return screenId === this.displayId;
-                });
-            }
+        if (isMac) {
+            return;
+        }
+        const screens = electron.screen.getAllDisplays();
+        if (screens && screens.length >= 0) {
+            this.externalDisplay = screens.find((screen) => {
+                const screenId = screen.id.toString();
+                return screenId === this.displayId;
+            });
         }
 
         const display = this.externalDisplay || electron.screen.getPrimaryDisplay();

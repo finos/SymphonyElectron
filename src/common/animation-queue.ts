@@ -4,6 +4,10 @@ export class AnimationQueue {
     private queue: any[] = [];
     private running: boolean = false;
 
+    constructor() {
+        this.animate = this.animate.bind(this);
+    }
+
     /**
      * Pushes each animation to a queue
      *
@@ -14,7 +18,7 @@ export class AnimationQueue {
             this.queue.push(object);
         } else {
             this.running = true;
-            setTimeout(this.animate.bind(this, object), 0);
+            setTimeout(() => this.animate(object), 0);
         }
     }
 
@@ -22,19 +26,19 @@ export class AnimationQueue {
      * Animates an animation that is part of the queue
      * @param object
      */
-    public animate(object) {
-        object.func.apply(null, object.args)
-            .then(() => {
-                if (this.queue.length > 0) {
-                    // Run next animation
-                    this.animate.call(this, this.queue.shift());
-                } else {
-                    this.running = false;
-                }
-            })
-            .catch((err) => {
-                logger.error(`animationQueue: encountered an error: ${err} with stack trace: ${err.stack}`);
-            });
+    public async animate(object): Promise<void> {
+        try {
+            await object.func.apply(null, object.args);
+        } catch (err) {
+            logger.error(`animationQueue: encountered an error: ${err} with stack trace: ${err.stack}`);
+        } finally {
+            if (this.queue.length > 0) {
+                // Run next animation
+                this.animate.call(this, this.queue.shift());
+            } else {
+                this.running = false;
+            }
+        }
     }
 
     /**
