@@ -1,5 +1,6 @@
 export enum apiCmds {
     isOnline = 'is-online',
+    getVersionInfo = 'get-version-info',
     registerLogger = 'register-logger',
     setBadgeCount = 'set-badge-count',
     badgeDataUrl = 'badge-data-url',
@@ -20,7 +21,11 @@ export enum apiCmds {
     keyPress = 'key-press',
     closeWindow = 'close-window',
     openScreenSharingIndicator = 'open-screen-sharing-indicator',
+    closeScreenSharingIndicator = 'close-screen-sharing-indicator',
     downloadManagerAction = 'download-manager-action',
+    getMediaSource = 'get-media-source',
+    notification = 'notification',
+    closeNotification = 'close-notification',
 }
 
 export enum apiName {
@@ -43,19 +48,14 @@ export interface IApiArgs {
     locale: string;
     keyCode: number;
     windowType: WindowTypes;
+    winKey: string;
+    streamId: string;
     displayId: string;
     path: string;
     type: string;
 }
 
 export type WindowTypes = 'screen-picker' | 'screen-sharing-indicator';
-
-/**
- * Activity detection
- */
-export interface IActivityDetection {
-    idleTime: number;
-}
 
 export interface IBadgeCount {
     count: number;
@@ -80,6 +80,7 @@ export interface IBoundsChange extends Electron.Rectangle {
  */
 export interface IScreenSharingIndicator {
     type: string;
+    requestId: number;
     reason?: string;
 }
 
@@ -87,3 +88,20 @@ export enum KeyCodes {
     Esc = 27,
     Alt = 18,
 }
+
+export interface IVersionInfo {
+    containerIdentifier: string;
+    containerVer: string;
+    buildNumber: string;
+    apiVer: string;
+    searchApiVer: string;
+}
+
+export interface ILogMsg {
+    level: LogLevel;
+    details: any;
+    showInConsole: boolean;
+    startTime: number;
+}
+
+export type LogLevel = 'error' | 'warn' | 'info' | 'verbose' | 'debug' | 'silly';

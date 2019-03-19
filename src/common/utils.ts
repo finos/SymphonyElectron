@@ -60,8 +60,12 @@ export const compareVersions = (v1: string, v2: string): number => {
         const n1 = parseInt(s1[i] || '0', 10);
         const n2 = parseInt(s2[i] || '0', 10);
 
-        if (n1 > n2) return 1;
-        if (n2 > n1) return -1;
+        if (n1 > n2) {
+            return 1;
+        }
+        if (n2 > n1) {
+            return -1;
+        }
     }
 
     if ([s1[2], s2[2]].every(patch.test.bind(patch))) {
@@ -71,11 +75,19 @@ export const compareVersions = (v1: string, v2: string): number => {
         const p2 = patch.exec(s2[2])[1].split('.').map(tryParse);
 
         for (let k = 0; k < Math.max(p1.length, p2.length); k++) {
-            if (p1[k] === undefined || typeof p2[k] === 'string' && typeof p1[k] === 'number') return -1;
-            if (p2[k] === undefined || typeof p1[k] === 'string' && typeof p2[k] === 'number') return 1;
+            if (p1[k] === undefined || typeof p2[k] === 'string' && typeof p1[k] === 'number') {
+                return -1;
+            }
+            if (p2[k] === undefined || typeof p1[k] === 'string' && typeof p2[k] === 'number') {
+                return 1;
+            }
 
-            if (p1[k] > p2[k]) return 1;
-            if (p2[k] > p1[k]) return -1;
+            if (p1[k] > p2[k]) {
+                return 1;
+            }
+            if (p2[k] > p1[k]) {
+                return -1;
+            }
         }
     } else if ([s1[2], s2[2]].some(patch.test.bind(patch))) {
         return patch.test(s1[2]) ? -1 : 1;
@@ -179,7 +191,9 @@ export const throttle = (func: (...args) => void, wait: number): (...args) => vo
  */
 export const formatString = (str: string, data?: object): string => {
 
-    if (!str || !data) return str;
+    if (!str || !data) {
+        return str;
+    }
 
     for (const key in data) {
         if (Object.prototype.hasOwnProperty.call(data, key)) {

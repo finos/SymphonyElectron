@@ -30,9 +30,11 @@ describe('screen sharing indicator', () => {
         const closeIpcRendererMock = {
             cmd: 'close-window',
             windowType: 'screen-sharing-indicator',
+            winKey: 'id-123',
         };
         const spy = jest.spyOn(ipcRenderer, sendEventLabel);
         const wrapper = shallow(React.createElement(ScreenSharingIndicator));
+        wrapper.setState({ streamId: 'id-123' });
         wrapper.find(customSelector).simulate('click');
         expect(spy).lastCalledWith(symphonyAPIEventLabel, closeIpcRendererMock);
     });

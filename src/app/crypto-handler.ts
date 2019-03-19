@@ -10,7 +10,7 @@ import { logger } from '../common/logger';
 const TAG_LENGTH = 16;
 const arch = process.arch === 'ia32';
 const winLibraryPath = isDevEnv ? path.join(__dirname, '..', '..', 'library') : path.join(execPath, 'library');
-const macLibraryPath = isDevEnv ? path.join(__dirname, '..', '..', 'library') : path.join(execPath, '..', 'library');
+const macLibraryPath = isDevEnv ? path.join(__dirname, '..', '..', '..', 'library') : path.join(execPath, '..', 'library');
 
 const cryptoLibPath = isMac ?
     path.join(macLibraryPath, 'cryptoLib.dylib') :

@@ -62,7 +62,9 @@ export default class ScreenPicker extends React.Component<{}, IState> {
     public componentDidMount(): void {
         ipcRenderer.on('screen-picker-data', this.updateState);
         document.addEventListener('keyup', this.handleKeyUpPress, true);
-        if (isWindowsOS) document.body.classList.add('ScreenPicker-window-border');
+        if (isWindowsOS) {
+            document.body.classList.add('ScreenPicker-window-border');
+        }
     }
 
     public componentWillUnmount(): void {
