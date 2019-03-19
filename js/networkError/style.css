@@ -69,3 +69,9 @@ a {
     transition: box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
     user-select: none;
 }
+
+.disabled {
+    cursor: not-allowed;
+    background: #cccccc;
+    color: #666666;
+}

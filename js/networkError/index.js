@@ -21,17 +21,20 @@ class NetworkError {
 
         // Add event listeners for buttons
         const cancelRetryButton = errorContent.getElementById('cancel-retry-button');
-        cancelRetryButton.addEventListener('click', () => {
+        const cancelRetry = () => {
             ipcRenderer.send(apiName, {
                 cmd: apiCmds.cancelNetworkStatusCheck
             });
-        });
+            cancelRetryButton.classList.add('disabled');
+            cancelRetryButton.removeEventListener('click', cancelRetry);
+        };
+        cancelRetryButton.addEventListener('click', cancelRetry);
         
         const quitButton = errorContent.getElementById('quit-button');
         quitButton.addEventListener('click', () => {
             ipcRenderer.send(apiName, {
                 cmd: apiCmds.quitWindow
-            })
+            });
         });
 
         const mainFrame = errorContent.getElementById('main-frame');
