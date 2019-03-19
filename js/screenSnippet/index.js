@@ -7,7 +7,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-const { isMac, isDevEnv } = require('../utils/misc.js');
+const { isMac, isDevEnv, isWindowsOS } = require('../utils/misc.js');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
 const eventEmitter = require('.././eventEmitter');
@@ -41,7 +41,7 @@ class ScreenSnippet {
 
             log.send(logLevels.INFO, 'ScreenSnippet: starting screen capture');
 
-            let tmpFilename = 'symphonyImage-' + Date.now() + '.jpg';
+            let tmpFilename = (isWindowsOS) ? 'symphonyImage-' + Date.now() + '.png' : 'symphonyImage-' + Date.now() + '.jpg';
             let tmpDir = os.tmpdir();
 
             let outputFileName = path.join(tmpDir, tmpFilename);
@@ -144,10 +144,11 @@ function readResult(outputFileName, resolve, reject, childProcessErr) {
         try {
             // convert binary data to base64 encoded string
             let output = Buffer.from(data).toString('base64');
-            resolve({
-                type: 'image/jpg;base64',
+            const resultOutput = {
+                type: isWindowsOS ? 'image/png;base64' : 'image/jpg;base64',
                 data: output
-            });
+            };
+            resolve(resultOutput);
         } catch (error) {
             reject(createError(error));
         } finally {
