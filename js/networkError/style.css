@@ -1,12 +1,8 @@
 body {
-    font-family: sans-serif, "Segoe UI", "Helvetica Neue", Arial;
     background-color: rgb(247, 247, 247);
     color: rgb(100, 100, 100);
-}
-
-html {
-    -webkit-text-size-adjust: 100%;
-    font-size: 100%;
+    margin: 0;
+    display: flex;
 }
 
 a {
@@ -14,7 +10,7 @@ a {
     text-decoration: none;
 }
 
-h1 {
+.NetworkError-header {
     color: #333;
     font-size: 1.6em;
     font-weight: normal;
@@ -24,18 +20,7 @@ h1 {
     word-wrap: break-word;
 }
 
-h1 span {
-    font-weight: 500;
-}
-
-h2 {
-    color: #666;
-    font-size: 1.2em;
-    font-weight: normal;
-    margin: 10px 0;
-}
-
-.icon {
+.NetworkError-icon {
     background-repeat: no-repeat;
     background-size: 100%;
     height: 72px;
@@ -45,7 +30,7 @@ h2 {
     display: inline-block;
 }
 
-.error-code {
+.NetworkError-error-code {
     color: #646464;
     text-transform: uppercase;
     display: block;
@@ -55,18 +40,20 @@ h2 {
 
 .content-wrapper {
     box-sizing: border-box;
-    font-size: 1em;
     line-height: 1.6em;
     margin: 14vh auto 0;
     max-width: 600px;
     width: 100%;
+    -webkit-text-size-adjust: 100%;
+    font-size: 100%;
+    font-family: sans-serif, "Segoe UI", "Helvetica Neue", Arial;
 }
 
-#main-message > p {
+.NetworkError-reason {
     display: inline;
 }
 
-button {
+.NetworkError-button {
     font-weight: 600;
     margin: 20px 0;
     text-transform: uppercase;

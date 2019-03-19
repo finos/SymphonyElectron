@@ -1,7 +1,7 @@
 const errorContent = (data) => {
     return (`<div id="main-frame" class="content-wrapper">
     <div id="main-content">
-        <div class="icon">
+        <div class="NetworkError-icon">
             <?xml version="1.0" encoding="utf-8"?>
             <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
                  xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -106,15 +106,15 @@ const errorContent = (data) => {
         </g>
         </svg>
         </div>
-        <div id="main-message">
-            <h1 id="header">${data["Problem connecting to Symphony"] || "Problem connecting to Symphony"}</h1>
-            <p id="reason">
+        <div class="main-message">
+            <p class="NetworkError-header">${data["Problem connecting to Symphony"] || "Problem connecting to Symphony"}</p>
+            <p id="NetworkError-reason">
                 ${data["Looks like you are not connected to the Internet. We'll try to reconnect automatically."]
                     || "Looks like you are not connected to the Internet. We'll try to reconnect automatically."}
             </p>
-            <div id="error-code" class="error-code">ERR_INTERNET_DISCONNECTED</div>
-            <button id="cancel-retry-button">${data["Cancel Retry"] || "Cancel Retry"}</button>
-            <button id="quit-button">${data["Quit Symphony"] || "Quit Symphony"}</button>
+            <div id="error-code" class="NetworkError-error-code">ERR_INTERNET_DISCONNECTED</div>
+            <button id="cancel-retry-button" class="NetworkError-button">${data["Cancel Retry"] || "Cancel Retry"}</button>
+            <button id="quit-button" class="NetworkError-button">${data["Quit Symphony"] || "Quit Symphony"}</button>
         </div>
     </div>
 </div>`);
