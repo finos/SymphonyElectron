@@ -96,8 +96,12 @@ electron.app.on('certificate-error', (event, webContents, url, error, _certifica
  */
 export const showLoadFailure = (browserWindow: Electron.BrowserWindow, url: string, errorDesc: string, errorCode: number, retryCallback: () => void, showDialog: boolean): void => {
     let message = url ? `${i18n.t('Error loading URL')()}:\n${url}` : i18n.t('Error loading window')();
-    if (errorDesc) message += `\n\n${errorDesc}`;
-    if (errorCode) message += `\n\nError Code: ${errorCode}`;
+    if (errorDesc) {
+        message += `\n\n${errorDesc}`;
+    }
+    if (errorCode) {
+        message += `\n\nError Code: ${errorCode}`;
+    }
 
     // async handle of user input
     const response = (buttonId: number): void => {

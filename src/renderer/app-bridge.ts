@@ -23,7 +23,9 @@ export default class AppBridge {
      * @param event
      */
     private static isValidEvent(event): boolean {
-        if (!event) return false;
+        if (!event) {
+            return false;
+        }
         return event.source && event.source === window;
     }
 
@@ -60,7 +62,9 @@ export default class AppBridge {
      * @param event
      */
     private handleMessage(event): void {
-        if (!AppBridge.isValidEvent(event)) return;
+        if (!AppBridge.isValidEvent(event)) {
+            return;
+        }
 
         const { method, data } = event.data;
         switch (method) {

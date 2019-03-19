@@ -8,7 +8,7 @@
     ]
   },
   "rules": {
-    "curly": false,
+    "curly": true,
     "eofline": false,
     "align": [
       true,

@@ -153,7 +153,9 @@ export default class NotificationHandler {
                     break;
             }
 
-            if (!windowExists(notificationWindow)) return;
+            if (!windowExists(notificationWindow)) {
+                return;
+            }
 
             // Get startPos, calc step size and start animationInterval
             const startY = notificationWindow.getPosition()[1];

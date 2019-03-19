@@ -238,7 +238,9 @@ class Notification extends NotificationHandler {
             const notificationWindow = win as ICustomBrowserWindow;
             return notificationWindow.clientId === clientId;
         });
-        if (index === -1) return;
+        if (index === -1) {
+            return;
+        }
         return this.activeNotifications[ index ] as ICustomBrowserWindow;
     }
 

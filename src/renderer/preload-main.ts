@@ -43,7 +43,9 @@ createAPI();
 // When the window is completely loaded
 ipcRenderer.on('page-load', (_event, { locale, resources, origin }) => {
     // origin for postMessage targetOrigin communication
-    if (origin) appBridge.origin = origin;
+    if (origin) {
+        appBridge.origin = origin;
+    }
 
     i18n.setResource(locale, resources);
 

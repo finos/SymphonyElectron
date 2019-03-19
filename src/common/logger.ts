@@ -136,9 +136,15 @@ class Logger {
 
         if (this.loggerWindow) {
             const logMsgs: IClientLogMsg = {};
-            if (this.logQueue.length) logMsgs.msgs = this.logQueue;
-            if (this.desiredLogLevel) logMsgs.logLevel = this.desiredLogLevel;
-            if (Object.keys(logMsgs).length) this.loggerWindow.send('log', logMsgs);
+            if (this.logQueue.length) {
+                logMsgs.msgs = this.logQueue;
+            }
+            if (this.desiredLogLevel) {
+                logMsgs.logLevel = this.desiredLogLevel;
+            }
+            if (Object.keys(logMsgs).length) {
+                this.loggerWindow.send('log', logMsgs);
+            }
         }
     }
 

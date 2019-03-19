@@ -80,7 +80,9 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
             // validates the user bring to front config and activates the wrapper
             if (typeof arg.reason === 'string' && arg.reason === 'notification') {
                 const shouldBringToFront = config.getConfigFields([ 'bringToFront' ]);
-                if (shouldBringToFront) activate(arg.windowName, false);
+                if (shouldBringToFront) {
+                    activate(arg.windowName, false);
+                }
             }
             break;
         case apiCmds.openScreenPickerWindow:

@@ -46,7 +46,9 @@ class ActivityDetection {
         const idleTimeInMillis = idleTime * 1000;
         if (idleTimeInMillis < this.idleThreshold) {
             this.sendActivity(idleTimeInMillis);
-            if (this.timer) clearInterval(this.timer);
+            if (this.timer) {
+                clearInterval(this.timer);
+            }
             this.timer = undefined;
             logger.info(`activity-detection: activity occurred`);
             return;

@@ -29,7 +29,9 @@ export const preventWindowNavigation = (browserWindow: Electron.BrowserWindow, i
 
         if (browserWindow.isDestroyed()
             || browserWindow.webContents.isDestroyed()
-            || winUrl === browserWindow.webContents.getURL()) return;
+            || winUrl === browserWindow.webContents.getURL()) {
+            return;
+        }
 
         e.preventDefault();
     };
@@ -73,7 +75,9 @@ export const createComponentWindow = (
         browserWindow.once('ready-to-show', () => browserWindow.show());
     }
     browserWindow.webContents.once('did-finish-load', () => {
-        if (!browserWindow || browserWindow.isDestroyed()) return;
+        if (!browserWindow || browserWindow.isDestroyed()) {
+            return;
+        }
         browserWindow.webContents.send('set-locale-resource', { locale: i18n.getLocale(), resource: i18n.loadedResources });
     });
     browserWindow.setMenu(null as any);
@@ -173,7 +177,9 @@ export const updateLocale = (locale: LocaleType): void => {
     // sets the new locale
     i18n.setLocale(locale);
     const appMenu = windowHandler.appMenu;
-    if (appMenu) appMenu.update(locale);
+    if (appMenu) {
+        appMenu.update(locale);
+    }
 };
 
 /**
@@ -185,7 +191,9 @@ export const showPopupMenu = (opts: Electron.PopupOptions): void => {
         const { x, y } = mainWindow.isFullScreen() ? { x: 0, y: 0 } : { x: 10, y: -20 };
         const popupOpts = { window: mainWindow, x, y };
         const appMenu = windowHandler.appMenu;
-        if (appMenu) appMenu.popupMenu({ ...popupOpts, ...opts });
+        if (appMenu) {
+            appMenu.popupMenu({ ...popupOpts, ...opts });
+        }
     }
 };
 
@@ -223,7 +231,9 @@ export const sanitize = (windowName: string): void => {
  * @return {x?: Number, y?: Number, width: Number, height: Number}
  */
 export const getBounds = (winPos: Electron.Rectangle, defaultWidth: number, defaultHeight: number): Partial<Electron.Rectangle> => {
-    if (!winPos) return { width: defaultWidth, height: defaultHeight };
+    if (!winPos) {
+        return { width: defaultWidth, height: defaultHeight };
+    }
     const displays = electron.screen.getAllDisplays();
 
     for (let i = 0, len = displays.length; i < len; i++) {

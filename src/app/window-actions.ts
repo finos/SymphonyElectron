@@ -54,7 +54,9 @@ export const throttledWindowChanges = throttle(saveWindowSettings, 1000);
 export const activate = (windowName: string, shouldFocus: boolean = true): void => {
 
     // Electron-136: don't activate when the app is reloaded programmatically
-    if (windowHandler.isAutoReload) return;
+    if (windowHandler.isAutoReload) {
+        return;
+    }
 
     const windows = windowHandler.getAllWindows();
     for (const key in windows) {
@@ -135,11 +137,15 @@ export const handleKeyPress = (key: number): void => {
  * @param window {BrowserWindow}
  */
 export const monitorWindowActions = (window: BrowserWindow): void => {
-    if (!window || window.isDestroyed()) return;
+    if (!window || window.isDestroyed()) {
+        return;
+    }
     const eventNames = [ 'move', 'resize', 'maximize', 'unmaximize' ];
     eventNames.forEach((event: string) => {
-        // @ts-ignore
-        if (window) window.on(event, throttledWindowChanges);
+        if (window) {
+            // @ts-ignore
+            window.on(event, throttledWindowChanges);
+        }
     });
     window.on('enter-full-screen', enterFullScreen);
     window.on('leave-full-screen', leaveFullScreen);
@@ -151,11 +157,15 @@ export const monitorWindowActions = (window: BrowserWindow): void => {
  * @param window
  */
 export const removeWindowEventListener = (window: BrowserWindow): void => {
-    if (!window || window.isDestroyed()) return;
+    if (!window || window.isDestroyed()) {
+        return;
+    }
     const eventNames = [ 'move', 'resize', 'maximize', 'unmaximize' ];
     eventNames.forEach((event: string) => {
-        // @ts-ignore
-        if (window) window.removeListener(event, throttledWindowChanges);
+        if (window) {
+            // @ts-ignore
+            window.removeListener(event, throttledWindowChanges);
+        }
     });
     window.removeListener('enter-full-screen', enterFullScreen);
     window.removeListener('leave-full-screen', leaveFullScreen);
