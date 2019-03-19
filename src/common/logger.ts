@@ -36,10 +36,9 @@ class Logger {
         this.logPath = app.getPath('logs');
 
         if (!isElectronQA) {
-            transports.file.file = path.join(this.logPath, 'app.log');
+            transports.file.file = path.join(this.logPath, `app_${Date.now()}.log`);
             transports.file.level = 'debug';
-            transports.file.format = '{h}:{i}:{s}:{ms} {text}';
-            transports.file.maxSize = 10 * 1024 * 1024;
+            transports.file.format = '{y}-{m}-{d} {h}:{i}:{s}:{ms} {z} | {level} | {text}';
             transports.file.appName = 'Symphony';
         }
 
