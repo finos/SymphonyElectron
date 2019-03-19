@@ -466,7 +466,7 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
                 // only allow window.open to succeed is if coming from same host,
                 // otherwise open in default browser.
-                if ((newWinHost === mainWinHost || newWinUrl === emptyUrlString) && dispositionWhitelist.includes(disposition)) {
+                if ((newWinHost === mainWinHost || newWinUrl === emptyUrlString || (newWinHost.indexOf(mainWinHost) !== -1 && frameName !== "")) && dispositionWhitelist.includes(disposition)) {
                     // handle: window.open
 
                     if (!frameName) {
