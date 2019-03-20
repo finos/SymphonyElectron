@@ -71,14 +71,9 @@ const MIN_HEIGHT = 300;
 const DEFAULT_WIDTH = 300;
 const DEFAULT_HEIGHT = 600;
 
-const IGNORE_ERROR_CODES = [
-    0,
-    -3,
-    -111
-];
-
 // Certificate transparency whitelist
 let ctWhitelist = [];
+let lastLoadFailError;
 
 /**
  * Adds a window key
@@ -340,27 +335,24 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     });
 
     mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDesc, validatedURL) => {
-        // Verify error code and display appropriate error content
-        if (!IGNORE_ERROR_CODES.includes(parseInt(errorCode, 10))) {
-            const message = i18n.getMessageFor('NetworkError');
-            mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/networkError/style.css'), 'utf8').toString());
-            mainWindow.webContents.send('network-error', { message, error: errorDesc });
-            isSymphonyReachable(mainWindow, validatedURL);
-        }
+        log.send(logLevels.ERROR, `Failed to load ${validatedURL}, with an error: ${errorCode}::${errorDesc}`);
+        lastLoadFailError = errorDesc
     });
 
     mainWindow.webContents.on('did-stop-loading', () => {
-        // Verify if SDA ended up in a blank page
-        mainWindow.webContents.executeJavaScript('document.location.href').then((href) => {
-            if (href === 'data:text/html,chromewebdata') {
-                const message = i18n.getMessageFor('NetworkError');
-                mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/networkError/style.css'), 'utf8').toString());
-                mainWindow.webContents.send('network-error', { message, error: "stop loading"});
-                isSymphonyReachable(mainWindow, config.url);
-            }
-        }).catch((error) => {
-            log.send(logLevels.ERROR, `Could not read document.location error: ${error}`);
-        });
+        if (mainWindow && !mainWindow.isDestroyed()) {
+            // Verify if SDA ended up in a blank page
+            mainWindow.webContents.executeJavaScript('document.location.href').then((href) => {
+                if (href === 'data:text/html,chromewebdata' || href === 'chrome-error://chromewebdata/') {
+                    const message = i18n.getMessageFor('NetworkError');
+                    mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/networkError/style.css'), 'utf8').toString());
+                    mainWindow.webContents.send('network-error', { message, error: lastLoadFailError || "PAGE_STOPPED_LOADING"});
+                    isSymphonyReachable(mainWindow, config.url);
+                }
+            }).catch((error) => {
+                log.send(logLevels.ERROR, `Could not read document.location error: ${error}`);
+            });
+        }
     });
 
     // In case a renderer process crashes, provide an
