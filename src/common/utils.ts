@@ -182,7 +182,7 @@ export const throttle = (func: (...args) => void, wait: number): (...args) => vo
  * @param data {Object} - Data to be added
  *
  * @example
- * StringFormat(this will log {time}`, { time: '1234' })
+ * StringFormat('this will log {time}', [{ time: '1234' }])
  *
  * result:
  * this will log 1234
