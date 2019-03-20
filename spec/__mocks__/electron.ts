@@ -105,6 +105,28 @@ export const ipcRenderer: IIpcRenderer = {
     },
 };
 
+const getCurrentWindow = jest.fn(() => {
+    return {
+        isFullScreen: jest.fn(() => {
+            return false;
+        }),
+        isMaximized: jest.fn(() => {
+            return false;
+        }),
+        on: jest.fn(),
+        removeListener: jest.fn(),
+        isDestroyed: jest.fn(() => {
+            return false;
+        }),
+        close: jest.fn(),
+        maximize: jest.fn(),
+        minimize: jest.fn(),
+        unmaximize: jest.fn(),
+        setFullScreen: jest.fn(),
+    };
+});
+
 export const remote = {
     app,
+    getCurrentWindow,
 };
