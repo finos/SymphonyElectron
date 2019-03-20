@@ -14,6 +14,7 @@ interface IApp {
     getName(): string;
     isReady(): boolean;
     getVersion(): string;
+    on(): void;
 }
 interface IIpcMain {
     on(event: any, cb: any): void;
@@ -52,6 +53,7 @@ export const app: IApp = {
     getName: () => appName,
     isReady: () => isReady,
     getVersion: () => version,
+    on: () => jest.fn(),
 };
 
 // simple ipc mocks for render and main process ipc using
@@ -105,6 +107,26 @@ export const ipcRenderer: IIpcRenderer = {
     },
 };
 
+export const session = {
+    defaultSession: {
+        clearCache: jest.fn(),
+    },
+};
+
+export const shell = {
+    openExternal: jest.fn(),
+};
+
+// tslint:disable-next-line:variable-name
+export const Menu = {
+    buildFromTemplate: jest.fn(),
+    setApplicationMenu: jest.fn(),
+};
+
+export const crashReporter = {
+    start: jest.fn(),
+};
+
 const getCurrentWindow = jest.fn(() => {
     return {
         isFullScreen: jest.fn(() => {
@@ -126,10 +148,8 @@ const getCurrentWindow = jest.fn(() => {
     };
 });
 
-export const session = {
-    defaultSession: {
-        clearCache: jest.fn(),
-    },
+export const dialog = {
+    showMessageBox: jest.fn(),
 };
 
 export const remote = {
