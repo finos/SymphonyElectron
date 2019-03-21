@@ -14,9 +14,3 @@ List related PRs against other branches / repositories:
 branch | PR
 ------ | ------
 other_pr_dev | [link]()
-
-## QA Checklist
-- [] Unit-Tests
-- [] Automation-Tests
-
-Attach unit & spectron tests results in PDF format against the above task lists for this branch
