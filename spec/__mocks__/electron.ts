@@ -109,12 +109,6 @@ export const ipcRenderer: IIpcRenderer = {
     },
 };
 
-export const session = {
-    defaultSession: {
-        clearCache: jest.fn(),
-    },
-};
-
 export const shell = {
     openExternal: jest.fn(),
 };
@@ -152,6 +146,21 @@ const getCurrentWindow = jest.fn(() => {
 
 export const dialog = {
     showMessageBox: jest.fn(),
+};
+
+// tslint:disable-next-line:variable-name
+export const BrowserWindow = {
+    getFocusedWindow: jest.fn(() => {
+        return {
+            isDestroyed: jest.fn(() => false),
+        };
+    }),
+};
+
+export const session = {
+    defaultSession: {
+        clearCache: jest.fn(),
+    },
 };
 
 export const remote = {

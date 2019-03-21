@@ -6,6 +6,12 @@ jest.mock('../src/common/utils.ts', () => {
     };
 });
 
+jest.mock('../src/common/env', () => {
+    return {
+        isElectronQA: false,
+    };
+});
+
 jest.mock('electron-log');
 
 describe('logger', () => {
@@ -27,6 +33,7 @@ describe('logger', () => {
     it('should call send when logger get registered', () => {
         instance.debug('test');
         instance.debug('test2');
+
         const mock = jest.fn<Electron.WebContents>(() => ({
             send: jest.fn(),
         }));
