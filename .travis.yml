@@ -5,7 +5,6 @@ env:
 os:
   - osx
   - windows
-  - linux
 
 compiler:
   - gcc
