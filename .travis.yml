@@ -1,0 +1,32 @@
+env:
+  global:
+    - ELECTRON_QA="true"
+
+os:
+  - osx
+  - windows
+  - linux
+
+compiler:
+  - gcc
+
+language: node_js
+
+node_js:
+  - '11'
+
+addons:
+  chrome: stable
+
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; fi
+
+script:
+  - node --version
+  - npm --version
+  - npm install
+  - npm test
+
+cache:
+  directories:
+    - node_modules
