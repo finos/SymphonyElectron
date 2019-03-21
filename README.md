@@ -1,5 +1,5 @@
 [![Symphony Software Foundation - Incubating](https://cdn.rawgit.com/symphonyoss/contrib-toolbox/master/images/ssf-badge-incubating.svg)](https://symphonyoss.atlassian.net/wiki/display/FM/Incubating)
-
+[![Build Status](https://travis-ci.org/symphonyoss/SymphonyElectron.svg?branch=master)](https://travis-ci.org/symphonyoss/SymphonyElectron)
 # SymphonyElectron
 
 ## About:
