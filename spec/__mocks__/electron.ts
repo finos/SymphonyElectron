@@ -126,6 +126,12 @@ const getCurrentWindow = jest.fn(() => {
     };
 });
 
+export const session = {
+    defaultSession: {
+        clearCache: jest.fn(),
+    },
+};
+
 export const remote = {
     app,
     getCurrentWindow,
