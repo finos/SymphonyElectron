@@ -76,6 +76,25 @@ export class WindowHandler {
     }
 
     /**
+     * Notification settings window opts
+     */
+    private static getNotificationSettingsOpts(): ICustomBrowserWindowConstructorOpts {
+        return {
+            width: 460,
+            height: 360,
+            show: false,
+            modal: true,
+            autoHideMenuBar: true,
+            webPreferences: {
+                sandbox: true,
+                nodeIntegration: false,
+                devTools: false,
+            },
+            winKey: getGuid(),
+        };
+    }
+
+    /**
      * Screen sharing indicator window opts
      */
     private static getScreenSharingIndicatorOpts(): ICustomBrowserWindowConstructorOpts {
@@ -155,10 +174,11 @@ export class WindowHandler {
     private screenPickerWindow: Electron.BrowserWindow | null = null;
     private screenSharingIndicatorWindow: Electron.BrowserWindow | null = null;
     private basicAuthWindow: Electron.BrowserWindow | null = null;
+    private notificationSettingsWindow: Electron.BrowserWindow | null = null;
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Settings
-        this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose' ]);
+        this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings' ]);
         this.globalConfig = config.getGlobalConfigFields([ 'url', 'crashReporter' ]);
 
         this.windows = {};
@@ -466,6 +486,45 @@ export class WindowHandler {
 
         ipcMain.once('basic-auth-closed', closeBasicAuth);
         ipcMain.once('basic-auth-login', login);
+    }
+
+    /**
+     * Creates and displays notification settings window
+     *
+     * @param windowName
+     */
+    public createNotificationSettingsWindow(windowName: string): void {
+        const opts = WindowHandler.getNotificationSettingsOpts();
+        // This prevents creating multiple instances of the
+        // notification configuration window
+        if (this.notificationSettingsWindow && !this.notificationSettingsWindow.isDestroyed()) {
+            if (this.notificationSettingsWindow.isMinimized()) {
+                this.notificationSettingsWindow.restore();
+            }
+            this.notificationSettingsWindow.focus();
+            return;
+        }
+        const allWindows = BrowserWindow.getAllWindows();
+        const selectedParentWindow = allWindows.find((window) => {
+            return (window as ICustomBrowserWindow).winName === windowName;
+        });
+
+        if (selectedParentWindow) {
+            opts.parent = selectedParentWindow;
+        }
+
+        this.notificationSettingsWindow = createComponentWindow('notification-settings', opts);
+        this.notificationSettingsWindow.setVisibleOnAllWorkspaces(true);
+        this.notificationSettingsWindow.webContents.on('did-finish-load', () => {
+            if (this.notificationSettingsWindow && windowExists(this.notificationSettingsWindow)) {
+                let screens: Electron.Display[] = [];
+                if (app.isReady()) {
+                    screens = electron.screen.getAllDisplays();
+                }
+                const { position, display } = this.config.notificationSettings;
+                this.notificationSettingsWindow.webContents.send('notification-settings-data', { screens, position, display });
+            }
+        });
     }
 
     /**

@@ -8,6 +8,7 @@ import BasicAuth from './components/basic-auth';
 import LoadingScreen from './components/loading-screen';
 import MoreInfo from './components/more-info';
 import NotificationComp from './components/notification-comp';
+import NotificationSettings from './components/notification-settings';
 import ScreenPicker from './components/screen-picker';
 import ScreenSharingIndicator from './components/screen-sharing-indicator';
 
@@ -19,6 +20,7 @@ const enum components {
     screenSharingIndicator = 'screen-sharing-indicator',
     basicAuth = 'basic-auth',
     notification = 'notification-comp',
+    notificationSettings = 'notification-settings',
 }
 
 const loadStyle = (style) => {
@@ -65,6 +67,10 @@ const load = () => {
         case components.notification:
             loadStyle(components.notification);
             component = NotificationComp;
+            break;
+        case components.notificationSettings:
+            loadStyle(components.notificationSettings);
+            component = NotificationSettings;
             break;
     }
     const element = React.createElement(component);

@@ -1,6 +1,7 @@
 import { ipcRenderer, remote } from 'electron';
 
 import { buildNumber } from '../../package.json';
+import { ICustomBrowserWindow } from '../app/window-handler';
 import {
     apiCmds,
     apiName,
@@ -259,6 +260,17 @@ export class SSFApi {
             i18n.setLocale(locale as LocaleType);
             throttledSetLocale(locale);
         }
+    }
+
+    /**
+     * Opens a modal window to configure notification preference.
+     */
+    public showNotificationSettings(): void {
+        const windowName = (remote.getCurrentWindow() as ICustomBrowserWindow).winName;
+        local.ipcRenderer.send(apiName.symphonyApi, {
+            cmd: apiCmds.showNotificationSettings,
+            windowName,
+        });
     }
 
     /**
