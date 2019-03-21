@@ -3,6 +3,8 @@ import * as os from 'os';
 import * as path from 'path';
 import { IConfig } from '../src/app/config-handler';
 
+jest.mock('electron-log');
+
 describe('config', () => {
     const configFileName: string = 'Symphony.config';
     let userConfigDir: string;

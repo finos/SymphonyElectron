@@ -15,6 +15,7 @@ interface IApp {
     isReady(): boolean;
     getVersion(): string;
     on(): void;
+    setPath(value: string, path: string): void;
 }
 interface IIpcMain {
     on(event: any, cb: any): void;
@@ -54,6 +55,7 @@ export const app: IApp = {
     isReady: () => isReady,
     getVersion: () => version,
     on: () => jest.fn(),
+    setPath: () => jest.fn(),
 };
 
 // simple ipc mocks for render and main process ipc using
