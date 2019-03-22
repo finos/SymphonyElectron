@@ -23,8 +23,9 @@ interface IIpcMain {
 interface IIpcRenderer {
     sendSync(event: any, cb: any): any;
     on(eventName: any, cb: any): void;
-    send(event: any, cb: any): void;
+    send(event: any, ...cb: any[]): void;
     removeListener(eventName: any, cb: any): void;
+    once(eventName: any, cb: any): void;
 }
 interface IPowerMonitor {
     querySystemIdleTime(): void;
@@ -89,21 +90,25 @@ export const ipcRenderer: IIpcRenderer = {
         }
         return null;
     },
-    send: (event, args) => {
+    send: (event, ...args) => {
         const senderEvent = {
             sender: {
-                send: (eventSend, arg) => {
-                    ipcEmitter.emit(eventSend, arg);
+                send: (eventSend, ...arg) => {
+                    ipcEmitter.emit(eventSend, ...arg);
                 },
             },
+            preventDefault: jest.fn(),
         };
-        ipcEmitter.emit(event, senderEvent, args);
+        ipcEmitter.emit(event, senderEvent, ...args);
     },
     on: (eventName, cb) => {
         ipcEmitter.on(eventName, cb);
     },
     removeListener: (eventName, cb) => {
         ipcEmitter.removeListener(eventName, cb);
+    },
+    once: (eventName, cb) => {
+        ipcEmitter.on(eventName, cb);
     },
 };
 
@@ -115,6 +120,12 @@ export const session = {
 
 export const shell = {
     openExternal: jest.fn(),
+};
+
+// tslint:disable-next-line:variable-name
+export const BrowserWindow = {
+    fromWebContents: (arg) => arg,
+    getAllWindows: jest.fn(() => []),
 };
 
 // tslint:disable-next-line:variable-name
