@@ -179,7 +179,7 @@ export class WindowHandler {
     private notificationSettingsWindow: Electron.BrowserWindow | null = null;
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
-        // use these settings on for initial setup
+        // Use these variables only on initial setup
         this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings' ]);
         this.globalConfig = config.getGlobalConfigFields([ 'url', 'crashReporter' ]);
 
