@@ -1,4 +1,5 @@
 import * as asyncMap from 'async.map';
+import { app } from 'electron';
 import * as electron from 'electron';
 
 import { windowExists } from '../app/window-utils';
@@ -6,6 +7,7 @@ import { isMac } from '../common/env';
 
 interface ISettings {
     startCorner: startCorner;
+    displayId: string;
     height: number;
     width: number;
     totalHeight: number;
@@ -33,15 +35,16 @@ export default class NotificationHandler {
     };
 
     private externalDisplay: Electron.Display | undefined;
-    private displayId: string = '';
 
     constructor(opts) {
         this.settings = opts as ISettings;
         this.setupNotificationPosition();
 
-        electron.screen.on('display-added', this.eventHandlers.onSetup);
-        electron.screen.on('display-removed', this.eventHandlers.onSetup);
-        electron.screen.on('display-metrics-changed', this.eventHandlers.onSetup);
+        app.once('ready', () => {
+            electron.screen.on('display-added', this.eventHandlers.onSetup);
+            electron.screen.on('display-removed', this.eventHandlers.onSetup);
+            electron.screen.on('display-metrics-changed', this.eventHandlers.onSetup);
+        });
     }
 
     /**
@@ -62,14 +65,15 @@ export default class NotificationHandler {
      */
     public setupNotificationPosition() {
         // This feature only applies to windows
-        if (isMac) {
+        if (!isMac || !app.isReady()) {
             return;
         }
+
         const screens = electron.screen.getAllDisplays();
         if (screens && screens.length >= 0) {
             this.externalDisplay = screens.find((screen) => {
                 const screenId = screen.id.toString();
-                return screenId === this.displayId;
+                return screenId === this.settings.displayId;
             });
         }
 

@@ -8,7 +8,9 @@ import DesktopCapturerSource = Electron.DesktopCapturerSource;
 import { apiName, WindowTypes } from '../common/api-interface';
 import { isMac, isWindowsOS } from '../common/env';
 import { i18n } from '../common/i18n';
+import { logger } from '../common/logger';
 import { getCommandLineArgs, getGuid } from '../common/utils';
+import { notification } from '../renderer/notification';
 import { AppMenu } from './app-menu';
 import { handleChildWindow } from './child-window-handler';
 import { config, IConfig } from './config-handler';
@@ -177,7 +179,7 @@ export class WindowHandler {
     private notificationSettingsWindow: Electron.BrowserWindow | null = null;
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
-        // Settings
+        // use these settings on for initial setup
         this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings' ]);
         this.globalConfig = config.getGlobalConfigFields([ 'url', 'crashReporter' ]);
 
@@ -278,7 +280,7 @@ export class WindowHandler {
                 return this.destroyAllWindow();
             }
 
-            if (this.config.minimizeOnClose) {
+            if (config.getConfigFields([ 'minimizeOnClose' ]).minimizeOnClose) {
                 event.preventDefault();
                 isMac ? this.mainWindow.hide() : this.mainWindow.minimize();
             } else {
@@ -336,6 +338,11 @@ export class WindowHandler {
                     if (browserWindow && windowExists(browserWindow)) {
                         browserWindow.close();
                     }
+                }
+                break;
+            case 'notification-settings':
+                if (this.notificationSettingsWindow && windowExists(this.notificationSettingsWindow)) {
+                    this.notificationSettingsWindow.close();
                 }
                 break;
             default:
@@ -521,9 +528,30 @@ export class WindowHandler {
                 if (app.isReady()) {
                     screens = electron.screen.getAllDisplays();
                 }
-                const { position, display } = this.config.notificationSettings;
+                const { position, display } = config.getConfigFields([ 'notificationSettings' ]).notificationSettings;
                 this.notificationSettingsWindow.webContents.send('notification-settings-data', { screens, position, display });
             }
+        });
+
+        this.addWindow(opts.winKey, this.notificationSettingsWindow);
+
+        ipcMain.once('notification-settings-update', async (_event, args) => {
+            const { display, position } = args;
+            try {
+                await config.updateUserConfig({ notificationSettings: { display, position } });
+            } catch (e) {
+                logger.error(`NotificationSettings: Could not update user config file error`, e);
+            }
+            if (this.notificationSettingsWindow && windowExists(this.notificationSettingsWindow)) {
+                this.notificationSettingsWindow.close();
+            }
+            // Update latest notification settings from config
+            notification.updateNotificationSettings();
+        });
+
+        this.notificationSettingsWindow.once('closed', () => {
+            this.removeWindow(opts.winKey);
+            this.notificationSettingsWindow = null;
         });
     }
 

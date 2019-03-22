@@ -1,5 +1,6 @@
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
+import { apiCmds, apiName } from '../../common/api-interface';
 
 import { i18n } from '../../common/i18n-preload';
 
@@ -21,6 +22,7 @@ export default class NotificationSettings extends React.Component<{}, IState> {
     private readonly eventHandlers = {
         onTogglePosition: (e: React.ChangeEvent<HTMLInputElement>) => this.togglePosition(e),
         onDisplaySelect: (e: React.ChangeEvent<HTMLSelectElement>) => this.selectDisplay(e),
+        onClose: () => this.close(),
         onSubmit: () => this.submit(),
     };
 
@@ -71,7 +73,7 @@ export default class NotificationSettings extends React.Component<{}, IState> {
                 </div>
                 <footer className='footer'>
                     <div className='buttonLayout'>
-                        <button id='cancel' className='buttonDismiss'>
+                        <button id='cancel' className='buttonDismiss' onClick={this.eventHandlers.onClose}>
                             {i18n.t('CANCEL', NOTIFICATION_SETTINGS_NAMESPACE)()}
                         </button>
                         <button id='ok-button' className='button' onClick={this.eventHandlers.onSubmit}>
@@ -100,12 +102,17 @@ export default class NotificationSettings extends React.Component<{}, IState> {
     private renderRadioButtons(id: startCorner, content: string): JSX.Element {
         return (
             <div className='radio'>
-                <label className='radio__label'>
-                    <span>
-                        {i18n.t(`${content}`, NOTIFICATION_SETTINGS_NAMESPACE)()}
-                    </span>
-                    <input onChange={this.eventHandlers.onTogglePosition} className={id} id={id} type='radio' name='position' value={id}/>
+                <label className='radio__label' htmlFor={id}>
+                    {i18n.t(`${content}`, NOTIFICATION_SETTINGS_NAMESPACE)()}
                 </label>
+                <input
+                    onChange={this.eventHandlers.onTogglePosition}
+                    className={id}
+                    id={id}
+                    type='radio'
+                    name='position'
+                    checked={this.state.position === id}
+                    value={id}/>
             </div>
         );
     }
@@ -114,10 +121,10 @@ export default class NotificationSettings extends React.Component<{}, IState> {
      * Renders the drop down list of available screen
      */
     private renderScreens(): JSX.Element[] {
-        const { screens } = this.state;
+        const { screens, display } = this.state;
         return screens.map((screen, index) => {
             return (
-                <option id={String(screen.id)} value={screen.id}>{index + 1}</option>
+                <option id={String(screen.id)} key={screen.id} value={display}>{index + 1}</option>
             );
         });
     }
@@ -148,6 +155,16 @@ export default class NotificationSettings extends React.Component<{}, IState> {
     private submit(): void {
         const { position, display } = this.state;
         ipcRenderer.send('notification-settings-update', { position, display });
+    }
+
+    /**
+     * Closes the notification settings window
+     */
+    private close(): void {
+        ipcRenderer.send(apiName.symphonyApi, {
+            cmd: apiCmds.closeWindow,
+            windowType: 'notification-settings',
+        });
     }
 
     /**
