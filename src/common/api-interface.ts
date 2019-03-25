@@ -55,7 +55,7 @@ export interface IApiArgs {
     type: string;
 }
 
-export type WindowTypes = 'screen-picker' | 'screen-sharing-indicator';
+export type WindowTypes = 'screen-picker' | 'screen-sharing-indicator' | 'notification-settings';
 
 export interface IBadgeCount {
     count: number;

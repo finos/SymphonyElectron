@@ -66,12 +66,12 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
                 activityDetection.setWindowAndThreshold(event.sender, arg.period);
             }
             break;
-        /*case ApiCmds.showNotificationSettings:
+        case apiCmds.showNotificationSettings:
             if (typeof arg.windowName === 'string') {
-                configureNotification.openConfigurationWindow(arg.windowName);
+                windowHandler.createNotificationSettingsWindow(arg.windowName);
             }
             break;
-        */case apiCmds.sanitize:
+        case apiCmds.sanitize:
             if (typeof arg.windowName === 'string') {
                 sanitize(arg.windowName);
             }
