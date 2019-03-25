@@ -65,7 +65,7 @@ export default class NotificationHandler {
      */
     public setupNotificationPosition() {
         // This feature only applies to windows
-        if (!isMac || !app.isReady()) {
+        if (isMac || !app.isReady()) {
             return;
         }
 
