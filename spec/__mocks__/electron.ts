@@ -15,6 +15,7 @@ interface IApp {
     isReady(): boolean;
     getVersion(): string;
     on(): void;
+    setPath(value: string, path: string): void;
 }
 interface IIpcMain {
     on(event: any, cb: any): void;
@@ -54,6 +55,7 @@ export const app: IApp = {
     isReady: () => isReady,
     getVersion: () => version,
     on: () => jest.fn(),
+    setPath: () => jest.fn(),
 };
 
 // simple ipc mocks for render and main process ipc using
@@ -107,12 +109,6 @@ export const ipcRenderer: IIpcRenderer = {
     },
 };
 
-export const session = {
-    defaultSession: {
-        clearCache: jest.fn(),
-    },
-};
-
 export const shell = {
     openExternal: jest.fn(),
 };
@@ -150,6 +146,21 @@ const getCurrentWindow = jest.fn(() => {
 
 export const dialog = {
     showMessageBox: jest.fn(),
+};
+
+// tslint:disable-next-line:variable-name
+export const BrowserWindow = {
+    getFocusedWindow: jest.fn(() => {
+        return {
+            isDestroyed: jest.fn(() => false),
+        };
+    }),
+};
+
+export const session = {
+    defaultSession: {
+        clearCache: jest.fn(),
+    },
 };
 
 export const remote = {
