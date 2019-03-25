@@ -367,7 +367,7 @@ export class WindowHandler {
 
         // This prevents creating multiple instances of the
         // about window
-        if (this.aboutAppWindow) {
+        if (this.aboutAppWindow && windowExists(this.aboutAppWindow)) {
             if (this.aboutAppWindow.isMinimized()) {
                 this.aboutAppWindow.restore();
             }
