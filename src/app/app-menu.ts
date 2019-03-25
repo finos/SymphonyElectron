@@ -1,4 +1,4 @@
-import { app, dialog, Menu, session, shell } from 'electron';
+import { app, dialog, Menu, MenuItemConstructorOptions, session, shell } from 'electron';
 
 import { isMac, isWindowsOS } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
@@ -7,7 +7,7 @@ import { autoLaunchInstance as autoLaunch } from './auto-launch-controller';
 import { config, IConfig } from './config-handler';
 import { exportCrashDumps, exportLogs } from './reports-handler';
 import { updateAlwaysOnTop } from './window-actions';
-import { windowHandler } from './window-handler';
+import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
 export const menuSections = {
     about: 'about',
@@ -204,81 +204,93 @@ export class AppMenu {
      * Builds menu items for window section
      */
     private buildWindowMenu(): Electron.MenuItemConstructorOptions {
+        const submenu: MenuItemConstructorOptions[] = [
+            this.assignRoleOrLabel('minimize', i18n.t('Minimize')()),
+            this.assignRoleOrLabel('close', i18n.t('Close')()),
+            this.buildSeparator(),
+            {
+                checked: launchOnStartup,
+                click: async (item) => {
+                    if (item.checked) {
+                        await autoLaunch.enableAutoLaunch();
+                    } else {
+                        await autoLaunch.disableAutoLaunch();
+                    }
+                    launchOnStartup = item.checked;
+                    await config.updateUserConfig({ launchOnStartup });
+                },
+                label: i18n.t('Auto Launch On Startup')(),
+                type: 'checkbox',
+            },
+            {
+                checked: isAlwaysOnTop,
+                click: async (item) => {
+                    isAlwaysOnTop = item.checked;
+                    updateAlwaysOnTop(item.checked, true);
+                    await config.updateUserConfig({ alwaysOnTop: item.checked });
+                },
+                label: i18n.t('Always on Top')(),
+                type: 'checkbox',
+            },
+            {
+                checked: minimizeOnClose,
+                click: async (item) => {
+                    minimizeOnClose = item.checked;
+                    await config.updateUserConfig({ minimizeOnClose });
+                },
+                label: i18n.t('Minimize on Close')(),
+                type: 'checkbox',
+            },
+            {
+                checked: bringToFront,
+                click: async (item) => {
+                    bringToFront = item.checked;
+                    await config.updateUserConfig({ bringToFront });
+                },
+                label: isWindowsOS
+                    ? i18n.t('Flash Notification in Taskbar')()
+                    : i18n.t('Bring to Front on Notifications')(),
+                type: 'checkbox',
+            },
+            this.buildSeparator(),
+            {
+                checked: memoryRefresh,
+                click: async (item) => {
+                    memoryRefresh = item.checked;
+                    await config.updateUserConfig({ memoryRefresh });
+                },
+                label: i18n.t('Refresh app when idle')(),
+                type: 'checkbox',
+            },
+            {
+                click: (_item, focusedWindow) => {
+                    if (focusedWindow && !focusedWindow.isDestroyed()) {
+                        const defaultSession = session.defaultSession;
+                        if (defaultSession) {
+                            defaultSession.clearCache(() => {
+                                focusedWindow.reload();
+                            });
+                        }
+                    }
+                },
+                label: i18n.t('Clear cache and Reload')(),
+            },
+        ];
+
+        if (isWindowsOS) {
+            submenu.push({
+                label: i18n.t('About Symphony')(),
+                click(_menuItem, focusedWindow) {
+                    const windowName = focusedWindow ? (focusedWindow as ICustomBrowserWindow).winName : '';
+                    windowHandler.createAboutAppWindow(windowName);
+                },
+            });
+        }
+
         return {
             label: i18n.t('Window')(),
             role: 'window',
-            submenu: [
-                this.assignRoleOrLabel('minimize', i18n.t('Minimize')()),
-                this.assignRoleOrLabel('close', i18n.t('Close')()),
-                this.buildSeparator(),
-                {
-                    checked: launchOnStartup,
-                    click: async (item) => {
-                        if (item.checked) {
-                            await autoLaunch.enableAutoLaunch();
-                        } else {
-                            await autoLaunch.disableAutoLaunch();
-                        }
-                        launchOnStartup = item.checked;
-                        await config.updateUserConfig({ launchOnStartup });
-                    },
-                    label: i18n.t('Auto Launch On Startup')(),
-                    type: 'checkbox',
-                },
-                {
-                    checked: isAlwaysOnTop,
-                    click: async (item) => {
-                        isAlwaysOnTop = item.checked;
-                        updateAlwaysOnTop(item.checked, true);
-                        await config.updateUserConfig({ alwaysOnTop: item.checked });
-                    },
-                    label: i18n.t('Always on Top')(),
-                    type: 'checkbox',
-                },
-                {
-                    checked: minimizeOnClose,
-                    click: async (item) => {
-                        minimizeOnClose = item.checked;
-                        await config.updateUserConfig({ minimizeOnClose });
-                    },
-                    label: i18n.t('Minimize on Close')(),
-                    type: 'checkbox',
-                },
-                {
-                    checked: bringToFront,
-                    click: async (item) => {
-                        bringToFront = item.checked;
-                        await config.updateUserConfig({ bringToFront });
-                    },
-                    label: isWindowsOS
-                        ? i18n.t('Flash Notification in Taskbar')()
-                        : i18n.t('Bring to Front on Notifications')(),
-                    type: 'checkbox',
-                },
-                this.buildSeparator(),
-                {
-                    checked: memoryRefresh,
-                    click: async (item) => {
-                        memoryRefresh = item.checked;
-                        await config.updateUserConfig({ memoryRefresh });
-                    },
-                    label: i18n.t('Refresh app when idle')(),
-                    type: 'checkbox',
-                },
-                {
-                    click: (_item, focusedWindow) => {
-                        if (focusedWindow && !focusedWindow.isDestroyed()) {
-                            const defaultSession = session.defaultSession;
-                            if (defaultSession) {
-                                defaultSession.clearCache(() => {
-                                    focusedWindow.reload();
-                                });
-                            }
-                        }
-                    },
-                    label: i18n.t('Clear cache and Reload')(),
-                },
-            ],
+            submenu,
         };
     }
 
