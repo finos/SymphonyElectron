@@ -1,12 +1,13 @@
 import { ipcMain } from 'electron';
 
+import { config } from '../app/config-handler';
 import { createComponentWindow, windowExists } from '../app/window-utils';
 import { AnimationQueue } from '../common/animation-queue';
 import { logger } from '../common/logger';
 import NotificationHandler from './notification-handler';
 
 // const MAX_QUEUE_SIZE = 30;
-const CLEAN_UP_INTERVAL = 60 * 100;
+const CLEAN_UP_INTERVAL = 60 * 1000; // Closes inactive notification
 const animationQueue = new AnimationQueue();
 
 interface ICustomBrowserWindow extends Electron.BrowserWindow {
@@ -32,6 +33,7 @@ type startCorner = 'upper-right' | 'upper-left' | 'lower-right' | 'lower-left';
 
 const notificationSettings = {
     startCorner: 'upper-right' as startCorner,
+    display: '',
     width: 380,
     height: 100,
     totalHeight: 0,
@@ -74,6 +76,8 @@ class Notification extends NotificationHandler {
         ipcMain.on('notification-clicked', (_event, windowId) => {
             this.notificationClicked(windowId);
         });
+        // Update latest notification settings from config
+        this.updateNotificationSettings();
         this.cleanUpTimer = setInterval(this.funcHandlers.onCleanUpInactiveNotification, CLEAN_UP_INTERVAL);
     }
 
@@ -100,6 +104,7 @@ class Notification extends NotificationHandler {
      */
     public async createNotificationWindow(data): Promise<ICustomBrowserWindow | undefined> {
 
+        // TODO: Handle MAX_QUEUE_SIZE
         if (data.tag) {
             for (let i = 0; i < this.notificationQueue.length; i++) {
                 if (this.notificationQueue[ i ].tag === data.tag) {
@@ -242,6 +247,19 @@ class Notification extends NotificationHandler {
             return;
         }
         return this.activeNotifications[ index ] as ICustomBrowserWindow;
+    }
+
+    /**
+     * Update latest notification settings from config
+     */
+    public updateNotificationSettings(): void {
+        const { display, position } = config.getConfigFields([ 'notificationSettings' ]).notificationSettings;
+        this.settings.displayId = display;
+        this.settings.startCorner = position as startCorner;
+
+        // recalculate notification position
+        this.setupNotificationPosition();
+        this.moveNotificationDown(0, this.activeNotifications);
     }
 
     /**

@@ -118,6 +118,9 @@ export default class AppBridge {
             case apiCmds.closeNotification:
                 notification.hideNotification(data);
                 break;
+            case apiCmds.showNotificationSettings:
+                ssf.showNotificationSettings();
+                break;
         }
     }
 
