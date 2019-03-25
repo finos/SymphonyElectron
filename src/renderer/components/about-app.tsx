@@ -35,7 +35,7 @@ export default class AboutApp extends React.Component<{}, IState> {
         const copyright = `Copyright \xA9 ${new Date().getFullYear()} ${appName}`;
         return (
             <div className='AboutApp'>
-                <img className='AboutApp-logo' src='../assets/symphony-logo.png'/>
+                <img className='AboutApp-logo' src='../renderer/assets/symphony-logo.png'/>
                 <span className='AboutApp-name'>{appName}</span>
                 <span className='AboutApp-versionText'>{versionString}</span>
                 <span className='AboutApp-copyrightText'>{copyright}</span>

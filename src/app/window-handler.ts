@@ -363,8 +363,28 @@ export class WindowHandler {
     /**
      * Creates a about app window
      */
-    public createAboutAppWindow(): void {
-        this.aboutAppWindow = createComponentWindow('about-app');
+    public createAboutAppWindow(windowName: string): void {
+
+        // This prevents creating multiple instances of the
+        // about window
+        if (this.aboutAppWindow && windowExists(this.aboutAppWindow)) {
+            if (this.aboutAppWindow.isMinimized()) {
+                this.aboutAppWindow.restore();
+            }
+            this.aboutAppWindow.focus();
+            return;
+        }
+
+        const allWindows = BrowserWindow.getAllWindows();
+        const selectedParentWindow = allWindows.find((window) => {
+            return (window as ICustomBrowserWindow).winName === windowName;
+        });
+
+        this.aboutAppWindow = createComponentWindow(
+            'about-app',
+            selectedParentWindow ? { parent: selectedParentWindow } : {},
+            );
+        this.aboutAppWindow.setVisibleOnAllWorkspaces(true);
         this.aboutAppWindow.webContents.once('did-finish-load', () => {
             if (!this.aboutAppWindow || !windowExists(this.aboutAppWindow)) {
                 return;

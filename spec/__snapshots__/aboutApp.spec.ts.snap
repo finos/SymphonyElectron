@@ -6,7 +6,7 @@ exports[`about app should render correctly 1`] = `
 >
   <img
     className="AboutApp-logo"
-    src="../assets/symphony-logo.png"
+    src="../renderer/assets/symphony-logo.png"
   />
   <span
     className="AboutApp-name"
