@@ -119,12 +119,6 @@ export const shell = {
 };
 
 // tslint:disable-next-line:variable-name
-export const BrowserWindow = {
-    fromWebContents: (arg) => arg,
-    getAllWindows: jest.fn(() => []),
-};
-
-// tslint:disable-next-line:variable-name
 export const Menu = {
     buildFromTemplate: jest.fn(),
     setApplicationMenu: jest.fn(),
@@ -166,6 +160,8 @@ export const BrowserWindow = {
             isDestroyed: jest.fn(() => false),
         };
     }),
+    fromWebContents: (arg) => arg,
+    getAllWindows: jest.fn(() => []),
 };
 
 export const session = {

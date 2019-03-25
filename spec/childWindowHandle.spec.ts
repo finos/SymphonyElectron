@@ -16,7 +16,6 @@ const getMainWindow = {
     setAlwaysOnTop: jest.fn(),
 };
 
-
 jest.mock('../src/common/env', () => {
     return {
         isWindowsOS: true,
