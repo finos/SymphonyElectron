@@ -4,6 +4,7 @@ const electron = require('electron');
 const app = electron.app;
 const childProcess = require('child_process');
 const fs = require('fs');
+const Jimp = require('jimp');
 const os = require('os');
 const path = require('path');
 
@@ -143,12 +144,20 @@ function readResult(outputFileName, resolve, reject, childProcessErr) {
 
         try {
             // convert binary data to base64 encoded string
-            let output = Buffer.from(data).toString('base64');
-            const resultOutput = {
-                type: isWindowsOS ? 'image/png;base64' : 'image/jpg;base64',
-                data: output
-            };
-            resolve(resultOutput);
+            Jimp.read(outputFileName, (error, image) => {
+                if (error) throw error;
+                image.quality(100)
+                    .getBufferAsync(Jimp.MIME_JPEG).then(src => {
+                        const value = src.toString('base64');
+                        const resultOutput = {
+                            type: 'image/jpg;base64',
+                            data: value,
+                        };
+                        resolve(resultOutput);
+                    }).catch((e) => {
+                        log.send(logLevels.ERROR, e);
+                    });
+            });
         } catch (error) {
             reject(createError(error));
         } finally {
