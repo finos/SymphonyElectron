@@ -499,7 +499,7 @@ export class WindowHandler {
             if (shouldClearSettings) {
                 clearSettings();
             }
-            if (this.basicAuthWindow && !windowExists(this.basicAuthWindow)) {
+            if (this.basicAuthWindow && windowExists(this.basicAuthWindow)) {
                 this.basicAuthWindow.close();
                 this.basicAuthWindow = null;
             }
@@ -511,7 +511,7 @@ export class WindowHandler {
             closeBasicAuth(false);
         };
 
-        this.basicAuthWindow.on('close', () => {
+        this.basicAuthWindow.once('close', () => {
             ipcMain.removeListener('basic-auth-closed', closeBasicAuth);
             ipcMain.removeListener('basic-auth-login', login);
         });
