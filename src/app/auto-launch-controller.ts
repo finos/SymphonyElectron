@@ -94,13 +94,14 @@ class AutoLaunchController extends AutoLaunch {
      */
     public async handleAutoLaunch(): Promise<void> {
         const { launchOnStartup }: IConfig = config.getConfigFields([ 'launchOnStartup' ]);
+        const isAutoLaunchEnabled = await this.isAutoLaunchEnabled();
 
         if (typeof launchOnStartup === 'boolean' && launchOnStartup) {
-            if (await !this.isAutoLaunchEnabled()) {
+            if (!isAutoLaunchEnabled) {
                 await this.enableAutoLaunch();
             }
         } else {
-            if (await this.isAutoLaunchEnabled()) {
+            if (isAutoLaunchEnabled) {
                 await this.disableAutoLaunch();
             }
         }

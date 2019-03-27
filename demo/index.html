@@ -9,6 +9,22 @@
                 padding: 5px;
                 border: 1px solid black;
             }
+
+            .yellow-dot {
+                height: 25px;
+                width: 25px;
+                background-color: yellow;
+                border-radius: 50%;
+                display: inline-block;
+            }
+
+            .green-dot {
+                height: 25px;
+                width: 25px;
+                background-color: green;
+                border-radius: 50%;
+                display: inline-block;
+            }
         </style>
     </head>
     <body>
@@ -55,6 +71,15 @@
             Crash Process:
         <p>
             <button id='crash'>Crash Renderer</button>
+        </p>
+        <br>
+        <hr>
+        <hr>
+        <p>
+            Activity Detection:
+        <p>
+            <button id='activity-detection'>Init activity</button>
+            <span id='activity-status' class="green-dot"></span>
         </p>
         <br>
         <hr>
@@ -316,7 +341,45 @@
             document.location.reload();
         });
 
-        window.addEventListener('message', (event) => console.log(event.data));
+        const activityDetection = document.getElementById('activity-detection');
+        const activityStatus = document.getElementById('activity-status');
+        activityDetection.addEventListener('click', () => {
+            if (window.ssf) {
+                window.ssf.registerActivityDetection(10000, activityDetection);
+            } else {
+                postMessage(apiCmds.registerActivityDetection, 5000);
+                startActivityInterval();
+            }
+        });
+
+        let activityTimer;
+        const startActivityInterval = () => {
+            return setInterval(() => {
+                activityStatus.classList.remove('green-dot');
+                activityStatus.classList.add('yellow-dot');
+            }, 10000);
+        };
+        const activityCallback = (data) => {
+            activityStatus.classList.remove('yellow-dot');
+            activityStatus.classList.add('green-dot');
+            console.log(data);
+            if (activityTimer) {
+                clearInterval(activityTimer);
+                activityTimer = null;
+            }
+            activityTimer = startActivityInterval();
+        };
+
+        window.addEventListener('message', (event) => {
+            const { data, method } = event.data;
+            switch (method) {
+                case 'activity-callback':
+                    activityCallback(data);
+                    break;
+                default:
+                    console.log(event.data);
+            }
+        });
 
         const postMessage = (method, data) => {
             window.postMessage({ method, data }, '*');

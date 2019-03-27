@@ -146,7 +146,7 @@ export const getGuid = (): string => {
 export const pick = (object: object, fields: string[]) => {
     const obj = {};
     for (const field of fields) {
-        if (object[field]) {
+        if (object[field] !== undefined && object[field] !== null) {
             obj[field] = object[field];
         }
     }

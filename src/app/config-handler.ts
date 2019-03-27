@@ -4,9 +4,10 @@ import * as path from 'path';
 
 import { omit } from 'lodash';
 import * as util from 'util';
+import { buildNumber } from '../../package.json';
 import { isDevEnv, isMac } from '../common/env';
 import { logger } from '../common/logger';
-import { compareVersions, pick } from '../common/utils';
+import { pick } from '../common/utils';
 
 const writeFile = util.promisify(fs.writeFile);
 
@@ -32,6 +33,7 @@ export interface IConfig {
     devToolsEnabled: boolean;
     ctWhitelist: string[];
     configVersion: string;
+    buildNumber: string;
     autoLaunchPath: string;
     notificationSettings: INotificationSetting;
     permissions: IPermission;
@@ -153,8 +155,14 @@ class Config {
      * by modifying the old config file
      */
     public async setUpFirstTimeLaunch(): Promise<void> {
-        const filteredFields: IConfig = omit(this.userConfig, ignoreSettings) as IConfig;
-        await this.updateUserConfig(filteredFields);
+        const execPath = path.dirname(this.appPath);
+        const shouldUpdateUserConfig = execPath.indexOf('AppData\\Local\\Programs') !== -1 || isMac;
+        if (shouldUpdateUserConfig) {
+            const filteredFields: IConfig = omit(this.userConfig, ignoreSettings) as IConfig;
+            // update to the new build number
+            filteredFields.buildNumber = buildNumber;
+            return await this.updateUserConfig(filteredFields);
+        }
     }
 
     /**
@@ -179,11 +187,11 @@ class Config {
      * Reads a stores the user config file
      *
      * If user config doesn't exits?
-     * this creates a new one with { configVersion: current_app_version }
+     * this creates a new one with { configVersion: current_app_version, buildNumber: current_app_build_number }
      */
     private async readUserConfig() {
         if (!fs.existsSync(this.userConfigPath)) {
-            await this.updateUserConfig({ configVersion: app.getVersion().toString() } as IConfig);
+            await this.updateUserConfig({ configVersion: app.getVersion().toString(), buildNumber } as IConfig);
         }
         this.userConfig = this.parseConfigData(fs.readFileSync(this.userConfigPath, 'utf8'));
     }
@@ -198,21 +206,16 @@ class Config {
     /**
      * Verifies if the application is launched for the first time
      */
-    private checkFirstTimeLaunch() {
+    private async checkFirstTimeLaunch() {
         logger.info('checking first launch');
-        const appVersionString = app.getVersion().toString();
-        const execPath = path.dirname(this.appPath);
-        const shouldUpdateUserConfig = execPath.indexOf('AppData\\Local\\Programs') !== -1 || isMac;
-        const userConfigVersion = this.userConfig && (this.userConfig as IConfig).configVersion || null;
+        const configBuildNumber = this.userConfig && (this.userConfig as IConfig).buildNumber || null;
 
-        if (!userConfigVersion) {
+        if (!configBuildNumber) {
             this.isFirstTime = true;
             return;
         }
 
-        if (!(userConfigVersion
-            && typeof userConfigVersion === 'string'
-            && (compareVersions(appVersionString, userConfigVersion) !== 1)) && shouldUpdateUserConfig) {
+        if (configBuildNumber && typeof configBuildNumber === 'string' && configBuildNumber !== buildNumber) {
             this.isFirstTime = true;
             return;
         }
