@@ -268,46 +268,6 @@
             ssf.crashRendererProcess();
         });
 
-        var getSources = document.getElementById('get-sources');
-        getSources.addEventListener('click', function() {
-            ssf.getMediaSource({types: ['window', 'screen']}, function(error, source) {
-                if (error) throw error;
-                navigator.webkitGetUserMedia({
-                    audio: false,
-                    video: {
-                      mandatory: {
-                        chromeMediaSource: 'desktop',
-                        chromeMediaSourceId: source.id,
-                        minWidth: 1280,
-                        maxWidth: 1280,
-                        minHeight: 720,
-                        maxHeight: 720
-                      }
-                    }
-                }, stream => {
-                    handleStream(stream, source.display_id);
-                }, handleError);
-            });
-        });
-
-        function handleStream(stream, displayId) {
-            document.getElementById('video').srcObject = stream;
-            ssf.showScreenSharingIndicator({
-                stream,
-                displayId
-            }, function (event) {
-                console.log('screen-sharing-indicator callback', event);
-                if (event.type === 'stopRequested') {
-                    stream.getVideoTracks().forEach(t => t.stop());
-                    document.getElementById('video').srcObject = null;
-                }
-            });
-        }
-
-        function handleError (e) {
-          console.log(e)
-        }
-
         var getVersionInfo = document.getElementById('get-version');
         getVersionInfo.addEventListener('click', function() {
             ssf.getVersionInfo().then(function(verInfo) {
@@ -341,6 +301,10 @@
             document.location.reload();
         });
 
+        /**
+         * Activity Detection
+         */
+
         const activityDetection = document.getElementById('activity-detection');
         const activityStatus = document.getElementById('activity-status');
         activityDetection.addEventListener('click', () => {
@@ -370,11 +334,80 @@
             activityTimer = startActivityInterval();
         };
 
+        /**
+         * Desktop capture
+         */
+        const getSources = document.getElementById('get-sources');
+        getSources.addEventListener('click', () => {
+            if (window.ssf) {
+                ssf.getMediaSource({types: ['window', 'screen']}, function(error, source) {
+                    if (error) throw error;
+                    navigator.webkitGetUserMedia({
+                        audio: false,
+                        video: {
+                            mandatory: {
+                                chromeMediaSource: 'desktop',
+                                chromeMediaSourceId: source.id,
+                                minWidth: 1280,
+                                maxWidth: 1280,
+                                minHeight: 720,
+                                maxHeight: 720
+                            }
+                        }
+                    }, stream => {
+                        handleStream(stream, source.display_id);
+                    }, handleError);
+                });
+            } else {
+                postMessage(apiCmds.getMediaSource, {types: ['window', 'screen']});
+            }
+        });
+
+        const handleStream = (stream, displayId) => {
+            document.getElementById('video').srcObject = stream;
+            if (window.ssf) {
+                ssf.showScreenSharingIndicator({
+                    stream,
+                    displayId
+                }, (event) => {
+                    console.log('screen-sharing-indicator callback', event);
+                    if (event.type === 'stopRequested') {
+                        stream.getVideoTracks().forEach(t => t.stop());
+                        document.getElementById('video').srcObject = null;
+                    }
+                });
+            } else {
+                postMessage(apiCmds.openScreenSharingIndicator, { streamId: stream.id, displayId, requestId: 0 });
+            }
+        };
+
+        const handleError = (e) => {
+            console.log(e)
+        };
+
+        /**
+         * Core post message api handler
+         */
+
         window.addEventListener('message', (event) => {
             const { data, method } = event.data;
             switch (method) {
                 case 'activity-callback':
                     activityCallback(data);
+                    break;
+                case 'media-source-callback':
+                    const constraints = {
+                        mandatory: {
+                            chromeMediaSource: 'desktop',
+                            maxWidth: screen.width > 1920 ? 1920 : screen.width,
+                            maxHeight: screen.height > 1080 ? 1080 : screen.height,
+                            chromeMediaSourceId: data.source.id
+                        },
+                        optional: []
+                    };
+                    navigator.mediaDevices.getUserMedia({ video: constraints }).then((stream) => {
+                        handleStream(stream, data.source.display_id);
+                    });
                     break;
                 default:
                     console.log(event.data);
