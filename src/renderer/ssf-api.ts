@@ -9,6 +9,7 @@ import {
     IBoundsChange,
     ILogMsg,
     IScreenSharingIndicator,
+    IScreenSharingIndicatorOptions,
     IScreenSnippet,
     IVersionInfo,
     KeyCodes,
@@ -112,7 +113,7 @@ export class SSFApi {
      *
      * @param  {String} windowName - Name of window. Note: main window name is 'main'
      */
-    public activate(windowName) {
+    public activate(windowName: string) {
         if (typeof windowName === 'string') {
             throttledActivate(windowName);
         }
@@ -124,7 +125,7 @@ export class SSFApi {
      * @param  {String} windowName Name of window. Note: main window name is 'main'
      * @param {String} reason, The reason for which the window is to be activated
      */
-    public bringToFront(windowName, reason) {
+    public bringToFront(windowName: string, reason: string) {
         if (typeof windowName === 'string') {
             throttledBringToFront(windowName, reason);
         }
@@ -186,7 +187,7 @@ export class SSFApi {
      *  logDetails: String
      *  }
      */
-    public registerLogger(logger) {
+    public registerLogger(logger: (msg: ILogMsg, logLevel: LogLevel, showInConsole: boolean) => void) {
         if (typeof logger === 'function') {
             local.logger = logger;
 
@@ -287,7 +288,7 @@ export class SSFApi {
      *    - 'error' - error occured. Event object contains 'reason' field.
      *    - 'stopRequested' - user clicked "Stop Sharing" button.
      */
-    public showScreenSharingIndicator(options, callback): void {
+    public showScreenSharingIndicator(options: IScreenSharingIndicatorOptions, callback): void {
         const { displayId, stream } = options;
 
         if (!stream || !stream.active || stream.getVideoTracks().length !== 1) {
@@ -301,10 +302,10 @@ export class SSFApi {
 
         const destroy = () => {
             throttledCloseScreenShareIndicator(stream.id);
-            options.stream.removeEventListener('inactive', destroy);
+            stream.removeEventListener('inactive', destroy);
         };
 
-        options.stream.addEventListener('inactive', destroy);
+        stream.addEventListener('inactive', destroy);
 
         if (typeof callback === 'function') {
             local.screenSharingIndicatorCallback = callback;
@@ -329,7 +330,7 @@ export class SSFApi {
      *    - 'error' - error occured. Event object contains 'reason' field.
      *    - 'stopRequested' - user clicked "Stop Sharing" button.
      */
-    public openScreenSharingIndicator(options, callback): void {
+    public openScreenSharingIndicator(options: IScreenSharingIndicatorOptions, callback): void {
         const { displayId, requestId, streamId } = options;
 
         if (typeof callback === 'function') {

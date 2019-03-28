@@ -3,6 +3,7 @@ import { ipcMain } from 'electron';
 import { config } from '../app/config-handler';
 import { createComponentWindow, windowExists } from '../app/window-utils';
 import { AnimationQueue } from '../common/animation-queue';
+import { INotificationData } from '../common/api-interface';
 import { logger } from '../common/logger';
 import NotificationHandler from './notification-handler';
 
@@ -14,19 +15,6 @@ interface ICustomBrowserWindow extends Electron.BrowserWindow {
     notificationData: INotificationData;
     displayTimer: NodeJS.Timer;
     clientId: number;
-}
-
-interface INotificationData {
-    id: number;
-    title: string;
-    text: string;
-    image: string;
-    flash: boolean;
-    color: string;
-    tag: string;
-    sticky: boolean;
-    company: string;
-    displayTime: number;
 }
 
 type startCorner = 'upper-right' | 'upper-left' | 'lower-right' | 'lower-left';
