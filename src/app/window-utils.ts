@@ -1,5 +1,5 @@
 import * as electron from 'electron';
-import { app, BrowserWindow, nativeImage } from 'electron';
+import { app, BrowserWindow, CertificateVerifyProcRequest, nativeImage } from 'electron';
 import * as filesize from 'filesize';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -9,10 +9,21 @@ import { isDevEnv, isMac } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { getGuid } from '../common/utils';
+import { whitelistHandler } from '../common/whitelist-handler';
+import { config } from './config-handler';
 import { screenSnippet } from './screen-snippet-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
 const checkValidWindow = true;
+const { ctWhitelist } = config.getGlobalConfigFields([ 'ctWhitelist' ]);
+
+/**
+ * Checks if window is valid and exists
+ *
+ * @param window {BrowserWindow}
+ * @return boolean
+ */
+export const windowExists = (window: BrowserWindow): boolean => !!window && typeof window.isDestroyed === 'function' && !window.isDestroyed();
 
 /**
  * Prevents window from navigating
@@ -20,11 +31,31 @@ const checkValidWindow = true;
  * @param browserWindow
  * @param isPopOutWindow
  */
-export const preventWindowNavigation = (browserWindow: Electron.BrowserWindow, isPopOutWindow: boolean = false): void => {
+export const preventWindowNavigation = (browserWindow: BrowserWindow, isPopOutWindow: boolean = false): void => {
+    if (!browserWindow || !windowExists(browserWindow)) {
+        return;
+    }
+
     const listener = (e: Electron.Event, winUrl: string) => {
-        if (isPopOutWindow && !winUrl.startsWith('http' || 'https')) {
+        if (!winUrl.startsWith('http' || 'https')) {
             e.preventDefault();
             return;
+        }
+
+        if (!isPopOutWindow) {
+            const isValid = whitelistHandler.isWhitelisted(winUrl);
+            if (!isValid) {
+                e.preventDefault();
+                if (browserWindow && windowExists(browserWindow)) {
+                    // @ts-ignore
+                    electron.dialog.showMessageBox(browserWindow, {
+                        type: 'warning',
+                        buttons: [ 'OK' ],
+                        title: i18n.t('Not Allowed'),
+                        message: `${i18n.t(`Sorry, you are not allowed to access this website`)} (${winUrl}), ${i18n.t('please contact your administrator for more details')}`,
+                    });
+                }
+            }
         }
 
         if (browserWindow.isDestroyed()
@@ -343,9 +374,27 @@ export const injectStyles = async (mainWindow: BrowserWindow, isCustomTitleBarAn
 };
 
 /**
- * Checks if window is valid and exists
+ * Proxy verification for root certificates
  *
- * @param window {BrowserWindow}
- * @return boolean
+ * @param request {CertificateVerifyProcRequest}
+ * @param callback {(verificationResult: number) => void}
  */
-export const windowExists = (window: BrowserWindow): boolean => !!window && typeof window.isDestroyed === 'function' && !window.isDestroyed();
+export const handleCertificateProxyVerification = (
+    request: CertificateVerifyProcRequest,
+    callback: (verificationResult: number) => void,
+): void => {
+    const { hostname: hostUrl, errorCode } = request;
+
+    if (errorCode === 0) {
+        return callback(0);
+    }
+
+    const { tld, domain } = whitelistHandler.parseDomain(hostUrl);
+    const host = domain + tld;
+
+    if (ctWhitelist && Array.isArray(ctWhitelist) && ctWhitelist.length > 0 && ctWhitelist.indexOf(host) > -1) {
+        return callback(0);
+    }
+
+    return callback(-2);
+};

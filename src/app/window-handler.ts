@@ -6,7 +6,7 @@ import { format, parse } from 'url';
 import { buildNumber, clientVersion, version } from '../../package.json';
 import DesktopCapturerSource = Electron.DesktopCapturerSource;
 import { apiName, WindowTypes } from '../common/api-interface';
-import { isMac, isWindowsOS } from '../common/env';
+import { isDevEnv, isMac, isWindowsOS } from '../common/env';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
 import { getCommandLineArgs, getGuid } from '../common/utils';
@@ -16,7 +16,14 @@ import { handleChildWindow } from './child-window-handler';
 import { config, IConfig } from './config-handler';
 import { showNetworkConnectivityError } from './dialog-handler';
 import { monitorWindowActions } from './window-actions';
-import { createComponentWindow, getBounds, handleDownloadManager, injectStyles, windowExists } from './window-utils';
+import {
+    createComponentWindow,
+    getBounds,
+    handleCertificateProxyVerification,
+    handleDownloadManager,
+    injectStyles, preventWindowNavigation,
+    windowExists,
+} from './window-utils';
 
 interface ICustomBrowserWindowConstructorOpts extends Electron.BrowserWindowConstructorOptions {
     winKey: string;
@@ -292,6 +299,14 @@ export class WindowHandler {
                 app.quit();
             }
         });
+
+        // Certificate verification proxy
+        if (!isDevEnv) {
+            this.mainWindow.webContents.session.setCertificateVerifyProc(handleCertificateProxyVerification);
+        }
+
+        // Validate window navigation
+        preventWindowNavigation(this.mainWindow, false);
 
         // Start monitoring window actions
         monitorWindowActions(this.mainWindow);
