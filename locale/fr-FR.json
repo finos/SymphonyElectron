@@ -119,7 +119,9 @@
     "Screens": "Écrans",
     "Select Application": "Sélectionnez une application",
     "Select Screen": "Sélectionnez l'écran",
-    "Share": "Partager"
+    "Share": "Partager",
+    "Entire screen": "Écran entier",
+    "Screen {number}": "Écran {number}"
   },
   "ScreenSharingIndicator": {
     "You are sharing your screen on Symphony": "Vous partagez votre écran sur Symphony",

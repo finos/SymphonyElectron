@@ -119,7 +119,9 @@
     "Screens": "画面",
     "Select Application": "アプリケーションを選択",
     "Select Screen": "画面を選択",
-    "Share": "共有"
+    "Share": "共有",
+    "Entire screen": "画面全体",
+    "Screen {number}": "画面 {number}"
   },
   "ScreenSharingIndicator": {
     "You are sharing your screen on Symphony": "あなたはSymphony上であなたの画面を共有しています",
