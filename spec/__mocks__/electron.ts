@@ -9,6 +9,7 @@ const executableName: string = '/Symphony.exe';
 const isReady: boolean = true;
 const version: string = '4.0.0';
 interface IApp {
+    commandLine: any;
     getAppPath(): string;
     getPath(type: string): string;
     getName(): string;
@@ -57,6 +58,9 @@ export const app: IApp = {
     getVersion: () => version,
     on: () => jest.fn(),
     setPath: () => jest.fn(),
+    commandLine: {
+        appendSwitch: jest.fn(),
+    },
 };
 
 // simple ipc mocks for render and main process ipc using
@@ -119,12 +123,6 @@ export const shell = {
 };
 
 // tslint:disable-next-line:variable-name
-export const BrowserWindow = {
-    fromWebContents: (arg) => arg,
-    getAllWindows: jest.fn(() => []),
-};
-
-// tslint:disable-next-line:variable-name
 export const Menu = {
     buildFromTemplate: jest.fn(),
     setApplicationMenu: jest.fn(),
@@ -157,6 +155,7 @@ const getCurrentWindow = jest.fn(() => {
 
 export const dialog = {
     showMessageBox: jest.fn(),
+    showErrorBox: jest.fn(),
 };
 
 // tslint:disable-next-line:variable-name
@@ -166,6 +165,8 @@ export const BrowserWindow = {
             isDestroyed: jest.fn(() => false),
         };
     }),
+    fromWebContents: (arg) => arg,
+    getAllWindows: jest.fn(() => []),
 };
 
 export const session = {
