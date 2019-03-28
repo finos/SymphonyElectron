@@ -251,6 +251,7 @@ function onWebContent(webContents) {
     spellchecker.initializeSpellChecker();
     spellchecker.updateContextMenuLocale(i18n.getMessageFor('ContextMenu'));
     const contextMenuBuilder = new ContextMenuBuilder(spellchecker.spellCheckHandler, webContents, false, spellchecker.processMenu.bind(spellchecker));
+    contextMenuBuilder.setAlternateStringFormatter(spellchecker.getStringTable(i18n.getMessageFor('ContextMenu')));
     let currentLocale = i18n.getLanguage();
 
     const contextMenuListener = (event, info) => {
