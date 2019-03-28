@@ -165,6 +165,7 @@
                 notification: 'notification',
                 closeNotification: 'close-notification',
         };
+        let requestId = 0;
 
         var openConfigWin = document.getElementById('open-config-win');
 
@@ -359,7 +360,7 @@
                     }, handleError);
                 });
             } else {
-                postMessage(apiCmds.getMediaSource, {types: ['window', 'screen']});
+                postMessage(apiCmds.getMediaSource, { types: ['window', 'screen'], requestId: ++requestId });
             }
         });
 
@@ -377,7 +378,7 @@
                     }
                 });
             } else {
-                postMessage(apiCmds.openScreenSharingIndicator, { streamId: stream.id, displayId, requestId: 0 });
+                postMessage(apiCmds.openScreenSharingIndicator, { streamId: stream.id, displayId, requestId: ++requestId });
             }
         };
 
@@ -396,6 +397,16 @@
                     activityCallback(data);
                     break;
                 case 'media-source-callback':
+
+                    if (data.error) {
+                        if (data.error.message === 'User Cancelled') {
+                            console.log('user canceled');
+                        } else {
+                            throw new Error(data.error);
+                        }
+                        return;
+                    }
+
                     const constraints = {
                         mandatory: {
                             chromeMediaSource: 'desktop',
@@ -408,6 +419,13 @@
                     navigator.mediaDevices.getUserMedia({ video: constraints }).then((stream) => {
                         handleStream(stream, data.source.display_id);
                     });
+                    break;
+                case 'screen-sharing-indicator-callback':
+                    if (typeof data.type !== 'string' || !requestId) {
+                        console.error(`screen-sharing-indicator-callback invalid args ${data}`);
+                    } else {
+                        console.log(`screen sharing will be stopped`);
+                    }
                     break;
                 default:
                     console.log(event.data);

@@ -87,6 +87,8 @@ try {
     console.warn('Failed to initialize Crypto Lib. You\'ll need to include the Crypto library. Contact the developers for more details');
 }
 
+let nextIndicatorId = 0;
+
 export class SSFApi {
 
     /**
@@ -286,6 +288,48 @@ export class SSFApi {
      *    - 'stopRequested' - user clicked "Stop Sharing" button.
      */
     public showScreenSharingIndicator(options, callback): void {
+        const { displayId, stream } = options;
+
+        if (!stream || !stream.active || stream.getVideoTracks().length !== 1) {
+            callback({type: 'error', reason: 'bad stream'});
+            return;
+        }
+        if (displayId && typeof(displayId) !== 'string') {
+            callback({type: 'error', reason: 'bad displayId'});
+            return;
+        }
+
+        const destroy = () => {
+            throttledCloseScreenShareIndicator(stream.id);
+            options.stream.removeEventListener('inactive', destroy);
+        };
+
+        options.stream.addEventListener('inactive', destroy);
+
+        if (typeof callback === 'function') {
+            local.screenSharingIndicatorCallback = callback;
+            ipcRenderer.send(apiName.symphonyApi, {
+                cmd: apiCmds.openScreenSharingIndicator,
+                displayId,
+                id: ++nextIndicatorId,
+                streamId: stream.id,
+            });
+        }
+    }
+
+    /**
+     * Shows a banner that informs user that the screen is being shared.
+     *
+     * @param options object with following fields:
+     *    - streamId unique id of stream
+     *    - displayId id of the display that is being shared or that contains the shared app
+     *    - requestId id to match the exact request
+     * @param callback callback function that will be called to handle events.
+     * Callback receives event object { type: string }. Types:
+     *    - 'error' - error occured. Event object contains 'reason' field.
+     *    - 'stopRequested' - user clicked "Stop Sharing" button.
+     */
+    public openScreenSharingIndicator(options, callback): void {
         const { displayId, requestId, streamId } = options;
 
         if (typeof callback === 'function') {

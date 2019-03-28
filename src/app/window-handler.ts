@@ -593,7 +593,7 @@ export class WindowHandler {
         screenSharingWebContents: Electron.webContents,
         displayId: string,
         id: number,
-        streamId,
+        streamId: string,
     ): void {
         const indicatorScreen =
             (displayId && electron.screen.getAllDisplays().filter((d) =>

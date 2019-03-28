@@ -1,4 +1,4 @@
-import { DesktopCapturerSource, remote } from 'electron';
+import { remote } from 'electron';
 
 import {
     apiCmds,
@@ -8,7 +8,7 @@ import {
     IScreenSnippet,
     LogLevel,
 } from '../common/api-interface';
-import { IScreenSourceError } from './desktop-capturer';
+import { ICustomDesktopCapturerSource, IScreenSourceError } from './desktop-capturer';
 import { SSFApi } from './ssf-api';
 
 const ssf = new SSFApi();
@@ -41,10 +41,9 @@ export default class AppBridge {
         onRegisterProtocolHandlerCallback: (uri: string) => this.protocolHandlerCallback(uri),
         onScreenSharingIndicatorCallback: (arg: IScreenSharingIndicator) => this.screenSharingIndicatorCallback(arg),
         onMediaSourceCallback: (
-            requestId: number | undefined,
             error: IScreenSourceError | null,
-            source: DesktopCapturerSource | undefined,
-        ): void => this.gotMediaSource(requestId, error, source),
+            source: ICustomDesktopCapturerSource | undefined,
+        ): void => this.gotMediaSource(error, source),
         onNotificationCallback: (event, data) => this.notificationCallback(event, data),
     };
 
@@ -104,7 +103,7 @@ export default class AppBridge {
                 ssf.registerProtocolHandler(this.callbackHandlers.onRegisterProtocolHandlerCallback);
                 break;
             case apiCmds.openScreenSharingIndicator:
-                ssf.showScreenSharingIndicator(data, this.callbackHandlers.onScreenSharingIndicatorCallback);
+                ssf.openScreenSharingIndicator(data, this.callbackHandlers.onScreenSharingIndicatorCallback);
                 break;
             case apiCmds.closeScreenSharingIndicator:
                 ssf.closeScreenSharingIndicator(data.streamId);
@@ -168,12 +167,20 @@ export default class AppBridge {
 
     /**
      * Broadcast the user selected source
-     * @param requestId {number}
-     * @param error {Error}
-     * @param source {DesktopCapturerSource}
+     * @param sourceError
+     * @param selectedSource
      */
-    private gotMediaSource(requestId: number | undefined, error: IScreenSourceError | null, source: DesktopCapturerSource | undefined): void {
-        this.broadcastMessage('media-source-callback', { requestId, source, error });
+    private gotMediaSource(sourceError: IScreenSourceError | null, selectedSource: ICustomDesktopCapturerSource | undefined): void {
+        if (sourceError) {
+            const { requestId, ...error } = sourceError;
+            this.broadcastMessage('media-source-callback', { requestId, error });
+            return;
+        }
+
+        if (selectedSource && selectedSource.requestId) {
+            const { requestId, ...source } = selectedSource;
+            this.broadcastMessage('media-source-callback', { requestId, source, error: sourceError });
+        }
     }
 
     /**

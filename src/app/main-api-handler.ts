@@ -115,7 +115,7 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
             break;
         case apiCmds.openScreenSharingIndicator:
             const { displayId, id, streamId } = arg;
-            if (typeof displayId === 'string' && typeof id === 'number' && typeof streamId === 'string') {
+            if (typeof displayId === 'string' && typeof id === 'number') {
                 windowHandler.createScreenSharingIndicatorWindow(event.sender, displayId, id, streamId);
             }
             break;
