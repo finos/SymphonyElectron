@@ -13,6 +13,10 @@
     "Please provide your login credentials for:": "Please provide your login credentials for:",
     "User name:": "User name:"
   },
+  "MoreInfo": {
+    "More Information": "More Information",
+    "Version Information": "Version Information"
+  },
   "Bring All to Front": "Bring All to Front",
   "Bring to Front on Notifications": "Bring to Front on Notifications",
   "Certificate Error": "Certificate Error",

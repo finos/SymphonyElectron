@@ -13,6 +13,10 @@
     "Please provide your login credentials for:": "あなたのログイン認証情報を入力してください。",
     "User name:": "ユーザー名："
   },
+  "MoreInfo": {
+    "More Information": "詳しくは",
+    "Version Information": "バージョン情報"
+  },
   "Bring All to Front": "すべて前面に表示",
   "Bring to Front on Notifications": "通知時に前面に表示",
   "Certificate Error": "証明書のエラー",

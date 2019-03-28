@@ -13,6 +13,10 @@
     "Please provide your login credentials for:": "Fournissez vos identifiants de connexion pour:",
     "User name:": "Nom d'utilisateur:"
   },
+  "MoreInfo": {
+    "More Information": "Plus d’informations",
+    "Version Information": "Information sur la version"
+  },
   "Bring All to Front": "Amener tous au front",
   "Bring to Front on Notifications": "Mettre les notifications au premier plan",
   "Certificate Error": "Erreur de certificat",
