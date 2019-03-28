@@ -123,7 +123,7 @@
   },
   "ScreenSharingIndicator": {
     "You are sharing your screen on Symphony": "あなたはSymphony上であなたの画面を共有しています",
-    "Stop Sharing": "共有を停止",
+    "Stop sharing": "画面共有を停止",
     "Hide": "非表示にする"
   },
   "ScreenSnippet": {
