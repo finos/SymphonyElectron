@@ -13,6 +13,10 @@
     "Please provide your login credentials for:": "Fournissez vos identifiants de connexion pour:",
     "User name:": "Nom d'utilisateur:"
   },
+  "MoreInfo": {
+    "More Information": "Plus d’informations",
+    "Version Information": "Information sur la version"
+  },
   "Bring All to Front": "Amener tous au front",
   "Bring to Front on Notifications": "Mettre les notifications au premier plan",
   "Certificate Error": "Erreur de certificat",
@@ -71,7 +75,7 @@
   "NetworkError": {
     "Problem connecting to Symphony": "Problème de connexion à Symphony",
     "Looks like you are not connected to the Internet. We'll try to reconnect automatically.": "On dirait que vous n'êtes pas connecté à Internet. Nous allons essayer de vous reconnecter automatiquement.",
-    "Cancel Retry": "Annuler réessayer",
+    "Cancel Retry": "Annuler nouvelle tentative",
     "Quit Symphony": "Quitter Symphony"
   },
   "No crashes available to share": "Pas de crash à partager",
@@ -115,7 +119,9 @@
     "Screens": "Écrans",
     "Select Application": "Sélectionnez une application",
     "Select Screen": "Sélectionnez l'écran",
-    "Share": "Partager"
+    "Share": "Partager",
+    "Entire screen": "Écran entier",
+    "Screen {number}": "Écran {number}"
   },
   "ScreenSharingIndicator": {
     "You are sharing your screen on Symphony": "Vous partagez votre écran sur Symphony",

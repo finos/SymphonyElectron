@@ -85,6 +85,8 @@ function openMoreInfoWindow(windowName) {
     });
 
     moreInfoWindow.webContents.on('did-finish-load', () => {
+        const moreInfoContext = i18n.getMessageFor('MoreInfo');
+        moreInfoWindow.webContents.send('i18n-more-info', moreInfoContext);
         // initialize crash reporter
         initCrashReporterMain({ process: 'more info window' });
         initCrashReporterRenderer(moreInfoWindow, { process: 'render | more info window' });

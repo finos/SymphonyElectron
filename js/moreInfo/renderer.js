@@ -36,6 +36,18 @@ ipcRenderer.on('register-crash-reporter', (event, arg) => {
     }
 });
 
+ipcRenderer.on('i18n-more-info', (event, content) => {
+    if (content && typeof content === 'object') {
+        const i18nNodes = document.querySelectorAll('[data-i18n-text]');
+
+        for (let node of i18nNodes) {
+            if (node.attributes['data-i18n-text'] && node.attributes['data-i18n-text'].value) {
+                node.innerText = content[node.attributes['data-i18n-text'].value] || node.attributes['data-i18n-text'].value;
+            }
+        }
+    }
+});
+
 // note: this is a workaround until
 // https://github.com/electron/electron/issues/8841
 // is fixed on the electron. where 'will-navigate'

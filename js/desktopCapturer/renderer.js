@@ -90,13 +90,21 @@ ipcRenderer.on('desktop-capturer-sources', (event, sources, isWindowsOS) => {
 
     for (let source of sources) {
         screenRegExp.lastIndex = 0;
-        if (source.name === 'Entire screen' || screenRegExp.exec(source.name)) {
+        if (source.display_id !== "") {
             source.fileName = 'fullscreen';
-            screenContent.appendChild(createItem(source));
+            if (source.name === 'Entire screen') {
+                const screenName = localizedContent['Entire screen'] || 'Entire screen';
+                screenContent.appendChild(createItem(source, screenName));
+            } else {
+                const screenName = localizedContent['Screen {number}'] || 'Screen {number}';
+                const screenNumber = source.name.substr(7, source.name.length);
+                const localisedScreenString = screenName.replace('{number}', screenNumber);
+                screenContent.appendChild(createItem(source, localisedScreenString));
+            }
             hasScreens = true;
         } else {
             source.fileName = null;
-            applicationContent.appendChild(createItem(source));
+            applicationContent.appendChild(createItem(source, source.name));
             hasApplications = true;
         }
     }
@@ -127,10 +135,11 @@ function startShare() {
 
 /**
  * Creates DOM elements and injects data
- * @param source
+ * @param source Screen source
+ * @param name Name of the source
  * @returns {HTMLDivElement}
  */
-function createItem(source) {
+function createItem(source, name) {
     const itemContainer = document.createElement("div");
     const sectionBox = document.createElement("div");
     const imageTag = document.createElement("img");
@@ -144,7 +153,7 @@ function createItem(source) {
 
     // Inject data to the dom element
     imageTag.src = source.thumbnail;
-    titleContainer.innerText = source.name;
+    titleContainer.innerText = name;
 
     sectionBox.appendChild(imageTag);
     itemContainer.id = source.id;
