@@ -118,6 +118,7 @@
     "electron-spellchecker": "git+https://github.com/symphonyoss/electron-spellchecker.git#v1.1.5",
     "ffi": "git+https://github.com/symphonyoss/node-ffi.git#v1.2.9",
     "filesize": "3.6.1",
+    "jimp": "0.6.0",
     "keymirror": "0.1.1",
     "lodash.difference": "4.5.0",
     "lodash.isequal": "4.5.0",
