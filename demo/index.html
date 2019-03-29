@@ -383,7 +383,7 @@
         };
 
         const handleError = (e) => {
-            console.log(e)
+            console.error(e);
         };
 
         /**
@@ -400,7 +400,7 @@
 
                     if (data.error) {
                         if (data.error.message === 'User Cancelled') {
-                            console.log('user canceled');
+                            console.error('user canceled');
                         } else {
                             throw new Error(data.error);
                         }
@@ -421,7 +421,7 @@
                     });
                     break;
                 case 'screen-sharing-indicator-callback':
-                    if (typeof data.type !== 'string' || !requestId) {
+                    if (!data || typeof data.type !== 'string' || !requestId) {
                         console.error(`screen-sharing-indicator-callback invalid args ${data}`);
                     } else {
                         console.log(`screen sharing will be stopped`);
