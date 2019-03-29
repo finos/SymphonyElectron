@@ -196,16 +196,18 @@ function getTemplate(app) {
                             accelerator: isMac ? 'Alt+Command+I' : 'Ctrl+Shift+I',
                             click(item, focusedWindow) {
                                 let devToolsEnabled = readConfigFromFile('devToolsEnabled');
-                                if (focusedWindow && devToolsEnabled) {
-                                    focusedWindow.webContents.toggleDevTools();
-                                } else {
-                                    log.send(logLevels.INFO, `dev tools disabled for ${focusedWindow.winName} window`);                                    
-                                    electron.dialog.showMessageBox(focusedWindow, {
-                                        type: 'warning',
-                                        buttons: ['Ok'],
-                                        title: i18n.getMessageFor('Dev Tools disabled'),
-                                        message: i18n.getMessageFor('Dev Tools has been disabled! Please contact your system administrator to enable it!'),
-                                    });
+                                if (focusedWindow && !focusedWindow.isDestroyed()) {
+                                    if (devToolsEnabled) {
+                                        focusedWindow.webContents.toggleDevTools();
+                                    } else {
+                                        log.send(logLevels.INFO, `dev tools disabled for ${focusedWindow.winName} window`);
+                                        electron.dialog.showMessageBox(focusedWindow, {
+                                            type: 'warning',
+                                            buttons: ['Ok'],
+                                            title: i18n.getMessageFor('Dev Tools disabled'),
+                                            message: i18n.getMessageFor('Dev Tools has been disabled! Please contact your system administrator to enable it!'),
+                                        });
+                                    }
                                 }
                             }
                         },
