@@ -15,7 +15,8 @@ interface IApp {
     getName(): string;
     isReady(): boolean;
     getVersion(): string;
-    on(): void;
+    on(event: any, cb: any): void;
+    once(): void;
     setPath(value: string, path: string): void;
 }
 interface IIpcMain {
@@ -56,7 +57,10 @@ export const app: IApp = {
     getName: () => appName,
     isReady: () => isReady,
     getVersion: () => version,
-    on: () => jest.fn(),
+    on: (event, cb) => {
+        ipcEmitter.on(event, cb);
+    },
+    once: () => jest.fn(),
     setPath: () => jest.fn(),
     commandLine: {
         appendSwitch: jest.fn(),
