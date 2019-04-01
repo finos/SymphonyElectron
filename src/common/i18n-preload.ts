@@ -16,7 +16,7 @@ class Translation {
      * @param namespace {string} name space in the resource
      */
     private static translate(value: string, resource: JSON | null, namespace: string | undefined): string {
-        return resource ? Translation.getResource(resource, namespace)[value] : null;
+        return resource ? (Translation.getResource(resource, namespace)[value] || value) : value;
     }
     private static getResource = (resource: JSON, namespace: string | undefined): JSON => namespace ? resource[namespace] : resource;
     private locale: LocaleType = 'en-US';

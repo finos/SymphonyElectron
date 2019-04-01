@@ -2,11 +2,16 @@ import { BrowserWindow, WebContents } from 'electron';
 
 import { parse as parseQuerystring } from 'querystring';
 import { format, parse, Url } from 'url';
-import { isWindowsOS } from '../common/env';
+import { isDevEnv, isWindowsOS } from '../common/env';
 import { getGuid } from '../common/utils';
 import { monitorWindowActions, removeWindowEventListener } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
-import { getBounds, injectStyles, preventWindowNavigation } from './window-utils';
+import {
+    getBounds,
+    handleCertificateProxyVerification,
+    injectStyles,
+    preventWindowNavigation,
+} from './window-utils';
 
 const DEFAULT_POP_OUT_WIDTH = 300;
 const DEFAULT_POP_OUT_HEIGHT = 600;
@@ -127,7 +132,12 @@ export const handleChildWindow = (webContents: WebContents): void => {
                 browserWin.on('close', () => {
                     removeWindowEventListener(browserWin);
                 });
-                // TODO: handle Permission Requests & setCertificateVerifyProc
+
+                // Certificate verification proxy
+                if (!isDevEnv) {
+                    browserWin.webContents.session.setCertificateVerifyProc(handleCertificateProxyVerification);
+                }
+                // TODO: handle Permission Requests
             });
         } else {
             event.preventDefault();

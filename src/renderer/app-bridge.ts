@@ -1,14 +1,14 @@
-import { DesktopCapturerSource, remote } from 'electron';
+import { remote } from 'electron';
 
 import {
     apiCmds,
     IBoundsChange,
-    ILogMsg,
-    IScreenSharingIndicator,
+    ILogMsg, INotificationData,
+    IScreenSharingIndicator, IScreenSharingIndicatorOptions,
     IScreenSnippet,
     LogLevel,
 } from '../common/api-interface';
-import { IScreenSourceError } from './desktop-capturer';
+import { ICustomDesktopCapturerSource, ICustomSourcesOptions, IScreenSourceError } from './desktop-capturer';
 import { SSFApi } from './ssf-api';
 
 const ssf = new SSFApi();
@@ -41,10 +41,9 @@ export default class AppBridge {
         onRegisterProtocolHandlerCallback: (uri: string) => this.protocolHandlerCallback(uri),
         onScreenSharingIndicatorCallback: (arg: IScreenSharingIndicator) => this.screenSharingIndicatorCallback(arg),
         onMediaSourceCallback: (
-            requestId: number | undefined,
             error: IScreenSourceError | null,
-            source: DesktopCapturerSource | undefined,
-        ): void => this.gotMediaSource(requestId, error, source),
+            source: ICustomDesktopCapturerSource | undefined,
+        ): void => this.gotMediaSource(error, source),
         onNotificationCallback: (event, data) => this.notificationCallback(event, data),
     };
 
@@ -72,24 +71,24 @@ export default class AppBridge {
                 this.broadcastMessage('get-version-info-callback', ssf.getVersionInfo());
                 break;
             case apiCmds.activate:
-                ssf.activate(data);
+                ssf.activate(data as string);
                 break;
             case apiCmds.bringToFront:
                 const { windowName, reason } = data;
-                ssf.bringToFront(windowName, reason);
+                ssf.bringToFront(windowName as string, reason as string);
                 break;
             case apiCmds.setBadgeCount:
                 if (typeof data === 'number') {
-                    ssf.setBadgeCount(data);
+                    ssf.setBadgeCount(data as number);
                 }
                 break;
             case apiCmds.setLocale:
                 if (typeof data === 'string') {
-                    ssf.setLocale(data);
+                    ssf.setLocale(data as string);
                 }
                 break;
             case apiCmds.registerActivityDetection:
-                ssf.registerActivityDetection(data, this.callbackHandlers.onActivityCallback);
+                ssf.registerActivityDetection(data as number, this.callbackHandlers.onActivityCallback);
                 break;
             case apiCmds.openScreenSnippet:
                 ssf.openScreenSnippet(this.callbackHandlers.onScreenSnippetCallback);
@@ -104,19 +103,19 @@ export default class AppBridge {
                 ssf.registerProtocolHandler(this.callbackHandlers.onRegisterProtocolHandlerCallback);
                 break;
             case apiCmds.openScreenSharingIndicator:
-                ssf.showScreenSharingIndicator(data, this.callbackHandlers.onScreenSharingIndicatorCallback);
+                ssf.openScreenSharingIndicator(data as IScreenSharingIndicatorOptions, this.callbackHandlers.onScreenSharingIndicatorCallback);
                 break;
             case apiCmds.closeScreenSharingIndicator:
-                ssf.closeScreenSharingIndicator(data.streamId);
+                ssf.closeScreenSharingIndicator(data.streamId as string);
                 break;
             case apiCmds.getMediaSource:
-                ssf.getMediaSource(data, this.callbackHandlers.onMediaSourceCallback);
+                ssf.getMediaSource(data as ICustomSourcesOptions, this.callbackHandlers.onMediaSourceCallback);
                 break;
             case apiCmds.notification:
-                notification.showNotification(data, this.callbackHandlers.onNotificationCallback);
+                notification.showNotification(data as INotificationData, this.callbackHandlers.onNotificationCallback);
                 break;
             case apiCmds.closeNotification:
-                notification.hideNotification(data);
+                notification.hideNotification(data as number);
                 break;
             case apiCmds.showNotificationSettings:
                 ssf.showNotificationSettings();
@@ -168,12 +167,20 @@ export default class AppBridge {
 
     /**
      * Broadcast the user selected source
-     * @param requestId {number}
-     * @param error {Error}
-     * @param source {DesktopCapturerSource}
+     * @param sourceError {IScreenSourceError}
+     * @param selectedSource {ICustomDesktopCapturerSource}
      */
-    private gotMediaSource(requestId: number | undefined, error: IScreenSourceError | null, source: DesktopCapturerSource | undefined): void {
-        this.broadcastMessage('media-source-callback', { requestId, source, error });
+    private gotMediaSource(sourceError: IScreenSourceError | null, selectedSource: ICustomDesktopCapturerSource | undefined): void {
+        if (sourceError) {
+            const { requestId, ...error } = sourceError;
+            this.broadcastMessage('media-source-callback', { requestId, error });
+            return;
+        }
+
+        if (selectedSource && selectedSource.requestId) {
+            const { requestId, ...source } = selectedSource;
+            this.broadcastMessage('media-source-callback', { requestId, source, error: sourceError });
+        }
     }
 
     /**

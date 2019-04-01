@@ -9,6 +9,7 @@ import {
     IBoundsChange,
     ILogMsg,
     IScreenSharingIndicator,
+    IScreenSharingIndicatorOptions,
     IScreenSnippet,
     IVersionInfo,
     KeyCodes,
@@ -87,6 +88,8 @@ try {
     console.warn('Failed to initialize Crypto Lib. You\'ll need to include the Crypto library. Contact the developers for more details');
 }
 
+let nextIndicatorId = 0;
+
 export class SSFApi {
 
     /**
@@ -110,7 +113,7 @@ export class SSFApi {
      *
      * @param  {String} windowName - Name of window. Note: main window name is 'main'
      */
-    public activate(windowName) {
+    public activate(windowName: string) {
         if (typeof windowName === 'string') {
             throttledActivate(windowName);
         }
@@ -122,7 +125,7 @@ export class SSFApi {
      * @param  {String} windowName Name of window. Note: main window name is 'main'
      * @param {String} reason, The reason for which the window is to be activated
      */
-    public bringToFront(windowName, reason) {
+    public bringToFront(windowName: string, reason: string) {
         if (typeof windowName === 'string') {
             throttledBringToFront(windowName, reason);
         }
@@ -184,7 +187,7 @@ export class SSFApi {
      *  logDetails: String
      *  }
      */
-    public registerLogger(logger) {
+    public registerLogger(logger: (msg: ILogMsg, logLevel: LogLevel, showInConsole: boolean) => void) {
         if (typeof logger === 'function') {
             local.logger = logger;
 
@@ -285,7 +288,49 @@ export class SSFApi {
      *    - 'error' - error occured. Event object contains 'reason' field.
      *    - 'stopRequested' - user clicked "Stop Sharing" button.
      */
-    public showScreenSharingIndicator(options, callback): void {
+    public showScreenSharingIndicator(options: IScreenSharingIndicatorOptions, callback): void {
+        const { displayId, stream } = options;
+
+        if (!stream || !stream.active || stream.getVideoTracks().length !== 1) {
+            callback({type: 'error', reason: 'bad stream'});
+            return;
+        }
+        if (displayId && typeof(displayId) !== 'string') {
+            callback({type: 'error', reason: 'bad displayId'});
+            return;
+        }
+
+        const destroy = () => {
+            throttledCloseScreenShareIndicator(stream.id);
+            stream.removeEventListener('inactive', destroy);
+        };
+
+        stream.addEventListener('inactive', destroy);
+
+        if (typeof callback === 'function') {
+            local.screenSharingIndicatorCallback = callback;
+            ipcRenderer.send(apiName.symphonyApi, {
+                cmd: apiCmds.openScreenSharingIndicator,
+                displayId,
+                id: ++nextIndicatorId,
+                streamId: stream.id,
+            });
+        }
+    }
+
+    /**
+     * Shows a banner that informs user that the screen is being shared.
+     *
+     * @param options object with following fields:
+     *    - streamId unique id of stream
+     *    - displayId id of the display that is being shared or that contains the shared app
+     *    - requestId id to match the exact request
+     * @param callback callback function that will be called to handle events.
+     * Callback receives event object { type: string }. Types:
+     *    - 'error' - error occured. Event object contains 'reason' field.
+     *    - 'stopRequested' - user clicked "Stop Sharing" button.
+     */
+    public openScreenSharingIndicator(options: IScreenSharingIndicatorOptions, callback): void {
         const { displayId, requestId, streamId } = options;
 
         if (typeof callback === 'function') {

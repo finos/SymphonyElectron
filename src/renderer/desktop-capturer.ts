@@ -21,12 +21,17 @@ export interface ICustomSourcesOptions extends SourcesOptions {
     requestId?: number;
 }
 
+export interface ICustomDesktopCapturerSource extends DesktopCapturerSource {
+    requestId: number | undefined;
+}
+
 export interface IScreenSourceError {
     name: string;
     message: string;
+    requestId: number | undefined;
 }
 
-export type CallbackType = (requestId: number | undefined, error: IScreenSourceError | null, source?: DesktopCapturerSource) => void;
+export type CallbackType = (error: IScreenSourceError | null, source?: ICustomDesktopCapturerSource) => void;
 const getNextId = () => ++nextId;
 
 /**
@@ -52,7 +57,7 @@ export const getSource = (options: ICustomSourcesOptions, callback: CallbackType
     const sourcesOpts: string[] = [];
     const { requestId, ...updatedOptions } = options;
     if (!isValid(options)) {
-        callback(requestId, { name: 'Invalid options', message: 'Invalid options' });
+        callback({ name: 'Invalid options', message: 'Invalid options', requestId });
         return;
     }
     captureWindow = includes.call(options.types, 'window');
@@ -92,7 +97,7 @@ export const getSource = (options: ICustomSourcesOptions, callback: CallbackType
                 title: `${i18n.t('Permission Denied')()}!`,
                 type: 'error',
             });
-            callback(requestId, { name: 'Permission Denied', message: 'Permission Denied' });
+            callback({ name: 'Permission Denied', message: 'Permission Denied', requestId });
             return;
         }
     }
@@ -106,11 +111,13 @@ export const getSource = (options: ICustomSourcesOptions, callback: CallbackType
             const filteredSource: DesktopCapturerSource[] = sources.filter((source) => source.name === title);
 
             if (Array.isArray(filteredSource) && filteredSource.length > 0) {
-                return callback(requestId, null, filteredSource[ 0 ]);
+                const source = { ...filteredSource[ 0 ], requestId };
+                return callback(null, source);
             }
 
             if (sources.length > 0) {
-                return callback(requestId, null, sources[ 0 ]);
+                const firstSource = { ...sources[ 0 ], requestId };
+                return callback(null, firstSource);
             }
 
         }
@@ -131,9 +138,9 @@ export const getSource = (options: ICustomSourcesOptions, callback: CallbackType
             // Cleaning up the event listener to prevent memory leaks
             if (!source) {
                 ipcRenderer.removeListener('start-share' + id, successCallback);
-                return callback(requestId, { name: 'User Cancelled', message: 'User Cancelled' });
+                return callback({ name: 'User Cancelled', message: 'User Cancelled', requestId });
             }
-            return callback(requestId, null, source);
+            return callback(null, { ...source, ...{ requestId } });
         };
         ipcRenderer.once('start-share' + id, successCallback);
         return null;

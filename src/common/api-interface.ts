@@ -26,6 +26,7 @@ export enum apiCmds {
     getMediaSource = 'get-media-source',
     notification = 'notification',
     closeNotification = 'close-notification',
+    initMainWindow = 'init-main-window',
 }
 
 export enum apiName {
@@ -87,6 +88,32 @@ export interface IScreenSharingIndicator {
 export enum KeyCodes {
     Esc = 27,
     Alt = 18,
+}
+
+/**
+ * Notification
+ */
+export interface INotificationData {
+    id: number;
+    title: string;
+    text: string;
+    image: string;
+    flash: boolean;
+    color: string;
+    tag: string;
+    sticky: boolean;
+    company: string;
+    displayTime: number;
+}
+
+/**
+ * Screen sharing Indicator
+ */
+export interface IScreenSharingIndicatorOptions {
+    displayId: string;
+    requestId: number;
+    streamId: string;
+    stream?: MediaStream;
 }
 
 export interface IVersionInfo {
