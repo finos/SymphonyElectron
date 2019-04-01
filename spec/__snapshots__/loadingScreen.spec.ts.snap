@@ -24,14 +24,11 @@ exports[`loading screen should render correctly 1`] = `
       cx="50"
       cy="50"
       fill="none"
-      ng-attr-r="{{config.radius}}"
       ng-attr-stroke="{{config.color}}"
-      ng-attr-stroke-dasharray="{{config.dasharray}}"
-      ng-attr-stroke-width="{{config.width}}"
       r="35"
       stroke="#ffffff"
-      stroke-dasharray="164.93361431346415 56.97787143782138"
-      stroke-width="10"
+      strokeDasharray="164.93361431346415 56.97787143782138"
+      strokeWidth="10"
       transform="rotate(59.6808 50 50)"
     >
       <animateTransform

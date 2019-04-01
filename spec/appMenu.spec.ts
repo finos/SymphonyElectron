@@ -327,7 +327,7 @@ describe('app menu', () => {
                     expect(spy).toBeCalled();
                 });
 
-                it('should call `electron.dialog` when focusedWindow is null', () => {
+                it('should not call `electron.dialog` when focusedWindow is null', () => {
                     const spy = jest.spyOn(dialog, 'showMessageBox');
                     const focusedWindow = null;
                     const expectedValue = {
@@ -338,7 +338,7 @@ describe('app menu', () => {
                     };
                     const menuItem = findHelpTroubleshootingMenuItem('Toggle Developer Tools');
                     menuItem.click({}, focusedWindow);
-                    expect(spy).lastCalledWith(null, expectedValue);
+                    expect(spy).not.toBeCalledWith(null, expectedValue);
                 });
             });
             it('should call `createMoreInfoWindow` when click in `More Information` menu', () => {
