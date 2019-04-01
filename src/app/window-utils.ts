@@ -1,9 +1,10 @@
 import * as electron from 'electron';
 import { app, BrowserWindow, CertificateVerifyProcRequest, nativeImage } from 'electron';
+import fetch from 'electron-fetch';
 import * as filesize from 'filesize';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as url from 'url';
+import { format, parse } from 'url';
 
 import { isDevEnv, isMac } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
@@ -15,7 +16,11 @@ import { screenSnippet } from './screen-snippet-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
 const checkValidWindow = true;
-const { ctWhitelist } = config.getGlobalConfigFields([ 'ctWhitelist' ]);
+const { url: configUrl, ctWhitelist } = config.getGlobalConfigFields([ 'url', 'ctWhitelist' ]);
+
+// Network status check variables
+const networkStatusCheckInterval = 10 * 1000;
+let networkStatusCheckIntervalId;
 
 /**
  * Checks if window is valid and exists
@@ -113,7 +118,7 @@ export const createComponentWindow = (
     });
     browserWindow.setMenu(null as any);
 
-    const targetUrl = url.format({
+    const targetUrl = format({
         pathname: require.resolve('../renderer/react-window.html'),
         protocol: 'file',
         query: {
@@ -397,4 +402,39 @@ export const handleCertificateProxyVerification = (
     }
 
     return callback(-2);
+};
+
+/**
+ * Validates the network by fetching the pod url
+ * every 10sec, on active reloads the given window
+ *
+ * @param window {ICustomBrowserWindow}
+ */
+export const isSymphonyReachable = (window: ICustomBrowserWindow | null) => {
+    if (networkStatusCheckIntervalId) {
+        return;
+    }
+    if (!window || !windowExists(window)) {
+        return;
+    }
+    networkStatusCheckIntervalId = setInterval(() => {
+        const { hostname, protocol } = parse(configUrl);
+        if (!hostname || !protocol) {
+            return;
+        }
+        const podUrl = `${protocol}//${hostname}`;
+        fetch(podUrl, { method: 'GET' }).then((rsp) => {
+            if (rsp.status === 200 && windowHandler.isOnline) {
+                window.loadURL(podUrl);
+                if (networkStatusCheckIntervalId) {
+                    clearInterval(networkStatusCheckIntervalId);
+                    networkStatusCheckIntervalId = null;
+                }
+            } else {
+                logger.warn(`Symphony down! statusCode: ${rsp.status} is online: ${windowHandler.isOnline}`);
+            }
+        }).catch((error) => {
+            logger.error(`Network status check: No active network connection ${error}`);
+        });
+    }, networkStatusCheckInterval);
 };

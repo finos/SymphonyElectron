@@ -33,6 +33,9 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
     }
 
     switch (arg.cmd) {
+        case apiCmds.initMainWindow:
+            windowHandler.initMainWindow();
+            break;
         case apiCmds.isOnline:
             if (typeof arg.isOnline === 'boolean') {
                 windowHandler.isOnline = arg.isOnline;
