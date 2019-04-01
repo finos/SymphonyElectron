@@ -6,7 +6,7 @@ import { format, parse } from 'url';
 import { buildNumber, clientVersion, version } from '../../package.json';
 import DesktopCapturerSource = Electron.DesktopCapturerSource;
 import { apiName, WindowTypes } from '../common/api-interface';
-import { isMac, isWindowsOS } from '../common/env';
+import { isDevEnv, isMac, isWindowsOS } from '../common/env';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
 import { getCommandLineArgs, getGuid } from '../common/utils';
@@ -14,9 +14,17 @@ import { notification } from '../renderer/notification';
 import { AppMenu } from './app-menu';
 import { handleChildWindow } from './child-window-handler';
 import { config, IConfig } from './config-handler';
-import { showNetworkConnectivityError } from './dialog-handler';
 import { monitorWindowActions } from './window-actions';
-import { createComponentWindow, getBounds, handleDownloadManager, injectStyles, windowExists } from './window-utils';
+import {
+    createComponentWindow,
+    getBounds,
+    handleCertificateProxyVerification,
+    handleDownloadManager,
+    injectStyles,
+    isSymphonyReachable,
+    preventWindowNavigation,
+    windowExists,
+} from './window-utils';
 
 interface ICustomBrowserWindowConstructorOpts extends Electron.BrowserWindowConstructorOptions {
     winKey: string;
@@ -36,12 +44,12 @@ export class WindowHandler {
     /**
      * Loading window opts
      */
-    private static getLoadingWindowOpts(): Electron.BrowserWindowConstructorOptions {
+    private static getLoadingWindowOpts(): ICustomBrowserWindowConstructorOpts {
         return {
             alwaysOnTop: false,
             center: true,
             frame: false,
-            height: 200,
+            height: 250,
             maximizable: false,
             minimizable: false,
             resizable: false,
@@ -54,6 +62,7 @@ export class WindowHandler {
                 devTools: false,
                 contextIsolation: true,
             },
+            winKey: getGuid(),
         };
     }
 
@@ -172,8 +181,9 @@ export class WindowHandler {
     private readonly config: IConfig;
     // Window reference
     private readonly windows: object;
-    private readonly isCustomTitleBarAndWindowOS: boolean;
+    private readonly isCustomTitleBar: boolean;
 
+    private loadFailError: string | undefined;
     private mainWindow: ICustomBrowserWindow | null = null;
     private loadingWindow: Electron.BrowserWindow | null = null;
     private aboutAppWindow: Electron.BrowserWindow | null = null;
@@ -192,7 +202,7 @@ export class WindowHandler {
         this.windowOpts = { ...this.getMainWindowOpts(), ...opts };
         this.isAutoReload = false;
         this.isOnline = true;
-        this.isCustomTitleBarAndWindowOS = isWindowsOS && this.config.isCustomTitleBar;
+        this.isCustomTitleBar = isWindowsOS && this.config.isCustomTitleBar;
 
         this.appMenu = null;
 
@@ -228,21 +238,6 @@ export class WindowHandler {
         // loads the main window with url from config/cmd line
         this.mainWindow.loadURL(this.url);
         this.mainWindow.webContents.on('did-finish-load', async () => {
-
-            // Displays a dialog if network connectivity has been lost
-            const retry = () => {
-                if (!this.mainWindow) {
-                    return;
-                }
-                if (!this.isOnline) {
-                    showNetworkConnectivityError(this.mainWindow, this.url, retry);
-                }
-                this.mainWindow.webContents.reload();
-            };
-            if (!this.isOnline && this.mainWindow) {
-                showNetworkConnectivityError(this.mainWindow, this.url, retry);
-            }
-
             // early exit if the window has already been destroyed
             if (!this.mainWindow || !windowExists(this.mainWindow)) {
                 return;
@@ -251,28 +246,39 @@ export class WindowHandler {
 
             // Injects custom title bar css into the webContents
             // only for Window and if it is enabled
-            await injectStyles(this.mainWindow, this.isCustomTitleBarAndWindowOS);
-            if (this.isCustomTitleBarAndWindowOS) {
-                this.mainWindow.webContents.send('initiate-custom-title-bar');
-            }
+            await injectStyles(this.mainWindow, this.isCustomTitleBar);
 
             this.mainWindow.webContents.send('page-load', {
                 isWindowsOS,
                 locale: i18n.getLocale(),
                 resources: i18n.loadedResources,
                 origin: this.globalConfig.url,
+                enableCustomTitleBar: this.isCustomTitleBar,
             });
             this.appMenu = new AppMenu();
+        });
 
-            // close the loading window when
-            // the main windows finished loading
-            if (this.loadingWindow) {
-                this.loadingWindow.destroy();
-                this.loadingWindow = null;
+        this.mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDesc, validatedURL) => {
+            logger.error(`Failed to load ${validatedURL}, with an error: ${errorCode}::${errorDesc}`);
+            this.loadFailError = errorDesc;
+        });
+
+        this.mainWindow.webContents.on('did-stop-loading', () => {
+            if (this.mainWindow && windowExists(this.mainWindow)) {
+            this.mainWindow.webContents.executeJavaScript('document.location.href').then((href) => {
+                    if (href === 'data:text/html,chromewebdata' || href === 'chrome-error://chromewebdata/') {
+                        if (this.loadingWindow && windowExists(this.loadingWindow)) {
+                            this.loadingWindow.webContents.send('loading-screen-data', { error: this.loadFailError });
+                            return;
+                        }
+
+                        this.showLoadingScreen(this.loadFailError);
+                        isSymphonyReachable(this.mainWindow);
+                    }
+                }).catch((error) => {
+                    logger.error(`Could not read document.location error: ${error}`);
+                });
             }
-
-            // Ready to show the window
-            this.mainWindow.show();
         });
 
         // Handle main window close
@@ -293,6 +299,14 @@ export class WindowHandler {
             }
         });
 
+        // Certificate verification proxy
+        if (!isDevEnv) {
+            this.mainWindow.webContents.session.setCertificateVerifyProc(handleCertificateProxyVerification);
+        }
+
+        // Validate window navigation
+        preventWindowNavigation(this.mainWindow, false);
+
         // Start monitoring window actions
         monitorWindowActions(this.mainWindow);
 
@@ -305,6 +319,28 @@ export class WindowHandler {
         // Handle pop-outs window
         handleChildWindow(this.mainWindow.webContents);
         return this.mainWindow;
+    }
+
+    /**
+     * Displays the main windows once
+     * all the HTML content have been injected
+     */
+    public initMainWindow(): void {
+        if (this.mainWindow && windowExists(this.mainWindow)) {
+            if (!this.isOnline && this.loadingWindow && windowExists(this.loadingWindow)) {
+                this.loadingWindow.webContents.send('loading-screen-data', { error: 'NETWORK_OFFLINE' });
+                return;
+            }
+
+            // close the loading window when
+            // the main windows finished loading
+            if (this.loadingWindow && windowExists(this.loadingWindow)) {
+                this.loadingWindow.close();
+            }
+
+            // Ready to show the window
+            this.mainWindow.show();
+        }
     }
 
     /**
@@ -380,16 +416,35 @@ export class WindowHandler {
      * Displays a loading window until the main
      * application is loaded
      */
-    public showLoadingScreen(): void {
-        this.loadingWindow = createComponentWindow('loading-screen', WindowHandler.getLoadingWindowOpts());
+    public showLoadingScreen(error?: string | undefined): void {
+        const opts = WindowHandler.getLoadingWindowOpts();
+        this.loadingWindow = createComponentWindow('loading-screen', opts);
+        this.addWindow(opts.winKey, this.loadingWindow);
         this.loadingWindow.webContents.once('did-finish-load', () => {
             if (!this.loadingWindow || !windowExists(this.loadingWindow)) {
                 return;
             }
-            this.loadingWindow.webContents.send('data');
+            if (error) {
+                this.loadingWindow.webContents.send('loading-screen-data', { error });
+            }
         });
 
-        this.loadingWindow.once('closed', () => this.loadingWindow = null);
+        ipcMain.once('reload-symphony', () => {
+            if (this.mainWindow && windowExists(this.mainWindow)) {
+                this.mainWindow.webContents.reload();
+            }
+        });
+
+        ipcMain.once('quit-symphony', () => {
+            if (this.mainWindow && windowExists(this.mainWindow)) {
+                app.quit();
+            }
+        });
+
+        this.loadingWindow.once('closed', () => {
+            this.removeWindow(opts.winKey);
+            this.loadingWindow = null;
+        });
     }
 
     /**
@@ -499,7 +554,7 @@ export class WindowHandler {
             if (shouldClearSettings) {
                 clearSettings();
             }
-            if (this.basicAuthWindow && !windowExists(this.basicAuthWindow)) {
+            if (this.basicAuthWindow && windowExists(this.basicAuthWindow)) {
                 this.basicAuthWindow.close();
                 this.basicAuthWindow = null;
             }
@@ -511,7 +566,7 @@ export class WindowHandler {
             closeBasicAuth(false);
         };
 
-        this.basicAuthWindow.on('close', () => {
+        this.basicAuthWindow.once('close', () => {
             ipcMain.removeListener('basic-auth-closed', closeBasicAuth);
             ipcMain.removeListener('basic-auth-login', login);
         });
@@ -593,7 +648,7 @@ export class WindowHandler {
         screenSharingWebContents: Electron.webContents,
         displayId: string,
         id: number,
-        streamId,
+        streamId: string,
     ): void {
         const indicatorScreen =
             (displayId && electron.screen.getAllDisplays().filter((d) =>
@@ -681,7 +736,7 @@ export class WindowHandler {
     private getMainWindowOpts(): ICustomBrowserWindowConstructorOpts {
         return {
             alwaysOnTop: false,
-            frame: !this.isCustomTitleBarAndWindowOS,
+            frame: !this.isCustomTitleBar,
             minHeight: 300,
             minWidth: 300,
             show: false,

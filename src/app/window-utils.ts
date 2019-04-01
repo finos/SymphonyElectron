@@ -1,18 +1,34 @@
 import * as electron from 'electron';
-import { app, BrowserWindow, nativeImage } from 'electron';
+import { app, BrowserWindow, CertificateVerifyProcRequest, nativeImage } from 'electron';
+import fetch from 'electron-fetch';
 import * as filesize from 'filesize';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as url from 'url';
+import { format, parse } from 'url';
 
 import { isDevEnv, isMac } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { getGuid } from '../common/utils';
+import { whitelistHandler } from '../common/whitelist-handler';
+import { config } from './config-handler';
 import { screenSnippet } from './screen-snippet-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
 const checkValidWindow = true;
+const { url: configUrl, ctWhitelist } = config.getGlobalConfigFields([ 'url', 'ctWhitelist' ]);
+
+// Network status check variables
+const networkStatusCheckInterval = 10 * 1000;
+let networkStatusCheckIntervalId;
+
+/**
+ * Checks if window is valid and exists
+ *
+ * @param window {BrowserWindow}
+ * @return boolean
+ */
+export const windowExists = (window: BrowserWindow): boolean => !!window && typeof window.isDestroyed === 'function' && !window.isDestroyed();
 
 /**
  * Prevents window from navigating
@@ -20,11 +36,31 @@ const checkValidWindow = true;
  * @param browserWindow
  * @param isPopOutWindow
  */
-export const preventWindowNavigation = (browserWindow: Electron.BrowserWindow, isPopOutWindow: boolean = false): void => {
+export const preventWindowNavigation = (browserWindow: BrowserWindow, isPopOutWindow: boolean = false): void => {
+    if (!browserWindow || !windowExists(browserWindow)) {
+        return;
+    }
+
     const listener = (e: Electron.Event, winUrl: string) => {
-        if (isPopOutWindow && !winUrl.startsWith('http' || 'https')) {
+        if (!winUrl.startsWith('http' || 'https')) {
             e.preventDefault();
             return;
+        }
+
+        if (!isPopOutWindow) {
+            const isValid = whitelistHandler.isWhitelisted(winUrl);
+            if (!isValid) {
+                e.preventDefault();
+                if (browserWindow && windowExists(browserWindow)) {
+                    // @ts-ignore
+                    electron.dialog.showMessageBox(browserWindow, {
+                        type: 'warning',
+                        buttons: [ 'OK' ],
+                        title: i18n.t('Not Allowed'),
+                        message: `${i18n.t(`Sorry, you are not allowed to access this website`)} (${winUrl}), ${i18n.t('please contact your administrator for more details')}`,
+                    });
+                }
+            }
         }
 
         if (browserWindow.isDestroyed()
@@ -82,7 +118,7 @@ export const createComponentWindow = (
     });
     browserWindow.setMenu(null as any);
 
-    const targetUrl = url.format({
+    const targetUrl = format({
         pathname: require.resolve('../renderer/react-window.html'),
         protocol: 'file',
         query: {
@@ -313,11 +349,11 @@ const readAndInsertCSS = async (window, paths): Promise<void> => {
  * Inserts all the required css on to the specified windows
  *
  * @param mainWindow {BrowserWindow}
- * @param isCustomTitleBarAndWindowOS {boolean} - whether custom title bar enabled
+ * @param isCustomTitleBar {boolean} - whether custom title bar enabled
  */
-export const injectStyles = async (mainWindow: BrowserWindow, isCustomTitleBarAndWindowOS: boolean): Promise<void> => {
+export const injectStyles = async (mainWindow: BrowserWindow, isCustomTitleBar: boolean): Promise<void> => {
     const paths: string[] = [];
-    if (isCustomTitleBarAndWindowOS) {
+    if (isCustomTitleBar) {
         let titleBarStylesPath;
         const stylesFileName = path.join('config', 'titleBarStyles.css');
         if (isDevEnv) {
@@ -343,9 +379,62 @@ export const injectStyles = async (mainWindow: BrowserWindow, isCustomTitleBarAn
 };
 
 /**
- * Checks if window is valid and exists
+ * Proxy verification for root certificates
  *
- * @param window {BrowserWindow}
- * @return boolean
+ * @param request {CertificateVerifyProcRequest}
+ * @param callback {(verificationResult: number) => void}
  */
-export const windowExists = (window: BrowserWindow): boolean => !!window && typeof window.isDestroyed === 'function' && !window.isDestroyed();
+export const handleCertificateProxyVerification = (
+    request: CertificateVerifyProcRequest,
+    callback: (verificationResult: number) => void,
+): void => {
+    const { hostname: hostUrl, errorCode } = request;
+
+    if (errorCode === 0) {
+        return callback(0);
+    }
+
+    const { tld, domain } = whitelistHandler.parseDomain(hostUrl);
+    const host = domain + tld;
+
+    if (ctWhitelist && Array.isArray(ctWhitelist) && ctWhitelist.length > 0 && ctWhitelist.indexOf(host) > -1) {
+        return callback(0);
+    }
+
+    return callback(-2);
+};
+
+/**
+ * Validates the network by fetching the pod url
+ * every 10sec, on active reloads the given window
+ *
+ * @param window {ICustomBrowserWindow}
+ */
+export const isSymphonyReachable = (window: ICustomBrowserWindow | null) => {
+    if (networkStatusCheckIntervalId) {
+        return;
+    }
+    if (!window || !windowExists(window)) {
+        return;
+    }
+    networkStatusCheckIntervalId = setInterval(() => {
+        const { hostname, protocol } = parse(configUrl);
+        if (!hostname || !protocol) {
+            return;
+        }
+        const podUrl = `${protocol}//${hostname}`;
+        fetch(podUrl, { method: 'GET' }).then((rsp) => {
+            if (rsp.status === 200 && windowHandler.isOnline) {
+                window.loadURL(podUrl);
+                if (networkStatusCheckIntervalId) {
+                    clearInterval(networkStatusCheckIntervalId);
+                    networkStatusCheckIntervalId = null;
+                }
+            } else {
+                logger.warn(`Symphony down! statusCode: ${rsp.status} is online: ${windowHandler.isOnline}`);
+            }
+        }).catch((error) => {
+            logger.error(`Network status check: No active network connection ${error}`);
+        });
+    }, networkStatusCheckInterval);
+};

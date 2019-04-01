@@ -1,6 +1,7 @@
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { apiCmds, apiName } from '../common/api-interface';
 
 import { i18n } from '../common/i18n-preload';
 import AppBridge from './app-bridge';
@@ -41,13 +42,21 @@ const createAPI = () => {
 createAPI();
 
 // When the window is completely loaded
-ipcRenderer.on('page-load', (_event, { locale, resources, origin }) => {
+ipcRenderer.on('page-load', (_event, { locale, resources, origin, enableCustomTitleBar }) => {
     // origin for postMessage targetOrigin communication
     if (origin) {
         appBridge.origin = origin;
     }
 
     i18n.setResource(locale, resources);
+
+    if (enableCustomTitleBar) {
+        // injects custom title bar
+        const element = React.createElement(WindowsTitleBar);
+        const div = document.createElement( 'div' );
+        document.body.appendChild(div);
+        ReactDOM.render(element, div);
+    }
 
     // injects snack bar
     const snackBar = React.createElement(SnackBar);
@@ -61,12 +70,8 @@ ipcRenderer.on('page-load', (_event, { locale, resources, origin }) => {
     if (footerSFE) {
         ReactDOM.render(downloadManager, footerSFE);
     }
-});
 
-// Creates a custom tile bar for Windows
-ipcRenderer.on('initiate-custom-title-bar', () => {
-    const element = React.createElement(WindowsTitleBar);
-    const div = document.createElement( 'div' );
-    document.body.appendChild(div);
-    ReactDOM.render(element, div);
+    ipcRenderer.send(apiName.symphonyApi, {
+        cmd: apiCmds.initMainWindow,
+    });
 });

@@ -26,7 +26,7 @@ describe('download manager', () => {
             fileName: 'test.png',
             savedPath: 'path://test',
             total: 1,
-            flashing: false,
+            flashing: true,
         };
 
         shallow(React.createElement(DownloadManager));
@@ -39,7 +39,7 @@ describe('download manager', () => {
                 fileName: 'test.png',
                 savedPath: 'path://test',
                 total: 1,
-                flashing: false,
+                flashing: true,
             }], showMainComponent: true,
         });
     });
@@ -56,7 +56,7 @@ describe('download manager', () => {
                         fileName: 'test.png',
                         savedPath: 'path://test',
                         total: 1,
-                        flashing: false,
+                        flashing: true,
                     }],
             });
         });

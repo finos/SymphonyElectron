@@ -9,7 +9,24 @@
                 padding: 5px;
                 border: 1px solid black;
             }
+
+            .yellow-dot {
+                height: 25px;
+                width: 25px;
+                background-color: yellow;
+                border-radius: 50%;
+                display: inline-block;
+            }
+
+            .green-dot {
+                height: 25px;
+                width: 25px;
+                background-color: green;
+                border-radius: 50%;
+                display: inline-block;
+            }
         </style>
+        <link rel="stylesheet" href="download-manager.css">
     </head>
     <body>
         <h1>Symphony Electron API Demo</h1>
@@ -55,6 +72,21 @@
             Crash Process:
         <p>
             <button id='crash'>Crash Renderer</button>
+        </p>
+        <br>
+        <hr>
+        <textarea id="text-val" rows="4">Writes some thing to the file</textarea>
+        <br/>
+        <input type="button" id="download-file1" value="Download"/>
+        <input type="button" id="download-file2" value="Download"/>
+        <div id="footer"></div>
+        <br>
+        <hr>
+        <p>
+            Activity Detection:
+        <p>
+            <button id='activity-detection'>Init activity</button>
+            <span id='activity-status' class="green-dot"></span>
         </p>
         <br>
         <hr>
@@ -140,6 +172,7 @@
                 notification: 'notification',
                 closeNotification: 'close-notification',
         };
+        let requestId = 0;
 
         var openConfigWin = document.getElementById('open-config-win');
 
@@ -243,46 +276,6 @@
             ssf.crashRendererProcess();
         });
 
-        var getSources = document.getElementById('get-sources');
-        getSources.addEventListener('click', function() {
-            ssf.getMediaSource({types: ['window', 'screen']}, function(error, source) {
-                if (error) throw error;
-                navigator.webkitGetUserMedia({
-                    audio: false,
-                    video: {
-                      mandatory: {
-                        chromeMediaSource: 'desktop',
-                        chromeMediaSourceId: source.id,
-                        minWidth: 1280,
-                        maxWidth: 1280,
-                        minHeight: 720,
-                        maxHeight: 720
-                      }
-                    }
-                }, stream => {
-                    handleStream(stream, source.display_id);
-                }, handleError);
-            });
-        });
-
-        function handleStream(stream, displayId) {
-            document.getElementById('video').srcObject = stream;
-            ssf.showScreenSharingIndicator({
-                stream,
-                displayId
-            }, function (event) {
-                console.log('screen-sharing-indicator callback', event);
-                if (event.type === 'stopRequested') {
-                    stream.getVideoTracks().forEach(t => t.stop());
-                    document.getElementById('video').srcObject = null;
-                }
-            });
-        }
-
-        function handleError (e) {
-          console.log(e)
-        }
-
         var getVersionInfo = document.getElementById('get-version');
         getVersionInfo.addEventListener('click', function() {
             ssf.getVersionInfo().then(function(verInfo) {
@@ -316,11 +309,165 @@
             document.location.reload();
         });
 
-        window.addEventListener('message', (event) => console.log(event.data));
+        /**
+         * Activity Detection
+         */
+
+        const activityDetection = document.getElementById('activity-detection');
+        const activityStatus = document.getElementById('activity-status');
+        activityDetection.addEventListener('click', () => {
+            if (window.ssf) {
+                window.ssf.registerActivityDetection(10000, activityDetection);
+            } else {
+                postMessage(apiCmds.registerActivityDetection, 5000);
+                startActivityInterval();
+            }
+        });
+
+        let activityTimer;
+        const startActivityInterval = () => {
+            return setInterval(() => {
+                activityStatus.classList.remove('green-dot');
+                activityStatus.classList.add('yellow-dot');
+            }, 10000);
+        };
+        const activityCallback = (data) => {
+            activityStatus.classList.remove('yellow-dot');
+            activityStatus.classList.add('green-dot');
+            console.log(data);
+            if (activityTimer) {
+                clearInterval(activityTimer);
+                activityTimer = null;
+            }
+            activityTimer = startActivityInterval();
+        };
+
+        /**
+         * Desktop capture
+         */
+        const getSources = document.getElementById('get-sources');
+        getSources.addEventListener('click', () => {
+            if (window.ssf) {
+                ssf.getMediaSource({types: ['window', 'screen']}, function(error, source) {
+                    if (error) throw error;
+                    navigator.webkitGetUserMedia({
+                        audio: false,
+                        video: {
+                            mandatory: {
+                                chromeMediaSource: 'desktop',
+                                chromeMediaSourceId: source.id,
+                                minWidth: 1280,
+                                maxWidth: 1280,
+                                minHeight: 720,
+                                maxHeight: 720
+                            }
+                        }
+                    }, stream => {
+                        handleStream(stream, source.display_id);
+                    }, handleError);
+                });
+            } else {
+                postMessage(apiCmds.getMediaSource, { types: ['window', 'screen'], requestId: ++requestId });
+            }
+        });
+
+        const handleStream = (stream, displayId) => {
+            document.getElementById('video').srcObject = stream;
+            if (window.ssf) {
+                ssf.showScreenSharingIndicator({
+                    stream,
+                    displayId
+                }, (event) => {
+                    console.log('screen-sharing-indicator callback', event);
+                    if (event.type === 'stopRequested') {
+                        stream.getVideoTracks().forEach(t => t.stop());
+                        document.getElementById('video').srcObject = null;
+                    }
+                });
+            } else {
+                postMessage(apiCmds.openScreenSharingIndicator, { streamId: stream.id, displayId, requestId: ++requestId });
+            }
+        };
+
+        const handleError = (e) => {
+            console.error(e);
+        };
+
+        /**
+         * Core post message api handler
+         */
+
+        window.addEventListener('message', (event) => {
+            const { data, method } = event.data;
+            switch (method) {
+                case 'activity-callback':
+                    activityCallback(data);
+                    break;
+                case 'media-source-callback':
+
+                    if (data.error) {
+                        if (data.error.message === 'User Cancelled') {
+                            console.error('user canceled');
+                        } else {
+                            throw new Error(data.error);
+                        }
+                        return;
+                    }
+
+                    const constraints = {
+                        mandatory: {
+                            chromeMediaSource: 'desktop',
+                            maxWidth: screen.width > 1920 ? 1920 : screen.width,
+                            maxHeight: screen.height > 1080 ? 1080 : screen.height,
+                            chromeMediaSourceId: data.source.id
+                        },
+                        optional: []
+                    };
+                    navigator.mediaDevices.getUserMedia({ video: constraints }).then((stream) => {
+                        handleStream(stream, data.source.display_id);
+                    });
+                    break;
+                case 'screen-sharing-indicator-callback':
+                    if (!data || typeof data.type !== 'string' || !requestId) {
+                        console.error(`screen-sharing-indicator-callback invalid args ${data}`);
+                    } else {
+                        console.log(`screen sharing will be stopped`);
+                    }
+                    break;
+                default:
+                    console.log(event.data);
+            }
+        });
 
         const postMessage = (method, data) => {
             window.postMessage({ method, data }, '*');
-        }
+        };
+
+        const download = (filename, text) => {
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+            element.setAttribute('download', filename);
+
+            element.style.display = 'none';
+            document.body.appendChild(element);
+
+            element.click();
+
+            document.body.removeChild(element);
+        };
+
+        // Start file download.
+        document.getElementById("download-file1").addEventListener("click", () => {
+            const filename = "hello.txt";
+            const text = document.getElementById("text-val").value;
+            download(filename, text);
+        }, false);
+
+        document.getElementById("download-file2").addEventListener("click", () => {
+            const filename = "bye.txt";
+            const text = document.getElementById("text-val").value;
+            download(filename, text);
+        }, false);
 
     </script>
 </html>

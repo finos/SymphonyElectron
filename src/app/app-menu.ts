@@ -8,6 +8,7 @@ import { config, IConfig } from './config-handler';
 import { exportCrashDumps, exportLogs } from './reports-handler';
 import { updateAlwaysOnTop } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
+import { windowExists } from './window-utils';
 
 export const menuSections = {
     about: 'about',
@@ -321,15 +322,17 @@ export class AppMenu {
                         accelerator: isMac ? 'Alt+Command+I' : 'Ctrl+Shift+I',
                         click(_item, focusedWindow) {
                             const devToolsEnabled = config.getGlobalConfigFields([ 'devToolsEnabled' ]);
-                            if (focusedWindow && devToolsEnabled) {
-                                focusedWindow.webContents.toggleDevTools();
-                            } else {
-                                dialog.showMessageBox(focusedWindow, {
-                                    type: 'warning',
-                                    buttons: [ 'Ok' ],
-                                    title: i18n.t('Dev Tools disabled')(),
-                                    message: i18n.t('Dev Tools has been disabled. Please contact your system administrator')(),
-                                });
+                            if (focusedWindow && windowExists(focusedWindow)) {
+                                if (devToolsEnabled) {
+                                    focusedWindow.webContents.toggleDevTools();
+                                } else {
+                                    dialog.showMessageBox(focusedWindow, {
+                                        type: 'warning',
+                                        buttons: [ 'Ok' ],
+                                        title: i18n.t('Dev Tools disabled')(),
+                                        message: i18n.t('Dev Tools has been disabled. Please contact your system administrator')(),
+                                    });
+                                }
                             }
                         },
                     },{
