@@ -349,11 +349,11 @@ const readAndInsertCSS = async (window, paths): Promise<void> => {
  * Inserts all the required css on to the specified windows
  *
  * @param mainWindow {BrowserWindow}
- * @param isCustomTitleBarAndWindowOS {boolean} - whether custom title bar enabled
+ * @param isCustomTitleBar {boolean} - whether custom title bar enabled
  */
-export const injectStyles = async (mainWindow: BrowserWindow, isCustomTitleBarAndWindowOS: boolean): Promise<void> => {
+export const injectStyles = async (mainWindow: BrowserWindow, isCustomTitleBar: boolean): Promise<void> => {
     const paths: string[] = [];
-    if (isCustomTitleBarAndWindowOS) {
+    if (isCustomTitleBar) {
         let titleBarStylesPath;
         const stylesFileName = path.join('config', 'titleBarStyles.css');
         if (isDevEnv) {

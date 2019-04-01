@@ -181,7 +181,7 @@ export class WindowHandler {
     private readonly config: IConfig;
     // Window reference
     private readonly windows: object;
-    private readonly isCustomTitleBarAndWindowOS: boolean;
+    private readonly isCustomTitleBar: boolean;
 
     private loadFailError: string | undefined;
     private mainWindow: ICustomBrowserWindow | null = null;
@@ -202,7 +202,7 @@ export class WindowHandler {
         this.windowOpts = { ...this.getMainWindowOpts(), ...opts };
         this.isAutoReload = false;
         this.isOnline = true;
-        this.isCustomTitleBarAndWindowOS = isWindowsOS && this.config.isCustomTitleBar;
+        this.isCustomTitleBar = isWindowsOS && this.config.isCustomTitleBar;
 
         this.appMenu = null;
 
@@ -246,14 +246,14 @@ export class WindowHandler {
 
             // Injects custom title bar css into the webContents
             // only for Window and if it is enabled
-            await injectStyles(this.mainWindow, this.isCustomTitleBarAndWindowOS);
+            await injectStyles(this.mainWindow, this.isCustomTitleBar);
 
             this.mainWindow.webContents.send('page-load', {
                 isWindowsOS,
                 locale: i18n.getLocale(),
                 resources: i18n.loadedResources,
                 origin: this.globalConfig.url,
-                enableCustomTitleBar: this.isCustomTitleBarAndWindowOS,
+                enableCustomTitleBar: this.isCustomTitleBar,
             });
             this.appMenu = new AppMenu();
         });
@@ -736,7 +736,7 @@ export class WindowHandler {
     private getMainWindowOpts(): ICustomBrowserWindowConstructorOpts {
         return {
             alwaysOnTop: false,
-            frame: !this.isCustomTitleBarAndWindowOS,
+            frame: !this.isCustomTitleBar,
             minHeight: 300,
             minWidth: 300,
             show: false,
