@@ -1,0 +1,31 @@
+@import "theme";
+
+body {
+  font-family: @font-family;
+  text-align: center;
+}
+
+h4 {
+  background: lightgrey;
+  padding: 10px;
+}
+
+.content {
+  text-align: center;
+}
+
+table {
+  font-family: @font-family;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid @text-color-primary-dark;
+  text-align: center;
+  padding: 8px;
+}
+
+tr:nth-child(odd) {
+  background-color: @text-color-secondary;
+}
