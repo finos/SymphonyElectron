@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
 
@@ -80,15 +81,23 @@ export default class DownloadManager extends React.Component<{}, IManagerState> 
         if (!item) {
             return;
         }
-        const { _id, total, fileName }: IDownloadManager = item;
-
+        const { _id, total, fileName, flashing }: IDownloadManager = item;
+        setTimeout(() => {
+            const { items } = this.state;
+            const index = items.findIndex((i) => i._id === _id);
+            if (index !== -1) {
+                items[index].flashing = false;
+                this.setState({
+                    items,
+                });
+            }
+        }, 4000);
         const fileDisplayName = this.getFileDisplayName(fileName);
-        // TODO: fix flashing issue
         return (
             <li key={_id} id={_id} className='download-element'>
                 <div className='download-item' id='dl-item' onClick={this.eventHandlers.onOpenFile(_id)}>
                     <div className='file'>
-                        <div id='download-progress' className='download-complete flash'>
+                        <div id='download-progress' className={classNames('download-complete', { flash: flashing })}>
                             <span className='tempo-icon tempo-icon--download download-complete-color'/>
                         </div>
                     </div>
@@ -123,7 +132,7 @@ export default class DownloadManager extends React.Component<{}, IManagerState> 
      */
     private injectItem(args: IDownloadManager): void {
         const { items } = this.state;
-        const allItems = [ ...items, ...[args] ];
+        const allItems = [ ...items, ...[ { ...args, ...{ flashing: true } } ] ];
         this.setState({ items: allItems, showMainComponent: true });
     }
 

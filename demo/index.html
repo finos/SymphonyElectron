@@ -26,6 +26,7 @@
                 display: inline-block;
             }
         </style>
+        <link rel="stylesheet" href="download-manager.css">
     </head>
     <body>
         <h1>Symphony Electron API Demo</h1>
@@ -74,6 +75,12 @@
         </p>
         <br>
         <hr>
+        <textarea id="text-val" rows="4">Writes some thing to the file</textarea>
+        <br/>
+        <input type="button" id="download-file1" value="Download"/>
+        <input type="button" id="download-file2" value="Download"/>
+        <div id="footer"></div>
+        <br>
         <hr>
         <p>
             Activity Detection:
@@ -434,7 +441,33 @@
 
         const postMessage = (method, data) => {
             window.postMessage({ method, data }, '*');
-        }
+        };
+
+        const download = (filename, text) => {
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+            element.setAttribute('download', filename);
+
+            element.style.display = 'none';
+            document.body.appendChild(element);
+
+            element.click();
+
+            document.body.removeChild(element);
+        };
+
+        // Start file download.
+        document.getElementById("download-file1").addEventListener("click", () => {
+            const filename = "hello.txt";
+            const text = document.getElementById("text-val").value;
+            download(filename, text);
+        }, false);
+
+        document.getElementById("download-file2").addEventListener("click", () => {
+            const filename = "bye.txt";
+            const text = document.getElementById("text-val").value;
+            download(filename, text);
+        }, false);
 
     </script>
 </html>
