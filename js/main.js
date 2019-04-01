@@ -27,6 +27,16 @@ const { handleCacheFailureCheckOnStartup, handleCacheFailureCheckOnExit} = requi
 const { isMac, isDevEnv } = require('./utils/misc.js');
 const getCmdLineArg = require('./utils/getCmdLineArg.js');
 
+// Allows a developer to set custom user data path from command line when
+// launching the app. Mostly used for running automation tests with
+// multiple instances
+let customDataArg = getCmdLineArg(process.argv, '--userDataPath=', false);
+let customDataFolder = customDataArg && customDataArg.substring(customDataArg.indexOf('=') + 1);
+
+if (customDataArg && customDataFolder) {
+    app.setPath('userData', customDataFolder);
+}
+
 //setting the env path child_process issue https://github.com/electron/electron/issues/7688
 shellPath()
     .then((path) => {
@@ -294,16 +304,6 @@ function setupThenOpenMainWindow() {
 
     isAppAlreadyOpen = true;
     getUrlAndCreateMainWindow();
-
-    // Allows a developer to set custom user data path from command line when
-    // launching the app. Mostly used for running automation tests with
-    // multiple instances
-    let customDataArg = getCmdLineArg(process.argv, '--userDataPath=', false);
-    let customDataFolder = customDataArg && customDataArg.substring(customDataArg.indexOf('=') + 1);
-
-    if (customDataArg && customDataFolder) {
-        app.setPath('userData', customDataFolder);
-    }
 
     // Event that fixes the remote desktop issue in Windows
     // by repositioning the browser window
