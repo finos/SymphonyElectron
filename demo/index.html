@@ -111,7 +111,8 @@
         <p>Window activate:</p>
         <button id='open-win'>open window</button>
 
-        <button id='bring-to-front'>bring open window to front</button>
+        <button id='bring-to-front'>bring window to front</button>
+        <button id='bring-to-front-without-focus'>bring to front without focus</button>
 
         <hr>
         <p>Get Media Sources:</p>
@@ -251,16 +252,29 @@
             }
         });
 
-        var win;
+        let win;
 
-        var openWinButton = document.getElementById('open-win');
-        openWinButton.addEventListener('click', function() {
+        const openWinButton = document.getElementById('open-win');
+        openWinButton.addEventListener('click', () => {
             win = window.open('win.html?x=100&y=100', 'test-window', 'height=800,width=400');
         });
 
-        var front = document.getElementById('bring-to-front');
-        front.addEventListener('click', function() {
-            window.ssf.activate(win.name);
+        const front = document.getElementById('bring-to-front');
+        front.addEventListener('click', () => {
+            if (window.ssf) {
+                window.ssf.activate(win.name);
+            } else {
+                postMessage(apiCmds.activate, win.name);
+            }
+        });
+
+        const frontWithoutFocus = document.getElementById('bring-to-front-without-focus');
+        frontWithoutFocus.addEventListener('click', () => {
+            if (window.ssf) {
+                window.ssf.bringToFront(win.name, 'notification');
+            } else {
+                postMessage(apiCmds.bringToFront, { windowName: win.name, reason: 'notification' });
+            }
         });
 
         // register callback to be notified when size/position changes for win.

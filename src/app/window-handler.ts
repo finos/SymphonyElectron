@@ -484,7 +484,15 @@ export class WindowHandler {
      * Creates a more info window
      */
     public createMoreInfoWindow(): void {
-        this.moreInfoWindow = createComponentWindow('more-info');
+        if (this.moreInfoWindow && windowExists(this.moreInfoWindow)) {
+            if (this.moreInfoWindow.isMinimized()) {
+                this.moreInfoWindow.restore();
+            }
+            this.moreInfoWindow.focus();
+            return;
+        }
+
+        this.moreInfoWindow = createComponentWindow('more-info', { width: 550, height: 500 });
         this.moreInfoWindow.webContents.once('did-finish-load', () => {
             if (!this.moreInfoWindow || !windowExists(this.moreInfoWindow)) {
                 return;

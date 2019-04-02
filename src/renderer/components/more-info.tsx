@@ -3,11 +3,8 @@ import * as React from 'react';
 /**
  * Window that display app version and copyright info
  */
-export default class MoreInfo extends React.Component<{}, {}> {
+export default class MoreInfo extends React.PureComponent {
 
-    constructor(props) {
-        super(props);
-    }
     /**
      * main render function
      */
@@ -15,15 +12,48 @@ export default class MoreInfo extends React.Component<{}, {}> {
         return (
             <div className='MoreInfo'>
                 <span><b>Version Information</b></span>
-                <span className='MoreInfo-electron'>{process.versions.electron}</span>
-                <span className='MoreInfo-chrome'>{process.versions.chrome}</span>
-                <span className='MoreInfo-v8'>{process.versions.v8}</span>
-                <span className='MoreInfo-node'>{process.versions.node}</span>
-                <span className='MoreInfo-openssl'>{process.versions.openssl}</span>
-                <span className='MoreInfo-zlib'>{process.versions.zlib}</span>
-                <span className='MoreInfo-uv'>{process.versions.uv}</span>
-                <span className='MoreInfo-ares'>{process.versions.ares}</span>
-                <span className='MoreInfo-http_parser'>{process.versions.http_parser}</span>
+                <div className='content'>
+                    <h4>Electron</h4>
+                    <span className='MoreInfo-electron'>{process.versions.electron || 'N/A'}</span>
+                </div>
+                <div className='content'>
+                    <h4>v8 related</h4>
+                    <table>
+                        <tbody>
+                        <tr>
+                            <th>Chrome</th>
+                            <th>v8</th>
+                            <th>Node</th>
+                        </tr>
+                        <tr>
+                            <td>{process.versions.chrome || 'N/A'}</td>
+                            <td>{process.versions.v8 || 'N/A'}</td>
+                            <td>{process.versions.node || 'N/A'}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div className='content'>
+                    <h4>Others</h4>
+                    <table>
+                        <tbody>
+                        <tr>
+                            <th>openssl</th>
+                            <th>zlib</th>
+                            <th>uv</th>
+                            <th>ares</th>
+                            <th>http_parser</th>
+                        </tr>
+                        <tr>
+                            <td>{process.versions.openssl || 'N/A'}</td>
+                            <td>{process.versions.zlib || 'N/A'}</td>
+                            <td>{process.versions.uv || 'N/A'}</td>
+                            <td>{process.versions.ares || 'N/A'}</td>
+                            <td>{process.versions.http_parser || 'N/A'}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         );
     }

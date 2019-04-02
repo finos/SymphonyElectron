@@ -39,13 +39,11 @@ let {
     launchOnStartup,
     alwaysOnTop: isAlwaysOnTop,
     bringToFront,
-    memoryRefresh,
 } = config.getConfigFields([
     'minimizeOnClose',
     'launchOnStartup',
     'alwaysOnTop',
     'bringToFront',
-    'memoryRefresh',
 ]) as IConfig;
 
 const menuItemsArray = Object.keys(menuSections)
@@ -254,15 +252,6 @@ export class AppMenu {
                 type: 'checkbox',
             },
             this.buildSeparator(),
-            {
-                checked: memoryRefresh,
-                click: async (item) => {
-                    memoryRefresh = item.checked;
-                    await config.updateUserConfig({ memoryRefresh });
-                },
-                label: i18n.t('Refresh app when idle')(),
-                type: 'checkbox',
-            },
             {
                 click: (_item, focusedWindow) => {
                     if (focusedWindow && !focusedWindow.isDestroyed()) {

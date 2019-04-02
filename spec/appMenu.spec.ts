@@ -47,7 +47,6 @@ jest.mock('../src/app/config-handler', () => {
                     alwaysOnTop: true,
                     isAlwaysOnTop: true,
                     bringToFront: true,
-                    memoryRefresh: true,
                 };
             }),
             getGlobalConfigFields: jest.fn(() => {
@@ -254,14 +253,6 @@ describe('app menu', () => {
                         const menuItem = findMenuItemBuildWindowMenu('Flash Notification in Taskbar');
                         expect(menuItem.label).toEqual(expectedValue);
                     });
-                });
-
-                it('should update `memoryRefresh` value when click is triggered', async () => {
-                    const spyConfig = jest.spyOn(config, updateUserFnLabel);
-                    const expectedValue = { memoryRefresh: true };
-                    const menuItem = findMenuItemBuildWindowMenu('Refresh app when idle');
-                    await menuItem.click(item);
-                    expect(spyConfig).lastCalledWith(expectedValue);
                 });
 
                 it('should call clear cache and reload correctly', () => {
