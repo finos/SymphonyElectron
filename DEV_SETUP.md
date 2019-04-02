@@ -80,11 +80,9 @@
 ## Tests and Code Coverage
 - [Jest framework](http://facebook.github.io/jest/) is used to run tests
 - Use `npm test` to run unit tests
-- Use `npm run spectron-test` to run UI tests
 - Code coverage reports are placed in [coverage](./out/coverage) directory
 - To check the test run report, see the [dist](./out) directory
 - See the [tests](./tests) directory to find all the unit tests
-- See the [spectron](./tests/spectron) directory to find all the unit tests
 
 ## Logging
 - Local logging is enabled for dev environments using the module [electron-log](https://www.npmjs.com/package/electron-log)

@@ -14,7 +14,6 @@
     "rebuild": "electron-rebuild -f",
     "dev": "npm run prebuild && cross-env ELECTRON_DEV=true electron .",
     "test": "npm run lint && npm rebuild --build-from-source && cross-env ELECTRON_QA=true jest --config jest.unit.config.json --runInBand && npm run rebuild",
-    "spectron-test": "npm run lint && npm rebuild --build-from-source robotjs && cross-env ELECTRON_QA=true jest --config jest.spectron.config.json --runInBand --detectOpenHandles",
     "demo-win": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file:///demo/index.html",
     "demo-mac": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/demo/index.html",
     "unpacked-mac": "npm run prebuild && npm run test && build --mac --dir",
@@ -104,7 +103,6 @@
     "ncp": "2.0.0",
     "robotjs": "0.5.1",
     "selenium-webdriver": "3.6.0",
-    "spectron": "5.0.0",
     "wdio-selenium-standalone-service": "0.0.12"
   },
   "dependencies": {
