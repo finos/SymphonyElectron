@@ -69,7 +69,11 @@ jest.mock('../src/common/logger', () => {
 jest.mock('../src/app/config-handler', () => {
     return {
         config: {
-            getConfigFields: jest.fn(() => true),
+            getConfigFields: jest.fn(() => {
+                return {
+                    bringToFront: true,
+                };
+            }),
         },
     };
 });

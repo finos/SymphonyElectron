@@ -27,7 +27,7 @@ describe('protocol handler', () => {
     });
 
     it('protocol uri should be null by default', () => {
-        expect(protocolHandlerInstance.protocolUri).toBeNull();
+        expect(protocolHandlerInstance.protocolUri).toBe('symphony://?userId=22222');
     });
 
     it('protocol action should be called when uri is correct', () => {
