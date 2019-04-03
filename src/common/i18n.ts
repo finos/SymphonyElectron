@@ -7,7 +7,7 @@ const localeCodeRegex = /^([a-z]{2})-([A-Z]{2})$/;
 
 export type LocaleType = 'en-US' | 'ja-JP';
 
-type formatterFunction = (args: object) => string;
+type formatterFunction = (args?: object) => string;
 
 class Translation {
     /**
@@ -54,7 +54,7 @@ class Translation {
      * @returns translate and formats string
      */
     public t(value: string, namespace?: string): formatterFunction {
-        return (args: object): string => {
+        return (args?: object): string => {
             if (this.loadedResources && this.loadedResources[this.locale]) {
                 return formatString(Translation.translate(value, this.loadedResources[this.locale], namespace), args);
             }
