@@ -32,7 +32,6 @@ export class SpellChecker {
         const contextMenuListener = (_event, info) => {
             if (this.locale !== i18n.getLocale()) {
                 contextMenuBuilder.setAlternateStringFormatter(this.getStringTable());
-                this.spellCheckHandler.updateContextMenuLocale(i18n.t('ContextMenu')());
                 this.locale = i18n.getLocale();
             }
             contextMenuBuilder.showPopupMenu(info);
@@ -42,6 +41,17 @@ export class SpellChecker {
         webContents.once('destroyed', () => {
             webContents.removeListener('context-menu', contextMenuListener);
         });
+    }
+
+    /**
+     * Predicts if the given text is misspelled
+     * @param text
+     */
+    public isMisspelled(text: string): boolean {
+        if (!this.spellCheckHandler) {
+            return false;
+        }
+        return this.spellCheckHandler.isMisspelled(text);
     }
 
     /**

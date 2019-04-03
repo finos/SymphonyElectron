@@ -14,6 +14,7 @@ import { notification } from '../renderer/notification';
 import { AppMenu } from './app-menu';
 import { handleChildWindow } from './child-window-handler';
 import { config, IConfig } from './config-handler';
+import { SpellChecker } from './spell-check-handler';
 import { monitorWindowActions } from './window-actions';
 import {
     createComponentWindow,
@@ -175,6 +176,7 @@ export class WindowHandler {
     public isOnline: boolean;
     public url: string | undefined;
     public willQuitApp: boolean = false;
+    public spellchecker: SpellChecker | undefined;
 
     private readonly windowOpts: ICustomBrowserWindowConstructorOpts;
     private readonly globalConfig: IConfig;
@@ -218,6 +220,10 @@ export class WindowHandler {
      * Starting point of the app
      */
     public createApplication() {
+
+        this.spellchecker = new SpellChecker();
+        logger.info(`initialized spellchecker module with locale ${this.spellchecker.locale}`);
+
         // set window opts with additional config
         this.mainWindow = new BrowserWindow({
             ...this.windowOpts, ...getBounds(this.config.mainWinPos, DEFAULT_WIDTH, DEFAULT_HEIGHT),

@@ -1,4 +1,4 @@
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, webFrame } from 'electron';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { apiCmds, apiName } from '../common/api-interface';
@@ -57,6 +57,18 @@ ipcRenderer.on('page-load', (_event, { locale, resources, origin, enableCustomTi
         document.body.appendChild(div);
         ReactDOM.render(element, div);
     }
+
+    webFrame.setSpellCheckProvider('en-US', {
+        spellCheck(words, callback) {
+            const misspelled = words.filter((word) => {
+                return ipcRenderer.sendSync(apiName.symphonyApi, {
+                    cmd: apiCmds.isMisspelled,
+                    word,
+                });
+            });
+            callback(misspelled);
+        },
+    });
 
     // injects snack bar
     const snackBar = React.createElement(SnackBar);

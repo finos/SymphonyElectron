@@ -27,6 +27,7 @@ export enum apiCmds {
     notification = 'notification',
     closeNotification = 'close-notification',
     initMainWindow = 'init-main-window',
+    isMisspelled = 'is-misspelled',
 }
 
 export enum apiName {
@@ -35,6 +36,7 @@ export enum apiName {
 }
 
 export interface IApiArgs {
+    word: string;
     cmd: apiCmds;
     isOnline: boolean;
     count: number;

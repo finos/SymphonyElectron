@@ -91,10 +91,13 @@
         <br>
         <hr>
         <p>Change language:<p>
-            <button id='set-locale-en-US'>Change language to English - US</button>
-            <button id='set-locale-ja-JP'>Change language to Japanese</button>
-            <button id='set-locale-fr-FR'>Change language to French</button>
-            <br>
+        <select id="locale-select" name="locale">
+            <option value="en-US">en-US</option>
+            <option value="ja-JP">ja-JP</option>
+            <option value="fr-FR">fr-FR</option>
+        </select>
+            <button id="changeLocale">Submit</button>
+        <br>
         <hr>
         <p>Badge Count:<p>
         <button id='inc-badge'>increment badge count</button>
@@ -307,26 +310,66 @@
             });
         });
 
-        var setLocaleToEn = document.getElementById('set-locale-en-US');
-        setLocaleToEn.addEventListener('click', function () {
-            ssf.setLocale('en-US');
-            document.location.reload();
+        /**
+         * Core post message api handler
+         */
+
+        const postMessage = (method, data) => {
+            window.postMessage({ method, data }, '*');
+        };
+
+        window.addEventListener('message', (event) => {
+            const { data, method } = event.data;
+            switch (method) {
+                case 'activity-callback':
+                    activityCallback(data);
+                    break;
+                case 'media-source-callback':
+                    if (data.error) {
+                        if (data.error.message === 'User Cancelled') {
+                            console.error('user canceled');
+                        } else {
+                            throw new Error(data.error);
+                        }
+                        return;
+                    }
+                    const constraints = {
+                        mandatory: {
+                            chromeMediaSource: 'desktop',
+                            maxWidth: screen.width > 1920 ? 1920 : screen.width,
+                            maxHeight: screen.height > 1080 ? 1080 : screen.height,
+                            chromeMediaSourceId: data.source.id
+                        },
+                        optional: []
+                    };
+                    navigator.mediaDevices.getUserMedia({ video: constraints }).then((stream) => {
+                        handleStream(stream, data.source.display_id);
+                    });
+                    break;
+                case 'screen-sharing-indicator-callback':
+                    if (!data || typeof data.type !== 'string' || !requestId) {
+                        console.error(`screen-sharing-indicator-callback invalid args ${data}`);
+                    } else {
+                        console.log(`screen sharing will be stopped`);
+                    }
+                    break;
+                default:
+                    console.log(event.data);
+            }
         });
-        var setLocaleToJa = document.getElementById('set-locale-ja-JP');
-        setLocaleToJa.addEventListener('click', function () {
-            ssf.setLocale('ja-JP');
-            document.location.reload();
-        });
-        var setLocaleToFr = document.getElementById('set-locale-fr-FR');
-        setLocaleToFr.addEventListener('click', function () {
-            ssf.setLocale('fr-FR');
-            document.location.reload();
-        });
+
+        /**
+         * Protocol handler
+         */
+        if (window.ssf) {
+            window.ssf.registerProtocolHandler();
+        } else {
+            postMessage(apiCmds.registerProtocolHandler);
+        }
 
         /**
          * Activity Detection
          */
-
         const activityDetection = document.getElementById('activity-detection');
         const activityStatus = document.getElementById('activity-status');
         activityDetection.addEventListener('click', () => {
@@ -408,55 +451,20 @@
         };
 
         /**
-         * Core post message api handler
+         * Locale api handler
          */
-
-        window.addEventListener('message', (event) => {
-            const { data, method } = event.data;
-            switch (method) {
-                case 'activity-callback':
-                    activityCallback(data);
-                    break;
-                case 'media-source-callback':
-
-                    if (data.error) {
-                        if (data.error.message === 'User Cancelled') {
-                            console.error('user canceled');
-                        } else {
-                            throw new Error(data.error);
-                        }
-                        return;
-                    }
-
-                    const constraints = {
-                        mandatory: {
-                            chromeMediaSource: 'desktop',
-                            maxWidth: screen.width > 1920 ? 1920 : screen.width,
-                            maxHeight: screen.height > 1080 ? 1080 : screen.height,
-                            chromeMediaSourceId: data.source.id
-                        },
-                        optional: []
-                    };
-                    navigator.mediaDevices.getUserMedia({ video: constraints }).then((stream) => {
-                        handleStream(stream, data.source.display_id);
-                    });
-                    break;
-                case 'screen-sharing-indicator-callback':
-                    if (!data || typeof data.type !== 'string' || !requestId) {
-                        console.error(`screen-sharing-indicator-callback invalid args ${data}`);
-                    } else {
-                        console.log(`screen sharing will be stopped`);
-                    }
-                    break;
-                default:
-                    console.log(event.data);
+        document.getElementById('changeLocale').addEventListener('click', () => {
+            const locale = document.getElementById('locale-select').value;
+            if (window.ssf) {
+                window.ssf.setLocale(locale);
+            } else {
+                postMessage(apiCmds.setLocale, locale);
             }
         });
 
-        const postMessage = (method, data) => {
-            window.postMessage({ method, data }, '*');
-        };
-
+        /**
+         * Download Manager api handler
+         */
         const download = (filename, text) => {
             const element = document.createElement('a');
             element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
@@ -471,13 +479,13 @@
         };
 
         // Start file download.
-        document.getElementById("download-file1").addEventListener("click", () => {
+        document.getElementById('download-file1').addEventListener('click', () => {
             const filename = "hello.txt";
             const text = document.getElementById("text-val").value;
             download(filename, text);
         }, false);
 
-        document.getElementById("download-file2").addEventListener("click", () => {
+        document.getElementById('download-file2').addEventListener('click', () => {
             const filename = "bye.txt";
             const text = document.getElementById("text-val").value;
             download(filename, text);

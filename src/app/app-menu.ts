@@ -154,15 +154,15 @@ export class AppMenu {
             label: i18n.t('Edit')(),
             submenu:
                 [
-                    this.assignRoleOrLabel('undo', i18n.t('Undo')()),
-                    this.assignRoleOrLabel('redo', i18n.t('Redo')()),
+                    this.assignRoleOrLabel({ role: 'undo', label: i18n.t('Undo')() }),
+                    this.assignRoleOrLabel({ role: 'redo', label: i18n.t('Redo')() }),
                     this.buildSeparator(),
-                    this.assignRoleOrLabel('cut', i18n.t('Cut')()),
-                    this.assignRoleOrLabel('copy', i18n.t('Copy')()),
-                    this.assignRoleOrLabel('paste', i18n.t('Paste')()),
-                    this.assignRoleOrLabel('pasteandmatchstyle', i18n.t('Paste and Match Style')()),
-                    this.assignRoleOrLabel('delete', i18n.t('Delete')()),
-                    this.assignRoleOrLabel('selectall', i18n.t('Select All')()),
+                    this.assignRoleOrLabel({ role: 'cut', label: i18n.t('Cut')() }),
+                    this.assignRoleOrLabel({ role: 'copy', label: i18n.t('Copy')() }),
+                    this.assignRoleOrLabel({ role: 'paste', label: i18n.t('Paste')() }),
+                    this.assignRoleOrLabel({ role: 'pasteandmatchstyle', label: i18n.t('Paste and Match Style')() }),
+                    this.assignRoleOrLabel({ role: 'delete', label: i18n.t('Delete')() }),
+                    this.assignRoleOrLabel({ role: 'selectall', label: i18n.t('Select All')() }),
                 ],
         };
 
@@ -190,11 +190,11 @@ export class AppMenu {
                 label: i18n.t('Reload')(),
             },
                 this.buildSeparator(),
-                this.assignRoleOrLabel('resetzoom', i18n.t('Actual Size')()),
-                this.assignRoleOrLabel('zoomin', i18n.t('Zoom In')()),
-                this.assignRoleOrLabel('zoomout', i18n.t('Zoom Out')()),
+                this.assignRoleOrLabel({ role: 'resetzoom', label: i18n.t('Actual Size')() }),
+                this.assignRoleOrLabel({ role: 'zoomin', label: i18n.t('Zoom In')() }),
+                this.assignRoleOrLabel({ role: 'zoomout', label: i18n.t('Zoom Out')() }),
                 this.buildSeparator(),
-                this.assignRoleOrLabel('togglefullscreen', i18n.t('Toggle Full Screen')()),
+                this.assignRoleOrLabel({ role: 'togglefullscreen', label: i18n.t('Toggle Full Screen')() }),
             ],
         };
     }
@@ -204,8 +204,8 @@ export class AppMenu {
      */
     private buildWindowMenu(): Electron.MenuItemConstructorOptions {
         const submenu: MenuItemConstructorOptions[] = [
-            this.assignRoleOrLabel('minimize', i18n.t('Minimize')()),
-            this.assignRoleOrLabel('close', i18n.t('Close')()),
+            this.assignRoleOrLabel({ role: 'minimize', label: i18n.t('Minimize')() }),
+            this.assignRoleOrLabel({ role: 'close', label: i18n.t('Close')() }),
             this.buildSeparator(),
             {
                 checked: launchOnStartup,
@@ -348,14 +348,14 @@ export class AppMenu {
      * @return {Object}.role The action of the menu item
      * @return {Object}.accelerator keyboard shortcuts and modifiers
      */
-    private assignRoleOrLabel(role: string, label: string) {
+    private assignRoleOrLabel({ role, label }: MenuItemConstructorOptions): MenuItemConstructorOptions {
         if (isMac) {
             return label ? { role, label } : { role };
         }
 
         if (isWindowsOS) {
-            return label ? { role, label, accelerator: windowsAccelerator[ role ] || '' }
-                : { role, accelerator: windowsAccelerator[ role ] || '' };
+            return label ? { role, label, accelerator: role ? windowsAccelerator[ role ] : '' }
+                : { role, accelerator: role ? windowsAccelerator[ role ] : '' };
         }
 
         return label ? { role, label } : { role };

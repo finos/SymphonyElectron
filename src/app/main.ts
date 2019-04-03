@@ -11,7 +11,6 @@ import { config } from './config-handler';
 import './dialog-handler';
 import './main-api-handler';
 import { protocolHandler } from './protocol-handler';
-import { SpellChecker } from './spell-check-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
 const allowMultiInstance: string | boolean = getCommandLineArgs(process.argv, '--multiInstance', true) || isDevEnv;
@@ -29,8 +28,6 @@ if (isMac) {
  */
 const startApplication = async () => {
     await app.whenReady();
-    const spellchecker = new SpellChecker();
-    logger.info(`initialized spellchecker module with locale ${spellchecker.locale}`);
     createAppCacheFile();
     windowHandler.showLoadingScreen();
     windowHandler.createApplication();
