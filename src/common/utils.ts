@@ -199,10 +199,7 @@ export const formatString = (str: string, data?: object): string => {
         if (Object.prototype.hasOwnProperty.call(data, key)) {
             return str.replace(/({([^}]+)})/g,  (i) => {
                 const replacedKey = i.replace(/{/, '').replace(/}/, '');
-                if (!data[key] || !data[key][replacedKey]) {
-                    return i;
-                }
-                return data[key][replacedKey];
+                return data[replacedKey] ? data[replacedKey] : replacedKey;
             });
         }
     }
