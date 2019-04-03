@@ -1,5 +1,5 @@
 import { apiName } from '../common/api-interface';
-import { isMac, isWindowsOS } from '../common/env';
+import { isMac } from '../common/env';
 import { getCommandLineArgs } from '../common/utils';
 import { activate } from './window-actions';
 
@@ -61,7 +61,7 @@ class ProtocolHandler {
      */
     public processArgv(argv?: string[]): void {
         const protocolUriFromArgv = getCommandLineArgs(argv || process.argv, protocol.SymphonyProtocol, false);
-        if (isWindowsOS && protocolUriFromArgv) {
+        if (protocolUriFromArgv) {
             this.sendProtocol(protocolUriFromArgv, false);
         }
     }

@@ -127,6 +127,11 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
                 downloadManagerAction(arg.type, arg.path);
             }
             break;
+        case apiCmds.isMisspelled:
+            if (typeof arg.word === 'string') {
+                event.returnValue = windowHandler.spellchecker ? windowHandler.spellchecker.isMisspelled(arg.word) : false;
+            }
+            break;
         default:
     }
 
