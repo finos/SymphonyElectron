@@ -110,8 +110,11 @@ function initializeLocalLogger() {
     let customLogPathArg = getCmdLineArg(process.argv, '--logPath=', false);
     let customLogsFolder = customLogPathArg && customLogPathArg.substring(customLogPathArg.indexOf('=') + 1);
 
-    if (customLogsFolder && fs.existsSync(customLogsFolder)) {
-        app.setPath('logs', customLogsFolder);
+    if (customLogsFolder) {
+        if (!fs.existsSync(customLogsFolder)) {
+            fs.mkdirSync(customLogsFolder);
+            app.setPath('logs', customLogsFolder);
+        }
     }
     // eslint-disable-next-line global-require
     electronLog = require('electron-log');
