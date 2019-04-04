@@ -117,7 +117,7 @@ class ScreenSnippet {
             }
             // convert binary data to base64 encoded string
             const output = Buffer.from(data).toString('base64');
-            return { message: 'success', data: output, type: 'image/jpg;base64' };
+            return { message: 'success', data: output, type: 'image/png;base64' };
         } catch (error) {
             if (error && error.code === 'ENOENT') {
                 // no such file exists, user likely aborted

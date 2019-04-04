@@ -67,7 +67,7 @@ export interface IBadgeCount {
 /**
  * Screen snippet
  */
-export type ScreenSnippetDataType = 'ERROR' | 'image/jpg;base64';
+export type ScreenSnippetDataType = 'ERROR' | 'image/png;base64';
 export interface IScreenSnippet {
     data?: string;
     message?: string;
