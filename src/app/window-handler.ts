@@ -262,6 +262,8 @@ export class WindowHandler {
                 enableCustomTitleBar: this.isCustomTitleBar,
             });
             this.appMenu = new AppMenu();
+            const { permissions } = config.getGlobalConfigFields([ 'permissions' ]);
+            this.mainWindow.webContents.send('is-screen-share-enabled', permissions.media);
         });
 
         this.mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDesc, validatedURL) => {
