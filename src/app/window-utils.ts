@@ -240,7 +240,7 @@ export const showPopupMenu = (opts: Electron.PopupOptions): void => {
  *
  * @param windowName {string}
  */
-export const sanitize = (windowName: string): void => {
+export const sanitize = async (windowName: string): Promise<void> => {
     // To make sure the reload event is from the main window
     const mainWindow = windowHandler.getMainWindow();
     if (mainWindow && windowName === mainWindow.winName) {
@@ -251,9 +251,8 @@ export const sanitize = (windowName: string): void => {
         if (!isMac) {
             screenSnippet.killChildProcess();
         }
-        // TODO: write method to clean up child window
         // Closes all the child windows
-        // windowMgr.cleanUpChildWindows();
+        await windowHandler.closeAllWindow();
     }
 };
 

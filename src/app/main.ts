@@ -18,10 +18,12 @@ const allowMultiInstance: string | boolean = getCommandLineArgs(process.argv, '-
 // on windows, we create the protocol handler via the installer
 // because electron leaves registry traces upon uninstallation
 if (isMac) {
-    app.setAsDefaultProtocolClient('symphony');
     // Sets application version info that will be displayed in about app panel
     app.setAboutPanelOptions({ applicationVersion: `${clientVersion}-${version}`, version: buildNumber });
 }
+
+// Electron sets the default protocol
+app.setAsDefaultProtocolClient('symphony');
 
 /**
  * Main function that init the application

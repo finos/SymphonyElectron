@@ -33,6 +33,7 @@ export enum apiCmds {
 export enum apiName {
     symphonyApi = 'symphony-api',
     mainWindowName = 'main',
+    notificationWindowName = 'notification-window',
 }
 
 export interface IApiArgs {
