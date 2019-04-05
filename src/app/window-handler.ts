@@ -260,6 +260,7 @@ export class WindowHandler {
                 resources: i18n.loadedResources,
                 origin: this.globalConfig.url,
                 enableCustomTitleBar: this.isCustomTitleBar,
+                isMainWindow: true,
             });
             this.appMenu = new AppMenu();
             const { permissions } = config.getGlobalConfigFields([ 'permissions' ]);
