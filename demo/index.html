@@ -223,35 +223,49 @@
             window.postMessage({ method: 'notification', data: notf }, '*');
         });
 
-        var badgeCount = 0;
+        /**
+         * Badge Count
+         */
+        let badgeCount = 0;
 
-        var incBadgeEl = document.getElementById('inc-badge');
-        incBadgeEl.addEventListener('click', function() {
+        const incBadgeEl = document.getElementById('inc-badge');
+        incBadgeEl.addEventListener('click', () => {
             badgeCount++;
-            ssf.setBadgeCount(badgeCount);
+            if (window.ssf) {
+                ssf.setBadgeCount(badgeCount);
+            } else {
+                postMessage(apiCmds.setBadgeCount, badgeCount);
+            }
         });
 
-        var incBadgeEl = document.getElementById('clear-badge');
-        incBadgeEl.addEventListener('click', function() {
+        const clearBadgeCount = document.getElementById('clear-badge');
+        clearBadgeCount.addEventListener('click', () => {
             badgeCount = 0;
-            ssf.setBadgeCount(0);
+            if (window.ssf) {
+                ssf.setBadgeCount(0);
+            } else {
+                postMessage(apiCmds.setBadgeCount, 0);
+            }
         });
 
-        var snippetButton = document.getElementById('snippet');
-        snippetButton.addEventListener('click', function() {
-            window.ssf.openScreenSnippet(gotSnippet.bind(this));
-
-            function gotSnippet(rsp) {
-                if (rsp) {
-                    if (rsp.type && rsp.type === 'ERROR') {
-                        // called when some error occurs during capture
-                        alert('error getting snippet' + rsp.message);
-                    } else if (rsp.data && rsp.type === 'image/jpg;base64') {
-                        var dataUrl = 'data:' + rsp.type + ',' + rsp.data;
-                        var img = document.getElementById('snippet-img');
-                        img.src = dataUrl;
+        const snippetButton = document.getElementById('snippet');
+        snippetButton.addEventListener('click', () => {
+            if (window.ssf) {
+                const gotSnippet = (rsp) => {
+                    if (rsp) {
+                        if (rsp.type && rsp.type === 'ERROR') {
+                            // called when some error occurs during capture
+                            alert('error getting snippet' + rsp.message);
+                        } else if (rsp.data && rsp.type === 'image/png;base64') {
+                            const dataUrl = 'data:' + rsp.type + ',' + rsp.data;
+                            const img = document.getElementById('snippet-img');
+                            img.src = dataUrl;
+                        }
                     }
-                }
+                };
+                window.ssf.openScreenSnippet(gotSnippet);
+            } else {
+                postMessage(apiCmds.openScreenSnippet)
             }
         });
 
@@ -351,6 +365,18 @@
                         console.error(`screen-sharing-indicator-callback invalid args ${data}`);
                     } else {
                         console.log(`screen sharing will be stopped`);
+                    }
+                    break;
+                case 'screen-snippet-callback':
+                    if (data) {
+                        if (data.type && data.type === 'ERROR') {
+                            // called when some error occurs during capture
+                            alert('error getting snippet' + data.message);
+                        } else if (data.data && data.type === 'image/png;base64') {
+                            const dataUrl = 'data:' + data.type + ',' + data.data;
+                            const img = document.getElementById('snippet-img');
+                            img.src = dataUrl;
+                        }
                     }
                     break;
                 default:

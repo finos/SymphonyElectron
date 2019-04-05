@@ -82,7 +82,8 @@ describe('utils', () => {
 
     describe('`formatString', () => {
         const str = 'this will log {time}';
-        const data = [{time: '1234'}];
+        const strReplaced = 'this will log time';
+        const data = { time: '1234' };
         it('should return `str` when data is empty', () => {
             expect(formatString(str)).toEqual(str);
         });
@@ -92,9 +93,19 @@ describe('utils', () => {
             expect(formatString(str, data)).toBe(expectedValue);
         });
 
+        it('should replace multiple keys to dynamics values when `formatString` is used', () => {
+            const dataTest = { multiple: true, placed: 'correct' };
+            expect(formatString('The string with {multiple} values {placed}', dataTest)).toBe('The string with true values correct');
+        });
+
         it('should return `str` when `data` not match', () => {
-            const dataTest = [{test: 123}];
-            expect(formatString(str, dataTest)).toBe(str);
+            const dataTest = { test: 123 };
+            expect(formatString(str, dataTest)).toBe(strReplaced);
+        });
+
+        it('should return `str` when `data` is undefined', () => {
+            const dataTest = { multiple: 'multiple', invalid: undefined };
+            expect(formatString('The string with {multiple} values {invalid}', dataTest)).toBe('The string with multiple values invalid');
         });
     });
 

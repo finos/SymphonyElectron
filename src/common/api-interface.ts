@@ -33,6 +33,7 @@ export enum apiCmds {
 export enum apiName {
     symphonyApi = 'symphony-api',
     mainWindowName = 'main',
+    notificationWindowName = 'notification-window',
 }
 
 export interface IApiArgs {
@@ -67,7 +68,7 @@ export interface IBadgeCount {
 /**
  * Screen snippet
  */
-export type ScreenSnippetDataType = 'ERROR' | 'image/jpg;base64';
+export type ScreenSnippetDataType = 'ERROR' | 'image/png;base64';
 export interface IScreenSnippet {
     data?: string;
     message?: string;

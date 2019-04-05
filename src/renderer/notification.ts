@@ -1,9 +1,9 @@
-import { ipcMain } from 'electron';
+import { app, ipcMain } from 'electron';
 
 import { config } from '../app/config-handler';
 import { createComponentWindow, windowExists } from '../app/window-utils';
 import { AnimationQueue } from '../common/animation-queue';
-import { INotificationData } from '../common/api-interface';
+import { apiName, INotificationData } from '../common/api-interface';
 import { logger } from '../common/logger';
 import NotificationHandler from './notification-handler';
 
@@ -12,6 +12,7 @@ const CLEAN_UP_INTERVAL = 60 * 1000; // Closes inactive notification
 const animationQueue = new AnimationQueue();
 
 interface ICustomBrowserWindow extends Electron.BrowserWindow {
+    winName: string;
     notificationData: INotificationData;
     displayTimer: NodeJS.Timer;
     clientId: number;
@@ -49,11 +50,12 @@ class Notification extends NotificationHandler {
         onCleanUpInactiveNotification: () => this.cleanUpInactiveNotification(),
         onCreateNotificationWindow: (data: INotificationData) => this.createNotificationWindow(data),
     };
-    private readonly activeNotifications: Electron.BrowserWindow[] = [];
-    private readonly inactiveWindows: Electron.BrowserWindow[] = [];
-    private readonly notificationQueue: INotificationData[] = [];
-    private readonly notificationCallbacks: any[] = [];
+    private activeNotifications: Electron.BrowserWindow[] = [];
+    private inactiveWindows: Electron.BrowserWindow[] = [];
     private cleanUpTimer: NodeJS.Timer;
+    private notificationQueue: INotificationData[] = [];
+
+    private readonly notificationCallbacks: any[] = [];
 
     constructor(opts) {
         super(opts);
@@ -65,7 +67,7 @@ class Notification extends NotificationHandler {
             this.notificationClicked(windowId);
         });
         // Update latest notification settings from config
-        this.updateNotificationSettings();
+        app.on('ready', () => this.updateNotificationSettings());
         this.cleanUpTimer = setInterval(this.funcHandlers.onCleanUpInactiveNotification, CLEAN_UP_INTERVAL);
     }
 
@@ -134,6 +136,7 @@ class Notification extends NotificationHandler {
         ) as ICustomBrowserWindow;
 
         notificationWindow.notificationData = data;
+        notificationWindow.winName = apiName.notificationWindowName;
         notificationWindow.once('closed', () => {
             const activeWindowIndex = this.activeNotifications.indexOf(notificationWindow);
             const inactiveWindowIndex = this.inactiveWindows.indexOf(notificationWindow);
@@ -248,6 +251,29 @@ class Notification extends NotificationHandler {
         // recalculate notification position
         this.setupNotificationPosition();
         this.moveNotificationDown(0, this.activeNotifications);
+    }
+
+    /**
+     * Closes all the notification windows and resets some configurations
+     */
+    public async cleanUp(): Promise<void> {
+        animationQueue.clear();
+        this.notificationQueue = [];
+        const activeNotificationWindows = Object.assign([], this.activeNotifications);
+        const inactiveNotificationWindows = Object.assign([], this.inactiveWindows);
+        for (const activeWindow of activeNotificationWindows) {
+            if (activeWindow && windowExists(activeWindow)) {
+                await this.hideNotification((activeWindow as ICustomBrowserWindow).clientId);
+            }
+        }
+        for (const inactiveWindow of inactiveNotificationWindows) {
+            if (inactiveWindow && windowExists(inactiveWindow)) {
+                inactiveWindow.close();
+            }
+        }
+
+        this.activeNotifications = [];
+        this.inactiveWindows = [];
     }
 
     /**

@@ -54,7 +54,13 @@ export default class NotificationSettings extends React.Component<{}, IState> {
                             <label>
                                 {i18n.t('Notification shown on Monitor:  ', NOTIFICATION_SETTINGS_NAMESPACE)()}
                             </label>
-                            <select className='selector' id='screen-selector' title='position' onChange={this.eventHandlers.onDisplaySelect}>
+                            <select
+                                className='selector'
+                                id='screen-selector'
+                                title='position'
+                                value={this.state.display}
+                                onChange={this.eventHandlers.onDisplaySelect}
+                            >
                                 {this.renderScreens()}
                             </select>
                         </div>
@@ -121,10 +127,10 @@ export default class NotificationSettings extends React.Component<{}, IState> {
      * Renders the drop down list of available screen
      */
     private renderScreens(): JSX.Element[] {
-        const { screens, display } = this.state;
+        const { screens } = this.state;
         return screens.map((screen, index) => {
             return (
-                <option id={String(screen.id)} key={screen.id} value={display}>{index + 1}</option>
+                <option id={String(screen.id)} key={screen.id} value={screen.id}>{index + 1}</option>
             );
         });
     }

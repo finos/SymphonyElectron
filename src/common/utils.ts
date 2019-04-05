@@ -182,7 +182,7 @@ export const throttle = (func: (...args) => void, wait: number): (...args) => vo
  * @param data {Object} - Data to be added
  *
  * @example
- * StringFormat('this will log {time}', [{ time: '1234' }])
+ * StringFormat('this will log {time}', { time: '1234' })
  *
  * result:
  * this will log 1234
@@ -199,10 +199,7 @@ export const formatString = (str: string, data?: object): string => {
         if (Object.prototype.hasOwnProperty.call(data, key)) {
             return str.replace(/({([^}]+)})/g,  (i) => {
                 const replacedKey = i.replace(/{/, '').replace(/}/, '');
-                if (!data[key] || !data[key][replacedKey]) {
-                    return i;
-                }
-                return data[key][replacedKey];
+                return data[replacedKey] ? data[replacedKey] : replacedKey;
             });
         }
     }

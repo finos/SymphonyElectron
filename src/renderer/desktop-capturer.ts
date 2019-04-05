@@ -13,8 +13,7 @@ import { i18n } from '../common/i18n-preload';
 const includes = [].includes;
 
 let nextId = 0;
-// TODO: add logic to check for permissions
-let isScreenShareEnabled = true;
+let isScreenShareEnabled = false;
 let screenShareArgv: string;
 
 export interface ICustomSourcesOptions extends SourcesOptions {
@@ -155,8 +154,8 @@ ipcRenderer.once('screen-share-argv', (_event, arg) => {
 });
 
 // event that updates screen share permission
-ipcRenderer.on('is-screen-share-enabled', (_event, screenShare) => {
-    if (typeof screenShare === 'boolean' && screenShare) {
-        isScreenShareEnabled = true;
+ipcRenderer.on('is-screen-share-enabled', (_event, canShareScreen) => {
+    if (typeof canShareScreen === 'boolean' && canShareScreen) {
+        isScreenShareEnabled = canShareScreen;
     }
 });

@@ -262,6 +262,8 @@ export class WindowHandler {
                 enableCustomTitleBar: this.isCustomTitleBar,
             });
             this.appMenu = new AppMenu();
+            const { permissions } = config.getGlobalConfigFields([ 'permissions' ]);
+            this.mainWindow.webContents.send('is-screen-share-enabled', permissions.media);
         });
 
         this.mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDesc, validatedURL) => {
@@ -398,6 +400,25 @@ export class WindowHandler {
     }
 
     /**
+     * Finds all the child window and closes it
+     */
+    public async closeAllWindow(): Promise<void> {
+        const browserWindows = BrowserWindow.getAllWindows();
+        await notification.cleanUp();
+        if (browserWindows && browserWindows.length) {
+            browserWindows.forEach((win) => {
+                const browserWindow = win as ICustomBrowserWindow;
+                if (browserWindow && windowExists(browserWindow)) {
+                    // Closes only child windows
+                    if (browserWindow.winName !== apiName.mainWindowName && browserWindow.winName !== apiName.notificationWindowName) {
+                        browserWindow.close();
+                    }
+                }
+            });
+        }
+    }
+
+    /**
      * Sets is auto reload when the application
      * is auto reloaded for optimizing memory
      *
@@ -476,7 +497,7 @@ export class WindowHandler {
         this.aboutAppWindow = createComponentWindow(
             'about-app',
             selectedParentWindow ? { parent: selectedParentWindow } : {},
-            );
+        );
         this.aboutAppWindow.setVisibleOnAllWorkspaces(true);
         this.aboutAppWindow.webContents.once('did-finish-load', () => {
             if (!this.aboutAppWindow || !windowExists(this.aboutAppWindow)) {
