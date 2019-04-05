@@ -99,7 +99,7 @@
     "chromedriver": "2.45.0",
     "cross-env": "5.2.0",
     "del": "3.0.0",
-    "electron": "5.0.0-beta.7",
+    "electron": "5.0.0-beta.8",
     "electron-builder": "20.38.4",
     "electron-builder-squirrel-windows": "20.38.3",
     "electron-chromedriver": "4.0.0-beta.1",
