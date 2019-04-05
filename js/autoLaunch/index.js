@@ -1,4 +1,5 @@
 const AutoLaunch = require('auto-launch');
+const {Key, windef} = require('windows-registry');
 
 // Local Dependencies
 const log = require('../log.js');
@@ -30,7 +31,19 @@ class AutoLaunchController extends AutoLaunch {
      */
     enableAutoLaunch() {
         log.send(logLevels.INFO, `Enabling auto launch!`);
-        return this.enable();
+        if (isMac) {
+            return this.enable();
+        }
+        return new Promise((resolve, reject) => {
+            const key = new Key(windef.HKEY.HKEY_CURRENT_USER, '', windef.KEY_ACCESS.KEY_ALL_ACCESS);
+            try {
+                const subKey = key.openSubKey('Software\\Microsoft\\Windows\\CurrentVersion\\Run', windef.KEY_ACCESS.KEY_ALL_ACCESS);
+                subKey.setValue(props.name, windef.REG_VALUE_TYPE.REG_SZ, props.path);
+                resolve();
+            } catch (e) {
+                reject(e);
+            }
+        })
     }
 
     /**
@@ -39,7 +52,19 @@ class AutoLaunchController extends AutoLaunch {
      */
     disableAutoLaunch() {
         log.send(logLevels.INFO, `Disabling auto launch!`);
-        return this.disable();
+        if (isMac) {
+            return this.disable();
+        }
+        return new Promise((resolve, reject) => {
+            const key = new Key(windef.HKEY.HKEY_CURRENT_USER, '', windef.KEY_ACCESS.KEY_ALL_ACCESS);
+            const subKey = key.openSubKey('Software\\Microsoft\\Windows\\CurrentVersion\\Run', windef.KEY_ACCESS.KEY_ALL_ACCESS);
+            try {
+                subKey.deleteValue(props.name);
+                resolve();
+            } catch (e) {
+                reject(e);
+            }
+        });
     }
 }
 
