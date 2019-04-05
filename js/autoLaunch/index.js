@@ -1,5 +1,4 @@
-const AutoLaunch = require('auto-launch');
-const {Key, windef} = require('windows-registry');
+const { app } = require('electron');
 
 // Local Dependencies
 const log = require('../log.js');
@@ -19,55 +18,6 @@ const props = isMac ? {
     path: getAutoLaunchPath() || process.execPath,
 };
 
-class AutoLaunchController extends AutoLaunch {
-
-    constructor(opts) {
-        super(opts);
-    }
-
-    /**
-     * Enable auto launch
-     * @return {Promise<void>}
-     */
-    enableAutoLaunch() {
-        log.send(logLevels.INFO, `Enabling auto launch!`);
-        if (isMac) {
-            return this.enable();
-        }
-        return new Promise((resolve, reject) => {
-            const key = new Key(windef.HKEY.HKEY_CURRENT_USER, '', windef.KEY_ACCESS.KEY_ALL_ACCESS);
-            try {
-                const subKey = key.openSubKey('Software\\Microsoft\\Windows\\CurrentVersion\\Run', windef.KEY_ACCESS.KEY_ALL_ACCESS);
-                subKey.setValue(props.name, windef.REG_VALUE_TYPE.REG_SZ, props.path);
-                resolve();
-            } catch (e) {
-                reject(e);
-            }
-        })
-    }
-
-    /**
-     * Disable auto launch
-     * @return {Promise<void>}
-     */
-    disableAutoLaunch() {
-        log.send(logLevels.INFO, `Disabling auto launch!`);
-        if (isMac) {
-            return this.disable();
-        }
-        return new Promise((resolve, reject) => {
-            const key = new Key(windef.HKEY.HKEY_CURRENT_USER, '', windef.KEY_ACCESS.KEY_ALL_ACCESS);
-            const subKey = key.openSubKey('Software\\Microsoft\\Windows\\CurrentVersion\\Run', windef.KEY_ACCESS.KEY_ALL_ACCESS);
-            try {
-                subKey.deleteValue(props.name);
-                resolve();
-            } catch (e) {
-                reject(e);
-            }
-        });
-    }
-}
-
 /**
  * Replace forward slash in the path to backward slash
  * @return {any}
@@ -77,9 +27,31 @@ function getAutoLaunchPath() {
     return autoLaunchPath ? autoLaunchPath.replace(/\//g, '\\') : null;
 }
 
-const autoLaunchInstance = new AutoLaunchController(props);
+/**
+ * Handle auto launch setting
+ * @param enabled Is auto launch enabled
+ */
+function handleAutoLaunch(enabled) {
+    app.setLoginItemSettings({openAtLogin: enabled, path: props.path});
+}
+
+/**
+ * Enable auto launch
+ */
+function enableAutoLaunch() {
+    log.send(logLevels.INFO, `Enabling auto launch!`);
+    handleAutoLaunch(true);
+}
+
+/**
+ * Disable auto launch
+ */
+function disableAutoLaunch() {
+    log.send(logLevels.INFO, `Disabling auto launch!`);
+    handleAutoLaunch(false);
+}
 
 module.exports = {
-    enable: autoLaunchInstance.enableAutoLaunch.bind(autoLaunchInstance),
-    disable: autoLaunchInstance.disableAutoLaunch.bind(autoLaunchInstance)
+    enable: enableAutoLaunch,
+    disable: disableAutoLaunch
 };
