@@ -294,13 +294,6 @@
             }
         });
 
-        // register callback to be notified when size/position changes for win.
-        // ssf.registerBoundsChange(onBoundsChange);
-
-        function onBoundsChange(arg) {
-            console.log('bounds changed for=', arg)
-        }
-
         // crash the renderer process
         const crash = document.getElementById('crash');
         crash.addEventListener('click', function () {
@@ -383,6 +376,20 @@
                     console.log(event.data);
             }
         });
+
+        /**
+         * Bound Changes
+         */
+        // register callback to be notified when size/position changes for win.
+        if (window.ssf) {
+            ssf.registerBoundsChange(onBoundsChange);
+        } else {
+            postMessage(apiCmds.registerBoundsChange);
+        }
+
+        function onBoundsChange(arg) {
+            console.log('bounds changed for=', arg)
+        }
 
         /**
          * Protocol handler

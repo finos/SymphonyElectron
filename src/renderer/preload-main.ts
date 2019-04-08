@@ -42,7 +42,7 @@ const createAPI = () => {
 createAPI();
 
 // When the window is completely loaded
-ipcRenderer.on('page-load', (_event, { locale, resources, origin, enableCustomTitleBar }) => {
+ipcRenderer.on('page-load', (_event, { locale, resources, origin, enableCustomTitleBar, isMainWindow }) => {
     // origin for postMessage targetOrigin communication
     if (origin) {
         appBridge.origin = origin;
@@ -83,7 +83,9 @@ ipcRenderer.on('page-load', (_event, { locale, resources, origin, enableCustomTi
         ReactDOM.render(downloadManager, footerSFE);
     }
 
-    ipcRenderer.send(apiName.symphonyApi, {
-        cmd: apiCmds.initMainWindow,
-    });
+    if (isMainWindow) {
+        ipcRenderer.send(apiName.symphonyApi, {
+            cmd: apiCmds.initMainWindow,
+        });
+    }
 });

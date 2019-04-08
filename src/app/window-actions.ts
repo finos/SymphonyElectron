@@ -5,9 +5,9 @@ import { isMac, isWindowsOS } from '../common/env';
 import { throttle } from '../common/utils';
 import { config } from './config-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
-import { showPopupMenu } from './window-utils';
+import { showPopupMenu, windowExists } from './window-utils';
 
-export const saveWindowSettings = (): void => {
+const saveWindowSettings = (): void => {
     const browserWindow = BrowserWindow.getFocusedWindow() as ICustomBrowserWindow;
 
     if (browserWindow && !browserWindow.isDestroyed()) {
@@ -15,32 +15,38 @@ export const saveWindowSettings = (): void => {
         const [ width, height ] = browserWindow.getSize();
         if (x && y && width && height) {
             browserWindow.webContents.send('boundsChange', { x, y, width, height, windowName: browserWindow.winName } as IBoundsChange);
-
-            if (browserWindow.winName === apiName.mainWindowName) {
-                const isMaximized = browserWindow.isMaximized();
-                const isFullScreen = browserWindow.isFullScreen();
-                config.updateUserConfig({ mainWinPos: { x, y, width, height, isMaximized, isFullScreen } });
-            }
         }
     }
 
 };
 
-export const enterFullScreen = () => {
+const windowMaximized = async (): Promise<void> => {
     const browserWindow = BrowserWindow.getFocusedWindow() as ICustomBrowserWindow;
-    if (browserWindow && !browserWindow.isDestroyed() && browserWindow.winName === apiName.mainWindowName) {
-        browserWindow.webContents.send('window-enter-full-screen');
+    if (browserWindow && windowExists(browserWindow) && browserWindow.winName === apiName.mainWindowName) {
+        const isMaximized = browserWindow.isMaximized();
+        const isFullScreen = browserWindow.isFullScreen();
+        if (isFullScreen) {
+            browserWindow.webContents.send('window-enter-full-screen');
+        }
+        const { mainWinPos } = config.getUserConfigFields([ 'mainWinPos' ]);
+        await config.updateUserConfig( { mainWinPos: { ...mainWinPos, ...{ isMaximized, isFullScreen } } });
     }
 };
 
-export const leaveFullScreen = () => {
+const windowUnmaximized = async (): Promise<void> => {
     const browserWindow = BrowserWindow.getFocusedWindow() as ICustomBrowserWindow;
-    if (browserWindow && !browserWindow.isDestroyed() && browserWindow.winName === apiName.mainWindowName) {
-        browserWindow.webContents.send('window-leave-full-screen');
+    if (browserWindow && windowExists(browserWindow) && browserWindow.winName === apiName.mainWindowName) {
+        const isMaximized = browserWindow.isMaximized();
+        const isFullScreen = browserWindow.isFullScreen();
+        if (!isFullScreen) {
+            browserWindow.webContents.send('window-leave-full-screen');
+        }
+        const { mainWinPos } = config.getUserConfigFields([ 'mainWinPos' ]);
+        await config.updateUserConfig( { mainWinPos: { ...mainWinPos, ...{ isMaximized, isFullScreen } } });
     }
 };
 
-export const throttledWindowChanges = throttle(saveWindowSettings, 1000);
+const throttledWindowChanges = throttle(saveWindowSettings, 1000);
 
 /**
  * Tries finding a window we have created with given name.  If found, then
@@ -140,15 +146,18 @@ export const monitorWindowActions = (window: BrowserWindow): void => {
     if (!window || window.isDestroyed()) {
         return;
     }
-    const eventNames = [ 'move', 'resize', 'maximize', 'unmaximize' ];
+    const eventNames = [ 'move', 'resize' ];
     eventNames.forEach((event: string) => {
         if (window) {
             // @ts-ignore
             window.on(event, throttledWindowChanges);
         }
     });
-    window.on('enter-full-screen', enterFullScreen);
-    window.on('leave-full-screen', leaveFullScreen);
+    window.on('enter-full-screen', windowMaximized);
+    window.on('maximize', windowMaximized);
+
+    window.on('leave-full-screen', windowUnmaximized);
+    window.on('unmaximize', windowUnmaximized);
 };
 
 /**
@@ -160,13 +169,16 @@ export const removeWindowEventListener = (window: BrowserWindow): void => {
     if (!window || window.isDestroyed()) {
         return;
     }
-    const eventNames = [ 'move', 'resize', 'maximize', 'unmaximize' ];
+    const eventNames = [ 'move', 'resize' ];
     eventNames.forEach((event: string) => {
         if (window) {
             // @ts-ignore
             window.removeListener(event, throttledWindowChanges);
         }
     });
-    window.removeListener('enter-full-screen', enterFullScreen);
-    window.removeListener('leave-full-screen', leaveFullScreen);
+    window.removeListener('enter-full-screen', windowMaximized);
+    window.removeListener('maximize', windowMaximized);
+
+    window.removeListener('leave-full-screen', windowUnmaximized);
+    window.removeListener('unmaximize', windowUnmaximized);
 };

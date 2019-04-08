@@ -3,7 +3,9 @@ import { BrowserWindow, WebContents } from 'electron';
 import { parse as parseQuerystring } from 'querystring';
 import { format, parse, Url } from 'url';
 import { isDevEnv, isWindowsOS } from '../common/env';
+import { i18n } from '../common/i18n';
 import { getGuid } from '../common/utils';
+import { config } from './config-handler';
 import { monitorWindowActions, removeWindowEventListener } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 import {
@@ -58,9 +60,24 @@ export const handleChildWindow = (webContents: WebContents): void => {
         const emptyUrlString = 'about:blank';
         const dispositionWhitelist = ['new-window', 'foreground-tab'];
 
+        const fullMainUrl = `${mainWinParsedUrl.protocol}//${mainWinParsedUrl.host}/`;
+        // If the main url and new window url are the same,
+        // we open that in a browser rather than a separate window
+        if (newWinUrl === fullMainUrl) {
+            event.preventDefault();
+            windowHandler.openUrlInDefaultBrowser(newWinUrl);
+            return;
+        }
+
         // only allow window.open to succeed is if coming from same hsot,
         // otherwise open in default browser.
-        if ((newWinHost === mainWinHost || newWinUrl === emptyUrlString) && dispositionWhitelist.includes(disposition)) {
+        if ((newWinHost === mainWinHost
+            || newWinUrl === emptyUrlString
+            || (newWinHost
+                && mainWinHost
+                && newWinHost.indexOf(mainWinHost) !== -1
+                && frameName !== ''))
+            && dispositionWhitelist.includes(disposition)) {
 
             const newWinKey = getGuid();
             if (!frameName) {
@@ -117,7 +134,15 @@ export const handleChildWindow = (webContents: WebContents): void => {
                     return;
                 }
                 windowHandler.addWindow(newWinKey, browserWin);
-                browserWin.webContents.send('page-load', { isWindowsOS });
+                const { url } = config.getGlobalConfigFields([ 'url' ]);
+                browserWin.webContents.send('page-load', {
+                    isWindowsOS,
+                    locale: i18n.getLocale(),
+                    resources: i18n.loadedResources,
+                    origin: url,
+                    enableCustomTitleBar: false,
+                    isMainWindow: false,
+                });
                 // Inserts css on to the window
                 await injectStyles(browserWin, false);
                 browserWin.winName = frameName;
@@ -133,11 +158,19 @@ export const handleChildWindow = (webContents: WebContents): void => {
                     removeWindowEventListener(browserWin);
                 });
 
-                // Certificate verification proxy
-                if (!isDevEnv) {
-                    browserWin.webContents.session.setCertificateVerifyProc(handleCertificateProxyVerification);
+                if (browserWin.webContents) {
+                    // validate link and create a child window or open in browser
+                    handleChildWindow(browserWin.webContents);
+
+                    // Certificate verification proxy
+                    if (!isDevEnv) {
+                        browserWin.webContents.session.setCertificateVerifyProc(handleCertificateProxyVerification);
+                    }
+
+                    // Updates media permissions for preload context
+                    const { permissions } = config.getGlobalConfigFields([ 'permissions' ]);
+                    browserWin.webContents.send('is-screen-share-enabled', permissions.media);
                 }
-                // TODO: handle Permission Requests
             });
         } else {
             event.preventDefault();
