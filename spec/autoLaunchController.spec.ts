@@ -13,6 +13,7 @@ jest.mock('../src/app/config-handler', () => {
                     launchOnStartup: true,
                 };
             }),
+            updateUserConfig: jest.fn(),
         },
     };
 });
