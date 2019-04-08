@@ -74,11 +74,18 @@ describe('child window handle', () => {
         handleChildWindow(ipcRenderer as any);
         ipcRenderer.send('new-window', ...args);
         ipcRenderer.send('did-finish-load');
-        expect(spy).lastCalledWith('page-load', { isWindowsOS: true});
+        expect(spy).lastCalledWith('page-load',  {
+            enableCustomTitleBar: false,
+            isMainWindow: false,
+            isWindowsOS: true,
+            locale: 'en-US',
+            origin: 'https://foundation-dev.symphony.com',
+            resources: {},
+        });
         expect(injectStyles).toBeCalled();
     });
 
-    it('should call `windowHandler.openUrlInDefaultBrowser` when url in invalid', () => { 
+    it('should call `windowHandler.openUrlInDefaultBrowser` when url in invalid', () => {
         const newWinUrl = 'invalid';
         const args = [newWinUrl, frameName, disposition, newWinOptions];
         const spy = jest.spyOn(windowHandler, 'openUrlInDefaultBrowser');
