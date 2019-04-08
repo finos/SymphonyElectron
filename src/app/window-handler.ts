@@ -229,6 +229,13 @@ export class WindowHandler {
             ...this.windowOpts, ...getBounds(this.config.mainWinPos, DEFAULT_WIDTH, DEFAULT_HEIGHT),
         }) as ICustomBrowserWindow;
         this.mainWindow.winName = apiName.mainWindowName;
+        const { isFullScreen, isMaximized } = this.config.mainWinPos;
+        if (isMaximized) {
+            this.mainWindow.maximize();
+        }
+        if (isFullScreen) {
+            this.mainWindow.setFullScreen(true);
+        }
 
         // Event needed to hide native menu bar on Windows 10 as we use custom menu bar
         this.mainWindow.webContents.once('did-start-loading', () => {
