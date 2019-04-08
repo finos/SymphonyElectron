@@ -68,13 +68,6 @@
         <button id='open-config-win'>Open configure window</button>
         <br>
         <hr>
-        <p>
-            Crash Process:
-        <p>
-            <button id='crash'>Crash Renderer</button>
-        </p>
-        <br>
-        <hr>
         <textarea id="text-val" rows="4">Writes some thing to the file</textarea>
         <br/>
         <input type="button" id="download-file1" value="Download"/>
@@ -292,12 +285,6 @@
             } else {
                 postMessage(apiCmds.bringToFront, { windowName: win.name, reason: 'notification' });
             }
-        });
-
-        // crash the renderer process
-        const crash = document.getElementById('crash');
-        crash.addEventListener('click', function () {
-            ssf.crashRendererProcess();
         });
 
         var getVersionInfo = document.getElementById('get-version');

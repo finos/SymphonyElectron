@@ -15,12 +15,24 @@ import { config } from './config-handler';
 import { screenSnippet } from './screen-snippet-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
+interface IStyles {
+    name: styleNames;
+    content: string;
+}
+
+enum styleNames {
+    titleBar = 'title-bar',
+    snackBar = 'snack-bar',
+}
+
 const checkValidWindow = true;
 const { url: configUrl, ctWhitelist } = config.getGlobalConfigFields([ 'url', 'ctWhitelist' ]);
 
 // Network status check variables
 const networkStatusCheckInterval = 10 * 1000;
 let networkStatusCheckIntervalId;
+
+const styles: IStyles[] = [];
 
 /**
  * Checks if window is valid and exists
@@ -339,10 +351,11 @@ export const handleDownloadManager = (_event, item: Electron.DownloadItem, webCo
  * Inserts css in to the window
  *
  * @param window {BrowserWindow}
- * @param paths {string[]}
  */
-const readAndInsertCSS = async (window, paths): Promise<void> => {
-    return paths.map((filePath) => window.webContents.insertCSS(fs.readFileSync(filePath, 'utf8').toString()));
+const readAndInsertCSS = async (window): Promise<IStyles[] | void> => {
+    if (window && windowExists(window)) {
+        return styles.map(({ content }) => window.webContents.insertCSS(content));
+    }
 };
 
 /**
@@ -351,31 +364,36 @@ const readAndInsertCSS = async (window, paths): Promise<void> => {
  * @param mainWindow {BrowserWindow}
  * @param isCustomTitleBar {boolean} - whether custom title bar enabled
  */
-export const injectStyles = async (mainWindow: BrowserWindow, isCustomTitleBar: boolean): Promise<void> => {
-    const paths: string[] = [];
+export const injectStyles = async (mainWindow: BrowserWindow, isCustomTitleBar: boolean): Promise<IStyles[] | void> => {
     if (isCustomTitleBar) {
-        let titleBarStylesPath;
-        const stylesFileName = path.join('config', 'titleBarStyles.css');
-        if (isDevEnv) {
-            titleBarStylesPath = path.join(app.getAppPath(), stylesFileName);
-        } else {
-            const execPath = path.dirname(app.getPath('exe'));
-            titleBarStylesPath = path.join(execPath, stylesFileName);
+        const index = styles.findIndex(({ name }) => name === styleNames.titleBar);
+        if (index === -1) {
+            let titleBarStylesPath;
+            const stylesFileName = path.join('config', 'titleBarStyles.css');
+            if (isDevEnv) {
+                titleBarStylesPath = path.join(app.getAppPath(), stylesFileName);
+            } else {
+                const execPath = path.dirname(app.getPath('exe'));
+                titleBarStylesPath = path.join(execPath, stylesFileName);
+            }
+            // Window custom title bar styles
+            if (fs.existsSync(titleBarStylesPath)) {
+                styles.push({ name: styleNames.titleBar, content: fs.readFileSync(titleBarStylesPath, 'utf8').toString() });
+            } else {
+                const stylePath = path.join(__dirname, '..', '/renderer/styles/title-bar.css');
+                styles.push({ name: styleNames.titleBar, content: fs.readFileSync(stylePath, 'utf8').toString() });
+            }
         }
-        // Window custom title bar styles
-        if (fs.existsSync(titleBarStylesPath)) {
-            paths.push(titleBarStylesPath);
-        } else {
-            paths.push(path.join(__dirname, '..', '/renderer/styles/title-bar.css'));
-        }
-    } else {
-        paths.push(path.join(__dirname, '..', '/renderer/styles/title-bar.css'));
+    }
+    // Snack bar styles
+    if (styles.findIndex(({ name }) => name === styleNames.snackBar) === -1) {
+        styles.push({
+            name: styleNames.snackBar,
+            content: fs.readFileSync(path.join(__dirname, '..', '/renderer/styles/snack-bar.css'), 'utf8').toString(),
+        });
     }
 
-    // Snack bar styles
-    paths.push(path.join(__dirname, '..', '/renderer/styles/snack-bar.css'));
-
-    return await readAndInsertCSS(mainWindow, paths);
+    return await readAndInsertCSS(mainWindow);
 };
 
 /**

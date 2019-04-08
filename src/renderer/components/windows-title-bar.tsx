@@ -48,6 +48,8 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
             } else {
                 contentWrapper.style.marginTop = this.state.titleBarHeight;
             }
+        } else {
+            document.body.style.marginTop = this.state.titleBarHeight;
         }
     }
 

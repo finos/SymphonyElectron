@@ -1,5 +1,5 @@
 import * as electron from 'electron';
-import { app, BrowserWindow, crashReporter, ipcMain } from 'electron';
+import { app, BrowserWindow, crashReporter, globalShortcut, ipcMain } from 'electron';
 import * as path from 'path';
 import { format, parse } from 'url';
 
@@ -98,6 +98,9 @@ export class WindowHandler {
             height: 360,
             show: false,
             modal: true,
+            minimizable: false,
+            maximizable: false,
+            fullscreenable: false,
             autoHideMenuBar: true,
             webPreferences: {
                 sandbox: true,
@@ -257,8 +260,7 @@ export class WindowHandler {
             }
             this.url = this.mainWindow.webContents.getURL();
 
-            // Injects custom title bar css into the webContents
-            // only for Window and if it is enabled
+            // Injects custom title bar and snack bar css into the webContents
             await injectStyles(this.mainWindow, this.isCustomTitleBar);
 
             this.mainWindow.webContents.send('page-load', {
@@ -297,6 +299,23 @@ export class WindowHandler {
             }
         });
 
+        this.mainWindow.webContents.on('crashed', (_event: Event, killed: boolean)  => {
+            if (killed) {
+                return;
+            }
+            electron.dialog.showMessageBox({
+                type: 'error',
+                title: i18n.t('Renderer Process Crashed')(),
+                message: i18n.t('Oops! Looks like we have had a crash. Please reload or close this window.')(),
+                buttons: [ 'Reload', 'Close' ],
+            }, (index: number) => {
+                if (!this.mainWindow || !windowExists(this.mainWindow)) {
+                    return;
+                }
+                index === 0 ? this.mainWindow.reload() : this.mainWindow.close();
+            });
+        });
+
         // Handle main window close
         this.mainWindow.on('close', (event) => {
             if (!this.mainWindow || !windowExists(this.mainWindow)) {
@@ -315,10 +334,17 @@ export class WindowHandler {
             }
         });
 
+        this.mainWindow.once('closed', () => {
+            this.destroyAllWindow();
+        });
+
         // Certificate verification proxy
         if (!isDevEnv) {
             this.mainWindow.webContents.session.setCertificateVerifyProc(handleCertificateProxyVerification);
         }
+
+        // Register global shortcuts
+        this.registerGlobalShortcuts();
 
         // Validate window navigation
         preventWindowNavigation(this.mainWindow, false);
@@ -758,6 +784,43 @@ export class WindowHandler {
      */
     public removeWindow(key: string): void {
         delete this.windows[ key ];
+    }
+
+    /**
+     * Registers keyboard shortcuts or devtools
+     */
+    private registerGlobalShortcuts(): void {
+        globalShortcut.register(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I', this.onRegisterDevtools);
+
+        app.on('browser-window-focus', () => {
+            globalShortcut.register(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I', this.onRegisterDevtools);
+        });
+
+        app.on('browser-window-blur', () => {
+            globalShortcut.unregister(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I');
+        });
+    }
+
+    /**
+     * Verifies and toggle devtool based on global config settings
+     * else displays a dialog
+     */
+    private onRegisterDevtools(): void {
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+        const { devToolsEnabled } = config.getGlobalConfigFields([ 'devToolsEnabled' ]);
+        if (focusedWindow && windowExists(focusedWindow)) {
+            if (devToolsEnabled) {
+                focusedWindow.webContents.toggleDevTools();
+            } else {
+                focusedWindow.webContents.closeDevTools();
+                electron.dialog.showMessageBox(focusedWindow, {
+                    type: 'warning',
+                    buttons: ['Ok'],
+                    title: i18n.t('Dev Tools disabled')(),
+                    message: i18n.t('Dev Tools has been disabled! Please contact your system administrator to enable it!')(),
+                });
+            }
+        }
     }
 
     /**
