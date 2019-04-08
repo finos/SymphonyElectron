@@ -26,15 +26,15 @@
   },
   "build": {
     "asarUnpack": [
-      "node_modules/@paulcbetts/cld/build/Release/cld.node"
+      "node_modules/@nornagon/cld/build/Release/cld.node"
     ],
     "files": [
       "!coverage/*",
       "!installer/*",
       "!tests/*",
-      "!node_modules/@paulcbetts/cld/deps/cld${/*}",
-      "!node_modules/@paulcbetts/cld/build/deps${/*}",
-      "!node_modules/@paulcbetts/spellchecker/vendor${/*}"
+      "!node_modules/@nornagon/cld/deps/cld${/*}",
+      "!node_modules/@nornagon/cld/build/deps${/*}",
+      "!node_modules/@nornagon/spellchecker/vendor${/*}"
     ],
     "extraFiles": [
       "config/Symphony.config",
