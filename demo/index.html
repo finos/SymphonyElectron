@@ -288,25 +288,97 @@
         });
 
         var getVersionInfo = document.getElementById('get-version');
-        getVersionInfo.addEventListener('click', function() {
-            ssf.getVersionInfo().then(function(verInfo) {
-                let apiVersionInfo = document.getElementById('api-version');
-                let containerIdentifier = document.getElementById('container-identifier');
-                let version = document.getElementById('container-ver');
-                let buildNumber = document.getElementById('build-number');
-                let searchApiVer = document.getElementById('search-api-ver');
+        getVersionInfo.addEventListener('click', () => {
+            if (window.ssf) {
+                ssf.getVersionInfo().then((verInfo) => {
+                    let apiVersionInfo = document.getElementById('api-version');
+                    let containerIdentifier = document.getElementById('container-identifier');
+                    let version = document.getElementById('container-ver');
+                    let buildNumber = document.getElementById('build-number');
+                    let searchApiVer = document.getElementById('search-api-ver');
 
-                apiVersionInfo.innerText = verInfo.apiVer;
-                containerIdentifier.innerText = verInfo.containerIdentifier;
-                version.innerText = verInfo.containerVer;
-                buildNumber.innerText = verInfo.buildNumber;
-                searchApiVer.innerText = verInfo.searchApiVer;
-            });
+                    apiVersionInfo.innerText = verInfo.apiVer;
+                    containerIdentifier.innerText = verInfo.containerIdentifier;
+                    version.innerText = verInfo.containerVer;
+                    buildNumber.innerText = verInfo.buildNumber;
+                    searchApiVer.innerText = verInfo.searchApiVer;
+                });
+            } else {
+                postRequest(apiCmds.getVersionInfo, null, {
+                    successCallback: (verInfo) => {
+                        let apiVersionInfo = document.getElementById('api-version');
+                        let containerIdentifier = document.getElementById('container-identifier');
+                        let version = document.getElementById('container-ver');
+                        let buildNumber = document.getElementById('build-number');
+                        let searchApiVer = document.getElementById('search-api-ver');
+
+                        apiVersionInfo.innerText = verInfo.apiVer;
+                        containerIdentifier.innerText = verInfo.containerIdentifier;
+                        version.innerText = verInfo.containerVer;
+                        buildNumber.innerText = verInfo.buildNumber;
+                        searchApiVer.innerText = verInfo.searchApiVer;
+                    }
+                });
+            }
         });
 
         /**
          * Core post message api handler
          */
+        const pending = [];
+        /**
+         * Delete the request once we get the response
+         * @returns {boolean}
+         * @param id
+         */
+        const forgetRequest = (id) => {
+            return delete pending[ id ];
+        };
+
+        const broadcastMessage = (method, data) => {
+            window.postMessage({ method: method, data: data }, window.origin);
+        };
+        /**
+         *
+         * @param method
+         * @param data
+         * @param handlers
+         */
+        const postRequest = (method, data = {}, handlers) => {
+            const request = Object.assign({ requestId: ++requestId }, data);
+            pending[ request.requestId ] = {
+                errorCallback: (error) => {
+                    return handlers.errorCallback(error)
+                        && forgetRequest(request.requestId);
+                },
+                successCallback: (response) => {
+                    return handlers.successCallback(response)
+                        && forgetRequest(request.requestId);
+                },
+            };
+            broadcastMessage(method, request);
+            return request.requestId;
+        };
+
+        const handleResponse = (data) => {
+            if (data && data.requestId) {
+                const id = data.requestId;
+                const content = data;
+                const resolver = pending[ id ];
+                if (!resolver) {
+                    return;
+                }
+                if (content.error) {
+                    resolver.errorCallback(content.error);
+                    return;
+                }
+                if (content.response) {
+                    resolver.successCallback(content.response);
+                    return;
+                }
+                resolver.successCallback(content);
+            }
+        };
 
         const postMessage = (method, data) => {
             window.postMessage({ method, data }, '*');
@@ -317,35 +389,6 @@
             switch (method) {
                 case 'activity-callback':
                     activityCallback(data);
-                    break;
-                case 'media-source-callback':
-                    if (data.error) {
-                        if (data.error.message === 'User Cancelled') {
-                            console.error('user canceled');
-                        } else {
-                            throw new Error(data.error);
-                        }
-                        return;
-                    }
-                    const constraints = {
-                        mandatory: {
-                            chromeMediaSource: 'desktop',
-                            maxWidth: screen.width > 1920 ? 1920 : screen.width,
-                            maxHeight: screen.height > 1080 ? 1080 : screen.height,
-                            chromeMediaSourceId: data.source.id
-                        },
-                        optional: []
-                    };
-                    navigator.mediaDevices.getUserMedia({ video: constraints }).then((stream) => {
-                        handleStream(stream, data.source.display_id);
-                    });
-                    break;
-                case 'screen-sharing-indicator-callback':
-                    if (!data || typeof data.type !== 'string' || !requestId) {
-                        console.error(`screen-sharing-indicator-callback invalid args ${data}`);
-                    } else {
-                        console.log(`screen sharing will be stopped`);
-                    }
                     break;
                 case 'screen-snippet-callback':
                     if (data) {
@@ -359,6 +402,9 @@
                         }
                     }
                     break;
+                case 'media-source-callback':
+                case 'screen-sharing-indicator-callback':
+                    handleResponse(data);
                 default:
                     console.log(event.data);
             }
@@ -444,7 +490,33 @@
                     }, handleError);
                 });
             } else {
-                postMessage(apiCmds.getMediaSource, { types: ['window', 'screen'], requestId: ++requestId });
+                const successHandler = (data) => {
+                    const constraints = {
+                        mandatory: {
+                            chromeMediaSource: 'desktop',
+                            maxWidth: screen.width > 1920 ? 1920 : screen.width,
+                            maxHeight: screen.height > 1080 ? 1080 : screen.height,
+                            chromeMediaSourceId: data.source.id
+                        },
+                        optional: []
+                    };
+                    navigator.mediaDevices.getUserMedia({ video: constraints }).then((stream) => {
+                        handleStream(stream, data.source.display_id);
+                    });
+                };
+                const errorHandler = (data) => {
+                    if (data.error) {
+                        if (data.error.message === 'User Cancelled') {
+                            console.error('user canceled');
+                        } else {
+                            throw new Error(data.error);
+                        }
+                    }
+                };
+                postRequest(apiCmds.getMediaSource, { types: ['window', 'screen'] }, {
+                    successCallback: (data) => successHandler(data),
+                    errorCallback: (error) => errorHandler(error),
+                });
             }
         });
 
@@ -462,7 +534,24 @@
                     }
                 });
             } else {
-                postMessage(apiCmds.openScreenSharingIndicator, { streamId: stream.id, displayId, requestId: ++requestId });
+                const success = (data) => {
+                    if (data.error) {
+                        if (data.error.message === 'User Cancelled') {
+                            console.error('user canceled');
+                        } else {
+                            throw new Error(data.error);
+                        }
+                        return;
+                    }
+                    if (!data || typeof data.type !== 'string' || !requestId) {
+                        console.error(`screen-sharing-indicator-callback invalid args ${data}`);
+                    } else {
+                        console.log(`screen sharing will be stopped`);
+                    }
+                };
+                postRequest(apiCmds.openScreenSharingIndicator, { streamId: stream.id, displayId }, {
+                    successCallback: (data) => success(data),
+                });
             }
         };
 

@@ -323,7 +323,7 @@ export class WindowHandler {
             }
 
             if (this.willQuitApp) {
-                return this.destroyAllWindow();
+                return this.destroyAllWindows();
             }
 
             if (config.getConfigFields([ 'minimizeOnClose' ]).minimizeOnClose) {
@@ -335,7 +335,7 @@ export class WindowHandler {
         });
 
         this.mainWindow.once('closed', () => {
-            this.destroyAllWindow();
+            this.destroyAllWindows();
         });
 
         // Certificate verification proxy
@@ -826,7 +826,7 @@ export class WindowHandler {
     /**
      * Cleans up reference
      */
-    private destroyAllWindow(): void {
+    private destroyAllWindows(): void {
         for (const key in this.windows) {
             if (Object.prototype.hasOwnProperty.call(this.windows, key)) {
                 const winKey = this.windows[ key ];

@@ -68,7 +68,12 @@ export default class AppBridge {
         const { method, data } = event.data;
         switch (method) {
             case apiCmds.getVersionInfo:
-                this.broadcastMessage('get-version-info-callback', ssf.getVersionInfo());
+                ssf.getVersionInfo().then((versionInfo) => {
+                    this.broadcastMessage('get-version-info-callback', {
+                        requestId: data.requestId,
+                        response: versionInfo,
+                    });
+                });
                 break;
             case apiCmds.activate:
                 ssf.activate(data as string);

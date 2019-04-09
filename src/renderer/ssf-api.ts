@@ -134,17 +134,17 @@ export class SSFApi {
     /**
      * Method that returns various version info
      */
-    public getVersionInfo(): IVersionInfo {
+    public getVersionInfo(): Promise<IVersionInfo> {
         const appName = remote.app.getName();
         const appVer = remote.app.getVersion();
 
-        return {
+        return Promise.resolve({
             containerIdentifier: appName,
             containerVer: appVer,
             buildNumber,
             apiVer: '2.0.0',
             searchApiVer: '3.0.0',
-        };
+        });
     }
 
     /**
