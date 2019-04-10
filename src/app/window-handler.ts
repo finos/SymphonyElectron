@@ -381,7 +381,9 @@ export class WindowHandler {
             }
 
             // Ready to show the window
-            this.mainWindow.show();
+            if (!this.isAutoReload) {
+                this.mainWindow.show();
+            }
         }
     }
 

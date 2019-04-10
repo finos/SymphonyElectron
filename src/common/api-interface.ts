@@ -28,6 +28,7 @@ export enum apiCmds {
     closeNotification = 'close-notification',
     initMainWindow = 'init-main-window',
     isMisspelled = 'is-misspelled',
+    memoryInfo = 'memory-info',
 }
 
 export enum apiName {
@@ -37,6 +38,7 @@ export enum apiName {
 }
 
 export interface IApiArgs {
+    memoryInfo: Electron.ProcessMemoryInfo;
     word: string;
     cmd: apiCmds;
     isOnline: boolean;

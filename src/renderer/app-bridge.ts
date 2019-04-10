@@ -125,6 +125,11 @@ export default class AppBridge {
             case apiCmds.showNotificationSettings:
                 ssf.showNotificationSettings();
                 break;
+            case apiCmds.setIsInMeeting:
+                if (typeof data === 'boolean') {
+                    ssf.setIsInMeeting(data as boolean);
+                }
+                break;
         }
     }
 
