@@ -140,6 +140,8 @@
     </body>
     <script>
 
+        window.name = 'main';
+
         const apiCmds = {
                 isOnline: 'is-online',
                 getVersionInfo: 'get-version-info',
@@ -404,7 +406,10 @@
                     break;
                 case 'media-source-callback':
                 case 'screen-sharing-indicator-callback':
+                case 'get-version-info-callback':
                     handleResponse(data);
+                    console.log(event.data);
+                    break;
                 default:
                     console.log(event.data);
             }

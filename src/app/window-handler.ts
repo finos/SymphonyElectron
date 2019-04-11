@@ -810,19 +810,20 @@ export class WindowHandler {
     private onRegisterDevtools(): void {
         const focusedWindow = BrowserWindow.getFocusedWindow();
         const { devToolsEnabled } = config.getGlobalConfigFields([ 'devToolsEnabled' ]);
-        if (focusedWindow && windowExists(focusedWindow)) {
-            if (devToolsEnabled) {
-                focusedWindow.webContents.toggleDevTools();
-            } else {
-                focusedWindow.webContents.closeDevTools();
-                electron.dialog.showMessageBox(focusedWindow, {
-                    type: 'warning',
-                    buttons: ['Ok'],
-                    title: i18n.t('Dev Tools disabled')(),
-                    message: i18n.t('Dev Tools has been disabled! Please contact your system administrator to enable it!')(),
-                });
-            }
+        if (!focusedWindow || !windowExists(focusedWindow)) {
+            return;
         }
+        if (devToolsEnabled) {
+            focusedWindow.webContents.toggleDevTools();
+            return;
+        }
+        focusedWindow.webContents.closeDevTools();
+        electron.dialog.showMessageBox(focusedWindow, {
+            type: 'warning',
+            buttons: [ 'Ok' ],
+            title: i18n.t('Dev Tools disabled')(),
+            message: i18n.t('Dev Tools has been disabled! Please contact your system administrator to enable it!')(),
+        });
     }
 
     /**
