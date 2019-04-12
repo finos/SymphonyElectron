@@ -25,14 +25,10 @@ class ScreenSnippet {
     constructor() {
         this.tempDir = os.tmpdir();
         this.isAlwaysOnTop = false;
-        if (isMac) {
-            this.captureUtil = '/usr/sbin/screencapture';
-        } else {
-            this.captureUtil = isDevEnv
-                ? path.join(__dirname,
-                    '../../node_modules/screen-snippet/bin/Release/ScreenSnippet.exe')
-                : path.join(path.dirname(app.getPath('exe')), 'ScreenSnippet.exe');
-        }
+        this.captureUtil = isMac ? '/usr/sbin/screencapture' : isDevEnv
+            ? path.join(__dirname,
+                '../../node_modules/screen-snippet/bin/Release/ScreenSnippet.exe')
+            : path.join(path.dirname(app.getPath('exe')), 'ScreenSnippet.exe');
     }
 
     /**
@@ -119,14 +115,12 @@ class ScreenSnippet {
             const output = Buffer.from(data).toString('base64');
             return { message: 'success', data: output, type: 'image/png;base64' };
         } catch (error) {
-            if (error && error.code === 'ENOENT') {
-                // no such file exists, user likely aborted
-                // creating snippet. also include any error when
-                // creating child process.
-                return { message: `file does not exist`, type: 'ERROR' };
-            } else {
-                return { message: `${error}`, type: 'ERROR' };
-            }
+            // no such file exists or user likely aborted
+            // creating snippet. also include any error when
+            // creating child process.
+            return error && error.code === 'ENOENT'
+                ? { message: `file does not exist`, type: 'ERROR' }
+                : { message: `${error}`, type: 'ERROR' };
         } finally {
             // remove tmp file (async)
             if (this.outputFileName) {

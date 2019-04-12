@@ -13,13 +13,13 @@ export class AnimationQueue {
      *
      * @param object
      */
-    public push(object) {
+    public push(object): void {
         if (this.running) {
             this.queue.push(object);
-        } else {
-            this.running = true;
-            setTimeout(() => this.animate(object), 0);
+            return;
         }
+        this.running = true;
+        setTimeout(() => this.animate(object), 0);
     }
 
     /**
@@ -44,7 +44,7 @@ export class AnimationQueue {
     /**
      * Clears the queue
      */
-    public clear() {
+    public clear(): void {
         this.queue = [];
     }
 }

@@ -326,12 +326,13 @@ export class WindowHandler {
                 return this.destroyAllWindows();
             }
 
-            if (config.getConfigFields([ 'minimizeOnClose' ]).minimizeOnClose) {
+            const { minimizeOnClose } = config.getConfigFields([ 'minimizeOnClose' ]);
+            if (minimizeOnClose) {
                 event.preventDefault();
                 isMac ? this.mainWindow.hide() : this.mainWindow.minimize();
-            } else {
-                app.quit();
+                return;
             }
+            app.quit();
         });
 
         this.mainWindow.once('closed', () => {
