@@ -1,5 +1,13 @@
 jest.mock('electron-log');
 
+jest.mock('../src/app/window-handler', () => {
+    return {
+        windowHandler: {
+            setIsAutoReload: jest.fn(() => true),
+        },
+    };
+});
+
 describe('activity detection', () => {
     const originalTimeout: number = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;

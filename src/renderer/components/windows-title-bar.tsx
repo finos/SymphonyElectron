@@ -39,16 +39,18 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
         this.window.on('leave-full-screen', () => this.updateState({ isFullScreen: false }));
     }
 
-    public componentDidMount() {
+    public componentDidMount(): void {
         const contentWrapper = document.getElementById('content-wrapper');
-        if (contentWrapper) {
-            if (this.state.isFullScreen) {
-                contentWrapper.style.marginTop = '0px';
-                document.body.style.removeProperty('margin-top');
-            } else {
-                contentWrapper.style.marginTop = this.state.titleBarHeight;
-            }
+        if (!contentWrapper) {
+            document.body.style.marginTop = this.state.titleBarHeight;
+            return;
         }
+        if (this.state.isFullScreen) {
+            contentWrapper.style.marginTop = '0px';
+            document.body.style.removeProperty('margin-top');
+            return;
+        }
+        contentWrapper.style.marginTop = this.state.titleBarHeight;
     }
 
     public componentWillMount() {
@@ -146,23 +148,22 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
                     </svg>
                 </button>
             );
-        } else {
-            return (
-                <button
-                    className='title-bar-button'
-                    title={i18n.t('unMaximize')()}
-                    onClick={this.eventHandlers.onMaximize  }
-                    onMouseDown={this.handleMouseDown}
-                >
-                    <svg x='0px' y='0px' viewBox='0 0 14 10.2'>
-                        <path
-                            fill='rgba(255, 255, 255, 0.9)'
-                            d='M0,0v10.1h10.2V0H0z M9.2,9.2H1.1V1h8.1V9.2z'
-                        />
-                    </svg>
-                </button>
-            );
         }
+        return (
+            <button
+                className='title-bar-button'
+                title={i18n.t('unMaximize')()}
+                onClick={this.eventHandlers.onMaximize}
+                onMouseDown={this.handleMouseDown}
+            >
+                <svg x='0px' y='0px' viewBox='0 0 14 10.2'>
+                    <path
+                        fill='rgba(255, 255, 255, 0.9)'
+                        d='M0,0v10.1h10.2V0H0z M9.2,9.2H1.1V1h8.1V9.2z'
+                    />
+                </svg>
+            </button>
+        );
     }
 
     /**

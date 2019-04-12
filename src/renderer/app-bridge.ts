@@ -60,7 +60,7 @@ export default class AppBridge {
      *
      * @param event
      */
-    private handleMessage(event): void {
+    private async handleMessage(event): Promise<void> {
         if (!AppBridge.isValidEvent(event)) {
             return;
         }
@@ -68,7 +68,11 @@ export default class AppBridge {
         const { method, data } = event.data;
         switch (method) {
             case apiCmds.getVersionInfo:
-                this.broadcastMessage('get-version-info-callback', ssf.getVersionInfo());
+                const versionInfo = await ssf.getVersionInfo();
+                this.broadcastMessage('get-version-info-callback', {
+                    requestId: data.requestId,
+                    response: versionInfo,
+                });
                 break;
             case apiCmds.activate:
                 ssf.activate(data as string);
@@ -119,6 +123,11 @@ export default class AppBridge {
                 break;
             case apiCmds.showNotificationSettings:
                 ssf.showNotificationSettings();
+                break;
+            case apiCmds.setIsInMeeting:
+                if (typeof data === 'boolean') {
+                    ssf.setIsInMeeting(data as boolean);
+                }
                 break;
         }
     }

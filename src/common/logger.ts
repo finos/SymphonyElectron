@@ -211,12 +211,13 @@ class Logger {
 
         if (this.loggerWindow) {
             this.loggerWindow.send('log', { msgs: [ logMsg ], logLevel: this.desiredLogLevel, showInConsole: this.showInConsole });
-        } else {
-            this.logQueue.push(logMsg);
-            // don't store more than 100 msgs. keep most recent log msgs.
-            if (this.logQueue.length > MAX_LOG_QUEUE_LENGTH) {
-                this.logQueue.shift();
-            }
+            return;
+        }
+
+        this.logQueue.push(logMsg);
+        // don't store more than 100 msgs. keep most recent log msgs.
+        if (this.logQueue.length > MAX_LOG_QUEUE_LENGTH) {
+            this.logQueue.shift();
         }
     }
 

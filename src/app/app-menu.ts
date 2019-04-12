@@ -96,11 +96,11 @@ export class AppMenu {
      * @param opts {Electron.PopupOptions}
      */
     public popupMenu(opts: Electron.PopupOptions): void {
-        if (this.menu) {
-            this.menu.popup(opts);
-        } else {
+        if (!this.menu) {
             logger.error(`app-menu: tried popup menu, but failed menu not defined`);
+            return;
         }
+        this.menu.popup(opts);
     }
 
     /**
@@ -311,18 +311,19 @@ export class AppMenu {
                         accelerator: isMac ? 'Alt+Command+I' : 'Ctrl+Shift+I',
                         click(_item, focusedWindow) {
                             const devToolsEnabled = config.getGlobalConfigFields([ 'devToolsEnabled' ]);
-                            if (focusedWindow && windowExists(focusedWindow)) {
-                                if (devToolsEnabled) {
-                                    focusedWindow.webContents.toggleDevTools();
-                                } else {
-                                    dialog.showMessageBox(focusedWindow, {
-                                        type: 'warning',
-                                        buttons: [ 'Ok' ],
-                                        title: i18n.t('Dev Tools disabled')(),
-                                        message: i18n.t('Dev Tools has been disabled. Please contact your system administrator')(),
-                                    });
-                                }
+                            if (!focusedWindow || !windowExists(focusedWindow)) {
+                                return;
                             }
+                            if (devToolsEnabled) {
+                                focusedWindow.webContents.toggleDevTools();
+                                return;
+                            }
+                            dialog.showMessageBox(focusedWindow, {
+                                type: 'warning',
+                                buttons: [ 'Ok' ],
+                                title: i18n.t('Dev Tools disabled')(),
+                                message: i18n.t('Dev Tools has been disabled. Please contact your system administrator')(),
+                            });
                         },
                     },{
                             click: () => windowHandler.createMoreInfoWindow(),

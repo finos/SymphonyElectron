@@ -100,10 +100,10 @@ class AutoLaunchController extends AutoLaunch {
             if (!isAutoLaunchEnabled) {
                 await this.enableAutoLaunch();
             }
-        } else {
-            if (isAutoLaunchEnabled) {
-                await this.disableAutoLaunch();
-            }
+            return;
+        }
+        if (isAutoLaunchEnabled) {
+            await this.disableAutoLaunch();
         }
     }
 }

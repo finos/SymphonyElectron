@@ -127,6 +127,9 @@ export const handleKeyPress = (key: number): void => {
             break;
         }
         case KeyCodes.Alt:
+            if (isMac) {
+                return;
+            }
             const browserWin = BrowserWindow.getFocusedWindow();
             if (browserWin && !browserWin.isDestroyed()) {
                 showPopupMenu({ window: browserWin });

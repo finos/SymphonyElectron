@@ -5,6 +5,7 @@ import { LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { activityDetection } from './activity-detection';
 import { config } from './config-handler';
+import { memoryMonitor } from './memory-monitor';
 import { protocolHandler } from './protocol-handler';
 import { screenSnippet } from './screen-snippet-handler';
 import { activate, handleKeyPress } from './window-actions';
@@ -130,6 +131,16 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
         case apiCmds.isMisspelled:
             if (typeof arg.word === 'string') {
                 event.returnValue = windowHandler.spellchecker ? windowHandler.spellchecker.isMisspelled(arg.word) : false;
+            }
+            break;
+        case apiCmds.setIsInMeeting:
+            if (typeof arg.isInMeeting === 'boolean') {
+                memoryMonitor.setMeetingStatus(arg.isInMeeting);
+            }
+            break;
+        case apiCmds.memoryInfo:
+            if (typeof arg.memoryInfo === 'object') {
+                memoryMonitor.setMemoryInfo(arg.memoryInfo);
             }
             break;
         default:

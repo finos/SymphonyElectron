@@ -108,9 +108,9 @@ app.on('activate', () => {
     const mainWindow: ICustomBrowserWindow | null = windowHandler.getMainWindow();
     if (!mainWindow || mainWindow.isDestroyed()) {
         startApplication();
-    } else {
-        mainWindow.show();
+        return;
     }
+    mainWindow.show();
 });
 
 /**

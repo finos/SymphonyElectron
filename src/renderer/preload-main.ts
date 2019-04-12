@@ -16,6 +16,7 @@ interface ISSFWindow extends Window {
 
 const ssfWindow: ISSFWindow = window;
 const appBridge = new AppBridge();
+const memoryInfoFetchInterval = 60 * 60 * 1000;
 
 /**
  * creates API exposed from electron.
@@ -87,5 +88,13 @@ ipcRenderer.on('page-load', (_event, { locale, resources, origin, enableCustomTi
         ipcRenderer.send(apiName.symphonyApi, {
             cmd: apiCmds.initMainWindow,
         });
+
+        setInterval(async () => {
+            const memoryInfo = await process.getProcessMemoryInfo();
+            ipcRenderer.send(apiName.symphonyApi, {
+                cmd: apiCmds.memoryInfo,
+                memoryInfo,
+            });
+        }, memoryInfoFetchInterval);
     }
 });

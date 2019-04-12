@@ -30,7 +30,11 @@ Test Window has been opened
         var incBadgeEl = document.getElementById('inc-badge');
         incBadgeEl.addEventListener('click', function() {
             badgeCount++;
-            ssf.setBadgeCount(badgeCount);
+            if (window.ssf) {
+                ssf.setBadgeCount(badgeCount);
+            } else {
+                postMessage({ method: 'set-badge-count', data: badgeCount }, window.origin);
+            }
         });
 
         var openWinButton = document.getElementById('open-win');

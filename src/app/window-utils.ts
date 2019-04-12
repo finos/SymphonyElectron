@@ -15,12 +15,24 @@ import { config } from './config-handler';
 import { screenSnippet } from './screen-snippet-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
+interface IStyles {
+    name: styleNames;
+    content: string;
+}
+
+enum styleNames {
+    titleBar = 'title-bar',
+    snackBar = 'snack-bar',
+}
+
 const checkValidWindow = true;
 const { url: configUrl, ctWhitelist } = config.getGlobalConfigFields([ 'url', 'ctWhitelist' ]);
 
 // Network status check variables
 const networkStatusCheckInterval = 10 * 1000;
 let networkStatusCheckIntervalId;
+
+const styles: IStyles[] = [];
 
 /**
  * Checks if window is valid and exists
@@ -153,16 +165,19 @@ export const showBadgeCount = (count: number): void => {
 
     // handle ms windows...
     const mainWindow = windowHandler.getMainWindow();
-    if (mainWindow) {
-        if (count > 0) {
-            // get badge img from renderer process, will return
-            // img dataUrl in setDataUrl func.
-            mainWindow.webContents.send('create-badge-data-url', { count });
-        } else {
-            // clear badge count icon
-            mainWindow.setOverlayIcon(null, '');
-        }
+    if (!mainWindow || !windowExists(mainWindow)) {
+        return;
     }
+
+    // get badge img from renderer process, will return
+    // img dataUrl in setDataUrl func.
+    if (count > 0) {
+        mainWindow.webContents.send('create-badge-data-url', { count });
+        return;
+    }
+
+    // clear badge count icon
+    mainWindow.setOverlayIcon(null, '');
 };
 
 /**
@@ -288,10 +303,15 @@ export const getBounds = (winPos: Electron.Rectangle, defaultWidth: number, defa
  * @param type
  * @param filePath
  */
-export const downloadManagerAction = (type, filePath) => {
+export const downloadManagerAction = (type, filePath): void => {
+    const focusedWindow = electron.BrowserWindow.getFocusedWindow();
+
+    if (!focusedWindow || !windowExists(focusedWindow)) {
+        return;
+    }
+
     if (type === 'open') {
         const openResponse = electron.shell.openExternal(`file:///${filePath}`);
-        const focusedWindow = electron.BrowserWindow.getFocusedWindow();
         if (!openResponse && focusedWindow && !focusedWindow.isDestroyed()) {
             electron.dialog.showMessageBox(focusedWindow, {
                 message: i18n.t('The file you are trying to open cannot be found in the specified path.')(),
@@ -299,16 +319,16 @@ export const downloadManagerAction = (type, filePath) => {
                 type: 'error',
             });
         }
-    } else {
-        const showResponse = electron.shell.showItemInFolder(filePath);
-        const focusedWindow = electron.BrowserWindow.getFocusedWindow();
-        if (!showResponse && focusedWindow && !focusedWindow.isDestroyed()) {
-            electron.dialog.showMessageBox(focusedWindow, {
-                message: i18n.t('The file you are trying to open cannot be found in the specified path.')(),
-                title: i18n.t('File not Found')(),
-                type: 'error',
-            });
-        }
+        return;
+    }
+
+    const showResponse = electron.shell.showItemInFolder(filePath);
+    if (!showResponse) {
+        electron.dialog.showMessageBox(focusedWindow, {
+            message: i18n.t('The file you are trying to open cannot be found in the specified path.')(),
+            title: i18n.t('File not Found')(),
+            type: 'error',
+        });
     }
 };
 
@@ -339,10 +359,11 @@ export const handleDownloadManager = (_event, item: Electron.DownloadItem, webCo
  * Inserts css in to the window
  *
  * @param window {BrowserWindow}
- * @param paths {string[]}
  */
-const readAndInsertCSS = async (window, paths): Promise<void> => {
-    return paths.map((filePath) => window.webContents.insertCSS(fs.readFileSync(filePath, 'utf8').toString()));
+const readAndInsertCSS = async (window): Promise<IStyles[] | void> => {
+    if (window && windowExists(window)) {
+        return styles.map(({ content }) => window.webContents.insertCSS(content));
+    }
 };
 
 /**
@@ -351,31 +372,36 @@ const readAndInsertCSS = async (window, paths): Promise<void> => {
  * @param mainWindow {BrowserWindow}
  * @param isCustomTitleBar {boolean} - whether custom title bar enabled
  */
-export const injectStyles = async (mainWindow: BrowserWindow, isCustomTitleBar: boolean): Promise<void> => {
-    const paths: string[] = [];
+export const injectStyles = async (mainWindow: BrowserWindow, isCustomTitleBar: boolean): Promise<IStyles[] | void> => {
     if (isCustomTitleBar) {
-        let titleBarStylesPath;
-        const stylesFileName = path.join('config', 'titleBarStyles.css');
-        if (isDevEnv) {
-            titleBarStylesPath = path.join(app.getAppPath(), stylesFileName);
-        } else {
-            const execPath = path.dirname(app.getPath('exe'));
-            titleBarStylesPath = path.join(execPath, stylesFileName);
+        const index = styles.findIndex(({ name }) => name === styleNames.titleBar);
+        if (index === -1) {
+            let titleBarStylesPath;
+            const stylesFileName = path.join('config', 'titleBarStyles.css');
+            if (isDevEnv) {
+                titleBarStylesPath = path.join(app.getAppPath(), stylesFileName);
+            } else {
+                const execPath = path.dirname(app.getPath('exe'));
+                titleBarStylesPath = path.join(execPath, stylesFileName);
+            }
+            // Window custom title bar styles
+            if (fs.existsSync(titleBarStylesPath)) {
+                styles.push({ name: styleNames.titleBar, content: fs.readFileSync(titleBarStylesPath, 'utf8').toString() });
+            } else {
+                const stylePath = path.join(__dirname, '..', '/renderer/styles/title-bar.css');
+                styles.push({ name: styleNames.titleBar, content: fs.readFileSync(stylePath, 'utf8').toString() });
+            }
         }
-        // Window custom title bar styles
-        if (fs.existsSync(titleBarStylesPath)) {
-            paths.push(titleBarStylesPath);
-        } else {
-            paths.push(path.join(__dirname, '..', '/renderer/styles/title-bar.css'));
-        }
-    } else {
-        paths.push(path.join(__dirname, '..', '/renderer/styles/title-bar.css'));
+    }
+    // Snack bar styles
+    if (styles.findIndex(({ name }) => name === styleNames.snackBar) === -1) {
+        styles.push({
+            name: styleNames.snackBar,
+            content: fs.readFileSync(path.join(__dirname, '..', '/renderer/styles/snack-bar.css'), 'utf8').toString(),
+        });
     }
 
-    // Snack bar styles
-    paths.push(path.join(__dirname, '..', '/renderer/styles/snack-bar.css'));
-
-    return await readAndInsertCSS(mainWindow, paths);
+    return await readAndInsertCSS(mainWindow);
 };
 
 /**
@@ -430,9 +456,9 @@ export const isSymphonyReachable = (window: ICustomBrowserWindow | null) => {
                     clearInterval(networkStatusCheckIntervalId);
                     networkStatusCheckIntervalId = null;
                 }
-            } else {
-                logger.warn(`Symphony down! statusCode: ${rsp.status} is online: ${windowHandler.isOnline}`);
+                return;
             }
+            logger.warn(`Symphony down! statusCode: ${rsp.status} is online: ${windowHandler.isOnline}`);
         }).catch((error) => {
             logger.error(`Network status check: No active network connection ${error}`);
         });

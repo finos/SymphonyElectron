@@ -79,6 +79,13 @@ const throttledCloseScreenShareIndicator = throttle((streamId) => {
     });
 }, 1000);
 
+const throttledSetIsInMeetingStatus = throttle((isInMeeting) => {
+    local.ipcRenderer.send(apiName.symphonyApi, {
+        cmd: apiCmds.setIsInMeeting,
+        isInMeeting,
+    });
+}, 1000);
+
 let cryptoLib: ICryptoLib | null;
 try {
     cryptoLib = remote.require('../app/crypto-handler.js').cryptoLibrary;
@@ -134,17 +141,17 @@ export class SSFApi {
     /**
      * Method that returns various version info
      */
-    public getVersionInfo(): IVersionInfo {
+    public getVersionInfo(): Promise<IVersionInfo> {
         const appName = remote.app.getName();
         const appVer = remote.app.getVersion();
 
-        return {
+        return Promise.resolve({
             containerIdentifier: appName,
             containerVer: appVer,
             buildNumber,
             apiVer: '2.0.0',
             searchApiVer: '3.0.0',
-        };
+        });
     }
 
     /**
@@ -263,6 +270,14 @@ export class SSFApi {
             i18n.setLocale(locale as LocaleType);
             throttledSetLocale(locale);
         }
+    }
+
+    /**
+     * Sets if the user is in an active meeting
+     * will be used to handle memory refresh functionality
+     */
+    public setIsInMeeting(isInMeeting): void {
+        throttledSetIsInMeetingStatus(isInMeeting);
     }
 
     /**
