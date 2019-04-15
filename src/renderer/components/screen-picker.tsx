@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { DesktopCapturerSource, ipcRenderer } from 'electron';
+import { ipcRenderer } from 'electron';
 import * as React from 'react';
 
 import { apiCmds, apiName } from '../../common/api-interface';
@@ -10,9 +10,13 @@ const screenRegExp = new RegExp(/^Screen \d+$/gmi);
 const SCREEN_PICKER_NAMESPACE = 'ScreenPicker';
 
 interface IState {
-    sources: Electron.DesktopCapturerSource[];
-    selectedSource: DesktopCapturerSource | undefined;
+    sources: ICustomDesktopCapturerSource[];
+    selectedSource: ICustomDesktopCapturerSource | undefined;
     selectedTab: tabs;
+}
+
+interface ICustomDesktopCapturerSource extends Electron.DesktopCapturerSource {
+    fileName: string | null;
 }
 
 type tabs = 'screens' | 'applications';
@@ -37,7 +41,7 @@ export default class ScreenPicker extends React.Component<{}, IState> {
     private isScreensAvailable: boolean;
     private isApplicationsAvailable: boolean;
     private readonly eventHandlers = {
-        onSelect: (src: Electron.DesktopCapturerSource) => this.select(src),
+        onSelect: (src: ICustomDesktopCapturerSource) => this.select(src),
         onToggle: (tab: tabs) => (_event: inputChangeEvent) => this.toggle(tab),
         onClose: () => this.close(),
         onSubmit: () => this.submit(),
@@ -118,16 +122,24 @@ export default class ScreenPicker extends React.Component<{}, IState> {
      *
      * @param sources {DesktopCapturerSource}
      */
-    private renderSources(sources: Electron.DesktopCapturerSource[]): JSX.Element {
+    private renderSources(sources: ICustomDesktopCapturerSource[]): JSX.Element {
         const screens: JSX.Element[] = [];
         const applications: JSX.Element[] = [];
-        sources.map((source: Electron.DesktopCapturerSource) => {
+        sources.map((source: ICustomDesktopCapturerSource) => {
             screenRegExp.lastIndex = 0;
             const shouldHighlight: string = classNames(
                 'ScreenPicker-item-container',
                 { 'ScreenPicker-selected': this.shouldHighlight(source.id) },
             );
-            if (source.name === 'Entire screen' || screenRegExp.exec(source.name)) {
+            if (source.display_id !== '') {
+                source.fileName = 'fullscreen';
+                let sourceName;
+                if (source.name === 'Entire screen') {
+                    sourceName = i18n.t('Entire screen', SCREEN_PICKER_NAMESPACE)();
+                } else {
+                    const screenNumber = source.name.substr(7, source.name.length);
+                    sourceName = i18n.t('Screen {number}', SCREEN_PICKER_NAMESPACE)({ number: screenNumber });
+                }
                 screens.push(
                     <div
                         className={shouldHighlight}
@@ -136,10 +148,11 @@ export default class ScreenPicker extends React.Component<{}, IState> {
                         <div className='ScreenPicker-screen-section-box'>
                             <img className='ScreenPicker-img-wrapper' src={source.thumbnail as any} alt='thumbnail image'/>
                         </div>
-                        <div className='ScreenPicker-screen-source-title'>{source.name}</div>
+                        <div className='ScreenPicker-screen-source-title'>{sourceName}</div>
                     </div>,
                 );
             } else {
+                source.fileName = null;
                 applications.push(
                     <div
                         className={shouldHighlight}
@@ -261,7 +274,7 @@ export default class ScreenPicker extends React.Component<{}, IState> {
      *
      * @param selectedSource {DesktopCapturerSource}
      */
-    private select(selectedSource: DesktopCapturerSource): void {
+    private select(selectedSource: ICustomDesktopCapturerSource): void {
         this.setState({ selectedSource });
     }
 

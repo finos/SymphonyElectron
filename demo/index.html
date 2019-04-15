@@ -445,7 +445,8 @@
         const activityStatus = document.getElementById('activity-status');
         activityDetection.addEventListener('click', () => {
             if (window.ssf) {
-                window.ssf.registerActivityDetection(10000, activityDetection);
+                window.ssf.registerActivityDetection(5000, activityCallback);
+                startActivityInterval();
             } else {
                 postMessage(apiCmds.registerActivityDetection, 5000);
                 startActivityInterval();
@@ -571,8 +572,10 @@
             const locale = document.getElementById('locale-select').value;
             if (window.ssf) {
                 window.ssf.setLocale(locale);
+                document.location.reload();
             } else {
                 postMessage(apiCmds.setLocale, locale);
+                document.location.reload();
             }
         });
 

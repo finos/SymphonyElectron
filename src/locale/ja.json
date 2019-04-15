@@ -13,6 +13,10 @@
     "Please provide your login credentials for:": "あなたのログイン認証情報を入力してください。",
     "User name:": "ユーザー名："
   },
+  "MoreInfo": {
+    "More Information": "詳しくは",
+    "Version Information": "バージョン情報"
+  },
   "Bring All to Front": "すべて前面に表示",
   "Bring to Front on Notifications": "通知時に前面に表示",
   "Certificate Error": "証明書のエラー",
@@ -34,9 +38,9 @@
     "Search with Google": "Googleで検索"
   },
   "DownloadManager": {
-    "Show in Folder": "フォルダで見て",
-    "Reveal in Finder": "Finderで明らかにする",
-    "Open": "開いた",
+    "Show in Folder": "フォルダーを開く",
+    "Reveal in Finder": "Finderで確認する",
+    "Open": "開く",
     "Downloaded": "ダウンロード済み",
     "File not Found": "ファイルが見つかりません",
     "The file you are trying to open cannot be found in the specified path.": "開こうとしているファイルが指定されたパスに見つかりません."
@@ -46,6 +50,8 @@
   "Cut": "切り取り",
   "Delete": "削除",
   "Disable Hamburger menu": "ハンバーガーメニューを無効にする",
+  "Dev Tools disabled": "開発ツールが無効",
+  "Dev Tools has been disabled! Please contact your system administrator to enable it!": "開発ツールが無効になっています。システム管理者に連絡して、有効にしてください。",
   "Edit": "編集",
   "Enable Hamburger menu": "ハンバーガーメニューを有効にする",
   "Error loading configuration": "構成の読み込みエラー",
@@ -66,6 +72,12 @@
   "Minimize on Close": "閉じるで最小化",
   "Native": "Native",
   "Network connectivity has been lost. Check your internet connection.": "ネットワーク接続が失われました。インターネット接続を確認してください。",
+  "NetworkError": {
+    "Problem connecting to Symphony": "Symphonyへの接続に関する問題",
+    "Looks like you are not connected to the Internet. We'll try to reconnect automatically.": "インターネットに接続していないようです。 自動的に再接続します。",
+    "Cancel Retry": "再試行をキャンセル",
+    "Quit Symphony": "Symphonyを終了"
+  },
   "No crashes available to share": "共有できるクラッシュはありません",
   "No logs are available to share": "共有できるログはありません",
   "Not Allowed": "許可されていませ｡",
@@ -107,11 +119,13 @@
     "Screens": "画面",
     "Select Application": "アプリケーションを選択",
     "Select Screen": "画面を選択",
-    "Share": "共有"
+    "Share": "共有",
+    "Entire screen": "画面全体",
+    "Screen {number}": "画面 {number}"
   },
   "ScreenSharingIndicator": {
-    "You are sharing your screen on {appName}": "あなたは{appName}上であなたの画面を共有しています",
-    "Stop Sharing": "共有を停止",
+    "You are sharing your screen on Symphony": "あなたはSymphony上であなたの画面を共有しています",
+    "Stop sharing": "画面共有を停止",
     "Hide": "非表示にする"
   },
   "ScreenSnippet": {
@@ -120,6 +134,10 @@
     "Highlight": "強調",
     "Pen": "ペン",
     "Snipping Tool": "切り取りツール"
+  },
+  "AboutSymphony": {
+    "About Symphony": "Symphonyについて",
+    "Version": "バージョン"
   },
   "Select All": "すべてを選択",
   "Services": "サービス",
