@@ -204,10 +204,10 @@ export class WindowHandler {
         this.globalConfig = config.getGlobalConfigFields([ 'url', 'crashReporter' ]);
 
         this.windows = {};
+        this.isCustomTitleBar = isWindowsOS && this.config.isCustomTitleBar;
         this.windowOpts = { ...this.getMainWindowOpts(), ...opts };
         this.isAutoReload = false;
         this.isOnline = true;
-        this.isCustomTitleBar = isWindowsOS && this.config.isCustomTitleBar;
 
         this.appMenu = null;
 
