@@ -124,7 +124,7 @@
     "Screen {number}": "Screen {number}"
   },
   "ScreenSharingIndicator": {
-    "You are sharing your screen on Symphony": "You are sharing your screen on Symphony",
+    "You are sharing your screen on {appName}": "You are sharing your screen on {appName}",
     "Stop sharing": "Stop sharing",
     "Hide": "Hide"
   },

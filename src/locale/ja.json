@@ -124,7 +124,7 @@
     "Screen {number}": "画面 {number}"
   },
   "ScreenSharingIndicator": {
-    "You are sharing your screen on Symphony": "あなたはSymphony上であなたの画面を共有しています",
+    "You are sharing your screen on {appName}": "あなたは{appName}上であなたの画面を共有しています",
     "Stop sharing": "画面共有を停止",
     "Hide": "非表示にする"
   },
