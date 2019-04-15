@@ -88,9 +88,9 @@ describe('screen picker', () => {
         };
         const applicationScreenStateMock = {
             sources: [
-                { display_id: '0', id: '0', name: 'Application screen 0', thumbnail: undefined },
+                { display_id: '', id: '1', name: 'Application 1', thumbnail: undefined },
             ],
-            selectedSource: { display_id: '0', id: '0', name: 'Application screen 0', thumbnail: undefined },
+            selectedSource: { display_id: '', id: '1', name: 'Application 1', thumbnail: undefined },
         };
 
         it('should call `onToggle` when screen tab is changed', () => {
@@ -116,7 +116,7 @@ describe('screen picker', () => {
         it('should call `onSelect` when `ScreenPicker-item-container` in Entire screen is clicked', () => {
             const wrapper = shallow(React.createElement(ScreenPicker));
             const spy = jest.spyOn(ScreenPicker.prototype, 'setState');
-            const expectedValue = { selectedSource: { display_id: '0', id: '0', name: 'Entire screen', thumbnail: undefined }};
+            const expectedValue = { selectedSource: { display_id: '0', fileName: 'fullscreen', id: '0', name: 'Entire screen', thumbnail: undefined }};
             const customSelector = '.ScreenPicker-item-container';
             const applicationScreenStateMock = {
                 sources: [
@@ -124,7 +124,7 @@ describe('screen picker', () => {
                     { display_id: '1', id: '1', name: 'Application screen 1', thumbnail: undefined },
                     { display_id: '2', id: '2', name: 'Application screen 2', thumbnail: undefined },
                 ],
-                selectedSource: { display_id: '1', id: '1', name: 'Application screen 1', thumbnail: undefined },
+                selectedSource: { display_id: '1', fileName: 'fullscreen', id: '1', name: 'Application screen 1', thumbnail: undefined },
             };
             wrapper.setState(applicationScreenStateMock);
             wrapper.find(customSelector).first().simulate('click');
@@ -134,7 +134,7 @@ describe('screen picker', () => {
         it('should call `onSelect` when `ScreenPicker-item-container` in Application screen is clicked', () => {
             const wrapper = shallow(React.createElement(ScreenPicker));
             const spy = jest.spyOn(ScreenPicker.prototype, 'setState');
-            const expectedValue = { selectedSource: { display_id: '2', id: '2', name: 'Application screen 2', thumbnail: undefined }};
+            const expectedValue = { selectedSource: { display_id: '2', fileName: 'fullscreen', id: '2', name: 'Application screen 2', thumbnail: undefined }};
             const customSelector = '.ScreenPicker-item-container';
             const applicationScreenStateMock = {
                 sources: [
@@ -142,7 +142,7 @@ describe('screen picker', () => {
                     { display_id: '1', id: '1', name: 'Application screen 1', thumbnail: undefined },
                     { display_id: '2', id: '2', name: 'Application screen 2', thumbnail: undefined },
                 ],
-                selectedSource: { display_id: '1', id: '1', name: 'Application screen 1', thumbnail: undefined },
+                selectedSource: { display_id: '1', fileName: 'fullscreen', id: '1', name: 'Application screen 1', thumbnail: undefined },
             };
             wrapper.setState(applicationScreenStateMock);
             wrapper.find(customSelector).at(2).simulate('click');
@@ -172,7 +172,7 @@ describe('screen picker', () => {
 
         it('should call `handleKeyUpPress` pageDown key correctly', () => {
             const spy = jest.spyOn(ScreenPicker.prototype, 'setState');
-            const expectedValue = { selectedSource: { display_id: '2', id: '2', name: 'Application screen 2', thumbnail: undefined }};
+            const expectedValue = { selectedSource: { display_id: '2', fileName: 'fullscreen', id: '2', name: 'Application screen 2', thumbnail: undefined }};
             const wrapper = shallow(React.createElement(ScreenPicker));
             wrapper.setState(stateMock);
             events.keyup(keyCode.pageDown);
@@ -181,7 +181,7 @@ describe('screen picker', () => {
 
         it('should call `handleKeyUpPress` right arrow key correctly', () => {
             const spy = jest.spyOn(ScreenPicker.prototype, 'setState');
-            const expectedValue = { selectedSource: { display_id: '2', id: '2', name: 'Application screen 2', thumbnail: undefined }};
+            const expectedValue = { selectedSource: { display_id: '2', fileName: 'fullscreen', id: '2', name: 'Application screen 2', thumbnail: undefined }};
             const wrapper = shallow(React.createElement(ScreenPicker));
             wrapper.setState(stateMock);
             events.keyup(keyCode.rightArrow);
@@ -190,7 +190,7 @@ describe('screen picker', () => {
 
         it('should call `handleKeyUpPress` pageUp key correctly', () => {
             const spy = jest.spyOn(ScreenPicker.prototype, 'setState');
-            const expectedValue = { selectedSource: { display_id: '0', id: '0', name: 'Application screen 0', thumbnail: undefined }};
+            const expectedValue = { selectedSource: { display_id: '0', fileName: 'fullscreen', id: '0', name: 'Application screen 0', thumbnail: undefined }};
             const wrapper = shallow(React.createElement(ScreenPicker));
             wrapper.setState(stateMock);
             events.keyup(keyCode.pageUp);
@@ -199,7 +199,7 @@ describe('screen picker', () => {
 
         it('should call `handleKeyUpPress` left arrow key correctly', () => {
             const spy = jest.spyOn(ScreenPicker.prototype, 'setState');
-            const expectedValue = { selectedSource: { display_id: '0', id: '0', name: 'Application screen 0', thumbnail: undefined }};
+            const expectedValue = { selectedSource: { display_id: '0', fileName: 'fullscreen', id: '0', name: 'Application screen 0', thumbnail: undefined }};
             const wrapper = shallow(React.createElement(ScreenPicker));
             wrapper.setState(stateMock);
             events.keyup(keyCode.leftArrow);
@@ -208,7 +208,7 @@ describe('screen picker', () => {
 
         it('should call `handleKeyUpPress` down arrow key correctly', () => {
             const spy = jest.spyOn(ScreenPicker.prototype, 'setState');
-            const expectedValue = { selectedSource: { display_id: '0', id: '0', name: 'Application screen 0', thumbnail: undefined }};
+            const expectedValue = { selectedSource: { display_id: '0', fileName: 'fullscreen', id: '0', name: 'Application screen 0', thumbnail: undefined }};
             const wrapper = shallow(React.createElement(ScreenPicker));
             wrapper.setState(stateMock);
             events.keyup(keyCode.downArrow);
@@ -217,7 +217,7 @@ describe('screen picker', () => {
 
         it('should call `handleKeyUpPress` up arrow key correctly', () => {
             const spy = jest.spyOn(ScreenPicker.prototype, 'setState');
-            const expectedValue = { selectedSource: { display_id: '2', id: '2', name: 'Application screen 2', thumbnail: undefined }};
+            const expectedValue = { selectedSource: { display_id: '2', fileName: 'fullscreen', id: '2', name: 'Application screen 2', thumbnail: undefined }};
             const wrapper = shallow(React.createElement(ScreenPicker));
             wrapper.setState(stateMock);
             events.keyup(keyCode.upArrow);
@@ -245,7 +245,7 @@ describe('screen picker', () => {
 
         it('should call `handleKeyUpPress` end key correctly', () => {
             const spy = jest.spyOn(ScreenPicker.prototype, 'setState');
-            const expectedValue = { selectedSource: { display_id: '0', id: '0', name: 'Application screen 0', thumbnail: undefined }};
+            const expectedValue = { selectedSource: { display_id: '0', fileName: 'fullscreen', id: '0', name: 'Application screen 0', thumbnail: undefined }};
             const wrapper = shallow(React.createElement(ScreenPicker));
             wrapper.setState(stateMock);
             events.keyup(keyCode.endKey);
@@ -255,13 +255,13 @@ describe('screen picker', () => {
     });
 
     describe('tab titles', () => {
-        it('should show `application-tab` when source name is not Entire screen', () => {
+        it('should show `application-tab` when display_id is empty', () => {
             const wrapper = shallow(React.createElement(ScreenPicker));
             const applicationScreenStateMock = {
                 sources: [
-                    { display_id: '1', id: '1', name: 'Application Screen', thumbnail: undefined },
-                    { display_id: '2', id: '2', name: 'Application Screen 2', thumbnail: undefined },
-                    { display_id: '3', id: '3', name: 'Application Screen 3', thumbnail: undefined },
+                    { display_id: '', id: '1', name: 'Application Screen', thumbnail: undefined },
+                    { display_id: '', id: '2', name: 'Application Screen 2', thumbnail: undefined },
+                    { display_id: '', id: '3', name: 'Application Screen 3', thumbnail: undefined },
                 ],
             };
             wrapper.setState(applicationScreenStateMock);
@@ -288,7 +288,7 @@ describe('screen picker', () => {
             const customState = {
                 sources: [
                     { display_id: '1', id: '1', name: 'Entire screen', thumbnail: undefined },
-                    { display_id: '1', id: '1', name: 'Application screen', thumbnail: undefined },
+                    { display_id: '', id: '1', name: 'Application screen', thumbnail: undefined },
                 ],
             };
             wrapper.setState(customState);
