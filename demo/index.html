@@ -258,7 +258,8 @@
                         }
                     }
                 };
-                window.ssf.openScreenSnippet(gotSnippet);
+                const screenSnippet = new window.ssf.ScreenSnippet();
+                screenSnippet.capture().then(gotSnippet).catch(gotSnippet);
             } else {
                 postMessage(apiCmds.openScreenSnippet)
             }
