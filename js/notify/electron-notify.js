@@ -384,7 +384,7 @@ function showNotification(notificationObj) {
 
             // next check notfs being shown
             for(let i = 0; i < activeNotifications.length; i++) {
-                if (activeNotifications[ i ] && !activeNotifications[ i ].isDestroyed()) {
+                if (activeNotifications[ i ] && windowExists(activeNotifications[ i ])) {
                     let existingNotfyObj = activeNotifications[ i ].notfyObj;
                     if (existingNotfyObj && tag === existingNotfyObj.tag) {
                         let notificationWindow = activeNotifications[ i ];
@@ -441,7 +441,7 @@ function setNotificationContents(notfWindow, notfObj) {
 
     let browserWindows = BrowserWindow.getAllWindows();
     const mainWindow = browserWindows.find((window) => { return window.winName === 'main' });
-    if (mainWindow && !mainWindow.isDestroyed()) {
+    if (mainWindow && windowExists(mainWindow)) {
         if (mainWindow.isAlwaysOnTop()) {
             notfWindow.setAlwaysOnTop(true);
         }
@@ -516,7 +516,7 @@ function buildCloseNotification(notificationWindow, notificationObj, getTimeoutI
 
         // safety check to prevent from using an
         // already destroyed notification window
-        if (notificationWindow && notificationWindow.isDestroyed()) {
+        if (!notificationWindow || typeof notificationWindow.isDestroyed !== 'function' || notificationWindow.isDestroyed()) {
             return new Promise(function(exitEarly) { exitEarly() })
         }
 
@@ -687,7 +687,7 @@ function moveNotificationAnimation(i, done) {
  * @param posY
  */
 function setWindowPosition(browserWin, posX, posY) {
-    if (browserWin && !browserWin.isDestroyed()) {
+    if (browserWin && windowExists(browserWin)) {
         browserWin.setPosition(parseInt(posX, 10), parseInt(posY, 10))
     }
 }
@@ -769,7 +769,7 @@ function cleanUpActiveNotification(event) {
  */
 function cleanUpInactiveWindow() {
     inactiveWindows.forEach(function(window) {
-        if (window && !window.isDestroyed()) {
+        if (window && windowExists(window)) {
             window.close();
         }
     });
@@ -784,7 +784,7 @@ function closeAll() {
     resetAnimationQueue();
     const notificationWin = Object.assign([], activeNotifications);
     for (let activeNotification of notificationWin) {
-        if (activeNotification && !activeNotification.isDestroyed()) {
+        if (activeNotification && windowExists(activeNotification)) {
             activeNotification.close();
         }
     }
@@ -812,7 +812,7 @@ function onMouseLeave(event, winId, notificationObj) {
     if (winId) {
         log.send(logLevels.INFO, `Mouse was removed from the notification ${winId}`);
         const notificationWindow = BrowserWindow.fromId(winId);
-        if (notificationWindow && !notificationWindow.isDestroyed()) {
+        if (notificationWindow && windowExists(notificationWindow)) {
             notificationWindow.displayTimer = setTimeout(function () {
                 let closeFunc = buildCloseNotification(BrowserWindow.fromId(winId), notificationObj);
                 buildCloseNotificationSafely(closeFunc)('close');
@@ -834,6 +834,14 @@ function onMouseOver(event, winId) {
             clearTimeout(notificationWindow.displayTimer);
         }
     }
+}
+
+/**
+ * Verifies if the passed window is valid and exists
+ * @param browserWindow {Electron.BrowserWindow}
+ */
+function windowExists(browserWindow) {
+    return !!browserWindow && typeof browserWindow.isDestroyed === 'function' && !browserWindow.isDestroyed();
 }
 
 // capturing mouse events
