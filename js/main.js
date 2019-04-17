@@ -53,8 +53,8 @@ require('./memoryMonitor.js');
 app.setAsDefaultProtocolClient('symphony');
 
 const windowMgr = require('./windowMgr.js');
-const { ContextMenuBuilder } = require('electron-spellchecker');
 const i18n = require('./translation/i18n');
+let ContextMenuBuilder;
 
 getConfigField('url')
     .then(initializeCrashReporter)
@@ -247,6 +247,12 @@ app.on('web-contents-created', function (event, webContents) {
 });
 
 function onWebContent(webContents) {
+
+    if (!ContextMenuBuilder) {
+        // eslint-disable-next-line global-require
+        ContextMenuBuilder = require('electron-spellchecker').ContextMenuBuilder;
+    }
+
     const spellchecker = windowMgr.getSpellchecker();
     spellchecker.initializeSpellChecker();
     spellchecker.updateContextMenuLocale(i18n.getMessageFor('ContextMenu'));
