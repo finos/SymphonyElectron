@@ -122,9 +122,9 @@ export class SSFApi {
      */
     public CryptoLib: ICryptoLib | null = cryptoLib; // tslint:disable-line
 
-    public swiftSearch: any | null = swiftSearch; // tslint:disable-line
+    public Search: any = swiftSearch; // tslint:disable-line
 
-    public swiftSearchUtils: any | null = swiftSearchUtils; // tslint:disable-line
+    public SearchUtils: any = swiftSearchUtils; // tslint:disable-line
 
     /**
      * Implements equivalent of desktopCapturer.getSources - that works in
