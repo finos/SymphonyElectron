@@ -19,7 +19,6 @@ try {
     const SSAPIBridge = remote.require('swift-search').SSAPIBridge;
     ssInstance = new SSAPIBridge();
 } catch (e) {
-    console.log(e);
     ssInstance = null;
     console.warn("Failed to initialize swift search. You'll need to include the search dependency. Contact the developers for more details");
 }
