@@ -75,7 +75,7 @@
     <ROW Directory="TARGETDIR" DefaultDir="SourceDir"/>
     <ROW Directory="app.asar.unpacked_Dir" Directory_Parent="resources_Dir" DefaultDir="APPASA~1.UNP|app.asar.unpacked"/>
     <ROW Directory="build_Dir" Directory_Parent="cld_Dir" DefaultDir="build"/>
-    <ROW Directory="cld_Dir" Directory_Parent="paulcbetts_Dir" DefaultDir="cld"/>
+    <ROW Directory="cld_Dir" Directory_Parent="nornagon_Dir" DefaultDir="cld"/>
     <ROW Directory="config_Dir" Directory_Parent="APPDIR" DefaultDir="config"/>
     <ROW Directory="dictionaries_Dir" Directory_Parent="APPDIR" DefaultDir="DICTIO~1|dictionaries"/>
     <ROW Directory="enUS_Dir" Directory_Parent="APPDIR" DefaultDir="en-US"/>
@@ -86,7 +86,7 @@
     <ROW Directory="library_Dir" Directory_Parent="APPDIR" DefaultDir="library"/>
     <ROW Directory="locales_Dir" Directory_Parent="APPDIR" DefaultDir="locales"/>
     <ROW Directory="node_modules_Dir" Directory_Parent="app.asar.unpacked_Dir" DefaultDir="NODE_M~1|node_modules"/>
-    <ROW Directory="paulcbetts_Dir" Directory_Parent="node_modules_Dir" DefaultDir="@PAULC~1|@paulcbetts"/>
+    <ROW Directory="nornagon_Dir" Directory_Parent="node_modules_Dir" DefaultDir="@NORNA~1|@nornagon"/>
     <ROW Directory="resources_Dir" Directory_Parent="APPDIR" DefaultDir="RESOUR~1|resources"/>
     <ROW Directory="spawnrx_Dir" Directory_Parent="node_modules_Dir" DefaultDir="spawn-rx"/>
     <ROW Directory="vendor_Dir" Directory_Parent="spawnrx_Dir" DefaultDir="vendor"/>
@@ -151,7 +151,7 @@
     <ROW Component="apimswincrtutilityl110.dll" ComponentId="{69743EF5-0C1E-4220-BEFB-D8561A358BBE}" Directory_="APPDIR" Attributes="0" KeyPath="apimswincrtutilityl110.dll"/>
     <ROW Component="appupdate.yml" ComponentId="{0C70DAF7-B9A5-42E8-8EAD-986872DA450E}" Directory_="resources_Dir" Attributes="0" KeyPath="app.asar" Type="0"/>
     <ROW Component="blink_image_resources_200_percent.pak" ComponentId="{19811F96-6FFC-4970-A103-9D0F5A1A402D}" Directory_="APPDIR" Attributes="0" KeyPath="LICENSES.chromium.html" Type="0"/>
-    <ROW Component="cld.node" ComponentId="{29DAA150-978F-4016-9F31-5547805DE82D}" Directory_="Release_Dir" Attributes="0" KeyPath="cld.node" Type="0"/>
+    <ROW Component="cld.node" ComponentId="{771A32CB-8B59-4321-B115-88A4BAB21E89}" Directory_="Release_Dir" Attributes="0" KeyPath="cld.node" Type="0"/>
     <ROW Component="d3dcompiler_47.dll" ComponentId="{86265353-5735-4FB2-85EB-26947BE73061}" Directory_="APPDIR" Attributes="0" KeyPath="d3dcompiler_47.dll"/>
     <ROW Component="enAU.bdic" ComponentId="{715AB168-8896-4623-BF47-CCD7A78DA08E}" Directory_="dictionaries_Dir" Attributes="0" KeyPath="enAU.bdic" Type="0"/>
     <ROW Component="ffmpeg.dll" ComponentId="{6ECB1C9B-C14D-4224-A048-D2C4666426DC}" Directory_="APPDIR" Attributes="0" KeyPath="ffmpeg.dll"/>
@@ -229,7 +229,7 @@
     <ROW File="apimswincrtstringl110.dll" Component_="apimswincrtstringl110.dll" FileName="API-M~39.DLL|api-ms-win-crt-string-l1-1-0.dll" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\api-ms-win-crt-string-l1-1-0.dll" SelfReg="false" NextFile="apimswincrttimel110.dll"/>
     <ROW File="apimswincrttimel110.dll" Component_="apimswincrttimel110.dll" FileName="API-M~40.DLL|api-ms-win-crt-time-l1-1-0.dll" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\api-ms-win-crt-time-l1-1-0.dll" SelfReg="false" NextFile="apimswincrtutilityl110.dll"/>
     <ROW File="apimswincrtutilityl110.dll" Component_="apimswincrtutilityl110.dll" FileName="API-M~41.DLL|api-ms-win-crt-utility-l1-1-0.dll" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\api-ms-win-crt-utility-l1-1-0.dll" SelfReg="false" NextFile="blink_image_resources_200_percent.pak"/>
-    <ROW File="app.asar" Component_="appupdate.yml" FileName="APP~1.ASA|app.asar" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\resources\app.asar" SelfReg="false" NextFile="cld.node"/>
+    <ROW File="app.asar" Component_="appupdate.yml" FileName="APP~1.ASA|app.asar" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\resources\app.asar" SelfReg="false" NextFile="build.cmd"/>
     <ROW File="ar.pak" Component_="am.pak" FileName="ar.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\ar.pak" SelfReg="false" NextFile="bg.pak"/>
     <ROW File="bg.pak" Component_="am.pak" FileName="bg.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\bg.pak" SelfReg="false" NextFile="bn.pak"/>
     <ROW File="blink_image_resources_200_percent.pak" Component_="blink_image_resources_200_percent.pak" FileName="BLINK_~1.PAK|blink_image_resources_200_percent.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\blink_image_resources_200_percent.pak" SelfReg="false" NextFile="content_resources_200_percent.pak"/>
@@ -237,7 +237,7 @@
     <ROW File="build.cmd" Component_="npmignore" FileName="build.cmd" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\build.cmd" SelfReg="false" NextFile="build.sh"/>
     <ROW File="build.sh" Component_="npmignore" FileName="build.sh" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\build.sh" SelfReg="false" NextFile="CODE_OF_CONDUCT.md"/>
     <ROW File="ca.pak" Component_="am.pak" FileName="ca.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\ca.pak" SelfReg="false" NextFile="cs.pak"/>
-    <ROW File="cld.node" Component_="cld.node" FileName="CLD~1.NOD|cld.node" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\resources\app.asar.unpacked\node_modules\@paulcbetts\cld\build\Release\cld.node" SelfReg="false" NextFile="build.cmd"/>
+    <ROW File="cld.node" Component_="cld.node" FileName="CLD~1.NOD|cld.node" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\resources\app.asar.unpacked\node_modules\@nornagon\cld\build\Release\cld.node" SelfReg="false"/>
     <ROW File="content_resources_200_percent.pak" Component_="blink_image_resources_200_percent.pak" FileName="CONTEN~1.PAK|content_resources_200_percent.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\content_resources_200_percent.pak" SelfReg="false" NextFile="content_shell.pak"/>
     <ROW File="content_shell.pak" Component_="blink_image_resources_200_percent.pak" FileName="CONTEN~2.PAK|content_shell.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\content_shell.pak" SelfReg="false" NextFile="msvcp140.dll"/>
     <ROW File="cs.pak" Component_="am.pak" FileName="cs.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\cs.pak" SelfReg="false" NextFile="da.pak"/>
@@ -262,7 +262,7 @@
     <ROW File="fi.pak" Component_="am.pak" FileName="fi.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\fi.pak" SelfReg="false" NextFile="fil.pak"/>
     <ROW File="fil.pak" Component_="am.pak" FileName="fil.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\fil.pak" SelfReg="false" NextFile="fr.pak"/>
     <ROW File="fr.pak" Component_="am.pak" FileName="fr.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\fr.pak" SelfReg="false" NextFile="gu.pak"/>
-    <ROW File="frFR.bdic" Component_="enAU.bdic" FileName="FR-FR~1.BDI|fr-FR.bdic" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\dictionaries\fr-FR.bdic" SelfReg="false"/>
+    <ROW File="frFR.bdic" Component_="enAU.bdic" FileName="FR-FR~1.BDI|fr-FR.bdic" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\dictionaries\fr-FR.bdic" SelfReg="false" NextFile="cld.node"/>
     <ROW File="gu.pak" Component_="am.pak" FileName="gu.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\gu.pak" SelfReg="false" NextFile="he.pak"/>
     <ROW File="he.pak" Component_="am.pak" FileName="he.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\he.pak" SelfReg="false" NextFile="hi.pak"/>
     <ROW File="hi.pak" Component_="am.pak" FileName="hi.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\hi.pak" SelfReg="false" NextFile="hr.pak"/>
