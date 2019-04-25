@@ -29,6 +29,7 @@ export enum apiCmds {
     initMainWindow = 'init-main-window',
     isMisspelled = 'is-misspelled',
     memoryInfo = 'memory-info',
+    swiftSearch = 'swift-search',
 }
 
 export enum apiName {
