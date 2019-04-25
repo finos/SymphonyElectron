@@ -7,6 +7,8 @@ const crashReporter = electron.crashReporter;
 const nodeURL = require('url');
 const shellPath = require('shell-path');
 const urlParser = require('url');
+const { ncp } = require('ncp');
+const path = require('path');
 const nodePath = require('path');
 require('electron-dl')();
 
@@ -29,8 +31,8 @@ const getCmdLineArg = require('./utils/getCmdLineArg.js');
 
 //setting the env path child_process issue https://github.com/electron/electron/issues/7688
 shellPath()
-    .then((path) => {
-        process.env.PATH = path
+    .then((sPath) => {
+        process.env.PATH = sPath
     })
     .catch(() => {
         process.env.PATH = [
@@ -348,6 +350,7 @@ function setupFirstTimeLaunch(resolve, reject, shouldUpdateUserConfig) {
     log.send(logLevels.INFO, 'setting first time launch config');
     getConfigField('launchOnStartup')
         .then(setStartup)
+        .then(copyDictionaries)
         .then(() => {
             if (shouldUpdateUserConfig) {
                 log.send(logLevels.INFO, `Resetting user config data? ${shouldUpdateUserConfig}`);
@@ -356,6 +359,37 @@ function setupFirstTimeLaunch(resolve, reject, shouldUpdateUserConfig) {
             return resolve();
         })
         .catch(reject);
+}
+
+/**
+ * Copies all the dictionaries files required
+ * for spellchecker module
+ * @return {Promise<any>}
+ */
+function copyDictionaries() {
+    return new Promise(resolve => {
+        if (isMac) {
+            resolve();
+            return;
+        }
+        const dictionariesDirName = 'dictionaries';
+        let dictionaryPath;
+        if (isDevEnv) {
+            dictionaryPath = path.join(app.getAppPath(), dictionariesDirName);
+        } else {
+            let execPath = path.dirname(app.getPath('exe'));
+            dictionaryPath = path.join(execPath, isMac ? '..' : '', dictionariesDirName);
+        }
+        const userDictionaries = path.join(app.getPath('userData'), dictionariesDirName);
+
+        ncp(dictionaryPath, userDictionaries, (error) => {
+            if (error) {
+                log.send(logLevels.ERROR, `unable to copy dictionaries ${error}`);
+            }
+            return resolve();
+        });
+
+    })
 }
 
 /**
