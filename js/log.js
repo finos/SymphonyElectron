@@ -109,17 +109,16 @@ function initializeLocalLogger() {
     // If the user has specified a custom log path use it.
     let customLogPathArg = getCmdLineArg(process.argv, '--logPath=', false);
     let customLogsFolder = customLogPathArg && customLogPathArg.substring(customLogPathArg.indexOf('=') + 1);
-
+    let logPath = app.getPath('logs');
     if (customLogsFolder) {
         if (!fs.existsSync(customLogsFolder)) {
             fs.mkdirSync(customLogsFolder);
-            app.setPath('logs', customLogsFolder);
         }
+        logPath = customLogsFolder;
     }
+    cleanupOldLogs(logPath);
     // eslint-disable-next-line global-require
     electronLog = require('electron-log');
-    const logPath = app.getPath('logs');
-    cleanupOldLogs(logPath);
     electronLog.transports.file.file = path.join(logPath, `app_${Date.now()}.log`);
     electronLog.transports.file.level = 'debug';
     electronLog.transports.file.format = '{y}-{m}-{d} {h}:{i}:{s}:{ms} {z} | {level} | {text}';
