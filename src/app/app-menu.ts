@@ -213,6 +213,20 @@ export class AppMenu {
      * Builds menu items for window section
      */
     private buildWindowMenu(): Electron.MenuItemConstructorOptions {
+        const hamburgerMenuItem = isWindowsOS
+            ? {
+                label: this.titleBarStyle === TitleBarStyles.NATIVE
+                    ? i18n.t('Enable Hamburger menu')()
+                    : i18n.t('Disable Hamburger menu')(),
+                click: () => {
+                    const isNativeStyle = this.titleBarStyle === TitleBarStyles.NATIVE;
+
+                    this.titleBarStyle = isNativeStyle ? TitleBarStyles.NATIVE : TitleBarStyles.CUSTOM;
+                    titleBarChangeDialog(isNativeStyle);
+                },
+            }
+            : this.buildSeparator();
+
         const submenu: MenuItemConstructorOptions[] = [
             this.assignRoleOrLabel({ role: 'minimize', label: i18n.t('Minimize')() }),
             this.assignRoleOrLabel({ role: 'close', label: i18n.t('Close')() }),
@@ -261,19 +275,7 @@ export class AppMenu {
                     : i18n.t('Bring to Front on Notifications')(),
                 type: 'checkbox',
             },
-            isWindowsOS
-                ? {
-                    label: this.titleBarStyle === TitleBarStyles.NATIVE
-                        ? i18n.t('Enable Hamburger menu')()
-                        : i18n.t('Disable Hamburger menu')(),
-                    click: () => {
-                        const isNativeStyle = this.titleBarStyle === TitleBarStyles.NATIVE;
-
-                        this.titleBarStyle = isNativeStyle ? TitleBarStyles.NATIVE : TitleBarStyles.CUSTOM;
-                        titleBarChangeDialog(isNativeStyle);
-                    },
-                }
-                : this.buildSeparator(),
+            hamburgerMenuItem,
             this.buildSeparator(),
             {
                 click: (_item, focusedWindow) => {
