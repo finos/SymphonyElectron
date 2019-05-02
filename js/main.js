@@ -362,6 +362,7 @@ function setStartup(lStartup) {
     if (launchOnStartup) {
         log.send(logLevels.INFO, `first time launch -> enabling launch on startup`);
         autoLaunch.enable();
+        return;
     }
     log.send(logLevels.INFO, `first time launch -> disabling launch on startup`);
     autoLaunch.disable();
