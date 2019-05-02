@@ -1,7 +1,11 @@
 import * as electron from 'electron';
+import { app } from 'electron';
+
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
+import { config } from './config-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
+import { windowExists } from './window-utils';
 
 let currentAuthURL;
 let tries = 0;
@@ -136,4 +140,32 @@ export const showLoadFailure = (browserWindow: Electron.BrowserWindow, url: stri
 export const showNetworkConnectivityError = (browserWindow: Electron.BrowserWindow, url: string = '', retryCallback: () => void): void => {
     const errorDesc = i18n.t('Network connectivity has been lost. Check your internet connection.')();
     showLoadFailure(browserWindow, url, errorDesc, 0, retryCallback, true);
+};
+
+/**
+ * Displays a dialog to get confirmation to enable/disable
+ * hamburger menu
+ *
+ * @param isNativeStyle {boolean}
+ */
+export const titleBarChangeDialog = (isNativeStyle: boolean) => {
+    const focusedWindow = electron.BrowserWindow.getFocusedWindow();
+    if (!focusedWindow || !windowExists(focusedWindow)) {
+        return;
+    }
+    const options = {
+        type: 'question',
+        title: i18n.t('Relaunch Application')(),
+        message: i18n.t('Updating Title bar style requires Symphony to relaunch.')(),
+        detail: i18n.t('Note: When Hamburger menu is disabled, you can trigger the main menu by pressing the Alt key.')(),
+        buttons: [ i18n.t('Relaunch')(), i18n.t('Cancel')() ],
+        cancelId: 1,
+    };
+    electron.dialog.showMessageBox(focusedWindow, options, async (index) => {
+        if (index === 0) {
+            await config.updateUserConfig({ isCustomTitleBar: isNativeStyle });
+            app.relaunch();
+            app.exit();
+        }
+    });
 };

@@ -5,6 +5,7 @@ import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { autoLaunchInstance as autoLaunch } from './auto-launch-controller';
 import { config, IConfig } from './config-handler';
+import { titleBarChangeDialog } from './dialog-handler';
 import { exportCrashDumps, exportLogs } from './reports-handler';
 import { updateAlwaysOnTop } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
@@ -17,6 +18,11 @@ export const menuSections = {
     window: 'window',
     help: 'help', // tslint:disable-line
 };
+
+enum TitleBarStyles {
+    CUSTOM,
+    NATIVE,
+}
 
 const windowsAccelerator = Object.assign({
     close: 'Ctrl+W',
@@ -55,10 +61,14 @@ export class AppMenu {
     private menu: Electron.Menu | undefined;
     private menuList: Electron.MenuItemConstructorOptions[];
     private locale: LocaleType;
+    private titleBarStyle: TitleBarStyles;
 
     constructor() {
         this.menuList = [];
         this.locale = i18n.getLocale();
+        this.titleBarStyle = config.getConfigFields([ 'isCustomTitleBar' ]).isCustomTitleBar
+            ? TitleBarStyles.CUSTOM
+            : TitleBarStyles.NATIVE;
         this.buildMenu();
     }
 
@@ -203,6 +213,20 @@ export class AppMenu {
      * Builds menu items for window section
      */
     private buildWindowMenu(): Electron.MenuItemConstructorOptions {
+        const hamburgerMenuItem = isWindowsOS
+            ? {
+                label: this.titleBarStyle === TitleBarStyles.NATIVE
+                    ? i18n.t('Enable Hamburger menu')()
+                    : i18n.t('Disable Hamburger menu')(),
+                click: () => {
+                    const isNativeStyle = this.titleBarStyle === TitleBarStyles.NATIVE;
+
+                    this.titleBarStyle = isNativeStyle ? TitleBarStyles.NATIVE : TitleBarStyles.CUSTOM;
+                    titleBarChangeDialog(isNativeStyle);
+                },
+            }
+            : this.buildSeparator();
+
         const submenu: MenuItemConstructorOptions[] = [
             this.assignRoleOrLabel({ role: 'minimize', label: i18n.t('Minimize')() }),
             this.assignRoleOrLabel({ role: 'close', label: i18n.t('Close')() }),
@@ -251,6 +275,7 @@ export class AppMenu {
                     : i18n.t('Bring to Front on Notifications')(),
                 type: 'checkbox',
             },
+            hamburgerMenuItem,
             this.buildSeparator(),
             {
                 click: (_item, focusedWindow) => {

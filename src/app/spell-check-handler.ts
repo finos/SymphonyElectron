@@ -29,6 +29,8 @@ export class SpellChecker {
      */
     public attachToWebContents(webContents: Electron.WebContents): void {
         const contextMenuBuilder = new ContextMenuBuilder(this.spellCheckHandler, webContents, false, this.processMenu);
+        contextMenuBuilder.setAlternateStringFormatter(this.getStringTable());
+        this.locale = i18n.getLocale();
         const contextMenuListener = (_event, info) => {
             if (this.locale !== i18n.getLocale()) {
                 contextMenuBuilder.setAlternateStringFormatter(this.getStringTable());

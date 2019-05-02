@@ -18,6 +18,7 @@ import {
 import { i18n, LocaleType } from '../common/i18n-preload';
 import { throttle } from '../common/utils';
 import { getSource } from './desktop-capturer';
+import { ScreenSnippetBcHandler } from './screen-snippet-bc-handler';
 
 let isAltKey: boolean = false;
 let isMenuOpen: boolean = false;
@@ -253,6 +254,14 @@ export class SSFApi {
 
         }
     }
+
+    /**
+     * Expose old screen snippet api to support backward compatibility
+     *
+     * @deprecated
+     */
+    // tslint:disable-next-line
+    public ScreenSnippet = ScreenSnippetBcHandler;
 
     /**
      * Allow user to capture portion of screen

@@ -13,6 +13,10 @@
     "Please provide your login credentials for:": "Please provide your login credentials for:",
     "User name:": "User name:"
   },
+  "MoreInfo": {
+    "More Information": "More Information",
+    "Version Information": "Version Information"
+  },
   "Bring All to Front": "Bring All to Front",
   "Bring to Front on Notifications": "Bring to Front on Notifications",
   "Certificate Error": "Certificate Error",
@@ -46,6 +50,8 @@
   "Cut": "Cut",
   "Delete": "Delete",
   "Disable Hamburger menu": "Disable Hamburger menu",
+  "Dev Tools disabled": "Dev Tools disabled",
+  "Dev Tools has been disabled! Please contact your system administrator to enable it!": "Dev Tools has been disabled! Please contact your system administrator to enable it!",
   "Edit": "Edit",
   "Enable Hamburger menu": "Enable Hamburger menu",
   "Error loading configuration": "Error loading configuration",
@@ -66,6 +72,12 @@
   "Minimize on Close": "Minimize on Close",
   "Native": "Native",
   "Network connectivity has been lost. Check your internet connection.": "Network connectivity has been lost. Check your internet connection.",
+  "NetworkError": {
+    "Problem connecting to Symphony": "Problem connecting to Symphony",
+    "Looks like you are not connected to the Internet. We'll try to reconnect automatically.": "Looks like you are not connected to the Internet. We'll try to reconnect automatically.",
+    "Cancel Retry": "Cancel Retry",
+    "Quit Symphony": "Quit Symphony"
+  },
   "No crashes available to share": "No crashes available to share",
   "No logs are available to share": "No logs are available to share",
   "Not Allowed": "Not Allowed",
@@ -107,7 +119,9 @@
     "Screens": "Screens",
     "Select Application": "Select Application",
     "Select Screen": "Select Screen",
-    "Share": "Share"
+    "Share": "Share",
+    "Entire screen": "Entire screen",
+    "Screen {number}": "Screen {number}"
   },
   "ScreenSharingIndicator": {
     "You are sharing your screen on {appName}": "You are sharing your screen on {appName}",
@@ -120,6 +134,10 @@
     "Highlight": "Highlight",
     "Pen": "Pen",
     "Snipping Tool": "Snipping Tool"
+  },
+  "AboutSymphony": {
+    "About Symphony": "About Symphony",
+    "Version": "Version"
   },
   "Select All": "Select All",
   "Services": "Services",
