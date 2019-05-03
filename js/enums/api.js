@@ -26,8 +26,8 @@ const cmds = keyMirror({
     setLocale: null,
     keyPress: null,
     openScreenSharingIndicator: null,
-    cancelNetworkStatusCheck: null,
     quitWindow: null,
+    reloadWindow: null,
 });
 
 module.exports = {

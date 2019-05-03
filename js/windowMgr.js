@@ -10,7 +10,6 @@ const path = require('path');
 const nodeURL = require('url');
 const querystring = require('querystring');
 const filesize = require('filesize');
-const fetch = require('electron-fetch').default;
 
 const { getTemplate, getMinimizeOnClose, getTitleBarStyle } = require('./menus/menuTemplate.js');
 const isInDisplayBounds = require('./utils/isInDisplayBounds.js');
@@ -49,8 +48,6 @@ let isAutoReload = false;
 let devToolsEnabled = true;
 let isCustomTitleBarEnabled = true;
 let titleBarStyles;
-let networkStatusCheckIntervalId;
-const networkStatusCheckInterval = 5000;
 
 const KeyCodes = {
     Esc: 27,
@@ -347,7 +344,6 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                     const message = i18n.getMessageFor('NetworkError');
                     mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/networkError/style.css'), 'utf8').toString());
                     mainWindow.webContents.send('network-error', { message, error: lastLoadFailError || "PAGE_STOPPED_LOADING"});
-                    isSymphonyReachable(mainWindow, config.url);
                 }
             }).catch((error) => {
                 log.send(logLevels.ERROR, `Could not read document.location error: ${error}`);
@@ -1310,41 +1306,13 @@ const logBrowserWindowEvents = (browserWindow, windowName) => {
 };
 
 /**
- * Validates the network by fetching the pod url
- * every 5sec, on active reloads the given window
- *
- * @param window
- * @param url
+ * Loads the main window with the global config url
  */
-const isSymphonyReachable = (window, url) => {
-    if (networkStatusCheckIntervalId) {
+const reloadWindow = () => {
+    if (!(mainWindow && typeof mainWindow.isDestroyed === 'function' && !mainWindow.isDestroyed())) {
         return;
     }
-    networkStatusCheckIntervalId = setInterval(() => {
-        fetch(config.url).then((rsp) => {
-            if (rsp.status === 200 && isOnline) {
-                window.loadURL(url);
-                if (networkStatusCheckIntervalId) {
-                    clearInterval(networkStatusCheckIntervalId);
-                    networkStatusCheckIntervalId = null;
-                }
-            } else {
-                log.send(logLevels.INFO, `Symphony down! statusCode: ${rsp.status} is online: ${isOnline}`);
-            }
-        }).catch((error) => {
-            log.send(logLevels.INFO, `Network status check: No active network connection ${error}`);
-        });
-    }, networkStatusCheckInterval);
-};
-
-/**
- * Clears the network status check interval
- */
-const cancelNetworkStatusCheck = () => {
-    if (networkStatusCheckIntervalId) {
-        clearInterval(networkStatusCheckIntervalId);
-        networkStatusCheckIntervalId = null;
-    }
+    mainWindow.loadURL(config.url);
 };
 
 module.exports = {
@@ -1365,5 +1333,5 @@ module.exports = {
     getIsOnline: getIsOnline,
     getSpellchecker: getSpellchecker,
     isMisspelled: isMisspelled,
-    cancelNetworkStatusCheck: cancelNetworkStatusCheck,
+    reloadWindow: reloadWindow
 };

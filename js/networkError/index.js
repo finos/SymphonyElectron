@@ -20,15 +20,15 @@ class NetworkError {
         errorContent.getElementById('error-code').innerText = error || "UNKNOWN_ERROR";
 
         // Add event listeners for buttons
-        const cancelRetryButton = errorContent.getElementById('cancel-retry-button');
-        const cancelRetry = () => {
+        const retryButton = errorContent.getElementById('retry-button');
+        const retry = () => {
+            retryButton.classList.add('disabled');
+            retryButton.removeEventListener('click', retry);
             ipcRenderer.send(apiName, {
-                cmd: apiCmds.cancelNetworkStatusCheck
+                cmd: apiCmds.reloadWindow
             });
-            cancelRetryButton.classList.add('disabled');
-            cancelRetryButton.removeEventListener('click', cancelRetry);
         };
-        cancelRetryButton.addEventListener('click', cancelRetry);
+        retryButton.addEventListener('click', retry);
         
         const quitButton = errorContent.getElementById('quit-button');
         quitButton.addEventListener('click', () => {

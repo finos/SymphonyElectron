@@ -113,7 +113,7 @@ const errorContent = (data) => {
                     || "Looks like you are not connected to the Internet. We'll try to reconnect automatically."}
             </p>
             <div id="error-code" class="NetworkError-error-code">ERR_INTERNET_DISCONNECTED</div>
-            <button id="cancel-retry-button" class="NetworkError-button">${data["Cancel Retry"] || "Cancel Retry"}</button>
+            <button id="retry-button" class="NetworkError-button">${data.Retry || "Retry"}</button>
             <button id="quit-button" class="NetworkError-button">${data["Quit Symphony"] || "Quit Symphony"}</button>
         </div>
     </div>
