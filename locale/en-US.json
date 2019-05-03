@@ -70,8 +70,8 @@
   "Network connectivity has been lost. Check your internet connection.": "Network connectivity has been lost. Check your internet connection.",
   "NetworkError": {
     "Problem connecting to Symphony": "Problem connecting to Symphony",
-    "Looks like you are not connected to the Internet. We'll try to reconnect automatically.": "Looks like you are not connected to the Internet. We'll try to reconnect automatically.",
-    "Cancel Retry": "Cancel Retry",
+    "Looks like you are not connected to the Internet.": "Looks like you are not connected to the Internet.",
+    "Retry": "Retry",
     "Quit Symphony": "Quit Symphony"
   },
   "No crashes available to share": "No crashes available to share",
