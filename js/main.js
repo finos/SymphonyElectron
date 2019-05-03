@@ -10,11 +10,19 @@ const urlParser = require('url');
 const nodePath = require('path');
 require('electron-dl')();
 
+const getCmdLineArg = require('./utils/getCmdLineArg.js');
 const { version, clientVersion, buildNumber } = require('../package.json');
 const log = require('./log.js');
 const logLevels = require('./enums/logLevels.js');
 
-log.send(logLevels.INFO, `-----------------Starting the app with version ${version}-----------------`);
+log.send(logLevels.INFO, `-----------------Starting the app with version ${version} and arguments ${process.argv}-----------------`);
+let customDataArg = getCmdLineArg(process.argv, '--userDataPath=', false);
+let customDataFolder = customDataArg && customDataArg.substring(customDataArg.indexOf('=') + 1);
+
+if (customDataArg && customDataFolder) {
+    log.send(logLevels.INFO, `Setting custom user data path ${customDataFolder}`);
+    app.setPath('userData', customDataFolder);
+}
 
 // Local Dependencies
 require('./stats');
@@ -25,7 +33,6 @@ const autoLaunch = require('./autoLaunch');
 const { handleCacheFailureCheckOnStartup, handleCacheFailureCheckOnExit} = require('./cacheHandler');
 
 const { isMac, isDevEnv } = require('./utils/misc.js');
-const getCmdLineArg = require('./utils/getCmdLineArg.js');
 
 //setting the env path child_process issue https://github.com/electron/electron/issues/7688
 shellPath()
@@ -300,16 +307,6 @@ function setupThenOpenMainWindow() {
 
     isAppAlreadyOpen = true;
     getUrlAndCreateMainWindow();
-
-    // Allows a developer to set custom user data path from command line when
-    // launching the app. Mostly used for running automation tests with
-    // multiple instances
-    let customDataArg = getCmdLineArg(process.argv, '--userDataPath=', false);
-    let customDataFolder = customDataArg && customDataArg.substring(customDataArg.indexOf('=') + 1);
-
-    if (customDataArg && customDataFolder) {
-        app.setPath('userData', customDataFolder);
-    }
 
     // Event that fixes the remote desktop issue in Windows
     // by repositioning the browser window
