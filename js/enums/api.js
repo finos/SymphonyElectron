@@ -26,7 +26,6 @@ const cmds = keyMirror({
     setLocale: null,
     keyPress: null,
     openScreenSharingIndicator: null,
-    quitWindow: null,
     reloadWindow: null,
 });
 

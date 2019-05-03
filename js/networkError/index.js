@@ -29,13 +29,6 @@ class NetworkError {
             });
         };
         retryButton.addEventListener('click', retry);
-        
-        const quitButton = errorContent.getElementById('quit-button');
-        quitButton.addEventListener('click', () => {
-            ipcRenderer.send(apiName, {
-                cmd: apiCmds.quitWindow
-            });
-        });
 
         const mainFrame = errorContent.getElementById('main-frame');
         document.body.appendChild(mainFrame);
