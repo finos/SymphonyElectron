@@ -317,33 +317,11 @@ function getTemplate(app) {
         label: i18n.getMessageFor('Auto Launch On Startup'),
         type: 'checkbox',
         checked: launchOnStartup,
-        click: function (item, focusedWindow) {
+        click: function (item) {
             if (item.checked) {
-                autoLaunch.enable()
-                    .catch(function (err) {
-                        let title = 'Error setting AutoLaunch configuration';
-                        log.send(logLevels.ERROR, 'MenuTemplate: ' + title + ': auto launch error ' + err);
-                        if (focusedWindow && !focusedWindow.isDestroyed()) {
-                            electron.dialog.showMessageBox(focusedWindow, {
-                                type: 'error',
-                                title: i18n.getMessageFor(title),
-                                message: i18n.getMessageFor(title) + ': ' + err
-                            });
-                        }
-                    });
+                autoLaunch.enable();
             } else {
-                autoLaunch.disable()
-                    .catch(function (err) {
-                        let title = 'Error setting AutoLaunch configuration';
-                        log.send(logLevels.ERROR, 'MenuTemplate: ' + title + ': auto launch error ' + err);
-                        if (focusedWindow && !focusedWindow.isDestroyed()) {
-                            electron.dialog.showMessageBox(focusedWindow, {
-                                type: 'error',
-                                title: i18n.getMessageFor(title),
-                                message: i18n.getMessageFor(title) + ': ' + err
-                            });
-                        }
-                    });
+                autoLaunch.disable();
             }
             launchOnStartup = item.checked;
             updateConfigField('launchOnStartup', launchOnStartup);

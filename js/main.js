@@ -347,8 +347,8 @@ function checkFirstTimeLaunch() {
 function setupFirstTimeLaunch(resolve, reject, shouldUpdateUserConfig) {
     log.send(logLevels.INFO, 'setting first time launch config');
     getConfigField('launchOnStartup')
-        .then(setStartup)
-        .then(() => {
+        .then((lStartup) => {
+            setStartup(lStartup || false);
             if (shouldUpdateUserConfig) {
                 log.send(logLevels.INFO, `Resetting user config data? ${shouldUpdateUserConfig}`);
                 return updateUserConfigOnLaunch(resolve, reject);
@@ -361,21 +361,17 @@ function setupFirstTimeLaunch(resolve, reject, shouldUpdateUserConfig) {
 /**
  * Sets Symphony on startup
  * @param lStartup
- * @returns {Promise}
  */
 function setStartup(lStartup) {
-    log.send(logLevels.INFO, `launch on startup parameter value is ${lStartup}`);
-    return new Promise((resolve) => {
-        let launchOnStartup = (String(lStartup) === 'true');
-        log.send(logLevels.INFO, `launchOnStartup value is ${launchOnStartup}`);
-        if (launchOnStartup) {
-            log.send(logLevels.INFO, `enabling launch on startup`);
-            autoLaunch.enable();
-            return resolve();
-        }
-        autoLaunch.disable();
-        return resolve();
-    });
+    log.send(logLevels.INFO, `first time launch -> launch on startup parameter value is ${lStartup}`);
+    let launchOnStartup = (String(lStartup) === 'true');
+    if (launchOnStartup) {
+        log.send(logLevels.INFO, `first time launch -> enabling launch on startup`);
+        autoLaunch.enable();
+        return;
+    }
+    log.send(logLevels.INFO, `first time launch -> disabling launch on startup`);
+    autoLaunch.disable();
 }
 
 /**
