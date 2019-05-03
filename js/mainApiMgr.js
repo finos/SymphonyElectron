@@ -191,8 +191,8 @@ electron.ipcMain.on(apiName, (event, arg) => {
                 openScreenSharingIndicator(event.sender, arg.displayId, arg.id);
             }
             break;
-        case apiCmds.cancelNetworkStatusCheck:
-            windowMgr.cancelNetworkStatusCheck();
+        case apiCmds.reloadWindow:
+            windowMgr.reloadWindow();
             break;
         case apiCmds.quitWindow:
             app.quit();
