@@ -1,4 +1,4 @@
-const AutoLaunch = require('auto-launch');
+const { app } = require('electron');
 
 // Local Dependencies
 const log = require('../log.js');
@@ -18,31 +18,6 @@ const props = isMac ? {
     path: getAutoLaunchPath() || process.execPath,
 };
 
-class AutoLaunchController extends AutoLaunch {
-
-    constructor(opts) {
-        super(opts);
-    }
-
-    /**
-     * Enable auto launch
-     * @return {Promise<void>}
-     */
-    enableAutoLaunch() {
-        log.send(logLevels.INFO, `Enabling auto launch!`);
-        return this.enable();
-    }
-
-    /**
-     * Disable auto launch
-     * @return {Promise<void>}
-     */
-    disableAutoLaunch() {
-        log.send(logLevels.INFO, `Disabling auto launch!`);
-        return this.disable();
-    }
-}
-
 /**
  * Replace forward slash in the path to backward slash
  * @return {any}
@@ -52,9 +27,31 @@ function getAutoLaunchPath() {
     return autoLaunchPath ? autoLaunchPath.replace(/\//g, '\\') : null;
 }
 
-const autoLaunchInstance = new AutoLaunchController(props);
+/**
+ * Handle auto launch setting
+ * @param enabled Is auto launch enabled
+ */
+function handleAutoLaunch(enabled) {
+    app.setLoginItemSettings({openAtLogin: enabled, path: props.path});
+}
+
+/**
+ * Enable auto launch
+ */
+function enableAutoLaunch() {
+    log.send(logLevels.INFO, `Enabling auto launch!`);
+    handleAutoLaunch(true);
+}
+
+/**
+ * Disable auto launch
+ */
+function disableAutoLaunch() {
+    log.send(logLevels.INFO, `Disabling auto launch!`);
+    handleAutoLaunch(false);
+}
 
 module.exports = {
-    enable: autoLaunchInstance.enableAutoLaunch.bind(autoLaunchInstance),
-    disable: autoLaunchInstance.disableAutoLaunch.bind(autoLaunchInstance)
+    enable: enableAutoLaunch,
+    disable: disableAutoLaunch
 };

@@ -24,19 +24,20 @@
   },
   "build": {
     "asarUnpack": [
-      "node_modules/@paulcbetts/cld/build/Release/cld.node"
+      "node_modules/@nornagon/cld/build/Release/cld.node"
     ],
     "files": [
       "!coverage/*",
       "!installer/*",
       "!tests/*",
-      "!node_modules/@paulcbetts/cld/deps/cld${/*}",
-      "!node_modules/@paulcbetts/cld/build/deps${/*}",
-      "!node_modules/@paulcbetts/spellchecker/vendor${/*}"
+      "!node_modules/@nornagon/cld/deps/cld${/*}",
+      "!node_modules/@nornagon/cld/build/deps${/*}",
+      "!node_modules/@nornagon/spellchecker/vendor${/*}"
     ],
     "extraFiles": [
       "config/Symphony.config",
       "config/titleBarStyles.css",
+      "dictionaries/**",
       "library/libsymphonysearch.dylib",
       "library/cryptoLib.dylib",
       "library/lz4.exec"
@@ -111,11 +112,10 @@
     "archiver": "3.0.0",
     "async.map": "0.5.2",
     "async.mapseries": "0.5.2",
-    "auto-launch": "5.0.5",
     "electron-dl": "1.12.0",
     "electron-fetch": "1.3.0",
     "electron-log": "2.2.17",
-    "electron-spellchecker": "git+https://github.com/symphonyoss/electron-spellchecker.git#v1.1.4",
+    "electron-spellchecker": "git+https://github.com/symphonyoss/electron-spellchecker.git#v2.0.1",
     "ffi": "git+https://github.com/symphonyoss/node-ffi.git#v1.2.8",
     "filesize": "3.6.1",
     "jimp": "0.6.4",
@@ -131,6 +131,6 @@
   },
   "optionalDependencies": {
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.5",
-    "swift-search": "3.0.1"
+    "swift-search": "3.0.2"
   }
 }

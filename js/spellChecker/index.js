@@ -1,6 +1,7 @@
 const { app, MenuItem } = require('electron');
-const { isMac } = require('./../utils/misc');
-const { SpellCheckHandler } = require('electron-spellchecker');
+const path = require('path');
+const { isMac, isDevEnv } = require('./../utils/misc');
+const { SpellCheckHandler, DictionarySync } = require('electron-spellchecker');
 const stringFormat = require('./../utils/stringFormat');
 
 class SpellCheckHelper {
@@ -9,7 +10,16 @@ class SpellCheckHelper {
      * A constructor to create an instance of the spell checker
      */
     constructor() {
-        this.spellCheckHandler = new SpellCheckHandler();
+        const dictionariesDirName = 'dictionaries';
+        let dictionaryPath;
+        if (isDevEnv) {
+            dictionaryPath = path.join(app.getAppPath(), dictionariesDirName);
+        } else {
+            let execPath = path.dirname(app.getPath('exe'));
+            dictionaryPath = path.join(execPath, isMac ? '..' : '', dictionariesDirName);
+        }
+        this.dictionarySync = new DictionarySync(dictionaryPath);
+        this.spellCheckHandler = new SpellCheckHandler(this.dictionarySync);
     }
 
     /**

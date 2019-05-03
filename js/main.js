@@ -60,8 +60,8 @@ require('./memoryMonitor.js');
 app.setAsDefaultProtocolClient('symphony');
 
 const windowMgr = require('./windowMgr.js');
-const { ContextMenuBuilder } = require('electron-spellchecker');
 const i18n = require('./translation/i18n');
+let ContextMenuBuilder;
 
 getConfigField('url')
     .then(initializeCrashReporter)
@@ -254,6 +254,12 @@ app.on('web-contents-created', function (event, webContents) {
 });
 
 function onWebContent(webContents) {
+
+    if (!ContextMenuBuilder) {
+        // eslint-disable-next-line global-require
+        ContextMenuBuilder = require('electron-spellchecker').ContextMenuBuilder;
+    }
+
     const spellchecker = windowMgr.getSpellchecker();
     spellchecker.initializeSpellChecker();
     spellchecker.updateContextMenuLocale(i18n.getMessageFor('ContextMenu'));
@@ -338,8 +344,8 @@ function checkFirstTimeLaunch() {
 function setupFirstTimeLaunch(resolve, reject, shouldUpdateUserConfig) {
     log.send(logLevels.INFO, 'setting first time launch config');
     getConfigField('launchOnStartup')
-        .then(setStartup)
-        .then(() => {
+        .then((lStartup) => {
+            setStartup(lStartup || false);
             if (shouldUpdateUserConfig) {
                 log.send(logLevels.INFO, `Resetting user config data? ${shouldUpdateUserConfig}`);
                 return updateUserConfigOnLaunch(resolve, reject);
@@ -352,21 +358,17 @@ function setupFirstTimeLaunch(resolve, reject, shouldUpdateUserConfig) {
 /**
  * Sets Symphony on startup
  * @param lStartup
- * @returns {Promise}
  */
 function setStartup(lStartup) {
-    log.send(logLevels.INFO, `launch on startup parameter value is ${lStartup}`);
-    return new Promise((resolve) => {
-        let launchOnStartup = (String(lStartup) === 'true');
-        log.send(logLevels.INFO, `launchOnStartup value is ${launchOnStartup}`);
-        if (launchOnStartup) {
-            log.send(logLevels.INFO, `enabling launch on startup`);
-            autoLaunch.enable();
-            return resolve();
-        }
-        autoLaunch.disable();
-        return resolve();
-    });
+    log.send(logLevels.INFO, `first time launch -> launch on startup parameter value is ${lStartup}`);
+    let launchOnStartup = (String(lStartup) === 'true');
+    if (launchOnStartup) {
+        log.send(logLevels.INFO, `first time launch -> enabling launch on startup`);
+        autoLaunch.enable();
+        return;
+    }
+    log.send(logLevels.INFO, `first time launch -> disabling launch on startup`);
+    autoLaunch.disable();
 }
 
 /**
