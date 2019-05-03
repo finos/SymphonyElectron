@@ -5,7 +5,6 @@
  * from the renderer process.
  */
 const electron = require('electron');
-const app = electron.app;
 
 const windowMgr = require('./windowMgr.js');
 const log = require('./log.js');
@@ -193,9 +192,6 @@ electron.ipcMain.on(apiName, (event, arg) => {
             break;
         case apiCmds.reloadWindow:
             windowMgr.reloadWindow();
-            break;
-        case apiCmds.quitWindow:
-            app.quit();
             break;
         default:
     }
