@@ -109,12 +109,11 @@ const errorContent = (data) => {
         <div class="main-message">
             <p class="NetworkError-header">${data["Problem connecting to Symphony"] || "Problem connecting to Symphony"}</p>
             <p id="NetworkError-reason">
-                ${data["Looks like you are not connected to the Internet. We'll try to reconnect automatically."]
-                    || "Looks like you are not connected to the Internet. We'll try to reconnect automatically."}
+                ${data["Looks like you are not connected to the Internet."]
+                    || "Looks like you are not connected to the Internet."}
             </p>
             <div id="error-code" class="NetworkError-error-code">ERR_INTERNET_DISCONNECTED</div>
-            <button id="cancel-retry-button" class="NetworkError-button">${data["Cancel Retry"] || "Cancel Retry"}</button>
-            <button id="quit-button" class="NetworkError-button">${data["Quit Symphony"] || "Quit Symphony"}</button>
+            <button id="retry-button" class="NetworkError-button">${data.Retry || "Retry"}</button>
         </div>
     </div>
 </div>`);

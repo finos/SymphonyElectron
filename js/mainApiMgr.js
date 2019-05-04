@@ -5,7 +5,6 @@
  * from the renderer process.
  */
 const electron = require('electron');
-const app = electron.app;
 
 const windowMgr = require('./windowMgr.js');
 const log = require('./log.js');
@@ -191,11 +190,8 @@ electron.ipcMain.on(apiName, (event, arg) => {
                 openScreenSharingIndicator(event.sender, arg.displayId, arg.id);
             }
             break;
-        case apiCmds.cancelNetworkStatusCheck:
-            windowMgr.cancelNetworkStatusCheck();
-            break;
-        case apiCmds.quitWindow:
-            app.quit();
+        case apiCmds.reloadWindow:
+            windowMgr.reloadWindow();
             break;
         default:
     }
