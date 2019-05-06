@@ -282,6 +282,11 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
     // content can be cached and will still finish load but
     // we might not have network connectivity, so warn the user.
     mainWindow.webContents.on('did-finish-load', function () {
+
+        if (!windowExists(mainWindow) || !mainWindow.webContents) {
+            return;
+        }
+
         // Initialize crash reporter
         initCrashReporterMain({ process: 'main window' });
         initCrashReporterRenderer(mainWindow, { process: 'render | main window' });
@@ -542,104 +547,106 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
                     childWebContents.once('did-finish-load', function () {
                         let browserWin = BrowserWindow.fromWebContents(childWebContents);
 
-                        if (browserWin) {
-                            log.send(logLevels.INFO, `loaded pop-out window url: ${JSON.stringify(newWinParsedUrl)}`);
+                        if (!windowExists(browserWin) || !browserWin.webContents) {
+                            return;
+                        }
 
-                            browserWin.webContents.send('on-page-load');
-                            // applies styles required for snack bar
-                            browserWin.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/snackBar/style.css'), 'utf8').toString());
+                        log.send(logLevels.INFO, `loaded pop-out window url: ${JSON.stringify(newWinParsedUrl)}`);
 
-                            initCrashReporterMain({ process: 'pop-out window' });
-                            initCrashReporterRenderer(browserWin, { process: 'render | pop-out window' });
+                        browserWin.webContents.send('on-page-load');
+                        // applies styles required for snack bar
+                        browserWin.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '/snackBar/style.css'), 'utf8').toString());
 
-                            browserWin.winName = frameName;
-                            browserWin.setAlwaysOnTop(alwaysOnTop);
-                            logBrowserWindowEvents(browserWin, browserWin.winName);
+                        initCrashReporterMain({ process: 'pop-out window' });
+                        initCrashReporterRenderer(browserWin, { process: 'render | pop-out window' });
 
-                            let handleChildWindowCrashEvent = (e, killed) => {
-                                log.send(logLevels.INFO, `Child Window crashed! Killed? ${killed}`);
+                        browserWin.winName = frameName;
+                        browserWin.setAlwaysOnTop(alwaysOnTop);
+                        logBrowserWindowEvents(browserWin, browserWin.winName);
 
-                                if (killed) {
-                                    return;
-                                }
-                                const options = {
-                                    type: 'error',
-                                    title: i18n.getMessageFor('Renderer Process Crashed'),
-                                    message: i18n.getMessageFor('Oops! Looks like we have had a crash. Please reload or close this window.'),
-                                    buttons: ['Reload', 'Close']
-                                };
+                        let handleChildWindowCrashEvent = (e, killed) => {
+                            log.send(logLevels.INFO, `Child Window crashed! Killed? ${killed}`);
 
-                                let childBrowserWindow = BrowserWindow.fromWebContents(e.sender);
-                                if (childBrowserWindow && !childBrowserWindow.isDestroyed()) {
-                                    electron.dialog.showMessageBox(childBrowserWindow, options, function (index) {
-                                        if (index === 0) {
-                                            childBrowserWindow.reload();
-                                        } else {
-                                            childBrowserWindow.close();
-                                        }
-                                    });
-                                }
+                            if (killed) {
+                                return;
+                            }
+                            const options = {
+                                type: 'error',
+                                title: i18n.getMessageFor('Renderer Process Crashed'),
+                                message: i18n.getMessageFor('Oops! Looks like we have had a crash. Please reload or close this window.'),
+                                buttons: ['Reload', 'Close']
                             };
 
-                            browserWin.webContents.on('crashed', handleChildWindowCrashEvent);
-                            browserWin.webContents.on('will-navigate', (e, navigatedURL) => {
-                                if (!navigatedURL.startsWith('http' || 'https')) {
-                                    e.preventDefault();
-                                }
-                            });
-
-                            // In case we navigate to an external link from inside a pop-out,
-                            // we open that link in an external browser rather than creating
-                            // a new window
-                            if (browserWin.webContents) {
-                                handleNewWindow(browserWin.webContents);
+                            let childBrowserWindow = BrowserWindow.fromWebContents(e.sender);
+                            if (childBrowserWindow && !childBrowserWindow.isDestroyed()) {
+                                electron.dialog.showMessageBox(childBrowserWindow, options, function (index) {
+                                    if (index === 0) {
+                                        childBrowserWindow.reload();
+                                    } else {
+                                        childBrowserWindow.close();
+                                    }
+                                });
                             }
+                        };
 
-                            addWindowKey(newWinKey, browserWin);
-
-                            // Method that sends bound changes as soon
-                            // as a new window is created
-                            // issue https://perzoinc.atlassian.net/browse/ELECTRON-172
-                            sendChildWinBoundsChange(browserWin);
-
-                            // throttle full screen
-                            let throttledFullScreen = throttle(1000,
-                                handleChildWindowFullScreen.bind(null, browserWin));
-
-                            // throttle leave full screen
-                            let throttledLeaveFullScreen = throttle(1000,
-                                handleChildWindowLeaveFullScreen.bind(null, browserWin));
-
-                            // throttle changes so we don't flood client.
-                            let throttledBoundsChange = throttle(1000,
-                                sendChildWinBoundsChange.bind(null, browserWin));
-
-                            browserWin.on('move', throttledBoundsChange);
-                            browserWin.on('resize', throttledBoundsChange);
-                            browserWin.on('enter-full-screen', throttledFullScreen);
-                            browserWin.on('leave-full-screen', throttledLeaveFullScreen);
-
-                            let handleChildWindowClosed = () => {
-                                removeWindowKey(newWinKey);
-                                browserWin.removeListener('move', throttledBoundsChange);
-                                browserWin.removeListener('resize', throttledBoundsChange);
-                                browserWin.removeListener('enter-full-screen', throttledFullScreen);
-                                browserWin.removeListener('leave-full-screen', throttledLeaveFullScreen);
-                            };
-
-                            browserWin.on('close', () => {
-                                browserWin.webContents.removeListener('crashed', handleChildWindowCrashEvent);
-                            });
-
-                            browserWin.once('closed', () => {
-                                handleChildWindowClosed();
-                            });
-
-                            handlePermissionRequests(browserWin.webContents);
-
-                            if (!isDevEnv) {
-                                browserWin.webContents.session.setCertificateVerifyProc(handleCertificateTransparencyChecks);
+                        browserWin.webContents.on('crashed', handleChildWindowCrashEvent);
+                        browserWin.webContents.on('will-navigate', (e, navigatedURL) => {
+                            if (!navigatedURL.startsWith('http' || 'https')) {
+                                e.preventDefault();
                             }
+                        });
+
+                        // In case we navigate to an external link from inside a pop-out,
+                        // we open that link in an external browser rather than creating
+                        // a new window
+                        if (browserWin.webContents) {
+                            handleNewWindow(browserWin.webContents);
+                        }
+
+                        addWindowKey(newWinKey, browserWin);
+
+                        // Method that sends bound changes as soon
+                        // as a new window is created
+                        // issue https://perzoinc.atlassian.net/browse/ELECTRON-172
+                        sendChildWinBoundsChange(browserWin);
+
+                        // throttle full screen
+                        let throttledFullScreen = throttle(1000,
+                            handleChildWindowFullScreen.bind(null, browserWin));
+
+                        // throttle leave full screen
+                        let throttledLeaveFullScreen = throttle(1000,
+                            handleChildWindowLeaveFullScreen.bind(null, browserWin));
+
+                        // throttle changes so we don't flood client.
+                        let throttledBoundsChange = throttle(1000,
+                            sendChildWinBoundsChange.bind(null, browserWin));
+
+                        browserWin.on('move', throttledBoundsChange);
+                        browserWin.on('resize', throttledBoundsChange);
+                        browserWin.on('enter-full-screen', throttledFullScreen);
+                        browserWin.on('leave-full-screen', throttledLeaveFullScreen);
+
+                        let handleChildWindowClosed = () => {
+                            removeWindowKey(newWinKey);
+                            browserWin.removeListener('move', throttledBoundsChange);
+                            browserWin.removeListener('resize', throttledBoundsChange);
+                            browserWin.removeListener('enter-full-screen', throttledFullScreen);
+                            browserWin.removeListener('leave-full-screen', throttledLeaveFullScreen);
+                        };
+
+                        browserWin.on('close', () => {
+                            browserWin.webContents.removeListener('crashed', handleChildWindowCrashEvent);
+                        });
+
+                        browserWin.once('closed', () => {
+                            handleChildWindowClosed();
+                        });
+
+                        handlePermissionRequests(browserWin.webContents);
+
+                        if (!isDevEnv) {
+                            browserWin.webContents.session.setCertificateVerifyProc(handleCertificateTransparencyChecks);
                         }
                     });
                 } else {
@@ -1318,6 +1325,14 @@ const reloadWindow = () => {
         return;
     }
     mainWindow.loadURL(config.url);
+};
+
+/**
+ * Check if the window exists
+ * @return {boolean}
+ */
+const windowExists = (window) => {
+    return !!window && typeof window.isDestroyed === 'function' && !window.isDestroyed();
 };
 
 module.exports = {
