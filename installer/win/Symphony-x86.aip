@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<DOCUMENT Type="Advanced Installer" CreateVersion="11.7.1" version="15.0.1" Modules="enterprise" RootPath="." Language="en" Id="{B6EC4BDE-C578-4A57-A3D2-C9B0154B042C}">
+<DOCUMENT Type="Advanced Installer" CreateVersion="11.7.1" version="15.9" Modules="enterprise" RootPath="." Language="en" Id="{B6EC4BDE-C578-4A57-A3D2-C9B0154B042C}">
   <COMPONENT cid="caphyon.advinst.msicomp.ProjectOptionsComponent">
-    <ROW Name="HiddenItems" Value="SccmComponent;ActSyncAppComponent;AppXAppDetailsComponent;AppXCapabilitiesComponent;AppXDependenciesComponent;AppXProductDetailsComponent;AppXVisualAssetsComponent;AppXAppDeclarationsComponent;AppXUriRulesComponent"/>
+    <ROW Name="HiddenItems" Value="SccmComponent;ActSyncAppComponent;AppXAppDetailsComponent;AppXCapabilitiesComponent;AppXDependenciesComponent;AppXProductDetailsComponent;AppXVisualAssetsComponent;AppXAppDeclarationsComponent;AppXUriRulesComponent;FixupComponent"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiPropsComponent">
     <ROW Property="AI_APP_ARGS" Value="/start-app=&quot;[#Symphony.pgx]&quot; --enable-media-stream"/>
@@ -108,11 +108,6 @@
     <ROW Component="Symphony.config" ComponentId="{DBC82D0C-B96E-4939-A950-53020CEB1B7F}" Directory_="config_Dir" Attributes="0" KeyPath="Symphony.config" Type="0"/>
     <ROW Component="Symphony.exe" ComponentId="{853053E4-D96C-42FE-9AF1-52FF1F449FFD}" Directory_="APPDIR" Attributes="256" KeyPath="Symphony.exe"/>
     <ROW Component="VkICD_mock_icd.dll" ComponentId="{C05146AC-C047-4EC4-8075-D89129EC761E}" Directory_="APPDIR" Attributes="0" KeyPath="VkICD_mock_icd.dll"/>
-    <ROW Component="VkLayer_core_validation.dll" ComponentId="{B5808BF5-3054-49B9-8F0C-C349046857B6}" Directory_="APPDIR" Attributes="0" KeyPath="VkLayer_core_validation.dll"/>
-    <ROW Component="VkLayer_object_tracker.dll" ComponentId="{AC9863C9-9510-4968-BDB4-D03AB59E5742}" Directory_="APPDIR" Attributes="0" KeyPath="VkLayer_object_tracker.dll"/>
-    <ROW Component="VkLayer_parameter_validation.dll" ComponentId="{C8BDCF64-4886-4348-BD9A-8CC397189544}" Directory_="APPDIR" Attributes="0" KeyPath="VkLayer_parameter_validation.dll"/>
-    <ROW Component="VkLayer_threading.dll" ComponentId="{A7AA00CC-1B88-4F6E-8630-635FAC2F5B7B}" Directory_="APPDIR" Attributes="0" KeyPath="VkLayer_threading.dll"/>
-    <ROW Component="VkLayer_unique_objects.dll" ComponentId="{BB978EEF-884A-4303-8711-A0FC140FBAD8}" Directory_="APPDIR" Attributes="0" KeyPath="VkLayer_unique_objects.dll"/>
     <ROW Component="_" ComponentId="{0AFBD4A1-2A78-4B48-B9B0-2420C23E27DE}" Directory_="APPDIR" Attributes="4" KeyPath="_"/>
     <ROW Component="__1" ComponentId="{F0A351BB-C0E2-4551-862B-72ADAD9893D1}" Directory_="APPDIR" Attributes="4" KeyPath="__1"/>
     <ROW Component="am.pak" ComponentId="{7F9B88EC-7331-4801-A165-8E9789C8BF82}" Directory_="locales_Dir" Attributes="0" KeyPath="am.pak" Type="0"/>
@@ -131,12 +126,11 @@
     <ROW Component="libGLESv2.dll" ComponentId="{06513829-1D3E-4286-BB01-112BF26E6684}" Directory_="APPDIR" Attributes="0" KeyPath="libGLESv2.dll"/>
     <ROW Component="libsymphonysearchx86.dll" ComponentId="{0FE8E551-95CE-4936-8553-217ED411CAD5}" Directory_="library_Dir" Attributes="0" KeyPath="libsymphonysearchx86.dll"/>
     <ROW Component="lz4winx86.exe" ComponentId="{C71364D8-6FE2-4BA1-8D89-12B075FFAEFD}" Directory_="library_Dir" Attributes="0" KeyPath="lz4winx86.exe"/>
-    <ROW Component="osmesa.dll" ComponentId="{8BDDF717-1B70-4A48-96ED-9D5A52DC2072}" Directory_="APPDIR" Attributes="0" KeyPath="osmesa.dll"/>
     <ROW Component="tarwin.exe" ComponentId="{B7E57E12-8788-49D4-A31C-23E821D36B2F}" Directory_="library_Dir" Attributes="0" KeyPath="tarwin.exe"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
     <ROW Feature="D564007E3BBE4F85950A09B470A7CA65" Title="Visual C++ Redistributable for Visual Studio 2013 x86" Description="Visual C++ Redistributable for Visual Studio 2013 x86" Display="3" Level="1" Attributes="0"/>
-    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="AI_CustomARPName AI_DisableModify FreeDiskSpace.exe Jobber.exe PodUrl ProductInformation ScreenSnippet.exe ScreenSnippet.resources.dll ScreenSnippet.resources.dll_1 ScreenSnippet.resources.dll_2 Symphony Symphony.config Symphony.exe VkICD_mock_icd.dll VkLayer_core_validation.dll VkLayer_object_tracker.dll VkLayer_parameter_validation.dll VkLayer_threading.dll VkLayer_unique_objects.dll _ __1 am.pak appupdate.yml blink_image_resources_200_percent.pak build.cmd cld.node d3dcompiler_47.dll enAU.bdic ffmpeg.dll index.js index.js_1 index.ts indexvalidatorx86.exe libEGL.dll libGLESv2.dll libsymphonysearchx86.dll lz4winx86.exe osmesa.dll tarwin.exe"/>
+    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="AI_CustomARPName AI_DisableModify FreeDiskSpace.exe Jobber.exe PodUrl ProductInformation ScreenSnippet.exe ScreenSnippet.resources.dll ScreenSnippet.resources.dll_1 ScreenSnippet.resources.dll_2 Symphony Symphony.config Symphony.exe VkICD_mock_icd.dll _ __1 am.pak appupdate.yml blink_image_resources_200_percent.pak build.cmd cld.node d3dcompiler_47.dll enAU.bdic ffmpeg.dll index.js index.js_1 index.ts indexvalidatorx86.exe libEGL.dll libGLESv2.dll libsymphonysearchx86.dll lz4winx86.exe tarwin.exe"/>
     <ATTRIBUTE name="CurrentFeature" value="MainFeature"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
@@ -153,12 +147,7 @@
     <ROW File="ScreenSnippet.resources.dll_2" Component_="ScreenSnippet.resources.dll_2" FileName="SCREEN~1.DLL|ScreenSnippet.resources.dll" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\resources\app.asar.unpacked\node_modules\screen-snippet\bin\Release\fr-FR\ScreenSnippet.resources.dll" SelfReg="false" NextFile="chrome_100_percent.pak"/>
     <ROW File="Symphony.config" Component_="Symphony.config" FileName="SYMPHO~1.CON|Symphony.config" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\config\Symphony.config" SelfReg="false" NextFile="am.pak"/>
     <ROW File="Symphony.exe" Component_="Symphony.exe" FileName="Symphony.exe" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\Symphony.exe" SelfReg="false" NextFile="d3dcompiler_47.dll" DigSign="true"/>
-    <ROW File="VkICD_mock_icd.dll" Component_="VkICD_mock_icd.dll" FileName="VKICD_~1.DLL|VkICD_mock_icd.dll" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\VkICD_mock_icd.dll" SelfReg="false" NextFile="VkLayer_core_validation.dll"/>
-    <ROW File="VkLayer_core_validation.dll" Component_="VkLayer_core_validation.dll" FileName="VKLAYE~1.DLL|VkLayer_core_validation.dll" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\VkLayer_core_validation.dll" SelfReg="false" NextFile="VkLayer_object_tracker.dll"/>
-    <ROW File="VkLayer_object_tracker.dll" Component_="VkLayer_object_tracker.dll" FileName="VKLAYE~2.DLL|VkLayer_object_tracker.dll" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\VkLayer_object_tracker.dll" SelfReg="false" NextFile="VkLayer_parameter_validation.dll"/>
-    <ROW File="VkLayer_parameter_validation.dll" Component_="VkLayer_parameter_validation.dll" FileName="VKLAYE~3.DLL|VkLayer_parameter_validation.dll" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\VkLayer_parameter_validation.dll" SelfReg="false" NextFile="VkLayer_threading.dll"/>
-    <ROW File="VkLayer_threading.dll" Component_="VkLayer_threading.dll" FileName="VKLAYE~4.DLL|VkLayer_threading.dll" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\VkLayer_threading.dll" SelfReg="false" NextFile="VkLayer_unique_objects.dll"/>
-    <ROW File="VkLayer_unique_objects.dll" Component_="VkLayer_unique_objects.dll" FileName="VKLAYE~5.DLL|VkLayer_unique_objects.dll" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\VkLayer_unique_objects.dll" SelfReg="false" NextFile="titleBarStyles.css"/>
+    <ROW File="VkICD_mock_icd.dll" Component_="VkICD_mock_icd.dll" FileName="VKICD_~1.DLL|VkICD_mock_icd.dll" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\VkICD_mock_icd.dll" SelfReg="false" NextFile="titleBarStyles.css"/>
     <ROW File="am.pak" Component_="am.pak" FileName="am.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\am.pak" SelfReg="false" NextFile="ar.pak"/>
     <ROW File="app.asar" Component_="appupdate.yml" FileName="APP~1.ASA|app.asar" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\resources\app.asar" SelfReg="false" NextFile="electron.asar"/>
     <ROW File="ar.pak" Component_="am.pak" FileName="ar.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\ar.pak" SelfReg="false" NextFile="bg.pak"/>
@@ -168,7 +157,7 @@
     <ROW File="build.sh" Component_="build.cmd" FileName="build.sh" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\build.sh" SelfReg="false" NextFile="CODE_OF_CONDUCT.md"/>
     <ROW File="ca.pak" Component_="am.pak" FileName="ca.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\ca.pak" SelfReg="false" NextFile="cs.pak"/>
     <ROW File="chrome_100_percent.pak" Component_="blink_image_resources_200_percent.pak" FileName="CHROME~1.PAK|chrome_100_percent.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\chrome_100_percent.pak" SelfReg="false" NextFile="chrome_200_percent.pak"/>
-    <ROW File="chrome_200_percent.pak" Component_="blink_image_resources_200_percent.pak" FileName="CHROME~2.PAK|chrome_200_percent.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\chrome_200_percent.pak" SelfReg="false" NextFile="osmesa.dll"/>
+    <ROW File="chrome_200_percent.pak" Component_="blink_image_resources_200_percent.pak" FileName="CHROME~2.PAK|chrome_200_percent.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\chrome_200_percent.pak" SelfReg="false" NextFile="resources.pak"/>
     <ROW File="cld.node" Component_="cld.node" FileName="CLD~1.NOD|cld.node" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\resources\app.asar.unpacked\node_modules\@nornagon\cld\build\Release\cld.node" SelfReg="false" NextFile="build.cmd"/>
     <ROW File="cs.pak" Component_="am.pak" FileName="cs.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\cs.pak" SelfReg="false" NextFile="da.pak"/>
     <ROW File="d3dcompiler_47.dll" Component_="d3dcompiler_47.dll" FileName="D3DCOM~1.DLL|d3dcompiler_47.dll" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\d3dcompiler_47.dll" SelfReg="false" NextFile="ffmpeg.dll"/>
@@ -220,7 +209,6 @@
     <ROW File="natives_blob.bin" Component_="blink_image_resources_200_percent.pak" FileName="NATIVE~1.BIN|natives_blob.bin" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\natives_blob.bin" SelfReg="false" NextFile="Symphony.config"/>
     <ROW File="nb.pak" Component_="am.pak" FileName="nb.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\nb.pak" SelfReg="false" NextFile="nl.pak"/>
     <ROW File="nl.pak" Component_="am.pak" FileName="nl.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\nl.pak" SelfReg="false" NextFile="pl.pak"/>
-    <ROW File="osmesa.dll" Component_="osmesa.dll" FileName="osmesa.dll" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\osmesa.dll" SelfReg="false" NextFile="resources.pak"/>
     <ROW File="package.json" Component_="build.cmd" FileName="PACKAG~1.JSO|package.json" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\package.json" SelfReg="false" NextFile="index.ts"/>
     <ROW File="pl.pak" Component_="am.pak" FileName="pl.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\pl.pak" SelfReg="false" NextFile="ptBR.pak"/>
     <ROW File="ptBR.pak" Component_="am.pak" FileName="pt-BR.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\pt-BR.pak" SelfReg="false" NextFile="ptPT.pak"/>
