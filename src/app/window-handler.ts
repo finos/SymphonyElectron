@@ -855,7 +855,7 @@ export class WindowHandler {
                 nodeIntegration: false,
                 preload: path.join(__dirname, '../renderer/_preload-main.js'),
                 sandbox: true,
-                contextIsolation: true,
+                contextIsolation: false,
             },
             winKey: getGuid(),
         };

@@ -121,10 +121,15 @@ export const createComponentWindow = (
 
     const browserWindow: ICustomBrowserWindow = new BrowserWindow(options) as ICustomBrowserWindow;
     if (shouldFocus) {
-        browserWindow.once('ready-to-show', () => browserWindow.show());
+        browserWindow.once('ready-to-show', () => {
+            if (!browserWindow || !windowExists(browserWindow)) {
+                return;
+            }
+            browserWindow.show();
+        });
     }
     browserWindow.webContents.once('did-finish-load', () => {
-        if (!browserWindow || browserWindow.isDestroyed()) {
+        if (!browserWindow || !windowExists(browserWindow)) {
             return;
         }
         browserWindow.webContents.send('set-locale-resource', { locale: i18n.getLocale(), resource: i18n.loadedResources });
