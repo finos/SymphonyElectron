@@ -1,6 +1,6 @@
 import { autoLaunchInstance } from '../src/app/auto-launch-controller';
 import { config } from '../src/app/config-handler';
-import * as electron from './__mocks__/electron';
+import { app } from './__mocks__/electron';
 
 jest.mock('electron-log');
 
@@ -30,39 +30,23 @@ describe('auto launch controller', async () => {
     });
 
     it('should call `enableAutoLaunch` correctly', async () => {
-        const spyFn = 'enable';
-        const spy = jest.spyOn(autoLaunchInstance, spyFn);
+        const spyFn = 'setLoginItemSettings';
+        const spy = jest.spyOn(app, spyFn);
         await autoLaunchInstance.enableAutoLaunch();
         expect(spy).toBeCalled();
     });
 
     it('should call `disableAutoLaunch` correctly', async () => {
-        const spyFn = 'disable';
-        const spy = jest.spyOn(autoLaunchInstance, spyFn);
+        const spyFn = 'setLoginItemSettings';
+        const spy = jest.spyOn(app, spyFn);
         await autoLaunchInstance.disableAutoLaunch();
         expect(spy).toBeCalled();
     });
 
     it('should call `isAutoLaunchEnabled` correctly', async () => {
-        const spyFn = 'isEnabled';
-        const spy = jest.spyOn(autoLaunchInstance, spyFn);
+        const spyFn = 'getLoginItemSettings';
+        const spy = jest.spyOn(app, spyFn);
         await autoLaunchInstance.isAutoLaunchEnabled();
-        expect(spy).toBeCalled();
-    });
-
-    it('should fail `enableAutoLaunch` when catch is trigged', async () => {
-        const spyFn = 'showMessageBox';
-        const spy = jest.spyOn(electron.dialog, spyFn);
-        autoLaunchInstance.enable = jest.fn(() => Promise.reject());
-        await autoLaunchInstance.enableAutoLaunch();
-        expect(spy).toBeCalled();
-    });
-
-    it('should fail `disableAutoLaunch` when catch is trigged', async () => {
-        const spyFn = 'showMessageBox';
-        const spy = jest.spyOn(electron.dialog, spyFn);
-        autoLaunchInstance.disable = jest.fn(() => Promise.reject());
-        await autoLaunchInstance.disableAutoLaunch();
         expect(spy).toBeCalled();
     });
 
@@ -84,6 +68,7 @@ describe('auto launch controller', async () => {
         const spy = jest.spyOn(autoLaunchInstance, spyFn);
         jest.spyOn(autoLaunchInstance,'isAutoLaunchEnabled').mockImplementation(() => true);
         await autoLaunchInstance.handleAutoLaunch();
+        console.log(autoLaunchInstance.isAutoLaunchEnabled());
         expect(spy).toBeCalled();
     });
 });

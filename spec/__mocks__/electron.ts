@@ -8,6 +8,7 @@ const appName: string = 'Symphony';
 const executableName: string = '/Symphony.exe';
 const isReady: boolean = true;
 const version: string = '4.0.0';
+const openAtLogin: boolean = true;
 interface IApp {
     commandLine: any;
     getAppPath(): string;
@@ -18,6 +19,11 @@ interface IApp {
     on(eventName: any, cb: any): void;
     once(eventName: any, cb: any): void;
     setPath(value: string, path: string): void;
+    setLoginItemSettings(settings: { openAtLogin: boolean, path: string }): void;
+    getLoginItemSettings(options?: { path: string, args: string[] }): LoginItemSettings;
+}
+interface LoginItemSettings {
+    openAtLogin: boolean;
 }
 interface IIpcMain {
     on(event: any, cb: any): void;
@@ -67,6 +73,8 @@ export const app: IApp = {
     once: (eventName, cb) => {
         ipcEmitter.on(eventName, cb);
     },
+    setLoginItemSettings: () => jest.fn(),
+    getLoginItemSettings: () => { openAtLogin },
 };
 
 // simple ipc mocks for render and main process ipc using

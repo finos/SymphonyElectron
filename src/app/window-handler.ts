@@ -61,7 +61,7 @@ export class WindowHandler {
                 sandbox: true,
                 nodeIntegration: false,
                 devTools: false,
-                contextIsolation: true,
+                contextIsolation: false,
             },
             winKey: getGuid(),
         };
@@ -83,7 +83,7 @@ export class WindowHandler {
             webPreferences: {
                 nodeIntegration: false,
                 sandbox: true,
-                contextIsolation: true,
+                contextIsolation: false,
             },
             winKey: getGuid(),
         };
@@ -106,7 +106,7 @@ export class WindowHandler {
                 sandbox: true,
                 nodeIntegration: false,
                 devTools: false,
-                contextIsolation: true,
+                contextIsolation: false,
             },
             winKey: getGuid(),
         };
@@ -131,7 +131,7 @@ export class WindowHandler {
                 sandbox: true,
                 nodeIntegration: false,
                 devTools: false,
-                contextIsolation: true,
+                contextIsolation: false,
             },
             winKey: getGuid(),
         };
@@ -152,7 +152,7 @@ export class WindowHandler {
                 sandbox: true,
                 nodeIntegration: false,
                 devTools: false,
-                contextIsolation: true,
+                contextIsolation: false,
             },
             winKey: getGuid(),
         };

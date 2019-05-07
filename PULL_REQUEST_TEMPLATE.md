@@ -7,7 +7,7 @@ Describe the problem or feature in addition to a link to the
 Describe the approach you've taken to implement this change / resolve the issue
 
 ## Related PRs
-List related PRs against other branches / repositories:
+List related PRs against other branches/repositories:
 
 branch | PR
 ------ | ------
