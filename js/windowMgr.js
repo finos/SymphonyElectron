@@ -28,8 +28,7 @@ const i18n = require('./translation/i18n');
 const getCmdLineArg = require('./utils/getCmdLineArg');
 const config = readConfigFileSync();
 
-const SpellChecker = require('./spellChecker').SpellCheckHelper;
-const spellchecker = new SpellChecker();
+let spellchecker;
 
 // show dialog when certificate errors occur
 require('./dialogs/showCertError.js');
@@ -108,10 +107,16 @@ function getParsedUrl(appUrl) {
 }
 
 /**
- * Returns the Spellchecker instance
+ * Creates and returns the Spellchecker instance
  * @returns {SpellCheckHelper}
  */
 function getSpellchecker() {
+    if (!spellchecker) {
+        // initialze spellchecker
+        // eslint-disable-next-line global-require
+        const SpellChecker = require('./spellChecker').SpellCheckHelper;
+        spellchecker = new SpellChecker();
+    }
     return spellchecker;
 }
 
