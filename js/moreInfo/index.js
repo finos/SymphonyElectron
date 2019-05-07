@@ -6,7 +6,6 @@ const path = require('path');
 const fs = require('fs');
 const log = require('../log.js');
 const logLevels = require('../enums/logLevels.js');
-const { version, clientVersion, buildNumber } = require('../../package.json');
 const { initCrashReporterMain, initCrashReporterRenderer } = require('../crashReporter.js');
 const i18n = require('../translation/i18n');
 const { isMac } = require('../utils/misc');
@@ -88,7 +87,18 @@ function openMoreInfoWindow(windowName) {
         // initialize crash reporter
         initCrashReporterMain({ process: 'more info window' });
         initCrashReporterRenderer(moreInfoWindow, { process: 'render | more info window' });
-        moreInfoWindow.webContents.send('versionInfo', { version, clientVersion, buildNumber });
+        const moreInfo = {
+            electronVersion: process.versions.electron,
+            chromiumVersion: process.versions.chrome,
+            v8Version: process.versions.v8,
+            nodeVersion: process.versions.node,
+            opensslVersion: process.versions.openssl,
+            zlibVersion: process.versions.zlib,
+            uvVersion: process.versions.uv,
+            aresVersion: process.versions.ares,
+            httpparserVersion: process.versions.http_parser
+        };
+        moreInfoWindow.webContents.send('moreInfo', moreInfo);
         if (!isMac) {
             // prevents from displaying menu items when "alt" key is pressed
             moreInfoWindow.setMenu(null);

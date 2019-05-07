@@ -1,34 +1,29 @@
 'use strict';
 const { ipcRenderer, crashReporter } = require('electron');
 
-renderDom();
+ipcRenderer.on('moreInfo', (event, moreInfo) => {
 
-/**
- * Method that renders application data
- */
-function renderDom() {
-    document.addEventListener('DOMContentLoaded', function () {
-        const electronV = document.getElementById('electron');
-        const chromiumV = document.getElementById('chromium');
-        const v8V = document.getElementById('v8');
-        const nodeV = document.getElementById('node');
-        const opensslV = document.getElementById('openssl');
-        const zlibV = document.getElementById('zlib');
-        const uvV = document.getElementById('uv');
-        const aresV = document.getElementById('ares');
-        const httpparserV = document.getElementById('httpparser');
+    const {electronVersion, chromiumVersion, v8Version, nodeVersion, opensslVersion, zlibVersion, uvVersion, aresVersion, httpparserVersion} = moreInfo;
+    const electronV = document.getElementById('electron');
+    const chromiumV = document.getElementById('chromium');
+    const v8V = document.getElementById('v8');
+    const nodeV = document.getElementById('node');
+    const opensslV = document.getElementById('openssl');
+    const zlibV = document.getElementById('zlib');
+    const uvV = document.getElementById('uv');
+    const aresV = document.getElementById('ares');
+    const httpparserV = document.getElementById('httpparser');
 
-        electronV.innerHTML = `<u>Electron</u> ${process.versions.electron}`;
-        chromiumV.innerHTML = `<u>Chromium</u> ${process.versions.chrome}`;
-        v8V.innerHTML = `<u>V8</u> ${process.versions.v8}`;
-        nodeV.innerHTML = `<u>Node</u> ${process.versions.node}`;
-        opensslV.innerHTML = `<u>OpenSSL</u> ${process.versions.openssl}`;
-        zlibV.innerHTML = `<u>ZLib</u> ${process.versions.zlib}`;
-        uvV.innerHTML = `<u>UV</u> ${process.versions.uv}`;
-        aresV.innerHTML = `<u>Ares</u> ${process.versions.ares}`;
-        httpparserV.innerHTML = `<u>HTTP Parser</u> ${process.versions.http_parser}`;
-    });
-}
+    electronV.innerHTML = `<u>Electron</u> ${electronVersion || 'N/A'}`;
+    chromiumV.innerHTML = `<u>Chromium</u> ${chromiumVersion || 'N/A'}`;
+    v8V.innerHTML = `<u>V8</u> ${v8Version || 'N/A'}`;
+    nodeV.innerHTML = `<u>Node</u> ${nodeVersion || 'N/A'}`;
+    opensslV.innerHTML = `<u>OpenSSL</u> ${opensslVersion || 'N/A'}`;
+    zlibV.innerHTML = `<u>ZLib</u> ${zlibVersion || 'N/A'}`;
+    uvV.innerHTML = `<u>UV</u> ${uvVersion || 'N/A'}`;
+    aresV.innerHTML = `<u>Ares</u> ${aresVersion || 'N/A'}`;
+    httpparserV.innerHTML = `<u>HTTP Parser</u> ${httpparserVersion || 'N/A'}`;
+});
 
 ipcRenderer.on('register-crash-reporter', (event, arg) => {
     if (arg && typeof arg === 'object') {
