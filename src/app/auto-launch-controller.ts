@@ -57,15 +57,12 @@ class AutoLaunchController {
         const { launchOnStartup }: IConfig = config.getConfigFields([ 'launchOnStartup' ]);
         const { openAtLogin: isAutoLaunchEnabled }: LoginItemSettings = this.isAutoLaunchEnabled();
 
-        console.log(this.isAutoLaunchEnabled());
-
         if (typeof launchOnStartup === 'boolean' && launchOnStartup) {
             if (!isAutoLaunchEnabled) {
                 this.enableAutoLaunch();
             }
             return;
         }
-        console.log(`Auto launch enabled!! ${isAutoLaunchEnabled}`)
         if (isAutoLaunchEnabled) {
             this.disableAutoLaunch();
         }
