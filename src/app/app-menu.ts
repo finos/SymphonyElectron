@@ -235,9 +235,9 @@ export class AppMenu {
                 checked: launchOnStartup,
                 click: async (item) => {
                     if (item.checked) {
-                        await autoLaunch.enableAutoLaunch();
+                        autoLaunch.enableAutoLaunch();
                     } else {
-                        await autoLaunch.disableAutoLaunch();
+                        autoLaunch.disableAutoLaunch();
                     }
                     launchOnStartup = item.checked;
                     await config.updateUserConfig({ launchOnStartup });
