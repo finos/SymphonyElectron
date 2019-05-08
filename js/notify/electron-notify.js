@@ -419,6 +419,9 @@ function showNotification(notificationObj) {
                 activeNotifications.push(updatedNotfWindow);
 
                 resolve(updatedNotfWindow);
+            }).catch((err) => {
+                log.send(logLevels.ERROR, `Unable to show notification error: ${err}`);
+                resolve();
             })
         } else {
             // Add to notificationQueue
@@ -718,7 +721,7 @@ function calcInsertPos() {
  * @returns {Promise}
  */
 function getWindow() {
-    return new Promise(function(resolve) {
+    return new Promise(function(resolve, reject) {
         let notificationWindow;
         // Are there still inactiveWindows?
         if (inactiveWindows.length > 0) {
@@ -734,6 +737,10 @@ function getWindow() {
             notificationWindow.setVisibleOnAllWorkspaces(true);
             notificationWindow.loadURL(getTemplatePath());
             notificationWindow.webContents.on('did-finish-load', function() {
+                if (!notificationWindow || !windowExists(notificationWindow)) {
+                    reject(new Error('notification window has been destroyed'));
+                    return;
+                }
                 // Done
                 notificationWindow.webContents.send('electron-notify-load-config', config);
                 resolve(notificationWindow)
