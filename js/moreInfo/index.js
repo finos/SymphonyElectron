@@ -84,6 +84,9 @@ function openMoreInfoWindow(windowName) {
     });
 
     moreInfoWindow.webContents.on('did-finish-load', () => {
+        if (!moreInfoWindow || moreInfoWindow.isDestroyed()) {
+            return;
+        }
         // initialize crash reporter
         initCrashReporterMain({ process: 'more info window' });
         initCrashReporterRenderer(moreInfoWindow, { process: 'render | more info window' });

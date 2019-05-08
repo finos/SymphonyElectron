@@ -85,6 +85,9 @@ function openAboutWindow(windowName) {
     });
 
     aboutWindow.webContents.on('did-finish-load', () => {
+        if (!aboutWindow || aboutWindow.isDestroyed()) {
+            return;
+        }
         // initialize crash reporter
         initCrashReporterMain({ process: 'about app window' });
         initCrashReporterRenderer(aboutWindow, { process: 'render | about app window' });
