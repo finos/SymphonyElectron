@@ -125,6 +125,11 @@ function openConfigurationWindow(windowName) {
     });
 
     configurationWindow.webContents.on('did-finish-load', () => {
+
+        if (!configurationWindow || configurationWindow.isDestroyed()) {
+            return;
+        }
+
         const notificationSettingsContent = i18n.getMessageFor('NotificationSettings');
         configurationWindow.webContents.send('i18n-notification-settings', notificationSettingsContent);
         if (screens && screens.length >= 0) {

@@ -60,6 +60,9 @@ function openScreenSharingIndicator(eventSender, displayId, id) {
     });
 
     indicatorWindow.webContents.on('did-finish-load', () => {
+        if (!indicatorWindow || indicatorWindow.isDestroyed()) {
+            return;
+        }
         initCrashReporterMain({ process: 'screen sharing indicator window' });
         initCrashReporterRenderer(indicatorWindow, { process: 'render | screen sharing indicator window' });
         indicatorWindow.webContents.send('window-data', {

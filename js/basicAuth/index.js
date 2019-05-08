@@ -98,6 +98,9 @@ function openBasicAuthWindow(windowName, hostname, isValidCredentials, clearSett
     });
 
     basicAuthWindow.webContents.on('did-finish-load', () => {
+        if (!basicAuthWindow || basicAuthWindow.isDestroyed()) {
+            return;
+        }
         const basicAuthContent = i18n.getMessageFor('BasicAuth');
         basicAuthWindow.webContents.send('i18n-basic-auth', basicAuthContent);
         // initialize crash reporter
