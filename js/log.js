@@ -49,7 +49,7 @@ class Logger {
             startTime: Date.now()
         };
 
-        if (this.logWindow) {
+        if (this.logWindow && typeof this.logWindow.isDestroyed === "function" && !this.logWindow.isDestroyed()) {
             this.logWindow.send('log', {
                 msgs: [ logMsg ]
             });
@@ -70,7 +70,7 @@ class Logger {
     setLogWindow(win) {
         this.logWindow = win;
 
-        if (this.logWindow) {
+        if (this.logWindow && typeof this.logWindow.isDestroyed === "function" && !this.logWindow.isDestroyed()) {
             let logMsg = {};
 
             if (Array.isArray(this.logQueue)) {
