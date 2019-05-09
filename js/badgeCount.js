@@ -29,7 +29,7 @@ function show(count) {
     // handle ms windows...
     const mainWindow = windowMgr.getMainWindow();
 
-    if (mainWindow) {
+    if (mainWindow && typeof mainWindow.isDestroyed === 'function' && !mainWindow.isDestroyed()) {
         if (count > 0) {
             // get badge img from renderer process, will return
             // img dataUrl in setDataUrl func.

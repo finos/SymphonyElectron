@@ -96,7 +96,7 @@ function monitorUserActivity() {
  * @param  {object} data - data as object
  */
 function send(data) {
-    if (activityWindow && data) {
+    if (activityWindow && typeof activityWindow.isDestroyed === 'function' && !activityWindow.isDestroyed() && data) {
         log.send(logLevels.INFO, 'activity occurred at time= ' + new Date().toUTCString());
         activityWindow.send('activity', {
             systemIdleTime: data.systemIdleTime
