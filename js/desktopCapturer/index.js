@@ -98,6 +98,9 @@ function openScreenPickerWindow(eventSender, sources, id) {
     });
 
     screenPickerWindow.webContents.on('did-finish-load', () => {
+        if (!screenPickerWindow || screenPickerWindow.isDestroyed()) {
+            return;
+        }
         const screenPickerContent = i18n.getMessageFor('ScreenPicker');
         screenPickerWindow.webContents.send('i18n-screen-picker', screenPickerContent);
         // initialize crash reporter

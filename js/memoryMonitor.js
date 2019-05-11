@@ -123,7 +123,7 @@ function setPreloadWindow(win) {
  * which invokes the optimize memory func
  */
 function requestMemoryInfo() {
-    if (preloadWindow) {
+    if (preloadWindow && typeof preloadWindow.isDestroyed === 'function' && !preloadWindow.isDestroyed()) {
         log.send(logLevels.INFO, 'Requesting memory information from the preload script');
         preloadWindow.send('memory-info-request');
     }

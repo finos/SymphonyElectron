@@ -20,7 +20,8 @@ describe('logger tests', function() {
         log.send('DEBUG', 'test2');
 
         let mockWin = {
-            send: jest.fn()
+            send: jest.fn(),
+            isDestroyed: () => false,
         };
 
         log.setLogWindow(mockWin);
@@ -33,7 +34,8 @@ describe('logger tests', function() {
 
     it('send single log msg logger has already been registered', function() {
         let mockWin = {
-            send: jest.fn()
+            send: jest.fn(),
+            isDestroyed: () => false,
         };
 
         log.setLogWindow(mockWin);
@@ -56,7 +58,8 @@ describe('logger tests', function() {
 
     it('should not send the logs', function() {
         let mockWin = {
-            send: jest.fn()
+            send: jest.fn(),
+            isDestroyed: () => false,
         };
 
         log.setLogWindow(mockWin);
