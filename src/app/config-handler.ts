@@ -39,7 +39,7 @@ export interface IConfig {
     permissions: IPermission;
     customFlags: ICustomFlag;
     crashReporter: ICrashReporter;
-    mainWinPos: ICustomRectangle;
+    mainWinPos?: ICustomRectangle;
 }
 
 export interface IPermission {
@@ -69,7 +69,7 @@ export interface INotificationSetting {
     display: string;
 }
 
-export interface ICustomRectangle extends Electron.Rectangle {
+export interface ICustomRectangle extends Partial<Electron.Rectangle> {
     isMaximized: boolean;
     isFullScreen: boolean;
 }
