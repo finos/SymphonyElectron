@@ -232,7 +232,7 @@ export class WindowHandler {
             ...this.windowOpts, ...getBounds(this.config.mainWinPos, DEFAULT_WIDTH, DEFAULT_HEIGHT),
         }) as ICustomBrowserWindow;
         this.mainWindow.winName = apiName.mainWindowName;
-        const { isFullScreen, isMaximized } = this.config.mainWinPos;
+        const { isFullScreen, isMaximized } = this.config.mainWinPos ? this.config.mainWinPos : { isFullScreen: false, isMaximized: false };
         if (isMaximized) {
             this.mainWindow.maximize();
         }

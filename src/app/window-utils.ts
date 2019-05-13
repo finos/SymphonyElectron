@@ -11,7 +11,7 @@ import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { getGuid } from '../common/utils';
 import { whitelistHandler } from '../common/whitelist-handler';
-import { config } from './config-handler';
+import { config, ICustomRectangle } from './config-handler';
 import { screenSnippet } from './screen-snippet-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
@@ -286,8 +286,8 @@ export const sanitize = async (windowName: string): Promise<void> => {
  * @param defaultHeight
  * @return {x?: Number, y?: Number, width: Number, height: Number}
  */
-export const getBounds = (winPos: Electron.Rectangle, defaultWidth: number, defaultHeight: number): Partial<Electron.Rectangle> => {
-    if (!winPos) {
+export const getBounds = (winPos: ICustomRectangle | Electron.Rectangle | undefined, defaultWidth: number, defaultHeight: number): Partial<Electron.Rectangle> => {
+    if (!winPos || !winPos.x || !winPos.y || !winPos.width || !winPos.height) {
         return { width: defaultWidth, height: defaultHeight };
     }
     const displays = electron.screen.getAllDisplays();
