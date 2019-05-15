@@ -69,7 +69,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
         const style = { display: isFullScreen ? 'none' : 'flex' };
 
         return (
-            <div className='title-bar'
+            <div id='title-bar'
                 onDoubleClick={this.state.isMaximized ? this.eventHandlers.onUnmaximize : this.eventHandlers.onMaximize}
                 style={style}
             >
