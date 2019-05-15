@@ -253,6 +253,10 @@ app.on('web-contents-created', function (event, webContents) {
     onWebContent(webContents);
 });
 
+process.on('uncaughtException', function(err) {
+    log.send(logLevels.ERROR, `Uncaught Exception Event: ${err}`);
+});
+
 function onWebContent(webContents) {
 
     if (!ContextMenuBuilder) {
