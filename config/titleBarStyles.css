@@ -12,7 +12,7 @@ Typically you'll want to set background-image: url(""); and background-size: cov
 ```
 
 */
-.title-bar {
+#title-bar {
     display: flex;
     position: fixed;
     background: rgba(74,74,74,1);
