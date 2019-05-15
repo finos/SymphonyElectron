@@ -9,6 +9,15 @@ jest.mock('fs', () => ({
         unlinkSync: jest.fn(),
 }));
 
+jest.mock('../src/common/logger', () => {
+    return {
+        logger: {
+            error: jest.fn(),
+            info: jest.fn(),
+        },
+    };
+});
+
 describe('app cache handler', () => {
     const cachePathExpected = path.join(app.getPath('userData'), 'CacheCheck');
 
