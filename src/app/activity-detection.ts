@@ -33,6 +33,7 @@ class ActivityDetection {
      */
     private startActivityMonitor(): void {
         if (app.isReady()) {
+            logger.info(`activity-detection: Starting activity monitor`);
             setInterval(() => (electron.powerMonitor as any).querySystemIdleTime(this.activity.bind(this)), this.idleThreshold);
         }
     }
@@ -54,7 +55,7 @@ class ActivityDetection {
             // activate func works normally
             windowHandler.setIsAutoReload(false);
             this.timer = undefined;
-            logger.info(`activity-detection: activity occurred`);
+            logger.info(`activity-detection: activity occurred, updating the client!`);
             return;
         }
 
@@ -78,6 +79,7 @@ class ActivityDetection {
     private sendActivity(idleTime: number): void {
         if (this.window && !this.window.isDestroyed()) {
             this.window.send('activity', idleTime || 1);
+            logger.info(`activity-detection: Sending activity status to the client!`);
         }
     }
 }

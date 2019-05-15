@@ -14,6 +14,7 @@ import {
     injectStyles,
     preventWindowNavigation,
 } from './window-utils';
+import {logger} from "../common/logger";
 
 const DEFAULT_POP_OUT_WIDTH = 300;
 const DEFAULT_POP_OUT_HEIGHT = 600;
@@ -31,25 +32,33 @@ const getParsedUrl = (configURL: string): Url => {
     const parsedUrl = parse(configURL);
 
     if (!parsedUrl.protocol || parsedUrl.protocol !== 'https') {
+        logger.info(`child-window-handler: The url ${configURL} doesn't have a valid protocol or is not https, so, adding https!`);
         parsedUrl.protocol = 'https:';
         parsedUrl.slashes = true;
     }
-    return parse(format(parsedUrl));
+    const finalParsedUrl = parse(format(parsedUrl));
+    logger.info(`child-window-handler: The original url ${configURL} is finally parsed as ${finalParsedUrl}`);
+    return finalParsedUrl;
 };
 
 export const handleChildWindow = (webContents: WebContents): void => {
     const childWindow = (event, newWinUrl, frameName, disposition, newWinOptions): void => {
+        logger.info(`child-window-handler: trying to create new child window for url ${newWinUrl},
+         frame ${frameName}, disposition ${disposition}`);
         const mainWindow = windowHandler.getMainWindow();
         if (!mainWindow || mainWindow.isDestroyed()) {
+            logger.info(`child-window-handler: main window is not available / destroyed, not creating child window!`);
             return;
         }
         if (!windowHandler.url) {
+            logger.info(`child-window-handler: we don't have a valid url, not creating child window!`);
             return;
         }
 
         if (!newWinOptions.webPreferences) {
             newWinOptions.webPreferences = {};
         }
+
         Object.assign(newWinOptions.webPreferences, webContents);
         const newWinParsedUrl = getParsedUrl(newWinUrl);
         const mainWinParsedUrl = getParsedUrl(windowHandler.url);
@@ -61,27 +70,26 @@ export const handleChildWindow = (webContents: WebContents): void => {
         const dispositionWhitelist = ['new-window', 'foreground-tab'];
 
         const fullMainUrl = `${mainWinParsedUrl.protocol}//${mainWinParsedUrl.host}/`;
+        logger.info(`child-window-handler: full main url is ${fullMainUrl}!`);
         // If the main url and new window url are the same,
         // we open that in a browser rather than a separate window
         if (newWinUrl === fullMainUrl) {
             event.preventDefault();
+            logger.info(`child-window-handler: the new window url ${newWinUrl} and the main url ${fullMainUrl}
+             are the same, so, redirecting to be opened in the default browser!`);
             windowHandler.openUrlInDefaultBrowser(newWinUrl);
             return;
         }
 
-        // only allow window.open to succeed is if coming from same hsot,
+        // only allow window.open to succeed if it is coming from same host,
         // otherwise open in default browser.
-        if ((newWinHost === mainWinHost
-            || newWinUrl === emptyUrlString
-            || (newWinHost
-                && mainWinHost
-                && newWinHost.indexOf(mainWinHost) !== -1
-                && frameName !== ''))
+        if ((newWinHost === mainWinHost || newWinUrl === emptyUrlString ||
+            (newWinHost && mainWinHost && newWinHost.indexOf(mainWinHost) !== -1 && frameName !== ''))
             && dispositionWhitelist.includes(disposition)) {
 
             const newWinKey = getGuid();
             if (!frameName) {
-                // abort - no frame name provided.
+                logger.info(`child-window-handler: frame name missing! not opening the url ${newWinUrl}`);
                 return;
             }
 
@@ -97,7 +105,6 @@ export const handleChildWindow = (webContents: WebContents): void => {
                 if (Number.isInteger(newX) && Number.isInteger(newY)) {
                     const newWinRect = { x: newX, y: newY, width, height };
                     const { x, y } = getBounds(newWinRect, DEFAULT_POP_OUT_WIDTH, DEFAULT_POP_OUT_HEIGHT);
-
                     newWinOptions.x = x;
                     newWinOptions.y = y;
                 } else {
@@ -129,6 +136,7 @@ export const handleChildWindow = (webContents: WebContents): void => {
             });
 
             childWebContents.once('did-finish-load', async () => {
+                logger.info(`child-window-handler: child window content loaded for url ${newWinUrl}!`);
                 const browserWin: ICustomBrowserWindow = BrowserWindow.fromWebContents(childWebContents) as ICustomBrowserWindow;
                 if (!browserWin) {
                     return;
@@ -147,6 +155,7 @@ export const handleChildWindow = (webContents: WebContents): void => {
                 await injectStyles(browserWin, false);
                 browserWin.winName = frameName;
                 browserWin.setAlwaysOnTop(mainWindow.isAlwaysOnTop());
+                logger.info(`child-window-handler: setting always on top for child window? ${mainWindow.isAlwaysOnTop()}!`);
 
                 // prevents window from navigating
                 preventWindowNavigation(browserWin, true);
@@ -155,6 +164,7 @@ export const handleChildWindow = (webContents: WebContents): void => {
                 monitorWindowActions(browserWin);
                 // Remove all attached event listeners
                 browserWin.on('close', () => {
+                    logger.info(`child-window-handler: close event occurred for window with url ${newWinUrl}!`);
                     removeWindowEventListener(browserWin);
                 });
 
@@ -173,6 +183,8 @@ export const handleChildWindow = (webContents: WebContents): void => {
                 }
             });
         } else {
+            logger.info(`child-window-handler: new window url is ${newWinUrl} which is not of the same host, 
+            so opening it in the default browser!`);
             event.preventDefault();
             windowHandler.openUrlInDefaultBrowser(newWinUrl);
         }

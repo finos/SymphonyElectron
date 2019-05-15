@@ -27,8 +27,8 @@ class AutoLaunchController {
      * @return {Promise<void>}
      */
     public enableAutoLaunch(): void {
-        logger.info(`Enabling auto launch!`);
         app.setLoginItemSettings({ openAtLogin: true, path: props.path });
+        logger.info(`auto-launch-controller: Enabled auto launch!`);
     }
 
     /**
@@ -37,8 +37,8 @@ class AutoLaunchController {
      * @return {Promise<void>}
      */
     public disableAutoLaunch(): void {
-        logger.info(`Disabling auto launch!`);
         app.setLoginItemSettings({ openAtLogin: false, path: props.path });
+        logger.info(`auto-launch-controller: Disabled auto launch!`);
     }
 
     /**
