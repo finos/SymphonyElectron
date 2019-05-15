@@ -1,7 +1,8 @@
 import { app, session } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
-import {logger} from "../common/logger";
+
+import { logger } from '../common/logger';
 
 // Cache check file path
 const cacheCheckFilePath: string = path.join(app.getPath('userData'), 'CacheCheck');

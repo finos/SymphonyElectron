@@ -4,6 +4,7 @@ import { parse as parseQuerystring } from 'querystring';
 import { format, parse, Url } from 'url';
 import { isDevEnv, isWindowsOS } from '../common/env';
 import { i18n } from '../common/i18n';
+import { logger } from '../common/logger';
 import { getGuid } from '../common/utils';
 import { config } from './config-handler';
 import { monitorWindowActions, removeWindowEventListener } from './window-actions';
@@ -14,7 +15,6 @@ import {
     injectStyles,
     preventWindowNavigation,
 } from './window-utils';
-import {logger} from "../common/logger";
 
 const DEFAULT_POP_OUT_WIDTH = 300;
 const DEFAULT_POP_OUT_HEIGHT = 600;
@@ -183,7 +183,7 @@ export const handleChildWindow = (webContents: WebContents): void => {
                 }
             });
         } else {
-            logger.info(`child-window-handler: new window url is ${newWinUrl} which is not of the same host, 
+            logger.info(`child-window-handler: new window url is ${newWinUrl} which is not of the same host,
             so opening it in the default browser!`);
             event.preventDefault();
             windowHandler.openUrlInDefaultBrowser(newWinUrl);

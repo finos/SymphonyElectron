@@ -2,7 +2,7 @@
 
 exports[`windows title bar should render correctly 1`] = `
 <div
-  className="title-bar"
+  id="title-bar"
   onDoubleClick={[Function]}
   style={
     Object {
