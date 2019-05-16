@@ -30,7 +30,7 @@ export class AnimationQueue {
         try {
             await object.func.apply(null, object.args);
         } catch (err) {
-            logger.error(`animationQueue: encountered an error: ${err} with stack trace: ${err.stack}`);
+            logger.error(`animation-queue: encountered an error: ${err} with stack trace: ${err.stack}`);
         } finally {
             if (this.queue.length > 0) {
                 // Run next animation

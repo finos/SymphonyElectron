@@ -30,45 +30,43 @@ app.setAsDefaultProtocolClient('symphony');
  */
 const startApplication = async () => {
     await app.whenReady();
+    logger.info(`main: app is ready, performing initial checks`);
     createAppCacheFile();
     windowHandler.showLoadingScreen();
     windowHandler.createApplication();
+    logger.info(`main: created application`);
 
     if (config.isFirstTimeLaunch()) {
-        logger.info('first time launch');
+        logger.info(`main: This is a first time launch! will update config and handle auto launch`);
         await config.setUpFirstTimeLaunch();
-
-        /**
-         * Enables or disables auto launch base on user settings
-         */
         await autoLaunchInstance.handleAutoLaunch();
     }
 
-    /**
-     * Sets chrome flags from global config
-     */
     setChromeFlags();
 };
 
 // Handle multiple/single instances
 if (!allowMultiInstance) {
-    logger.info('Multiple instance not allowed requesting lock', { allowMultiInstance });
+    logger.info('main: Multiple instances are not allowed, requesting lock', { allowMultiInstance });
     const gotTheLock = app.requestSingleInstanceLock();
 
     // quit if another instance is already running, ignore for dev env or if app was started with multiInstance flag
     if (!gotTheLock) {
-        logger.info('Got the lock hence closing the instance', { gotTheLock });
+        logger.info(`main: got the lock hence closing the new instance`, { gotTheLock });
         app.quit();
     } else {
-        logger.info('Creating the first instance of the application');
+        logger.info(`main: Creating the first instance of the application`);
         app.on('second-instance', (_event, argv) => {
             // Someone tried to run a second instance, we should focus our window.
+            logger.info(`main: We've got a second instance of the app, will check if it's allowed and exit if not`);
             const mainWindow = windowHandler.getMainWindow();
             if (mainWindow && !mainWindow.isDestroyed()) {
                 if (isMac) {
+                    logger.info(`main: We are on mac, so, showing the existing window`);
                     return mainWindow.show();
                 }
                 if (mainWindow.isMinimized()) {
+                    logger.info(`main: our main window is minimised, will restore it!`);
                     mainWindow.restore();
                 }
                 mainWindow.focus();
@@ -78,7 +76,7 @@ if (!allowMultiInstance) {
         startApplication();
     }
 } else {
-    logger.info('Multiple instance allowed hence create application', { allowMultiInstance });
+    logger.info(`main: multi instance allowed, creating second instance`, { allowMultiInstance });
     startApplication();
 }
 
@@ -86,12 +84,18 @@ if (!allowMultiInstance) {
  * Is triggered when all the windows are closed
  * In which case we quit the app
  */
-app.on('window-all-closed', () => app.quit());
+app.on('window-all-closed', () => {
+    logger.info(`main: all windows are closed, quitting the app!`);
+    app.quit();
+});
 
 /**
  * Creates a new empty cache file when the app is quit
  */
-app.on('quit',  () => cleanUpAppCache());
+app.on('quit',  () => {
+    logger.info(`main: quitting the app!`);
+    cleanUpAppCache();
+});
 
 /**
  * Cleans up reference before quiting
@@ -107,9 +111,11 @@ app.on('before-quit', () => windowHandler.willQuitApp = true);
 app.on('activate', () => {
     const mainWindow: ICustomBrowserWindow | null = windowHandler.getMainWindow();
     if (!mainWindow || mainWindow.isDestroyed()) {
+        logger.info(`main: main window not existing or destroyed, creating a new instance of the main window!`);
         startApplication();
         return;
     }
+    logger.info(`main: activating & showing main window now!`);
     mainWindow.show();
 });
 
@@ -118,4 +124,7 @@ app.on('activate', () => {
  *
  * This event is emitted only on macOS at this moment
  */
-app.on('open-url', (_event, url) => protocolHandler.sendProtocol(url));
+app.on('open-url', (_event, url) => {
+    logger.info(`main: we got a protocol request with url ${url}! processing the request!`);
+    protocolHandler.sendProtocol(url);
+});

@@ -106,6 +106,7 @@ class Config {
      * @param fields
      */
     public getConfigFields(fields: string[]): IConfig {
+        logger.info(`config-handler: Trying to get config values for the fields ${fields}`);
         return { ...this.getGlobalConfigFields(fields), ...this.getUserConfigFields(fields) } as IConfig;
     }
 
@@ -115,6 +116,7 @@ class Config {
      * @param fields {Array}
      */
     public getUserConfigFields(fields: string[]): IConfig {
+        logger.info(`config-handler: Trying to get user config values for the fields ${fields}`);
         return pick(this.userConfig, fields) as IConfig;
     }
 
@@ -124,6 +126,7 @@ class Config {
      * @param fields {Array}
      */
     public getGlobalConfigFields(fields: string[]): IConfig {
+        logger.info(`config-handler: Trying to get global config values for the fields ${fields}`);
         return pick(this.globalConfig, fields) as IConfig;
     }
 
@@ -133,12 +136,14 @@ class Config {
      * @param data {IConfig}
      */
     public async updateUserConfig(data: Partial<IConfig>): Promise<void> {
+        logger.info(`config-handler: updating user config values with the data ${data}`);
         this.userConfig = { ...this.userConfig, ...data };
         try {
             await writeFile(this.userConfigPath, JSON.stringify(this.userConfig), { encoding: 'utf8' });
+            logger.info(`config-handler: updated user config values with the data ${data}`);
         } catch (error) {
             logger.error(`config-handler: failed to update user config file with ${data}`, error);
-            dialog.showErrorBox('Error updating user config file', 'failed to write user config file with ${}');
+            dialog.showErrorBox(`Update failed`, `Failed to update user config due to error: ${error}`);
         }
     }
 
@@ -161,6 +166,7 @@ class Config {
             const filteredFields: IConfig = omit(this.userConfig, ignoreSettings) as IConfig;
             // update to the new build number
             filteredFields.buildNumber = buildNumber;
+            logger.info(`config-handler: setting first time launch for build ${buildNumber}`);
             return await this.updateUserConfig(filteredFields);
         }
     }
@@ -173,11 +179,14 @@ class Config {
     private parseConfigData(data: string): object {
         let parsedData;
         if (!data) {
+            logger.error(`config-handler: unable to read config file`);
             throw new Error('unable to read user config file');
         }
         try {
             parsedData = JSON.parse(data);
+            logger.info(`config-handler: parsed JSON file with data ${JSON.stringify(parsedData)}`);
         } catch (e) {
+            logger.error(`config-handler: parsing JSON file failed due to error ${e}`);
             throw new Error(e);
         }
         return parsedData;
@@ -191,9 +200,11 @@ class Config {
      */
     private async readUserConfig() {
         if (!fs.existsSync(this.userConfigPath)) {
+            logger.info(`config-handler: user config doesn't exist! will create new one and update config`);
             await this.updateUserConfig({ configVersion: app.getVersion().toString(), buildNumber } as IConfig);
         }
         this.userConfig = this.parseConfigData(fs.readFileSync(this.userConfigPath, 'utf8'));
+        logger.info(`config-handler: user config exists with data ${JSON.stringify(this.userConfig)}`);
     }
 
     /**
@@ -201,24 +212,28 @@ class Config {
      */
     private readGlobalConfig() {
         this.globalConfig = this.parseConfigData(fs.readFileSync(this.globalConfigPath, 'utf8'));
+        logger.info(`config-handler: global config exists with data ${JSON.stringify(this.globalConfig)}`);
     }
 
     /**
      * Verifies if the application is launched for the first time
      */
     private async checkFirstTimeLaunch() {
-        logger.info('checking first launch');
+        logger.info('config-handler: checking first time launch');
         const configBuildNumber = this.userConfig && (this.userConfig as IConfig).buildNumber || null;
 
         if (!configBuildNumber) {
+            logger.info(`config-handler: there's no build number found, this is a first time launch`);
             this.isFirstTime = true;
             return;
         }
 
         if (configBuildNumber && typeof configBuildNumber === 'string' && configBuildNumber !== buildNumber) {
+            logger.info(`config-handler: build number found is of an older build, this is a first time launch`);
             this.isFirstTime = true;
             return;
         }
+        logger.info(`config-handler: build number is the same as the previous build, not a first time launch`);
         this.isFirstTime = false;
     }
 }

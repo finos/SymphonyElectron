@@ -1,7 +1,7 @@
 import { BrowserWindow } from 'electron';
-
 import { apiName, IBoundsChange, KeyCodes } from '../common/api-interface';
 import { isMac, isWindowsOS } from '../common/env';
+import { logger } from '../common/logger';
 import { throttle } from '../common/utils';
 import { config } from './config-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
@@ -95,6 +95,7 @@ export const activate = (windowName: string, shouldFocus: boolean = true): void 
  * @param shouldActivateMainWindow
  */
 export const updateAlwaysOnTop = (shouldSetAlwaysOnTop: boolean, shouldActivateMainWindow: boolean = true): void => {
+    logger.info(`window-actions: Should we set always on top? ${shouldSetAlwaysOnTop}!`);
     const browserWins: ICustomBrowserWindow[] = BrowserWindow.getAllWindows() as ICustomBrowserWindow[];
     if (browserWins.length > 0) {
         browserWins
@@ -107,6 +108,7 @@ export const updateAlwaysOnTop = (shouldSetAlwaysOnTop: boolean, shouldActivateM
         const mainWindow = windowHandler.getMainWindow();
         if (mainWindow && mainWindow.winName && shouldActivateMainWindow) {
             activate(mainWindow.winName);
+            logger.info(`window-actions: activated main window!`);
         }
     }
 };

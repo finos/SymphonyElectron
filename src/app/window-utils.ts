@@ -52,9 +52,11 @@ export const preventWindowNavigation = (browserWindow: BrowserWindow, isPopOutWi
     if (!browserWindow || !windowExists(browserWindow)) {
         return;
     }
+    logger.info(`window-utils: preventing window from navigating!`);
 
     const listener = (e: Electron.Event, winUrl: string) => {
         if (!winUrl.startsWith('http' || 'https')) {
+            logger.info(`window-utils: ${winUrl} doesn't start with http or https, so, not navigating!`);
             e.preventDefault();
             return;
         }
@@ -158,9 +160,11 @@ export const createComponentWindow = (
  */
 export const showBadgeCount = (count: number): void => {
     if (typeof count !== 'number') {
-        logger.warn(`badgeCount: invalid func arg, must be a number: ${count}`);
+        logger.warn(`window-utils: badgeCount: invalid func arg, must be a number: ${count}`);
         return;
     }
+
+    logger.info(`window-utils: updating barge count to ${count}!`);
 
     if (isMac) {
         // too big of a number here and setBadgeCount crashes
@@ -219,7 +223,7 @@ export const isValidWindow = (browserWin: Electron.BrowserWindow): boolean => {
     }
 
     if (!result) {
-        logger.warn('invalid window try to perform action, ignoring action');
+        logger.warn('window-utils: invalid window try to perform action, ignoring action');
     }
 
     return result;
@@ -231,10 +235,12 @@ export const isValidWindow = (browserWin: Electron.BrowserWindow): boolean => {
  * @param locale {LocaleType}
  */
 export const updateLocale = (locale: LocaleType): void => {
+    logger.info(`window-utils: updating locale to ${locale}!`);
     // sets the new locale
     i18n.setLocale(locale);
     const appMenu = windowHandler.appMenu;
     if (appMenu) {
+        logger.info(`window-utils: updating app menu with locale ${locale}!`);
         appMenu.update(locale);
     }
 };
@@ -454,8 +460,10 @@ export const isSymphonyReachable = (window: ICustomBrowserWindow | null) => {
             return;
         }
         const podUrl = `${protocol}//${hostname}`;
+        logger.info(`window-utils: checking to see if pod ${podUrl} is reachable!`);
         fetch(podUrl, { method: 'GET' }).then((rsp) => {
             if (rsp.status === 200 && windowHandler.isOnline) {
+                logger.info(`window-utils: pod ${podUrl} is reachable, loading main window!`);
                 window.loadURL(podUrl);
                 if (networkStatusCheckIntervalId) {
                     clearInterval(networkStatusCheckIntervalId);
@@ -463,9 +471,9 @@ export const isSymphonyReachable = (window: ICustomBrowserWindow | null) => {
                 }
                 return;
             }
-            logger.warn(`Symphony down! statusCode: ${rsp.status} is online: ${windowHandler.isOnline}`);
+            logger.warn(`window-utils: POD is down! statusCode: ${rsp.status}, is online: ${windowHandler.isOnline}`);
         }).catch((error) => {
-            logger.error(`Network status check: No active network connection ${error}`);
+            logger.error(`window-utils: Network status check: No active network connection ${error}`);
         });
     }, networkStatusCheckInterval);
 };

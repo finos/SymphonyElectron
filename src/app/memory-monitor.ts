@@ -30,6 +30,7 @@ class MemoryMonitor {
      */
     public setMemoryInfo(memoryInfo: Electron.ProcessMemoryInfo): void {
         this.memoryInfo = memoryInfo;
+        logger.info(`memory-monitor: setting memory info to ${memoryInfo}`);
         this.validateMemory();
     }
 
@@ -40,15 +41,17 @@ class MemoryMonitor {
      */
     public setMeetingStatus(isInMeeting: boolean): void {
         this.isInMeeting = isInMeeting;
+        logger.info(`memory-monitor: setting meeting status to ${isInMeeting}`);
     }
 
     /**
      * Validates the predefined conditions and refreshes the client
      */
     private validateMemory(): void {
+        logger.info(`memory-monitor: validating memory refresh conditions`);
         const { memoryRefresh } = config.getConfigFields([ 'memoryRefresh' ]);
         if (!memoryRefresh) {
-            logger.info(`memory refresh is disabled`);
+            logger.info(`memory-monitor: memory refresh is disabled in the config, not going to refresh!`);
             return;
         }
 
@@ -61,7 +64,7 @@ class MemoryMonitor {
                 && idleTime > this.maxIdleTime
                 && (workingSetSizeInMB > this.memoryThreshold))
             ) {
-                logger.info(`Not Reloading the app as
+                logger.info(`memory-monitor: Not Reloading the app as
                 application was refreshed less than a hour ago? ${this.canReload ? 'no' : 'yes'}
                 memory consumption is ${(workingSetSizeInMB) || 'unknown'}mb is less than? ${this.memoryThreshold}mb
                 system idle tick was ${idleTime}ms is less than? ${this.maxIdleTime}ms
@@ -71,7 +74,7 @@ class MemoryMonitor {
             }
             const mainWindow = windowHandler.getMainWindow();
             if (mainWindow && windowExists(mainWindow)) {
-                logger.info(`Reloading the app to optimize memory usage as
+                logger.info(`memory-monitor: Reloading the app to optimize memory usage as
                     memory consumption is ${workingSetSizeInMB}mb is greater than? ${this.memoryThreshold}mb threshold
                     system idle tick was ${idleTime}ms is greater than ${this.maxIdleTime}ms
                     user was in a meeting? ${this.isInMeeting}

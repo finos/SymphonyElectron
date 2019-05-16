@@ -1,5 +1,6 @@
 import { apiName } from '../common/api-interface';
 import { isMac } from '../common/env';
+import { logger } from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
 import { activate } from './window-actions';
 
@@ -25,9 +26,10 @@ class ProtocolHandler {
      */
     public setPreloadWebContents(webContents: Electron.WebContents): void {
         this.preloadWebContents = webContents;
-        // check for cashed protocol uri and process it
+        logger.info(`protocol handler: SFE is active and we have a valid protocol window with web contents!`);
         if (this.protocolUri) {
             this.sendProtocol(this.protocolUri);
+            logger.info(`protocol handler: we have a cached url ${this.protocolUri}, so, processed the request to SFE!`);
             this.protocolUri = null;
         }
     }
@@ -35,12 +37,14 @@ class ProtocolHandler {
     /**
      * Sends the protocol uri to the web app to further process
      *
-     * @param uri {String}
+     * @param url {String}
      * @param isAppRunning {Boolean} - whether the application is running
      */
-    public sendProtocol(uri: string, isAppRunning: boolean = true): void {
+    public sendProtocol(url: string, isAppRunning: boolean = true): void {
+        logger.info(`protocol handler: processing protocol request for the url ${url}!`);
         if (!this.preloadWebContents || !isAppRunning) {
-            this.protocolUri = uri;
+            logger.info(`protocol handler: app was started from the protocol request. Caching the URL ${url}!`);
+            this.protocolUri = url;
             return;
         }
         // This is needed for mac OS as it brings pop-outs to foreground
@@ -49,8 +53,9 @@ class ProtocolHandler {
             activate(apiName.mainWindowName);
         }
 
-        if (ProtocolHandler.isValidProtocolUri(uri)) {
-            this.preloadWebContents.send('protocol-action', uri);
+        if (ProtocolHandler.isValidProtocolUri(url)) {
+            logger.info(`protocol handler: our protocol request is a valid url ${url}! sending request to SFE for further action!`);
+            this.preloadWebContents.send('protocol-action', url);
         }
     }
 
@@ -60,8 +65,10 @@ class ProtocolHandler {
      * @param argv {String[]} - data received from process.argv
      */
     public processArgv(argv?: string[]): void {
+        logger.info(`protocol handler: processing protocol args!`);
         const protocolUriFromArgv = getCommandLineArgs(argv || process.argv, protocol.SymphonyProtocol, false);
         if (protocolUriFromArgv) {
+            logger.info(`protocol handler: we have a protocol request for the url ${protocolUriFromArgv}!`);
             this.sendProtocol(protocolUriFromArgv, false);
         }
     }

@@ -57,7 +57,7 @@ export class WhitelistHandler {
      * returns true if hostName or domain present in the whitelist
      *
      * @param url {String} - url the electron is navigated to
-     * @param whitelistUrl {String} - coma separated whitelists
+     * @param whitelistUrl {String} - comma separated whitelists
      *
      * @returns {boolean}
      */

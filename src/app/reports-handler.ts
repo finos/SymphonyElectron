@@ -6,6 +6,7 @@ import * as path from 'path';
 
 import { isMac } from '../common/env';
 import { i18n } from '../common/i18n';
+import { logger } from '../common/logger';
 
 /**
  * Archives files in the source directory
@@ -19,14 +20,17 @@ import { i18n } from '../common/i18n';
 const generateArchiveForDirectory = (source: string, destination: string, fileExtensions: string[]): Promise<void> => {
 
     return new Promise((resolve, reject) => {
+        logger.info(`reports-handler: generating archive for directory ${source}`);
         const output = fs.createWriteStream(destination);
         const archive = archiver('zip', { zlib: { level: 9 } });
 
         output.on('close', () => {
+            logger.info(`reports-handler: generated archive for directory ${source}`);
             return resolve();
         });
 
-        archive.on('error', (err) => {
+        archive.on('error', (err: Error) => {
+            logger.error(`reports-handler: error archiving directory for ${source} with error ${err}`);
             return reject(err);
         });
 
@@ -69,8 +73,9 @@ export const exportLogs = (): void => {
     const focusedWindow = BrowserWindow.getFocusedWindow();
 
     if (!fs.existsSync(source) && focusedWindow && !focusedWindow.isDestroyed()) {
+        logger.error(`reports-handler: Can't find any logs to share!`);
         dialog.showMessageBox(focusedWindow, {
-            message: i18n.t('No logs are available to share')(),
+            message: i18n.t(`Can't find any logs to share!`)(),
             title: i18n.t('Failed!')(),
             type: 'error',
         });
@@ -86,6 +91,7 @@ export const exportLogs = (): void => {
         })
         .catch((err) => {
             if (focusedWindow && !focusedWindow.isDestroyed()) {
+                logger.error(`reports-handler: Can't share logs due to error ${err}`);
                 dialog.showMessageBox(focusedWindow, {
                     message: `${i18n.t('Unable to generate logs due to ')()} ${err}`,
                     title: i18n.t('Failed!')(),

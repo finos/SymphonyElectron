@@ -4,6 +4,7 @@ import * as path from 'path';
 import { ContextMenuBuilder, DictionarySync, SpellCheckHandler } from 'electron-spellchecker';
 import { isDevEnv, isMac } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
+import { logger } from '../common/logger';
 
 export class SpellChecker {
     public locale: LocaleType = 'en-US';
@@ -42,6 +43,7 @@ export class SpellChecker {
         const contextMenuBuilder = new ContextMenuBuilder(this.spellCheckHandler, webContents, false, this.processMenu);
         contextMenuBuilder.setAlternateStringFormatter(this.getStringTable());
         this.locale = i18n.getLocale();
+        logger.info(`spell-check-handler: Building context menu with locale ${this.locale}!`);
         const contextMenuListener = (_event, info) => {
             if (this.locale !== i18n.getLocale()) {
                 contextMenuBuilder.setAlternateStringFormatter(this.getStringTable());
@@ -52,6 +54,7 @@ export class SpellChecker {
 
         webContents.on('context-menu', contextMenuListener);
         webContents.once('destroyed', () => {
+            logger.info(`spell-check-handler: web contents destroyed, removing context menu listener!`);
             webContents.removeListener('context-menu', contextMenuListener);
         });
     }

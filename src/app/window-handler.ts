@@ -225,7 +225,7 @@ export class WindowHandler {
     public createApplication() {
 
         this.spellchecker = new SpellChecker();
-        logger.info(`initialized spellchecker module with locale ${this.spellchecker.locale}`);
+        logger.info(`window-handler: initialized spellchecker module with locale ${this.spellchecker.locale}`);
 
         // set window opts with additional config
         this.mainWindow = new BrowserWindow({
@@ -235,13 +235,16 @@ export class WindowHandler {
         const { isFullScreen, isMaximized } = this.config.mainWinPos ? this.config.mainWinPos : { isFullScreen: false, isMaximized: false };
         if (isMaximized) {
             this.mainWindow.maximize();
+            logger.info(`window-handler: window is maximized!`);
         }
         if (isFullScreen) {
+            logger.info(`window-handler: window is in full screen!`);
             this.mainWindow.setFullScreen(true);
         }
 
         // Event needed to hide native menu bar on Windows 10 as we use custom menu bar
         this.mainWindow.webContents.once('did-start-loading', () => {
+            logger.info(`window-handler: main window web contents started loading!`);
             if ((this.config.isCustomTitleBar || isWindowsOS) && this.mainWindow && windowExists(this.mainWindow)) {
                 this.mainWindow.setMenuBarVisibility(false);
             }
@@ -254,8 +257,10 @@ export class WindowHandler {
         // loads the main window with url from config/cmd line
         this.mainWindow.loadURL(this.url);
         this.mainWindow.webContents.on('did-finish-load', async () => {
+            logger.info(`window-handler: main window web contents finished loading!`);
             // early exit if the window has already been destroyed
             if (!this.mainWindow || !windowExists(this.mainWindow)) {
+                logger.info(`window-handler: main window web contents destroyed already! exiting`);
                 return;
             }
             this.url = this.mainWindow.webContents.getURL();
@@ -277,7 +282,7 @@ export class WindowHandler {
         });
 
         this.mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDesc, validatedURL) => {
-            logger.error(`Failed to load ${validatedURL}, with an error: ${errorCode}::${errorDesc}`);
+            logger.error(`window-handler: Failed to load ${validatedURL}, with an error: ${errorCode}::${errorDesc}`);
             this.loadFailError = errorDesc;
         });
 
@@ -301,8 +306,10 @@ export class WindowHandler {
 
         this.mainWindow.webContents.on('crashed', (_event: Event, killed: boolean)  => {
             if (killed) {
+                logger.info(`window-handler: main window crashed (killed)!`);
                 return;
             }
+            logger.info(`window-handler: main window crashed!`);
             electron.dialog.showMessageBox({
                 type: 'error',
                 title: i18n.t('Renderer Process Crashed')(),
@@ -323,6 +330,7 @@ export class WindowHandler {
             }
 
             if (this.willQuitApp) {
+                logger.info(`window-handler: app is quitting, destroying all windows!`);
                 return this.destroyAllWindows();
             }
 
@@ -336,6 +344,7 @@ export class WindowHandler {
         });
 
         this.mainWindow.once('closed', () => {
+            logger.info(`window-handler: main window closed, destroying all windows!`);
             this.destroyAllWindows();
         });
 
@@ -369,8 +378,10 @@ export class WindowHandler {
      * all the HTML content have been injected
      */
     public initMainWindow(): void {
+        logger.info(`window-handler: initializing main window!`);
         if (this.mainWindow && windowExists(this.mainWindow)) {
             if (!this.isOnline && this.loadingWindow && windowExists(this.loadingWindow)) {
+                logger.info(`window-handler: network is offline!`);
                 this.loadingWindow.webContents.send('loading-screen-data', { error: 'NETWORK_OFFLINE' });
                 return;
             }
@@ -378,6 +389,7 @@ export class WindowHandler {
             // close the loading window when
             // the main windows finished loading
             if (this.loadingWindow && windowExists(this.loadingWindow)) {
+                logger.info(`window-handler: closing loading window as the main window is now ready!`);
                 this.loadingWindow.close();
             }
 
@@ -412,6 +424,7 @@ export class WindowHandler {
      * @param winKey {string} - Unique ID assigned to the window
      */
     public closeWindow(windowType: WindowTypes, winKey?: string): void {
+        logger.info(`window-handler: closing window type ${windowType} with key ${winKey}!`);
         switch (windowType) {
             case 'screen-picker':
                 if (this.screenPickerWindow && windowExists(this.screenPickerWindow)) {
@@ -489,8 +502,10 @@ export class WindowHandler {
                 return;
             }
             if (error) {
+                logger.info(`window-handler: loading screen failed ${error}!`);
                 this.loadingWindow.webContents.send('loading-screen-data', { error });
             }
+            logger.info(`window-handler: loading screen started ${error}!`);
         });
 
         ipcMain.once('reload-symphony', () => {
@@ -767,6 +782,7 @@ export class WindowHandler {
     public openUrlInDefaultBrowser(urlToOpen) {
         if (urlToOpen) {
             electron.shell.openExternal(urlToOpen);
+            logger.info(`window-handler: opened url ${urlToOpen} in the default browser!`);
         }
     }
 
@@ -793,6 +809,7 @@ export class WindowHandler {
      * Registers keyboard shortcuts or devtools
      */
     private registerGlobalShortcuts(): void {
+        logger.info(`window-handler: registering global shortcuts!`);
         globalShortcut.register(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I', this.onRegisterDevtools);
 
         app.on('browser-window-focus', () => {
@@ -819,6 +836,7 @@ export class WindowHandler {
             return;
         }
         focusedWindow.webContents.closeDevTools();
+        logger.info(`window-handler: dev tools disabled by admin, showing error dialog to user!`);
         electron.dialog.showMessageBox(focusedWindow, {
             type: 'warning',
             buttons: [ 'Ok' ],

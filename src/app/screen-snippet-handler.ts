@@ -38,26 +38,32 @@ class ScreenSnippet {
      * @param webContents {Electron.webContents}
      */
     public async capture(webContents: Electron.webContents) {
+        logger.info(`screen-snippet-handler: Starting screen capture!`);
         this.outputFileName = path.join(this.tempDir, 'symphonyImage-' + Date.now() + '.jpg');
         this.captureUtilArgs = isMac
             ? [ '-i', '-s', '-t', 'jpg', this.outputFileName ]
             : [ this.outputFileName, i18n.getLocale() ];
 
+        logger.info(`screen-snippet-handler: Capturing snippet with file ${this.outputFileName} and args ${this.captureUtilArgs}!`);
+
         const mainWindow = windowHandler.getMainWindow();
         if (mainWindow) {
             this.isAlwaysOnTop = mainWindow.isAlwaysOnTop();
+            logger.info(`screen-snippet-handler: Is main window always on top? ${this.isAlwaysOnTop}!`);
             updateAlwaysOnTop(false, false);
         }
         // only allow one screen capture at a time.
         if (this.child) {
+            logger.info(`screen-snippet-handler: Child screen capture exists, killing it and keeping only 1 instance!`);
             this.child.kill();
         }
         try {
             await this.execCmd(this.captureUtil, this.captureUtilArgs);
             const { message, data, type }: IScreenSnippet = await this.convertFileToData();
+            logger.info(`screen-snippet-handler: Snippet captured! Sending data to SFE`);
             webContents.send('screen-snippet-data', { message, data, type });
         } catch (error) {
-            logger.error(`screen-snippet: screen snippet process was killed`, error);
+            logger.error(`screen-snippet-handler: screen capture failed with error: ${error}!`);
         }
     }
 
@@ -105,10 +111,12 @@ class ScreenSnippet {
     private async convertFileToData(): Promise<IScreenSnippet> {
         try {
             if (!this.outputFileName) {
+                logger.info(`screen-snippet-handler: screen capture failed! output file doesn't exist!`);
                 return { message: 'output file name is required', type: 'ERROR' };
             }
             const data = await readFile(this.outputFileName);
             if (!data) {
+                logger.info(`screen-snippet-handler: screen capture failed! data doesn't exist!`);
                 return { message: `no file data provided`, type: 'ERROR' };
             }
             // convert binary data to base64 encoded string
@@ -125,10 +133,9 @@ class ScreenSnippet {
             // remove tmp file (async)
             if (this.outputFileName) {
                 fs.unlink(this.outputFileName, (removeErr) => {
-                    // note: node complains if calling async
-                    // func without callback.
+                    logger.info(`screen-snippet-handler: cleaning up temp snippet file: ${this.outputFileName}!`);
                     if (removeErr) {
-                        logger.error(`ScreenSnippet: error removing temp snippet file: ${this.outputFileName}, err: ${removeErr}`);
+                        logger.error(`screen-snippet-handler: error removing temp snippet file: ${this.outputFileName}, err: ${removeErr}`);
                     }
                 });
             }
