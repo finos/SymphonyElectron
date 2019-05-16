@@ -1,4 +1,5 @@
 const { app } = require('electron');
+const AutoLaunch = require('auto-launch');
 
 // Local Dependencies
 const log = require('../log.js');
@@ -17,6 +18,17 @@ const props = isMac ? {
     name: 'Symphony',
     path: getAutoLaunchPath() || process.execPath,
 };
+
+/**
+ * @deprecated - removes old Symphony launch agent if exists
+ */
+if (isMac) {
+    const autoLaunch = new AutoLaunch(props);
+    autoLaunch.disable()
+        .then(() => log.send(logLevels.INFO, `Old Symphony launch agent successfully removed`))
+        .catch((e) => log.send(logLevels.ERROR, `Old Symphony launch agent failed to remove error: ${e}`));
+}
+
 
 /**
  * Replace forward slash in the path to backward slash
