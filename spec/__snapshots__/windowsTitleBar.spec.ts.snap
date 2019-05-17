@@ -85,7 +85,7 @@ exports[`windows title bar should render correctly 1`] = `
       className="title-bar-button"
       onClick={[Function]}
       onMouseDown={[Function]}
-      title="unMaximize"
+      title="Maximize"
     >
       <svg
         viewBox="0 0 14 10.2"
