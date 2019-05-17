@@ -508,8 +508,8 @@ function buildMenuItem(role, label) {
     }
 
     if (isWindowsOS) {
-        return label ? { role: role, label: label, accelerator: windowsAccelerator[role] || '', registerAccelerator: true }
-            : { role: role, accelerator: windowsAccelerator[role] || '', registerAccelerator: true }
+        return label ? { role: role, label: label, accelerator: windowsAccelerator[role] || '' }
+            : { role: role, accelerator: windowsAccelerator[role] || '' }
     }
 
     return label ? { role: role, label: label } : { role: role }
