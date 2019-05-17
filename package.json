@@ -150,6 +150,6 @@
   },
   "optionalDependencies": {
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.5",
-    "swift-search": "5.0.0-beta.2"
+    "swift-search": "5.0.0-beta.3"
   }
 }
