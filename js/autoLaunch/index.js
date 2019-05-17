@@ -19,6 +19,7 @@ const props = isMac ? {
     path: getAutoLaunchPath() || process.execPath,
 };
 
+// TODO: Remove this method in the future
 removeOldLaunchAgent();
 
 /**
