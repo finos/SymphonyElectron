@@ -9,6 +9,7 @@ interface IState {
     isFullScreen: boolean;
     titleBarHeight: string;
 }
+const TITLE_BAR_NAMESPACE = 'TitleBar';
 
 export default class WindowsTitleBar extends React.Component<{}, IState> {
     private readonly window: Electron.BrowserWindow;
@@ -75,7 +76,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
             >
                 <div className='title-bar-button-container'>
                     <button
-                        title={i18n.t('Menu')()}
+                        title={i18n.t('Menu', TITLE_BAR_NAMESPACE)()}
                         className='hamburger-menu-button'
                         onClick={this.eventHandlers.onShowMenu}
                         onMouseDown={this.handleMouseDown}
@@ -94,7 +95,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
                 <div className='title-bar-button-container'>
                     <button
                         className='title-bar-button'
-                        title={i18n.t('Minimize')()}
+                        title={i18n.t('Minimize', TITLE_BAR_NAMESPACE)()}
                         onClick={this.eventHandlers.onMinimize}
                         onMouseDown={this.handleMouseDown}
                     >
@@ -109,7 +110,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
                 <div className='title-bar-button-container'>
                     <button
                         className='title-bar-button'
-                        title={i18n.t('Close')()}
+                        title={i18n.t('Close', TITLE_BAR_NAMESPACE)()}
                         onClick={this.eventHandlers.onClose}
                         onMouseDown={this.handleMouseDown}
                     >
@@ -136,7 +137,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
             return (
                 <button
                     className='title-bar-button'
-                    title={i18n.t('Maximize')()}
+                    title={i18n.t('Restore', TITLE_BAR_NAMESPACE)()}
                     onClick={this.eventHandlers.onUnmaximize}
                     onMouseDown={this.handleMouseDown}
                 >
@@ -152,7 +153,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
         return (
             <button
                 className='title-bar-button'
-                title={i18n.t('unMaximize')()}
+                title={i18n.t('Maximize', TITLE_BAR_NAMESPACE)()}
                 onClick={this.eventHandlers.onMaximize}
                 onMouseDown={this.handleMouseDown}
             >
