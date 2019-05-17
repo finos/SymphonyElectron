@@ -156,7 +156,8 @@
     "Close": "Close",
     "Maximize": "Maximize",
     "Menu": "Menu",
-    "Minimize": "Minimize"
+    "Minimize": "Minimize",
+    "Restore": "Restore"
   },
   "Title Bar Style": "Title Bar Style",
   "Toggle Full Screen": "Toggle Full Screen",

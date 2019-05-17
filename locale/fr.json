@@ -156,7 +156,8 @@
     "Close": "Fermer",
     "Maximize": "Maximiser",
     "Menu": "Menu",
-    "Minimize": "Minimiser"
+    "Minimize": "Minimiser",
+    "Restore": "Restaurer"
   },
   "Title Bar Style": "Style de la barre de titre",
   "Toggle Full Screen": "Basculer plein écran",
