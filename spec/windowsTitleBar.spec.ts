@@ -146,7 +146,7 @@ describe('windows title bar', () => {
 
     describe('maximize functions', () => {
         it('should call `unmaximize` correctly when is not full screen', () => {
-            const titleLabel = 'Maximize';
+            const titleLabel = 'Restore';
             const unmaximizeFn = 'unmaximize';
             const customSelector = `button.title-bar-button[title="${titleLabel}"]`;
             const wrapper = shallow(React.createElement(WindowsTitleBar));
@@ -160,7 +160,7 @@ describe('windows title bar', () => {
 
         it('should call `unmaximize` correctly when is full screen', () => {
             const windowSpyFn = 'setFullScreen';
-            const titleLabel = 'Maximize';
+            const titleLabel = 'Restore';
             const customSelector = `button.title-bar-button[title="${titleLabel}"]`;
             const wrapper = shallow(React.createElement(WindowsTitleBar));
             const instance: any = wrapper.instance();
@@ -175,7 +175,7 @@ describe('windows title bar', () => {
         });
 
         it('should call maximize correctly when it is not in full screen', () => {
-            const titleLabel = 'unMaximize';
+            const titleLabel = 'Maximize';
             const maximizeFn = 'maximize';
             const expectedState = { isMaximized: true };
             const customSelector = `button.title-bar-button[title="${titleLabel}"]`;
