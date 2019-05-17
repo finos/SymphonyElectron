@@ -156,7 +156,8 @@
     "Close": "閉じる",
     "Maximize": "最大化する",
     "Menu": "メニュー",
-    "Minimize": "最小化する"
+    "Minimize": "最小化する",
+    "Restore": "戻す"
   },
   "Title Bar Style": "タイトルバーのスタイル",
   "Toggle Full Screen": "画面表示を切り替え",

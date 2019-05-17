@@ -490,7 +490,7 @@ function createAPI() {
 
     // Adds custom title bar style for Windows 10 OS
     local.ipcRenderer.on('initiate-windows-title-bar', (event, arg) => {
-        if (arg && typeof arg === 'string') {
+        if (arg && typeof arg === 'object') {
             titleBar.initiateWindowsTitleBar(arg);
         }
     });

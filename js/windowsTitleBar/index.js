@@ -18,9 +18,10 @@ class TitleBar {
         this.titleBar = titleBarParsed.getElementById('title-bar');
     }
 
-    initiateWindowsTitleBar(titleBarStyle) {
+    initiateWindowsTitleBar({ titleBarStyle, titleBar }) {
 
         const actionItemsParsed = this.domParser.parseFromString(htmlContents.button, 'text/html');
+        this.localeContent = titleBar;
 
         if (titleBarStyle === titleBarStyles.CUSTOM) {
             const buttons = actionItemsParsed.getElementsByClassName('action-items');
@@ -31,7 +32,7 @@ class TitleBar {
             }
         }
 
-        const updateIcon = TitleBar.updateIcons;
+        const updateIcon = this.updateIcons;
 
         // Event to capture and update icons
         this.window.on('maximize', updateIcon.bind(this, true));
@@ -67,6 +68,8 @@ class TitleBar {
         this.initiateEventListeners();
 
         this.updateTitleBar(this.window.isFullScreen());
+        this.updateLocale(this.localeContent);
+        this.updateIcons(this.window.isMaximized());
     }
 
     /**
@@ -93,9 +96,12 @@ class TitleBar {
      * @param content {Object}
      */
     updateLocale(content) {
+        this.localeContent = content;
         this.hamburgerMenuButton.title = content.Menu || 'Menu';
         this.minimizeButton.title = content.Minimize || 'Minimize';
-        this.maximizeButton.title = content.Maximize || 'Maximize';
+        this.maximizeButton.title = this.isMaximized
+            ? (content.Restore || 'Restore')
+            : (content.Maximize || 'Maximize');
         this.closeButton.title = content.Close || 'Close';
     }
 
@@ -151,7 +157,8 @@ class TitleBar {
      * unmaximize icons
      * @param isMaximized
      */
-    static updateIcons(isMaximized) {
+    updateIcons(isMaximized) {
+        this.isMaximized = isMaximized;
         const button = document.getElementById('title-bar-maximize-button');
 
         if (!button) {
@@ -160,8 +167,10 @@ class TitleBar {
 
         if (isMaximized) {
             button.innerHTML = htmlContents.unMaximizeButton;
+            button.title = this.localeContent ? (this.localeContent.Restore || 'Restore') : 'Restore';
         } else {
             button.innerHTML = htmlContents.maximizeButton;
+            button.title = this.localeContent ? (this.localeContent.Maximize || 'Maximize') : 'Maximize';
         }
     }
 

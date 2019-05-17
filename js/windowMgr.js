@@ -314,7 +314,8 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
             mainWindow.webContents.insertCSS(titleBarStyles);
             // This is required to initiate Windows title bar only after insertCSS
             const titleBarStyle = getTitleBarStyle();
-            mainWindow.webContents.send('initiate-windows-title-bar', titleBarStyle);
+            const titleBar = i18n.getMessageFor('TitleBar');
+            mainWindow.webContents.send('initiate-windows-title-bar', { titleBarStyle, titleBar });
         }
 
         if (!isOnline) {
