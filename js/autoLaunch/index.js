@@ -19,16 +19,19 @@ const props = isMac ? {
     path: getAutoLaunchPath() || process.execPath,
 };
 
+removeOldLaunchAgent();
+
 /**
  * @deprecated - removes old Symphony launch agent if exists
  */
-if (isMac) {
-    const autoLaunch = new AutoLaunch(props);
-    autoLaunch.disable()
-        .then(() => log.send(logLevels.INFO, `Old Symphony launch agent successfully removed`))
-        .catch((e) => log.send(logLevels.ERROR, `Old Symphony launch agent failed to remove error: ${e}`));
+function removeOldLaunchAgent() {
+    if (isMac) {
+        const autoLaunch = new AutoLaunch(props);
+        autoLaunch.disable()
+            .then(() => log.send(logLevels.INFO, `Old Symphony launch agent successfully removed`))
+            .catch((e) => log.send(logLevels.ERROR, `Old Symphony launch agent failed to remove error: ${e}`));
+    }
 }
-
 
 /**
  * Replace forward slash in the path to backward slash
