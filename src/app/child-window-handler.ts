@@ -9,12 +9,7 @@ import { getGuid } from '../common/utils';
 import { config } from './config-handler';
 import { monitorWindowActions, removeWindowEventListener } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
-import {
-    getBounds,
-    handleCertificateProxyVerification,
-    injectStyles,
-    preventWindowNavigation,
-} from './window-utils';
+import { getBounds, handleCertificateProxyVerification, injectStyles, preventWindowNavigation, } from './window-utils';
 
 const DEFAULT_POP_OUT_WIDTH = 300;
 const DEFAULT_POP_OUT_HEIGHT = 600;
@@ -73,7 +68,7 @@ export const handleChildWindow = (webContents: WebContents): void => {
         logger.info(`child-window-handler: full main url is ${fullMainUrl}!`);
         // If the main url and new window url are the same,
         // we open that in a browser rather than a separate window
-        if (newWinUrl === fullMainUrl) {
+        if (newWinUrl.startsWith(fullMainUrl)) {
             event.preventDefault();
             logger.info(`child-window-handler: the new window url ${newWinUrl} and the main url ${fullMainUrl}
              are the same, so, redirecting to be opened in the default browser!`);
