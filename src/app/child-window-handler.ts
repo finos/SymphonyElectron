@@ -37,7 +37,7 @@ const getParsedUrl = (configURL: string): Url => {
         parsedUrl.slashes = true;
     }
     const finalParsedUrl = parse(format(parsedUrl));
-    logger.info(`child-window-handler: The original url ${configURL} is finally parsed as ${finalParsedUrl}`);
+    logger.info(`child-window-handler: The original url ${configURL} is finally parsed as ${JSON.stringify(finalParsedUrl)}`);
     return finalParsedUrl;
 };
 
@@ -70,10 +70,10 @@ export const handleChildWindow = (webContents: WebContents): void => {
         const dispositionWhitelist = ['new-window', 'foreground-tab'];
 
         const fullMainUrl = `${mainWinParsedUrl.protocol}//${mainWinParsedUrl.host}/`;
-        logger.info(`child-window-handler: full main url is ${fullMainUrl}!`);
+        logger.info(`child-window-handler: full main url is ${fullMainUrl}`);
         // If the main url and new window url are the same,
         // we open that in a browser rather than a separate window
-        if (newWinUrl === fullMainUrl) {
+        if (newWinUrl.startsWith(fullMainUrl)) {
             event.preventDefault();
             logger.info(`child-window-handler: the new window url ${newWinUrl} and the main url ${fullMainUrl}
              are the same, so, redirecting to be opened in the default browser!`);

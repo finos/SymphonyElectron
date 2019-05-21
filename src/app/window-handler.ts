@@ -4,7 +4,6 @@ import * as path from 'path';
 import { format, parse } from 'url';
 
 import { buildNumber, clientVersion, version } from '../../package.json';
-import DesktopCapturerSource = Electron.DesktopCapturerSource;
 import { apiName, WindowTypes } from '../common/api-interface';
 import { isDevEnv, isMac, isWindowsOS } from '../common/env';
 import { i18n } from '../common/i18n';
@@ -26,6 +25,7 @@ import {
     preventWindowNavigation,
     windowExists,
 } from './window-utils';
+import DesktopCapturerSource = Electron.DesktopCapturerSource;
 
 interface ICustomBrowserWindowConstructorOpts extends Electron.BrowserWindowConstructorOptions {
     winKey: string;
@@ -505,7 +505,7 @@ export class WindowHandler {
                 logger.info(`window-handler: loading screen failed ${error}!`);
                 this.loadingWindow.webContents.send('loading-screen-data', { error });
             }
-            logger.info(`window-handler: loading screen started ${error}!`);
+            logger.info(`window-handler: loading screen started!`);
         });
 
         ipcMain.once('reload-symphony', () => {
