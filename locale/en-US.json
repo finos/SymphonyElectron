@@ -66,6 +66,10 @@
   "Loading Error": "Loading Error",
   "Minimize": "Minimize",
   "Minimize on Close": "Minimize on Close",
+  "MoreInfo": {
+    "More Information": "More Information",
+    "Version Information": "Version Information"
+  },
   "Native": "Native",
   "Network connectivity has been lost. Check your internet connection.": "Network connectivity has been lost. Check your internet connection.",
   "NetworkError": {
