@@ -35,9 +35,4 @@ gulp.task('copy', function () {
     }).pipe(gulp.dest('lib/src'))
 });
 
-gulp.task('install-pre-commit-hook', function () {
-    return gulp.src('hooks/pre-commit')
-        .pipe(gulp.dest('.git/hooks'));
-});
-
 gulp.task('build', gulp.series('clean', 'compile', 'less', 'copy'));
