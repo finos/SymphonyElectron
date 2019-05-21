@@ -200,6 +200,8 @@ class Config {
      */
     private async readUserConfig() {
         if (!fs.existsSync(this.userConfigPath)) {
+            // Need to wait until app ready event to access user data
+            await app.whenReady();
             logger.info(`config-handler: user config doesn't exist! will create new one and update config`);
             await this.updateUserConfig({ configVersion: app.getVersion().toString(), buildNumber } as IConfig);
         }
