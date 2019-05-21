@@ -9,7 +9,7 @@ import { getGuid } from '../common/utils';
 import { config } from './config-handler';
 import { monitorWindowActions, removeWindowEventListener } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
-import { getBounds, handleCertificateProxyVerification, injectStyles, preventWindowNavigation, } from './window-utils';
+import { getBounds, handleCertificateProxyVerification, injectStyles, preventWindowNavigation } from './window-utils';
 
 const DEFAULT_POP_OUT_WIDTH = 300;
 const DEFAULT_POP_OUT_HEIGHT = 600;
@@ -32,7 +32,7 @@ const getParsedUrl = (configURL: string): Url => {
         parsedUrl.slashes = true;
     }
     const finalParsedUrl = parse(format(parsedUrl));
-    logger.info(`child-window-handler: The original url ${configURL} is finally parsed as ${finalParsedUrl}`);
+    logger.info(`child-window-handler: The original url ${configURL} is finally parsed as ${JSON.stringify(finalParsedUrl)}`);
     return finalParsedUrl;
 };
 
@@ -65,7 +65,7 @@ export const handleChildWindow = (webContents: WebContents): void => {
         const dispositionWhitelist = ['new-window', 'foreground-tab'];
 
         const fullMainUrl = `${mainWinParsedUrl.protocol}//${mainWinParsedUrl.host}/`;
-        logger.info(`child-window-handler: full main url is ${fullMainUrl}!`);
+        logger.info(`child-window-handler: full main url is ${fullMainUrl}`);
         // If the main url and new window url are the same,
         // we open that in a browser rather than a separate window
         if (newWinUrl.startsWith(fullMainUrl)) {
