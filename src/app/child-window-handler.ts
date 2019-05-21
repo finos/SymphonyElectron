@@ -9,7 +9,11 @@ import { getGuid } from '../common/utils';
 import { config } from './config-handler';
 import { monitorWindowActions, removeWindowEventListener } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
-import { getBounds, handleCertificateProxyVerification, injectStyles, preventWindowNavigation } from './window-utils';
+import { getBounds,
+    handleCertificateProxyVerification,
+    injectStyles,
+    preventWindowNavigation,
+} from './window-utils';
 
 const DEFAULT_POP_OUT_WIDTH = 300;
 const DEFAULT_POP_OUT_HEIGHT = 600;
