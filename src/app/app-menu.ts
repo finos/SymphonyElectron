@@ -45,11 +45,13 @@ let {
     launchOnStartup,
     alwaysOnTop: isAlwaysOnTop,
     bringToFront,
+    memoryRefresh,
 } = config.getConfigFields([
     'minimizeOnClose',
     'launchOnStartup',
     'alwaysOnTop',
     'bringToFront',
+    'memoryRefresh',
 ]) as IConfig;
 
 const menuItemsArray = Object.keys(menuSections)
@@ -213,19 +215,7 @@ export class AppMenu {
      * Builds menu items for window section
      */
     private buildWindowMenu(): Electron.MenuItemConstructorOptions {
-        const hamburgerMenuItem = isWindowsOS
-            ? {
-                label: this.titleBarStyle === TitleBarStyles.NATIVE
-                    ? i18n.t('Enable Hamburger menu')()
-                    : i18n.t('Disable Hamburger menu')(),
-                click: () => {
-                    const isNativeStyle = this.titleBarStyle === TitleBarStyles.NATIVE;
-
-                    this.titleBarStyle = isNativeStyle ? TitleBarStyles.NATIVE : TitleBarStyles.CUSTOM;
-                    titleBarChangeDialog(isNativeStyle);
-                },
-            }
-            : this.buildSeparator();
+        logger.info(`app-menu: building window menu`);
 
         const submenu: MenuItemConstructorOptions[] = [
             this.assignRoleOrLabel({ role: 'minimize', label: i18n.t('Minimize')() }),
@@ -275,8 +265,28 @@ export class AppMenu {
                     : i18n.t('Bring to Front on Notifications')(),
                 type: 'checkbox',
             },
-            hamburgerMenuItem,
             this.buildSeparator(),
+            {
+                label: this.titleBarStyle === TitleBarStyles.NATIVE
+                    ? i18n.t('Enable Hamburger menu')()
+                    : i18n.t('Disable Hamburger menu')(),
+                visible: isWindowsOS,
+                click: () => {
+                    const isNativeStyle = this.titleBarStyle === TitleBarStyles.NATIVE;
+
+                    this.titleBarStyle = isNativeStyle ? TitleBarStyles.NATIVE : TitleBarStyles.CUSTOM;
+                    titleBarChangeDialog(isNativeStyle);
+                },
+            },
+            {
+                checked: memoryRefresh,
+                click: async (item) => {
+                    memoryRefresh = item.checked;
+                    await config.updateUserConfig({ memoryRefresh });
+                },
+                label: i18n.t('Refresh app when idle')(),
+                type: 'checkbox',
+            },
             {
                 click: (_item, focusedWindow) => {
                     if (focusedWindow && !focusedWindow.isDestroyed()) {
@@ -290,16 +300,17 @@ export class AppMenu {
                 },
                 label: i18n.t('Clear cache and Reload')(),
             },
+            this.buildSeparator(),
         ];
 
         if (isWindowsOS) {
-            submenu.push({
-                label: i18n.t('About Symphony')(),
-                click(_menuItem, focusedWindow) {
-                    const windowName = focusedWindow ? (focusedWindow as ICustomBrowserWindow).winName : '';
-                    windowHandler.createAboutAppWindow(windowName);
+            submenu.push(
+                {
+                    role: 'quit',
+                    visible: isWindowsOS,
+                    label: i18n.t('Quit Symphony')(),
                 },
-            });
+            );
         }
 
         return {
@@ -350,10 +361,17 @@ export class AppMenu {
                                 message: i18n.t('Dev Tools has been disabled. Please contact your system administrator')(),
                             });
                         },
-                    },{
-                            click: () => windowHandler.createMoreInfoWindow(),
-                            label: i18n.t('More Information')(),
-                    }],
+                    }, {
+                        click: () => windowHandler.createMoreInfoWindow(),
+                        label: i18n.t('More Information')(),
+                    } ],
+                }, {
+                    label: i18n.t('About Symphony')(),
+                    visible: isWindowsOS,
+                    click(_menuItem, focusedWindow) {
+                        const windowName = focusedWindow ? (focusedWindow as ICustomBrowserWindow).winName : '';
+                        windowHandler.createAboutAppWindow(windowName);
+                    },
                 } ],
         };
     }
