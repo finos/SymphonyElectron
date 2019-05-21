@@ -307,12 +307,17 @@ export class AppMenu {
                 label: i18n.t('Clear cache and Reload')(),
             },
             this.buildSeparator(),
-            {
-                role: 'quit',
-                visible: isWindowsOS,
-                label: i18n.t('Quit Symphony')(),
-            },
         ];
+
+        if (isWindowsOS) {
+            submenu.push(
+                {
+                    role: 'quit',
+                    visible: isWindowsOS,
+                    label: i18n.t('Quit Symphony')(),
+                },
+            );
+        }
 
         return {
             label: i18n.t('Window')(),
@@ -363,10 +368,10 @@ export class AppMenu {
                                 message: i18n.t('Dev Tools has been disabled. Please contact your system administrator')(),
                             });
                         },
-                    },{
-                            click: () => windowHandler.createMoreInfoWindow(),
-                            label: i18n.t('More Information')(),
-                    }],
+                    }, {
+                        click: () => windowHandler.createMoreInfoWindow(),
+                        label: i18n.t('More Information')(),
+                    } ],
                 }, {
                     label: i18n.t('About Symphony')(),
                     visible: isWindowsOS,
