@@ -9,7 +9,8 @@ import { getGuid } from '../common/utils';
 import { config } from './config-handler';
 import { monitorWindowActions, removeWindowEventListener } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
-import { getBounds,
+import {
+    getBounds,
     handleCertificateProxyVerification,
     injectStyles,
     preventWindowNavigation,
