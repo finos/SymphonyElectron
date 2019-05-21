@@ -15,7 +15,7 @@ import { handleChildWindow } from './child-window-handler';
 import { config, IConfig } from './config-handler';
 import { SpellChecker } from './spell-check-handler';
 import { monitorWindowActions } from './window-actions';
-import { createComponentWindow, getBounds, handleCertificateProxyVerification, handleDownloadManager, injectStyles, isSymphonyReachable, preventWindowNavigation, windowExists, } from './window-utils';
+import { createComponentWindow, getBounds, handleCertificateProxyVerification, handleDownloadManager, injectStyles, isSymphonyReachable, preventWindowNavigation, windowExists } from './window-utils';
 import DesktopCapturerSource = Electron.DesktopCapturerSource;
 
 interface ICustomBrowserWindowConstructorOpts extends Electron.BrowserWindowConstructorOptions {
