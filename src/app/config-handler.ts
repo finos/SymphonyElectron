@@ -97,9 +97,6 @@ class Config {
         this.readGlobalConfig();
 
         this.checkFirstTimeLaunch();
-
-        logger.info(`config-handler: user config path -> ${this.userConfigPath}`);
-        logger.info(`config-handler: global config path -> ${this.globalConfigPath}`);
     }
 
     /**
