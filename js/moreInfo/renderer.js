@@ -3,7 +3,18 @@ const { ipcRenderer, crashReporter } = require('electron');
 
 ipcRenderer.on('moreInfo', (event, moreInfo) => {
 
-    const {electronVersion, chromiumVersion, v8Version, nodeVersion, opensslVersion, zlibVersion, uvVersion, aresVersion, httpparserVersion} = moreInfo;
+    const {
+        electronVersion,
+        chromiumVersion,
+        v8Version,
+        nodeVersion,
+        opensslVersion,
+        zlibVersion,
+        uvVersion,
+        aresVersion,
+        httpparserVersion,
+        localeContent,
+    } = moreInfo;
     const electronV = document.getElementById('electron');
     const chromiumV = document.getElementById('chromium');
     const v8V = document.getElementById('v8');
@@ -13,6 +24,7 @@ ipcRenderer.on('moreInfo', (event, moreInfo) => {
     const uvV = document.getElementById('uv');
     const aresV = document.getElementById('ares');
     const httpparserV = document.getElementById('httpparser');
+    const heading = document.getElementById('heading');
 
     electronV.innerHTML = `<u>Electron</u> ${electronVersion || 'N/A'}`;
     chromiumV.innerHTML = `<u>Chromium</u> ${chromiumVersion || 'N/A'}`;
@@ -23,6 +35,9 @@ ipcRenderer.on('moreInfo', (event, moreInfo) => {
     uvV.innerHTML = `<u>UV</u> ${uvVersion || 'N/A'}`;
     aresV.innerHTML = `<u>Ares</u> ${aresVersion || 'N/A'}`;
     httpparserV.innerHTML = `<u>HTTP Parser</u> ${httpparserVersion || 'N/A'}`;
+
+    heading.innerHTML = `<b>${localeContent['Version Information']}</b>` || 'Version Information';
+    document.title = localeContent['More Information'] || 'More Information';
 });
 
 ipcRenderer.on('register-crash-reporter', (event, arg) => {

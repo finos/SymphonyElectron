@@ -99,7 +99,8 @@ function openMoreInfoWindow(windowName) {
             zlibVersion: process.versions.zlib,
             uvVersion: process.versions.uv,
             aresVersion: process.versions.ares,
-            httpparserVersion: process.versions.http_parser
+            httpparserVersion: process.versions.http_parser,
+            localeContent: i18n.getMessageFor('MoreInfo'),
         };
         moreInfoWindow.webContents.send('moreInfo', moreInfo);
         if (!isMac) {

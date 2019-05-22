@@ -66,6 +66,10 @@
   "Loading Error": "読み込みエラー",
   "Minimize": "最小化",
   "Minimize on Close": "閉じるで最小化",
+  "MoreInfo": {
+    "More Information": "詳しくは",
+    "Version Information": "バージョン情報"
+  },
   "Native": "Native",
   "Network connectivity has been lost. Check your internet connection.": "ネットワーク接続が失われました。インターネット接続を確認してください。",
   "NetworkError": {

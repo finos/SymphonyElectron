@@ -66,6 +66,10 @@
   "Loading Error": "Erreur lors du chargement",
   "Minimize": "Minimiser",
   "Minimiser on Close": "Minimiser à la fermeture",
+  "MoreInfo": {
+    "More Information": "Plus d’informations",
+    "Version Information": "Information sur la version"
+  },
   "Native": "Originaire",
   "Network connectivity has been lost. Check your internet connection.": "La connectivité a été perdue. Vérifiez votre connection à l'internet.",
   "NetworkError": {
