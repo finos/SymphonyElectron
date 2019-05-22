@@ -1,3 +1,4 @@
+import AutoLaunch = require('auto-launch');
 import { app, LoginItemSettings } from 'electron';
 
 import { isMac } from '../common/env';
@@ -57,6 +58,11 @@ class AutoLaunchController {
         const { launchOnStartup }: IConfig = config.getConfigFields([ 'launchOnStartup' ]);
         const { openAtLogin: isAutoLaunchEnabled }: LoginItemSettings = this.isAutoLaunchEnabled();
 
+        if (isMac) {
+            // TODO: Remove this method in the future
+            await this.removeOldLaunchAgent();
+        }
+
         if (typeof launchOnStartup === 'boolean' && launchOnStartup) {
             if (!isAutoLaunchEnabled) {
                 this.enableAutoLaunch();
@@ -65,6 +71,20 @@ class AutoLaunchController {
         }
         if (isAutoLaunchEnabled) {
             this.disableAutoLaunch();
+        }
+    }
+
+    /**
+     * Removes old Symphony launch agent if exists
+     *
+     * @deprecated
+     */
+    private async removeOldLaunchAgent(): Promise<void> {
+        const autoLaunch = new AutoLaunch(props);
+        try {
+            await autoLaunch.disable();
+        } catch (e) {
+            logger.error(`auto-launch-controller: Old Symphony launch agent failed to remove ${e}`);
         }
     }
 }
