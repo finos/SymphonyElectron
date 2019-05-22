@@ -70,8 +70,8 @@ export interface INotificationSetting {
 }
 
 export interface ICustomRectangle extends Partial<Electron.Rectangle> {
-    isMaximized: boolean;
-    isFullScreen: boolean;
+    isMaximized?: boolean;
+    isFullScreen?: boolean;
 }
 
 class Config {

@@ -7,7 +7,7 @@ import { config } from './config-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 import { showPopupMenu, windowExists } from './window-utils';
 
-const saveWindowSettings = (): void => {
+const saveWindowSettings = async (): Promise<void> => {
     const browserWindow = BrowserWindow.getFocusedWindow() as ICustomBrowserWindow;
 
     if (browserWindow && !browserWindow.isDestroyed()) {
@@ -15,6 +15,11 @@ const saveWindowSettings = (): void => {
         const [ width, height ] = browserWindow.getSize();
         if (x && y && width && height) {
             browserWindow.webContents.send('boundsChange', { x, y, width, height, windowName: browserWindow.winName } as IBoundsChange);
+
+            // Update the config file
+            if (browserWindow.winName === apiName.mainWindowName) {
+                await config.updateUserConfig({ mainWinPos: { x, y, width, height } });
+            }
         }
     }
 
