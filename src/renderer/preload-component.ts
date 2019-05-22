@@ -51,6 +51,7 @@ const load = () => {
         case components.moreInfo:
             loadStyle(components.moreInfo);
             component = MoreInfo;
+            document.title = i18n.t('More Information', 'MoreInfo')();
             break;
         case components.screenPicker:
             loadStyle(components.screenPicker);
@@ -77,9 +78,9 @@ const load = () => {
     ReactDOM.render(element, document.getElementById('Root'));
 };
 
-document.addEventListener('DOMContentLoaded', load);
-
-ipcRenderer.on('set-locale-resource', (_event, data) => {
+ipcRenderer.on('page-load', (_event, data) => {
     const { locale, resource } = data;
     i18n.setResource(locale, resource);
+    // Renders component as soon as the page is ready
+    load();
 });
