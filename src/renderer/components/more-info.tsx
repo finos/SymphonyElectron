@@ -1,5 +1,8 @@
 import * as React from 'react';
 
+import { i18n } from '../../common/i18n-preload';
+
+const MORE_INFO_NAMESPACE = 'MoreInfo';
 /**
  * Window that display app version and copyright info
  */
@@ -11,13 +14,13 @@ export default class MoreInfo extends React.PureComponent {
     public render(): JSX.Element {
         return (
             <div className='MoreInfo'>
-                <span><b>Version Information</b></span>
+                <span><b>{i18n.t('Version Information', MORE_INFO_NAMESPACE)()}</b></span>
                 <div className='content'>
                     <h4>Electron</h4>
                     <span className='MoreInfo-electron'>{process.versions.electron || 'N/A'}</span>
                 </div>
                 <div className='content'>
-                    <h4>v8 related</h4>
+                    <h4>v8 {i18n.t('related', MORE_INFO_NAMESPACE)()}</h4>
                     <table>
                         <tbody>
                         <tr>
@@ -34,7 +37,7 @@ export default class MoreInfo extends React.PureComponent {
                     </table>
                 </div>
                 <div className='content'>
-                    <h4>Others</h4>
+                    <h4>{i18n.t('Others', MORE_INFO_NAMESPACE)()}</h4>
                     <table>
                         <tbody>
                         <tr>

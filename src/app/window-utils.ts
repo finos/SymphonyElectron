@@ -132,7 +132,7 @@ export const createComponentWindow = (
         if (!browserWindow || !windowExists(browserWindow)) {
             return;
         }
-        browserWindow.webContents.send('set-locale-resource', { locale: i18n.getLocale(), resource: i18n.loadedResources });
+        browserWindow.webContents.send('page-load', { locale: i18n.getLocale(), resource: i18n.loadedResources });
     });
     browserWindow.setMenu(null as any);
 
