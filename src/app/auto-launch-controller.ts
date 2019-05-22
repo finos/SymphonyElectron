@@ -83,6 +83,7 @@ class AutoLaunchController {
         const autoLaunch = new AutoLaunch(props);
         try {
             await autoLaunch.disable();
+            logger.info(`auto-launch-controller: Old Symphony launch agent has been successfully removed`);
         } catch (e) {
             logger.error(`auto-launch-controller: Old Symphony launch agent failed to remove ${e}`);
         }
