@@ -112,6 +112,7 @@
   "dependencies": {
     "archiver": "3.0.0",
     "async.map": "0.5.2",
+    "auto-launch": "5.0.5",
     "classnames": "2.2.6",
     "electron-dl": "1.14.0",
     "electron-fetch": "1.3.0",
@@ -123,8 +124,7 @@
     "react": "16.6.3",
     "react-dom": "16.6.0",
     "ref-napi": "1.4.1",
-    "shell-path": "2.1.0",
-    "auto-launch": "5.0.5"
+    "shell-path": "2.1.0"
   },
   "optionalDependencies": {
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.5",
