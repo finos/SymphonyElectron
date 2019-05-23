@@ -456,28 +456,22 @@ function doCreateMainWindow(initialUrl, initialBounds, isCustomTitleBar) {
 
                 Object.assign(newWinOptions.webPreferences, topWebContents);
 
-                let newWinParsedUrl = getParsedUrl(newWinUrl);
-                let mainWinParsedUrl = getParsedUrl(url);
+                const newWinParsedUrl = getParsedUrl(newWinUrl);
 
-                let newWinHost = newWinParsedUrl && newWinParsedUrl.host;
-                let mainWinHost = mainWinParsedUrl && mainWinParsedUrl.host;
+                const newWinUrlData = parseDomain(newWinUrl);
+                const mainWinUrlData = parseDomain(url);
+
+                const newWinDomainName = `${newWinUrlData.domain}${newWinUrlData.tld}`;
+                const mainWinDomainName = `${mainWinUrlData.domain}${mainWinUrlData.tld}`;
 
                 let emptyUrlString = 'about:blank';
                 let dispositionWhitelist = ['new-window', 'foreground-tab'];
 
-                let fullMainUrl = `${mainWinParsedUrl.protocol}//${mainWinParsedUrl.host}/`;
-
-                // If the main url and new window url are the same,
-                // we open that in a browser rather than a separate window
-                if (newWinUrl === fullMainUrl) {
-                    event.preventDefault();
-                    openUrlInDefaultBrowser(newWinUrl);
-                    return;
-                }
-
                 // only allow window.open to succeed is if coming from same host,
                 // otherwise open in default browser.
-                if ((newWinHost === mainWinHost || newWinUrl === emptyUrlString || (newWinHost.indexOf(mainWinHost) !== -1 && frameName !== "")) && dispositionWhitelist.includes(disposition)) {
+                if ((newWinDomainName === mainWinDomainName || newWinUrl === emptyUrlString)
+                    && frameName !== ''
+                    && dispositionWhitelist.includes(disposition)) {
                     // handle: window.open
 
                     if (!frameName) {
