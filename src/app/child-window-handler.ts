@@ -6,6 +6,7 @@ import { isDevEnv, isWindowsOS } from '../common/env';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
 import { getGuid } from '../common/utils';
+import { whitelistHandler } from '../common/whitelist-handler';
 import { config } from './config-handler';
 import { monitorWindowActions, removeWindowEventListener } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
@@ -60,31 +61,23 @@ export const handleChildWindow = (webContents: WebContents): void => {
         }
 
         Object.assign(newWinOptions.webPreferences, webContents);
-        const newWinParsedUrl = getParsedUrl(newWinUrl);
-        const mainWinParsedUrl = getParsedUrl(windowHandler.url);
 
-        const newWinHost = newWinParsedUrl && newWinParsedUrl.host;
-        const mainWinHost = mainWinParsedUrl && mainWinParsedUrl.host;
+        // need this to extract other parameters
+        const newWinParsedUrl = getParsedUrl(newWinUrl);
+
+        const newWinUrlData = whitelistHandler.parseDomain(newWinUrl);
+        const mainWinUrlData = whitelistHandler.parseDomain(windowHandler.url);
+
+        const newWinDomainName = `${newWinUrlData.domain}${newWinUrlData.tld}`;
+        const mainWinDomainName = `${mainWinUrlData.domain}${mainWinUrlData.tld}`;
 
         const emptyUrlString = 'about:blank';
         const dispositionWhitelist = ['new-window', 'foreground-tab'];
 
-        const fullMainUrl = `${mainWinParsedUrl.protocol}//${mainWinParsedUrl.host}/`;
-        logger.info(`child-window-handler: full main url is ${fullMainUrl}`);
-        // If the main url and new window url are the same,
-        // we open that in a browser rather than a separate window
-        if (newWinUrl.startsWith(fullMainUrl)) {
-            event.preventDefault();
-            logger.info(`child-window-handler: the new window url ${newWinUrl} and the main url ${fullMainUrl}
-             are the same, so, redirecting to be opened in the default browser!`);
-            windowHandler.openUrlInDefaultBrowser(newWinUrl);
-            return;
-        }
-
-        // only allow window.open to succeed if it is coming from same host,
+        // only allow window.open to succeed is if coming from same host,
         // otherwise open in default browser.
-        if ((newWinHost === mainWinHost || newWinUrl === emptyUrlString ||
-            (newWinHost && mainWinHost && newWinHost.indexOf(mainWinHost) !== -1 && frameName !== ''))
+        if ((newWinDomainName === mainWinDomainName || newWinUrl === emptyUrlString)
+            && frameName !== ''
             && dispositionWhitelist.includes(disposition)) {
 
             const newWinKey = getGuid();
