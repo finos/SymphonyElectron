@@ -44,8 +44,8 @@ const getParsedUrl = (configURL: string): Url => {
 
 export const handleChildWindow = (webContents: WebContents): void => {
     const childWindow = (event, newWinUrl, frameName, disposition, newWinOptions): void => {
-        logger.info(`child-window-handler: trying to create new child window for url ${newWinUrl},
-         frame ${frameName}, disposition ${disposition}`);
+        logger.info(`child-window-handler: trying to create new child window for url: ${newWinUrl},
+         frame name: ${frameName || undefined}, disposition: ${disposition}`);
         const mainWindow = windowHandler.getMainWindow();
         if (!mainWindow || mainWindow.isDestroyed()) {
             logger.info(`child-window-handler: main window is not available / destroyed, not creating child window!`);
@@ -71,6 +71,8 @@ export const handleChildWindow = (webContents: WebContents): void => {
         const newWinDomainName = `${newWinUrlData.domain}${newWinUrlData.tld}`;
         const mainWinDomainName = `${mainWinUrlData.domain}${mainWinUrlData.tld}`;
 
+        logger.info(`child-window-handler: main window url: ${mainWinUrlData.subdomain}.${mainWinUrlData.domain}.${mainWinUrlData.tld}`);
+
         const emptyUrlString = 'about:blank';
         const dispositionWhitelist = ['new-window', 'foreground-tab'];
 
@@ -79,6 +81,8 @@ export const handleChildWindow = (webContents: WebContents): void => {
         if ((newWinDomainName === mainWinDomainName || newWinUrl === emptyUrlString)
             && frameName !== ''
             && dispositionWhitelist.includes(disposition)) {
+
+            logger.info(`child-window-handler: opening pop-out window for ${newWinUrl}`);
 
             const newWinKey = getGuid();
             if (!frameName) {
