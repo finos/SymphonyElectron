@@ -34,3 +34,4 @@ library
 *.log
 js/translation/*_missing.json
 out
+lib
