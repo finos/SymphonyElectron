@@ -381,7 +381,8 @@ export class WindowHandler {
             }
 
             // Ready to show the window
-            if (!this.isAutoReload) {
+            // activate the window only if it is not visible to the user
+            if (!this.isAutoReload && !this.mainWindow.isVisible()) {
                 this.mainWindow.show();
             }
         }
