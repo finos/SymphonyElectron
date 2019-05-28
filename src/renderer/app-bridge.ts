@@ -1,7 +1,8 @@
-import { remote } from 'electron';
+import { ipcRenderer, remote } from 'electron';
 
 import {
     apiCmds,
+    apiName,
     IBoundsChange,
     ILogMsg, INotificationData,
     IScreenSharingIndicator, IScreenSharingIndicatorOptions,
@@ -23,7 +24,7 @@ try {
     console.warn("Failed to initialize swift search. You'll need to include the search dependency. Contact the developers for more details");
 }
 
-export default class AppBridge {
+export class AppBridge {
 
     /**
      * Validates the incoming postMessage
@@ -59,7 +60,7 @@ export default class AppBridge {
     constructor() {
         // starts with corporate pod and
         // will be updated with the global config url
-        this.origin = 'https://corporate.symphony.com';
+        this.origin = ipcRenderer.sendSync(apiName.symphonyApi, { cmd: apiCmds.getConfigUrl });
         if (ssInstance && typeof ssInstance.setBroadcastMessage === 'function') {
             ssInstance.setBroadcastMessage(this.broadcastMessage);
         }
@@ -230,3 +231,7 @@ export default class AppBridge {
     }
 
 }
+
+const appBridge = new AppBridge();
+
+export default appBridge;
