@@ -310,8 +310,6 @@ class Notification extends NotificationHandler {
      * Closes the active notification after certain period
      */
     private cleanUpInactiveNotification() {
-        logger.info('active notification', this.activeNotifications.length);
-        logger.info('inactive notification', this.inactiveWindows.length);
         if (this.inactiveWindows.length > 0) {
             logger.info('cleaning up inactive notification windows', { inactiveNotification: this.inactiveWindows.length });
             this.inactiveWindows.forEach((window) => {

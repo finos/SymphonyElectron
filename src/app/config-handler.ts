@@ -210,7 +210,7 @@ class Config {
      * Verifies if the application is launched for the first time
      */
     private async checkFirstTimeLaunch() {
-        logger.info('checking first launch');
+        logger.info('config-handler: checking first launch');
         const configBuildNumber = this.userConfig && (this.userConfig as IConfig).buildNumber || null;
 
         if (!configBuildNumber) {
