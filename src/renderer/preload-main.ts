@@ -4,7 +4,7 @@ import * as ReactDOM from 'react-dom';
 import { apiCmds, apiName } from '../common/api-interface';
 
 import { i18n } from '../common/i18n-preload';
-import AppBridge from './app-bridge';
+import './app-bridge';
 import DownloadManager from './components/download-manager';
 import SnackBar from './components/snack-bar';
 import WindowsTitleBar from './components/windows-title-bar';
@@ -15,7 +15,6 @@ interface ISSFWindow extends Window {
 }
 
 const ssfWindow: ISSFWindow = window;
-const appBridge = new AppBridge();
 const memoryInfoFetchInterval = 60 * 60 * 1000;
 
 /**
@@ -43,11 +42,7 @@ const createAPI = () => {
 createAPI();
 
 // When the window is completely loaded
-ipcRenderer.on('page-load', (_event, { locale, resources, origin, enableCustomTitleBar, isMainWindow }) => {
-    // origin for postMessage targetOrigin communication
-    if (origin) {
-        appBridge.origin = origin;
-    }
+ipcRenderer.on('page-load', (_event, { locale, resources, enableCustomTitleBar, isMainWindow }) => {
 
     i18n.setResource(locale, resources);
 

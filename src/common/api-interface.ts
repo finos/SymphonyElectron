@@ -30,6 +30,7 @@ export enum apiCmds {
     isMisspelled = 'is-misspelled',
     memoryInfo = 'memory-info',
     swiftSearch = 'swift-search',
+    getConfigUrl = 'get-config-url',
 }
 
 export enum apiName {

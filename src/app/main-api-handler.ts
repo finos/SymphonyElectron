@@ -143,6 +143,10 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
                 memoryMonitor.setMemoryInfo(arg.memoryInfo);
             }
             break;
+        case apiCmds.getConfigUrl:
+            const { url } = config.getGlobalConfigFields([ 'url' ]);
+            event.returnValue = url;
+            break;
         default:
     }
 

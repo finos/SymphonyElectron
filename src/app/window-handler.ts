@@ -267,7 +267,6 @@ export class WindowHandler {
                 isWindowsOS,
                 locale: i18n.getLocale(),
                 resources: i18n.loadedResources,
-                origin: this.globalConfig.url,
                 enableCustomTitleBar: this.isCustomTitleBar,
                 isMainWindow: true,
             });
