@@ -24,19 +24,19 @@ export class AppStats {
      */
     private logSystemStats() {
         logger.info(`stats: -----------------Gathering system information-----------------`);
-        logger.info( `Network Info -> ${JSON.stringify(os.networkInterfaces())}`);
-        logger.info( `CPU Info -> ${JSON.stringify(os.cpus())}`);
-        logger.info( `Operating System -> ${JSON.stringify(os.type())}`);
-        logger.info( `Platform -> ${JSON.stringify(os.platform())}`);
-        logger.info( `Architecture -> ${JSON.stringify(os.arch())}`);
-        logger.info( `Hostname -> ${JSON.stringify(os.hostname())}`);
-        logger.info( `Temp Directory -> ${JSON.stringify(os.tmpdir())}`);
-        logger.info( `Home Directory -> ${JSON.stringify(os.homedir())}`);
-        logger.info( `Total Memory (MB) -> ${JSON.stringify(os.totalmem() / this.MB_IN_BYTES)}`);
-        logger.info( `Free Memory (MB) -> ${JSON.stringify(os.freemem() / this.MB_IN_BYTES)}`);
-        logger.info( `Load Average -> ${JSON.stringify(os.loadavg())}`);
-        logger.info( `Uptime -> ${JSON.stringify(os.uptime())}`);
-        logger.info( `User Info (OS Returned) -> ${JSON.stringify(os.userInfo())}`);
+        logger.info( `Network Info -> `, os.networkInterfaces());
+        logger.info( `CPU Info -> `, os.cpus());
+        logger.info( `Operating System -> `, os.type());
+        logger.info( `Platform -> `, os.platform());
+        logger.info( `Architecture -> `, os.arch());
+        logger.info( `Hostname -> `, os.hostname());
+        logger.info( `Temp Directory -> `, os.tmpdir());
+        logger.info( `Home Directory -> `, os.homedir());
+        logger.info( `Total Memory (MB) -> `, os.totalmem() / this.MB_IN_BYTES);
+        logger.info( `Free Memory (MB) -> `, os.freemem() / this.MB_IN_BYTES);
+        logger.info( `Load Average -> `, os.loadavg());
+        logger.info( `Uptime -> `, os.uptime());
+        logger.info( `User Info (OS Returned) -> `, os.userInfo());
     }
 
     /**
@@ -44,7 +44,7 @@ export class AppStats {
      */
     private logGPUStats() {
         logger.info( `-----------------Gathering GPU information-----------------`);
-        logger.info( `GPU Feature Status -> ${JSON.stringify(app.getGPUFeatureStatus())}`);
+        logger.info( `GPU Feature Status -> `, app.getGPUFeatureStatus());
     }
 
     /**
@@ -62,11 +62,11 @@ export class AppStats {
         logger.info(`stats: Is app packaged? ${app.isPackaged}`);
 
         const globalConfiguration = config.getGlobalConfigFields(configItems);
-        logger.info(`stats: Global configuration: ${JSON.stringify(globalConfiguration)}`);
+        logger.info(`stats: Global configuration: `, globalConfiguration);
 
         const userConfiguration = config.getUserConfigFields(configItems);
         logger.info(`stats: -----------------Gathering User Configuration Information-----------------`);
-        logger.info(`stats: User configuration: ${JSON.stringify(userConfiguration)}`);
+        logger.info(`stats: User configuration: `, userConfiguration);
     }
 
     /**
@@ -76,7 +76,7 @@ export class AppStats {
         logger.info(`stats: -----------------Gathering App Metrics-----------------`);
         const metrics = app.getAppMetrics();
         metrics.forEach((metric) => {
-            logger.info(`stats: PID -> ${metric.pid}, Type -> ${metric.type}, CPU Usage -> ${JSON.stringify(metric.cpu)}`);
+            logger.info(`stats: PID -> ${metric.pid}, Type -> ${metric.type}, CPU Usage -> `, metric.cpu);
         });
     }
 
