@@ -106,7 +106,6 @@ export class AppStats {
         logger.info(`stats: Is Mac Store app? ${process.mas}`);
         logger.info(`stats: Is Windows Store app? ${process.windowsStore}`);
         logger.info(`stats: Resources Path? ${process.resourcesPath}`);
-        logger.info(`stats: Sandboxed? ${process.sandboxed}`);
         logger.info(`stats: Chrome Version? ${process.versions.chrome}`);
         logger.info(`stats: Electron Version? ${process.versions.electron}`);
     }
