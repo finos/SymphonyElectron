@@ -32,7 +32,6 @@ const startApplication = async () => {
     await app.whenReady();
     logger.info(`main: app is ready, performing initial checks`);
     createAppCacheFile();
-    windowHandler.showLoadingScreen();
     windowHandler.createApplication();
     logger.info(`main: created application`);
 

@@ -77,8 +77,7 @@
   "NetworkError": {
     "Problem connecting to Symphony": "Problem connecting to Symphony",
     "Looks like you are not connected to the Internet. We'll try to reconnect automatically.": "Looks like you are not connected to the Internet. We'll try to reconnect automatically.",
-    "Cancel Retry": "Cancel Retry",
-    "Quit Symphony": "Quit Symphony"
+    "Retry": "Retry"
   },
   "No crashes available to share": "No crashes available to share",
   "No logs are available to share": "No logs are available to share",

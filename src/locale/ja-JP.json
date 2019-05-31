@@ -77,8 +77,7 @@
   "NetworkError": {
     "Problem connecting to Symphony": "Symphonyへの接続に関する問題",
     "Looks like you are not connected to the Internet. We'll try to reconnect automatically.": "インターネットに接続していないようです。 自動的に再接続します。",
-    "Cancel Retry": "再試行をキャンセル",
-    "Quit Symphony": "Symphonyを終了"
+    "Retry": "再試行を"
   },
   "No crashes available to share": "共有できるクラッシュはありません",
   "No logs are available to share": "共有できるログはありません",

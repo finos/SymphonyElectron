@@ -1,5 +1,6 @@
 import * as electron from 'electron';
 import { app, BrowserWindow, crashReporter, globalShortcut, ipcMain } from 'electron';
+import * as fs from 'fs';
 import * as path from 'path';
 import { format, parse } from 'url';
 
@@ -41,31 +42,6 @@ const DEFAULT_WIDTH: number = 900;
 const DEFAULT_HEIGHT: number = 900;
 
 export class WindowHandler {
-
-    /**
-     * Loading window opts
-     */
-    private static getLoadingWindowOpts(): ICustomBrowserWindowConstructorOpts {
-        return {
-            alwaysOnTop: false,
-            center: true,
-            frame: false,
-            height: 250,
-            maximizable: false,
-            minimizable: false,
-            resizable: false,
-            show: false,
-            title: 'Symphony',
-            width: 400,
-            webPreferences: {
-                sandbox: true,
-                nodeIntegration: false,
-                devTools: false,
-                contextIsolation: false,
-            },
-            winKey: getGuid(),
-        };
-    }
 
     /**
      * Screen picker window opts
@@ -190,7 +166,6 @@ export class WindowHandler {
 
     private loadFailError: string | undefined;
     private mainWindow: ICustomBrowserWindow | null = null;
-    private loadingWindow: Electron.BrowserWindow | null = null;
     private aboutAppWindow: Electron.BrowserWindow | null = null;
     private moreInfoWindow: Electron.BrowserWindow | null = null;
     private screenPickerWindow: Electron.BrowserWindow | null = null;
@@ -285,25 +260,24 @@ export class WindowHandler {
             this.loadFailError = errorDesc;
         });
 
-        this.mainWindow.webContents.on('did-stop-loading', () => {
+        this.mainWindow.webContents.on('did-stop-loading', async () => {
             if (this.mainWindow && windowExists(this.mainWindow)) {
-            this.mainWindow.webContents.executeJavaScript('document.location.href').then((href) => {
+                const href = await this.mainWindow.webContents.executeJavaScript('document.location.href');
+                try {
                     if (href === 'data:text/html,chromewebdata' || href === 'chrome-error://chromewebdata/') {
-                        if (this.loadingWindow && windowExists(this.loadingWindow)) {
-                            this.loadingWindow.webContents.send('loading-screen-data', { error: this.loadFailError });
-                            return;
+                        if (this.mainWindow && windowExists(this.mainWindow)) {
+                            this.mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '..', '/renderer/styles/network-error.css'), 'utf8').toString());
+                            this.mainWindow.webContents.send('network-error', { error: this.loadFailError });
+                            isSymphonyReachable(this.mainWindow);
                         }
-
-                        this.showLoadingScreen(this.loadFailError);
-                        isSymphonyReachable(this.mainWindow);
                     }
-                }).catch((error) => {
-                    logger.error(`Could not read document.location error: ${error}`);
-                });
+                } catch (error) {
+                    logger.error(`window-handler: Could not read document.location`, error);
+                }
             }
         });
 
-        this.mainWindow.webContents.on('crashed', (_event: Event, killed: boolean)  => {
+        this.mainWindow.webContents.on('crashed', (_event: Event, killed: boolean) => {
             if (killed) {
                 logger.info(`window-handler: main window crashed (killed)!`);
                 return;
@@ -347,6 +321,13 @@ export class WindowHandler {
             this.destroyAllWindows();
         });
 
+        // Reloads the Symphony
+        ipcMain.on('reload-symphony', () => {
+            if (this.mainWindow && windowExists(this.mainWindow)) {
+                this.mainWindow.loadURL(this.url || this.globalConfig.url);
+            }
+        });
+
         // Certificate verification proxy
         if (!isDevEnv) {
             this.mainWindow.webContents.session.setCertificateVerifyProc(handleCertificateProxyVerification);
@@ -370,34 +351,6 @@ export class WindowHandler {
         // Handle pop-outs window
         handleChildWindow(this.mainWindow.webContents);
         return this.mainWindow;
-    }
-
-    /**
-     * Displays the main windows once
-     * all the HTML content have been injected
-     */
-    public initMainWindow(): void {
-        logger.info(`window-handler: initializing main window!`);
-        if (this.mainWindow && windowExists(this.mainWindow)) {
-            if (!this.isOnline && this.loadingWindow && windowExists(this.loadingWindow)) {
-                logger.info(`window-handler: network is offline!`);
-                this.loadingWindow.webContents.send('loading-screen-data', { error: 'NETWORK_OFFLINE' });
-                return;
-            }
-
-            // close the loading window when
-            // the main windows finished loading
-            if (this.loadingWindow && windowExists(this.loadingWindow)) {
-                logger.info(`window-handler: closing loading window as the main window is now ready!`);
-                this.loadingWindow.close();
-            }
-
-            // Ready to show the window
-            // activate the window only if it is not visible to the user
-            if (!this.isAutoReload && !this.mainWindow.isVisible()) {
-                this.mainWindow.show();
-            }
-        }
     }
 
     /**
@@ -487,43 +440,6 @@ export class WindowHandler {
     public hasWindow(key: string, window: Electron.BrowserWindow): boolean {
         const browserWindow = this.windows[ key ];
         return browserWindow && window === browserWindow;
-    }
-
-    /**
-     * Displays a loading window until the main
-     * application is loaded
-     */
-    public showLoadingScreen(error?: string | undefined): void {
-        const opts = WindowHandler.getLoadingWindowOpts();
-        this.loadingWindow = createComponentWindow('loading-screen', opts);
-        this.addWindow(opts.winKey, this.loadingWindow);
-        this.loadingWindow.webContents.once('did-finish-load', () => {
-            if (!this.loadingWindow || !windowExists(this.loadingWindow)) {
-                return;
-            }
-            if (error) {
-                logger.info(`window-handler: loading screen failed ${error}!`);
-                this.loadingWindow.webContents.send('loading-screen-data', { error });
-            }
-            logger.info(`window-handler: loading screen started!`);
-        });
-
-        ipcMain.once('reload-symphony', () => {
-            if (this.mainWindow && windowExists(this.mainWindow)) {
-                this.mainWindow.webContents.reload();
-            }
-        });
-
-        ipcMain.once('quit-symphony', () => {
-            if (this.mainWindow && windowExists(this.mainWindow)) {
-                app.quit();
-            }
-        });
-
-        this.loadingWindow.once('closed', () => {
-            this.removeWindow(opts.winKey);
-            this.loadingWindow = null;
-        });
     }
 
     /**
@@ -867,7 +783,7 @@ export class WindowHandler {
             frame: !this.isCustomTitleBar,
             minHeight: 300,
             minWidth: 300,
-            show: false,
+            show: true,
             title: 'Symphony',
             webPreferences: {
                 nodeIntegration: false,
