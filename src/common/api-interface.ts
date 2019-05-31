@@ -26,7 +26,6 @@ export enum apiCmds {
     getMediaSource = 'get-media-source',
     notification = 'notification',
     closeNotification = 'close-notification',
-    initMainWindow = 'init-main-window',
     isMisspelled = 'is-misspelled',
     memoryInfo = 'memory-info',
     swiftSearch = 'swift-search',
