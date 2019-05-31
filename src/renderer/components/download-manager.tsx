@@ -102,7 +102,7 @@ export default class DownloadManager extends React.Component<{}, IManagerState> 
                         </div>
                     </div>
                     <div className='downloaded-filename'>
-                        <h1 className='text-cutoff'>
+                        <h1 className='text-cutoff' title={fileDisplayName}>
                             {fileDisplayName}
                         </h1>
                         <span id='per'>
