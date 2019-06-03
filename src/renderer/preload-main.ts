@@ -6,6 +6,7 @@ import { apiCmds, apiName } from '../common/api-interface';
 import { i18n } from '../common/i18n-preload';
 import './app-bridge';
 import DownloadManager from './components/download-manager';
+import NetworkError from './components/network-error';
 import SnackBar from './components/snack-bar';
 import WindowsTitleBar from './components/windows-title-bar';
 import { SSFApi } from './ssf-api';
@@ -80,10 +81,6 @@ ipcRenderer.on('page-load', (_event, { locale, resources, enableCustomTitleBar, 
     }
 
     if (isMainWindow) {
-        ipcRenderer.send(apiName.symphonyApi, {
-            cmd: apiCmds.initMainWindow,
-        });
-
         setInterval(async () => {
             const memoryInfo = await process.getProcessMemoryInfo();
             ipcRenderer.send(apiName.symphonyApi, {
@@ -92,4 +89,14 @@ ipcRenderer.on('page-load', (_event, { locale, resources, enableCustomTitleBar, 
             });
         }, memoryInfoFetchInterval);
     }
+});
+
+// Injects network error content into the DOM
+ipcRenderer.on('network-error', (_event, { error }) => {
+    const networkErrorContainer = document.createElement( 'div' );
+    networkErrorContainer.id = 'main-frame';
+    networkErrorContainer.classList.add('content-wrapper');
+    document.body.append(networkErrorContainer);
+    const networkError = React.createElement(NetworkError, { error });
+    ReactDOM.render(networkError, networkErrorContainer);
 });

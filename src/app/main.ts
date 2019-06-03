@@ -31,7 +31,6 @@ app.setAsDefaultProtocolClient('symphony');
 const startApplication = async () => {
     await app.whenReady();
     createAppCacheFile();
-    windowHandler.showLoadingScreen();
     windowHandler.createApplication();
 
     if (config.isFirstTimeLaunch()) {
