@@ -21,6 +21,7 @@
   },
   "Bring All to Front": "Amener tous au front",
   "Bring to Front on Notifications": "Mettre les notifications au premier plan",
+  "Build expired": "Construit expiré",
   "Certificate Error": "Erreur de certificat",
   "Close": "Fermer",
   "Cancel": "Annuler",
@@ -155,6 +156,7 @@
     "Press ": "Appuyer sur "
   },
   "Sorry, you are not allowed to access this website": "Désolé, vous n'êtes pas autorisé à accéder à ce site.",
+  "Sorry, this is a test build and it has expired. Please contact your administrator to get a production build.": "Désolé, ceci est une version de test et elle a expiré. Veuillez contacter votre administrateur pour obtenir une version de production.",
   "Speech": "Dictée vocale",
   "Start Speaking": "Commencer à dicter",
   "Stop Speaking": "Arreter de dicter",

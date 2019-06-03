@@ -21,6 +21,7 @@
   },
   "Bring All to Front": "Bring All to Front",
   "Bring to Front on Notifications": "Bring to Front on Notifications",
+  "Build expired": "Build expired",
   "Certificate Error": "Certificate Error",
   "Close": "Close",
   "Cancel": "Cancel",
@@ -155,6 +156,7 @@
     "Press ": "Press "
   },
   "Sorry, you are not allowed to access this website": "Sorry, you are not allowed to access this website",
+  "Sorry, this is a test build and it has expired. Please contact your administrator to get a production build.": "Sorry, this is a test build and it has expired. Please contact your administrator to get a production build.",
   "Speech": "Speech",
   "Start Speaking": "Start Speaking",
   "Stop Speaking": "Stop Speaking",
