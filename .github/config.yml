@@ -19,3 +19,12 @@ firstPRMergeComment: >
   Congrats on merging your first pull request! We here at Symphony are proud of you!
 
 # It is recommended to include as many gifs and emojis as possible!
+
+## Trop (Backporting PRs) Configuration
+watchedProject:
+  name: SymphonyElectron
+
+# Users authorized to run manual trop backports
+authorizedUsers:
+  - VishwasShashidhar
+  - KiranNiranjan
