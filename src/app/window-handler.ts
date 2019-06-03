@@ -16,6 +16,7 @@ import { AppMenu } from './app-menu';
 import { handleChildWindow } from './child-window-handler';
 import { config, IConfig } from './config-handler';
 import { SpellChecker } from './spell-check-handler';
+import { checkIfBuildExpired } from './ttl-handler';
 import { monitorWindowActions } from './window-actions';
 import {
     createComponentWindow,
@@ -228,6 +229,8 @@ export class WindowHandler {
 
         // loads the main window with url from config/cmd line
         this.mainWindow.loadURL(this.url);
+        // check for build expiry in case of test builds
+        this.checkExpiry(this.mainWindow);
         this.mainWindow.webContents.on('did-finish-load', async () => {
             // early exit if the window has already been destroyed
             if (!this.mainWindow || !windowExists(this.mainWindow)) {
@@ -780,6 +783,35 @@ export class WindowHandler {
             },
             winKey: getGuid(),
         };
+    }
+
+    /**
+     * Check if build is expired and show an error message
+     * @param browserWindow Focused window instance
+     */
+    private checkExpiry(browserWindow: BrowserWindow) {
+        logger.info(`window handler: calling ttl handler to check for build expiry!`);
+        const buildExpired = checkIfBuildExpired();
+        if (!buildExpired) {
+            logger.info(`window handler: build not expired, proceeding further!`);
+            return;
+        }
+        logger.info(`window handler: build expired, will inform the user and quit the app!`);
+        const response = (resp: number) => {
+            if (resp === 0) {
+                electron.app.exit();
+            }
+        };
+
+        const options = {
+            type: 'error',
+            title: i18n.t('Build expired')(),
+            message: i18n.t('Sorry, this is a test build and it has expired. Please contact your administrator to get a production build.')(),
+            buttons: [ i18n.t('Quit')()],
+            cancelId: 0,
+        };
+
+        electron.dialog.showMessageBox(browserWindow, options, response);
     }
 }
 
