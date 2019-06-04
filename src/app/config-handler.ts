@@ -197,6 +197,7 @@ class Config {
             await this.updateUserConfig({ configVersion: app.getVersion().toString(), buildNumber } as IConfig);
         }
         this.userConfig = this.parseConfigData(fs.readFileSync(this.userConfigPath, 'utf8'));
+        logger.info(`config-handler: User configuration: `, this.userConfig);
     }
 
     /**
@@ -204,6 +205,7 @@ class Config {
      */
     private readGlobalConfig() {
         this.globalConfig = this.parseConfigData(fs.readFileSync(this.globalConfigPath, 'utf8'));
+        logger.info(`config-handler: Global configuration: `, this.globalConfig);
     }
 
     /**

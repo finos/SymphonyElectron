@@ -1,7 +1,6 @@
 import { app } from 'electron';
 import * as os from 'os';
 import { logger } from '../common/logger';
-import { config } from './config-handler';
 
 export class AppStats {
 
@@ -23,7 +22,7 @@ export class AppStats {
      * Logs system related statistics
      */
     private logSystemStats() {
-        logger.info(`stats: -----------------Gathering system information-----------------`);
+        logger.info(`-----------------Gathering system information-----------------`);
         logger.info( `Network Info -> `, os.networkInterfaces());
         logger.info( `CPU Info -> `, os.cpus());
         logger.info( `Operating System -> `, os.type());
@@ -51,29 +50,15 @@ export class AppStats {
      * Logs Configuration Data
      */
     private logConfigurationData() {
-        const configItems = [
-            'url', 'minimizeOnClose', 'launchOnStartup', 'alwaysOnTop', 'bringToFront', 'whitelistUrl',
-            'isCustomTitleBar', 'memoryRefresh', 'devToolsEnabled', 'ctWhitelist', 'configVersion',
-            'buildNumber', 'autoLaunchPath', 'notificationSettings', 'permissions', 'customFlags',
-            'crashReporter', 'mainWinPos',
-        ];
-
-        logger.info(`stats: -----------------App Configuration Information-----------------`);
+        logger.info(`-----------------App Configuration Information-----------------`);
         logger.info(`stats: Is app packaged? ${app.isPackaged}`);
-
-        const globalConfiguration = config.getGlobalConfigFields(configItems);
-        logger.info(`stats: Global configuration: `, globalConfiguration);
-
-        const userConfiguration = config.getUserConfigFields(configItems);
-        logger.info(`stats: -----------------Gathering User Configuration Information-----------------`);
-        logger.info(`stats: User configuration: `, userConfiguration);
     }
 
     /**
      * Logs App metrics
      */
     private logAppMetrics() {
-        logger.info(`stats: -----------------Gathering App Metrics-----------------`);
+        logger.info(`-----------------Gathering App Metrics-----------------`);
         const metrics = app.getAppMetrics();
         metrics.forEach((metric) => {
             logger.info(`stats: PID -> ${metric.pid}, Type -> ${metric.type}, CPU Usage -> `, metric.cpu);
@@ -102,6 +87,7 @@ export class AppStats {
      * Logs process info
      */
     private logProcessInfo() {
+        logger.info(`-----------------Gathering Process Info-----------------`);
         logger.info(`stats: Is default app? ${process.defaultApp}`);
         logger.info(`stats: Is Mac Store app? ${process.mas}`);
         logger.info(`stats: Is Windows Store app? ${process.windowsStore}`);

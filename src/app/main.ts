@@ -51,15 +51,15 @@ const startApplication = async () => {
 
 // Handle multiple/single instances
 if (!allowMultiInstance) {
-    logger.info('Multiple instance not allowed requesting lock', { allowMultiInstance });
+    logger.info('main: Multiple instance not allowed requesting lock', { allowMultiInstance });
     const gotTheLock = app.requestSingleInstanceLock();
 
     // quit if another instance is already running, ignore for dev env or if app was started with multiInstance flag
     if (!gotTheLock) {
-        logger.info('Got the lock hence closing the instance', { gotTheLock });
+        logger.info('main: Got the lock hence closing the instance', { gotTheLock });
         app.quit();
     } else {
-        logger.info('Creating the first instance of the application');
+        logger.info('main: Creating the first instance of the application');
         app.on('second-instance', (_event, argv) => {
             // Someone tried to run a second instance, we should focus our window.
             const mainWindow = windowHandler.getMainWindow();
@@ -77,7 +77,7 @@ if (!allowMultiInstance) {
         startApplication();
     }
 } else {
-    logger.info('Multiple instance allowed hence create application', { allowMultiInstance });
+    logger.info('main: Multiple instance allowed hence create application', { allowMultiInstance });
     startApplication();
 }
 

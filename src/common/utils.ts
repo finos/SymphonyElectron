@@ -165,13 +165,21 @@ export const throttle = (func: (...args) => void, wait: number): (...args) => vo
         throw Error('throttle: invalid throttleTime arg, must be a number: ' + wait);
     }
 
-    let isCalled: boolean = false;
+    let timer: NodeJS.Timer;
+    let lastRan = 0;
 
     return (...args) => {
-        if (!isCalled) {
-            func(...args);
-            isCalled = true;
-            setTimeout(() => isCalled = false, wait);
+        if (!lastRan) {
+            func.apply(null, args);
+            lastRan = Date.now();
+        } else {
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                if ((Date.now() - lastRan) >= wait) {
+                    func.apply(null, args);
+                    lastRan = Date.now();
+                }
+            }, wait - (Date.now() - lastRan));
         }
     };
 };

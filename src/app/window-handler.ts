@@ -201,7 +201,7 @@ export class WindowHandler {
     public createApplication() {
 
         this.spellchecker = new SpellChecker();
-        logger.info(`initialized spellchecker module with locale ${this.spellchecker.locale}`);
+        logger.info(`window-handler: initialized spellchecker module with locale ${this.spellchecker.locale}`);
 
         // set window opts with additional config
         this.mainWindow = new BrowserWindow({
