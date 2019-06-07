@@ -18,6 +18,7 @@ import {
 import { i18n, LocaleType } from '../common/i18n-preload';
 import { throttle } from '../common/utils';
 import { getSource } from './desktop-capturer';
+import SSFNotificationHandler from './notification-ssf-hendler';
 import { ScreenSnippetBcHandler } from './screen-snippet-bc-handler';
 
 let isAltKey: boolean = false;
@@ -126,6 +127,8 @@ export class SSFApi {
     public Search: any = swiftSearch; // tslint:disable-line
 
     public SearchUtils: any = swiftSearchUtils; // tslint:disable-line
+
+    public Notification = SSFNotificationHandler; // tslint:disable-line
 
     /**
      * Implements equivalent of desktopCapturer.getSources - that works in

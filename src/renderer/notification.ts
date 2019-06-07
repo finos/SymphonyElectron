@@ -3,7 +3,7 @@ import { app, ipcMain } from 'electron';
 import { config } from '../app/config-handler';
 import { createComponentWindow, windowExists } from '../app/window-utils';
 import { AnimationQueue } from '../common/animation-queue';
-import { apiName, INotificationData } from '../common/api-interface';
+import { apiName, INotificationData, NotificationActions } from '../common/api-interface';
 import { logger } from '../common/logger';
 import NotificationHandler from './notification-handler';
 
@@ -221,7 +221,7 @@ class Notification extends NotificationHandler {
             const data = browserWindow.notificationData;
             const callback = this.notificationCallbacks[ clientId ];
             if (typeof callback === 'function') {
-                callback('notification-clicked', data);
+                callback(NotificationActions.notificationClicked, data);
             }
             this.hideNotification(clientId);
         }
@@ -239,7 +239,7 @@ class Notification extends NotificationHandler {
             const data = browserWindow.notificationData;
             const callback = this.notificationCallbacks[ clientId ];
             if (typeof callback === 'function') {
-                callback('notification-closed', data);
+                callback(NotificationActions.notificationClosed, data);
             }
         }
     }
