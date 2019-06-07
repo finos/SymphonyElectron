@@ -219,7 +219,7 @@ export const isValidWindow = (browserWin: Electron.BrowserWindow): boolean => {
     }
 
     if (!result) {
-        logger.warn('invalid window try to perform action, ignoring action');
+        logger.warn(`window-utils: invalid window try to perform action, ignoring action`);
     }
 
     return result;

@@ -1,8 +1,7 @@
-import { ipcRenderer, remote } from 'electron';
+import { remote } from 'electron';
 
 import {
     apiCmds,
-    apiName,
     IBoundsChange,
     ILogMsg, INotificationData,
     IScreenSharingIndicator, IScreenSharingIndicatorOptions,
@@ -60,7 +59,9 @@ export class AppBridge {
     constructor() {
         // starts with corporate pod and
         // will be updated with the global config url
-        this.origin = ipcRenderer.sendSync(apiName.symphonyApi, { cmd: apiCmds.getConfigUrl });
+        const currentWindow = remote.getCurrentWindow();
+        // @ts-ignore
+        this.origin = currentWindow.origin || '';
         if (ssInstance && typeof ssInstance.setBroadcastMessage === 'function') {
             ssInstance.setBroadcastMessage(this.broadcastMessage);
         }

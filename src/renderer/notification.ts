@@ -60,6 +60,8 @@ class Notification extends NotificationHandler {
     constructor(opts) {
         super(opts);
         ipcMain.on('close-notification', (_event, windowId) => {
+            // removes the event listeners on the client side
+            this.notificationClosed(windowId);
             this.hideNotification(windowId);
         });
 
@@ -160,6 +162,7 @@ class Notification extends NotificationHandler {
      */
     public setNotificationContent(notificationWindow: ICustomBrowserWindow, data: INotificationData): void {
         notificationWindow.clientId = data.id;
+        notificationWindow.notificationData = data;
         const displayTime = data.displayTime ? data.displayTime : notificationSettings.displayTime;
         let timeoutId;
 
@@ -218,9 +221,26 @@ class Notification extends NotificationHandler {
             const data = browserWindow.notificationData;
             const callback = this.notificationCallbacks[ clientId ];
             if (typeof callback === 'function') {
-                this.notificationCallbacks[ clientId ]('notification-clicked', data);
+                callback('notification-clicked', data);
             }
             this.hideNotification(clientId);
+        }
+    }
+
+    /**
+     * Handles notification close which updates client
+     * to remove event listeners
+     *
+     * @param clientId {number}
+     */
+    public notificationClosed(clientId): void {
+        const browserWindow = this.getNotificationWindow(clientId);
+        if (browserWindow && windowExists(browserWindow) && browserWindow.notificationData) {
+            const data = browserWindow.notificationData;
+            const callback = this.notificationCallbacks[ clientId ];
+            if (typeof callback === 'function') {
+                callback('notification-closed', data);
+            }
         }
     }
 

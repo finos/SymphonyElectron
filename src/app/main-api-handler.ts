@@ -26,6 +26,7 @@ import {
  */
 ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
     if (!isValidWindow(BrowserWindow.fromWebContents(event.sender))) {
+        logger.error(`main-api-handler: invalid window try to perform action, ignoring action`, arg.cmd);
         return;
     }
 
