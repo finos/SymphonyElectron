@@ -62,6 +62,7 @@ jest.mock('../src/common/logger', () => {
     return {
         logger: {
             setLoggerWindow: jest.fn(),
+            error: jest.fn(),
         },
     };
 });
