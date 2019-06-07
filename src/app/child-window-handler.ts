@@ -126,7 +126,8 @@ export const handleChildWindow = (webContents: WebContents): void => {
             const childWebContents: WebContents = newWinOptions.webContents;
             // Event needed to hide native menu bar
             childWebContents.once('did-start-loading', () => {
-                const browserWin = BrowserWindow.fromWebContents(childWebContents);
+                const browserWin = BrowserWindow.fromWebContents(childWebContents) as ICustomBrowserWindow;
+                browserWin.origin = config.getGlobalConfigFields([ 'url' ]).url;
                 if (isWindowsOS && browserWin && !browserWin.isDestroyed()) {
                     browserWin.setMenuBarVisibility(false);
                 }

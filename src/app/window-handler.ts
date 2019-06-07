@@ -36,6 +36,7 @@ interface ICustomBrowserWindowConstructorOpts extends Electron.BrowserWindowCons
 export interface ICustomBrowserWindow extends Electron.BrowserWindow {
     winName: string;
     notificationObj?: object;
+    origin?: string;
 }
 
 // Default window width & height
@@ -234,6 +235,8 @@ export class WindowHandler {
         this.mainWindow.loadURL(this.url);
         // check for build expiry in case of test builds
         this.checkExpiry(this.mainWindow);
+        // need this for postMessage origin
+        this.mainWindow.origin = this.globalConfig.url;
         this.mainWindow.webContents.on('did-finish-load', async () => {
             logger.info(`window-handler: main window web contents finished loading!`);
             // early exit if the window has already been destroyed
