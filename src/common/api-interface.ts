@@ -112,6 +112,11 @@ export interface INotificationData {
     displayTime: number;
 }
 
+export enum NotificationActions {
+    notificationClicked = 'notification-clicked',
+    notificationClosed = 'notification-closed',
+}
+
 /**
  * Screen sharing Indicator
  */
