@@ -11,6 +11,7 @@ interface IState {
     company: string;
     body: string;
     image: string;
+    icon: string;
     id: number;
     color: string;
 }
@@ -31,6 +32,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
             company: 'Symphony',
             body: '',
             image: '',
+            icon: '',
             id: 0,
             color: '',
         };
@@ -49,11 +51,12 @@ export default class NotificationComp extends React.Component<{}, IState> {
      * Renders the custom title bar
      */
     public render(): JSX.Element {
-        const { title, company, body, image, id, color } = this.state;
-        const isLightTheme = color ? color.match(whiteColorRegExp) : true;
+        const { title, company, body, image, icon, id, color } = this.state;
+        const colorHex = color ? '#' + color : undefined;
+        const isLightTheme = colorHex ? colorHex.match(whiteColorRegExp) : true;
 
         const theme = classNames({ light: isLightTheme, dark: !isLightTheme });
-        const bgColor = { backgroundColor: color || '#ffffff' };
+        const bgColor = { backgroundColor: colorHex || '#ffffff' };
 
         return (
             <div className='container' style={bgColor} onClick={this.eventHandlers.onClick(id)}>
@@ -62,11 +65,11 @@ export default class NotificationComp extends React.Component<{}, IState> {
                 </div>
                 <div className='header'>
                     <span className={`title ${theme}`}>{title}</span>
-                    <span className='company' style={{color: color || '#4a4a4a'}}>{company}</span>
+                    <span className='company' style={{color: colorHex || '#4a4a4a'}}>{company}</span>
                     <span className={`message ${theme}`}>{body}</span>
                 </div>
                 <div className='user-profile-pic-container'>
-                    <img src={image} className='user-profile-pic' alt='user profile picture'/>
+                    <img src={image || icon} className='user-profile-pic' alt='user profile picture'/>
                 </div>
                 <div className='close' title={i18n.t('Close')()} onClick={this.eventHandlers.onClose(id)}>
                     <svg fill='#000000' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'>
