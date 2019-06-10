@@ -215,7 +215,27 @@
                 method: 'notification',
             };
 
-            window.postMessage({ method: 'notification', data: notf }, '*');
+            if (window.ssf) {
+                const ssfNotificationHandler = new window.ssf.Notification(notf.title, notf);
+                const onclick = (event) => {
+                    event.target.close();
+                    alert('notification clicked: ' + event.target.data.title);
+                };
+                ssfNotificationHandler.addEventListener('click', onclick);
+
+                const onclose = () => {
+                    alert('notification closed');
+                };
+                ssfNotificationHandler.addEventListener('close', onclose);
+
+                const onerror = (event) => {
+                    alert('error=' + event.result);
+                };
+                ssfNotificationHandler.addEventListener('error', onerror);
+            } else {
+                window.postMessage({ method: 'notification', data: notf }, '*');
+            }
+
         });
 
         /**
