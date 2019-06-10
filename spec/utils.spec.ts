@@ -110,8 +110,20 @@ describe('utils', () => {
     });
 
     describe('`throttle`', () => {
+        let origNow;
+        let now;
         beforeEach(() => {
-            jest.useFakeTimers();
+            origNow = Date.now;
+            // mock date func
+            Date.now = () => {
+                return now;
+            };
+            now = 10000;
+        });
+
+        afterEach(() => {
+            // restore original
+            Date.now = origNow;
         });
 
         it('should fail when wait is invalid', () => {
@@ -124,10 +136,17 @@ describe('utils', () => {
         });
 
         it('should call `throttle` correctly', () => {
-            const validTime = 3;
-            const tempFn = throttle(jest.fn(), validTime);
+            jest.useFakeTimers();
+            const validTime = 1000;
+            const functionMock = jest.fn();
+            const tempFn = throttle(functionMock, validTime);
+            for (let i = 0; i < 3; i++) {
+                tempFn();
+            }
+            now += 1000;
+            jest.runTimersToTime(1000);
             tempFn();
-            expect(setTimeout).toBeCalledWith(expect.any(Function), validTime);
+            expect(functionMock).toBeCalledTimes(2);
         });
     });
 });

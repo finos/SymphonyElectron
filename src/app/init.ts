@@ -13,15 +13,17 @@ const userDataPath = userDataPathArg && userDataPathArg.substring(userDataPathAr
 
 // Set user data path before app ready event
 if (isDevEnv) {
-    const appDataPath = app.getPath('appData');
-    logger.info(`init: Setting app data path to ${appDataPath}`);
-    app.setPath('userData', path.join(appDataPath, 'Symphony-dev'));
+    const devDataPath = path.join(app.getPath('appData'), 'Symphony-dev');
+    logger.info(`init: Setting user data path to`, devDataPath);
+    app.setPath('userData', devDataPath);
 }
 
 if (userDataPath) {
-    logger.info(`init: Setting user data path to ${userDataPath}`);
+    logger.info(`init: Setting user data path to`, userDataPath);
     app.setPath('userData', userDataPath);
 }
+
+logger.info(`init: Fetch user data path`, app.getPath('userData'));
 
 // Log app statistics
 appStats.logStats();
