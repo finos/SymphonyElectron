@@ -59,7 +59,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
         const bgColor = { backgroundColor: colorHex || '#ffffff' };
 
         return (
-            <div className='container' style={bgColor} onClick={this.eventHandlers.onClick(id)}>
+            <div className='container' role='alert' style={bgColor} onClick={this.eventHandlers.onClick(id)}>
                 <div className='logo-container'>
                     <img className={`logo ${theme}`} alt='symphony logo'/>
                 </div>
