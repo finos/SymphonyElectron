@@ -1,7 +1,7 @@
 import { app } from 'electron';
-import { Library } from 'ffi-napi';
+import { Library } from 'ffi';
 import * as path from 'path';
-import { refType, types } from 'ref-napi';
+import { refType, types } from 'ref';
 
 const execPath = path.dirname(app.getPath('exe'));
 import { isDevEnv, isMac } from '../common/env';
