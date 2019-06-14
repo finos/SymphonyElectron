@@ -63,6 +63,7 @@ jest.mock('../src/app/window-handler', () => {
     return {
         windowHandler: {
             createMoreInfoWindow: jest.fn(),
+            getMainWindow: jest.fn(),
         },
     };
 });

@@ -90,6 +90,15 @@ export class AppMenu {
         logger.info(`app-menu: built menu from the provided template`);
         Menu.setApplicationMenu(this.menu);
         logger.info(`app-menu: set application menu`);
+
+        // Remove the default menu for window
+        // as we use custom popup menu
+        if (isWindowsOS) {
+            const mainWindow = windowHandler.getMainWindow();
+            if (mainWindow && windowExists(mainWindow)) {
+                mainWindow.setMenuBarVisibility(false);
+            }
+        }
     }
 
     /**
