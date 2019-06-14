@@ -23,8 +23,8 @@ export default class SSFNotificationHandler {
     constructor(title, options) {
         this.id = latestID;
         latestID++;
-        this._data = { ...options, title, id: this.id };
-        notification.showNotification(this._data, this.eventHandlers.onClick);
+        notification.showNotification({ ...options, title, id: this.id }, this.eventHandlers.onClick);
+        this._data = options.data;
     }
 
     /**

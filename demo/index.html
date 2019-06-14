@@ -208,7 +208,7 @@
                 color: color || 'white',
                 sticky: shouldStick,
                 data: {
-                    hello: 'hello word'
+                    hello: `Notification with id ${num} clicked')`
                 },
                 tag: tag,
                 company: company,
@@ -219,7 +219,7 @@
                 const ssfNotificationHandler = new window.ssf.Notification(notf.title, notf);
                 const onclick = (event) => {
                     event.target.close();
-                    alert('notification clicked: ' + event.target.data.title);
+                    alert('notification clicked: ' + event.target.data.hello);
                 };
                 ssfNotificationHandler.addEventListener('click', onclick);
 
