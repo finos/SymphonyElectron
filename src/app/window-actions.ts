@@ -129,6 +129,7 @@ export const handleKeyPress = (key: number): void => {
             const focusedWindow = BrowserWindow.getFocusedWindow();
 
             if (focusedWindow && !focusedWindow.isDestroyed() && focusedWindow.isFullScreen()) {
+                logger.info(`window-actions: exiting fullscreen by esc key action`);
                 focusedWindow.setFullScreen(false);
             }
             break;
@@ -139,6 +140,7 @@ export const handleKeyPress = (key: number): void => {
             }
             const browserWin = BrowserWindow.getFocusedWindow();
             if (browserWin && !browserWin.isDestroyed()) {
+                logger.info(`window-actions: popping up menu by alt key action`);
                 showPopupMenu({ window: browserWin });
             }
             break;

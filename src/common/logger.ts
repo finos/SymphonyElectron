@@ -1,9 +1,10 @@
-import { app } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import electronLog, { LogLevel, transports } from 'electron-log';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
 
+import { windowExists } from '../app/window-utils';
 import { isElectronQA } from './env';
 import { getCommandLineArgs } from './utils';
 
@@ -210,6 +211,10 @@ class Logger {
         }
 
         if (this.loggerWindow) {
+            const browserWindow = BrowserWindow.fromWebContents(this.loggerWindow);
+            if (!browserWindow || !windowExists(browserWindow)) {
+                return;
+            }
             this.loggerWindow.send('log', { msgs: [ logMsg ], logLevel: this.desiredLogLevel, showInConsole: this.showInConsole });
             return;
         }
