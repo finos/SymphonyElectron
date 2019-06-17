@@ -5,7 +5,7 @@ import { formatString } from './utils';
 
 const localeCodeRegex = /^([a-z]{2})-([A-Z]{2})$/;
 
-export type LocaleType = 'en-US' | 'ja-JP';
+export type LocaleType = 'en-US' | 'ja-JP' | 'fr-FR';
 
 type formatterFunction = (args?: object) => string;
 
@@ -40,6 +40,8 @@ class Translation {
 
     /**
      * Gets the current locale
+     *
+     * @return LocaleType {string}
      */
     public getLocale(): LocaleType {
         return this.locale;
