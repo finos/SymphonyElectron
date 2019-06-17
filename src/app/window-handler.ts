@@ -95,7 +95,7 @@ export class WindowHandler {
      */
     private static getScreenSharingIndicatorOpts(): ICustomBrowserWindowConstructorOpts {
         return {
-            width: 592,
+            width: 620,
             height: 48,
             show: false,
             modal: true,
