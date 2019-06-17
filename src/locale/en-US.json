@@ -1,5 +1,9 @@
 {
   "About Symphony": "About Symphony",
+  "AboutSymphony": {
+    "About Symphony": "About Symphony",
+    "Version": "Version"
+  },
   "Actual Size": "Actual Size",
   "Always on Top": "Always on Top",
   "Auto Launch On Startup": "Auto Launch On Startup",
@@ -24,9 +28,10 @@
   "Bring All to Front": "Bring All to Front",
   "Bring to Front on Notifications": "Bring to Front on Notifications",
   "Build expired": "Build expired",
-  "Certificate Error": "Certificate Error",
-  "Close": "Close",
   "Cancel": "Cancel",
+  "Certificate Error": "Certificate Error",
+  "Clear cache and Reload": "Clear cache and Reload",
+  "Close": "Close",
   "ContextMenu": {
     "Add to Dictionary": "Add to Dictionary",
     "Copy": "Copy",
@@ -42,21 +47,21 @@
     "Reload": "Reload",
     "Search with Google": "Search with Google"
   },
-  "DownloadManager": {
-    "Show in Folder": "Show in Folder",
-    "Reveal in Finder": "Reveal in Finder",
-    "Open": "Open",
-    "Downloaded": "Downloaded",
-    "File not Found": "File not Found",
-    "The file you are trying to open cannot be found in the specified path.": "The file you are trying to open cannot be found in the specified path."
-  },
   "Copy": "Copy",
   "Custom": "Custom",
   "Cut": "Cut",
   "Delete": "Delete",
-  "Disable Hamburger menu": "Disable Hamburger menu",
   "Dev Tools disabled": "Dev Tools disabled",
   "Dev Tools has been disabled! Please contact your system administrator to enable it!": "Dev Tools has been disabled! Please contact your system administrator to enable it!",
+  "Disable Hamburger menu": "Disable Hamburger menu",
+  "DownloadManager": {
+    "Downloaded": "Downloaded",
+    "File not Found": "File not Found",
+    "Open": "Open",
+    "Reveal in Finder": "Reveal in Finder",
+    "Show in Folder": "Show in Folder",
+    "The file you are trying to open cannot be found in the specified path.": "The file you are trying to open cannot be found in the specified path."
+  },
   "Edit": "Edit",
   "Enable Hamburger menu": "Enable Hamburger menu",
   "Error loading configuration": "Error loading configuration",
@@ -67,7 +72,6 @@
   "Flash Notification in Taskbar": "Flash Notification in Taskbar",
   "Help": "Help",
   "Help Url": "https://support.symphony.com",
-  "Symphony Url": "https://symphony.com/en-US",
   "Hide Others": "Hide Others",
   "Hide Symphony": "Hide Symphony",
   "Ignore": "Ignore",
@@ -75,11 +79,18 @@
   "Loading Error": "Loading Error",
   "Minimize": "Minimize",
   "Minimize on Close": "Minimize on Close",
+  "More Information": "More Information",
+  "MoreInfo": {
+    "More Information": "More Information",
+    "Others": "Others",
+    "related": "related",
+    "Version Information": "Version Information"
+  },
   "Native": "Native",
   "Network connectivity has been lost. Check your internet connection.": "Network connectivity has been lost. Check your internet connection.",
   "NetworkError": {
-    "Problem connecting to Symphony": "Problem connecting to Symphony",
     "Looks like you are not connected to the Internet. We'll try to reconnect automatically.": "Looks like you are not connected to the Internet. We'll try to reconnect automatically.",
+    "Problem connecting to Symphony": "Problem connecting to Symphony",
     "Retry": "Retry"
   },
   "No crashes available to share": "No crashes available to share",
@@ -104,33 +115,35 @@
   "Paste": "Paste",
   "Paste and Match Style": "Paste and Match Style",
   "Permission Denied": "Permission Denied",
+  "Permissions": {
+    "Full Screen": "Full Screen"
+  },
   "Please contact your admin for help": "Please contact your admin for help",
   "please contact your administrator for more details": "please contact your administrator for more details",
   "Quit Symphony": "Quit Symphony",
   "Redo": "Redo",
   "Refresh app when idle": "Refresh app when idle",
-  "Clear cache and Reload": "Clear cache and Reload",
-  "Relaunch Application": "Relaunch Application",
   "Relaunch": "Relaunch",
+  "Relaunch Application": "Relaunch Application",
   "Reload": "Reload",
   "Renderer Process Crashed": "Renderer Process Crashed",
   "ScreenPicker": {
     "Applications": "Applications",
     "Cancel": "Cancel",
     "Choose what you'd like to share": "Choose what you'd like to share",
+    "Entire screen": "Entire screen",
     "No screens or applications are currently available.": "No screens or applications are currently available.",
     "Screen Picker": "Screen Picker",
+    "Screen {number}": "Screen {number}",
     "Screens": "Screens",
     "Select Application": "Select Application",
     "Select Screen": "Select Screen",
-    "Share": "Share",
-    "Entire screen": "Entire screen",
-    "Screen {number}": "Screen {number}"
+    "Share": "Share"
   },
   "ScreenSharingIndicator": {
-    "You are sharing your screen on {appName}": "You are sharing your screen on {appName}",
+    "Hide": "Hide",
     "Stop sharing": "Stop sharing",
-    "Hide": "Hide"
+    "You are sharing your screen on {appName}": "You are sharing your screen on {appName}"
   },
   "ScreenSnippet": {
     "Done": "Done",
@@ -139,17 +152,11 @@
     "Pen": "Pen",
     "Snipping Tool": "Snipping Tool"
   },
-  "AboutSymphony": {
-    "About Symphony": "About Symphony",
-    "Version": "Version"
-  },
   "Select All": "Select All",
   "Services": "Services",
   "Show All": "Show All",
   "Show crash dump in Explorer": "Show crash dump in Explorer",
   "Show crash dump in Finder": "Show crash dump in Finder",
-  "Toggle Developer Tools": "Toggle Developer Tools",
-  "More Information": "More Information",
   "Show Logs in Explorer": "Show Logs in Explorer",
   "Show Logs in Finder": "Show Logs in Finder",
   "SnackBar": {
@@ -157,12 +164,14 @@
     "esc": "esc",
     "Press ": "Press "
   },
-  "Sorry, you are not allowed to access this website": "Sorry, you are not allowed to access this website",
   "Sorry, this is a test build and it has expired. Please contact your administrator to get a production build.": "Sorry, this is a test build and it has expired. Please contact your administrator to get a production build.",
+  "Sorry, you are not allowed to access this website": "Sorry, you are not allowed to access this website",
   "Speech": "Speech",
   "Start Speaking": "Start Speaking",
   "Stop Speaking": "Stop Speaking",
   "Symphony Help": "Symphony Help",
+  "Symphony Url": "https://symphony.com/en-US",
+  "Title Bar Style": "Title Bar Style",
   "TitleBar": {
     "Close": "Close",
     "Maximize": "Maximize",
@@ -170,7 +179,7 @@
     "Minimize": "Minimize",
     "Restore": "Restore"
   },
-  "Title Bar Style": "Title Bar Style",
+  "Toggle Developer Tools": "Toggle Developer Tools",
   "Toggle Full Screen": "Toggle Full Screen",
   "Troubleshooting": "Troubleshooting",
   "Unable to generate crash reports due to ": "Unable to generate crash reports due to ",

@@ -16,7 +16,7 @@ import { handleChildWindow } from './child-window-handler';
 import { config, IConfig } from './config-handler';
 import { SpellChecker } from './spell-check-handler';
 import { checkIfBuildExpired } from './ttl-handler';
-import { monitorWindowActions } from './window-actions';
+import { handlePermissionRequests, monitorWindowActions } from './window-actions';
 import {
     createComponentWindow,
     getBounds,
@@ -345,6 +345,9 @@ export class WindowHandler {
 
         // Validate window navigation
         preventWindowNavigation(this.mainWindow, false);
+
+        // Handle media/other permissions
+        handlePermissionRequests(this.mainWindow.webContents);
 
         // Start monitoring window actions
         monitorWindowActions(this.mainWindow);

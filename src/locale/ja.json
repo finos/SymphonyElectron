@@ -1,5 +1,9 @@
 {
   "About Symphony": "Symphonyについて",
+  "AboutSymphony": {
+    "About Symphony": "Symphonyについて",
+    "Version": "バージョン"
+  },
   "Actual Size": "実際のサイズ",
   "Always on Top": "つねに前面に表示",
   "Auto Launch On Startup": "スタートアップ時に自動起動",
@@ -24,9 +28,10 @@
   "Bring All to Front": "すべて前面に表示",
   "Bring to Front on Notifications": "通知時に前面に表示",
   "Build expired": "期限切れのビルド",
-  "Certificate Error": "証明書のエラー",
-  "Close": "閉じる",
   "Cancel": "キャンセル",
+  "Certificate Error": "証明書のエラー",
+  "Clear cache and Reload": "キャッシュをクリアしてリロードする",
+  "Close": "閉じる",
   "ContextMenu": {
     "Add to Dictionary": "辞書に追加",
     "Copy": "コピー",
@@ -42,21 +47,21 @@
     "Reload": "再読み込み",
     "Search with Google": "Googleで検索"
   },
-  "DownloadManager": {
-    "Show in Folder": "フォルダーを開く",
-    "Reveal in Finder": "Finderで確認する",
-    "Open": "開く",
-    "Downloaded": "ダウンロード済み",
-    "File not Found": "ファイルが見つかりません",
-    "The file you are trying to open cannot be found in the specified path.": "開こうとしているファイルが指定されたパスに見つかりません."
-  },
   "Copy": "コピー",
   "Custom": "カスタム",
   "Cut": "切り取り",
   "Delete": "削除",
-  "Disable Hamburger menu": "ハンバーガーメニューを無効にする",
   "Dev Tools disabled": "開発ツールが無効",
   "Dev Tools has been disabled! Please contact your system administrator to enable it!": "開発ツールが無効になっています。システム管理者に連絡して、有効にしてください。",
+  "Disable Hamburger menu": "ハンバーガーメニューを無効にする",
+  "DownloadManager": {
+    "Downloaded": "ダウンロード済み",
+    "File not Found": "ファイルが見つかりません",
+    "Open": "開く",
+    "Reveal in Finder": "Finderで確認する",
+    "Show in Folder": "フォルダーを開く",
+    "The file you are trying to open cannot be found in the specified path.": "開こうとしているファイルが指定されたパスに見つかりません."
+  },
   "Edit": "編集",
   "Enable Hamburger menu": "ハンバーガーメニューを有効にする",
   "Error loading configuration": "構成の読み込みエラー",
@@ -67,7 +72,6 @@
   "Flash Notification in Taskbar": "タスクバーの通知を点滅",
   "Help": "ヘルプ",
   "Help Url": "https://support.symphony.com/hc/ja",
-  "Symphony Url": "https://symphony.com/ja",
   "Hide Others": "他を隠す",
   "Hide Symphony": "Symphonyを隠す",
   "Ignore": "無視",
@@ -75,11 +79,18 @@
   "Loading Error": "読み込みエラー",
   "Minimize": "最小化",
   "Minimize on Close": "閉じるで最小化",
+  "More Information": "詳しくは",
+  "MoreInfo": {
+    "More Information": "詳しくは",
+    "Others": "その他",
+    "related": "関連した",
+    "Version Information": "バージョン情報"
+  },
   "Native": "Native",
   "Network connectivity has been lost. Check your internet connection.": "ネットワーク接続が失われました。インターネット接続を確認してください。",
   "NetworkError": {
-    "Problem connecting to Symphony": "Symphonyへの接続に関する問題",
     "Looks like you are not connected to the Internet. We'll try to reconnect automatically.": "インターネットに接続していないようです。 自動的に再接続します。",
+    "Problem connecting to Symphony": "Symphonyへの接続に関する問題",
     "Retry": "再試行を"
   },
   "No crashes available to share": "共有できるクラッシュはありません",
@@ -104,33 +115,35 @@
   "Paste": "貼り付け",
   "Paste and Match Style": "貼り付けでスタイルを合わせる",
   "Permission Denied": "アクセス許可が拒否されています",
+  "Permissions": {
+    "Full Screen": "全画面表示"
+  },
   "Please contact your admin for help": "不明な点がある場合は､管理者にお問い合わせください",
   "please contact your administrator for more details": "詳細は、管理者にお問い合わせください",
   "Quit Symphony": "Symphonyを終了",
   "Redo": "やり直し",
   "Refresh app when idle": "アイドル時にアプリを再表示",
-  "Clear cache and Reload": "キャッシュをクリアしてリロードする",
-  "Relaunch Application": "アプリケーションの再起動",
   "Relaunch": "「リスタート」",
+  "Relaunch Application": "アプリケーションの再起動",
   "Reload": "再読み込み",
   "Renderer Process Crashed": "レンダラープロセスがクラッシュしました",
   "ScreenPicker": {
     "Applications": "アプリケーション",
     "Cancel": "キャンセル",
     "Choose what you'd like to share": "共有するものを選択する",
+    "Entire screen": "画面全体",
     "No screens or applications are currently available.": "現在利用できる画面およびアプリケーションはありません。",
     "Screen Picker": "画面の選択",
+    "Screen {number}": "画面 {number}",
     "Screens": "画面",
     "Select Application": "アプリケーションを選択",
     "Select Screen": "画面を選択",
-    "Share": "共有",
-    "Entire screen": "画面全体",
-    "Screen {number}": "画面 {number}"
+    "Share": "共有"
   },
   "ScreenSharingIndicator": {
-    "You are sharing your screen on {appName}": "あなたは{appName}上であなたの画面を共有しています",
+    "Hide": "非表示にする",
     "Stop sharing": "画面共有を停止",
-    "Hide": "非表示にする"
+    "You are sharing your screen on {appName}": "あなたは{appName}上であなたの画面を共有しています"
   },
   "ScreenSnippet": {
     "Done": "完了",
@@ -139,17 +152,11 @@
     "Pen": "ペン",
     "Snipping Tool": "切り取りツール"
   },
-  "AboutSymphony": {
-    "About Symphony": "Symphonyについて",
-    "Version": "バージョン"
-  },
   "Select All": "すべてを選択",
   "Services": "サービス",
   "Show All": "すべてを表示",
   "Show crash dump in Explorer": "Explorerにクラッシュダンプを表示",
   "Show crash dump in Finder": "ファインダーにクラッシュダンプを表示",
-  "Toggle Developer Tools": "開発者ツールの切り替え",
-  "More Information": "詳しくは",
   "Show Logs in Explorer": "Explorerにログを表示",
   "Show Logs in Finder": "ファインダーにログを表示",
   "SnackBar": {
@@ -157,12 +164,14 @@
     "esc": "esc",
     "Press ": "全画面表示を終了するには "
   },
-  "Sorry, you are not allowed to access this website": "申し訳ありませんが、このウェブサイトへのアクセスは許可されていません",
   "Sorry, this is a test build and it has expired. Please contact your administrator to get a production build.": "申し訳ありませんが、これはテストビルドであり、期限切れです。プロダクションビルドを入手するには、管理者に連絡してください。",
+  "Sorry, you are not allowed to access this website": "申し訳ありませんが、このウェブサイトへのアクセスは許可されていません",
   "Speech": "スピーチ",
   "Start Speaking": "スピーチを開始",
   "Stop Speaking": "スピーチを終了",
   "Symphony Help": "Symphonyのヘルプ",
+  "Symphony Url": "https://symphony.com/ja",
+  "Title Bar Style": "タイトルバーのスタイル",
   "TitleBar": {
     "Close": "閉じる",
     "Maximize": "最大化する",
@@ -170,7 +179,7 @@
     "Minimize": "最小化する",
     "Restore": "戻す"
   },
-  "Title Bar Style": "タイトルバーのスタイル",
+  "Toggle Developer Tools": "開発者ツールの切り替え",
   "Toggle Full Screen": "画面表示を切り替え",
   "Troubleshooting": "トラブルシューティング",
   "Unable to generate crash reports due to ": "クラッシュレポートを生成できません｡理由: ",

@@ -109,6 +109,9 @@
   "Paste": "Coller",
   "Paste and Match Style": "Coller et appliquer le style",
   "Permission Denied": "Permission refusée",
+  "Permissions": {
+    "Full Screen": "Plein écran"
+  },
   "Please contact your admin for help": "Veuillez contacter votre administrateur pour obtenir de l'aide.",
   "please contact your administrator for more details": "veuillez contacter votre administrateur pour plus de détails",
   "Quit Symphony": "Quitter Symphony",
