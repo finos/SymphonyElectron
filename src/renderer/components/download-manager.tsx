@@ -111,7 +111,7 @@ export default class DownloadManager extends React.Component<{}, IManagerState> 
                     </div>
                 </div>
                 <div id='menu' className='caret tempo-icon tempo-icon--dropdown'>
-                    <div id='download-action-menu' className='download-action-menu'>
+                    <div id='download-action-menu' className='download-action-menu' style={{width: '200px'}}>
                         <ul id={_id}>
                             <li id='download-open' onClick={this.eventHandlers.onOpenFile(_id)}>
                                 {i18n.t('Open', DOWNLOAD_MANAGER_NAMESPACE)()}
