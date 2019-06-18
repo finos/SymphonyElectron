@@ -1,8 +1,12 @@
 {
   "About Symphony": "À propos de Symphony",
+  "AboutSymphony": {
+    "About Symphony": "À propos de Symphony",
+    "Version": "Version"
+  },
   "Actual Size": "Taille actuelle",
-  "Always on Top": "Toujours au top",
-  "Auto Launch On Startup": "Lancement Automatique au démarrage",
+  "Always on Top": "Garder Symphony au premier plan",
+  "Auto Launch On Startup": "Lancement automatique au démarrage",
   "BasicAuth": {
     "Authentication Request": "Demande d'authentification",
     "Cancel": "Annuler",
@@ -13,18 +17,13 @@
     "Please provide your login credentials for:": "Fournissez vos identifiants de connexion pour:",
     "User name:": "Nom d'utilisateur:"
   },
-  "MoreInfo": {
-    "More Information": "Plus d’informations",
-    "Others": "Autres",
-    "related": "en relation",
-    "Version Information": "Information sur la version"
-  },
-  "Bring All to Front": "Amener tous au front",
-  "Bring to Front on Notifications": "Mettre les notifications au premier plan",
+  "Bring All to Front": "Amener les fenêtres au premier plan",
+  "Bring to Front on Notifications": "Afficher les notifications au premier plan",
   "Build expired": "Construit expiré",
-  "Certificate Error": "Erreur de certificat",
-  "Close": "Fermer",
   "Cancel": "Annuler",
+  "Certificate Error": "Erreur de certificat",
+  "Clear cache and Reload": "Vider le cache et rafraîchir Symphony",
+  "Close": "Fermer",
   "ContextMenu": {
     "Add to Dictionary": "Ajouter au dictionnaire",
     "Copy": "Copier",
@@ -40,21 +39,21 @@
     "Reload": "Recharger",
     "Search with Google": "Rechercher avec Google"
   },
-  "DownloadManager": {
-    "Show in Folder": "Afficher dans le dossier",
-    "Reveal in Finder": "Révéler dans le Finder",
-    "Open": "Ouvrir",
-    "Downloaded": "Téléchargé",
-    "File not Found": "Fichier non trouvé",
-    "The file you are trying to open cannot be found in the specified path.": "Le fichier que vous essayez d'ouvrir est introuvable dans le chemin spécifié."
-  },
   "Copy": "Copier",
   "Custom": "Personnalisé",
   "Cut": "Couper",
   "Delete": "Effacer",
-  "Disable Hamburger menu": "Désactiver le menu Hamburger",
   "Dev Tools disabled": "Outils de développement désactivés",
   "Dev Tools has been disabled! Please contact your system administrator to enable it!": "Dev Tools a été désactivé ! Veuillez contacter votre administrateur système pour l’activer !",
+  "Disable Hamburger menu": "Désactiver le menu Hamburger",
+  "DownloadManager": {
+    "Downloaded": "Téléchargé",
+    "File not Found": "Fichier non trouvé",
+    "Open": "Ouvrir",
+    "Reveal in Finder": "Montrer le fichier",
+    "Show in Folder": "Afficher dans le dossier",
+    "The file you are trying to open cannot be found in the specified path.": "Le fichier que vous essayez d'ouvrir est introuvable dans le chemin spécifié."
+  },
   "Edit": "Modifier",
   "Enable Hamburger menu": "Activer le menu Hamburger",
   "Error loading configuration": "Erreur de chargement de la configuration",
@@ -65,19 +64,25 @@
   "Flash Notification in Taskbar": "Notification Flash dans la barre des tâches",
   "Help": "Aide",
   "Help Url": "https://support.symphony.com",
-  "Symphony Url": "https://symphony.com/fr-FR",
-  "Hide Others": "Cacher les autres",
+  "Hide Others": "Cacher les autres applications",
   "Hide Symphony": "Cacher Symphony",
   "Ignore": "Ignorer",
-  "Learn More": "Apprendre encore plus",
+  "Learn More": "En savoir plus sur Symphony",
   "Loading Error": "Erreur lors du chargement",
   "Minimize": "Minimiser",
-  "Minimiser on Close": "Minimiser à la fermeture",
+  "Minimize on Close": "Minimiser Symphony au lieu quitter",
+  "More Information": "Informations détaillées",
+  "MoreInfo": {
+    "More Information": "Informations détaillées",
+    "Others": "Autres",
+    "related": "en relation",
+    "Version Information": "Information sur cette version de Symphony"
+  },
   "Native": "Originaire",
   "Network connectivity has been lost. Check your internet connection.": "La connectivité a été perdue. Vérifiez votre connection à l'internet.",
   "NetworkError": {
-    "Problem connecting to Symphony": "Problème de connexion à Symphony",
     "Looks like you are not connected to the Internet. We'll try to reconnect automatically.": "On dirait que vous n'êtes pas connecté à Internet. Nous allons essayer de vous reconnecter automatiquement.",
+    "Problem connecting to Symphony": "Problème de connexion à Symphony",
     "Retry": "Réessayez"
   },
   "No crashes available to share": "Pas de crash à partager",
@@ -105,30 +110,29 @@
   "Please contact your admin for help": "Veuillez contacter votre administrateur pour obtenir de l'aide.",
   "please contact your administrator for more details": "veuillez contacter votre administrateur pour plus de détails",
   "Quit Symphony": "Quitter Symphony",
-  "Redo": "Refaire",
-  "Refresh app when idle": "Actualiser l'application en mode inactive",
-  "Clear cache and Reload": "Vider le cache et recharger",
-  "Relaunch Application": "Redémarrer l'application",
+  "Redo": "Répéter la dernière opération",
+  "Refresh app when idle": "Rafraîchir Symphony pendant les périodes d'inactivité",
   "Relaunch": "Redémarrer",
+  "Relaunch Application": "Redémarrer l'application",
   "Reload": "Recharger",
   "Renderer Process Crashed": "Processus de rendu a eu un crash",
   "ScreenPicker": {
     "Applications": "Applications",
     "Cancel": "Annuler",
     "Choose what you'd like to share": "Choisissez ce que vous souhaitez partager",
+    "Entire screen": "Écran entier",
     "No screens or applications are currently available.": "Aucun écran ou application n'est actuellement disponible.",
     "Screen Picker": "Sélecteur d'écran",
+    "Screen {number}": "Écran {number}",
     "Screens": "Écrans",
     "Select Application": "Sélectionnez une application",
     "Select Screen": "Sélectionnez l'écran",
-    "Share": "Partager",
-    "Entire screen": "Écran entier",
-    "Screen {number}": "Écran {number}"
+    "Share": "Partager"
   },
   "ScreenSharingIndicator": {
-    "You are sharing your screen on {appName}": "Vous partagez votre écran sur {appName}",
+    "Hide": "Masquer",
     "Stop sharing": "Arrêter le partage",
-    "Hide": "Masquer"
+    "You are sharing your screen on {appName}": "Vous partagez votre écran sur {appName}"
   },
   "ScreenSnippet": {
     "Done": "Terminé",
@@ -137,30 +141,26 @@
     "Pen": "Stylo",
     "Snipping Tool": "Outil Capture"
   },
-  "AboutSymphony": {
-    "About Symphony": "À propos de Symphony",
-    "Version": "Version"
-  },
   "Select All": "Tout sélectionner",
   "Services": "Services",
   "Show All": "Tout afficher",
   "Show crash dump in Explorer": "Afficher rapport de crash dans Explorateur",
-  "Show crash dump in Finder": "Afficher rapport de crash dans Finder",
-  "Toggle Developer Tools": "Basculer, les outils de développement",
-  "More Information": "Plus d'information",
+  "Show crash dump in Finder": "Montrer dans l'application 'Finder' le rapport de l'arrêt inopiné",
   "Show Logs in Explorer": "Afficher journal d'évenements dans Explorateur",
-  "Show Logs in Finder": "Afficher journal d'évenements dans Finder",
+  "Show Logs in Finder": "Montrer dans l'application 'Finder' le journal d'évènements",
   "SnackBar": {
     " to exit full screen": " pour quitter le plein écran",
     "esc": "esc",
     "Press ": "Appuyer sur "
   },
-  "Sorry, you are not allowed to access this website": "Désolé, vous n'êtes pas autorisé à accéder à ce site.",
   "Sorry, this is a test build and it has expired. Please contact your administrator to get a production build.": "Désolé, ceci est une version de test et elle a expiré. Veuillez contacter votre administrateur pour obtenir une version de production.",
+  "Sorry, you are not allowed to access this website": "Désolé, vous n'êtes pas autorisé à accéder à ce site.",
   "Speech": "Dictée vocale",
   "Start Speaking": "Commencer à dicter",
   "Stop Speaking": "Arreter de dicter",
-  "Symphony Help": "Aide Symphony",
+  "Symphony Help": "Aide en ligne de Symphony",
+  "Symphony Url": "https://symphony.com/fr-FR",
+  "Title Bar Style": "Style de la barre de titre",
   "TitleBar": {
     "Close": "Fermer",
     "Maximize": "Maximiser",
@@ -168,12 +168,12 @@
     "Minimize": "Minimiser",
     "Restore": "Restaurer"
   },
-  "Title Bar Style": "Style de la barre de titre",
+  "Toggle Developer Tools": "Basculer, les outils de développement",
   "Toggle Full Screen": "Basculer plein écran",
   "Troubleshooting": "Dépannage",
   "Unable to generate crash reports due to ": "Impossible de générer le rapport de crash en raison de ",
   "Unable to generate logs due to ": "Impossible de générer le journal d'évenements en raison de",
-  "Undo": "Défaire",
+  "Undo": "Annuler la dernière opération",
   "Updating Title bar style requires Symphony to relaunch.": "La mise à jour du style de la barre de titre nécessite le redémarrage de Symphony.",
   "View": "Visualiser",
   "Window": "Fenêtre",
