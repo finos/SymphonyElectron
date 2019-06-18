@@ -237,10 +237,10 @@ export const handleSessionPermissions = (permission: boolean, message: string, c
  */
 export const handlePermissionRequests = (webContents: Electron.webContents): void => {
 
-    const { session } = webContents;
-    if (!webContents || !session) {
+    if (!webContents || !webContents.session) {
         return;
     }
+    const { session } = webContents;
 
     const { permissions } = config.getGlobalConfigFields([ 'permissions' ]);
     if (!permissions) {
