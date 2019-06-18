@@ -17,7 +17,9 @@
     "More Information": "詳しくは",
     "Others": "その他",
     "related": "関連した",
-    "Version Information": "バージョン情報"
+    "Version Information": "バージョン情報",
+    "Supported Version": "対応バージョン",
+    "Index Version": "索引バージョン"
   },
   "Bring All to Front": "すべて前面に表示",
   "Bring to Front on Notifications": "通知時に前面に表示",

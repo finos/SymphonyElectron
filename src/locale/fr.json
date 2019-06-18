@@ -76,7 +76,9 @@
     "More Information": "Informations détaillées",
     "Others": "Autres",
     "related": "en relation",
-    "Version Information": "Information sur cette version de Symphony"
+    "Version Information": "Information sur cette version de Symphony",
+    "Supported Version": "Version prise en charge",
+    "Index Version": "Version d'index"
   },
   "Native": "Originaire",
   "Network connectivity has been lost. Check your internet connection.": "La connectivité a été perdue. Vérifiez votre connection à l'internet.",
