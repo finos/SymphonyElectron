@@ -14,12 +14,12 @@
     "User name:": "ユーザー名："
   },
   "MoreInfo": {
+    "Index Version": "索引バージョン",
     "More Information": "詳しくは",
     "Others": "その他",
     "related": "関連した",
-    "Version Information": "バージョン情報",
     "Supported Version": "対応バージョン",
-    "Index Version": "索引バージョン"
+    "Version Information": "バージョン情報"
   },
   "Bring All to Front": "すべて前面に表示",
   "Bring to Front on Notifications": "通知時に前面に表示",

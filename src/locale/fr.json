@@ -73,12 +73,12 @@
   "Minimize on Close": "Minimiser Symphony au lieu quitter",
   "More Information": "Informations détaillées",
   "MoreInfo": {
+    "Index Version": "Version d'index",
     "More Information": "Informations détaillées",
     "Others": "Autres",
     "related": "en relation",
-    "Version Information": "Information sur cette version de Symphony",
     "Supported Version": "Version prise en charge",
-    "Index Version": "Version d'index"
+    "Version Information": "Information sur cette version de Symphony"
   },
   "Native": "Originaire",
   "Network connectivity has been lost. Check your internet connection.": "La connectivité a été perdue. Vérifiez votre connection à l'internet.",
