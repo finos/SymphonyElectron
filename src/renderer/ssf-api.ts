@@ -177,7 +177,7 @@ export class SSFApi {
             buildNumber,
             apiVer: '2.0.0',
             // Only need to bump if there are any breaking changes.
-            searchApiVer: '3.0.0',
+            searchApiVer: '1.55.3',
         });
     }
 
