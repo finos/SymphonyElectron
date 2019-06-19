@@ -14,11 +14,11 @@
     "User name:": "ユーザー名："
   },
   "MoreInfo": {
-    "Index Version": "索引バージョン",
+    "Swift Search Version": "迅速な検索バージョン",
     "More Information": "詳しくは",
     "Others": "その他",
     "related": "関連した",
-    "Supported Version": "対応バージョン",
+    "API Version": "APIのバージョン",
     "Version Information": "バージョン情報"
   },
   "Bring All to Front": "すべて前面に表示",

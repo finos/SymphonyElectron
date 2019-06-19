@@ -73,11 +73,11 @@
   "Minimize on Close": "Minimiser Symphony au lieu quitter",
   "More Information": "Informations détaillées",
   "MoreInfo": {
-    "Index Version": "Version d'index",
+    "Swift Search Version": "Version de recherche rapide",
     "More Information": "Informations détaillées",
     "Others": "Autres",
     "related": "en relation",
-    "Supported Version": "Version prise en charge",
+    "API Version": "Version de l'API",
     "Version Information": "Information sur cette version de Symphony"
   },
   "Native": "Originaire",

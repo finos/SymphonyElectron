@@ -4,6 +4,7 @@
   "version": "3.8.0",
   "clientVersion": "1.55",
   "buildNumber": "0",
+  "searchAPIVersion": "1.55.3",
   "description": "Symphony desktop app (Foundation ODP)",
   "author": "Symphony",
   "main": "lib/src/app/init.js",

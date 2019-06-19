@@ -1,10 +1,11 @@
 import * as React from 'react';
 
+import { optionalDependencies, searchAPIVersion } from '../../../package.json';
 import { i18n } from '../../common/i18n-preload';
 
 interface ISSDataInterface {
     supportedVersion?: string;
-    indexVersion?: string;
+    swiftSearchVersion?: string;
 }
 
 const MORE_INFO_NAMESPACE = 'MoreInfo';
@@ -13,16 +14,10 @@ const MORE_INFO_NAMESPACE = 'MoreInfo';
  * Returns process variable if the value is set
  */
 const getSwiftSearchData = () => {
-    let swiftSearchInfo = null;
-
-    if (process && process.env) {
-        try {
-            swiftSearchInfo = JSON.parse(process.env.SWIFT_SEARCH || '');
-        } catch (e) {
-            return null;
-        }
-    }
-
+    const swiftSearchInfo: ISSDataInterface = {
+            swiftSearchVersion: optionalDependencies['swift-search'],
+            supportedVersion: searchAPIVersion,
+    };
     return swiftSearchInfo;
 };
 
@@ -35,8 +30,8 @@ export default class MoreInfo extends React.PureComponent {
      * Render Swift-Search version details
      */
     public static renderSwiftSearchInfo(): JSX.Element | null {
-        const { indexVersion, supportedVersion }: ISSDataInterface = getSwiftSearchData() || {};
-        if (!indexVersion || !supportedVersion) {
+        const { swiftSearchVersion, supportedVersion }: ISSDataInterface = getSwiftSearchData() || {};
+        if (!swiftSearchVersion || !supportedVersion) {
             return null;
         }
         return (
@@ -45,12 +40,12 @@ export default class MoreInfo extends React.PureComponent {
                 <table>
                     <tbody>
                     <tr>
-                        <th>{i18n.t('Supported Version', MORE_INFO_NAMESPACE)()}</th>
-                        <th>{i18n.t('Index Version', MORE_INFO_NAMESPACE)()}</th>
+                        <th>{i18n.t('Swift Search Version', MORE_INFO_NAMESPACE)()}</th>
+                        <th>{i18n.t('API Version', MORE_INFO_NAMESPACE)()}</th>
                     </tr>
                     <tr>
+                        <td>{swiftSearchVersion || 'N/A'}</td>
                         <td>{supportedVersion || 'N/A'}</td>
-                        <td>{indexVersion || 'N/A'}</td>
                     </tr>
                     </tbody>
                 </table>
