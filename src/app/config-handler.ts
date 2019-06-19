@@ -38,7 +38,6 @@ export interface IConfig {
     notificationSettings: INotificationSetting;
     permissions: IPermission;
     customFlags: ICustomFlag;
-    crashReporter: ICrashReporter;
     mainWinPos?: ICustomRectangle;
 }
 
@@ -56,12 +55,6 @@ export interface ICustomFlag {
     authServerWhitelist: string;
     authNegotiateDelegateWhitelist: string;
     disableGpu: boolean;
-}
-
-export interface ICrashReporter {
-    submitURL: string;
-    companyName: string;
-    uploadToServer: boolean;
 }
 
 export interface INotificationSetting {

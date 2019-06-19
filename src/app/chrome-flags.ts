@@ -3,6 +3,10 @@ import { logger } from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
 import { config, IConfig } from './config-handler';
 
+// Set default flags
+logger.info(`chrome-flags: Setting mandatory chrome flags`, { flag: { 'ssl-version-fallback-min': 'tls1.2' } });
+app.commandLine.appendSwitch('ssl-version-fallback-min', 'tls1.2');
+
 /**
  * Sets chrome flags
  */
