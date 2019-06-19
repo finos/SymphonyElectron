@@ -49,17 +49,7 @@
     "appId": "com.symphony.electron-desktop",
     "mac": {
       "target": "dmg",
-      "category": "public.app-category.business",
-      "extendInfo": {
-        "NSAppTransportSecurity": {
-          "NSExceptionDomains": {
-            "localhost": {
-              "NSTemporaryExceptionAllowsInsecureHTTPLoads": false,
-              "NSTemporaryExceptionMinimumTLSVersion": "1.2"
-            }
-          }
-        }
-      }
+      "category": "public.app-category.business"
     },
     "dmg": {
       "contents": [
