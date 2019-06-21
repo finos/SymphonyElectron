@@ -73,11 +73,11 @@
   "Minimize on Close": "閉じるで最小化",
   "More Information": "詳しくは",
   "MoreInfo": {
-    "Swift Search Version": "迅速な検索バージョン",
+    "API Version": "APIのバージョン",
     "More Information": "詳しくは",
     "Others": "その他",
     "related": "関連した",
-    "API Version": "APIのバージョン",
+    "Swift Search Version": "迅速な検索バージョン",
     "Version Information": "バージョン情報"
   },
   "Native": "Native",

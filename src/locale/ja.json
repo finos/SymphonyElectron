@@ -17,14 +17,6 @@
     "Please provide your login credentials for:": "あなたのログイン認証情報を入力してください。",
     "User name:": "ユーザー名："
   },
-  "MoreInfo": {
-    "Swift Search Version": "迅速な検索バージョン",
-    "More Information": "詳しくは",
-    "Others": "その他",
-    "related": "関連した",
-    "API Version": "APIのバージョン",
-    "Version Information": "バージョン情報"
-  },
   "Bring All to Front": "すべて前面に表示",
   "Bring to Front on Notifications": "通知時に前面に表示",
   "Build expired": "期限切れのビルド",
@@ -81,9 +73,11 @@
   "Minimize on Close": "閉じるで最小化",
   "More Information": "詳しくは",
   "MoreInfo": {
+    "API Version": "APIのバージョン",
     "More Information": "詳しくは",
     "Others": "その他",
     "related": "関連した",
+    "Swift Search Version": "迅速な検索バージョン",
     "Version Information": "バージョン情報"
   },
   "Native": "Native",

@@ -17,14 +17,6 @@
     "Please provide your login credentials for:": "Please provide your login credentials for:",
     "User name:": "User name:"
   },
-  "MoreInfo": {
-    "Swift Search Version": "Swift Search Version",
-    "More Information": "More Information",
-    "Others": "Others",
-    "related": "related",
-    "API Version": "API Version",
-    "Version Information": "Version Information"
-  },
   "Bring All to Front": "Bring All to Front",
   "Bring to Front on Notifications": "Bring to Front on Notifications",
   "Build expired": "Build expired",
@@ -81,9 +73,11 @@
   "Minimize on Close": "Minimize on Close",
   "More Information": "More Information",
   "MoreInfo": {
+    "Swift Search Version": "Swift Search Version",
     "More Information": "More Information",
     "Others": "Others",
     "related": "related",
+    "API Version": "API Version",
     "Version Information": "Version Information"
   },
   "Native": "Native",
