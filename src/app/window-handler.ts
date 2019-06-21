@@ -178,7 +178,7 @@ export class WindowHandler {
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Use these variables only on initial setup
         this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings' ]);
-        this.globalConfig = config.getGlobalConfigFields([ 'url', 'crashReporter' ]);
+        this.globalConfig = config.getGlobalConfigFields([ 'url' ]);
 
         this.windows = {};
         this.isCustomTitleBar = isWindowsOS && this.config.isCustomTitleBar;
@@ -190,7 +190,8 @@ export class WindowHandler {
 
         try {
             const extra = { podUrl: this.globalConfig.url, process: 'main' };
-            crashReporter.start({ ...this.globalConfig.crashReporter, extra });
+            const defaultOpts = { uploadToServer: false, companyName: 'Symphony', submitURL: '' };
+            crashReporter.start({ ...defaultOpts, extra });
         } catch (e) {
             throw new Error('failed to init crash report');
         }
