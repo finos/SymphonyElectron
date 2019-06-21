@@ -14,9 +14,11 @@
     "User name:": "User name:"
   },
   "MoreInfo": {
+    "Swift Search Version": "Swift Search Version",
     "More Information": "More Information",
     "Others": "Others",
     "related": "related",
+    "API Version": "API Version",
     "Version Information": "Version Information"
   },
   "Bring All to Front": "Bring All to Front",

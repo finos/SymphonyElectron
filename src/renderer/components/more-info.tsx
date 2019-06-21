@@ -1,12 +1,57 @@
 import * as React from 'react';
 
+import { optionalDependencies, searchAPIVersion } from '../../../package.json';
 import { i18n } from '../../common/i18n-preload';
 
+interface ISSDataInterface {
+    supportedVersion?: string;
+    swiftSearchVersion?: string;
+}
+
 const MORE_INFO_NAMESPACE = 'MoreInfo';
+
+/**
+ * Returns process variable if the value is set
+ */
+const getSwiftSearchData = () => {
+    const swiftSearchInfo: ISSDataInterface = {
+            swiftSearchVersion: optionalDependencies['swift-search'],
+            supportedVersion: searchAPIVersion,
+    };
+    return swiftSearchInfo;
+};
+
 /**
  * Window that display app version and copyright info
  */
 export default class MoreInfo extends React.PureComponent {
+
+    /**
+     * Render Swift-Search version details
+     */
+    public static renderSwiftSearchInfo(): JSX.Element | null {
+        const { swiftSearchVersion, supportedVersion }: ISSDataInterface = getSwiftSearchData() || {};
+        if (!swiftSearchVersion || !supportedVersion) {
+            return null;
+        }
+        return (
+            <div className='content'>
+                <h4>Swift Search</h4>
+                <table>
+                    <tbody>
+                    <tr>
+                        <th>{i18n.t('Swift Search Version', MORE_INFO_NAMESPACE)()}</th>
+                        <th>{i18n.t('API Version', MORE_INFO_NAMESPACE)()}</th>
+                    </tr>
+                    <tr>
+                        <td>{swiftSearchVersion || 'N/A'}</td>
+                        <td>{supportedVersion || 'N/A'}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        );
+    }
 
     /**
      * main render function
@@ -57,6 +102,7 @@ export default class MoreInfo extends React.PureComponent {
                         </tbody>
                     </table>
                 </div>
+                {MoreInfo.renderSwiftSearchInfo()}
             </div>
         );
     }

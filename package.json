@@ -4,6 +4,7 @@
   "version": "3.8.0",
   "clientVersion": "1.55",
   "buildNumber": "0",
+  "searchAPIVersion": "1.55.3",
   "description": "Symphony desktop app (Foundation ODP)",
   "author": "Symphony",
   "main": "lib/src/app/init.js",
@@ -129,6 +130,6 @@
   },
   "optionalDependencies": {
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.5",
-    "swift-search": "1.55.2-beta.5"
+    "swift-search": "1.55.2-beta.6"
   }
 }

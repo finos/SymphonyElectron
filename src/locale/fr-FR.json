@@ -73,9 +73,11 @@
   "Minimize on Close": "Minimiser lors de la fermeture",
   "More Information": "Informations détaillées",
   "MoreInfo": {
+    "Swift Search Version": "Version de recherche rapide",
     "More Information": "Informations détaillées",
     "Others": "Autres",
     "related": "en relation",
+    "API Version": "Version de l'API",
     "Version Information": "Information sur cette version de Symphony"
   },
   "Native": "Originaire",
