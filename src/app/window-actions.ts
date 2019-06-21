@@ -1,11 +1,24 @@
-import { BrowserWindow } from 'electron';
+import { BrowserWindow, dialog } from 'electron';
+
 import { apiName, IBoundsChange, KeyCodes } from '../common/api-interface';
 import { isMac, isWindowsOS } from '../common/env';
+import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
 import { throttle } from '../common/utils';
 import { config } from './config-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 import { showPopupMenu, windowExists } from './window-utils';
+
+enum Permissions {
+    MEDIA = 'media',
+    LOCATION = 'geolocation',
+    NOTIFICATIONS = 'notifications',
+    MIDI_SYSEX = 'midiSysex',
+    POINTER_LOCK = 'pointerLock',
+    FULL_SCREEN = 'fullscreen',
+    OPEN_EXTERNAL = 'openExternal',
+}
+const PERMISSIONS_NAMESPACE = 'Permissions';
 
 const saveWindowSettings = async (): Promise<void> => {
     const browserWindow = BrowserWindow.getFocusedWindow() as ICustomBrowserWindow;
@@ -34,7 +47,7 @@ const windowMaximized = async (): Promise<void> => {
             browserWindow.webContents.send('window-enter-full-screen');
         }
         const { mainWinPos } = config.getUserConfigFields([ 'mainWinPos' ]);
-        await config.updateUserConfig( { mainWinPos: { ...mainWinPos, ...{ isMaximized, isFullScreen } } });
+        await config.updateUserConfig({ mainWinPos: { ...mainWinPos, ...{ isMaximized, isFullScreen } } });
     }
 };
 
@@ -47,7 +60,7 @@ const windowUnmaximized = async (): Promise<void> => {
             browserWindow.webContents.send('window-leave-full-screen');
         }
         const { mainWinPos } = config.getUserConfigFields([ 'mainWinPos' ]);
-        await config.updateUserConfig( { mainWinPos: { ...mainWinPos, ...{ isMaximized, isFullScreen } } });
+        await config.updateUserConfig({ mainWinPos: { ...mainWinPos, ...{ isMaximized, isFullScreen } } });
     }
 };
 
@@ -193,4 +206,66 @@ export const removeWindowEventListener = (window: BrowserWindow): void => {
 
     window.removeListener('leave-full-screen', windowUnmaximized);
     window.removeListener('unmaximize', windowUnmaximized);
+};
+
+/**
+ * Verifies the permission and display a
+ * dialog if the action is not enabled
+ *
+ * @param permission {boolean} - config value to a specific permission
+ * @param message {string} - custom message displayed to the user
+ * @param callback {function}
+ */
+export const handleSessionPermissions = (permission: boolean, message: string, callback: (permission: boolean) => void): void => {
+    logger.info(`window-action: permission is ->`, { type: message, permission });
+
+    if (!permission) {
+        const fullMessage = `${i18n.t('Your administrator has disabled')()} ${message}. ${i18n.t('Please contact your admin for help')()}`;
+        const browserWindow = BrowserWindow.getFocusedWindow();
+        if (browserWindow && !browserWindow.isDestroyed()) {
+            dialog.showMessageBox(browserWindow, { type: 'error', title: `${i18n.t('Permission Denied')()}!`, message: fullMessage });
+        }
+    }
+
+    return callback(permission);
+};
+
+/**
+ * Sets permission requests for the window
+ *
+ * @param webContents {Electron.webContents}
+ */
+export const handlePermissionRequests = (webContents: Electron.webContents): void => {
+
+    if (!webContents || !webContents.session) {
+        return;
+    }
+    const { session } = webContents;
+
+    const { permissions } = config.getGlobalConfigFields([ 'permissions' ]);
+    if (!permissions) {
+        logger.error('permissions configuration is invalid, so, everything will be true by default!');
+        return;
+    }
+
+    session.setPermissionRequestHandler((_webContents, permission, callback) => {
+        switch (permission) {
+            case Permissions.MEDIA:
+                return handleSessionPermissions(permissions.media, 'sharing your camera, microphone, and speakers', callback);
+            case Permissions.LOCATION:
+                return handleSessionPermissions(permissions.geolocation, 'sharing your location', callback);
+            case Permissions.NOTIFICATIONS:
+                return handleSessionPermissions(permissions.notifications, 'notifications', callback);
+            case Permissions.MIDI_SYSEX:
+                return handleSessionPermissions(permissions.midiSysex, 'MIDI Sysex', callback);
+            case Permissions.POINTER_LOCK:
+                return handleSessionPermissions(permissions.pointerLock, 'Pointer Lock', callback);
+            case Permissions.FULL_SCREEN:
+                return handleSessionPermissions(permissions.fullscreen, i18n.t('Full Screen', PERMISSIONS_NAMESPACE)(), callback);
+            case Permissions.OPEN_EXTERNAL:
+                return handleSessionPermissions(permissions.openExternal, 'Opening External App', callback);
+            default:
+                return callback(false);
+        }
+    });
 };

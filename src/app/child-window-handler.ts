@@ -8,7 +8,7 @@ import { logger } from '../common/logger';
 import { getGuid } from '../common/utils';
 import { whitelistHandler } from '../common/whitelist-handler';
 import { config } from './config-handler';
-import { monitorWindowActions, removeWindowEventListener } from './window-actions';
+import { handlePermissionRequests, monitorWindowActions, removeWindowEventListener } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 import {
     getBounds,
@@ -157,6 +157,9 @@ export const handleChildWindow = (webContents: WebContents): void => {
 
                 // prevents window from navigating
                 preventWindowNavigation(browserWin, true);
+
+                // Handle media/other permissions
+                handlePermissionRequests(browserWin.webContents);
 
                 // Monitor window actions
                 monitorWindowActions(browserWin);
