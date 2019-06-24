@@ -93,7 +93,16 @@ export class WindowHandler {
         this.windows = {};
         this.contextIsolation = this.globalConfig.contextIsolation || false;
         this.isCustomTitleBar = isWindowsOS && this.config.isCustomTitleBar;
-        this.windowOpts = { ...this.getMainWindowOpts(), ...opts };
+        this.windowOpts = {
+            ...this.getWindowOpts({
+                frame: !this.isCustomTitleBar,
+                minHeight: 300,
+                minWidth: 300,
+                title: 'Symphony',
+            }, {
+                preload: path.join(__dirname, '../renderer/_preload-main.js'),
+            }), ...opts,
+        };
         this.isAutoReload = false;
         this.isOnline = true;
 
@@ -430,7 +439,16 @@ export class WindowHandler {
             this.screenPickerWindow.close();
         }
 
-        const opts = this.getScreenPickerWindowOpts();
+        const opts = this.getWindowOpts({
+            alwaysOnTop: true,
+            autoHideMenuBar: true,
+            frame: false,
+            height: isMac ? 519 : 523,
+            width: 580,
+            show: false,
+        }, {
+            devTools: false,
+        });
         this.screenPickerWindow = createComponentWindow('screen-picker', opts);
         this.screenPickerWindow.webContents.once('did-finish-load', () => {
             if (!this.screenPickerWindow || !windowExists(this.screenPickerWindow)) {
@@ -464,7 +482,16 @@ export class WindowHandler {
      * @param callback
      */
     public createBasicAuthWindow(window: ICustomBrowserWindow, hostname: string, isMultipleTries: boolean, clearSettings, callback): void {
-        const opts = this.getBasicAuthOpts();
+        const opts = this.getWindowOpts({
+            width: 360,
+            height: isMac ? 270 : 295,
+            show: false,
+            modal: true,
+            autoHideMenuBar: true,
+            resizable: false,
+        }, {
+            devTools: false,
+        });
         opts.parent = window;
         this.basicAuthWindow = createComponentWindow('basic-auth', opts);
         this.basicAuthWindow.setVisibleOnAllWorkspaces(true);
@@ -505,7 +532,18 @@ export class WindowHandler {
      * @param windowName
      */
     public createNotificationSettingsWindow(windowName: string): void {
-        const opts = this.getNotificationSettingsOpts();
+        const opts = this.getWindowOpts({
+            width: 460,
+            height: 360,
+            show: false,
+            modal: true,
+            minimizable: false,
+            maximizable: false,
+            fullscreenable: false,
+            autoHideMenuBar: true,
+        }, {
+            devTools: false,
+        });
         // This prevents creating multiple instances of the
         // notification configuration window
         if (this.notificationSettingsWindow && !this.notificationSettingsWindow.isDestroyed()) {
@@ -580,7 +618,22 @@ export class WindowHandler {
 
         const screenRect = indicatorScreen.workArea;
         // Set stream id as winKey to link stream to the window
-        let opts = { ...this.getScreenSharingIndicatorOpts(), ...{ winKey: streamId } };
+        let opts = {
+            ...this.getWindowOpts({
+                width: 620,
+                height: 48,
+                show: false,
+                modal: true,
+                frame: false,
+                focusable: false,
+                transparent: true,
+                autoHideMenuBar: true,
+                resizable: false,
+                alwaysOnTop: true,
+            }, {
+                devTools: false,
+            }), ...{ winKey: streamId },
+        };
         if (opts.width && opts.height) {
             opts = Object.assign({}, opts, {
                 x: screenRect.x + Math.round((screenRect.width - opts.width) / 2),
@@ -717,7 +770,7 @@ export class WindowHandler {
             type: 'error',
             title: i18n.t('Build expired')(),
             message: i18n.t('Sorry, this is a test build and it has expired. Please contact your administrator to get a production build.')(),
-            buttons: [ i18n.t('Quit')()],
+            buttons: [ i18n.t('Quit')() ],
             cancelId: 0,
         };
 
@@ -725,115 +778,26 @@ export class WindowHandler {
     }
 
     /**
-     * Main window opts
+     * Returns constructor opts for the browser window
+     *
+     * @param windowOpts {Electron.BrowserWindowConstructorOptions}
+     * @param webPreferences {Electron.WebPreferences}
      */
-    private getMainWindowOpts(): ICustomBrowserWindowConstructorOpts {
-        return {
+    private getWindowOpts(windowOpts: Electron.BrowserWindowConstructorOptions, webPreferences: Electron.WebPreferences): ICustomBrowserWindowConstructorOpts {
+        const defaultPreferencesOpts = {
+            ...{
+                sandbox: true,
+                nodeIntegration: false,
+                contextIsolation: this.contextIsolation,
+            }, ...webPreferences,
+        };
+        const defaultWindowOpts = {
             alwaysOnTop: false,
-            frame: !this.isCustomTitleBar,
-            minHeight: 300,
-            minWidth: 300,
-            show: true,
-            title: 'Symphony',
-            webPreferences: {
-                nodeIntegration: false,
-                preload: path.join(__dirname, '../renderer/_preload-main.js'),
-                sandbox: true,
-                contextIsolation: this.contextIsolation,
-            },
+            webPreferences: defaultPreferencesOpts,
             winKey: getGuid(),
         };
-    }
 
-    /**
-     * Screen picker window opts
-     */
-    private getScreenPickerWindowOpts(): ICustomBrowserWindowConstructorOpts {
-        return {
-            alwaysOnTop: true,
-            autoHideMenuBar: true,
-            frame: false,
-            height: isMac ? 519 : 523,
-            width: 580,
-            modal: false,
-            resizable: true,
-            show: false,
-            webPreferences: {
-                nodeIntegration: false,
-                sandbox: true,
-                contextIsolation: this.contextIsolation,
-            },
-            winKey: getGuid(),
-        };
-    }
-
-    /**
-     * Notification settings window opts
-     */
-    private getNotificationSettingsOpts(): ICustomBrowserWindowConstructorOpts {
-        return {
-            width: 460,
-            height: 360,
-            show: false,
-            modal: true,
-            minimizable: false,
-            maximizable: false,
-            fullscreenable: false,
-            autoHideMenuBar: true,
-            webPreferences: {
-                sandbox: true,
-                nodeIntegration: false,
-                devTools: false,
-                contextIsolation: this.contextIsolation,
-            },
-            winKey: getGuid(),
-        };
-    }
-
-    /**
-     * Screen sharing indicator window opts
-     */
-    private getScreenSharingIndicatorOpts(): ICustomBrowserWindowConstructorOpts {
-        return {
-            width: 620,
-            height: 48,
-            show: false,
-            modal: true,
-            frame: false,
-            focusable: false,
-            transparent: true,
-            autoHideMenuBar: true,
-            resizable: false,
-            alwaysOnTop: true,
-            webPreferences: {
-                sandbox: true,
-                nodeIntegration: false,
-                devTools: false,
-                contextIsolation: this.contextIsolation,
-            },
-            winKey: getGuid(),
-        };
-    }
-
-    /**
-     * Basic auth window opts
-     */
-    private getBasicAuthOpts(): ICustomBrowserWindowConstructorOpts {
-        return {
-            width: 360,
-            height: isMac ? 270 : 295,
-            show: false,
-            modal: true,
-            autoHideMenuBar: true,
-            resizable: false,
-            webPreferences: {
-                sandbox: true,
-                nodeIntegration: false,
-                devTools: false,
-                contextIsolation: this.contextIsolation,
-            },
-            winKey: getGuid(),
-        };
+        return { ...defaultWindowOpts, ...windowOpts };
     }
 }
 
