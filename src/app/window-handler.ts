@@ -46,97 +46,6 @@ const DEFAULT_HEIGHT: number = 900;
 export class WindowHandler {
 
     /**
-     * Screen picker window opts
-     */
-    private static getScreenPickerWindowOpts(): ICustomBrowserWindowConstructorOpts {
-        return {
-            alwaysOnTop: true,
-            autoHideMenuBar: true,
-            frame: false,
-            height: isMac ? 519 : 523,
-            width: 580,
-            modal: false,
-            resizable: true,
-            show: false,
-            webPreferences: {
-                nodeIntegration: false,
-                sandbox: true,
-                contextIsolation: false,
-            },
-            winKey: getGuid(),
-        };
-    }
-
-    /**
-     * Notification settings window opts
-     */
-    private static getNotificationSettingsOpts(): ICustomBrowserWindowConstructorOpts {
-        return {
-            width: 460,
-            height: 360,
-            show: false,
-            modal: true,
-            minimizable: false,
-            maximizable: false,
-            fullscreenable: false,
-            autoHideMenuBar: true,
-            webPreferences: {
-                sandbox: true,
-                nodeIntegration: false,
-                devTools: false,
-                contextIsolation: false,
-            },
-            winKey: getGuid(),
-        };
-    }
-
-    /**
-     * Screen sharing indicator window opts
-     */
-    private static getScreenSharingIndicatorOpts(): ICustomBrowserWindowConstructorOpts {
-        return {
-            width: 620,
-            height: 48,
-            show: false,
-            modal: true,
-            frame: false,
-            focusable: false,
-            transparent: true,
-            autoHideMenuBar: true,
-            resizable: false,
-            alwaysOnTop: true,
-            webPreferences: {
-                sandbox: true,
-                nodeIntegration: false,
-                devTools: false,
-                contextIsolation: false,
-            },
-            winKey: getGuid(),
-        };
-    }
-
-    /**
-     * Basic auth window opts
-     */
-    private static getBasicAuthOpts(): ICustomBrowserWindowConstructorOpts {
-        return {
-            width: 360,
-            height: isMac ? 270 : 295,
-            show: false,
-            modal: true,
-            autoHideMenuBar: true,
-            resizable: false,
-            webPreferences: {
-                sandbox: true,
-                nodeIntegration: false,
-                devTools: false,
-                contextIsolation: false,
-            },
-            winKey: getGuid(),
-        };
-    }
-
-    /**
      * Verifies if the url is valid and
      * forcefully appends https if not present
      *
@@ -159,6 +68,7 @@ export class WindowHandler {
     public willQuitApp: boolean = false;
     public spellchecker: SpellChecker | undefined;
 
+    private readonly contextIsolation: boolean;
     private readonly windowOpts: ICustomBrowserWindowConstructorOpts;
     private readonly globalConfig: IConfig;
     private readonly config: IConfig;
@@ -178,9 +88,10 @@ export class WindowHandler {
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Use these variables only on initial setup
         this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings' ]);
-        this.globalConfig = config.getGlobalConfigFields([ 'url' ]);
+        this.globalConfig = config.getGlobalConfigFields([ 'url', 'contextIsolation' ]);
 
         this.windows = {};
+        this.contextIsolation = this.globalConfig.contextIsolation || false;
         this.isCustomTitleBar = isWindowsOS && this.config.isCustomTitleBar;
         this.windowOpts = { ...this.getMainWindowOpts(), ...opts };
         this.isAutoReload = false;
@@ -519,7 +430,7 @@ export class WindowHandler {
             this.screenPickerWindow.close();
         }
 
-        const opts = WindowHandler.getScreenPickerWindowOpts();
+        const opts = this.getScreenPickerWindowOpts();
         this.screenPickerWindow = createComponentWindow('screen-picker', opts);
         this.screenPickerWindow.webContents.once('did-finish-load', () => {
             if (!this.screenPickerWindow || !windowExists(this.screenPickerWindow)) {
@@ -553,7 +464,7 @@ export class WindowHandler {
      * @param callback
      */
     public createBasicAuthWindow(window: ICustomBrowserWindow, hostname: string, isMultipleTries: boolean, clearSettings, callback): void {
-        const opts = WindowHandler.getBasicAuthOpts();
+        const opts = this.getBasicAuthOpts();
         opts.parent = window;
         this.basicAuthWindow = createComponentWindow('basic-auth', opts);
         this.basicAuthWindow.setVisibleOnAllWorkspaces(true);
@@ -594,7 +505,7 @@ export class WindowHandler {
      * @param windowName
      */
     public createNotificationSettingsWindow(windowName: string): void {
-        const opts = WindowHandler.getNotificationSettingsOpts();
+        const opts = this.getNotificationSettingsOpts();
         // This prevents creating multiple instances of the
         // notification configuration window
         if (this.notificationSettingsWindow && !this.notificationSettingsWindow.isDestroyed()) {
@@ -669,7 +580,7 @@ export class WindowHandler {
 
         const screenRect = indicatorScreen.workArea;
         // Set stream id as winKey to link stream to the window
-        let opts = { ...WindowHandler.getScreenSharingIndicatorOpts(), ...{ winKey: streamId } };
+        let opts = { ...this.getScreenSharingIndicatorOpts(), ...{ winKey: streamId } };
         if (opts.width && opts.height) {
             opts = Object.assign({}, opts, {
                 x: screenRect.x + Math.round((screenRect.width - opts.width) / 2),
@@ -785,27 +696,6 @@ export class WindowHandler {
     }
 
     /**
-     * Main window opts
-     */
-    private getMainWindowOpts(): ICustomBrowserWindowConstructorOpts {
-        return {
-            alwaysOnTop: false,
-            frame: !this.isCustomTitleBar,
-            minHeight: 300,
-            minWidth: 300,
-            show: true,
-            title: 'Symphony',
-            webPreferences: {
-                nodeIntegration: false,
-                preload: path.join(__dirname, '../renderer/_preload-main.js'),
-                sandbox: true,
-                contextIsolation: false,
-            },
-            winKey: getGuid(),
-        };
-    }
-
-    /**
      * Check if build is expired and show an error message
      * @param browserWindow Focused window instance
      */
@@ -832,6 +722,118 @@ export class WindowHandler {
         };
 
         electron.dialog.showMessageBox(browserWindow, options, response);
+    }
+
+    /**
+     * Main window opts
+     */
+    private getMainWindowOpts(): ICustomBrowserWindowConstructorOpts {
+        return {
+            alwaysOnTop: false,
+            frame: !this.isCustomTitleBar,
+            minHeight: 300,
+            minWidth: 300,
+            show: true,
+            title: 'Symphony',
+            webPreferences: {
+                nodeIntegration: false,
+                preload: path.join(__dirname, '../renderer/_preload-main.js'),
+                sandbox: true,
+                contextIsolation: this.contextIsolation,
+            },
+            winKey: getGuid(),
+        };
+    }
+
+    /**
+     * Screen picker window opts
+     */
+    private getScreenPickerWindowOpts(): ICustomBrowserWindowConstructorOpts {
+        return {
+            alwaysOnTop: true,
+            autoHideMenuBar: true,
+            frame: false,
+            height: isMac ? 519 : 523,
+            width: 580,
+            modal: false,
+            resizable: true,
+            show: false,
+            webPreferences: {
+                nodeIntegration: false,
+                sandbox: true,
+                contextIsolation: this.contextIsolation,
+            },
+            winKey: getGuid(),
+        };
+    }
+
+    /**
+     * Notification settings window opts
+     */
+    private getNotificationSettingsOpts(): ICustomBrowserWindowConstructorOpts {
+        return {
+            width: 460,
+            height: 360,
+            show: false,
+            modal: true,
+            minimizable: false,
+            maximizable: false,
+            fullscreenable: false,
+            autoHideMenuBar: true,
+            webPreferences: {
+                sandbox: true,
+                nodeIntegration: false,
+                devTools: false,
+                contextIsolation: this.contextIsolation,
+            },
+            winKey: getGuid(),
+        };
+    }
+
+    /**
+     * Screen sharing indicator window opts
+     */
+    private getScreenSharingIndicatorOpts(): ICustomBrowserWindowConstructorOpts {
+        return {
+            width: 620,
+            height: 48,
+            show: false,
+            modal: true,
+            frame: false,
+            focusable: false,
+            transparent: true,
+            autoHideMenuBar: true,
+            resizable: false,
+            alwaysOnTop: true,
+            webPreferences: {
+                sandbox: true,
+                nodeIntegration: false,
+                devTools: false,
+                contextIsolation: this.contextIsolation,
+            },
+            winKey: getGuid(),
+        };
+    }
+
+    /**
+     * Basic auth window opts
+     */
+    private getBasicAuthOpts(): ICustomBrowserWindowConstructorOpts {
+        return {
+            width: 360,
+            height: isMac ? 270 : 295,
+            show: false,
+            modal: true,
+            autoHideMenuBar: true,
+            resizable: false,
+            webPreferences: {
+                sandbox: true,
+                nodeIntegration: false,
+                devTools: false,
+                contextIsolation: this.contextIsolation,
+            },
+            winKey: getGuid(),
+        };
     }
 }
 

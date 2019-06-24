@@ -31,6 +31,7 @@ export interface IConfig {
     isCustomTitleBar: boolean;
     memoryRefresh: boolean;
     devToolsEnabled: boolean;
+    contextIsolation: boolean;
     ctWhitelist: string[];
     configVersion: string;
     buildNumber: string;
