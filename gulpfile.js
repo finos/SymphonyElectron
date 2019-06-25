@@ -48,20 +48,22 @@ gulp.task('copy', function () {
  */
 gulp.task('setExpiry', function (done) {
     // Set expiry of 15 days for test builds we create from CI
-    const expiryDays = 15;
+    const expiryDays = process.argv[4] || 15;
+    console.log(`Setting expiry to ${expiryDays} days`);
     const milliseconds = 24*60*60*1000;
     const expiryTime = new Date().getTime() + (expiryDays * milliseconds);
+    console.log(`Setting expiry time to ${expiryTime}`);
 
     const ttlHandlerFile = path.join(__dirname, 'src/app/ttl-handler.ts');
     fs.readFile(ttlHandlerFile, 'utf8', function (err,data) {
         if (err) {
-            console.log(err);
+            console.error(err);
             return done(err);
         }
 
         // Do a simple search and replace in the `ttl-handler.ts` file
         const replacementString = `const ttlExpiryTime = ${expiryTime}`;
-        var result = data.replace(/const ttlExpiryTime = -1/g, replacementString);
+        const result = data.replace(/const ttlExpiryTime = -1/g, replacementString);
 
         fs.writeFile(ttlHandlerFile, result, 'utf8', function (err) {
             if (err) {

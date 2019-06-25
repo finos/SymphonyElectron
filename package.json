@@ -19,7 +19,6 @@
     "packed-mac": "npm run unpacked-mac && packagesbuild -v installer/mac/symphony-mac-packager.pkgproj",
     "prebuild": "npm run compile && npm run rebuild && npm run browserify-preload",
     "rebuild": "electron-rebuild -f",
-    "setexpiry": "gulp setExpiry",
     "start": "npm run compile && npm run browserify-preload && cross-env ELECTRON_DEV=true electron .",
     "test": "npm run lint && cross-env ELECTRON_QA=true jest --config jest.config.json --runInBand",
     "unpacked-mac": "npm run prebuild && npm run test && build --mac --dir",
