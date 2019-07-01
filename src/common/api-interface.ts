@@ -7,6 +7,7 @@ export enum apiCmds {
     activate = 'activate',
     registerBoundsChange = 'register-bounds-change',
     registerProtocolHandler = 'register-protocol-handler',
+    registerAnalyticHandler = 'register-analytic-handler',
     registerActivityDetection = 'register-activity-detection',
     showNotificationSettings = 'show-notification-settings',
     sanitize = 'sanitize',

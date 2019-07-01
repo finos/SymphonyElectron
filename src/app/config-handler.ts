@@ -39,6 +39,7 @@ export interface IConfig {
     notificationSettings: INotificationSetting;
     permissions: IPermission;
     customFlags: ICustomFlag;
+    performanceSettings: IPerformanceSettings;
     mainWinPos?: ICustomRectangle;
 }
 
@@ -56,6 +57,11 @@ export interface ICustomFlag {
     authServerWhitelist: string;
     authNegotiateDelegateWhitelist: string;
     disableGpu: boolean;
+}
+
+export interface IPerformanceSettings {
+    backgroundThrottling: boolean;
+    disableBackgroundRendering: boolean;
 }
 
 export interface INotificationSetting {

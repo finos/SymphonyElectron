@@ -88,10 +88,11 @@ export class WindowHandler {
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Use these variables only on initial setup
         this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings' ]);
-        this.globalConfig = config.getGlobalConfigFields([ 'url', 'contextIsolation' ]);
+        this.globalConfig = config.getGlobalConfigFields([ 'url', 'contextIsolation', 'performanceSettings' ]);
+        const { url, contextIsolation, performanceSettings }: IConfig = this.globalConfig;
 
         this.windows = {};
-        this.contextIsolation = this.globalConfig.contextIsolation || false;
+        this.contextIsolation = contextIsolation || false;
         this.isCustomTitleBar = isWindowsOS && this.config.isCustomTitleBar;
         this.windowOpts = {
             ...this.getWindowOpts({
@@ -101,6 +102,7 @@ export class WindowHandler {
                 title: 'Symphony',
             }, {
                 preload: path.join(__dirname, '../renderer/_preload-main.js'),
+                backgroundThrottling: performanceSettings ? performanceSettings.backgroundThrottling : true,
             }), ...opts,
         };
         this.isAutoReload = false;
@@ -109,7 +111,7 @@ export class WindowHandler {
         this.appMenu = null;
 
         try {
-            const extra = { podUrl: this.globalConfig.url, process: 'main' };
+            const extra = { podUrl: url, process: 'main' };
             const defaultOpts = { uploadToServer: false, companyName: 'Symphony', submitURL: '' };
             crashReporter.start({ ...defaultOpts, extra });
         } catch (e) {

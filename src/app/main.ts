@@ -6,7 +6,7 @@ import { logger } from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
 import { cleanUpAppCache, createAppCacheFile } from './app-cache-handler';
 import { autoLaunchInstance } from './auto-launch-controller';
-import { setChromeFlags } from './chrome-flags';
+import { setChromeFlags, setSessionProperties } from './chrome-flags';
 import { config } from './config-handler';
 import './dialog-handler';
 import './main-api-handler';
@@ -25,6 +25,9 @@ if (isMac) {
 // Electron sets the default protocol
 app.setAsDefaultProtocolClient('symphony');
 
+// Setup chrome flags
+setChromeFlags();
+
 /**
  * Main function that init the application
  */
@@ -41,7 +44,8 @@ const startApplication = async () => {
         await autoLaunchInstance.handleAutoLaunch();
     }
 
-    setChromeFlags();
+    // Setup session properties only after app ready
+    setSessionProperties();
 };
 
 // Handle multiple/single instances
