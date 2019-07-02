@@ -69,6 +69,7 @@ export class WindowHandler {
     public spellchecker: SpellChecker | undefined;
 
     private readonly contextIsolation: boolean;
+    private readonly backgroundThrottling: boolean;
     private readonly windowOpts: ICustomBrowserWindowConstructorOpts;
     private readonly globalConfig: IConfig;
     private readonly config: IConfig;
@@ -89,9 +90,12 @@ export class WindowHandler {
         // Use these variables only on initial setup
         this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings' ]);
         this.globalConfig = config.getGlobalConfigFields([ 'url', 'contextIsolation' ]);
+        const { customFlags } = config.getGlobalConfigFields([ 'customFlags' ]) as IConfig;
+        this.globalConfig.customFlags = customFlags;
 
         this.windows = {};
         this.contextIsolation = this.globalConfig.contextIsolation || false;
+        this.backgroundThrottling = !this.globalConfig.customFlags.disableThrottling;
         this.isCustomTitleBar = isWindowsOS && this.config.isCustomTitleBar;
         this.windowOpts = {
             ...this.getWindowOpts({
@@ -789,6 +793,7 @@ export class WindowHandler {
                 sandbox: true,
                 nodeIntegration: false,
                 contextIsolation: this.contextIsolation,
+                backgroundThrottling: this.backgroundThrottling,
             }, ...webPreferences,
         };
         const defaultWindowOpts = {

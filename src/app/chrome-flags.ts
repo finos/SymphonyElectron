@@ -21,6 +21,7 @@ export const setChromeFlags = () => {
         'disable-d3d11': customFlags.disableGpu || null,
         'disable-gpu': customFlags.disableGpu || null,
         'disable-gpu-compositing': customFlags.disableGpu || null,
+        'disable-renderer-backgrounding': customFlags.disableThrottling || 'false',
     };
 
     for (const key in configFlags) {
