@@ -89,9 +89,7 @@ export class WindowHandler {
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Use these variables only on initial setup
         this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings' ]);
-        this.globalConfig = config.getGlobalConfigFields([ 'url', 'contextIsolation' ]);
-        const { customFlags } = config.getGlobalConfigFields([ 'customFlags' ]) as IConfig;
-        this.globalConfig.customFlags = customFlags;
+        this.globalConfig = config.getGlobalConfigFields([ 'url', 'contextIsolation', 'customFlags' ]);
 
         this.windows = {};
         this.contextIsolation = this.globalConfig.contextIsolation || false;
