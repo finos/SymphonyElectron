@@ -10,10 +10,14 @@ import { setChromeFlags } from './chrome-flags';
 import { config } from './config-handler';
 import './dialog-handler';
 import './main-api-handler';
+import { handlePerformanceSettings } from './perf-handler';
 import { protocolHandler } from './protocol-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
 const allowMultiInstance: string | boolean = getCommandLineArgs(process.argv, '--multiInstance', true) || isDevEnv;
+
+handlePerformanceSettings();
+setChromeFlags();
 
 // on windows, we create the protocol handler via the installer
 // because electron leaves registry traces upon uninstallation
@@ -41,7 +45,6 @@ const startApplication = async () => {
         await autoLaunchInstance.handleAutoLaunch();
     }
 
-    setChromeFlags();
 };
 
 // Handle multiple/single instances

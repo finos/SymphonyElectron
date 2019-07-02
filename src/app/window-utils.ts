@@ -164,7 +164,7 @@ export const showBadgeCount = (count: number): void => {
         return;
     }
 
-    logger.info(`window-utils: updating barge count to ${count}!`);
+    logger.info(`window-utils: updating badge count to ${count}!`);
 
     if (isMac) {
         // too big of a number here and setBadgeCount crashes
