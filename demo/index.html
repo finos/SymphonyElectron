@@ -322,23 +322,23 @@
             let searchApiVer = document.getElementById('search-api-ver');
             let cpuArch = document.getElementById('cpu-arch');
             if (window.ssf) {
-                ssf.getVersionInfo().then((verInfo) => {
-                    apiVersionInfo.innerText = verInfo.apiVer;
-                    containerIdentifier.innerText = verInfo.containerIdentifier;
-                    version.innerText = verInfo.containerVer;
-                    buildNumber.innerText = verInfo.buildNumber;
-                    searchApiVer.innerText = verInfo.searchApiVer;
-                    cpuArch.innerText = verInfo.cpuArch;
+                ssf.getVersionInfo().then((versionInfo) => {
+                    apiVersionInfo.innerText = versionInfo.apiVer;
+                    containerIdentifier.innerText = versionInfo.containerIdentifier;
+                    version.innerText = versionInfo.containerVer;
+                    buildNumber.innerText = versionInfo.buildNumber;
+                    searchApiVer.innerText = versionInfo.searchApiVer;
+                    cpuArch.innerText = versionInfo.cpuArch;
                 });
             } else {
                 postRequest(apiCmds.getVersionInfo, null, {
-                    successCallback: (verInfo) => {
-                        apiVersionInfo.innerText = verInfo.apiVer;
-                        containerIdentifier.innerText = verInfo.containerIdentifier;
-                        version.innerText = verInfo.containerVer;
-                        buildNumber.innerText = verInfo.buildNumber;
-                        searchApiVer.innerText = verInfo.searchApiVer;
-                        cpuArch.innerText = verInfo.cpuArch;
+                    successCallback: (versionInfo) => {
+                        apiVersionInfo.innerText = versionInfo.apiVer;
+                        containerIdentifier.innerText = versionInfo.containerIdentifier;
+                        version.innerText = versionInfo.containerVer;
+                        buildNumber.innerText = versionInfo.buildNumber;
+                        searchApiVer.innerText = versionInfo.searchApiVer;
+                        cpuArch.innerText = versionInfo.cpuArch;
                     }
                 });
             }
@@ -438,14 +438,14 @@
         /**
          * Analytic events
          */
-        const onAnalyticEvent = (data) => {
+        const onAnalyticsEvent = (data) => {
             console.log(`event logger`, data);
         };
 
         if (window.ssf) {
-            window.ssf.registerAnalyticEvent(onAnalyticEvent);
+            window.ssf.registerAnalyticsEvent(onAnalyticsEvent);
         } else {
-            postMessage(apiCmds.registerAnalyticHandler);
+            postMessage(apiCmds.registerAnalyticsHandler);
         }
 
         /**

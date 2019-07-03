@@ -4,7 +4,7 @@ import { apiCmds, apiName, IApiArgs } from '../common/api-interface';
 import { LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { activityDetection } from './activity-detection';
-import { analytics } from './analytic-events-handler';
+import { analytics } from './analytics-handler';
 import { config } from './config-handler';
 import { memoryMonitor } from './memory-monitor';
 import { protocolHandler } from './protocol-handler';
@@ -146,7 +146,7 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
             const { url } = config.getGlobalConfigFields([ 'url' ]);
             event.returnValue = url;
             break;
-        case apiCmds.registerAnalyticHandler:
+        case apiCmds.registerAnalyticsHandler:
             analytics.registerPreloadWindow(event.sender);
             break;
         default:

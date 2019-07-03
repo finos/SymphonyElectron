@@ -1,4 +1,4 @@
-export interface IAnalyticData {
+export interface IAnalyticsData {
     element: string;
     action_type: MenuActionTypes;
     action_result: string;
@@ -13,21 +13,21 @@ export enum MenuActionTypes {
     REFRESH_APP_IN_IDLE = 'refresh_app_in_idle',
 }
 
-export enum AnalyticActions {
+export enum AnalyticsActions {
     ENABLED = 'ON',
     DISABLED = 'OFF',
 }
 
-export enum AnalyticElements {
+export enum AnalyticsElements {
     MENU = 'MENU',
 }
 
 const MAX_EVENT_QUEUE_LENGTH = 50;
-const analyticCallback = 'analytic-callback';
+const analyticsCallback = 'analytics-callback';
 
 class Analytics {
     private preloadWindow: Electron.webContents | undefined;
-    private analyticEventQueue: IAnalyticData[] = [];
+    private analyticsEventQueue: IAnalyticsData[] = [];
 
     /**
      * Stores the reference to the preload window
@@ -37,31 +37,32 @@ class Analytics {
     public registerPreloadWindow(webContents: Electron.webContents): void {
         this.preloadWindow = webContents;
 
-        if (this.preloadWindow && !this.preloadWindow.isDestroyed()) {
-            if (this.analyticEventQueue && this.analyticEventQueue.length > 0) {
-                this.analyticEventQueue.forEach((events) => {
-                    if (this.preloadWindow && !this.preloadWindow.isDestroyed()) {
-                        this.preloadWindow.send(analyticCallback, events);
-                    }
-                });
-            }
+        if (!(this.preloadWindow && !this.preloadWindow.isDestroyed())) {
+            return;
+        }
+        if (this.analyticsEventQueue && this.analyticsEventQueue.length > 0) {
+            this.analyticsEventQueue.forEach((events) => {
+                if (this.preloadWindow && !this.preloadWindow.isDestroyed()) {
+                    this.preloadWindow.send(analyticsCallback, events);
+                }
+            });
         }
     }
 
     /**
-     * Sends the analytic events to the web client
+     * Sends the analytics events to the web client
      *
-     * @param eventData {IAnalyticData}
+     * @param eventData {IAnalyticsData}
      */
-    public track(eventData: IAnalyticData): void {
+    public track(eventData: IAnalyticsData): void {
         if (this.preloadWindow && !this.preloadWindow.isDestroyed()) {
-            this.preloadWindow.send(analyticCallback, eventData);
+            this.preloadWindow.send(analyticsCallback, eventData);
             return;
         }
-        this.analyticEventQueue.push(eventData);
+        this.analyticsEventQueue.push(eventData);
         // don't store more than 100 msgs. keep most recent log msgs.
-        if (this.analyticEventQueue.length > MAX_EVENT_QUEUE_LENGTH) {
-            this.analyticEventQueue.shift();
+        if (this.analyticsEventQueue.length > MAX_EVENT_QUEUE_LENGTH) {
+            this.analyticsEventQueue.shift();
         }
     }
 }

@@ -38,7 +38,7 @@ export interface ILocalObject {
     boundsChangeCallback?: (arg: IBoundsChange) => void;
     screenSharingIndicatorCallback?: (arg: IScreenSharingIndicator) => void;
     protocolActionCallback?: (arg: string) => void;
-    analyticEventHandler?: (arg: any) => void;
+    analyticsEventHandler?: (arg: any) => void;
 }
 
 const local: ILocalObject = {
@@ -264,17 +264,17 @@ export class SSFApi {
     }
 
     /**
-     * Allows JS to register analytic event handler
-     * to pass analytic event data
+     * Allows JS to register analytics event handler
+     * to pass analytics event data
      *
-     * @param analyticEventHandler
+     * @param analyticsEventHandler
      */
-    public registerAnalyticEvent(analyticEventHandler): void {
-        if (typeof analyticEventHandler === 'function') {
-            local.analyticEventHandler = analyticEventHandler;
+    public registerAnalyticsEvent(analyticsEventHandler): void {
+        if (typeof analyticsEventHandler === 'function') {
+            local.analyticsEventHandler = analyticsEventHandler;
 
             local.ipcRenderer.send(apiName.symphonyApi, {
-                cmd: apiCmds.registerAnalyticHandler,
+                cmd: apiCmds.registerAnalyticsHandler,
             });
         }
     }
@@ -565,9 +565,9 @@ local.ipcRenderer.on('protocol-action', (_event, arg: string) => {
     }
 });
 
-local.ipcRenderer.on('analytic-callback', (_event, arg: object) => {
-    if (typeof local.analyticEventHandler === 'function' && arg) {
-        local.analyticEventHandler(arg);
+local.ipcRenderer.on('analytics-callback', (_event, arg: object) => {
+    if (typeof local.analyticsEventHandler === 'function' && arg) {
+        local.analyticsEventHandler(arg);
     }
 });
 
