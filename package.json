@@ -117,7 +117,7 @@
     "async.map": "0.5.2",
     "auto-launch": "5.0.5",
     "classnames": "2.2.6",
-    "electron-dl": "git+https://github.com/symphonyoss/electron-dl.git#v1.15.0",
+    "electron-dl": "1.14.0",
     "electron-fetch": "1.3.0",
     "electron-log": "2.2.17",
     "electron-spellchecker": "git+https://github.com/symphonyoss/electron-spellchecker.git#v2.0.1",
