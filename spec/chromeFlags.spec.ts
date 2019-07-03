@@ -1,7 +1,6 @@
 import { setChromeFlags } from '../src/app/chrome-flags';
 import { config } from '../src/app/config-handler';
 import { isDevEnv, isMac, isWindowsOS } from '../src/common/env';
-import { getCommandLineArgs } from '../src/common/utils';
 import { app } from './__mocks__/electron';
 
 jest.mock('../src/common/utils', () => {
@@ -13,6 +12,7 @@ jest.mock('../src/common/utils', () => {
                         authServerWhitelist: 'url',
                         authNegotiateDelegateWhitelist: 'whitelist',
                         disableGpu: true,
+                        disableThrottling: false,
                     },
                 };
             }),
@@ -22,7 +22,7 @@ jest.mock('../src/common/utils', () => {
 
 jest.mock('../src/common/utils', () => {
     return {
-        getCommandLineArgs: jest.fn(() => '--chrome-flags=remote-debugging-port:5858,host-rules:MAP * 127.0.0.1'),
+        getCommandLineArgs: jest.fn(),
         compareVersions: jest.fn(),
     };
 });
@@ -34,7 +34,6 @@ describe('chrome flags', () => {
         (isDevEnv as any) = false;
         (isMac as any) = true;
         (isWindowsOS as any) = false;
-        (getCommandLineArgs as any) = jest.fn(() => '--chrome-flags=remote-debugging-port:5858,host-rules:MAP * 127.0.0.1');
         config.getGlobalConfigFields = jest.fn(() => {
                 return {
                     customFlags: {
@@ -89,24 +88,6 @@ describe('chrome flags', () => {
             expect(spy).nthCalledWith(4, 'disable-d3d11', true);
             expect(spy).nthCalledWith(5, 'disable-gpu', true);
             expect(spy).nthCalledWith(6, 'disable-gpu-compositing', true);
-            expect(spy).nthCalledWith(7, 'disable-renderer-backgrounding', 'false');
-            expect(spy).nthCalledWith(8, 'remote-debugging-port', '5858');
-            expect(spy).nthCalledWith(9, 'host-rules', 'MAP * 127.0.0.1');
-        });
-
-        it('should return `undefined` when `chromeFlagsFromCmd` is null', () => {
-            (getCommandLineArgs as any) = jest.fn(() => null);
-            expect(setChromeFlags()).toBeUndefined();
-        });
-
-        it('should return `undefined` when  `chromeFlagsArgs` is incorrect', () => {
-            (getCommandLineArgs as any) = jest.fn(() => 'testing');
-            expect(setChromeFlags()).toBeUndefined();
-        });
-
-        it('should return `undefined` when  `flags[key]` is incorrect', () => {
-            (getCommandLineArgs as any) = jest.fn(() => '--chrome-flags=,');
-            expect(setChromeFlags()).toBeUndefined();
         });
     });
 });
