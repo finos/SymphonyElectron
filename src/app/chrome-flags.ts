@@ -15,7 +15,7 @@ const specialArgs = ['--url', '--multiInstance', '--userDataPath=', 'symphony://
  */
 export const setChromeFlags = () => {
     logger.info(`chrome-flags: Checking if we need to set chrome flags!`);
-    const { customFlags, performanceSettings } = config.getGlobalConfigFields([ 'customFlags', 'performanceSettings' ]) as IConfig;
+    const { customFlags } = config.getGlobalConfigFields([ 'customFlags' ]) as IConfig;
 
     const configFlags: object = {
         'auth-negotiate-delegate-whitelist': customFlags.authServerWhitelist,
@@ -24,7 +24,7 @@ export const setChromeFlags = () => {
         'disable-d3d11': customFlags.disableGpu || null,
         'disable-gpu': customFlags.disableGpu || null,
         'disable-gpu-compositing': customFlags.disableGpu || null,
-        'disable-renderer-backgrounding': performanceSettings.disableBackgroundRendering || null,
+        'disable-renderer-backgrounding': customFlags.disableThrottling || null,
     };
 
     for (const key in configFlags) {

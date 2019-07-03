@@ -89,8 +89,9 @@ describe('chrome flags', () => {
             expect(spy).nthCalledWith(4, 'disable-d3d11', true);
             expect(spy).nthCalledWith(5, 'disable-gpu', true);
             expect(spy).nthCalledWith(6, 'disable-gpu-compositing', true);
-            expect(spy).nthCalledWith(7, 'remote-debugging-port', '5858');
-            expect(spy).nthCalledWith(8, 'host-rules', 'MAP * 127.0.0.1');
+            expect(spy).nthCalledWith(7, 'disable-renderer-backgrounding', 'false');
+            expect(spy).nthCalledWith(8, 'remote-debugging-port', '5858');
+            expect(spy).nthCalledWith(9, 'host-rules', 'MAP * 127.0.0.1');
         });
 
         it('should return `undefined` when `chromeFlagsFromCmd` is null', () => {

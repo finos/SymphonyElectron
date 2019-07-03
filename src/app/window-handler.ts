@@ -69,6 +69,7 @@ export class WindowHandler {
     public spellchecker: SpellChecker | undefined;
 
     private readonly contextIsolation: boolean;
+    private readonly backgroundThrottling: boolean;
     private readonly windowOpts: ICustomBrowserWindowConstructorOpts;
     private readonly globalConfig: IConfig;
     private readonly config: IConfig;
@@ -88,10 +89,12 @@ export class WindowHandler {
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Use these variables only on initial setup
         this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings' ]);
-        this.globalConfig = config.getGlobalConfigFields([ 'url', 'contextIsolation', 'performanceSettings' ]);
-        const { url, contextIsolation, performanceSettings }: IConfig = this.globalConfig;
+        this.globalConfig = config.getGlobalConfigFields([ 'url', 'contextIsolation', 'customFlags' ]);
+        const { url, contextIsolation, customFlags }: IConfig = this.globalConfig;
 
         this.windows = {};
+        this.contextIsolation = contextIsolation || false;
+        this.backgroundThrottling = !customFlags.disableThrottling;
         this.contextIsolation = contextIsolation || false;
         this.isCustomTitleBar = isWindowsOS && this.config.isCustomTitleBar;
         this.windowOpts = {
@@ -102,7 +105,6 @@ export class WindowHandler {
                 title: 'Symphony',
             }, {
                 preload: path.join(__dirname, '../renderer/_preload-main.js'),
-                backgroundThrottling: performanceSettings ? performanceSettings.backgroundThrottling : true,
             }), ...opts,
         };
         this.isAutoReload = false;
@@ -791,6 +793,7 @@ export class WindowHandler {
                 sandbox: true,
                 nodeIntegration: false,
                 contextIsolation: this.contextIsolation,
+                backgroundThrottling: this.backgroundThrottling,
             }, ...webPreferences,
         };
         const defaultWindowOpts = {

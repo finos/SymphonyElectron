@@ -57,6 +57,7 @@ export interface ICustomFlag {
     authServerWhitelist: string;
     authNegotiateDelegateWhitelist: string;
     disableGpu: boolean;
+    disableThrottling: boolean;
 }
 
 export interface IPerformanceSettings {
