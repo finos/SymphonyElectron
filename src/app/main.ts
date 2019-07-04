@@ -1,5 +1,6 @@
 import { app } from 'electron';
 
+import * as electronDownloader from 'electron-dl';
 import { buildNumber, clientVersion, version } from '../../package.json';
 import { isDevEnv, isMac } from '../common/env';
 import { logger } from '../common/logger';
@@ -16,11 +17,10 @@ import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
 const allowMultiInstance: string | boolean = getCommandLineArgs(process.argv, '--multiInstance', true) || isDevEnv;
 
+electronDownloader();
 handlePerformanceSettings();
 setChromeFlags();
 
-// on windows, we create the protocol handler via the installer
-// because electron leaves registry traces upon uninstallation
 if (isMac) {
     // Sets application version info that will be displayed in about app panel
     app.setAboutPanelOptions({ applicationVersion: `${clientVersion}-${version}`, version: buildNumber });
