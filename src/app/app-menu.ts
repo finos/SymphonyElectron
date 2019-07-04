@@ -59,6 +59,7 @@ let {
     'bringToFront',
     'memoryRefresh',
 ]) as IConfig;
+let initialAnalyticsSent = false;
 
 const menuItemsArray = Object.keys(menuSections)
     .map((key) => menuSections[ key ])
@@ -78,6 +79,16 @@ export class AppMenu {
             ? TitleBarStyles.CUSTOM
             : TitleBarStyles.NATIVE;
         this.buildMenu();
+        // send initial analytic
+        if (!initialAnalyticsSent) {
+            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.MINIMIZE_ON_CLOSE, minimizeOnClose);
+            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.AUTO_LAUNCH_ON_START_UP, launchOnStartup);
+            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.ALWAYS_ON_TOP, isAlwaysOnTop);
+            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.FLASH_NOTIFICATION_IN_TASK_BAR, bringToFront);
+            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.REFRESH_APP_IN_IDLE, memoryRefresh);
+            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.HAMBURGER_MENU, isMac ? false : this.titleBarStyle === TitleBarStyles.CUSTOM);
+        }
+        initialAnalyticsSent = true;
     }
 
     /**
@@ -252,11 +263,7 @@ export class AppMenu {
                     }
                     launchOnStartup = item.checked;
                     await config.updateUserConfig({ launchOnStartup });
-                    analytics.track({
-                        element: AnalyticsElements.MENU,
-                        action_type: MenuActionTypes.AUTO_LAUNCH_ON_START_UP,
-                        action_result: item.checked ? AnalyticsActions.ENABLED : AnalyticsActions.DISABLED,
-                    });
+                    this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.AUTO_LAUNCH_ON_START_UP, item.checked);
                 },
                 label: i18n.t('Auto Launch On Startup')(),
                 type: 'checkbox',
@@ -267,11 +274,7 @@ export class AppMenu {
                     isAlwaysOnTop = item.checked;
                     updateAlwaysOnTop(item.checked, true);
                     await config.updateUserConfig({ alwaysOnTop: item.checked });
-                    analytics.track({
-                        element: AnalyticsElements.MENU,
-                        action_type: MenuActionTypes.ALWAYS_ON_TOP,
-                        action_result: item.checked ? AnalyticsActions.ENABLED : AnalyticsActions.DISABLED,
-                    });
+                    this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.ALWAYS_ON_TOP, item.checked);
                 },
                 label: i18n.t('Always on Top')(),
                 type: 'checkbox',
@@ -281,11 +284,7 @@ export class AppMenu {
                 click: async (item) => {
                     minimizeOnClose = item.checked;
                     await config.updateUserConfig({ minimizeOnClose });
-                    analytics.track({
-                        element: AnalyticsElements.MENU,
-                        action_type: MenuActionTypes.MINIMIZE_ON_CLOSE,
-                        action_result: item.checked ? AnalyticsActions.ENABLED : AnalyticsActions.DISABLED,
-                    });
+                    this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.MINIMIZE_ON_CLOSE, item.checked);
                 },
                 label: i18n.t('Minimize on Close')(),
                 type: 'checkbox',
@@ -295,11 +294,7 @@ export class AppMenu {
                 click: async (item) => {
                     bringToFront = item.checked;
                     await config.updateUserConfig({ bringToFront });
-                    analytics.track({
-                        element: AnalyticsElements.MENU,
-                        action_type: MenuActionTypes.FLASH_NOTIFICATION_IN_TASK_BAR,
-                        action_result: item.checked ? AnalyticsActions.ENABLED : AnalyticsActions.DISABLED,
-                    });
+                    this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.FLASH_NOTIFICATION_IN_TASK_BAR, item.checked);
                 },
                 label: isWindowsOS
                     ? i18n.t('Flash Notification in Taskbar')()
@@ -317,11 +312,7 @@ export class AppMenu {
 
                     this.titleBarStyle = isNativeStyle ? TitleBarStyles.NATIVE : TitleBarStyles.CUSTOM;
                     titleBarChangeDialog(isNativeStyle);
-                    analytics.track({
-                        element: AnalyticsElements.MENU,
-                        action_type: MenuActionTypes.HAMBURGER_MENU,
-                        action_result: isNativeStyle ? AnalyticsActions.DISABLED : AnalyticsActions.ENABLED,
-                    });
+                    this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.HAMBURGER_MENU, this.titleBarStyle === TitleBarStyles.CUSTOM);
                 },
             },
             {
@@ -329,11 +320,7 @@ export class AppMenu {
                 click: async (item) => {
                     memoryRefresh = item.checked;
                     await config.updateUserConfig({ memoryRefresh });
-                    analytics.track({
-                        element: AnalyticsElements.MENU,
-                        action_type: MenuActionTypes.REFRESH_APP_IN_IDLE,
-                        action_result: item.checked ? AnalyticsActions.ENABLED : AnalyticsActions.DISABLED,
-                    });
+                    this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.REFRESH_APP_IN_IDLE, item.checked);
                 },
                 label: i18n.t('Refresh app when idle')(),
                 type: 'checkbox',
@@ -456,5 +443,20 @@ export class AppMenu {
         }
 
         return label ? { role, label } : { role };
+    }
+
+    /**
+     * Sends analytics events
+     *
+     * @param element {AnalyticsElements}
+     * @param type {MenuActionTypes}
+     * @param result {Boolean}
+     */
+    private sendAnalytics(element: AnalyticsElements, type: MenuActionTypes, result: boolean): void {
+        analytics.track({
+            element,
+            action_type: type,
+            action_result: result ? AnalyticsActions.ENABLED : AnalyticsActions.DISABLED,
+        });
     }
 }
