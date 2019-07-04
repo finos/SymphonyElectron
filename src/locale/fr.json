@@ -111,13 +111,13 @@
   "Permission Denied": "Permission refusée",
   "Permissions": {
     "Your administrator has disabled Full Screen. Please contact your admin for help": "Votre administrateur a désactivé Plein écran. Veuillez contacter votre administrateur pour obtenir de l'aide.",
-    "Your administrator has disabled notifications. Please contact your admin for help": "Votre administrateur a désactivé Notifications. Veuillez contacter votre administrateur pour obtenir de l'aide.",
     "Your administrator has disabled MIDI Sysex. Please contact your admin for help": "Votre administrateur a désactivé MIDI Sysex. Veuillez contacter votre administrateur pour obtenir de l'aide.",
+    "Your administrator has disabled notifications. Please contact your admin for help": "Votre administrateur a désactivé Notifications. Veuillez contacter votre administrateur pour obtenir de l'aide.",
     "Your administrator has disabled Opening External App. Please contact your admin for help": "Votre administrateur a désactivé Ouverture d'application externe. Veuillez contacter votre administrateur pour obtenir de l'aide.",
     "Your administrator has disabled Pointer Lock. Please contact your admin for help": "Votre administrateur a désactivé Pointer Lock. Veuillez contacter votre administrateur pour obtenir de l'aide.",
-    "Your administrator has disabled sharing your screen. Please contact your admin for help": "Votre administrateur a désactivé partager votre écran. Veuillez contacter votre administrateur pour obtenir de l'aide.",
     "Your administrator has disabled sharing your camera, microphone, and speakers. Please contact your admin for help": "Votre administrateur a désactivé partager votre caméra, votre microphone et vos haut-parleurs. Veuillez contacter votre administrateur pour obtenir de l'aide.",
-    "Your administrator has disabled sharing your location. Please contact your admin for help": "Votre administrateur a désactivé partager votre position. Veuillez contacter votre administrateur pour obtenir de l'aide."
+    "Your administrator has disabled sharing your location. Please contact your admin for help": "Votre administrateur a désactivé partager votre position. Veuillez contacter votre administrateur pour obtenir de l'aide.",
+    "Your administrator has disabled sharing your screen. Please contact your admin for help": "Votre administrateur a désactivé partager votre écran. Veuillez contacter votre administrateur pour obtenir de l'aide."
   },
   "Please contact your admin for help": "Veuillez contacter votre administrateur pour obtenir de l'aide.",
   "please contact your administrator for more details": "veuillez contacter votre administrateur pour plus de détails",
