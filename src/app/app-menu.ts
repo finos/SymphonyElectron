@@ -3,6 +3,12 @@ import { app, dialog, Menu, MenuItemConstructorOptions, session, shell } from 'e
 import { isMac, isWindowsOS } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
+import {
+    analytics,
+    AnalyticsActions,
+    AnalyticsElements,
+    MenuActionTypes,
+} from './analytics-handler';
 import { autoLaunchInstance as autoLaunch } from './auto-launch-controller';
 import { config, IConfig } from './config-handler';
 import { titleBarChangeDialog } from './dialog-handler';
@@ -246,6 +252,11 @@ export class AppMenu {
                     }
                     launchOnStartup = item.checked;
                     await config.updateUserConfig({ launchOnStartup });
+                    analytics.track({
+                        element: AnalyticsElements.MENU,
+                        action_type: MenuActionTypes.AUTO_LAUNCH_ON_START_UP,
+                        action_result: item.checked ? AnalyticsActions.ENABLED : AnalyticsActions.DISABLED,
+                    });
                 },
                 label: i18n.t('Auto Launch On Startup')(),
                 type: 'checkbox',
@@ -256,6 +267,11 @@ export class AppMenu {
                     isAlwaysOnTop = item.checked;
                     updateAlwaysOnTop(item.checked, true);
                     await config.updateUserConfig({ alwaysOnTop: item.checked });
+                    analytics.track({
+                        element: AnalyticsElements.MENU,
+                        action_type: MenuActionTypes.ALWAYS_ON_TOP,
+                        action_result: item.checked ? AnalyticsActions.ENABLED : AnalyticsActions.DISABLED,
+                    });
                 },
                 label: i18n.t('Always on Top')(),
                 type: 'checkbox',
@@ -265,6 +281,11 @@ export class AppMenu {
                 click: async (item) => {
                     minimizeOnClose = item.checked;
                     await config.updateUserConfig({ minimizeOnClose });
+                    analytics.track({
+                        element: AnalyticsElements.MENU,
+                        action_type: MenuActionTypes.MINIMIZE_ON_CLOSE,
+                        action_result: item.checked ? AnalyticsActions.ENABLED : AnalyticsActions.DISABLED,
+                    });
                 },
                 label: i18n.t('Minimize on Close')(),
                 type: 'checkbox',
@@ -274,6 +295,11 @@ export class AppMenu {
                 click: async (item) => {
                     bringToFront = item.checked;
                     await config.updateUserConfig({ bringToFront });
+                    analytics.track({
+                        element: AnalyticsElements.MENU,
+                        action_type: MenuActionTypes.FLASH_NOTIFICATION_IN_TASK_BAR,
+                        action_result: item.checked ? AnalyticsActions.ENABLED : AnalyticsActions.DISABLED,
+                    });
                 },
                 label: isWindowsOS
                     ? i18n.t('Flash Notification in Taskbar')()
@@ -291,6 +317,11 @@ export class AppMenu {
 
                     this.titleBarStyle = isNativeStyle ? TitleBarStyles.NATIVE : TitleBarStyles.CUSTOM;
                     titleBarChangeDialog(isNativeStyle);
+                    analytics.track({
+                        element: AnalyticsElements.MENU,
+                        action_type: MenuActionTypes.HAMBURGER_MENU,
+                        action_result: isNativeStyle ? AnalyticsActions.DISABLED : AnalyticsActions.ENABLED,
+                    });
                 },
             },
             {
@@ -298,6 +329,11 @@ export class AppMenu {
                 click: async (item) => {
                     memoryRefresh = item.checked;
                     await config.updateUserConfig({ memoryRefresh });
+                    analytics.track({
+                        element: AnalyticsElements.MENU,
+                        action_type: MenuActionTypes.REFRESH_APP_IN_IDLE,
+                        action_result: item.checked ? AnalyticsActions.ENABLED : AnalyticsActions.DISABLED,
+                    });
                 },
                 label: i18n.t('Refresh app when idle')(),
                 type: 'checkbox',

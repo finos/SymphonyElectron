@@ -128,6 +128,7 @@
                 <th>Container Version</th>
                 <th>Build Number</th>
                 <th>Search Api Version</th>
+                <th>CPU Arch</th>
             </tr>
             <tr>
                 <td id="api-version"></td>
@@ -135,6 +136,7 @@
                 <td id="container-ver"></td>
                 <td id="build-number"></td>
                 <td id="search-api-ver"></td>
+                <td id="cpu-arch"></td>
             </tr>
         </table>
     </body>
@@ -151,6 +153,7 @@
                 activate: 'activate',
                 registerBoundsChange: 'register-bounds-change',
                 registerProtocolHandler: 'register-protocol-handler',
+                registerAnalyticHandler: 'register-analytic-handler',
                 registerActivityDetection: 'register-activity-detection',
                 showNotificationSettings: 'show-notification-settings',
                 sanitize: 'sanitize',
@@ -312,34 +315,30 @@
 
         var getVersionInfo = document.getElementById('get-version');
         getVersionInfo.addEventListener('click', () => {
+            let apiVersionInfo = document.getElementById('api-version');
+            let containerIdentifier = document.getElementById('container-identifier');
+            let version = document.getElementById('container-ver');
+            let buildNumber = document.getElementById('build-number');
+            let searchApiVer = document.getElementById('search-api-ver');
+            let cpuArch = document.getElementById('cpu-arch');
             if (window.ssf) {
-                ssf.getVersionInfo().then((verInfo) => {
-                    let apiVersionInfo = document.getElementById('api-version');
-                    let containerIdentifier = document.getElementById('container-identifier');
-                    let version = document.getElementById('container-ver');
-                    let buildNumber = document.getElementById('build-number');
-                    let searchApiVer = document.getElementById('search-api-ver');
-
-                    apiVersionInfo.innerText = verInfo.apiVer;
-                    containerIdentifier.innerText = verInfo.containerIdentifier;
-                    version.innerText = verInfo.containerVer;
-                    buildNumber.innerText = verInfo.buildNumber;
-                    searchApiVer.innerText = verInfo.searchApiVer;
+                ssf.getVersionInfo().then((versionInfo) => {
+                    apiVersionInfo.innerText = versionInfo.apiVer;
+                    containerIdentifier.innerText = versionInfo.containerIdentifier;
+                    version.innerText = versionInfo.containerVer;
+                    buildNumber.innerText = versionInfo.buildNumber;
+                    searchApiVer.innerText = versionInfo.searchApiVer;
+                    cpuArch.innerText = versionInfo.cpuArch;
                 });
             } else {
                 postRequest(apiCmds.getVersionInfo, null, {
-                    successCallback: (verInfo) => {
-                        let apiVersionInfo = document.getElementById('api-version');
-                        let containerIdentifier = document.getElementById('container-identifier');
-                        let version = document.getElementById('container-ver');
-                        let buildNumber = document.getElementById('build-number');
-                        let searchApiVer = document.getElementById('search-api-ver');
-
-                        apiVersionInfo.innerText = verInfo.apiVer;
-                        containerIdentifier.innerText = verInfo.containerIdentifier;
-                        version.innerText = verInfo.containerVer;
-                        buildNumber.innerText = verInfo.buildNumber;
-                        searchApiVer.innerText = verInfo.searchApiVer;
+                    successCallback: (versionInfo) => {
+                        apiVersionInfo.innerText = versionInfo.apiVer;
+                        containerIdentifier.innerText = versionInfo.containerIdentifier;
+                        version.innerText = versionInfo.containerVer;
+                        buildNumber.innerText = versionInfo.buildNumber;
+                        searchApiVer.innerText = versionInfo.searchApiVer;
+                        cpuArch.innerText = versionInfo.cpuArch;
                     }
                 });
             }
@@ -435,6 +434,19 @@
                     console.log(event.data);
             }
         });
+
+        /**
+         * Analytic events
+         */
+        const onAnalyticsEvent = (data) => {
+            console.log(`event logger`, data);
+        };
+
+        if (window.ssf) {
+            window.ssf.registerAnalyticsEvent(onAnalyticsEvent);
+        } else {
+            postMessage(apiCmds.registerAnalyticsHandler);
+        }
 
         /**
          * Bound Changes
