@@ -19,7 +19,7 @@ export enum AnalyticsActions {
 }
 
 export enum AnalyticsElements {
-    MENU = 'MENU',
+    MENU = 'Menu',
 }
 
 const MAX_EVENT_QUEUE_LENGTH = 50;
