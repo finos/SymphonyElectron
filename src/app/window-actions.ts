@@ -220,10 +220,9 @@ export const handleSessionPermissions = (permission: boolean, message: string, c
     logger.info(`window-action: permission is ->`, { type: message, permission });
 
     if (!permission) {
-        const fullMessage = `${i18n.t('Your administrator has disabled')()} ${message}. ${i18n.t('Please contact your admin for help')()}`;
         const browserWindow = BrowserWindow.getFocusedWindow();
         if (browserWindow && !browserWindow.isDestroyed()) {
-            dialog.showMessageBox(browserWindow, { type: 'error', title: `${i18n.t('Permission Denied')()}!`, message: fullMessage });
+            dialog.showMessageBox(browserWindow, { type: 'error', title: `${i18n.t('Permission Denied')()}!`, message });
         }
     }
 
@@ -251,19 +250,19 @@ export const handlePermissionRequests = (webContents: Electron.webContents): voi
     session.setPermissionRequestHandler((_webContents, permission, callback) => {
         switch (permission) {
             case Permissions.MEDIA:
-                return handleSessionPermissions(permissions.media, 'sharing your camera, microphone, and speakers', callback);
+                return handleSessionPermissions(permissions.media, i18n.t('Your administrator has disabled sharing your camera, microphone, and speakers. Please contact your admin for help', PERMISSIONS_NAMESPACE)(), callback);
             case Permissions.LOCATION:
-                return handleSessionPermissions(permissions.geolocation, 'sharing your location', callback);
+                return handleSessionPermissions(permissions.geolocation, i18n.t('Your administrator has disabled sharing your location. Please contact your admin for help', PERMISSIONS_NAMESPACE)(), callback);
             case Permissions.NOTIFICATIONS:
-                return handleSessionPermissions(permissions.notifications, 'notifications', callback);
+                return handleSessionPermissions(permissions.notifications, i18n.t('Your administrator has disabled notifications. Please contact your admin for help', PERMISSIONS_NAMESPACE)(), callback);
             case Permissions.MIDI_SYSEX:
-                return handleSessionPermissions(permissions.midiSysex, 'MIDI Sysex', callback);
+                return handleSessionPermissions(permissions.midiSysex, i18n.t('Your administrator has disabled MIDI Sysex. Please contact your admin for help', PERMISSIONS_NAMESPACE)(), callback);
             case Permissions.POINTER_LOCK:
-                return handleSessionPermissions(permissions.pointerLock, 'Pointer Lock', callback);
+                return handleSessionPermissions(permissions.pointerLock, i18n.t('Your administrator has disabled Pointer Lock. Please contact your admin for help', PERMISSIONS_NAMESPACE)(), callback);
             case Permissions.FULL_SCREEN:
-                return handleSessionPermissions(permissions.fullscreen, i18n.t('Full Screen', PERMISSIONS_NAMESPACE)(), callback);
+                return handleSessionPermissions(permissions.fullscreen, i18n.t('Your administrator has disabled Full Screen. Please contact your admin for help', PERMISSIONS_NAMESPACE)(), callback);
             case Permissions.OPEN_EXTERNAL:
-                return handleSessionPermissions(permissions.openExternal, 'Opening External App', callback);
+                return handleSessionPermissions(permissions.openExternal, i18n.t('Your administrator has disabled Opening External App. Please contact your admin for help', PERMISSIONS_NAMESPACE)(), callback);
             default:
                 return callback(false);
         }

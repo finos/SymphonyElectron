@@ -110,7 +110,14 @@
   "Paste and Match Style": "貼り付けでスタイルを合わせる",
   "Permission Denied": "アクセス許可が拒否されています",
   "Permissions": {
-    "Full Screen": "全画面表示"
+    "Your administrator has disabled Full Screen. Please contact your admin for help": "貴社のシンフォニー管理者が全画面表示設定を無効にしました。詳細については、管理者にお問い合わせください。",
+    "Your administrator has disabled notifications. Please contact your admin for help": "貴社のシンフォニー管理者が通知を無効にしました。詳細については、管理者にお問い合わせください。",
+    "Your administrator has disabled MIDI Sysex. Please contact your admin for help": "貴社のシンフォニー管理者がMIDI Sysexを無効にしました。詳細については、管理者にお問い合わせください。",
+    "Your administrator has disabled Opening External App. Please contact your admin for help": "貴社のシンフォニー管理者が外部アプリを開く共有設定を無効にしました。詳細については、管理者にお問い合わせください。",
+    "Your administrator has disabled Pointer Lock. Please contact your admin for help": "貴社のシンフォニー管理者がPointer Lockを無効にしました。詳細については、管理者にお問い合わせください。",
+    "Your administrator has disabled sharing your screen. Please contact your admin for help": "貴社のシンフォニー管理者が画面共有設定を無効にしました。詳細については、管理者にお問い合わせください。画面",
+    "Your administrator has disabled sharing your camera, microphone, and speakers. Please contact your admin for help": "貴社のシンフォニー管理者がカメラ、マイク、スピーカーの共有設定を無効にしました。詳細については、管理者にお問い合わせください。",
+    "Your administrator has disabled sharing your location. Please contact your admin for help": "貴社のシンフォニー管理者が位置情報の共有設定を無効にしました。詳細については、管理者にお問い合わせください。"
   },
   "Please contact your admin for help": "不明な点がある場合は､管理者にお問い合わせください",
   "please contact your administrator for more details": "詳細は、管理者にお問い合わせください",
