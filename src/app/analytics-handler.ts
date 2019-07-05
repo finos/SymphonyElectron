@@ -19,7 +19,7 @@ export enum AnalyticsActions {
 }
 
 export enum AnalyticsElements {
-    MENU = 'MENU',
+    MENU = 'Menu',
 }
 
 const MAX_EVENT_QUEUE_LENGTH = 50;
@@ -46,6 +46,7 @@ class Analytics {
                     this.preloadWindow.send(analyticsCallback, events);
                 }
             });
+            this.resetAnalytics();
         }
     }
 
@@ -64,6 +65,13 @@ class Analytics {
         if (this.analyticsEventQueue.length > MAX_EVENT_QUEUE_LENGTH) {
             this.analyticsEventQueue.shift();
         }
+    }
+
+    /**
+     * Clears the analytics queue
+     */
+    public resetAnalytics(): void {
+        this.analyticsEventQueue = [];
     }
 }
 
