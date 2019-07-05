@@ -14,6 +14,8 @@ import { handlePerformanceSettings } from './perf-handler';
 import { protocolHandler } from './protocol-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
+logger.info(`App started with the args ${JSON.stringify(process.argv)}`);
+
 const allowMultiInstance: string | boolean = getCommandLineArgs(process.argv, '--multiInstance', true) || isDevEnv;
 let isAppAlreadyOpen: boolean = false;
 

@@ -69,7 +69,7 @@ class ProtocolHandler {
         const protocolUriFromArgv = getCommandLineArgs(argv || process.argv, protocol.SymphonyProtocol, false);
         if (protocolUriFromArgv) {
             logger.info(`protocol handler: we have a protocol request for the url ${protocolUriFromArgv}!`);
-        this.sendProtocol(protocolUriFromArgv, isAppAlreadyOpen);
+            this.sendProtocol(protocolUriFromArgv, isAppAlreadyOpen);
         }
     }
 }
