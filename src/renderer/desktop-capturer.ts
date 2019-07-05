@@ -92,7 +92,7 @@ export const getSource = (options: ICustomSourcesOptions, callback: CallbackType
         const focusedWindow = remote.BrowserWindow.getFocusedWindow();
         if (focusedWindow && !focusedWindow.isDestroyed()) {
             remote.dialog.showMessageBox(focusedWindow, {
-                message: i18n.t('Your administrator has disabled screen share. Please contact your admin for help')(),
+                message: `${i18n.t('Your administrator has disabled sharing your screen. Please contact your admin for help', 'Permissions')()}`,
                 title: `${i18n.t('Permission Denied')()}!`,
                 type: 'error',
             });
