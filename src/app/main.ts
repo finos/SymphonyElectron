@@ -15,6 +15,7 @@ import { protocolHandler } from './protocol-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
 const allowMultiInstance: string | boolean = getCommandLineArgs(process.argv, '--multiInstance', true) || isDevEnv;
+let isAppAlreadyOpen: boolean = false;
 
 handlePerformanceSettings();
 setChromeFlags();
@@ -74,7 +75,8 @@ if (!allowMultiInstance) {
                     mainWindow.restore();
                 }
                 mainWindow.focus();
-                protocolHandler.processArgv(argv);
+                isAppAlreadyOpen = true;
+                protocolHandler.processArgv(argv, isAppAlreadyOpen);
             }
         });
         startApplication();
