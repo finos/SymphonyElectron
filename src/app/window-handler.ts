@@ -411,9 +411,6 @@ export class WindowHandler {
             eventEmitter.on('update-version-info', (versionInfo) => {
                 clientVersion = versionInfo.clientVersion;
                 buildNumber = versionInfo.buildNumber;
-                if (isMac) {
-                    app.setAboutPanelOptions({ applicationVersion: `${clientVersion}`, version: buildNumber });
-                }
                 if (this.aboutAppWindow) {
                     this.aboutAppWindow.webContents.send('about-app-data', { buildNumber, clientVersion });
                 }
@@ -438,7 +435,13 @@ export class WindowHandler {
             if (!this.moreInfoWindow || !windowExists(this.moreInfoWindow)) {
                 return;
             }
-            this.moreInfoWindow.webContents.send('more-info-data');
+            const verInfo: IVersionInfo = versionHandler.getVersionInfo();
+            this.moreInfoWindow.webContents.send('more-info-data', verInfo);
+            eventEmitter.on('update-version-info', (versionInfo) => {
+                if (this.moreInfoWindow) {
+                    this.moreInfoWindow.webContents.send('more-info-data', versionInfo);
+                }
+            });
         });
     }
 

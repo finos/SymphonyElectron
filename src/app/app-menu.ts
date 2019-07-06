@@ -406,7 +406,7 @@ export class AppMenu {
                     } ],
                 }, {
                     label: i18n.t('About Symphony')(),
-                    visible: true,
+                    visible: isWindowsOS,
                     click(_menuItem, focusedWindow) {
                         const windowName = focusedWindow ? (focusedWindow as ICustomBrowserWindow).winName : '';
                         windowHandler.createAboutAppWindow(windowName);
