@@ -26,6 +26,7 @@ interface IVersionInfo {
 class VersionHandler {
 
     private versionInfo: IVersionInfo;
+    private serverVersionInfo: any;
 
     constructor() {
         this.versionInfo = {
@@ -61,6 +62,12 @@ class VersionHandler {
      */
     private getClientVersion() {
 
+        if (this.serverVersionInfo) {
+            this.versionInfo.clientVersion = this.serverVersionInfo['Implementation-Version'] || this.versionInfo.clientVersion;
+            this.versionInfo.buildNumber = this.serverVersionInfo['Implementation-Build'] || this.versionInfo.buildNumber;
+            return;
+        }
+
         const { url: podUrl }: IConfig = config.getGlobalConfigFields(['url']);
 
         if (!podUrl) {
@@ -83,9 +90,9 @@ class VersionHandler {
 
             res.on('end', () => {
                 try {
-                    const data = JSON.parse(body)[0];
-                    this.versionInfo.clientVersion = data['Implementation-Version'] || this.versionInfo.clientVersion;
-                    this.versionInfo.buildNumber = data['Implementation-Build'] || this.versionInfo.buildNumber;
+                    this.serverVersionInfo = JSON.parse(body)[0];
+                    this.versionInfo.clientVersion = this.serverVersionInfo['Implementation-Version'] || this.versionInfo.clientVersion;
+                    this.versionInfo.buildNumber = this.serverVersionInfo['Implementation-Build'] || this.versionInfo.buildNumber;
                     logger.info(`Updated version info from server! ${JSON.stringify(this.versionInfo)}`);
                     eventEmitter.emit('update-version-info', this.versionInfo);
                 } catch (error) {
