@@ -1,6 +1,5 @@
 import { app } from 'electron';
 
-import { buildNumber, clientVersion, version } from '../../package.json';
 import { isDevEnv, isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
@@ -9,9 +8,11 @@ import { autoLaunchInstance } from './auto-launch-controller';
 import { setChromeFlags, setSessionProperties } from './chrome-flags';
 import { config } from './config-handler';
 import './dialog-handler';
+import { eventEmitter } from './event-emitter';
 import './main-api-handler';
 import { handlePerformanceSettings } from './perf-handler';
 import { protocolHandler } from './protocol-handler';
+import { IVersionInfo, versionHandler } from './version-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
 logger.info(`App started with the args ${JSON.stringify(process.argv)}`);
@@ -22,11 +23,25 @@ let isAppAlreadyOpen: boolean = false;
 handlePerformanceSettings();
 setChromeFlags();
 
-// on windows, we create the protocol handler via the installer
-// because electron leaves registry traces upon uninstallation
+const setAboutPanel = (clientVersion: string, buildNumber: string) => {
+    const appName = app.getName();
+    const copyright = `Copyright \xA9 ${new Date().getFullYear()} ${appName}`;
+    app.setAboutPanelOptions({
+        applicationName: appName,
+        applicationVersion: clientVersion,
+        version: buildNumber,
+        copyright,
+    });
+};
+
 if (isMac) {
-    // Sets application version info that will be displayed in about app panel
-    app.setAboutPanelOptions({ applicationVersion: `${clientVersion}-${version}`, version: buildNumber });
+    let { clientVersion, buildNumber }: IVersionInfo = versionHandler.getVersionInfo();
+    setAboutPanel(clientVersion, buildNumber);
+    eventEmitter.on('update-version-info', (versionInfo) => {
+        clientVersion = versionInfo.clientVersion;
+        buildNumber = versionInfo.buildNumber;
+        setAboutPanel(clientVersion, buildNumber);
+    });
 }
 
 // Electron sets the default protocol

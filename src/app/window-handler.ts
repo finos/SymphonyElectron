@@ -4,7 +4,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { format, parse } from 'url';
 
-import { buildNumber, clientVersion, version } from '../../package.json';
 import { apiName, WindowTypes } from '../common/api-interface';
 import { isDevEnv, isMac, isWindowsOS } from '../common/env';
 import { i18n } from '../common/i18n';
@@ -14,8 +13,11 @@ import { notification } from '../renderer/notification';
 import { AppMenu } from './app-menu';
 import { handleChildWindow } from './child-window-handler';
 import { config, IConfig } from './config-handler';
+import { eventEmitter } from './event-emitter';
 import { SpellChecker } from './spell-check-handler';
 import { checkIfBuildExpired } from './ttl-handler';
+import DesktopCapturerSource = Electron.DesktopCapturerSource;
+import { IVersionInfo, versionHandler } from './version-handler.js';
 import { handlePermissionRequests, monitorWindowActions } from './window-actions';
 import {
     createComponentWindow,
@@ -27,7 +29,6 @@ import {
     preventWindowNavigation,
     windowExists,
 } from './window-utils';
-import DesktopCapturerSource = Electron.DesktopCapturerSource;
 
 interface ICustomBrowserWindowConstructorOpts extends Electron.BrowserWindowConstructorOptions {
     winKey: string;
@@ -405,7 +406,18 @@ export class WindowHandler {
             if (!this.aboutAppWindow || !windowExists(this.aboutAppWindow)) {
                 return;
             }
-            this.aboutAppWindow.webContents.send('about-app-data', { buildNumber, clientVersion, version });
+            let { clientVersion, buildNumber }: IVersionInfo = versionHandler.getVersionInfo();
+            this.aboutAppWindow.webContents.send('about-app-data', { buildNumber, clientVersion });
+            eventEmitter.on('update-version-info', (versionInfo) => {
+                clientVersion = versionInfo.clientVersion;
+                buildNumber = versionInfo.buildNumber;
+                if (isMac) {
+                    app.setAboutPanelOptions({ applicationVersion: `${clientVersion}`, version: buildNumber });
+                }
+                if (this.aboutAppWindow) {
+                    this.aboutAppWindow.webContents.send('about-app-data', { buildNumber, clientVersion });
+                }
+            });
         });
     }
 
