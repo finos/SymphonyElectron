@@ -52,7 +52,7 @@ exports[`more info should render correctly 1`] = `
     className="content"
   >
     <h4>
-      v8
+      v8 
       related
     </h4>
     <table>

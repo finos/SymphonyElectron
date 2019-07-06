@@ -27,7 +27,7 @@ describe('more info', () => {
 
     it('should render correctly', () => {
         const wrapper = shallow(React.createElement(MoreInfo));
-        expect(wrapper).toMatchInlineSnapshot();
+        expect(wrapper).toMatchSnapshot();
     });
 
     it('should call `more-info-data` event when component is mounted', () => {
