@@ -1,4 +1,5 @@
 import { app } from 'electron';
+import * as shellPath from 'shell-path';
 
 import { buildNumber, clientVersion, version } from '../../package.json';
 import { isDevEnv, isMac } from '../common/env';
@@ -18,6 +19,31 @@ logger.info(`App started with the args ${JSON.stringify(process.argv)}`);
 
 const allowMultiInstance: string | boolean = getCommandLineArgs(process.argv, '--multiInstance', true) || isDevEnv;
 let isAppAlreadyOpen: boolean = false;
+
+// Setting the env path child_process issue https://github.com/electron/electron/issues/7688
+(async () => {
+    try {
+        const paths = await shellPath();
+        if (paths) {
+            return process.env.PATH = paths;
+        }
+        if (isMac) {
+            process.env.PATH = [
+                './node_modules/.bin',
+                '/usr/local/bin',
+                process.env.PATH,
+            ].join(':');
+        }
+    } catch (e) {
+        if (isMac) {
+            process.env.PATH = [
+                './node_modules/.bin',
+                '/usr/local/bin',
+                process.env.PATH,
+            ].join(':');
+        }
+    }
+})();
 
 handlePerformanceSettings();
 setChromeFlags();
