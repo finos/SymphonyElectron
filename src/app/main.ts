@@ -1,4 +1,5 @@
 import { app } from 'electron';
+import * as shellPath from 'shell-path';
 
 import * as electronDownloader from 'electron-dl';
 import { buildNumber, clientVersion, version } from '../../package.json';
@@ -7,7 +8,7 @@ import { logger } from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
 import { cleanUpAppCache, createAppCacheFile } from './app-cache-handler';
 import { autoLaunchInstance } from './auto-launch-controller';
-import { setChromeFlags } from './chrome-flags';
+import { setChromeFlags, setSessionProperties } from './chrome-flags';
 import { config } from './config-handler';
 import './dialog-handler';
 import './main-api-handler';
@@ -15,7 +16,35 @@ import { handlePerformanceSettings } from './perf-handler';
 import { protocolHandler } from './protocol-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
+logger.info(`App started with the args ${JSON.stringify(process.argv)}`);
+
 const allowMultiInstance: string | boolean = getCommandLineArgs(process.argv, '--multiInstance', true) || isDevEnv;
+let isAppAlreadyOpen: boolean = false;
+
+// Setting the env path child_process issue https://github.com/electron/electron/issues/7688
+(async () => {
+    try {
+        const paths = await shellPath();
+        if (paths) {
+            return process.env.PATH = paths;
+        }
+        if (isMac) {
+            process.env.PATH = [
+                './node_modules/.bin',
+                '/usr/local/bin',
+                process.env.PATH,
+            ].join(':');
+        }
+    } catch (e) {
+        if (isMac) {
+            process.env.PATH = [
+                './node_modules/.bin',
+                '/usr/local/bin',
+                process.env.PATH,
+            ].join(':');
+        }
+    }
+})();
 
 electronDownloader();
 handlePerformanceSettings();
@@ -45,6 +74,8 @@ const startApplication = async () => {
         await autoLaunchInstance.handleAutoLaunch();
     }
 
+    // Setup session properties only after app ready
+    setSessionProperties();
 };
 
 // Handle multiple/single instances
@@ -72,7 +103,8 @@ if (!allowMultiInstance) {
                     mainWindow.restore();
                 }
                 mainWindow.focus();
-                protocolHandler.processArgv(argv);
+                isAppAlreadyOpen = true;
+                protocolHandler.processArgv(argv, isAppAlreadyOpen);
             }
         });
         startApplication();

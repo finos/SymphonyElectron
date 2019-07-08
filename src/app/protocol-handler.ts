@@ -64,12 +64,12 @@ class ProtocolHandler {
      *
      * @param argv {String[]} - data received from process.argv
      */
-    public processArgv(argv?: string[]): void {
+    public processArgv(argv?: string[], isAppAlreadyOpen: boolean = false): void {
         logger.info(`protocol handler: processing protocol args!`);
         const protocolUriFromArgv = getCommandLineArgs(argv || process.argv, protocol.SymphonyProtocol, false);
         if (protocolUriFromArgv) {
             logger.info(`protocol handler: we have a protocol request for the url ${protocolUriFromArgv}!`);
-            this.sendProtocol(protocolUriFromArgv, false);
+            this.sendProtocol(protocolUriFromArgv, isAppAlreadyOpen);
         }
     }
 }

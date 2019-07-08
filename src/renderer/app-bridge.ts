@@ -1,5 +1,6 @@
 import { remote } from 'electron';
 
+import { IAnalyticsData } from '../app/analytics-handler';
 import {
     apiCmds,
     IBoundsChange,
@@ -54,6 +55,7 @@ export class AppBridge {
             source: ICustomDesktopCapturerSource | undefined,
         ): void => this.gotMediaSource(error, source),
         onNotificationCallback: (event, data) => this.notificationCallback(event, data),
+        onAnalyticsEventCallback: (data) => this.analyticsEventCallback(data),
     };
 
     constructor() {
@@ -143,6 +145,9 @@ export class AppBridge {
                     ssf.setIsInMeeting(data as boolean);
                 }
                 break;
+            case apiCmds.registerAnalyticsHandler:
+                ssf.registerAnalyticsEvent(this.callbackHandlers.onAnalyticsEventCallback);
+                break;
             case apiCmds.swiftSearch:
                 if (ssInstance) {
                     ssInstance.handleMessageEvents(data);
@@ -191,6 +196,14 @@ export class AppBridge {
      */
     private screenSharingIndicatorCallback(arg: IScreenSharingIndicator): void {
         this.broadcastMessage('screen-sharing-indicator-callback', arg);
+    }
+
+    /**
+     * Broadcast analytics events data
+     * @param arg {IAnalyticsData}
+     */
+    private analyticsEventCallback(arg: IAnalyticsData): void {
+        this.broadcastMessage('analytics-event-callback', arg);
     }
 
     /**

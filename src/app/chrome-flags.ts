@@ -1,11 +1,14 @@
-import { app } from 'electron';
+import { app, session } from 'electron';
+
 import { logger } from '../common/logger';
-import { getCommandLineArgs } from '../common/utils';
 import { config, IConfig } from './config-handler';
 
 // Set default flags
 logger.info(`chrome-flags: Setting mandatory chrome flags`, { flag: { 'ssl-version-fallback-min': 'tls1.2' } });
 app.commandLine.appendSwitch('ssl-version-fallback-min', 'tls1.2');
+
+// Special args that need to be excluded as part of the chrome command line switch
+const specialArgs = [ '--url', '--multiInstance', '--userDataPath=', 'symphony://', '--inspect-brk', '--inspect', '--logPath' ];
 
 /**
  * Sets chrome flags
@@ -21,7 +24,7 @@ export const setChromeFlags = () => {
         'disable-d3d11': customFlags.disableGpu || null,
         'disable-gpu': customFlags.disableGpu || null,
         'disable-gpu-compositing': customFlags.disableGpu || null,
-        'disable-renderer-backgrounding': customFlags.disableThrottling || 'false',
+        'disable-renderer-backgrounding': customFlags.disableThrottling || null,
     };
 
     for (const key in configFlags) {
@@ -35,44 +38,43 @@ export const setChromeFlags = () => {
         }
     }
 
-    logger.info(`chrome-flags: Checking to see if we have any flags passsed from command line!`);
-    const chromeFlagsFromCmd = getCommandLineArgs(process.argv, '--chrome-flags=', false);
-    if (!chromeFlagsFromCmd) {
-        logger.info(`chrome-flags: No flags passed from command line, returning`);
-        return;
-    }
-
-    const chromeFlagsArgs = chromeFlagsFromCmd.substr(15);
-    logger.info(`chrome-flags: Command line args passed as ${chromeFlagsArgs}`);
-    if (!chromeFlagsArgs) {
-        logger.info(`chrome-flags: Not a valid set of args passed through command line for setting chrome flags, returning`);
-        return;
-    }
-
-    const flags = chromeFlagsArgs.split(',');
-    logger.info(`chrome-flags: Flags we have are ${flags}`);
-    if (!flags || !Array.isArray(flags)) {
-        logger.info(`chrome-flags: Empty set of flags passed! returning`);
-        return;
-    }
-
-    for (const key in flags) {
-
-        if (!Object.prototype.hasOwnProperty.call(flags, key)) {
-            continue;
-        }
-
-        if (!flags[key]) {
+    const cmdArgs = process.argv;
+    cmdArgs.forEach((arg) => {
+        // We need to check if the argument key matches the one
+        // in the special args array and return if it does match
+        const argSplit = arg.split('=');
+        const argKey = argSplit[0];
+        const argValue = argSplit[1] && arg.substring(arg.indexOf('=') + 1);
+        if (arg.startsWith('--') && specialArgs.includes(argKey)) {
             return;
         }
 
-        const flagArray = flags[key].split(':');
-
-        if (flagArray && Array.isArray(flagArray) && flagArray.length > 0) {
-            const chromeFlagKey = flagArray[0];
-            const chromeFlagValue = flagArray[1];
-            logger.info(`chrome-flags: Setting chrome flag from command line for key ${chromeFlagKey} and value ${chromeFlagValue}`);
-            app.commandLine.appendSwitch(chromeFlagKey, chromeFlagValue);
+        // All the chrome flags starts with --
+        // So, any other arg (like 'electron' or '.')
+        // need to be skipped
+        if (arg.startsWith('--')) {
+            // Since chrome takes values after an equals
+            // We split the arg and set it either as
+            // just a key, or as a key-value pair
+            if (argKey && argValue) {
+                app.commandLine.appendSwitch(argKey.substr(2), argValue);
+            } else {
+                app.commandLine.appendSwitch(argKey);
+            }
+            logger.info( `Appended chrome command line switch ${argKey} with value ${argValue}`);
         }
+
+    });
+};
+
+/**
+ * Sets default session properties
+ */
+export const setSessionProperties = () => {
+    logger.info(`chrome-flags: Settings session properties`);
+    const { customFlags } = config.getGlobalConfigFields([ 'customFlags' ]) as IConfig;
+
+    if (session.defaultSession && customFlags && customFlags.authServerWhitelist && customFlags.authServerWhitelist !== '') {
+        session.defaultSession.allowNTLMCredentialsForDomains(customFlags.authServerWhitelist);
     }
 };

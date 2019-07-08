@@ -3,6 +3,12 @@ import { app, dialog, Menu, MenuItemConstructorOptions, session, shell } from 'e
 import { isMac, isWindowsOS } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
+import {
+    analytics,
+    AnalyticsActions,
+    AnalyticsElements,
+    MenuActionTypes,
+} from './analytics-handler';
 import { autoLaunchInstance as autoLaunch } from './auto-launch-controller';
 import { config, IConfig } from './config-handler';
 import { titleBarChangeDialog } from './dialog-handler';
@@ -53,6 +59,7 @@ let {
     'bringToFront',
     'memoryRefresh',
 ]) as IConfig;
+let initialAnalyticsSent = false;
 
 const menuItemsArray = Object.keys(menuSections)
     .map((key) => menuSections[ key ])
@@ -72,6 +79,16 @@ export class AppMenu {
             ? TitleBarStyles.CUSTOM
             : TitleBarStyles.NATIVE;
         this.buildMenu();
+        // send initial analytic
+        if (!initialAnalyticsSent) {
+            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.MINIMIZE_ON_CLOSE, minimizeOnClose);
+            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.AUTO_LAUNCH_ON_START_UP, launchOnStartup);
+            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.ALWAYS_ON_TOP, isAlwaysOnTop);
+            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.FLASH_NOTIFICATION_IN_TASK_BAR, bringToFront);
+            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.REFRESH_APP_IN_IDLE, memoryRefresh);
+            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.HAMBURGER_MENU, isMac ? false : this.titleBarStyle === TitleBarStyles.CUSTOM);
+        }
+        initialAnalyticsSent = true;
     }
 
     /**
@@ -246,6 +263,7 @@ export class AppMenu {
                     }
                     launchOnStartup = item.checked;
                     await config.updateUserConfig({ launchOnStartup });
+                    this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.AUTO_LAUNCH_ON_START_UP, item.checked);
                 },
                 label: i18n.t('Auto Launch On Startup')(),
                 type: 'checkbox',
@@ -256,6 +274,7 @@ export class AppMenu {
                     isAlwaysOnTop = item.checked;
                     updateAlwaysOnTop(item.checked, true);
                     await config.updateUserConfig({ alwaysOnTop: item.checked });
+                    this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.ALWAYS_ON_TOP, item.checked);
                 },
                 label: i18n.t('Always on Top')(),
                 type: 'checkbox',
@@ -265,6 +284,7 @@ export class AppMenu {
                 click: async (item) => {
                     minimizeOnClose = item.checked;
                     await config.updateUserConfig({ minimizeOnClose });
+                    this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.MINIMIZE_ON_CLOSE, item.checked);
                 },
                 label: i18n.t('Minimize on Close')(),
                 type: 'checkbox',
@@ -274,6 +294,7 @@ export class AppMenu {
                 click: async (item) => {
                     bringToFront = item.checked;
                     await config.updateUserConfig({ bringToFront });
+                    this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.FLASH_NOTIFICATION_IN_TASK_BAR, item.checked);
                 },
                 label: isWindowsOS
                     ? i18n.t('Flash Notification in Taskbar')()
@@ -291,6 +312,7 @@ export class AppMenu {
 
                     this.titleBarStyle = isNativeStyle ? TitleBarStyles.NATIVE : TitleBarStyles.CUSTOM;
                     titleBarChangeDialog(isNativeStyle);
+                    this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.HAMBURGER_MENU, this.titleBarStyle === TitleBarStyles.CUSTOM);
                 },
             },
             {
@@ -298,6 +320,7 @@ export class AppMenu {
                 click: async (item) => {
                     memoryRefresh = item.checked;
                     await config.updateUserConfig({ memoryRefresh });
+                    this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.REFRESH_APP_IN_IDLE, item.checked);
                 },
                 label: i18n.t('Refresh app when idle')(),
                 type: 'checkbox',
@@ -420,5 +443,20 @@ export class AppMenu {
         }
 
         return label ? { role, label } : { role };
+    }
+
+    /**
+     * Sends analytics events
+     *
+     * @param element {AnalyticsElements}
+     * @param type {MenuActionTypes}
+     * @param result {Boolean}
+     */
+    private sendAnalytics(element: AnalyticsElements, type: MenuActionTypes, result: boolean): void {
+        analytics.track({
+            element,
+            action_type: type,
+            action_result: result ? AnalyticsActions.ENABLED : AnalyticsActions.DISABLED,
+        });
     }
 }

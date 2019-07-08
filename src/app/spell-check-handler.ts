@@ -54,7 +54,6 @@ export class SpellChecker {
 
         webContents.on('context-menu', contextMenuListener);
         webContents.once('destroyed', () => {
-            logger.info(`spell-check-handler: web contents destroyed, removing context menu listener!`);
             webContents.removeListener('context-menu', contextMenuListener);
         });
     }

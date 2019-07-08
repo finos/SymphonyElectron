@@ -90,10 +90,12 @@ export class WindowHandler {
         // Use these variables only on initial setup
         this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings' ]);
         this.globalConfig = config.getGlobalConfigFields([ 'url', 'contextIsolation', 'customFlags' ]);
+        const { url, contextIsolation, customFlags }: IConfig = this.globalConfig;
 
         this.windows = {};
-        this.contextIsolation = this.globalConfig.contextIsolation || false;
-        this.backgroundThrottling = !this.globalConfig.customFlags.disableThrottling;
+        this.contextIsolation = contextIsolation || false;
+        this.backgroundThrottling = !customFlags.disableThrottling;
+        this.contextIsolation = contextIsolation || false;
         this.isCustomTitleBar = isWindowsOS && this.config.isCustomTitleBar;
         this.windowOpts = {
             ...this.getWindowOpts({
@@ -111,7 +113,7 @@ export class WindowHandler {
         this.appMenu = null;
 
         try {
-            const extra = { podUrl: this.globalConfig.url, process: 'main' };
+            const extra = { podUrl: url, process: 'main' };
             const defaultOpts = { uploadToServer: false, companyName: 'Symphony', submitURL: '' };
             crashReporter.start({ ...defaultOpts, extra });
         } catch (e) {

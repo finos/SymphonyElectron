@@ -1,4 +1,5 @@
 import { ipcRenderer, remote } from 'electron';
+const os = remote.require('os');
 
 import { buildNumber, searchAPIVersion } from '../../package.json';
 import { ICustomBrowserWindow } from '../app/window-handler';
@@ -37,6 +38,7 @@ export interface ILocalObject {
     boundsChangeCallback?: (arg: IBoundsChange) => void;
     screenSharingIndicatorCallback?: (arg: IScreenSharingIndicator) => void;
     protocolActionCallback?: (arg: string) => void;
+    analyticsEventHandler?: (arg: any) => void;
 }
 
 const local: ILocalObject = {
@@ -170,12 +172,14 @@ export class SSFApi {
     public getVersionInfo(): Promise<IVersionInfo> {
         const appName = remote.app.getName();
         const appVer = remote.app.getVersion();
+        const cpuArch = os.arch() || '';
 
         return Promise.resolve({
             containerIdentifier: appName,
             containerVer: appVer,
             buildNumber,
             apiVer: '2.0.0',
+            cpuArch,
             // Only need to bump if there are any breaking changes.
             searchApiVer: searchAPIVersion,
         });
@@ -221,7 +225,7 @@ export class SSFApi {
      *  logDetails: String
      *  }
      */
-    public registerLogger(logger: (msg: ILogMsg, logLevel: LogLevel, showInConsole: boolean) => void) {
+    public registerLogger(logger: (msg: ILogMsg, logLevel: LogLevel, showInConsole: boolean) => void): void {
         if (typeof logger === 'function') {
             local.logger = logger;
 
@@ -247,7 +251,7 @@ export class SSFApi {
      * this registration func is invoked then the protocolHandler callback
      * will be immediately called.
      */
-    public registerProtocolHandler(protocolHandler) {
+    public registerProtocolHandler(protocolHandler): void {
         if (typeof protocolHandler === 'function') {
 
             local.protocolActionCallback = protocolHandler;
@@ -256,6 +260,22 @@ export class SSFApi {
                 cmd: apiCmds.registerProtocolHandler,
             });
 
+        }
+    }
+
+    /**
+     * Allows JS to register analytics event handler
+     * to pass analytics event data
+     *
+     * @param analyticsEventHandler
+     */
+    public registerAnalyticsEvent(analyticsEventHandler): void {
+        if (typeof analyticsEventHandler === 'function') {
+            local.analyticsEventHandler = analyticsEventHandler;
+
+            local.ipcRenderer.send(apiName.symphonyApi, {
+                cmd: apiCmds.registerAnalyticsHandler,
+            });
         }
     }
 
@@ -542,6 +562,12 @@ local.ipcRenderer.on('log', (_event, arg) => {
 local.ipcRenderer.on('protocol-action', (_event, arg: string) => {
     if (typeof local.protocolActionCallback === 'function' && typeof arg === 'string') {
         local.protocolActionCallback(arg);
+    }
+});
+
+local.ipcRenderer.on('analytics-callback', (_event, arg: object) => {
+    if (typeof local.analyticsEventHandler === 'function' && arg) {
+        local.analyticsEventHandler(arg);
     }
 });
 
