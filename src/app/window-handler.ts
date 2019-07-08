@@ -4,7 +4,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { format, parse } from 'url';
 
-import { buildNumber, clientVersion, version } from '../../package.json';
 import { apiName, WindowTypes } from '../common/api-interface';
 import { isDevEnv, isMac, isWindowsOS } from '../common/env';
 import { i18n } from '../common/i18n';
@@ -16,6 +15,8 @@ import { handleChildWindow } from './child-window-handler';
 import { config, IConfig } from './config-handler';
 import { SpellChecker } from './spell-check-handler';
 import { checkIfBuildExpired } from './ttl-handler';
+import DesktopCapturerSource = Electron.DesktopCapturerSource;
+import { IVersionInfo, versionHandler } from './version-handler.js';
 import { handlePermissionRequests, monitorWindowActions } from './window-actions';
 import {
     createComponentWindow,
@@ -27,7 +28,6 @@ import {
     preventWindowNavigation,
     windowExists,
 } from './window-utils';
-import DesktopCapturerSource = Electron.DesktopCapturerSource;
 
 interface ICustomBrowserWindowConstructorOpts extends Electron.BrowserWindowConstructorOptions {
     winKey: string;
@@ -401,11 +401,12 @@ export class WindowHandler {
             selectedParentWindow ? { parent: selectedParentWindow } : {},
         );
         this.aboutAppWindow.setVisibleOnAllWorkspaces(true);
-        this.aboutAppWindow.webContents.once('did-finish-load', () => {
+        this.aboutAppWindow.webContents.once('did-finish-load', async () => {
             if (!this.aboutAppWindow || !windowExists(this.aboutAppWindow)) {
                 return;
             }
-            this.aboutAppWindow.webContents.send('about-app-data', { buildNumber, clientVersion, version });
+            const { clientVersion, buildNumber }: IVersionInfo = await versionHandler.getClientVersion();
+            this.aboutAppWindow.webContents.send('about-app-data', { buildNumber, clientVersion });
         });
     }
 
@@ -422,11 +423,12 @@ export class WindowHandler {
         }
 
         this.moreInfoWindow = createComponentWindow('more-info', { width: 550, height: 500 });
-        this.moreInfoWindow.webContents.once('did-finish-load', () => {
+        this.moreInfoWindow.webContents.once('did-finish-load', async () => {
             if (!this.moreInfoWindow || !windowExists(this.moreInfoWindow)) {
                 return;
             }
-            this.moreInfoWindow.webContents.send('more-info-data');
+            const versionInfo: IVersionInfo = await versionHandler.getClientVersion();
+            this.moreInfoWindow.webContents.send('more-info-data', versionInfo);
         });
     }
 

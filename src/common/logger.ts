@@ -42,7 +42,7 @@ class Logger {
 
         this.logPath = app.getPath('logs');
 
-        if (!isElectronQA) {
+        if (app.isPackaged) {
             transports.file.file = path.join(this.logPath, `app_${Date.now()}.log`);
             transports.file.level = 'debug';
             transports.file.format = '{y}-{m}-{d} {h}:{i}:{s}:{ms} {z} | {level} | {text}';

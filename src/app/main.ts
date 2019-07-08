@@ -1,7 +1,6 @@
 import { app } from 'electron';
 import * as shellPath from 'shell-path';
 
-import { buildNumber, clientVersion, version } from '../../package.json';
 import { isDevEnv, isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
@@ -13,6 +12,7 @@ import './dialog-handler';
 import './main-api-handler';
 import { handlePerformanceSettings } from './perf-handler';
 import { protocolHandler } from './protocol-handler';
+import { IVersionInfo, versionHandler } from './version-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
 logger.info(`App started with the args ${JSON.stringify(process.argv)}`);
@@ -48,21 +48,29 @@ let isAppAlreadyOpen: boolean = false;
 handlePerformanceSettings();
 setChromeFlags();
 
-// on windows, we create the protocol handler via the installer
-// because electron leaves registry traces upon uninstallation
-if (isMac) {
-    // Sets application version info that will be displayed in about app panel
-    app.setAboutPanelOptions({ applicationVersion: `${clientVersion}-${version}`, version: buildNumber });
-}
-
 // Electron sets the default protocol
 app.setAsDefaultProtocolClient('symphony');
+
+const setAboutPanel = (clientVersion: string, buildNumber: string) => {
+    const appName = app.getName();
+    const copyright = `Copyright \xA9 ${new Date().getFullYear()} ${appName}`;
+    app.setAboutPanelOptions({
+        applicationName: appName,
+        applicationVersion: clientVersion,
+        version: buildNumber,
+        copyright,
+    });
+};
 
 /**
  * Main function that init the application
  */
 const startApplication = async () => {
     await app.whenReady();
+    versionHandler.getClientVersion()
+    .then((versionInfo: IVersionInfo) => {
+        setAboutPanel(versionInfo.clientVersion, versionInfo.buildNumber);
+    });
     logger.info(`main: app is ready, performing initial checks`);
     createAppCacheFile();
     windowHandler.createApplication();
