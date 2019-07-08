@@ -62,7 +62,7 @@ class VersionHandler {
             const { url: podUrl }: IConfig = config.getGlobalConfigFields(['url']);
 
             if (!podUrl) {
-                logger.error(`Unable to get pod url for getting version data from server! Setting defaults!`);
+                logger.error(`version-handler: Unable to get pod url for getting version data from server! Setting defaults!`);
                 resolve(this.versionInfo);
                 return;
             }
@@ -72,7 +72,7 @@ class VersionHandler {
             const versionApiPath = '/webcontroller/HealthCheck/version/advanced';
 
             const url = `${protocol}//${hostname}${versionApiPath}`;
-            logger.info(`Trying to get version info for the URL: ${url}`);
+            logger.info(`version-handler: Trying to get version info for the URL: ${url}`);
 
             const request = net.request(url);
             request.on('response', (res) => {
@@ -87,21 +87,35 @@ class VersionHandler {
                         this.serverVersionInfo = JSON.parse(body)[0];
                         this.versionInfo.clientVersion = this.serverVersionInfo['Implementation-Version'] || this.versionInfo.clientVersion;
                         this.versionInfo.buildNumber = this.serverVersionInfo['Implementation-Build'] || this.versionInfo.buildNumber;
-                        logger.info(`Updated version info from server! ${JSON.stringify(this.versionInfo)}`);
+                        logger.info(`version-handler: Updated version info from server! ${JSON.stringify(this.versionInfo)}`);
                         resolve(this.versionInfo);
                     } catch (error) {
-                        logger.error(`Error getting version data from the server! ${error}`);
+                        logger.error(`version-handler: Error getting version data from the server! ${error}`);
                         resolve(this.versionInfo);
                         return;
                     }
                 });
 
                 res.on('error', (error) => {
-                    logger.error(`Error getting version data from the server! ${error}`);
+                    logger.error(`version-handler: Error getting version data from the server! ${error}`);
                     resolve(this.versionInfo);
                     return;
                 });
 
+            });
+
+            request.on('error', (error) => {
+                logger.error(`version-handler: Error getting version data from the server! ${error}`);
+                resolve(this.versionInfo);
+                return;
+            });
+
+            request.on('close', () => {
+                logger.info(`version-handler: Request closed!!`);
+            });
+
+            request.on('finish', () => {
+                logger.info(`version-handler: Request finished!!`);
             });
 
             request.end();
