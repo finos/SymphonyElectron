@@ -41,8 +41,10 @@ const setAboutPanel = (clientVersion: string, buildNumber: string) => {
  */
 const startApplication = async () => {
     await app.whenReady();
-    const versionInfo: IVersionInfo = await versionHandler.getClientVersion();
-    setAboutPanel(versionInfo.clientVersion, versionInfo.buildNumber);
+    versionHandler.getClientVersion()
+    .then((versionInfo: IVersionInfo) => {
+        setAboutPanel(versionInfo.clientVersion, versionInfo.buildNumber);
+    });
     logger.info(`main: app is ready, performing initial checks`);
     createAppCacheFile();
     windowHandler.createApplication();
