@@ -13,7 +13,6 @@ import { notification } from '../renderer/notification';
 import { AppMenu } from './app-menu';
 import { handleChildWindow } from './child-window-handler';
 import { config, IConfig } from './config-handler';
-import { eventEmitter } from './event-emitter';
 import { SpellChecker } from './spell-check-handler';
 import { checkIfBuildExpired } from './ttl-handler';
 import DesktopCapturerSource = Electron.DesktopCapturerSource;
@@ -402,19 +401,12 @@ export class WindowHandler {
             selectedParentWindow ? { parent: selectedParentWindow } : {},
         );
         this.aboutAppWindow.setVisibleOnAllWorkspaces(true);
-        this.aboutAppWindow.webContents.once('did-finish-load', () => {
+        this.aboutAppWindow.webContents.once('did-finish-load', async () => {
             if (!this.aboutAppWindow || !windowExists(this.aboutAppWindow)) {
                 return;
             }
-            let { clientVersion, buildNumber }: IVersionInfo = versionHandler.getVersionInfo();
+            const { clientVersion, buildNumber }: IVersionInfo = await versionHandler.getClientVersion();
             this.aboutAppWindow.webContents.send('about-app-data', { buildNumber, clientVersion });
-            eventEmitter.on('update-version-info', (versionInfo) => {
-                clientVersion = versionInfo.clientVersion;
-                buildNumber = versionInfo.buildNumber;
-                if (this.aboutAppWindow) {
-                    this.aboutAppWindow.webContents.send('about-app-data', { buildNumber, clientVersion });
-                }
-            });
         });
     }
 
@@ -431,17 +423,12 @@ export class WindowHandler {
         }
 
         this.moreInfoWindow = createComponentWindow('more-info', { width: 550, height: 500 });
-        this.moreInfoWindow.webContents.once('did-finish-load', () => {
+        this.moreInfoWindow.webContents.once('did-finish-load', async () => {
             if (!this.moreInfoWindow || !windowExists(this.moreInfoWindow)) {
                 return;
             }
-            const verInfo: IVersionInfo = versionHandler.getVersionInfo();
-            this.moreInfoWindow.webContents.send('more-info-data', verInfo);
-            eventEmitter.on('update-version-info', (versionInfo) => {
-                if (this.moreInfoWindow) {
-                    this.moreInfoWindow.webContents.send('more-info-data', versionInfo);
-                }
-            });
+            const versionInfo: IVersionInfo = await versionHandler.getClientVersion();
+            this.moreInfoWindow.webContents.send('more-info-data', versionInfo);
         });
     }
 

@@ -8,7 +8,6 @@ import { autoLaunchInstance } from './auto-launch-controller';
 import { setChromeFlags, setSessionProperties } from './chrome-flags';
 import { config } from './config-handler';
 import './dialog-handler';
-import { eventEmitter } from './event-emitter';
 import './main-api-handler';
 import { handlePerformanceSettings } from './perf-handler';
 import { protocolHandler } from './protocol-handler';
@@ -23,6 +22,9 @@ let isAppAlreadyOpen: boolean = false;
 handlePerformanceSettings();
 setChromeFlags();
 
+// Electron sets the default protocol
+app.setAsDefaultProtocolClient('symphony');
+
 const setAboutPanel = (clientVersion: string, buildNumber: string) => {
     const appName = app.getName();
     const copyright = `Copyright \xA9 ${new Date().getFullYear()} ${appName}`;
@@ -34,24 +36,13 @@ const setAboutPanel = (clientVersion: string, buildNumber: string) => {
     });
 };
 
-if (isMac) {
-    let { clientVersion, buildNumber }: IVersionInfo = versionHandler.getVersionInfo();
-    setAboutPanel(clientVersion, buildNumber);
-    eventEmitter.on('update-version-info', (versionInfo) => {
-        clientVersion = versionInfo.clientVersion;
-        buildNumber = versionInfo.buildNumber;
-        setAboutPanel(clientVersion, buildNumber);
-    });
-}
-
-// Electron sets the default protocol
-app.setAsDefaultProtocolClient('symphony');
-
 /**
  * Main function that init the application
  */
 const startApplication = async () => {
     await app.whenReady();
+    const versionInfo: IVersionInfo = await versionHandler.getClientVersion();
+    setAboutPanel(versionInfo.clientVersion, versionInfo.buildNumber);
     logger.info(`main: app is ready, performing initial checks`);
     createAppCacheFile();
     windowHandler.createApplication();
