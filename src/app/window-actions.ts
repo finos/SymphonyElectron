@@ -65,6 +65,8 @@ const windowUnmaximized = async (): Promise<void> => {
 };
 
 const throttledWindowChanges = throttle(saveWindowSettings, 1000);
+const throttledWindowMaximized = throttle(windowMaximized, 1000);
+const throttledWindowUnmaximized = throttle(windowUnmaximized, 1000);
 
 /**
  * Tries finding a window we have created with given name.  If found, then
@@ -178,11 +180,11 @@ export const monitorWindowActions = (window: BrowserWindow): void => {
             window.on(event, throttledWindowChanges);
         }
     });
-    window.on('enter-full-screen', windowMaximized);
-    window.on('maximize', windowMaximized);
+    window.on('enter-full-screen', throttledWindowMaximized);
+    window.on('maximize', throttledWindowMaximized);
 
-    window.on('leave-full-screen', windowUnmaximized);
-    window.on('unmaximize', windowUnmaximized);
+    window.on('leave-full-screen', throttledWindowUnmaximized);
+    window.on('unmaximize', throttledWindowUnmaximized);
 };
 
 /**
@@ -201,11 +203,11 @@ export const removeWindowEventListener = (window: BrowserWindow): void => {
             window.removeListener(event, throttledWindowChanges);
         }
     });
-    window.removeListener('enter-full-screen', windowMaximized);
-    window.removeListener('maximize', windowMaximized);
+    window.removeListener('enter-full-screen', throttledWindowMaximized);
+    window.removeListener('maximize', throttledWindowMaximized);
 
-    window.removeListener('leave-full-screen', windowUnmaximized);
-    window.removeListener('unmaximize', windowUnmaximized);
+    window.removeListener('leave-full-screen', throttledWindowUnmaximized);
+    window.removeListener('unmaximize', throttledWindowUnmaximized);
 };
 
 /**
