@@ -23,6 +23,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
     private readonly eventHandlers = {
         onClose: (winKey) => (_event: mouseEventButton) => this.close(winKey),
         onClick: (data) => (_event: mouseEventButton) => this.click(data),
+        onContextMenu: (event) => this.contextMenu(event),
     };
 
     constructor(props) {
@@ -59,7 +60,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
         const bgColor = { backgroundColor: colorHex || '#ffffff' };
 
         return (
-            <div className='container' role='alert' style={bgColor} onClick={this.eventHandlers.onClick(id)}>
+            <div className='container' onContextMenu={this.eventHandlers.onContextMenu} role='alert' style={bgColor} onClick={this.eventHandlers.onClick(id)}>
                 <div className='logo-container'>
                     <img className={`logo ${theme}`} alt='symphony logo'/>
                 </div>
@@ -97,6 +98,15 @@ export default class NotificationComp extends React.Component<{}, IState> {
      */
     private close(id: number) {
         ipcRenderer.send('close-notification', id);
+    }
+
+    /**
+     * Disable context menu
+     *
+     * @param event
+     */
+    private contextMenu(event) {
+        event.preventDefault();
     }
 
     /**
