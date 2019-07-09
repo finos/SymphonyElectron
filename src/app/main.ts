@@ -1,4 +1,5 @@
 import { app } from 'electron';
+import * as electronDownloader from 'electron-dl';
 import * as shellPath from 'shell-path';
 
 import { isDevEnv, isMac } from '../common/env';
@@ -45,6 +46,7 @@ let isAppAlreadyOpen: boolean = false;
     }
 })();
 
+electronDownloader();
 handlePerformanceSettings();
 setChromeFlags();
 

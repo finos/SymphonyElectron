@@ -12,6 +12,7 @@ interface IDownloadManager {
     savedPath: string;
     total: number;
     flashing: boolean;
+    count: number;
 }
 
 interface IManagerState {
@@ -92,7 +93,7 @@ export default class DownloadManager extends React.Component<{}, IManagerState> 
                 });
             }
         }, 4000);
-        const fileDisplayName = this.getFileDisplayName(fileName);
+        const fileDisplayName = this.getFileDisplayName(fileName, item);
         return (
             <li key={_id} id={_id} className='download-element'>
                 <div className='download-item' id='dl-item' onClick={this.eventHandlers.onOpenFile(_id)}>
@@ -132,6 +133,13 @@ export default class DownloadManager extends React.Component<{}, IManagerState> 
      */
     private injectItem(args: IDownloadManager): void {
         const { items } = this.state;
+        let itemCount = 0;
+        for (const item of items) {
+            if (args.fileName === item.fileName) {
+                itemCount++;
+            }
+        }
+        args.count = itemCount;
         const allItems = [ ...items, ...[ { ...args, ...{ flashing: true } } ] ];
         this.setState({ items: allItems, showMainComponent: true });
     }
@@ -190,31 +198,17 @@ export default class DownloadManager extends React.Component<{}, IManagerState> 
      * Checks and constructs file name
      *
      * @param fileName
+     * @param item
      */
-    private getFileDisplayName(fileName: string): string {
-        const { items } = this.state;
-        let fileNameCount = 0;
-        let fileDisplayName = fileName;
-
-        /* Check if a file with the same name exists
-         * (akin to the user downloading a file with the same name again)
-         * in the download bar
-         */
-        for (const value of items) {
-            if (fileName === value.fileName) {
-                fileNameCount++;
-            }
-        }
-
+    private getFileDisplayName(fileName: string, item: IDownloadManager): string {
         /* If it exists, add a count to the name like how Chrome does */
-        if (fileNameCount) {
-            const extLastIndex = fileDisplayName.lastIndexOf('.');
-            const fileCount = ' (' + fileNameCount + ')';
+        if (item.count > 0) {
+            const extLastIndex = fileName.lastIndexOf('.');
+            const fileCount = ' (' + item.count + ')';
 
-            fileDisplayName = fileDisplayName.slice(0, extLastIndex) + fileCount + fileDisplayName.slice(extLastIndex);
+            fileName = fileName.slice(0, extLastIndex) + fileCount + fileName.slice(extLastIndex);
         }
-
-        return fileDisplayName;
+        return fileName;
     }
 
     /**

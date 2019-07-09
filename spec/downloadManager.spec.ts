@@ -36,6 +36,7 @@ describe('download manager', () => {
         expect(spy).toBeCalledWith({
             items: [{
                 _id: 1,
+                count: 0,
                 fileName: 'test.png',
                 savedPath: 'path://test',
                 total: 1,
