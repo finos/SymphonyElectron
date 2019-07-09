@@ -23,7 +23,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
     private readonly eventHandlers = {
         onClose: (winKey) => (_event: mouseEventButton) => this.close(winKey),
         onClick: (data) => (_event: mouseEventButton) => this.click(data),
-        onContextMenu: (event) => this.contentMenu(event),
+        onContextMenu: (event) => this.contextMenu(event),
     };
 
     constructor(props) {
@@ -105,7 +105,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
      *
      * @param event
      */
-    private contentMenu(event) {
+    private contextMenu(event) {
         event.preventDefault();
     }
 
