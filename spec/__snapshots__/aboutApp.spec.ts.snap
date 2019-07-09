@@ -16,7 +16,7 @@ exports[`about app should render correctly 1`] = `
   <span
     className="AboutApp-versionText"
   >
-    Version 0-N/A ()
+    Version 0 ()
   </span>
   <span
     className="AboutApp-copyrightText"

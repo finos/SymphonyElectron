@@ -20,7 +20,7 @@
     "prebuild": "npm run compile && npm run rebuild && npm run browserify-preload",
     "rebuild": "electron-rebuild -f",
     "start": "npm run compile && npm run browserify-preload && cross-env ELECTRON_DEV=true electron .",
-    "test": "npm run lint && cross-env ELECTRON_QA=true jest --config jest.config.json --runInBand",
+    "test": "npm run lint && cross-env ELECTRON_QA=true jest --config jest.config.json --runInBand --detectOpenHandles",
     "unpacked-mac": "npm run prebuild && npm run test && build --mac --dir",
     "unpacked-win": "npm run prebuild && npm run test && build --win --x64 --dir",
     "unpacked-win-x86": "npm run prebuild && npm run test && build --win --ia32 --dir"
