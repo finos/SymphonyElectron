@@ -1,7 +1,7 @@
 import { app } from 'electron';
+import * as electronDownloader from 'electron-dl';
 import * as shellPath from 'shell-path';
 
-import * as electronDownloader from 'electron-dl';
 import { isDevEnv, isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
