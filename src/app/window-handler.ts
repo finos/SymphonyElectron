@@ -88,7 +88,7 @@ export class WindowHandler {
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Use these variables only on initial setup
-        this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings' ]);
+        this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings', 'alwaysOnTop' ]);
         this.globalConfig = config.getGlobalConfigFields([ 'url', 'contextIsolation', 'customFlags' ]);
         const { url, contextIsolation, customFlags }: IConfig = this.globalConfig;
 
@@ -99,6 +99,7 @@ export class WindowHandler {
         this.isCustomTitleBar = isWindowsOS && this.config.isCustomTitleBar;
         this.windowOpts = {
             ...this.getWindowOpts({
+                alwaysOnTop: this.config.alwaysOnTop || false,
                 frame: !this.isCustomTitleBar,
                 minHeight: 300,
                 minWidth: 300,
