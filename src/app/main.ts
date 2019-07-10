@@ -96,7 +96,7 @@ if (!allowMultiInstance) {
     // quit if another instance is already running, ignore for dev env or if app was started with multiInstance flag
     if (!gotTheLock) {
         logger.info(`main: got the lock hence closing the new instance`, { gotTheLock });
-        app.quit();
+        app.exit();
     } else {
         logger.info(`main: Creating the first instance of the application`);
         app.on('second-instance', (_event, argv) => {
