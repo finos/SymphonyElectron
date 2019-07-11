@@ -90,7 +90,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
                 </div>
                 <div className='title-container'>
                     {this.getSymphonyLogo()}
-                    <p className='title-bar-title'>{document.title || 'Symphony'}</p>
+                    <p id='title-bar-title'>{document.title || 'Symphony'}</p>
                 </div>
                 <div className='title-bar-button-container'>
                     <button

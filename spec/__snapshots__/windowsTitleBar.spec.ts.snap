@@ -232,7 +232,7 @@ exports[`windows title bar should render correctly 1`] = `
       />
     </svg>
     <p
-      className="title-bar-title"
+      id="title-bar-title"
     >
       Symphony
     </p>

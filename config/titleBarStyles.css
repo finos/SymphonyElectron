@@ -91,7 +91,7 @@ Typically you'll want to set content: url("") and adjust the width property
     overflow: hidden;
 }
 
-.title-bar-title {
+#title-bar-title {
     font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     color: white;
     margin: 0;
