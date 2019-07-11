@@ -107,7 +107,7 @@ export default class DownloadManager extends React.Component<{}, IManagerState> 
                             {fileDisplayName}
                         </h1>
                         <span id='per'>
-                            {total}{i18n.t('Downloaded', DOWNLOAD_MANAGER_NAMESPACE)()}
+                            {total} {i18n.t('downloaded', DOWNLOAD_MANAGER_NAMESPACE)()}
                         </span>
                     </div>
                 </div>

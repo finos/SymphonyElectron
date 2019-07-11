@@ -47,7 +47,7 @@
   "Dev Tools has been disabled! Please contact your system administrator to enable it!": "Dev Tools a été désactivé ! Veuillez contacter votre administrateur système pour l’activer !",
   "Disable Hamburger menu": "Désactiver le menu Hamburger",
   "DownloadManager": {
-    "Downloaded": "Téléchargé",
+    "downloaded": "téléchargé",
     "File not Found": "Fichier non trouvé",
     "Open": "Ouvrir",
     "Reveal in Finder": "Montrer le fichier",
