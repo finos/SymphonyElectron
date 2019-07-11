@@ -101,7 +101,7 @@ class Config {
      * @param fields
      */
     public getConfigFields(fields: string[]): IConfig {
-        logger.info(`config-handler: Trying to get config values for the fields ${fields}`);
+        logger.info(`config-handler: Trying to get config values for the fields`, fields);
         return { ...this.getGlobalConfigFields(fields), ...this.getUserConfigFields(fields) } as IConfig;
     }
 
@@ -111,7 +111,7 @@ class Config {
      * @param fields {Array}
      */
     public getUserConfigFields(fields: string[]): IConfig {
-        logger.info(`config-handler: Trying to get user config values for the fields ${fields}`);
+        logger.info(`config-handler: Trying to get user config values for the fields`, fields);
         return pick(this.userConfig, fields) as IConfig;
     }
 
@@ -121,7 +121,7 @@ class Config {
      * @param fields {Array}
      */
     public getGlobalConfigFields(fields: string[]): IConfig {
-        logger.info(`config-handler: Trying to get global config values for the fields ${fields}`);
+        logger.info(`config-handler: Trying to get global config values for the fields`, fields);
         return pick(this.globalConfig, fields) as IConfig;
     }
 
@@ -131,7 +131,7 @@ class Config {
      * @param data {IConfig}
      */
     public async updateUserConfig(data: Partial<IConfig>): Promise<void> {
-        logger.info(`config-handler: updating user config values with the data ${data}`);
+        logger.info(`config-handler: updating user config values with the data`, data);
         this.userConfig = { ...this.userConfig, ...data };
         try {
             await writeFile(this.userConfigPath, JSON.stringify(this.userConfig), { encoding: 'utf8' });
@@ -161,7 +161,7 @@ class Config {
             const filteredFields: IConfig = omit(this.userConfig, ignoreSettings) as IConfig;
             // update to the new build number
             filteredFields.buildNumber = buildNumber;
-            logger.info(`config-handler: setting first time launch for build ${buildNumber}`);
+            logger.info(`config-handler: setting first time launch for build`, buildNumber);
             return await this.updateUserConfig(filteredFields);
         }
     }
@@ -179,7 +179,7 @@ class Config {
         }
         try {
             parsedData = JSON.parse(data);
-            logger.info(`config-handler: parsed JSON file with data ${JSON.stringify(parsedData)}`);
+            logger.info(`config-handler: parsed JSON file with data`, parsedData);
         } catch (e) {
             logger.error(`config-handler: parsing JSON file failed due to error ${e}`);
             throw new Error(e);
