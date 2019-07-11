@@ -23,7 +23,7 @@ const PERMISSIONS_NAMESPACE = 'Permissions';
 const saveWindowSettings = async (): Promise<void> => {
     const browserWindow = BrowserWindow.getFocusedWindow() as ICustomBrowserWindow;
 
-    if (browserWindow && !browserWindow.isDestroyed()) {
+    if (browserWindow && windowExists(browserWindow)) {
         const [ x, y ] = browserWindow.getPosition();
         const [ width, height ] = browserWindow.getSize();
         if (x && y && width && height) {
@@ -31,7 +31,11 @@ const saveWindowSettings = async (): Promise<void> => {
 
             // Update the config file
             if (browserWindow.winName === apiName.mainWindowName) {
-                await config.updateUserConfig({ mainWinPos: { x, y, width, height } });
+                const isMaximized = browserWindow.isMaximized();
+                const isFullScreen = browserWindow.isFullScreen();
+                browserWindow.webContents.send(isFullScreen ? 'window-enter-full-screen' : 'window-leave-full-screen');
+                const { mainWinPos } = config.getUserConfigFields([ 'mainWinPos' ]);
+                await config.updateUserConfig({ mainWinPos: { ...mainWinPos, ...{ x, y, width, height, isMaximized, isFullScreen } } });
             }
         }
     }
@@ -43,30 +47,16 @@ const windowMaximized = async (): Promise<void> => {
     if (browserWindow && windowExists(browserWindow) && browserWindow.winName === apiName.mainWindowName) {
         const isMaximized = browserWindow.isMaximized();
         const isFullScreen = browserWindow.isFullScreen();
-        if (isFullScreen) {
-            browserWindow.webContents.send('window-enter-full-screen');
-        }
+        browserWindow.webContents.send(isFullScreen ? 'window-enter-full-screen' : 'window-leave-full-screen');
         const { mainWinPos } = config.getUserConfigFields([ 'mainWinPos' ]);
         await config.updateUserConfig({ mainWinPos: { ...mainWinPos, ...{ isMaximized, isFullScreen } } });
     }
 };
 
-const windowUnmaximized = async (): Promise<void> => {
-    const browserWindow = BrowserWindow.getFocusedWindow() as ICustomBrowserWindow;
-    if (browserWindow && windowExists(browserWindow) && browserWindow.winName === apiName.mainWindowName) {
-        const isMaximized = browserWindow.isMaximized();
-        const isFullScreen = browserWindow.isFullScreen();
-        if (!isFullScreen) {
-            browserWindow.webContents.send('window-leave-full-screen');
-        }
-        const { mainWinPos } = config.getUserConfigFields([ 'mainWinPos' ]);
-        await config.updateUserConfig({ mainWinPos: { ...mainWinPos, ...{ isMaximized, isFullScreen } } });
-    }
-};
-
-const throttledWindowChanges = throttle(saveWindowSettings, 1000);
-const throttledWindowMaximized = throttle(windowMaximized, 1000);
-const throttledWindowUnmaximized = throttle(windowUnmaximized, 1000);
+const throttledWindowChanges = throttle(async () => {
+    await saveWindowSettings();
+    await windowMaximized();
+}, 1000);
 
 /**
  * Tries finding a window we have created with given name.  If found, then
@@ -180,11 +170,11 @@ export const monitorWindowActions = (window: BrowserWindow): void => {
             window.on(event, throttledWindowChanges);
         }
     });
-    window.on('enter-full-screen', throttledWindowMaximized);
-    window.on('maximize', throttledWindowMaximized);
+    window.on('enter-full-screen', throttledWindowChanges);
+    window.on('maximize', throttledWindowChanges);
 
-    window.on('leave-full-screen', throttledWindowUnmaximized);
-    window.on('unmaximize', throttledWindowUnmaximized);
+    window.on('leave-full-screen', throttledWindowChanges);
+    window.on('unmaximize', throttledWindowChanges);
 };
 
 /**
@@ -203,11 +193,11 @@ export const removeWindowEventListener = (window: BrowserWindow): void => {
             window.removeListener(event, throttledWindowChanges);
         }
     });
-    window.removeListener('enter-full-screen', throttledWindowMaximized);
-    window.removeListener('maximize', throttledWindowMaximized);
+    window.removeListener('enter-full-screen', throttledWindowChanges);
+    window.removeListener('maximize', throttledWindowChanges);
 
-    window.removeListener('leave-full-screen', throttledWindowUnmaximized);
-    window.removeListener('unmaximize', throttledWindowUnmaximized);
+    window.removeListener('leave-full-screen', throttledWindowChanges);
+    window.removeListener('unmaximize', throttledWindowChanges);
 };
 
 /**
