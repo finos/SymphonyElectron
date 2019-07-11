@@ -47,7 +47,7 @@
   "Dev Tools has been disabled! Please contact your system administrator to enable it!": "Dev Tools has been disabled! Please contact your system administrator to enable it!",
   "Disable Hamburger menu": "Disable Hamburger menu",
   "DownloadManager": {
-    "Downloaded": "Downloaded",
+    "downloaded": "downloaded",
     "File not Found": "File not Found",
     "Open": "Open",
     "Reveal in Finder": "Reveal in Finder",
