@@ -49,6 +49,8 @@ class Notification extends NotificationHandler {
     private readonly funcHandlers = {
         onCleanUpInactiveNotification: () => this.cleanUpInactiveNotification(),
         onCreateNotificationWindow: (data: INotificationData) => this.createNotificationWindow(data),
+        onMouseOver: (_event, windowId) => this.onMouseOver(windowId),
+        onMouseLeave: (_event, windowId) => this.onMouseLeave(windowId),
     };
     private activeNotifications: Electron.BrowserWindow[] = [];
     private inactiveWindows: Electron.BrowserWindow[] = [];
@@ -68,6 +70,8 @@ class Notification extends NotificationHandler {
         ipcMain.on('notification-clicked', (_event, windowId) => {
             this.notificationClicked(windowId);
         });
+        ipcMain.on('notification-mouseover', this.funcHandlers.onMouseOver);
+        ipcMain.on('notification-mouseleave', this.funcHandlers.onMouseLeave);
         // Update latest notification settings from config
         app.on('ready', () => this.updateNotificationSettings());
         this.cleanUpTimer = setInterval(this.funcHandlers.onCleanUpInactiveNotification, CLEAN_UP_INTERVAL);
@@ -338,6 +342,39 @@ class Notification extends NotificationHandler {
                 }
             });
             logger.info(`notification: cleaned up inactive notification windows`, {inactiveNotification: this.inactiveWindows.length});
+        }
+    }
+
+    /**
+     * Clears the timer for a specific notification window
+     *
+     * @param windowId {number} - Id associated with the window
+     */
+    private onMouseOver(windowId: number): void {
+        const notificationWindow = this.getNotificationWindow(windowId);
+        if (!notificationWindow || !windowExists(notificationWindow)) {
+            return;
+        }
+        clearTimeout(notificationWindow.displayTimer);
+    }
+
+    /**
+     * Start a new timer to close the notification
+     *
+     * @param windowId
+     */
+    private onMouseLeave(windowId: number): void {
+        const notificationWindow = this.getNotificationWindow(windowId);
+        if (!notificationWindow || !windowExists(notificationWindow)) {
+            return;
+        }
+        const displayTime = (notificationWindow.notificationData && notificationWindow.notificationData.displayTime)
+            ? notificationWindow.notificationData.displayTime
+            : notificationSettings.displayTime;
+        if (notificationWindow && windowExists(notificationWindow)) {
+            notificationWindow.displayTimer = setTimeout(async () => {
+                await this.hideNotification(notificationWindow.clientId);
+            }, displayTime);
         }
     }
 

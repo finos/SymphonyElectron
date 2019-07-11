@@ -24,6 +24,8 @@ export default class NotificationComp extends React.Component<{}, IState> {
         onClose: (winKey) => (_event: mouseEventButton) => this.close(winKey),
         onClick: (data) => (_event: mouseEventButton) => this.click(data),
         onContextMenu: (event) => this.contextMenu(event),
+        onMouseOver: (winKey) => (_event: mouseEventButton) => this.onMouseOver(winKey),
+        onMouseLeave: (winKey) => (_event: mouseEventButton) => this.onMouseLeave(winKey),
     };
 
     constructor(props) {
@@ -60,7 +62,14 @@ export default class NotificationComp extends React.Component<{}, IState> {
         const bgColor = { backgroundColor: colorHex || '#ffffff' };
 
         return (
-            <div className='container' onContextMenu={this.eventHandlers.onContextMenu} role='alert' style={bgColor} onClick={this.eventHandlers.onClick(id)}>
+            <div className='container'
+                 role='alert'
+                 style={bgColor}
+                 onContextMenu={this.eventHandlers.onContextMenu}
+                 onClick={this.eventHandlers.onClick(id)}
+                 onMouseOver={this.eventHandlers.onMouseOver(id)}
+                 onMouseLeave={this.eventHandlers.onMouseLeave(id)}
+            >
                 <div className='logo-container'>
                     <img className={`logo ${theme}`} alt='symphony logo'/>
                 </div>
@@ -87,7 +96,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
      *
      * @param id {number}
      */
-    private click(id: number) {
+    private click(id: number): void {
         ipcRenderer.send('notification-clicked', id);
     }
 
@@ -96,7 +105,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
      *
      * @param id {number}
      */
-    private close(id: number) {
+    private close(id: number): void {
         ipcRenderer.send('close-notification', id);
     }
 
@@ -105,8 +114,26 @@ export default class NotificationComp extends React.Component<{}, IState> {
      *
      * @param event
      */
-    private contextMenu(event) {
+    private contextMenu(event): void {
         event.preventDefault();
+    }
+
+    /**
+     * Handle mouse over
+     *
+     * @param id {number}
+     */
+    private onMouseOver(id: number): void {
+        ipcRenderer.send('notification-mouseover', id);
+    }
+
+    /**
+     * Handle mouse over
+     *
+     * @param id {number}
+     */
+    private onMouseLeave(id: number): void {
+        ipcRenderer.send('notification-mouseleave', id);
     }
 
     /**
