@@ -10,6 +10,12 @@ jest.mock('../src/app/window-handler', () => {
     };
 });
 
+jest.mock('../src/renderer/notification', () => {
+    return {
+        setupNotificationPosition: jest.fn(),
+    };
+});
+
 jest.mock('electron-log');
 
 describe('dialog handler', () => {
