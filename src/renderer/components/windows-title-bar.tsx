@@ -40,20 +40,6 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
         this.window.on('leave-full-screen', () => this.updateState({ isFullScreen: false }));
     }
 
-    public componentDidMount(): void {
-        const contentWrapper = document.getElementById('content-wrapper');
-        if (!contentWrapper) {
-            document.body.style.marginTop = this.state.titleBarHeight;
-            return;
-        }
-        if (this.state.isFullScreen) {
-            contentWrapper.style.marginTop = '0px';
-            document.body.style.removeProperty('margin-top');
-            return;
-        }
-        contentWrapper.style.marginTop = this.state.titleBarHeight;
-    }
-
     public componentWillMount() {
         this.window.removeListener('maximize', this.updateState);
         this.window.removeListener('unmaximize', this.updateState);
@@ -68,6 +54,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
 
         const { isFullScreen } = this.state;
         const style = { display: isFullScreen ? 'none' : 'flex' };
+        this.updateTitleBar();
 
         return (
             <div id='title-bar'
@@ -239,6 +226,23 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
 
         document.body.appendChild(borderBottom);
         document.body.classList.add('window-border');
+    }
+
+    /**
+     * Modifies the client's DOM content
+     */
+    private updateTitleBar(): void {
+        const { isFullScreen, titleBarHeight } = this.state;
+        const contentWrapper = document.getElementById('content-wrapper');
+        if (!contentWrapper) {
+            document.body.style.marginTop = isFullScreen ? '0px' : titleBarHeight;
+            return;
+        }
+
+        contentWrapper.style.marginTop = isFullScreen ? '0px' : titleBarHeight;
+        if (isFullScreen) {
+            document.body.style.removeProperty('margin-top');
+        }
     }
 
     /**
