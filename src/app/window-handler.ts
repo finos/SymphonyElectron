@@ -67,6 +67,7 @@ export class WindowHandler {
     public url: string | undefined;
     public willQuitApp: boolean = false;
     public spellchecker: SpellChecker | undefined;
+    public isCustomTitleBar: boolean;
 
     private readonly contextIsolation: boolean;
     private readonly backgroundThrottling: boolean;
@@ -75,7 +76,6 @@ export class WindowHandler {
     private readonly config: IConfig;
     // Window reference
     private readonly windows: object;
-    private readonly isCustomTitleBar: boolean;
 
     private loadFailError: string | undefined;
     private mainWindow: ICustomBrowserWindow | null = null;
