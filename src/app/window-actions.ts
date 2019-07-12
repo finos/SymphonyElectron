@@ -5,6 +5,7 @@ import { isMac, isWindowsOS } from '../common/env';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
 import { throttle } from '../common/utils';
+import { notification } from '../renderer/notification';
 import { config } from './config-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 import { showPopupMenu, windowExists } from './window-utils';
@@ -56,6 +57,11 @@ const windowMaximized = async (): Promise<void> => {
 const throttledWindowChanges = throttle(async () => {
     await saveWindowSettings();
     await windowMaximized();
+    notification.moveNotificationToTop();
+}, 1000);
+
+const throttledWindowRestore = throttle(async () => {
+    notification.moveNotificationToTop();
 }, 1000);
 
 /**
@@ -109,7 +115,7 @@ export const updateAlwaysOnTop = (shouldSetAlwaysOnTop: boolean, shouldActivateM
     const browserWins: ICustomBrowserWindow[] = BrowserWindow.getAllWindows() as ICustomBrowserWindow[];
     if (browserWins.length > 0) {
         browserWins
-            .filter((browser) => typeof browser.notificationObj !== 'object')
+            .filter((browser) => typeof browser.notificationData !== 'object')
             .forEach((browser) => browser.setAlwaysOnTop(shouldSetAlwaysOnTop));
 
         // An issue where changing the alwaysOnTop property
@@ -175,6 +181,10 @@ export const monitorWindowActions = (window: BrowserWindow): void => {
 
     window.on('leave-full-screen', throttledWindowChanges);
     window.on('unmaximize', throttledWindowChanges);
+
+    if ((window as ICustomBrowserWindow).winName === apiName.mainWindowName) {
+        window.on('restore', throttledWindowRestore);
+    }
 };
 
 /**

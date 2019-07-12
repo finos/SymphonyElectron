@@ -35,7 +35,7 @@ interface ICustomBrowserWindowConstructorOpts extends Electron.BrowserWindowCons
 
 export interface ICustomBrowserWindow extends Electron.BrowserWindow {
     winName: string;
-    notificationObj?: object;
+    notificationData?: object;
     origin?: string;
 }
 
