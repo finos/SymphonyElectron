@@ -301,6 +301,21 @@ class Notification extends NotificationHandler {
     }
 
     /**
+     * Brings all the notification to the top
+     * issue: ELECTRON-1382
+     */
+    public moveNotificationToTop(): void {
+        const notificationWindows = this.activeNotifications as ICustomBrowserWindow[];
+        notificationWindows
+            .filter((browserWindow) => typeof browserWindow.notificationData === 'object' && browserWindow.isVisible())
+            .forEach((browserWindow) => {
+                if (browserWindow && windowExists(browserWindow) && browserWindow.isVisible()) {
+                    browserWindow.moveTop();
+                }
+            });
+    }
+
+    /**
      * Waits for window to load and resolves
      *
      * @param window
@@ -368,6 +383,11 @@ class Notification extends NotificationHandler {
         if (!notificationWindow || !windowExists(notificationWindow)) {
             return;
         }
+
+        if (notificationWindow.notificationData && notificationWindow.notificationData.sticky) {
+            return;
+        }
+
         const displayTime = (notificationWindow.notificationData && notificationWindow.notificationData.displayTime)
             ? notificationWindow.notificationData.displayTime
             : notificationSettings.displayTime;
