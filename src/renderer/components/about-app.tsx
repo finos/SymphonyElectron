@@ -6,6 +6,7 @@ interface IState {
     copyWrite?: string;
     clientVersion: string;
     buildNumber: string;
+    versionLocalised?: string;
 }
 
 /**
@@ -19,6 +20,7 @@ export default class AboutApp extends React.Component<{}, IState> {
             appName: 'Symphony',
             buildNumber: '',
             clientVersion: '0',
+            versionLocalised: 'Version',
         };
         this.updateState = this.updateState.bind(this);
     }
@@ -27,13 +29,13 @@ export default class AboutApp extends React.Component<{}, IState> {
      * main render function
      */
     public render(): JSX.Element {
-        const { clientVersion, buildNumber } = this.state;
+        const { clientVersion, buildNumber, versionLocalised } = this.state;
         const appName = remote.app.getName() || 'Symphony';
-        const versionString = `Version ${clientVersion} (${buildNumber})`;
+        const versionString = `${versionLocalised} ${clientVersion} (${buildNumber})`;
         const copyright = `Copyright \xA9 ${new Date().getFullYear()} ${appName}`;
         return (
             <div className='AboutApp'>
-                <img className='AboutApp-logo' src='../renderer/assets/symphony-logo.png'/>
+                <img className='AboutApp-logo' src='../renderer/assets/symphony-logo.png' alt='Symphony'/>
                 <span className='AboutApp-name'>{appName}</span>
                 <span className='AboutApp-versionText'>{versionString}</span>
                 <span className='AboutApp-copyrightText'>{copyright}</span>
