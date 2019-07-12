@@ -34,6 +34,7 @@ const networkStatusCheckInterval = 10 * 1000;
 let networkStatusCheckIntervalId;
 
 const styles: IStyles[] = [];
+const DOWNLOAD_MANAGER_NAMESPACE = 'DownloadManager';
 
 /**
  * Checks if window is valid and exists
@@ -318,6 +319,8 @@ export const getBounds = (winPos: ICustomRectangle | Electron.Rectangle | undefi
  */
 export const downloadManagerAction = (type, filePath): void => {
     const focusedWindow = electron.BrowserWindow.getFocusedWindow();
+    const message = i18n.t('The file you are trying to open cannot be found in the specified path.', DOWNLOAD_MANAGER_NAMESPACE)();
+    const title = i18n.t('File not Found', DOWNLOAD_MANAGER_NAMESPACE)();
 
     if (!focusedWindow || !windowExists(focusedWindow)) {
         return;
@@ -327,8 +330,8 @@ export const downloadManagerAction = (type, filePath): void => {
         const openResponse = electron.shell.openExternal(`file:///${filePath}`);
         if (!openResponse && focusedWindow && !focusedWindow.isDestroyed()) {
             electron.dialog.showMessageBox(focusedWindow, {
-                message: i18n.t('The file you are trying to open cannot be found in the specified path.')(),
-                title: i18n.t('File not Found')(),
+                message,
+                title,
                 type: 'error',
             });
         }
@@ -338,8 +341,8 @@ export const downloadManagerAction = (type, filePath): void => {
     const showResponse = electron.shell.showItemInFolder(filePath);
     if (!showResponse) {
         electron.dialog.showMessageBox(focusedWindow, {
-            message: i18n.t('The file you are trying to open cannot be found in the specified path.')(),
-            title: i18n.t('File not Found')(),
+            message,
+            title,
             type: 'error',
         });
     }
