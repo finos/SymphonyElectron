@@ -5,6 +5,7 @@ import * as filesize from 'filesize';
 import * as fs from 'fs';
 import * as path from 'path';
 import { format, parse } from 'url';
+import { apiName } from '../common/api-interface';
 
 import { isDevEnv, isMac } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
@@ -250,8 +251,9 @@ export const updateLocale = (locale: LocaleType): void => {
  */
 export const showPopupMenu = (opts: Electron.PopupOptions): void => {
     const mainWindow = windowHandler.getMainWindow();
-    if (mainWindow && !mainWindow.isDestroyed() && isValidWindow(mainWindow)) {
-        const { x, y } = mainWindow.isFullScreen() ? { x: 0, y: 0 } : { x: 20, y: 15 };
+    if (mainWindow && windowExists(mainWindow) && isValidWindow(mainWindow) && mainWindow.winName === apiName.mainWindowName) {
+        const coordinates = windowHandler.isCustomTitleBar ? { x: 20, y: 15 } : { x: 10, y: -20 };
+        const { x, y } = mainWindow.isFullScreen() ? { x: 0, y: 0 } : coordinates;
         const popupOpts = { window: mainWindow, x, y };
         const appMenu = windowHandler.appMenu;
         if (appMenu) {
