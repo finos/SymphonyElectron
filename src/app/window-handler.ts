@@ -406,8 +406,10 @@ export class WindowHandler {
             if (!this.aboutAppWindow || !windowExists(this.aboutAppWindow)) {
                 return;
             }
+            const ABOUT_SYMPHONY_NAMESPACE = 'AboutSymphony';
+            const versionLocalised = i18n.t('Version', ABOUT_SYMPHONY_NAMESPACE)();
             const { clientVersion, buildNumber }: IVersionInfo = await versionHandler.getClientVersion();
-            this.aboutAppWindow.webContents.send('about-app-data', { buildNumber, clientVersion });
+            this.aboutAppWindow.webContents.send('about-app-data', { buildNumber, clientVersion, versionLocalised });
         });
     }
 

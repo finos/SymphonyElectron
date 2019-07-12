@@ -5,6 +5,7 @@ exports[`about app should render correctly 1`] = `
   className="AboutApp"
 >
   <img
+    alt="Symphony"
     className="AboutApp-logo"
     src="../renderer/assets/symphony-logo.png"
   />
