@@ -13,7 +13,6 @@ const TITLE_BAR_NAMESPACE = 'TitleBar';
 
 export default class WindowsTitleBar extends React.Component<{}, IState> {
     private readonly window: Electron.BrowserWindow;
-    private readonly title: string;
     private readonly eventHandlers = {
         onClose: () => this.close(),
         onMaximize: () => this.maximize(),
@@ -25,7 +24,6 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
     constructor(props) {
         super(props);
         this.window = remote.getCurrentWindow();
-        this.title = document.title || 'Symphony';
         this.state = {
             isFullScreen: this.window.isFullScreen(),
             isMaximized: this.window.isMaximized(),
@@ -79,7 +77,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
                 </div>
                 <div className='title-container'>
                     {this.getSymphonyLogo()}
-                    <p id='title-bar-title'>{this.title}</p>
+                    <p id='title-bar-title'>{document.title || 'Symphony'}</p>
                 </div>
                 <div className='title-bar-button-container'>
                     <button
