@@ -215,12 +215,14 @@ export class AppBridge {
         if (sourceError) {
             const { requestId, ...error } = sourceError;
             this.broadcastMessage('media-source-callback', { requestId, error });
+            this.broadcastMessage('media-source-callback-v1', { requestId, error });
             return;
         }
 
         if (selectedSource && selectedSource.requestId) {
             const { requestId, ...source } = selectedSource;
             this.broadcastMessage('media-source-callback', { requestId, source, error: sourceError });
+            this.broadcastMessage('media-source-callback-v1', { requestId, response: { source, error: sourceError } });
         }
     }
 
