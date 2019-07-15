@@ -72,7 +72,7 @@ export default class NotificationSettings extends React.Component<{}, IState> {
                             </div>
                             <div className='second-set'>
                                 {this.renderRadioButtons('upper-right', 'Top Right')}
-                                {this.renderRadioButtons('lower-right', 'Bottom Left')}
+                                {this.renderRadioButtons('lower-right', 'Bottom Right')}
                             </div>
                         </div>
                     </form>
