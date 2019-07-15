@@ -79,7 +79,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
                     <span className={`message ${theme}`}>{body}</span>
                 </div>
                 <div className='user-profile-pic-container'>
-                    <img src={image || icon} className='user-profile-pic' alt='user profile picture'/>
+                    <img src={image || icon || '../renderer/assets/symphony-default-profile-pic.png'} className='user-profile-pic' alt='user profile picture'/>
                 </div>
                 <div className='close' title={i18n.t('Close')()} onClick={this.eventHandlers.onClose(id)}>
                     <svg fill='#000000' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'>
