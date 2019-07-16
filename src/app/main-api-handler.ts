@@ -10,7 +10,7 @@ import { memoryMonitor } from './memory-monitor';
 import { protocolHandler } from './protocol-handler';
 import { screenSnippet } from './screen-snippet-handler';
 import { activate, handleKeyPress } from './window-actions';
-import { windowHandler } from './window-handler';
+import { ICustomBrowserWindow, windowHandler } from './window-handler';
 import {
     downloadManagerAction,
     isValidWindow,
@@ -19,6 +19,7 @@ import {
     showBadgeCount,
     showPopupMenu,
     updateLocale,
+    windowExists,
 } from './window-utils';
 
 /**
@@ -94,8 +95,8 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
             }
             break;
         case apiCmds.popupMenu: {
-            const browserWin = BrowserWindow.fromWebContents(event.sender);
-            if (browserWin && !browserWin.isDestroyed()) {
+            const browserWin = BrowserWindow.fromWebContents(event.sender) as ICustomBrowserWindow;
+            if (browserWin && windowExists(browserWin) && browserWin.winName === apiName.mainWindowName) {
                 showPopupMenu({ window: browserWin });
             }
             break;
