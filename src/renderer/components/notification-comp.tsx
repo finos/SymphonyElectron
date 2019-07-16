@@ -14,6 +14,7 @@ interface IState {
     icon: string;
     id: number;
     color: string;
+    flash: boolean;
 }
 
 type mouseEventButton = React.MouseEvent<HTMLDivElement>;
@@ -27,6 +28,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
         onMouseOver: (winKey) => (_event: mouseEventButton) => this.onMouseOver(winKey),
         onMouseLeave: (winKey) => (_event: mouseEventButton) => this.onMouseLeave(winKey),
     };
+    private flashTimer: NodeJS.Timer | undefined;
 
     constructor(props) {
         super(props);
@@ -38,6 +40,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
             icon: '',
             id: 0,
             color: '',
+            flash: false,
         };
         this.updateState = this.updateState.bind(this);
     }
@@ -48,6 +51,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
 
     public componentWillUnmount(): void {
         ipcRenderer.removeListener('notification-data', this.updateState);
+        this.clearFlashInterval();
     }
 
     /**
@@ -55,11 +59,10 @@ export default class NotificationComp extends React.Component<{}, IState> {
      */
     public render(): JSX.Element {
         const { title, company, body, image, icon, id, color } = this.state;
-        const colorHex = (color && !color.startsWith('#')) ? '#' + color : color;
-        const isLightTheme = (colorHex && colorHex.match(whiteColorRegExp)) || false;
+        const isLightTheme = (color && color.match(whiteColorRegExp)) || false;
 
         const theme = classNames({ light: isLightTheme, dark: !isLightTheme });
-        const bgColor = { backgroundColor: colorHex || '#ffffff' };
+        const bgColor = { backgroundColor: color || '#ffffff' };
 
         return (
             <div className='container'
@@ -75,7 +78,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
                 </div>
                 <div className='header'>
                     <span className={`title ${theme}`}>{title}</span>
-                    <span className='company' style={{color: colorHex || '#4a4a4a'}}>{company}</span>
+                    <span className='company' style={{color: color || '#4a4a4a'}}>{company}</span>
                     <span className={`message ${theme}`}>{body}</span>
                 </div>
                 <div className='user-profile-pic-container'>
@@ -98,6 +101,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
      */
     private click(id: number): void {
         ipcRenderer.send('notification-clicked', id);
+        this.clearFlashInterval();
     }
 
     /**
@@ -107,6 +111,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
      */
     private close(id: number): void {
         ipcRenderer.send('close-notification', id);
+        this.clearFlashInterval();
     }
 
     /**
@@ -137,12 +142,34 @@ export default class NotificationComp extends React.Component<{}, IState> {
     }
 
     /**
+     * Clears a active notification flash interval
+     */
+    private clearFlashInterval(): void {
+        if (this.flashTimer) {
+            clearInterval(this.flashTimer);
+        }
+    }
+
+    /**
      * Sets the About app state
      *
      * @param _event
      * @param data {Object}
      */
     private updateState(_event, data): void {
+        const { color, flash } = data;
+        data.color = (color && !color.startsWith('#')) ? '#' + color : color;
         this.setState(data as IState);
+        if (flash) {
+            const origColor = data.color;
+            this.flashTimer = setInterval(() => {
+                const { color: bgColor } = this.state;
+                if (bgColor === 'red') {
+                    this.setState({ color: origColor });
+                } else {
+                    this.setState({ color: 'red' });
+                }
+            }, 1000);
+        }
     }
 }
