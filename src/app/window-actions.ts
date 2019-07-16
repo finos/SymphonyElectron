@@ -149,8 +149,8 @@ export const handleKeyPress = (key: number): void => {
             if (isMac) {
                 return;
             }
-            const browserWin = BrowserWindow.getFocusedWindow();
-            if (browserWin && !browserWin.isDestroyed()) {
+            const browserWin = BrowserWindow.getFocusedWindow() as ICustomBrowserWindow;
+            if (browserWin && windowExists(browserWin) && browserWin.winName === apiName.mainWindowName) {
                 logger.info(`window-actions: popping up menu by alt key action`);
                 showPopupMenu({ window: browserWin });
             }

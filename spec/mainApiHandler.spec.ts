@@ -55,6 +55,7 @@ jest.mock('../src/app/window-utils', () => {
         showBadgeCount: jest.fn(),
         showPopupMenu: jest.fn(),
         updateLocale: jest.fn(),
+        windowExists: jest.fn( () => true),
     };
 });
 
@@ -243,6 +244,7 @@ describe('main api handler', () => {
         it('should call `popupMenu` correctly', () => {
             const fromWebContentsMocked = {
                 isDestroyed: jest.fn(),
+                winName: apiName.mainWindowName,
             };
             const spy = jest.spyOn(utils, 'showPopupMenu');
             const value = {
