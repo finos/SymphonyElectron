@@ -397,7 +397,7 @@ export class AppMenu {
                                 type: 'warning',
                                 buttons: [ 'Ok' ],
                                 title: i18n.t('Dev Tools disabled')(),
-                                message: i18n.t('Dev Tools has been disabled. Please contact your system administrator')(),
+                                message: i18n.t('Dev Tools has been disabled! Please contact your system administrator to enable it!')(),
                             });
                         },
                     }, {
