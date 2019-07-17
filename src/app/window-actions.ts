@@ -20,6 +20,7 @@ enum Permissions {
     OPEN_EXTERNAL = 'openExternal',
 }
 const PERMISSIONS_NAMESPACE = 'Permissions';
+const { isCustomTitleBar } = config.getUserConfigFields([ 'isCustomTitleBar' ]);
 
 const saveWindowSettings = async (): Promise<void> => {
     const browserWindow = BrowserWindow.getFocusedWindow() as ICustomBrowserWindow;
@@ -146,7 +147,7 @@ export const handleKeyPress = (key: number): void => {
             break;
         }
         case KeyCodes.Alt:
-            if (isMac) {
+            if (isMac || isCustomTitleBar) {
                 return;
             }
             const browserWin = BrowserWindow.getFocusedWindow() as ICustomBrowserWindow;
