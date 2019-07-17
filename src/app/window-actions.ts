@@ -146,7 +146,7 @@ export const handleKeyPress = (key: number): void => {
             break;
         }
         case KeyCodes.Alt:
-            if (isMac) {
+            if (isMac || windowHandler.isCustomTitleBar) {
                 return;
             }
             const browserWin = BrowserWindow.getFocusedWindow() as ICustomBrowserWindow;
