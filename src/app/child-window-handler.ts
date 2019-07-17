@@ -8,7 +8,12 @@ import { logger } from '../common/logger';
 import { getGuid } from '../common/utils';
 import { whitelistHandler } from '../common/whitelist-handler';
 import { config } from './config-handler';
-import { handlePermissionRequests, monitorWindowActions, removeWindowEventListener } from './window-actions';
+import {
+    handlePermissionRequests,
+    monitorWindowActions,
+    removeWindowEventListener,
+    sendInitialBoundChanges,
+} from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 import {
     getBounds,
@@ -163,6 +168,10 @@ export const handleChildWindow = (webContents: WebContents): void => {
 
                 // Monitor window actions
                 monitorWindowActions(browserWin);
+
+                // Update initial bound changes
+                sendInitialBoundChanges(browserWin);
+
                 // Remove all attached event listeners
                 browserWin.on('close', () => {
                     logger.info(`child-window-handler: close event occurred for window with url ${newWinUrl}!`);
