@@ -385,7 +385,7 @@ export class AppMenu {
                         label: i18n.t('Toggle Developer Tools')(),
                         accelerator: isMac ? 'Alt+Command+I' : 'Ctrl+Shift+I',
                         click(_item, focusedWindow) {
-                            const devToolsEnabled = config.getGlobalConfigFields([ 'devToolsEnabled' ]);
+                            const { devToolsEnabled } = config.getGlobalConfigFields([ 'devToolsEnabled' ]);
                             if (!focusedWindow || !windowExists(focusedWindow)) {
                                 return;
                             }
