@@ -23,12 +23,16 @@ const PERMISSIONS_NAMESPACE = 'Permissions';
 
 const saveWindowSettings = async (): Promise<void> => {
     const browserWindow = BrowserWindow.getFocusedWindow() as ICustomBrowserWindow;
+    const mainWindow = windowHandler.getMainWindow();
 
     if (browserWindow && windowExists(browserWindow)) {
         const [ x, y ] = browserWindow.getPosition();
         const [ width, height ] = browserWindow.getSize();
         if (x && y && width && height) {
-            browserWindow.webContents.send('boundsChange', { x, y, width, height, windowName: browserWindow.winName } as IBoundsChange);
+            // Only send bound changes over to client for pop-out windows
+            if (browserWindow.winName !== apiName.mainWindowName && mainWindow && windowExists(mainWindow)) {
+                mainWindow.webContents.send('boundsChange', { x, y, width, height, windowName: browserWindow.winName } as IBoundsChange);
+            }
 
             // Update the config file
             if (browserWindow.winName === apiName.mainWindowName) {
@@ -63,6 +67,28 @@ const throttledWindowChanges = throttle(async () => {
 const throttledWindowRestore = throttle(async () => {
     notification.moveNotificationToTop();
 }, 1000);
+
+/**
+ * Sends initial bound changes for pop-out windows
+ *
+ * @param childWindow {BrowserWindow} - window created via new-window event
+ */
+export const sendInitialBoundChanges = (childWindow: BrowserWindow): void => {
+    logger.info(`window-actions: Sending initial bounds`);
+    const mainWindow = windowHandler.getMainWindow();
+    if (!mainWindow || !windowExists(mainWindow)) {
+        return;
+    }
+
+    if (!childWindow || !windowExists(childWindow)) {
+        logger.error(`window-actions: child window has already been destroyed - not sending bound change`);
+        return;
+    }
+    const { x, y, width, height } = childWindow.getBounds();
+    const windowName = (childWindow as ICustomBrowserWindow).winName;
+    mainWindow.webContents.send('boundsChange', { x, y, width, height, windowName } as IBoundsChange);
+    logger.info(`window-actions: Initial bounds sent for ${(childWindow as ICustomBrowserWindow).winName}`, { x, y, width, height });
+};
 
 /**
  * Tries finding a window we have created with given name.  If found, then
