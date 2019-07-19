@@ -3,7 +3,7 @@ import { ipcRenderer } from 'electron';
 import * as React from 'react';
 
 import { apiCmds, apiName } from '../../common/api-interface';
-import { isWindowsOS } from '../../common/env';
+import { isMac, isWindowsOS } from '../../common/env';
 import { i18n } from '../../common/i18n-preload';
 
 const screenRegExp = new RegExp(/^Screen \d+$/gmi);
@@ -131,7 +131,7 @@ export default class ScreenPicker extends React.Component<{}, IState> {
                 'ScreenPicker-item-container',
                 { 'ScreenPicker-selected': this.shouldHighlight(source.id) },
             );
-            if (source.display_id !== '') {
+            if ((isMac && source.display_id !== '') || (isWindowsOS && (source.name === 'Entire screen' || screenRegExp.exec(source.name)))) {
                 source.fileName = 'fullscreen';
                 let sourceName;
                 if (source.name === 'Entire screen') {

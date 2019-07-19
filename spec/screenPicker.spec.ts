@@ -283,6 +283,40 @@ describe('screen picker', () => {
             expect(wrapper.find(applicationTabCustomSelector)).toHaveLength(0);
         });
 
+        it('should show `screen-tab` for Windows when source name is Entire screen and display_id is not present', () => {
+            const env = require('../src/common/env');
+            const wrapper = shallow(React.createElement(ScreenPicker));
+            const entireScreenStateMock = {
+                sources: [
+                    { display_id: '', id: '1', name: 'Entire screen', thumbnail: undefined },
+                    { display_id: '', id: '2', name: 'Screen 2', thumbnail: undefined },
+                    { display_id: '', id: '3', name: 'screen 3', thumbnail: undefined },
+                ],
+            };
+            env.isWindowsOS = true;
+            env.isMac = false;
+            wrapper.setState(entireScreenStateMock);
+            expect(wrapper.find(screenTabCustomSelector)).toHaveLength(1);
+            expect(wrapper.find(applicationTabCustomSelector)).toHaveLength(0);
+        });
+
+        it('should not show `screen-tab` for Mac when source name is Entire screen and display_id is not present', () => {
+            const env = require('../src/common/env');
+            const wrapper = shallow(React.createElement(ScreenPicker));
+            const entireScreenStateMock = {
+                sources: [
+                    { display_id: '', id: '1', name: 'Entire screen', thumbnail: undefined },
+                    { display_id: '', id: '2', name: 'Screen 2', thumbnail: undefined },
+                    { display_id: '', id: '3', name: 'screen 3', thumbnail: undefined },
+                ],
+            };
+            env.isWindowsOS = false;
+            env.isMac = true;
+            wrapper.setState(entireScreenStateMock);
+            expect(wrapper.find(screenTabCustomSelector)).toHaveLength(0);
+            expect(wrapper.find(applicationTabCustomSelector)).toHaveLength(1);
+        });
+
         it('should show `screen-tab` and `application-tab` when `isScreensAvailable` and `isApplicationsAvailable` is true', () => {
             const wrapper = shallow(React.createElement(ScreenPicker));
             const customState = {
