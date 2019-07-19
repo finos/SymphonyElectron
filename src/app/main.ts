@@ -13,7 +13,6 @@ import './dialog-handler';
 import './main-api-handler';
 import { handlePerformanceSettings } from './perf-handler';
 import { protocolHandler } from './protocol-handler';
-import { IVersionInfo, versionHandler } from './version-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
 logger.info(`App started with the args ${JSON.stringify(process.argv)}`);
@@ -53,28 +52,11 @@ setChromeFlags();
 // Electron sets the default protocol
 app.setAsDefaultProtocolClient('symphony');
 
-const setAboutPanel = (clientVersion: string, buildNumber: string) => {
-    const appName = app.getName();
-    const copyright = `Copyright \xA9 ${new Date().getFullYear()} ${appName}`;
-    app.setAboutPanelOptions({
-        applicationName: appName,
-        applicationVersion: clientVersion,
-        version: buildNumber,
-        copyright,
-    });
-};
-
 /**
  * Main function that init the application
  */
 const startApplication = async () => {
     await app.whenReady();
-    versionHandler.getClientVersion()
-    .then((versionInfo: IVersionInfo) => {
-        if (isMac) {
-            setAboutPanel(versionInfo.clientVersion, versionInfo.buildNumber);
-        }
-    });
     logger.info(`main: app is ready, performing initial checks`);
     createAppCacheFile();
     windowHandler.createApplication();

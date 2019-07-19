@@ -42,6 +42,7 @@ jest.mock('../src/app/window-handler', () => {
             createScreenPickerWindow: jest.fn(),
             createScreenSharingIndicatorWindow: jest.fn(),
             isOnline: false,
+            updateVersionInfo: jest.fn(),
         },
     };
 });

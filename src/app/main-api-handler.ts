@@ -49,6 +49,9 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
             break;
         case apiCmds.registerProtocolHandler:
             protocolHandler.setPreloadWebContents(event.sender);
+            // Since we register the prococol handler window upon login,
+            // we make use of it and update the pod version info on SDA
+            windowHandler.updateVersionInfo();
             break;
         case apiCmds.badgeDataUrl:
             if (typeof arg.dataUrl === 'string' && typeof arg.count === 'number') {
