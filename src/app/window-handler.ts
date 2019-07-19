@@ -16,7 +16,7 @@ import { config, IConfig } from './config-handler';
 import { SpellChecker } from './spell-check-handler';
 import { checkIfBuildExpired } from './ttl-handler';
 import DesktopCapturerSource = Electron.DesktopCapturerSource;
-import { IVersionInfo, versionHandler } from './version-handler';
+import { versionHandler } from './version-handler';
 import { handlePermissionRequests, monitorWindowActions } from './window-actions';
 import {
     createComponentWindow,
@@ -85,13 +85,12 @@ export class WindowHandler {
     private screenSharingIndicatorWindow: Electron.BrowserWindow | null = null;
     private basicAuthWindow: Electron.BrowserWindow | null = null;
     private notificationSettingsWindow: Electron.BrowserWindow | null = null;
-    private versionInfo: IVersionInfo;
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Use these variables only on initial setup
         this.config = config.getConfigFields(['isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings', 'alwaysOnTop']);
         this.globalConfig = config.getGlobalConfigFields(['url', 'contextIsolation', 'customFlags']);
-        const { url, contextIsolation, customFlags }: IConfig = this.globalConfig;
+        const {url, contextIsolation, customFlags}: IConfig = this.globalConfig;
 
         this.windows = {};
         this.contextIsolation = contextIsolation || false;
@@ -106,8 +105,8 @@ export class WindowHandler {
                 minWidth: 300,
                 title: 'Symphony',
             }, {
-                    preload: path.join(__dirname, '../renderer/_preload-main.js'),
-                }), ...opts,
+                preload: path.join(__dirname, '../renderer/_preload-main.js'),
+            }), ...opts,
         };
         this.isAutoReload = false;
         this.isOnline = true;
@@ -115,30 +114,13 @@ export class WindowHandler {
         this.appMenu = null;
 
         try {
-            const extra = { podUrl: url, process: 'main' };
-            const defaultOpts = { uploadToServer: false, companyName: 'Symphony', submitURL: '' };
-            crashReporter.start({ ...defaultOpts, extra });
+            const extra = {podUrl: url, process: 'main'};
+            const defaultOpts = {uploadToServer: false, companyName: 'Symphony', submitURL: ''};
+            crashReporter.start({...defaultOpts, extra});
         } catch (e) {
             throw new Error('failed to init crash report');
         }
 
-        this.versionInfo = {
-            clientVersion: 'N/A',
-            buildNumber: 'N/A',
-            sdaVersion: 'N/A',
-            sdaBuildNumber: 'N/A',
-            electronVersion: 'N/A',
-            chromeVersion: 'N/A',
-            v8Version: 'N/A',
-            nodeVersion: 'N/A',
-            openSslVersion: 'N/A',
-            zlibVersion: 'N/A',
-            uvVersion: 'N/A',
-            aresVersion: 'N/A',
-            httpParserVersion: 'N/A',
-            swiftSearchVersion: 'N/A',
-            swiftSerchSupportedVersion: 'N/A',
-        };
     }
 
     /**
@@ -155,7 +137,7 @@ export class WindowHandler {
             ...this.windowOpts, ...getBounds(this.config.mainWinPos, DEFAULT_WIDTH, DEFAULT_HEIGHT),
         }) as ICustomBrowserWindow;
         this.mainWindow.winName = apiName.mainWindowName;
-        const { isFullScreen, isMaximized } = this.config.mainWinPos ? this.config.mainWinPos : { isFullScreen: false, isMaximized: false };
+        const {isFullScreen, isMaximized} = this.config.mainWinPos ? this.config.mainWinPos : {isFullScreen: false, isMaximized: false};
         if (isMaximized) {
             this.mainWindow.maximize();
             logger.info(`window-handler: window is maximized!`);
@@ -203,7 +185,7 @@ export class WindowHandler {
                 isMainWindow: true,
             });
             this.appMenu = new AppMenu();
-            const { permissions } = config.getGlobalConfigFields(['permissions']);
+            const {permissions} = config.getGlobalConfigFields(['permissions']);
             this.mainWindow.webContents.send('is-screen-share-enabled', permissions.media);
         });
 
@@ -219,7 +201,7 @@ export class WindowHandler {
                     if (href === 'data:text/html,chromewebdata' || href === 'chrome-error://chromewebdata/') {
                         if (this.mainWindow && windowExists(this.mainWindow)) {
                             this.mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '..', '/renderer/styles/network-error.css'), 'utf8').toString());
-                            this.mainWindow.webContents.send('network-error', { error: this.loadFailError });
+                            this.mainWindow.webContents.send('network-error', {error: this.loadFailError});
                             isSymphonyReachable(this.mainWindow);
                         }
                     }
@@ -259,7 +241,7 @@ export class WindowHandler {
                 return this.destroyAllWindows();
             }
 
-            const { minimizeOnClose } = config.getConfigFields(['minimizeOnClose']);
+            const {minimizeOnClose} = config.getConfigFields(['minimizeOnClose']);
             if (minimizeOnClose) {
                 event.preventDefault();
                 isMac ? this.mainWindow.hide() : this.mainWindow.minimize();
@@ -437,8 +419,8 @@ export class WindowHandler {
             const ABOUT_SYMPHONY_NAMESPACE = 'AboutSymphony';
             const versionLocalised = i18n.t('Version', ABOUT_SYMPHONY_NAMESPACE)();
             const aboutInfo = {
-                buildNumber: this.versionInfo.buildNumber,
-                clientVersion: this.versionInfo.clientVersion,
+                buildNumber: versionHandler.versionInfo.buildNumber,
+                clientVersion: versionHandler.versionInfo.clientVersion,
                 versionLocalised,
             };
             if (this.aboutAppWindow && windowExists(this.aboutAppWindow)) {
@@ -472,7 +454,7 @@ export class WindowHandler {
         this.moreInfoWindow = createComponentWindow('more-info', opts);
         this.moreInfoWindow.webContents.once('did-finish-load', async () => {
             if (this.moreInfoWindow && windowExists(this.moreInfoWindow)) {
-                this.moreInfoWindow.webContents.send('more-info-data', this.versionInfo);
+                this.moreInfoWindow.webContents.send('more-info-data', versionHandler.versionInfo);
             }
         });
     }
@@ -511,7 +493,7 @@ export class WindowHandler {
             if (!this.screenPickerWindow || !windowExists(this.screenPickerWindow)) {
                 return;
             }
-            this.screenPickerWindow.webContents.send('screen-picker-data', { sources, id });
+            this.screenPickerWindow.webContents.send('screen-picker-data', {sources, id});
             this.addWindow(opts.winKey, this.screenPickerWindow);
         });
         ipcMain.once('screen-source-selected', (_event, source) => {
@@ -547,8 +529,8 @@ export class WindowHandler {
             autoHideMenuBar: true,
             resizable: false,
         }, {
-                devTools: false,
-            });
+            devTools: false,
+        });
         opts.parent = window;
         this.basicAuthWindow = createComponentWindow('basic-auth', opts);
         this.basicAuthWindow.setVisibleOnAllWorkspaces(true);
@@ -556,7 +538,7 @@ export class WindowHandler {
             if (!this.basicAuthWindow || !windowExists(this.basicAuthWindow)) {
                 return;
             }
-            this.basicAuthWindow.webContents.send('basic-auth-data', { hostname, isValidCredentials: isMultipleTries });
+            this.basicAuthWindow.webContents.send('basic-auth-data', {hostname, isValidCredentials: isMultipleTries});
         });
         const closeBasicAuth = (shouldClearSettings = true) => {
             if (shouldClearSettings) {
@@ -569,7 +551,7 @@ export class WindowHandler {
         };
 
         const login = (_event, arg) => {
-            const { username, password } = arg;
+            const {username, password} = arg;
             callback(username, password);
             closeBasicAuth(false);
         };
@@ -599,8 +581,8 @@ export class WindowHandler {
             fullscreenable: false,
             autoHideMenuBar: true,
         }, {
-                devTools: false,
-            });
+            devTools: false,
+        });
         // This prevents creating multiple instances of the
         // notification configuration window
         if (this.notificationSettingsWindow && !this.notificationSettingsWindow.isDestroyed()) {
@@ -627,17 +609,17 @@ export class WindowHandler {
                 if (app.isReady()) {
                     screens = electron.screen.getAllDisplays();
                 }
-                const { position, display } = config.getConfigFields(['notificationSettings']).notificationSettings;
-                this.notificationSettingsWindow.webContents.send('notification-settings-data', { screens, position, display });
+                const {position, display} = config.getConfigFields(['notificationSettings']).notificationSettings;
+                this.notificationSettingsWindow.webContents.send('notification-settings-data', {screens, position, display});
             }
         });
 
         this.addWindow(opts.winKey, this.notificationSettingsWindow);
 
         ipcMain.once('notification-settings-update', async (_event, args) => {
-            const { display, position } = args;
+            const {display, position} = args;
             try {
-                await config.updateUserConfig({ notificationSettings: { display, position } });
+                await config.updateUserConfig({notificationSettings: {display, position}});
             } catch (e) {
                 logger.error(`NotificationSettings: Could not update user config file error`, e);
             }
@@ -689,8 +671,8 @@ export class WindowHandler {
                 alwaysOnTop: true,
                 fullscreenable: false,
             }, {
-                    devTools: false,
-                }), ...{ winKey: streamId },
+                devTools: false,
+            }), ...{winKey: streamId},
         };
         if (opts.width && opts.height) {
             opts = Object.assign({}, opts, {
@@ -704,7 +686,7 @@ export class WindowHandler {
             if (!this.screenSharingIndicatorWindow || !windowExists(this.screenSharingIndicatorWindow)) {
                 return;
             }
-            this.screenSharingIndicatorWindow.webContents.send('screen-sharing-indicator-data', { id, streamId });
+            this.screenSharingIndicatorWindow.webContents.send('screen-sharing-indicator-data', {id, streamId});
         });
         const stopScreenSharing = (_event, indicatorId) => {
             if (id === indicatorId) {
@@ -726,7 +708,7 @@ export class WindowHandler {
      * Update version info on the about app window and more info window
      */
     public async updateVersionInfo() {
-        this.versionInfo = await versionHandler.getClientVersion(true, this.url);
+        await versionHandler.getClientVersion(true, this.url);
         this.setAboutPanel();
     }
 
@@ -772,8 +754,8 @@ export class WindowHandler {
         const copyright = `Copyright \xA9 ${new Date().getFullYear()} ${appName}`;
         app.setAboutPanelOptions({
             applicationName: appName,
-            applicationVersion: this.versionInfo.clientVersion,
-            version: this.versionInfo.buildNumber,
+            applicationVersion: versionHandler.versionInfo.clientVersion,
+            version: versionHandler.versionInfo.buildNumber,
             copyright,
         });
 
@@ -801,7 +783,7 @@ export class WindowHandler {
      */
     private onRegisterDevtools(): void {
         const focusedWindow = BrowserWindow.getFocusedWindow();
-        const { devToolsEnabled } = config.getGlobalConfigFields(['devToolsEnabled']);
+        const {devToolsEnabled} = config.getGlobalConfigFields(['devToolsEnabled']);
         if (!focusedWindow || !windowExists(focusedWindow)) {
             return;
         }
@@ -882,7 +864,7 @@ export class WindowHandler {
             winKey: getGuid(),
         };
 
-        return { ...defaultWindowOpts, ...windowOpts };
+        return {...defaultWindowOpts, ...windowOpts};
     }
 }
 

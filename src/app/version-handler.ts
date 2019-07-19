@@ -19,12 +19,12 @@ interface IVersionInfo {
     aresVersion: string;
     httpParserVersion: string;
     swiftSearchVersion: string;
-    swiftSerchSupportedVersion: string;
+    swiftSearchSupportedVersion: string;
 }
 
 class VersionHandler {
 
-    private versionInfo: IVersionInfo;
+    public versionInfo: IVersionInfo;
     private serverVersionInfo: any;
     private mainUrl;
 
@@ -44,7 +44,7 @@ class VersionHandler {
             aresVersion: process.versions.ares,
             httpParserVersion: process.versions.http_parser,
             swiftSearchVersion: optionalDependencies['swift-search'],
-            swiftSerchSupportedVersion: searchAPIVersion,
+            swiftSearchSupportedVersion: searchAPIVersion,
         };
         this.mainUrl = null;
     }
