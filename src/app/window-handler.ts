@@ -737,6 +737,9 @@ export class WindowHandler {
      * Sets the about panel details for macOS
      */
     private setAboutPanel() {
+        if (!isMac) {
+            return;
+        }
         const appName = app.getName();
         const copyright = `Copyright \xA9 ${new Date().getFullYear()} ${appName}`;
         app.setAboutPanelOptions({
