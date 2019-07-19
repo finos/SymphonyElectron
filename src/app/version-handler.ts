@@ -3,7 +3,6 @@ import * as nodeURL from 'url';
 import { buildNumber, clientVersion, optionalDependencies, searchAPIVersion, version } from '../../package.json';
 import { logger } from '../common/logger';
 import { config, IConfig } from './config-handler';
-import { windowHandler } from './window-handler';
 
 interface IVersionInfo {
     clientVersion: string;
@@ -53,7 +52,7 @@ class VersionHandler {
     /**
      * Get Symphony version from the pod
      */
-    public getClientVersion(fetchFromServer: boolean = false): Promise<IVersionInfo> {
+    public getClientVersion(fetchFromServer: boolean = false, mainUrl?: string): Promise<IVersionInfo> {
         return new Promise((resolve) => {
 
             if (this.serverVersionInfo && !fetchFromServer) {
@@ -61,6 +60,10 @@ class VersionHandler {
                 this.versionInfo.buildNumber = this.serverVersionInfo['Implementation-Build'] || this.versionInfo.buildNumber;
                 resolve(this.versionInfo);
                 return;
+            }
+
+            if (mainUrl) {
+                this.mainUrl = mainUrl;
             }
 
             const { url: podUrl }: IConfig = config.getGlobalConfigFields(['url']);
@@ -128,15 +131,6 @@ class VersionHandler {
 
             request.end();
         });
-    }
-
-    /**
-     * Updates the version info on demand
-     */
-    public async updateVersionInfo() {
-        this.mainUrl = windowHandler.url;
-        await this.getClientVersion(true);
-        windowHandler.updateVersionInfo(this.versionInfo);
     }
 
 }

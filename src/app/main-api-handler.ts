@@ -9,7 +9,6 @@ import { config } from './config-handler';
 import { memoryMonitor } from './memory-monitor';
 import { protocolHandler } from './protocol-handler';
 import { screenSnippet } from './screen-snippet-handler';
-import { versionHandler } from './version-handler';
 import { activate, handleKeyPress } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 import {
@@ -52,7 +51,7 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
             protocolHandler.setPreloadWebContents(event.sender);
             // Since we register the prococol handler window upon login,
             // we make use of it and update the pod version info on SDA
-            versionHandler.updateVersionInfo();
+            windowHandler.updateVersionInfo();
             break;
         case apiCmds.badgeDataUrl:
             if (typeof arg.dataUrl === 'string' && typeof arg.count === 'number') {

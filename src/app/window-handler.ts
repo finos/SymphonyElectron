@@ -16,7 +16,7 @@ import { config, IConfig } from './config-handler';
 import { SpellChecker } from './spell-check-handler';
 import { checkIfBuildExpired } from './ttl-handler';
 import DesktopCapturerSource = Electron.DesktopCapturerSource;
-import { IVersionInfo } from './version-handler';
+import { IVersionInfo, versionHandler } from './version-handler';
 import { handlePermissionRequests, monitorWindowActions } from './window-actions';
 import {
     createComponentWindow,
@@ -146,6 +146,7 @@ export class WindowHandler {
      */
     public createApplication() {
 
+        this.updateVersionInfo();
         this.spellchecker = new SpellChecker();
         logger.info(`window-handler: initialized spellchecker module with locale ${this.spellchecker.locale}`);
 
@@ -696,8 +697,8 @@ export class WindowHandler {
     /**
      * Update version info on the about app window and more info window
      */
-    public async updateVersionInfo(versionInfo: IVersionInfo) {
-        this.versionInfo = versionInfo;
+    public async updateVersionInfo() {
+        this.versionInfo = await versionHandler.getClientVersion(true, this.url);
         this.setAboutPanel();
     }
 

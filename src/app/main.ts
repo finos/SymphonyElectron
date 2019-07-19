@@ -13,7 +13,6 @@ import './dialog-handler';
 import './main-api-handler';
 import { handlePerformanceSettings } from './perf-handler';
 import { protocolHandler } from './protocol-handler';
-import { versionHandler } from './version-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
 logger.info(`App started with the args ${JSON.stringify(process.argv)}`);
@@ -58,7 +57,6 @@ app.setAsDefaultProtocolClient('symphony');
  */
 const startApplication = async () => {
     await app.whenReady();
-    versionHandler.updateVersionInfo();
     logger.info(`main: app is ready, performing initial checks`);
     createAppCacheFile();
     windowHandler.createApplication();
