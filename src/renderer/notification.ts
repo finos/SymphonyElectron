@@ -170,6 +170,13 @@ class Notification extends NotificationHandler {
         const displayTime = data.displayTime ? data.displayTime : notificationSettings.displayTime;
         let timeoutId;
 
+        // Reset the display timer
+        if (notificationWindow.displayTimer) {
+            clearTimeout(notificationWindow.displayTimer);
+        }
+        // Move notification to top
+        notificationWindow.moveTop();
+
         if (!data.sticky) {
             timeoutId = setTimeout(async () => {
                 await this.hideNotification(notificationWindow.clientId);
