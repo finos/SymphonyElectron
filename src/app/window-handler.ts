@@ -16,7 +16,7 @@ import { config, IConfig } from './config-handler';
 import { SpellChecker } from './spell-check-handler';
 import { checkIfBuildExpired } from './ttl-handler';
 import DesktopCapturerSource = Electron.DesktopCapturerSource;
-import { IVersionInfo, versionHandler } from './version-handler';
+import { IVersionInfo } from './version-handler';
 import { handlePermissionRequests, monitorWindowActions } from './window-actions';
 import {
     createComponentWindow,
@@ -85,11 +85,12 @@ export class WindowHandler {
     private screenSharingIndicatorWindow: Electron.BrowserWindow | null = null;
     private basicAuthWindow: Electron.BrowserWindow | null = null;
     private notificationSettingsWindow: Electron.BrowserWindow | null = null;
+    private versionInfo: IVersionInfo;
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Use these variables only on initial setup
-        this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings', 'alwaysOnTop' ]);
-        this.globalConfig = config.getGlobalConfigFields([ 'url', 'contextIsolation', 'customFlags' ]);
+        this.config = config.getConfigFields(['isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings', 'alwaysOnTop']);
+        this.globalConfig = config.getGlobalConfigFields(['url', 'contextIsolation', 'customFlags']);
         const { url, contextIsolation, customFlags }: IConfig = this.globalConfig;
 
         this.windows = {};
@@ -105,8 +106,8 @@ export class WindowHandler {
                 minWidth: 300,
                 title: 'Symphony',
             }, {
-                preload: path.join(__dirname, '../renderer/_preload-main.js'),
-            }), ...opts,
+                    preload: path.join(__dirname, '../renderer/_preload-main.js'),
+                }), ...opts,
         };
         this.isAutoReload = false;
         this.isOnline = true;
@@ -120,6 +121,24 @@ export class WindowHandler {
         } catch (e) {
             throw new Error('failed to init crash report');
         }
+
+        this.versionInfo = {
+            clientVersion: 'N/A',
+            buildNumber: 'N/A',
+            sdaVersion: 'N/A',
+            sdaBuildNumber: 'N/A',
+            electronVersion: 'N/A',
+            chromeVersion: 'N/A',
+            v8Version: 'N/A',
+            nodeVersion: 'N/A',
+            openSslVersion: 'N/A',
+            zlibVersion: 'N/A',
+            uvVersion: 'N/A',
+            aresVersion: 'N/A',
+            httpParserVersion: 'N/A',
+            swiftSearchVersion: 'N/A',
+            swiftSerchSupportedVersion: 'N/A',
+        };
     }
 
     /**
@@ -183,7 +202,7 @@ export class WindowHandler {
                 isMainWindow: true,
             });
             this.appMenu = new AppMenu();
-            const { permissions } = config.getGlobalConfigFields([ 'permissions' ]);
+            const { permissions } = config.getGlobalConfigFields(['permissions']);
             this.mainWindow.webContents.send('is-screen-share-enabled', permissions.media);
         });
 
@@ -219,7 +238,7 @@ export class WindowHandler {
                 type: 'error',
                 title: i18n.t('Renderer Process Crashed')(),
                 message: i18n.t('Oops! Looks like we have had a crash. Please reload or close this window.')(),
-                buttons: [ 'Reload', 'Close' ],
+                buttons: ['Reload', 'Close'],
             }, (index: number) => {
                 if (!this.mainWindow || !windowExists(this.mainWindow)) {
                     return;
@@ -239,7 +258,7 @@ export class WindowHandler {
                 return this.destroyAllWindows();
             }
 
-            const { minimizeOnClose } = config.getConfigFields([ 'minimizeOnClose' ]);
+            const { minimizeOnClose } = config.getConfigFields(['minimizeOnClose']);
             if (minimizeOnClose) {
                 event.preventDefault();
                 isMac ? this.mainWindow.hide() : this.mainWindow.minimize();
@@ -321,7 +340,7 @@ export class WindowHandler {
                 break;
             case 'screen-sharing-indicator':
                 if (winKey) {
-                    const browserWindow = this.windows[ winKey ];
+                    const browserWindow = this.windows[winKey];
                     if (browserWindow && windowExists(browserWindow)) {
                         browserWindow.close();
                     }
@@ -373,7 +392,7 @@ export class WindowHandler {
      * @param window {Electron.BrowserWindow}
      */
     public hasWindow(key: string, window: Electron.BrowserWindow): boolean {
-        const browserWindow = this.windows[ key ];
+        const browserWindow = this.windows[key];
         return browserWindow && window === browserWindow;
     }
 
@@ -403,13 +422,16 @@ export class WindowHandler {
         );
         this.aboutAppWindow.setVisibleOnAllWorkspaces(true);
         this.aboutAppWindow.webContents.once('did-finish-load', async () => {
-            if (!this.aboutAppWindow || !windowExists(this.aboutAppWindow)) {
-                return;
-            }
             const ABOUT_SYMPHONY_NAMESPACE = 'AboutSymphony';
             const versionLocalised = i18n.t('Version', ABOUT_SYMPHONY_NAMESPACE)();
-            const { clientVersion, buildNumber }: IVersionInfo = await versionHandler.getClientVersion();
-            this.aboutAppWindow.webContents.send('about-app-data', { buildNumber, clientVersion, versionLocalised });
+            const aboutInfo = {
+                buildNumber: this.versionInfo.buildNumber,
+                clientVersion: this.versionInfo.clientVersion,
+                versionLocalised,
+            };
+            if (this.aboutAppWindow && windowExists(this.aboutAppWindow)) {
+                this.aboutAppWindow.webContents.send('about-app-data', aboutInfo);
+            }
         });
     }
 
@@ -427,11 +449,9 @@ export class WindowHandler {
 
         this.moreInfoWindow = createComponentWindow('more-info', { width: 550, height: 500 });
         this.moreInfoWindow.webContents.once('did-finish-load', async () => {
-            if (!this.moreInfoWindow || !windowExists(this.moreInfoWindow)) {
-                return;
+            if (this.moreInfoWindow && windowExists(this.moreInfoWindow)) {
+                this.moreInfoWindow.webContents.send('more-info-data', this.versionInfo);
             }
-            const versionInfo: IVersionInfo = await versionHandler.getClientVersion();
-            this.moreInfoWindow.webContents.send('more-info-data', versionInfo);
         });
     }
 
@@ -456,8 +476,8 @@ export class WindowHandler {
             width: 580,
             show: false,
         }, {
-            devTools: false,
-        });
+                devTools: false,
+            });
         this.screenPickerWindow = createComponentWindow('screen-picker', opts);
         this.screenPickerWindow.webContents.once('did-finish-load', () => {
             if (!this.screenPickerWindow || !windowExists(this.screenPickerWindow)) {
@@ -499,8 +519,8 @@ export class WindowHandler {
             autoHideMenuBar: true,
             resizable: false,
         }, {
-            devTools: false,
-        });
+                devTools: false,
+            });
         opts.parent = window;
         this.basicAuthWindow = createComponentWindow('basic-auth', opts);
         this.basicAuthWindow.setVisibleOnAllWorkspaces(true);
@@ -551,8 +571,8 @@ export class WindowHandler {
             fullscreenable: false,
             autoHideMenuBar: true,
         }, {
-            devTools: false,
-        });
+                devTools: false,
+            });
         // This prevents creating multiple instances of the
         // notification configuration window
         if (this.notificationSettingsWindow && !this.notificationSettingsWindow.isDestroyed()) {
@@ -579,7 +599,7 @@ export class WindowHandler {
                 if (app.isReady()) {
                     screens = electron.screen.getAllDisplays();
                 }
-                const { position, display } = config.getConfigFields([ 'notificationSettings' ]).notificationSettings;
+                const { position, display } = config.getConfigFields(['notificationSettings']).notificationSettings;
                 this.notificationSettingsWindow.webContents.send('notification-settings-data', { screens, position, display });
             }
         });
@@ -623,7 +643,7 @@ export class WindowHandler {
     ): void {
         const indicatorScreen =
             (displayId && electron.screen.getAllDisplays().filter((d) =>
-                displayId.includes(d.id.toString()))[ 0 ]) || electron.screen.getPrimaryDisplay();
+                displayId.includes(d.id.toString()))[0]) || electron.screen.getPrimaryDisplay();
 
         const screenRect = indicatorScreen.workArea;
         // Set stream id as winKey to link stream to the window
@@ -640,8 +660,8 @@ export class WindowHandler {
                 resizable: false,
                 alwaysOnTop: true,
             }, {
-                devTools: false,
-            }), ...{ winKey: streamId },
+                    devTools: false,
+                }), ...{ winKey: streamId },
         };
         if (opts.width && opts.height) {
             opts = Object.assign({}, opts, {
@@ -674,6 +694,14 @@ export class WindowHandler {
     }
 
     /**
+     * Update version info on the about app window and more info window
+     */
+    public async updateVersionInfo(versionInfo: IVersionInfo) {
+        this.versionInfo = versionInfo;
+        this.setAboutPanel();
+    }
+
+    /**
      * Opens an external url in the system's default browser
      *
      * @param urlToOpen
@@ -692,7 +720,7 @@ export class WindowHandler {
      * @param browserWindow {Electron.BrowserWindow}
      */
     public addWindow(key: string, browserWindow: Electron.BrowserWindow): void {
-        this.windows[ key ] = browserWindow;
+        this.windows[key] = browserWindow;
     }
 
     /**
@@ -701,7 +729,22 @@ export class WindowHandler {
      * @param key {string}
      */
     public removeWindow(key: string): void {
-        delete this.windows[ key ];
+        delete this.windows[key];
+    }
+
+    /**
+     * Sets the about panel details for macOS
+     */
+    private setAboutPanel() {
+        const appName = app.getName();
+        const copyright = `Copyright \xA9 ${new Date().getFullYear()} ${appName}`;
+        app.setAboutPanelOptions({
+            applicationName: appName,
+            applicationVersion: this.versionInfo.clientVersion,
+            version: this.versionInfo.buildNumber,
+            copyright,
+        });
+
     }
 
     /**
@@ -726,7 +769,7 @@ export class WindowHandler {
      */
     private onRegisterDevtools(): void {
         const focusedWindow = BrowserWindow.getFocusedWindow();
-        const { devToolsEnabled } = config.getGlobalConfigFields([ 'devToolsEnabled' ]);
+        const { devToolsEnabled } = config.getGlobalConfigFields(['devToolsEnabled']);
         if (!focusedWindow || !windowExists(focusedWindow)) {
             return;
         }
@@ -738,7 +781,7 @@ export class WindowHandler {
         logger.info(`window-handler: dev tools disabled by admin, showing error dialog to user!`);
         electron.dialog.showMessageBox(focusedWindow, {
             type: 'warning',
-            buttons: [ 'Ok' ],
+            buttons: ['Ok'],
             title: i18n.t('Dev Tools disabled')(),
             message: i18n.t('Dev Tools has been disabled! Please contact your system administrator to enable it!')(),
         });
@@ -750,7 +793,7 @@ export class WindowHandler {
     private destroyAllWindows(): void {
         for (const key in this.windows) {
             if (Object.prototype.hasOwnProperty.call(this.windows, key)) {
-                const winKey = this.windows[ key ];
+                const winKey = this.windows[key];
                 this.removeWindow(winKey);
             }
         }
@@ -779,7 +822,7 @@ export class WindowHandler {
             type: 'error',
             title: i18n.t('Build expired')(),
             message: i18n.t('Sorry, this is a test build and it has expired. Please contact your administrator to get a production build.')(),
-            buttons: [ i18n.t('Quit')() ],
+            buttons: [i18n.t('Quit')()],
             cancelId: 0,
         };
 
