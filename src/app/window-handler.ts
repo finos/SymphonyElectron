@@ -1,5 +1,5 @@
 import * as electron from 'electron';
-import { app, BrowserWindow, crashReporter, globalShortcut, ipcMain } from 'electron';
+import { app, BrowserWindow, BrowserWindowConstructorOptions, crashReporter, globalShortcut, ipcMain } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 import { format, parse } from 'url';
@@ -417,10 +417,21 @@ export class WindowHandler {
             return (window as ICustomBrowserWindow).winName === windowName;
         });
 
-        this.aboutAppWindow = createComponentWindow(
-            'about-app',
-            selectedParentWindow ? { parent: selectedParentWindow } : {},
-        );
+        const opts: BrowserWindowConstructorOptions = this.getWindowOpts({
+            modal: true,
+        }, {
+            devTools: false,
+        });
+
+        if (this.mainWindow && windowExists(this.mainWindow) && this.mainWindow.isAlwaysOnTop()) {
+            opts.alwaysOnTop = true;
+        }
+
+        if (selectedParentWindow) {
+            opts.parent = selectedParentWindow;
+        }
+
+        this.aboutAppWindow = createComponentWindow('about-app', opts);
         this.aboutAppWindow.setVisibleOnAllWorkspaces(true);
         this.aboutAppWindow.webContents.once('did-finish-load', async () => {
             const ABOUT_SYMPHONY_NAMESPACE = 'AboutSymphony';
@@ -448,7 +459,17 @@ export class WindowHandler {
             return;
         }
 
-        this.moreInfoWindow = createComponentWindow('more-info', { width: 550, height: 500 });
+        const opts: BrowserWindowConstructorOptions = this.getWindowOpts({
+            width: 550,
+            height: 500,
+        }, {
+            devTools: false,
+        });
+        if (this.mainWindow && windowExists(this.mainWindow) && this.mainWindow.isAlwaysOnTop()) {
+            opts.alwaysOnTop = true;
+        }
+
+        this.moreInfoWindow = createComponentWindow('more-info', opts);
         this.moreInfoWindow.webContents.once('did-finish-load', async () => {
             if (this.moreInfoWindow && windowExists(this.moreInfoWindow)) {
                 this.moreInfoWindow.webContents.send('more-info-data', this.versionInfo);
@@ -469,16 +490,22 @@ export class WindowHandler {
             this.screenPickerWindow.close();
         }
 
-        const opts = this.getWindowOpts({
+        const opts: ICustomBrowserWindowConstructorOpts = this.getWindowOpts({
             alwaysOnTop: true,
             autoHideMenuBar: true,
             frame: false,
+            modal: true,
             height: isMac ? 519 : 523,
             width: 580,
             show: false,
         }, {
-                devTools: false,
-            });
+            devTools: false,
+        });
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+        if (focusedWindow && windowExists(focusedWindow) && isWindowsOS) {
+            opts.parent = focusedWindow;
+        }
+
         this.screenPickerWindow = createComponentWindow('screen-picker', opts);
         this.screenPickerWindow.webContents.once('did-finish-load', () => {
             if (!this.screenPickerWindow || !windowExists(this.screenPickerWindow)) {
@@ -660,6 +687,7 @@ export class WindowHandler {
                 autoHideMenuBar: true,
                 resizable: false,
                 alwaysOnTop: true,
+                fullscreenable: false,
             }, {
                     devTools: false,
                 }), ...{ winKey: streamId },
