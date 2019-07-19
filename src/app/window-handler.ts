@@ -16,7 +16,7 @@ import { config, IConfig } from './config-handler';
 import { SpellChecker } from './spell-check-handler';
 import { checkIfBuildExpired } from './ttl-handler';
 import DesktopCapturerSource = Electron.DesktopCapturerSource;
-import { IVersionInfo, versionHandler } from './version-handler.js';
+import { IVersionInfo, versionHandler } from './version-handler';
 import { handlePermissionRequests, monitorWindowActions } from './window-actions';
 import {
     createComponentWindow,

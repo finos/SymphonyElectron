@@ -65,17 +65,12 @@ ipcRenderer.on('page-load', (_event, { locale, resources, enableCustomTitleBar, 
     });
 
     // injects snack bar
-    const snackBar = React.createElement(SnackBar);
-    const snackBarContainer = document.createElement( 'div' );
-    document.body.appendChild(snackBarContainer);
-    ReactDOM.render(snackBar, snackBarContainer);
+    const snackBar = new SnackBar();
+    snackBar.initSnackBar();
 
     // injects download manager contents
-    const downloadManager = React.createElement(DownloadManager);
-    const footerSFE = document.getElementById('footer');
-    if (footerSFE) {
-        ReactDOM.render(downloadManager, footerSFE);
-    }
+    const downloadManager = new DownloadManager();
+    downloadManager.initDownloadManager();
 
     if (isMainWindow) {
         setInterval(async () => {
