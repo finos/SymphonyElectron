@@ -18,7 +18,7 @@ interface IState {
     aresVersion: string;
     httpParserVersion: string;
     swiftSearchVersion: string;
-    swiftSerchSupportedVersion: string;
+    swiftSearchSupportedVersion: string;
 }
 
 const MORE_INFO_NAMESPACE = 'MoreInfo';
@@ -45,7 +45,7 @@ export default class MoreInfo extends React.Component<{}, IState> {
             aresVersion: 'N/A',
             httpParserVersion: 'N/A',
             swiftSearchVersion: 'N/A',
-            swiftSerchSupportedVersion: 'N/A',
+            swiftSearchSupportedVersion: 'N/A',
         };
         this.updateState = this.updateState.bind(this);
     }
@@ -67,7 +67,7 @@ export default class MoreInfo extends React.Component<{}, IState> {
             electronVersion, chromeVersion, v8Version,
             nodeVersion, openSslVersion, zlibVersion,
             uvVersion, aresVersion, httpParserVersion,
-            swiftSearchVersion, swiftSerchSupportedVersion,
+            swiftSearchVersion, swiftSearchSupportedVersion,
         } = this.state;
 
         const podVersion = `${clientVersion} (${buildNumber})`;
@@ -142,7 +142,7 @@ export default class MoreInfo extends React.Component<{}, IState> {
                             </tr>
                             <tr>
                                 <td>{swiftSearchVersion || 'N/A'}</td>
-                                <td>{swiftSerchSupportedVersion || 'N/A'}</td>
+                                <td>{swiftSearchSupportedVersion || 'N/A'}</td>
                             </tr>
                         </tbody>
                     </table>
