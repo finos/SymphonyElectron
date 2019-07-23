@@ -244,9 +244,16 @@ export class WindowHandler {
             const {minimizeOnClose} = config.getConfigFields(['minimizeOnClose']);
             if (minimizeOnClose) {
                 event.preventDefault();
-                isMac ? this.mainWindow.hide() : this.mainWindow.minimize();
+                this.mainWindow.minimize();
                 return;
             }
+
+            if (isMac) {
+                event.preventDefault();
+                this.mainWindow.hide();
+                return;
+            }
+
             app.quit();
         });
 
