@@ -160,6 +160,9 @@ export default class NotificationComp extends React.Component<{}, IState> {
         const { color, flash } = data;
         data.color = (color && !color.startsWith('#')) ? '#' + color : color;
         this.setState(data as IState);
+        if (this.flashTimer) {
+            clearInterval(this.flashTimer);
+        }
         if (flash) {
             const origColor = data.color;
             this.flashTimer = setInterval(() => {
