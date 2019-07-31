@@ -18,7 +18,7 @@ class MemoryMonitor {
         this.isInMeeting = false;
         this.canReload = true;
         this.maxIdleTime = 4 * 60 * 60 * 1000; // 4 hours
-        this.memoryThreshold = 800; // 800MB
+        this.memoryThreshold = 800 * 1024; // 800MB
         this.memoryRefreshThreshold = 60 * 60 * 1000; // 1 hour
     }
 
@@ -57,16 +57,15 @@ class MemoryMonitor {
 
         (electron.powerMonitor as any).querySystemIdleTime((time) => {
             const idleTime = time * 1000;
-            const workingSetSizeInMB = this.memoryInfo && (this.memoryInfo.workingSetSize / 1024) || 0;
             if (!(!this.isInMeeting
                 && windowHandler.isOnline
                 && this.canReload
                 && idleTime > this.maxIdleTime
-                && (workingSetSizeInMB > this.memoryThreshold))
+                && (this.memoryInfo && this.memoryInfo.private > this.memoryThreshold))
             ) {
                 logger.info(`memory-monitor: Not Reloading the app as
                 application was refreshed less than a hour ago? ${this.canReload ? 'no' : 'yes'}
-                memory consumption is ${(workingSetSizeInMB) || 'unknown'}mb is less than? ${this.memoryThreshold}mb
+                memory consumption is ${(this.memoryInfo && this.memoryInfo.private) || 'unknown'}kb is less than? ${this.memoryThreshold}kb
                 system idle tick was ${idleTime}ms is less than? ${this.maxIdleTime}ms
                 user was in a meeting? ${this.isInMeeting}
                 is network online? ${windowHandler.isOnline}`);
@@ -75,7 +74,7 @@ class MemoryMonitor {
             const mainWindow = windowHandler.getMainWindow();
             if (mainWindow && windowExists(mainWindow)) {
                 logger.info(`memory-monitor: Reloading the app to optimize memory usage as
-                    memory consumption is ${workingSetSizeInMB}mb is greater than? ${this.memoryThreshold}mb threshold
+                    memory consumption is ${this.memoryInfo.private}kb is greater than? ${this.memoryThreshold}kb threshold
                     system idle tick was ${idleTime}ms is greater than ${this.maxIdleTime}ms
                     user was in a meeting? ${this.isInMeeting}
                     is network online? ${windowHandler.isOnline}`);

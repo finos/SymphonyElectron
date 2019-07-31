@@ -85,16 +85,16 @@
   },
   "devDependencies": {
     "@types/enzyme": "3.9.0",
-    "@types/ffi": "0.2.2",
+    "@types/ffi-napi": "2.4.1",
+    "@types/ref-napi": "1.4.0",
     "@types/jest": "23.3.12",
     "@types/node": "10.11.4",
     "@types/react": "16.8.3",
     "@types/react-dom": "16.0.9",
-    "@types/ref": "0.0.28",
     "browserify": "16.2.3",
     "cross-env": "5.2.0",
     "del": "3.0.0",
-    "electron": "3.1.12",
+    "electron": "5.0.8",
     "electron-builder": "20.38.4",
     "electron-builder-squirrel-windows": "20.38.3",
     "electron-rebuild": "1.8.2",
@@ -121,16 +121,16 @@
     "electron-fetch": "1.3.0",
     "electron-log": "2.2.17",
     "electron-spellchecker": "git+https://github.com/symphonyoss/electron-spellchecker.git#v2.0.1",
-    "ffi": "git+https://github.com/symphonyoss/node-ffi.git#v1.2.8",
+    "ffi-napi": "2.4.5",
     "filesize": "3.6.1",
     "lodash.isequal": "4.5.0",
     "react": "16.6.3",
     "react-dom": "16.6.0",
-    "ref": "1.3.5",
+    "ref-napi": "1.4.1",
     "shell-path": "2.1.0"
   },
   "optionalDependencies": {
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.7",
-    "swift-search": "1.55.3-2"
+    "swift-search": "1.55.2-beta.1"
   }
 }
