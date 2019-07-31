@@ -55,12 +55,15 @@ ipcRenderer.on('page-load', (_event, { locale, resources, enableCustomTitleBar, 
         ReactDOM.render(element, div);
     }
 
-    webFrame.setSpellCheckProvider('en-US', false,{
-        spellCheck(text) {
-            return !ipcRenderer.sendSync(apiName.symphonyApi, {
-                cmd: apiCmds.isMisspelled,
-                word: text,
+    webFrame.setSpellCheckProvider('en-US', {
+        spellCheck(words, callback) {
+            const misspelled = words.filter((word) => {
+                return ipcRenderer.sendSync(apiName.symphonyApi, {
+                    cmd: apiCmds.isMisspelled,
+                    word,
+                });
             });
+            callback(misspelled);
         },
     });
 
