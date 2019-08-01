@@ -5,6 +5,7 @@ import { apiCmds, apiName } from '../../common/api-interface';
 import { i18n } from '../../common/i18n-preload';
 
 interface IState {
+    title: string;
     isMaximized: boolean;
     isFullScreen: boolean;
     titleBarHeight: string;
@@ -20,11 +21,13 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
         onShowMenu: () => this.showMenu(),
         onUnmaximize: () => this.unmaximize(),
     };
+    private observer: MutationObserver | undefined;
 
     constructor(props) {
         super(props);
         this.window = remote.getCurrentWindow();
         this.state = {
+            title: document.title || 'Symphony',
             isFullScreen: this.window.isFullScreen(),
             isMaximized: this.window.isMaximized(),
             titleBarHeight: '32px',
@@ -40,6 +43,17 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
         this.window.on('leave-full-screen', () => this.updateState({ isFullScreen: false }));
     }
 
+    public componentDidMount(): void {
+        const target = document.querySelector('title');
+        this.observer = new MutationObserver((mutations) => {
+            const title: string = mutations[0].target.textContent ? mutations[0].target.textContent : 'Symphony';
+            this.setState({ title } );
+        });
+        if (target) {
+            this.observer.observe(target, { attributes: true, childList: true, subtree: true, characterData: true });
+        }
+    }
+
     public componentWillMount() {
         this.window.removeListener('maximize', this.updateState);
         this.window.removeListener('unmaximize', this.updateState);
@@ -47,12 +61,18 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
         this.window.removeListener('leave-full-screen', this.updateState);
     }
 
+    public componentWillUnmount(): void {
+        if (this.observer) {
+            this.observer.disconnect();
+        }
+    }
+
     /**
      * Renders the custom title bar
      */
     public render(): JSX.Element | null {
 
-        const { isFullScreen } = this.state;
+        const { title, isFullScreen } = this.state;
         const style = { display: isFullScreen ? 'none' : 'flex' };
         this.updateTitleBar();
 
@@ -77,7 +97,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
                 </div>
                 <div className='title-container'>
                     {this.getSymphonyLogo()}
-                    <p id='title-bar-title'>{document.title || 'Symphony'}</p>
+                    <p id='title-bar-title'>{title}</p>
                 </div>
                 <div className='title-bar-button-container'>
                     <button
