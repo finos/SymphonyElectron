@@ -3,6 +3,12 @@ import * as React from 'react';
 import WindowsTitleBar from '../src/renderer/components/windows-title-bar';
 import { ipcRenderer, remote } from './__mocks__/electron';
 
+// @ts-ignore
+global.MutationObserver = jest.fn().mockImplementation(() => ({
+    observe: jest.fn(),
+    disconnect: jest.fn(),
+}));
+
 describe('windows title bar', () => {
     beforeEach(() => {
         // state initial
@@ -96,7 +102,7 @@ describe('windows title bar', () => {
         const wrapper = shallow(React.createElement(WindowsTitleBar));
         const event = {
             preventDefault: jest.fn(),
-        }
+        };
         const spy = jest.spyOn(event, 'preventDefault');
         wrapper.find(customSelector).simulate('mouseDown', event);
         expect(spy).toBeCalled();
