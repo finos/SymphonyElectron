@@ -39,9 +39,9 @@ class ScreenSnippet {
      */
     public async capture(webContents: Electron.webContents) {
         logger.info(`screen-snippet-handler: Starting screen capture!`);
-        this.outputFileName = path.join(this.tempDir, 'symphonyImage-' + Date.now() + '.jpg');
+        this.outputFileName = path.join(this.tempDir, 'symphonyImage-' + Date.now() + '.png');
         this.captureUtilArgs = isMac
-            ? [ '-i', '-s', '-t', 'jpg', this.outputFileName ]
+            ? [ '-i', '-s', '-t', 'png', this.outputFileName ]
             : [ this.outputFileName, i18n.getLocale() ];
 
         logger.info(`screen-snippet-handler: Capturing snippet with file ${this.outputFileName} and args ${this.captureUtilArgs}!`);
@@ -85,7 +85,7 @@ class ScreenSnippet {
      *
      * @param captureUtil {string}
      * @param captureUtilArgs {captureUtilArgs}
-     * @example execCmd('-i -s', '/user/desktop/symphonyImage-1544025391698.jpg')
+     * @example execCmd('-i -s', '/user/desktop/symphonyImage-1544025391698.png')
      */
     private execCmd(captureUtil: string, captureUtilArgs: ReadonlyArray<string>): Promise<ChildProcess> {
         return new Promise<ChildProcess>((resolve, reject) => {
