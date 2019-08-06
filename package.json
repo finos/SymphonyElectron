@@ -46,6 +46,7 @@
       "library/libsymphonysearch.dylib",
       "library/indexvalidator.exec",
       "library/cryptoLib.dylib",
+      "library/dictionary",
       "library/lz4.exec"
     ],
     "appId": "com.symphony.electron-desktop",
@@ -131,6 +132,6 @@
   },
   "optionalDependencies": {
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.7",
-    "swift-search": "1.55.3-2"
+    "swift-search": "1.55.3-3"
   }
 }
