@@ -30,8 +30,7 @@ class Translation {
      * @param locale
      */
     public setLocale(locale: LocaleType): void {
-        const localeMatch: string[] | null = locale.match(localeCodeRegex);
-        if (!locale && (!localeMatch || localeMatch.length < 1)) {
+        if (!this.isValidLocale(locale)) {
             return;
         }
 
@@ -45,6 +44,19 @@ class Translation {
      */
     public getLocale(): LocaleType {
         return this.locale;
+    }
+
+    /**
+     * Validates the locale using Regex
+     *
+     * @param locale {LocaleType}
+     */
+    public isValidLocale(locale: LocaleType): boolean {
+        if (!locale) {
+            return false;
+        }
+        const localeMatch: string[] | null = locale.match(localeCodeRegex);
+        return !(!locale && (!localeMatch || localeMatch.length < 1));
     }
 
     /**
