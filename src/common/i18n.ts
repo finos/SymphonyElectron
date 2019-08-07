@@ -52,6 +52,9 @@ class Translation {
      * @param locale {LocaleType}
      */
     public isValidLocale(locale: LocaleType): boolean {
+        if (!locale) {
+            return false;
+        }
         const localeMatch: string[] | null = locale.match(localeCodeRegex);
         return !(!locale && (!localeMatch || localeMatch.length < 1));
     }
