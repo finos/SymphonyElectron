@@ -6,7 +6,7 @@ import { format, parse } from 'url';
 
 import { apiName, WindowTypes } from '../common/api-interface';
 import { isDevEnv, isMac, isWindowsOS } from '../common/env';
-import { i18n } from '../common/i18n';
+import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { getCommandLineArgs, getGuid } from '../common/utils';
 import { notification } from '../renderer/notification';
@@ -88,7 +88,7 @@ export class WindowHandler {
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Use these variables only on initial setup
-        this.config = config.getConfigFields(['isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings', 'alwaysOnTop']);
+        this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings', 'alwaysOnTop', 'locale' ]);
         this.globalConfig = config.getGlobalConfigFields(['url', 'contextIsolation', 'customFlags']);
         const {url, contextIsolation, customFlags}: IConfig = this.globalConfig;
 
@@ -112,6 +112,8 @@ export class WindowHandler {
         this.isOnline = true;
 
         this.appMenu = null;
+        const locale: LocaleType = (this.config.locale || app.getLocale()) as LocaleType;
+        i18n.setLocale(locale);
 
         try {
             const extra = {podUrl: url, process: 'main'};

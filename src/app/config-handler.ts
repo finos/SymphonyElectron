@@ -40,6 +40,7 @@ export interface IConfig {
     permissions: IPermission;
     customFlags: ICustomFlag;
     mainWinPos?: ICustomRectangle;
+    locale?: string;
 }
 
 export interface IPermission {
