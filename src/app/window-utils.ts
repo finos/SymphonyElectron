@@ -235,7 +235,7 @@ export const isValidWindow = (browserWin: Electron.BrowserWindow): boolean => {
  *
  * @param locale {LocaleType}
  */
-export const updateLocale = (locale: LocaleType): void => {
+export const updateLocale = async (locale: LocaleType): Promise<void> => {
     logger.info(`window-utils: updating locale to ${locale}!`);
     // sets the new locale
     i18n.setLocale(locale);
@@ -243,6 +243,11 @@ export const updateLocale = (locale: LocaleType): void => {
     if (appMenu) {
         logger.info(`window-utils: updating app menu with locale ${locale}!`);
         appMenu.update(locale);
+    }
+
+    if (i18n.isValidLocale(locale)) {
+        // Update user config file with latest locale changes
+        await config.updateUserConfig({ locale });
     }
 };
 
