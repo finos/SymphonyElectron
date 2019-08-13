@@ -70,6 +70,10 @@
     },
     "win": {
       "target": "squirrel"
+    },
+    "linux": {
+      "target": "zip",
+      "category": "Office"
     }
   },
   "repository": {

@@ -3,7 +3,7 @@ import { app } from 'electron';
 import * as electron from 'electron';
 
 import { windowExists } from '../app/window-utils';
-import { isMac } from '../common/env';
+import { isLinux, isMac } from '../common/env';
 
 interface ISettings {
     startCorner: startCorner;
@@ -65,7 +65,7 @@ export default class NotificationHandler {
      */
     public setupNotificationPosition() {
         // This feature only applies to windows
-        if (isMac || !app.isReady()) {
+        if (isMac || isLinux || !app.isReady()) {
             return;
         }
 

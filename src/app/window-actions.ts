@@ -1,7 +1,7 @@
 import { BrowserWindow, dialog } from 'electron';
 
 import { apiName, IBoundsChange, KeyCodes } from '../common/api-interface';
-import { isMac, isWindowsOS } from '../common/env';
+import { isLinux, isMac, isWindowsOS } from '../common/env';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
 import { throttle } from '../common/utils';
@@ -118,7 +118,7 @@ export const activate = (windowName: string, shouldFocus: boolean = true): void 
                 // Bring the window to the top without focusing
                 // Flash task bar icon in Windows for windows
                 if (!shouldFocus) {
-                    return isMac ? window.showInactive() : window.flashFrame(true);
+                    return (isMac || isLinux) ? window.showInactive() : window.flashFrame(true);
                 }
 
                 // Note: On window just focusing will preserve window snapped state
@@ -175,7 +175,7 @@ export const handleKeyPress = (key: number): void => {
             break;
         }
         case KeyCodes.Alt:
-            if (isMac || windowHandler.isCustomTitleBar) {
+            if (isMac || isLinux || windowHandler.isCustomTitleBar) {
                 return;
             }
             const browserWin = BrowserWindow.getFocusedWindow() as ICustomBrowserWindow;

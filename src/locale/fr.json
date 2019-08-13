@@ -158,8 +158,10 @@
   "Show All": "Tout afficher",
   "Show crash dump in Explorer": "Afficher rapport de crash dans Explorateur",
   "Show crash dump in Finder": "Montrer dans l'application 'Finder' le rapport de l'arrêt inopiné",
+  "Show crash dump in File Manager": "Afficher le vidage sur incident dans le Gestionnaire de fichiers",
   "Show Logs in Explorer": "Afficher journal d'évenements dans Explorateur",
   "Show Logs in Finder": "Montrer dans l'application 'Finder' le journal d'évènements",
+  "Show Logs in File Manager": "Afficher les journaux dans le gestionnaire de fichiers",
   "SnackBar": {
     " to exit full screen": " pour quitter le plein écran",
     "esc": "esc",

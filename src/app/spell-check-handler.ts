@@ -2,7 +2,7 @@ import { app, MenuItem } from 'electron';
 import * as path from 'path';
 
 import { ContextMenuBuilder, DictionarySync, SpellCheckHandler } from 'electron-spellchecker';
-import { isDevEnv, isMac } from '../common/env';
+import { isDevEnv, isLinux, isMac } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 
@@ -18,13 +18,13 @@ export class SpellChecker {
             this.dictionaryPath = path.join(app.getAppPath(), dictionariesDirName);
         } else {
             const execPath = path.dirname(app.getPath('exe'));
-            this.dictionaryPath = path.join(execPath, isMac ? '..' : '', dictionariesDirName);
+            this.dictionaryPath = path.join(execPath, (isMac || isLinux) ? '..' : '', dictionariesDirName);
         }
         this.dictionarySync = new DictionarySync(this.dictionaryPath);
         this.spellCheckHandler = new SpellCheckHandler(this.dictionarySync);
         this.spellCheckHandler.automaticallyIdentifyLanguages = false;
         // language is switched w.r.t to the current system language.
-        if (!isMac) {
+        if (!isMac || !isLinux) {
             const sysLocale = app.getLocale() || 'en-US';
             this.spellCheckHandler.switchLanguage(sysLocale);
         }

@@ -20,6 +20,7 @@ const getMainWindow = {
 jest.mock('../src/common/env', () => {
     return {
         isWindowsOS: true,
+        isLinux: false,
         isMac: false,
     };
 });

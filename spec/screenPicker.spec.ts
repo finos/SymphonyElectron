@@ -6,6 +6,7 @@ import { ipcRenderer } from './__mocks__/electron';
 jest.mock('../src/common/env', () => {
     return {
         isWindowsOS: false,
+        isLinux: false,
         isMac: true,
     };
 });
@@ -294,6 +295,7 @@ describe('screen picker', () => {
                 ],
             };
             env.isWindowsOS = true;
+            env.isLinux = false;
             env.isMac = false;
             wrapper.setState(entireScreenStateMock);
             expect(wrapper.find(screenTabCustomSelector)).toHaveLength(1);
@@ -311,6 +313,7 @@ describe('screen picker', () => {
                 ],
             };
             env.isWindowsOS = false;
+            env.isLinux = false;
             env.isMac = true;
             wrapper.setState(entireScreenStateMock);
             expect(wrapper.find(screenTabCustomSelector)).toHaveLength(0);

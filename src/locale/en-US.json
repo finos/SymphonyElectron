@@ -158,8 +158,10 @@
   "Show All": "Show All",
   "Show crash dump in Explorer": "Show crash dump in Explorer",
   "Show crash dump in Finder": "Show crash dump in Finder",
+  "Show crash dump in File Manager": "Show crash dump in File Manager",
   "Show Logs in Explorer": "Show Logs in Explorer",
   "Show Logs in Finder": "Show Logs in Finder",
+  "Show Logs in File Manager": "Show Logs in File Manager",
   "SnackBar": {
     " to exit full screen": " to exit full screen",
     "esc": "esc",
