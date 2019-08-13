@@ -57,7 +57,7 @@ export default class NetworkError extends React.Component<IProps, {}> {
                         </defs>
                     </svg>
                 </div>
-                <div className='main-message'>
+                <div className='main-message' lang={i18n.getLocale()}>
                     <p className='NetworkError-header'>
                         {i18n.t('Problem connecting to Symphony', NETWORK_ERROR_NAMESPACE)()}
                     </p>

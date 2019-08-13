@@ -7,6 +7,14 @@ body {
   margin: 0;
 }
 
+.main-message {
+  font-family: @font-family;
+}
+
+.main-message:lang(ja-JP) {
+  font-family: @font-family-ja;
+}
+
 a {
   color: rgb(17, 85, 204);
   text-decoration: none;
@@ -68,7 +76,6 @@ a {
 .content-wrapper {
   -webkit-text-size-adjust: 100%;
   box-sizing: border-box;
-  font-family: @font-family;
   font-size: 100%;
   line-height: 1.6em;
   margin: 14vh auto 0;
