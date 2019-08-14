@@ -1,4 +1,4 @@
-import { app } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -9,8 +9,7 @@ import { IScreenSnippet } from '../common/api-interface';
 import { isDevEnv, isMac } from '../common/env';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
-import { updateAlwaysOnTop } from './window-actions';
-import { windowHandler } from './window-handler';
+import { windowExists } from './window-utils';
 
 const readFile = util.promisify(fs.readFile);
 
@@ -18,13 +17,12 @@ class ScreenSnippet {
     private readonly tempDir: string;
     private readonly captureUtil: string;
     private outputFileName: string | undefined;
-    private isAlwaysOnTop: boolean;
     private captureUtilArgs: ReadonlyArray<string> | undefined;
     private child: ChildProcess | undefined;
+    private focusedWindow: BrowserWindow | null = null;
 
     constructor() {
         this.tempDir = os.tmpdir();
-        this.isAlwaysOnTop = false;
         this.captureUtil = isMac ? '/usr/sbin/screencapture' : isDevEnv
             ? path.join(__dirname,
                 '../../node_modules/screen-snippet/bin/Release/ScreenSnippet.exe')
@@ -43,15 +41,10 @@ class ScreenSnippet {
         this.captureUtilArgs = isMac
             ? [ '-i', '-s', '-t', 'png', this.outputFileName ]
             : [ this.outputFileName, i18n.getLocale() ];
+        this.focusedWindow = BrowserWindow.getFocusedWindow();
 
         logger.info(`screen-snippet-handler: Capturing snippet with file ${this.outputFileName} and args ${this.captureUtilArgs}!`);
 
-        const mainWindow = windowHandler.getMainWindow();
-        if (mainWindow) {
-            this.isAlwaysOnTop = mainWindow.isAlwaysOnTop();
-            logger.info(`screen-snippet-handler: Is main window always on top? ${this.isAlwaysOnTop}!`);
-            updateAlwaysOnTop(false, false);
-        }
         // only allow one screen capture at a time.
         if (this.child) {
             logger.info(`screen-snippet-handler: Child screen capture exists, killing it and keeping only 1 instance!`);
@@ -90,9 +83,6 @@ class ScreenSnippet {
     private execCmd(captureUtil: string, captureUtilArgs: ReadonlyArray<string>): Promise<ChildProcess> {
         return new Promise<ChildProcess>((resolve, reject) => {
             return this.child = execFile(captureUtil, captureUtilArgs, (error: ExecException | null) => {
-                if (this.isAlwaysOnTop) {
-                    updateAlwaysOnTop(true, false);
-                }
                 if (error && error.killed) {
                     // processs was killed, just resolve with no data.
                     return reject(error);
@@ -130,6 +120,9 @@ class ScreenSnippet {
                 ? { message: `file does not exist`, type: 'ERROR' }
                 : { message: `${error}`, type: 'ERROR' };
         } finally {
+            if (this.focusedWindow && windowExists(this.focusedWindow)) {
+                this.focusedWindow.moveTop();
+            }
             // remove tmp file (async)
             if (this.outputFileName) {
                 fs.unlink(this.outputFileName, (removeErr) => {
