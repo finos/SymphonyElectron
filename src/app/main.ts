@@ -2,7 +2,7 @@ import { app } from 'electron';
 import * as electronDownloader from 'electron-dl';
 import * as shellPath from 'shell-path';
 
-import { isDevEnv, isMac } from '../common/env';
+import { isDevEnv, isLinux, isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
 import { cleanUpAppCache, createAppCacheFile } from './app-cache-handler';
@@ -65,7 +65,9 @@ const startApplication = async () => {
     if (config.isFirstTimeLaunch()) {
         logger.info(`main: This is a first time launch! will update config and handle auto launch`);
         await config.setUpFirstTimeLaunch();
-        await autoLaunchInstance.handleAutoLaunch();
+        if (!isLinux) {
+            await autoLaunchInstance.handleAutoLaunch();
+        }
     }
 
     // Setup session properties only after app ready

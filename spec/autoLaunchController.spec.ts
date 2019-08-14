@@ -68,7 +68,6 @@ describe('auto launch controller', async () => {
         const spy = jest.spyOn(autoLaunchInstance, spyFn);
         jest.spyOn(autoLaunchInstance,'isAutoLaunchEnabled').mockImplementation(() => ({openAtLogin: true}));
         await autoLaunchInstance.handleAutoLaunch();
-        console.log(autoLaunchInstance.isAutoLaunchEnabled());
         expect(spy).toBeCalled();
     });
 });

@@ -1,6 +1,6 @@
 import { app, LoginItemSettings } from 'electron';
 
-import { isLinux, isMac } from '../common/env';
+import { isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { config, IConfig } from './config-handler';
 
@@ -54,9 +54,6 @@ class AutoLaunchController {
      * Validates the user config and enables auto launch
      */
     public async handleAutoLaunch(): Promise<void> {
-        if (isLinux) {
-            return;
-        }
         const { launchOnStartup }: IConfig = config.getConfigFields([ 'launchOnStartup' ]);
         const { openAtLogin: isAutoLaunchEnabled }: LoginItemSettings = this.isAutoLaunchEnabled();
 
