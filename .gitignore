@@ -35,3 +35,4 @@ library
 js/translation/*_missing.json
 out
 lib
+build

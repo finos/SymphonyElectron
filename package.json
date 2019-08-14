@@ -15,15 +15,17 @@
     "dev": "npm run prebuild && cross-env ELECTRON_DEV=true electron .",
     "demo-win": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file:///demo/index.html",
     "demo-mac": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/demo/index.html",
+    "icon-gen": "electron-icon-maker --input=images/icon_1024.png --output=./build",
     "lint": "tslint --project tsconfig.json",
+    "packed-linux": "npm run prebuild && npm run test && npm run icon-gen && build --linux",
     "packed-mac": "npm run unpacked-mac && packagesbuild -v installer/mac/symphony-mac-packager.pkgproj",
     "prebuild": "npm run compile && npm run rebuild && npm run browserify-preload",
     "rebuild": "electron-rebuild -f",
     "start": "npm run compile && npm run browserify-preload && cross-env ELECTRON_DEV=true electron .",
     "test": "npm run lint && cross-env ELECTRON_QA=true jest --config jest.config.json --runInBand --detectOpenHandles",
-    "unpacked-mac": "npm run prebuild && npm run test && build --mac --dir",
-    "unpacked-win": "npm run prebuild && npm run test && build --win --x64 --dir",
-    "unpacked-win-x86": "npm run prebuild && npm run test && build --win --ia32 --dir"
+    "unpacked-mac": "npm run prebuild && npm run test && npm run icon-gen && build --mac --dir",
+    "unpacked-win": "npm run prebuild && npm run test && npm run icon-gen && build --win --x64 --dir",
+    "unpacked-win-x86": "npm run prebuild && npm run test && npm run icon-gen && build --win --ia32 --dir"
   },
   "build": {
     "asarUnpack": [
@@ -52,7 +54,8 @@
     "appId": "com.symphony.electron-desktop",
     "mac": {
       "target": "dmg",
-      "category": "public.app-category.business"
+      "category": "public.app-category.business",
+      "icon": "build/icons/mac/icon.icns"
     },
     "dmg": {
       "contents": [
@@ -69,11 +72,28 @@
       ]
     },
     "win": {
-      "target": "squirrel"
+      "target": "squirrel",
+      "icon": "build/icons/win/icon.ico"
     },
     "linux": {
-      "target": "zip",
-      "category": "Office"
+      "category": "Network;InstantMessaging;Chat",
+      "desktop": {
+        "StartupWMClass": "Symphony"
+      },
+      "target": [
+        "deb"
+      ],
+      "icon": "build/icons/png"
+    },
+    "deb": {
+      "depends": [
+        "libnotify4",
+        "libappindicator1",
+        "libxtst6",
+        "libnss3",
+        "libasound2",
+        "libxss1"
+      ]
     }
   },
   "repository": {
@@ -91,17 +111,18 @@
   "devDependencies": {
     "@types/enzyme": "3.9.0",
     "@types/ffi-napi": "2.4.1",
-    "@types/ref-napi": "1.4.0",
     "@types/jest": "23.3.12",
     "@types/node": "10.11.4",
     "@types/react": "16.8.3",
     "@types/react-dom": "16.0.9",
+    "@types/ref-napi": "1.4.0",
     "browserify": "16.2.3",
     "cross-env": "5.2.0",
     "del": "3.0.0",
     "electron": "5.0.8",
     "electron-builder": "20.38.4",
     "electron-builder-squirrel-windows": "20.38.3",
+    "electron-icon-maker": "0.0.4",
     "electron-rebuild": "1.8.2",
     "enzyme": "3.9.0",
     "enzyme-adapter-react-16": "1.10.0",
