@@ -41,7 +41,7 @@ class Logger {
         }
 
         if (isLinux) {
-            this.logPath = app.getPath('userData');
+            this.logPath = app.getPath('appData');
         } else {
             this.logPath = app.getPath('logs');
         }
