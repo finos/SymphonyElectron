@@ -267,6 +267,7 @@ export class AppMenu {
                 },
                 label: i18n.t('Auto Launch On Startup')(),
                 type: 'checkbox',
+                visible: !isLinux,
             },
             {
                 checked: isAlwaysOnTop,
@@ -278,6 +279,7 @@ export class AppMenu {
                 },
                 label: i18n.t('Always on Top')(),
                 type: 'checkbox',
+                visible: !isLinux,
             },
             {
                 checked: minimizeOnClose,
