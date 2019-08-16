@@ -2,7 +2,6 @@ import { app, dialog } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { omit } from 'lodash';
 import * as util from 'util';
 import { buildNumber } from '../../package.json';
 import { isDevEnv, isMac } from '../common/env';
@@ -10,16 +9,6 @@ import { logger } from '../common/logger';
 import { pick } from '../common/utils';
 
 const writeFile = util.promisify(fs.writeFile);
-
-const ignoreSettings =  [
-    'minimizeOnClose',
-    'launchOnStartup',
-    'alwaysOnTop',
-    'url',
-    'memoryRefresh',
-    'bringToFront',
-    'isCustomTitleBar',
-];
 
 export interface IConfig {
     url: string;
@@ -159,7 +148,15 @@ class Config {
         const execPath = path.dirname(this.appPath);
         const shouldUpdateUserConfig = execPath.indexOf('AppData\\Local\\Programs') !== -1 || isMac;
         if (shouldUpdateUserConfig) {
-            const filteredFields: IConfig = omit(this.userConfig, ignoreSettings) as IConfig;
+            const {
+                minimizeOnClose,
+                launchOnStartup,
+                alwaysOnTop,
+                url,
+                memoryRefresh,
+                bringToFront,
+                isCustomTitleBar,
+                ...filteredFields }: IConfig = this.userConfig as IConfig;
             // update to the new build number
             filteredFields.buildNumber = buildNumber;
             logger.info(`config-handler: setting first time launch for build`, buildNumber);
