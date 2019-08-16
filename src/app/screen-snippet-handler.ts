@@ -6,7 +6,7 @@ import * as path from 'path';
 import { ChildProcess, ExecException, execFile } from 'child_process';
 import * as util from 'util';
 import { IScreenSnippet } from '../common/api-interface';
-import { isDevEnv, isMac } from '../common/env';
+import { isDevEnv, isLinux, isMac } from '../common/env';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
 import { updateAlwaysOnTop } from './window-actions';
@@ -29,6 +29,10 @@ class ScreenSnippet {
             ? path.join(__dirname,
                 '../../node_modules/screen-snippet/bin/Release/ScreenSnippet.exe')
             : path.join(path.dirname(app.getPath('exe')), 'ScreenSnippet.exe');
+
+        if (isLinux) {
+            this.captureUtil = '/usr/bin/gnome-screenshot';
+        }
     }
 
     /**
@@ -44,6 +48,9 @@ class ScreenSnippet {
             ? [ '-i', '-s', '-t', 'png', this.outputFileName ]
             : [ this.outputFileName, i18n.getLocale() ];
 
+        if (isLinux) {
+            this.captureUtilArgs = ['-a', '-f', this.outputFileName];
+        }
         logger.info(`screen-snippet-handler: Capturing snippet with file ${this.outputFileName} and args ${this.captureUtilArgs}!`);
 
         const mainWindow = windowHandler.getMainWindow();
