@@ -5,7 +5,7 @@ import * as path from 'path';
 import { omit } from 'lodash';
 import * as util from 'util';
 import { buildNumber } from '../../package.json';
-import { isDevEnv, isLinux, isMac } from '../common/env';
+import { isDevEnv, isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { pick } from '../common/utils';
 
@@ -85,7 +85,7 @@ class Config {
         this.appPath = isDevEnv ? app.getAppPath() : path.dirname(app.getPath('exe'));
         this.globalConfigPath = isDevEnv
             ? path.join(this.appPath, path.join('config', this.configFileName))
-            : path.join(this.appPath, (isMac || isLinux) ? '..' : '', 'config', this.configFileName);
+            : path.join(this.appPath, (isMac) ? '..' : '', 'config', this.configFileName);
 
         this.globalConfig = {};
         this.userConfig = {};
