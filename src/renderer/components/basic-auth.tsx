@@ -48,7 +48,7 @@ export default class BasicAuth extends React.Component<{}, IState> {
         const { hostname, isValidCredentials } = this.state;
         const shouldShowError = classNames('credentials-error', { 'display-error': !isValidCredentials });
         return (
-            <div className='container'>
+            <div className='container' lang={i18n.getLocale()}>
                 <span>{i18n.t('Please provide your login credentials for:', BASIC_AUTH_NAMESPACE)()}</span>
                 <span className='hostname'>{hostname}</span>
                 <span id='credentialsError' className={shouldShowError}>{i18n.t('Invalid user name/password', BASIC_AUTH_NAMESPACE)()}</span>

@@ -3,6 +3,7 @@
 exports[`basic auth should render correctly 1`] = `
 <div
   className="container"
+  lang="en-US"
 >
   <span>
     Please provide your login credentials for:
