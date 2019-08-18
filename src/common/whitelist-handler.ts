@@ -1,5 +1,3 @@
-import isEqual from 'lodash.isequal';
-
 import { config } from '../app/config-handler';
 
 const urlParts = /^(https?:\/\/)?([^/]*@)?(.+?)(:\d{2,5})?([/?].*)?$/;
@@ -99,7 +97,14 @@ export class WhitelistHandler {
      * @returns {boolean}
      */
     private matchDomains(parsedUrl: IURLObject, parsedWhitelist: IURLObject): boolean {
-        if (isEqual(parsedUrl, parsedWhitelist)) {
+        if (!parsedUrl || !parsedWhitelist) {
+            return false;
+        }
+        if (
+            parsedUrl.subdomain === parsedWhitelist.subdomain
+            && parsedUrl.domain === parsedWhitelist.domain
+            && parsedUrl.tld === parsedWhitelist.tld
+        ) {
             return true;
         }
 
