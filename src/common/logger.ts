@@ -1,5 +1,5 @@
 import { app, BrowserWindow } from 'electron';
-import electronLog, { LogLevel, transports } from 'electron-log';
+import electronLog, { ILogLevel as LogLevel, transports } from 'electron-log';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
