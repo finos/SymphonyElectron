@@ -18,6 +18,7 @@ jest.mock('../src/app/reports-handler', () => {
 jest.mock('../src/common/env', () => {
     return {
         isWindowsOS: false,
+        isLinux: false,
         isMac: true,
     };
 });
@@ -108,6 +109,7 @@ describe('app menu', () => {
     beforeEach(() => {
         appMenu = new AppMenu();
         env.isWindowsOS = false;
+        env.isLinux = false;
         env.isMac = true;
     });
 
@@ -162,6 +164,7 @@ describe('app menu', () => {
 
         it('should call `buildEditMenu` correctly on WindowsOS', () => {
             env.isWindowsOS = true;
+            env.isLinux = false;
             env.isMac = false;
             const spyFn = 'buildEditMenu';
             const spy = jest.spyOn(appMenu, spyFn);
@@ -250,6 +253,7 @@ describe('app menu', () => {
                     it('should find `Flash Notification in Taskbar` when is WindowsOS', () => {
                         const expectedValue = 'Flash Notification in Taskbar';
                         env.isWindowsOS = true;
+                        env.isLinux = false;
                         env.isMac = false;
                         const menuItem = findMenuItemBuildWindowMenu('Flash Notification in Taskbar');
                         expect(menuItem.label).toEqual(expectedValue);

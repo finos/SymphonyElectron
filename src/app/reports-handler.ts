@@ -4,7 +4,7 @@ import * as electron from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { isMac } from '../common/env';
+import { isLinux, isMac } from '../common/env';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
 
@@ -66,9 +66,10 @@ const generateArchiveForDirectory = (source: string, destination: string, fileEx
 export const exportLogs = (): void => {
     const FILE_EXTENSIONS = [ '.log' ];
     const MAC_LOGS_PATH = '/Library/Logs/Symphony/';
+    const LINUX_LOGS_PATH = '/.config/Symphony/';
     const WINDOWS_LOGS_PATH = '\\AppData\\Roaming\\Symphony\\logs';
 
-    const logsPath = isMac ? MAC_LOGS_PATH : WINDOWS_LOGS_PATH;
+    const logsPath = isMac ? MAC_LOGS_PATH : isLinux ? LINUX_LOGS_PATH : WINDOWS_LOGS_PATH;
     const source = app.getPath('home') + logsPath;
     const focusedWindow = BrowserWindow.getFocusedWindow();
 
@@ -81,7 +82,7 @@ export const exportLogs = (): void => {
         });
         return;
     }
-    const destPath = isMac ? '/logs_symphony_' : '\\logs_symphony_';
+    const destPath = (isMac || isLinux) ? '/logs_symphony_' : '\\logs_symphony_';
     const timestamp = new Date().getTime();
     const destination = app.getPath('downloads') + destPath + timestamp + '.zip';
 
@@ -119,7 +120,7 @@ export const exportCrashDumps = (): void => {
         return;
     }
 
-    const destPath = isMac ? '/crashes_symphony_' : '\\crashes_symphony_';
+    const destPath = (isMac || isLinux) ? '/crashes_symphony_' : '\\crashes_symphony_';
     const timestamp = new Date().getTime();
 
     const destination = electron.app.getPath('downloads') + destPath + timestamp + '.zip';

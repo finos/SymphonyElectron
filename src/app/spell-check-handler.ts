@@ -18,7 +18,7 @@ export class SpellChecker {
             this.dictionaryPath = path.join(app.getAppPath(), dictionariesDirName);
         } else {
             const execPath = path.dirname(app.getPath('exe'));
-            this.dictionaryPath = path.join(execPath, isMac ? '..' : '', dictionariesDirName);
+            this.dictionaryPath = path.join(execPath, (isMac) ? '..' : '', dictionariesDirName);
         }
         this.dictionarySync = new DictionarySync(this.dictionaryPath);
         this.spellCheckHandler = new SpellCheckHandler(this.dictionarySync);

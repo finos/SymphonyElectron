@@ -1,6 +1,6 @@
 import { app, dialog, Menu, MenuItemConstructorOptions, session, shell } from 'electron';
 
-import { isMac, isWindowsOS } from '../common/env';
+import { isLinux, isMac, isWindowsOS } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import {
@@ -86,7 +86,7 @@ export class AppMenu {
             this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.ALWAYS_ON_TOP, isAlwaysOnTop);
             this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.FLASH_NOTIFICATION_IN_TASK_BAR, bringToFront);
             this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.REFRESH_APP_IN_IDLE, memoryRefresh);
-            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.HAMBURGER_MENU, isMac ? false : this.titleBarStyle === TitleBarStyles.CUSTOM);
+            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.HAMBURGER_MENU, (isMac || isLinux) ? false : this.titleBarStyle === TitleBarStyles.CUSTOM);
         }
         initialAnalyticsSent = true;
     }
@@ -267,6 +267,7 @@ export class AppMenu {
                 },
                 label: i18n.t('Auto Launch On Startup')(),
                 type: 'checkbox',
+                visible: !isLinux,
             },
             {
                 checked: isAlwaysOnTop,
@@ -278,6 +279,7 @@ export class AppMenu {
                 },
                 label: i18n.t('Always on Top')(),
                 type: 'checkbox',
+                visible: !isLinux,
             },
             {
                 checked: minimizeOnClose,
@@ -363,6 +365,22 @@ export class AppMenu {
      */
     private buildHelpMenu(): Electron.MenuItemConstructorOptions {
         logger.info(`app-menu: building help menu`);
+        let showLogsLabel: string = i18n.t('Show Logs in Explorer')();
+        if (isMac) {
+            showLogsLabel = i18n.t('Show Logs in Finder')();
+        }
+        if (isLinux) {
+            showLogsLabel = i18n.t('Show Logs in File Manager')();
+        }
+
+        let showCrashesLabel: string = i18n.t('Show crash dump in Explorer')();
+        if (isMac) {
+            showCrashesLabel = i18n.t('Show crash dump in Finder')();
+        }
+        if (isLinux) {
+            showCrashesLabel = i18n.t('Show crash dump in File Manager')();
+        }
+
         return {
             label: i18n.t('Help')(),
             role: 'help',
@@ -377,10 +395,10 @@ export class AppMenu {
                     label: i18n.t('Troubleshooting')(),
                     submenu: [ {
                         click: async () => exportLogs(),
-                        label: isMac ? i18n.t('Show Logs in Finder')() : i18n.t('Show Logs in Explorer')(),
+                        label: showLogsLabel,
                     }, {
                         click: () => exportCrashDumps(),
-                        label: isMac ? i18n.t('Show crash dump in Finder')() : i18n.t('Show crash dump in Explorer')(),
+                        label: showCrashesLabel,
                     }, {
                         label: i18n.t('Toggle Developer Tools')(),
                         accelerator: isMac ? 'Alt+Command+I' : 'Ctrl+Shift+I',
@@ -433,7 +451,7 @@ export class AppMenu {
      */
     private assignRoleOrLabel({ role, label }: MenuItemConstructorOptions): MenuItemConstructorOptions {
         logger.info(`app-menu: assigning role & label respectively for ${role} & ${label}`);
-        if (isMac) {
+        if (isMac || isLinux) {
             return label ? { role, label } : { role };
         }
 

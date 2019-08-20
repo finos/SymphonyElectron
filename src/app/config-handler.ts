@@ -4,7 +4,7 @@ import * as path from 'path';
 
 import * as util from 'util';
 import { buildNumber } from '../../package.json';
-import { isDevEnv, isMac } from '../common/env';
+import { isDevEnv, isElectronQA, isLinux, isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { pick } from '../common/utils';
 
@@ -74,7 +74,11 @@ class Config {
         this.appPath = isDevEnv ? app.getAppPath() : path.dirname(app.getPath('exe'));
         this.globalConfigPath = isDevEnv
             ? path.join(this.appPath, path.join('config', this.configFileName))
-            : path.join(this.appPath, isMac ? '..' : '', 'config', this.configFileName);
+            : path.join(this.appPath, (isMac) ? '..' : '', 'config', this.configFileName);
+
+        if (isLinux) {
+            this.globalConfigPath = path.join(this.appPath, (isElectronQA) ? '..' : '', 'config', this.configFileName);
+        }
 
         this.globalConfig = {};
         this.userConfig = {};

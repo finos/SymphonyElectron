@@ -6,7 +6,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { format, parse } from 'url';
 
-import { isDevEnv, isMac } from '../common/env';
+import { isDevEnv, isLinux, isMac } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { getGuid } from '../common/utils';
@@ -167,7 +167,7 @@ export const showBadgeCount = (count: number): void => {
 
     logger.info(`window-utils: updating badge count to ${count}!`);
 
-    if (isMac) {
+    if (isMac || isLinux) {
         // too big of a number here and setBadgeCount crashes
         app.setBadgeCount(Math.min(1e8, count));
         return;
@@ -281,7 +281,7 @@ export const sanitize = async (windowName: string): Promise<void> => {
         showBadgeCount(0);
 
         // Terminates the screen snippet process on reload
-        if (!isMac) {
+        if (!isMac || !isLinux) {
             screenSnippet.killChildProcess();
         }
         // Closes all the child windows

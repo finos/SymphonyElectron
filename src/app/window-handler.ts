@@ -152,7 +152,7 @@ export class WindowHandler {
         // Event needed to hide native menu bar on Windows 10 as we use custom menu bar
         this.mainWindow.webContents.once('did-start-loading', () => {
             logger.info(`window-handler: main window web contents started loading!`);
-            if ((this.config.isCustomTitleBar || isWindowsOS) && this.mainWindow && windowExists(this.mainWindow)) {
+            if ((this.config.isCustomTitleBar && isWindowsOS) && this.mainWindow && windowExists(this.mainWindow)) {
                 this.mainWindow.setMenuBarVisibility(false);
             }
         });
