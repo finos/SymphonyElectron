@@ -81,19 +81,9 @@
         "StartupWMClass": "Symphony"
       },
       "target": [
-        "deb"
+        "deb", "rpm"
       ],
       "icon": "build/icons/png"
-    },
-    "deb": {
-      "depends": [
-        "libnotify4",
-        "libappindicator1",
-        "libxtst6",
-        "libnss3",
-        "libasound2",
-        "libxss1"
-      ]
     }
   },
   "repository": {
