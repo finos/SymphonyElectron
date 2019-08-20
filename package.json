@@ -145,7 +145,7 @@
     "shell-path": "2.1.0"
   },
   "optionalDependencies": {
-    "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.7",
+    "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet.git#v1.0.8",
     "swift-search": "2.0.1"
   }
 }
