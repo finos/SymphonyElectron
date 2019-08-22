@@ -17,6 +17,7 @@ interface ISSFWindow extends Window {
 
 const ssfWindow: ISSFWindow = window;
 const memoryInfoFetchInterval = 60 * 60 * 1000;
+const snackBar = new SnackBar();
 
 /**
  * creates API exposed from electron.
@@ -68,7 +69,6 @@ ipcRenderer.on('page-load', (_event, { locale, resources, enableCustomTitleBar, 
     });
 
     // injects snack bar
-    const snackBar = new SnackBar();
     snackBar.initSnackBar();
 
     // injects download manager contents

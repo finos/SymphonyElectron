@@ -78,12 +78,12 @@ export const handleChildWindow = (webContents: WebContents): void => {
 
         logger.info(`child-window-handler: main window url: ${mainWinUrlData.subdomain}.${mainWinUrlData.domain}.${mainWinUrlData.tld}`);
 
-        const emptyUrlString = 'about:blank';
+        const emptyUrlString = [ 'about:blank', 'about:blank#blocked' ];
         const dispositionWhitelist = ['new-window', 'foreground-tab'];
 
         // only allow window.open to succeed is if coming from same host,
         // otherwise open in default browser.
-        if ((newWinDomainName === mainWinDomainName || newWinUrl === emptyUrlString)
+        if ((newWinDomainName === mainWinDomainName || emptyUrlString.includes(newWinUrl))
             && frameName !== ''
             && dispositionWhitelist.includes(disposition)) {
 

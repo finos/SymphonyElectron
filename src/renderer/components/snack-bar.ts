@@ -1,4 +1,4 @@
-import { ipcRenderer } from 'electron';
+import { remote } from 'electron';
 import Timer = NodeJS.Timer;
 
 import { i18n } from '../../common/i18n-preload';
@@ -6,29 +6,34 @@ import { i18n } from '../../common/i18n-preload';
 const SNACKBAR_NAMESPACE = 'SnackBar';
 
 export default class SnackBar {
-    private snackBarTimer: Timer | undefined;
-    private domParser: DOMParser;
 
-    private readonly body: HTMLCollectionOf<Element>;
-    private readonly snackBar: HTMLElement | null;
+    private readonly eventHandlers = {
+        onShowSnackBar: () => this.showSnackBar(),
+        onRemoveSnackBar: () => this.removeSnackBar(),
+    };
+
+    private snackBarTimer: Timer | undefined;
+    private domParser: DOMParser | undefined;
+    private body: HTMLCollectionOf<Element> | undefined;
+    private snackBar: HTMLElement | null = null;
 
     constructor() {
-        this.body = document.getElementsByTagName('body');
-
-        this.domParser = new DOMParser();
-        const snackBar = this.domParser.parseFromString(this.render(), 'text/html');
-        this.snackBar = snackBar.getElementById('snack-bar');
+        const browserWindow = remote.getCurrentWindow();
+        if (browserWindow && typeof browserWindow.isDestroyed === 'function' && !browserWindow.isDestroyed()) {
+            browserWindow.on('enter-full-screen', this.eventHandlers.onShowSnackBar);
+            browserWindow.on('leave-full-screen', this.eventHandlers.onRemoveSnackBar);
+        }
     }
 
     /**
      * initializes the event listeners
      */
     public initSnackBar(): void {
-        this.showSnackBar = this.showSnackBar.bind(this);
-        this.removeSnackBar = this.removeSnackBar.bind(this);
+        this.body = document.getElementsByTagName('body');
 
-        ipcRenderer.on('window-enter-full-screen', this.showSnackBar);
-        ipcRenderer.on('window-leave-full-screen', this.removeSnackBar);
+        this.domParser = new DOMParser();
+        const snackBar = this.domParser.parseFromString(this.render(), 'text/html');
+        this.snackBar = snackBar.getElementById('snack-bar');
     }
 
     /**
@@ -40,7 +45,7 @@ export default class SnackBar {
                 this.body[ 0 ].appendChild(this.snackBar);
                 this.snackBar.classList.add('SnackBar-show');
                 this.snackBarTimer = setTimeout(() => {
-                    if (this.snackBar) {
+                    if (this.snackBar && this.body) {
                         if (document.getElementById('snack-bar')) {
                             this.body[ 0 ].removeChild(this.snackBar);
                         }
