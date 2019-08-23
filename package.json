@@ -81,7 +81,8 @@
         "StartupWMClass": "Symphony"
       },
       "target": [
-        "deb", "rpm"
+        "deb",
+        "rpm"
       ],
       "icon": "build/icons/png"
     }

@@ -80,8 +80,8 @@
 ## Tests and Code Coverage
 - [Jest framework](http://facebook.github.io/jest/) is used to run tests
 - Use `npm test` to run unit tests
-- Code coverage reports are placed in [coverage](./out/coverage) directory
-- To check the test run report, see the [dist](./out) directory
+- Code coverage reports are placed in [coverage](../../out/coverage) directory
+- To check the test run report, see the [dist](../../out) directory
 - See the [tests](./tests) directory to find all the unit tests
 
 ## Logging

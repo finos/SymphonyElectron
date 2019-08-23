@@ -27,7 +27,7 @@ In order to achieve those goals Symphony is participating and working in close c
 
 ## Development Setup & Running
 
-Read [Dev Setup](./DEV_SETUP.md)
+Read [Dev Setup](docs/development/DEV_SETUP.md)
 
 ## License
 The code in this repository is distributed under the Apache License, Version 2.0.
