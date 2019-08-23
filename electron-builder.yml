@@ -1,0 +1,52 @@
+productName: "Symphony"
+appId: "com.symphony.electron-desktop"
+
+# Package electron code into a asar archive. Set to false to debug issues.
+asar: true
+
+# Unpack these files from asar to have them signed
+asarUnpack:
+  - 'node_modules/@nornagon/cld/build/Release/cld.node'
+  - 'node_modules/@nornagon/spellchecker/build/Release/spellchecker.node'
+  - 'node_modules/keyboard-layout/build/Release/keyboard-layout-manager.node'
+
+# Don't package these files
+files:
+  - '!coverage/*'
+  - '!installer/*'
+  - '!tests/*'
+  - '!node_modules/@nornagon/cld/deps/cld${/*}'
+  - '!node_modules/@nornagon/cld/build/deps${/*}'
+  - '!node_modules/@nornagon/spellchecker/vendor${/*}'
+
+# Extra files to package
+extraFiles:
+  - 'config/Symphony.config'
+  - 'config/titleBarStyles.css'
+  - 'assets/dictionaries/**'
+  - 'library/libsymphonysearch.dylib'
+  - 'library/indexvalidator.exec'
+  - 'library/cryptoLib.dylib'
+  - 'library/dictionary'
+  - 'library/lz4.exec'
+
+# Mac OS configuration
+mac:
+  category: 'public.app-category.business'
+  icon: 'build/icons/mac/icon.icns'
+
+# Windows configuration
+win:
+  icon: 'build/icons/win/icon.ico'
+  target:
+    - 'squirrel'
+
+# Linux configuration
+linux:
+  category: 'Network;InstantMessaging;Chat'
+  desktop:
+    StartupWMClass: 'Symphony'
+  target:
+    - 'deb'
+    - 'rpm'
+  icon: 'build/icons/png'

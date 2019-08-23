@@ -13,8 +13,8 @@
     "browserify-preload": "browserify -o lib/src/renderer/_preload-main.js -x electron --insert-global-vars=__filename,__dirname lib/src/renderer/preload-main.js",
     "compile": "npm run lint && gulp build",
     "dev": "npm run prebuild && cross-env ELECTRON_DEV=true electron .",
-    "demo-win": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file:///demo/index.html",
-    "demo-mac": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/demo/index.html",
+    "demo-win": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file:///src/demo/index.html",
+    "demo-mac": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/src/demo/index.html",
     "icon-gen": "electron-icon-maker --input=images/icon_1024.png --output=./build",
     "lint": "tslint --project tsconfig.json",
     "packed-linux": "npm run prebuild && npm run test && npm run icon-gen && build --linux",
@@ -22,70 +22,10 @@
     "prebuild": "npm run compile && npm run rebuild && npm run browserify-preload",
     "rebuild": "electron-rebuild -f",
     "start": "npm run compile && npm run browserify-preload && cross-env ELECTRON_DEV=true electron .",
-    "test": "npm run lint && cross-env ELECTRON_QA=true jest --config jest.config.json --runInBand --detectOpenHandles",
+    "test": "npm run lint && cross-env ELECTRON_QA=true jest --config jest-config.json --runInBand --detectOpenHandles",
     "unpacked-mac": "npm run prebuild && npm run test && npm run icon-gen && build --mac --dir",
     "unpacked-win": "npm run prebuild && npm run test && npm run icon-gen && build --win --x64 --dir",
     "unpacked-win-x86": "npm run prebuild && npm run test && npm run icon-gen && build --win --ia32 --dir"
-  },
-  "build": {
-    "asarUnpack": [
-      "node_modules/@nornagon/cld/build/Release/cld.node",
-      "node_modules/@nornagon/spellchecker/build/Release/spellchecker.node",
-      "node_modules/keyboard-layout/build/Release/keyboard-layout-manager.node"
-    ],
-    "files": [
-      "!coverage/*",
-      "!installer/*",
-      "!tests/*",
-      "!node_modules/@nornagon/cld/deps/cld${/*}",
-      "!node_modules/@nornagon/cld/build/deps${/*}",
-      "!node_modules/@nornagon/spellchecker/vendor${/*}"
-    ],
-    "extraFiles": [
-      "config/Symphony.config",
-      "config/titleBarStyles.css",
-      "dictionaries/**",
-      "library/libsymphonysearch.dylib",
-      "library/indexvalidator.exec",
-      "library/cryptoLib.dylib",
-      "library/dictionary",
-      "library/lz4.exec"
-    ],
-    "appId": "com.symphony.electron-desktop",
-    "mac": {
-      "target": "dmg",
-      "category": "public.app-category.business",
-      "icon": "build/icons/mac/icon.icns"
-    },
-    "dmg": {
-      "contents": [
-        {
-          "x": 140,
-          "y": 184
-        },
-        {
-          "x": 412,
-          "y": 184,
-          "type": "link",
-          "path": "/Applications"
-        }
-      ]
-    },
-    "win": {
-      "target": "squirrel",
-      "icon": "build/icons/win/icon.ico"
-    },
-    "linux": {
-      "category": "Network;InstantMessaging;Chat",
-      "desktop": {
-        "StartupWMClass": "Symphony"
-      },
-      "target": [
-        "deb",
-        "rpm"
-      ],
-      "icon": "build/icons/png"
-    }
   },
   "repository": {
     "type": "git",

@@ -20,7 +20,7 @@
     "text",
     "html"
   ],
-  "coverageDirectory": "out/coverage",
+  "coverageDirectory": "dist/coverage",
   "collectCoverageFrom": [
     "src/**/*.{ts,tsx}",
     "!**/node_modules/**",
