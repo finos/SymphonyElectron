@@ -3,7 +3,7 @@
   "productName": "Symphony",
   "version": "5.0.0",
   "clientVersion": "2.0.1",
-  "buildNumber": "0",
+  "buildNumber":"",
   "searchAPIVersion": "1.55.3",
   "description": "Symphony desktop app (Foundation ODP)",
   "author": "Symphony OSS <help@finos.org>",

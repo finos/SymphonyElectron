@@ -34,7 +34,7 @@
       "includeConsoleLog": true,
       "theme": "lightTheme",
       "sort": "status",
-      "outputPath": "./out/Unit Tests Report.html"
+      "outputPath": "./dist/coverage/UnitTestsReport.html"
     }]
   ],
   "setupFiles": [

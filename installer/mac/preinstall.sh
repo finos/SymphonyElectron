@@ -12,7 +12,7 @@ delete_app()
 compare_versions()
 {
     # Get the installer version:
-    CURRENT_VERSION=APP_VERSION
+    CURRENT_VERSION=5.0.0
 
     # Get the currently installed version:
     INSTALLED_VERSION=$(plutil -p /Applications/Symphony.app/Contents/Info.plist | awk '/CFBundleShortVersionString/ {print substr($3, 2, length($3)-2)}')
