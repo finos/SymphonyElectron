@@ -13,25 +13,25 @@ set PATH=%PATH%;C:\Program Files (x86)\GnuWin32\bin
 echo %PATH%
 
 WHERE git
-if (%ERRORLEVEL% > 0) then (
+if %ERRORLEVEL% NEQ 0 (
   echo "GIT does not exist. Please set it up before running this script."
   EXIT /B 1
 )
 
 WHERE node
-if (%ERRORLEVEL% > 0) then (
+if %ERRORLEVEL% NEQ 0 (
   echo "NODE does not exist. Please set it up before running this script."
   EXIT /B 1
 )
 
 WHERE npm
-if (%ERRORLEVEL% > 0) then (
+if %ERRORLEVEL% NEQ 0 (
   echo "NPM does not exist. Please set it up before running this script."
   EXIT /B 1
 )
 
 WHERE gulp
-if (%ERRORLEVEL% > 0) then (
+if %ERRORLEVEL% NEQ 0 (
   echo "GULP does not exist. Please set it up before running this script."
   EXIT /B 1
 )
@@ -49,7 +49,7 @@ call npm install
 call npm i -g gulp-cli
 
 :: Set expiry if required
-IF ("%EXPIRY_PERIOD%"=="") then (
+IF "%EXPIRY_PERIOD%"=="" (
     echo "Not setting expiry for the build!"
 ) else (
     echo "Setting expiry to days: %EXPIRY_PERIOD%"
