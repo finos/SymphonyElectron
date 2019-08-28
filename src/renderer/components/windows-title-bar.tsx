@@ -54,13 +54,6 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
         }
     }
 
-    public componentWillMount() {
-        this.window.removeListener('maximize', this.updateState);
-        this.window.removeListener('unmaximize', this.updateState);
-        this.window.removeListener('enter-full-screen', this.updateState);
-        this.window.removeListener('leave-full-screen', this.updateState);
-    }
-
     public componentWillUnmount(): void {
         if (this.observer) {
             this.observer.disconnect();
