@@ -200,6 +200,10 @@ export class WindowHandler {
 
         this.mainWindow.webContents.on('did-stop-loading', async () => {
             if (this.mainWindow && windowExists(this.mainWindow)) {
+                this.mainWindow.webContents.send('page-load-failed', {
+                    locale: i18n.getLocale(),
+                    resources: i18n.loadedResources,
+                });
                 const href = await this.mainWindow.webContents.executeJavaScript('document.location.href');
                 try {
                     if (href === 'data:text/html,chromewebdata' || href === 'chrome-error://chromewebdata/') {

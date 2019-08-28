@@ -35,6 +35,9 @@ class Translation {
         }
 
         this.locale = locale;
+        if (!this.loadedResources[this.locale]) {
+            this.loadResource(this.locale);
+        }
     }
 
     /**

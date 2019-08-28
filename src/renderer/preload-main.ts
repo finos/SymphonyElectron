@@ -86,6 +86,11 @@ ipcRenderer.on('page-load', (_event, { locale, resources, enableCustomTitleBar, 
     }
 });
 
+// When the window fails to load
+ipcRenderer.on('page-load-failed', (_event, { locale, resources }) => {
+    i18n.setResource(locale, resources);
+});
+
 // Injects network error content into the DOM
 ipcRenderer.on('network-error', (_event, { error }) => {
     const networkErrorContainer = document.createElement( 'div' );
