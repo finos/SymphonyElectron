@@ -23,7 +23,7 @@ files:
 extraFiles:
   - 'config/Symphony.config'
   - 'config/titleBarStyles.css'
-  - 'assets/dictionaries/**'
+  - 'dictionaries/**'
   - 'library/libsymphonysearch.dylib'
   - 'library/indexvalidator.exec'
   - 'library/cryptoLib.dylib'

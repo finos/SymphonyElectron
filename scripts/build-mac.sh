@@ -10,6 +10,11 @@ if ! [ -x "$(command -v node)" ]; then
   exit 1
 fi
 
+if ! [ -x "$(command -v npm)" ]; then
+  echo 'NPM does not exist! Please set it up before running this script!' >&2
+  exit 1
+fi
+
 if ! [ -x "$(command -v /usr/local/bin/packagesbuild)" ]; then
   echo 'Packages build does not exist! Please set it up before running this script!' >&2
   exit 1
