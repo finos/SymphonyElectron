@@ -1,4 +1,4 @@
-import { app, dialog, Menu, MenuItemConstructorOptions, session, shell } from 'electron';
+import { app, Menu, MenuItemConstructorOptions, session, shell } from 'electron';
 
 import { isLinux, isMac, isWindowsOS } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
@@ -65,6 +65,8 @@ const menuItemsArray = Object.keys(menuSections)
     .map((key) => menuSections[ key ])
     .filter((value) => isMac ?
         true : value !== menuSections.about);
+
+const { devToolsEnabled } = config.getGlobalConfigFields([ 'devToolsEnabled' ]);
 
 export class AppMenu {
     private menu: Electron.Menu | undefined;
@@ -403,7 +405,6 @@ export class AppMenu {
                         label: i18n.t('Toggle Developer Tools')(),
                         accelerator: isMac ? 'Alt+Command+I' : 'Ctrl+Shift+I',
                         click(_item, focusedWindow) {
-                            const { devToolsEnabled } = config.getGlobalConfigFields([ 'devToolsEnabled' ]);
                             if (!focusedWindow || !windowExists(focusedWindow)) {
                                 return;
                             }
@@ -411,12 +412,6 @@ export class AppMenu {
                                 focusedWindow.webContents.toggleDevTools();
                                 return;
                             }
-                            dialog.showMessageBox(focusedWindow, {
-                                type: 'warning',
-                                buttons: [ 'Ok' ],
-                                title: i18n.t('Dev Tools disabled')(),
-                                message: i18n.t('Dev Tools has been disabled! Please contact your system administrator to enable it!')(),
-                            });
                         },
                     }, {
                         click: () => windowHandler.createMoreInfoWindow(),

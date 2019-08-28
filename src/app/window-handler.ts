@@ -43,6 +43,8 @@ export interface ICustomBrowserWindow extends Electron.BrowserWindow {
 const DEFAULT_WIDTH: number = 900;
 const DEFAULT_HEIGHT: number = 900;
 
+const {devToolsEnabled} = config.getGlobalConfigFields(['devToolsEnabled']);
+
 export class WindowHandler {
 
     /**
@@ -792,7 +794,6 @@ export class WindowHandler {
      */
     private onRegisterDevtools(): void {
         const focusedWindow = BrowserWindow.getFocusedWindow();
-        const {devToolsEnabled} = config.getGlobalConfigFields(['devToolsEnabled']);
         if (!focusedWindow || !windowExists(focusedWindow)) {
             return;
         }
@@ -801,13 +802,7 @@ export class WindowHandler {
             return;
         }
         focusedWindow.webContents.closeDevTools();
-        logger.info(`window-handler: dev tools disabled by admin, showing error dialog to user!`);
-        electron.dialog.showMessageBox(focusedWindow, {
-            type: 'warning',
-            buttons: ['Ok'],
-            title: i18n.t('Dev Tools disabled')(),
-            message: i18n.t('Dev Tools has been disabled! Please contact your system administrator to enable it!')(),
-        });
+        logger.info(`window-handler: dev tools disabled by admin, not opening it for the user!`);
     }
 
     /**
