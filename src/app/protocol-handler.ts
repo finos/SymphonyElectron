@@ -41,6 +41,10 @@ class ProtocolHandler {
      * @param isAppRunning {Boolean} - whether the application is running
      */
     public sendProtocol(url: string, isAppRunning: boolean = true): void {
+        if (url && url.length > 2083) {
+            logger.info(`protocol-handler: protocol handler url length is greater than 2083, not performing any action!`);
+            return;
+        }
         logger.info(`protocol handler: processing protocol request for the url ${url}!`);
         if (!this.preloadWebContents || !isAppRunning) {
             logger.info(`protocol handler: app was started from the protocol request. Caching the URL ${url}!`);
