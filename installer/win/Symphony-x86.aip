@@ -624,7 +624,7 @@
     <ROW Dialog="UrlValidationDlg" HCentering="50" VCentering="50" Width="370" Height="270" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiIconsComponent">
-    <ROW Name="icon.exe" SourcePath="..\..\build\icons\win\icon.ico" Index="0"/>
+    <ROW Name="icon.exe" SourcePath="..\..\images\icon.ico" Index="0"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstExSeqComponent">
     <ROW Action="AI_DOWNGRADE" Condition="AI_NEWERPRODUCTFOUND AND (UILevel &lt;&gt; 5)" Sequence="210"/>

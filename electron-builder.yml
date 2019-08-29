@@ -33,11 +33,11 @@ extraFiles:
 # Mac OS configuration
 mac:
   category: 'public.app-category.business'
-  icon: 'build/icons/mac/icon.icns'
+  icon: 'images/icon.icns'
 
 # Windows configuration
 win:
-  icon: 'build/icons/win/icon.ico'
+  icon: 'images/icon.ico'
   target:
     - 'squirrel'
 
@@ -49,4 +49,4 @@ linux:
   target:
     - 'deb'
     - 'rpm'
-  icon: 'build/icons/png'
+  icon: 'images/linux'
