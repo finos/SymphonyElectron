@@ -195,6 +195,7 @@ export const handleChildWindow = (webContents: WebContents): void => {
         } else {
             if (newWinUrl && newWinUrl.length > 2083) {
                 logger.info(`child-window-handler: new window url length is greater than 2083, not performing any action!`);
+                event.preventDefault();
                 return;
             }
             logger.info(`child-window-handler: new window url is ${newWinUrl} which is not of the same host,
