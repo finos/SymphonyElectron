@@ -2,7 +2,10 @@
   "About Symphony": "À propos de Symphony",
   "AboutSymphony": {
     "About Symphony": "À propos de Symphony",
-    "Version": "Version"
+    "Copy": "Copier",
+    "Copy all the version information in this page": "Copier toutes les informations de version dans cette page",
+    "Others": "Autres",
+    "Symphony Logo": "Logo Symphony"
   },
   "Actual Size": "Taille actuelle",
   "Always on Top": "Garder Symphony au premier plan",
@@ -71,15 +74,6 @@
   "Loading Error": "Erreur lors du chargement",
   "Minimize": "Minimiser",
   "Minimize on Close": "Minimiser lors de la fermeture",
-  "More Information": "Informations détaillées",
-  "MoreInfo": {
-    "API Version": "Version de l'API",
-    "More Information": "Informations détaillées",
-    "Others": "Autres",
-    "related": "en relation",
-    "Swift Search Version": "Version de recherche rapide",
-    "Version Information": "Information sur cette version de Symphony"
-  },
   "Native": "Originaire",
   "Network connectivity has been lost. Check your internet connection.": "La connectivité a été perdue. Vérifiez votre connection à l'internet.",
   "NetworkError": {
@@ -157,11 +151,11 @@
   "Services": "Services",
   "Show All": "Tout afficher",
   "Show crash dump in Explorer": "Afficher rapport de crash dans Explorateur",
-  "Show crash dump in Finder": "Montrer dans l'application 'Finder' le rapport de l'arrêt inopiné",
   "Show crash dump in File Manager": "Afficher le vidage sur incident dans le Gestionnaire de fichiers",
+  "Show crash dump in Finder": "Montrer dans l'application 'Finder' le rapport de l'arrêt inopiné",
   "Show Logs in Explorer": "Afficher journal d'évenements dans Explorateur",
-  "Show Logs in Finder": "Montrer dans l'application 'Finder' le journal d'évènements",
   "Show Logs in File Manager": "Afficher les journaux dans le gestionnaire de fichiers",
+  "Show Logs in Finder": "Montrer dans l'application 'Finder' le journal d'évènements",
   "SnackBar": {
     " to exit full screen": " pour quitter le plein écran",
     "esc": "esc",

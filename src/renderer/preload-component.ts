@@ -5,7 +5,6 @@ import * as ReactDOM from 'react-dom';
 import { i18n } from '../common/i18n-preload';
 import AboutBox from './components/about-app';
 import BasicAuth from './components/basic-auth';
-import MoreInfo from './components/more-info';
 import NotificationComp from './components/notification-comp';
 import NotificationSettings from './components/notification-settings';
 import ScreenPicker from './components/screen-picker';
@@ -13,7 +12,6 @@ import ScreenSharingIndicator from './components/screen-sharing-indicator';
 
 const enum components {
     aboutApp = 'about-app',
-    moreInfo = 'more-info',
     screenPicker = 'screen-picker',
     screenSharingIndicator = 'screen-sharing-indicator',
     basicAuth = 'basic-auth',
@@ -41,11 +39,7 @@ const load = () => {
         case components.aboutApp:
             loadStyle(components.aboutApp);
             component = AboutBox;
-            break;
-        case components.moreInfo:
-            loadStyle(components.moreInfo);
-            component = MoreInfo;
-            document.title = i18n.t('More Information', 'MoreInfo')();
+            document.title = i18n.t('About Symphony', 'AboutSymphony')();
             break;
         case components.screenPicker:
             loadStyle(components.screenPicker);

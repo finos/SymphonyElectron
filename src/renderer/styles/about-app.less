@@ -6,40 +6,124 @@
 @text-padding: 10px;
 
 body {
-  overflow: hidden;
+  overflow: scroll;
   background-color: white;
   margin: 0;
   height: 100%;
+  width: 100%;
+}
+
+.AboutApp:lang(ja-JP) {
+  font-family: @font-family-ja;
 }
 
 .AboutApp {
   text-align: center;
   display: flex;
   flex-direction: column;
-  padding-top: 20px;
+  padding: 10px;
+  font-family: @font-family;
+  overflow: scroll;
 
-  &-name {
-    flex: 1;
-    font-size: 1.3em;
-    padding: @text-padding;
-    font-weight: bold;
+  &-header-container {
+    flex-direction: row;
+    display: flex;
+    align-items: center;
   }
 
-  &-versionText {
-    flex: 1;
-    font-size: 1em;
-    color: @version-text-color;
+  &-header-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  &-main-container {
+    padding: 0 20px;
+  }
+
+  &-name {
+    font-size: 1.6em;
+    padding-left: @text-padding;
+    font-weight: bold;
+    margin: 0;
   }
 
   &-copyrightText {
-    flex: 1;
-    padding: @text-padding;
-    font-size: 0.6em;
+    padding-left: @text-padding;
+    font-size: 0.9em;
+    margin: 0;
     color: @copyright-text-color;
   }
 
   &-logo {
     margin: auto;
+  }
+
+  &-symphony-section {
+    padding-left: 109px;
+  }
+
+  &-electron-section {
+    padding-left: 88px;
+  }
+
+  &-others-section {
+    padding-left: 30px;
+  }
+
+  hr {
+    width: 90%;
+  }
+
+  ul {
+    list-style: none;
+    clear: both;
+    display: table;
+    text-align: right;
+  }
+
+  h4 {
+    text-align: start;
+  }
+
+  li {
+    display: table-row;
+    text-align: left;
+  }
+
+  b {
+    display: table-cell;
+    padding-right: 1em;
+    text-align: right;
+    font-weight: normal;
+  }
+
+  &-copy-button {
+    text-transform: capitalize;
+  }
+
+  &-copy-button {
+    box-shadow: none;
+    border: none;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    text-align: center;
+    padding: 10px 32px;
+    margin: 4px 20px;
+    display: inline-block;
+    text-decoration: none;
+    line-height: 12px;
+    background-color: rgba(61, 162, 253, 1);
+    color: rgba(255, 255, 255, 1);
+    cursor: pointer;
+    text-transform: uppercase;
+    float: right;
+
+    &:focus {
+      box-shadow: 0 0 10px rgba(61, 162, 253, 1);
+      outline: none;
+    }
   }
 }
 

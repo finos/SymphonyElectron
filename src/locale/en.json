@@ -2,7 +2,10 @@
   "About Symphony": "About Symphony",
   "AboutSymphony": {
     "About Symphony": "About Symphony",
-    "Version": "Version"
+    "Copy": "Copy",
+    "Copy all the version information in this page": "Copy all the version information in this page",
+    "Others": "Others",
+    "Symphony Logo": "Symphony Logo"
   },
   "Actual Size": "Actual Size",
   "Always on Top": "Always on Top",
@@ -71,15 +74,6 @@
   "Loading Error": "Loading Error",
   "Minimize": "Minimize",
   "Minimize on Close": "Minimize on Close",
-  "More Information": "More Information",
-  "MoreInfo": {
-    "API Version": "API Version",
-    "More Information": "More Information",
-    "Others": "Others",
-    "related": "related",
-    "Swift Search Version": "Swift Search Version",
-    "Version Information": "Version Information"
-  },
   "Native": "Native",
   "Network connectivity has been lost. Check your internet connection.": "Network connectivity has been lost. Check your internet connection.",
   "NetworkError": {
@@ -157,11 +151,11 @@
   "Services": "Services",
   "Show All": "Show All",
   "Show crash dump in Explorer": "Show crash dump in Explorer",
-  "Show crash dump in Finder": "Show crash dump in Finder",
   "Show crash dump in File Manager": "Show crash dump in File Manager",
+  "Show crash dump in Finder": "Show crash dump in Finder",
   "Show Logs in Explorer": "Show Logs in Explorer",
-  "Show Logs in Finder": "Show Logs in Finder",
   "Show Logs in File Manager": "Show Logs in File Manager",
+  "Show Logs in Finder": "Show Logs in Finder",
   "SnackBar": {
     " to exit full screen": " to exit full screen",
     "esc": "esc",
