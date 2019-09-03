@@ -415,7 +415,7 @@ export class WindowHandler {
 
         const opts: BrowserWindowConstructorOptions = this.getWindowOpts({
             width: 410,
-            height: isWindowsOS ? 755 : 685,
+            height: isWindowsOS ? 725 : 685,
             modal: false,
             alwaysOnTop: isMac,
             resizable: true,
