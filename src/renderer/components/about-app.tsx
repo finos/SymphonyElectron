@@ -115,8 +115,8 @@ export default class AboutApp extends React.Component<{}, IState> {
                             <li><b>uv:</b> {uvVersion}</li>
                             <li><b>ares:</b> {aresVersion}</li>
                             <li><b>http_parser:</b> {httpParserVersion}</li>
-                            <li><b>Swift Search:</b> {swiftSearchVersion}</li>
-                            <li><b>Swift Search API:</b> {swiftSearchSupportedVersion}</li>
+                            <li><b>{i18n.t('Swift Search', ABOUT_SYMPHONY_NAMESPACE)()}:</b> {swiftSearchVersion}</li>
+                            <li><b>{i18n.t('Swift Search API', ABOUT_SYMPHONY_NAMESPACE)()}:</b> {swiftSearchSupportedVersion}</li>
                         </ul>
                     </section>
                 </div>
