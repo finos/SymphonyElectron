@@ -182,7 +182,7 @@ export class AppMenu {
                 { label: i18n.t('Services')(), role: 'services' },
                 this.buildSeparator(),
                 { label: i18n.t('Hide Symphony')(), role: 'hide' },
-                { label: i18n.t('Hide Others')(), role: 'hideothers' },
+                { label: i18n.t('Hide Others')(), role: 'hideOthers' },
                 { label: i18n.t('Show All')(), role: 'unhide' },
                 this.buildSeparator(),
                 { label: i18n.t('Quit Symphony')(), role: 'quit' },
@@ -205,9 +205,9 @@ export class AppMenu {
                     this.assignRoleOrLabel({ role: 'cut', label: i18n.t('Cut')() }),
                     this.assignRoleOrLabel({ role: 'copy', label: i18n.t('Copy')() }),
                     this.assignRoleOrLabel({ role: 'paste', label: i18n.t('Paste')() }),
-                    this.assignRoleOrLabel({ role: 'pasteandmatchstyle', label: i18n.t('Paste and Match Style')() }),
+                    this.assignRoleOrLabel({ role: 'pasteAndMatchStyle', label: i18n.t('Paste and Match Style')() }),
                     this.assignRoleOrLabel({ role: 'delete', label: i18n.t('Delete')() }),
-                    this.assignRoleOrLabel({ role: 'selectall', label: i18n.t('Select All')() }),
+                    this.assignRoleOrLabel({ role: 'selectAll', label: i18n.t('Select All')() }),
                 ],
         };
 
@@ -215,8 +215,8 @@ export class AppMenu {
             menu.submenu.push(this.buildSeparator(), {
                 label: i18n.t('Speech')(),
                 submenu: [
-                    { label: i18n.t('Start Speaking')(), role: 'startspeaking' },
-                    { label: i18n.t('Stop Speaking')(), role: 'stopspeaking' },
+                    { label: i18n.t('Start Speaking')(), role: 'startSpeaking' },
+                    { label: i18n.t('Stop Speaking')(), role: 'stopSpeaking' },
                 ],
             });
         }
@@ -236,9 +236,9 @@ export class AppMenu {
                 label: i18n.t('Reload')(),
             },
                 this.buildSeparator(),
-                this.assignRoleOrLabel({ role: 'resetzoom', label: i18n.t('Actual Size')() }),
-                this.assignRoleOrLabel({ role: 'zoomin', label: i18n.t('Zoom In')() }),
-                this.assignRoleOrLabel({ role: 'zoomout', label: i18n.t('Zoom Out')() }),
+                this.assignRoleOrLabel({ role: 'resetZoom', label: i18n.t('Actual Size')() }),
+                this.assignRoleOrLabel({ role: 'zoomIn', label: i18n.t('Zoom In')() }),
+                this.assignRoleOrLabel({ role: 'zoomOut', label: i18n.t('Zoom Out')() }),
                 this.buildSeparator(),
                 this.assignRoleOrLabel({ role: 'togglefullscreen', label: i18n.t('Toggle Full Screen')() }),
             ],

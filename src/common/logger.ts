@@ -22,6 +22,10 @@ interface IClientLogMsg {
 
 const MAX_LOG_QUEUE_LENGTH = 100;
 
+// Electron wants this to be called initially before calling
+// app.getPath('logs')
+app.setAppLogsPath();
+
 class Logger {
     private readonly showInConsole: boolean = false;
     private readonly desiredLogLevel?: LogLevel;
