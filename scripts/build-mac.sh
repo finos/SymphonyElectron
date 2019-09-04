@@ -63,23 +63,6 @@ fi
 echo "Running tests, code coverage, linting and building..."
 npm run unpacked-mac
 
-APP_BUILD=dist/mac/Symphony.app
-
-# Test if app was built and exists, if not, exit
-if [ ! -e ${APP_BUILD} ]; then
-  echo "BUILD FAILED: app does not exist: ${APP_BUILD}"
-  exit 1
-fi
-
-echo "App created: ${APP_BUILD}"
-
 # Create .pkg installer
 echo "Creating .pkg"
 /usr/local/bin/packagesbuild -v installer/mac/symphony-mac-packager.pkgproj
-PACKAGE=installer/mac/build/Symphony.pkg
-
-if [ ! -e ${PACKAGE} ]; then
-  echo "BUILD PACKAGE FAILED: package not created: ${PACKAGE}"
-  exit 1
-fi
-echo "Package created: ${PACKAGE}"
