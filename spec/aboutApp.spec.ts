@@ -5,7 +5,24 @@ import { ipcRenderer } from './__mocks__/electron';
 
 describe('about app', () => {
     const aboutAppDataLabel = 'about-app-data';
-    const aboutDataMock = { buildNumber: '4.x.x', clientVersion: '1', version: 'x.x.x' };
+    const aboutDataMock = {
+        buildNumber: '4.x.x',
+        clientVersion: '1',
+        version: 'x.x.x',
+        sdaVersion: '3.8.0',
+        sdaBuildNumber: '0',
+        electronVersion: '3.1.11',
+        chromeVersion: '66.789',
+        v8Version: '6.7.8',
+        nodeVersion: '10.12',
+        openSslVersion: '1.2.3',
+        zlibVersion: '4.5.6',
+        uvVersion: '7.8',
+        aresVersion: '9.10',
+        httpParserVersion: '11.12',
+        swiftSearchVersion: '1.55.3-beta.1',
+        swiftSerchSupportedVersion: '1.55.3',
+    };
     const onLabelEvent = 'on';
     const removeListenerLabelEvent = 'removeListener';
 

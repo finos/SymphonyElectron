@@ -3,7 +3,6 @@ import { autoLaunchInstance } from '../src/app/auto-launch-controller';
 import { config } from '../src/app/config-handler';
 import { exportCrashDumps, exportLogs } from '../src/app/reports-handler';
 import { updateAlwaysOnTop } from '../src/app/window-actions';
-import { windowHandler } from '../src/app/window-handler';
 import * as envMock from '../src/common/env';
 import { logger } from '../src/common/logger';
 import { dialog, session, shell } from './__mocks__/electron';
@@ -336,13 +335,6 @@ describe('app menu', () => {
                     menuItem.click({}, focusedWindow);
                     expect(spy).not.toBeCalledWith(null, expectedValue);
                 });
-            });
-            it('should call `createMoreInfoWindow` when click in `More Information` menu', () => {
-                const spyFn = 'createMoreInfoWindow';
-                const spy = jest.spyOn(windowHandler, spyFn);
-                const menuItem = findHelpTroubleshootingMenuItem('More Information');
-                menuItem.click();
-                expect(spy).toBeCalled();
             });
         });
     });

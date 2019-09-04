@@ -2,7 +2,12 @@
   "About Symphony": "Symphonyについて",
   "AboutSymphony": {
     "About Symphony": "Symphonyについて",
-    "Version": "バージョン"
+    "Copy": "コピー",
+    "Copy all the version information in this page": "このページのすべてのバージョン情報をコピー",
+    "Others": "その他",
+    "Swift Search": "Swift検索",
+    "Swift Search API": "Swift検索API",
+    "Symphony Logo": "Symphonyロゴ"
   },
   "Actual Size": "実際のサイズ",
   "Always on Top": "つねに前面に表示",
@@ -71,15 +76,6 @@
   "Loading Error": "読み込みエラー",
   "Minimize": "最小化",
   "Minimize on Close": "閉じるで最小化",
-  "More Information": "詳しくは",
-  "MoreInfo": {
-    "API Version": "APIのバージョン",
-    "More Information": "詳しくは",
-    "Others": "その他",
-    "related": "関連した",
-    "Swift Search Version": "迅速な検索バージョン",
-    "Version Information": "バージョン情報"
-  },
   "Native": "Native",
   "Network connectivity has been lost. Check your internet connection.": "ネットワーク接続が失われました。インターネット接続を確認してください。",
   "NetworkError": {
@@ -157,11 +153,11 @@
   "Services": "サービス",
   "Show All": "すべてを表示",
   "Show crash dump in Explorer": "Explorerにクラッシュダンプを表示",
-  "Show crash dump in Finder": "ファインダーにクラッシュダンプを表示",
   "Show crash dump in File Manager": "ファイルマネージャでクラッシュダンプを表示します",
+  "Show crash dump in Finder": "ファインダーにクラッシュダンプを表示",
   "Show Logs in Explorer": "Explorerにログを表示",
-  "Show Logs in Finder": "ファインダーにログを表示",
   "Show Logs in File Manager": "ファイルマネージャに表示ログ",
+  "Show Logs in Finder": "ファインダーにログを表示",
   "SnackBar": {
     " to exit full screen": " を押します",
     "esc": "esc",

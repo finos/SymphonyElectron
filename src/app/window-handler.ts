@@ -82,7 +82,6 @@ export class WindowHandler {
     private loadFailError: string | undefined;
     private mainWindow: ICustomBrowserWindow | null = null;
     private aboutAppWindow: Electron.BrowserWindow | null = null;
-    private moreInfoWindow: Electron.BrowserWindow | null = null;
     private screenPickerWindow: Electron.BrowserWindow | null = null;
     private screenSharingIndicatorWindow: Electron.BrowserWindow | null = null;
     private basicAuthWindow: Electron.BrowserWindow | null = null;
@@ -415,7 +414,11 @@ export class WindowHandler {
         });
 
         const opts: BrowserWindowConstructorOptions = this.getWindowOpts({
-            modal: true,
+            width: 420,
+            height: isWindowsOS ? 725 : 685,
+            modal: false,
+            alwaysOnTop: isMac,
+            resizable: true,
         }, {
             devTools: false,
         });
@@ -424,7 +427,7 @@ export class WindowHandler {
             opts.alwaysOnTop = true;
         }
 
-        if (selectedParentWindow) {
+        if (isWindowsOS && selectedParentWindow) {
             opts.parent = selectedParentWindow;
         }
 
@@ -437,39 +440,10 @@ export class WindowHandler {
                 buildNumber: versionHandler.versionInfo.buildNumber,
                 clientVersion: versionHandler.versionInfo.clientVersion,
                 versionLocalised,
+                ...versionHandler.versionInfo,
             };
             if (this.aboutAppWindow && windowExists(this.aboutAppWindow)) {
                 this.aboutAppWindow.webContents.send('about-app-data', aboutInfo);
-            }
-        });
-    }
-
-    /**
-     * Creates a more info window
-     */
-    public createMoreInfoWindow(): void {
-        if (this.moreInfoWindow && windowExists(this.moreInfoWindow)) {
-            if (this.moreInfoWindow.isMinimized()) {
-                this.moreInfoWindow.restore();
-            }
-            this.moreInfoWindow.focus();
-            return;
-        }
-
-        const opts: BrowserWindowConstructorOptions = this.getWindowOpts({
-            width: 550,
-            height: 500,
-        }, {
-            devTools: false,
-        });
-        if (this.mainWindow && windowExists(this.mainWindow) && this.mainWindow.isAlwaysOnTop()) {
-            opts.alwaysOnTop = true;
-        }
-
-        this.moreInfoWindow = createComponentWindow('more-info', opts);
-        this.moreInfoWindow.webContents.once('did-finish-load', async () => {
-            if (this.moreInfoWindow && windowExists(this.moreInfoWindow)) {
-                this.moreInfoWindow.webContents.send('more-info-data', versionHandler.versionInfo);
             }
         });
     }

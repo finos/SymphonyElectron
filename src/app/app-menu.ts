@@ -177,7 +177,13 @@ export class AppMenu {
             id: menuSections.about,
             label: app.getName(),
             submenu: [
-                { label: i18n.t('About Symphony')(), role: 'about' },
+                {
+                    label: i18n.t('About Symphony')(),
+                    click(_menuItem, focusedWindow) {
+                        const windowName = focusedWindow ? (focusedWindow as ICustomBrowserWindow).winName : '';
+                        windowHandler.createAboutAppWindow(windowName);
+                    },
+                },
                 this.buildSeparator(),
                 { label: i18n.t('Services')(), role: 'services' },
                 this.buildSeparator(),
@@ -413,9 +419,6 @@ export class AppMenu {
                                 return;
                             }
                         },
-                    }, {
-                        click: () => windowHandler.createMoreInfoWindow(),
-                        label: i18n.t('More Information')(),
                     } ],
                 }, {
                     label: i18n.t('About Symphony')(),
