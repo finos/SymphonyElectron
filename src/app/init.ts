@@ -10,6 +10,10 @@ import { appStats } from './stats';
 const userDataPathArg: string | null = getCommandLineArgs(process.argv, '--userDataPath=', false);
 const userDataPath = userDataPathArg && userDataPathArg.substring(userDataPathArg.indexOf('=') + 1);
 
+// need to set this explicitly if using Squirrel
+// https://www.electron.build/configuration/configuration#Configuration-squirrelWindows
+app.setAppUserModelId('com.symphony.electron-desktop');
+
 // Set user data path before app ready event
 if (isDevEnv) {
     const devDataPath = path.join(app.getPath('appData'), 'Symphony-dev');
