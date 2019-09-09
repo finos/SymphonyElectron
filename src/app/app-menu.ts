@@ -51,13 +51,11 @@ let {
     launchOnStartup,
     alwaysOnTop: isAlwaysOnTop,
     bringToFront,
-    memoryRefresh,
 } = config.getConfigFields([
     'minimizeOnClose',
     'launchOnStartup',
     'alwaysOnTop',
     'bringToFront',
-    'memoryRefresh',
 ]) as IConfig;
 let initialAnalyticsSent = false;
 
@@ -87,7 +85,6 @@ export class AppMenu {
             this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.AUTO_LAUNCH_ON_START_UP, launchOnStartup);
             this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.ALWAYS_ON_TOP, isAlwaysOnTop);
             this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.FLASH_NOTIFICATION_IN_TASK_BAR, bringToFront);
-            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.REFRESH_APP_IN_IDLE, memoryRefresh);
             this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.HAMBURGER_MENU, (isMac || isLinux) ? false : this.titleBarStyle === TitleBarStyles.CUSTOM);
         }
         initialAnalyticsSent = true;
@@ -324,16 +321,6 @@ export class AppMenu {
                     titleBarChangeDialog(isNativeStyle);
                     this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.HAMBURGER_MENU, this.titleBarStyle === TitleBarStyles.CUSTOM);
                 },
-            },
-            {
-                checked: memoryRefresh,
-                click: async (item) => {
-                    memoryRefresh = item.checked;
-                    await config.updateUserConfig({ memoryRefresh });
-                    this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.REFRESH_APP_IN_IDLE, item.checked);
-                },
-                label: i18n.t('Refresh app when idle')(),
-                type: 'checkbox',
             },
             {
                 click: (_item, focusedWindow) => {

@@ -3,7 +3,6 @@ import { app } from 'electron';
 import Timer = NodeJS.Timer;
 
 import { logger } from '../common/logger';
-import { windowHandler } from './window-handler';
 
 class ActivityDetection {
     private idleThreshold: number;
@@ -51,9 +50,6 @@ class ActivityDetection {
             if (this.timer) {
                 clearInterval(this.timer);
             }
-            // set auto reload to false so the
-            // activate func works normally
-            windowHandler.setIsAutoReload(false);
             this.timer = undefined;
             logger.info(`activity-detection: activity occurred, updating the client!`);
             return;

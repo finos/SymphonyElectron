@@ -14,8 +14,6 @@ export enum apiCmds {
     bringToFront = 'bring-to-front',
     openScreenPickerWindow = 'open-screen-picker-window',
     popupMenu = 'popup-menu',
-    optimizeMemoryConsumption = 'optimize-memory-consumption',
-    optimizeMemoryRegister = 'optimize-memory-register',
     setIsInMeeting = 'set-is-in-meeting',
     setLocale = 'set-locale',
     openScreenSnippet = 'open-screen-snippet',

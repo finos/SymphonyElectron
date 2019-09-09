@@ -1,25 +1,13 @@
 import * as electron from 'electron';
 
 import { logger } from '../common/logger';
-import { config } from './config-handler';
-import { windowHandler } from './window-handler';
-import { windowExists } from './window-utils';
 
 class MemoryMonitor {
     private memoryInfo: Electron.ProcessMemoryInfo | undefined = undefined;
     private isInMeeting: boolean;
-    private canReload: boolean;
-
-    private readonly maxIdleTime: number;
-    private readonly memoryThreshold: number;
-    private readonly memoryRefreshThreshold: number;
 
     constructor() {
         this.isInMeeting = false;
-        this.canReload = true;
-        this.maxIdleTime = 4 * 60 * 60 * 1000; // 4 hours
-        this.memoryThreshold = 800 * 1024; // 800MB
-        this.memoryRefreshThreshold = 60 * 60 * 1000; // 1 hour
     }
 
     /**
@@ -48,43 +36,11 @@ class MemoryMonitor {
      * Validates the predefined conditions and refreshes the client
      */
     private validateMemory(): void {
-        logger.info(`memory-monitor: validating memory refresh conditions`);
-        const { memoryRefresh } = config.getConfigFields([ 'memoryRefresh' ]);
-        if (!memoryRefresh) {
-            logger.info(`memory-monitor: memory refresh is disabled in the config, not going to refresh!`);
-            return;
-        }
-
         (electron.powerMonitor as any).querySystemIdleTime((time) => {
             const idleTime = time * 1000;
-            if (!(!this.isInMeeting
-                && windowHandler.isOnline
-                && this.canReload
-                && idleTime > this.maxIdleTime
-                && (this.memoryInfo && this.memoryInfo.private > this.memoryThreshold))
-            ) {
-                logger.info(`memory-monitor: Not Reloading the app as
-                application was refreshed less than a hour ago? ${this.canReload ? 'no' : 'yes'}
-                memory consumption is ${(this.memoryInfo && this.memoryInfo.private) || 'unknown'}kb is less than? ${this.memoryThreshold}kb
-                system idle tick was ${idleTime}ms is less than? ${this.maxIdleTime}ms
-                user was in a meeting? ${this.isInMeeting}
-                is network online? ${windowHandler.isOnline}`);
-                return;
-            }
-            const mainWindow = windowHandler.getMainWindow();
-            if (mainWindow && windowExists(mainWindow)) {
-                logger.info(`memory-monitor: Reloading the app to optimize memory usage as
-                    memory consumption is ${this.memoryInfo.private}kb is greater than? ${this.memoryThreshold}kb threshold
-                    system idle tick was ${idleTime}ms is greater than ${this.maxIdleTime}ms
-                    user was in a meeting? ${this.isInMeeting}
-                    is network online? ${windowHandler.isOnline}`);
-                windowHandler.setIsAutoReload(true);
-                mainWindow.reload();
-                this.canReload = false;
-                setTimeout(() => {
-                    this.canReload = true;
-                }, this.memoryRefreshThreshold);
-            }
+            logger.info(`memory-monitor: memory info`, (this.memoryInfo && this.memoryInfo.private));
+            logger.info(`memory-monitor: is user in active RTC meeting`, this.isInMeeting);
+            logger.info(`memory-monitor: system idle tick`, idleTime);
         });
     }
 }
