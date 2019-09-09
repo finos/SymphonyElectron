@@ -18,7 +18,6 @@ export interface IConfig {
     bringToFront: boolean;
     whitelistUrl: string;
     isCustomTitleBar: boolean;
-    memoryRefresh: boolean;
     devToolsEnabled: boolean;
     contextIsolation: boolean;
     ctWhitelist: string[];
@@ -157,7 +156,6 @@ class Config {
                 launchOnStartup,
                 alwaysOnTop,
                 url,
-                memoryRefresh,
                 bringToFront,
                 isCustomTitleBar,
                 ...filteredFields }: IConfig = this.userConfig as IConfig;

@@ -101,11 +101,6 @@ export const sendInitialBoundChanges = (childWindow: BrowserWindow): void => {
  */
 export const activate = (windowName: string, shouldFocus: boolean = true): void => {
 
-    // Electron-136: don't activate when the app is reloaded programmatically
-    if (windowHandler.isAutoReload) {
-        return;
-    }
-
     const windows = windowHandler.getAllWindows();
     for (const key in windows) {
         if (Object.prototype.hasOwnProperty.call(windows, key)) {

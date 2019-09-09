@@ -64,7 +64,6 @@ export class WindowHandler {
     }
 
     public appMenu: AppMenu | null;
-    public isAutoReload: boolean;
     public isOnline: boolean;
     public url: string | undefined;
     public willQuitApp: boolean = false;
@@ -109,7 +108,6 @@ export class WindowHandler {
                 preload: path.join(__dirname, '../renderer/_preload-main.js'),
             }), ...opts,
         };
-        this.isAutoReload = false;
         this.isOnline = true;
 
         this.appMenu = null;
@@ -369,16 +367,6 @@ export class WindowHandler {
                 }
             });
         }
-    }
-
-    /**
-     * Sets is auto reload when the application
-     * is auto reloaded for optimizing memory
-     *
-     * @param shouldAutoReload {boolean}
-     */
-    public setIsAutoReload(shouldAutoReload: boolean): void {
-        this.isAutoReload = shouldAutoReload;
     }
 
     /**
