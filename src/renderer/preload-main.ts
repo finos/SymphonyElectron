@@ -16,7 +16,8 @@ interface ISSFWindow extends Window {
 }
 
 const ssfWindow: ISSFWindow = window;
-const memoryInfoFetchInterval = 60 * 60 * 1000;
+const minMemoryFetchInterval = 4 * 60 * 60 * 1000;
+const maxMemoryFetchInterval = 12 * 60 * 60 * 1000;
 const snackBar = new SnackBar();
 
 /**
@@ -42,6 +43,36 @@ const createAPI = () => {
 };
 
 createAPI();
+
+/**
+ * Returns a random number that is between (min - max)
+ * if min is 4hrs and max is 12hrs then the
+ * returned value will be a random b/w 4 - 12 hrs
+ *
+ * @param min {number} - millisecond
+ * @param max {number} - millisecond
+ */
+const getRandomTime = (min, max) => {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
+/**
+ * Monitory memory with a randomized time
+ *
+ * @param time
+ */
+const monitorMemory = (time)  => {
+    setTimeout(async () => {
+        const memoryInfo = await process.getProcessMemoryInfo();
+        ipcRenderer.send(apiName.symphonyApi, {
+            cmd: apiCmds.memoryInfo,
+            memoryInfo,
+        });
+        monitorMemory(getRandomTime(minMemoryFetchInterval, maxMemoryFetchInterval));
+    }, time);
+};
 
 // When the window is completely loaded
 ipcRenderer.on('page-load', (_event, { locale, resources, enableCustomTitleBar, isMainWindow }) => {
@@ -76,13 +107,7 @@ ipcRenderer.on('page-load', (_event, { locale, resources, enableCustomTitleBar, 
     downloadManager.initDownloadManager();
 
     if (isMainWindow) {
-        setInterval(async () => {
-            const memoryInfo = await process.getProcessMemoryInfo();
-            ipcRenderer.send(apiName.symphonyApi, {
-                cmd: apiCmds.memoryInfo,
-                memoryInfo,
-            });
-        }, memoryInfoFetchInterval);
+        monitorMemory(getRandomTime(minMemoryFetchInterval, maxMemoryFetchInterval));
     }
 });
 
