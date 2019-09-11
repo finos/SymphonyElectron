@@ -1,5 +1,6 @@
 import * as electron from 'electron';
 
+import { isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { config } from './config-handler';
 import { windowHandler } from './window-handler';
@@ -58,11 +59,13 @@ class MemoryMonitor {
 
         (electron.powerMonitor as any).querySystemIdleTime((time) => {
             const idleTime = time * 1000;
+            // for MacOS use private else use residentSet
+            const memoryConsumption = isMac ? (this.memoryInfo && this.memoryInfo.private) : (this.memoryInfo && this.memoryInfo.residentSet);
             logger.info(`memory-monitor: Checking different conditions to see if we should auto reload the app`);
 
             logger.info(`memory-monitor: Is in meeting: `, this.isInMeeting);
             logger.info(`memory-monitor: Is Network online: `, windowHandler.isOnline);
-            logger.info(`memory-monitor: Memory consumption: `, this.memoryInfo && this.memoryInfo.private);
+            logger.info(`memory-monitor: Memory consumption: `, memoryConsumption);
             logger.info(`memory-monitor: Idle Time: `, idleTime);
             logger.info(`memory-monitor: Last Reload time: `, this.lastReloadTime);
 
@@ -76,8 +79,8 @@ class MemoryMonitor {
                 return;
             }
 
-            if (!(this.memoryInfo && this.memoryInfo.private > this.memoryThreshold)) {
-                logger.info(`memory-monitor: NOT RELOADING -> Memory consumption ${this.memoryInfo && this.memoryInfo.private} is lesser than the threshold ${this.memoryThreshold}`);
+            if (!(memoryConsumption && memoryConsumption > this.memoryThreshold)) {
+                logger.info(`memory-monitor: NOT RELOADING -> Memory consumption ${memoryConsumption} is lesser than the threshold ${this.memoryThreshold}`);
                 return;
             }
 
