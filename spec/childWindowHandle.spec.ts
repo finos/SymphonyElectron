@@ -98,6 +98,6 @@ describe('child window handle', () => {
         const spy = jest.spyOn(windowHandler, 'openUrlInDefaultBrowser');
         handleChildWindow(ipcRenderer as any);
         ipcRenderer.send('new-window', ...args);
-        expect(spy).toBeCalledWith('invalid');
+        expect(spy).not.toBeCalledWith('invalid');
     });
 });
