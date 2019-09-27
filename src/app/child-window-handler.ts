@@ -29,21 +29,45 @@ const MIN_WIDTH = 300;
 const MIN_HEIGHT = 300;
 
 /**
- * Verifies if the url is valid and
- * forcefully appends https if not present
- *
- * @param configURL {string}
+ * Verifies protocol for a new url to check if it is http or https
+ * @param url URL to be verified
  */
-const getParsedUrl = (configURL: string): Url => {
-    const parsedUrl = parse(configURL);
+const verifyProtocolForNewUrl = (url: string): boolean => {
+    const parsedUrl = parse(url);
+    if (!parsedUrl) {
+        logger.info(`child-window-handler: The url ${url} doesn't have a protocol. Returning false for verification!`);
+        return false;
+    }
+
+    if (parsedUrl.protocol === 'https') {
+        logger.info(`child-window-handler: The url ${url} is a https url! Returning true for verification!`);
+        return true;
+    }
+
+    if (parsedUrl.protocol === 'http') {
+        logger.info(`child-window-handler: The url ${url} is a http url! Returning true for verification!`);
+        return true;
+    }
+
+    return false;
+};
+
+/**
+ * Verifies if the url is valid and forcefully appends https if not present
+ * This happens mainly for urls from the same domain
+ *
+ * @param url {string}
+ */
+const getParsedUrl = (url: string): Url => {
+    const parsedUrl = parse(url);
 
     if (!parsedUrl.protocol || parsedUrl.protocol !== 'https') {
-        logger.info(`child-window-handler: The url ${configURL} doesn't have a valid protocol or is not https, so, adding https!`);
+        logger.info(`child-window-handler: The url ${url} doesn't have a valid protocol or is not https, so, adding https!`);
         parsedUrl.protocol = 'https:';
         parsedUrl.slashes = true;
     }
     const finalParsedUrl = parse(format(parsedUrl));
-    logger.info(`child-window-handler: The original url ${configURL} is finally parsed as ${JSON.stringify(finalParsedUrl)}`);
+    logger.info(`child-window-handler: The original url ${url} is finally parsed as ${JSON.stringify(finalParsedUrl)}`);
     return finalParsedUrl;
 };
 
@@ -196,6 +220,10 @@ export const handleChildWindow = (webContents: WebContents): void => {
             event.preventDefault();
             if (newWinUrl && newWinUrl.length > 2083) {
                 logger.info(`child-window-handler: new window url length is greater than 2083, not performing any action!`);
+                return;
+            }
+            if (!verifyProtocolForNewUrl(newWinUrl)) {
+                logger.info(`child-window-handler: new window url protocol is not http or https, not performing any action!`);
                 return;
             }
             logger.info(`child-window-handler: new window url is ${newWinUrl} which is not of the same host,
