@@ -158,9 +158,31 @@ export class WindowHandler {
             }
         });
 
+        this.url = WindowHandler.getValidUrl(this.globalConfig.url);
+        logger.info(`window-handler: setting url ${this.url} from config file!`);
+
         // Get url to load from cmd line or from global config file
         const urlFromCmd = getCommandLineArgs(process.argv, '--url=', false);
-        this.url = urlFromCmd && urlFromCmd.substr(6) || WindowHandler.getValidUrl(this.globalConfig.url);
+
+        if (urlFromCmd) {
+            const commandLineUrl = urlFromCmd.substr(6);
+            logger.info(`window-handler: trying to set url ${commandLineUrl} from command line.`);
+            const { podWhitelist } = config.getGlobalConfigFields([ 'podWhitelist' ]);
+            logger.info(`window-handler: checking pod whitelist.`);
+            if (podWhitelist.length > 0) {
+                logger.info(`window-handler: pod whitelist is not empty ${podWhitelist}`);
+                if (podWhitelist.includes(commandLineUrl)) {
+                    logger.info(`window-handler: url from command line is whitelisted in the config file.`);
+                    logger.info(`window-handler: setting ${commandLineUrl} from the command line as the main window url.`);
+                    this.url = commandLineUrl;
+                } else {
+                    logger.info(`window-handler: url ${commandLineUrl} from command line is NOT WHITELISTED in the config file.`);
+                }
+            } else {
+                logger.info(`window-handler: setting ${commandLineUrl} from the command line as the main window url since pod whitelist is empty.`);
+                this.url = commandLineUrl;
+            }
+        }
 
         // loads the main window with url from config/cmd line
         this.mainWindow.loadURL(this.url);
@@ -188,7 +210,7 @@ export class WindowHandler {
                 isMainWindow: true,
             });
             this.appMenu = new AppMenu();
-            const {permissions} = config.getGlobalConfigFields(['permissions']);
+            const { permissions } = config.getGlobalConfigFields(['permissions']);
             this.mainWindow.webContents.send('is-screen-share-enabled', permissions.media);
         });
 

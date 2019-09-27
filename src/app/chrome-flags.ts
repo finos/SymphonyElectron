@@ -8,7 +8,7 @@ logger.info(`chrome-flags: Setting mandatory chrome flags`, { flag: { 'ssl-versi
 app.commandLine.appendSwitch('ssl-version-fallback-min', 'tls1.2');
 
 // Special args that need to be excluded as part of the chrome command line switch
-const specialArgs = [ '--url', '--multiInstance', '--userDataPath=', 'symphony://', '--inspect-brk', '--inspect', '--logPath' ];
+const specialArgs = [ '--url', '--multiInstance', '--userDataPath=', 'symphony://', '--inspect-brk', '--inspect', '--logPath', '--no-sandbox' ];
 
 /**
  * Sets chrome flags
