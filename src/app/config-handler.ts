@@ -22,6 +22,7 @@ export interface IConfig {
     devToolsEnabled: boolean;
     contextIsolation: boolean;
     ctWhitelist: string[];
+    podWhitelist: string[];
     configVersion: string;
     buildNumber: string;
     autoLaunchPath: string;
