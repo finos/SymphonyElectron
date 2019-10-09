@@ -39,12 +39,12 @@ const verifyProtocolForNewUrl = (url: string): boolean => {
         return false;
     }
 
-    if (parsedUrl.protocol === 'https') {
+    if (parsedUrl.protocol === 'https:') {
         logger.info(`child-window-handler: The url ${url} is a https url! Returning true for verification!`);
         return true;
     }
 
-    if (parsedUrl.protocol === 'http') {
+    if (parsedUrl.protocol === 'http:') {
         logger.info(`child-window-handler: The url ${url} is a http url! Returning true for verification!`);
         return true;
     }
