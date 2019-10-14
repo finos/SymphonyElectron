@@ -54,11 +54,6 @@ class Logger {
             transports.file.level = 'debug';
             transports.file.format = '{y}-{m}-{d} {h}:{i}:{s}:{ms} {z} | {level} | {text}';
             transports.file.appName = 'Symphony';
-        } else {
-            transports.file.file = path.join(this.logPath, `app_${Date.now()}.log`);
-            transports.file.level = 'debug';
-            transports.file.format = '{y}-{m}-{d} {h}:{i}:{s}:{ms} {z} | {level} | {text}';
-            transports.file.appName = 'Symphony-dev';
         }
 
         const logLevel = getCommandLineArgs(process.argv, '--logLevel=', false);
@@ -74,7 +69,9 @@ class Logger {
         }
 
         // cleans up old logs if there are any
-        this.cleanupOldLogs();
+        if (app.isPackaged) {
+            this.cleanupOldLogs();
+        }
     }
 
     /**
