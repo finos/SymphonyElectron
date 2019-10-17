@@ -36,7 +36,10 @@ class Logger {
         // If the user has specified a custom log path use it.
         const customLogPathArg = getCommandLineArgs(process.argv, '--logPath=', false);
         const customLogsFolder = customLogPathArg && customLogPathArg.substring(customLogPathArg.indexOf('=') + 1);
-        if (customLogsFolder && fs.existsSync(customLogsFolder)) {
+        if (customLogsFolder) {
+            if (!fs.existsSync(customLogsFolder)) {
+                fs.mkdirSync(customLogsFolder, { recursive: true });
+            }
             app.setPath('logs', customLogsFolder);
         }
 
@@ -66,7 +69,9 @@ class Logger {
         }
 
         // cleans up old logs if there are any
-        this.cleanupOldLogs();
+        if (app.isPackaged) {
+            this.cleanupOldLogs();
+        }
     }
 
     /**
@@ -234,15 +239,12 @@ class Logger {
      */
     private cleanupOldLogs(): void {
         const files = fs.readdirSync(this.logPath);
-        const deleteTimeStamp = new Date().getTime() + (10 * 24 * 60 * 60 * 1000);
+        const deleteTimeStamp = new Date().getTime() - (5 * 24 * 60 * 60 * 1000);
         files.forEach((file) => {
-            if (file === '.DS_Store' || file === 'app.log') {
-                return;
-            }
             const filePath = path.join(this.logPath, file);
             const stat = fs.statSync(filePath);
             const fileTimestamp = new Date(util.inspect(stat.mtime)).getTime();
-            if (fileTimestamp > deleteTimeStamp) {
+            if (fileTimestamp < deleteTimeStamp) {
                 fs.unlinkSync(filePath);
             }
         });
