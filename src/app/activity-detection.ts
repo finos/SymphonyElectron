@@ -9,6 +9,7 @@ class ActivityDetection {
     private idleThreshold: number;
     private window: Electron.WebContents | null;
     private timer: Timer | undefined;
+    private queryInterval: NodeJS.Timer | undefined;
 
     constructor() {
         this.idleThreshold = 60 * 60 * 1000;
@@ -24,6 +25,9 @@ class ActivityDetection {
     public setWindowAndThreshold(window: Electron.WebContents, idleThreshold: number): void {
         this.window = window;
         this.idleThreshold = idleThreshold;
+        if (this.queryInterval) {
+            clearInterval(this.queryInterval);
+        }
         this.startActivityMonitor();
         logger.info(`activity-detection: Initialized activity detection with an idleThreshold of ${idleThreshold}`);
     }
@@ -34,7 +38,7 @@ class ActivityDetection {
     private startActivityMonitor(): void {
         if (app.isReady()) {
             logger.info(`activity-detection: Starting activity monitor`);
-            setInterval(() => (electron.powerMonitor as any).querySystemIdleTime(this.activity.bind(this)), this.idleThreshold);
+            this.queryInterval = setInterval(() => (electron.powerMonitor as any).querySystemIdleTime(this.activity.bind(this)), this.idleThreshold);
         }
     }
 
