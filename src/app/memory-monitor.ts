@@ -32,7 +32,7 @@ class MemoryMonitor {
      */
     public setMemoryInfo(memoryInfo: Electron.ProcessMemoryInfo): void {
         this.memoryInfo = memoryInfo;
-        logger.info(`memory-monitor: setting memory info to ${memoryInfo}`);
+        logger.info(`memory-monitor: setting memory info to ${JSON.stringify(memoryInfo)}`);
         this.validateMemory();
     }
 
