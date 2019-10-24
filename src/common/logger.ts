@@ -229,6 +229,9 @@ class Logger {
      * Cleans up logs older than a day
      */
     private cleanupOldLogs(): void {
+        if (!fs.existsSync(this.logPath)) {
+            return;
+        }
         const files = fs.readdirSync(this.logPath);
         const deleteTimeStamp = new Date().getTime() + (10 * 24 * 60 * 60 * 1000);
         files.forEach((file) => {
