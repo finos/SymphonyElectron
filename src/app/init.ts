@@ -1,10 +1,15 @@
 import { app } from 'electron';
 import * as path from 'path';
 
-import { isDevEnv } from '../common/env';
+import { isDevEnv, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
 import { appStats } from './stats';
+
+if (isWindowsOS && process.env.LOCALAPPDATA) {
+    app.setPath('appData', process.env.LOCALAPPDATA);
+    app.setPath('userData', path.join(app.getPath('appData'), app.getName()));
+}
 
 // Handle custom user data path from process.argv
 const userDataPathArg: string | null = getCommandLineArgs(process.argv, '--userDataPath=', false);
