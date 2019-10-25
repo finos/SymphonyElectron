@@ -38,7 +38,7 @@ interface IIpcRenderer {
     once(eventName: any, cb: any): void;
 }
 interface IPowerMonitor {
-    querySystemIdleTime(): void;
+    getSystemIdleTime(): void;
 }
 
 const pathToConfigDir = (): string => {
@@ -102,7 +102,7 @@ export const ipcMain: IIpcMain = {
 };
 
 export const powerMonitor: IPowerMonitor = {
-    querySystemIdleTime: jest.fn().mockImplementation((cb) => cb(mockIdleTime)),
+    getSystemIdleTime: jest.fn().mockReturnValue(mockIdleTime),
 };
 
 export const ipcRenderer: IIpcRenderer = {
