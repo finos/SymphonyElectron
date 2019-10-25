@@ -21,6 +21,7 @@ interface IApp {
     setPath(value: string, path: string): void;
     setLoginItemSettings(settings: { openAtLogin: boolean, path: string }): void;
     getLoginItemSettings(options?: { path: string, args: string[] }): ILoginItemSettings;
+    setAppLogsPath(): void;
 }
 interface ILoginItemSettings {
     openAtLogin: boolean;
@@ -76,6 +77,9 @@ export const app: IApp = {
     setLoginItemSettings: () => jest.fn(),
     getLoginItemSettings: (): ILoginItemSettings => {
         return { openAtLogin: true };
+    },
+    setAppLogsPath: (): void => {
+        return;
     },
 };
 
