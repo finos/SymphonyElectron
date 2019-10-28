@@ -26,11 +26,7 @@
     "unpacked-win-x86": "npm run prebuild && npm run test && build --win --ia32 --dir"
   },
   "build": {
-    "asarUnpack": [
-      "node_modules/@nornagon/cld/build/Release/cld.node",
-      "node_modules/@nornagon/spellchecker/build/Release/spellchecker.node",
-      "node_modules/keyboard-layout/build/Release/keyboard-layout-manager.node"
-    ],
+    "asarUnpack": "**/*.node",
     "files": [
       "!coverage/*",
       "!installer/*",
