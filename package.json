@@ -26,6 +26,54 @@
     "unpacked-win": "npm run prebuild && npm run test && node_modules\\.bin\\electron-builder build --win --x64 --dir",
     "unpacked-win-x86": "npm run prebuild && npm run test && node_modules\\.bin\\electron-builder build --win --ia32 --dir"
   },
+  "build": {
+    "appId": "com.symphony.electron-desktop",
+    "asar": true,
+    "asarUnpack": [
+      "node_modules/@nornagon/cld/build/Release/cld.node",
+      "node_modules/@nornagon/spellchecker/build/Release/spellchecker.node",
+      "node_modules/keyboard-layout/build/Release/keyboard-layout-manager.node"
+    ],
+    "files": [
+      "!coverage/*",
+      "!installer/*",
+      "!tests/*",
+      "!node_modules/@nornagon/cld/deps/cld${/*}",
+      "!node_modules/@nornagon/cld/build/deps${/*}",
+      "!node_modules/@nornagon/spellchecker/vendor${/*}"
+    ],
+    "extraFiles": [
+      "config/Symphony.config",
+      "config/titleBarStyles.css",
+      "dictionaries/**",
+      "library/libsymphonysearch.dylib",
+      "library/indexvalidator.exec",
+      "library/cryptoLib.dylib",
+      "library/dictionary",
+      "library/lz4.exec"
+    ],
+    "mac": {
+      "category": "public.app-category.business",
+      "icon": "images/icon.icns"
+    },
+    "win": {
+      "icon": "images/icon.ico",
+      "target": [
+        "squirrel"
+      ]
+    },
+    "linux": {
+      "category": "Network;InstantMessaging;Chat",
+      "desktop": {
+        "StartupWMClass": "Symphony"
+      },
+      "target": [
+        "deb",
+        "rpm"
+      ],
+      "icon": "images/linux"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/SymphonyOSS/SymphonyElectron.git"
