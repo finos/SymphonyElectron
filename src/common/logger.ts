@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
 
-import { isElectronQA, isLinux } from './env';
+import { isElectronQA, isLinux, isWindowsOS } from './env';
 import { getCommandLineArgs } from './utils';
 
 export interface ILogMsg {
@@ -21,6 +21,16 @@ interface IClientLogMsg {
 }
 
 const MAX_LOG_QUEUE_LENGTH = 100;
+
+// Force log path to local path in Windows rather than roaming
+if (isWindowsOS && process.env.LOCALAPPDATA) {
+    app.setPath('appData', process.env.LOCALAPPDATA);
+    app.setPath('userData', path.join(app.getPath('appData'), app.getName()));
+}
+
+// Electron wants this to be called initially before calling
+// app.getPath('logs')
+app.setAppLogsPath();
 
 class Logger {
     private readonly showInConsole: boolean = false;

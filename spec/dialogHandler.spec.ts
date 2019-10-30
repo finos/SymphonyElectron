@@ -44,18 +44,20 @@ describe('dialog handler', () => {
             const errorMocked = 'check for server certificate revocation';
             const certificate = null;
 
-            it('should return false when buttonId is 1', () => {
-                dialog.showMessageBox = jest.fn(() => 1);
-                ipcRenderer.send('certificate-error', webContentsMocked, urlMocked, errorMocked, certificate, callbackMocked);
-                expect(callbackMocked).toBeCalledWith(false);
+            it('should return false when buttonId is 1', async (done) => {
+                dialog.showMessageBox = jest.fn(() => {
+                    return { response: 1 };
+                });
+                await ipcRenderer.send('certificate-error', webContentsMocked, urlMocked, errorMocked, certificate, callbackMocked);
+                done(expect(callbackMocked).toBeCalledWith(false));
             });
 
-            it('should return true when buttonId is not 1', () => {
+            it('should return true when buttonId is not 1', async (done) => {
                 dialog.showMessageBox = jest.fn(() => 2);
-                ipcRenderer.send('certificate-error', webContentsMocked, urlMocked, errorMocked, certificate, callbackMocked);
+                await ipcRenderer.send('certificate-error', webContentsMocked, urlMocked, errorMocked, certificate, callbackMocked);
                 expect(callbackMocked).toBeCalledWith(true);
-                ipcRenderer.send('certificate-error', webContentsMocked, urlMocked, errorMocked, certificate, callbackMocked);
-                expect(callbackMocked).toBeCalledWith(true);
+                await ipcRenderer.send('certificate-error', webContentsMocked, urlMocked, errorMocked, certificate, callbackMocked);
+                done(expect(callbackMocked).toBeCalledWith(true));
             });
         });
     });
@@ -78,7 +80,7 @@ describe('dialog handler', () => {
             message: `Error loading URL:\n${urlMocked}\n\n${errorDescMocked}\n\nError Code: ${errorCodeMocked}`,
         };
         showLoadFailure(browserWindowMocked, urlMocked, errorDescMocked, errorCodeMocked, callbackMocked, showDialogMocked);
-        expect(spy).toBeCalledWith({ id: 123 }, expectedValue, expect.any(Function));
+        expect(spy).toBeCalledWith({ id: 123 }, expectedValue);
     });
 
     it('should call `showNetworkConnectivityError` correctly', () => {
@@ -97,6 +99,6 @@ describe('dialog handler', () => {
             message: `Error loading URL:\n${urlMocked}\n\n${errorDescMocked}`,
         };
         showNetworkConnectivityError(browserWindowMocked, urlMocked, callbackMocked);
-        expect(spy).toBeCalledWith({ id: 123 }, expectedValue, expect.any(Function));
+        expect(spy).toBeCalledWith({ id: 123 }, expectedValue);
     });
 });

@@ -53,7 +53,7 @@ let ignoreAllCertErrors = false;
  * Note: the dialog is synchronous so further processing is blocked until
  * user provides a response.
  */
-electron.app.on('certificate-error', (event, webContents, url, error, _certificate, callback) => {
+electron.app.on('certificate-error', async (event, webContents, url, error, _certificate, callback) => {
     // TODO: Add logic verify custom certificate
 
     if (ignoreAllCertErrors) {
@@ -65,7 +65,7 @@ electron.app.on('certificate-error', (event, webContents, url, error, _certifica
     logger.warn(`Certificate error: ${error} for url: ${url}`);
 
     const browserWin = electron.BrowserWindow.fromWebContents(webContents);
-    const buttonId = electron.dialog.showMessageBox(browserWin, {
+    const { response } = await electron.dialog.showMessageBox(browserWin, {
         type: 'warning',
         buttons: [
             i18n.t('Allow')(),
@@ -81,11 +81,11 @@ electron.app.on('certificate-error', (event, webContents, url, error, _certifica
 
     event.preventDefault();
 
-    if (buttonId === 2) {
+    if (response === 2) {
         ignoreAllCertErrors = true;
     }
 
-    callback(buttonId !== 1);
+    callback(response !== 1);
 });
 
 /**
@@ -98,7 +98,7 @@ electron.app.on('certificate-error', (event, webContents, url, error, _certifica
  * @param  retryCallback        {function} Callback when user clicks reload
  * @param  showDialog           {Boolean} Indicates if a dialog need to be show to a user
  */
-export const showLoadFailure = (browserWindow: Electron.BrowserWindow, url: string, errorDesc: string, errorCode: number, retryCallback: () => void, showDialog: boolean): void => {
+export const showLoadFailure = async (browserWindow: Electron.BrowserWindow, url: string, errorDesc: string, errorCode: number, retryCallback: () => void, showDialog: boolean): Promise<void> => {
     let message = url ? `${i18n.t('Error loading URL')()}:\n${url}` : i18n.t('Error loading window')();
     if (errorDesc) {
         message += `\n\n${errorDesc}`;
@@ -107,16 +107,8 @@ export const showLoadFailure = (browserWindow: Electron.BrowserWindow, url: stri
         message += `\n\nError Code: ${errorCode}`;
     }
 
-    // async handle of user input
-    const response = (buttonId: number): void => {
-        // retry if hitting button index 0 (i.e., reload)
-        if (buttonId === 0 && typeof retryCallback === 'function') {
-            retryCallback();
-        }
-    };
-
     if (showDialog) {
-        electron.dialog.showMessageBox(browserWindow, {
+        const { response } = await electron.dialog.showMessageBox(browserWindow, {
             type: 'error',
             buttons: [ i18n.t('Reload')(), i18n.t('Ignore')() ],
             defaultId: 0,
@@ -124,7 +116,13 @@ export const showLoadFailure = (browserWindow: Electron.BrowserWindow, url: stri
             noLink: true,
             title: i18n.t('Loading Error')(),
             message,
-        }, response);
+        });
+
+        // async handle of user input
+        // retry if hitting button index 0 (i.e., reload)
+        if (response === 0 && typeof retryCallback === 'function') {
+            retryCallback();
+        }
     }
 
     logger.warn(`Load failure msg: ${errorDesc} errorCode: ${errorCode} for url: ${url}`);
@@ -148,7 +146,7 @@ export const showNetworkConnectivityError = (browserWindow: Electron.BrowserWind
  *
  * @param isNativeStyle {boolean}
  */
-export const titleBarChangeDialog = (isNativeStyle: boolean) => {
+export const titleBarChangeDialog = async (isNativeStyle: boolean) => {
     const focusedWindow = electron.BrowserWindow.getFocusedWindow();
     if (!focusedWindow || !windowExists(focusedWindow)) {
         return;
@@ -161,11 +159,10 @@ export const titleBarChangeDialog = (isNativeStyle: boolean) => {
         buttons: [ i18n.t('Relaunch')(), i18n.t('Cancel')() ],
         cancelId: 1,
     };
-    electron.dialog.showMessageBox(focusedWindow, options, async (index) => {
-        if (index === 0) {
-            await config.updateUserConfig({ isCustomTitleBar: isNativeStyle });
-            app.relaunch();
-            app.exit();
-        }
-    });
+    const { response } = await electron.dialog.showMessageBox(focusedWindow, options);
+    if (response === 0) {
+        await config.updateUserConfig({ isCustomTitleBar: isNativeStyle });
+        app.relaunch();
+        app.exit();
+    }
 };

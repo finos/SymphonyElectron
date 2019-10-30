@@ -38,7 +38,10 @@ class ActivityDetection {
     private startActivityMonitor(): void {
         if (app.isReady()) {
             logger.info(`activity-detection: Starting activity monitor`);
-            this.queryInterval = setInterval(() => (electron.powerMonitor as any).querySystemIdleTime(this.activity.bind(this)), this.idleThreshold);
+            this.queryInterval = setInterval(() => {
+                const idleTime = electron.powerMonitor.getSystemIdleTime();
+                this.activity(idleTime);
+            }, this.idleThreshold);
         }
     }
 
@@ -69,7 +72,8 @@ class ActivityDetection {
             // when user goes inactive
             this.timer = setInterval(() => {
                 if (app.isReady()) {
-                    (electron.powerMonitor as any).querySystemIdleTime(this.activity.bind(this));
+                    const activeTime = electron.powerMonitor.getSystemIdleTime();
+                    this.activity(activeTime);
                 }
             },  1000);
         }

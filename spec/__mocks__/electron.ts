@@ -21,6 +21,7 @@ interface IApp {
     setPath(value: string, path: string): void;
     setLoginItemSettings(settings: { openAtLogin: boolean, path: string }): void;
     getLoginItemSettings(options?: { path: string, args: string[] }): ILoginItemSettings;
+    setAppLogsPath(): void;
 }
 interface ILoginItemSettings {
     openAtLogin: boolean;
@@ -37,7 +38,7 @@ interface IIpcRenderer {
     once(eventName: any, cb: any): void;
 }
 interface IPowerMonitor {
-    querySystemIdleTime(): void;
+    getSystemIdleTime(): void;
 }
 
 const pathToConfigDir = (): string => {
@@ -77,6 +78,9 @@ export const app: IApp = {
     getLoginItemSettings: (): ILoginItemSettings => {
         return { openAtLogin: true };
     },
+    setAppLogsPath: (): void => {
+        return;
+    },
 };
 
 // simple ipc mocks for render and main process ipc using
@@ -98,7 +102,7 @@ export const ipcMain: IIpcMain = {
 };
 
 export const powerMonitor: IPowerMonitor = {
-    querySystemIdleTime: jest.fn().mockImplementation((cb) => cb(mockIdleTime)),
+    getSystemIdleTime: jest.fn().mockReturnValue(mockIdleTime),
 };
 
 export const ipcRenderer: IIpcRenderer = {

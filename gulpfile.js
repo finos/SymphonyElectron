@@ -2,11 +2,11 @@ const fs = require('fs');
 const gulp = require('gulp');
 const less = require('gulp-less');
 const sourcemaps = require('gulp-sourcemaps');
-const tsc = require('gulp-tsc');
+const tsc = require('gulp-typescript');
 const del = require('del');
 const path = require('path');
 
-// TODO: Add gulp watch tasks
+const tsProject = tsc.createProject('./tsconfig.json');
 
 gulp.task('clean', function() {
     return del('lib');
@@ -17,8 +17,9 @@ gulp.task('clean', function() {
  * and copy to the destination
  */
 gulp.task('compile', function() {
-    return gulp.src(['src/**/*.ts', 'src/**/*.tsx'])
-        .pipe(tsc({ project: './tsconfig.json' }))
+    return tsProject.src()
+        .pipe(tsProject())
+        .on('error', (err) => console.log(err))
         .pipe(gulp.dest('lib/'))
 });
 
@@ -37,7 +38,8 @@ gulp.task('copy', function () {
     return gulp.src([
         './src/renderer/assets/*',
         './src/renderer/*.html',
-        './src/locale/*'
+        './src/locale/*',
+        './package.json'
     ], {
         "base": "./src"
     }).pipe(gulp.dest('lib/src'))

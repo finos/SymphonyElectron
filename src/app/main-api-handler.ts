@@ -26,7 +26,7 @@ import {
  * Handle API related ipc messages from renderers. Only messages from windows
  * we have created are allowed.
  */
-ipcMain.on(apiName.symphonyApi, (event: Electron.Event, arg: IApiArgs) => {
+ipcMain.on(apiName.symphonyApi, (event: Electron.IpcMainEvent, arg: IApiArgs) => {
     if (!isValidWindow(BrowserWindow.fromWebContents(event.sender))) {
         logger.error(`main-api-handler: invalid window try to perform action, ignoring action`, arg.cmd);
         return;
