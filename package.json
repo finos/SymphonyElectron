@@ -23,8 +23,8 @@
     "start": "npm run compile && npm run browserify-preload && cross-env ELECTRON_DEV=true electron .",
     "test": "npm run lint && cross-env ELECTRON_QA=true jest --config jest-config.json --runInBand --detectOpenHandles",
     "unpacked-mac": "npm run prebuild && npm run test && ./node_modules/.bin/electron-builder build --mac --dir",
-    "unpacked-win": "npm run prebuild && npm run test && ./node_modules/.bin/electron-builder build --win --x64 --dir",
-    "unpacked-win-x86": "npm run prebuild && npm run test && ./node_modules/.bin/electron-builder build --win --ia32 --dir"
+    "unpacked-win": "npm run prebuild && npm run test && node_modules\\.bin\\electron-builder build --win --x64 --dir",
+    "unpacked-win-x86": "npm run prebuild && npm run test && node_modules\\.bin\\electron-builder build --win --ia32 --dir"
   },
   "repository": {
     "type": "git",
