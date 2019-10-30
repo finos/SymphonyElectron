@@ -16,15 +16,15 @@
     "demo-win": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file:///src/demo/index.html",
     "demo-mac": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/src/demo/index.html",
     "lint": "tslint --project tsconfig.json",
-    "packed-linux": "npm run prebuild && npm run test && build --linux",
+    "packed-linux": "npm run prebuild && npm run test && ./node_modules/.bin/electron-builder build --linux",
     "packed-mac": "npm run unpacked-mac && packagesbuild -v installer/mac/symphony-mac-packager.pkgproj",
     "prebuild": "npm run compile && npm run rebuild && npm run browserify-preload",
     "rebuild": "electron-rebuild -f",
     "start": "npm run compile && npm run browserify-preload && cross-env ELECTRON_DEV=true electron .",
     "test": "npm run lint && cross-env ELECTRON_QA=true jest --config jest-config.json --runInBand --detectOpenHandles",
-    "unpacked-mac": "npm run prebuild && npm run test && build --mac --dir",
-    "unpacked-win": "npm run prebuild && npm run test && build --win --x64 --dir",
-    "unpacked-win-x86": "npm run prebuild && npm run test && build --win --ia32 --dir"
+    "unpacked-mac": "npm run prebuild && npm run test && ./node_modules/.bin/electron-builder build --mac --dir",
+    "unpacked-win": "npm run prebuild && npm run test && ./node_modules/.bin/electron-builder build --win --x64 --dir",
+    "unpacked-win-x86": "npm run prebuild && npm run test && ./node_modules/.bin/electron-builder build --win --ia32 --dir"
   },
   "repository": {
     "type": "git",
@@ -50,7 +50,7 @@
     "cross-env": "5.2.0",
     "del": "3.0.0",
     "electron": "6.1.2",
-    "electron-builder": "20.38.4",
+    "electron-builder": "21.2.0",
     "electron-builder-squirrel-windows": "20.38.3",
     "electron-icon-maker": "0.0.4",
     "electron-rebuild": "1.8.2",
