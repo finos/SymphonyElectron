@@ -6,6 +6,7 @@
     "resolveJsonModule": true,
     "jsx": "react",
     "outDir": "lib",
+    "rootDir": ".",
     "lib": [
       "es2016",
       "dom"
