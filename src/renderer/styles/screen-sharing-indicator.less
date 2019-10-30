@@ -1,7 +1,7 @@
 @white: rgba(255,255,255, 1);
 @background: #6b717c;
 @button-color: #303237;
-@stop-sharing-background: #107ccc;
+@stop-sharing-background:#EE3D3D;
 @font: "system";
 
 @font-face {
@@ -14,62 +14,56 @@ body {
   font-family: @font;
   font-size: 13px;
   padding: 0;
-  margin: 10px;
+  margin: 0px;
   user-select: none;
   -webkit-app-region: drag;
-  background: rgba(255, 255, 255, 0.9);
+  width: 100%;
+  height: 100%;
 }
 
 .ScreenSharingIndicator {
-
-  .window-border {
-    border: 2px solid rgba(68, 68, 68, 1);
-  }
-
-  .buttons {
-    float: right;
-    font-size: 12px;
-    font-weight: bold;
-  }
+  background: #FFFFFF;
+  width: 584px;
+  height: 40px;
+  border-radius: 24px;
+  border: 4px solid @stop-sharing-background;
 
   .stop-sharing-button {
     text-transform: uppercase;
     background: @stop-sharing-background;
     color: @white;
     border: none;
-    font-size: inherit;
-    border-radius: 14px;
-    height: 28px;
+    width: 152px;
+    height: 32px;
+    border-radius: 16px;
+    position: absolute;
+    left: 432px;
+    top: 8px;
+    font-size: 12px;
+    line-height: 14px;
+    text-align: center;
+
     padding: 6px 14px;
     outline: none;
     cursor: pointer;
     -webkit-app-region: no-drag;
   }
 
-  .hide-button {
-    text-decoration: none;
-    text-transform: uppercase;
-    color: @background;
-    margin-right: 29px;
-    -webkit-app-region: no-drag;
-  }
-
   .text-label {
-    position: relative;
-    top: -2px;
-    left: 16px;
+    position: absolute;
+    width: 281px;
+    height: 17px;
+    left: 24px;
+    top: 16px;
     font-size: 14px;
+    line-height: 16px;
+    display: flex;
+    align-items: center;
+    color: #000000;
   }
 
-  .drag-area {
-    display: inline-block;
-    width: 8px;
-    height: 22px;
-    position: relative;
-    cursor: move;
-    top: 3px;
-    text-transform: uppercase;
-    background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 1px, rgba(0, 0, 0, 0.12) 1px, rgba(0, 0, 0, 0.12) 2px);
+  .text-label2 {
+    font-weight: bold
   }
 
   .mac {

@@ -670,7 +670,7 @@ export class WindowHandler {
         // Set stream id as winKey to link stream to the window
         let opts = {
             ...this.getWindowOpts({
-                width: 620,
+                width: 592,
                 height: 48,
                 show: false,
                 modal: true,
@@ -681,6 +681,9 @@ export class WindowHandler {
                 resizable: false,
                 alwaysOnTop: true,
                 fullscreenable: false,
+                titleBarStyle: 'customButtonsOnHover',
+                minimizable: false,
+                maximizable: false,
             }, {
                 devTools: false,
             }), ...{winKey: streamId},
@@ -688,9 +691,10 @@ export class WindowHandler {
         if (opts.width && opts.height) {
             opts = Object.assign({}, opts, {
                 x: screenRect.x + Math.round((screenRect.width - opts.width) / 2),
-                y: screenRect.y + screenRect.height - opts.height,
+                y: screenRect.y + 16,
             });
         }
+
         this.screenSharingIndicatorWindow = createComponentWindow('screen-sharing-indicator', opts);
         this.screenSharingIndicatorWindow.setVisibleOnAllWorkspaces(true);
         this.screenSharingIndicatorWindow.webContents.once('did-finish-load', () => {

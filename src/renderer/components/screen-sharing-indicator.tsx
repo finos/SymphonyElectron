@@ -37,12 +37,13 @@ export default class ScreenSharingIndicator extends React.Component<{}, IState> 
     public render(): JSX.Element {
         const { id } = this.state;
         const namespace = 'ScreenSharingIndicator';
+
         return (
             <div className={classNames('ScreenSharingIndicator', { mac: isMac })}>
-                <span className='drag-area'/>
-                <span className='text-label'>{i18n.t(`You are sharing your screen on {appName}`, namespace)({ appName: remote.app.getName() })}</span>
+                <span className='text-label'>{(i18n.t(`You are sharing your screen on {appName}`, namespace)({ appName: remote.app.getName()})).replace(remote.app.getName(), '')}
+                    <span className='text-label2'>&nbsp;{remote.app.getName()}</span>
+                </span>
                 <span className='buttons'>
-                    <a className='hide-button' href='#' onClick={this.eventHandlers.onClose}>{i18n.t('Hide', namespace)()}</a>
                     <button className='stop-sharing-button' onClick={this.eventHandlers.onStopScreenSharing(id)}>
                         {i18n.t('Stop sharing', namespace)()}
                     </button>

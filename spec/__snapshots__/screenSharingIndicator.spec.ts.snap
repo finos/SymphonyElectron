@@ -5,23 +5,19 @@ exports[`screen sharing indicator should render correctly 1`] = `
   className="ScreenSharingIndicator mac"
 >
   <span
-    className="drag-area"
-  />
-  <span
     className="text-label"
   >
-    You are sharing your screen on Symphony
+    You are sharing your screen on 
+    <span
+      className="text-label2"
+    >
+       
+      Symphony
+    </span>
   </span>
   <span
     className="buttons"
   >
-    <a
-      className="hide-button"
-      href="#"
-      onClick={[Function]}
-    >
-      Hide
-    </a>
     <button
       className="stop-sharing-button"
       onClick={[Function]}
