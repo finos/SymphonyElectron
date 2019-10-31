@@ -1,7 +1,7 @@
 {
   "name": "symphony",
   "productName": "Symphony",
-  "version": "3.8.2",
+  "version": "3.8.3",
   "clientVersion": "1.55.3",
   "buildNumber": "0",
   "searchAPIVersion": "1.55.3",
@@ -84,7 +84,7 @@
     "@types/enzyme": "3.9.0",
     "@types/ffi": "0.2.2",
     "@types/jest": "23.3.12",
-    "@types/node": "10.11.4",
+    "@types/node": "11.13.22",
     "@types/react": "16.8.3",
     "@types/react-dom": "16.0.9",
     "@types/ref": "0.0.28",
