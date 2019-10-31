@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
 
-import { isElectronQA } from './env';
+import { isElectronQA, isWindowsOS } from './env';
 import { getCommandLineArgs } from './utils';
 
 export interface ILogMsg {
@@ -21,6 +21,19 @@ interface IClientLogMsg {
 }
 
 const MAX_LOG_QUEUE_LENGTH = 100;
+
+if (isWindowsOS && process.env.LOCALAPPDATA) {
+    app.setPath('appData', process.env.LOCALAPPDATA);
+    app.setPath('userData', path.join(app.getPath('appData'), app.getName()));
+
+    // We need to create the logs directory manually because
+    // Electron 3.1.x doesn't support this
+    const logPath = path.join(app.getPath('appData'), app.getName(), 'logs');
+    if (!fs.existsSync(logPath) && !isElectronQA) {
+        fs.mkdirSync(logPath);
+    }
+    app.setPath('logs', logPath);
+}
 
 class Logger {
     private readonly showInConsole: boolean = false;
@@ -229,6 +242,9 @@ class Logger {
      * Cleans up logs older than a day
      */
     private cleanupOldLogs(): void {
+        if (!fs.existsSync(this.logPath)) {
+            return;
+        }
         const files = fs.readdirSync(this.logPath);
         const deleteTimeStamp = new Date().getTime() + (10 * 24 * 60 * 60 * 1000);
         files.forEach((file) => {

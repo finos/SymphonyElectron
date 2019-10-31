@@ -66,7 +66,7 @@ const generateArchiveForDirectory = (source: string, destination: string, fileEx
 export const exportLogs = (): void => {
     const FILE_EXTENSIONS = [ '.log' ];
     const MAC_LOGS_PATH = '/Library/Logs/Symphony/';
-    const WINDOWS_LOGS_PATH = '\\AppData\\Roaming\\Symphony\\logs';
+    const WINDOWS_LOGS_PATH = '\\AppData\\Local\\Symphony\\logs';
 
     const logsPath = isMac ? MAC_LOGS_PATH : WINDOWS_LOGS_PATH;
     const source = app.getPath('home') + logsPath;

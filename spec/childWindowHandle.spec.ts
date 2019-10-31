@@ -21,6 +21,7 @@ jest.mock('../src/common/env', () => {
     return {
         isWindowsOS: true,
         isMac: false,
+        isElectronQA: true,
     };
 });
 
