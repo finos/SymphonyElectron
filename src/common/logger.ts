@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
 
-import { isElectronQA } from './env';
+import { isElectronQA, isWindowsOS } from './env';
 import { getCommandLineArgs } from './utils';
 
 export interface ILogMsg {
@@ -21,6 +21,16 @@ interface IClientLogMsg {
 }
 
 const MAX_LOG_QUEUE_LENGTH = 100;
+
+if (isWindowsOS && process.env.LOCALAPPDATA) {
+    app.setPath('appData', process.env.LOCALAPPDATA);
+    app.setPath('userData', path.join(app.getPath('appData'), app.getName()));
+    const logPath = path.join(app.getPath('appData'), app.getName(), 'logs');
+    if (!fs.existsSync(logPath)) {
+        fs.mkdirSync(logPath);
+    }
+    app.setPath('logs', logPath);
+}
 
 class Logger {
     private readonly showInConsole: boolean = false;
