@@ -29,7 +29,7 @@ if (isWindowsOS && process.env.LOCALAPPDATA) {
     // We need to create the logs directory manually because
     // Electron 3.1.x doesn't support this
     const logPath = path.join(app.getPath('appData'), app.getName(), 'logs');
-    if (!fs.existsSync(logPath)) {
+    if (!fs.existsSync(logPath) && !isElectronQA) {
         fs.mkdirSync(logPath);
     }
     app.setPath('logs', logPath);
