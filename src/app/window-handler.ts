@@ -665,6 +665,8 @@ export class WindowHandler {
             (displayId && electron.screen.getAllDisplays().filter((d) =>
                 displayId.includes(d.id.toString()))[0]) || electron.screen.getPrimaryDisplay();
 
+        const topPositionOfIndicatorScreen = 16;
+
         const screenRect = indicatorScreen.workArea;
         // Set stream id as winKey to link stream to the window
         let opts = {
@@ -690,7 +692,7 @@ export class WindowHandler {
         if (opts.width && opts.height) {
             opts = Object.assign({}, opts, {
                 x: screenRect.x + Math.round((screenRect.width - opts.width) / 2),
-                y: screenRect.y + 16,
+                y: screenRect.y + topPositionOfIndicatorScreen,
             });
         }
 
