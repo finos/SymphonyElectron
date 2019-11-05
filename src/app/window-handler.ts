@@ -359,8 +359,9 @@ export class WindowHandler {
             case 'screen-sharing-indicator':
                 if (winKey) {
                     const browserWindow = this.windows[winKey];
+
                     if (browserWindow && windowExists(browserWindow)) {
-                        browserWindow.close();
+                        browserWindow.destroy();
                     }
                 }
                 break;
@@ -685,6 +686,7 @@ export class WindowHandler {
                 titleBarStyle: 'customButtonsOnHover',
                 minimizable: false,
                 maximizable: false,
+                closable: false,
             }, {
                 devTools: false,
             }), ...{winKey: streamId},
