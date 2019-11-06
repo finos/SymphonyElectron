@@ -7,6 +7,7 @@ interface IState {
     copyWrite?: string;
     clientVersion: string;
     buildNumber: string;
+    sfeVersion: string;
     versionLocalised?: string;
     sdaVersion?: string;
     sdaBuildNumber?: string;
@@ -41,6 +42,7 @@ export default class AboutApp extends React.Component<{}, IState> {
             versionLocalised: 'Version',
             clientVersion: 'N/A',
             buildNumber: 'N/A',
+            sfeVersion: 'N/A',
             sdaVersion: 'N/A',
             sdaBuildNumber: 'N/A',
             electronVersion: 'N/A',
@@ -62,7 +64,7 @@ export default class AboutApp extends React.Component<{}, IState> {
      * main render function
      */
     public render(): JSX.Element {
-        const { clientVersion, buildNumber,
+        const { clientVersion, buildNumber, sfeVersion,
             sdaVersion, sdaBuildNumber,
             electronVersion, chromeVersion, v8Version,
             nodeVersion, openSslVersion, zlibVersion,
@@ -95,6 +97,7 @@ export default class AboutApp extends React.Component<{}, IState> {
                         <h4>Symphony</h4>
                         <ul className='AboutApp-symphony-section'>
                             <li><b>SBE:</b> {podVersion}</li>
+                            <li><b>SFE:</b> {sfeVersion}</li>
                             <li><b>SDA:</b> {sdaVersionBuild}</li>
                         </ul>
                     </section>

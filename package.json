@@ -5,6 +5,7 @@
   "clientVersion": "2.0.1",
   "buildNumber": "0",
   "searchAPIVersion": "1.55.3",
+  "sfeVersion": "0",
   "description": "Symphony desktop app (Foundation ODP)",
   "author": "Symphony OSS <help@finos.org>",
   "main": "lib/src/app/init.js",
