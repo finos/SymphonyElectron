@@ -16,7 +16,6 @@ describe('screen sharing indicator', () => {
     const onEventLabel = 'on';
     const removeListenerEventLabel = 'removeListener';
     const sendEventLabel = 'send';
-    const symphonyAPIEventLabel = 'symphony-api';
     const screenSharingIndicatorDataEventLabel = 'screen-sharing-indicator-data';
     // state moked
     const screenSharingIndicatorStateMock = { id: 10 };
@@ -24,20 +23,6 @@ describe('screen sharing indicator', () => {
     it('should render correctly', () => {
         const wrapper = shallow(React.createElement(ScreenSharingIndicator));
         expect(wrapper).toMatchSnapshot();
-    });
-
-    it('should call `close` correctly', () => {
-        const customSelector = 'a.hide-button';
-        const closeIpcRendererMock = {
-            cmd: 'close-window',
-            windowType: 'screen-sharing-indicator',
-            winKey: 'id-123',
-        };
-        const spy = jest.spyOn(ipcRenderer, sendEventLabel);
-        const wrapper = shallow(React.createElement(ScreenSharingIndicator));
-        wrapper.setState({ streamId: 'id-123' });
-        wrapper.find(customSelector).simulate('click');
-        expect(spy).lastCalledWith(symphonyAPIEventLabel, closeIpcRendererMock);
     });
 
     it('should call `stopScreenShare` correctly', () => {

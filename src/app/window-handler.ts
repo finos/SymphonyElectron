@@ -359,8 +359,9 @@ export class WindowHandler {
             case 'screen-sharing-indicator':
                 if (winKey) {
                     const browserWindow = this.windows[winKey];
+
                     if (browserWindow && windowExists(browserWindow)) {
-                        browserWindow.close();
+                        browserWindow.destroy();
                     }
                 }
                 break;
@@ -665,11 +666,13 @@ export class WindowHandler {
             (displayId && electron.screen.getAllDisplays().filter((d) =>
                 displayId.includes(d.id.toString()))[0]) || electron.screen.getPrimaryDisplay();
 
+        const topPositionOfIndicatorScreen = 16;
+
         const screenRect = indicatorScreen.workArea;
         // Set stream id as winKey to link stream to the window
         let opts = {
             ...this.getWindowOpts({
-                width: 620,
+                width: 592,
                 height: 48,
                 show: false,
                 modal: true,
@@ -680,6 +683,10 @@ export class WindowHandler {
                 resizable: false,
                 alwaysOnTop: true,
                 fullscreenable: false,
+                titleBarStyle: 'customButtonsOnHover',
+                minimizable: false,
+                maximizable: false,
+                closable: false,
             }, {
                 devTools: false,
             }), ...{winKey: streamId},
@@ -687,9 +694,10 @@ export class WindowHandler {
         if (opts.width && opts.height) {
             opts = Object.assign({}, opts, {
                 x: screenRect.x + Math.round((screenRect.width - opts.width) / 2),
-                y: screenRect.y + screenRect.height - opts.height,
+                y: screenRect.y + topPositionOfIndicatorScreen,
             });
         }
+
         this.screenSharingIndicatorWindow = createComponentWindow('screen-sharing-indicator', opts);
         this.screenSharingIndicatorWindow.setVisibleOnAllWorkspaces(true);
         this.screenSharingIndicatorWindow.webContents.once('did-finish-load', () => {
