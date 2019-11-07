@@ -52,6 +52,13 @@ exports[`about app should render correctly 1`] = `
         </li>
         <li>
           <b>
+            SFE:
+          </b>
+           
+          N/A
+        </li>
+        <li>
+          <b>
             SDA:
           </b>
            

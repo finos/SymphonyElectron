@@ -1,12 +1,13 @@
 import { net } from 'electron';
 import * as nodeURL from 'url';
-import { buildNumber, clientVersion, optionalDependencies, searchAPIVersion, version } from '../../package.json';
+import { buildNumber, clientVersion, optionalDependencies, searchAPIVersion, sfeVersion, version } from '../../package.json';
 import { logger } from '../common/logger';
 import { config, IConfig } from './config-handler';
 
 interface IVersionInfo {
     clientVersion: string;
     buildNumber: string;
+    sfeVersion: string;
     sdaVersion: string;
     sdaBuildNumber: string;
     electronVersion: string;
@@ -27,11 +28,13 @@ class VersionHandler {
     public versionInfo: IVersionInfo;
     private serverVersionInfo: any;
     private mainUrl;
+    private sfeVersionInfo: any;
 
     constructor() {
         this.versionInfo = {
             clientVersion,
             buildNumber,
+            sfeVersion,
             sdaVersion: version,
             sdaBuildNumber: buildNumber,
             electronVersion: process.versions.electron,
@@ -130,6 +133,58 @@ class VersionHandler {
             });
 
             request.end();
+
+            /* Get SFE version */
+            const urlSfeVersion = `${protocol}//${hostname}/client/version.json`;
+            logger.info(`version-handler: Trying to get SFE version info for the URL: ${urlSfeVersion}`);
+
+            const requestSfeVersion = net.request(urlSfeVersion);
+            requestSfeVersion.on('response', (res) => {
+
+                let body: string = '';
+                res.on('data', (d: Buffer) => {
+                    body += d;
+                });
+
+                res.on('end', () => {
+                    try {
+                        this.sfeVersionInfo = JSON.parse(body);
+                        const key = 'version';
+
+                        this.versionInfo.sfeVersion = this.sfeVersionInfo[key];
+
+                        logger.info(`version-handler: Updated SFE version info from server! ${JSON.stringify(this.versionInfo)}`);
+                        resolve(this.versionInfo);
+                    } catch (error) {
+                        logger.error(`version-handler: Error getting SFE version data from the server! ${error}`);
+                        resolve(this.versionInfo);
+                        return;
+                    }
+                });
+
+                res.on('error', (error: Error) => {
+                    logger.error(`version-handler: Error getting SFE version data from the server! ${error}`);
+                    resolve(this.versionInfo);
+                    return;
+                });
+
+            });
+
+            requestSfeVersion.on('error', (error: Error) => {
+                logger.error(`version-handler: Error getting SFE version data from the server! ${error}`);
+                resolve(this.versionInfo);
+                return;
+            });
+
+            requestSfeVersion.on('close', () => {
+                logger.info(`version-handler: Request closed!!`);
+            });
+
+            requestSfeVersion.on('finish', () => {
+                logger.info(`version-handler: Request finished!!`);
+            });
+
+            requestSfeVersion.end();
         });
     }
 
