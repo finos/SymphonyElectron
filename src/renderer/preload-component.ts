@@ -43,21 +43,26 @@ const load = () => {
             break;
         case components.screenPicker:
             loadStyle(components.screenPicker);
+            document.title = 'Screen Picker - Symphony';
             component = ScreenPicker;
             break;
         case components.screenSharingIndicator:
             loadStyle(components.screenSharingIndicator);
+            document.title = 'Screen Sharing Indicator - Symphony';
             component = ScreenSharingIndicator;
             break;
         case components.basicAuth:
             loadStyle(components.basicAuth);
+            document.title = 'Basic Authentication - Symphony';
             component = BasicAuth;
             break;
         case components.notification:
             loadStyle(components.notification);
+            document.title = 'Notification - Symphony';
             component = NotificationComp;
             break;
         case components.notificationSettings:
+            document.title = 'Notification Settings - Symphony';
             loadStyle(components.notificationSettings);
             component = NotificationSettings;
             break;
