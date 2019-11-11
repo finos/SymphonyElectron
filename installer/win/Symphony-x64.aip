@@ -73,20 +73,31 @@
     <ROW Directory="ProgramMenuFolder" Directory_Parent="TARGETDIR" DefaultDir="PROGRA~1|ProgramMenuFolder" IsPseudoRoot="1"/>
     <ROW Directory="Release_1_Dir" Directory_Parent="build_1_Dir" DefaultDir="Release"/>
     <ROW Directory="Release_2_Dir" Directory_Parent="build_2_Dir" DefaultDir="Release"/>
+    <ROW Directory="Release_3_Dir" Directory_Parent="build_3_Dir" DefaultDir="Release"/>
+    <ROW Directory="Release_4_Dir" Directory_Parent="build_4_Dir" DefaultDir="Release"/>
+    <ROW Directory="Release_5_Dir" Directory_Parent="build_5_Dir" DefaultDir="Release"/>
     <ROW Directory="Release_Dir" Directory_Parent="build_Dir" DefaultDir="Release"/>
     <ROW Directory="Symphony_Dir" Directory_Parent="ProgramMenuFolder" DefaultDir="Symphony"/>
     <ROW Directory="TARGETDIR" DefaultDir="SourceDir"/>
     <ROW Directory="app.asar.unpacked_Dir" Directory_Parent="resources_Dir" DefaultDir="APPASA~1.UNP|app.asar.unpacked"/>
     <ROW Directory="bin_1_Dir" Directory_Parent="cld_Dir" DefaultDir="bin"/>
+    <ROW Directory="bin_2_Dir" Directory_Parent="diskusage_Dir" DefaultDir="bin"/>
+    <ROW Directory="bin_3_Dir" Directory_Parent="ffinapi_Dir" DefaultDir="bin"/>
+    <ROW Directory="bin_4_Dir" Directory_Parent="refnapi_Dir" DefaultDir="bin"/>
     <ROW Directory="bin_Dir" Directory_Parent="spellchecker_Dir" DefaultDir="bin"/>
     <ROW Directory="build_1_Dir" Directory_Parent="cld_Dir" DefaultDir="build"/>
     <ROW Directory="build_2_Dir" Directory_Parent="keyboardlayout_Dir" DefaultDir="build"/>
+    <ROW Directory="build_3_Dir" Directory_Parent="diskusage_Dir" DefaultDir="build"/>
+    <ROW Directory="build_4_Dir" Directory_Parent="ffinapi_Dir" DefaultDir="build"/>
+    <ROW Directory="build_5_Dir" Directory_Parent="refnapi_Dir" DefaultDir="build"/>
     <ROW Directory="build_Dir" Directory_Parent="spellchecker_Dir" DefaultDir="build"/>
     <ROW Directory="cld_Dir" Directory_Parent="node_modules_Dir" DefaultDir="cld"/>
     <ROW Directory="config_Dir" Directory_Parent="APPDIR" DefaultDir="config"/>
     <ROW Directory="dictionaries_Dir" Directory_Parent="APPDIR" DefaultDir="DICTIO~1|dictionaries"/>
+    <ROW Directory="diskusage_Dir" Directory_Parent="node_modules_Dir" DefaultDir="DISKUS~1|diskusage"/>
     <ROW Directory="enUS_Dir" Directory_Parent="APPDIR" DefaultDir="en-US"/>
     <ROW Directory="felixrieseberg_Dir" Directory_Parent="node_modules_Dir" DefaultDir="@FELIX~1|@felixrieseberg"/>
+    <ROW Directory="ffinapi_Dir" Directory_Parent="node_modules_Dir" DefaultDir="ffi-napi"/>
     <ROW Directory="frFR_Dir" Directory_Parent="APPDIR" DefaultDir="fr-FR"/>
     <ROW Directory="jaJP_Dir" Directory_Parent="APPDIR" DefaultDir="ja-JP"/>
     <ROW Directory="jobber_Dir" Directory_Parent="vendor_Dir" DefaultDir="jobber"/>
@@ -95,6 +106,7 @@
     <ROW Directory="library_Dir" Directory_Parent="APPDIR" DefaultDir="library"/>
     <ROW Directory="locales_Dir" Directory_Parent="APPDIR" DefaultDir="locales"/>
     <ROW Directory="node_modules_Dir" Directory_Parent="app.asar.unpacked_Dir" DefaultDir="NODE_M~1|node_modules"/>
+    <ROW Directory="refnapi_Dir" Directory_Parent="node_modules_Dir" DefaultDir="ref-napi"/>
     <ROW Directory="resources_Dir" Directory_Parent="APPDIR" DefaultDir="RESOUR~1|resources"/>
     <ROW Directory="spawnrx_Dir" Directory_Parent="node_modules_Dir" DefaultDir="spawn-rx"/>
     <ROW Directory="spellchecker_Dir" Directory_Parent="felixrieseberg_Dir" DefaultDir="SPELLC~1|spellchecker"/>
@@ -102,6 +114,9 @@
     <ROW Directory="src_Dir" Directory_Parent="lib_Dir" DefaultDir="src"/>
     <ROW Directory="vendor_Dir" Directory_Parent="spawnrx_Dir" DefaultDir="vendor"/>
     <ROW Directory="win32x6473_1_Dir" Directory_Parent="bin_1_Dir" DefaultDir="WIN32-~1|win32-x64-73"/>
+    <ROW Directory="win32x6473_2_Dir" Directory_Parent="bin_2_Dir" DefaultDir="WIN32-~2|win32-x64-73"/>
+    <ROW Directory="win32x6473_3_Dir" Directory_Parent="bin_3_Dir" DefaultDir="WIN32-~1|win32-x64-73"/>
+    <ROW Directory="win32x6473_4_Dir" Directory_Parent="bin_4_Dir" DefaultDir="WIN32-~1|win32-x64-73"/>
     <ROW Directory="win32x6473_Dir" Directory_Parent="bin_Dir" DefaultDir="WIN32-~1|win32-x64-73"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
@@ -121,13 +136,18 @@
     <ROW Component="__1" ComponentId="{F70EA270-345A-4510-8428-0EF7B2EC44A3}" Directory_="APPDIR" Attributes="260" KeyPath="__1"/>
     <ROW Component="am.pak" ComponentId="{76F935B8-6077-4C7A-AD1B-77E2DBA856CC}" Directory_="locales_Dir" Attributes="0" KeyPath="am.pak" Type="0"/>
     <ROW Component="appupdate.yml" ComponentId="{F7586760-660A-4C38-8937-138DBEC18D34}" Directory_="resources_Dir" Attributes="0" KeyPath="app.asar" Type="0"/>
+    <ROW Component="binding.node" ComponentId="{A9A0F331-862B-4F47-87C5-B9A707958442}" Directory_="Release_5_Dir" Attributes="256" KeyPath="binding.node" Type="0"/>
     <ROW Component="blink_image_resources_200_percent.pak" ComponentId="{56AB17A5-B690-4CBE-A39D-512381AAAFE1}" Directory_="APPDIR" Attributes="0" KeyPath="LICENSES.chromium.html" Type="0"/>
     <ROW Component="build.cmd" ComponentId="{2892AEA1-7773-46FE-8F4C-56E7EAC3BDC3}" Directory_="spawnrx_Dir" Attributes="0" KeyPath="build.cmd" Type="0"/>
     <ROW Component="cld.node" ComponentId="{B972858A-9215-4608-B6F8-D3DCE293909A}" Directory_="win32x6473_1_Dir" Attributes="256" KeyPath="cld.node" Type="0"/>
     <ROW Component="cld.node_1" ComponentId="{5725F1C0-82DA-4FF0-874E-A18B2A93F563}" Directory_="Release_1_Dir" Attributes="256" KeyPath="cld.node_1" Type="0"/>
     <ROW Component="d3dcompiler_47.dll" ComponentId="{C7B87C02-3116-43A8-A70B-3592B70E6AC8}" Directory_="APPDIR" Attributes="256" KeyPath="d3dcompiler_47.dll"/>
     <ROW Component="dictionary" ComponentId="{0337D363-6EC5-4283-98AC-0E2931979F53}" Directory_="library_Dir" Attributes="0" KeyPath="dictionary" Type="0"/>
+    <ROW Component="diskusage.node_1" ComponentId="{063E3ECA-DF28-4CD9-A976-7ADA4F5A30A1}" Directory_="win32x6473_2_Dir" Attributes="256" KeyPath="diskusage.node_1" Type="0"/>
+    <ROW Component="diskusage.node_2" ComponentId="{7F4BD27C-4572-42FE-A51A-F817C0719F60}" Directory_="Release_3_Dir" Attributes="256" KeyPath="diskusage.node_2" Type="0"/>
     <ROW Component="enAU.bdic" ComponentId="{13F10BB0-1A04-4A5E-8B6D-33CA73C97AEB}" Directory_="dictionaries_Dir" Attributes="0" KeyPath="enAU.bdic" Type="0"/>
+    <ROW Component="ffi_bindings.node" ComponentId="{8EBF5A78-4828-4848-AF97-62BAF5D31D4F}" Directory_="Release_4_Dir" Attributes="256" KeyPath="ffi_bindings.node" Type="0"/>
+    <ROW Component="ffinapi.node" ComponentId="{D0D91F1F-279B-4925-B201-D678D28609A3}" Directory_="win32x6473_3_Dir" Attributes="256" KeyPath="ffinapi.node" Type="0"/>
     <ROW Component="ffmpeg.dll" ComponentId="{A1C4A332-3490-44D8-A5C9-9523889B488B}" Directory_="APPDIR" Attributes="256" KeyPath="ffmpeg.dll"/>
     <ROW Component="index.js" ComponentId="{741D86B3-7B85-4EE3-B47F-4680D5EBA3BF}" Directory_="lib_Dir" Attributes="0" KeyPath="index.js" Type="0"/>
     <ROW Component="index.js_1" ComponentId="{E2560E07-B7EA-4186-94B6-0EAE52C043C0}" Directory_="src_Dir" Attributes="0" KeyPath="index.js_1" Type="0"/>
@@ -138,13 +158,14 @@
     <ROW Component="libGLESv2.dll" ComponentId="{0E8B8B21-B4C0-45C9-95D3-637FD93A4EC0}" Directory_="APPDIR" Attributes="256" KeyPath="libGLESv2.dll"/>
     <ROW Component="libsymphonysearchx64.dll" ComponentId="{A8C99D17-FA62-4996-8FAE-52D1DCF9BF26}" Directory_="library_Dir" Attributes="256" KeyPath="libsymphonysearchx64.dll"/>
     <ROW Component="lz4winx64.exe" ComponentId="{8B78B313-EAE9-4533-AFEB-56F9E0CA73A1}" Directory_="library_Dir" Attributes="256" KeyPath="lz4winx64.exe"/>
+    <ROW Component="refnapi.node" ComponentId="{47A0F720-31F4-4A75-925E-5BFD4AF0E30B}" Directory_="win32x6473_4_Dir" Attributes="256" KeyPath="refnapi.node" Type="0"/>
     <ROW Component="spellchecker.node" ComponentId="{DAB0AD3A-7C87-4D36-B94E-3A399CAC7662}" Directory_="win32x6473_Dir" Attributes="256" KeyPath="spellchecker.node" Type="0"/>
     <ROW Component="spellchecker.node_1" ComponentId="{93A61E2B-EEAF-4C1B-B3EC-37ABA8D01465}" Directory_="Release_Dir" Attributes="256" KeyPath="spellchecker.node_1" Type="0"/>
     <ROW Component="tarwin.exe" ComponentId="{4C98F3B1-1A73-4761-86C0-DE0FC18A8800}" Directory_="library_Dir" Attributes="0" KeyPath="tarwin.exe"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
     <ROW Feature="D564007E3BBE4F85950A09B470A7CA65" Title="Visual C++ Redistributable for Visual Studio 2013 x86" Description="Visual C++ Redistributable for Visual Studio 2013 x86" Display="3" Level="1" Attributes="0"/>
-    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="AI_CustomARPName AI_DisableModify Jobber.exe PodUrl ProductInformation ScreenSnippet.exe ScreenSnippet.resources.dll ScreenSnippet.resources.dll_1 ScreenSnippet.resources.dll_2 Symphony Symphony.config Symphony.exe _ __1 am.pak appupdate.yml blink_image_resources_200_percent.pak build.cmd cld.node cld.node_1 d3dcompiler_47.dll dictionary enAU.bdic ffmpeg.dll index.js index.js_1 index.ts indexvalidatorx64.exe keyboardlayoutmanager.node libEGL.dll libGLESv2.dll libsymphonysearchx64.dll lz4winx64.exe spellchecker.node spellchecker.node_1 tarwin.exe"/>
+    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="AI_CustomARPName AI_DisableModify Jobber.exe PodUrl ProductInformation ScreenSnippet.exe ScreenSnippet.resources.dll ScreenSnippet.resources.dll_1 ScreenSnippet.resources.dll_2 Symphony Symphony.config Symphony.exe _ __1 am.pak appupdate.yml binding.node blink_image_resources_200_percent.pak build.cmd cld.node cld.node_1 d3dcompiler_47.dll dictionary diskusage.node_1 diskusage.node_2 enAU.bdic ffi_bindings.node ffinapi.node ffmpeg.dll index.js index.js_1 index.ts indexvalidatorx64.exe keyboardlayoutmanager.node libEGL.dll libGLESv2.dll libsymphonysearchx64.dll lz4winx64.exe refnapi.node spellchecker.node spellchecker.node_1 tarwin.exe"/>
     <ATTRIBUTE name="CurrentFeature" value="MainFeature"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
@@ -164,6 +185,7 @@
     <ROW File="app.asar" Component_="appupdate.yml" FileName="APP~1.ASA|app.asar" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar" SelfReg="false" NextFile="electron.asar"/>
     <ROW File="ar.pak" Component_="am.pak" FileName="ar.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\ar.pak" SelfReg="false" NextFile="bg.pak"/>
     <ROW File="bg.pak" Component_="am.pak" FileName="bg.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\bg.pak" SelfReg="false" NextFile="bn.pak"/>
+    <ROW File="binding.node" Component_="binding.node" FileName="BINDIN~1.NOD|binding.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ref-napi\build\Release\binding.node" SelfReg="false"/>
     <ROW File="bn.pak" Component_="am.pak" FileName="bn.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\bn.pak" SelfReg="false" NextFile="ca.pak"/>
     <ROW File="build.cmd" Component_="build.cmd" FileName="build.cmd" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\build.cmd" SelfReg="false" NextFile="build.sh"/>
     <ROW File="build.sh" Component_="build.cmd" FileName="build.sh" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\build.sh" SelfReg="false" NextFile="CODE_OF_CONDUCT.md"/>
@@ -171,12 +193,14 @@
     <ROW File="chrome_100_percent.pak" Component_="blink_image_resources_200_percent.pak" FileName="CHROME~1.PAK|chrome_100_percent.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\chrome_100_percent.pak" SelfReg="false" NextFile="chrome_200_percent.pak"/>
     <ROW File="chrome_200_percent.pak" Component_="blink_image_resources_200_percent.pak" FileName="CHROME~2.PAK|chrome_200_percent.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\chrome_200_percent.pak" SelfReg="false" NextFile="resources.pak"/>
     <ROW File="cld.node" Component_="cld.node" FileName="CLD~1.NOD|cld.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\cld\bin\win32-x64-73\cld.node" SelfReg="false" NextFile="cld.node_1"/>
-    <ROW File="cld.node_1" Component_="cld.node_1" FileName="CLD~1.NOD|cld.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\cld\build\Release\cld.node" SelfReg="false"/>
+    <ROW File="cld.node_1" Component_="cld.node_1" FileName="CLD~1.NOD|cld.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\cld\build\Release\cld.node" SelfReg="false" NextFile="diskusage.node_1"/>
     <ROW File="cs.pak" Component_="am.pak" FileName="cs.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\cs.pak" SelfReg="false" NextFile="da.pak"/>
     <ROW File="d3dcompiler_47.dll" Component_="d3dcompiler_47.dll" FileName="D3DCOM~1.DLL|d3dcompiler_47.dll" Attributes="0" SourcePath="..\..\dist\win-unpacked\d3dcompiler_47.dll" SelfReg="false" NextFile="ffmpeg.dll"/>
     <ROW File="da.pak" Component_="am.pak" FileName="da.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\da.pak" SelfReg="false" NextFile="de.pak"/>
     <ROW File="de.pak" Component_="am.pak" FileName="de.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\de.pak" SelfReg="false" NextFile="el.pak"/>
     <ROW File="dictionary" Component_="dictionary" FileName="DICTIO~1|dictionary" Attributes="0" SourcePath="..\..\library\dictionary" SelfReg="false" NextFile="chrome_100_percent.pak"/>
+    <ROW File="diskusage.node_1" Component_="diskusage.node_1" FileName="DISKUS~1.NOD|diskusage.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\diskusage\bin\win32-x64-73\diskusage.node" SelfReg="false" NextFile="diskusage.node_2"/>
+    <ROW File="diskusage.node_2" Component_="diskusage.node_2" FileName="DISKUS~1.NOD|diskusage.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\diskusage\build\Release\diskusage.node" SelfReg="false" NextFile="ffinapi.node"/>
     <ROW File="el.pak" Component_="am.pak" FileName="el.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\el.pak" SelfReg="false" NextFile="enGB.pak"/>
     <ROW File="electron.asar" Component_="appupdate.yml" FileName="ELECTR~1.ASA|electron.asar" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\electron.asar" SelfReg="false" NextFile="Symphony.config_1"/>
     <ROW File="enAU.bdic" Component_="enAU.bdic" FileName="EN-AU~1.BDI|en-AU.bdic" Attributes="0" SourcePath="..\..\dist\win-unpacked\dictionaries\en-AU.bdic" SelfReg="false" NextFile="enCA.bdic"/>
@@ -190,6 +214,8 @@
     <ROW File="esdoc.json" Component_="build.cmd" FileName="ESDOC~1.JSO|esdoc.json" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\esdoc.json" SelfReg="false" NextFile="index.js"/>
     <ROW File="et.pak" Component_="am.pak" FileName="et.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\et.pak" SelfReg="false" NextFile="fa.pak"/>
     <ROW File="fa.pak" Component_="am.pak" FileName="fa.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\fa.pak" SelfReg="false" NextFile="fi.pak"/>
+    <ROW File="ffi_bindings.node" Component_="ffi_bindings.node" FileName="FFI_BI~1.NOD|ffi_bindings.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ffi-napi\build\Release\ffi_bindings.node" SelfReg="false" NextFile="refnapi.node"/>
+    <ROW File="ffinapi.node" Component_="ffinapi.node" FileName="FFI-NA~1.NOD|ffi-napi.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ffi-napi\bin\win32-x64-73\ffi-napi.node" SelfReg="false" NextFile="ffi_bindings.node"/>
     <ROW File="ffmpeg.dll" Component_="ffmpeg.dll" FileName="ffmpeg.dll" Attributes="0" SourcePath="..\..\dist\win-unpacked\ffmpeg.dll" SelfReg="false" NextFile="icudtl.dat"/>
     <ROW File="fi.pak" Component_="am.pak" FileName="fi.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\fi.pak" SelfReg="false" NextFile="fil.pak"/>
     <ROW File="fil.pak" Component_="am.pak" FileName="fil.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\fil.pak" SelfReg="false" NextFile="fr.pak"/>
@@ -228,6 +254,7 @@
     <ROW File="pl.pak" Component_="am.pak" FileName="pl.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\pl.pak" SelfReg="false" NextFile="ptBR.pak"/>
     <ROW File="ptBR.pak" Component_="am.pak" FileName="pt-BR.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\pt-BR.pak" SelfReg="false" NextFile="ptPT.pak"/>
     <ROW File="ptPT.pak" Component_="am.pak" FileName="pt-PT.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\pt-PT.pak" SelfReg="false" NextFile="ro.pak"/>
+    <ROW File="refnapi.node" Component_="refnapi.node" FileName="REF-NA~1.NOD|ref-napi.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ref-napi\bin\win32-x64-73\ref-napi.node" SelfReg="false" NextFile="binding.node"/>
     <ROW File="resources.pak" Component_="blink_image_resources_200_percent.pak" FileName="RESOUR~1.PAK|resources.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources.pak" SelfReg="false" NextFile="snapshot_blob.bin"/>
     <ROW File="ro.pak" Component_="am.pak" FileName="ro.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\ro.pak" SelfReg="false" NextFile="ru.pak"/>
     <ROW File="ru.pak" Component_="am.pak" FileName="ru.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\ru.pak" SelfReg="false" NextFile="sk.pak"/>
