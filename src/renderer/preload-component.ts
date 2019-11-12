@@ -8,12 +8,14 @@ import BasicAuth from './components/basic-auth';
 import NotificationComp from './components/notification-comp';
 import NotificationSettings from './components/notification-settings';
 import ScreenPicker from './components/screen-picker';
+import ScreenSharingFrame from './components/screen-sharing-frame';
 import ScreenSharingIndicator from './components/screen-sharing-indicator';
 
 const enum components {
     aboutApp = 'about-app',
     screenPicker = 'screen-picker',
     screenSharingIndicator = 'screen-sharing-indicator',
+    screenSharingFrame = 'screen-sharing-frame',
     basicAuth = 'basic-auth',
     notification = 'notification-comp',
     notificationSettings = 'notification-settings',
@@ -48,6 +50,10 @@ const load = () => {
         case components.screenSharingIndicator:
             loadStyle(components.screenSharingIndicator);
             component = ScreenSharingIndicator;
+            break;
+        case components.screenSharingFrame:
+            loadStyle(components.screenSharingFrame);
+            component = ScreenSharingFrame;
             break;
         case components.basicAuth:
             loadStyle(components.basicAuth);

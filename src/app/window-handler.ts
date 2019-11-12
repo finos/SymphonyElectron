@@ -84,6 +84,7 @@ export class WindowHandler {
     private aboutAppWindow: Electron.BrowserWindow | null = null;
     private screenPickerWindow: Electron.BrowserWindow | null = null;
     private screenSharingIndicatorWindow: Electron.BrowserWindow | null = null;
+    private screenSharingFrameWindow: Electron.BrowserWindow | null = null;
     private basicAuthWindow: Electron.BrowserWindow | null = null;
     private notificationSettingsWindow: Electron.BrowserWindow | null = null;
 
@@ -362,6 +363,10 @@ export class WindowHandler {
 
                     if (browserWindow && windowExists(browserWindow)) {
                         browserWindow.destroy();
+
+                        if (this.screenSharingFrameWindow && windowExists(this.screenSharingFrameWindow)) {
+                            this.screenSharingFrameWindow.close();
+                        }
                     }
                 }
                 break;
@@ -699,6 +704,20 @@ export class WindowHandler {
             });
         }
 
+        if (displayId !== '') {
+            const displays = electron.screen.getAllDisplays();
+
+            displays.forEach((element) => {
+                if (displayId === element.id.toString()) {
+                    this.createScrenSharingFrameWindow('screen-sharing-frame',
+                    element.workArea.width,
+                    element.workArea.height,
+                    element.workArea.x,
+                    element.workArea.y);
+                }
+            });
+        }
+
         this.screenSharingIndicatorWindow = createComponentWindow('screen-sharing-indicator', opts);
         this.screenSharingIndicatorWindow.setVisibleOnAllWorkspaces(true);
         this.screenSharingIndicatorWindow.webContents.once('did-finish-load', () => {
@@ -721,6 +740,55 @@ export class WindowHandler {
         });
 
         ipcMain.once('stop-screen-sharing', stopScreenSharing);
+    }
+
+    /**
+     * Creates a screen-sharing frame around the shared area
+     */
+    public createScrenSharingFrameWindow(windowName: string, frameWidth: number, frameHeight: number, framePositionX: number, framePositionY: number): void {
+
+        // This prevents creating multiple instances of the
+        // about window
+        if (this.screenSharingFrameWindow && windowExists(this.screenSharingFrameWindow)) {
+            if (this.screenSharingFrameWindow.isMinimized()) {
+                this.screenSharingFrameWindow.restore();
+            }
+            this.screenSharingFrameWindow.focus();
+            return;
+        }
+
+        const allWindows = BrowserWindow.getAllWindows();
+        const selectedParentWindow = allWindows.find((window) => {
+            return (window as ICustomBrowserWindow).winName === windowName;
+        });
+
+        const opts: BrowserWindowConstructorOptions = this.getWindowOpts({
+            width: frameWidth,
+            height: frameHeight,
+            frame: false,
+            transparent: true,
+            alwaysOnTop: true,
+        }, {
+            devTools: false,
+        });
+
+        if (this.mainWindow && windowExists(this.mainWindow) && this.mainWindow.isAlwaysOnTop()) {
+            opts.alwaysOnTop = true;
+        }
+
+        if (isWindowsOS && selectedParentWindow) {
+            opts.parent = selectedParentWindow;
+        }
+
+        this.screenSharingFrameWindow = createComponentWindow('screen-sharing-frame', opts);
+
+        const area = this.screenSharingFrameWindow.getBounds();
+        area.x = framePositionX;
+        area.y = framePositionY;
+        this.screenSharingFrameWindow.setBounds(area);
+
+        this.screenSharingFrameWindow.setIgnoreMouseEvents(true);
+        this.screenSharingFrameWindow.setVisibleOnAllWorkspaces(true);
     }
 
     /**
