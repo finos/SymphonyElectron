@@ -1,5 +1,4 @@
 import { remote } from 'electron';
-
 import { IAnalyticsData } from '../app/analytics-handler';
 import {
     apiCmds,
@@ -9,6 +8,7 @@ import {
     IScreenSnippet,
     LogLevel,
 } from '../common/api-interface';
+import { isDemoEnv } from '../common/env';
 import { ICustomDesktopCapturerSource, ICustomSourcesOptions, IScreenSourceError } from './desktop-capturer';
 import { SSFApi } from './ssf-api';
 
@@ -64,6 +64,9 @@ export class AppBridge {
         const currentWindow = remote.getCurrentWindow();
         // @ts-ignore
         this.origin = currentWindow.origin || '';
+        if ( isDemoEnv ) {
+            this.origin = '*'; // Override origin if we are running the demo
+        }
         if (ssInstance && typeof ssInstance.setBroadcastMessage === 'function') {
             ssInstance.setBroadcastMessage(this.broadcastMessage);
         }

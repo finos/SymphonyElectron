@@ -7,3 +7,6 @@ export const isWindowsOS = (process.platform === 'win32');
 export const isLinux = (process.platform === 'linux');
 
 export const isNodeEnv = !!process.env.NODE_ENV;
+
+export const isDemoEnv = process.env.ELECTRON_DEMO ?
+    process.env.ELECTRON_DEMO.trim().toLowerCase() === 'true' : false;
