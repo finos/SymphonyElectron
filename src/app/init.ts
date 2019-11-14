@@ -1,7 +1,7 @@
 import { app } from 'electron';
 import * as path from 'path';
 
-import { isDevEnv } from '../common/env';
+import { isDevEnv, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
 import { appStats } from './stats';
@@ -9,6 +9,14 @@ import { appStats } from './stats';
 // Handle custom user data path from process.argv
 const userDataPathArg: string | null = getCommandLineArgs(process.argv, '--userDataPath=', false);
 const userDataPath = userDataPathArg && userDataPathArg.substring(userDataPathArg.indexOf('=') + 1);
+
+// enable sandbox to fix SDA-1588
+// enable this feature only on windows as there is an issue with respect to MacOs
+// and the fix is not back ported to 3.1.x
+// https://github.com/electron/electron/pull/20497
+if (isWindowsOS) {
+    app.enableMixedSandbox();
+}
 
 // Set user data path before app ready event
 if (isDevEnv) {

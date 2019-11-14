@@ -10,7 +10,8 @@
   "main": "lib/src/app/init.js",
   "types": "lib/src/app/init.d.ts",
   "scripts": {
-    "browserify-preload": "browserify -o lib/src/renderer/_preload-main.js -x electron --insert-global-vars=__filename,__dirname lib/src/renderer/preload-main.js",
+    "browserify-preload": "browserify -o lib/src/renderer/_preload-main.js -x electron --insert-global-vars=__filename,__dirname lib/src/renderer/preload-main.js && npm run browserify-preload-component",
+    "browserify-preload-component": "browserify -o lib/src/renderer/_preload-component.js -x electron --insert-global-vars=__filename,__dirname lib/src/renderer/preload-component.js",
     "compile": "npm run lint && gulp build",
     "dev": "npm run prebuild && cross-env ELECTRON_DEV=true electron .",
     "demo-win": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file:///demo/index.html",
