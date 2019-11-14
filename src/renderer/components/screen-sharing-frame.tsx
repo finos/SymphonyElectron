@@ -16,12 +16,4 @@ export default class ScreenSharingFrame extends React.Component<{}> {
             </div>
         );
     }
-
-    /*public componentDidMount(): void {
-        ipcRenderer.on('screen-sharing-frame-app-data');
-    }
-
-    public componentWillUnmount(): void {
-        ipcRenderer.removeListener('screen-sharing-frame-app-data');
-    }*/
 }
