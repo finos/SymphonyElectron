@@ -86,7 +86,6 @@ export class AppBridge {
         switch (method) {
             case apiCmds.getVersionInfo:
                 const versionInfo = await ssf.getVersionInfo();
-                alert( JSON.stringify( versionInfo ) );
                 this.broadcastMessage('get-version-info-callback', {
                     requestId: data.requestId,
                     response: versionInfo,
