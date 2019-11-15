@@ -4,6 +4,7 @@ import * as electron from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { ILogFile } from '../common/api-interface';
 import { isLinux, isMac } from '../common/env';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
@@ -63,7 +64,7 @@ const generateArchiveForDirectory = (source: string, destination: string, fileEx
  * MacOS - /Library/Logs/Symphony/
  * Windows - AppData\Roaming\Symphony\logs
  */
-export const exportLogs = (): void => {
+export const exportLogsFinalize = ( logs: ILogFile[] ): void => {
     const FILE_EXTENSIONS = [ '.log' ];
     const MAC_LOGS_PATH = '/Library/Logs/Symphony/';
     const LINUX_LOGS_PATH = '/.config/Symphony/';
@@ -82,6 +83,11 @@ export const exportLogs = (): void => {
         });
         return;
     }
+
+    for (const log of logs) {
+        fs.writeFileSync(source + ( !isMac && !isLinux ? '\\' : '' ) + log.filename + '.log', log.contents );
+    }
+
     const destPath = (isMac || isLinux) ? '/logs_symphony_' : '\\logs_symphony_';
     const timestamp = new Date().getTime();
     const destination = app.getPath('downloads') + destPath + timestamp + '.zip';
@@ -100,6 +106,28 @@ export const exportLogs = (): void => {
                 });
             }
         });
+};
+
+class RetrieveLogs {
+    public webContents: Electron.WebContents | undefined = undefined;
+}
+
+const retrieveLogs = new RetrieveLogs();
+
+export { retrieveLogs };
+
+/**
+ * Compress and export logs stored under system log directory
+ *
+ * MacOS - /Library/Logs/Symphony/
+ * Windows - AppData\Roaming\Symphony\logs
+ */
+export const exportLogs = (): void => {
+    if (typeof retrieveLogs.webContents === 'undefined') {
+        exportLogsFinalize([]);
+    } else {
+        retrieveLogs.webContents.send('retrieve-logs');
+    }
 };
 
 /**

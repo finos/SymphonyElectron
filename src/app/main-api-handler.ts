@@ -8,6 +8,7 @@ import { analytics } from './analytics-handler';
 import { config } from './config-handler';
 import { memoryMonitor } from './memory-monitor';
 import { protocolHandler } from './protocol-handler';
+import { exportLogsFinalize, retrieveLogs } from './reports-handler';
 import { screenSnippet } from './screen-snippet-handler';
 import { activate, handleKeyPress } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
@@ -153,6 +154,12 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.IpcMainEvent, arg: IApiArgs) =>
         case apiCmds.registerAnalyticsHandler:
             analytics.registerPreloadWindow(event.sender);
             break;
+        case apiCmds.registerLogRetriever: {
+            retrieveLogs.webContents = event.sender;
+        } break;
+        case apiCmds.logReceiver: {
+            exportLogsFinalize(arg.logs);
+        } break;
         default:
     }
 

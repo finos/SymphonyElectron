@@ -56,6 +56,7 @@ export class AppBridge {
         ): void => this.gotMediaSource(error, source),
         onNotificationCallback: (event, data) => this.notificationCallback(event, data),
         onAnalyticsEventCallback: (data) => this.analyticsEventCallback(data),
+        onRegisterLogRetrieverCallback: () => this.logRetrieverCallback(),
     };
 
     constructor() {
@@ -85,6 +86,7 @@ export class AppBridge {
         switch (method) {
             case apiCmds.getVersionInfo:
                 const versionInfo = await ssf.getVersionInfo();
+                alert( JSON.stringify( versionInfo ) );
                 this.broadcastMessage('get-version-info-callback', {
                     requestId: data.requestId,
                     response: versionInfo,
@@ -153,7 +155,13 @@ export class AppBridge {
                     ssInstance.handleMessageEvents(data);
                 }
                 break;
-        }
+            case apiCmds.registerLogRetriever:
+                ssf.registerLogRetriever(this.callbackHandlers.onRegisterLogRetrieverCallback);
+                break;
+            case apiCmds.logReceiver:
+                ssf.logReceiver( data.logs );
+                break;
+            }
     }
 
     /**
@@ -167,6 +175,8 @@ export class AppBridge {
      * @param arg {IScreenSnippet}
      */
     private screenSnippetCallback = (arg: IScreenSnippet): void => this.broadcastMessage('screen-snippet-callback', arg);
+
+    private logRetrieverCallback = (): void => this.broadcastMessage('retrieve-logs', null);
 
     /**
      * Broadcast bound changes

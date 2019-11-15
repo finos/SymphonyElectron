@@ -31,6 +31,8 @@ export enum apiCmds {
     memoryInfo = 'memory-info',
     swiftSearch = 'swift-search',
     getConfigUrl = 'get-config-url',
+    registerLogRetriever = 'register-log-retriever',
+    logReceiver = 'log-receiver',
 }
 
 export enum apiName {
@@ -61,10 +63,15 @@ export interface IApiArgs {
     displayId: string;
     path: string;
     type: string;
+    logs: ILogFile[];
 }
 
 export type WindowTypes = 'screen-picker' | 'screen-sharing-indicator' | 'notification-settings';
 
+export interface ILogFile {
+    filename: string;
+    contents: string;
+}
 export interface IBadgeCount {
     count: number;
 }

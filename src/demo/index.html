@@ -106,6 +106,17 @@
         <image id='snippet-img'/>
 
         <hr>
+        <p>RTC Logs:</p>
+        Filename <input type='text' id='rtc-log-filename' value='rtc_log'/>
+        <p>Contents</p>
+        <textarea id="rtc-log-contents" rows="4">Test log contents</textarea>
+
+        <p>Other Logs:</p>
+        Filename <input type='text' id='other-log-filename' value=''/>
+        <p>Contents</p>
+        <textarea id="other-log-contents" rows="4"></textarea>
+
+        <hr>
         <p>Window activate:</p>
         <button id='open-win'>open window</button>
 
@@ -175,7 +186,11 @@
                 getMediaSource: 'get-media-source',
                 notification: 'notification',
                 closeNotification: 'close-notification',
+                registerLogRetriever: 'register-log-retriever',
+                logReceiver: 'log-receiver',
         };
+
+
         let requestId = 0;
 
         var openConfigWin = document.getElementById('open-config-win');
@@ -426,6 +441,21 @@
                         }
                     }
                     break;
+                case 'retrieve-logs':
+                    if (document.getElementById('other-log-filename').value == '') {
+                        const filename = document.getElementById('rtc-log-filename').value;
+                        const contents = document.getElementById('rtc-log-contents').value;
+                        broadcastMessage( apiCmds.logReceiver, { logs: [ { filename, contents },  ] } );
+                    } else {
+                        const filename1 = document.getElementById('rtc-log-filename').value;
+                        const contents1 = document.getElementById('rtc-log-contents').value;
+                        const filename2 = document.getElementById('other-log-filename').value;
+                        const contents2 = document.getElementById('other-log-contents').value;
+                        broadcastMessage( apiCmds.logReceiver, 
+                                { logs: [ { filename: filename1, contents: contents1 }, 
+                                          { filename: filename2, contents: contents2 }, ] } );
+                    }
+                    break;
                 case 'media-source-callback':
                 case 'screen-sharing-indicator-callback':
                 case 'get-version-info-callback':
@@ -471,6 +501,15 @@
             window.ssf.registerProtocolHandler();
         } else {
             postMessage(apiCmds.registerProtocolHandler);
+        }
+
+        /**
+         * Log retriever
+         */
+        if (window.ssf) {
+            window.ssf.registerLogRetriever();
+        } else {
+            postMessage(apiCmds.registerLogRetriever);
         }
 
         /**
@@ -599,6 +638,7 @@
         const handleError = (e) => {
             console.error(e);
         };
+
 
         /**
          * Locale api handler

@@ -39,6 +39,7 @@ export interface ILocalObject {
     screenSharingIndicatorCallback?: (arg: IScreenSharingIndicator) => void;
     protocolActionCallback?: (arg: string) => void;
     analyticsEventHandler?: (arg: any) => void;
+    logRetriever?: () => void;
 }
 
 const local: ILocalObject = {
@@ -234,6 +235,28 @@ export class SSFApi {
                 cmd: apiCmds.registerLogger,
             });
         }
+    }
+
+    /**
+     * Allows JS to register a log retriever that can be used by electron main process.
+     * @param  {Object} retriever  function that can be called to retrieve logs
+     */
+    public registerLogRetriever(retriever): void {
+        if (typeof retriever === 'function') {
+            local.logRetriever = retriever;
+            local.ipcRenderer.send(apiName.symphonyApi, {
+                cmd: apiCmds.registerLogRetriever,
+            });
+        }
+    }
+
+    /**
+     * Allows JS to send logs to the electron main process when it calls the log retriever.
+     */
+    public logReceiver(logs): void {
+        local.ipcRenderer.send(apiName.symphonyApi, {
+            cmd: apiCmds.logReceiver, logs,
+        });
     }
 
     /**
@@ -487,6 +510,16 @@ local.ipcRenderer.on('create-badge-data-url', (_event: Event, arg: IBadgeCount) 
 local.ipcRenderer.on('screen-snippet-data', (_event: Event, arg: IScreenSnippet) => {
     if (typeof arg === 'object' && typeof local.screenSnippetCallback === 'function') {
         local.screenSnippetCallback(arg);
+    }
+});
+
+/**
+ * An event triggered by the main process
+ * when it needs to retrieve logs
+ */
+local.ipcRenderer.on('retrieve-logs', () => {
+    if (typeof local.logRetriever === 'function') {
+        local.logRetriever();
     }
 });
 
