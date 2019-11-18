@@ -85,7 +85,7 @@ export const exportLogsFinalize = ( logs: ILogFile[] ): void => {
     }
 
     for (const log of logs) {
-        fs.writeFileSync(source + ( !isMac && !isLinux ? '\\' : '' ) + log.filename + '.log', log.contents );
+        fs.writeFileSync(path.join( source, log.filename + '.log' ), log.contents );
     }
 
     const destPath = (isMac || isLinux) ? '/logs_symphony_' : '\\logs_symphony_';
