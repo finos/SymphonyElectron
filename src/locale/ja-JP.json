@@ -159,9 +159,9 @@
   "Show Logs in File Manager": "ファイルマネージャに表示ログ",
   "Show Logs in Finder": "ファインダーにログを表示",
   "SnackBar": {
-    " to exit full screen": " を押します",
+    " to exit full screen": " を押して全画面表示を終了します",
     "esc": "Esc",
-    "Press ": "全画面表示を終了するには "
+    "Press ": " "
   },
   "Sorry, this is a test build and it has expired. Please contact your administrator to get a production build.": "申し訳ありませんが、これはテストビルドであり、期限切れです。プロダクションビルドを入手するには、管理者に連絡してください。",
   "Sorry, you are not allowed to access this website": "申し訳ありませんが、このウェブサイトへのアクセスは許可されていません",
