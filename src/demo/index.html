@@ -25,11 +25,31 @@
                 border-radius: 50%;
                 display: inline-block;
             }
+            .origin-reminder {
+                background: lightyellow;
+                padding: 20px;
+                margin: 40px;
+                border: 2px solid black;
+                display: block;
+            }
+            .origin-reminder-tt {
+                font-weight: normal;
+                background: yellow;
+                padding-left: 10px;
+                padding-right: 10px;
+                padding-top: 3px;
+                padding-bottom: 3px;
+            }
         </style>
         <link rel="stylesheet" href="download-manager.css">
     </head>
     <body>
         <h1>Symphony Electron API Demo</h1>
+        <div class='origin-reminder'>
+            <p><b>Remember to set <tt class='origin-reminder-tt'>this.origin</tt> to <tt class='origin-reminder-tt'>'*'</tt> in app-bridge.ts when using this API demo</b></p>
+            <p>Search for <tt class='origin-reminder-tt'>// DEMO-APP:</tt> and comment that line back in.
+            <u>Make sure to comment it out again before you commit.</u></p>
+        </div>
         <hr>
         <p>Notifications:<p>
         <button id='notf'>show notification</button>

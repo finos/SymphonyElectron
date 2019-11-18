@@ -64,6 +64,7 @@ export class AppBridge {
         const currentWindow = remote.getCurrentWindow();
         // @ts-ignore
         this.origin = currentWindow.origin || '';
+        // this.origin = '*'; // DEMO-APP: Comment this line back in only to test demo-app - DO NOT COMMIT
         if (ssInstance && typeof ssInstance.setBroadcastMessage === 'function') {
             ssInstance.setBroadcastMessage(this.broadcastMessage);
         }
