@@ -8,6 +8,7 @@ import {
     apiName,
     IBadgeCount,
     IBoundsChange,
+    ILogFile,
     ILogMsg,
     IScreenSharingIndicator,
     IScreenSharingIndicatorOptions,
@@ -239,7 +240,6 @@ export class SSFApi {
 
     /**
      * Allows JS to register a log retriever that can be used by electron main process.
-     * @param  {Object} retriever  function that can be called to retrieve logs
      */
     public registerLogRetriever(retriever): void {
         if (typeof retriever === 'function') {
@@ -253,9 +253,10 @@ export class SSFApi {
     /**
      * Allows JS to send logs to the electron main process when it calls the log retriever.
      */
-    public logReceiver(logs): void {
+    public logReceiver(logs: ILogFile[]): void {
         local.ipcRenderer.send(apiName.symphonyApi, {
-            cmd: apiCmds.logReceiver, logs,
+            cmd: apiCmds.logReceiver,
+            logs,
         });
     }
 

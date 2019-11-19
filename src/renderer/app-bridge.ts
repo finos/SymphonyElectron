@@ -158,7 +158,7 @@ export class AppBridge {
                 ssf.registerLogRetriever(this.callbackHandlers.onRegisterLogRetrieverCallback);
                 break;
             case apiCmds.logReceiver:
-                ssf.logReceiver( data.logs );
+                ssf.logReceiver(data.logs);
                 break;
             }
     }

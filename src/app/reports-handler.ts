@@ -4,7 +4,7 @@ import * as electron from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { ILogFile } from '../common/api-interface';
+import { ILogFile, IRetrieveLogs } from '../common/api-interface';
 import { isLinux, isMac } from '../common/env';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
@@ -108,13 +108,9 @@ export const exportLogsFinalize = ( logs: ILogFile[] ): void => {
         });
 };
 
-class RetrieveLogs {
-    public webContents: Electron.WebContents | undefined = undefined;
-}
-
-const retrieveLogs = new RetrieveLogs();
-
-export { retrieveLogs };
+export const retrieveLogs: IRetrieveLogs = {
+    webContents: undefined,
+};
 
 /**
  * Compress and export logs stored under system log directory

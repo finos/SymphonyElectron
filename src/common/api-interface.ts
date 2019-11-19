@@ -151,3 +151,7 @@ export interface ILogMsg {
 }
 
 export type LogLevel = 'error' | 'warn' | 'info' | 'verbose' | 'debug' | 'silly';
+
+export interface IRetrieveLogs {
+    webContents: Electron.WebContents | undefined;
+}
