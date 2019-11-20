@@ -68,7 +68,7 @@ const load = () => {
             component = NotificationComp;
             break;
         case components.notificationSettings:
-            document.title = 'Notification Settings - Symphony';
+            document.title = i18n.t('Notification Settings - Symphony', 'NotificationSettings')();
             loadStyle(components.notificationSettings);
             component = NotificationSettings;
             break;
