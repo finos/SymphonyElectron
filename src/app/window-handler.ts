@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { format, parse } from 'url';
 
+import { ChildProcess, ExecException, execFile } from 'child_process';
 import { apiName, WindowTypes } from '../common/api-interface';
 import { isDevEnv, isMac, isWindowsOS } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
@@ -87,6 +88,7 @@ export class WindowHandler {
     private screenSharingFrameWindow: Electron.BrowserWindow | null = null;
     private basicAuthWindow: Electron.BrowserWindow | null = null;
     private notificationSettingsWindow: Electron.BrowserWindow | null = null;
+    private child: ChildProcess | undefined;
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Use these variables only on initial setup
@@ -364,8 +366,12 @@ export class WindowHandler {
                     if (browserWindow && windowExists(browserWindow)) {
                         browserWindow.destroy();
 
-                        if (this.screenSharingFrameWindow && windowExists(this.screenSharingFrameWindow)) {
-                            this.screenSharingFrameWindow.close();
+                        if (isWindowsOS) {
+                            this.execCmd('C:\\symphony\\ScreenShareIndicatorFrame\\x64\\Release\\ScreenShareIndicatorFrame.exe', [] );
+                        } else {
+                            if (this.screenSharingFrameWindow && windowExists(this.screenSharingFrameWindow)) {
+                                this.screenSharingFrameWindow.close();
+                            }
                         }
                     }
                 }
@@ -514,6 +520,14 @@ export class WindowHandler {
             this.addWindow(opts.winKey, this.screenPickerWindow);
         });
         ipcMain.once('screen-source-selected', (_event, source) => {
+            const str = JSON.stringify(source);
+            logger.info(`window-handler: screen-source-selected, source: ${str} id: ${id}!`);
+            const type = source.id.split(':')[0];
+            if (type === 'window') {
+                const hwnd = source.id.split(':')[1];
+                this.execCmd('C:\\symphony\\ScreenShareIndicatorFrame\\x64\\Release\\ScreenShareIndicatorFrame.exe', [ hwnd ] );
+            }
+
             window.send('start-share' + id, source);
             if (this.screenPickerWindow && windowExists(this.screenPickerWindow)) {
                 this.screenPickerWindow.close();
@@ -709,11 +723,19 @@ export class WindowHandler {
 
             displays.forEach((element) => {
                 if (displayId === element.id.toString()) {
-                    this.createScrenSharingFrameWindow('screen-sharing-frame',
-                    element.workArea.width,
-                    element.workArea.height,
-                    element.workArea.x,
-                    element.workArea.y);
+                    if (isWindowsOS) {
+                        const str = JSON.stringify(element);
+                        logger.info(`window-handler: MG element: ${str}`);
+                        const winX: string = element.bounds.x.toString();
+                        const winY: string = element.bounds.y.toString();
+                        this.execCmd('C:\\symphony\\ScreenShareIndicatorFrame\\x64\\Release\\ScreenShareIndicatorFrame.exe', [ winX, winY ] );
+                    } else {
+                        this.createScrenSharingFrameWindow('screen-sharing-frame',
+                        element.workArea.width,
+                        element.workArea.height,
+                        element.workArea.x,
+                        element.workArea.y);
+                    }
                 }
             });
         }
@@ -944,6 +966,30 @@ export class WindowHandler {
 
         return {...defaultWindowOpts, ...windowOpts};
     }
+
+    /**
+     * Executes the given command via a child process
+     *
+     * Windows: uses custom built windows screen capture tool
+     * Mac OSX: uses built-in screencapture tool which has been
+     * available since OSX ver 10.2.
+     *
+     * @param captureUtil {string}
+     * @param captureUtilArgs {captureUtilArgs}
+     * @example execCmd('-i -s', '/user/desktop/symphonyImage-1544025391698.png')
+     */
+    private execCmd(captureUtil: string, captureUtilArgs: ReadonlyArray<string>): Promise<ChildProcess> {
+        return new Promise<ChildProcess>((resolve, reject) => {
+            return this.child = execFile(captureUtil, captureUtilArgs, (error: ExecException | null) => {
+                if (error && error.killed) {
+                    // processs was killed, just resolve with no data.
+                    return reject(error);
+                }
+                resolve();
+            });
+        });
+    }
+
 }
 
 const windowHandler = new WindowHandler();
