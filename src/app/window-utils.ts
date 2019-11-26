@@ -117,7 +117,7 @@ export const createComponentWindow = (
         width: 300,
         ...opts,
         webPreferences: {
-            preload: path.join(__dirname, '../renderer/preload-component'),
+            preload: path.join(__dirname, '../renderer/_preload-component.js'),
             devTools: false,
         },
     };
