@@ -29,7 +29,6 @@ installer/win/Symphony-x64-cache
 installer/win/Symphony-x64-SetupFiles
 installer/win/Symphony-x86-cache
 installer/win/Symphony-x86-SetupFiles
-package-lock.json
 library
 *.log
 js/translation/*_missing.json
