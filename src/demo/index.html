@@ -106,6 +106,16 @@
         <image id='snippet-img'/>
 
         <hr>
+        <p>RTC Logs:</p>
+        Filename <input type='text' id='rtc-log-filename' value='rtc_log.log'/>
+        <p>Contents</p>
+        <textarea id="rtc-log-contents" rows="4">Test log contents</textarea>
+        <p/>
+        Filename <input type='text' id='rtc-log-filename2' value=''/>
+        <p>Contents</p>
+        <textarea id="rtc-log-contents2" rows="4"></textarea>
+
+        <hr>
         <p>Window activate:</p>
         <button id='open-win'>open window</button>
 
@@ -155,6 +165,8 @@
                 activate: 'activate',
                 registerBoundsChange: 'register-bounds-change',
                 registerProtocolHandler: 'register-protocol-handler',
+                registerLogRetriever: 'register-log-retriever',
+                logReceiver: 'log-receiver',
                 registerAnalyticHandler: 'register-analytic-handler',
                 registerActivityDetection: 'register-activity-detection',
                 showNotificationSettings: 'show-notification-settings',
@@ -408,9 +420,33 @@
             window.postMessage({ method, data }, '*');
         };
 
+        const getRTCLogs = () => {
+            if (document.getElementById('rtc-log-filename2').value == '') {
+                const filename = document.getElementById('rtc-log-filename').value;
+                const contents = document.getElementById('rtc-log-contents').value;
+                return [ { filename, contents }, ];
+            } else {
+                const filename1 = document.getElementById('rtc-log-filename').value;
+                const contents1 = document.getElementById('rtc-log-contents').value;
+                const filename2 = document.getElementById('rtc-log-filename2').value;
+                const contents2 = document.getElementById('rtc-log-contents2').value;
+                return [ { filename: filename1, contents: contents1 }, 
+                    { filename: filename2, contents: contents2 }, ];
+            }
+        }
+
         window.addEventListener('message', (event) => {
             const { data, method } = event.data;
             switch (method) {
+                case 'collect-logs':
+                    if( data === 'RTC' ) {
+                        if (window.ssf) {
+                            window.ssf.logReceiver('RTC', getRTCLogs());
+                        } else {
+                            postMessage( apiCmds.logReceiver, { logName: 'RTC', logFiles: getRTCLogs() } );
+                        }
+                    }
+                    break;
                 case 'activity-callback':
                     activityCallback(data);
                     break;
@@ -436,6 +472,15 @@
                     console.log(event.data);
             }
         });
+
+        /**
+         * Log retriever
+         */
+        if (window.ssf) {
+            window.ssf.registerLogRetriever('RTC');
+        } else {
+            postMessage(apiCmds.registerLogRetriever, 'RTC' );
+        }
 
         /**
          * Analytic events

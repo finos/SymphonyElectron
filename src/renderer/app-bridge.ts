@@ -49,6 +49,7 @@ export class AppBridge {
         onRegisterLoggerCallback: (msg: ILogMsg, logLevel: LogLevel, showInConsole: boolean) =>
             this.registerLoggerCallback(msg, logLevel, showInConsole),
         onRegisterProtocolHandlerCallback: (uri: string) => this.protocolHandlerCallback(uri),
+        onCollectLogsCallback: (logName: string) => this.collectLogsCallback(logName),
         onScreenSharingIndicatorCallback: (arg: IScreenSharingIndicator) => this.screenSharingIndicatorCallback(arg),
         onMediaSourceCallback: (
             error: IScreenSourceError | null,
@@ -122,6 +123,12 @@ export class AppBridge {
             case apiCmds.registerProtocolHandler:
                 ssf.registerProtocolHandler(this.callbackHandlers.onRegisterProtocolHandlerCallback);
                 break;
+            case apiCmds.registerLogRetriever:
+                ssf.registerLogRetriever(this.callbackHandlers.onCollectLogsCallback, data);
+                break;
+            case apiCmds.logReceiver:
+                ssf.logReceiver( data.logName, data.logFiles );
+                break;
             case apiCmds.openScreenSharingIndicator:
                 ssf.openScreenSharingIndicator(data as IScreenSharingIndicatorOptions, this.callbackHandlers.onScreenSharingIndicatorCallback);
                 break;
@@ -189,6 +196,8 @@ export class AppBridge {
      * @param uri {string}
      */
     private protocolHandlerCallback = (uri: string): void => this.broadcastMessage('protocol-callback', uri);
+
+    private collectLogsCallback = (logName: string): void => this.broadcastMessage('collect-logs',logName);
 
     /**
      * Broadcast event that stops screen sharing

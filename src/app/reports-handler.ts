@@ -4,6 +4,7 @@ import * as electron from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { ILogs } from '../common/api-interface';
 import { isLinux, isMac } from '../common/env';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
@@ -17,19 +18,30 @@ import { logger } from '../common/logger';
  * @param fileExtensions {Array} array of file ext
  * @return {Promise<void>}
  */
-const generateArchiveForDirectory = (source: string, destination: string, fileExtensions: string[]): Promise<void> => {
+const generateArchiveForDirectory = (source: string, destination: string, fileExtensions: string[], retrievedLogs: ILogs[]): Promise<void> => {
 
     return new Promise((resolve, reject) => {
         logger.info(`reports-handler: generating archive for directory ${source}`);
         const output = fs.createWriteStream(destination);
         const archive = archiver('zip', { zlib: { level: 9 } });
+        const filesForCleanup: string[] = [];
 
         output.on('close', () => {
+            for (const file of filesForCleanup) {
+                if (fs.existsSync( file )) {
+                    fs.unlinkSync(file);
+                }
+            }
             logger.info(`reports-handler: generated archive for directory ${source}`);
             return resolve();
         });
 
         archive.on('error', (err: Error) => {
+            for (const file of filesForCleanup) {
+                if (fs.existsSync( file )) {
+                    fs.unlinkSync(file);
+                }
+            }
             logger.error(`reports-handler: error archiving directory for ${source} with error ${err}`);
             return reject(err);
         });
@@ -53,8 +65,36 @@ const generateArchiveForDirectory = (source: string, destination: string, fileEx
                 }
             });
 
+        for (const logs of retrievedLogs) {
+            for (const logFile of logs.logFiles) {
+                const file = path.join( source, logFile.filename );
+                fs.writeFileSync(file, logFile.contents );
+                archive.file(file, { name: 'logs/' + logFile.filename });
+                filesForCleanup.push(file);
+            }
+        }
+
         archive.finalize();
     });
+};
+
+interface ILogRetriever {
+    sender: Electron.WebContents;
+    logName: string;
+}
+
+const logRetrievers: ILogRetriever[] = [];
+const receivedLogs: ILogs[] = [];
+
+export const registerLogRetriever = ( sender: Electron.WebContents, logName: string): void => {
+    logRetrievers.push( { sender, logName } );
+};
+
+export const collectLogs = (): void => {
+    receivedLogs.length = 0;
+    for (const logRetriever of logRetrievers ) {
+        logRetriever.sender.send('collect-logs', logRetriever.logName );
+    }
 };
 
 /**
@@ -63,7 +103,7 @@ const generateArchiveForDirectory = (source: string, destination: string, fileEx
  * MacOS - /Library/Logs/Symphony/
  * Windows - AppData\Roaming\Symphony\logs
  */
-export const exportLogs = (): void => {
+export const packageLogs = (retrievedLogs: ILogs[]): void => {
     const FILE_EXTENSIONS = [ '.log' ];
     const MAC_LOGS_PATH = '/Library/Logs/Symphony/';
     const LINUX_LOGS_PATH = '/.config/Symphony/';
@@ -86,7 +126,7 @@ export const exportLogs = (): void => {
     const timestamp = new Date().getTime();
     const destination = app.getPath('downloads') + destPath + timestamp + '.zip';
 
-    generateArchiveForDirectory(source, destination, FILE_EXTENSIONS)
+    generateArchiveForDirectory(source, destination, FILE_EXTENSIONS, retrievedLogs)
         .then(() => {
             shell.showItemInFolder(destination);
         })
@@ -100,6 +140,36 @@ export const exportLogs = (): void => {
                 });
             }
         });
+};
+
+export const finalizeLogExports = (logs: ILogs) => {
+    receivedLogs.push(logs);
+
+    let allReceived = true;
+    for (const logRetriever of logRetrievers ) {
+        let found = false;
+        for (const log of receivedLogs) {
+            if (log.logName === logRetriever.logName) {
+                found = true;
+            }
+        }
+        if (!found) {
+            allReceived = false;
+        }
+    }
+
+    if (allReceived) {
+        packageLogs(receivedLogs);
+        receivedLogs.length = 0;
+    }
+};
+
+export const exportLogs = (): void => {
+    if ( logRetrievers.length > 0) {
+        collectLogs();
+    } else {
+        packageLogs([]);
+    }
 };
 
 /**
@@ -125,7 +195,7 @@ export const exportCrashDumps = (): void => {
 
     const destination = electron.app.getPath('downloads') + destPath + timestamp + '.zip';
 
-    generateArchiveForDirectory(source, destination, FILE_EXTENSIONS)
+    generateArchiveForDirectory(source, destination, FILE_EXTENSIONS, [])
         .then(() => {
             electron.shell.showItemInFolder(destination);
         })
