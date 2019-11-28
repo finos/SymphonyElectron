@@ -124,6 +124,7 @@
     <ROW Component="Jobber.exe" ComponentId="{AA93E17F-DDA4-4E55-A027-11FE49821386}" Directory_="jobber_Dir" Attributes="0" KeyPath="Jobber.exe"/>
     <ROW Component="PodUrl" ComponentId="{EA80D82D-BC65-4075-A9A8-F53E2B2513CE}" Directory_="APPDIR" Attributes="260" KeyPath="PodUrl"/>
     <ROW Component="ProductInformation" ComponentId="{8B92B687-8AE0-4A5C-B6AB-5D1854009CEA}" Directory_="APPDIR" Attributes="4" KeyPath="Version"/>
+    <ROW Component="ScreenShareIndicatorFrame.exe" ComponentId="{85DC2888-EBE5-4084-A084-E076020086D5}" Directory_="APPDIR" Attributes="0" KeyPath="ScreenShareIndicatorFrame.exe"/>
     <ROW Component="ScreenSnippet.exe" ComponentId="{66D4F5CB-F7ED-48CD-B65B-D1C4DAEEB0B7}" Directory_="APPDIR" Attributes="0" KeyPath="ScreenSnippet.exe"/>
     <ROW Component="ScreenSnippet.resources.dll" ComponentId="{8E8BD8FC-9036-4D3E-8B35-6427A22F7526}" Directory_="enUS_Dir" Attributes="0" KeyPath="ScreenSnippet.resources.dll"/>
     <ROW Component="ScreenSnippet.resources.dll_1" ComponentId="{467BC7AB-B539-4C5C-AC0D-150D4B5B1DC1}" Directory_="jaJP_Dir" Attributes="0" KeyPath="ScreenSnippet.resources.dll_1"/>
