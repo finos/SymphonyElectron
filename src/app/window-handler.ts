@@ -88,7 +88,7 @@ export class WindowHandler {
     private screenSharingFrameWindow: Electron.BrowserWindow | null = null;
     private basicAuthWindow: Electron.BrowserWindow | null = null;
     private notificationSettingsWindow: Electron.BrowserWindow | null = null;
-    private child: ChildProcess | undefined;
+    private screenShareIndicatorFrameUtil: string;
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Use these variables only on initial setup
@@ -114,6 +114,11 @@ export class WindowHandler {
         };
         this.isAutoReload = false;
         this.isOnline = true;
+
+        this.screenShareIndicatorFrameUtil = !isWindowsOS ? '' : isDevEnv
+            ? path.join(__dirname,
+                '../../../node_modules/screen-share-indicator-frame/ScreenShareIndicatorFrame.exe')
+            : path.join(path.dirname(app.getPath('exe')), 'ScreenShareIndicatorFrame.exe');
 
         this.appMenu = null;
         const locale: LocaleType = (this.config.locale || app.getLocale()) as LocaleType;
@@ -367,7 +372,7 @@ export class WindowHandler {
                         browserWindow.destroy();
 
                         if (isWindowsOS) {
-                            this.execCmd('C:\\symphony\\ScreenShareIndicatorFrame\\x64\\Release\\ScreenShareIndicatorFrame.exe', [] );
+                            this.execCmd(this.screenShareIndicatorFrameUtil, []);
                         } else {
                             if (this.screenSharingFrameWindow && windowExists(this.screenSharingFrameWindow)) {
                                 this.screenSharingFrameWindow.close();
@@ -520,12 +525,14 @@ export class WindowHandler {
             this.addWindow(opts.winKey, this.screenPickerWindow);
         });
         ipcMain.once('screen-source-selected', (_event, source) => {
-            const str = JSON.stringify(source);
-            logger.info(`window-handler: screen-source-selected, source: ${str} id: ${id}!`);
-            const type = source.id.split(':')[0];
-            if (type === 'window') {
-                const hwnd = source.id.split(':')[1];
-                this.execCmd('C:\\symphony\\ScreenShareIndicatorFrame\\x64\\Release\\ScreenShareIndicatorFrame.exe', [ hwnd ] );
+            if (isWindowsOS) {
+                const str = JSON.stringify(source);
+                logger.info(`window-handler: screen-source-selected, source: ${str} id: ${id}!`);
+                const type = source.id.split(':')[0];
+                if (type === 'window') {
+                    const hwnd = source.id.split(':')[1];
+                    this.execCmd(this.screenShareIndicatorFrameUtil, [ hwnd ]);
+                }
             }
 
             window.send('start-share' + id, source);
@@ -728,7 +735,7 @@ export class WindowHandler {
                         logger.info(`window-handler: MG element: ${str}`);
                         const winX: string = element.bounds.x.toString();
                         const winY: string = element.bounds.y.toString();
-                        this.execCmd('C:\\symphony\\ScreenShareIndicatorFrame\\x64\\Release\\ScreenShareIndicatorFrame.exe', [ winX, winY ] );
+                        this.execCmd(this.screenShareIndicatorFrameUtil, [ winX, winY ]);
                     } else {
                         this.createScrenSharingFrameWindow('screen-sharing-frame',
                         element.workArea.width,
@@ -970,17 +977,13 @@ export class WindowHandler {
     /**
      * Executes the given command via a child process
      *
-     * Windows: uses custom built windows screen capture tool
-     * Mac OSX: uses built-in screencapture tool which has been
-     * available since OSX ver 10.2.
-     *
-     * @param captureUtil {string}
-     * @param captureUtilArgs {captureUtilArgs}
-     * @example execCmd('-i -s', '/user/desktop/symphonyImage-1544025391698.png')
+     * @param util {string}
+     * @param utilArgs {ReadonlyArray<string>}
      */
-    private execCmd(captureUtil: string, captureUtilArgs: ReadonlyArray<string>): Promise<ChildProcess> {
+    private execCmd(util: string, utilArgs: ReadonlyArray<string>): Promise<ChildProcess> {
+        logger.info(`window handler: execCmd: util: ${util} utilArgs: ${utilArgs}`);
         return new Promise<ChildProcess>((resolve, reject) => {
-            return this.child = execFile(captureUtil, captureUtilArgs, (error: ExecException | null) => {
+            return execFile(util, utilArgs, (error: ExecException | null) => {
                 if (error && error.killed) {
                     // processs was killed, just resolve with no data.
                     return reject(error);
