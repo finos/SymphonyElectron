@@ -50,7 +50,9 @@ handlePerformanceSettings();
 setChromeFlags();
 
 // Electron sets the default protocol
-app.setAsDefaultProtocolClient('symphony');
+if (!isDevEnv) {
+    app.setAsDefaultProtocolClient('symphony');
+}
 
 /**
  * Main function that init the application
