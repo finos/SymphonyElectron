@@ -36,14 +36,14 @@ const windowsAccelerator = Object.assign({
     cut: 'Ctrl+X',
     minimize: 'Ctrl+M',
     paste: 'Ctrl+V',
-    pasteandmatchstyle: 'Ctrl+Shift+V',
+    pasteAndMatchStyle: 'Ctrl+Shift+V',
     redo: 'Ctrl+Y',
-    resetzoom: 'Ctrl+0',
-    selectall: 'Ctrl+A',
+    resetZoom: 'Ctrl+0',
+    selectAll: 'Ctrl+A',
     togglefullscreen: 'F11',
     undo: 'Ctrl+Z',
-    zoomin: 'Ctrl+Shift+Plus',
-    zoomout: 'Ctrl+-',
+    zoomIn: 'Ctrl+Plus',
+    zoomOut: 'Ctrl+-',
 });
 
 let {
