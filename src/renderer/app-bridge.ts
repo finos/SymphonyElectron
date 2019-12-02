@@ -65,7 +65,6 @@ export class AppBridge {
         const currentWindow = remote.getCurrentWindow();
         // @ts-ignore
         this.origin = currentWindow.origin || '';
-        this.origin = '*';
         if (ssInstance && typeof ssInstance.setBroadcastMessage === 'function') {
             ssInstance.setBroadcastMessage(this.broadcastMessage);
         }
