@@ -1,6 +1,7 @@
 env:
   global:
     - ELECTRON_QA="true"
+    - npm config set package-lock false
 
 os:
   - osx
@@ -20,10 +21,12 @@ addons:
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; fi
 
+install:
+  - npm install
+
 script:
   - node --version
   - npm --version
-  - npm install
   - npm test
 
 cache:
