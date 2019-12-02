@@ -55,10 +55,10 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.IpcMainEvent, arg: IApiArgs) =>
             windowHandler.updateVersionInfo();
             break;
         case apiCmds.registerLogRetriever:
-            registerLogRetriever( event.sender, arg.logName );
+            registerLogRetriever(event.sender, arg.logName);
             break;
-        case apiCmds.logReceiver:
-            finalizeLogExports( arg.logs );
+        case apiCmds.sendLogs:
+            finalizeLogExports(arg.logs);
             break;
         case apiCmds.badgeDataUrl:
             if (typeof arg.dataUrl === 'string' && typeof arg.count === 'number') {

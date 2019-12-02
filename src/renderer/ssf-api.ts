@@ -38,7 +38,7 @@ export interface ILocalObject {
     boundsChangeCallback?: (arg: IBoundsChange) => void;
     screenSharingIndicatorCallback?: (arg: IScreenSharingIndicator) => void;
     protocolActionCallback?: (arg: string) => void;
-    collectLogsCallback?: (arg: string) => void;
+    collectLogsCallback?: Array<( () => void )>;
     analyticsEventHandler?: (arg: any) => void;
 }
 
@@ -268,10 +268,12 @@ export class SSFApi {
      * Allows JS to register a log retriever that can be used by the
      * electron main process to retrieve current logs.
      */
-    public registerLogRetriever(collectLogs: (logName: string) => void, logName: string): void {
+    public registerLogRetriever(collectLogs: () => void, logName: string): void {
         if (typeof collectLogs === 'function') {
-
-            local.collectLogsCallback = collectLogs;
+            if (!local.collectLogsCallback) {
+                local.collectLogsCallback = new Array<( () => void )>();
+            }
+            local.collectLogsCallback.push(collectLogs);
 
             local.ipcRenderer.send(apiName.symphonyApi, {
                 cmd: apiCmds.registerLogRetriever,
@@ -284,9 +286,9 @@ export class SSFApi {
     /**
      * Send log files to main process when requested.
      */
-    public logReceiver(logName: string, logFiles): void {
+    public sendLogs(logName: string, logFiles): void {
         local.ipcRenderer.send(apiName.symphonyApi, {
-            cmd: apiCmds.logReceiver,
+            cmd: apiCmds.sendLogs,
             logs: { logName, logFiles },
         });
     }
@@ -518,9 +520,11 @@ local.ipcRenderer.on('screen-snippet-data', (_event: Event, arg: IScreenSnippet)
     }
 });
 
-local.ipcRenderer.on('collect-logs', ( _event: Event, arg: string ) => {
-    if (typeof local.collectLogsCallback === 'function') {
-        local.collectLogsCallback(arg);
+local.ipcRenderer.on('collect-logs', ( _event: Event ) => {
+    if (local.collectLogsCallback) {
+        for (const callback of local.collectLogsCallback) {
+            callback();
+        }
     }
 });
 

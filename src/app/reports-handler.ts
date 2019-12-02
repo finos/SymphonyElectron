@@ -28,7 +28,7 @@ const generateArchiveForDirectory = (source: string, destination: string, fileEx
 
         output.on('close', () => {
             for (const file of filesForCleanup) {
-                if (fs.existsSync( file )) {
+                if (fs.existsSync(file)) {
                     fs.unlinkSync(file);
                 }
             }
@@ -38,7 +38,7 @@ const generateArchiveForDirectory = (source: string, destination: string, fileEx
 
         archive.on('error', (err: Error) => {
             for (const file of filesForCleanup) {
-                if (fs.existsSync( file )) {
+                if (fs.existsSync(file)) {
                     fs.unlinkSync(file);
                 }
             }
@@ -78,23 +78,18 @@ const generateArchiveForDirectory = (source: string, destination: string, fileEx
     });
 };
 
-interface ILogRetriever {
-    sender: Electron.WebContents;
-    logName: string;
-}
-
-const logRetrievers: ILogRetriever[] = [];
+let logWebContents: Electron.WebContents;
+const logTypes: string[] = [];
 const receivedLogs: ILogs[] = [];
 
-export const registerLogRetriever = ( sender: Electron.WebContents, logName: string): void => {
-    logRetrievers.push( { sender, logName } );
+export const registerLogRetriever = (sender: Electron.WebContents, logName: string): void => {
+    logWebContents =  sender;
+    logTypes.push( logName );
 };
 
 export const collectLogs = (): void => {
     receivedLogs.length = 0;
-    for (const logRetriever of logRetrievers ) {
-        logRetriever.sender.send('collect-logs', logRetriever.logName );
-    }
+    logWebContents.send('collect-logs' );
 };
 
 /**
@@ -146,13 +141,8 @@ export const finalizeLogExports = (logs: ILogs) => {
     receivedLogs.push(logs);
 
     let allReceived = true;
-    for (const logRetriever of logRetrievers ) {
-        let found = false;
-        for (const log of receivedLogs) {
-            if (log.logName === logRetriever.logName) {
-                found = true;
-            }
-        }
+    for (const logType of logTypes) {
+        const found = receivedLogs.some((log) => log.logName === logType);
         if (!found) {
             allReceived = false;
         }
@@ -165,7 +155,7 @@ export const finalizeLogExports = (logs: ILogs) => {
 };
 
 export const exportLogs = (): void => {
-    if ( logRetrievers.length > 0) {
+    if (logTypes.length > 0) {
         collectLogs();
     } else {
         packageLogs([]);

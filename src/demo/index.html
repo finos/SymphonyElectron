@@ -106,14 +106,14 @@
         <image id='snippet-img'/>
 
         <hr>
-        <p>RTC Logs:</p>
-        Filename <input type='text' id='rtc-log-filename' value='rtc_log.log'/>
+        <p>Logs:</p>
+        Filename <input type='text' id='log-filename' value='test_log.log'/>
         <p>Contents</p>
-        <textarea id="rtc-log-contents" rows="4">Test log contents</textarea>
+        <textarea id="log-contents" rows="4">Test log contents</textarea>
         <p/>
-        Filename <input type='text' id='rtc-log-filename2' value=''/>
+        Filename <input type='text' id='log-filename2' value=''/>
         <p>Contents</p>
-        <textarea id="rtc-log-contents2" rows="4"></textarea>
+        <textarea id="log-contents2" rows="4"></textarea>
 
         <hr>
         <p>Window activate:</p>
@@ -166,7 +166,7 @@
                 registerBoundsChange: 'register-bounds-change',
                 registerProtocolHandler: 'register-protocol-handler',
                 registerLogRetriever: 'register-log-retriever',
-                logReceiver: 'log-receiver',
+                sendLogs: 'send-logs',
                 registerAnalyticHandler: 'register-analytic-handler',
                 registerActivityDetection: 'register-activity-detection',
                 showNotificationSettings: 'show-notification-settings',
@@ -420,31 +420,31 @@
             window.postMessage({ method, data }, '*');
         };
 
-        const getRTCLogs = () => {
-            if (document.getElementById('rtc-log-filename2').value == '') {
-                const filename = document.getElementById('rtc-log-filename').value;
-                const contents = document.getElementById('rtc-log-contents').value;
+        const getTestLogs = () => {
+            if (document.getElementById('log-filename2').value == '') {
+                const filename = document.getElementById('log-filename').value;
+                const contents = document.getElementById('log-contents').value;
                 return [ { filename, contents }, ];
             } else {
-                const filename1 = document.getElementById('rtc-log-filename').value;
-                const contents1 = document.getElementById('rtc-log-contents').value;
-                const filename2 = document.getElementById('rtc-log-filename2').value;
-                const contents2 = document.getElementById('rtc-log-contents2').value;
+                const filename1 = document.getElementById('log-filename').value;
+                const contents1 = document.getElementById('log-contents').value;
+                const filename2 = document.getElementById('log-filename2').value;
+                const contents2 = document.getElementById('log-contents2').value;
                 return [ { filename: filename1, contents: contents1 }, 
                     { filename: filename2, contents: contents2 }, ];
             }
         }
 
+        const logTypeTestLogs = 'TestLogs';
+
         window.addEventListener('message', (event) => {
             const { data, method } = event.data;
             switch (method) {
                 case 'collect-logs':
-                    if( data === 'RTC' ) {
-                        if (window.ssf) {
-                            window.ssf.logReceiver('RTC', getRTCLogs());
-                        } else {
-                            postMessage( apiCmds.logReceiver, { logName: 'RTC', logFiles: getRTCLogs() } );
-                        }
+                    if (window.ssf) {
+                        window.ssf.sendLogs(logTypeTestLogs, getTestLogs());
+                    } else {
+                        postMessage( apiCmds.sendLogs, { logName: logTypeTestLogs, logFiles: getTestLogs() } );
                     }
                     break;
                 case 'activity-callback':
@@ -477,9 +477,9 @@
          * Log retriever
          */
         if (window.ssf) {
-            window.ssf.registerLogRetriever('RTC');
+            window.ssf.registerLogRetriever(logTypeTestLogs);
         } else {
-            postMessage(apiCmds.registerLogRetriever, 'RTC' );
+            postMessage(apiCmds.registerLogRetriever, logTypeTestLogs);
         }
 
         /**

@@ -49,7 +49,7 @@ export class AppBridge {
         onRegisterLoggerCallback: (msg: ILogMsg, logLevel: LogLevel, showInConsole: boolean) =>
             this.registerLoggerCallback(msg, logLevel, showInConsole),
         onRegisterProtocolHandlerCallback: (uri: string) => this.protocolHandlerCallback(uri),
-        onCollectLogsCallback: (logName: string) => this.collectLogsCallback(logName),
+        onCollectLogsCallback: () => this.collectLogsCallback(),
         onScreenSharingIndicatorCallback: (arg: IScreenSharingIndicator) => this.screenSharingIndicatorCallback(arg),
         onMediaSourceCallback: (
             error: IScreenSourceError | null,
@@ -65,6 +65,7 @@ export class AppBridge {
         const currentWindow = remote.getCurrentWindow();
         // @ts-ignore
         this.origin = currentWindow.origin || '';
+        this.origin = '*';
         if (ssInstance && typeof ssInstance.setBroadcastMessage === 'function') {
             ssInstance.setBroadcastMessage(this.broadcastMessage);
         }
@@ -126,8 +127,8 @@ export class AppBridge {
             case apiCmds.registerLogRetriever:
                 ssf.registerLogRetriever(this.callbackHandlers.onCollectLogsCallback, data);
                 break;
-            case apiCmds.logReceiver:
-                ssf.logReceiver( data.logName, data.logFiles );
+            case apiCmds.sendLogs:
+                ssf.sendLogs(data.logName, data.logFiles);
                 break;
             case apiCmds.openScreenSharingIndicator:
                 ssf.openScreenSharingIndicator(data as IScreenSharingIndicatorOptions, this.callbackHandlers.onScreenSharingIndicatorCallback);
@@ -197,7 +198,7 @@ export class AppBridge {
      */
     private protocolHandlerCallback = (uri: string): void => this.broadcastMessage('protocol-callback', uri);
 
-    private collectLogsCallback = (logName: string): void => this.broadcastMessage('collect-logs',logName);
+    private collectLogsCallback = (): void => this.broadcastMessage('collect-logs', undefined);
 
     /**
      * Broadcast event that stops screen sharing
