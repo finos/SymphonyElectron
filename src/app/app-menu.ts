@@ -42,7 +42,7 @@ const windowsAccelerator = Object.assign({
     selectAll: 'Ctrl+A',
     togglefullscreen: 'F11',
     undo: 'Ctrl+Z',
-    zoomIn: 'Ctrl++',
+    zoomIn: 'Ctrl+=',
     zoomOut: 'Ctrl+-',
 });
 
