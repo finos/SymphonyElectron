@@ -260,7 +260,7 @@
     <ROW File="sv.pak" Component_="am.pak" FileName="sv.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\sv.pak" SelfReg="false" NextFile="sw.pak"/>
     <ROW File="sw.pak" Component_="am.pak" FileName="sw.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\sw.pak" SelfReg="false" NextFile="ta.pak"/>
     <ROW File="ta.pak" Component_="am.pak" FileName="ta.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\ta.pak" SelfReg="false" NextFile="te.pak"/>
-    <ROW File="tarwin.exe" Component_="tarwin.exe" FileName="tar-win.exe" Attributes="0" SourcePath="..\..\library\tar-win.exe" SelfReg="false" NextFile="ScreenSnippet.resources.dll" DigSign="true"/>
+    <ROW File="tarwin.exe" Component_="tarwin.exe" FileName="tar-win.exe" Attributes="0" SourcePath="..\..\library\tar-win.exe" SelfReg="false" NextFile="v8_context_snapshot.bin" DigSign="true"/>
     <ROW File="te.pak" Component_="am.pak" FileName="te.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\te.pak" SelfReg="false" NextFile="th.pak"/>
     <ROW File="th.pak" Component_="am.pak" FileName="th.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\th.pak" SelfReg="false" NextFile="tr.pak"/>
     <ROW File="titleBarStyles.css" Component_="Symphony.config" FileName="TITLEB~1.CSS|titleBarStyles.css" Attributes="0" SourcePath="..\..\dist\win-unpacked\config\titleBarStyles.css" SelfReg="false" NextFile="enAU.bdic"/>
@@ -268,7 +268,7 @@
     <ROW File="tsconfig.json" Component_="build.cmd" FileName="TSCONF~1.JSO|tsconfig.json" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\tsconfig.json" SelfReg="false" NextFile="tslint.json"/>
     <ROW File="tslint.json" Component_="build.cmd" FileName="TSLINT~1.JSO|tslint.json" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\tslint.json" SelfReg="false" NextFile="Jobber.exe"/>
     <ROW File="uk.pak" Component_="am.pak" FileName="uk.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\uk.pak" SelfReg="false" NextFile="vi.pak"/>
-    <ROW File="v8_context_snapshot.bin" Component_="blink_image_resources_200_percent.pak" FileName="V8_CON~1.BIN|v8_context_snapshot.bin" Attributes="0" SourcePath="..\..\dist\win-unpacked\v8_context_snapshot.bin" SelfReg="false" NextFile="ScreenSnippet.resources.dll_2"/>
+    <ROW File="v8_context_snapshot.bin" Component_="blink_image_resources_200_percent.pak" FileName="V8_CON~1.BIN|v8_context_snapshot.bin" Attributes="0" SourcePath="..\..\dist\win-unpacked\v8_context_snapshot.bin" SelfReg="false" NextFile="titleBarStyles.css"/>
     <ROW File="vi.pak" Component_="am.pak" FileName="vi.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\vi.pak" SelfReg="false" NextFile="zhCN.pak"/>
     <ROW File="zhCN.pak" Component_="am.pak" FileName="zh-CN.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\zh-CN.pak" SelfReg="false" NextFile="zhTW.pak"/>
     <ROW File="zhTW.pak" Component_="am.pak" FileName="zh-TW.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\zh-TW.pak" SelfReg="false" NextFile="app.asar"/>
