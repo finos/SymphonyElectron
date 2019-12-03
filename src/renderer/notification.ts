@@ -419,6 +419,7 @@ class Notification extends NotificationHandler {
             frame: false,
             transparent: true,
             acceptFirstMouse: true,
+            title: 'Notification - Symphony',
             webPreferences: {
                 sandbox: true,
                 nodeIntegration: false,
