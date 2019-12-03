@@ -25,7 +25,7 @@ class ScreenSnippet {
         this.tempDir = os.tmpdir();
         this.captureUtil = isMac ? '/usr/sbin/screencapture' : isDevEnv
             ? path.join(__dirname,
-                '../../node_modules/screen-snippet/bin/Release/ScreenSnippet.exe')
+                '../../../node_modules/screen-snippet/ScreenSnippet.exe')
             : path.join(path.dirname(app.getPath('exe')), 'ScreenSnippet.exe');
 
         if (isLinux) {
@@ -88,6 +88,7 @@ class ScreenSnippet {
      * @example execCmd('-i -s', '/user/desktop/symphonyImage-1544025391698.png')
      */
     private execCmd(captureUtil: string, captureUtilArgs: ReadonlyArray<string>): Promise<ChildProcess> {
+        logger.info(`screen-snippet-handlers: execCmd ${captureUtil} ${captureUtilArgs}`);
         return new Promise<ChildProcess>((resolve, reject) => {
             return this.child = execFile(captureUtil, captureUtilArgs, (error: ExecException | null) => {
                 if (error && error.killed) {
