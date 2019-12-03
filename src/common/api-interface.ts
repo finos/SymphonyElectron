@@ -7,6 +7,8 @@ export enum apiCmds {
     activate = 'activate',
     registerBoundsChange = 'register-bounds-change',
     registerProtocolHandler = 'register-protocol-handler',
+    registerLogRetriever = 'register-log-retriever',
+    sendLogs = 'send-logs',
     registerAnalyticsHandler = 'register-analytics-handler',
     registerActivityDetection = 'register-activity-detection',
     showNotificationSettings = 'show-notification-settings',
@@ -61,6 +63,8 @@ export interface IApiArgs {
     displayId: string;
     path: string;
     type: string;
+    logName: string;
+    logs: ILogs;
 }
 
 export type WindowTypes = 'screen-picker' | 'screen-sharing-indicator' | 'notification-settings';
@@ -144,3 +148,13 @@ export interface ILogMsg {
 }
 
 export type LogLevel = 'error' | 'warn' | 'info' | 'verbose' | 'debug' | 'silly';
+
+export interface ILogFile {
+    filename: string;
+    contents: string;
+}
+
+export interface ILogs {
+    logName: string;
+    logFiles: ILogFile[];
+}

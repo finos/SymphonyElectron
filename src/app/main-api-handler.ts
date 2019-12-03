@@ -8,6 +8,7 @@ import { analytics } from './analytics-handler';
 import { config } from './config-handler';
 import { memoryMonitor } from './memory-monitor';
 import { protocolHandler } from './protocol-handler';
+import { finalizeLogExports, registerLogRetriever } from './reports-handler';
 import { screenSnippet } from './screen-snippet-handler';
 import { activate, handleKeyPress } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
@@ -52,6 +53,12 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.IpcMainEvent, arg: IApiArgs) =>
             // Since we register the prococol handler window upon login,
             // we make use of it and update the pod version info on SDA
             windowHandler.updateVersionInfo();
+            break;
+        case apiCmds.registerLogRetriever:
+            registerLogRetriever(event.sender, arg.logName);
+            break;
+        case apiCmds.sendLogs:
+            finalizeLogExports(arg.logs);
             break;
         case apiCmds.badgeDataUrl:
             if (typeof arg.dataUrl === 'string' && typeof arg.count === 'number') {
