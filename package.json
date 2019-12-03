@@ -133,7 +133,6 @@
   },
   "optionalDependencies": {
     "screen-snippet": "git+https://github.com/mattias-symphony/ScreenSnippet2.git",
-    "screen-share-indicator-frame": "git+https://github.com/mattias-symphony/ScreenShareIndicatorFrame.git",
     "swift-search": "2.0.1"
   }
 }
