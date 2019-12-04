@@ -445,7 +445,7 @@ export class WindowHandler {
             height: isWindowsOS ? 745 : 705,
             modal: false,
             alwaysOnTop: isMac,
-            resizable: true,
+            resizable: false,
         }, {
             devTools: false,
         });
