@@ -532,7 +532,6 @@ export class WindowHandler {
         });
         ipcMain.once('screen-source-selected', (_event, source) => {
             if (isWindowsOS) {
-                const str = JSON.stringify(source);
                 logger.info(`window-handler: screen-source-selected`, source, id);
                 const type = source.id.split(':')[0];
                 if (type === 'window') {
@@ -737,8 +736,7 @@ export class WindowHandler {
             displays.forEach((element) => {
                 if (displayId === element.id.toString()) {
                     if (isWindowsOS) {
-                        const str = JSON.stringify(element);
-                        logger.info(`window-handler: MG element:`, element);
+                        logger.info(`window-handler: element:`, element);
                         const winX: string = element.bounds.x.toString();
                         const winY: string = element.bounds.y.toString();
                         this.execCmd(this.screenShareIndicatorFrameUtil, [ winX, winY ]);
