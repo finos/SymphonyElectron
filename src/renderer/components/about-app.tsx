@@ -1,4 +1,4 @@
-import { clipboard, ipcRenderer, remote } from 'electron';
+import { ipcRenderer, remote } from 'electron';
 import * as React from 'react';
 import { i18n } from '../../common/i18n-preload';
 
@@ -149,7 +149,7 @@ export default class AboutApp extends React.Component<{}, IState> {
     public copy(): void {
         const data = this.state;
         if (data) {
-            clipboard.write({ text: JSON.stringify(data) }, 'clipboard' );
+            remote.clipboard.write({ text: JSON.stringify(data) }, 'clipboard' );
         }
     }
 
