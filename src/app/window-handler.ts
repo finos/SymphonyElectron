@@ -432,6 +432,33 @@ export class WindowHandler {
     }
 
     /**
+     * Move window to the same screen as main window
+     */
+    public MoveWindow(windowToMove: BrowserWindow) {
+        const allWindows = BrowserWindow.getAllWindows();
+
+        const parentWindow = allWindows.find((window) => {
+            return (window as ICustomBrowserWindow).winName === 'main';
+        });
+
+        if (parentWindow && windowExists(parentWindow)) {
+            const display = electron.screen.getDisplayNearestPoint({x: parentWindow.getBounds().x, y: parentWindow.getBounds().y});
+
+            console.warn('QQQQ display: ' + JSON.stringify(display.bounds));
+            console.warn('QQQQ windowToMove.width: ' + windowToMove.getBounds().width);
+            console.warn('QQQQ windowToMove.heigth: ' + windowToMove.getBounds().height);
+
+            const positionX = Math.trunc(display.bounds.x + display.bounds.width / 2 - windowToMove.getBounds().width / 2);
+            const positionY = Math.trunc(display.bounds.y + display.bounds.height / 2 - windowToMove.getBounds().height / 2);
+
+            console.warn('QQQQ positionX: ' + positionX);
+            console.warn('QQQQ positionY: ' + positionY);
+
+            windowToMove.setPosition(positionX, positionY);
+        }
+    }
+
+    /**
      * Creates a about app window
      */
     public createAboutAppWindow(windowName: string): void {
@@ -447,6 +474,7 @@ export class WindowHandler {
         }
 
         const allWindows = BrowserWindow.getAllWindows();
+
         const selectedParentWindow = allWindows.find((window) => {
             return (window as ICustomBrowserWindow).winName === windowName;
         });
@@ -470,6 +498,7 @@ export class WindowHandler {
         }
 
         this.aboutAppWindow = createComponentWindow('about-app', opts);
+        this.MoveWindow(this.aboutAppWindow);
         this.aboutAppWindow.setVisibleOnAllWorkspaces(true);
         this.aboutAppWindow.webContents.once('did-finish-load', async () => {
             const ABOUT_SYMPHONY_NAMESPACE = 'AboutSymphony';
@@ -517,7 +546,7 @@ export class WindowHandler {
         }
 
         this.screenPickerWindow = createComponentWindow('screen-picker', opts);
-
+        this.MoveWindow(this.screenPickerWindow);
         this.screenPickerWindow.webContents.once('did-finish-load', () => {
             if (!this.screenPickerWindow || !windowExists(this.screenPickerWindow)) {
                 return;
@@ -576,6 +605,7 @@ export class WindowHandler {
         });
         opts.parent = window;
         this.basicAuthWindow = createComponentWindow('basic-auth', opts);
+        this.MoveWindow(this.basicAuthWindow);
         this.basicAuthWindow.setVisibleOnAllWorkspaces(true);
         this.basicAuthWindow.webContents.once('did-finish-load', () => {
             if (!this.basicAuthWindow || !windowExists(this.basicAuthWindow)) {
@@ -645,6 +675,7 @@ export class WindowHandler {
         }
 
         this.notificationSettingsWindow = createComponentWindow('notification-settings', opts);
+        this.MoveWindow(this.notificationSettingsWindow);
         this.notificationSettingsWindow.setVisibleOnAllWorkspaces(true);
         this.notificationSettingsWindow.webContents.on('did-finish-load', () => {
             if (this.notificationSettingsWindow && windowExists(this.notificationSettingsWindow)) {
@@ -752,6 +783,7 @@ export class WindowHandler {
         }
 
         this.screenSharingIndicatorWindow = createComponentWindow('screen-sharing-indicator', opts);
+        this.MoveWindow(this.screenSharingIndicatorWindow);
         this.screenSharingIndicatorWindow.setVisibleOnAllWorkspaces(true);
         this.screenSharingIndicatorWindow.webContents.once('did-finish-load', () => {
             if (!this.screenSharingIndicatorWindow || !windowExists(this.screenSharingIndicatorWindow)) {
