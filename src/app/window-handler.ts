@@ -432,6 +432,49 @@ export class WindowHandler {
     }
 
     /**
+     * Move window to the same screen as main window
+     */
+    public moveWindow(windowToMove: BrowserWindow) {
+        const allWindows = BrowserWindow.getAllWindows();
+
+        const parentWindow = allWindows.find((window) => {
+            return (window as ICustomBrowserWindow).winName === 'main';
+        });
+
+        if (parentWindow && windowExists(parentWindow)) {
+            const display = electron.screen.getDisplayNearestPoint({x: parentWindow.getBounds().x, y: parentWindow.getBounds().y});
+
+            logger.info('window-handler: moveWindow, display: ' + JSON.stringify(display.workArea));
+            logger.info('window-handler: moveWindow, windowToMove: ' + JSON.stringify(windowToMove.getBounds()));
+
+            if (display.workArea.width < windowToMove.getBounds().width) {
+                windowToMove.setSize(display.workArea.width, windowToMove.getBounds().height);
+            }
+
+            if (display.workArea.height < windowToMove.getBounds().height) {
+                windowToMove.setSize(windowToMove.getBounds().width, display.workArea.height);
+            }
+
+            let positionX = Math.trunc(display.workArea.x + display.workArea.width / 2 - windowToMove.getBounds().width / 2);
+            if (positionX < display.workArea.x) {
+                positionX = display.workArea.x;
+            }
+
+            let positionY = Math.trunc(display.workArea.y + display.workArea.height / 2 - windowToMove.getBounds().height / 2);
+            if (positionY < display.workArea.y) {
+                positionY = display.workArea.y;
+            }
+
+            logger.info('window-handler: moveWindow, positionX: ' + positionX);
+            logger.info('window-handler: moveWindow, positionY: ' + positionY);
+
+            windowToMove.setPosition(positionX, positionY);
+            // Because of a bug for windows10 we need to call setPosition twice
+            windowToMove.setPosition(positionX, positionY);
+        }
+    }
+
+    /**
      * Creates a about app window
      */
     public createAboutAppWindow(windowName: string): void {
@@ -447,6 +490,7 @@ export class WindowHandler {
         }
 
         const allWindows = BrowserWindow.getAllWindows();
+
         const selectedParentWindow = allWindows.find((window) => {
             return (window as ICustomBrowserWindow).winName === windowName;
         });
@@ -470,6 +514,7 @@ export class WindowHandler {
         }
 
         this.aboutAppWindow = createComponentWindow('about-app', opts);
+        this.moveWindow(this.aboutAppWindow);
         this.aboutAppWindow.setVisibleOnAllWorkspaces(true);
         this.aboutAppWindow.webContents.once('did-finish-load', async () => {
             const ABOUT_SYMPHONY_NAMESPACE = 'AboutSymphony';
@@ -517,7 +562,7 @@ export class WindowHandler {
         }
 
         this.screenPickerWindow = createComponentWindow('screen-picker', opts);
-
+        this.moveWindow(this.screenPickerWindow);
         this.screenPickerWindow.webContents.once('did-finish-load', () => {
             if (!this.screenPickerWindow || !windowExists(this.screenPickerWindow)) {
                 return;
@@ -576,6 +621,7 @@ export class WindowHandler {
         });
         opts.parent = window;
         this.basicAuthWindow = createComponentWindow('basic-auth', opts);
+        this.moveWindow(this.basicAuthWindow);
         this.basicAuthWindow.setVisibleOnAllWorkspaces(true);
         this.basicAuthWindow.webContents.once('did-finish-load', () => {
             if (!this.basicAuthWindow || !windowExists(this.basicAuthWindow)) {
@@ -645,6 +691,7 @@ export class WindowHandler {
         }
 
         this.notificationSettingsWindow = createComponentWindow('notification-settings', opts);
+        this.moveWindow(this.notificationSettingsWindow);
         this.notificationSettingsWindow.setVisibleOnAllWorkspaces(true);
         this.notificationSettingsWindow.webContents.on('did-finish-load', () => {
             if (this.notificationSettingsWindow && windowExists(this.notificationSettingsWindow)) {
