@@ -16,10 +16,6 @@ fi
 
 # Source all the profile files to ensure nvm is in path
 source $HOME/.nvm/nvm.sh
-source $HOME/.profile
-source $HOME/.zshrc
-source $HOME/.bashrc
-source $HOME/.bash_profile
 
 NODE_CURRENT_VERSION=$(nvm current)
 if [ "$NODE_REQUIRED_VERSION" != "$NODE_CURRENT_VERSION" ]; then
