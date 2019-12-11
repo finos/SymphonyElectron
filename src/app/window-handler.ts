@@ -576,12 +576,14 @@ export class WindowHandler {
             this.addWindow(opts.winKey, this.screenPickerWindow);
         });
         ipcMain.once('screen-source-selected', (_event, source) => {
-            if (isWindowsOS) {
-                logger.info(`window-handler: screen-source-selected`, source, id);
-                const type = source.id.split(':')[0];
-                if (type === 'window') {
-                    const hwnd = source.id.split(':')[1];
-                    this.execCmd(this.screenShareIndicatorFrameUtil, [ hwnd ]);
+            if (source != null) {
+                if (isWindowsOS) {
+                    logger.info(`window-handler: screen-source-selected`, source, id);
+                    const type = source.id.split(':')[0];
+                    if (type === 'window') {
+                        const hwnd = source.id.split(':')[1];
+                        this.execCmd(this.screenShareIndicatorFrameUtil, [ hwnd ]);
+                    }
                 }
             }
 
