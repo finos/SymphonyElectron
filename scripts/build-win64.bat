@@ -40,6 +40,8 @@ if %ERRORLEVEL% NEQ 0 (
   EXIT /B 1
 )
 
+call npm i -g gulp-cli
+
 WHERE gulp
 if %ERRORLEVEL% NEQ 0 (
   echo "GULP does not exist. Please set it up before running this script."
@@ -58,8 +60,6 @@ echo D | xcopy /y "C:\jenkins\workspace\tronlibraries\library" "library"
 
 echo "Running npm install..."
 call npm install
-
-call npm i -g gulp-cli
 
 :: Set expiry if required
 IF "%EXPIRY_PERIOD%"=="" (
