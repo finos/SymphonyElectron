@@ -435,14 +435,8 @@ export class WindowHandler {
      * Move window to the same screen as main window
      */
     public moveWindow(windowToMove: BrowserWindow) {
-        const allWindows = BrowserWindow.getAllWindows();
-
-        const parentWindow = allWindows.find((window) => {
-            return (window as ICustomBrowserWindow).winName === 'main';
-        });
-
-        if (parentWindow && windowExists(parentWindow)) {
-            const display = electron.screen.getDisplayNearestPoint({x: parentWindow.getBounds().x, y: parentWindow.getBounds().y});
+        if (this.mainWindow && windowExists(this.mainWindow)) {
+            const display = electron.screen.getDisplayMatching(this.mainWindow.getBounds());
 
             logger.info('window-handler: moveWindow, display: ' + JSON.stringify(display.workArea));
             logger.info('window-handler: moveWindow, windowToMove: ' + JSON.stringify(windowToMove.getBounds()));
