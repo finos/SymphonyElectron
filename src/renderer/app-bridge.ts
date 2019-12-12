@@ -114,6 +114,9 @@ export class AppBridge {
             case apiCmds.openScreenSnippet:
                 ssf.openScreenSnippet(this.callbackHandlers.onScreenSnippetCallback);
                 break;
+            case apiCmds.closeScreenSnippet:
+                ssf.closeScreenSnippet();
+                break;
             case apiCmds.registerBoundsChange:
                 ssf.registerBoundsChange(this.callbackHandlers.onRegisterBoundsChangeCallback);
                 break;

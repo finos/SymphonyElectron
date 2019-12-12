@@ -68,6 +68,22 @@ class ScreenSnippet {
     }
 
     /**
+     * Cancels a screen capture and closes the snippet window
+     *
+     * @param webContents {Electron.webContents}
+     */
+    public async cancelCapture() {
+        logger.info(`screen-snippet-handler: Cancel screen capture!`);
+        this.focusedWindow = BrowserWindow.getFocusedWindow();
+
+        try {
+            await this.execCmd(this.captureUtil, []);
+        } catch (error) {
+            logger.error(`screen-snippet-handler: screen capture cancedl failed with error: ${error}!`);
+        }
+    }
+
+    /**
      * Kills the child process when the application is reloaded
      */
     public killChildProcess(): void {

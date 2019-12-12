@@ -24,4 +24,14 @@ export class ScreenSnippetBcHandler {
             });
         });
     }
+    /**
+     * cancel capture method to support backward compatibility
+     *
+     * @deprecated user closeScreenSnippet instead
+     */
+    public cancel() {
+        ipcRenderer.send(apiName.symphonyApi, {
+            cmd: apiCmds.closeScreenSnippet,
+        });
+    }
 }
