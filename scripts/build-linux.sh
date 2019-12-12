@@ -1,8 +1,26 @@
 #!/bin/bash
 
+NODE_REQUIRED_VERSION=v12.13.1
+
 if ! [ -x "$(command -v git)" ]; then
   echo 'GIT does not exist! Please set it up before running this script!' >&2
   exit 1
+fi
+
+# Switch to the appropriate node version for the branch using NVM
+if [ -x "$(command -v nvm)" ]; then
+  echo 'NVM does not not exist! Install it to switch to the appropriate node version!' >&2
+  exit 1
+fi
+
+# Source all the profile files to ensure nvm is in path
+source $HOME/.nvm/nvm.sh
+
+NODE_CURRENT_VERSION=$(nvm current)
+if [ "$NODE_REQUIRED_VERSION" != "$NODE_CURRENT_VERSION" ]; then
+  echo 'Node version does not match required version! Installing the required version' >&2
+  nvm install $NODE_REQUIRED_VERSION
+  nvm use $NODE_REQUIRED_VERSION
 fi
 
 if ! [ -x "$(command -v node)" ]; then

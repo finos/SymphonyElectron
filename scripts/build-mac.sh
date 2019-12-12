@@ -19,7 +19,7 @@ source $HOME/.nvm/nvm.sh
 
 NODE_CURRENT_VERSION=$(nvm current)
 if [ "$NODE_REQUIRED_VERSION" != "$NODE_CURRENT_VERSION" ]; then
-  echo 'Node version does not match required version!' >&2
+  echo 'Node version does not match required version! Installing the required version' >&2
   nvm install $NODE_REQUIRED_VERSION
   nvm use $NODE_REQUIRED_VERSION
 fi
