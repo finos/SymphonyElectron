@@ -38,6 +38,7 @@ export interface ILocalObject {
     boundsChangeCallback?: (arg: IBoundsChange) => void;
     screenSharingIndicatorCallback?: (arg: IScreenSharingIndicator) => void;
     protocolActionCallback?: (arg: string) => void;
+    collectLogsCallback?: Array<( () => void )>;
     analyticsEventHandler?: (arg: any) => void;
 }
 
@@ -261,6 +262,35 @@ export class SSFApi {
             });
 
         }
+    }
+
+    /**
+     * Allows JS to register a log retriever that can be used by the
+     * electron main process to retrieve current logs.
+     */
+    public registerLogRetriever(collectLogs: () => void, logName: string): void {
+        if (typeof collectLogs === 'function') {
+            if (!local.collectLogsCallback) {
+                local.collectLogsCallback = new Array<( () => void )>();
+            }
+            local.collectLogsCallback.push(collectLogs);
+
+            local.ipcRenderer.send(apiName.symphonyApi, {
+                cmd: apiCmds.registerLogRetriever,
+                logName,
+            });
+
+        }
+    }
+
+    /**
+     * Send log files to main process when requested.
+     */
+    public sendLogs(logName: string, logFiles): void {
+        local.ipcRenderer.send(apiName.symphonyApi, {
+            cmd: apiCmds.sendLogs,
+            logs: { logName, logFiles },
+        });
     }
 
     /**
@@ -498,6 +528,14 @@ local.ipcRenderer.on('create-badge-data-url', (_event: Event, arg: IBadgeCount) 
 local.ipcRenderer.on('screen-snippet-data', (_event: Event, arg: IScreenSnippet) => {
     if (typeof arg === 'object' && typeof local.screenSnippetCallback === 'function') {
         local.screenSnippetCallback(arg);
+    }
+});
+
+local.ipcRenderer.on('collect-logs', ( _event: Event ) => {
+    if (local.collectLogsCallback) {
+        for (const callback of local.collectLogsCallback) {
+            callback();
+        }
     }
 });
 

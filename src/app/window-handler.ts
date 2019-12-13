@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { format, parse } from 'url';
 
+import { ChildProcess, ExecException, execFile } from 'child_process';
 import { apiName, WindowTypes } from '../common/api-interface';
 import { isDevEnv, isMac, isWindowsOS } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
@@ -87,6 +88,7 @@ export class WindowHandler {
     private screenSharingFrameWindow: Electron.BrowserWindow | null = null;
     private basicAuthWindow: Electron.BrowserWindow | null = null;
     private notificationSettingsWindow: Electron.BrowserWindow | null = null;
+    private screenShareIndicatorFrameUtil: string;
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Use these variables only on initial setup
@@ -112,6 +114,11 @@ export class WindowHandler {
         };
         this.isAutoReload = false;
         this.isOnline = true;
+
+        this.screenShareIndicatorFrameUtil = !isWindowsOS ? '' : isDevEnv
+            ? path.join(__dirname,
+                '../../../node_modules/screen-share-indicator-frame/ScreenShareIndicatorFrame.exe')
+            : path.join(path.dirname(app.getPath('exe')), 'ScreenShareIndicatorFrame.exe');
 
         this.appMenu = null;
         const locale: LocaleType = (this.config.locale || app.getLocale()) as LocaleType;
@@ -364,8 +371,12 @@ export class WindowHandler {
                     if (browserWindow && windowExists(browserWindow)) {
                         browserWindow.destroy();
 
-                        if (this.screenSharingFrameWindow && windowExists(this.screenSharingFrameWindow)) {
-                            this.screenSharingFrameWindow.close();
+                        if (isWindowsOS) {
+                            this.execCmd(this.screenShareIndicatorFrameUtil, []);
+                        } else {
+                            if (this.screenSharingFrameWindow && windowExists(this.screenSharingFrameWindow)) {
+                                this.screenSharingFrameWindow.close();
+                            }
                         }
                     }
                 }
@@ -421,6 +432,43 @@ export class WindowHandler {
     }
 
     /**
+     * Move window to the same screen as main window
+     */
+    public moveWindow(windowToMove: BrowserWindow) {
+        if (this.mainWindow && windowExists(this.mainWindow)) {
+            const display = electron.screen.getDisplayMatching(this.mainWindow.getBounds());
+
+            logger.info('window-handler: moveWindow, display: ' + JSON.stringify(display.workArea));
+            logger.info('window-handler: moveWindow, windowToMove: ' + JSON.stringify(windowToMove.getBounds()));
+
+            if (display.workArea.width < windowToMove.getBounds().width) {
+                windowToMove.setSize(display.workArea.width, windowToMove.getBounds().height);
+            }
+
+            if (display.workArea.height < windowToMove.getBounds().height) {
+                windowToMove.setSize(windowToMove.getBounds().width, display.workArea.height);
+            }
+
+            let positionX = Math.trunc(display.workArea.x + display.workArea.width / 2 - windowToMove.getBounds().width / 2);
+            if (positionX < display.workArea.x) {
+                positionX = display.workArea.x;
+            }
+
+            let positionY = Math.trunc(display.workArea.y + display.workArea.height / 2 - windowToMove.getBounds().height / 2);
+            if (positionY < display.workArea.y) {
+                positionY = display.workArea.y;
+            }
+
+            logger.info('window-handler: moveWindow, positionX: ' + positionX);
+            logger.info('window-handler: moveWindow, positionY: ' + positionY);
+
+            windowToMove.setPosition(positionX, positionY);
+            // Because of a bug for windows10 we need to call setPosition twice
+            windowToMove.setPosition(positionX, positionY);
+        }
+    }
+
+    /**
      * Creates a about app window
      */
     public createAboutAppWindow(windowName: string): void {
@@ -436,16 +484,17 @@ export class WindowHandler {
         }
 
         const allWindows = BrowserWindow.getAllWindows();
+
         const selectedParentWindow = allWindows.find((window) => {
             return (window as ICustomBrowserWindow).winName === windowName;
         });
 
         const opts: BrowserWindowConstructorOptions = this.getWindowOpts({
-            width: 420,
+            width: 550,
             height: isWindowsOS ? 745 : 705,
             modal: false,
             alwaysOnTop: isMac,
-            resizable: true,
+            resizable: false,
         }, {
             devTools: false,
         });
@@ -459,6 +508,7 @@ export class WindowHandler {
         }
 
         this.aboutAppWindow = createComponentWindow('about-app', opts);
+        this.moveWindow(this.aboutAppWindow);
         this.aboutAppWindow.setVisibleOnAllWorkspaces(true);
         this.aboutAppWindow.webContents.once('did-finish-load', async () => {
             const ABOUT_SYMPHONY_NAMESPACE = 'AboutSymphony';
@@ -506,7 +556,7 @@ export class WindowHandler {
         }
 
         this.screenPickerWindow = createComponentWindow('screen-picker', opts);
-
+        this.moveWindow(this.screenPickerWindow);
         this.screenPickerWindow.webContents.once('did-finish-load', () => {
             if (!this.screenPickerWindow || !windowExists(this.screenPickerWindow)) {
                 return;
@@ -520,6 +570,17 @@ export class WindowHandler {
             this.addWindow(opts.winKey, this.screenPickerWindow);
         });
         ipcMain.once('screen-source-selected', (_event, source) => {
+            if (source != null) {
+                if (isWindowsOS) {
+                    logger.info(`window-handler: screen-source-selected`, source, id);
+                    const type = source.id.split(':')[0];
+                    if (type === 'window') {
+                        const hwnd = source.id.split(':')[1];
+                        this.execCmd(this.screenShareIndicatorFrameUtil, [ hwnd ]);
+                    }
+                }
+            }
+
             window.send('start-share' + id, source);
             if (this.screenPickerWindow && windowExists(this.screenPickerWindow)) {
                 this.screenPickerWindow.close();
@@ -556,6 +617,7 @@ export class WindowHandler {
         });
         opts.parent = window;
         this.basicAuthWindow = createComponentWindow('basic-auth', opts);
+        this.moveWindow(this.basicAuthWindow);
         this.basicAuthWindow.setVisibleOnAllWorkspaces(true);
         this.basicAuthWindow.webContents.once('did-finish-load', () => {
             if (!this.basicAuthWindow || !windowExists(this.basicAuthWindow)) {
@@ -625,6 +687,7 @@ export class WindowHandler {
         }
 
         this.notificationSettingsWindow = createComponentWindow('notification-settings', opts);
+        this.moveWindow(this.notificationSettingsWindow);
         this.notificationSettingsWindow.setVisibleOnAllWorkspaces(true);
         this.notificationSettingsWindow.webContents.on('did-finish-load', () => {
             if (this.notificationSettingsWindow && windowExists(this.notificationSettingsWindow)) {
@@ -715,11 +778,18 @@ export class WindowHandler {
 
             displays.forEach((element) => {
                 if (displayId === element.id.toString()) {
-                    this.createScrenSharingFrameWindow('screen-sharing-frame',
-                    element.workArea.width,
-                    element.workArea.height,
-                    element.workArea.x,
-                    element.workArea.y);
+                    if (isWindowsOS) {
+                        logger.info(`window-handler: element:`, element);
+                        const winX: string = element.bounds.x.toString();
+                        const winY: string = element.bounds.y.toString();
+                        this.execCmd(this.screenShareIndicatorFrameUtil, [ winX, winY ]);
+                    } else {
+                        this.createScrenSharingFrameWindow('screen-sharing-frame',
+                        element.workArea.width,
+                        element.workArea.height,
+                        element.workArea.x,
+                        element.workArea.y);
+                    }
                 }
             });
         }
@@ -950,6 +1020,26 @@ export class WindowHandler {
 
         return {...defaultWindowOpts, ...windowOpts};
     }
+
+    /**
+     * Executes the given command via a child process
+     *
+     * @param util {string}
+     * @param utilArgs {ReadonlyArray<string>}
+     */
+    private execCmd(util: string, utilArgs: ReadonlyArray<string>): Promise<ChildProcess> {
+        logger.info(`window handler: execCmd: util: ${util} utilArgs: ${utilArgs}`);
+        return new Promise<ChildProcess>((resolve, reject) => {
+            return execFile(util, utilArgs, (error: ExecException | null) => {
+                if (error && error.killed) {
+                    // processs was killed, just resolve with no data.
+                    return reject(error);
+                }
+                resolve();
+            });
+        });
+    }
+
 }
 
 const windowHandler = new WindowHandler();

@@ -127,6 +127,16 @@
         <button id='cancel-snippet'>cancel snippet</button>
 
         <hr>
+        <p>Logs:</p>
+        Filename <input type='text' id='log-filename' value='test_log.log'/>
+        <p>Contents</p>
+        <textarea id="log-contents" rows="4">Test log contents</textarea>
+        <p/>
+        Filename <input type='text' id='log-filename2' value=''/>
+        <p>Contents</p>
+        <textarea id="log-contents2" rows="4"></textarea>
+
+        <hr>
         <p>Window activate:</p>
         <button id='open-win'>open window</button>
 
@@ -176,6 +186,8 @@
                 activate: 'activate',
                 registerBoundsChange: 'register-bounds-change',
                 registerProtocolHandler: 'register-protocol-handler',
+                registerLogRetriever: 'register-log-retriever',
+                sendLogs: 'send-logs',
                 registerAnalyticHandler: 'register-analytic-handler',
                 registerActivityDetection: 'register-activity-detection',
                 showNotificationSettings: 'show-notification-settings',
@@ -440,9 +452,33 @@
             window.postMessage({ method, data }, '*');
         };
 
+        const getTestLogs = () => {
+            if (document.getElementById('log-filename2').value == '') {
+                const filename = document.getElementById('log-filename').value;
+                const contents = document.getElementById('log-contents').value;
+                return [ { filename, contents }, ];
+            } else {
+                const filename1 = document.getElementById('log-filename').value;
+                const contents1 = document.getElementById('log-contents').value;
+                const filename2 = document.getElementById('log-filename2').value;
+                const contents2 = document.getElementById('log-contents2').value;
+                return [ { filename: filename1, contents: contents1 }, 
+                    { filename: filename2, contents: contents2 }, ];
+            }
+        }
+
+        const logTypeTestLogs = 'TestLogs';
+
         window.addEventListener('message', (event) => {
             const { data, method } = event.data;
             switch (method) {
+                case 'collect-logs':
+                    if (window.ssf) {
+                        window.ssf.sendLogs(logTypeTestLogs, getTestLogs());
+                    } else {
+                        postMessage( apiCmds.sendLogs, { logName: logTypeTestLogs, logFiles: getTestLogs() } );
+                    }
+                    break;
                 case 'activity-callback':
                     activityCallback(data);
                     break;
@@ -468,6 +504,15 @@
                     console.log(event.data);
             }
         });
+
+        /**
+         * Log retriever
+         */
+        if (window.ssf) {
+            window.ssf.registerLogRetriever(logTypeTestLogs);
+        } else {
+            postMessage(apiCmds.registerLogRetriever, logTypeTestLogs);
+        }
 
         /**
          * Analytic events
