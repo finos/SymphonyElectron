@@ -40,14 +40,6 @@ if %ERRORLEVEL% NEQ 0 (
   EXIT /B 1
 )
 
-call npm i -g gulp-cli
-
-WHERE gulp
-if %ERRORLEVEL% NEQ 0 (
-  echo "GULP does not exist. Please set it up before running this script."
-  EXIT /B 1
-)
-
 echo "Node version is: "
 call node --version
 
