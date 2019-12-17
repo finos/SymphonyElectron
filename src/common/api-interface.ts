@@ -33,6 +33,7 @@ export enum apiCmds {
     memoryInfo = 'memory-info',
     swiftSearch = 'swift-search',
     getConfigUrl = 'get-config-url',
+    registerRestartFloater = 'register-restart-floater',
 }
 
 export enum apiName {
@@ -157,4 +158,9 @@ export interface ILogFile {
 export interface ILogs {
     logName: string;
     logFiles: ILogFile[];
+}
+
+export interface IRestartFloaterData {
+    windowName: string;
+    bounds: Electron.Rectangle;
 }

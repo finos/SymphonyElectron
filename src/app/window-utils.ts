@@ -5,6 +5,7 @@ import * as filesize from 'filesize';
 import * as fs from 'fs';
 import * as path from 'path';
 import { format, parse } from 'url';
+import { apiName } from '../common/api-interface';
 
 import { isDevEnv, isLinux, isMac } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
@@ -485,4 +486,30 @@ export const isSymphonyReachable = (window: ICustomBrowserWindow | null) => {
             logger.error(`window-utils: Network status check: No active network connection ${error}`);
         });
     }, networkStatusCheckInterval);
+};
+
+/**
+ * Refreshes/Restarts the window based on type
+ *
+ * @param browserWindow {ICustomBrowserWindow}
+ */
+export const reloadWindow = (browserWindow: ICustomBrowserWindow) => {
+    if (!browserWindow || !windowExists(browserWindow)) {
+        return;
+    }
+
+    const windowName = browserWindow.winName;
+    const mainWindow = windowHandler.getMainWindow();
+    // reload the main window
+    if (windowName === apiName.mainWindowName) {
+        logger.info(`window-utils: reloading the main window`);
+        browserWindow.reload();
+        return;
+    }
+    // Send an event to SFE that restarts the pop-out window
+    if (mainWindow && windowExists(mainWindow)) {
+        logger.info(`window-handler: reloading the window`, { windowName });
+        const bounds = browserWindow.getBounds();
+        mainWindow.webContents.send('restart-floater', { windowName, bounds });
+    }
 };

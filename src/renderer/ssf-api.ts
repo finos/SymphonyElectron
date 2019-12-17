@@ -9,6 +9,7 @@ import {
     IBadgeCount,
     IBoundsChange,
     ILogMsg,
+    IRestartFloaterData,
     IScreenSharingIndicator,
     IScreenSharingIndicatorOptions,
     IScreenSnippet,
@@ -40,6 +41,7 @@ export interface ILocalObject {
     protocolActionCallback?: (arg: string) => void;
     collectLogsCallback?: Array<( () => void )>;
     analyticsEventHandler?: (arg: any) => void;
+    restartFloater?: (arg: IRestartFloaterData) => void;
 }
 
 const local: ILocalObject = {
@@ -451,6 +453,14 @@ export class SSFApi {
         throttledCloseScreenShareIndicator(winKey);
     }
 
+    /**
+     * Allows JS to register a function to restart floater
+     * @param callback
+     */
+    public registerRestartFloater(callback: (args: IRestartFloaterData) => void): void {
+        local.restartFloater = callback;
+    }
+
 }
 
 /**
@@ -606,6 +616,16 @@ local.ipcRenderer.on('protocol-action', (_event, arg: string) => {
 local.ipcRenderer.on('analytics-callback', (_event, arg: object) => {
     if (typeof local.analyticsEventHandler === 'function' && arg) {
         local.analyticsEventHandler(arg);
+    }
+});
+
+/**
+ * An event triggered by the main process to restart the child window
+ * @param {IRestartFloaterData}
+ */
+local.ipcRenderer.on('restart-floater', (_event, { windowName, bounds }: IRestartFloaterData) => {
+    if (typeof local.restartFloater === 'function' && windowName) {
+        local.restartFloater({ windowName, bounds });
     }
 });
 

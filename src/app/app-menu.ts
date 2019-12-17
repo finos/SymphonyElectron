@@ -15,7 +15,7 @@ import { titleBarChangeDialog } from './dialog-handler';
 import { exportCrashDumps, exportLogs } from './reports-handler';
 import { updateAlwaysOnTop } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
-import { windowExists } from './window-utils';
+import { reloadWindow, windowExists } from './window-utils';
 
 export const menuSections = {
     about: 'about',
@@ -238,7 +238,7 @@ export class AppMenu {
             label: i18n.t('View')(),
             submenu: [ {
                 accelerator: 'CmdOrCtrl+R',
-                click: (_item, focusedWindow) => focusedWindow ? focusedWindow.reload() : null,
+                click: (_item, focusedWindow) => focusedWindow ? reloadWindow(focusedWindow as ICustomBrowserWindow) : null,
                 label: i18n.t('Reload')(),
             },
                 this.buildSeparator(),

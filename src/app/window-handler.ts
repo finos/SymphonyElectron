@@ -27,6 +27,7 @@ import {
     injectStyles,
     isSymphonyReachable,
     preventWindowNavigation,
+    reloadWindow,
     windowExists,
 } from './window-utils';
 
@@ -930,13 +931,16 @@ export class WindowHandler {
     private registerGlobalShortcuts(): void {
         logger.info(`window-handler: registering global shortcuts!`);
         globalShortcut.register(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I', this.onRegisterDevtools);
+        globalShortcut.register('CmdOrCtrl+R', this.onReload);
 
         app.on('browser-window-focus', () => {
             globalShortcut.register(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I', this.onRegisterDevtools);
+            globalShortcut.register('CmdOrCtrl+R', this.onReload);
         });
 
         app.on('browser-window-blur', () => {
             globalShortcut.unregister(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I');
+            globalShortcut.unregister('CmdOrCtrl+R');
         });
     }
 
@@ -955,6 +959,17 @@ export class WindowHandler {
         }
         focusedWindow.webContents.closeDevTools();
         logger.info(`window-handler: dev tools disabled by admin, not opening it for the user!`);
+    }
+
+    /**
+     * Reloads the window based on the window type
+     */
+    private onReload(): void {
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+        if (!focusedWindow || !windowExists(focusedWindow)) {
+            return;
+        }
+        reloadWindow(focusedWindow as ICustomBrowserWindow);
     }
 
     /**
