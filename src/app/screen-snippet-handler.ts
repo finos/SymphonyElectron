@@ -79,7 +79,7 @@ class ScreenSnippet {
         try {
             await this.execCmd(this.captureUtil, []);
         } catch (error) {
-            logger.error(`screen-snippet-handler: screen capture cancedl failed with error: ${error}!`);
+            logger.error(`screen-snippet-handler: screen capture cancel failed with error: ${error}!`);
         }
     }
 
