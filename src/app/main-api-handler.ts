@@ -124,6 +124,9 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.IpcMainEvent, arg: IApiArgs) =>
         case apiCmds.openScreenSnippet:
             screenSnippet.capture(event.sender);
             break;
+        case apiCmds.closeScreenSnippet:
+            screenSnippet.cancelCapture();
+            break;
         case apiCmds.closeWindow:
             windowHandler.closeWindow(arg.windowType, arg.winKey);
             break;

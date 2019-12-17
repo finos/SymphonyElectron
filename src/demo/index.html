@@ -124,6 +124,7 @@
         <button id='snippet'>get snippet</button>
         <p>snippet output:</p>
         <image id='snippet-img'/>
+        <button id='cancel-snippet'>cancel snippet</button>
 
         <hr>
         <p>Logs:</p>
@@ -199,6 +200,7 @@
                 setIsInMeeting: 'set-is-in-meeting',
                 setLocale: 'set-locale',
                 openScreenSnippet: 'open-screen-snippet',
+                closeScreenSnippet: 'close-screen-snippet',
                 keyPress: 'key-press',
                 closeWindow: 'close-window',
                 openScreenSharingIndicator: 'open-screen-sharing-indicator',
@@ -319,6 +321,16 @@
                 screenSnippet.capture().then(gotSnippet).catch(gotSnippet);
             } else {
                 postMessage(apiCmds.openScreenSnippet)
+            }
+        });
+
+        const cancelSnippetButton = document.getElementById('cancel-snippet');
+        cancelSnippetButton.addEventListener('click', () => {
+            if (window.ssf) {
+                const screenSnippet = new window.ssf.ScreenSnippet();
+                screenSnippet.cancelCapture();
+            } else {
+                postMessage(apiCmds.closeScreenSnippet)
             }
         });
 

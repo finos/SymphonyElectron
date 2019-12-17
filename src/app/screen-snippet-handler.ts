@@ -25,7 +25,7 @@ class ScreenSnippet {
         this.tempDir = os.tmpdir();
         this.captureUtil = isMac ? '/usr/sbin/screencapture' : isDevEnv
             ? path.join(__dirname,
-                '../../node_modules/screen-snippet/bin/Release/ScreenSnippet.exe')
+                '../../../node_modules/screen-snippet/ScreenSnippet.exe')
             : path.join(path.dirname(app.getPath('exe')), 'ScreenSnippet.exe');
 
         if (isLinux) {
@@ -68,6 +68,22 @@ class ScreenSnippet {
     }
 
     /**
+     * Cancels a screen capture and closes the snippet window
+     *
+     * @param webContents {Electron.webContents}
+     */
+    public async cancelCapture() {
+        logger.info(`screen-snippet-handler: Cancel screen capture!`);
+        this.focusedWindow = BrowserWindow.getFocusedWindow();
+
+        try {
+            await this.execCmd(this.captureUtil, []);
+        } catch (error) {
+            logger.error(`screen-snippet-handler: screen capture cancel failed with error: ${error}!`);
+        }
+    }
+
+    /**
      * Kills the child process when the application is reloaded
      */
     public killChildProcess(): void {
@@ -88,6 +104,7 @@ class ScreenSnippet {
      * @example execCmd('-i -s', '/user/desktop/symphonyImage-1544025391698.png')
      */
     private execCmd(captureUtil: string, captureUtilArgs: ReadonlyArray<string>): Promise<ChildProcess> {
+        logger.info(`screen-snippet-handlers: execCmd ${captureUtil} ${captureUtilArgs}`);
         return new Promise<ChildProcess>((resolve, reject) => {
             return this.child = execFile(captureUtil, captureUtilArgs, (error: ExecException | null) => {
                 if (error && error.killed) {

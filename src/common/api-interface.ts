@@ -21,6 +21,7 @@ export enum apiCmds {
     setIsInMeeting = 'set-is-in-meeting',
     setLocale = 'set-locale',
     openScreenSnippet = 'open-screen-snippet',
+    closeScreenSnippet = 'close-screen-snippet',
     keyPress = 'key-press',
     closeWindow = 'close-window',
     openScreenSharingIndicator = 'open-screen-sharing-indicator',
