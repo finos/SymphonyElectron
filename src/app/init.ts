@@ -1,7 +1,7 @@
 import { app } from 'electron';
 import * as path from 'path';
 
-import { isDevEnv } from '../common/env';
+import { isDevEnv, isNodeEnv } from '../common/env';
 import { logger } from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
 import { appStats } from './stats';
@@ -11,7 +11,9 @@ const userDataPathArg: string | null = getCommandLineArgs(process.argv, '--userD
 const userDataPath = userDataPathArg && userDataPathArg.substring(userDataPathArg.indexOf('=') + 1);
 
 // force sandbox: true for all BrowserWindow instances.
-app.enableSandbox();
+if (!isNodeEnv) {
+    app.enableSandbox();
+}
 
 // need to set this explicitly if using Squirrel
 // https://www.electron.build/configuration/configuration#Configuration-squirrelWindows

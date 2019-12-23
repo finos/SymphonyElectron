@@ -259,12 +259,16 @@
                 const ssfNotificationHandler = new window.ssf.Notification(notf.title, notf);
                 const onclick = (event) => {
                     event.target.close();
-                    alert('notification clicked: ' + event.target.data.hello);
+                    if (!process.env.NODE_ENV) {
+                        alert('notification clicked: ' + event.target.data.hello);
+                    }
                 };
                 ssfNotificationHandler.addEventListener('click', onclick);
 
                 const onclose = () => {
-                    alert('notification closed');
+                    if (!process.env.NODE_ENV) {
+                        alert('notification closed');
+                    }
                 };
                 ssfNotificationHandler.addEventListener('close', onclose);
 
