@@ -209,6 +209,7 @@
                 getMediaSource: 'get-media-source',
                 notification: 'notification',
                 closeNotification: 'close-notification',
+                registerRestartFloater: 'register-restart-floater',
         };
         let requestId = 0;
 
@@ -500,6 +501,9 @@
                     handleResponse(data);
                     console.log(event.data);
                     break;
+                case 'restart-floater-callback':
+                    onRestartFloater(data);
+                    break;
                 default:
                     console.log(event.data);
             }
@@ -548,6 +552,22 @@
             window.ssf.registerProtocolHandler();
         } else {
             postMessage(apiCmds.registerProtocolHandler);
+        }
+
+        const onRestartFloater = (data) => {
+            if (win) {
+                win.close();
+            }
+            win = window.open(`win.html?x=${data.bounds.x}&y=${data.bounds.y},test-window`, `height=${data.bounds.height},width=${data.bounds.width}}`);
+        };
+
+        /**
+         * Protocol handler
+         */
+        if (window.ssf) {
+            window.ssf.registerRestartFloater(onRestartFloater);
+        } else {
+            postMessage(apiCmds.registerRestartFloater);
         }
 
         /**

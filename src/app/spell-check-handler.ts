@@ -5,6 +5,8 @@ import { ContextMenuBuilder, DictionarySync, SpellCheckHandler } from 'electron-
 import { isDevEnv, isMac } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
+import { ICustomBrowserWindow } from './window-handler';
+import { reloadWindow } from './window-utils';
 
 export class SpellChecker {
     public locale: LocaleType = 'en-US';
@@ -117,9 +119,11 @@ export class SpellChecker {
         if (!isLink) {
             menu.append(new MenuItem({ type: 'separator' }));
             menu.append(new MenuItem({
-                role: 'reload',
                 accelerator: 'CmdOrCtrl+R',
                 label: i18n.t('Reload')(),
+                click: (_menuItem, browserWindow , _event) => {
+                    reloadWindow(browserWindow as ICustomBrowserWindow);
+                },
             }));
         }
         return menu;

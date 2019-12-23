@@ -4,8 +4,11 @@ import { IAnalyticsData } from '../app/analytics-handler';
 import {
     apiCmds,
     IBoundsChange,
-    ILogMsg, INotificationData,
-    IScreenSharingIndicator, IScreenSharingIndicatorOptions,
+    ILogMsg,
+    INotificationData,
+    IRestartFloaterData,
+    IScreenSharingIndicator,
+    IScreenSharingIndicatorOptions,
     IScreenSnippet,
     LogLevel,
 } from '../common/api-interface';
@@ -57,6 +60,7 @@ export class AppBridge {
         ): void => this.gotMediaSource(error, source),
         onNotificationCallback: (event, data) => this.notificationCallback(event, data),
         onAnalyticsEventCallback: (data) => this.analyticsEventCallback(data),
+        restartFloater: (data) => this.restartFloater(data),
     };
 
     constructor() {
@@ -159,6 +163,9 @@ export class AppBridge {
             case apiCmds.registerAnalyticsHandler:
                 ssf.registerAnalyticsEvent(this.callbackHandlers.onAnalyticsEventCallback);
                 break;
+            case apiCmds.registerRestartFloater:
+                ssf.registerRestartFloater(this.callbackHandlers.restartFloater);
+                break;
             case apiCmds.swiftSearch:
                 if (ssInstance) {
                     ssInstance.handleMessageEvents(data);
@@ -217,6 +224,14 @@ export class AppBridge {
      */
     private analyticsEventCallback(arg: IAnalyticsData): void {
         this.broadcastMessage('analytics-event-callback', arg);
+    }
+
+    /**
+     * Broadcast to restart floater event with data
+     * @param arg {IAnalyticsData}
+     */
+    private restartFloater(arg: IRestartFloaterData): void {
+        this.broadcastMessage('restart-floater-callback', arg);
     }
 
     /**

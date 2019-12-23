@@ -64,6 +64,8 @@ electron.app.on('certificate-error', async (event, webContents, url, error, _cer
 
     logger.warn(`Certificate error: ${error} for url: ${url}`);
 
+    event.preventDefault();
+
     const browserWin = electron.BrowserWindow.fromWebContents(webContents);
     const { response } = await electron.dialog.showMessageBox(browserWin, {
         type: 'warning',
@@ -78,8 +80,6 @@ electron.app.on('certificate-error', async (event, webContents, url, error, _cer
         title: i18n.t('Certificate Error')(),
         message: `${i18n.t('Certificate Error')()}: ${error}\nURL: ${url}`,
     });
-
-    event.preventDefault();
 
     if (response === 2) {
         ignoreAllCertErrors = true;
