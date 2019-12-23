@@ -13,17 +13,24 @@
   "scripts": {
     "browserify-preload": "browserify -o lib/src/renderer/_preload-main.js -x electron --insert-global-vars=__filename,__dirname lib/src/renderer/preload-main.js && npm run browserify-preload-component",
     "browserify-preload-component": "browserify -o lib/src/renderer/_preload-component.js -x electron --insert-global-vars=__filename,__dirname lib/src/renderer/preload-component.js",
-    "compile": "npm run lint && gulp build",
+    "compile": "run-s lint compile:*",
+    "compile:project": "gulp build",
+    "compile:spec": "tsc -p tsconfig.spec.json",
+    "compile:robot": "npm rebuild --build-from-source robotjs",
     "dev": "npm run prebuild && cross-env ELECTRON_DEV=true electron .",
     "demo-win": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file:///src/demo/index.html",
     "demo-mac": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/src/demo/index.html",
-    "lint": "tslint --project tsconfig.json",
+    "lint": "run-s lint:*",
+    "lint:project": "tslint --project tsconfig.json",
+    "lint:spec": "tslint --project tsconfig.spec.json",
     "packed-linux": "npm run prebuild && npm run test && ./node_modules/.bin/electron-builder build --linux",
     "packed-mac": "npm run unpacked-mac && packagesbuild -v installer/mac/symphony-mac-packager.pkgproj",
     "prebuild": "npm run compile && npm run rebuild && npm run browserify-preload",
     "rebuild": "electron-rebuild -f",
     "start": "npm run compile && npm run browserify-preload && cross-env ELECTRON_DEV=true electron .",
-    "test": "npm run lint && cross-env ELECTRON_QA=true jest --config jest-config.json --runInBand --detectOpenHandles",
+    "test": "run-s lint compile test:*",
+    "test:unit": "cross-env ELECTRON_QA=true jest --config jest-config.json --runInBand --detectOpenHandles",
+    "test:spectron": "npx ava --verbose --serial",
     "unpacked-mac": "npm run prebuild && npm run test && ./node_modules/.bin/electron-builder build --mac --dir",
     "unpacked-win": "npm run prebuild && npm run test && node_modules\\.bin\\electron-builder build --win --x64 --dir",
     "unpacked-win-x86": "npm run prebuild && npm run test && node_modules\\.bin\\electron-builder build --win --ia32 --dir"
@@ -105,6 +112,7 @@
     "@types/react": "16.8.3",
     "@types/react-dom": "16.0.9",
     "@types/ref-napi": "1.4.0",
+    "ava": "2.4.0",
     "browserify": "16.2.3",
     "cross-env": "5.2.0",
     "del": "3.0.0",
@@ -124,6 +132,9 @@
     "jest-html-reporter": "2.4.2",
     "less": "3.8.1",
     "node-abi": "^2.14.0",
+    "npm-run-all": "^4.1.5",
+    "robotjs": "^0.6.0",
+    "spectron": "8.0.0",
     "ts-jest": "23.10.5",
     "tslint": "5.11.0",
     "typescript": "3.1.1"
@@ -149,5 +160,14 @@
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#v1.0.6",
     "screen-share-indicator-frame": "git+https://github.com/symphonyoss/ScreenShareIndicatorFrame.git#v1.4.3",
     "swift-search": "2.0.2"
+  },
+  "ava": {
+    "failFast": true,
+    "files": [
+      "lib/spectron/**/*.spec.js"
+    ],
+    "sources": [
+      "lib/src/**/*.js"
+    ]
   }
 }
