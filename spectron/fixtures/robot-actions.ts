@@ -1,11 +1,12 @@
 import * as robot from 'robotjs';
 import { isMac } from '../../src/common/env';
+import { Timeouts } from './spectron-setup';
 
 class RobotActions {
 
     constructor() {
-        robot.setKeyboardDelay(1000);
-        robot.setMouseDelay(1000);
+        robot.setKeyboardDelay(Timeouts.oneSec);
+        robot.setMouseDelay(Timeouts.oneSec);
     }
 
     /**

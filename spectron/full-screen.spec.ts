@@ -3,7 +3,13 @@ import * as robot from 'robotjs';
 import { Application } from 'spectron';
 import { robotActions } from './fixtures/robot-actions';
 
-import { getDemoFilePath, sleep, startApplication, stopApplication } from './fixtures/spectron-setup';
+import {
+    getDemoFilePath,
+    sleep,
+    startApplication,
+    stopApplication,
+    Timeouts,
+} from './fixtures/spectron-setup';
 
 let app;
 
@@ -18,11 +24,11 @@ test.after.always(async () => {
 
 test('fullscreen: verify application full screen feature', async (t) => {
     await app.browserWindow.loadURL(getDemoFilePath());
-    await app.client.waitUntilWindowLoaded(5000);
+    await app.client.waitUntilWindowLoaded(Timeouts.fiveSec);
     robotActions.toggleFullscreen();
     t.true(await app.browserWindow.isFullScreen());
 
-    await sleep(500);
+    await sleep(Timeouts.halfSec);
     robot.keyTap('escape');
     t.false(await app.browserWindow.isFullScreen());
 });

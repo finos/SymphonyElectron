@@ -6,11 +6,7 @@ platform:
   - x86
   - x64
 
-branches:
-  only:
-    - master
-
-skip_tags: true
+skip_tags: false
 
 environment:
   nodejs_version: "12"
@@ -25,4 +21,4 @@ install:
 test_script:
   - node --version
   - npm --version
-  - npm run compile:spec && npm run test:spectron
+  - npm run test

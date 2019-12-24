@@ -1,6 +1,12 @@
 import * as path from 'path';
 import { Application, BasicAppSettings } from 'spectron';
 
+export enum Timeouts {
+    halfSec = 500,
+    oneSec = 1000,
+    fiveSec = 5000,
+}
+
 /**
  * Returns the electron executable path
  */
