@@ -24,8 +24,7 @@
 
 ## Run demo:
 - npm install
-- npm run demo-win (for windows)
-- npm run demo-mac (for mac osx)
+- npm run demo (runs platform specific commands)
 
 Remember to set this.origin to '*' in app-bridge.ts when running the demo. Search 
 for // DEMO-APP: and comment that line back in. Make sure to comment it out again 
@@ -104,12 +103,21 @@ before you commit.
 - To change the start url (i.e., pod url), edit config/Symphony.config and change 'url' variable. if no protocol provided, then https will be added.
 - The installer will include file config/Symphony.config next to executable. Changes in this file will effect all users.  
 
-## Tests and Code Coverage
+## Tests
+- Use `npm test` to run all the tests
+
+### Unit tests and Code Coverage
 - [Jest framework](http://facebook.github.io/jest/) is used to run tests
-- Use `npm test` to run unit tests
+- Use `npm run test:unit` to run unit tests
 - Code coverage reports are placed in [coverage](../../out/coverage) directory
 - To check the test run report, see the [dist](../../out) directory
 - See the [tests](./tests) directory to find all the unit tests
+
+### Spectron Tests
+- [AVA](https://github.com/avajs/ava) is used to run Spectron tests
+- Use `npm run test:spectron` to run spectron tests
+- To compile spectron tests `npm run compile:spec`
+- To run specific test use example: `npm run test:spectron -- --match=spell*` runs only spellchecker related tests 
 
 ## Logging
 - Local logging is enabled for dev environments using the module [electron-log](https://www.npmjs.com/package/electron-log)
