@@ -57,7 +57,7 @@ export const startApplication = async (
 ): Promise<Application> => {
     // loads demo page correctly
     if (shouldLoadDemoApp && options.args) {
-        options.args.push(`. --url=file://${path.join(__dirname, '..', '..', '..', '/src/demo/index.html')}`);
+        options.args.push(`. --url=file://${getDemoFilePath()}`);
     }
     const application = new Application(options);
     await application.start();
