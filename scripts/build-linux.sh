@@ -1,6 +1,7 @@
 #!/bin/bash
 
 NODE_REQUIRED_VERSION=v12.13.1
+SNYK_API_TOKEN=885953dc-9469-443c-984d-524352d54116
 
 if ! [ -x "$(command -v git)" ]; then
   echo 'GIT does not exist! Please set it up before running this script!' >&2
@@ -34,8 +35,14 @@ if ! [ -x "$(command -v npm)" ]; then
 fi
 
 if ! [ -x "$(command -v gulp)" ]; then
-  echo 'Gulp does not exist! Install it for setting expiry!' >&2
-  exit 1
+  echo 'Gulp does not exist! Installing it!' >&2
+  npm install -g gulp
+fi
+
+if ! [ -x "$(command -v snyk)" ]; then
+  echo 'Snyk does not exist! Installing and setting it up' >&2
+  npm install -g snyk
+  snyk config set api=$SNYK_API_TOKEN
 fi
 
 if [ -z "$PARENT_BUILD_VERSION" ]; then
@@ -55,7 +62,12 @@ fi
 PKG_VERSION=$(node -e "console.log(require('./package.json').version);")
 
 # Install app dependencies
+echo "Installing dependencies"
 npm install
+
+# Run Snyk Security Tests
+echo "Running snyk security tests"
+snyk test --file=package.json
 
 # replace url in config
 echo "Setting default pod url to https://corporate.symphony.com"
