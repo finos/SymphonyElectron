@@ -14,32 +14,8 @@ echo %PATH%
 set PATH=%PATH%;C:\Program Files (x86)\GnuWin32\bin
 echo %PATH%
 
-WHERE git
-if %ERRORLEVEL% NEQ 0 (
-  echo "GIT does not exist. Please set it up before running this script."
-  EXIT /B 1
-)
-
-WHERE nvm
-if %ERRORLEVEL% NEQ 0 (
-  echo "NVM does not exist. Please set it up before running this script."
-  EXIT /B 1
-)
-
 nvm install %NODE_REQUIRED_VERSION%
 nvm use %NODE_REQUIRED_VERSION%
-
-WHERE node
-if %ERRORLEVEL% NEQ 0 (
-  echo "NODE does not exist. Please set it up before running this script."
-  EXIT /B 1
-)
-
-WHERE npm
-if %ERRORLEVEL% NEQ 0 (
-  echo "NPM does not exist. Please set it up before running this script."
-  EXIT /B 1
-)
 
 echo "Node version is: "
 call node --version
