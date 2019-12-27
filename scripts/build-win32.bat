@@ -26,8 +26,8 @@ if %ERRORLEVEL% NEQ 0 (
   EXIT /B 1
 )
 
-nvm install %NODE_REQUIRED_VERSION%
-nvm use %NODE_REQUIRED_VERSION%
+call nvm install %NODE_REQUIRED_VERSION%
+call nvm use %NODE_REQUIRED_VERSION%
 
 echo "Node version is: "
 call node --version
@@ -35,14 +35,14 @@ call node --version
 WHERE gulp
 if %ERRORLEVEL% NEQ 0 (
   echo "GULP does not exist. Installing it."
-  npm i gulp -g
+  call npm i gulp -g
 )
 
 WHERE snyk
 if %ERRORLEVEL% NEQ 0 (
   echo "Snyk does not exist! Installing and setting it up"
-  npm i snyk -g
-  snyk config set api=%SNYK_API_TOKEN%
+  call npm i snyk -g
+  call snyk config set api=%SNYK_API_TOKEN%
 )
 
 :: Below command replaces buildVersion with the appropriate build number from jenkins
