@@ -29,9 +29,6 @@ if %ERRORLEVEL% NEQ 0 (
 call nvm install %NODE_REQUIRED_VERSION%
 call nvm use %NODE_REQUIRED_VERSION%
 
-echo "Node version is: "
-call node --version
-
 WHERE gulp
 if %ERRORLEVEL% NEQ 0 (
   echo "GULP does not exist. Installing it."
