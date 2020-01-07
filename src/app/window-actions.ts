@@ -39,7 +39,7 @@ const saveWindowSettings = async (): Promise<void> => {
                 const isMaximized = browserWindow.isMaximized();
                 const isFullScreen = browserWindow.isFullScreen();
                 const { mainWinPos } = config.getUserConfigFields([ 'mainWinPos' ]);
-                await config.updateUserConfig({ mainWinPos: { ...mainWinPos, ...{ x, y, width, height, isMaximized, isFullScreen } } });
+                await config.updateUserConfig({ mainWinPos: { ...mainWinPos, ...{ height, width, x, y, isMaximized, isFullScreen } } });
             }
         }
     }
@@ -49,11 +49,13 @@ const saveWindowSettings = async (): Promise<void> => {
 const windowMaximized = async (): Promise<void> => {
     const browserWindow = BrowserWindow.getFocusedWindow() as ICustomBrowserWindow;
     if (browserWindow && windowExists(browserWindow)) {
+        const [ x, y ] = browserWindow.getPosition();
+        const [ width, height ] = browserWindow.getSize();
         const isMaximized = browserWindow.isMaximized();
         const isFullScreen = browserWindow.isFullScreen();
         if (browserWindow.winName === apiName.mainWindowName) {
             const { mainWinPos } = config.getUserConfigFields([ 'mainWinPos' ]);
-            await config.updateUserConfig({ mainWinPos: { ...mainWinPos, ...{ isMaximized, isFullScreen } } });
+            await config.updateUserConfig({ mainWinPos: { ...mainWinPos, ...{ height, width, x, y, isMaximized, isFullScreen } } });
         }
     }
 };
