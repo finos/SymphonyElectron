@@ -144,16 +144,20 @@ export class WindowHandler {
         this.spellchecker = new SpellChecker();
         logger.info(`window-handler: initialized spellchecker module with locale ${this.spellchecker.locale}`);
 
+        logger.info('window-handler: createApplication mainWinPos: ' + JSON.stringify(this.config.mainWinPos));
+
         // set window opts with additional config
         this.mainWindow = new BrowserWindow({
             ...this.windowOpts, ...getBounds(this.config.mainWinPos, DEFAULT_WIDTH, DEFAULT_HEIGHT),
         }) as ICustomBrowserWindow;
+
         this.mainWindow.winName = apiName.mainWindowName;
         const {isFullScreen, isMaximized} = this.config.mainWinPos ? this.config.mainWinPos : {isFullScreen: false, isMaximized: false};
         if (isMaximized) {
             this.mainWindow.maximize();
             logger.info(`window-handler: window is maximized!`);
         }
+
         if (isFullScreen) {
             logger.info(`window-handler: window is in full screen!`);
             this.mainWindow.setFullScreen(true);
