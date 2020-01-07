@@ -301,16 +301,19 @@ export const sanitize = async (windowName: string): Promise<void> => {
  * @return {x?: Number, y?: Number, width: Number, height: Number}
  */
 export const getBounds = (winPos: ICustomRectangle | Electron.Rectangle | undefined, defaultWidth: number, defaultHeight: number): Partial<Electron.Rectangle> => {
+    logger.info('window-utils: getBounds, winPos: ' + JSON.stringify(winPos));
+
     if (!winPos || !winPos.x || !winPos.y || !winPos.width || !winPos.height) {
         return { width: defaultWidth, height: defaultHeight };
     }
     const displays = electron.screen.getAllDisplays();
 
     for (let i = 0, len = displays.length; i < len; i++) {
-        const workArea = displays[ i ].workArea;
-        if (winPos.x >= workArea.x && winPos.y >= workArea.y &&
-            ((winPos.x + winPos.width) <= (workArea.x + workArea.width)) &&
-            ((winPos.y + winPos.height) <= (workArea.y + workArea.height))) {
+        const bounds = displays[ i ].bounds;
+        logger.info('window-utils: getBounds, bounds: ' + JSON.stringify(bounds));
+        if (winPos.x >= bounds.x && winPos.y >= bounds.y &&
+            ((winPos.x + winPos.width) <= (bounds.x + bounds.width)) &&
+            ((winPos.y + winPos.height) <= (bounds.y + bounds.height))) {
             return winPos;
         }
     }
