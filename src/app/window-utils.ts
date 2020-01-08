@@ -513,3 +513,31 @@ export const reloadWindow = (browserWindow: ICustomBrowserWindow) => {
         mainWindow.webContents.send('restart-floater', { windowName, bounds });
     }
 };
+
+/**
+ * Verifies if window exists and restores/focuses the window
+ *
+ * @param browserWindow {ICustomBrowserWindow}
+ */
+export const didVerifyAndRestoreWindow = (browserWindow: BrowserWindow | null): boolean => {
+    if (!browserWindow || !windowExists(browserWindow)) {
+        return false;
+    }
+    if (browserWindow.isMinimized()) {
+        browserWindow.restore();
+    }
+    browserWindow.focus();
+    return true;
+};
+
+/**
+ * Finds and returns a specific window by name
+ *
+ * @param windowName {String}
+ */
+export const getWindowByName = (windowName: string): BrowserWindow | undefined => {
+    const allWindows = BrowserWindow.getAllWindows();
+    return allWindows.find((window) => {
+        return (window as ICustomBrowserWindow).winName === windowName;
+    });
+};
