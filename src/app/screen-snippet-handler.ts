@@ -6,9 +6,11 @@ import * as path from 'path';
 import { ChildProcess, ExecException, execFile } from 'child_process';
 import * as util from 'util';
 import { IScreenSnippet } from '../common/api-interface';
-import { isDevEnv, isLinux, isMac } from '../common/env';
+import { isDevEnv, isLinux, isMac, isWindowsOS } from '../common/env';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
+import { updateAlwaysOnTop } from './window-actions';
+import { windowHandler } from './window-handler';
 import { windowExists } from './window-utils';
 
 const readFile = util.promisify(fs.readFile);
@@ -20,6 +22,7 @@ class ScreenSnippet {
     private captureUtilArgs: ReadonlyArray<string> | undefined;
     private child: ChildProcess | undefined;
     private focusedWindow: BrowserWindow | null = null;
+    private shouldUpdateAlwaysOnTop: boolean = false;
 
     constructor() {
         this.tempDir = os.tmpdir();
@@ -40,6 +43,13 @@ class ScreenSnippet {
      * @param webContents {Electron.webContents}
      */
     public async capture(webContents: Electron.webContents) {
+        const mainWindow = windowHandler.getMainWindow();
+        if (mainWindow && windowExists(mainWindow) && isWindowsOS) {
+            this.shouldUpdateAlwaysOnTop = mainWindow.isAlwaysOnTop();
+            if (this.shouldUpdateAlwaysOnTop) {
+                await updateAlwaysOnTop(false, false);
+            }
+        }
         logger.info(`screen-snippet-handler: Starting screen capture!`);
         this.outputFileName = path.join(this.tempDir, 'symphonyImage-' + Date.now() + '.png');
         this.captureUtilArgs = isMac
@@ -62,15 +72,21 @@ class ScreenSnippet {
             const { message, data, type }: IScreenSnippet = await this.convertFileToData();
             logger.info(`screen-snippet-handler: Snippet captured! Sending data to SFE`);
             webContents.send('screen-snippet-data', { message, data, type });
+            if (this.shouldUpdateAlwaysOnTop) {
+                await updateAlwaysOnTop(true, false);
+                this.shouldUpdateAlwaysOnTop = false;
+            }
         } catch (error) {
+            if (this.shouldUpdateAlwaysOnTop) {
+                await updateAlwaysOnTop(true, false);
+                this.shouldUpdateAlwaysOnTop = false;
+            }
             logger.error(`screen-snippet-handler: screen capture failed with error: ${error}!`);
         }
     }
 
     /**
      * Cancels a screen capture and closes the snippet window
-     *
-     * @param webContents {Electron.webContents}
      */
     public async cancelCapture() {
         logger.info(`screen-snippet-handler: Cancel screen capture!`);
