@@ -317,6 +317,29 @@ export const getBounds = (winPos: ICustomRectangle | Electron.Rectangle | undefi
             return winPos;
         }
     }
+
+    // Fit in the middle of immediate display
+    const display = electron.screen.getDisplayMatching(winPos as electron.Rectangle);
+
+    if (display) {
+        // Check that defaultWidth fits
+        let windowWidth = defaultWidth;
+        if (display.workArea.width < defaultWidth) {
+            windowWidth = display.workArea.width;
+        }
+
+        // Check that defaultHeight fits
+        let windowHeight = defaultHeight;
+        if (display.workArea.height < defaultHeight) {
+            windowHeight = display.workArea.height;
+        }
+
+        const windowX = display.workArea.x + display.workArea.width / 2 - windowWidth / 2;
+        const windowY = display.workArea.y + display.workArea.height / 2 - windowHeight / 2;
+
+        return { x: windowX, y: windowY, width: defaultWidth, height: defaultHeight };
+    }
+
     return { width: defaultWidth, height: defaultHeight };
 };
 
