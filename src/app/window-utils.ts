@@ -337,7 +337,7 @@ export const getBounds = (winPos: ICustomRectangle | Electron.Rectangle | undefi
         const windowX = display.workArea.x + display.workArea.width / 2 - windowWidth / 2;
         const windowY = display.workArea.y + display.workArea.height / 2 - windowHeight / 2;
 
-        return { x: windowX, y: windowY, width: defaultWidth, height: defaultHeight };
+        return { x: windowX, y: windowY, width: windowWidth, height: windowHeight };
     }
 
     return { width: defaultWidth, height: defaultHeight };
