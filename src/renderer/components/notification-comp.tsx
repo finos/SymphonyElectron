@@ -25,7 +25,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
         onClose: (winKey) => (_event: mouseEventButton) => this.close(winKey),
         onClick: (data) => (_event: mouseEventButton) => this.click(data),
         onContextMenu: (event) => this.contextMenu(event),
-        onMouseOver: (winKey) => (_event: mouseEventButton) => this.onMouseOver(winKey),
+        onMouseEnter: (winKey) => (_event: mouseEventButton) => this.onMouseEnter(winKey),
         onMouseLeave: (winKey) => (_event: mouseEventButton) => this.onMouseLeave(winKey),
     };
     private flashTimer: NodeJS.Timer | undefined;
@@ -70,7 +70,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
                  style={bgColor}
                  onContextMenu={this.eventHandlers.onContextMenu}
                  onClick={this.eventHandlers.onClick(id)}
-                 onMouseOver={this.eventHandlers.onMouseOver(id)}
+                 onMouseEnter={this.eventHandlers.onMouseEnter(id)}
                  onMouseLeave={this.eventHandlers.onMouseLeave(id)}
             >
                 <div className='logo-container'>
@@ -124,12 +124,12 @@ export default class NotificationComp extends React.Component<{}, IState> {
     }
 
     /**
-     * Handle mouse over
+     * Handle mouse enter
      *
      * @param id {number}
      */
-    private onMouseOver(id: number): void {
-        ipcRenderer.send('notification-mouseover', id);
+    private onMouseEnter(id: number): void {
+        ipcRenderer.send('notification-mouseenter', id);
     }
 
     /**

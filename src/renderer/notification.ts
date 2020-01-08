@@ -70,7 +70,7 @@ class Notification extends NotificationHandler {
         ipcMain.on('notification-clicked', (_event, windowId) => {
             this.notificationClicked(windowId);
         });
-        ipcMain.on('notification-mouseover', this.funcHandlers.onMouseOver);
+        ipcMain.on('notification-mouseenter', this.funcHandlers.onMouseOver);
         ipcMain.on('notification-mouseleave', this.funcHandlers.onMouseLeave);
         // Update latest notification settings from config
         app.on('ready', () => this.updateNotificationSettings());
@@ -155,6 +155,13 @@ class Notification extends NotificationHandler {
                 this.inactiveWindows.splice(inactiveWindowIndex, 1);
             }
         });
+
+        // This is a workaround to fix an issue with electron framework
+        // https://github.com/electron/electron/issues/611
+        notificationWindow.on('resize', (event) => {
+            event.preventDefault();
+        });
+
         return await this.didFinishLoad(notificationWindow, data);
     }
 
@@ -414,7 +421,7 @@ class Notification extends NotificationHandler {
             height: 100,
             alwaysOnTop: true,
             skipTaskbar: true,
-            resizable: false,
+            resizable: true,
             show: false,
             frame: false,
             transparent: true,
