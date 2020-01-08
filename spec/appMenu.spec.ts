@@ -224,12 +224,9 @@ describe('app menu', () => {
             });
 
                 it('should update `alwaysOnTop` value when click is triggered', async () => {
-                    const spyConfig = jest.spyOn(config, updateUserFnLabel);
-                    const expectedValue = { alwaysOnTop: true };
                     const menuItem = findMenuItemBuildWindowMenu('Always on Top');
                     await menuItem.click(item);
                     expect(updateAlwaysOnTop).toBeCalledWith(true, true);
-                    expect(spyConfig).lastCalledWith(expectedValue);
                 });
 
                 it('should update `minimizeOnClose` value when click is triggered', async () => {

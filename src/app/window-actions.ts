@@ -136,9 +136,10 @@ export const activate = (windowName: string, shouldFocus: boolean = true): void 
  * @param shouldSetAlwaysOnTop
  * @param shouldActivateMainWindow
  */
-export const updateAlwaysOnTop = (shouldSetAlwaysOnTop: boolean, shouldActivateMainWindow: boolean = true): void => {
+export const updateAlwaysOnTop = async (shouldSetAlwaysOnTop: boolean, shouldActivateMainWindow: boolean = true): Promise<void> => {
     logger.info(`window-actions: Should we set always on top? ${shouldSetAlwaysOnTop}!`);
     const browserWins: ICustomBrowserWindow[] = BrowserWindow.getAllWindows() as ICustomBrowserWindow[];
+    await config.updateUserConfig({ alwaysOnTop: shouldSetAlwaysOnTop });
     if (browserWins.length > 0) {
         browserWins
             .filter((browser) => typeof browser.notificationData !== 'object')

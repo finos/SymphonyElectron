@@ -281,8 +281,7 @@ export class AppMenu {
                 checked: isAlwaysOnTop,
                 click: async (item) => {
                     isAlwaysOnTop = item.checked;
-                    updateAlwaysOnTop(item.checked, true);
-                    await config.updateUserConfig({ alwaysOnTop: item.checked });
+                    await updateAlwaysOnTop(item.checked, true);
                     this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.ALWAYS_ON_TOP, item.checked);
                 },
                 label: i18n.t('Always on Top')(),
