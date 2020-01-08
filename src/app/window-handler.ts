@@ -21,7 +21,8 @@ import { versionHandler } from './version-handler';
 import { handlePermissionRequests, monitorWindowActions } from './window-actions';
 import {
     createComponentWindow,
-    getBounds,
+    didVerifyAndRestoreWindow,
+    getBounds, getWindowByName,
     handleCertificateProxyVerification,
     handleDownloadManager,
     injectStyles,
@@ -476,24 +477,16 @@ export class WindowHandler {
 
         // This prevents creating multiple instances of the
         // about window
-        if (this.aboutAppWindow && windowExists(this.aboutAppWindow)) {
-            if (this.aboutAppWindow.isMinimized()) {
-                this.aboutAppWindow.restore();
-            }
-            this.aboutAppWindow.focus();
+        if (didVerifyAndRestoreWindow(this.aboutAppWindow)) {
             return;
         }
 
-        const allWindows = BrowserWindow.getAllWindows();
-
-        const selectedParentWindow = allWindows.find((window) => {
-            return (window as ICustomBrowserWindow).winName === windowName;
-        });
+        const selectedParentWindow = getWindowByName(windowName);
 
         const opts: BrowserWindowConstructorOptions = this.getWindowOpts({
             width: 550,
             height: isWindowsOS ? 745 : 705,
-            modal: false,
+            modal: true,
             alwaysOnTop: isMac,
             resizable: false,
         }, {
@@ -671,17 +664,10 @@ export class WindowHandler {
         });
         // This prevents creating multiple instances of the
         // notification configuration window
-        if (this.notificationSettingsWindow && !this.notificationSettingsWindow.isDestroyed()) {
-            if (this.notificationSettingsWindow.isMinimized()) {
-                this.notificationSettingsWindow.restore();
-            }
-            this.notificationSettingsWindow.focus();
+        if (didVerifyAndRestoreWindow(this.notificationSettingsWindow)) {
             return;
         }
-        const allWindows = BrowserWindow.getAllWindows();
-        const selectedParentWindow = allWindows.find((window) => {
-            return (window as ICustomBrowserWindow).winName === windowName;
-        });
+        const selectedParentWindow = getWindowByName(windowName);
 
         if (selectedParentWindow) {
             opts.parent = selectedParentWindow;
@@ -785,7 +771,7 @@ export class WindowHandler {
                         const winY: string = element.bounds.y.toString();
                         this.execCmd(this.screenShareIndicatorFrameUtil, [ winX, winY ]);
                     } else {
-                        this.createScrenSharingFrameWindow('screen-sharing-frame',
+                        this.createScreenSharingFrameWindow('screen-sharing-frame',
                         element.workArea.width,
                         element.workArea.height,
                         element.workArea.x,
@@ -822,22 +808,15 @@ export class WindowHandler {
     /**
      * Creates a screen-sharing frame around the shared area
      */
-    public createScrenSharingFrameWindow(windowName: string, frameWidth: number, frameHeight: number, framePositionX: number, framePositionY: number): void {
+    public createScreenSharingFrameWindow(windowName: string, frameWidth: number, frameHeight: number, framePositionX: number, framePositionY: number): void {
 
         // This prevents creating multiple instances of the
         // about window
-        if (this.screenSharingFrameWindow && windowExists(this.screenSharingFrameWindow)) {
-            if (this.screenSharingFrameWindow.isMinimized()) {
-                this.screenSharingFrameWindow.restore();
-            }
-            this.screenSharingFrameWindow.focus();
+        if (didVerifyAndRestoreWindow(this.screenSharingFrameWindow)) {
             return;
         }
 
-        const allWindows = BrowserWindow.getAllWindows();
-        const selectedParentWindow = allWindows.find((window) => {
-            return (window as ICustomBrowserWindow).winName === windowName;
-        });
+        const selectedParentWindow = getWindowByName(windowName);
 
         const opts: BrowserWindowConstructorOptions = this.getWindowOpts({
             width: frameWidth,
