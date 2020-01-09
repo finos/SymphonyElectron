@@ -26,8 +26,8 @@ const saveWindowSettings = async (): Promise<void> => {
     const mainWindow = windowHandler.getMainWindow();
 
     if (browserWindow && windowExists(browserWindow)) {
-        const [ x, y ] = browserWindow.getPosition();
-        const [ width, height ] = browserWindow.getSize();
+        let [ x, y ] = browserWindow.getPosition();
+        let [ width, height ] = browserWindow.getSize();
         if (x && y && width && height) {
             // Only send bound changes over to client for pop-out windows
             if (browserWindow.winName !== apiName.mainWindowName && mainWindow && windowExists(mainWindow)) {
@@ -39,7 +39,18 @@ const saveWindowSettings = async (): Promise<void> => {
                 const isMaximized = browserWindow.isMaximized();
                 const isFullScreen = browserWindow.isFullScreen();
                 const { mainWinPos } = config.getUserConfigFields([ 'mainWinPos' ]);
-                await config.updateUserConfig({ mainWinPos: { ...mainWinPos, ...{ x, y, width, height, isMaximized, isFullScreen } } });
+
+                if (isMaximized || isFullScreen) {
+                    // Keep the original size and position when window is maximized or full screen
+                    if (mainWinPos !== undefined && mainWinPos.x !== undefined && mainWinPos.y !== undefined && mainWinPos.width !== undefined && mainWinPos.height !== undefined) {
+                        x = mainWinPos.x;
+                        y = mainWinPos.y;
+                        width = mainWinPos.width;
+                        height = mainWinPos.height;
+                    }
+                }
+
+                await config.updateUserConfig({ mainWinPos: { ...mainWinPos, ...{ height, width, x, y, isMaximized, isFullScreen } } });
             }
         }
     }
