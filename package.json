@@ -1,12 +1,12 @@
 {
-  "name": "symphony",
-  "productName": "Symphony",
+  "name": "mana",
+  "productName": "Mana",
   "version": "6.0.0",
   "clientVersion": "2.0.1",
   "buildNumber": "0",
   "searchAPIVersion": "1.55.3",
   "sfeVersion": "0",
-  "description": "Symphony desktop app (Foundation ODP)",
+  "description": "Mana desktop app",
   "author": "Symphony OSS <help@finos.org>",
   "main": "lib/src/app/init.js",
   "types": "lib/src/app/init.d.ts",
@@ -19,7 +19,7 @@
     "demo-mac": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/src/demo/index.html",
     "lint": "tslint --project tsconfig.json",
     "packed-linux": "npm run prebuild && npm run test && ./node_modules/.bin/electron-builder build --linux",
-    "packed-mac": "npm run unpacked-mac && packagesbuild -v installer/mac/symphony-mac-packager.pkgproj",
+    "packed-mac": "npm run unpacked-mac && packagesbuild -v installer/mac/mana-mac-packager.pkgproj",
     "prebuild": "npm run compile && npm run rebuild && npm run browserify-preload",
     "rebuild": "electron-rebuild -f",
     "start": "npm run compile && npm run browserify-preload && cross-env ELECTRON_DEV=true electron .",
@@ -29,7 +29,7 @@
     "unpacked-win-x86": "npm run prebuild && npm run test && node_modules\\.bin\\electron-builder build --win --ia32 --dir"
   },
   "build": {
-    "appId": "com.symphony.electron-desktop",
+    "appId": "com.symphony.mana",
     "asar": true,
     "asarUnpack": "**/*.node",
     "files": [
@@ -63,7 +63,7 @@
     "linux": {
       "category": "Network;InstantMessaging;Chat",
       "desktop": {
-        "StartupWMClass": "Symphony"
+        "StartupWMClass": "Mana"
       },
       "target": [
         "deb",

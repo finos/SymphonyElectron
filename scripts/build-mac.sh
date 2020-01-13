@@ -102,4 +102,4 @@ npm run unpacked-mac
 
 # Create .pkg installer
 echo "Creating .pkg"
-/usr/local/bin/packagesbuild -v installer/mac/symphony-mac-packager.pkgproj
+/usr/local/bin/packagesbuild -v installer/mac/mana-mac-packager.pkgproj

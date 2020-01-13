@@ -31,6 +31,8 @@ export interface IConfig {
     customFlags: ICustomFlag;
     mainWinPos?: ICustomRectangle;
     locale?: string;
+    manaPath?: string;
+    channel?: string;
 }
 
 export interface IPermission {
