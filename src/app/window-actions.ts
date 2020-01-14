@@ -144,10 +144,13 @@ export const activate = (windowName: string, shouldFocus: boolean = true): void 
 /**
  * Sets always on top property based on isAlwaysOnTop
  *
- * @param shouldSetAlwaysOnTop
- * @param shouldActivateMainWindow
+ * @param shouldSetAlwaysOnTop {boolean} - Whether to enable always on top or not
+ * @param shouldActivateMainWindow {boolean} - Whether to active main window
  */
-export const updateAlwaysOnTop = async (shouldSetAlwaysOnTop: boolean, shouldActivateMainWindow: boolean = true): Promise<void> => {
+export const updateAlwaysOnTop = async (
+    shouldSetAlwaysOnTop: boolean,
+    shouldActivateMainWindow: boolean = true,
+): Promise<void> => {
     logger.info(`window-actions: Should we set always on top? ${shouldSetAlwaysOnTop}!`);
     const browserWins: ICustomBrowserWindow[] = BrowserWindow.getAllWindows() as ICustomBrowserWindow[];
     await config.updateUserConfig({ alwaysOnTop: shouldSetAlwaysOnTop });
@@ -199,6 +202,18 @@ export const handleKeyPress = (key: number): void => {
 };
 
 /**
+ * Sets the window to always on top based
+ * on fullscreen state
+ */
+const setSpecificAlwaysOnTop = () => {
+    const browserWindow = BrowserWindow.getFocusedWindow();
+    if (isMac && browserWindow && windowExists(browserWindow) && browserWindow.isAlwaysOnTop()) {
+        // Set the focused window's always on top level based on fullscreen state
+        browserWindow.setAlwaysOnTop(true, browserWindow.isFullScreen() ? 'modal-panel' : 'floating');
+    }
+};
+
+/**
  * Monitors window actions
  *
  * @param window {BrowserWindow}
@@ -223,6 +238,13 @@ export const monitorWindowActions = (window: BrowserWindow): void => {
     if ((window as ICustomBrowserWindow).winName === apiName.mainWindowName) {
         window.on('restore', throttledWindowRestore);
     }
+
+    // Workaround for an issue with MacOS + AlwaysOnTop
+    // Issue: SDA-1665
+    if (isMac) {
+        window.on('enter-full-screen', setSpecificAlwaysOnTop);
+        window.on('leave-full-screen', setSpecificAlwaysOnTop);
+    }
 };
 
 /**
@@ -246,6 +268,13 @@ export const removeWindowEventListener = (window: BrowserWindow): void => {
 
     window.removeListener('leave-full-screen', throttledWindowChanges);
     window.removeListener('unmaximize', throttledWindowChanges);
+
+    // Workaround for and issue with MacOS + AlwaysOnTop
+    // Issue: SDA-1665
+    if (isMac) {
+        window.removeListener('enter-full-screen', setSpecificAlwaysOnTop);
+        window.removeListener('leave-full-screen', setSpecificAlwaysOnTop);
+    }
 };
 
 /**
