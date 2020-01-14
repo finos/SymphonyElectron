@@ -83,6 +83,9 @@ class ScreenSnippet {
      * Cancels a screen capture and closes the snippet window
      */
     public async cancelCapture() {
+        if (!isWindowsOS) {
+            return;
+        }
         logger.info(`screen-snippet-handler: Cancel screen capture!`);
         this.focusedWindow = BrowserWindow.getFocusedWindow();
 
