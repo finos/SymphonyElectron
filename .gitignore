@@ -35,3 +35,7 @@ js/translation/*_missing.json
 out
 lib
 build
+installer/win/Mana-x64-cache
+installer/win/Mana-x64-SetupFiles
+installer/win/Mana-x86-cache
+installer/win/Mana-x86-SetupFiles
