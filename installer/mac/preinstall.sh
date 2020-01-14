@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # Kill the existing running instance
-sudo killall Symphony
+sudo killall Mana
 
 delete_app()
 {
     # Delete the installed version only if it is older than the installing version
-    sudo rm -rf /Applications/Symphony.app
+    sudo rm -rf /Applications/Mana.app
 }
 
 compare_versions()
@@ -15,7 +15,7 @@ compare_versions()
     CURRENT_VERSION=6.0.0
 
     # Get the currently installed version:
-    INSTALLED_VERSION=$(plutil -p /Applications/Symphony.app/Contents/Info.plist | awk '/CFBundleShortVersionString/ {print substr($3, 2, length($3)-2)}')
+    INSTALLED_VERSION=$(plutil -p /Applications/Mana.app/Contents/Info.plist | awk '/CFBundleShortVersionString/ {print substr($3, 2, length($3)-2)}')
 
     # If there are no versions installed, just exit the script
     if [ -z "$INSTALLED_VERSION" -a "$INSTALLED_VERSION" != " " ]; then
