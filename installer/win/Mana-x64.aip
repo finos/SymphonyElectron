@@ -219,7 +219,7 @@
     <ROW File="app.asar" Component_="app.asar" FileName="APP~1.ASA|app.asar" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar" SelfReg="false" NextFile="spellchecker.node"/>
     <ROW File="ar.pak" Component_="am.pak" FileName="ar.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\ar.pak" SelfReg="false" NextFile="bg.pak"/>
     <ROW File="bg.pak" Component_="am.pak" FileName="bg.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\bg.pak" SelfReg="false" NextFile="bn.pak"/>
-    <ROW File="binding.node" Component_="binding.node" FileName="BINDIN~1.NOD|binding.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ref-napi\build\Release\binding.node" SelfReg="false" NextFile="nothing.node_1"/>
+    <ROW File="binding.node" Component_="binding.node" FileName="BINDIN~1.NOD|binding.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ref-napi\build\Release\binding.node" SelfReg="false" NextFile="CODE_OF_CONDUCT.md"/>
     <ROW File="bn.pak" Component_="am.pak" FileName="bn.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\bn.pak" SelfReg="false" NextFile="ca.pak"/>
     <ROW File="build.cmd" Component_="build.cmd" FileName="build.cmd" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\build.cmd" SelfReg="false" NextFile="build.sh"/>
     <ROW File="build.sh" Component_="build.cmd" FileName="build.sh" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\build.sh" SelfReg="false" NextFile="CODE_OF_CONDUCT.md_2"/>
@@ -249,7 +249,7 @@
     <ROW File="esdoc.json" Component_="build.cmd" FileName="ESDOC~1.JSO|esdoc.json" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\esdoc.json" SelfReg="false" NextFile="index.js"/>
     <ROW File="et.pak" Component_="am.pak" FileName="et.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\et.pak" SelfReg="false" NextFile="fa.pak"/>
     <ROW File="fa.pak" Component_="am.pak" FileName="fa.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\fa.pak" SelfReg="false" NextFile="fi.pak"/>
-    <ROW File="ffi_bindings.node" Component_="ffi_bindings.node" FileName="FFI_BI~1.NOD|ffi_bindings.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ffi-napi\build\Release\ffi_bindings.node" SelfReg="false" NextFile="nothing.node"/>
+    <ROW File="ffi_bindings.node" Component_="ffi_bindings.node" FileName="FFI_BI~1.NOD|ffi_bindings.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ffi-napi\build\Release\ffi_bindings.node" SelfReg="false" NextFile="keyboardlayout.node"/>
     <ROW File="ffinapi.node" Component_="ffinapi.node" FileName="FFI-NA~1.NOD|ffi-napi.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ffi-napi\bin\win32-x64-73\ffi-napi.node" SelfReg="false" NextFile="ffi_bindings.node"/>
     <ROW File="ffmpeg.dll" Component_="ffmpeg.dll" FileName="ffmpeg.dll" Attributes="0" SourcePath="..\..\dist\win-unpacked\ffmpeg.dll" SelfReg="false" NextFile="icudtl.dat"/>
     <ROW File="fi.pak" Component_="am.pak" FileName="fi.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\fi.pak" SelfReg="false" NextFile="fil.pak"/>
@@ -287,8 +287,6 @@
     <ROW File="natives_blob.bin" Component_="chrome_100_percent.pak" FileName="NATIVE~1.BIN|natives_blob.bin" Attributes="0" SourcePath="..\..\dist\win-unpacked\natives_blob.bin" SelfReg="false" NextFile="resources.pak"/>
     <ROW File="nb.pak" Component_="am.pak" FileName="nb.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\nb.pak" SelfReg="false" NextFile="nl.pak"/>
     <ROW File="nl.pak" Component_="am.pak" FileName="nl.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\nl.pak" SelfReg="false" NextFile="pl.pak"/>
-    <ROW File="nothing.node" Component_="ffi_bindings.node" FileName="NOTHIN~1.NOD|nothing.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ffi-napi\build\Release\nothing.node" SelfReg="false" NextFile="keyboardlayout.node"/>
-    <ROW File="nothing.node_1" Component_="binding.node" FileName="NOTHIN~1.NOD|nothing.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ref-napi\build\Release\nothing.node" SelfReg="false" NextFile="CODE_OF_CONDUCT.md"/>
     <ROW File="package.json" Component_="whitesource" FileName="PACKAG~1.JSO|package.json" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\screen-share-indicator-frame\package.json" SelfReg="false" NextFile="ScreenShareIndicatorFrame.c"/>
     <ROW File="package.json_1" Component_="whitesource_1" FileName="PACKAG~1.JSO|package.json" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\screen-snippet\package.json" SelfReg="false" NextFile="pen.cur"/>
     <ROW File="package.json_2" Component_="build.cmd" FileName="PACKAG~1.JSO|package.json" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\package.json" SelfReg="false" NextFile="index.ts"/>
@@ -754,8 +752,8 @@
     <ROW Action="AI_AiRestoreDeferredImpersonate" Sequence="6599"/>
     <ROW Action="PowerShellScriptInline" Condition="( Installed AND ( REMOVE = &quot;ALL&quot; OR AI_INSTALL_MODE = &quot;Remove&quot; ) ) AND ( (VersionNT &gt; 501) OR (VersionNT = 501 AND ServicePackLevel &gt;= 2) )" Sequence="6402"/>
     <ROW Action="AI_DATA_SETTER_1" Condition="( Installed AND ( REMOVE = &quot;ALL&quot; OR AI_INSTALL_MODE = &quot;Remove&quot; ) ) AND ( (VersionNT &gt; 501) OR (VersionNT = 501 AND ServicePackLevel &gt;= 2) )" Sequence="6401"/>
-    <ROW Action="AI_AiRemoveFilesImmediate" Sequence="3499"/>
     <ROW Action="AI_AiRemoveFilesRollback" Sequence="3099"/>
+    <ROW Action="AI_AiRemoveFilesImmediate" Sequence="3499"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
     <ROW Action="AI_ResolveKnownFolders" Sequence="53"/>
