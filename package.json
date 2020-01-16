@@ -52,7 +52,9 @@
     ],
     "mac": {
       "category": "public.app-category.business",
-      "icon": "images/icon.icns"
+      "icon": "images/icon.icns",
+      "entitlements": "entitlements.mac.plist",
+      "entitlementsInherit": "entitlements.mac.plist"
     },
     "win": {
       "icon": "images/icon.ico",
