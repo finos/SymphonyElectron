@@ -4,7 +4,7 @@
 settingsFilePath='/tmp/sym_settings.txt'
 permissionsFilePath='/tmp/sym_permissions.txt'
 installPath="$2"
-configPath="/Symphony.app/Contents/config/Symphony.config"
+configPath="/Mana.app/Contents/config/Symphony.config"
 newPath=${installPath}${configPath}
 
 ## Get Symphony Settings from the temp file ##
@@ -16,7 +16,7 @@ bring_to_front=$(sed -n '5p' ${settingsFilePath});
 dev_tools_enabled=$(sed -n '6p' ${settingsFilePath});
 
 if [ "$pod_url" == "" ]; then
-    pod_url="https://my.symphony.com"
+    pod_url="https://corporate.symphony.com"
 fi
 
 if [ "$minimize_on_close" == "" ]; then
