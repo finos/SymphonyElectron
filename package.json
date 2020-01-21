@@ -1,7 +1,7 @@
 {
   "name": "symphony",
   "productName": "Symphony",
-  "version": "6.0.0",
+  "version": "6.1.0",
   "clientVersion": "2.0.1",
   "buildNumber": "0",
   "searchAPIVersion": "1.55.3",
@@ -52,7 +52,9 @@
     ],
     "mac": {
       "category": "public.app-category.business",
-      "icon": "images/icon.icns"
+      "icon": "images/icon.icns",
+      "entitlements": "entitlements.mac.plist",
+      "entitlementsInherit": "entitlements.mac.plist"
     },
     "win": {
       "icon": "images/icon.ico",
