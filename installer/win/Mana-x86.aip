@@ -44,13 +44,13 @@
     <ROW Property="POD_URL" Value="https://[POD].symphony.com" Type="4"/>
     <ROW Property="POINTER_LOCK" Value="true"/>
     <ROW Property="POINTER_LOCK_CB" Value="true" Type="4"/>
-    <ROW Property="ProductCode" Value="1033:{0B1802D3-A237-44DD-86F3-23014B21937A} " Type="16"/>
+    <ROW Property="ProductCode" Value="1033:{1304884A-9D4E-4011-A611-2268D3380193} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="Mana"/>
     <ROW Property="ProductVersion" Value="6.0.0" Type="32"/>
     <ROW Property="RUNAPPLICATION" Value="1" Type="4"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
-    <ROW Property="UpgradeCode" Value="{36402281-8141-4797-8A90-07CFA75EFA55}"/>
+    <ROW Property="UpgradeCode" Value="{C5B8B708-0417-4A3D-9581-67A9C454A642}"/>
     <ROW Property="WindowsType9X" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
     <ROW Property="WindowsType9XDisplay" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
     <ROW Property="WindowsTypeNT" MultiBuildValue="DefaultBuild:Windows XP SP3 x86, Windows Server 2003 SP2 x86, Windows Vista x86" ValueLocId="-"/>
