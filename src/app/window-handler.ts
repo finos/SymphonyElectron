@@ -752,7 +752,6 @@ export class WindowHandler {
                 titleBarStyle: 'customButtonsOnHover',
                 minimizable: false,
                 maximizable: false,
-                closable: false,
             }, {
                 devTools: false,
             }), ...{winKey: streamId},
