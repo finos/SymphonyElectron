@@ -20,6 +20,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
         onMinimize: () => this.minimize(),
         onShowMenu: () => this.showMenu(),
         onUnmaximize: () => this.unmaximize(),
+        onDisableContextMenu: (event) => this.disableContextMenu(event),
     };
     private observer: MutationObserver | undefined;
 
@@ -83,6 +84,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
                         title={i18n.t('Menu', TITLE_BAR_NAMESPACE)()}
                         className='hamburger-menu-button'
                         onClick={this.eventHandlers.onShowMenu}
+                        onContextMenu={this.eventHandlers.onDisableContextMenu}
                         onMouseDown={this.handleMouseDown}
                     >
                         <svg x='0px' y='0px' viewBox='0 0 15 10'>
@@ -101,6 +103,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
                         className='title-bar-button'
                         title={i18n.t('Minimize', TITLE_BAR_NAMESPACE)()}
                         onClick={this.eventHandlers.onMinimize}
+                        onContextMenu={this.eventHandlers.onDisableContextMenu}
                         onMouseDown={this.handleMouseDown}
                     >
                         <svg x='0px' y='0px' viewBox='0 0 14 1'>
@@ -116,6 +119,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
                         className='title-bar-button'
                         title={i18n.t('Close', TITLE_BAR_NAMESPACE)()}
                         onClick={this.eventHandlers.onClose}
+                        onContextMenu={this.eventHandlers.onDisableContextMenu}
                         onMouseDown={this.handleMouseDown}
                     >
                         <svg x='0px' y='0px' viewBox='0 0 14 10.2'>
@@ -143,6 +147,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
                     className='title-bar-button'
                     title={i18n.t('Restore', TITLE_BAR_NAMESPACE)()}
                     onClick={this.eventHandlers.onUnmaximize}
+                    onContextMenu={this.eventHandlers.onDisableContextMenu}
                     onMouseDown={this.handleMouseDown}
                 >
                     <svg x='0px' y='0px' viewBox='0 0 14 10.2'>
@@ -159,6 +164,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
                 className='title-bar-button'
                 title={i18n.t('Maximize', TITLE_BAR_NAMESPACE)()}
                 onClick={this.eventHandlers.onMaximize}
+                onContextMenu={this.eventHandlers.onDisableContextMenu}
                 onMouseDown={this.handleMouseDown}
             >
                 <svg x='0px' y='0px' viewBox='0 0 14 10.2'>
@@ -304,6 +310,16 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
                 </defs>
             </svg>
         );
+    }
+
+    /**
+     * Disables context menu for action buttons
+     *
+     * @param event
+     */
+    private disableContextMenu(event): boolean {
+        event.preventDefault();
+        return false;
     }
 
     /**

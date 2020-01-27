@@ -336,8 +336,6 @@ export class SSFApi {
 
     /**
      * Cancel a screen capture in progress
-     *
-     * @param screenSnippetCallback {function}
      */
     public closeScreenSnippet(): void {
         local.ipcRenderer.send(apiName.symphonyApi, {

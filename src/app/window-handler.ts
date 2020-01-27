@@ -440,7 +440,7 @@ export class WindowHandler {
     /**
      * Move window to the same screen as main window
      */
-    public moveWindow(windowToMove: BrowserWindow) {
+    public moveWindow(windowToMove: BrowserWindow, fixedYPosition?: number) {
         if (this.mainWindow && windowExists(this.mainWindow)) {
             const display = electron.screen.getDisplayMatching(this.mainWindow.getBounds());
 
@@ -460,7 +460,14 @@ export class WindowHandler {
                 positionX = display.workArea.x;
             }
 
-            let positionY = Math.trunc(display.workArea.y + display.workArea.height / 2 - windowToMove.getBounds().height / 2);
+            let positionY;
+            if (fixedYPosition) {
+                positionY = Math.trunc(display.workArea.y + fixedYPosition);
+            } else {
+                // Center the window in y-axis
+                positionY = Math.trunc(display.workArea.y + display.workArea.height / 2 - windowToMove.getBounds().height / 2);
+            }
+
             if (positionY < display.workArea.y) {
                 positionY = display.workArea.y;
             }
@@ -743,7 +750,7 @@ export class WindowHandler {
                 show: false,
                 modal: true,
                 frame: false,
-                focusable: false,
+                focusable: true,
                 transparent: true,
                 autoHideMenuBar: true,
                 resizable: false,
@@ -785,6 +792,7 @@ export class WindowHandler {
         }
 
         this.screenSharingIndicatorWindow = createComponentWindow('screen-sharing-indicator', opts);
+        this.moveWindow(this.screenSharingIndicatorWindow, topPositionOfIndicatorScreen);
         this.screenSharingIndicatorWindow.setVisibleOnAllWorkspaces(true);
         this.screenSharingIndicatorWindow.webContents.once('did-finish-load', () => {
             if (!this.screenSharingIndicatorWindow || !windowExists(this.screenSharingIndicatorWindow)) {
