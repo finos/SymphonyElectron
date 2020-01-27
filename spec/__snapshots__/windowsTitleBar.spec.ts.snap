@@ -16,6 +16,7 @@ exports[`windows title bar should render correctly 1`] = `
     <button
       className="hamburger-menu-button"
       onClick={[Function]}
+      onContextMenu={[Function]}
       onMouseDown={[Function]}
       title="Menu"
     >
@@ -93,6 +94,7 @@ exports[`windows title bar should render correctly 1`] = `
     <button
       className="title-bar-button"
       onClick={[Function]}
+      onContextMenu={[Function]}
       onMouseDown={[Function]}
       title="Minimize"
     >
@@ -115,6 +117,7 @@ exports[`windows title bar should render correctly 1`] = `
     <button
       className="title-bar-button"
       onClick={[Function]}
+      onContextMenu={[Function]}
       onMouseDown={[Function]}
       title="Maximize"
     >
@@ -136,6 +139,7 @@ exports[`windows title bar should render correctly 1`] = `
     <button
       className="title-bar-button"
       onClick={[Function]}
+      onContextMenu={[Function]}
       onMouseDown={[Function]}
       title="Close"
     >
