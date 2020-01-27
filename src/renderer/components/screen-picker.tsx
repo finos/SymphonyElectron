@@ -6,8 +6,9 @@ import { apiCmds, apiName } from '../../common/api-interface';
 import { isLinux, isMac, isWindowsOS } from '../../common/env';
 import { i18n } from '../../common/i18n-preload';
 
-const screenRegExp = new RegExp(/^Screen \d+$/gmi);
+const screenRegExp = new RegExp(/^screen \d+$/gmi);
 const SCREEN_PICKER_NAMESPACE = 'ScreenPicker';
+const ENTIRE_SCREEN = 'entire screen';
 
 interface IState {
     sources: ICustomDesktopCapturerSource[];
@@ -131,14 +132,15 @@ export default class ScreenPicker extends React.Component<{}, IState> {
                 'ScreenPicker-item-container',
                 { 'ScreenPicker-selected': this.shouldHighlight(source.id) },
             );
-            if (((isMac || isLinux) && source.display_id !== '') || (isWindowsOS && (source.name === 'Entire screen' || screenRegExp.exec(source.name)))) {
+            const sourceName = source.name.toLocaleLowerCase();
+            if (((isMac || isLinux) && source.display_id !== '') || (isWindowsOS && (sourceName === ENTIRE_SCREEN || screenRegExp.exec(sourceName)))) {
                 source.fileName = 'fullscreen';
-                let sourceName;
-                if (source.name === 'Entire screen') {
-                    sourceName = i18n.t('Entire screen', SCREEN_PICKER_NAMESPACE)();
+                let screenName;
+                if (sourceName === ENTIRE_SCREEN) {
+                    screenName = i18n.t('Entire screen', SCREEN_PICKER_NAMESPACE)();
                 } else {
                     const screenNumber = source.name.substr(7, source.name.length);
-                    sourceName = i18n.t('Screen {number}', SCREEN_PICKER_NAMESPACE)({ number: screenNumber });
+                    screenName = i18n.t('Screen {number}', SCREEN_PICKER_NAMESPACE)({ number: screenNumber });
                 }
                 screens.push(
                     <div
@@ -148,7 +150,7 @@ export default class ScreenPicker extends React.Component<{}, IState> {
                         <div className='ScreenPicker-screen-section-box'>
                             <img className='ScreenPicker-img-wrapper' src={source.thumbnail as any} alt='thumbnail image'/>
                         </div>
-                        <div className='ScreenPicker-screen-source-title'>{sourceName}</div>
+                        <div className='ScreenPicker-screen-source-title'>{screenName}</div>
                     </div>,
                 );
             } else {
