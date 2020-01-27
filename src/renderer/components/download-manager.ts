@@ -105,7 +105,7 @@ export default class DownloadManager {
                     </div>
                 </div>
                 <div id='menu' class='caret tempo-icon tempo-icon--dropdown'>
-                    <div id='download-action-menu' class='download-action-menu' style={width: '200px'}>
+                    <div id='download-action-menu' class='download-action-menu' style="width: 200px">
                         <ul id={_id}>
                             <li id='download-open' title="${i18n.t('Open', DOWNLOAD_MANAGER_NAMESPACE)()}">
                                 ${i18n.t('Open', DOWNLOAD_MANAGER_NAMESPACE)()}
