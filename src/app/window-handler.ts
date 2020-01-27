@@ -750,7 +750,7 @@ export class WindowHandler {
                 show: false,
                 modal: true,
                 frame: false,
-                focusable: false,
+                focusable: true,
                 transparent: true,
                 autoHideMenuBar: true,
                 resizable: false,
