@@ -55,6 +55,20 @@ before you commit.
 - To create msi (installer):
   * Run the advanced installer script located in `installer/win` directory
   * There are two configuration files one each for 64-bit and 32-bit
+  
+### Linux (Docker Instruction)
+- run the below docker commands inside the project directory
+- To generate and tag the container
+`docker build -t linux:6.0.0 --build-arg REPO=https://github.com/symphonyoss/SymphonyElectron --build-arg BRANCH=linux .`
+- To run the docker image
+`docker run linux:6.0.0`
+
+##### Other use full commands
+- To delete the container/image
+`docker rmi -f linux:6.0.0`
+- To connect to the interactive bash
+`docker run -i -t linux:6.0.0 /bin/bash`
+
 
 #### MSI command line options:
 - To install for all users (admin required): msiexec.exe /i Symphony-x64.msi ALLUSERS=1
