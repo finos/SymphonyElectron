@@ -18,6 +18,7 @@ export interface IConfig {
     bringToFront: boolean;
     whitelistUrl: string;
     isCustomTitleBar: boolean;
+    disableGpu: boolean;
     memoryRefresh: boolean;
     devToolsEnabled: boolean;
     contextIsolation: boolean;
@@ -46,7 +47,6 @@ export interface IPermission {
 export interface ICustomFlag {
     authServerWhitelist: string;
     authNegotiateDelegateWhitelist: string;
-    disableGpu: boolean;
     disableThrottling: boolean;
 }
 

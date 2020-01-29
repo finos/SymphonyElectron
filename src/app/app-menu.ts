@@ -11,7 +11,7 @@ import {
 } from './analytics-handler';
 import { autoLaunchInstance as autoLaunch } from './auto-launch-controller';
 import { config, IConfig } from './config-handler';
-import { titleBarChangeDialog } from './dialog-handler';
+import { gpuRestartDialog, titleBarChangeDialog } from './dialog-handler';
 import { exportCrashDumps, exportLogs } from './reports-handler';
 import { updateAlwaysOnTop } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
@@ -73,6 +73,7 @@ export class AppMenu {
     private menuList: Electron.MenuItemConstructorOptions[];
     private locale: LocaleType;
     private titleBarStyle: TitleBarStyles;
+    private disableGpu: boolean;
 
     constructor() {
         this.menuList = [];
@@ -80,6 +81,7 @@ export class AppMenu {
         this.titleBarStyle = config.getConfigFields([ 'isCustomTitleBar' ]).isCustomTitleBar
             ? TitleBarStyles.CUSTOM
             : TitleBarStyles.NATIVE;
+        this.disableGpu = config.getConfigFields(['disableGpu']).disableGpu;
         this.buildMenu();
         // send initial analytic
         if (!initialAnalyticsSent) {
@@ -418,6 +420,14 @@ export class AppMenu {
                                 focusedWindow.webContents.toggleDevTools();
                                 return;
                             }
+                        },
+                    },
+                    {
+                        label: this.disableGpu
+                            ? i18n.t('Enable GPU')()
+                            : i18n.t('Disable GPU')(),
+                        click: () => {
+                            gpuRestartDialog(!this.disableGpu);
                         },
                     } ],
                 }, {

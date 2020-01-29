@@ -166,3 +166,23 @@ export const titleBarChangeDialog = async (isNativeStyle: boolean) => {
         app.exit();
     }
 };
+
+export const gpuRestartDialog = async (disableGpu: boolean) => {
+    const focusedWindow = electron.BrowserWindow.getFocusedWindow();
+    if (!focusedWindow || !windowExists(focusedWindow)) {
+        return;
+    }
+    const options = {
+        type: 'question',
+        title: i18n.t('Relaunch Application')(),
+        message: i18n.t('Changing GPU settings requires Symphony to relaunch.')(),
+        buttons: [ i18n.t('Relaunch')(), i18n.t('Cancel')() ],
+        cancelId: 1,
+    };
+    const { response } = await electron.dialog.showMessageBox(focusedWindow, options);
+    if (response === 0) {
+        await config.updateUserConfig({ disableGpu });
+        app.relaunch();
+        app.exit();
+    }
+};

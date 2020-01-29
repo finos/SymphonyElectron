@@ -27,6 +27,7 @@
   "Build expired": "Build expired",
   "Cancel": "Cancel",
   "Certificate Error": "Certificate Error",
+  "Changing GPU settings requires Symphony to relaunch.": "Changing GPU settings requires Symphony to relaunch.",
   "Clear cache and Reload": "Clear cache and Reload",
   "Close": "Close",
   "ContextMenu": {
@@ -51,6 +52,7 @@
   "Dev Tools disabled": "Dev Tools disabled",
   "Dev Tools has been disabled! Please contact your system administrator to enable it!": "Dev Tools has been disabled! Please contact your system administrator to enable it!",
   "Disable Hamburger menu": "Disable Hamburger menu",
+  "Disable GPU": "Disable GPU",
   "DownloadManager": {
     "downloaded": "downloaded",
     "File not Found": "File not Found",
@@ -61,6 +63,7 @@
   },
   "Edit": "Edit",
   "Enable Hamburger menu": "Enable Hamburger menu",
+  "Enable GPU": "Enable GPU",
   "Error loading configuration": "Error loading configuration",
   "Error loading URL": "Error loading URL",
   "Error loading window": "Error loading window",

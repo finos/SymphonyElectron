@@ -27,6 +27,7 @@
   "Build expired": "期限切れのビルド",
   "Cancel": "キャンセル",
   "Certificate Error": "証明書のエラー",
+  "Changing GPU settings requires Symphony to relaunch.": "GPU設定を変更するには、Symphonyを再起動する必要があります。",
   "Clear cache and Reload": "キャッシュをクリアしてリロードする",
   "Close": "閉じる",
   "ContextMenu": {
@@ -51,6 +52,7 @@
   "Dev Tools disabled": "開発ツールが無効",
   "Dev Tools has been disabled! Please contact your system administrator to enable it!": "開発ツールが無効になっています。システム管理者に連絡して、有効にしてください。",
   "Disable Hamburger menu": "ハンバーガーメニューを無効にする",
+  "Disable GPU": "GPUを無効にする",
   "DownloadManager": {
     "downloaded": "ダウンロード済み",
     "File not Found": "ファイルが見つかりません",
@@ -61,6 +63,7 @@
   },
   "Edit": "編集",
   "Enable Hamburger menu": "ハンバーガーメニューを有効にする",
+  "Enable GPU": "GPUを有効にする",
   "Error loading configuration": "構成の読み込みエラー",
   "Error loading URL": "URLの読み込みエラー",
   "Error loading window": "ウィンドウを読み込みエラー",
