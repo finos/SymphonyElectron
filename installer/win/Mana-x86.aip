@@ -41,7 +41,7 @@
     <ROW Property="NOTIFICATIONS" Value="true"/>
     <ROW Property="OPEN_EXTERNAL" Value="true"/>
     <ROW Property="OPEN_EXTERNAL_CB" Value="true" Type="4"/>
-    <ROW Property="POD_URL" Value="https://[POD].symphony.com" Type="4"/>
+    <ROW Property="POD_URL" Value="https://corporate.symphony.com" Type="4"/>
     <ROW Property="POINTER_LOCK" Value="true"/>
     <ROW Property="POINTER_LOCK_CB" Value="true" Type="4"/>
     <ROW Property="ProductCode" Value="1033:{1304884A-9D4E-4011-A611-2268D3380193} " Type="16"/>
