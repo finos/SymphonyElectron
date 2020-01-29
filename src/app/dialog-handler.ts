@@ -167,6 +167,10 @@ export const titleBarChangeDialog = async (isNativeStyle: boolean) => {
     }
 };
 
+/**
+ * Displays a dialog to restart app upon changing gpu settings
+ * @param disableGpu
+ */
 export const gpuRestartDialog = async (disableGpu: boolean) => {
     const focusedWindow = electron.BrowserWindow.getFocusedWindow();
     if (!focusedWindow || !windowExists(focusedWindow)) {

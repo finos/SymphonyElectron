@@ -105,7 +105,7 @@ export class AppStats {
         try {
             logger.info(`All Data: ${JSON.stringify(await si.getAllData())}`);
         } catch (e) {
-            logger.error(`Error gathering system information: ${e}`);
+            logger.error(`Error gathering all data: ${e}`);
         }
     }
 }
