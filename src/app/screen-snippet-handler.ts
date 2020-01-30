@@ -65,22 +65,16 @@ class ScreenSnippet {
         // only allow one screen capture at a time.
         if (this.child) {
             logger.info(`screen-snippet-handler: Child screen capture exists, killing it and keeping only 1 instance!`);
-            this.child.kill();
+            this.killChildProcess();
         }
         try {
             await this.execCmd(this.captureUtil, this.captureUtilArgs);
             const { message, data, type }: IScreenSnippet = await this.convertFileToData();
             logger.info(`screen-snippet-handler: Snippet captured! Sending data to SFE`);
             webContents.send('screen-snippet-data', { message, data, type });
-            if (this.shouldUpdateAlwaysOnTop) {
-                await updateAlwaysOnTop(true, false);
-                this.shouldUpdateAlwaysOnTop = false;
-            }
+            await this.verifyAndUpdateAlwaysOnTop();
         } catch (error) {
-            if (this.shouldUpdateAlwaysOnTop) {
-                await updateAlwaysOnTop(true, false);
-                this.shouldUpdateAlwaysOnTop = false;
-            }
+            await this.verifyAndUpdateAlwaysOnTop();
             logger.error(`screen-snippet-handler: screen capture failed with error: ${error}!`);
         }
     }
@@ -89,12 +83,17 @@ class ScreenSnippet {
      * Cancels a screen capture and closes the snippet window
      */
     public async cancelCapture() {
+        if (!isWindowsOS) {
+            return;
+        }
         logger.info(`screen-snippet-handler: Cancel screen capture!`);
         this.focusedWindow = BrowserWindow.getFocusedWindow();
 
         try {
             await this.execCmd(this.captureUtil, []);
+            await this.verifyAndUpdateAlwaysOnTop();
         } catch (error) {
+            await this.verifyAndUpdateAlwaysOnTop();
             logger.error(`screen-snippet-handler: screen capture cancel failed with error: ${error}!`);
         }
     }
@@ -172,6 +171,16 @@ class ScreenSnippet {
                     }
                 });
             }
+        }
+    }
+
+    /**
+     * Verify and updates always on top
+     */
+    private async verifyAndUpdateAlwaysOnTop(): Promise<void> {
+        if (this.shouldUpdateAlwaysOnTop) {
+            await updateAlwaysOnTop(true, false);
+            this.shouldUpdateAlwaysOnTop = false;
         }
     }
 }

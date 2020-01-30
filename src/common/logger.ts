@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
 
-import { isElectronQA, isLinux, isWindowsOS } from './env';
+import { isElectronQA, isWindowsOS } from './env';
 import { getCommandLineArgs } from './utils';
 
 export interface ILogMsg {
@@ -53,11 +53,7 @@ class Logger {
             app.setPath('logs', customLogsFolder);
         }
 
-        if (isLinux) {
-            this.logPath = app.getPath('appData');
-        } else {
-            this.logPath = app.getPath('logs');
-        }
+        this.logPath = app.getPath('logs');
 
         if (app.isPackaged) {
             transports.file.file = path.join(this.logPath, `app_${Date.now()}.log`);
