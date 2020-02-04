@@ -358,7 +358,10 @@ export const downloadManagerAction = (type, filePath): void => {
     }
 
     if (type === 'open') {
-        const openResponse = electron.shell.openItem(`${filePath}`);
+        let openResponse = fs.existsSync(`${filePath}`);
+        if (openResponse) {
+            openResponse = electron.shell.openItem(`${filePath}`);
+        }
         if (!openResponse && focusedWindow && !focusedWindow.isDestroyed()) {
             electron.dialog.showMessageBox(focusedWindow, {
                 message,
