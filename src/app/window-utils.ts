@@ -1,5 +1,5 @@
 import * as electron from 'electron';
-import { app, BrowserWindow, CertificateVerifyProcRequest, nativeImage } from 'electron';
+import { app, BrowserWindow, nativeImage } from 'electron';
 import fetch from 'electron-fetch';
 import * as filesize from 'filesize';
 import * as fs from 'fs';
@@ -213,7 +213,7 @@ export const setDataUrl = (dataUrl: string, count: number): void => {
  * @param  {BrowserWindow} browserWin  node emitter event to be tested
  * @return {Boolean} returns true if exists otherwise false
  */
-export const isValidWindow = (browserWin: Electron.BrowserWindow): boolean => {
+export const isValidWindow = (browserWin: Electron.BrowserWindow | null): boolean => {
     if (!checkValidWindow) {
         return true;
     }
@@ -454,11 +454,11 @@ export const injectStyles = async (mainWindow: BrowserWindow, isCustomTitleBar: 
 /**
  * Proxy verification for root certificates
  *
- * @param request {CertificateVerifyProcRequest}
+ * @param request {any}
  * @param callback {(verificationResult: number) => void}
  */
 export const handleCertificateProxyVerification = (
-    request: CertificateVerifyProcRequest,
+    request: any,
     callback: (verificationResult: number) => void,
 ): void => {
     const { hostname: hostUrl, errorCode } = request;

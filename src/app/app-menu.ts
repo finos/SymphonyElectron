@@ -335,13 +335,12 @@ export class AppMenu {
                 type: 'checkbox',
             },
             {
-                click: (_item, focusedWindow) => {
+                click: async (_item, focusedWindow) => {
                     if (focusedWindow && !focusedWindow.isDestroyed()) {
                         const defaultSession = session.defaultSession;
                         if (defaultSession) {
-                            defaultSession.clearCache(() => {
-                                focusedWindow.reload();
-                            });
+                            await defaultSession.clearCache();
+                            focusedWindow.reload();
                         }
                     }
                 },
