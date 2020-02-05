@@ -1,6 +1,6 @@
 import { showLoadFailure, showNetworkConnectivityError } from '../src/app/dialog-handler';
 import { windowHandler } from '../src/app/window-handler';
-import { dialog, ipcRenderer } from './__mocks__/electron';
+import { dialog, ipcRenderer, BrowserWindow } from './__mocks__/electron';
 
 jest.mock('../src/app/window-handler', () => {
     return {
@@ -45,6 +45,9 @@ describe('dialog handler', () => {
             const certificate = null;
 
             it('should return false when buttonId is 1', async (done) => {
+                BrowserWindow.fromWebContents = jest.fn(() => {
+                    return { isDestroyed: jest.fn(() => false) };
+                });
                 dialog.showMessageBox = jest.fn(() => {
                     return { response: 1 };
                 });
@@ -53,6 +56,9 @@ describe('dialog handler', () => {
             });
 
             it('should return true when buttonId is not 1', async (done) => {
+                BrowserWindow.fromWebContents = jest.fn(() => {
+                    return { isDestroyed: jest.fn(() => false) };
+                });
                 dialog.showMessageBox = jest.fn(() => 2);
                 await ipcRenderer.send('certificate-error', webContentsMocked, urlMocked, errorMocked, certificate, callbackMocked);
                 expect(callbackMocked).toBeCalledWith(true);

@@ -33,7 +33,7 @@ describe('app cache handler', () => {
         const spyFn = 'clearCache';
         const spy = jest.spyOn(session.defaultSession, spyFn);
         cleanUpAppCache();
-        expect(spy).lastCalledWith(expect.any(Function));
+        expect(spy).toBeCalled();
     });
 
     it('should call `createAppCacheFile` correctly', () => {
