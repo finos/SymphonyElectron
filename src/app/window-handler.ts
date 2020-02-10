@@ -27,6 +27,7 @@ import {
     handleDownloadManager,
     injectStyles,
     isSymphonyReachable,
+    monitorNetworkInterception,
     preventWindowNavigation,
     reloadWindow,
     windowExists,
@@ -73,6 +74,7 @@ export class WindowHandler {
     public willQuitApp: boolean = false;
     public spellchecker: SpellChecker | undefined;
     public isCustomTitleBar: boolean;
+    public isWebPageLoading: boolean = true;
 
     private readonly contextIsolation: boolean;
     private readonly backgroundThrottling: boolean;
@@ -178,6 +180,9 @@ export class WindowHandler {
             if ((this.config.isCustomTitleBar && isWindowsOS) && this.mainWindow && windowExists(this.mainWindow)) {
                 this.mainWindow.setMenuBarVisibility(false);
             }
+            // monitors network connection and
+            // displays error banner on failure
+            monitorNetworkInterception();
         });
 
         this.url = WindowHandler.getValidUrl(this.globalConfig.url);
