@@ -62,13 +62,17 @@ body {
 
 .title {
   font-family: sans-serif;
-  font-size: 14px;
   font-weight: 700;
-  color: var(--text-color);
+  width: 100%;
+  overflow-wrap: break-word;
+  font-size: 14px;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
+  cursor: default;
+  text-overflow: ellipsis;
+  color: var(--text-color);
 }
 
 .company {
