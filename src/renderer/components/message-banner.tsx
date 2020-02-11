@@ -14,6 +14,7 @@ export default class MessageBanner {
     private closeButton: HTMLElement | null = null;
     private retryButton: HTMLElement | null = null;
     private domParser: DOMParser | undefined;
+    private url: string | undefined;
 
     constructor() {
         this.body = document.getElementsByTagName('body');
@@ -51,8 +52,10 @@ export default class MessageBanner {
      *
      * @param show {boolean}
      * @param type {bannerTypes}
+     * @param url {string} - POD URL from global config file
      */
-    public showBanner(show: boolean, type: bannerTypes): void {
+    public showBanner(show: boolean, type: bannerTypes, url?: string): void {
+        this.url = url;
         if (this.body && this.body.length > 0 && this.banner) {
             this.body[ 0 ].appendChild(this.banner);
             if (show) {
@@ -95,17 +98,21 @@ export default class MessageBanner {
             return;
         }
 
-        onlineStateIntervalId = setInterval(() => {
-            if (window.navigator.onLine) {
-                if (this.banner) {
-                    this.banner.classList.remove('sda-banner-show');
+        onlineStateIntervalId = setInterval(async () => {
+            try {
+                const response = await window.fetch(this.url || window.location.href, { cache: 'no-cache', keepalive: false });
+                if (window.navigator.onLine && (response.status === 200 || response.ok)) {
+                    if (this.banner) {
+                        this.banner.classList.remove('sda-banner-show');
+                    }
+                    if (onlineStateIntervalId) {
+                        clearInterval(onlineStateIntervalId);
+                        onlineStateIntervalId = null;
+                    }
+                    this.reload();
                 }
-                if (onlineStateIntervalId) {
-                    clearInterval(onlineStateIntervalId);
-                    onlineStateIntervalId = null;
-                }
-                this.reload();
-            }
+                // tslint:disable-next-line:no-empty
+            } catch (e) {}
         }, onlineStateInterval);
     }
 

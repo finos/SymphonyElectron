@@ -134,9 +134,9 @@ ipcRenderer.on('network-error', (_event, { error }) => {
     ReactDOM.render(networkError, networkErrorContainer);
 });
 
-ipcRenderer.on('show-banner', (_event, { show, bannerType }) => {
+ipcRenderer.on('show-banner', (_event, { show, bannerType, url }) => {
     if (!!document.getElementsByClassName('sda-banner-show').length) {
         return;
     }
-    banner.showBanner(show, bannerType);
+    banner.showBanner(show, bannerType, url);
 });

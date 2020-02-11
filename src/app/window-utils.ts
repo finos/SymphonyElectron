@@ -596,11 +596,11 @@ export const monitorNetworkInterception = () => {
     }
 
     const mainWindow = windowHandler.getMainWindow();
-    const podUrl = `${protocol}//${hostname}/*`;
+    const podUrl = `${protocol}//${hostname}/`;
     logger.info('window-utils: monitoring network interception for url', podUrl);
 
     // Filter applied w.r.t pod url
-    const filter = { urls: [ podUrl ] };
+    const filter = { urls: [ podUrl + '*' ] };
 
     if (mainWindow && windowExists(mainWindow)) {
         isNetworkMonitorInitialized = true;
@@ -614,7 +614,7 @@ export const monitorNetworkInterception = () => {
                 || details.error === 'net::ERR_NAME_NOT_RESOLVED') {
 
                 logger.error(`window-utils: URL failed to load`, details);
-                mainWindow.webContents.send('show-banner', { show: true, bannerType: 'error' });
+                mainWindow.webContents.send('show-banner', { show: true, bannerType: 'error', url: podUrl });
             }
         });
     }
