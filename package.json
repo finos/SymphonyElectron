@@ -54,7 +54,17 @@
       "category": "public.app-category.business",
       "icon": "images/icon.icns",
       "entitlements": "entitlements.mac.plist",
-      "entitlementsInherit": "entitlements.mac.plist"
+      "entitlementsInherit": "entitlements.mac.plist",
+      "gatekeeperAssess": true,
+      "hardenedRuntime": true,
+      "binaries": [
+        "library/lz4.exec",
+        "library/indexvalidator.exec",
+        "library/libsymphonysearch.dylib",
+        "library/cryptoLib.dylib",
+        "library/dictionary",
+        "installer/mac/SymphonySettingsPlugin.bundle/Contents/MacOS/SymphonySettingsPlugin"
+      ]
     },
     "win": {
       "icon": "images/icon.ico",
