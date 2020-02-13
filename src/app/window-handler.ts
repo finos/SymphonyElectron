@@ -152,6 +152,14 @@ export class WindowHandler {
             ...this.windowOpts, ...getBounds(this.config.mainWinPos, DEFAULT_WIDTH, DEFAULT_HEIGHT),
         }) as ICustomBrowserWindow;
 
+        if (isWindowsOS) {
+            // SDA-1720 when Symphony on secondary screen is wider than main screen, the window on secondary is clapmed to the width of main screen
+            // Only happens on windows (BrowserWindow)
+            this.mainWindow.setBounds(getBounds(this.config.mainWinPos, DEFAULT_WIDTH, DEFAULT_HEIGHT) as Electron.Rectangle);
+        }
+
+        logger.info('window-handler: this.mainWindow.getBounds: ' + JSON.stringify(this.mainWindow.getBounds()));
+
         this.mainWindow.winName = apiName.mainWindowName;
         const {isFullScreen, isMaximized} = this.config.mainWinPos ? this.config.mainWinPos : {isFullScreen: false, isMaximized: false};
         if (isMaximized) {
@@ -460,7 +468,7 @@ export class WindowHandler {
     /**
      * Move window to the same screen as main window
      */
-    public moveWindow(windowToMove: BrowserWindow) {
+    public moveWindow(windowToMove: BrowserWindow, fixedYPosition?: number) {
         if (this.mainWindow && windowExists(this.mainWindow)) {
             const display = electron.screen.getDisplayMatching(this.mainWindow.getBounds());
 
@@ -480,7 +488,14 @@ export class WindowHandler {
                 positionX = display.workArea.x;
             }
 
-            let positionY = Math.trunc(display.workArea.y + display.workArea.height / 2 - windowToMove.getBounds().height / 2);
+            let positionY;
+            if (fixedYPosition) {
+                positionY = Math.trunc(display.workArea.y + fixedYPosition);
+            } else {
+                // Center the window in y-axis
+                positionY = Math.trunc(display.workArea.y + display.workArea.height / 2 - windowToMove.getBounds().height / 2);
+            }
+
             if (positionY < display.workArea.y) {
                 positionY = display.workArea.y;
             }
@@ -763,7 +778,7 @@ export class WindowHandler {
                 show: false,
                 modal: true,
                 frame: false,
-                focusable: false,
+                focusable: true,
                 transparent: true,
                 autoHideMenuBar: true,
                 resizable: false,
@@ -772,7 +787,6 @@ export class WindowHandler {
                 titleBarStyle: 'customButtonsOnHover',
                 minimizable: false,
                 maximizable: false,
-                closable: false,
             }, {
                 devTools: false,
             }), ...{winKey: streamId},
@@ -791,9 +805,7 @@ export class WindowHandler {
                 if (displayId === element.id.toString()) {
                     if (isWindowsOS) {
                         logger.info(`window-handler: element:`, element);
-                        const winX: string = element.bounds.x.toString();
-                        const winY: string = element.bounds.y.toString();
-                        this.execCmd(this.screenShareIndicatorFrameUtil, [ winX, winY ]);
+                        this.execCmd(this.screenShareIndicatorFrameUtil, [ displayId ]);
                     } else {
                         this.createScreenSharingFrameWindow('screen-sharing-frame',
                         element.workArea.width,
@@ -806,6 +818,7 @@ export class WindowHandler {
         }
 
         this.screenSharingIndicatorWindow = createComponentWindow('screen-sharing-indicator', opts);
+        this.moveWindow(this.screenSharingIndicatorWindow, topPositionOfIndicatorScreen);
         this.screenSharingIndicatorWindow.setVisibleOnAllWorkspaces(true);
         this.screenSharingIndicatorWindow.webContents.once('did-finish-load', () => {
             if (!this.screenSharingIndicatorWindow || !windowExists(this.screenSharingIndicatorWindow)) {

@@ -1,7 +1,7 @@
 {
   "name": "mana",
   "productName": "Mana",
-  "version": "6.0.0",
+  "version": "6.1.0",
   "clientVersion": "2.0.1",
   "buildNumber": "0",
   "searchAPIVersion": "1.55.3",
@@ -54,7 +54,17 @@
       "category": "public.app-category.business",
       "icon": "images/icon.icns",
       "entitlements": "entitlements.mac.plist",
-      "entitlementsInherit": "entitlements.mac.plist"
+      "entitlementsInherit": "entitlements.mac.plist",
+      "gatekeeperAssess": true,
+      "hardenedRuntime": true,
+      "binaries": [
+        "library/lz4.exec",
+        "library/indexvalidator.exec",
+        "library/libsymphonysearch.dylib",
+        "library/cryptoLib.dylib",
+        "library/dictionary",
+        "installer/mac/SymphonySettingsPlugin.bundle/Contents/MacOS/SymphonySettingsPlugin"
+      ]
     },
     "win": {
       "icon": "images/icon.ico",
@@ -112,7 +122,7 @@
     "jest": "23.6.0",
     "jest-html-reporter": "2.4.2",
     "less": "3.8.1",
-    "node-abi": "^2.12.0",
+    "node-abi": "^2.13.0",
     "ts-jest": "23.10.5",
     "tslint": "5.11.0",
     "typescript": "3.1.1"
@@ -134,8 +144,8 @@
     "shell-path": "2.1.0"
   },
   "optionalDependencies": {
-    "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#v1.0.4",
-    "screen-share-indicator-frame": "git+https://github.com/symphonyoss/ScreenShareIndicatorFrame.git#v1.0.0",
+    "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#v1.0.6",
+    "screen-share-indicator-frame": "git+https://github.com/symphonyoss/ScreenShareIndicatorFrame.git#v1.1.0",
     "swift-search": "2.0.1"
   }
 }

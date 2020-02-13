@@ -140,7 +140,7 @@
   },
   "ScreenSharingIndicator": {
     "Hide": "Masquer",
-    "Stop sharing": "Arrêter le partage",
+    "Stop sharing": "Arrêter",
     "You are sharing your screen on {appName}": "Vous partagez votre écran sur {appName}"
   },
   "ScreenSnippet": {
