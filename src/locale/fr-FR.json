@@ -12,6 +12,10 @@
   "Actual Size": "Taille actuelle",
   "Always on Top": "Garder Symphony au premier plan",
   "Auto Launch On Startup": "Lancement automatique au démarrage",
+  "Banner": {
+    "Connection lost. This message will disappear once the connection is restored.": "Connexion perdue. Ce message disparaîtra une fois la connexion rétablie.",
+    "Retry Now": "Réessayer maintenant"
+  },
   "BasicAuth": {
     "Authentication Request": "Demande d'authentification",
     "Cancel": "Annuler",

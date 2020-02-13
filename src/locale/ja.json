@@ -12,6 +12,10 @@
   "Actual Size": "実際のサイズ",
   "Always on Top": "つねに前面に表示",
   "Auto Launch On Startup": "スタートアップ時に自動起動",
+  "Banner": {
+    "Connection lost. This message will disappear once the connection is restored.": "接続が失われました。接続が回復すると、このメッセージは消えます。",
+    "Retry Now": "今すぐ再試行"
+  },
   "BasicAuth": {
     "Authentication Request": "認証要求",
     "Cancel": "キャンセル",
