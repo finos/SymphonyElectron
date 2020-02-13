@@ -69,8 +69,8 @@ else
   ls -lrth $HOME/tronlibraries/library
 fi
 
-codesign -s "Developer ID Application: Symphony Communication Services LLC" library/lz4.exec
-codesign -s "Developer ID Application: Symphony Communication Services LLC" library/indexvalidator.exec
+codesign --force --options runtime -sign "Developer ID Application: Symphony Communication Services LLC" library/lz4.exec
+codesign --force --options runtime -sign "Developer ID Application: Symphony Communication Services LLC" library/indexvalidator.exec
 
 PKG_VERSION=$(node -e "console.log(require('./package.json').version);")
 
