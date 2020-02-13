@@ -65,6 +65,8 @@ if [ ! -d "$HOME/tronlibraries/library" ]; then
   echo 'Search libraries do not exist! Not building with swift search' >&2
 else
   cp -r "$HOME/tronlibraries/library" .
+  echo 'Copied search libraries'
+  ls -lrth $HOME/tronlibraries/library
 fi
 
 PKG_VERSION=$(node -e "console.log(require('./package.json').version);")
