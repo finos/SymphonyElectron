@@ -53,6 +53,10 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.IpcMainEvent, arg: IApiArgs) =>
             // Since we register the prococol handler window upon login,
             // we make use of it and update the pod version info on SDA
             windowHandler.updateVersionInfo();
+
+            // Set this to false once the SFE is completely loaded
+            // so, we can prevent from showing error banners
+            windowHandler.isWebPageLoading = false;
             break;
         case apiCmds.registerLogRetriever:
             registerLogRetriever(event.sender, arg.logName);
@@ -89,6 +93,7 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.IpcMainEvent, arg: IApiArgs) =>
             if (typeof arg.windowName === 'string') {
                 sanitize(arg.windowName);
             }
+            windowHandler.isWebPageLoading = true;
             break;
         case apiCmds.bringToFront:
             // validates the user bring to front config and activates the wrapper

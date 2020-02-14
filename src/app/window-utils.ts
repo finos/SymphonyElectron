@@ -24,6 +24,7 @@ interface IStyles {
 enum styleNames {
     titleBar = 'title-bar',
     snackBar = 'snack-bar',
+    messageBanner = 'message-banner',
 }
 
 const checkValidWindow = true;
@@ -32,6 +33,7 @@ const { url: configUrl, ctWhitelist } = config.getGlobalConfigFields([ 'url', 'c
 // Network status check variables
 const networkStatusCheckInterval = 10 * 1000;
 let networkStatusCheckIntervalId;
+let isNetworkMonitorInitialized = false;
 
 const styles: IStyles[] = [];
 const DOWNLOAD_MANAGER_NAMESPACE = 'DownloadManager';
@@ -358,7 +360,10 @@ export const downloadManagerAction = (type, filePath): void => {
     }
 
     if (type === 'open') {
-        const openResponse = electron.shell.openItem(`${filePath}`);
+        let openResponse = fs.existsSync(`${filePath}`);
+        if (openResponse) {
+            openResponse = electron.shell.openItem(`${filePath}`);
+        }
         if (!openResponse && focusedWindow && !focusedWindow.isDestroyed()) {
             electron.dialog.showMessageBox(focusedWindow, {
                 message,
@@ -445,6 +450,14 @@ export const injectStyles = async (mainWindow: BrowserWindow, isCustomTitleBar: 
         styles.push({
             name: styleNames.snackBar,
             content: fs.readFileSync(path.join(__dirname, '..', '/renderer/styles/snack-bar.css'), 'utf8').toString(),
+        });
+    }
+
+    // Banner styles
+    if (styles.findIndex(({ name }) => name === styleNames.messageBanner) === -1) {
+        styles.push({
+            name: styleNames.messageBanner,
+            content: fs.readFileSync(path.join(__dirname, '..', '/renderer/styles/message-banner.css'), 'utf8').toString(),
         });
     }
 
@@ -566,4 +579,43 @@ export const getWindowByName = (windowName: string): BrowserWindow | undefined =
     return allWindows.find((window) => {
         return (window as ICustomBrowserWindow).winName === windowName;
     });
+};
+
+/**
+ * Monitors network requests and displays red banner on failure
+ */
+export const monitorNetworkInterception = () => {
+    if (isNetworkMonitorInitialized) {
+        return;
+    }
+    const { url } = config.getGlobalConfigFields( [ 'url' ] );
+    const { hostname, protocol } = parse(url);
+
+    if (!hostname || !protocol) {
+        return;
+    }
+
+    const mainWindow = windowHandler.getMainWindow();
+    const podUrl = `${protocol}//${hostname}/`;
+    logger.info('window-utils: monitoring network interception for url', podUrl);
+
+    // Filter applied w.r.t pod url
+    const filter = { urls: [ podUrl + '*' ] };
+
+    if (mainWindow && windowExists(mainWindow)) {
+        isNetworkMonitorInitialized = true;
+        mainWindow.webContents.session.webRequest.onErrorOccurred(filter,(details) => {
+            if (!mainWindow || !windowExists(mainWindow)) {
+                return;
+            }
+            if (windowHandler.isWebPageLoading
+                && details.error === 'net::ERR_INTERNET_DISCONNECTED'
+                || details.error === 'net::ERR_NETWORK_CHANGED'
+                || details.error === 'net::ERR_NAME_NOT_RESOLVED') {
+
+                logger.error(`window-utils: URL failed to load`, details);
+                mainWindow.webContents.send('show-banner', { show: true, bannerType: 'error', url: podUrl });
+            }
+        });
+    }
 };

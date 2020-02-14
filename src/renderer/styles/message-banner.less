@@ -1,0 +1,105 @@
+@import "theme";
+
+.sda-banner-error {
+  --info: #FFC2C2;
+  --info-border: #D4172D;
+  --info-icon: #E57373;
+  --info-text: #B0072C;
+  --info-link: #0962F1;
+}
+
+.sda-banner-warning {
+  --info: #F1E7CA;
+  --info-icon: #FDCD3B;
+  --info-text: #000000;
+  --info-link: #0962F1;
+}
+
+.sda-banner {
+  top: 0;
+  z-index: 2001 !important;
+  height: 34px;
+  display: none;
+  position: fixed;
+  left: 0;
+  width: 100%;
+  font-size: 12px;
+  background-color: var(--info);
+  font-family: @font-family;
+  font-weight: 400;
+
+  &-focus-active {
+    border-color: transparent !important;
+    box-shadow:  none !important;
+  }
+
+  &-message {
+    margin-left: 18px;
+    margin-top: 4px;
+    display: flex;
+    flex: auto;
+    color: var(--info-text);
+  }
+
+  &-close-icon {
+    opacity: 0.8;
+  }
+
+  &-icon {
+    margin: 0;
+    height: 100%;
+    width: 38px;
+    opacity: 1;
+    background-image: url("data:image/svg+xml,%3Csvg id='fill' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cdefs%3E%3Cstyle%3E.cls-1%7Bfill:%23fff;%7D%3C/style%3E%3C/defs%3E%3Ctitle%3Eset2%3C/title%3E%3Cpath class='cls-1' d='M24,0A24,24,0,1,0,48,24,24,24,0,0,0,24,0Zm4,42a2,2,0,0,1-2,2H22a2,2,0,0,1-2-2V38a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2ZM28,9.88V30a2,2,0,0,1-2,2H22a2,2,0,0,1-2-2V6a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2Z'/%3E%3C/svg%3E%0A");;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    background-position: center;
+  }
+
+  &-error {
+    background-color: var(--info);
+  }
+
+  &-icon {
+    background-color: var(--info-icon) !important;
+  }
+
+  &-warning {
+    background-color: var(--info);
+  }
+
+  &-show {
+    display: flex;
+    align-items: center;
+  }
+
+  &-retry-button, &-action-button {
+    color: var(--info-link);
+    flex: 0 0 auto;
+    margin-left: 4px;
+    margin-right: 4px;
+    margin-top: 0;
+
+    &:hover, &:focus {
+      cursor: pointer;
+    }
+
+    &:active {
+      cursor: pointer;
+    }
+  }
+
+  &-close-icon {
+    flex: 0 0 auto;
+    margin-left: auto;
+    cursor: pointer;
+    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+    opacity: 0.5;
+    background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3C!-- Generator: Adobe Illustrator 19.2.1, SVG Export Plug-In . SVG Version: 6.00 Build 0) --%3E%3Csvg version='1.1' id='fill' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' viewBox='0 0 48 48' style='enable-background:new 0 0 48 48;' xml:space='preserve'%3E%3Ctitle%3Eset1%3C/title%3E%3Cpath d='M39.4,33.8L31,25.4c-0.4-0.4-0.9-0.9-1.4-1.4c0.5-0.5,1-1,1.4-1.4l8.4-8.4c0.8-0.8,0.8-2,0-2.8l-2.8-2.8 c-0.8-0.8-2-0.8-2.8,0L25.4,17c-0.4,0.4-0.9,0.9-1.4,1.4c-0.5-0.5-1-1-1.4-1.4l-8.4-8.4c-0.8-0.8-2-0.8-2.8,0l-2.8,2.8 c-0.8,0.8-0.8,2,0,2.8l8.4,8.4c0.4,0.4,0.9,0.9,1.4,1.4c-0.5,0.5-1,1-1.4,1.4l-8.4,8.4c-0.8,0.8-0.8,2,0,2.8l2.8,2.8 c0.8,0.8,2,0.8,2.8,0l8.4-8.4c0.4-0.4,0.9-0.9,1.4-1.4c0.5,0.5,1,1,1.4,1.4l8.4,8.4c0.8,0.8,2,0.8,2.8,0l2.8-2.8 C40.2,35.8,40.2,34.6,39.4,33.8z'/%3E%3C/svg%3E%0A");
+    background-repeat: no-repeat;
+    background-size: 8px;
+    background-position: center;
+  }
+}
