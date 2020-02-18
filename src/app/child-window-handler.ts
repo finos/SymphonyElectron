@@ -153,7 +153,7 @@ export const handleChildWindow = (webContents: WebContents): void => {
             newWinOptions.alwaysOnTop = mainWindow.isAlwaysOnTop();
             newWinOptions.frame = true;
             newWinOptions.winKey = newWinKey;
-            newWinOptions.fullscreenable = false;
+            newWinOptions.fullscreen = false;
 
             const childWebContents: WebContents = newWinOptions.webContents;
             // Event needed to hide native menu bar
