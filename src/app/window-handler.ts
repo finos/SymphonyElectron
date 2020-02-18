@@ -513,6 +513,7 @@ export class WindowHandler {
             modal: true,
             alwaysOnTop: isMac,
             resizable: false,
+            fullscreenable: false,
         }, {
             devTools: false,
         });
@@ -565,6 +566,7 @@ export class WindowHandler {
             height: isMac ? 519 : 523,
             width: 580,
             show: false,
+            fullscreenable: false,
         }, {
             devTools: false,
         });
