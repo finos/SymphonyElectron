@@ -5,7 +5,7 @@ import { LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { activityDetection } from './activity-detection';
 import { analytics } from './analytics-handler';
-import { config } from './config-handler';
+import { CloudConfigDataTypes, config, ICloudConfig } from './config-handler';
 import { memoryMonitor } from './memory-monitor';
 import { protocolHandler } from './protocol-handler';
 import { finalizeLogExports, registerLogRetriever } from './reports-handler';
@@ -19,6 +19,7 @@ import {
     setDataUrl,
     showBadgeCount,
     showPopupMenu,
+    updateFeaturesForCloudConfig,
     updateLocale,
     windowExists,
 } from './window-utils';
@@ -27,7 +28,7 @@ import {
  * Handle API related ipc messages from renderers. Only messages from windows
  * we have created are allowed.
  */
-ipcMain.on(apiName.symphonyApi, (event: Electron.IpcMainEvent, arg: IApiArgs) => {
+ipcMain.on(apiName.symphonyApi, async (event: Electron.IpcMainEvent, arg: IApiArgs) => {
     if (!isValidWindow(BrowserWindow.fromWebContents(event.sender))) {
         logger.error(`main-api-handler: invalid window try to perform action, ignoring action`, arg.cmd);
         return;
@@ -99,7 +100,9 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.IpcMainEvent, arg: IApiArgs) =>
             // validates the user bring to front config and activates the wrapper
             if (typeof arg.reason === 'string' && arg.reason === 'notification') {
                 const { bringToFront } = config.getConfigFields([ 'bringToFront' ]);
-                if (bringToFront) {
+                console.log(bringToFront);
+                console.log(CloudConfigDataTypes.ENABLED);
+                if (bringToFront === CloudConfigDataTypes.ENABLED) {
                     activate(arg.windowName, false);
                 }
             }
@@ -168,6 +171,14 @@ ipcMain.on(apiName.symphonyApi, (event: Electron.IpcMainEvent, arg: IApiArgs) =>
         case apiCmds.registerAnalyticsHandler:
             analytics.registerPreloadWindow(event.sender);
             break;
+        case apiCmds.setCloudConfig:
+            const { podLevelEntitlements, acpFeatureLevelEntitlements, pmpEntitlements, ...rest } = arg.cloudConfig as ICloudConfig;
+            logger.info('main-api-handler: ignored other values from SFE', rest);
+            await config.updateCloudConfig({ podLevelEntitlements, acpFeatureLevelEntitlements, pmpEntitlements });
+            await updateFeaturesForCloudConfig();
+            if (windowHandler.appMenu) {
+                windowHandler.appMenu.buildMenu();
+            }
         default:
     }
 

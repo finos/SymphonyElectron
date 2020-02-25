@@ -34,7 +34,7 @@
     "only-arrow-functions": true,
     "object-literal-sort-keys": false,
     "no-console": [
-      true,
+      false,
       "log",
       "error"
     ],

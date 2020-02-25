@@ -18,7 +18,7 @@ export class WhitelistHandler {
      * @returns {boolean}
      */
     public isWhitelisted(url: string): boolean {
-        const { whitelistUrl } = config.getGlobalConfigFields([ 'whitelistUrl' ]);
+        const { whitelistUrl } = config.getConfigFields([ 'whitelistUrl' ]);
 
         return this.checkWhitelist(url, whitelistUrl);
     }
