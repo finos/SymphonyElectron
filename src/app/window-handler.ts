@@ -119,10 +119,18 @@ export class WindowHandler {
         this.isAutoReload = false;
         this.isOnline = true;
 
-        this.screenShareIndicatorFrameUtil = !isWindowsOS ? '' : isDevEnv
-            ? path.join(__dirname,
-                '../../../node_modules/screen-share-indicator-frame/ScreenShareIndicatorFrame.exe')
-            : path.join(path.dirname(app.getPath('exe')), 'ScreenShareIndicatorFrame.exe');
+        this.screenShareIndicatorFrameUtil = '';
+        if (isWindowsOS) {
+            this.screenShareIndicatorFrameUtil = isDevEnv
+                ? path.join(__dirname,
+                    '../../../node_modules/screen-share-indicator-frame/ScreenShareIndicatorFrame.exe')
+                : path.join(path.dirname(app.getPath('exe')), 'ScreenShareIndicatorFrame.exe');
+        } else if (isMac) {
+            this.screenShareIndicatorFrameUtil = isDevEnv
+                ? path.join(__dirname,
+                    '../../../node_modules/screen-share-indicator-frame/SymphonyScreenShareIndicator')
+                : path.join(path.dirname(app.getPath('exe')), 'SymphonyScreenShareIndicator');
+        }
 
         this.appMenu = null;
         const locale: LocaleType = (this.config.locale || app.getLocale()) as LocaleType;
@@ -390,7 +398,7 @@ export class WindowHandler {
                     if (browserWindow && windowExists(browserWindow)) {
                         browserWindow.destroy();
 
-                        if (isWindowsOS) {
+                        if (isWindowsOS || isMac) {
                             this.execCmd(this.screenShareIndicatorFrameUtil, []);
                         } else {
                             if (this.screenSharingFrameWindow && windowExists(this.screenSharingFrameWindow)) {
@@ -790,8 +798,8 @@ export class WindowHandler {
 
             displays.forEach((element) => {
                 if (displayId === element.id.toString()) {
-                    if (isWindowsOS) {
-                        logger.info(`window-handler: element:`, element);
+                    logger.info(`window-handler: element:`, element);
+                    if (isWindowsOS || isMac) {
                         this.execCmd(this.screenShareIndicatorFrameUtil, [ displayId ]);
                     } else {
                         this.createScreenSharingFrameWindow('screen-sharing-frame',
