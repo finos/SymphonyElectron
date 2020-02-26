@@ -48,7 +48,8 @@
       "library/indexvalidator.exec",
       "library/cryptoLib.dylib",
       "library/dictionary",
-      "library/lz4.exec"
+      "library/lz4.exec",
+      "node_modules/screen-share-indicator-frame/SymphonyScreenShareIndicator"
     ],
     "mac": {
       "category": "public.app-category.business",
