@@ -147,7 +147,7 @@ export class AppMenu {
         isCustomTitleBar = configData.isCustomTitleBar;
 
         // fetch updated cloud config
-        this.cloudConfig = config.getCloudConfigFields(this.menuItemConfigFields);
+        this.cloudConfig = config.getFilteredCloudConfigFields(this.menuItemConfigFields);
     }
 
     /**
