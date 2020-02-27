@@ -59,6 +59,11 @@ jest.mock('../src/app/config-handler', () => {
                     devToolsEnabled: true,
                 };
             }),
+            getFilteredCloudConfigFields: jest.fn(() => {
+                return {
+                    devToolsEnabled: true,
+                };
+            }),
             getCloudConfigFields: jest.fn(() => {
                 return {
                     devToolsEnabled: true,

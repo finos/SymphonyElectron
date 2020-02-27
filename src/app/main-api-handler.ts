@@ -100,8 +100,6 @@ ipcMain.on(apiName.symphonyApi, async (event: Electron.IpcMainEvent, arg: IApiAr
             // validates the user bring to front config and activates the wrapper
             if (typeof arg.reason === 'string' && arg.reason === 'notification') {
                 const { bringToFront } = config.getConfigFields([ 'bringToFront' ]);
-                console.log(bringToFront);
-                console.log(CloudConfigDataTypes.ENABLED);
                 if (bringToFront === CloudConfigDataTypes.ENABLED) {
                     activate(arg.windowName, false);
                 }
