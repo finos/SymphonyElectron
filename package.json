@@ -48,7 +48,8 @@
       "library/indexvalidator.exec",
       "library/cryptoLib.dylib",
       "library/dictionary",
-      "library/lz4.exec"
+      "library/lz4.exec",
+      "node_modules/screen-share-indicator-frame/SymphonyScreenShareIndicator"
     ],
     "mac": {
       "category": "public.app-category.business",
@@ -145,7 +146,7 @@
   },
   "optionalDependencies": {
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#v1.0.6",
-    "screen-share-indicator-frame": "git+https://github.com/symphonyoss/ScreenShareIndicatorFrame.git#v1.1.0",
+    "screen-share-indicator-frame": "git+https://github.com/symphonyoss/ScreenShareIndicatorFrame.git#v1.2.0",
     "swift-search": "2.0.1"
   }
 }
