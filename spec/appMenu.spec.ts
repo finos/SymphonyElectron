@@ -52,6 +52,7 @@ jest.mock('../src/app/config-handler', () => {
                     alwaysOnTop: 'ENABLED',
                     isAlwaysOnTop: 'ENABLED',
                     bringToFront: 'ENABLED',
+                    devToolsEnabled: true,
                 };
             }),
             getGlobalConfigFields: jest.fn(() => {
