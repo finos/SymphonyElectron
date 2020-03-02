@@ -643,9 +643,9 @@ export const monitorNetworkInterception = () => {
                 return;
             }
             if (windowHandler.isWebPageLoading
-                && details.error === 'net::ERR_INTERNET_DISCONNECTED'
+                && (details.error === 'net::ERR_INTERNET_DISCONNECTED'
                 || details.error === 'net::ERR_NETWORK_CHANGED'
-                || details.error === 'net::ERR_NAME_NOT_RESOLVED') {
+                || details.error === 'net::ERR_NAME_NOT_RESOLVED')) {
 
                 logger.error(`window-utils: URL failed to load`, details);
                 mainWindow.webContents.send('show-banner', { show: true, bannerType: 'error', url: podUrl });
