@@ -71,6 +71,7 @@ fi
 
 codesign --force --options runtime -s "Developer ID Application: Symphony Communication Services LLC" library/lz4.exec
 codesign --force --options runtime -s "Developer ID Application: Symphony Communication Services LLC" library/indexvalidator.exec
+codesign --force --options runtime -s "Developer ID Application: Symphony Communication Services LLC" node_modules/screen-share-indicator-frame/SymphonyScreenShareIndicator
 
 PKG_VERSION=$(node -e "console.log(require('./package.json').version);")
 
