@@ -516,8 +516,8 @@ export class WindowHandler {
         const selectedParentWindow = getWindowByName(windowName);
 
         const opts: BrowserWindowConstructorOptions = this.getWindowOpts({
-            width: 550,
-            height: 340,
+            width: 440,
+            height: 300,
             modal: true,
             alwaysOnTop: isMac,
             resizable: false,

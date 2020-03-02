@@ -87,7 +87,6 @@ export default class AboutApp extends React.Component<{}, IState> {
                         <p className='AboutApp-copyrightText'>{copyright}</p>
                     </div>
                 </div>
-                <hr />
                 <div className='AboutApp-main-container'>
                     <section>
                         <ul className='AboutApp-symphony-section'>
@@ -97,7 +96,6 @@ export default class AboutApp extends React.Component<{}, IState> {
                         </ul>
                     </section>
                 </div>
-                <hr />
                 <div>
                     <button
                         className='AboutApp-copy-button'
