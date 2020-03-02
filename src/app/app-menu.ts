@@ -48,6 +48,7 @@ let {
     bringToFront,
     memoryRefresh,
     isCustomTitleBar,
+    devToolsEnabled,
 } = config.getConfigFields([
     'minimizeOnClose',
     'launchOnStartup',
@@ -55,6 +56,7 @@ let {
     'bringToFront',
     'memoryRefresh',
     'isCustomTitleBar',
+    'devToolsEnabled',
 ]) as IConfig;
 let initialAnalyticsSent = false;
 
@@ -62,8 +64,6 @@ const menuItemsArray = Object.keys(menuSections)
     .map((key) => menuSections[ key ])
     .filter((value) => isMac ?
         true : value !== menuSections.about);
-
-const { devToolsEnabled } = config.getCloudConfigFields([ 'devToolsEnabled' ]);
 
 export class AppMenu {
     private menu: Electron.Menu | undefined;
@@ -76,8 +76,8 @@ export class AppMenu {
     constructor() {
         this.menuList = [];
         this.locale = i18n.getLocale();
-        this.menuItemConfigFields = [ 'minimizeOnClose', 'launchOnStartup', 'alwaysOnTop', 'bringToFront', 'memoryRefresh', 'isCustomTitleBar' ];
-        this.cloudConfig = config.getCloudConfigFields(this.menuItemConfigFields);
+        this.menuItemConfigFields = [ 'minimizeOnClose', 'launchOnStartup', 'alwaysOnTop', 'bringToFront', 'memoryRefresh', 'isCustomTitleBar', 'devToolsEnabled' ];
+        this.cloudConfig = config.getFilteredCloudConfigFields(this.menuItemConfigFields);
         this.buildMenu();
         // send initial analytic
         if (!initialAnalyticsSent) {
@@ -145,6 +145,7 @@ export class AppMenu {
         bringToFront = configData.bringToFront;
         memoryRefresh = configData.memoryRefresh;
         isCustomTitleBar = configData.isCustomTitleBar;
+        devToolsEnabled = configData.devToolsEnabled;
 
         // fetch updated cloud config
         this.cloudConfig = config.getFilteredCloudConfigFields(this.menuItemConfigFields);
@@ -345,12 +346,9 @@ export class AppMenu {
                 label: (isCustomTitleBar === CloudConfigDataTypes.DISABLED || isCustomTitleBar === CloudConfigDataTypes.NOT_SET)
                     ? i18n.t('Enable Hamburger menu')()
                     : i18n.t('Disable Hamburger menu')(),
-                visible: isWindowsOS && isCustomTitleBarCC === CloudConfigDataTypes.NOT_SET,
+                visible: isWindowsOS,
                 click: () => {
-                    const isNativeStyle = isCustomTitleBar === CloudConfigDataTypes.DISABLED;
-
-                    isCustomTitleBar = isNativeStyle ? CloudConfigDataTypes.DISABLED : CloudConfigDataTypes.ENABLED;
-                    titleBarChangeDialog(isNativeStyle);
+                    titleBarChangeDialog(isCustomTitleBar === CloudConfigDataTypes.DISABLED ? CloudConfigDataTypes.ENABLED : CloudConfigDataTypes.DISABLED);
                     this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.HAMBURGER_MENU, isCustomTitleBar === CloudConfigDataTypes.ENABLED);
                 },
                 enabled: !isCustomTitleBarCC || isCustomTitleBarCC === CloudConfigDataTypes.NOT_SET,
@@ -419,6 +417,7 @@ export class AppMenu {
         if (isLinux) {
             showCrashesLabel = i18n.t('Show crash dump in File Manager')();
         }
+        const { devToolsEnabled: isDevToolsEnabledCC } = this.cloudConfig as IConfig;
 
         return {
             label: i18n.t('Help')(),
@@ -441,7 +440,7 @@ export class AppMenu {
                     }, {
                         label: i18n.t('Toggle Developer Tools')(),
                         accelerator: isMac ? 'Alt+Command+I' : 'Ctrl+Shift+I',
-                        visible: devToolsEnabled,
+                        visible: isDevToolsEnabledCC,
                         click(_item, focusedWindow) {
                             if (!focusedWindow || !windowExists(focusedWindow)) {
                                 return;

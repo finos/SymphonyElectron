@@ -46,8 +46,6 @@ export interface ICustomBrowserWindow extends Electron.BrowserWindow {
 const DEFAULT_WIDTH: number = 900;
 const DEFAULT_HEIGHT: number = 900;
 
-const { devToolsEnabled } = config.getConfigFields([ 'devToolsEnabled' ]);
-
 export class WindowHandler {
 
     /**
@@ -96,6 +94,7 @@ export class WindowHandler {
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Use these variables only on initial setup
         this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings', 'alwaysOnTop', 'locale', 'customFlags' ]);
+        logger.info(`window-handler: main windows initialized with following config data`, this.config);
         this.globalConfig = config.getGlobalConfigFields([ 'url', 'contextIsolation' ]);
         const { url, contextIsolation }: IGlobalConfig = this.globalConfig;
         const { customFlags } = this.config;
@@ -964,6 +963,7 @@ export class WindowHandler {
         if (!focusedWindow || !windowExists(focusedWindow)) {
             return;
         }
+        const { devToolsEnabled } = config.getConfigFields([ 'devToolsEnabled' ]);
         if (devToolsEnabled) {
             focusedWindow.webContents.toggleDevTools();
             return;
