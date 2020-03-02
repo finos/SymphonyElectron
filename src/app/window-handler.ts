@@ -928,7 +928,9 @@ export class WindowHandler {
         logger.info(`window handler: execCmd: util: ${util} utilArgs: ${utilArgs}`);
         return new Promise<ChildProcess>((resolve, reject) => {
             return execFile(util, utilArgs, (error: ExecException | null) => {
-                logger.info(`window handler: execCmd: error: ${error}`);
+                if (error) {
+                    logger.info(`window handler: execCmd: error: ${error}`);
+                }
                 if (error && error.killed) {
                     // processs was killed, just resolve with no data.
                     return reject(error);
