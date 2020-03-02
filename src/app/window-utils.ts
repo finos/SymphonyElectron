@@ -543,6 +543,9 @@ export const reloadWindow = (browserWindow: ICustomBrowserWindow) => {
     if (windowName === apiName.mainWindowName) {
         logger.info(`window-utils: reloading the main window`);
         browserWindow.reload();
+
+        windowHandler.execCmd(windowHandler.screenShareIndicatorFrameUtil, []);
+
         return;
     }
     // Send an event to SFE that restarts the pop-out window
