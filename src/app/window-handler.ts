@@ -599,7 +599,7 @@ export class WindowHandler {
         ipcMain.once('screen-source-selected', (_event, source) => {
             if (source != null) {
                 logger.info(`window-handler: screen-source-selected`, source, id);
-                if (isWindowsOS) {
+                if (isWindowsOS || isMac) {
                     const type = source.id.split(':')[0];
                     if (type === 'window') {
                         const hwnd = source.id.split(':')[1];
