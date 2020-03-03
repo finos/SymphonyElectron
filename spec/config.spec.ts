@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { IConfig } from '../src/app/config-handler';
+import { IConfig, IGlobalConfig } from '../src/app/config-handler';
 
 jest.mock('electron-log');
 
@@ -75,7 +75,7 @@ describe('config', () => {
             configInstance.readUserConfig();
             configInstance.readGlobalConfig();
 
-            const configField: IConfig = configInstance.getConfigFields(fieldMock);
+            const configField: IGlobalConfig = configInstance.getGlobalConfigFields(fieldMock);
 
             expect(configField.url).toBe('something');
         });

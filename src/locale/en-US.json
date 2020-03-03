@@ -12,6 +12,10 @@
   "Actual Size": "Actual Size",
   "Always on Top": "Always on Top",
   "Auto Launch On Startup": "Auto Launch On Startup",
+  "Banner": {
+    "Connection lost. This message will disappear once the connection is restored.": "Connection lost. This message will disappear once the connection is restored.",
+    "Retry Now": "Retry Now"
+  },
   "BasicAuth": {
     "Authentication Request": "Authentication Request",
     "Cancel": "Cancel",

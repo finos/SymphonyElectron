@@ -71,10 +71,15 @@ jest.mock('../src/common/logger', () => {
 
 jest.mock('../src/app/config-handler', () => {
     return {
+        CloudConfigDataTypes: {
+            NOT_SET: 'NOT_SET',
+            ENABLED: 'ENABLED',
+            DISABLED: 'DISABLED',
+        },
         config: {
             getConfigFields: jest.fn(() => {
                 return {
-                    bringToFront: true,
+                    bringToFront: 'ENABLED',
                 };
             }),
         },

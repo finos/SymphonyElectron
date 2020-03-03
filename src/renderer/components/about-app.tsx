@@ -66,10 +66,6 @@ export default class AboutApp extends React.Component<{}, IState> {
     public render(): JSX.Element {
         const { clientVersion, buildNumber, sfeVersion,
             sdaVersion, sdaBuildNumber,
-            electronVersion, chromeVersion, v8Version,
-            nodeVersion, openSslVersion, zlibVersion,
-            uvVersion, aresVersion, httpParserVersion,
-            swiftSearchVersion, swiftSearchSupportedVersion,
         } = this.state;
 
         const appName = remote.app.getName() || 'Symphony';
@@ -91,39 +87,15 @@ export default class AboutApp extends React.Component<{}, IState> {
                         <p className='AboutApp-copyrightText'>{copyright}</p>
                     </div>
                 </div>
-                <hr />
                 <div className='AboutApp-main-container'>
                     <section>
-                        <h4>Symphony</h4>
                         <ul className='AboutApp-symphony-section'>
                             <li><b>SBE:</b> {podVersion}</li>
-                            <li><b>SFE:</b> {sfeVersion}</li>
                             <li><b>SDA:</b> {sdaVersionBuild}</li>
-                        </ul>
-                    </section>
-                    <section>
-                        <h4>Electron</h4>
-                        <ul className='AboutApp-electron-section'>
-                            <li><b>Electron:</b> {electronVersion}</li>
-                            <li><b>Chrome:</b> {chromeVersion}</li>
-                            <li><b>V8:</b> {v8Version}</li>
-                            <li><b>Node:</b> {nodeVersion}</li>
-                        </ul>
-                    </section>
-                    <section>
-                        <h4>{i18n.t('Others', ABOUT_SYMPHONY_NAMESPACE)()}</h4>
-                        <ul className='AboutApp-others-section'>
-                            <li><b>openssl:</b> {openSslVersion}</li>
-                            <li><b>zlib:</b> {zlibVersion}</li>
-                            <li><b>uv:</b> {uvVersion}</li>
-                            <li><b>ares:</b> {aresVersion}</li>
-                            <li><b>http_parser:</b> {httpParserVersion}</li>
-                            <li><b>{i18n.t('Swift Search', ABOUT_SYMPHONY_NAMESPACE)()}:</b> {swiftSearchVersion}</li>
-                            <li><b>{i18n.t('Swift Search API', ABOUT_SYMPHONY_NAMESPACE)()}:</b> {swiftSearchSupportedVersion}</li>
+                            <li><b>SFE:</b> {sfeVersion}</li>
                         </ul>
                     </section>
                 </div>
-                <hr />
                 <div>
                     <button
                         className='AboutApp-copy-button'
