@@ -180,8 +180,8 @@ export const gpuRestartDialog = async (disableGpu: boolean) => {
     const options = {
         type: 'question',
         title: i18n.t('Relaunch Application')(),
-        message: i18n.t('Changing GPU settings requires Symphony to relaunch.')(),
-        buttons: [ i18n.t('Relaunch')(), i18n.t('Cancel')() ],
+        message: i18n.t('Would you like to restart and apply these new settings now?')(),
+        buttons: [ i18n.t('Restart')(), i18n.t('Later')() ],
         cancelId: 1,
     };
     const { response } = await electron.dialog.showMessageBox(focusedWindow, options);

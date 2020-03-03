@@ -72,7 +72,6 @@ export class AppMenu {
     private cloudConfig: IConfig | {};
 
     private readonly menuItemConfigFields: string[];
-    private titleBarStyle: TitleBarStyles;
     private disableGpu: boolean;
 
     constructor() {
@@ -80,9 +79,6 @@ export class AppMenu {
         this.locale = i18n.getLocale();
         this.menuItemConfigFields = [ 'minimizeOnClose', 'launchOnStartup', 'alwaysOnTop', 'bringToFront', 'memoryRefresh', 'isCustomTitleBar', 'devToolsEnabled' ];
         this.cloudConfig = config.getFilteredCloudConfigFields(this.menuItemConfigFields);
-        this.titleBarStyle = config.getConfigFields([ 'isCustomTitleBar' ]).isCustomTitleBar
-            ? TitleBarStyles.CUSTOM
-            : TitleBarStyles.NATIVE;
         this.disableGpu = config.getConfigFields(['disableGpu']).disableGpu;
         this.buildMenu();
         // send initial analytic

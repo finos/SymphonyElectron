@@ -31,7 +31,6 @@ export interface IConfig {
     isCustomTitleBar: CloudConfigDataTypes;
     memoryRefresh: CloudConfigDataTypes;
     memoryThreshold: string;
-    isCustomTitleBar: boolean;
     disableGpu: boolean;
     devToolsEnabled: boolean;
     ctWhitelist: string[];
