@@ -154,6 +154,25 @@ export const pick = (object: object, fields: string[]) => {
 };
 
 /**
+ * Filters out truthy values
+ *
+ * @param data {Object} { test: true, test1: false, test2: 'NOT_SET' }
+ * @param values {Array} [ true, "NOT_SET" ]
+ * @return {Object} { test1: false }
+ */
+export const filterOutSelectedValues = (data: object, values): object => {
+    if (!data) {
+        return {};
+    }
+    return Object.keys(data).reduce((obj, key) => {
+        if (values.indexOf(data[key]) <= -1) {
+            obj[key] = data[key];
+        }
+        return obj;
+    }, {});
+};
+
+/**
  * Limits your function to be called at most every milliseconds
  *
  * @param func

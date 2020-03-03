@@ -215,7 +215,7 @@ export const handleChildWindow = (webContents: WebContents): void => {
                     }
 
                     // Updates media permissions for preload context
-                    const { permissions } = config.getGlobalConfigFields([ 'permissions' ]);
+                    const { permissions } = config.getConfigFields([ 'permissions' ]);
                     browserWin.webContents.send('is-screen-share-enabled', permissions.media);
                 }
             });
