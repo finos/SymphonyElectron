@@ -10,7 +10,7 @@ import {
     MenuActionTypes,
 } from './analytics-handler';
 import { autoLaunchInstance as autoLaunch } from './auto-launch-controller';
-import { config, IConfig } from './config-handler';
+import { CloudConfigDataTypes, config, IConfig } from './config-handler';
 import { titleBarChangeDialog } from './dialog-handler';
 import { exportCrashDumps, exportLogs } from './reports-handler';
 import { updateAlwaysOnTop } from './window-actions';
@@ -24,11 +24,6 @@ export const menuSections = {
     window: 'window',
     help: 'help', // tslint:disable-line
 };
-
-enum TitleBarStyles {
-    CUSTOM,
-    NATIVE,
-}
 
 const windowsAccelerator = Object.assign({
     close: 'Ctrl+W',
@@ -52,12 +47,16 @@ let {
     alwaysOnTop: isAlwaysOnTop,
     bringToFront,
     memoryRefresh,
+    isCustomTitleBar,
+    devToolsEnabled,
 } = config.getConfigFields([
     'minimizeOnClose',
     'launchOnStartup',
     'alwaysOnTop',
     'bringToFront',
     'memoryRefresh',
+    'isCustomTitleBar',
+    'devToolsEnabled',
 ]) as IConfig;
 let initialAnalyticsSent = false;
 
@@ -66,29 +65,28 @@ const menuItemsArray = Object.keys(menuSections)
     .filter((value) => isMac ?
         true : value !== menuSections.about);
 
-const { devToolsEnabled } = config.getGlobalConfigFields([ 'devToolsEnabled' ]);
-
 export class AppMenu {
     private menu: Electron.Menu | undefined;
     private menuList: Electron.MenuItemConstructorOptions[];
     private locale: LocaleType;
-    private titleBarStyle: TitleBarStyles;
+    private cloudConfig: IConfig | {};
+
+    private readonly menuItemConfigFields: string[];
 
     constructor() {
         this.menuList = [];
         this.locale = i18n.getLocale();
-        this.titleBarStyle = config.getConfigFields([ 'isCustomTitleBar' ]).isCustomTitleBar
-            ? TitleBarStyles.CUSTOM
-            : TitleBarStyles.NATIVE;
+        this.menuItemConfigFields = [ 'minimizeOnClose', 'launchOnStartup', 'alwaysOnTop', 'bringToFront', 'memoryRefresh', 'isCustomTitleBar', 'devToolsEnabled' ];
+        this.cloudConfig = config.getFilteredCloudConfigFields(this.menuItemConfigFields);
         this.buildMenu();
         // send initial analytic
         if (!initialAnalyticsSent) {
-            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.MINIMIZE_ON_CLOSE, minimizeOnClose);
-            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.AUTO_LAUNCH_ON_START_UP, launchOnStartup);
-            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.ALWAYS_ON_TOP, isAlwaysOnTop);
-            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.FLASH_NOTIFICATION_IN_TASK_BAR, bringToFront);
-            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.REFRESH_APP_IN_IDLE, memoryRefresh);
-            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.HAMBURGER_MENU, (isMac || isLinux) ? false : this.titleBarStyle === TitleBarStyles.CUSTOM);
+            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.MINIMIZE_ON_CLOSE, minimizeOnClose === CloudConfigDataTypes.ENABLED);
+            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.AUTO_LAUNCH_ON_START_UP, launchOnStartup === CloudConfigDataTypes.ENABLED);
+            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.ALWAYS_ON_TOP, isAlwaysOnTop === CloudConfigDataTypes.ENABLED);
+            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.FLASH_NOTIFICATION_IN_TASK_BAR, bringToFront === CloudConfigDataTypes.ENABLED);
+            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.REFRESH_APP_IN_IDLE, memoryRefresh === CloudConfigDataTypes.ENABLED);
+            this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.HAMBURGER_MENU, (isMac || isLinux) ? false : isCustomTitleBar === CloudConfigDataTypes.ENABLED);
         }
         initialAnalyticsSent = true;
     }
@@ -97,6 +95,9 @@ export class AppMenu {
      * Builds the menu items for all the menu
      */
     public buildMenu(): void {
+        // updates the global variables
+        this.updateGlobals();
+
         this.menuList = menuItemsArray.reduce((map: Electron.MenuItemConstructorOptions, key: string) => {
             map[ key ] = this.buildMenuKey(key);
             return map;
@@ -131,6 +132,23 @@ export class AppMenu {
             this.buildMenu();
             this.locale = locale;
         }
+    }
+
+    /**
+     * Updates the global variables
+     */
+    public updateGlobals(): void {
+        const configData = config.getConfigFields(this.menuItemConfigFields) as IConfig;
+        minimizeOnClose = configData.minimizeOnClose;
+        launchOnStartup = configData.launchOnStartup;
+        isAlwaysOnTop = configData.alwaysOnTop;
+        bringToFront = configData.bringToFront;
+        memoryRefresh = configData.memoryRefresh;
+        isCustomTitleBar = configData.isCustomTitleBar;
+        devToolsEnabled = configData.devToolsEnabled;
+
+        // fetch updated cloud config
+        this.cloudConfig = config.getFilteredCloudConfigFields(this.menuItemConfigFields);
     }
 
     /**
@@ -257,51 +275,63 @@ export class AppMenu {
     private buildWindowMenu(): Electron.MenuItemConstructorOptions {
         logger.info(`app-menu: building window menu`);
 
+        const {
+            alwaysOnTop: isAlwaysOnTopCC,
+            minimizeOnClose: minimizeOnCloseCC,
+            launchOnStartup: launchOnStartupCC,
+            bringToFront: bringToFrontCC,
+            memoryRefresh: memoryRefreshCC,
+            isCustomTitleBar: isCustomTitleBarCC,
+        } = this.cloudConfig as IConfig;
+
         const submenu: MenuItemConstructorOptions[] = [
             this.assignRoleOrLabel({ role: 'minimize', label: i18n.t('Minimize')() }),
             this.assignRoleOrLabel({ role: 'close', label: i18n.t('Close')() }),
             this.buildSeparator(),
             {
-                checked: launchOnStartup,
+                checked: launchOnStartup === CloudConfigDataTypes.ENABLED,
                 click: async (item) => {
                     if (item.checked) {
                         autoLaunch.enableAutoLaunch();
                     } else {
                         autoLaunch.disableAutoLaunch();
                     }
-                    launchOnStartup = item.checked;
+                    launchOnStartup = item.checked ? CloudConfigDataTypes.ENABLED : CloudConfigDataTypes.NOT_SET;
                     await config.updateUserConfig({ launchOnStartup });
                     this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.AUTO_LAUNCH_ON_START_UP, item.checked);
                 },
                 label: i18n.t('Auto Launch On Startup')(),
                 type: 'checkbox',
                 visible: !isLinux,
+                enabled: !launchOnStartupCC || launchOnStartupCC === CloudConfigDataTypes.NOT_SET,
             },
             {
-                checked: isAlwaysOnTop,
+                checked: isAlwaysOnTop === CloudConfigDataTypes.ENABLED,
                 click: async (item) => {
-                    isAlwaysOnTop = item.checked;
+                    isAlwaysOnTop = item.checked ? CloudConfigDataTypes.ENABLED : CloudConfigDataTypes.NOT_SET;
                     await updateAlwaysOnTop(item.checked, true);
                     this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.ALWAYS_ON_TOP, item.checked);
                 },
                 label: i18n.t('Always on Top')(),
                 type: 'checkbox',
                 visible: !isLinux,
+                enabled: !isAlwaysOnTopCC || isAlwaysOnTopCC === CloudConfigDataTypes.NOT_SET,
             },
             {
-                checked: minimizeOnClose,
+                checked: minimizeOnClose === CloudConfigDataTypes.ENABLED,
                 click: async (item) => {
-                    minimizeOnClose = item.checked;
+                    minimizeOnClose = item.checked ? CloudConfigDataTypes.ENABLED : CloudConfigDataTypes.NOT_SET;
                     await config.updateUserConfig({ minimizeOnClose });
                     this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.MINIMIZE_ON_CLOSE, item.checked);
                 },
                 label: i18n.t('Minimize on Close')(),
                 type: 'checkbox',
+                enabled: !minimizeOnCloseCC || minimizeOnCloseCC === CloudConfigDataTypes.NOT_SET,
             },
             {
-                checked: bringToFront,
+                checked: bringToFront === CloudConfigDataTypes.ENABLED,
                 click: async (item) => {
-                    bringToFront = item.checked;
+                    bringToFront = item.checked ? CloudConfigDataTypes.ENABLED : CloudConfigDataTypes.NOT_SET;
                     await config.updateUserConfig({ bringToFront });
                     this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.FLASH_NOTIFICATION_IN_TASK_BAR, item.checked);
                 },
@@ -309,30 +339,30 @@ export class AppMenu {
                     ? i18n.t('Flash Notification in Taskbar')()
                     : i18n.t('Bring to Front on Notifications')(),
                 type: 'checkbox',
+                enabled: !bringToFrontCC || bringToFrontCC === CloudConfigDataTypes.NOT_SET,
             },
             this.buildSeparator(),
             {
-                label: this.titleBarStyle === TitleBarStyles.NATIVE
+                label: (isCustomTitleBar === CloudConfigDataTypes.DISABLED || isCustomTitleBar === CloudConfigDataTypes.NOT_SET)
                     ? i18n.t('Enable Hamburger menu')()
                     : i18n.t('Disable Hamburger menu')(),
                 visible: isWindowsOS,
                 click: () => {
-                    const isNativeStyle = this.titleBarStyle === TitleBarStyles.NATIVE;
-
-                    this.titleBarStyle = isNativeStyle ? TitleBarStyles.NATIVE : TitleBarStyles.CUSTOM;
-                    titleBarChangeDialog(isNativeStyle);
-                    this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.HAMBURGER_MENU, this.titleBarStyle === TitleBarStyles.CUSTOM);
+                    titleBarChangeDialog(isCustomTitleBar === CloudConfigDataTypes.DISABLED ? CloudConfigDataTypes.ENABLED : CloudConfigDataTypes.DISABLED);
+                    this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.HAMBURGER_MENU, isCustomTitleBar === CloudConfigDataTypes.ENABLED);
                 },
+                enabled: !isCustomTitleBarCC || isCustomTitleBarCC === CloudConfigDataTypes.NOT_SET,
             },
             {
-                checked: memoryRefresh,
+                checked: memoryRefresh === CloudConfigDataTypes.ENABLED,
                 click: async (item) => {
-                    memoryRefresh = item.checked;
+                    memoryRefresh = item.checked ? CloudConfigDataTypes.ENABLED : CloudConfigDataTypes.NOT_SET;
                     await config.updateUserConfig({ memoryRefresh });
                     this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.REFRESH_APP_IN_IDLE, item.checked);
                 },
                 label: i18n.t('Refresh app when idle')(),
                 type: 'checkbox',
+                enabled: !memoryRefreshCC || memoryRefreshCC === CloudConfigDataTypes.NOT_SET,
             },
             {
                 click: (_item, focusedWindow) => {
@@ -387,6 +417,7 @@ export class AppMenu {
         if (isLinux) {
             showCrashesLabel = i18n.t('Show crash dump in File Manager')();
         }
+        const { devToolsEnabled: isDevToolsEnabledCC } = this.cloudConfig as IConfig;
 
         return {
             label: i18n.t('Help')(),
@@ -409,7 +440,7 @@ export class AppMenu {
                     }, {
                         label: i18n.t('Toggle Developer Tools')(),
                         accelerator: isMac ? 'Alt+Command+I' : 'Ctrl+Shift+I',
-                        visible: devToolsEnabled,
+                        visible: isDevToolsEnabledCC,
                         click(_item, focusedWindow) {
                             if (!focusedWindow || !windowExists(focusedWindow)) {
                                 return;

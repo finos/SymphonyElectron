@@ -6,7 +6,7 @@ import { app } from './__mocks__/electron';
 jest.mock('../src/common/utils', () => {
     return {
         config: {
-            getGlobalConfigFields: jest.fn(() => {
+            getCloudConfigField: jest.fn(() => {
                 return {
                     customFlags: {
                         authServerWhitelist: 'url',
@@ -35,7 +35,7 @@ describe('chrome flags', () => {
         (isMac as any) = true;
         (isWindowsOS as any) = false;
         (isLinux as any) = false;
-        config.getGlobalConfigFields = jest.fn(() => {
+        config.getConfigFields = jest.fn(() => {
                 return {
                     customFlags: {
                         authServerWhitelist: 'url',
@@ -59,7 +59,7 @@ describe('chrome flags', () => {
     });
 
     it('should call `setChromeFlags` correctly when `disableGpu` is false', () => {
-        config.getGlobalConfigFields = jest.fn(() => {
+        config.getConfigFields = jest.fn(() => {
             return {
                 customFlags: {
                     authServerWhitelist: 'url',

@@ -15,7 +15,7 @@ const specialArgs = [ '--url', '--multiInstance', '--userDataPath=', 'symphony:/
  */
 export const setChromeFlags = () => {
     logger.info(`chrome-flags: Checking if we need to set chrome flags!`);
-    const { customFlags } = config.getGlobalConfigFields([ 'customFlags' ]) as IConfig;
+    const { customFlags } = config.getConfigFields([ 'customFlags' ]) as IConfig;
 
     const configFlags: object = {
         'auth-negotiate-delegate-whitelist': customFlags.authServerWhitelist,
@@ -72,7 +72,7 @@ export const setChromeFlags = () => {
  */
 export const setSessionProperties = () => {
     logger.info(`chrome-flags: Settings session properties`);
-    const { customFlags } = config.getGlobalConfigFields([ 'customFlags' ]) as IConfig;
+    const { customFlags } = config.getConfigFields([ 'customFlags' ]) as IConfig;
 
     if (session.defaultSession && customFlags && customFlags.authServerWhitelist && customFlags.authServerWhitelist !== '') {
         session.defaultSession.allowNTLMCredentialsForDomains(customFlags.authServerWhitelist);

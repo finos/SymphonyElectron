@@ -2,7 +2,7 @@ import { net } from 'electron';
 import * as nodeURL from 'url';
 import { buildNumber, clientVersion, optionalDependencies, searchAPIVersion, sfeVersion, version } from '../../package.json';
 import { logger } from '../common/logger';
-import { config, IConfig } from './config-handler';
+import { config, IGlobalConfig } from './config-handler';
 
 interface IVersionInfo {
     clientVersion: string;
@@ -69,7 +69,7 @@ class VersionHandler {
                 this.mainUrl = mainUrl;
             }
 
-            const { url: podUrl }: IConfig = config.getGlobalConfigFields(['url']);
+            const { url: podUrl }: IGlobalConfig = config.getGlobalConfigFields(['url']);
 
             if (!this.mainUrl || !nodeURL.parse(this.mainUrl)) {
                 this.mainUrl = podUrl;

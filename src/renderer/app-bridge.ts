@@ -166,6 +166,9 @@ export class AppBridge {
             case apiCmds.registerRestartFloater:
                 ssf.registerRestartFloater(this.callbackHandlers.restartFloater);
                 break;
+            case apiCmds.setCloudConfig:
+                ssf.setCloudConfig(data as object);
+                break;
             case apiCmds.swiftSearch:
                 if (ssInstance) {
                     ssInstance.handleMessageEvents(data);
