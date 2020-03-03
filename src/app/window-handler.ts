@@ -72,6 +72,7 @@ export class WindowHandler {
     public spellchecker: SpellChecker | undefined;
     public isCustomTitleBar: boolean;
     public isWebPageLoading: boolean = true;
+    public screenShareIndicatorFrameUtil: string;
 
     private readonly contextIsolation: boolean;
     private readonly backgroundThrottling: boolean;
@@ -89,7 +90,6 @@ export class WindowHandler {
     private screenSharingFrameWindow: Electron.BrowserWindow | null = null;
     private basicAuthWindow: Electron.BrowserWindow | null = null;
     private notificationSettingsWindow: Electron.BrowserWindow | null = null;
-    private screenShareIndicatorFrameUtil: string;
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Use these variables only on initial setup
@@ -918,6 +918,28 @@ export class WindowHandler {
     }
 
     /**
+     * Executes the given command via a child process
+     *
+     * @param util {string}
+     * @param utilArgs {ReadonlyArray<string>}
+     */
+    public execCmd(util: string, utilArgs: ReadonlyArray<string>): Promise<ChildProcess> {
+        logger.info(`window handler: execCmd: util: ${util} utilArgs: ${utilArgs}`);
+        return new Promise<ChildProcess>((resolve, reject) => {
+            return execFile(util, utilArgs, (error: ExecException | null) => {
+                if (error) {
+                    logger.info(`window handler: execCmd: error: ${error}`);
+                }
+                if (error && error.killed) {
+                    // processs was killed, just resolve with no data.
+                    return reject(error);
+                }
+                resolve();
+            });
+        });
+    }
+
+    /**
      * Sets the about panel details for macOS
      */
     private setAboutPanel() {
@@ -1046,27 +1068,6 @@ export class WindowHandler {
 
         return {...defaultWindowOpts, ...windowOpts};
     }
-
-    /**
-     * Executes the given command via a child process
-     *
-     * @param util {string}
-     * @param utilArgs {ReadonlyArray<string>}
-     */
-    private execCmd(util: string, utilArgs: ReadonlyArray<string>): Promise<ChildProcess> {
-        logger.info(`window handler: execCmd: util: ${util} utilArgs: ${utilArgs}`);
-        return new Promise<ChildProcess>((resolve, reject) => {
-            return execFile(util, utilArgs, (error: ExecException | null) => {
-                logger.info(`window handler: execCmd: error: ${error}`);
-                if (error && error.killed) {
-                    // processs was killed, just resolve with no data.
-                    return reject(error);
-                }
-                resolve();
-            });
-        });
-    }
-
 }
 
 const windowHandler = new WindowHandler();
