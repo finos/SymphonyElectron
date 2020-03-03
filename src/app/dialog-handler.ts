@@ -185,8 +185,8 @@ export const gpuRestartDialog = async (disableGpu: boolean) => {
         cancelId: 1,
     };
     const { response } = await electron.dialog.showMessageBox(focusedWindow, options);
+    await config.updateUserConfig({ disableGpu });
     if (response === 0) {
-        await config.updateUserConfig({ disableGpu });
         app.relaunch();
         app.exit();
     }

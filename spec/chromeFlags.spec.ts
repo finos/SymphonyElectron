@@ -6,7 +6,7 @@ import { app } from './__mocks__/electron';
 jest.mock('../src/app/config-handler', () => {
     return {
         config: {
-            getCloudConfigField: jest.fn(() => {
+            getConfigFields: jest.fn(() => {
                 return {
                     customFlags: {
                         authServerWhitelist: 'url',
@@ -40,8 +40,8 @@ describe('chrome flags', () => {
                     customFlags: {
                         authServerWhitelist: 'url',
                         authNegotiateDelegateWhitelist: 'whitelist',
-                        disableGpu: true,
                     },
+                    disableGpu: true,
                 };
             });
         jest.clearAllMocks();
