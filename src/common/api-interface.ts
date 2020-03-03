@@ -35,6 +35,7 @@ export enum apiCmds {
     swiftSearch = 'swift-search',
     getConfigUrl = 'get-config-url',
     registerRestartFloater = 'register-restart-floater',
+    setCloudConfig = 'set-cloud-config',
 }
 
 export enum apiName {
@@ -67,6 +68,7 @@ export interface IApiArgs {
     type: string;
     logName: string;
     logs: ILogs;
+    cloudConfig: object;
 }
 
 export type WindowTypes = 'screen-picker' | 'screen-sharing-indicator' | 'notification-settings';

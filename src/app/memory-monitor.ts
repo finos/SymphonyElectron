@@ -2,7 +2,7 @@ import * as electron from 'electron';
 
 import { isMac } from '../common/env';
 import { logger } from '../common/logger';
-import { config } from './config-handler';
+import { CloudConfigDataTypes, config } from './config-handler';
 import { windowHandler } from './window-handler';
 import { windowExists } from './window-utils';
 
@@ -11,9 +11,9 @@ class MemoryMonitor {
     private isInMeeting: boolean;
     private canReload: boolean;
     private lastReloadTime?: number;
+    private memoryThreshold: number;
 
     private readonly maxIdleTime: number;
-    private readonly memoryThreshold: number;
     private readonly memoryRefreshThreshold: number;
 
     constructor() {
@@ -47,12 +47,21 @@ class MemoryMonitor {
     }
 
     /**
+     * Sets the memory threshold
+     *
+     * @param memoryThreshold
+     */
+    public setMemoryThreshold(memoryThreshold: number): void {
+        this.memoryThreshold = memoryThreshold * 1024;
+    }
+
+    /**
      * Validates the predefined conditions and refreshes the client
      */
     private validateMemory(): void {
         logger.info(`memory-monitor: validating memory refresh conditions`);
         const { memoryRefresh } = config.getConfigFields([ 'memoryRefresh' ]);
-        if (!memoryRefresh) {
+        if (memoryRefresh !== CloudConfigDataTypes.ENABLED) {
             logger.info(`memory-monitor: memory reload is disabled in the config, not going to refresh!`);
             return;
         }

@@ -3,7 +3,7 @@ import { app } from 'electron';
 
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
-import { config } from './config-handler';
+import { CloudConfigDataTypes, config } from './config-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 import { windowExists } from './window-utils';
 
@@ -146,7 +146,7 @@ export const showNetworkConnectivityError = (browserWindow: Electron.BrowserWind
  *
  * @param isNativeStyle {boolean}
  */
-export const titleBarChangeDialog = async (isNativeStyle: boolean) => {
+export const titleBarChangeDialog = async (isNativeStyle: CloudConfigDataTypes) => {
     const focusedWindow = electron.BrowserWindow.getFocusedWindow();
     if (!focusedWindow || !windowExists(focusedWindow)) {
         return;
@@ -161,7 +161,8 @@ export const titleBarChangeDialog = async (isNativeStyle: boolean) => {
     };
     const { response } = await electron.dialog.showMessageBox(focusedWindow, options);
     if (response === 0) {
-        await config.updateUserConfig({ isCustomTitleBar: isNativeStyle });
+        logger.error(`test`, isNativeStyle);
+        await config.updateUserConfig({ isCustomTitleBar:  isNativeStyle });
         app.relaunch();
         app.exit();
     }
