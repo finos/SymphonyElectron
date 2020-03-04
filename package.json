@@ -139,8 +139,8 @@
     "electron-spellchecker": "git+https://github.com/symphonyoss/electron-spellchecker.git#v2.3.0",
     "ffi-napi": "2.4.5",
     "filesize": "4.1.2",
-    "react": "16.9.0",
-    "react-dom": "16.9.0",
+    "react": "16.12.0",
+    "react-dom": "16.12.0",
     "ref-napi": "1.4.1",
     "shell-path": "2.1.0"
   },
