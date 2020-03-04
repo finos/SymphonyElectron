@@ -3,9 +3,9 @@ import { logger } from '../common/logger';
 import { config, IConfig } from './config-handler';
 
 export const handlePerformanceSettings = () => {
-    const { customFlags } = config.getGlobalConfigFields([ 'customFlags' ]) as IConfig;
+    const { customFlags } = config.getCloudConfigFields([ 'customFlags' ]) as IConfig;
 
-    if (customFlags.disableThrottling) {
+    if (customFlags && customFlags.disableThrottling) {
         logger.info(`perf-handler: Disabling power throttling!`);
         powerSaveBlocker.start('prevent-display-sleep');
         return;
