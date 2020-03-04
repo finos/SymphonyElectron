@@ -815,6 +815,7 @@ export class WindowHandler {
         this.screenSharingIndicatorWindow = createComponentWindow('screen-sharing-indicator', opts);
         this.moveWindow(this.screenSharingIndicatorWindow, topPositionOfIndicatorScreen);
         this.screenSharingIndicatorWindow.setVisibleOnAllWorkspaces(true);
+        this.screenSharingIndicatorWindow.setSkipTaskbar(true);
         this.screenSharingIndicatorWindow.webContents.once('did-finish-load', () => {
             if (!this.screenSharingIndicatorWindow || !windowExists(this.screenSharingIndicatorWindow)) {
                 return;
