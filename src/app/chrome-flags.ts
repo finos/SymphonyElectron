@@ -15,16 +15,16 @@ const specialArgs = [ '--url', '--multiInstance', '--userDataPath=', 'symphony:/
  */
 export const setChromeFlags = () => {
     logger.info(`chrome-flags: Checking if we need to set chrome flags!`);
-    const { customFlags } = config.getConfigFields([ 'customFlags' ]) as IConfig;
 
+    const flagsConfig = config.getConfigFields(['customFlags', 'disableGpu']) as IConfig;
     const configFlags: object = {
-        'auth-negotiate-delegate-whitelist': customFlags.authServerWhitelist,
-        'auth-server-whitelist': customFlags.authNegotiateDelegateWhitelist,
+        'auth-negotiate-delegate-whitelist': flagsConfig.customFlags.authServerWhitelist,
+        'auth-server-whitelist': flagsConfig.customFlags.authNegotiateDelegateWhitelist,
         'disable-background-timer-throttling': 'true',
-        'disable-d3d11': customFlags.disableGpu || null,
-        'disable-gpu': customFlags.disableGpu || null,
-        'disable-gpu-compositing': customFlags.disableGpu || null,
-        'disable-renderer-backgrounding': customFlags.disableThrottling || null,
+        'disable-d3d11': flagsConfig.disableGpu || null,
+        'disable-gpu': flagsConfig.disableGpu || null,
+        'disable-gpu-compositing': flagsConfig.disableGpu || null,
+        'disable-renderer-backgrounding': flagsConfig.customFlags.disableThrottling || null,
     };
 
     for (const key in configFlags) {

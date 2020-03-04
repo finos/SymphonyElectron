@@ -31,6 +31,7 @@ export interface IConfig {
     isCustomTitleBar: CloudConfigDataTypes;
     memoryRefresh: CloudConfigDataTypes;
     memoryThreshold: string;
+    disableGpu: boolean;
     devToolsEnabled: boolean;
     ctWhitelist: string[];
     podWhitelist: string[];
@@ -94,7 +95,6 @@ export interface IPermission {
 export interface ICustomFlag {
     authServerWhitelist: string;
     authNegotiateDelegateWhitelist: string;
-    disableGpu: boolean;
     disableThrottling: boolean;
 }
 

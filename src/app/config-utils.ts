@@ -13,6 +13,7 @@ export const getDefaultUserConfig = (): IConfig => {
         isCustomTitleBar: CloudConfigDataTypes.ENABLED,
         memoryRefresh: CloudConfigDataTypes.ENABLED,
         memoryThreshold: '800',
+        disableGpu: false,
         devToolsEnabled: true,
         ctWhitelist: [],
         podWhitelist: [],
@@ -23,7 +24,6 @@ export const getDefaultUserConfig = (): IConfig => {
         customFlags: {
             authServerWhitelist: '',
             authNegotiateDelegateWhitelist: '',
-            disableGpu: false,
             disableThrottling: false,
         },
         permissions: {

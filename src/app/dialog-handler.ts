@@ -167,3 +167,27 @@ export const titleBarChangeDialog = async (isNativeStyle: CloudConfigDataTypes) 
         app.exit();
     }
 };
+
+/**
+ * Displays a dialog to restart app upon changing gpu settings
+ * @param disableGpu
+ */
+export const gpuRestartDialog = async (disableGpu: boolean) => {
+    const focusedWindow = electron.BrowserWindow.getFocusedWindow();
+    if (!focusedWindow || !windowExists(focusedWindow)) {
+        return;
+    }
+    const options = {
+        type: 'question',
+        title: i18n.t('Relaunch Application')(),
+        message: i18n.t('Would you like to restart and apply these new settings now?')(),
+        buttons: [ i18n.t('Restart')(), i18n.t('Later')() ],
+        cancelId: 1,
+    };
+    const { response } = await electron.dialog.showMessageBox(focusedWindow, options);
+    await config.updateUserConfig({ disableGpu });
+    if (response === 0) {
+        app.relaunch();
+        app.exit();
+    }
+};
