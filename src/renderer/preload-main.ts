@@ -6,6 +6,7 @@ import { apiCmds, apiName } from '../common/api-interface';
 import { i18n } from '../common/i18n-preload';
 import './app-bridge';
 import DownloadManager from './components/download-manager';
+import MessageBanner from './components/message-banner';
 import NetworkError from './components/network-error';
 import SnackBar from './components/snack-bar';
 import WindowsTitleBar from './components/windows-title-bar';
@@ -19,6 +20,7 @@ const ssfWindow: ISSFWindow = window;
 const minMemoryFetchInterval = 4 * 60 * 60 * 1000;
 const maxMemoryFetchInterval = 12 * 60 * 60 * 1000;
 const snackBar = new SnackBar();
+const banner = new MessageBanner();
 
 /**
  * creates API exposed from electron.
@@ -75,7 +77,7 @@ const monitorMemory = (time)  => {
 };
 
 // When the window is completely loaded
-ipcRenderer.on('page-load', (_event, { locale, resources, enableCustomTitleBar, isMainWindow }) => {
+ipcRenderer.on('page-load', (_event, { locale, resources, enableCustomTitleBar }) => {
 
     i18n.setResource(locale, resources);
 
@@ -108,9 +110,9 @@ ipcRenderer.on('page-load', (_event, { locale, resources, enableCustomTitleBar, 
     const downloadManager = new DownloadManager();
     downloadManager.initDownloadManager();
 
-    if (isMainWindow) {
-        monitorMemory(getRandomTime(minMemoryFetchInterval, maxMemoryFetchInterval));
-    }
+    // initialize red banner
+    banner.initBanner();
+    banner.showBanner(false, 'error');
 });
 
 // When the window fails to load
@@ -126,4 +128,15 @@ ipcRenderer.on('network-error', (_event, { error }) => {
     document.body.append(networkErrorContainer);
     const networkError = React.createElement(NetworkError, { error });
     ReactDOM.render(networkError, networkErrorContainer);
+});
+
+ipcRenderer.on('show-banner', (_event, { show, bannerType, url }) => {
+    if (!!document.getElementsByClassName('sda-banner-show').length) {
+        return;
+    }
+    banner.showBanner(show, bannerType, url);
+});
+
+ipcRenderer.on('initialize-memory-refresh', () => {
+    monitorMemory(getRandomTime(minMemoryFetchInterval, maxMemoryFetchInterval));
 });

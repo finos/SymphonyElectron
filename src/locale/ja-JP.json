@@ -12,6 +12,10 @@
   "Actual Size": "実際のサイズ",
   "Always on Top": "つねに前面に表示",
   "Auto Launch On Startup": "スタートアップ時に自動起動",
+  "Banner": {
+    "Connection lost. This message will disappear once the connection is restored.": "接続が失われました。接続が回復すると、このメッセージは消えます。",
+    "Retry Now": "今すぐ再試行"
+  },
   "BasicAuth": {
     "Authentication Request": "認証要求",
     "Cancel": "キャンセル",
@@ -51,6 +55,7 @@
   "Dev Tools disabled": "開発ツールが無効",
   "Dev Tools has been disabled! Please contact your system administrator to enable it!": "開発ツールが無効になっています。システム管理者に連絡して、有効にしてください。",
   "Disable Hamburger menu": "ハンバーガーメニューを無効にする",
+  "Disable GPU": "GPUを無効にする",
   "DownloadManager": {
     "downloaded": "ダウンロード済み",
     "File not Found": "ファイルが見つかりません",
@@ -61,6 +66,7 @@
   },
   "Edit": "編集",
   "Enable Hamburger menu": "ハンバーガーメニューを有効にする",
+  "Enable GPU": "GPUを有効にする",
   "Error loading configuration": "構成の読み込みエラー",
   "Error loading URL": "URLの読み込みエラー",
   "Error loading window": "ウィンドウを読み込みエラー",
@@ -72,6 +78,7 @@
   "Hide Others": "他を隠す",
   "Hide Symphony": "Symphonyを隠す",
   "Ignore": "無視",
+  "Later": "後で",
   "Learn More": "詳細",
   "Loading Error": "読み込みエラー",
   "Minimize": "最小化",
@@ -122,6 +129,7 @@
   "Redo": "やり直し",
   "Refresh app when idle": "アイドル時にアプリを再表示",
   "Relaunch": "「リスタート」",
+  "Restart": "再起動する",
   "Relaunch Application": "アプリケーションの再起動",
   "Reload": "再読み込み",
   "Renderer Process Crashed": "レンダラープロセスがクラッシュしました",
@@ -188,6 +196,7 @@
   "Updating Title bar style requires Symphony to relaunch.": "タイトルバーのスタイルを更新するには、Symphonyが再起動する必要があります。",
   "View": "ビュー",
   "Window": "ウインドウ",
+  "Would you like to restart and apply these new settings now?": "今すぐ再起動して、新しい設定を適用しますか？",
   "Your administrator has disabled": "管理者によて無効にされています",
   "Zoom": "ズーム",
   "Zoom In": "ズームイン",

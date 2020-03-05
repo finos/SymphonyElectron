@@ -39,17 +39,33 @@ jest.mock('../src/app/auto-launch-controller', () => {
 
 jest.mock('../src/app/config-handler', () => {
     return {
+        CloudConfigDataTypes: {
+            NOT_SET: 'NOT_SET',
+            ENABLED: 'ENABLED',
+            DISABLED: 'DISABLED',
+        },
         config: {
             getConfigFields: jest.fn(() => {
                 return {
-                    minimizeOnClose: true,
-                    launchOnStartup: true,
-                    alwaysOnTop: true,
-                    isAlwaysOnTop: true,
-                    bringToFront: true,
+                    minimizeOnClose: 'ENABLED',
+                    launchOnStartup: 'ENABLED',
+                    alwaysOnTop: 'ENABLED',
+                    isAlwaysOnTop: 'ENABLED',
+                    bringToFront: 'ENABLED',
+                    devToolsEnabled: true,
                 };
             }),
             getGlobalConfigFields: jest.fn(() => {
+                return {
+                    devToolsEnabled: true,
+                };
+            }),
+            getFilteredCloudConfigFields: jest.fn(() => {
+                return {
+                    devToolsEnabled: true,
+                };
+            }),
+            getCloudConfigFields: jest.fn(() => {
                 return {
                     devToolsEnabled: true,
                 };
@@ -202,7 +218,7 @@ describe('app menu', () => {
                 it('should disable `AutoLaunch` when click is triggered', async () => {
                     const spyFn = 'disableAutoLaunch';
                     const spyConfig = jest.spyOn(config, updateUserFnLabel);
-                    const expectedValue = { launchOnStartup: false };
+                    const expectedValue = { launchOnStartup: 'NOT_SET' };
                     const spy = jest.spyOn(autoLaunchInstance, spyFn);
                     const customItem = {
                         checked: false,
@@ -215,7 +231,7 @@ describe('app menu', () => {
                 it('should enable `AutoLaunch` when click is triggered', async () => {
                     const spyFn = 'enableAutoLaunch';
                     const spyConfig = jest.spyOn(config, updateUserFnLabel);
-                    const expectedValue = { launchOnStartup: true };
+                    const expectedValue = { launchOnStartup: 'ENABLED' };
                     const spy = jest.spyOn(autoLaunchInstance, spyFn);
                     await autoLaunchMenuItem.click(item);
                     expect(spy).toBeCalled();
@@ -231,7 +247,7 @@ describe('app menu', () => {
 
                 it('should update `minimizeOnClose` value when click is triggered', async () => {
                     const spyConfig = jest.spyOn(config, updateUserFnLabel);
-                    const expectedValue = { minimizeOnClose: true };
+                    const expectedValue = { minimizeOnClose: 'ENABLED' };
                     const menuItem = findMenuItemBuildWindowMenu('Minimize on Close');
                     await menuItem.click(item);
                     expect(spyConfig).lastCalledWith(expectedValue);
@@ -240,7 +256,7 @@ describe('app menu', () => {
                 describe('`bringToFront`', () => {
                     it('should update `bringToFront` value when click is triggered', async () => {
                         const spyConfig = jest.spyOn(config, updateUserFnLabel);
-                        const expectedValue = { bringToFront: true };
+                        const expectedValue = { bringToFront: 'ENABLED' };
                         const menuItem = findMenuItemBuildWindowMenu('Bring to Front on Notifications');
                         await menuItem.click(item);
                         expect(spyConfig).lastCalledWith(expectedValue);

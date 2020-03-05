@@ -47,7 +47,7 @@ class ScreenSnippet {
         if (mainWindow && windowExists(mainWindow) && isWindowsOS) {
             this.shouldUpdateAlwaysOnTop = mainWindow.isAlwaysOnTop();
             if (this.shouldUpdateAlwaysOnTop) {
-                await updateAlwaysOnTop(false, false);
+                await updateAlwaysOnTop(false, false, false);
             }
         }
         logger.info(`screen-snippet-handler: Starting screen capture!`);
@@ -179,7 +179,7 @@ class ScreenSnippet {
      */
     private async verifyAndUpdateAlwaysOnTop(): Promise<void> {
         if (this.shouldUpdateAlwaysOnTop) {
-            await updateAlwaysOnTop(true, false);
+            await updateAlwaysOnTop(true, false, false);
             this.shouldUpdateAlwaysOnTop = false;
         }
     }

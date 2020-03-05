@@ -93,6 +93,13 @@ const throttledSetIsInMeetingStatus = throttle((isInMeeting) => {
     });
 }, 1000);
 
+const throttledSetCloudConfig = throttle((data) => {
+    ipcRenderer.send(apiName.symphonyApi, {
+        cmd: apiCmds.setCloudConfig,
+        cloudConfig: data,
+    });
+}, 1000);
+
 let cryptoLib: ICryptoLib | null;
 try {
     cryptoLib = remote.require('../app/crypto-handler.js').cryptoLibrary;
@@ -468,6 +475,15 @@ export class SSFApi {
      */
     public registerRestartFloater(callback: (args: IRestartFloaterData) => void): void {
         local.restartFloater = callback;
+    }
+
+    /**
+     * Allows JS to set the PMP & ACP cloud config
+     *
+     * @param data {ICloudConfig}
+     */
+    public setCloudConfig(data: {}): void {
+        throttledSetCloudConfig(data);
     }
 
 }

@@ -3,17 +3,17 @@ import { config } from '../src/app/config-handler';
 import { isDevEnv, isLinux, isMac, isWindowsOS } from '../src/common/env';
 import { app } from './__mocks__/electron';
 
-jest.mock('../src/common/utils', () => {
+jest.mock('../src/app/config-handler', () => {
     return {
         config: {
-            getGlobalConfigFields: jest.fn(() => {
+            getConfigFields: jest.fn(() => {
                 return {
                     customFlags: {
                         authServerWhitelist: 'url',
                         authNegotiateDelegateWhitelist: 'whitelist',
-                        disableGpu: true,
                         disableThrottling: false,
                     },
+                    disableGpu: true,
                 };
             }),
         },
@@ -35,13 +35,13 @@ describe('chrome flags', () => {
         (isMac as any) = true;
         (isWindowsOS as any) = false;
         (isLinux as any) = false;
-        config.getGlobalConfigFields = jest.fn(() => {
+        config.getConfigFields = jest.fn(() => {
                 return {
                     customFlags: {
                         authServerWhitelist: 'url',
                         authNegotiateDelegateWhitelist: 'whitelist',
-                        disableGpu: true,
                     },
+                    disableGpu: true,
                 };
             });
         jest.clearAllMocks();
@@ -59,7 +59,7 @@ describe('chrome flags', () => {
     });
 
     it('should call `setChromeFlags` correctly when `disableGpu` is false', () => {
-        config.getGlobalConfigFields = jest.fn(() => {
+        config.getConfigFields = jest.fn(() => {
             return {
                 customFlags: {
                     authServerWhitelist: 'url',

@@ -153,6 +153,7 @@ export const handleChildWindow = (webContents: WebContents): void => {
             newWinOptions.alwaysOnTop = mainWindow.isAlwaysOnTop();
             newWinOptions.frame = true;
             newWinOptions.winKey = newWinKey;
+            newWinOptions.fullscreen = false;
 
             const childWebContents: WebContents = newWinOptions.webContents;
             // Event needed to hide native menu bar
@@ -214,7 +215,7 @@ export const handleChildWindow = (webContents: WebContents): void => {
                     }
 
                     // Updates media permissions for preload context
-                    const { permissions } = config.getGlobalConfigFields([ 'permissions' ]);
+                    const { permissions } = config.getConfigFields([ 'permissions' ]);
                     browserWin.webContents.send('is-screen-share-enabled', permissions.media);
                 }
             });
