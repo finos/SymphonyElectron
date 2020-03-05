@@ -16,7 +16,7 @@ test.after.always(async () => {
     await stopApplication(app);
 });
 
-test('about-app: verify application minimize / maximize feature', async (t) => {
+test('about-app: verify about application feature', async (t) => {
     robotActions.clickAppMenu();
     robot.keyTap('down');
     robot.keyTap('enter');

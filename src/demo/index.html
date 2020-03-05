@@ -673,6 +673,7 @@
                     if (event.type === 'stopRequested') {
                         stream.getVideoTracks().forEach(t => t.stop());
                         document.getElementById('video').srcObject = null;
+                        ssf.closeScreenSharingIndicator(stream.id)
                     }
                 });
             } else {
