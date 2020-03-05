@@ -67,8 +67,6 @@ electron.app.on('certificate-error', async (event, webContents, url, error, _cer
     event.preventDefault();
 
     const browserWin = electron.BrowserWindow.fromWebContents(webContents);
-    // tslint:disable-next-line: no-console
-    console.log(`Browser window is ${browserWin}`);
     if (browserWin && windowExists(browserWin)) {
         const {response} = await electron.dialog.showMessageBox(browserWin, {
             type: 'warning',
