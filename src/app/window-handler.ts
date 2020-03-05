@@ -1,10 +1,10 @@
+import { ChildProcess, ExecException, execFile } from 'child_process';
 import * as electron from 'electron';
-import { app, BrowserWindow, BrowserWindowConstructorOptions, crashReporter, globalShortcut, ipcMain } from 'electron';
+import { app, BrowserWindow, BrowserWindowConstructorOptions, crashReporter, DesktopCapturerSource, globalShortcut, ipcMain } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 import { format, parse } from 'url';
 
-import { ChildProcess, ExecException, execFile } from 'child_process';
 import { apiName, WindowTypes } from '../common/api-interface';
 import { isDevEnv, isMac, isWindowsOS } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
@@ -13,10 +13,9 @@ import { getCommandLineArgs, getGuid } from '../common/utils';
 import { notification } from '../renderer/notification';
 import { AppMenu } from './app-menu';
 import { handleChildWindow } from './child-window-handler';
-import { config, IConfig } from './config-handler';
+import { CloudConfigDataTypes, config, IConfig, IGlobalConfig } from './config-handler';
 import { SpellChecker } from './spell-check-handler';
 import { checkIfBuildExpired } from './ttl-handler';
-import DesktopCapturerSource = Electron.DesktopCapturerSource;
 import { versionHandler } from './version-handler';
 import { handlePermissionRequests, monitorWindowActions } from './window-actions';
 import {
@@ -47,8 +46,6 @@ export interface ICustomBrowserWindow extends Electron.BrowserWindow {
 const DEFAULT_WIDTH: number = 900;
 const DEFAULT_HEIGHT: number = 900;
 
-const {devToolsEnabled} = config.getGlobalConfigFields(['devToolsEnabled']);
-
 export class WindowHandler {
 
     /**
@@ -75,11 +72,12 @@ export class WindowHandler {
     public spellchecker: SpellChecker | undefined;
     public isCustomTitleBar: boolean;
     public isWebPageLoading: boolean = true;
+    public screenShareIndicatorFrameUtil: string;
 
     private readonly contextIsolation: boolean;
     private readonly backgroundThrottling: boolean;
     private readonly windowOpts: ICustomBrowserWindowConstructorOpts;
-    private readonly globalConfig: IConfig;
+    private readonly globalConfig: IGlobalConfig;
     private readonly config: IConfig;
     // Window reference
     private readonly windows: object;
@@ -92,22 +90,23 @@ export class WindowHandler {
     private screenSharingFrameWindow: Electron.BrowserWindow | null = null;
     private basicAuthWindow: Electron.BrowserWindow | null = null;
     private notificationSettingsWindow: Electron.BrowserWindow | null = null;
-    private screenShareIndicatorFrameUtil: string;
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Use these variables only on initial setup
-        this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings', 'alwaysOnTop', 'locale' ]);
-        this.globalConfig = config.getGlobalConfigFields(['url', 'contextIsolation', 'customFlags']);
-        const {url, contextIsolation, customFlags}: IConfig = this.globalConfig;
+        this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings', 'alwaysOnTop', 'locale', 'customFlags' ]);
+        logger.info(`window-handler: main windows initialized with following config data`, this.config);
+        this.globalConfig = config.getGlobalConfigFields([ 'url', 'contextIsolation' ]);
+        const { url, contextIsolation }: IGlobalConfig = this.globalConfig;
+        const { customFlags } = this.config;
 
         this.windows = {};
         this.contextIsolation = contextIsolation || false;
         this.backgroundThrottling = !customFlags.disableThrottling;
         this.contextIsolation = contextIsolation || false;
-        this.isCustomTitleBar = isWindowsOS && this.config.isCustomTitleBar;
+        this.isCustomTitleBar = isWindowsOS && this.config.isCustomTitleBar === CloudConfigDataTypes.ENABLED;
         this.windowOpts = {
             ...this.getWindowOpts({
-                alwaysOnTop: this.config.alwaysOnTop || false,
+                alwaysOnTop: this.config.alwaysOnTop === CloudConfigDataTypes.ENABLED || false,
                 frame: !this.isCustomTitleBar,
                 minHeight: 300,
                 minWidth: 300,
@@ -185,7 +184,7 @@ export class WindowHandler {
         // Event needed to hide native menu bar on Windows 10 as we use custom menu bar
         this.mainWindow.webContents.once('did-start-loading', () => {
             logger.info(`window-handler: main window web contents started loading!`);
-            if ((this.config.isCustomTitleBar && isWindowsOS) && this.mainWindow && windowExists(this.mainWindow)) {
+            if ((this.config.isCustomTitleBar === CloudConfigDataTypes.ENABLED && isWindowsOS) && this.mainWindow && windowExists(this.mainWindow)) {
                 this.mainWindow.setMenuBarVisibility(false);
             }
             // monitors network connection and
@@ -202,7 +201,7 @@ export class WindowHandler {
         if (urlFromCmd) {
             const commandLineUrl = urlFromCmd.substr(6);
             logger.info(`window-handler: trying to set url ${commandLineUrl} from command line.`);
-            const { podWhitelist } = config.getGlobalConfigFields([ 'podWhitelist' ]);
+            const { podWhitelist } = config.getConfigFields([ 'podWhitelist' ]);
             logger.info(`window-handler: checking pod whitelist.`);
             if (podWhitelist.length > 0) {
                 logger.info(`window-handler: pod whitelist is not empty ${podWhitelist}`);
@@ -265,7 +264,7 @@ export class WindowHandler {
                 isMainWindow: true,
             });
             this.appMenu = new AppMenu();
-            const { permissions } = config.getGlobalConfigFields(['permissions']);
+            const { permissions } = config.getConfigFields([ 'permissions' ]);
             this.mainWindow.webContents.send('is-screen-share-enabled', permissions.media);
         });
 
@@ -324,8 +323,8 @@ export class WindowHandler {
                 return this.destroyAllWindows();
             }
 
-            const {minimizeOnClose} = config.getConfigFields(['minimizeOnClose']);
-            if (minimizeOnClose) {
+            const { minimizeOnClose } = config.getConfigFields([ 'minimizeOnClose' ]);
+            if (minimizeOnClose === CloudConfigDataTypes.ENABLED) {
                 event.preventDefault();
                 this.mainWindow.minimize();
                 return;
@@ -536,8 +535,8 @@ export class WindowHandler {
         const selectedParentWindow = getWindowByName(windowName);
 
         const opts: BrowserWindowConstructorOptions = this.getWindowOpts({
-            width: 550,
-            height: isWindowsOS ? 745 : 705,
+            width: 440,
+            height: 305,
             modal: true,
             alwaysOnTop: isMac,
             resizable: false,
@@ -620,7 +619,7 @@ export class WindowHandler {
         ipcMain.once('screen-source-selected', (_event, source) => {
             if (source != null) {
                 logger.info(`window-handler: screen-source-selected`, source, id);
-                if (isWindowsOS) {
+                if (isWindowsOS || isMac) {
                     const type = source.id.split(':')[0];
                     if (type === 'window') {
                         const hwnd = source.id.split(':')[1];
@@ -736,7 +735,7 @@ export class WindowHandler {
                 if (app.isReady()) {
                     screens = electron.screen.getAllDisplays();
                 }
-                const {position, display} = config.getConfigFields(['notificationSettings']).notificationSettings;
+                const { position, display } = config.getConfigFields([ 'notificationSettings' ]).notificationSettings;
                 this.notificationSettingsWindow.webContents.send('notification-settings-data', {screens, position, display});
             }
         });
@@ -835,6 +834,7 @@ export class WindowHandler {
         this.screenSharingIndicatorWindow = createComponentWindow('screen-sharing-indicator', opts);
         this.moveWindow(this.screenSharingIndicatorWindow, topPositionOfIndicatorScreen);
         this.screenSharingIndicatorWindow.setVisibleOnAllWorkspaces(true);
+        this.screenSharingIndicatorWindow.setSkipTaskbar(true);
         this.screenSharingIndicatorWindow.webContents.once('did-finish-load', () => {
             if (!this.screenSharingIndicatorWindow || !windowExists(this.screenSharingIndicatorWindow)) {
                 return;
@@ -939,6 +939,28 @@ export class WindowHandler {
     }
 
     /**
+     * Executes the given command via a child process
+     *
+     * @param util {string}
+     * @param utilArgs {ReadonlyArray<string>}
+     */
+    public execCmd(util: string, utilArgs: ReadonlyArray<string>): Promise<ChildProcess> {
+        logger.info(`window handler: execCmd: util: ${util} utilArgs: ${utilArgs}`);
+        return new Promise<ChildProcess>((resolve, reject) => {
+            return execFile(util, utilArgs, (error: ExecException | null) => {
+                if (error) {
+                    logger.info(`window handler: execCmd: error: ${error}`);
+                }
+                if (error && error.killed) {
+                    // processs was killed, just resolve with no data.
+                    return reject(error);
+                }
+                resolve();
+            });
+        });
+    }
+
+    /**
      * Sets the about panel details for macOS
      */
     private setAboutPanel() {
@@ -984,6 +1006,7 @@ export class WindowHandler {
         if (!focusedWindow || !windowExists(focusedWindow)) {
             return;
         }
+        const { devToolsEnabled } = config.getConfigFields([ 'devToolsEnabled' ]);
         if (devToolsEnabled) {
             focusedWindow.webContents.toggleDevTools();
             return;
@@ -1066,27 +1089,6 @@ export class WindowHandler {
 
         return {...defaultWindowOpts, ...windowOpts};
     }
-
-    /**
-     * Executes the given command via a child process
-     *
-     * @param util {string}
-     * @param utilArgs {ReadonlyArray<string>}
-     */
-    private execCmd(util: string, utilArgs: ReadonlyArray<string>): Promise<ChildProcess> {
-        logger.info(`window handler: execCmd: util: ${util} utilArgs: ${utilArgs}`);
-        return new Promise<ChildProcess>((resolve, reject) => {
-            return execFile(util, utilArgs, (error: ExecException | null) => {
-                logger.info(`window handler: execCmd: error: ${error}`);
-                if (error && error.killed) {
-                    // processs was killed, just resolve with no data.
-                    return reject(error);
-                }
-                resolve();
-            });
-        });
-    }
-
 }
 
 const windowHandler = new WindowHandler();

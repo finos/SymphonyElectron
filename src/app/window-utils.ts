@@ -12,8 +12,11 @@ import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { getGuid } from '../common/utils';
 import { whitelistHandler } from '../common/whitelist-handler';
-import { config, ICustomRectangle } from './config-handler';
+import { autoLaunchInstance } from './auto-launch-controller';
+import { CloudConfigDataTypes, config, IConfig, ICustomRectangle } from './config-handler';
+import { memoryMonitor } from './memory-monitor';
 import { screenSnippet } from './screen-snippet-handler';
+import { updateAlwaysOnTop } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
 interface IStyles {
@@ -28,7 +31,8 @@ enum styleNames {
 }
 
 const checkValidWindow = true;
-const { url: configUrl, ctWhitelist } = config.getGlobalConfigFields([ 'url', 'ctWhitelist' ]);
+const { url: configUrl } = config.getGlobalConfigFields([ 'url' ]);
+const { ctWhitelist } = config.getConfigFields([ 'ctWhitelist' ]);
 
 // Network status check variables
 const networkStatusCheckInterval = 10 * 1000;
@@ -543,6 +547,9 @@ export const reloadWindow = (browserWindow: ICustomBrowserWindow) => {
     if (windowName === apiName.mainWindowName) {
         logger.info(`window-utils: reloading the main window`);
         browserWindow.reload();
+
+        windowHandler.execCmd(windowHandler.screenShareIndicatorFrameUtil, []);
+
         return;
     }
     // Send an event to SFE that restarts the pop-out window
@@ -579,6 +586,36 @@ export const getWindowByName = (windowName: string): BrowserWindow | undefined =
     return allWindows.find((window) => {
         return (window as ICustomBrowserWindow).winName === windowName;
     });
+};
+
+export const updateFeaturesForCloudConfig = async (): Promise<void> => {
+    const {
+        alwaysOnTop: isAlwaysOnTop,
+        launchOnStartup,
+        memoryRefresh,
+        memoryThreshold,
+    } = config.getConfigFields([
+        'launchOnStartup',
+        'alwaysOnTop',
+        'memoryRefresh',
+        'memoryThreshold',
+    ]) as IConfig;
+
+    const mainWindow = windowHandler.getMainWindow();
+
+    // Update Always on top feature
+    await updateAlwaysOnTop(isAlwaysOnTop === CloudConfigDataTypes.ENABLED, false, false);
+
+    // Update launch on start up
+    launchOnStartup === CloudConfigDataTypes.ENABLED ? autoLaunchInstance.enableAutoLaunch() : autoLaunchInstance.disableAutoLaunch();
+
+    if (mainWindow && windowExists(mainWindow)) {
+        if (memoryRefresh) {
+            logger.info(`window-utils: updating the memory threshold`, memoryThreshold);
+            memoryMonitor.setMemoryThreshold(parseInt(memoryThreshold, 10));
+            mainWindow.webContents.send('initialize-memory-refresh');
+        }
+    }
 };
 
 /**

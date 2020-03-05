@@ -4,7 +4,7 @@ import { isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { config, IConfig } from './config-handler';
 
-const { autoLaunchPath }: IConfig = config.getGlobalConfigFields([ 'autoLaunchPath' ]);
+const { autoLaunchPath }: IConfig = config.getConfigFields([ 'autoLaunchPath' ]);
 
 const props = isMac ? {
     mac: {

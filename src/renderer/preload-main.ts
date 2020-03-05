@@ -77,7 +77,7 @@ const monitorMemory = (time)  => {
 };
 
 // When the window is completely loaded
-ipcRenderer.on('page-load', (_event, { locale, resources, enableCustomTitleBar, isMainWindow }) => {
+ipcRenderer.on('page-load', (_event, { locale, resources, enableCustomTitleBar }) => {
 
     i18n.setResource(locale, resources);
 
@@ -113,10 +113,6 @@ ipcRenderer.on('page-load', (_event, { locale, resources, enableCustomTitleBar, 
     // initialize red banner
     banner.initBanner();
     banner.showBanner(false, 'error');
-
-    if (isMainWindow) {
-        monitorMemory(getRandomTime(minMemoryFetchInterval, maxMemoryFetchInterval));
-    }
 });
 
 // When the window fails to load
@@ -139,4 +135,8 @@ ipcRenderer.on('show-banner', (_event, { show, bannerType, url }) => {
         return;
     }
     banner.showBanner(show, bannerType, url);
+});
+
+ipcRenderer.on('initialize-memory-refresh', () => {
+    monitorMemory(getRandomTime(minMemoryFetchInterval, maxMemoryFetchInterval));
 });
