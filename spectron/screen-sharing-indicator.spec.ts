@@ -46,12 +46,12 @@ test('screen-sharing-indicator: verify screen sharing indicator with frame is sh
     robot.keyTap('enter');
 
     await sleep(2000);
-    t.is(await app.client.getWindowCount(), 3);
+    t.is(await app.client.getWindowCount(), 2);
 });
 
 test('screen-sharing-indicator: verify screen sharing indicator title', async (t) => {
     // including the screen sharing frame
-    await app.client.windowByIndex(2);
+    await app.client.windowByIndex(1);
     await app.client.waitUntilWindowLoaded(Timeouts.fiveSec);
 
     const indicatorTitle = await app.browserWindow.getTitle();
