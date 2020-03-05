@@ -1,6 +1,6 @@
 import { showLoadFailure, showNetworkConnectivityError } from '../src/app/dialog-handler';
 import { windowHandler } from '../src/app/window-handler';
-import { dialog, ipcRenderer, BrowserWindow } from './__mocks__/electron';
+import { BrowserWindow, dialog, ipcRenderer } from './__mocks__/electron';
 
 jest.mock('../src/app/window-handler', () => {
     return {
