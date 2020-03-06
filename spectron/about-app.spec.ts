@@ -3,13 +3,18 @@ import * as robot from 'robotjs';
 import { Application } from 'spectron';
 import { robotActions } from './fixtures/robot-actions';
 
-import { sleep, startApplication, stopApplication, Timeouts } from './fixtures/spectron-setup';
+import { podUrl, sleep, startApplication, stopApplication, Timeouts } from './fixtures/spectron-setup';
 
 let app;
 
 test.before(async (t) => {
     app = await startApplication() as Application;
     t.true(app.isRunning());
+
+    await app.browserWindow.loadURL(podUrl);
+    await app.client.waitUntilWindowLoaded(Timeouts.fiveSec);
+
+    await sleep(Timeouts.fiveSec);
 });
 
 test.after.always(async () => {

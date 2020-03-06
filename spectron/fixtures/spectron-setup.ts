@@ -1,10 +1,14 @@
 import * as path from 'path';
 import { Application, BasicAppSettings } from 'spectron';
 
+export const podUrl = 'https://corporate.symphony.com';
+
 export enum Timeouts {
     halfSec = 500,
     oneSec = 1000,
+    threeSec = 3000,
     fiveSec = 5000,
+    tenSec = 10000,
 }
 
 /**
