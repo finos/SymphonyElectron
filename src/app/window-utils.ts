@@ -60,11 +60,11 @@ export const preventWindowNavigation = (browserWindow: BrowserWindow, isPopOutWi
     if (!browserWindow || !windowExists(browserWindow)) {
         return;
     }
-    logger.info(`window-utils: preventing window from navigating!`);
+    logger.info(`window-utils: preventing window from navigating!`, isPopOutWindow);
 
-    const listener = (e: Electron.Event, winUrl: string) => {
+    const listener = async (e: Electron.Event, winUrl: string) => {
         if (!winUrl.startsWith('http' || 'https')) {
-            logger.info(`window-utils: ${winUrl} doesn't start with http or https, so, not navigating!`);
+            logger.error(`window-utils: ${winUrl} doesn't start with http or https, so, not navigating!`);
             e.preventDefault();
             return;
         }
@@ -74,13 +74,13 @@ export const preventWindowNavigation = (browserWindow: BrowserWindow, isPopOutWi
             if (!isValid) {
                 e.preventDefault();
                 if (browserWindow && windowExists(browserWindow)) {
-                    // @ts-ignore
-                    electron.dialog.showMessageBox(browserWindow, {
+                    const response = await electron.dialog.showMessageBox(browserWindow, {
                         type: 'warning',
                         buttons: [ 'OK' ],
                         title: i18n.t('Not Allowed')(),
-                        message: `${i18n.t(`Sorry, you are not allowed to access this website`)} (${winUrl}), ${i18n.t('please contact your administrator for more details')}`,
+                        message: `${i18n.t(`Sorry, you are not allowed to access this website`)()} (${winUrl}), ${i18n.t('please contact your administrator for more details')()}`,
                     });
+                    logger.info(`window-utils: received ${response} response from dialog`);
                 }
             }
         }
@@ -90,8 +90,6 @@ export const preventWindowNavigation = (browserWindow: BrowserWindow, isPopOutWi
             || winUrl === browserWindow.webContents.getURL()) {
             return;
         }
-
-        e.preventDefault();
     };
 
     browserWindow.webContents.on('will-navigate', listener);
