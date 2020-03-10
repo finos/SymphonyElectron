@@ -187,7 +187,7 @@
     <ROW File="app.asar" Component_="appupdate.yml" FileName="APP~1.ASA|app.asar" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar" SelfReg="false" NextFile="Symphony.config_1"/>
     <ROW File="ar.pak" Component_="am.pak" FileName="ar.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\ar.pak" SelfReg="false" NextFile="bg.pak"/>
     <ROW File="bg.pak" Component_="am.pak" FileName="bg.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\bg.pak" SelfReg="false" NextFile="bn.pak"/>
-    <ROW File="binding.node" Component_="binding.node" FileName="BINDIN~1.NOD|binding.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ref-napi\build\Release\binding.node" SelfReg="false" NextFile="nothing.node"/>
+    <ROW File="binding.node" Component_="binding.node" FileName="BINDIN~1.NOD|binding.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ref-napi\build\Release\binding.node" SelfReg="false" NextFile="build.cmd"/>
     <ROW File="bn.pak" Component_="am.pak" FileName="bn.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\bn.pak" SelfReg="false" NextFile="ca.pak"/>
     <ROW File="build.cmd" Component_="build.cmd" FileName="build.cmd" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\build.cmd" SelfReg="false" NextFile="build.sh"/>
     <ROW File="build.sh" Component_="build.cmd" FileName="build.sh" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\build.sh" SelfReg="false" NextFile="CODE_OF_CONDUCT.md_2"/>
@@ -253,7 +253,6 @@
     <ROW File="ms.pak" Component_="am.pak" FileName="ms.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\ms.pak" SelfReg="false" NextFile="nb.pak"/>
     <ROW File="nb.pak" Component_="am.pak" FileName="nb.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\nb.pak" SelfReg="false" NextFile="nl.pak"/>
     <ROW File="nl.pak" Component_="am.pak" FileName="nl.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\nl.pak" SelfReg="false" NextFile="pl.pak"/>
-    <ROW File="nothing.node" Component_="binding.node" FileName="NOTHIN~1.NOD|nothing.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ref-napi\build\Release\nothing.node" SelfReg="false" NextFile="build.cmd"/>
     <ROW File="package.json_2" Component_="build.cmd" FileName="PACKAG~1.JSO|package.json" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\package.json" SelfReg="false" NextFile="index.ts"/>
     <ROW File="pl.pak" Component_="am.pak" FileName="pl.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\pl.pak" SelfReg="false" NextFile="ptBR.pak"/>
     <ROW File="ptBR.pak" Component_="am.pak" FileName="pt-BR.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\pt-BR.pak" SelfReg="false" NextFile="ptPT.pak"/>
