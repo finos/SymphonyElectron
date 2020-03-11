@@ -304,7 +304,8 @@ export class AppMenu {
                 },
                 label: i18n.t('Auto Launch On Startup')(),
                 type: 'checkbox',
-                visible: !isLinux && (!launchOnStartupCC || launchOnStartupCC === CloudConfigDataTypes.NOT_SET),
+                visible: !isLinux,
+                enabled: !launchOnStartupCC || launchOnStartupCC === CloudConfigDataTypes.NOT_SET,
             },
             {
                 checked: isAlwaysOnTop === CloudConfigDataTypes.ENABLED,
@@ -315,7 +316,8 @@ export class AppMenu {
                 },
                 label: i18n.t('Always on Top')(),
                 type: 'checkbox',
-                visible: !isLinux && (!isAlwaysOnTopCC || isAlwaysOnTopCC === CloudConfigDataTypes.NOT_SET),
+                visible: !isLinux,
+                enabled: !isAlwaysOnTopCC || isAlwaysOnTopCC === CloudConfigDataTypes.NOT_SET,
             },
             {
                 checked: minimizeOnClose === CloudConfigDataTypes.ENABLED,
@@ -326,7 +328,7 @@ export class AppMenu {
                 },
                 label: i18n.t('Minimize on Close')(),
                 type: 'checkbox',
-                visible: !minimizeOnCloseCC || minimizeOnCloseCC === CloudConfigDataTypes.NOT_SET,
+                enabled: !minimizeOnCloseCC || minimizeOnCloseCC === CloudConfigDataTypes.NOT_SET,
             },
             {
                 checked: bringToFront === CloudConfigDataTypes.ENABLED,
@@ -339,18 +341,19 @@ export class AppMenu {
                     ? i18n.t('Flash Notification in Taskbar')()
                     : i18n.t('Bring to Front on Notifications')(),
                 type: 'checkbox',
-                visible: !bringToFrontCC || bringToFrontCC === CloudConfigDataTypes.NOT_SET,
+                enabled: !bringToFrontCC || bringToFrontCC === CloudConfigDataTypes.NOT_SET,
             },
             this.buildSeparator(),
             {
                 label: (isCustomTitleBar === CloudConfigDataTypes.DISABLED || isCustomTitleBar === CloudConfigDataTypes.NOT_SET)
                     ? i18n.t('Enable Hamburger menu')()
                     : i18n.t('Disable Hamburger menu')(),
+                visible: isWindowsOS,
                 click: () => {
                     titleBarChangeDialog(isCustomTitleBar === CloudConfigDataTypes.DISABLED ? CloudConfigDataTypes.ENABLED : CloudConfigDataTypes.DISABLED);
                     this.sendAnalytics(AnalyticsElements.MENU, MenuActionTypes.HAMBURGER_MENU, isCustomTitleBar === CloudConfigDataTypes.ENABLED);
                 },
-                visible: isWindowsOS && (!isCustomTitleBarCC || isCustomTitleBarCC === CloudConfigDataTypes.NOT_SET),
+                enabled: !isCustomTitleBarCC || isCustomTitleBarCC === CloudConfigDataTypes.NOT_SET,
             },
             {
                 checked: memoryRefresh === CloudConfigDataTypes.ENABLED,
@@ -361,7 +364,7 @@ export class AppMenu {
                 },
                 label: i18n.t('Refresh app when idle')(),
                 type: 'checkbox',
-                visible: !memoryRefreshCC || memoryRefreshCC === CloudConfigDataTypes.NOT_SET,
+                enabled: !memoryRefreshCC || memoryRefreshCC === CloudConfigDataTypes.NOT_SET,
             },
             {
                 click: (_item, focusedWindow) => {
