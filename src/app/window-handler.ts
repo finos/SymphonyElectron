@@ -964,6 +964,11 @@ export class WindowHandler {
     private registerGlobalShortcuts(): void {
         logger.info(`window-handler: registering global shortcuts!`);
         globalShortcut.register(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I', this.onRegisterDevtools);
+
+        if (isMac) {
+            globalShortcut.register('Cmd+=' , this.onZoomIn);
+        }
+
         globalShortcut.register('CmdOrCtrl+R', this.onReload);
 
         app.on('browser-window-focus', () => {
@@ -1004,6 +1009,17 @@ export class WindowHandler {
             return;
         }
         reloadWindow(focusedWindow as ICustomBrowserWindow);
+    }
+
+    /**
+     * Zoom in
+     */
+    private onZoomIn(): void {
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+        if (!focusedWindow || !windowExists(focusedWindow)) {
+            return;
+        }
+        focusedWindow.webContents.zoomLevel += 0.5;
     }
 
     /**
