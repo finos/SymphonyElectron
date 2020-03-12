@@ -1019,7 +1019,9 @@ export class WindowHandler {
         if (!focusedWindow || !windowExists(focusedWindow)) {
             return;
         }
-        focusedWindow.webContents.zoomLevel += 0.5;
+        // electron/lib/browser/api/menu-item-roles.js row 159
+        const zoomLevelConstantFromElectron = 0.5;
+        focusedWindow.webContents.zoomLevel += zoomLevelConstantFromElectron;
     }
 
     /**
