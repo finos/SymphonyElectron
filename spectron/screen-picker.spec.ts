@@ -3,7 +3,7 @@ import * as robot from 'robotjs';
 import { Application } from 'spectron';
 
 import {
-    getDemoFilePath,
+    getDemoFilePath, loadURL,
     sleep,
     startApplication,
     stopApplication,
@@ -32,7 +32,7 @@ test.after.always(async () => {
 });
 
 test('screen-picker: verify screen-picker close button', async (t) => {
-    await app.browserWindow.loadURL(getDemoFilePath());
+    await loadURL(app, getDemoFilePath());
     await app.client.waitUntilWindowLoaded(Timeouts.fiveSec);
     await openScreenPicker(app);
 

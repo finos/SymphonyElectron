@@ -3,7 +3,7 @@ import * as robot from 'robotjs';
 
 import { Application } from 'spectron';
 
-import { getDemoFilePath, startApplication, stopApplication, Timeouts } from './fixtures/spectron-setup';
+import { getDemoFilePath, loadURL, startApplication, stopApplication, Timeouts } from './fixtures/spectron-setup';
 
 let app;
 
@@ -20,7 +20,7 @@ test('spell-checker: verify application spell checking feature', async (t) => {
     robot.setKeyboardDelay(Timeouts.oneSec);
     const missSpelledWord = 'teest ';
 
-    await app.browserWindow.loadURL(getDemoFilePath());
+    await loadURL(app, getDemoFilePath());
     await app.client.waitUntilWindowLoaded(Timeouts.fiveSec);
     await app.client.electron.remote.clipboard.writeText(missSpelledWord);
     await app.client.click('#tag');

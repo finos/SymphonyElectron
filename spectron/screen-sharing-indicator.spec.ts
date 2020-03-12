@@ -3,7 +3,7 @@ import * as robot from 'robotjs';
 import { Application } from 'spectron';
 
 import {
-    getDemoFilePath,
+    getDemoFilePath, loadURL,
     sleep,
     startApplication,
     stopApplication,
@@ -32,7 +32,7 @@ test.after.always(async () => {
 });
 
 test('screen-sharing-indicator: verify screen sharing indicator with frame is shown', async (t) => {
-    await app.browserWindow.loadURL(getDemoFilePath());
+    await loadURL(app, getDemoFilePath());
     await app.client.waitUntilWindowLoaded(Timeouts.fiveSec);
     await openScreenPicker(app);
     robot.setKeyboardDelay(2000);

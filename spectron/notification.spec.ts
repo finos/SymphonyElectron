@@ -1,7 +1,7 @@
 import test from 'ava';
 import { Application } from 'spectron';
 
-import { getDemoFilePath, sleep, startApplication, stopApplication, Timeouts } from './fixtures/spectron-setup';
+import { getDemoFilePath, loadURL, sleep, startApplication, stopApplication, Timeouts } from './fixtures/spectron-setup';
 
 let app;
 
@@ -19,7 +19,7 @@ test('Verify is the application is running', async (t) => {
 });
 
 test('Verify notification window is created', async (t) => {
-    await app.browserWindow.loadURL(getDemoFilePath());
+    await loadURL(app, getDemoFilePath());
     await app.client.waitUntilWindowLoaded(Timeouts.fiveSec);
     await app.client.click('#notf');
 

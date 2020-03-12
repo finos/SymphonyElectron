@@ -4,7 +4,7 @@ import { Application } from 'spectron';
 import { robotActions } from './fixtures/robot-actions';
 
 import {
-    getDemoFilePath,
+    getDemoFilePath, loadURL,
     sleep,
     startApplication,
     stopApplication,
@@ -23,7 +23,7 @@ test.after.always(async () => {
 });
 
 test('fullscreen: verify application full screen feature', async (t) => {
-    await app.browserWindow.loadURL(getDemoFilePath());
+    await loadURL(app, getDemoFilePath());
     await app.client.waitUntilWindowLoaded(Timeouts.fiveSec);
     robotActions.toggleFullscreen();
     t.true(await app.browserWindow.isFullScreen());

@@ -77,3 +77,21 @@ export const sleep = (ms) => {
         setTimeout(resolve, ms);
     });
 };
+
+/**
+ * Loads the url with try catch due to an issue in Spectron frame work
+ * https://github.com/electron-userland/spectron/issues/493
+ * @param app
+ * @param url
+ */
+export const loadURL = async (app: Application, url: string): Promise<void> => {
+    try {
+        return await app.browserWindow.loadURL(url);
+    } catch (error) {
+        const errorIsNavigatedError: boolean = error.message.includes('Inspected target navigated or closed');
+
+        if (!errorIsNavigatedError) {
+            throw error;
+        }
+    }
+};
