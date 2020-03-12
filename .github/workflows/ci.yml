@@ -18,8 +18,11 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+
+    - name: install linux dependency
       if: startsWith(matrix.os,'ubuntu')
         run: sudo apt-get install libxtst-dev
+
     - run: npm config set package-lock false
     - run: npm install
     - run: npm test
