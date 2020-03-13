@@ -51,7 +51,7 @@ setChromeFlags();
 
 // Electron sets the default protocol
 if (!isDevEnv) {
-    app.setAsDefaultProtocolClient('symphony');
+    app.setAsDefaultProtocolClient('mana');
 }
 
 /**

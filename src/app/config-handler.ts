@@ -19,6 +19,8 @@ export enum CloudConfigDataTypes {
 export interface IGlobalConfig {
     url: string;
     contextIsolation: boolean;
+    manaPath?: string;
+    channel?: string;
 }
 
 export interface IConfig {
@@ -42,8 +44,6 @@ export interface IConfig {
     notificationSettings: INotificationSetting;
     mainWinPos?: ICustomRectangle;
     locale?: string;
-    manaPath?: string;
-    channel?: string;
 }
 
 export interface ICloudConfig {

@@ -240,11 +240,11 @@ export class WindowHandler {
                 logger.error(e);
             }
             const { manaPath, channel } = config.getGlobalConfigFields([ 'manaPath', 'channel' ]);
-            const manaString = (manaPath) ? manaPath : 'client-bff';
+            const manaString = (manaPath && manaPath.length > 0) ? manaPath : 'client-bff';
             const parsedUrl = parse(this.url);
             if (this.url.indexOf(`https://${parsedUrl.hostname}/client/index.html`) !== -1) {
                 if (this.url.indexOf(manaString) === -1) {
-                    const channelString = (channel) ? channel + '/' : '';
+                    const channelString = (channel && channel.length > 0) ? channel + '/' : '';
                     const dogfoodUrl = `https://${parsedUrl.hostname}/${manaString}/${channelString}index.html?x-km-csrf-token=${csrfToken}`;
                     this.mainWindow.loadURL(dogfoodUrl);
 
