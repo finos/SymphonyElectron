@@ -67,25 +67,26 @@ electron.app.on('certificate-error', async (event, webContents, url, error, _cer
     event.preventDefault();
 
     const browserWin = electron.BrowserWindow.fromWebContents(webContents);
-    const { response } = await electron.dialog.showMessageBox(browserWin, {
-        type: 'warning',
-        buttons: [
-            i18n.t('Allow')(),
-            i18n.t('Deny')(),
-            i18n.t('Ignore All')(),
-        ],
-        defaultId: 1,
-        cancelId: 1,
-        noLink: true,
-        title: i18n.t('Certificate Error')(),
-        message: `${i18n.t('Certificate Error')()}: ${error}\nURL: ${url}`,
-    });
+    if (browserWin && windowExists(browserWin)) {
+        const {response} = await electron.dialog.showMessageBox(browserWin, {
+            type: 'warning',
+            buttons: [
+                i18n.t('Allow')(),
+                i18n.t('Deny')(),
+                i18n.t('Ignore All')(),
+            ],
+            defaultId: 1,
+            cancelId: 1,
+            noLink: true,
+            title: i18n.t('Certificate Error')(),
+            message: `${i18n.t('Certificate Error')()}: ${error}\nURL: ${url}`,
+        });
+        if (response === 2) {
+            ignoreAllCertErrors = true;
+        }
 
-    if (response === 2) {
-        ignoreAllCertErrors = true;
+        callback(response !== 1);
     }
-
-    callback(response !== 1);
 });
 
 /**

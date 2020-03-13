@@ -1,5 +1,5 @@
 import * as electron from 'electron';
-import { app, BrowserWindow, CertificateVerifyProcRequest, nativeImage } from 'electron';
+import { app, BrowserWindow, nativeImage } from 'electron';
 import fetch from 'electron-fetch';
 import * as filesize from 'filesize';
 import * as fs from 'fs';
@@ -60,11 +60,11 @@ export const preventWindowNavigation = (browserWindow: BrowserWindow, isPopOutWi
     if (!browserWindow || !windowExists(browserWindow)) {
         return;
     }
-    logger.info(`window-utils: preventing window from navigating!`);
+    logger.info(`window-utils: preventing window from navigating!`, isPopOutWindow);
 
-    const listener = (e: Electron.Event, winUrl: string) => {
+    const listener = async (e: Electron.Event, winUrl: string) => {
         if (!winUrl.startsWith('http' || 'https')) {
-            logger.info(`window-utils: ${winUrl} doesn't start with http or https, so, not navigating!`);
+            logger.error(`window-utils: ${winUrl} doesn't start with http or https, so, not navigating!`);
             e.preventDefault();
             return;
         }
@@ -74,13 +74,13 @@ export const preventWindowNavigation = (browserWindow: BrowserWindow, isPopOutWi
             if (!isValid) {
                 e.preventDefault();
                 if (browserWindow && windowExists(browserWindow)) {
-                    // @ts-ignore
-                    electron.dialog.showMessageBox(browserWindow, {
+                    const response = await electron.dialog.showMessageBox(browserWindow, {
                         type: 'warning',
                         buttons: [ 'OK' ],
                         title: i18n.t('Not Allowed')(),
-                        message: `${i18n.t(`Sorry, you are not allowed to access this website`)} (${winUrl}), ${i18n.t('please contact your administrator for more details')}`,
+                        message: `${i18n.t(`Sorry, you are not allowed to access this website`)()} (${winUrl}), ${i18n.t('please contact your administrator for more details')()}`,
                     });
+                    logger.info(`window-utils: received ${response} response from dialog`);
                 }
             }
         }
@@ -90,8 +90,6 @@ export const preventWindowNavigation = (browserWindow: BrowserWindow, isPopOutWi
             || winUrl === browserWindow.webContents.getURL()) {
             return;
         }
-
-        e.preventDefault();
     };
 
     browserWindow.webContents.on('will-navigate', listener);
@@ -219,7 +217,7 @@ export const setDataUrl = (dataUrl: string, count: number): void => {
  * @param  {BrowserWindow} browserWin  node emitter event to be tested
  * @return {Boolean} returns true if exists otherwise false
  */
-export const isValidWindow = (browserWin: Electron.BrowserWindow): boolean => {
+export const isValidWindow = (browserWin: Electron.BrowserWindow | null): boolean => {
     if (!checkValidWindow) {
         return true;
     }
@@ -471,11 +469,11 @@ export const injectStyles = async (mainWindow: BrowserWindow, isCustomTitleBar: 
 /**
  * Proxy verification for root certificates
  *
- * @param request {CertificateVerifyProcRequest}
+ * @param request {any}
  * @param callback {(verificationResult: number) => void}
  */
 export const handleCertificateProxyVerification = (
-    request: CertificateVerifyProcRequest,
+    request: any,
     callback: (verificationResult: number) => void,
 ): void => {
     const { hostname: hostUrl, errorCode } = request;
@@ -517,7 +515,7 @@ export const isSymphonyReachable = (window: ICustomBrowserWindow | null) => {
         fetch(podUrl, { method: 'GET' }).then((rsp) => {
             if (rsp.status === 200 && windowHandler.isOnline) {
                 logger.info(`window-utils: pod ${podUrl} is reachable, loading main window!`);
-                window.loadURL(podUrl);
+                window.loadURL(configUrl);
                 if (networkStatusCheckIntervalId) {
                     clearInterval(networkStatusCheckIntervalId);
                     networkStatusCheckIntervalId = null;

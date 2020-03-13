@@ -7,7 +7,6 @@ import { buildNumber } from '../../package.json';
 import { isDevEnv, isElectronQA, isLinux, isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { filterOutSelectedValues, pick } from '../common/utils';
-import { getDefaultUserConfig } from './config-utils';
 
 const writeFile = util.promisify(fs.writeFile);
 
@@ -270,9 +269,9 @@ class Config {
         const { acpFeatureLevelEntitlements, podLevelEntitlements, pmpEntitlements } = this.cloudConfig as ICloudConfig;
 
         // Filter out some values
-        const filteredACP = filterOutSelectedValues(acpFeatureLevelEntitlements, [ true, 'NOT_SET' ]);
-        const filteredPod = filterOutSelectedValues(podLevelEntitlements, [ true, 'NOT_SET' ]);
-        const filteredPMP = filterOutSelectedValues(pmpEntitlements, [ true, 'NOT_SET' ]);
+        const filteredACP = filterOutSelectedValues(acpFeatureLevelEntitlements, [ true, 'NOT_SET', '' ]);
+        const filteredPod = filterOutSelectedValues(podLevelEntitlements, [ true, 'NOT_SET', '' ]);
+        const filteredPMP = filterOutSelectedValues(pmpEntitlements, [ true, 'NOT_SET', '' ]);
 
         // priority is PMP > ACP > SDA
         this.filteredCloudConfig = { ...filteredACP, ...filteredPod, ...filteredPMP };
@@ -309,8 +308,9 @@ class Config {
         if (!fs.existsSync(this.userConfigPath)) {
             // Need to wait until app ready event to access user data
             await app.whenReady();
+            await this.readGlobalConfig();
             logger.info(`config-handler: user config doesn't exist! will create new one and update config`);
-            await this.updateUserConfig({ configVersion: app.getVersion().toString(), buildNumber, ...getDefaultUserConfig() } as IConfig);
+            await this.updateUserConfig({ configVersion: app.getVersion().toString(), buildNumber, ...this.globalConfig } as IConfig);
         }
         this.userConfig = this.parseConfigData(fs.readFileSync(this.userConfigPath, 'utf8'));
         logger.info(`config-handler: User configuration: `, this.userConfig);

@@ -289,13 +289,14 @@ export const removeWindowEventListener = (window: BrowserWindow): void => {
  * @param message {string} - custom message displayed to the user
  * @param callback {function}
  */
-export const handleSessionPermissions = (permission: boolean, message: string, callback: (permission: boolean) => void): void => {
+export const handleSessionPermissions = async (permission: boolean, message: string, callback: (permission: boolean) => void): Promise<void> => {
     logger.info(`window-action: permission is ->`, { type: message, permission });
 
     if (!permission) {
         const browserWindow = BrowserWindow.getFocusedWindow();
         if (browserWindow && !browserWindow.isDestroyed()) {
-            dialog.showMessageBox(browserWindow, { type: 'error', title: `${i18n.t('Permission Denied')()}!`, message });
+            const response = await dialog.showMessageBox(browserWindow, { type: 'error', title: `${i18n.t('Permission Denied')()}!`, message });
+            logger.error(`window-actions: permissions message box closed with response`, response);
         }
     }
 

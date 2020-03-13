@@ -41,6 +41,10 @@ const windowsAccelerator = Object.assign({
     zoomOut: 'Ctrl+-',
 });
 
+const macAccelerator = Object.assign({
+    zoomIn: 'CommandOrControl+=',
+});
+
 let {
     minimizeOnClose,
     launchOnStartup,
@@ -367,13 +371,12 @@ export class AppMenu {
                 enabled: !memoryRefreshCC || memoryRefreshCC === CloudConfigDataTypes.NOT_SET,
             },
             {
-                click: (_item, focusedWindow) => {
+                click: async (_item, focusedWindow) => {
                     if (focusedWindow && !focusedWindow.isDestroyed()) {
                         const defaultSession = session.defaultSession;
                         if (defaultSession) {
-                            defaultSession.clearCache(() => {
-                                focusedWindow.reload();
-                            });
+                            await defaultSession.clearCache();
+                            focusedWindow.reload();
                         }
                     }
                 },
@@ -490,8 +493,13 @@ export class AppMenu {
      */
     private assignRoleOrLabel({ role, label }: MenuItemConstructorOptions): MenuItemConstructorOptions {
         logger.info(`app-menu: assigning role & label respectively for ${role} & ${label}`);
-        if (isMac || isLinux) {
+        if (isLinux) {
             return label ? { role, label } : { role };
+        }
+
+        if (isMac) {
+            return label ? { role, label, accelerator: role ? macAccelerator[ role ] : '' }
+                : { role, accelerator: role ? macAccelerator[ role ] : '' };
         }
 
         if (isWindowsOS) {

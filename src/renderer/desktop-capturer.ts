@@ -49,7 +49,7 @@ const isValid = (options: ICustomSourcesOptions) => {
  * @param callback {CallbackType}
  * @returns {*}
  */
-export const getSource = (options: ICustomSourcesOptions, callback: CallbackType) => {
+export const getSource = async (options: ICustomSourcesOptions, callback: CallbackType) => {
     let captureWindow;
     let captureScreen;
     let id;
@@ -102,48 +102,46 @@ export const getSource = (options: ICustomSourcesOptions, callback: CallbackType
     }
 
     id = getNextId();
-    desktopCapturer.getSources({ types: sourcesOpts, thumbnailSize: updatedOptions.thumbnailSize }, (_event, sources: DesktopCapturerSource[]) => {
+    const sources: DesktopCapturerSource[] = await desktopCapturer.getSources({ types: sourcesOpts, thumbnailSize: updatedOptions.thumbnailSize });
+    // Auto select screen source based on args for testing only
+    if (screenShareArgv) {
+        const title = screenShareArgv.substr(screenShareArgv.indexOf('=') + 1);
+        const filteredSource: DesktopCapturerSource[] = sources.filter((source) => source.name === title);
 
-        // Auto select screen source based on args for testing only
-        if (screenShareArgv) {
-            const title = screenShareArgv.substr(screenShareArgv.indexOf('=') + 1);
-            const filteredSource: DesktopCapturerSource[] = sources.filter((source) => source.name === title);
-
-            if (Array.isArray(filteredSource) && filteredSource.length > 0) {
-                const source = { ...filteredSource[ 0 ], requestId };
-                return callback(null, source);
-            }
-
-            if (sources.length > 0) {
-                const firstSource = { ...sources[ 0 ], requestId };
-                return callback(null, firstSource);
-            }
-
+        if (Array.isArray(filteredSource) && filteredSource.length > 0) {
+            const source = { ...filteredSource[ 0 ], requestId };
+            return callback(null, source);
         }
 
-        const updatedSources = sources.map((source) => {
-            return Object.assign({}, source, {
-                thumbnail: source.thumbnail.toDataURL(),
-            });
-        });
+        if (sources.length > 0) {
+            const firstSource = { ...sources[ 0 ], requestId };
+            return callback(null, firstSource);
+        }
 
-        ipcRenderer.send(apiName.symphonyApi, {
-            cmd: apiCmds.openScreenPickerWindow,
-            id,
-            sources: updatedSources,
-        });
+    }
 
-        const successCallback = (_e, source: DesktopCapturerSource) => {
-            // Cleaning up the event listener to prevent memory leaks
-            if (!source) {
-                ipcRenderer.removeListener('start-share' + id, successCallback);
-                return callback({ name: 'User Cancelled', message: 'User Cancelled', requestId });
-            }
-            return callback(null, { ...source, ...{ requestId } });
-        };
-        ipcRenderer.once('start-share' + id, successCallback);
-        return null;
+    const updatedSources = sources.map((source) => {
+        return Object.assign({}, source, {
+            thumbnail: source.thumbnail.toDataURL(),
+        });
     });
+
+    ipcRenderer.send(apiName.symphonyApi, {
+        cmd: apiCmds.openScreenPickerWindow,
+        id,
+        sources: updatedSources,
+    });
+
+    const successCallback = (_e, source: DesktopCapturerSource) => {
+        // Cleaning up the event listener to prevent memory leaks
+        if (!source) {
+            ipcRenderer.removeListener('start-share' + id, successCallback);
+            return callback({ name: 'User Cancelled', message: 'User Cancelled', requestId });
+        }
+        return callback(null, { ...source, ...{ requestId } });
+    };
+    ipcRenderer.once('start-share' + id, successCallback);
+    return null;
 };
 
 // event that updates screen share argv
