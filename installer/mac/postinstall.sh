@@ -35,10 +35,10 @@ pod_url_escaped=$(sed 's#[&/\]#\\&#g' <<<"$pod_url")
 
 ## Replace the default settings with the user selected settings ##
 sed -i "" -E "s#\"url\" ?: ?\".*\"#\"url\"\: \"$pod_url_escaped\"#g" ${newPath}
-sed -i "" -E "s#\"minimizeOnClose\" ?: ?\"([Ee][Nn][Aa][Bb][Ll][Ee][Dd]|[Dd][Ii][Ss][Aa][Bb][Ll][Ee][Dd])\"#\"minimizeOnClose\":\ $minimize_on_close#g" ${newPath}
-sed -i "" -E "s#\"alwaysOnTop\" ?: ?\"([Ee][Nn][Aa][Bb][Ll][Ee][Dd]|[Dd][Ii][Ss][Aa][Bb][Ll][Ee][Dd])\"#\"alwaysOnTop\":\ $always_on_top#g" ${newPath}
-sed -i "" -E "s#\"launchOnStartup\" ?: ?\"([Ee][Nn][Aa][Bb][Ll][Ee][Dd]|[Dd][Ii][Ss][Aa][Bb][Ll][Ee][Dd])\"#\"launchOnStartup\":\ $launch_on_startup#g" ${newPath}
-sed -i "" -E "s#\"bringToFront\" ?: ?\"([Ee][Nn][Aa][Bb][Ll][Ee][Dd]|[Dd][Ii][Ss][Aa][Bb][Ll][Ee][Dd])\"#\"bringToFront\":\ $bring_to_front#g" ${newPath}
+sed -i "" -E "s#\"minimizeOnClose\" ?: ?\"([Ee][Nn][Aa][Bb][Ll][Ee][Dd]|[Dd][Ii][Ss][Aa][Bb][Ll][Ee][Dd])\"#\"minimizeOnClose\":\ \"$minimize_on_close\"#g" ${newPath}
+sed -i "" -E "s#\"alwaysOnTop\" ?: ?\"([Ee][Nn][Aa][Bb][Ll][Ee][Dd]|[Dd][Ii][Ss][Aa][Bb][Ll][Ee][Dd])\"#\"alwaysOnTop\":\ \"$always_on_top\"#g" ${newPath}
+sed -i "" -E "s#\"launchOnStartup\" ?: ?\"([Ee][Nn][Aa][Bb][Ll][Ee][Dd]|[Dd][Ii][Ss][Aa][Bb][Ll][Ee][Dd])\"#\"launchOnStartup\":\ \"$launch_on_startup\"#g" ${newPath}
+sed -i "" -E "s#\"bringToFront\" ?: ?\"([Ee][Nn][Aa][Bb][Ll][Ee][Dd]|[Dd][Ii][Ss][Aa][Bb][Ll][Ee][Dd])\"#\"bringToFront\":\ \"$bring_to_front\"#g" ${newPath}
 sed -i "" -E "s#\"devToolsEnabled\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"devToolsEnabled\":\ $dev_tools_enabled#g" ${newPath}
 
 ## Remove the temp settings file created ##
