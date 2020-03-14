@@ -1025,7 +1025,6 @@ export class WindowHandler {
      * https://github.com/electron/electron/issues/15496
      */
     private onZoomIn(): void {
-        logger.error(`came here`);
         const focusedWindow = BrowserWindow.getFocusedWindow();
         if (!focusedWindow || !windowExists(focusedWindow)) {
             return;
