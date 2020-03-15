@@ -42,7 +42,7 @@ const windowsAccelerator = Object.assign({
 });
 
 const macAccelerator = Object.assign({
-    zoomIn: 'CommandOrControl+=',
+    zoomIn: 'CommandOrControl+Plus',
 });
 
 let {
