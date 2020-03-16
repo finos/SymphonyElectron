@@ -10,7 +10,7 @@
     <ROW Property="AI_ThemeStyle" Value="default" MsiKey="AI_ThemeStyle"/>
     <ROW Property="AI_UNINSTALLER" Value="msiexec.exe"/>
     <ROW Property="ALLUSERS" Value="1" MultiBuildValue="DefaultBuild:2"/>
-    <ROW Property="ALWAYS_ON_TOP" Value="false" Type="4"/>
+    <ROW Property="ALWAYS_ON_TOP" Value="DISABLED" Type="4"/>
     <ROW Property="ARPCOMMENTS" Value="This installer database contains the logic and data required to install [|ProductName]." ValueLocId="*"/>
     <ROW Property="ARPHELPLINK" Value="http://www.symphony.com"/>
     <ROW Property="ARPNOMODIFY" MultiBuildValue="DefaultBuild:1"/>
@@ -19,12 +19,12 @@
     <ROW Property="ARPSYSTEMCOMPONENT" Value="1"/>
     <ROW Property="ARPURLINFOABOUT" Value="http://www.symphony.com"/>
     <ROW Property="AUTO_LAUNCH_PATH" Value="[|]"/>
-    <ROW Property="AUTO_START" Value="true" Type="4"/>
+    <ROW Property="AUTO_START" Value="ENABLED" Type="4"/>
     <ROW Property="AUTO_START_CB" Value="true"/>
-    <ROW Property="BRING_TO_FRONT" Value="false"/>
+    <ROW Property="BRING_TO_FRONT" Value="DISABLED"/>
     <ROW Property="BannerBitmap" Value="banner" MultiBuildValue="DefaultBuild:Banner.jpg" Type="1" MsiKey="BannerBitmap"/>
     <ROW Property="CTRLS" Value="2"/>
-    <ROW Property="CUSTOM_TITLE_BAR" Value="true"/>
+    <ROW Property="CUSTOM_TITLE_BAR" Value="ENABLED"/>
     <ROW Property="CUSTOM_TITLE_BAR_CB" Value="true" Type="4"/>
     <ROW Property="DEV_TOOLS_CB" Value="true" Type="4"/>
     <ROW Property="DEV_TOOLS_ENABLED" Value="true"/>
@@ -37,7 +37,7 @@
     <ROW Property="MEDIA_CB" Value="true" Type="4"/>
     <ROW Property="MIDI_SYSEX" Value="true"/>
     <ROW Property="MIDI_SYSEX_CB" Value="true" Type="4"/>
-    <ROW Property="MINIMIZE_ON_CLOSE" Value="true" Type="4"/>
+    <ROW Property="MINIMIZE_ON_CLOSE" Value="ENABLED" Type="4"/>
     <ROW Property="MINIMIZE_ON_CLOSE_CB" Value="true"/>
     <ROW Property="Manufacturer" Value="Symphony"/>
     <ROW Property="NOTIFICATIONS" Value="true"/>
