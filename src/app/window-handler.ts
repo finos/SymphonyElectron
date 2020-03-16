@@ -986,14 +986,27 @@ export class WindowHandler {
         globalShortcut.register(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I', this.onRegisterDevtools);
         globalShortcut.register('CmdOrCtrl+R', this.onReload);
 
+        if (isMac) {
+            globalShortcut.register('CmdOrCtrl+Plus', this.onZoomIn);
+            globalShortcut.register('CmdOrCtrl+=', this.onZoomIn);
+        }
+
         app.on('browser-window-focus', () => {
             globalShortcut.register(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I', this.onRegisterDevtools);
             globalShortcut.register('CmdOrCtrl+R', this.onReload);
+            if (isMac) {
+                globalShortcut.register('CmdOrCtrl+Plus', this.onZoomIn);
+                globalShortcut.register('CmdOrCtrl+=', this.onZoomIn);
+            }
         });
 
         app.on('browser-window-blur', () => {
             globalShortcut.unregister(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I');
             globalShortcut.unregister('CmdOrCtrl+R');
+            if (isMac) {
+                globalShortcut.unregister('CmdOrCtrl+Plus');
+                globalShortcut.unregister('CmdOrCtrl+=');
+            }
         });
     }
 
@@ -1024,6 +1037,21 @@ export class WindowHandler {
             return;
         }
         reloadWindow(focusedWindow as ICustomBrowserWindow);
+    }
+
+    /**
+     * This is a workarround untill we have a
+     * fix on the electron framework
+     * https://github.com/electron/electron/issues/15496
+     */
+    private onZoomIn(): void {
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+        if (!focusedWindow || !windowExists(focusedWindow)) {
+            return;
+        }
+        // electron/lib/browser/api/menu-item-roles.js row 159
+        const currentZoomLevel = focusedWindow.webContents.getZoomLevel();
+        focusedWindow.webContents.setZoomLevel(currentZoomLevel + 0.5);
     }
 
     /**
