@@ -118,7 +118,7 @@ before you commit.
 - Use `npm run test:spectron` to run spectron tests
 - To compile spectron tests `npm run compile:spec`
 - To run specific test use example: `npm run test:spectron -- --match=spell*` runs only spellchecker related tests
-- Specton - Application logs can be found in `~/Library/Logs/Electron/`  
+- Spectron - Application logs can be found in `~/Library/Logs/Electron/`  
 
 ## Logging
 - Local logging is enabled for dev environments using the module [electron-log](https://www.npmjs.com/package/electron-log)
