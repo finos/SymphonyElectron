@@ -9,6 +9,7 @@ import {
     IBadgeCount,
     IBoundsChange,
     ILogMsg,
+    IMediaPermission,
     IRestartFloaterData,
     IScreenSharingIndicator,
     IScreenSharingIndicatorOptions,
@@ -484,6 +485,17 @@ export class SSFApi {
      */
     public setCloudConfig(data: {}): void {
         throttledSetCloudConfig(data);
+    }
+
+    /**
+     * Check media permission
+     */
+    public async checkMediaPermission(): Promise<IMediaPermission> {
+       return Promise.resolve({
+            camera: remote.systemPreferences.getMediaAccessStatus('camera'),
+            microphone: remote.systemPreferences.getMediaAccessStatus('microphone'),
+            screen: remote.systemPreferences.getMediaAccessStatus('screen'),
+        });
     }
 
 }

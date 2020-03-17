@@ -36,6 +36,7 @@ export enum apiCmds {
     getConfigUrl = 'get-config-url',
     registerRestartFloater = 'register-restart-floater',
     setCloudConfig = 'set-cloud-config',
+    checkMediaPermission = 'check-media-permission',
 }
 
 export enum apiName {
@@ -142,6 +143,12 @@ export interface IVersionInfo {
     buildNumber: string;
     apiVer: string;
     searchApiVer: string;
+}
+
+export interface IMediaPermission {
+    camera: string;
+    microphone: string;
+    screen: string;
 }
 
 export interface ILogMsg {
