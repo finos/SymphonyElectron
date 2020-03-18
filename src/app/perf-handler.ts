@@ -1,11 +1,12 @@
 import { powerSaveBlocker } from 'electron';
 import { logger } from '../common/logger';
-import { config, IConfig } from './config-handler';
+import { CloudConfigDataTypes, config, IConfig } from './config-handler';
 
 export const handlePerformanceSettings = () => {
     const { customFlags } = config.getCloudConfigFields([ 'customFlags' ]) as IConfig;
+    const { disableThrottling } = config.getCloudConfigFields([ 'disableThrottling' ]) as any;
 
-    if (customFlags && customFlags.disableThrottling) {
+    if ((customFlags && customFlags.disableThrottling === CloudConfigDataTypes.ENABLED) || disableThrottling === CloudConfigDataTypes.ENABLED) {
         logger.info(`perf-handler: Disabling power throttling!`);
         powerSaveBlocker.start('prevent-display-sleep');
         return;

@@ -96,12 +96,13 @@ export class WindowHandler {
         this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings', 'alwaysOnTop', 'locale', 'customFlags' ]);
         logger.info(`window-handler: main windows initialized with following config data`, this.config);
         this.globalConfig = config.getGlobalConfigFields([ 'url', 'contextIsolation' ]);
+        const { disableThrottling } = config.getCloudConfigFields([ 'disableThrottling' ]) as any;
         const { url, contextIsolation }: IGlobalConfig = this.globalConfig;
         const { customFlags } = this.config;
 
         this.windows = {};
         this.contextIsolation = contextIsolation || false;
-        this.backgroundThrottling = !customFlags.disableThrottling;
+        this.backgroundThrottling = (customFlags.disableThrottling !== CloudConfigDataTypes.ENABLED || disableThrottling !== CloudConfigDataTypes.ENABLED);
         this.contextIsolation = contextIsolation || false;
         this.isCustomTitleBar = isWindowsOS && this.config.isCustomTitleBar === CloudConfigDataTypes.ENABLED;
         this.windowOpts = {
@@ -966,14 +967,27 @@ export class WindowHandler {
         globalShortcut.register(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I', this.onRegisterDevtools);
         globalShortcut.register('CmdOrCtrl+R', this.onReload);
 
+        if (isMac) {
+            globalShortcut.register('CmdOrCtrl+Plus', this.onZoomIn);
+            globalShortcut.register('CmdOrCtrl+=', this.onZoomIn);
+        }
+
         app.on('browser-window-focus', () => {
             globalShortcut.register(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I', this.onRegisterDevtools);
             globalShortcut.register('CmdOrCtrl+R', this.onReload);
+            if (isMac) {
+                globalShortcut.register('CmdOrCtrl+Plus', this.onZoomIn);
+                globalShortcut.register('CmdOrCtrl+=', this.onZoomIn);
+            }
         });
 
         app.on('browser-window-blur', () => {
             globalShortcut.unregister(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I');
             globalShortcut.unregister('CmdOrCtrl+R');
+            if (isMac) {
+                globalShortcut.unregister('CmdOrCtrl+Plus');
+                globalShortcut.unregister('CmdOrCtrl+=');
+            }
         });
     }
 
@@ -1004,6 +1018,21 @@ export class WindowHandler {
             return;
         }
         reloadWindow(focusedWindow as ICustomBrowserWindow);
+    }
+
+    /**
+     * This is a workarround untill we have a
+     * fix on the electron framework
+     * https://github.com/electron/electron/issues/15496
+     */
+    private onZoomIn(): void {
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+        if (!focusedWindow || !windowExists(focusedWindow)) {
+            return;
+        }
+        // electron/lib/browser/api/menu-item-roles.js row 159
+        const currentZoomLevel = focusedWindow.webContents.getZoomLevel();
+        focusedWindow.webContents.setZoomLevel(currentZoomLevel + 0.5);
     }
 
     /**
