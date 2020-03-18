@@ -144,6 +144,22 @@
         <button id='bring-to-front-without-focus'>bring to front without focus</button>
 
         <hr>
+        <p>Check Media Permission:</p>
+        <button id='check-media-permission'>Check media permission</button>
+        <br>
+        <table  >
+            <tr>
+                <th>Camera permission</th>
+                <th>Microphone permission</th>
+                <th>Screen permission</th>
+            </tr>
+            <tr>
+                <td id="camera-permission"></td>
+                <td id="microphone-permission"></td>
+                <td id="screen-permission"></td>
+            </tr>
+        </table>
+        <hr>
         <p>Get Media Sources:</p>
         <button id='get-sources'>Open screen picker & screensharing indicator</button>
         <br>
@@ -210,6 +226,7 @@
                 notification: 'notification',
                 closeNotification: 'close-notification',
                 registerRestartFloater: 'register-restart-floater',
+                checkMediaPermission: 'check-media-permission',
         };
         let requestId = 0;
 
@@ -508,6 +525,10 @@
                 case 'restart-floater-callback':
                     onRestartFloater(data);
                     break;
+                case 'check-media-permission-callback':
+                    handleResponse(data);
+                    console.log(event.data);
+                    break;
                 default:
                     console.log(event.data);
             }
@@ -606,6 +627,40 @@
             }
             activityTimer = startActivityInterval();
         };
+
+        /**
+         * Check media permission
+         */
+        const mediaPermission = document.getElementById('check-media-permission');
+        mediaPermission.addEventListener('click', () => {
+            let cameraPermission = document.getElementById('camera-permission');
+            let microphonePermission = document.getElementById('microphone-permission');
+            let screenPermission = document.getElementById('screen-permission');
+            if (navigator.appVersion.indexOf("Mac") != -1) {
+                if (window.ssf) {
+                    ssf.checkMediaPermission().then((mediaPermission) => {
+                        console.log('check-media-permission, mediaPermission: ' + JSON.stringify(mediaPermission));
+                        cameraPermission.innerText = mediaPermission.camera;
+                        microphonePermission.innerText = mediaPermission.microphone;
+                        screenPermission.innerText = mediaPermission.screen;
+                    });
+                } else {
+                    postRequest(apiCmds.checkMediaPermission, null, {
+                        successCallback: (mediaPermission) => {
+                            console.log('check-media-permission, mediaPermission: ' + JSON.stringify(mediaPermission));
+                            cameraPermission.innerText = mediaPermission.camera;
+                            microphonePermission.innerText = mediaPermission.microphone;
+                            screenPermission.innerText = mediaPermission.screen;
+                        }
+                    });
+                }
+            } else {
+                const notImplementedText = 'Not implemented for windows';
+                cameraPermission.innerText = notImplementedText;
+                microphonePermission.innerText = notImplementedText;
+                screenPermission.innerText = notImplementedText;
+            }
+        });
 
         /**
          * Desktop capture
