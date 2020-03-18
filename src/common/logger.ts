@@ -250,7 +250,7 @@ class Logger {
             const filePath = path.join(this.logPath, file);
             const stat = fs.statSync(filePath);
             const fileTimestamp = new Date(util.inspect(stat.mtime)).getTime();
-            if (fileTimestamp < deleteTimeStamp) {
+            if ((fileTimestamp < deleteTimeStamp) && fs.existsSync(filePath)) {
                 fs.unlinkSync(filePath);
             }
         });
