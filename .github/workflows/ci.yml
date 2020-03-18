@@ -13,14 +13,17 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm config set package-lock false
-    - run: npm install
-    - run: npm test
-      env:
-        CI: true
-        ELECTRON_QA: true
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm config set package-lock false
+      - name: install linux dependency
+        if: startsWith(matrix.os,'ubuntu')
+        run: sudo apt-get install libxtst-dev
+      - run: npm install
+      - run: npm test
+        env:
+          CI: true
+          ELECTRON_QA: true
