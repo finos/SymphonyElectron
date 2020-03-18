@@ -165,6 +165,9 @@ export const filterOutSelectedValues = (data: object, values): object => {
         return {};
     }
     return Object.keys(data).reduce((obj, key) => {
+        if (Array.isArray(data[key]) && data[key].length <= 0) {
+            return obj;
+        }
         if (values.indexOf(data[key]) <= -1) {
             obj[key] = data[key];
         }
