@@ -94,7 +94,7 @@ export interface IPermission {
 export interface ICustomFlag {
     authServerWhitelist: string;
     authNegotiateDelegateWhitelist: string;
-    disableThrottling: boolean;
+    disableThrottling: CloudConfigDataTypes;
 }
 
 export interface INotificationSetting {
@@ -150,8 +150,9 @@ class Config {
      * @param fields
      */
     public getConfigFields(fields: string[]): IConfig {
-        logger.info(`config-handler: Trying to get cloud config values for the fields`, fields);
-        return { ...this.getGlobalConfigFields(fields), ...this.getUserConfigFields(fields), ...this.getFilteredCloudConfigFields(fields) } as IConfig;
+        const configFields = { ...this.getGlobalConfigFields(fields), ...this.getUserConfigFields(fields), ...this.getFilteredCloudConfigFields(fields) } as IConfig;
+        logger.info(`config-handler: getting combined config values for the fields ${fields}`, configFields);
+        return configFields;
     }
 
     /**
@@ -160,8 +161,9 @@ class Config {
      * @param fields {Array}
      */
     public getUserConfigFields(fields: string[]): IConfig {
-        logger.info(`config-handler: Trying to get user config values for the fields`, fields);
-        return pick(this.userConfig, fields) as IConfig;
+        const userConfigData = pick(this.userConfig, fields) as IConfig;
+        logger.info(`config-handler: getting user config values for the fields ${fields}`, userConfigData);
+        return userConfigData;
     }
 
     /**
@@ -170,8 +172,9 @@ class Config {
      * @param fields {Array}
      */
     public getGlobalConfigFields(fields: string[]): IGlobalConfig {
-        logger.info(`config-handler: Trying to get global config values for the fields`, fields);
-        return pick(this.globalConfig, fields) as IGlobalConfig;
+        const globalConfigData = pick(this.globalConfig, fields) as IGlobalConfig;
+        logger.info(`config-handler: getting global config values for the fields ${fields}`, globalConfigData);
+        return globalConfigData;
     }
 
     /**
@@ -180,7 +183,9 @@ class Config {
      * @param fields {Array}
      */
     public getFilteredCloudConfigFields(fields: string[]): IConfig | {} {
-        return pick(this.filteredCloudConfig, fields) as IConfig;
+        const filteredCloudConfigData = pick(this.filteredCloudConfig, fields) as IConfig;
+        logger.info(`config-handler: getting filtered cloud config values for the ${fields}`, filteredCloudConfigData);
+        return filteredCloudConfigData;
     }
 
     /**
@@ -190,7 +195,10 @@ class Config {
     public getCloudConfigFields(fields: string[]): IConfig {
         const { acpFeatureLevelEntitlements, podLevelEntitlements, pmpEntitlements } = this.cloudConfig as ICloudConfig;
         const cloudConfig = { ...acpFeatureLevelEntitlements, ...podLevelEntitlements, ...pmpEntitlements };
-        return pick(cloudConfig, fields) as IConfig;
+        logger.info(`config-handler: prioritized cloud config data`, cloudConfig);
+        const cloudConfigData = pick(cloudConfig, fields) as IConfig;
+        logger.info(`config-handler: getting prioritized cloud config values for the fields ${fields}`, cloudConfigData);
+        return cloudConfigData;
     }
 
     /**
@@ -223,7 +231,7 @@ class Config {
         logger.info(`config-handler: prioritized and filtered cloud config: `, this.filteredCloudConfig);
         try {
             await writeFile(this.cloudConfigPath, JSON.stringify(this.cloudConfig), { encoding: 'utf8' });
-            logger.info(`config-handler: writting cloud config values to file`);
+            logger.info(`config-handler: writing cloud config values to file`);
         } catch (error) {
             logger.error(`config-handler: failed to update cloud config file with ${data}`, error);
         }
