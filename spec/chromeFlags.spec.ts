@@ -5,15 +5,25 @@ import { app } from './__mocks__/electron';
 
 jest.mock('../src/app/config-handler', () => {
     return {
+        CloudConfigDataTypes: {
+            NOT_SET: 'NOT_SET',
+            ENABLED: 'ENABLED',
+            DISABLED: 'DISABLED',
+        },
         config: {
             getConfigFields: jest.fn(() => {
                 return {
                     customFlags: {
                         authServerWhitelist: 'url',
                         authNegotiateDelegateWhitelist: 'whitelist',
-                        disableThrottling: false,
+                        disableThrottling: 'DISABLED',
                     },
                     disableGpu: true,
+                };
+            }),
+            getCloudConfigFields: jest.fn(() => {
+                return {
+                    disableThrottling: 'DISABLED',
                 };
             }),
         },
@@ -73,6 +83,79 @@ describe('chrome flags', () => {
         expect(spy).nthCalledWith(2, 'auth-server-whitelist', 'whitelist');
         expect(spy).nthCalledWith(3, 'disable-background-timer-throttling', 'true');
         expect(spy).not.nthCalledWith(4);
+    });
+
+    it('should set `disable-renderer-backgrounding` chrome flag correctly when cloud config is ENABLED', () => {
+        config.getConfigFields = jest.fn(() => {
+            return {
+                customFlags: {
+                    authServerWhitelist: 'url',
+                    authNegotiateDelegateWhitelist: 'whitelist',
+                    disableGpu: false,
+                    disableThrottling: 'ENABLED',
+                },
+            };
+        });
+        const spy = jest.spyOn(app.commandLine, 'appendSwitch');
+        setChromeFlags();
+        expect(spy).nthCalledWith(4, 'disable-renderer-backgrounding', 'true');
+        expect(spy).not.nthCalledWith(5);
+    });
+
+    it('should set `disable-renderer-backgrounding` chrome flag correctly when cloud config PMP setting is ENABLED', () => {
+        config.getCloudConfigFields = jest.fn(() => {
+            return {
+                disableThrottling: 'ENABLED',
+            };
+        });
+        const spy = jest.spyOn(app.commandLine, 'appendSwitch');
+        setChromeFlags();
+        expect(spy).nthCalledWith(7, 'disable-renderer-backgrounding', 'true');
+        expect(spy).not.nthCalledWith(8);
+    });
+
+    it('should set `disable-renderer-backgrounding` chrome flag when any one is ENABLED ', () => {
+        config.getConfigFields = jest.fn(() => {
+            return {
+                customFlags: {
+                    authServerWhitelist: 'url',
+                    authNegotiateDelegateWhitelist: 'whitelist',
+                    disableGpu: false,
+                    disableThrottling: 'DISABLED',
+                },
+            };
+        });
+        config.getCloudConfigFields = jest.fn(() => {
+            return {
+                disableThrottling: 'ENABLED',
+            };
+        });
+        const spy = jest.spyOn(app.commandLine, 'appendSwitch');
+        setChromeFlags();
+        expect(spy).nthCalledWith(4, 'disable-renderer-backgrounding', 'true');
+        expect(spy).not.nthCalledWith(5);
+    });
+
+    it('should set `disable-renderer-backgrounding` chrome flag when PMP is ENABLED', () => {
+        config.getConfigFields = jest.fn(() => {
+            return {
+                customFlags: {
+                    authServerWhitelist: 'url',
+                    authNegotiateDelegateWhitelist: 'whitelist',
+                    disableGpu: false,
+                    disableThrottling: 'ENABLED',
+                },
+            };
+        });
+        config.getCloudConfigFields = jest.fn(() => {
+            return {
+                disableThrottling: 'DISABLED',
+            };
+        });
+        const spy = jest.spyOn(app.commandLine, 'appendSwitch');
+        setChromeFlags();
+        expect(spy).nthCalledWith(4, 'disable-renderer-backgrounding', 'true');
+        expect(spy).not.nthCalledWith(5);
     });
 
     describe('`isDevEnv`', () => {
