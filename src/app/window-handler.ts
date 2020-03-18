@@ -96,12 +96,13 @@ export class WindowHandler {
         this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings', 'alwaysOnTop', 'locale', 'customFlags' ]);
         logger.info(`window-handler: main windows initialized with following config data`, this.config);
         this.globalConfig = config.getGlobalConfigFields([ 'url', 'contextIsolation' ]);
+        const { disableThrottling } = config.getCloudConfigFields([ 'disableThrottling' ]) as any;
         const { url, contextIsolation }: IGlobalConfig = this.globalConfig;
         const { customFlags } = this.config;
 
         this.windows = {};
         this.contextIsolation = contextIsolation || false;
-        this.backgroundThrottling = !customFlags.disableThrottling;
+        this.backgroundThrottling = (customFlags.disableThrottling !== CloudConfigDataTypes.ENABLED || disableThrottling !== CloudConfigDataTypes.ENABLED);
         this.isCustomTitleBar = isWindowsOS && this.config.isCustomTitleBar === CloudConfigDataTypes.ENABLED;
         this.windowOpts = {
             ...this.getWindowOpts({
