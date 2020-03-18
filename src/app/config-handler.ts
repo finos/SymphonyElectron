@@ -267,9 +267,9 @@ class Config {
         const { acpFeatureLevelEntitlements, podLevelEntitlements, pmpEntitlements } = this.cloudConfig as ICloudConfig;
 
         // Filter out some values
-        const filteredACP = filterOutSelectedValues(acpFeatureLevelEntitlements, [ true, 'NOT_SET', '' ]);
-        const filteredPod = filterOutSelectedValues(podLevelEntitlements, [ true, 'NOT_SET', '' ]);
-        const filteredPMP = filterOutSelectedValues(pmpEntitlements, [ true, 'NOT_SET', '' ]);
+        const filteredACP = filterOutSelectedValues(acpFeatureLevelEntitlements, [ true, 'NOT_SET', '', [] ]);
+        const filteredPod = filterOutSelectedValues(podLevelEntitlements, [ true, 'NOT_SET', '', [] ]);
+        const filteredPMP = filterOutSelectedValues(pmpEntitlements, [ true, 'NOT_SET', '', [] ]);
 
         // priority is PMP > ACP > SDA
         this.filteredCloudConfig = { ...filteredACP, ...filteredPod, ...filteredPMP };
