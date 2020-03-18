@@ -174,6 +174,13 @@ export class AppBridge {
                     ssInstance.handleMessageEvents(data);
                 }
                 break;
+            case apiCmds.checkMediaPermission:
+                const mediaPermission = await ssf.checkMediaPermission();
+                this.broadcastMessage('check-media-permission-callback', {
+                    requestId: data.requestId,
+                    response: mediaPermission,
+                });
+                break;
         }
     }
 
