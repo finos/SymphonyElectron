@@ -967,6 +967,11 @@ export class WindowHandler {
         globalShortcut.register(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I', this.onRegisterDevtools);
         globalShortcut.register('CmdOrCtrl+R', this.onReload);
 
+        // Hack to switch between Client 1.5, Mana-stable and Mana-daily
+        globalShortcut.register('CmdOrCtrl+Shift+1', this.onClient1_5);
+        globalShortcut.register('CmdOrCtrl+Shift+2', this.onClientManaStable);
+        globalShortcut.register('CmdOrCtrl+Shift+3', this.onClientManaDaily);
+
         if (isMac) {
             globalShortcut.register('CmdOrCtrl+Plus', this.onZoomIn);
             globalShortcut.register('CmdOrCtrl+=', this.onZoomIn);
@@ -1033,6 +1038,73 @@ export class WindowHandler {
         // electron/lib/browser/api/menu-item-roles.js row 159
         const currentZoomLevel = focusedWindow.webContents.getZoomLevel();
         focusedWindow.webContents.setZoomLevel(currentZoomLevel + 0.5);
+    }
+
+    /**
+     * HACK SWITCH to Client 1.5
+     */
+    private onClient1_5(): void {
+        logger.info('window handler: go to Client 1.5');
+
+        logger.info('this.url: ' + this.url);
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+
+        const dogfoodUrl = `https://corporate.symphony.com/`;
+        if (focusedWindow && windowExists(focusedWindow)) {
+            focusedWindow.loadURL(dogfoodUrl);
+            reloadWindow(focusedWindow as ICustomBrowserWindow);
+        } else {
+            logger.error('window handler: Could not go to client 1.5');
+        }
+    }
+
+    /**
+     * HACK SWITCH to Client Mana-stable
+     */
+    private onClientManaStable(): void {
+        logger.info('window handler: go to Client Mana-stable');
+
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+
+        if (focusedWindow) {
+            logger.info('window handler: windowExists: ' + windowExists(focusedWindow));
+        } else {
+            logger.info('window handler: no mainWindow');
+        }
+        let csrfToken;
+        if (focusedWindow && windowExists(focusedWindow)) {
+            try {
+                csrfToken = focusedWindow.webContents.executeJavaScript(`localStorage.getItem('x-km-csrf-token')`);
+            } catch (e) {
+                logger.error(e);
+            }
+
+            const dogfoodUrl = `https://corporate.symphony.com/client-bff/index.html?x-km-csrf-token=${csrfToken}`;
+            focusedWindow.loadURL(dogfoodUrl);
+            reloadWindow(focusedWindow as ICustomBrowserWindow);
+
+            // const { manaPath, channel } = config.getGlobalConfigFields([ 'manaPath', 'channel' ]);
+            // const manaString = (manaPath && manaPath.length > 0) ? manaPath : 'client-bff';
+            // const parsedUrl = parse(this.url);
+            // if (this.url.indexOf(`https://${parsedUrl.hostname}/client/index.html`) !== -1) {
+            //     if (this.url.indexOf(manaString) === -1) {
+            //        const channelString = (channel && channel.length > 0) ? channel + '/' : '';
+            //        const dogfoodUrl = `https://${parsedUrl.hostname}/${manaString}/${channelString}index.html?x-km-csrf-token=${csrfToken}`;
+            //        this.mainWindow.loadURL(dogfoodUrl);
+            //
+            //        this.url = this.mainWindow.webContents.getURL();
+                    // return;
+            //    }
+        } else {
+            logger.error('window handler: Could not go to client Mana-stable');
+        }
+    }
+
+    /**
+     * HACK SWITCH to Client Mana-daily
+     */
+    private onClientManaDaily(): void {
+        logger.info('window handler: go to Client Mana-daily');
     }
 
     /**
