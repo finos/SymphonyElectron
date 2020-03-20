@@ -604,7 +604,7 @@ export class WindowHandler {
                     if (type === 'window') {
                         const hwnd = source.id.split(':')[1];
                         this.execCmd(this.screenShareIndicatorFrameUtil, [ hwnd ]);
-                    } else if (type === 'screen') {
+                    } else if (isMac && type === 'screen') {
                         const dispId = source.id.split(':')[1];
                         this.execCmd(this.screenShareIndicatorFrameUtil, [ dispId ]);
                     }
@@ -801,7 +801,9 @@ export class WindowHandler {
             displays.forEach((element) => {
                 if (displayId === element.id.toString()) {
                     logger.info(`window-handler: element:`, element);
-                    if (isLinux) {
+                    if (isWindowsOS) {
+                        this.execCmd(this.screenShareIndicatorFrameUtil, [ displayId ]);
+                    } else if (isLinux) {
                         this.createScreenSharingFrameWindow('screen-sharing-frame',
                         element.workArea.width,
                         element.workArea.height,
