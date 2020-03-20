@@ -1043,7 +1043,7 @@ export class WindowHandler {
     /**
      * HACK SWITCH to Client 1.5
      */
-    private onClient1_5(): void {
+    private async onClient1_5(): void {
         logger.info('window handler: go to Client 1.5');
 
         logger.info('this.url: ' + this.url);
@@ -1051,7 +1051,7 @@ export class WindowHandler {
 
         const dogfoodUrl = `https://corporate.symphony.com/`;
         if (focusedWindow && windowExists(focusedWindow)) {
-            focusedWindow.loadURL(dogfoodUrl);
+            await focusedWindow.loadURL(dogfoodUrl);
             reloadWindow(focusedWindow as ICustomBrowserWindow);
         } else {
             logger.error('window handler: Could not go to client 1.5');
@@ -1074,13 +1074,13 @@ export class WindowHandler {
         let csrfToken;
         if (focusedWindow && windowExists(focusedWindow)) {
             try {
-                csrfToken = focusedWindow.webContents.executeJavaScript(`localStorage.getItem('x-km-csrf-token')`);
+                csrfToken = await focusedWindow.webContents.executeJavaScript(`localStorage.getItem('x-km-csrf-token')`);
             } catch (e) {
                 logger.error(e);
             }
 
             const dogfoodUrl = `https://corporate.symphony.com/client-bff/index.html?x-km-csrf-token=${csrfToken}`;
-            focusedWindow.loadURL(dogfoodUrl);
+            await focusedWindow.loadURL(dogfoodUrl);
             reloadWindow(focusedWindow as ICustomBrowserWindow);
 
             // const { manaPath, channel } = config.getGlobalConfigFields([ 'manaPath', 'channel' ]);
