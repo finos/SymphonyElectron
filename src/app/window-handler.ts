@@ -46,6 +46,8 @@ export interface ICustomBrowserWindow extends Electron.BrowserWindow {
 const DEFAULT_WIDTH: number = 900;
 const DEFAULT_HEIGHT: number = 900;
 
+let switchClient = 'client1_5';
+
 export class WindowHandler {
 
     /**
@@ -1043,68 +1045,109 @@ export class WindowHandler {
     /**
      * HACK SWITCH to Client 1.5
      */
-    private async onClient1_5(): void {
+    private async onClient1_5(): Promise <void> {
         logger.info('window handler: go to Client 1.5');
+        logger.info('this.globalConfig.url: ' + config.getGlobalConfigFields([ 'url']));
 
-        logger.info('this.url: ' + this.url);
-        const focusedWindow = BrowserWindow.getFocusedWindow();
+        if (config.getGlobalConfigFields([ 'url']).url && config.getGlobalConfigFields([ 'url']).url.startsWith('https://corporate.symphony.com')) {
+            logger.info('window handler: switchClient: ' + switchClient);
+            if (switchClient === 'client1_5' ) {
+                return;
+            }
 
-        const dogfoodUrl = `https://corporate.symphony.com/`;
-        if (focusedWindow && windowExists(focusedWindow)) {
-            await focusedWindow.loadURL(dogfoodUrl);
-            reloadWindow(focusedWindow as ICustomBrowserWindow);
+            switchClient = 'client1_5';
+
+            const focusedWindow = BrowserWindow.getFocusedWindow();
+
+            const dogfoodUrl = `https://corporate.symphony.com/`;
+            if (focusedWindow && windowExists(focusedWindow)) {
+                await focusedWindow.loadURL(dogfoodUrl);
+                reloadWindow(focusedWindow as ICustomBrowserWindow);
+            } else {
+                logger.error('window handler: Could not go to client 1.5');
+            }
         } else {
-            logger.error('window handler: Could not go to client 1.5');
+            logger.info('Switch not support for this POD-url');
         }
     }
 
     /**
      * HACK SWITCH to Client Mana-stable
      */
-    private onClientManaStable(): void {
+    private async onClientManaStable(): Promise <void> {
         logger.info('window handler: go to Client Mana-stable');
 
-        const focusedWindow = BrowserWindow.getFocusedWindow();
-
-        if (focusedWindow) {
-            logger.info('window handler: windowExists: ' + windowExists(focusedWindow));
-        } else {
-            logger.info('window handler: no mainWindow');
-        }
-        let csrfToken;
-        if (focusedWindow && windowExists(focusedWindow)) {
-            try {
-                csrfToken = await focusedWindow.webContents.executeJavaScript(`localStorage.getItem('x-km-csrf-token')`);
-            } catch (e) {
-                logger.error(e);
+        if (config.getGlobalConfigFields([ 'url']).url && config.getGlobalConfigFields([ 'url']).url.startsWith('https://corporate.symphony.com')) {
+            logger.info('window handler: switchClient: ' + switchClient);
+            if (switchClient === 'mana_stable') {
+                return;
             }
 
-            const dogfoodUrl = `https://corporate.symphony.com/client-bff/index.html?x-km-csrf-token=${csrfToken}`;
-            await focusedWindow.loadURL(dogfoodUrl);
-            reloadWindow(focusedWindow as ICustomBrowserWindow);
+            switchClient = 'mana_stable';
+            const focusedWindow = BrowserWindow.getFocusedWindow();
 
-            // const { manaPath, channel } = config.getGlobalConfigFields([ 'manaPath', 'channel' ]);
-            // const manaString = (manaPath && manaPath.length > 0) ? manaPath : 'client-bff';
-            // const parsedUrl = parse(this.url);
-            // if (this.url.indexOf(`https://${parsedUrl.hostname}/client/index.html`) !== -1) {
-            //     if (this.url.indexOf(manaString) === -1) {
-            //        const channelString = (channel && channel.length > 0) ? channel + '/' : '';
-            //        const dogfoodUrl = `https://${parsedUrl.hostname}/${manaString}/${channelString}index.html?x-km-csrf-token=${csrfToken}`;
-            //        this.mainWindow.loadURL(dogfoodUrl);
-            //
-            //        this.url = this.mainWindow.webContents.getURL();
-                    // return;
-            //    }
+            if (focusedWindow) {
+                logger.info('window handler: windowExists: ' + windowExists(focusedWindow));
+            } else {
+                logger.info('window handler: no mainWindow');
+            }
+            let csrfToken;
+            if (focusedWindow && windowExists(focusedWindow)) {
+                try {
+                    csrfToken = await focusedWindow.webContents.executeJavaScript(`localStorage.getItem('x-km-csrf-token')`);
+                } catch (e) {
+                    logger.error(e);
+                }
+
+                const dogfoodUrl = `https://corporate.symphony.com/client-bff/index.html?x-km-csrf-token=${csrfToken}`;
+                await focusedWindow.loadURL(dogfoodUrl);
+                reloadWindow(focusedWindow as ICustomBrowserWindow);
+            } else {
+                logger.error('window handler: Could not go to client Mana-stable');
+            }
         } else {
-            logger.error('window handler: Could not go to client Mana-stable');
+            logger.info('Switch not support for this POD-url');
         }
     }
 
     /**
      * HACK SWITCH to Client Mana-daily
      */
-    private onClientManaDaily(): void {
+    private async onClientManaDaily(): Promise <void> {
         logger.info('window handler: go to Client Mana-daily');
+
+        if (config.getGlobalConfigFields([ 'url']).url && config.getGlobalConfigFields([ 'url']).url.startsWith('https://corporate.symphony.com')) {
+            logger.info('window handler: switchClient: ' + switchClient);
+            if (switchClient === 'mana_daily') {
+                return;
+            }
+
+            switchClient = 'mana_daily';
+
+            const focusedWindow = BrowserWindow.getFocusedWindow();
+
+            if (focusedWindow) {
+                logger.info('window handler: windowExists: ' + windowExists(focusedWindow));
+            } else {
+                logger.info('window handler: no mainWindow');
+            }
+            let csrfToken;
+            if (focusedWindow && windowExists(focusedWindow)) {
+                try {
+                    csrfToken = await focusedWindow.webContents.executeJavaScript(`localStorage.getItem('x-km-csrf-token')`);
+                } catch (e) {
+                    logger.error(e);
+                }
+
+                const dogfoodUrl = `https://corporate.symphony.com/client-bff/daily/index.html?x-km-csrf-token=${csrfToken}`;
+                await focusedWindow.loadURL(dogfoodUrl);
+                reloadWindow(focusedWindow as ICustomBrowserWindow);
+            } else {
+                logger.error('window handler: Could not go to client Mana-stable');
+            }
+        } else {
+            logger.info('Switch not support for this POD-url');
+        }
     }
 
     /**
