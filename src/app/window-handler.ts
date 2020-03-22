@@ -46,7 +46,17 @@ export interface ICustomBrowserWindow extends Electron.BrowserWindow {
 const DEFAULT_WIDTH: number = 900;
 const DEFAULT_HEIGHT: number = 900;
 
-let switchClient = 'client1_5';
+enum ClientVersionTypes {
+    CLIENT_1_5 = 'client_1_5',
+    CLIENT_MANA_STABLE = 'client_mana_stable',
+    CLIENT_MANA_DAILY = 'client_mana_daily',
+}
+
+let currentClient = ClientVersionTypes.CLIENT_1_5;
+
+const checkIfCorporate = () => {
+    return (config.getGlobalConfigFields([ 'url']).url && config.getGlobalConfigFields([ 'url']).url.startsWith('https://corporate.symphony.com'));
+};
 
 export class WindowHandler {
 
@@ -970,9 +980,13 @@ export class WindowHandler {
         globalShortcut.register('CmdOrCtrl+R', this.onReload);
 
         // Hack to switch between Client 1.5, Mana-stable and Mana-daily
-        globalShortcut.register('CmdOrCtrl+Shift+1', this.onClient1_5);
-        globalShortcut.register('CmdOrCtrl+Shift+2', this.onClientManaStable);
-        globalShortcut.register('CmdOrCtrl+Shift+3', this.onClientManaDaily);
+        if (checkIfCorporate()) {
+            globalShortcut.register('CmdOrCtrl+Shift+1', this.onClient1_5);
+            globalShortcut.register('CmdOrCtrl+Shift+2', this.onClientManaStable);
+            globalShortcut.register('CmdOrCtrl+Shift+3', this.onClientManaDaily);
+        } else {
+            logger.info('Switch between clients not support for this POD-url');
+        }
 
         if (isMac) {
             globalShortcut.register('CmdOrCtrl+Plus', this.onZoomIn);
@@ -1047,27 +1061,17 @@ export class WindowHandler {
      */
     private async onClient1_5(): Promise <void> {
         logger.info('window handler: go to Client 1.5');
-        logger.info('this.globalConfig.url: ' + config.getGlobalConfigFields([ 'url']));
-
-        if (config.getGlobalConfigFields([ 'url']).url && config.getGlobalConfigFields([ 'url']).url.startsWith('https://corporate.symphony.com')) {
-            logger.info('window handler: switchClient: ' + switchClient);
-            if (switchClient === 'client1_5' ) {
-                return;
-            }
-
-            switchClient = 'client1_5';
-
-            const focusedWindow = BrowserWindow.getFocusedWindow();
-
-            const dogfoodUrl = `https://corporate.symphony.com/`;
-            if (focusedWindow && windowExists(focusedWindow)) {
-                await focusedWindow.loadURL(dogfoodUrl);
-                reloadWindow(focusedWindow as ICustomBrowserWindow);
-            } else {
-                logger.error('window handler: Could not go to client 1.5');
-            }
+        logger.info('window handler: currentClient: ' + currentClient);
+        if (currentClient === ClientVersionTypes.CLIENT_1_5) {
+            return;
+        }
+        currentClient = ClientVersionTypes.CLIENT_1_5;
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+        const dogfoodUrl = `https://corporate.symphony.com/`;
+        if (focusedWindow && windowExists(focusedWindow)) {
+            await focusedWindow.loadURL(dogfoodUrl);
         } else {
-            logger.info('Switch not support for this POD-url');
+            logger.error('window handler: Could not go to client 1.5');
         }
     }
 
@@ -1076,37 +1080,24 @@ export class WindowHandler {
      */
     private async onClientManaStable(): Promise <void> {
         logger.info('window handler: go to Client Mana-stable');
-
-        if (config.getGlobalConfigFields([ 'url']).url && config.getGlobalConfigFields([ 'url']).url.startsWith('https://corporate.symphony.com')) {
-            logger.info('window handler: switchClient: ' + switchClient);
-            if (switchClient === 'mana_stable') {
-                return;
+        logger.info('window handler: currentClient: ' + currentClient);
+        if (currentClient === ClientVersionTypes.CLIENT_MANA_STABLE) {
+            return;
+        }
+        currentClient = ClientVersionTypes.CLIENT_MANA_STABLE;
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+        let csrfToken;
+        if (focusedWindow && windowExists(focusedWindow)) {
+            try {
+                csrfToken = await focusedWindow.webContents.executeJavaScript(`localStorage.getItem('x-km-csrf-token')`);
+            } catch (e) {
+                logger.error(e);
             }
 
-            switchClient = 'mana_stable';
-            const focusedWindow = BrowserWindow.getFocusedWindow();
-
-            if (focusedWindow) {
-                logger.info('window handler: windowExists: ' + windowExists(focusedWindow));
-            } else {
-                logger.info('window handler: no mainWindow');
-            }
-            let csrfToken;
-            if (focusedWindow && windowExists(focusedWindow)) {
-                try {
-                    csrfToken = await focusedWindow.webContents.executeJavaScript(`localStorage.getItem('x-km-csrf-token')`);
-                } catch (e) {
-                    logger.error(e);
-                }
-
-                const dogfoodUrl = `https://corporate.symphony.com/client-bff/index.html?x-km-csrf-token=${csrfToken}`;
-                await focusedWindow.loadURL(dogfoodUrl);
-                reloadWindow(focusedWindow as ICustomBrowserWindow);
-            } else {
-                logger.error('window handler: Could not go to client Mana-stable');
-            }
+            const dogfoodUrl = `https://corporate.symphony.com/client-bff/index.html?x-km-csrf-token=${csrfToken}`;
+            await focusedWindow.loadURL(dogfoodUrl);
         } else {
-            logger.info('Switch not support for this POD-url');
+            logger.error('window handler: Could not go to client Mana-stable');
         }
     }
 
@@ -1115,38 +1106,24 @@ export class WindowHandler {
      */
     private async onClientManaDaily(): Promise <void> {
         logger.info('window handler: go to Client Mana-daily');
-
-        if (config.getGlobalConfigFields([ 'url']).url && config.getGlobalConfigFields([ 'url']).url.startsWith('https://corporate.symphony.com')) {
-            logger.info('window handler: switchClient: ' + switchClient);
-            if (switchClient === 'mana_daily') {
-                return;
+        logger.info('window handler: currentClient: ' + currentClient);
+        if (currentClient === ClientVersionTypes.CLIENT_MANA_DAILY) {
+            return;
+        }
+        currentClient = ClientVersionTypes.CLIENT_MANA_DAILY;
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+        let csrfToken;
+        if (focusedWindow && windowExists(focusedWindow)) {
+            try {
+                csrfToken = await focusedWindow.webContents.executeJavaScript(`localStorage.getItem('x-km-csrf-token')`);
+            } catch (e) {
+                logger.error(e);
             }
 
-            switchClient = 'mana_daily';
-
-            const focusedWindow = BrowserWindow.getFocusedWindow();
-
-            if (focusedWindow) {
-                logger.info('window handler: windowExists: ' + windowExists(focusedWindow));
-            } else {
-                logger.info('window handler: no mainWindow');
-            }
-            let csrfToken;
-            if (focusedWindow && windowExists(focusedWindow)) {
-                try {
-                    csrfToken = await focusedWindow.webContents.executeJavaScript(`localStorage.getItem('x-km-csrf-token')`);
-                } catch (e) {
-                    logger.error(e);
-                }
-
-                const dogfoodUrl = `https://corporate.symphony.com/client-bff/daily/index.html?x-km-csrf-token=${csrfToken}`;
-                await focusedWindow.loadURL(dogfoodUrl);
-                reloadWindow(focusedWindow as ICustomBrowserWindow);
-            } else {
-                logger.error('window handler: Could not go to client Mana-stable');
-            }
+            const dogfoodUrl = `https://corporate.symphony.com/client-bff/daily/index.html?x-km-csrf-token=${csrfToken}`;
+            await focusedWindow.loadURL(dogfoodUrl);
         } else {
-            logger.info('Switch not support for this POD-url');
+            logger.error('window handler: Could not go to client Mana-stable');
         }
     }
 
