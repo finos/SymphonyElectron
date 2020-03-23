@@ -984,7 +984,7 @@ export class WindowHandler {
             globalShortcut.register(isMac ? 'Cmd+Alt+2' : 'Ctrl+Shift+2', this.onClientManaStable);
             globalShortcut.register(isMac ? 'Cmd+Alt+3' : 'Ctrl+Shift+3', this.onClientManaDaily);
         } else {
-            logger.info('Switch between clients not support for this POD-url');
+            logger.info('Switch between clients not supported for this POD-url');
         }
 
         if (isMac) {
