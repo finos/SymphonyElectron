@@ -2,7 +2,7 @@ import { app, LoginItemSettings } from 'electron';
 
 import { isMac } from '../common/env';
 import { logger } from '../common/logger';
-import { config, IConfig } from './config-handler';
+import { CloudConfigDataTypes, config, IConfig } from './config-handler';
 
 const { autoLaunchPath }: IConfig = config.getConfigFields([ 'autoLaunchPath' ]);
 
@@ -57,7 +57,7 @@ class AutoLaunchController {
         const { launchOnStartup }: IConfig = config.getConfigFields([ 'launchOnStartup' ]);
         const { openAtLogin: isAutoLaunchEnabled }: LoginItemSettings = this.isAutoLaunchEnabled();
 
-        if (typeof launchOnStartup === 'boolean' && launchOnStartup) {
+        if (launchOnStartup === CloudConfigDataTypes.ENABLED) {
             if (!isAutoLaunchEnabled) {
                 this.enableAutoLaunch();
             }
