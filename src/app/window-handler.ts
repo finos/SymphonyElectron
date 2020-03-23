@@ -980,7 +980,7 @@ export class WindowHandler {
         globalShortcut.register('CmdOrCtrl+R', this.onReload);
 
         // Hack to switch between Client 1.5, Mana-stable and Mana-daily
-        if (checkIfCorporate()) {
+        if (this.globalConfig.url && this.globalConfig.url.startsWith('https://corporate.symphony.com')) {
             globalShortcut.register('CmdOrCtrl+Shift+1', this.onClient1_5);
             globalShortcut.register('CmdOrCtrl+Shift+2', this.onClientManaStable);
             globalShortcut.register('CmdOrCtrl+Shift+3', this.onClientManaDaily);
