@@ -977,9 +977,9 @@ export class WindowHandler {
 
         // Hack to switch between Client 1.5, Mana-stable and Mana-daily
         if (this.globalConfig.url && this.globalConfig.url.startsWith('https://corporate.symphony.com')) {
-            globalShortcut.register('CmdOrCtrl+Shift+1', this.onClient1_5);
-            globalShortcut.register('CmdOrCtrl+Shift+2', this.onClientManaStable);
-            globalShortcut.register('CmdOrCtrl+Shift+3', this.onClientManaDaily);
+            globalShortcut.register(isMac ? 'Cmd+Alt+1' : 'Ctrl+Alt+1', this.onClient1_5);
+            globalShortcut.register(isMac ? 'Cmd+Alt+2' : 'Ctrl+Alt+2', this.onClientManaStable);
+            globalShortcut.register(isMac ? 'Cmd+Alt+3' : 'Ctrl+Alt+3', this.onClientManaDaily);
         } else {
             logger.info('Switch between clients not support for this POD-url');
         }
