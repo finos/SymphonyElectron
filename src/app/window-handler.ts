@@ -46,6 +46,14 @@ export interface ICustomBrowserWindow extends Electron.BrowserWindow {
 const DEFAULT_WIDTH: number = 900;
 const DEFAULT_HEIGHT: number = 900;
 
+enum ClientVersionTypes {
+    CLIENT_1_5 = 'client_1_5',
+    CLIENT_MANA_STABLE = 'client_mana_stable',
+    CLIENT_MANA_DAILY = 'client_mana_daily',
+}
+
+let currentClient = ClientVersionTypes.CLIENT_1_5;
+
 export class WindowHandler {
 
     /**
@@ -970,6 +978,15 @@ export class WindowHandler {
         globalShortcut.register(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I', this.onRegisterDevtools);
         globalShortcut.register('CmdOrCtrl+R', this.onReload);
 
+        // Hack to switch between Client 1.5, Mana-stable and Mana-daily
+        if (this.globalConfig.url && this.globalConfig.url.startsWith('https://corporate.symphony.com')) {
+            globalShortcut.register(isMac ? 'Cmd+Alt+1' : 'Ctrl+Shift+1', this.onClient1_5);
+            globalShortcut.register(isMac ? 'Cmd+Alt+2' : 'Ctrl+Shift+2', this.onClientManaStable);
+            globalShortcut.register(isMac ? 'Cmd+Alt+3' : 'Ctrl+Shift+3', this.onClientManaDaily);
+        } else {
+            logger.info('Switch between clients not supported for this POD-url');
+        }
+
         if (isMac) {
             globalShortcut.register('CmdOrCtrl+Plus', this.onZoomIn);
             globalShortcut.register('CmdOrCtrl+=', this.onZoomIn);
@@ -1036,6 +1053,77 @@ export class WindowHandler {
         // electron/lib/browser/api/menu-item-roles.js row 159
         const currentZoomLevel = focusedWindow.webContents.getZoomLevel();
         focusedWindow.webContents.setZoomLevel(currentZoomLevel + 0.5);
+    }
+
+    /**
+     * HACK SWITCH to Client 1.5
+     */
+    private async onClient1_5(): Promise <void> {
+        logger.info('window handler: go to Client 1.5');
+        logger.info('window handler: currentClient: ' + currentClient);
+        if (currentClient === ClientVersionTypes.CLIENT_1_5) {
+            return;
+        }
+        currentClient = ClientVersionTypes.CLIENT_1_5;
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+        const dogfoodUrl = `https://corporate.symphony.com/`;
+        if (focusedWindow && windowExists(focusedWindow)) {
+            await focusedWindow.loadURL(dogfoodUrl);
+        } else {
+            logger.error('window handler: Could not go to client 1.5');
+        }
+    }
+
+    /**
+     * HACK SWITCH to Client Mana-stable
+     */
+    private async onClientManaStable(): Promise <void> {
+        logger.info('window handler: go to Client Mana-stable');
+        logger.info('window handler: currentClient: ' + currentClient);
+        if (currentClient === ClientVersionTypes.CLIENT_MANA_STABLE) {
+            return;
+        }
+        currentClient = ClientVersionTypes.CLIENT_MANA_STABLE;
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+        let csrfToken;
+        if (focusedWindow && windowExists(focusedWindow)) {
+            try {
+                csrfToken = await focusedWindow.webContents.executeJavaScript(`localStorage.getItem('x-km-csrf-token')`);
+            } catch (e) {
+                logger.error(e);
+            }
+
+            const dogfoodUrl = `https://corporate.symphony.com/client-bff/index.html?x-km-csrf-token=${csrfToken}`;
+            await focusedWindow.loadURL(dogfoodUrl);
+        } else {
+            logger.error('window handler: Could not go to client Mana-stable');
+        }
+    }
+
+    /**
+     * HACK SWITCH to Client Mana-daily
+     */
+    private async onClientManaDaily(): Promise <void> {
+        logger.info('window handler: go to Client Mana-daily');
+        logger.info('window handler: currentClient: ' + currentClient);
+        if (currentClient === ClientVersionTypes.CLIENT_MANA_DAILY) {
+            return;
+        }
+        currentClient = ClientVersionTypes.CLIENT_MANA_DAILY;
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+        let csrfToken;
+        if (focusedWindow && windowExists(focusedWindow)) {
+            try {
+                csrfToken = await focusedWindow.webContents.executeJavaScript(`localStorage.getItem('x-km-csrf-token')`);
+            } catch (e) {
+                logger.error(e);
+            }
+
+            const dogfoodUrl = `https://corporate.symphony.com/client-bff/daily/index.html?x-km-csrf-token=${csrfToken}`;
+            await focusedWindow.loadURL(dogfoodUrl);
+        } else {
+            logger.error('window handler: Could not go to client Mana-stable');
+        }
     }
 
     /**
