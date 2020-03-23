@@ -49,6 +49,10 @@ electronDownloader();
 handlePerformanceSettings();
 setChromeFlags();
 
+// Need this to prevent blank pop-out from 8.x versions
+// Refer - SDA-1877 - https://github.com/electron/electron/issues/18397
+app.allowRendererProcessReuse = true;
+
 // Electron sets the default protocol
 if (!isDevEnv) {
     app.setAsDefaultProtocolClient('symphony');
