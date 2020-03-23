@@ -341,7 +341,7 @@ class Notification extends NotificationHandler {
             if (Object.prototype.hasOwnProperty.call(browserWindows, win)) {
                 const browserWin = browserWindows[ win ];
                 if (browserWin && windowExists(browserWin) && browserWin.winName === apiName.mainWindowName && browserWin.isFullScreen()) {
-                    browserWin.setFullScreen(false);
+                    browserWin.webContents.send('exit-html-fullscreen');
                     return;
                 }
             }
