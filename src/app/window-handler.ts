@@ -6,7 +6,7 @@ import * as path from 'path';
 import { format, parse } from 'url';
 
 import { apiName, WindowTypes } from '../common/api-interface';
-import { isDevEnv, isMac, isWindowsOS } from '../common/env';
+import { isDevEnv, isLinux, isMac, isWindowsOS } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { getCommandLineArgs, getGuid } from '../common/utils';
@@ -605,6 +605,9 @@ export class WindowHandler {
                     if (type === 'window') {
                         const hwnd = source.id.split(':')[1];
                         this.execCmd(this.screenShareIndicatorFrameUtil, [ hwnd ]);
+                    } else if (isMac && type === 'screen') {
+                        const dispId = source.id.split(':')[1];
+                        this.execCmd(this.screenShareIndicatorFrameUtil, [ dispId ]);
                     }
                 }
             }
@@ -799,9 +802,9 @@ export class WindowHandler {
             displays.forEach((element) => {
                 if (displayId === element.id.toString()) {
                     logger.info(`window-handler: element:`, element);
-                    if (isWindowsOS || isMac) {
+                    if (isWindowsOS) {
                         this.execCmd(this.screenShareIndicatorFrameUtil, [ displayId ]);
-                    } else {
+                    } else if (isLinux) {
                         this.createScreenSharingFrameWindow('screen-sharing-frame',
                         element.workArea.width,
                         element.workArea.height,
