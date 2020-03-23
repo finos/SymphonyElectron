@@ -54,10 +54,6 @@ enum ClientVersionTypes {
 
 let currentClient = ClientVersionTypes.CLIENT_1_5;
 
-const checkIfCorporate = () => {
-    return (config.getGlobalConfigFields([ 'url']).url && config.getGlobalConfigFields([ 'url']).url.startsWith('https://corporate.symphony.com'));
-};
-
 export class WindowHandler {
 
     /**
