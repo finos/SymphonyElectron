@@ -1,4 +1,4 @@
-import { app, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 
 import { config } from '../app/config-handler';
 import { createComponentWindow, windowExists } from '../app/window-utils';
@@ -243,6 +243,7 @@ class Notification extends NotificationHandler {
                 callback(NotificationActions.notificationClicked, data);
             }
             this.hideNotification(clientId);
+            this.exitFullScreen();
         }
     }
 
@@ -328,6 +329,23 @@ class Notification extends NotificationHandler {
                     browserWindow.moveTop();
                 }
             });
+    }
+
+    /**
+     * SDA-1268 - Workaround to exit window
+     * fullscreen state when notification is clicked
+     */
+    public exitFullScreen(): void {
+        const browserWindows: ICustomBrowserWindow[] = BrowserWindow.getAllWindows() as ICustomBrowserWindow[];
+        for (const win in browserWindows) {
+            if (Object.prototype.hasOwnProperty.call(browserWindows, win)) {
+                const browserWin = browserWindows[ win ];
+                if (browserWin && windowExists(browserWin) && browserWin.winName === apiName.mainWindowName && browserWin.isFullScreen()) {
+                    browserWin.setFullScreen(false);
+                    return;
+                }
+            }
+        }
     }
 
     /**
