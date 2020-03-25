@@ -140,3 +140,9 @@ ipcRenderer.on('show-banner', (_event, { show, bannerType, url }) => {
 ipcRenderer.on('initialize-memory-refresh', () => {
     monitorMemory(getRandomTime(minMemoryFetchInterval, maxMemoryFetchInterval));
 });
+
+ipcRenderer.on('exit-html-fullscreen', async () => {
+    if (document && typeof document.exitFullscreen === 'function') {
+        await document.exitFullscreen();
+    }
+});
