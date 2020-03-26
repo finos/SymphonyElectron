@@ -445,7 +445,7 @@ export class AppMenu {
                     }, {
                         label: i18n.t('Toggle Developer Tools')(),
                         accelerator: isMac ? 'Alt+Command+I' : 'Ctrl+Shift+I',
-                        visible: typeof isDevToolsEnabledCC === 'boolean' && isDevToolsEnabledCC,
+                        visible: (typeof isDevToolsEnabledCC === 'boolean' && isDevToolsEnabledCC) || devToolsEnabled,
                         click(_item, focusedWindow) {
                             if (!focusedWindow || !windowExists(focusedWindow)) {
                                 return;
