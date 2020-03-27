@@ -27,6 +27,33 @@ class RobotActions {
     }
 
     /**
+     * Zoom in via keyboard Command/Ctrl +
+     */
+    public zoomIn(): void {
+        const modifier = isMac ? [ 'command' ] : [ 'control' ];
+        robot.keyToggle('+', 'down', modifier);
+        robot.keyToggle('+', 'up', modifier);
+    }
+
+    /**
+     * Zoom out via keyboard
+     */
+    public zoomOut(): void {
+        const modifier = isMac ? [ 'command' ] : [ 'control' ];
+        robot.keyToggle('-', 'down', modifier);
+        robot.keyToggle('-', 'up', modifier);
+    }
+
+    /**
+     * Zoom reset via keyboard
+     */
+    public zoomReset(): void {
+        const modifier = isMac ? [ 'command' ] : [ 'control' ];
+        robot.keyToggle('0', 'down', modifier);
+        robot.keyToggle('0', 'up', modifier);
+    }
+
+    /**
      * Click the App menu
      */
     public clickAppMenu(point?: Electron.Point): void {
