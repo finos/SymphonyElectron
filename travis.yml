@@ -33,6 +33,7 @@ script:
   - npm --version
   - npm run rebuild
   - npm run test:spectron
+  - npm run coveralls
 
 cache:
   directories:
