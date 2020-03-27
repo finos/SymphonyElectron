@@ -1,4 +1,6 @@
-name: Mark stale issues and pull requests
+name: Jest Coverage Report
+
+on: [push, pull_request]
 
 jobs:
   jest-coverage:
