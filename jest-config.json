@@ -16,10 +16,6 @@
   ],
   "verbose": true,
   "collectCoverage": true,
-  "coverageReporters": [
-    "text",
-    "html"
-  ],
   "coverageDirectory": "dist/coverage",
   "collectCoverageFrom": [
     "src/**/*.{ts,tsx}",
