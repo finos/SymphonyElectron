@@ -1094,7 +1094,7 @@ export class WindowHandler {
             }
             const dogfoodUrl = `https://corporate.symphony.com/client-bff/index.html?x-km-csrf-token=${csrfToken}`;
             await focusedWindow.loadURL(dogfoodUrl);
-            windowHandler.isWebPageLoading = true;
+            this.isWebPageLoading = false;
         } else {
             logger.error('window handler: Could not go to client Mana-stable');
         }
@@ -1121,7 +1121,7 @@ export class WindowHandler {
 
             const dogfoodUrl = `https://corporate.symphony.com/client-bff/daily/index.html?x-km-csrf-token=${csrfToken}`;
             await focusedWindow.loadURL(dogfoodUrl);
-            windowHandler.isWebPageLoading = true;
+            this.isWebPageLoading = false;
         } else {
             logger.error('window handler: Could not go to client Mana-stable');
         }
