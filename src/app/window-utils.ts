@@ -641,11 +641,13 @@ export const monitorNetworkInterception = () => {
 
     if (mainWindow && windowExists(mainWindow)) {
         isNetworkMonitorInitialized = true;
-        mainWindow.webContents.session.webRequest.onErrorOccurred(filter,(details) => {
+        mainWindow.webContents.session.webRequest.onErrorOccurred(filter,async (details) => {
             if (!mainWindow || !windowExists(mainWindow)) {
                 return;
             }
-            if (windowHandler.isWebPageLoading
+            const manaUrl: string = await mainWindow.webContents.executeJavaScript('document.location.href');
+            const isMana = manaUrl && manaUrl.includes('client-bff');
+            if (!isMana && windowHandler.isWebPageLoading
                 && (details.error === 'net::ERR_INTERNET_DISCONNECTED'
                 || details.error === 'net::ERR_NETWORK_CHANGED'
                 || details.error === 'net::ERR_NAME_NOT_RESOLVED')) {
