@@ -1,0 +1,2 @@
+- name: Jest Code Coverage Report
+  uses: ziishaned/jest-reporter-action@0.1.1
