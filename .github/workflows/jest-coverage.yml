@@ -1,5 +1,12 @@
-- name: Jest Code Coverage Report
-  uses: ziishaned/jest-reporter-action@v0.1.1
-  with:
-    github-token: ${{ secrets.GITHUB_TOKEN }}
-    test-command: "npm run test:coverage"
+name: Mark stale issues and pull requests
+
+jobs:
+  jest-coverage:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: ziishaned/jest-reporter-action@v0.1.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          test-command: "npm run test:coverage"
