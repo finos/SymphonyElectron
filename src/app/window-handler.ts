@@ -1092,7 +1092,6 @@ export class WindowHandler {
             } catch (e) {
                 logger.error(e);
             }
-
             const dogfoodUrl = `https://corporate.symphony.com/client-bff/index.html?x-km-csrf-token=${csrfToken}`;
             await focusedWindow.loadURL(dogfoodUrl);
         } else {
