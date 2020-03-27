@@ -5,6 +5,8 @@ env:
 
 os:
   - osx
+  - windows
+  - linux
 
 compiler:
   - gcc
@@ -27,13 +29,14 @@ install:
   - export DISPLAY=':99.0'
   - Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
   - npm install
+  - npm run rebuild
 
 script:
-  - node --version
-  - npm --version
-  - npm run rebuild
-  - npm run test:spectron
+  - echo "Unit Tests"
   - npm run coveralls
+
+  - echo "Spectron Tests"
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then xvfb-run npm run test:spectron; else npm run test:spectron
 
 cache:
   directories:
