@@ -32,6 +32,7 @@
     "start": "run-s compile browserify && cross-env ELECTRON_DEV=true electron .",
     "test": "run-s lint test:unit",
     "test:unit": "cross-env ELECTRON_QA=true jest --config jest-config.json --runInBand --detectOpenHandles",
+    "test:coverage": "cross-env ELECTRON_QA=true jest --config jest-config.json --runInBand --detectOpenHandles --coverage",
     "test:spectron": "npm run copy && run-s lint compile browserify && cross-env ELECTRON_QA=true npx ava --verbose --serial",
     "copy": "run-os",
     "copy:darwin": "ncp config 'node_modules/electron/dist/Electron.app/Contents/config'",
