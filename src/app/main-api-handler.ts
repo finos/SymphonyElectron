@@ -171,6 +171,9 @@ ipcMain.on(apiName.symphonyApi, async (event: Electron.IpcMainEvent, arg: IApiAr
             break;
         case apiCmds.setCloudConfig:
             const { podLevelEntitlements, acpFeatureLevelEntitlements, pmpEntitlements, ...rest } = arg.cloudConfig as ICloudConfig;
+            if (podLevelEntitlements && podLevelEntitlements.autoLaunchPath && podLevelEntitlements.autoLaunchPath.match(/\\\\/g)) {
+                podLevelEntitlements.autoLaunchPath = podLevelEntitlements.autoLaunchPath.replace(/\\+/g, '\\');
+            }
             logger.info('main-api-handler: ignored other values from SFE', rest);
             await config.updateCloudConfig({ podLevelEntitlements, acpFeatureLevelEntitlements, pmpEntitlements });
             await updateFeaturesForCloudConfig();
