@@ -50,7 +50,8 @@
       "!tests/*",
       "!node_modules/@nornagon/cld/deps/cld${/*}",
       "!node_modules/@nornagon/cld/build/deps${/*}",
-      "!node_modules/@nornagon/spellchecker/vendor${/*}"
+      "!node_modules/@nornagon/spellchecker/vendor${/*}",
+      "!**/*.map"
     ],
     "extraFiles": [
       "config/Symphony.config",
