@@ -3,10 +3,15 @@ import * as React from 'react';
 import { i18n } from '../../common/i18n-preload';
 
 interface IState {
+    userConfig: object;
+    globalConfig: object;
+    cloudConfig: object;
+    finalConfig: object;
     appName: string;
     copyWrite?: string;
     clientVersion: string;
     buildNumber: string;
+    hostname: string;
     sfeVersion: string;
     versionLocalised?: string;
     sdaVersion?: string;
@@ -38,10 +43,15 @@ export default class AboutApp extends React.Component<{}, IState> {
     constructor(props) {
         super(props);
         this.state = {
+            userConfig: {},
+            globalConfig: {},
+            cloudConfig: {},
+            finalConfig: {},
             appName: 'Symphony',
             versionLocalised: 'Version',
             clientVersion: 'N/A',
             buildNumber: 'N/A',
+            hostname: 'N/A',
             sfeVersion: 'N/A',
             sdaVersion: 'N/A',
             sdaBuildNumber: 'N/A',
@@ -64,7 +74,7 @@ export default class AboutApp extends React.Component<{}, IState> {
      * main render function
      */
     public render(): JSX.Element {
-        const { clientVersion, buildNumber, sfeVersion,
+        const { clientVersion, buildNumber, hostname, sfeVersion,
             sdaVersion, sdaBuildNumber,
         } = this.state;
 
@@ -90,6 +100,7 @@ export default class AboutApp extends React.Component<{}, IState> {
                 <div className='AboutApp-main-container'>
                     <section>
                         <ul className='AboutApp-symphony-section'>
+                            <li><b>POD:</b> {hostname || 'N/A'}</li>
                             <li><b>SBE:</b> {podVersion}</li>
                             <li><b>SDA:</b> {sdaVersionBuild}</li>
                             <li><b>SFE:</b> {sfeVersion}</li>
@@ -121,7 +132,7 @@ export default class AboutApp extends React.Component<{}, IState> {
     public copy(): void {
         const data = this.state;
         if (data) {
-            remote.clipboard.write({ text: JSON.stringify(data) }, 'clipboard' );
+            remote.clipboard.write({ text: JSON.stringify(data, null, 4) }, 'clipboard' );
         }
     }
 
