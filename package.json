@@ -117,7 +117,7 @@
     "@types/react": "16.8.3",
     "@types/react-dom": "16.0.9",
     "@types/ref-napi": "1.4.0",
-    "ava": "2.4.0",
+    "ava": "^3.5.2",
     "browserify": "^16.5.1",
     "cross-env": "5.2.0",
     "del": "3.0.0",
@@ -133,8 +133,8 @@
     "gulp-less": "4.0.1",
     "gulp-sourcemaps": "2.6.4",
     "gulp-typescript": "5.0.1",
-    "jest": "23.6.0",
-    "jest-html-reporter": "2.4.2",
+    "jest": "^25.2.4",
+    "jest-html-reporter": "^3.0.0",
     "less": "3.8.1",
     "ncp": "2.0.0",
     "node-abi": "^2.15.0",
@@ -142,7 +142,7 @@
     "robotjs": "0.6.0",
     "run-script-os": "1.0.7",
     "spectron": "10.0.1",
-    "ts-jest": "23.10.5",
+    "ts-jest": "^25.3.0",
     "tslint": "5.11.0",
     "typescript": "3.1.1"
   },
@@ -172,8 +172,8 @@
     "files": [
       "lib/spectron/**/*.spec.js"
     ],
-    "sources": [
-      "lib/src/**/*.js"
+    "ignoredByWatcher": [
+      "!lib/src/**/*.js"
     ]
   }
 }
