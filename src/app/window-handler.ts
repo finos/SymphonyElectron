@@ -534,7 +534,7 @@ export class WindowHandler {
 
         const opts: BrowserWindowConstructorOptions = this.getWindowOpts({
             width: 440,
-            height: 305,
+            height: 315,
             modal: true,
             alwaysOnTop: isMac,
             resizable: false,
@@ -557,7 +557,18 @@ export class WindowHandler {
         this.aboutAppWindow.webContents.once('did-finish-load', async () => {
             const ABOUT_SYMPHONY_NAMESPACE = 'AboutSymphony';
             const versionLocalised = i18n.t('Version', ABOUT_SYMPHONY_NAMESPACE)();
+            const { hostname } = parse(this.url || this.globalConfig.url);
+            const userConfig = config.userConfig;
+            const globalConfig = config.globalConfig;
+            const cloudConfig = config.cloudConfig;
+            const filteredConfig = config.filteredCloudConfig;
+            const finalConfig = { ...globalConfig, ...userConfig, ...filteredConfig };
             const aboutInfo = {
+                userConfig,
+                globalConfig,
+                cloudConfig,
+                finalConfig,
+                hostname,
                 buildNumber: versionHandler.versionInfo.buildNumber,
                 clientVersion: versionHandler.versionInfo.clientVersion,
                 sfeVersion: versionHandler.versionInfo.sfeVersion,

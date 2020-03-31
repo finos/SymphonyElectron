@@ -115,10 +115,10 @@ export interface ICustomRectangle extends Partial<Electron.Rectangle> {
 }
 
 class Config {
-    private userConfig: IConfig | {};
-    private globalConfig: IConfig | {};
-    private cloudConfig: ICloudConfig | {};
-    private filteredCloudConfig: ICloudConfig | {};
+    public userConfig: IConfig | {};
+    public globalConfig: IConfig | {};
+    public cloudConfig: ICloudConfig | {};
+    public filteredCloudConfig: ICloudConfig | {};
     private isFirstTime: boolean = true;
     private readonly configFileName: string;
     private readonly userConfigPath: string;
