@@ -247,7 +247,7 @@ export class WindowHandler {
             logger.info(`window-handler: client switch from config is ${this.config.clientSwitch}`);
 
             const parsedUrl = parse(this.url);
-            if (this.url.indexOf(`https://${parsedUrl.hostname}/client/index.html`) !== -1) {
+            if (this.url.startsWith('https://corporate.symphony.com') && this.url.indexOf(`https://${parsedUrl.hostname}/client/index.html`) !== -1) {
                 this.switchClient(this.config.clientSwitch ? this.config.clientSwitch : ClientSwitchType.CLIENT_2_0);
             }
 
