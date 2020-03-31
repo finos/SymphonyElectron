@@ -18,7 +18,9 @@ gulp.task('clean', function() {
  */
 gulp.task('compile', function() {
     return tsProject.src()
+        .pipe(sourcemaps.init())
         .pipe(tsProject())
+        .pipe(sourcemaps.write('.'))
         .on('error', (err) => console.log(err))
         .pipe(gulp.dest('lib/'))
 });

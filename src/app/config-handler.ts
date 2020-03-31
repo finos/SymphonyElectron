@@ -16,6 +16,12 @@ export enum CloudConfigDataTypes {
     DISABLED = 'DISABLED',
 }
 
+export enum ClientSwitchType {
+    CLIENT_1_5 = 'CLIENT_1_5',
+    CLIENT_2_0 = 'CLIENT_2_0',
+    CLIENT_2_0_DAILY = 'CLIENT_2_0_DAILY',
+}
+
 export interface IGlobalConfig {
     url: string;
     contextIsolation: boolean;
@@ -42,6 +48,7 @@ export interface IConfig {
     notificationSettings: INotificationSetting;
     mainWinPos?: ICustomRectangle;
     locale?: string;
+    clientSwitch: ClientSwitchType;
 }
 
 export interface ICloudConfig {
@@ -108,10 +115,10 @@ export interface ICustomRectangle extends Partial<Electron.Rectangle> {
 }
 
 class Config {
-    private userConfig: IConfig | {};
-    private globalConfig: IConfig | {};
-    private cloudConfig: ICloudConfig | {};
-    private filteredCloudConfig: ICloudConfig | {};
+    public userConfig: IConfig | {};
+    public globalConfig: IConfig | {};
+    public cloudConfig: ICloudConfig | {};
+    public filteredCloudConfig: ICloudConfig | {};
     private isFirstTime: boolean = true;
     private readonly configFileName: string;
     private readonly userConfigPath: string;
