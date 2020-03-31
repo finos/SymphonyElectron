@@ -16,6 +16,12 @@ export enum CloudConfigDataTypes {
     DISABLED = 'DISABLED',
 }
 
+export enum ClientSwitchType {
+    CLIENT_1_5 = 'CLIENT_1_5',
+    CLIENT_2_0 = 'CLIENT_2_0',
+    CLIENT_2_0_DAILY = 'CLIENT_2_0_DAILY',
+}
+
 export interface IGlobalConfig {
     url: string;
     contextIsolation: boolean;
@@ -42,6 +48,7 @@ export interface IConfig {
     notificationSettings: INotificationSetting;
     mainWinPos?: ICustomRectangle;
     locale?: string;
+    clientSwitch: ClientSwitchType;
 }
 
 export interface ICloudConfig {
