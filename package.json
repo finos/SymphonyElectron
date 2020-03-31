@@ -161,7 +161,7 @@
     "react-dom": "16.13.0",
     "ref-napi": "1.4.3",
     "shell-path": "2.1.0",
-    "systeminformation": "4.22.5"
+    "systeminformation": "4.23.0"
   },
   "optionalDependencies": {
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#v1.0.6",
