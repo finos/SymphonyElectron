@@ -56,7 +56,7 @@ call npm install
 
 # Run Snyk Security Tests
 echo "Running snyk security tests"
-call snyk test --file=package-lock.json --org=%SNYK_ORG%
+call snyk test --file=package.json --org=%SNYK_ORG%
 
 :: Set expiry if required
 IF "%EXPIRY_PERIOD%"=="" (

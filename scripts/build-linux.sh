@@ -69,7 +69,7 @@ npm install
 
 # Run Snyk Security Tests
 echo "Running snyk security tests"
-snyk test --file=package-lock.json --org="$SNYK_ORG"
+snyk test --file=package.json --org="$SNYK_ORG"
 
 # replace url in config
 echo "Setting default pod url to https://corporate.symphony.com"
