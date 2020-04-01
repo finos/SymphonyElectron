@@ -39,9 +39,10 @@ WHERE snyk
 if %ERRORLEVEL% NEQ 0 (
   echo "Snyk does not exist! Installing and setting it up"
   call npm i snyk -g
-  call snyk config set org=%$SNYK_ORG%
-  call snyk config set api=%SNYK_API_TOKEN%
 )
+echo "Setting snyk org to %SNYK_ORG% and api token to %SNYK_API_TOKEN%"
+call snyk config set org=%SNYK_ORG%
+call snyk config set api=%SNYK_API_TOKEN%
 
 :: Below command replaces buildVersion with the appropriate build number from jenkins
 sed -i -e "s/\"buildNumber\"[[:space:]]*\:[[:space:]]*\".*\"/\"buildNumber\":\"%PARENT_BUILD_VERSION%\"/g" package.json

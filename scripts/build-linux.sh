@@ -42,9 +42,10 @@ fi
 if ! [ -x "$(command -v snyk)" ]; then
   echo 'Snyk does not exist! Installing and setting it up' >&2
   npm install -g snyk
-  snyk config set org="$SNYK_ORG"
-  snyk config set api="$SNYK_API_TOKEN"
 fi
+echo "Setting snyk org to $SNYK_ORG and api token to $SNYK_API_TOKEN"
+snyk config set org="$SNYK_ORG"
+snyk config set api="$SNYK_API_TOKEN"
 
 if [ -z "$PARENT_BUILD_VERSION" ]; then
   echo "PARENT_BUILD_VERSION is empty, setting default"
