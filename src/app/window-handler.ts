@@ -339,6 +339,9 @@ export class WindowHandler {
 
         this.mainWindow.once('closed', () => {
             logger.info(`window-handler: main window closed, destroying all windows!`);
+            if (isWindowsOS || isMac) {
+                this.execCmd(this.screenShareIndicatorFrameUtil, []);
+            }
             this.destroyAllWindows();
         });
 
