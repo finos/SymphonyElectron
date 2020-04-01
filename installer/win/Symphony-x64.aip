@@ -230,8 +230,7 @@
     <ROW File="icudtl.dat" Component_="blink_image_resources_200_percent.pak" FileName="icudtl.dat" Attributes="0" SourcePath="..\..\dist\win-unpacked\icudtl.dat" SelfReg="false" NextFile="libEGL.dll"/>
     <ROW File="id.pak" Component_="am.pak" FileName="id.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\id.pak" SelfReg="false" NextFile="it.pak"/>
     <ROW File="index.js" Component_="index.js" FileName="index.js" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\lib\index.js" SelfReg="false" NextFile="index.js_1"/>
-    <ROW File="index.js.map" Component_="index.js_1" FileName="INDEXJ~1.MAP|index.js.map" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\lib\src\index.js.map" SelfReg="false" NextFile="package.json_2"/>
-    <ROW File="index.js_1" Component_="index.js_1" FileName="index.js" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\lib\src\index.js" SelfReg="false" NextFile="index.js.map"/>
+    <ROW File="index.js_1" Component_="index.js_1" FileName="index.js" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\lib\src\index.js" SelfReg="false" NextFile="package.json_2"/>
     <ROW File="index.ts" Component_="index.ts" FileName="index.ts" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\src\index.ts" SelfReg="false" NextFile="tsconfig.json"/>
     <ROW File="indexvalidatorx64.exe" Component_="indexvalidatorx64.exe" FileName="INDEXV~1.EXE|indexvalidator-x64.exe" Attributes="0" SourcePath="..\..\library\indexvalidator-x64.exe" SelfReg="false" NextFile="libsymphonysearchx64.dll" DigSign="true"/>
     <ROW File="it.pak" Component_="am.pak" FileName="it.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\it.pak" SelfReg="false" NextFile="ja.pak"/>

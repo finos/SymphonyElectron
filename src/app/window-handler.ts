@@ -1,6 +1,14 @@
 import { ChildProcess, ExecException, execFile } from 'child_process';
 import * as electron from 'electron';
-import { app, BrowserWindow, BrowserWindowConstructorOptions, crashReporter, DesktopCapturerSource, globalShortcut, ipcMain } from 'electron';
+import {
+    app,
+    BrowserWindow,
+    BrowserWindowConstructorOptions,
+    crashReporter,
+    DesktopCapturerSource,
+    globalShortcut,
+    ipcMain,
+} from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 import { format, parse } from 'url';
@@ -13,7 +21,7 @@ import { getCommandLineArgs, getGuid } from '../common/utils';
 import { notification } from '../renderer/notification';
 import { AppMenu } from './app-menu';
 import { handleChildWindow } from './child-window-handler';
-import { CloudConfigDataTypes, config, IConfig, IGlobalConfig } from './config-handler';
+import { ClientSwitchType, CloudConfigDataTypes, config, IConfig, IGlobalConfig } from './config-handler';
 import { SpellChecker } from './spell-check-handler';
 import { checkIfBuildExpired } from './ttl-handler';
 import { versionHandler } from './version-handler';
@@ -46,14 +54,6 @@ export interface ICustomBrowserWindow extends Electron.BrowserWindow {
 const DEFAULT_WIDTH: number = 900;
 const DEFAULT_HEIGHT: number = 900;
 
-enum ClientVersionTypes {
-    CLIENT_1_5 = 'client_1_5',
-    CLIENT_MANA_STABLE = 'client_mana_stable',
-    CLIENT_MANA_DAILY = 'client_mana_daily',
-}
-
-let currentClient = ClientVersionTypes.CLIENT_1_5;
-
 export class WindowHandler {
 
     /**
@@ -76,6 +76,8 @@ export class WindowHandler {
     public isAutoReload: boolean;
     public isOnline: boolean;
     public url: string | undefined;
+    public startUrl!: string;
+    public currentClient: ClientSwitchType = ClientSwitchType.CLIENT_1_5;
     public willQuitApp: boolean = false;
     public spellchecker: SpellChecker | undefined;
     public isCustomTitleBar: boolean;
@@ -101,7 +103,7 @@ export class WindowHandler {
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Use these variables only on initial setup
-        this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings', 'alwaysOnTop', 'locale', 'customFlags' ]);
+        this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings', 'alwaysOnTop', 'locale', 'customFlags', 'clientSwitch' ]);
         logger.info(`window-handler: main windows initialized with following config data`, this.config);
         this.globalConfig = config.getGlobalConfigFields([ 'url', 'contextIsolation' ]);
         const { disableThrottling } = config.getCloudConfigFields([ 'disableThrottling' ]) as any;
@@ -156,7 +158,7 @@ export class WindowHandler {
     /**
      * Starting point of the app
      */
-    public createApplication() {
+    public async createApplication() {
 
         this.updateVersionInfo();
         this.spellchecker = new SpellChecker();
@@ -226,6 +228,7 @@ export class WindowHandler {
             }
         }
 
+        this.startUrl = this.url;
         // loads the main window with url from config/cmd line
         this.mainWindow.loadURL(this.url);
         // check for build expiry in case of test builds
@@ -240,6 +243,13 @@ export class WindowHandler {
                 return;
             }
             this.url = this.mainWindow.webContents.getURL();
+
+            logger.info(`window-handler: client switch from config is ${this.config.clientSwitch}`);
+
+            const parsedUrl = parse(this.url);
+            if (this.url.startsWith('https://corporate.symphony.com') && this.url.indexOf(`https://${parsedUrl.hostname}/client/index.html`) !== -1) {
+                this.switchClient(this.config.clientSwitch ? this.config.clientSwitch : ClientSwitchType.CLIENT_2_0);
+            }
 
             // Injects custom title bar and snack bar css into the webContents
             await injectStyles(this.mainWindow, this.isCustomTitleBar);
@@ -527,7 +537,7 @@ export class WindowHandler {
 
         const opts: BrowserWindowConstructorOptions = this.getWindowOpts({
             width: 440,
-            height: 305,
+            height: 315,
             modal: true,
             alwaysOnTop: isMac,
             resizable: false,
@@ -550,7 +560,18 @@ export class WindowHandler {
         this.aboutAppWindow.webContents.once('did-finish-load', async () => {
             const ABOUT_SYMPHONY_NAMESPACE = 'AboutSymphony';
             const versionLocalised = i18n.t('Version', ABOUT_SYMPHONY_NAMESPACE)();
+            const { hostname } = parse(this.url || this.globalConfig.url);
+            const userConfig = config.userConfig;
+            const globalConfig = config.globalConfig;
+            const cloudConfig = config.cloudConfig;
+            const filteredConfig = config.filteredCloudConfig;
+            const finalConfig = { ...globalConfig, ...userConfig, ...filteredConfig };
             const aboutInfo = {
+                userConfig,
+                globalConfig,
+                cloudConfig,
+                finalConfig,
+                hostname,
                 buildNumber: versionHandler.versionInfo.buildNumber,
                 clientVersion: versionHandler.versionInfo.clientVersion,
                 sfeVersion: versionHandler.versionInfo.sfeVersion,
@@ -982,10 +1003,10 @@ export class WindowHandler {
         globalShortcut.register('CmdOrCtrl+R', this.onReload);
 
         // Hack to switch between Client 1.5, Mana-stable and Mana-daily
-        if (this.globalConfig.url && this.globalConfig.url.startsWith('https://corporate.symphony.com')) {
-            globalShortcut.register(isMac ? 'Cmd+Alt+1' : 'Ctrl+Shift+1', this.onClient1_5);
-            globalShortcut.register(isMac ? 'Cmd+Alt+2' : 'Ctrl+Shift+2', this.onClientManaStable);
-            globalShortcut.register(isMac ? 'Cmd+Alt+3' : 'Ctrl+Shift+3', this.onClientManaDaily);
+        if (this.url && this.url.startsWith('https://corporate.symphony.com')) {
+            globalShortcut.register(isMac ? 'Cmd+Alt+1' : 'Ctrl+Shift+1', () => this.switchClient(ClientSwitchType.CLIENT_1_5));
+            globalShortcut.register(isMac ? 'Cmd+Alt+2' : 'Ctrl+Shift+2', () => this.switchClient(ClientSwitchType.CLIENT_2_0));
+            globalShortcut.register(isMac ? 'Cmd+Alt+3' : 'Ctrl+Shift+3', () => this.switchClient(ClientSwitchType.CLIENT_2_0_DAILY));
         } else {
             logger.info('Switch between clients not supported for this POD-url');
         }
@@ -1059,72 +1080,49 @@ export class WindowHandler {
     }
 
     /**
-     * HACK SWITCH to Client 1.5
+     * Switch between clients 1.5, 2.0 and 2.0 daily
+     * @param clientSwitch client switch you want to switch to.
      */
-    private async onClient1_5(): Promise <void> {
-        logger.info('window handler: go to Client 1.5');
-        logger.info('window handler: currentClient: ' + currentClient);
-        if (currentClient === ClientVersionTypes.CLIENT_1_5) {
-            return;
-        }
-        currentClient = ClientVersionTypes.CLIENT_1_5;
-        const focusedWindow = BrowserWindow.getFocusedWindow();
-        const dogfoodUrl = `https://corporate.symphony.com/`;
-        if (focusedWindow && windowExists(focusedWindow)) {
-            await focusedWindow.loadURL(dogfoodUrl);
-        } else {
-            logger.error('window handler: Could not go to client 1.5');
-        }
-    }
+    private async switchClient(clientSwitch: ClientSwitchType): Promise<void> {
 
-    /**
-     * HACK SWITCH to Client Mana-stable
-     */
-    private async onClientManaStable(): Promise <void> {
-        logger.info('window handler: go to Client Mana-stable');
-        logger.info('window handler: currentClient: ' + currentClient);
-        if (currentClient === ClientVersionTypes.CLIENT_MANA_STABLE) {
+        if (this.currentClient && this.currentClient === clientSwitch) {
+            logger.info(`window handler: already in the same client ${clientSwitch}. Not switching!`);
             return;
         }
-        currentClient = ClientVersionTypes.CLIENT_MANA_STABLE;
+        logger.info(`window handler: switch to client ${clientSwitch}`);
+        logger.info(`window handler: currentClient: ${this.currentClient}`);
+        this.currentClient = clientSwitch;
         const focusedWindow = BrowserWindow.getFocusedWindow();
-        let csrfToken;
-        if (focusedWindow && windowExists(focusedWindow)) {
-            try {
-                csrfToken = await focusedWindow.webContents.executeJavaScript(`localStorage.getItem('x-km-csrf-token')`);
-            } catch (e) {
-                logger.error(e);
+
+        if (!(focusedWindow && windowExists(focusedWindow))) {
+            return;
+        }
+        try {
+            if (!this.url) {
+                this.url = this.globalConfig.url;
             }
-            const dogfoodUrl = `https://corporate.symphony.com/client-bff/index.html?x-km-csrf-token=${csrfToken}`;
-            await focusedWindow.loadURL(dogfoodUrl);
-        } else {
-            logger.error('window handler: Could not go to client Mana-stable');
-        }
-    }
-
-    /**
-     * HACK SWITCH to Client Mana-daily
-     */
-    private async onClientManaDaily(): Promise <void> {
-        logger.info('window handler: go to Client Mana-daily');
-        logger.info('window handler: currentClient: ' + currentClient);
-        if (currentClient === ClientVersionTypes.CLIENT_MANA_DAILY) {
-            return;
-        }
-        currentClient = ClientVersionTypes.CLIENT_MANA_DAILY;
-        const focusedWindow = BrowserWindow.getFocusedWindow();
-        let csrfToken;
-        if (focusedWindow && windowExists(focusedWindow)) {
-            try {
-                csrfToken = await focusedWindow.webContents.executeJavaScript(`localStorage.getItem('x-km-csrf-token')`);
-            } catch (e) {
-                logger.error(e);
+            const parsedUrl = parse(this.url);
+            const manaPath = 'client-bff';
+            const manaChannel = 'daily';
+            const csrfToken = await focusedWindow.webContents.executeJavaScript(`localStorage.getItem('x-km-csrf-token')`);
+            switch (this.currentClient) {
+                case ClientSwitchType.CLIENT_1_5:
+                    this.url = this.startUrl;
+                    break;
+                case ClientSwitchType.CLIENT_2_0:
+                    this.url = `https://${parsedUrl.hostname}/${manaPath}/index.html?x-km-csrf-token=${csrfToken}`;
+                    break;
+                case ClientSwitchType.CLIENT_2_0_DAILY:
+                    this.url = `https://${parsedUrl.hostname}/${manaPath}/${manaChannel}/index.html?x-km-csrf-token=${csrfToken}`;
+                    break;
+                default:
+                    this.url = this.globalConfig.url;
             }
-
-            const dogfoodUrl = `https://corporate.symphony.com/client-bff/daily/index.html?x-km-csrf-token=${csrfToken}`;
-            await focusedWindow.loadURL(dogfoodUrl);
-        } else {
-            logger.error('window handler: Could not go to client Mana-stable');
+            await config.updateUserConfig({ clientSwitch });
+            this.config.clientSwitch = clientSwitch;
+            await focusedWindow.loadURL(this.url);
+        } catch (e) {
+            logger.error(`window-handler: failed to switch client because of error ${e}`);
         }
     }
 
