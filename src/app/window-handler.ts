@@ -1092,9 +1092,9 @@ export class WindowHandler {
         logger.info(`window handler: switch to client ${clientSwitch}`);
         logger.info(`window handler: currentClient: ${this.currentClient}`);
         this.currentClient = clientSwitch;
-        const focusedWindow = BrowserWindow.getFocusedWindow();
 
-        if (!(focusedWindow && windowExists(focusedWindow))) {
+        if (!this.mainWindow || !windowExists(this.mainWindow)) {
+            logger.info(`window-handler: switch client - main window web contents destroyed already! exiting`);
             return;
         }
         try {
@@ -1104,7 +1104,7 @@ export class WindowHandler {
             const parsedUrl = parse(this.url);
             const manaPath = 'client-bff';
             const manaChannel = 'daily';
-            const csrfToken = await focusedWindow.webContents.executeJavaScript(`localStorage.getItem('x-km-csrf-token')`);
+            const csrfToken = await this.mainWindow.webContents.executeJavaScript(`localStorage.getItem('x-km-csrf-token')`);
             switch (this.currentClient) {
                 case ClientSwitchType.CLIENT_1_5:
                     this.url = this.startUrl;
@@ -1120,7 +1120,7 @@ export class WindowHandler {
             }
             await config.updateUserConfig({ clientSwitch });
             this.config.clientSwitch = clientSwitch;
-            await focusedWindow.loadURL(this.url);
+            await this.mainWindow.loadURL(this.url);
         } catch (e) {
             logger.error(`window-handler: failed to switch client because of error ${e}`);
         }
