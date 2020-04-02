@@ -175,12 +175,12 @@ export class AppBridge {
                 }
                 break;
             case apiCmds.getCPUUsage:
-                    const cpuUsage = await ssf.getCPUUsage();
-                    this.broadcastMessage('get-cpu-usage-callback', {
-                        requestId: data.requestId,
-                        response: cpuUsage,
-                    });
-                    break;
+                const cpuUsage = await ssf.getCPUUsage();
+                this.broadcastMessage('get-cpu-usage-callback', {
+                    requestId: data.requestId,
+                    response: cpuUsage,
+                });
+                break;
             case apiCmds.checkMediaPermission:
                 const mediaPermission = await ssf.checkMediaPermission();
                 this.broadcastMessage('check-media-permission-callback', {

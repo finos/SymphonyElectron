@@ -1,13 +1,28 @@
 import { ipcRenderer, remote } from 'electron';
+const os = remote.require('os');
 import { buildNumber, searchAPIVersion } from '../../package.json';
 import { ICustomBrowserWindow } from '../app/window-handler';
-import { apiCmds, apiName, IBadgeCount, IBoundsChange, ICPUUsage, ILogMsg, IMediaPermission, IRestartFloaterData, IScreenSharingIndicator, IScreenSharingIndicatorOptions, IScreenSnippet, IVersionInfo, KeyCodes, LogLevel } from '../common/api-interface';
+import { 
+    apiCmds,
+    apiName,
+    IBadgeCount,
+    IBoundsChange,
+    ICPUUsage,
+    ILogMsg,
+    IMediaPermission,
+    IRestartFloaterData,
+    IScreenSharingIndicator,
+    IScreenSharingIndicatorOptions,
+    IScreenSnippet,
+    IVersionInfo,
+    KeyCodes,
+    LogLevel
+} from '../common/api-interface';
 import { i18n, LocaleType } from '../common/i18n-preload';
 import { throttle } from '../common/utils';
 import { getSource } from './desktop-capturer';
 import SSFNotificationHandler from './notification-ssf-hendler';
 import { ScreenSnippetBcHandler } from './screen-snippet-bc-handler';
-const os = remote.require('os');
 
 let isAltKey: boolean = false;
 let isMenuOpen: boolean = false;
@@ -479,7 +494,7 @@ export class SSFApi {
         return Promise.resolve(
             await process.getCPUUsage(),
         );
-     }
+    }
 
     /**
      * Check media permission
