@@ -1107,7 +1107,7 @@ export class WindowHandler {
             const csrfToken = await this.mainWindow.webContents.executeJavaScript(`localStorage.getItem('x-km-csrf-token')`);
             switch (this.currentClient) {
                 case ClientSwitchType.CLIENT_1_5:
-                    this.url = this.startUrl;
+                    this.url = this.startUrl + `?x-km-csrf-token=${csrfToken}`;
                     break;
                 case ClientSwitchType.CLIENT_2_0:
                     this.url = `https://${parsedUrl.hostname}/${manaPath}/index.html?x-km-csrf-token=${csrfToken}`;
@@ -1116,7 +1116,7 @@ export class WindowHandler {
                     this.url = `https://${parsedUrl.hostname}/${manaPath}/${manaChannel}/index.html?x-km-csrf-token=${csrfToken}`;
                     break;
                 default:
-                    this.url = this.globalConfig.url;
+                    this.url = this.globalConfig.url + `?x-km-csrf-token=${csrfToken}`;
             }
             await config.updateUserConfig({ clientSwitch });
             this.config.clientSwitch = clientSwitch;
