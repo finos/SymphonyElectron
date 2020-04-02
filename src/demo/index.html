@@ -641,10 +641,10 @@
         /**
          * Get CPU usage
          */
-        const cpuMessurement = document.getElementById('button-get-cpu-usage');
+        const cpuMeasurement = document.getElementById('button-get-cpu-usage');
 
-        cpuMessurement.addEventListener('click', () => {
-            console.log('Start messure CPU !!!');
+        cpuMeasurement.addEventListener('click', () => {
+            console.log('Start measure CPU !!!');
 
             if (window.ssf) {
                 ssf.getCPUUsage.then((cpuUsage) => {
