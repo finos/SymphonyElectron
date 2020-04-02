@@ -2,7 +2,7 @@ import { ipcRenderer, remote } from 'electron';
 const os = remote.require('os');
 import { buildNumber, searchAPIVersion } from '../../package.json';
 import { ICustomBrowserWindow } from '../app/window-handler';
-import { 
+import {
     apiCmds,
     apiName,
     IBadgeCount,
@@ -16,7 +16,7 @@ import {
     IScreenSnippet,
     IVersionInfo,
     KeyCodes,
-    LogLevel
+    LogLevel,
 } from '../common/api-interface';
 import { i18n, LocaleType } from '../common/i18n-preload';
 import { throttle } from '../common/utils';
