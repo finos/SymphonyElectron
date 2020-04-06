@@ -1023,6 +1023,13 @@ export class WindowHandler {
                 globalShortcut.register('CmdOrCtrl+Plus', this.onZoomIn);
                 globalShortcut.register('CmdOrCtrl+=', this.onZoomIn);
             }
+            if (this.url && this.url.startsWith('https://corporate.symphony.com')) {
+                globalShortcut.register(isMac ? 'Cmd+Alt+1' : 'Ctrl+Shift+1', () => this.switchClient(ClientSwitchType.CLIENT_1_5));
+                globalShortcut.register(isMac ? 'Cmd+Alt+2' : 'Ctrl+Shift+2', () => this.switchClient(ClientSwitchType.CLIENT_2_0));
+                globalShortcut.register(isMac ? 'Cmd+Alt+3' : 'Ctrl+Shift+3', () => this.switchClient(ClientSwitchType.CLIENT_2_0_DAILY));
+            } else {
+                logger.info('Switch between clients not supported for this POD-url');
+            }
         });
 
         app.on('browser-window-blur', () => {
@@ -1031,6 +1038,12 @@ export class WindowHandler {
             if (isMac) {
                 globalShortcut.unregister('CmdOrCtrl+Plus');
                 globalShortcut.unregister('CmdOrCtrl+=');
+            }
+            // Unregister shortcuts related to client switch
+            if (this.url && this.url.startsWith('https://corporate.symphony.com')) {
+                globalShortcut.unregister(isMac ? 'Cmd+Alt+1' : 'Ctrl+Shift+1');
+                globalShortcut.unregister(isMac ? 'Cmd+Alt+2' : 'Ctrl+Shift+2');
+                globalShortcut.unregister(isMac ? 'Cmd+Alt+3' : 'Ctrl+Shift+3');
             }
         });
     }
