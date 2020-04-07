@@ -1,11 +1,12 @@
 import { app, BrowserWindow } from 'electron';
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 
 import { ChildProcess, ExecException, execFile } from 'child_process';
 import * as util from 'util';
 import { IScreenSnippet } from '../common/api-interface';
-import { isDevEnv, isLinux, isMac, isWindowsOS } from '../common/env';
+import { isDevEnv, isElectronQA, isLinux, isMac, isWindowsOS } from '../common/env';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
 import { updateAlwaysOnTop } from './window-actions';
@@ -24,9 +25,13 @@ class ScreenSnippet {
     private shouldUpdateAlwaysOnTop: boolean = false;
 
     constructor() {
-        this.tempDir = path.join(app.getPath('userData'), 'temp');
-        if (!fs.existsSync(this.tempDir)) {
-            fs.mkdirSync(this.tempDir);
+        if (isElectronQA) {
+            this.tempDir = os.tmpdir();
+        } else {
+            this.tempDir = path.join(app.getPath('userData'), 'temp');
+            if (!fs.existsSync(this.tempDir)) {
+                fs.mkdirSync(this.tempDir);
+            }
         }
         this.captureUtil = isMac ? '/usr/sbin/screencapture' : isDevEnv
             ? path.join(__dirname,
