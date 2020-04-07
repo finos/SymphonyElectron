@@ -1,6 +1,5 @@
 import { app, BrowserWindow } from 'electron';
 import * as fs from 'fs';
-import * as os from 'os';
 import * as path from 'path';
 
 import { ChildProcess, ExecException, execFile } from 'child_process';
@@ -25,7 +24,10 @@ class ScreenSnippet {
     private shouldUpdateAlwaysOnTop: boolean = false;
 
     constructor() {
-        this.tempDir = os.tmpdir();
+        this.tempDir = path.join(app.getPath('userData'), 'temp');
+        if (!fs.existsSync(this.tempDir)) {
+            fs.mkdirSync(this.tempDir);
+        }
         this.captureUtil = isMac ? '/usr/sbin/screencapture' : isDevEnv
             ? path.join(__dirname,
                 '../../../node_modules/screen-snippet/ScreenSnippet.exe')
