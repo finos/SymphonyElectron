@@ -828,9 +828,9 @@ export class WindowHandler {
             });
         }
 
+        logger.info('window-handler: createScreenSharingIndicatorWindow, displayId: ' + displayId);
         if (displayId !== '') {
             const displays = electron.screen.getAllDisplays();
-            logger.info('window-handler: createScreenSharingIndicatorWindow, displayId: ' + displayId);
             displays.forEach((element) => {
                 logger.info('window-handler: element.id.toString(): ' + element.id.toString());
                 if (displayId === element.id.toString()) {
