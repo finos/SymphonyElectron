@@ -75,6 +75,8 @@
     <ROW Directory="Release_3_Dir" Directory_Parent="build_3_Dir" DefaultDir="Release"/>
     <ROW Directory="Release_4_Dir" Directory_Parent="build_4_Dir" DefaultDir="Release"/>
     <ROW Directory="Release_5_Dir" Directory_Parent="build_5_Dir" DefaultDir="Release"/>
+    <ROW Directory="Release_6_Dir" Directory_Parent="build_6_Dir" DefaultDir="Release"/>
+    <ROW Directory="Release_7_Dir" Directory_Parent="build_7_Dir" DefaultDir="Release"/>
     <ROW Directory="Release_Dir" Directory_Parent="build_Dir" DefaultDir="Release"/>
     <ROW Directory="Symphony_Dir" Directory_Parent="ProgramMenuFolder" DefaultDir="Symphony"/>
     <ROW Directory="TARGETDIR" DefaultDir="SourceDir"/>
@@ -84,12 +86,16 @@
     <ROW Directory="bin_3_Dir" Directory_Parent="ffinapi_Dir" DefaultDir="bin"/>
     <ROW Directory="bin_4_Dir" Directory_Parent="keyboardlayout_Dir" DefaultDir="bin"/>
     <ROW Directory="bin_5_Dir" Directory_Parent="refnapi_Dir" DefaultDir="bin"/>
+    <ROW Directory="bin_6_Dir" Directory_Parent="ffinapi_1_Dir" DefaultDir="bin"/>
+    <ROW Directory="bin_7_Dir" Directory_Parent="refnapi_1_Dir" DefaultDir="bin"/>
     <ROW Directory="bin_Dir" Directory_Parent="spellchecker_Dir" DefaultDir="bin"/>
     <ROW Directory="build_1_Dir" Directory_Parent="cld_Dir" DefaultDir="build"/>
     <ROW Directory="build_2_Dir" Directory_Parent="diskusage_Dir" DefaultDir="build"/>
     <ROW Directory="build_3_Dir" Directory_Parent="ffinapi_Dir" DefaultDir="build"/>
     <ROW Directory="build_4_Dir" Directory_Parent="keyboardlayout_Dir" DefaultDir="build"/>
     <ROW Directory="build_5_Dir" Directory_Parent="refnapi_Dir" DefaultDir="build"/>
+    <ROW Directory="build_6_Dir" Directory_Parent="ffinapi_1_Dir" DefaultDir="build"/>
+    <ROW Directory="build_7_Dir" Directory_Parent="refnapi_1_Dir" DefaultDir="build"/>
     <ROW Directory="build_Dir" Directory_Parent="spellchecker_Dir" DefaultDir="build"/>
     <ROW Directory="cld_Dir" Directory_Parent="node_modules_Dir" DefaultDir="cld"/>
     <ROW Directory="config_Dir" Directory_Parent="APPDIR" DefaultDir="config"/>
@@ -97,6 +103,7 @@
     <ROW Directory="diskusage_Dir" Directory_Parent="node_modules_Dir" DefaultDir="DISKUS~1|diskusage"/>
     <ROW Directory="enUS_Dir" Directory_Parent="APPDIR" DefaultDir="en-US"/>
     <ROW Directory="felixrieseberg_Dir" Directory_Parent="node_modules_Dir" DefaultDir="@FELIX~1|@felixrieseberg"/>
+    <ROW Directory="ffinapi_1_Dir" Directory_Parent="node_modules_1_Dir" DefaultDir="ffi-napi"/>
     <ROW Directory="ffinapi_Dir" Directory_Parent="node_modules_Dir" DefaultDir="ffi-napi"/>
     <ROW Directory="frFR_Dir" Directory_Parent="APPDIR" DefaultDir="fr-FR"/>
     <ROW Directory="jaJP_Dir" Directory_Parent="APPDIR" DefaultDir="ja-JP"/>
@@ -105,13 +112,16 @@
     <ROW Directory="lib_Dir" Directory_Parent="spawnrx_Dir" DefaultDir="lib"/>
     <ROW Directory="library_Dir" Directory_Parent="APPDIR" DefaultDir="library"/>
     <ROW Directory="locales_Dir" Directory_Parent="APPDIR" DefaultDir="locales"/>
+    <ROW Directory="node_modules_1_Dir" Directory_Parent="swiftsearch_Dir" DefaultDir="NODE_M~1|node_modules"/>
     <ROW Directory="node_modules_Dir" Directory_Parent="app.asar.unpacked_Dir" DefaultDir="NODE_M~1|node_modules"/>
+    <ROW Directory="refnapi_1_Dir" Directory_Parent="node_modules_1_Dir" DefaultDir="ref-napi"/>
     <ROW Directory="refnapi_Dir" Directory_Parent="node_modules_Dir" DefaultDir="ref-napi"/>
     <ROW Directory="resources_Dir" Directory_Parent="APPDIR" DefaultDir="RESOUR~1|resources"/>
     <ROW Directory="spawnrx_Dir" Directory_Parent="node_modules_Dir" DefaultDir="spawn-rx"/>
     <ROW Directory="spellchecker_Dir" Directory_Parent="felixrieseberg_Dir" DefaultDir="SPELLC~1|spellchecker"/>
     <ROW Directory="src_1_Dir" Directory_Parent="spawnrx_Dir" DefaultDir="src"/>
     <ROW Directory="src_Dir" Directory_Parent="lib_Dir" DefaultDir="src"/>
+    <ROW Directory="swiftsearch_Dir" Directory_Parent="node_modules_Dir" DefaultDir="SWIFT-~1|swift-search"/>
     <ROW Directory="swiftshader_Dir" Directory_Parent="APPDIR" DefaultDir="SWIFTS~1|swiftshader"/>
     <ROW Directory="vendor_Dir" Directory_Parent="spawnrx_Dir" DefaultDir="vendor"/>
     <ROW Directory="win32x6476_1_Dir" Directory_Parent="bin_1_Dir" DefaultDir="WIN32-~1|win32-x64-76"/>
@@ -119,6 +129,8 @@
     <ROW Directory="win32x6476_3_Dir" Directory_Parent="bin_3_Dir" DefaultDir="WIN32-~1|win32-x64-76"/>
     <ROW Directory="win32x6476_4_Dir" Directory_Parent="bin_4_Dir" DefaultDir="WIN32-~1|win32-x64-76"/>
     <ROW Directory="win32x6476_5_Dir" Directory_Parent="bin_5_Dir" DefaultDir="WIN32-~1|win32-x64-76"/>
+    <ROW Directory="win32x6476_6_Dir" Directory_Parent="bin_6_Dir" DefaultDir="WIN32-~1|win32-x64-76"/>
+    <ROW Directory="win32x6476_7_Dir" Directory_Parent="bin_7_Dir" DefaultDir="WIN32-~1|win32-x64-76"/>
     <ROW Directory="win32x6476_Dir" Directory_Parent="bin_Dir" DefaultDir="WIN32-~1|win32-x64-76"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
@@ -137,6 +149,7 @@
     <ROW Component="am.pak" ComponentId="{7F9B88EC-7331-4801-A165-8E9789C8BF82}" Directory_="locales_Dir" Attributes="0" KeyPath="am.pak" Type="0"/>
     <ROW Component="appupdate.yml" ComponentId="{0C70DAF7-B9A5-42E8-8EAD-986872DA450E}" Directory_="resources_Dir" Attributes="0" KeyPath="app.asar" Type="0"/>
     <ROW Component="binding.node" ComponentId="{705E9EBA-D90D-4DEF-8D7B-03EABFE0A9CD}" Directory_="Release_5_Dir" Attributes="0" KeyPath="binding.node" Type="0"/>
+    <ROW Component="binding.node_1" ComponentId="{33AB7BE4-6C6C-452C-89A5-CABB8A7962F3}" Directory_="Release_7_Dir" Attributes="0" KeyPath="binding.node_1" Type="0"/>
     <ROW Component="blink_image_resources_200_percent.pak" ComponentId="{19811F96-6FFC-4970-A103-9D0F5A1A402D}" Directory_="APPDIR" Attributes="0" KeyPath="LICENSES.chromium.html" Type="0"/>
     <ROW Component="build.cmd" ComponentId="{69452B49-A616-474E-A63A-56D20330B4BE}" Directory_="spawnrx_Dir" Attributes="0" KeyPath="build.cmd" Type="0"/>
     <ROW Component="cld.node" ComponentId="{B6B8E701-2EA3-4147-808D-B62057BAE07E}" Directory_="win32x6476_1_Dir" Attributes="256" KeyPath="cld.node" Type="0"/>
@@ -147,7 +160,9 @@
     <ROW Component="diskusage.node_1" ComponentId="{4E899DE5-156F-438F-81EE-C7D02524F851}" Directory_="Release_2_Dir" Attributes="0" KeyPath="diskusage.node_1" Type="0"/>
     <ROW Component="enAU.bdic" ComponentId="{D150D8CE-8674-41D5-BDDA-3524275B8B22}" Directory_="dictionaries_Dir" Attributes="0" KeyPath="enAU.bdic" Type="0"/>
     <ROW Component="ffi_bindings.node" ComponentId="{46F47000-EF55-43CF-9B72-10D78249251B}" Directory_="Release_3_Dir" Attributes="0" KeyPath="ffi_bindings.node" Type="0"/>
+    <ROW Component="ffi_bindings.node_1" ComponentId="{B2C8B3D4-B34B-4813-99FE-7867628B3CED}" Directory_="Release_6_Dir" Attributes="0" KeyPath="ffi_bindings.node_1" Type="0"/>
     <ROW Component="ffinapi.node" ComponentId="{EB851C01-B71C-490F-865B-09BB6D1FA4F8}" Directory_="win32x6476_3_Dir" Attributes="256" KeyPath="ffinapi.node" Type="0"/>
+    <ROW Component="ffinapi.node_1" ComponentId="{4BA3EBF3-B77A-44AB-8F81-806E3E24FC28}" Directory_="win32x6476_6_Dir" Attributes="256" KeyPath="ffinapi.node_1" Type="0"/>
     <ROW Component="ffmpeg.dll" ComponentId="{6ECB1C9B-C14D-4224-A048-D2C4666426DC}" Directory_="APPDIR" Attributes="0" KeyPath="ffmpeg.dll"/>
     <ROW Component="index.js" ComponentId="{B69DA2BF-9BF5-4268-887C-1493763F71D0}" Directory_="lib_Dir" Attributes="0" KeyPath="index.js" Type="0"/>
     <ROW Component="index.js_1" ComponentId="{073B61E4-AFA9-4D0D-9133-BD7DC3A0BA82}" Directory_="src_Dir" Attributes="0" KeyPath="index.js_1" Type="0"/>
@@ -162,6 +177,7 @@
     <ROW Component="libsymphonysearchx86.dll" ComponentId="{0FE8E551-95CE-4936-8553-217ED411CAD5}" Directory_="library_Dir" Attributes="0" KeyPath="libsymphonysearchx86.dll"/>
     <ROW Component="lz4winx86.exe" ComponentId="{C71364D8-6FE2-4BA1-8D89-12B075FFAEFD}" Directory_="library_Dir" Attributes="0" KeyPath="lz4winx86.exe"/>
     <ROW Component="refnapi.node" ComponentId="{12DD9590-48A5-42C0-AB98-33136AD41775}" Directory_="win32x6476_5_Dir" Attributes="256" KeyPath="refnapi.node" Type="0"/>
+    <ROW Component="refnapi.node_1" ComponentId="{C2E55C84-3878-4C04-8BA9-E29C6B12784B}" Directory_="win32x6476_7_Dir" Attributes="256" KeyPath="refnapi.node_1" Type="0"/>
     <ROW Component="spellchecker.node" ComponentId="{8F137894-D1CF-4DC2-BFE1-C791A4581BD8}" Directory_="win32x6476_Dir" Attributes="256" KeyPath="spellchecker.node" Type="0"/>
     <ROW Component="spellchecker.node_1" ComponentId="{CB28464D-1E30-4CDE-A66D-B0E8100955C4}" Directory_="Release_Dir" Attributes="0" KeyPath="spellchecker.node_1" Type="0"/>
     <ROW Component="tarwin.exe" ComponentId="{B7E57E12-8788-49D4-A31C-23E821D36B2F}" Directory_="library_Dir" Attributes="0" KeyPath="tarwin.exe"/>
@@ -169,7 +185,7 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
     <ROW Feature="D564007E3BBE4F85950A09B470A7CA65" Title="Visual C++ Redistributable for Visual Studio 2013 x86" Description="Visual C++ Redistributable for Visual Studio 2013 x86" Display="3" Level="1" Attributes="0"/>
-    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="AI_CustomARPName AI_DisableModify Jobber.exe PodUrl ProductInformation ScreenShareIndicatorFrame.exe ScreenSnippet.exe Symphony Symphony.config Symphony.exe _ __1 am.pak appupdate.yml binding.node blink_image_resources_200_percent.pak build.cmd cld.node cld.node_1 d3dcompiler_47.dll dictionary diskusage.node diskusage.node_1 enAU.bdic ffi_bindings.node ffinapi.node ffmpeg.dll index.js index.js_1 index.ts indexvalidatorx86.exe keyboardlayout.node keyboardlayoutmanager.node libEGL.dll libEGL.dll_2 libGLESv2.dll libGLESv2.dll_2 libsymphonysearchx86.dll lz4winx86.exe refnapi.node spellchecker.node spellchecker.node_1 tarwin.exe vk_swiftshader.dll"/>
+    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="AI_CustomARPName AI_DisableModify Jobber.exe PodUrl ProductInformation ScreenShareIndicatorFrame.exe ScreenSnippet.exe Symphony Symphony.config Symphony.exe _ __1 am.pak appupdate.yml binding.node binding.node_1 blink_image_resources_200_percent.pak build.cmd cld.node cld.node_1 d3dcompiler_47.dll dictionary diskusage.node diskusage.node_1 enAU.bdic ffi_bindings.node ffi_bindings.node_1 ffinapi.node ffinapi.node_1 ffmpeg.dll index.js index.js_1 index.ts indexvalidatorx86.exe keyboardlayout.node keyboardlayoutmanager.node libEGL.dll libEGL.dll_2 libGLESv2.dll libGLESv2.dll_2 libsymphonysearchx86.dll lz4winx86.exe refnapi.node refnapi.node_1 spellchecker.node spellchecker.node_1 tarwin.exe vk_swiftshader.dll"/>
     <ATTRIBUTE name="CurrentFeature" value="MainFeature"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
@@ -187,6 +203,7 @@
     <ROW File="ar.pak" Component_="am.pak" FileName="ar.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\ar.pak" SelfReg="false" NextFile="bg.pak"/>
     <ROW File="bg.pak" Component_="am.pak" FileName="bg.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\bg.pak" SelfReg="false" NextFile="bn.pak"/>
     <ROW File="binding.node" Component_="binding.node" FileName="BINDIN~1.NOD|binding.node" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\resources\app.asar.unpacked\node_modules\ref-napi\build\Release\binding.node" SelfReg="false" NextFile="build.cmd"/>
+    <ROW File="binding.node_1" Component_="binding.node_1" FileName="BINDIN~1.NOD|binding.node" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\resources\app.asar.unpacked\node_modules\swift-search\node_modules\ref-napi\build\Release\binding.node" SelfReg="false"/>
     <ROW File="bn.pak" Component_="am.pak" FileName="bn.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\bn.pak" SelfReg="false" NextFile="ca.pak"/>
     <ROW File="build.cmd" Component_="build.cmd" FileName="build.cmd" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\build.cmd" SelfReg="false" NextFile="build.sh"/>
     <ROW File="build.sh" Component_="build.cmd" FileName="build.sh" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\build.sh" SelfReg="false" NextFile="CODE_OF_CONDUCT.md_2"/>
@@ -215,7 +232,9 @@
     <ROW File="et.pak" Component_="am.pak" FileName="et.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\et.pak" SelfReg="false" NextFile="fa.pak"/>
     <ROW File="fa.pak" Component_="am.pak" FileName="fa.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\fa.pak" SelfReg="false" NextFile="fi.pak"/>
     <ROW File="ffi_bindings.node" Component_="ffi_bindings.node" FileName="FFI_BI~1.NOD|ffi_bindings.node" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\resources\app.asar.unpacked\node_modules\ffi-napi\build\Release\ffi_bindings.node" SelfReg="false" NextFile="keyboardlayout.node"/>
+    <ROW File="ffi_bindings.node_1" Component_="ffi_bindings.node_1" FileName="FFI_BI~1.NOD|ffi_bindings.node" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\resources\app.asar.unpacked\node_modules\swift-search\node_modules\ffi-napi\build\Release\ffi_bindings.node" SelfReg="false" NextFile="refnapi.node_1"/>
     <ROW File="ffinapi.node" Component_="ffinapi.node" FileName="FFI-NA~1.NOD|ffi-napi.node" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\resources\app.asar.unpacked\node_modules\ffi-napi\bin\win32-x64-76\ffi-napi.node" SelfReg="false" NextFile="ffi_bindings.node"/>
+    <ROW File="ffinapi.node_1" Component_="ffinapi.node_1" FileName="FFI-NA~1.NOD|ffi-napi.node" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\resources\app.asar.unpacked\node_modules\swift-search\node_modules\ffi-napi\bin\win32-x64-76\ffi-napi.node" SelfReg="false" NextFile="ffi_bindings.node_1"/>
     <ROW File="ffmpeg.dll" Component_="ffmpeg.dll" FileName="ffmpeg.dll" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\ffmpeg.dll" SelfReg="false" NextFile="icudtl.dat"/>
     <ROW File="fi.pak" Component_="am.pak" FileName="fi.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\fi.pak" SelfReg="false" NextFile="fil.pak"/>
     <ROW File="fil.pak" Component_="am.pak" FileName="fil.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\fil.pak" SelfReg="false" NextFile="fr.pak"/>
@@ -241,7 +260,7 @@
     <ROW File="libEGL.dll" Component_="libEGL.dll" FileName="libEGL.dll" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\libEGL.dll" SelfReg="false" NextFile="libGLESv2.dll"/>
     <ROW File="libEGL.dll_2" Component_="libEGL.dll_2" FileName="libEGL.dll" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\swiftshader\libEGL.dll" SelfReg="false" NextFile="libGLESv2.dll_2"/>
     <ROW File="libGLESv2.dll" Component_="libGLESv2.dll" FileName="LIBGLE~1.DLL|libGLESv2.dll" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\libGLESv2.dll" SelfReg="false" NextFile="LICENSE.electron.txt"/>
-    <ROW File="libGLESv2.dll_2" Component_="libGLESv2.dll_2" FileName="LIBGLE~1.DLL|libGLESv2.dll" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\swiftshader\libGLESv2.dll" SelfReg="false"/>
+    <ROW File="libGLESv2.dll_2" Component_="libGLESv2.dll_2" FileName="LIBGLE~1.DLL|libGLESv2.dll" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\swiftshader\libGLESv2.dll" SelfReg="false" NextFile="ffinapi.node_1"/>
     <ROW File="libsymphonysearchx86.dll" Component_="libsymphonysearchx86.dll" FileName="LIBSYM~2.DLL|libsymphonysearch-x86.dll" Attributes="0" SourcePath="..\..\library\libsymphonysearch-x86.dll" SelfReg="false" NextFile="lz4winx86.exe"/>
     <ROW File="lt.pak" Component_="am.pak" FileName="lt.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\lt.pak" SelfReg="false" NextFile="lv.pak"/>
     <ROW File="lv.pak" Component_="am.pak" FileName="lv.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\lv.pak" SelfReg="false" NextFile="ml.pak"/>
@@ -256,6 +275,7 @@
     <ROW File="ptBR.pak" Component_="am.pak" FileName="pt-BR.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\pt-BR.pak" SelfReg="false" NextFile="ptPT.pak"/>
     <ROW File="ptPT.pak" Component_="am.pak" FileName="pt-PT.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\pt-PT.pak" SelfReg="false" NextFile="ro.pak"/>
     <ROW File="refnapi.node" Component_="refnapi.node" FileName="REF-NA~1.NOD|ref-napi.node" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\resources\app.asar.unpacked\node_modules\ref-napi\bin\win32-x64-76\ref-napi.node" SelfReg="false" NextFile="binding.node"/>
+    <ROW File="refnapi.node_1" Component_="refnapi.node_1" FileName="REF-NA~1.NOD|ref-napi.node" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\resources\app.asar.unpacked\node_modules\swift-search\node_modules\ref-napi\bin\win32-x64-76\ref-napi.node" SelfReg="false" NextFile="binding.node_1"/>
     <ROW File="resources.pak" Component_="blink_image_resources_200_percent.pak" FileName="RESOUR~1.PAK|resources.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\resources.pak" SelfReg="false" NextFile="snapshot_blob.bin"/>
     <ROW File="ro.pak" Component_="am.pak" FileName="ro.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\ro.pak" SelfReg="false" NextFile="ru.pak"/>
     <ROW File="ru.pak" Component_="am.pak" FileName="ru.pak" Attributes="0" SourcePath="..\..\dist\win-ia32-unpacked\locales\ru.pak" SelfReg="false" NextFile="sk.pak"/>
