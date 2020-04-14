@@ -1,4 +1,4 @@
-import { ipcRenderer, webFrame } from 'electron';
+import { contextBridge, ipcRenderer, webFrame } from 'electron';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { apiCmds, apiName } from '../common/api-interface';
@@ -45,6 +45,39 @@ const createAPI = () => {
 };
 
 createAPI();
+
+if (ssfWindow.ssf) {
+    // New context bridge api that exposes all the methods on to window object
+    contextBridge.exposeInMainWorld('manaSSF', {
+        CryptoLib: ssfWindow.ssf.CryptoLib,
+        Search: ssfWindow.ssf.Search,
+        Notification: ssfWindow.ssf.Notification,
+        getMediaSource: ssfWindow.ssf.getMediaSource,
+        activate: ssfWindow.ssf.activate,
+        bringToFront: ssfWindow.ssf.bringToFront,
+        getVersionInfo: ssfWindow.ssf.getVersionInfo,
+        registerActivityDetection: ssfWindow.ssf.registerActivityDetection,
+        registerBoundsChange: ssfWindow.ssf.registerBoundsChange,
+        registerLogger: ssfWindow.ssf.registerLogger,
+        registerProtocolHandler: ssfWindow.ssf.registerProtocolHandler,
+        registerLogRetriever: ssfWindow.ssf.registerLogRetriever,
+        sendLogs: ssfWindow.ssf.sendLogs,
+        registerAnalyticsEvent: ssfWindow.ssf.registerAnalyticsEvent,
+        ScreenSnippet: ssfWindow.ssf.ScreenSnippet,
+        openScreenSnippet: ssfWindow.ssf.openScreenSnippet,
+        closeScreenSnippet: ssfWindow.ssf.closeScreenSnippet,
+        setBadgeCount: ssfWindow.ssf.setBadgeCount,
+        setLocale: ssfWindow.ssf.setLocale,
+        setIsInMeeting: ssfWindow.ssf.setIsInMeeting,
+        showNotificationSettings: ssfWindow.ssf.showNotificationSettings,
+        showScreenSharingIndicator: ssfWindow.ssf.showScreenSharingIndicator,
+        openScreenSharingIndicator: ssfWindow.ssf.openScreenSharingIndicator,
+        closeScreenSharingIndicator: ssfWindow.ssf.closeScreenSharingIndicator,
+        registerRestartFloater: ssfWindow.ssf.registerRestartFloater,
+        setCloudConfig: ssfWindow.ssf.setCloudConfig,
+        checkMediaPermission: ssfWindow.ssf.checkMediaPermission,
+    });
+}
 
 /**
  * Returns a random number that is between (min - max)
