@@ -639,6 +639,13 @@ export class WindowHandler {
                     } else if (isMac && type === 'screen') {
                         const dispId = source.id.split(':')[1];
                         this.execCmd(this.screenShareIndicatorFrameUtil, [ dispId ]);
+                    } else if (isWindowsOS && type === 'screen') {
+                        logger.info('window-handler: source.display_id: ' + source.display_id);
+                        if (source.display_id !== '') {
+                            this.execCmd(this.screenShareIndicatorFrameUtil, [ source.display_id ]);
+                        } else {
+                            this.execCmd(this.screenShareIndicatorFrameUtil, [ '0' ]);
+                        }
                     }
                 }
             }
@@ -828,23 +835,22 @@ export class WindowHandler {
             });
         }
 
+        logger.info('window-handler: createScreenSharingIndicatorWindow, displayId: ' + displayId);
         if (displayId !== '') {
-            const displays = electron.screen.getAllDisplays();
-
-            displays.forEach((element) => {
-                if (displayId === element.id.toString()) {
-                    logger.info(`window-handler: element:`, element);
-                    if (isWindowsOS) {
-                        this.execCmd(this.screenShareIndicatorFrameUtil, [ displayId ]);
-                    } else if (isLinux) {
-                        this.createScreenSharingFrameWindow('screen-sharing-frame',
-                        element.workArea.width,
-                        element.workArea.height,
-                        element.workArea.x,
-                        element.workArea.y);
+            if (isLinux) {
+                const displays = electron.screen.getAllDisplays();
+                displays.forEach((element) => {
+                    logger.info('window-handler: element.id.toString(): ' + element.id.toString());
+                    if (displayId === element.id.toString()) {
+                        logger.info(`window-handler: element:`, element);
+                            this.createScreenSharingFrameWindow('screen-sharing-frame',
+                            element.workArea.width,
+                            element.workArea.height,
+                            element.workArea.x,
+                            element.workArea.y);
                     }
-                }
-            });
+                });
+            }
         }
 
         this.screenSharingIndicatorWindow = createComponentWindow('screen-sharing-indicator', opts);
