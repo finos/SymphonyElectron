@@ -7,7 +7,6 @@
     <ROW Property="AI_APP_ARGS" Value="/start-app=&quot;[#Symphony.pgx]&quot; --enable-media-stream"/>
     <ROW Property="AI_BITMAP_DISPLAY_MODE" Value="0"/>
     <ROW Property="AI_PRODUCTNAME_ARP" Value="[|ProductName]"/>
-    <ROW Property="AI_RUN_AS_ADMIN" Value="0"/>
     <ROW Property="AI_ThemeStyle" Value="default" MsiKey="AI_ThemeStyle"/>
     <ROW Property="AI_UNINSTALLER" Value="msiexec.exe"/>
     <ROW Property="ALLUSERS" Value="1" MultiBuildValue="DefaultBuild:2"/>
