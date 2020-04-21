@@ -76,8 +76,7 @@
         "library/indexvalidator.exec",
         "library/libsymphonysearch.dylib",
         "library/cryptoLib.dylib",
-        "library/dictionary",
-        "installer/mac/SymphonySettingsPlugin.bundle/Contents/MacOS/SymphonySettingsPlugin"
+        "library/dictionary"
       ]
     },
     "win": {
