@@ -21,6 +21,7 @@
     <ROW Property="AUTO_LAUNCH_PATH" Value="[|]"/>
     <ROW Property="AUTO_START" Value="ENABLED" Type="4"/>
     <ROW Property="AUTO_START_CB" Value="true" Type="4"/>
+    <ROW Property="AiSkipExitDlg" Value="1"/>
     <ROW Property="BRING_TO_FRONT" Value="DISABLED" Type="4"/>
     <ROW Property="BannerBitmap" Value="banner" MultiBuildValue="DefaultBuild:Banner.jpg" Type="1" MsiKey="BannerBitmap"/>
     <ROW Property="CTRLS" Value="2"/>
@@ -43,7 +44,7 @@
     <ROW Property="NOTIFICATIONS" Value="true"/>
     <ROW Property="OPEN_EXTERNAL" Value="true"/>
     <ROW Property="OPEN_EXTERNAL_CB" Value="true"/>
-    <ROW Property="POD_URL" Value="https://[POD].symphony.com" Type="4"/>
+    <ROW Property="POD_URL" Value="https://corporate.symphony.com" Type="4"/>
     <ROW Property="POINTER_LOCK" Value="true"/>
     <ROW Property="POINTER_LOCK_CB" Value="true"/>
     <ROW Property="ProductCode" Value="1033:{F17EDEB4-A15F-46B9-83E9-8652CBC886B2} " Type="16"/>
@@ -657,6 +658,7 @@
     <ROW Action="AI_DOWNGRADE" Type="19" Target="4010"/>
     <ROW Action="AI_DpiContentScale" Type="1" Source="aicustact.dll" Target="DpiContentScale"/>
     <ROW Action="AI_EnableDebugLog" Type="321" Source="aicustact.dll" Target="EnableDebugLog"/>
+    <ROW Action="AI_FinishActions" Type="1" Source="aicustact.dll" Target="RunAllExitActions"/>
     <ROW Action="AI_GetArpIconPath" Type="1" Source="aicustact.dll" Target="GetArpIconPath"/>
     <ROW Action="AI_InstallModeCheck" Type="1" Source="aicustact.dll" Target="UpdateInstallMode" WithoutSeq="true"/>
     <ROW Action="AI_LaunchApp" Type="1" Source="aicustact.dll" Target="[#Symphony.exe]"/>
@@ -715,6 +717,7 @@
     <ROW Action="AI_SETMIXINSTLOCATION" Sequence="749"/>
     <ROW Action="UninstallPreviousVersions" Sequence="1281"/>
     <ROW Action="AI_EnableDebugLog" Sequence="51"/>
+    <ROW Action="AI_FinishActions" Condition="AI_INSTALL AND AiSkipExitDlg" Sequence="1300"/>
     <ATTRIBUTE name="DeletedRows" value="WelcomeDlg"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiLaunchConditionsComponent">
