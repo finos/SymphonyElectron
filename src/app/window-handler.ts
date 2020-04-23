@@ -100,6 +100,7 @@ export class WindowHandler {
     private screenSharingFrameWindow: Electron.BrowserWindow | null = null;
     private basicAuthWindow: Electron.BrowserWindow | null = null;
     private notificationSettingsWindow: Electron.BrowserWindow | null = null;
+    private welcomeWindow: Electron.BrowserWindow | null = null;
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Use these variables only on initial setup
@@ -520,6 +521,54 @@ export class WindowHandler {
             // Because of a bug for windows10 we need to call setPosition twice
             windowToMove.setPosition(positionX, positionY);
         }
+    }
+
+    /**
+     * Creates a welcome window
+     */
+    public createWelcomeWindow(windowName: string): void {
+
+        // This prevents creating multiple instances of the
+        // welcome window
+        if (didVerifyAndRestoreWindow(this.welcomeWindow)) {
+            return;
+        }
+
+        const selectedParentWindow = getWindowByName(windowName);
+
+        const opts: BrowserWindowConstructorOptions = this.getWindowOpts({
+            width: 550,
+            height: 400,
+            modal: true,
+            alwaysOnTop: isMac,
+            resizable: false,
+            fullscreenable: false,
+        }, {
+            devTools: true,
+        });
+
+        if (this.mainWindow && windowExists(this.mainWindow) && this.mainWindow.isAlwaysOnTop()) {
+            opts.alwaysOnTop = true;
+        }
+
+        if (isWindowsOS && selectedParentWindow) {
+            opts.parent = selectedParentWindow;
+        }
+
+        this.welcomeWindow = createComponentWindow('welcome', opts);
+        this.moveWindow(this.welcomeWindow);
+        this.welcomeWindow.setVisibleOnAllWorkspaces(true);
+        this.welcomeWindow.webContents.once('did-finish-load', async () => {
+            if (this.welcomeWindow && windowExists(this.welcomeWindow)) {
+                this.welcomeWindow.webContents.send('welcome', {url: this.url});
+            }
+        });
+
+        ipcMain.on('set-pod-url', (event, args) => {
+            logger.info(`Setting pod url`);
+            logger.info(`event: ${event}`);
+            logger.info(`args: ${JSON.stringify(args)}`);
+        });
     }
 
     /**

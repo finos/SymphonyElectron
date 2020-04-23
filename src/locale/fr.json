@@ -195,6 +195,11 @@
   "Undo": "Annuler la dernière opération",
   "Updating Title bar style requires Symphony to relaunch.": "La mise à jour du style de la barre de titre nécessite le redémarrage de Symphony.",
   "View": "Visualiser",
+  "Welcome": {
+    "WelcomeText": "Welcome",
+    "Symphony Logo": "Symphony",
+    "Continue": "Continue"
+  },
   "Window": "Fenêtre",
   "Would you like to restart and apply these new settings now?": "Voulez-vous redémarrer et appliquer ce nouveau paramètre maintenant?",
   "Your administrator has disabled": "Votre administrateur a désactivé",

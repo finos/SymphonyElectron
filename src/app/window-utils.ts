@@ -125,7 +125,7 @@ export const createComponentWindow = (
             sandbox: !isNodeEnv,
             nodeIntegration: isNodeEnv,
             preload: path.join(__dirname, '../renderer/_preload-component.js'),
-            devTools: false,
+            devTools: true,
         },
     };
 
@@ -142,6 +142,7 @@ export const createComponentWindow = (
         if (!browserWindow || !windowExists(browserWindow)) {
             return;
         }
+        browserWindow.webContents.openDevTools();
         browserWindow.webContents.send('page-load', { locale: i18n.getLocale(), resource: i18n.loadedResources });
     });
     browserWindow.setMenu(null as any);

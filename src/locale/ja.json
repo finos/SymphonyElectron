@@ -195,6 +195,11 @@
   "Undo": "元に戻す",
   "Updating Title bar style requires Symphony to relaunch.": "タイトルバーのスタイルを更新するには、Symphonyが再起動する必要があります。",
   "View": "ビュー",
+  "Welcome": {
+    "WelcomeText": "Welcome",
+    "Symphony Logo": "Symphony",
+    "Continue": "Continue"
+  },
   "Window": "ウインドウ",
   "Would you like to restart and apply these new settings now?": "今すぐ再起動して、新しい設定を適用しますか？",
   "Your administrator has disabled": "管理者によて無効にされています",
