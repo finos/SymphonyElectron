@@ -37,8 +37,7 @@
     "copy:darwin": "ncp config 'node_modules/electron/dist/Electron.app/Contents/config'",
     "copy:win32": "ncp config node_modules\\electron\\dist\\config",
     "unpacked-mac": "npm run prebuild && npm run test && ./node_modules/.bin/electron-builder build --mac --dir",
-    "unpacked-win": "npm run prebuild && npm run test && node_modules\\.bin\\electron-builder build --win --x64 --dir",
-    "unpacked-win-x86": "npm run prebuild && npm run test && node_modules\\.bin\\electron-builder build --win --ia32 --dir"
+    "unpacked-win": "npm run prebuild && npm run test && node_modules\\.bin\\electron-builder build --win --x64 --dir"
   },
   "build": {
     "appId": "com.symphony.electron-desktop",
