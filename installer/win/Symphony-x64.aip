@@ -10,7 +10,7 @@
     <ROW Property="AI_ThemeStyle" Value="default" MsiKey="AI_ThemeStyle"/>
     <ROW Property="AI_UNINSTALLER" Value="msiexec.exe"/>
     <ROW Property="ALLUSERS" Value="1" MultiBuildValue="DefaultBuild:2"/>
-    <ROW Property="ALWAYS_ON_TOP" Value="false" Type="4"/>
+    <ROW Property="ALWAYS_ON_TOP" Value="DISABLED" Type="4"/>
     <ROW Property="ARPCOMMENTS" Value="This installer database contains the logic and data required to install [|ProductName]." ValueLocId="*"/>
     <ROW Property="ARPHELPLINK" Value="http://www.symphony.com"/>
     <ROW Property="ARPNOMODIFY" MultiBuildValue="DefaultBuild:1"/>
@@ -19,25 +19,26 @@
     <ROW Property="ARPSYSTEMCOMPONENT" Value="1"/>
     <ROW Property="ARPURLINFOABOUT" Value="http://www.symphony.com"/>
     <ROW Property="AUTO_LAUNCH_PATH" Value="[|]"/>
-    <ROW Property="AUTO_START" Value="true" Type="4"/>
+    <ROW Property="AUTO_START" Value="ENABLED" Type="4"/>
     <ROW Property="AUTO_START_CB" Value="true" Type="4"/>
-    <ROW Property="BRING_TO_FRONT" Value="false" Type="4"/>
+    <ROW Property="BRING_TO_FRONT" Value="DISABLED" Type="4"/>
     <ROW Property="BannerBitmap" Value="banner" MultiBuildValue="DefaultBuild:Banner.jpg" Type="1" MsiKey="BannerBitmap"/>
     <ROW Property="CTRLS" Value="2"/>
-    <ROW Property="CUSTOM_TITLE_BAR" Value="true"/>
+    <ROW Property="CUSTOM_TITLE_BAR" Value="ENABLED"/>
     <ROW Property="CUSTOM_TITLE_BAR_CB" Value="true" Type="4"/>
     <ROW Property="DEV_TOOLS_CB" Value="true" Type="4"/>
     <ROW Property="DEV_TOOLS_ENABLED" Value="true"/>
     <ROW Property="DialogBitmap" Value="dialog" MultiBuildValue="DefaultBuild:Tabloid.jpg" Type="1" MsiKey="DialogBitmap"/>
     <ROW Property="FULL_SCREEN" Value="true"/>
     <ROW Property="FULL_SCREEN_CB" Value="true"/>
+    <ROW Property="FileInUseProcess" Value="Symphony.exe" Type="4"/>
     <ROW Property="LOCATION" Value="true"/>
     <ROW Property="LOCATION_CB" Value="true" Type="4"/>
     <ROW Property="MEDIA" Value="true"/>
     <ROW Property="MEDIA_CB" Value="true" Type="4"/>
     <ROW Property="MIDI_SYSEX" Value="true"/>
     <ROW Property="MIDI_SYSEX_CB" Value="true"/>
-    <ROW Property="MINIMIZE_ON_CLOSE" Value="true" Type="4"/>
+    <ROW Property="MINIMIZE_ON_CLOSE" Value="ENABLED" Type="4"/>
     <ROW Property="MINIMIZE_ON_CLOSE_CB" Value="true" Type="4"/>
     <ROW Property="Manufacturer" Value="Symphony"/>
     <ROW Property="NOTIFICATIONS" Value="true"/>
@@ -46,10 +47,10 @@
     <ROW Property="POD_URL" Value="https://[POD].symphony.com" Type="4"/>
     <ROW Property="POINTER_LOCK" Value="true"/>
     <ROW Property="POINTER_LOCK_CB" Value="true"/>
-    <ROW Property="ProductCode" Value="1033:{F17EDEB4-A15F-46B9-83E9-8652CBC886B2} " Type="16"/>
+    <ROW Property="ProductCode" Value="1033:{023C6F54-AAD9-4C55-BAE7-C81D26C1FCDA} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="Symphony"/>
-    <ROW Property="ProductVersion" Value="2.0.0" Type="32"/>
+    <ROW Property="ProductVersion" Value="8.0.0" Type="32"/>
     <ROW Property="REBOOT" MultiBuildValue="DefaultBuild:ReallySuppress"/>
     <ROW Property="RUNAPPLICATION" Value="1" Type="4"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
@@ -76,6 +77,8 @@
     <ROW Directory="Release_3_Dir" Directory_Parent="build_3_Dir" DefaultDir="Release"/>
     <ROW Directory="Release_4_Dir" Directory_Parent="build_4_Dir" DefaultDir="Release"/>
     <ROW Directory="Release_5_Dir" Directory_Parent="build_5_Dir" DefaultDir="Release"/>
+    <ROW Directory="Release_6_Dir" Directory_Parent="build_6_Dir" DefaultDir="Release"/>
+    <ROW Directory="Release_7_Dir" Directory_Parent="build_7_Dir" DefaultDir="Release"/>
     <ROW Directory="Release_Dir" Directory_Parent="build_Dir" DefaultDir="Release"/>
     <ROW Directory="Symphony_Dir" Directory_Parent="ProgramMenuFolder" DefaultDir="Symphony"/>
     <ROW Directory="TARGETDIR" DefaultDir="SourceDir"/>
@@ -83,13 +86,18 @@
     <ROW Directory="bin_1_Dir" Directory_Parent="cld_Dir" DefaultDir="bin"/>
     <ROW Directory="bin_2_Dir" Directory_Parent="diskusage_Dir" DefaultDir="bin"/>
     <ROW Directory="bin_3_Dir" Directory_Parent="ffinapi_Dir" DefaultDir="bin"/>
-    <ROW Directory="bin_4_Dir" Directory_Parent="refnapi_Dir" DefaultDir="bin"/>
+    <ROW Directory="bin_4_Dir" Directory_Parent="keyboardlayout_Dir" DefaultDir="bin"/>
+    <ROW Directory="bin_5_Dir" Directory_Parent="refnapi_Dir" DefaultDir="bin"/>
+    <ROW Directory="bin_6_Dir" Directory_Parent="ffinapi_1_Dir" DefaultDir="bin"/>
+    <ROW Directory="bin_7_Dir" Directory_Parent="refnapi_1_Dir" DefaultDir="bin"/>
     <ROW Directory="bin_Dir" Directory_Parent="spellchecker_Dir" DefaultDir="bin"/>
     <ROW Directory="build_1_Dir" Directory_Parent="cld_Dir" DefaultDir="build"/>
-    <ROW Directory="build_2_Dir" Directory_Parent="keyboardlayout_Dir" DefaultDir="build"/>
-    <ROW Directory="build_3_Dir" Directory_Parent="diskusage_Dir" DefaultDir="build"/>
-    <ROW Directory="build_4_Dir" Directory_Parent="ffinapi_Dir" DefaultDir="build"/>
+    <ROW Directory="build_2_Dir" Directory_Parent="diskusage_Dir" DefaultDir="build"/>
+    <ROW Directory="build_3_Dir" Directory_Parent="ffinapi_Dir" DefaultDir="build"/>
+    <ROW Directory="build_4_Dir" Directory_Parent="keyboardlayout_Dir" DefaultDir="build"/>
     <ROW Directory="build_5_Dir" Directory_Parent="refnapi_Dir" DefaultDir="build"/>
+    <ROW Directory="build_6_Dir" Directory_Parent="ffinapi_1_Dir" DefaultDir="build"/>
+    <ROW Directory="build_7_Dir" Directory_Parent="refnapi_1_Dir" DefaultDir="build"/>
     <ROW Directory="build_Dir" Directory_Parent="spellchecker_Dir" DefaultDir="build"/>
     <ROW Directory="cld_Dir" Directory_Parent="node_modules_Dir" DefaultDir="cld"/>
     <ROW Directory="config_Dir" Directory_Parent="APPDIR" DefaultDir="config"/>
@@ -97,6 +105,7 @@
     <ROW Directory="diskusage_Dir" Directory_Parent="node_modules_Dir" DefaultDir="DISKUS~1|diskusage"/>
     <ROW Directory="enUS_Dir" Directory_Parent="APPDIR" DefaultDir="en-US"/>
     <ROW Directory="felixrieseberg_Dir" Directory_Parent="node_modules_Dir" DefaultDir="@FELIX~1|@felixrieseberg"/>
+    <ROW Directory="ffinapi_1_Dir" Directory_Parent="node_modules_1_Dir" DefaultDir="ffi-napi"/>
     <ROW Directory="ffinapi_Dir" Directory_Parent="node_modules_Dir" DefaultDir="ffi-napi"/>
     <ROW Directory="frFR_Dir" Directory_Parent="APPDIR" DefaultDir="fr-FR"/>
     <ROW Directory="jaJP_Dir" Directory_Parent="APPDIR" DefaultDir="ja-JP"/>
@@ -105,24 +114,31 @@
     <ROW Directory="lib_Dir" Directory_Parent="spawnrx_Dir" DefaultDir="lib"/>
     <ROW Directory="library_Dir" Directory_Parent="APPDIR" DefaultDir="library"/>
     <ROW Directory="locales_Dir" Directory_Parent="APPDIR" DefaultDir="locales"/>
+    <ROW Directory="node_modules_1_Dir" Directory_Parent="swiftsearch_Dir" DefaultDir="NODE_M~1|node_modules"/>
     <ROW Directory="node_modules_Dir" Directory_Parent="app.asar.unpacked_Dir" DefaultDir="NODE_M~1|node_modules"/>
+    <ROW Directory="refnapi_1_Dir" Directory_Parent="node_modules_1_Dir" DefaultDir="ref-napi"/>
     <ROW Directory="refnapi_Dir" Directory_Parent="node_modules_Dir" DefaultDir="ref-napi"/>
     <ROW Directory="resources_Dir" Directory_Parent="APPDIR" DefaultDir="RESOUR~1|resources"/>
     <ROW Directory="spawnrx_Dir" Directory_Parent="node_modules_Dir" DefaultDir="spawn-rx"/>
     <ROW Directory="spellchecker_Dir" Directory_Parent="felixrieseberg_Dir" DefaultDir="SPELLC~1|spellchecker"/>
     <ROW Directory="src_1_Dir" Directory_Parent="spawnrx_Dir" DefaultDir="src"/>
     <ROW Directory="src_Dir" Directory_Parent="lib_Dir" DefaultDir="src"/>
+    <ROW Directory="swiftsearch_Dir" Directory_Parent="node_modules_Dir" DefaultDir="SWIFT-~1|swift-search"/>
+    <ROW Directory="swiftshader_Dir" Directory_Parent="APPDIR" DefaultDir="SWIFTS~1|swiftshader"/>
     <ROW Directory="vendor_Dir" Directory_Parent="spawnrx_Dir" DefaultDir="vendor"/>
-    <ROW Directory="win32x6473_1_Dir" Directory_Parent="bin_1_Dir" DefaultDir="WIN32-~1|win32-x64-73"/>
-    <ROW Directory="win32x6473_2_Dir" Directory_Parent="bin_2_Dir" DefaultDir="WIN32-~2|win32-x64-73"/>
-    <ROW Directory="win32x6473_3_Dir" Directory_Parent="bin_3_Dir" DefaultDir="WIN32-~1|win32-x64-73"/>
-    <ROW Directory="win32x6473_4_Dir" Directory_Parent="bin_4_Dir" DefaultDir="WIN32-~1|win32-x64-73"/>
-    <ROW Directory="win32x6473_Dir" Directory_Parent="bin_Dir" DefaultDir="WIN32-~1|win32-x64-73"/>
+    <ROW Directory="win32x6476_1_Dir" Directory_Parent="bin_1_Dir" DefaultDir="WIN32-~1|win32-x64-76"/>
+    <ROW Directory="win32x6476_2_Dir" Directory_Parent="bin_2_Dir" DefaultDir="WIN32-~1|win32-x64-76"/>
+    <ROW Directory="win32x6476_3_Dir" Directory_Parent="bin_3_Dir" DefaultDir="WIN32-~1|win32-x64-76"/>
+    <ROW Directory="win32x6476_4_Dir" Directory_Parent="bin_4_Dir" DefaultDir="WIN32-~1|win32-x64-76"/>
+    <ROW Directory="win32x6476_5_Dir" Directory_Parent="bin_5_Dir" DefaultDir="WIN32-~1|win32-x64-76"/>
+    <ROW Directory="win32x6476_6_Dir" Directory_Parent="bin_6_Dir" DefaultDir="WIN32-~1|win32-x64-76"/>
+    <ROW Directory="win32x6476_7_Dir" Directory_Parent="bin_7_Dir" DefaultDir="WIN32-~1|win32-x64-76"/>
+    <ROW Directory="win32x6476_Dir" Directory_Parent="bin_Dir" DefaultDir="WIN32-~1|win32-x64-76"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
-    <ROW Component="AI_CustomARPName" ComponentId="{2817ACD9-F494-4729-9830-111EF3311CFA}" Directory_="APPDIR" Attributes="4" KeyPath="DisplayName" Options="1"/>
+    <ROW Component="AI_CustomARPName" ComponentId="{3426F253-C6BB-4A10-9063-03E084A6F8CF}" Directory_="APPDIR" Attributes="4" KeyPath="DisplayName" Options="1"/>
     <ROW Component="AI_DisableModify" ComponentId="{DA4E8013-2F4B-493A-90A8-BD729DA7EE2C}" Directory_="APPDIR" Attributes="260" KeyPath="NoModify" Options="1"/>
-    <ROW Component="Jobber.exe" ComponentId="{AB38505C-2B94-49AA-BDD2-92CCC8F0DFCD}" Directory_="jobber_Dir" Attributes="0" KeyPath="Jobber.exe"/>
+    <ROW Component="Jobber.exe" ComponentId="{761861CF-BEB6-4808-9F56-E57E4D6D98A8}" Directory_="jobber_Dir" Attributes="0" KeyPath="Jobber.exe"/>
     <ROW Component="PodUrl" ComponentId="{EA80D82D-BC65-4075-A9A8-F53E2B2513CE}" Directory_="APPDIR" Attributes="260" KeyPath="PodUrl"/>
     <ROW Component="ProductInformation" ComponentId="{8B92B687-8AE0-4A5C-B6AB-5D1854009CEA}" Directory_="APPDIR" Attributes="4" KeyPath="Version"/>
     <ROW Component="ScreenShareIndicatorFrame.exe" ComponentId="{85DC2888-EBE5-4084-A084-E076020086D5}" Directory_="APPDIR" Attributes="0" KeyPath="ScreenShareIndicatorFrame.exe"/>
@@ -134,70 +150,78 @@
     <ROW Component="__1" ComponentId="{F70EA270-345A-4510-8428-0EF7B2EC44A3}" Directory_="APPDIR" Attributes="260" KeyPath="__1"/>
     <ROW Component="am.pak" ComponentId="{76F935B8-6077-4C7A-AD1B-77E2DBA856CC}" Directory_="locales_Dir" Attributes="0" KeyPath="am.pak" Type="0"/>
     <ROW Component="appupdate.yml" ComponentId="{F7586760-660A-4C38-8937-138DBEC18D34}" Directory_="resources_Dir" Attributes="0" KeyPath="app.asar" Type="0"/>
-    <ROW Component="binding.node" ComponentId="{A9A0F331-862B-4F47-87C5-B9A707958442}" Directory_="Release_5_Dir" Attributes="256" KeyPath="binding.node" Type="0"/>
+    <ROW Component="binding.node" ComponentId="{55DD464C-0D6C-4531-8310-9805F824C165}" Directory_="Release_5_Dir" Attributes="256" KeyPath="binding.node" Type="0"/>
+    <ROW Component="binding.node_1" ComponentId="{D3892889-CD3C-4428-B791-ACF717FC56FB}" Directory_="Release_7_Dir" Attributes="256" KeyPath="binding.node_1" Type="0"/>
     <ROW Component="blink_image_resources_200_percent.pak" ComponentId="{56AB17A5-B690-4CBE-A39D-512381AAAFE1}" Directory_="APPDIR" Attributes="0" KeyPath="LICENSES.chromium.html" Type="0"/>
-    <ROW Component="build.cmd" ComponentId="{2892AEA1-7773-46FE-8F4C-56E7EAC3BDC3}" Directory_="spawnrx_Dir" Attributes="0" KeyPath="build.cmd" Type="0"/>
-    <ROW Component="cld.node" ComponentId="{B972858A-9215-4608-B6F8-D3DCE293909A}" Directory_="win32x6473_1_Dir" Attributes="256" KeyPath="cld.node" Type="0"/>
-    <ROW Component="cld.node_1" ComponentId="{5725F1C0-82DA-4FF0-874E-A18B2A93F563}" Directory_="Release_1_Dir" Attributes="256" KeyPath="cld.node_1" Type="0"/>
+    <ROW Component="build.cmd" ComponentId="{3A8ED63A-A713-4372-BB13-549B1D0A08CD}" Directory_="spawnrx_Dir" Attributes="0" KeyPath="build.cmd" Type="0"/>
+    <ROW Component="cld.node" ComponentId="{84AFB935-46F6-4D03-BF6E-E6CD71DD51EA}" Directory_="win32x6476_1_Dir" Attributes="256" KeyPath="cld.node" Type="0"/>
+    <ROW Component="cld.node_1" ComponentId="{7B6A26DB-012D-49EC-8B2E-377F2B5CC3E2}" Directory_="Release_1_Dir" Attributes="256" KeyPath="cld.node_1" Type="0"/>
     <ROW Component="d3dcompiler_47.dll" ComponentId="{C7B87C02-3116-43A8-A70B-3592B70E6AC8}" Directory_="APPDIR" Attributes="256" KeyPath="d3dcompiler_47.dll"/>
     <ROW Component="dictionary" ComponentId="{0337D363-6EC5-4283-98AC-0E2931979F53}" Directory_="library_Dir" Attributes="0" KeyPath="dictionary" Type="0"/>
-    <ROW Component="diskusage.node_1" ComponentId="{063E3ECA-DF28-4CD9-A976-7ADA4F5A30A1}" Directory_="win32x6473_2_Dir" Attributes="256" KeyPath="diskusage.node_1" Type="0"/>
-    <ROW Component="diskusage.node_2" ComponentId="{7F4BD27C-4572-42FE-A51A-F817C0719F60}" Directory_="Release_3_Dir" Attributes="256" KeyPath="diskusage.node_2" Type="0"/>
+    <ROW Component="diskusage.node" ComponentId="{B5F55ED0-4495-45AC-A76E-0EFF4024EA89}" Directory_="win32x6476_2_Dir" Attributes="256" KeyPath="diskusage.node" Type="0"/>
+    <ROW Component="diskusage.node_1" ComponentId="{B233CADA-EDF1-46D9-B87E-1BE653EF24C4}" Directory_="Release_2_Dir" Attributes="256" KeyPath="diskusage.node_1" Type="0"/>
     <ROW Component="enAU.bdic" ComponentId="{13F10BB0-1A04-4A5E-8B6D-33CA73C97AEB}" Directory_="dictionaries_Dir" Attributes="0" KeyPath="enAU.bdic" Type="0"/>
-    <ROW Component="ffi_bindings.node" ComponentId="{8EBF5A78-4828-4848-AF97-62BAF5D31D4F}" Directory_="Release_4_Dir" Attributes="256" KeyPath="ffi_bindings.node" Type="0"/>
-    <ROW Component="ffinapi.node" ComponentId="{D0D91F1F-279B-4925-B201-D678D28609A3}" Directory_="win32x6473_3_Dir" Attributes="256" KeyPath="ffinapi.node" Type="0"/>
+    <ROW Component="ffi_bindings.node" ComponentId="{43D97DFF-79E1-4E6F-8B68-54A180815583}" Directory_="Release_3_Dir" Attributes="256" KeyPath="ffi_bindings.node" Type="0"/>
+    <ROW Component="ffi_bindings.node_1" ComponentId="{79A45524-4CAC-4621-8757-8ED39187769B}" Directory_="Release_6_Dir" Attributes="256" KeyPath="ffi_bindings.node_1" Type="0"/>
+    <ROW Component="ffinapi.node" ComponentId="{B25D650D-EDD7-42CD-A743-2FC83492D166}" Directory_="win32x6476_3_Dir" Attributes="256" KeyPath="ffinapi.node" Type="0"/>
+    <ROW Component="ffinapi.node_1" ComponentId="{04B6B68C-FA8E-4C11-97EB-68026A904225}" Directory_="win32x6476_6_Dir" Attributes="256" KeyPath="ffinapi.node_1" Type="0"/>
     <ROW Component="ffmpeg.dll" ComponentId="{A1C4A332-3490-44D8-A5C9-9523889B488B}" Directory_="APPDIR" Attributes="256" KeyPath="ffmpeg.dll"/>
-    <ROW Component="index.js" ComponentId="{741D86B3-7B85-4EE3-B47F-4680D5EBA3BF}" Directory_="lib_Dir" Attributes="0" KeyPath="index.js" Type="0"/>
-    <ROW Component="index.js_1" ComponentId="{E2560E07-B7EA-4186-94B6-0EAE52C043C0}" Directory_="src_Dir" Attributes="0" KeyPath="index.js_1" Type="0"/>
-    <ROW Component="index.ts" ComponentId="{19341989-DFA6-4A3D-BCA7-9D49243BFB69}" Directory_="src_1_Dir" Attributes="0" KeyPath="index.ts" Type="0"/>
+    <ROW Component="index.js" ComponentId="{71228171-1778-41CB-9FA6-ACF16B3E6830}" Directory_="lib_Dir" Attributes="0" KeyPath="index.js" Type="0"/>
+    <ROW Component="index.js_1" ComponentId="{BA4835A9-6507-4A13-86D4-EF5B84466D08}" Directory_="src_Dir" Attributes="0" KeyPath="index.js_1" Type="0"/>
+    <ROW Component="index.ts" ComponentId="{D53BA0A1-FF46-4358-83CA-E7C32E31A117}" Directory_="src_1_Dir" Attributes="0" KeyPath="index.ts" Type="0"/>
     <ROW Component="indexvalidatorx64.exe" ComponentId="{0266F3CF-5462-4381-9971-2353034D7E1D}" Directory_="library_Dir" Attributes="256" KeyPath="indexvalidatorx64.exe"/>
-    <ROW Component="keyboardlayoutmanager.node" ComponentId="{A5757182-A878-4BFC-A5FB-BD5CD57382F6}" Directory_="Release_2_Dir" Attributes="256" KeyPath="keyboardlayoutmanager.node" Type="0"/>
+    <ROW Component="keyboardlayout.node" ComponentId="{93C3F8B8-8E0A-47C7-B345-EDEE3210D744}" Directory_="win32x6476_4_Dir" Attributes="256" KeyPath="keyboardlayout.node" Type="0"/>
+    <ROW Component="keyboardlayoutmanager.node" ComponentId="{485FEEB1-B003-4A19-B2C9-784E402645E7}" Directory_="Release_4_Dir" Attributes="256" KeyPath="keyboardlayoutmanager.node" Type="0"/>
     <ROW Component="libEGL.dll" ComponentId="{8EEC76AB-3601-4D11-B13E-32EC2A38C539}" Directory_="APPDIR" Attributes="256" KeyPath="libEGL.dll"/>
+    <ROW Component="libEGL.dll_1" ComponentId="{4687EB69-8743-4028-A845-592309EBB322}" Directory_="swiftshader_Dir" Attributes="256" KeyPath="libEGL.dll_1"/>
     <ROW Component="libGLESv2.dll" ComponentId="{0E8B8B21-B4C0-45C9-95D3-637FD93A4EC0}" Directory_="APPDIR" Attributes="256" KeyPath="libGLESv2.dll"/>
+    <ROW Component="libGLESv2.dll_1" ComponentId="{6CEEACB7-8686-4DF1-B442-B7EE93F6132F}" Directory_="swiftshader_Dir" Attributes="256" KeyPath="libGLESv2.dll_1"/>
     <ROW Component="libsymphonysearchx64.dll" ComponentId="{A8C99D17-FA62-4996-8FAE-52D1DCF9BF26}" Directory_="library_Dir" Attributes="256" KeyPath="libsymphonysearchx64.dll"/>
     <ROW Component="lz4winx64.exe" ComponentId="{8B78B313-EAE9-4533-AFEB-56F9E0CA73A1}" Directory_="library_Dir" Attributes="256" KeyPath="lz4winx64.exe"/>
-    <ROW Component="refnapi.node" ComponentId="{47A0F720-31F4-4A75-925E-5BFD4AF0E30B}" Directory_="win32x6473_4_Dir" Attributes="256" KeyPath="refnapi.node" Type="0"/>
-    <ROW Component="spellchecker.node" ComponentId="{DAB0AD3A-7C87-4D36-B94E-3A399CAC7662}" Directory_="win32x6473_Dir" Attributes="256" KeyPath="spellchecker.node" Type="0"/>
-    <ROW Component="spellchecker.node_1" ComponentId="{93A61E2B-EEAF-4C1B-B3EC-37ABA8D01465}" Directory_="Release_Dir" Attributes="256" KeyPath="spellchecker.node_1" Type="0"/>
+    <ROW Component="refnapi.node" ComponentId="{3892C3AF-B2AD-4DF8-9D05-C5DC05CCCD08}" Directory_="win32x6476_5_Dir" Attributes="256" KeyPath="refnapi.node" Type="0"/>
+    <ROW Component="refnapi.node_1" ComponentId="{CFF6BE64-E62F-4D82-8D02-A394A6393228}" Directory_="win32x6476_7_Dir" Attributes="256" KeyPath="refnapi.node_1" Type="0"/>
+    <ROW Component="spellchecker.node" ComponentId="{686D99C1-7B79-44BE-A6FB-91B6D302DB8B}" Directory_="win32x6476_Dir" Attributes="256" KeyPath="spellchecker.node" Type="0"/>
+    <ROW Component="spellchecker.node_1" ComponentId="{4D9D9DBA-2F38-4E2A-BEC2-9CC7BD069637}" Directory_="Release_Dir" Attributes="256" KeyPath="spellchecker.node_1" Type="0"/>
     <ROW Component="tarwin.exe" ComponentId="{4C98F3B1-1A73-4761-86C0-DE0FC18A8800}" Directory_="library_Dir" Attributes="0" KeyPath="tarwin.exe"/>
+    <ROW Component="vk_swiftshader.dll" ComponentId="{A9EB979C-64AB-4814-8BBC-48A5D768338C}" Directory_="APPDIR" Attributes="256" KeyPath="vk_swiftshader.dll"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
     <ROW Feature="D564007E3BBE4F85950A09B470A7CA65" Title="Visual C++ Redistributable for Visual Studio 2013 x86" Description="Visual C++ Redistributable for Visual Studio 2013 x86" Display="3" Level="1" Attributes="0"/>
-    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="AI_CustomARPName AI_DisableModify Jobber.exe PodUrl ProductInformation ScreenShareIndicatorFrame.exe ScreenSnippet.exe Symphony Symphony.config Symphony.exe _ __1 am.pak appupdate.yml binding.node blink_image_resources_200_percent.pak build.cmd cld.node cld.node_1 d3dcompiler_47.dll dictionary diskusage.node_1 diskusage.node_2 enAU.bdic ffi_bindings.node ffinapi.node ffmpeg.dll index.js index.js_1 index.ts indexvalidatorx64.exe keyboardlayoutmanager.node libEGL.dll libGLESv2.dll libsymphonysearchx64.dll lz4winx64.exe refnapi.node spellchecker.node spellchecker.node_1 tarwin.exe"/>
+    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="AI_CustomARPName AI_DisableModify Jobber.exe PodUrl ProductInformation ScreenShareIndicatorFrame.exe ScreenSnippet.exe Symphony Symphony.config Symphony.exe _ __1 am.pak appupdate.yml binding.node binding.node_1 blink_image_resources_200_percent.pak build.cmd cld.node cld.node_1 d3dcompiler_47.dll dictionary diskusage.node diskusage.node_1 enAU.bdic ffi_bindings.node ffi_bindings.node_1 ffinapi.node ffinapi.node_1 ffmpeg.dll index.js index.js_1 index.ts indexvalidatorx64.exe keyboardlayout.node keyboardlayoutmanager.node libEGL.dll libEGL.dll_1 libGLESv2.dll libGLESv2.dll_1 libsymphonysearchx64.dll lz4winx64.exe refnapi.node refnapi.node_1 spellchecker.node spellchecker.node_1 tarwin.exe vk_swiftshader.dll"/>
     <ATTRIBUTE name="CurrentFeature" value="MainFeature"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
-    <ROW File="CODE_OF_CONDUCT.md" Component_="build.cmd" FileName="CODE_O~1.MD|CODE_OF_CONDUCT.md" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\CODE_OF_CONDUCT.md" SelfReg="false" NextFile="COPYING"/>
+    <ROW File="CODE_OF_CONDUCT.md_2" Component_="build.cmd" FileName="CODE_O~1.MD|CODE_OF_CONDUCT.md" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\CODE_OF_CONDUCT.md" SelfReg="false" NextFile="COPYING"/>
     <ROW File="COPYING" Component_="build.cmd" FileName="COPYING" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\COPYING" SelfReg="false" NextFile="esdoc.json"/>
-    <ROW File="Jobber.exe" Component_="Jobber.exe" FileName="Jobber.exe" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\vendor\jobber\Jobber.exe" SelfReg="false" NextFile="keyboardlayoutmanager.node" DigSign="true"/>
+    <ROW File="Jobber.exe" Component_="Jobber.exe" FileName="Jobber.exe" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\vendor\jobber\Jobber.exe" SelfReg="false" NextFile="libEGL.dll_1" DigSign="true"/>
     <ROW File="LICENSE.electron.txt" Component_="blink_image_resources_200_percent.pak" FileName="LICENS~1.TXT|LICENSE.electron.txt" Attributes="0" SourcePath="..\..\dist\win-unpacked\LICENSE.electron.txt" SelfReg="false" NextFile="LICENSES.chromium.html"/>
-    <ROW File="LICENSES.chromium.html" Component_="blink_image_resources_200_percent.pak" FileName="LICENS~1.HTM|LICENSES.chromium.html" Attributes="0" SourcePath="..\..\dist\win-unpacked\LICENSES.chromium.html" SelfReg="false" NextFile="natives_blob.bin"/>
-    <ROW File="ScreenShareIndicatorFrame.exe" Component_="ScreenShareIndicatorFrame.exe" FileName="SCREEN~2.EXE|ScreenShareIndicatorFrame.exe" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\screen-share-indicator-frame\ScreenShareIndicatorFrame.exe" SelfReg="false" DigSign="true"/>
-    <ROW File="ScreenSnippet.exe" Component_="ScreenSnippet.exe" FileName="SCREEN~1.EXE|ScreenSnippet.exe" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\screen-snippet\ScreenSnippet.exe" SelfReg="false" NextFile="indexvalidatorx64.exe" DigSign="true"/>
+    <ROW File="LICENSES.chromium.html" Component_="blink_image_resources_200_percent.pak" FileName="LICENS~1.HTM|LICENSES.chromium.html" Attributes="0" SourcePath="..\..\dist\win-unpacked\LICENSES.chromium.html" SelfReg="false" NextFile="Symphony.exe"/>
+    <ROW File="ScreenShareIndicatorFrame.exe" Component_="ScreenShareIndicatorFrame.exe" FileName="SCREEN~2.EXE|ScreenShareIndicatorFrame.exe" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\screen-share-indicator-frame\ScreenShareIndicatorFrame.exe" SelfReg="false" NextFile="vk_swiftshader.dll" DigSign="true"/>
+    <ROW File="ScreenSnippet.exe" Component_="ScreenSnippet.exe" FileName="SCREEN~1.EXE|ScreenSnippet.exe" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\screen-snippet\ScreenSnippet.exe" SelfReg="false" NextFile="indexvalidatorx64.exe" DigSign="true"/>
     <ROW File="Symphony.config_1" Component_="Symphony.config" FileName="SYMPHO~1.CON|Symphony.config" Attributes="0" SourcePath="..\..\dist\win-unpacked\config\Symphony.config" SelfReg="false" NextFile="ScreenSnippet.exe"/>
     <ROW File="Symphony.exe" Component_="Symphony.exe" FileName="Symphony.exe" Attributes="0" SourcePath="..\..\dist\win-unpacked\Symphony.exe" SelfReg="false" NextFile="am.pak" DigSign="true"/>
     <ROW File="am.pak" Component_="am.pak" FileName="am.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\am.pak" SelfReg="false" NextFile="ar.pak"/>
-    <ROW File="app.asar" Component_="appupdate.yml" FileName="APP~1.ASA|app.asar" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar" SelfReg="false" NextFile="electron.asar"/>
+    <ROW File="app.asar" Component_="appupdate.yml" FileName="APP~1.ASA|app.asar" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar" SelfReg="false" NextFile="Symphony.config_1"/>
     <ROW File="ar.pak" Component_="am.pak" FileName="ar.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\ar.pak" SelfReg="false" NextFile="bg.pak"/>
     <ROW File="bg.pak" Component_="am.pak" FileName="bg.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\bg.pak" SelfReg="false" NextFile="bn.pak"/>
-    <ROW File="binding.node" Component_="binding.node" FileName="BINDIN~1.NOD|binding.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ref-napi\build\Release\binding.node" SelfReg="false" NextFile="ScreenShareIndicatorFrame.exe"/>
+    <ROW File="binding.node" Component_="binding.node" FileName="BINDIN~1.NOD|binding.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ref-napi\build\Release\binding.node" SelfReg="false" NextFile="build.cmd"/>
+    <ROW File="binding.node_1" Component_="binding.node_1" FileName="BINDIN~1.NOD|binding.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\swift-search\node_modules\ref-napi\build\Release\binding.node" SelfReg="false"/>
     <ROW File="bn.pak" Component_="am.pak" FileName="bn.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\bn.pak" SelfReg="false" NextFile="ca.pak"/>
     <ROW File="build.cmd" Component_="build.cmd" FileName="build.cmd" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\build.cmd" SelfReg="false" NextFile="build.sh"/>
-    <ROW File="build.sh" Component_="build.cmd" FileName="build.sh" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\build.sh" SelfReg="false" NextFile="CODE_OF_CONDUCT.md"/>
+    <ROW File="build.sh" Component_="build.cmd" FileName="build.sh" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\build.sh" SelfReg="false" NextFile="CODE_OF_CONDUCT.md_2"/>
     <ROW File="ca.pak" Component_="am.pak" FileName="ca.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\ca.pak" SelfReg="false" NextFile="cs.pak"/>
     <ROW File="chrome_100_percent.pak" Component_="blink_image_resources_200_percent.pak" FileName="CHROME~1.PAK|chrome_100_percent.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\chrome_100_percent.pak" SelfReg="false" NextFile="chrome_200_percent.pak"/>
     <ROW File="chrome_200_percent.pak" Component_="blink_image_resources_200_percent.pak" FileName="CHROME~2.PAK|chrome_200_percent.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\chrome_200_percent.pak" SelfReg="false" NextFile="resources.pak"/>
-    <ROW File="cld.node" Component_="cld.node" FileName="CLD~1.NOD|cld.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\cld\bin\win32-x64-73\cld.node" SelfReg="false" NextFile="cld.node_1"/>
-    <ROW File="cld.node_1" Component_="cld.node_1" FileName="CLD~1.NOD|cld.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\cld\build\Release\cld.node" SelfReg="false" NextFile="diskusage.node_1"/>
+    <ROW File="cld.node" Component_="cld.node" FileName="CLD~1.NOD|cld.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\cld\bin\win32-x64-76\cld.node" SelfReg="false" NextFile="cld.node_1"/>
+    <ROW File="cld.node_1" Component_="cld.node_1" FileName="CLD~1.NOD|cld.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\cld\build\Release\cld.node" SelfReg="false" NextFile="diskusage.node"/>
     <ROW File="cs.pak" Component_="am.pak" FileName="cs.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\cs.pak" SelfReg="false" NextFile="da.pak"/>
     <ROW File="d3dcompiler_47.dll" Component_="d3dcompiler_47.dll" FileName="D3DCOM~1.DLL|d3dcompiler_47.dll" Attributes="0" SourcePath="..\..\dist\win-unpacked\d3dcompiler_47.dll" SelfReg="false" NextFile="ffmpeg.dll"/>
     <ROW File="da.pak" Component_="am.pak" FileName="da.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\da.pak" SelfReg="false" NextFile="de.pak"/>
     <ROW File="de.pak" Component_="am.pak" FileName="de.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\de.pak" SelfReg="false" NextFile="el.pak"/>
     <ROW File="dictionary" Component_="dictionary" FileName="DICTIO~1|dictionary" Attributes="0" SourcePath="..\..\library\dictionary" SelfReg="false" NextFile="chrome_100_percent.pak"/>
-    <ROW File="diskusage.node_1" Component_="diskusage.node_1" FileName="DISKUS~1.NOD|diskusage.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\diskusage\bin\win32-x64-73\diskusage.node" SelfReg="false" NextFile="diskusage.node_2"/>
-    <ROW File="diskusage.node_2" Component_="diskusage.node_2" FileName="DISKUS~1.NOD|diskusage.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\diskusage\build\Release\diskusage.node" SelfReg="false" NextFile="ffinapi.node"/>
+    <ROW File="diskusage.node" Component_="diskusage.node" FileName="DISKUS~1.NOD|diskusage.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\diskusage\bin\win32-x64-76\diskusage.node" SelfReg="false" NextFile="diskusage.node_1"/>
+    <ROW File="diskusage.node_1" Component_="diskusage.node_1" FileName="DISKUS~1.NOD|diskusage.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\diskusage\build\Release\diskusage.node" SelfReg="false" NextFile="ffinapi.node"/>
     <ROW File="el.pak" Component_="am.pak" FileName="el.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\el.pak" SelfReg="false" NextFile="enGB.pak"/>
-    <ROW File="electron.asar" Component_="appupdate.yml" FileName="ELECTR~1.ASA|electron.asar" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\electron.asar" SelfReg="false" NextFile="Symphony.config_1"/>
     <ROW File="enAU.bdic" Component_="enAU.bdic" FileName="EN-AU~1.BDI|en-AU.bdic" Attributes="0" SourcePath="..\..\dist\win-unpacked\dictionaries\en-AU.bdic" SelfReg="false" NextFile="enCA.bdic"/>
     <ROW File="enCA.bdic" Component_="enAU.bdic" FileName="EN-CA~1.BDI|en-CA.bdic" Attributes="0" SourcePath="..\..\dist\win-unpacked\dictionaries\en-CA.bdic" SelfReg="false" NextFile="enGB.bdic"/>
     <ROW File="enGB.bdic" Component_="enAU.bdic" FileName="EN-GB~1.BDI|en-GB.bdic" Attributes="0" SourcePath="..\..\dist\win-unpacked\dictionaries\en-GB.bdic" SelfReg="false" NextFile="enUS.bdic"/>
@@ -209,13 +233,15 @@
     <ROW File="esdoc.json" Component_="build.cmd" FileName="ESDOC~1.JSO|esdoc.json" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\esdoc.json" SelfReg="false" NextFile="index.js"/>
     <ROW File="et.pak" Component_="am.pak" FileName="et.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\et.pak" SelfReg="false" NextFile="fa.pak"/>
     <ROW File="fa.pak" Component_="am.pak" FileName="fa.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\fa.pak" SelfReg="false" NextFile="fi.pak"/>
-    <ROW File="ffi_bindings.node" Component_="ffi_bindings.node" FileName="FFI_BI~1.NOD|ffi_bindings.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ffi-napi\build\Release\ffi_bindings.node" SelfReg="false" NextFile="refnapi.node"/>
-    <ROW File="ffinapi.node" Component_="ffinapi.node" FileName="FFI-NA~1.NOD|ffi-napi.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ffi-napi\bin\win32-x64-73\ffi-napi.node" SelfReg="false" NextFile="ffi_bindings.node"/>
+    <ROW File="ffi_bindings.node" Component_="ffi_bindings.node" FileName="FFI_BI~1.NOD|ffi_bindings.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ffi-napi\build\Release\ffi_bindings.node" SelfReg="false" NextFile="keyboardlayout.node"/>
+    <ROW File="ffi_bindings.node_1" Component_="ffi_bindings.node_1" FileName="FFI_BI~1.NOD|ffi_bindings.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\swift-search\node_modules\ffi-napi\build\Release\ffi_bindings.node" SelfReg="false" NextFile="refnapi.node_1"/>
+    <ROW File="ffinapi.node" Component_="ffinapi.node" FileName="FFI-NA~1.NOD|ffi-napi.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ffi-napi\bin\win32-x64-76\ffi-napi.node" SelfReg="false" NextFile="ffi_bindings.node"/>
+    <ROW File="ffinapi.node_1" Component_="ffinapi.node_1" FileName="FFI-NA~1.NOD|ffi-napi.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\swift-search\node_modules\ffi-napi\bin\win32-x64-76\ffi-napi.node" SelfReg="false" NextFile="ffi_bindings.node_1"/>
     <ROW File="ffmpeg.dll" Component_="ffmpeg.dll" FileName="ffmpeg.dll" Attributes="0" SourcePath="..\..\dist\win-unpacked\ffmpeg.dll" SelfReg="false" NextFile="icudtl.dat"/>
     <ROW File="fi.pak" Component_="am.pak" FileName="fi.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\fi.pak" SelfReg="false" NextFile="fil.pak"/>
     <ROW File="fil.pak" Component_="am.pak" FileName="fil.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\fil.pak" SelfReg="false" NextFile="fr.pak"/>
     <ROW File="fr.pak" Component_="am.pak" FileName="fr.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\fr.pak" SelfReg="false" NextFile="gu.pak"/>
-    <ROW File="frFR.bdic" Component_="enAU.bdic" FileName="FR-FR~1.BDI|fr-FR.bdic" Attributes="0" SourcePath="..\..\dist\win-unpacked\dictionaries\fr-FR.bdic" SelfReg="false" NextFile="build.cmd"/>
+    <ROW File="frFR.bdic" Component_="enAU.bdic" FileName="FR-FR~1.BDI|fr-FR.bdic" Attributes="0" SourcePath="..\..\dist\win-unpacked\dictionaries\fr-FR.bdic" SelfReg="false" NextFile="dictionary"/>
     <ROW File="gu.pak" Component_="am.pak" FileName="gu.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\gu.pak" SelfReg="false" NextFile="he.pak"/>
     <ROW File="he.pak" Component_="am.pak" FileName="he.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\he.pak" SelfReg="false" NextFile="hi.pak"/>
     <ROW File="hi.pak" Component_="am.pak" FileName="hi.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\hi.pak" SelfReg="false" NextFile="hr.pak"/>
@@ -224,17 +250,19 @@
     <ROW File="icudtl.dat" Component_="blink_image_resources_200_percent.pak" FileName="icudtl.dat" Attributes="0" SourcePath="..\..\dist\win-unpacked\icudtl.dat" SelfReg="false" NextFile="libEGL.dll"/>
     <ROW File="id.pak" Component_="am.pak" FileName="id.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\id.pak" SelfReg="false" NextFile="it.pak"/>
     <ROW File="index.js" Component_="index.js" FileName="index.js" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\lib\index.js" SelfReg="false" NextFile="index.js_1"/>
-    <ROW File="index.js.map" Component_="index.js_1" FileName="INDEXJ~1.MAP|index.js.map" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\lib\src\index.js.map" SelfReg="false" NextFile="package.json"/>
-    <ROW File="index.js_1" Component_="index.js_1" FileName="index.js" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\lib\src\index.js" SelfReg="false" NextFile="index.js.map"/>
+    <ROW File="index.js_1" Component_="index.js_1" FileName="index.js" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\lib\src\index.js" SelfReg="false" NextFile="package.json_2"/>
     <ROW File="index.ts" Component_="index.ts" FileName="index.ts" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\src\index.ts" SelfReg="false" NextFile="tsconfig.json"/>
     <ROW File="indexvalidatorx64.exe" Component_="indexvalidatorx64.exe" FileName="INDEXV~1.EXE|indexvalidator-x64.exe" Attributes="0" SourcePath="..\..\library\indexvalidator-x64.exe" SelfReg="false" NextFile="libsymphonysearchx64.dll" DigSign="true"/>
     <ROW File="it.pak" Component_="am.pak" FileName="it.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\it.pak" SelfReg="false" NextFile="ja.pak"/>
     <ROW File="ja.pak" Component_="am.pak" FileName="ja.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\ja.pak" SelfReg="false" NextFile="kn.pak"/>
-    <ROW File="keyboardlayoutmanager.node" Component_="keyboardlayoutmanager.node" FileName="KEYBOA~1.NOD|keyboard-layout-manager.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\keyboard-layout\build\Release\keyboard-layout-manager.node" SelfReg="false" NextFile="dictionary"/>
+    <ROW File="keyboardlayout.node" Component_="keyboardlayout.node" FileName="KEYBOA~1.NOD|keyboard-layout.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\keyboard-layout\bin\win32-x64-76\keyboard-layout.node" SelfReg="false" NextFile="keyboardlayoutmanager.node"/>
+    <ROW File="keyboardlayoutmanager.node" Component_="keyboardlayoutmanager.node" FileName="KEYBOA~1.NOD|keyboard-layout-manager.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\keyboard-layout\build\Release\keyboard-layout-manager.node" SelfReg="false" NextFile="refnapi.node"/>
     <ROW File="kn.pak" Component_="am.pak" FileName="kn.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\kn.pak" SelfReg="false" NextFile="ko.pak"/>
     <ROW File="ko.pak" Component_="am.pak" FileName="ko.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\ko.pak" SelfReg="false" NextFile="lt.pak"/>
     <ROW File="libEGL.dll" Component_="libEGL.dll" FileName="libEGL.dll" Attributes="0" SourcePath="..\..\dist\win-unpacked\libEGL.dll" SelfReg="false" NextFile="libGLESv2.dll"/>
+    <ROW File="libEGL.dll_1" Component_="libEGL.dll_1" FileName="libEGL.dll" Attributes="0" SourcePath="..\..\dist\win-unpacked\swiftshader\libEGL.dll" SelfReg="false" NextFile="libGLESv2.dll_1"/>
     <ROW File="libGLESv2.dll" Component_="libGLESv2.dll" FileName="LIBGLE~1.DLL|libGLESv2.dll" Attributes="0" SourcePath="..\..\dist\win-unpacked\libGLESv2.dll" SelfReg="false" NextFile="LICENSE.electron.txt"/>
+    <ROW File="libGLESv2.dll_1" Component_="libGLESv2.dll_1" FileName="LIBGLE~1.DLL|libGLESv2.dll" Attributes="0" SourcePath="..\..\dist\win-unpacked\swiftshader\libGLESv2.dll" SelfReg="false" NextFile="ffinapi.node_1"/>
     <ROW File="libsymphonysearchx64.dll" Component_="libsymphonysearchx64.dll" FileName="LIBSYM~1.DLL|libsymphonysearch-x64.dll" Attributes="0" SourcePath="..\..\library\libsymphonysearch-x64.dll" SelfReg="false" NextFile="lz4winx64.exe"/>
     <ROW File="lt.pak" Component_="am.pak" FileName="lt.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\lt.pak" SelfReg="false" NextFile="lv.pak"/>
     <ROW File="lv.pak" Component_="am.pak" FileName="lv.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\lv.pak" SelfReg="false" NextFile="ml.pak"/>
@@ -242,21 +270,21 @@
     <ROW File="ml.pak" Component_="am.pak" FileName="ml.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\ml.pak" SelfReg="false" NextFile="mr.pak"/>
     <ROW File="mr.pak" Component_="am.pak" FileName="mr.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\mr.pak" SelfReg="false" NextFile="ms.pak"/>
     <ROW File="ms.pak" Component_="am.pak" FileName="ms.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\ms.pak" SelfReg="false" NextFile="nb.pak"/>
-    <ROW File="natives_blob.bin" Component_="blink_image_resources_200_percent.pak" FileName="NATIVE~1.BIN|natives_blob.bin" Attributes="0" SourcePath="..\..\dist\win-unpacked\natives_blob.bin" SelfReg="false" NextFile="Symphony.exe"/>
     <ROW File="nb.pak" Component_="am.pak" FileName="nb.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\nb.pak" SelfReg="false" NextFile="nl.pak"/>
     <ROW File="nl.pak" Component_="am.pak" FileName="nl.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\nl.pak" SelfReg="false" NextFile="pl.pak"/>
-    <ROW File="package.json" Component_="build.cmd" FileName="PACKAG~1.JSO|package.json" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\package.json" SelfReg="false" NextFile="index.ts"/>
+    <ROW File="package.json_2" Component_="build.cmd" FileName="PACKAG~1.JSO|package.json" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\package.json" SelfReg="false" NextFile="index.ts"/>
     <ROW File="pl.pak" Component_="am.pak" FileName="pl.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\pl.pak" SelfReg="false" NextFile="ptBR.pak"/>
     <ROW File="ptBR.pak" Component_="am.pak" FileName="pt-BR.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\pt-BR.pak" SelfReg="false" NextFile="ptPT.pak"/>
     <ROW File="ptPT.pak" Component_="am.pak" FileName="pt-PT.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\pt-PT.pak" SelfReg="false" NextFile="ro.pak"/>
-    <ROW File="refnapi.node" Component_="refnapi.node" FileName="REF-NA~1.NOD|ref-napi.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ref-napi\bin\win32-x64-73\ref-napi.node" SelfReg="false" NextFile="binding.node"/>
+    <ROW File="refnapi.node" Component_="refnapi.node" FileName="REF-NA~1.NOD|ref-napi.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ref-napi\bin\win32-x64-76\ref-napi.node" SelfReg="false" NextFile="binding.node"/>
+    <ROW File="refnapi.node_1" Component_="refnapi.node_1" FileName="REF-NA~1.NOD|ref-napi.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\swift-search\node_modules\ref-napi\bin\win32-x64-76\ref-napi.node" SelfReg="false" NextFile="binding.node_1"/>
     <ROW File="resources.pak" Component_="blink_image_resources_200_percent.pak" FileName="RESOUR~1.PAK|resources.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources.pak" SelfReg="false" NextFile="snapshot_blob.bin"/>
     <ROW File="ro.pak" Component_="am.pak" FileName="ro.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\ro.pak" SelfReg="false" NextFile="ru.pak"/>
     <ROW File="ru.pak" Component_="am.pak" FileName="ru.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\ru.pak" SelfReg="false" NextFile="sk.pak"/>
     <ROW File="sk.pak" Component_="am.pak" FileName="sk.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\sk.pak" SelfReg="false" NextFile="sl.pak"/>
     <ROW File="sl.pak" Component_="am.pak" FileName="sl.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\sl.pak" SelfReg="false" NextFile="sr.pak"/>
-    <ROW File="snapshot_blob.bin" Component_="blink_image_resources_200_percent.pak" FileName="SNAPSH~1.BIN|snapshot_blob.bin" Attributes="0" SourcePath="..\..\dist\win-unpacked\snapshot_blob.bin" SelfReg="false" NextFile="spellchecker.node"/>
-    <ROW File="spellchecker.node" Component_="spellchecker.node" FileName="SPELLC~1.NOD|spellchecker.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\@felixrieseberg\spellchecker\bin\win32-x64-73\spellchecker.node" SelfReg="false" NextFile="spellchecker.node_1"/>
+    <ROW File="snapshot_blob.bin" Component_="blink_image_resources_200_percent.pak" FileName="SNAPSH~1.BIN|snapshot_blob.bin" Attributes="0" SourcePath="..\..\dist\win-unpacked\snapshot_blob.bin" SelfReg="false" NextFile="ScreenShareIndicatorFrame.exe"/>
+    <ROW File="spellchecker.node" Component_="spellchecker.node" FileName="SPELLC~1.NOD|spellchecker.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\@felixrieseberg\spellchecker\bin\win32-x64-76\spellchecker.node" SelfReg="false" NextFile="spellchecker.node_1"/>
     <ROW File="spellchecker.node_1" Component_="spellchecker.node_1" FileName="SPELLC~1.NOD|spellchecker.node" Attributes="0" SourcePath="..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\@felixrieseberg\spellchecker\build\Release\spellchecker.node" SelfReg="false" NextFile="cld.node"/>
     <ROW File="sr.pak" Component_="am.pak" FileName="sr.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\sr.pak" SelfReg="false" NextFile="sv.pak"/>
     <ROW File="sv.pak" Component_="am.pak" FileName="sv.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\sv.pak" SelfReg="false" NextFile="sw.pak"/>
@@ -272,6 +300,8 @@
     <ROW File="uk.pak" Component_="am.pak" FileName="uk.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\uk.pak" SelfReg="false" NextFile="vi.pak"/>
     <ROW File="v8_context_snapshot.bin" Component_="blink_image_resources_200_percent.pak" FileName="V8_CON~1.BIN|v8_context_snapshot.bin" Attributes="0" SourcePath="..\..\dist\win-unpacked\v8_context_snapshot.bin" SelfReg="false" NextFile="titleBarStyles.css"/>
     <ROW File="vi.pak" Component_="am.pak" FileName="vi.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\vi.pak" SelfReg="false" NextFile="zhCN.pak"/>
+    <ROW File="vk_swiftshader.dll" Component_="vk_swiftshader.dll" FileName="VK_SWI~1.DLL|vk_swiftshader.dll" Attributes="0" SourcePath="..\..\dist\win-unpacked\vk_swiftshader.dll" SelfReg="false" NextFile="vk_swiftshader_icd.json"/>
+    <ROW File="vk_swiftshader_icd.json" Component_="blink_image_resources_200_percent.pak" FileName="VK_SWI~1.JSO|vk_swiftshader_icd.json" Attributes="0" SourcePath="..\..\dist\win-unpacked\vk_swiftshader_icd.json" SelfReg="false" NextFile="spellchecker.node"/>
     <ROW File="zhCN.pak" Component_="am.pak" FileName="zh-CN.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\zh-CN.pak" SelfReg="false" NextFile="zhTW.pak"/>
     <ROW File="zhTW.pak" Component_="am.pak" FileName="zh-TW.pak" Attributes="0" SourcePath="..\..\dist\win-unpacked\locales\zh-TW.pak" SelfReg="false" NextFile="app.asar"/>
   </COMPONENT>
@@ -373,6 +403,14 @@
     <ROW Dialog_="BrowseDlg" Control="Logo" Type="Text" X="4" Y="228" Width="38" Height="12" Attributes="1" Text="Symphony" Order="300" TextLocId="Control.Text.BrowseDlg#Logo" MsiKey="BrowseDlg#Logo"/>
     <ROW Dialog_="BrowseDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="1200" MsiKey="BrowseDlg#BannerBitmap"/>
     <ROW Dialog_="BrowseDlg" Control="Description" Type="Text" X="17" Y="21" Width="272" Height="14" Attributes="196611" Text="Browse to the destination folder" Order="1400" TextLocId="Control.Text.BrowseDlg#Description" MsiKey="BrowseDlg#Description"/>
+    <ROW Dialog_="CloseSymphonyDialog" Control="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Attributes="1" Text="[ButtonText_Next]" Order="100"/>
+    <ROW Dialog_="CloseSymphonyDialog" Control="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Attributes="2" Text="[ButtonText_Cancel]" Order="200"/>
+    <ROW Dialog_="CloseSymphonyDialog" Control="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" Attributes="1048577" Text="[DialogBitmap]" Order="300"/>
+    <ROW Dialog_="CloseSymphonyDialog" Control="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Attributes="3" Text="[ButtonText_Back]" Order="400"/>
+    <ROW Dialog_="CloseSymphonyDialog" Control="Title" Type="Text" X="135" Y="20" Width="220" Height="60" Attributes="196611" Text="Close Symphony" TextStyle="VerdanaBold13_VerdanaBold13" Order="500"/>
+    <ROW Dialog_="CloseSymphonyDialog" Control="Description" Type="Text" X="135" Y="86" Width="220" Height="60" Attributes="196611" Text="It looks like an instance of Symphony is running. You&apos;ll need to close that before continuing with the installation. Please click the below &quot;Close Symphony&quot; button to close Symphony and continue." Order="600"/>
+    <ROW Dialog_="CloseSymphonyDialog" Control="BottomLine" Type="Line" X="0" Y="234" Width="372" Height="0" Attributes="1" Order="700"/>
+    <ROW Dialog_="CloseSymphonyDialog" Control="PushButton_1" Type="PushButton" X="135" Y="161" Width="80" Height="26" Attributes="3" Text="Close Symphony" Order="800"/>
     <ROW Dialog_="CustomizeDlg" Control="Logo" Type="Text" X="4" Y="228" Width="39" Height="12" Attributes="1" Text="Symphony" Order="600" TextLocId="Control.Text.CustomizeDlg#Logo" MsiKey="CustomizeDlg#Logo"/>
     <ROW Dialog_="CustomizeDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="1000" MsiKey="CustomizeDlg#BannerBitmap"/>
     <ROW Dialog_="CustomizeDlg" Control="Description" Type="Text" X="17" Y="21" Width="272" Height="14" Attributes="196611" Text="Select the way you want features to be installed." Order="1300" TextLocId="Control.Text.CustomizeDlg#Description" MsiKey="CustomizeDlg#Description"/>
@@ -521,9 +559,9 @@
     <ROW Dialog_="ResumeDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_RESUME" Ordering="299"/>
     <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_PATCH" Ordering="199"/>
     <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="PatchWelcomeDlg" Condition="AI_PATCH" Ordering="203"/>
-    <ROW Dialog_="InstallTypeDlg" Control_="Next" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="102"/>
+    <ROW Dialog_="InstallTypeDlg" Control_="Next" Event="EndDialog" Argument="Return" Condition="AI_INSTALL AND ( AI_PROCESS_STATE=&quot;Stopped&quot; )" Ordering="105"/>
     <ROW Dialog_="InstallationDlg" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="100"/>
-    <ROW Dialog_="InstallationDlg" Control_="Next" Event="EndDialog" Argument="Return" Condition="AI_INSTALL AND ( INVALID_POD_URL = &quot;valid&quot; )" Ordering="6"/>
+    <ROW Dialog_="InstallationDlg" Control_="Next" Event="EndDialog" Argument="Return" Condition="AI_INSTALL AND ( INVALID_POD_URL = &quot;valid&quot; )" Ordering="11"/>
     <ROW Dialog_="SettingsDlg" Control_="Next" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="6"/>
     <ROW Dialog_="SettingsDlg" Control_="PushButton_1" Event="SpawnDialog" Argument="AdvanceSettings" Condition="AI_INSTALL" Ordering="1"/>
     <ROW Dialog_="SettingsDlg" Control_="Next" Event="SpawnDialog" Argument="OutOfRbDiskDlg" Condition="AI_INSTALL AND OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST=&quot;P&quot; OR NOT PROMPTROLLBACKCOST)" Ordering="9" Options="2"/>
@@ -539,18 +577,17 @@
     <ROW Dialog_="AdvanceSettings" Control_="Cancel" Event="EndDialog" Argument="Return" Condition="1" Ordering="0"/>
     <ROW Dialog_="AdvanceSettings" Control_="Next" Event="DoAction" Argument="PodUrlValidation" Condition="1" Ordering="0"/>
     <ROW Dialog_="AdvanceSettings" Control_="Next" Event="EndDialog" Argument="Return" Condition="1" Ordering="1"/>
-    <ROW Dialog_="SettingsDlg" Control_="Next" Event="DoAction" Argument="PodUrlValidation" Condition="AI_INSTALL" Ordering="7"/>
     <ROW Dialog_="InstallationDlg" Control_="Back" Event="SpawnDialog" Argument="InstallTypeDlg" Condition="AI_INSTALL" Ordering="1"/>
     <ROW Dialog_="SettingsDlg" Control_="TemplateSeqDlgDialogInitializer" Event="[AI_ButtonText_Next_Orig]" Argument="[ButtonText_Next]" Condition="AI_INSTALL" Ordering="4"/>
-    <ROW Dialog_="InstallationDlg" Control_="Next" Event="NewDialog" Argument="SettingsDlg" Condition="AI_INSTALL AND ( INVALID_POD_URL = &quot;valid&quot; )" Ordering="5"/>
-    <ROW Dialog_="InstallTypeDlg" Control_="Next" Event="NewDialog" Argument="InstallationDlg" Condition="AI_INSTALL" Ordering="101"/>
+    <ROW Dialog_="InstallationDlg" Control_="Next" Event="NewDialog" Argument="SettingsDlg" Condition="AI_INSTALL AND ( INVALID_POD_URL = &quot;valid&quot; )" Ordering="10"/>
+    <ROW Dialog_="InstallTypeDlg" Control_="Next" Event="NewDialog" Argument="InstallationDlg" Condition="AI_INSTALL AND ( AI_PROCESS_STATE=&quot;Stopped&quot; )" Ordering="104"/>
     <ROW Dialog_="SettingsDlg" Control_="Back" Event="[Text_Next]" Argument="[AI_Text_Next_Orig]" Condition="AI_INSTALL" Ordering="5" Options="2"/>
     <ROW Dialog_="SettingsDlg" Control_="Back" Event="SpawnDialog" Argument="InstallationDlg" Condition="AI_INSTALL" Ordering="6"/>
-    <ROW Dialog_="InstallationDlg" Control_="Next" Event="SetTargetPath" Argument="APPDIR" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="InstallationDlg" Control_="Next" Event="SetTargetPath" Argument="APPDIR" Condition="AI_INSTALL" Ordering="3"/>
     <ROW Dialog_="UrlValidationDlg" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="100"/>
     <ROW Dialog_="InstallationDlg" Control_="InstallationDlgDialogInitializer" Event="DoAction" Argument="PodUrlValidation" Condition="AI_INSTALL" Ordering="0"/>
-    <ROW Dialog_="InstallationDlg" Control_="Next" Event="SpawnDialog" Argument="UrlValidationDlg" Condition="AI_INSTALL AND ( INVALID_POD_URL = &quot;invalid&quot; )" Ordering="4"/>
-    <ROW Dialog_="InstallationDlg" Control_="Next" Event="DoAction" Argument="PodUrlValidation" Condition="AI_INSTALL" Ordering="3"/>
+    <ROW Dialog_="InstallationDlg" Control_="Next" Event="SpawnDialog" Argument="UrlValidationDlg" Condition="AI_INSTALL AND ( INVALID_POD_URL = &quot;invalid&quot; )" Ordering="5"/>
+    <ROW Dialog_="InstallationDlg" Control_="Next" Event="DoAction" Argument="PodUrlValidation" Condition="AI_INSTALL" Ordering="4"/>
     <ROW Dialog_="UrlValidationDlg" Control_="Back" Event="EndDialog" Argument="Return" Condition="1" Ordering="0"/>
     <ROW Dialog_="InstallTypeDlg" Control_="Next" Event="DoAction" Argument="AI_AuthorSinglePackage" Condition="AI_INSTALL" Ordering="100" MsiKey="InstallTypeDlg#Next#DoAction#AI_AuthorSinglePackage#AI_INSTALL"/>
     <ROW Dialog_="InstallTypeDlg" Control_="TemplateDlgDialogInitializer" Event="[AI_InstallPerUser]" Argument="0" Condition="1 AND (ALLUSERS=&quot;1&quot;)" Ordering="100" MsiKey="InstallTypeDlg#TemplateDlgDialogInitializer#[AI_InstallPerUser]#0#1 AND (ALLUSERS=&quot;1&quot;)"/>
@@ -623,6 +660,17 @@
     <ROW Dialog_="InstallationDlg" Control_="SsoCheckbox" Event="DoAction" Argument="SsoCheckbox" Condition="AI_INSTALL AND ( NOT SSO_CHECKBOX )" Ordering="1"/>
     <ROW Dialog_="InstallationDlg" Control_="SsoCheckbox" Event="[AiRefreshDlg]" Argument="1" Condition="AI_INSTALL AND ( NOT SSO_CHECKBOX )" Ordering="2"/>
     <ROW Dialog_="InstallationDlg" Control_="SsoCheckbox" Event="[AiRefreshDlg]" Argument="1" Condition="AI_INSTALL AND ( SSO_CHECKBOX )" Ordering="3"/>
+    <ROW Dialog_="CloseSymphonyDialog" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="100"/>
+    <ROW Dialog_="CloseSymphonyDialog" Control_="Back" Event="EndDialog" Argument="Return" Condition="1" Ordering="0"/>
+    <ROW Dialog_="InstallTypeDlg" Control_="TemplateDlgDialogInitializer" Event="DoAction" Argument="DetectSymphony" Condition="AI_INSTALL" Ordering="102"/>
+    <ROW Dialog_="CloseSymphonyDialog" Control_="PushButton_1" Event="DoAction" Argument="StopProcess" Condition="1" Ordering="1"/>
+    <ROW Dialog_="CloseSymphonyDialog" Control_="PushButton_1" Event="DoAction" Argument="AI_DATA_SETTER_4" Condition="1" Ordering="0"/>
+    <ROW Dialog_="InstallTypeDlg" Control_="TemplateDlgDialogInitializer" Event="DoAction" Argument="AI_DATA_SETTER_2" Condition="AI_INSTALL" Ordering="101"/>
+    <ROW Dialog_="InstallTypeDlg" Control_="Next" Event="DoAction" Argument="DetectSymphony" Condition="AI_INSTALL" Ordering="102"/>
+    <ROW Dialog_="CloseSymphonyDialog" Control_="Back" Event="DoAction" Argument="DetectSymphony" Condition="1" Ordering="2"/>
+    <ROW Dialog_="CloseSymphonyDialog" Control_="Back" Event="DoAction" Argument="AI_DATA_SETTER_2" Condition="1" Ordering="1"/>
+    <ROW Dialog_="InstallTypeDlg" Control_="Next" Event="DoAction" Argument="AI_DATA_SETTER_2" Condition="AI_INSTALL" Ordering="101"/>
+    <ROW Dialog_="InstallTypeDlg" Control_="Next" Event="SpawnDialog" Argument="CloseSymphonyDialog" Condition="AI_INSTALL AND ( AI_PROCESS_STATE=&quot;Running&quot; )" Ordering="103"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCreateFolderComponent">
     <ROW Directory_="Symphony_Dir" Component_="Symphony" ManualDelete="false"/>
@@ -638,6 +686,7 @@
     <ROW Action="AI_DATA_SETTER" Type="51" Source="CustomActionData" Target="Symphony.exe"/>
     <ROW Action="AI_DATA_SETTER_1" Type="51" Source="CustomActionData" Target="AEkAcwA2ADQAQgBpAHQAAgABAFAAYQByAGEAbQBzAAIAAQBTAGMAcgBpAHAAdAACACMAIABCAGwAbwBjAGsAIABmAG8AcgAgAGQAZQBjAGwAYQByAGkAbgBnACAAdABoAGUAIABzAGMAcgBpAHAAdAAgAHAAYQByAGEAbQBlAHQAZQByAHMALgANAAoAUABhAHIAYQBtACgAKQANAAoADQAKACMAIABZAG8AdQByACAAYwBvAGQAZQAgAGcAbwBlAHMAIABoAGUAcgBlAC4ADQAKAFIAZQBtAG8AdgBlAC0ASQB0AGUAbQBQAHIAbwBwAGUAcgB0AHkAIAAtAFAAYQB0AGgAIAAiAEgASwBDAFUAOgBTAG8AZgB0AHcAYQByAGUAXABNAGkAYwByAG8AcwBvAGYAdABcAFcAaQBuAGQAbwB3AHMAXABDAHUAcgByAGUAbgB0AFYAZQByAHMAaQBvAG4AXABSAHUAbgAiACAALQBOAGEAbQBlACAAIgBTAHkAbQBwAGgAbwBuAHkAIgAgAC0ARQByAHIAbwByAEEAYwB0AGkAbwBuACAAUwBpAGwAZQBuAHQAbAB5AEMAbwBuAHQAaQBuAHUAZQANAAoAUgBlAG0AbwB2AGUALQBJAHQAZQBtAFAAcgBvAHAAZQByAHQAeQAgAC0AUABhAHQAaAAgACIASABLAEMAVQA6AFMAbwBmAHQAdwBhAHIAZQBcAE0AaQBjAHIAbwBzAG8AZgB0AFwAVwBpAG4AZABvAHcAcwBcAEMAdQByAHIAZQBuAHQAVgBlAHIAcwBpAG8AbgBcAFIAdQBuACIAIAAtAE4AYQBtAGUAIAAiAGMAbwBtAC4AcwB5AG0AcABoAG8AbgB5AC4AZQBsAGUAYwB0AHIAbwBuAC0AZABlAHMAawB0AG8AcAAiACAALQBFAHIAcgBvAHIAQQBjAHQAaQBvAG4AIABTAGkAbABlAG4AdABsAHkAQwBvAG4AdABpAG4AdQBlAA0ACgBSAGUAbQBvAHYAZQAtAEkAdABlAG0AUAByAG8AcABlAHIAdAB5ACAALQBQAGEAdABoACAAIgBIAEsAQwBVADoAUwBvAGYAdAB3AGEAcgBlAFwATQBpAGMAcgBvAHMAbwBmAHQAXABXAGkAbgBkAG8AdwBzAFwAQwB1AHIAcgBlAG4AdABWAGUAcgBzAGkAbwBuAFwAUgB1AG4AIgAgAC0ATgBhAG0AZQAgACIAZQBsAGUAYwB0AHIAbwBuAC4AYQBwAHAALgBTAHkAbQBwAGgAbwBuAHkAIgAgAC0ARQByAHIAbwByAEEAYwB0AGkAbwBuACAAUwBpAGwAZQBuAHQAbAB5AEMAbwBuAHQAaQBuAHUAZQANAAoAUgBlAG0AbwB2AGUALQBJAHQAZQBtACAAIgBIAEsAQwBVADoAUwBvAGYAdAB3AGEAcgBlAFwAQwBsAGEAcwBzAGUAcwBcAHMAeQBtAHAAaABvAG4AeQAiACAALQBSAGUAYwB1AHIAcwBlACAALQBFAHIAcgBvAHIAQQBjAHQAaQBvAG4AIABTAGkAbABlAG4AdABsAHkAQwBvAG4AdABpAG4AdQBlAA0ACgANAAoAUgBlAG0AbwB2AGUALQBJAHQAZQBtACAAIgBIAEsATABNADoAUwBPAEYAVABXAEEAUgBFAFwAQwBsAGEAcwBzAGUAcwBcAHMAeQBtAHAAaABvAG4AeQAiACAALQBSAGUAYwB1AHIAcwBlACAALQBFAHIAcgBvAHIAQQBjAHQAaQBvAG4AIABTAGkAbABlAG4AdABsAHkAQwBvAG4AdABpAG4AdQBlAA0ACgANAAoATgBlAHcALQBQAFMARAByAGkAdgBlACAALQBOAGEAbQBlACAASABLAEMAUgAgAC0AUABTAFAAcgBvAHYAaQBkAGUAcgAgAFIAZQBnAGkAcwB0AHIAeQAgAC0AUgBvAG8AdAAgAEgASwBFAFkAXwBDAEwAQQBTAFMARQBTAF8AUgBPAE8AVAAgAC0ARQByAHIAbwByAEEAYwB0AGkAbwBuACAAUwBpAGwAZQBuAHQAbAB5AEMAbwBuAHQAaQBuAHUAZQANAAoAUgBlAG0AbwB2AGUALQBpAHQAZQBtACAAIgBIAEsAQwBSADoAXABzAHkAbQBwAGgAbwBuAHkAIgAgAC0AUgBlAGMAdQByAHMAZQAgAC0ARQByAHIAbwByAEEAYwB0AGkAbwBuACAAUwBpAGwAZQBuAHQAbAB5AEMAbwBuAHQAaQBuAHUAZQANAAoADQAKAE4AZQB3AC0AUABTAEQAcgBpAHYAZQAgAC0ATgBhAG0AZQAgAEgASwBVACAALQBQAFMAUAByAG8AdgBpAGQAZQByACAAUgBlAGcAaQBzAHQAcgB5ACAALQBSAG8AbwB0ACAASABLAEUAWQBfAFUAUwBFAFIAUwAgAC0ARQByAHIAbwByAEEAYwB0AGkAbwBuACAAUwBpAGwAZQBuAHQAbAB5AEMAbwBuAHQAaQBuAHUAZQANAAoAUgBlAG0AbwB2AGUALQBJAHQAZQBtAFAAcgBvAHAAZQByAHQAeQAgAC0AUABhAHQAaAAgACIASABLAFUAOgAuAEQARQBGAEEAVQBMAFQAXABTAG8AZgB0AHcAYQByAGUAXABNAGkAYwByAG8AcwBvAGYAdABcAFcAaQBuAGQAbwB3AHMAXABDAHUAcgByAGUAbgB0AFYAZQByAHMAaQBvAG4AXABSAHUAbgAiACAALQBOAGEAbQBlACAAIgBTAHkAbQBwAGgAbwBuAHkAIgAgAC0ARQByAHIAbwByAEEAYwB0AGkAbwBuACAAUwBpAGwAZQBuAHQAbAB5AEMAbwBuAHQAaQBuAHUAZQ=="/>
     <ROW Action="AI_DATA_SETTER_2" Type="51" Source="CustomActionData" Target="Symphony.exe"/>
+    <ROW Action="AI_DATA_SETTER_4" Type="51" Source="CustomActionData" Target="Symphony.exe"/>
     <ROW Action="AI_DOWNGRADE" Type="19" Target="4010"/>
     <ROW Action="AI_DpiContentScale" Type="1" Source="aicustact.dll" Target="DpiContentScale"/>
     <ROW Action="AI_EnableDebugLog" Type="321" Source="aicustact.dll" Target="EnableDebugLog"/>
@@ -653,18 +702,20 @@
     <ROW Action="AI_TxtUpdaterConfig" Type="11265" Source="TxtUpdater.dll" Target="OnTxtUpdaterConfig" WithoutSeq="true"/>
     <ROW Action="AI_TxtUpdaterInstall" Type="1" Source="TxtUpdater.dll" Target="OnTxtUpdaterInstall"/>
     <ROW Action="AI_TxtUpdaterRollback" Type="11521" Source="TxtUpdater.dll" Target="OnTxtUpdaterRollback" WithoutSeq="true"/>
-    <ROW Action="KillParagon" Type="65" Source="aicustact.dll" Target="StopProcess" Options="1" AdditionalSeq="AI_DATA_SETTER_2"/>
+    <ROW Action="DetectSymphony" Type="65" Source="aicustact.dll" Target="DetectProcess" WithoutSeq="true" Options="3" AdditionalSeq="AI_DATA_SETTER_2"/>
     <ROW Action="KillRenderer" Type="65" Source="aicustact.dll" Target="StopProcess" Options="1" AdditionalSeq="AI_DATA_SETTER"/>
-    <ROW Action="PodUrlValidation" Type="101" Target="Script Text" TargetUnformatted="var prefix1 = &quot;https://&quot;;&#13;&#10;var prefix2 = &quot;http://&quot;;&#13;&#10;&#13;&#10;Session.Property(&quot;POD_URL&quot;) = Session.Property(&quot;POD_URL&quot;).replace(/^\s\s*/, &apos;&apos;).replace(/\s\s*$/, &apos;&apos;);&#13;&#10;&#13;&#10;if (!Session.Property(&quot;POD_URL&quot;) || Session.Property(&quot;POD_URL&quot;) === &quot;&quot; || Session.Property(&quot;POD_URL&quot;) === &quot;https://[POD].symphony.com&quot;) {&#13;&#10;&#9;Session.Property(&quot;INVALID_POD_URL&quot;) = &quot;invalid&quot;;&#13;&#10;} else if (Session.Property(&quot;POD_URL&quot;).substr(0, prefix1.length) !== prefix1 &amp;&amp; Session.Property(&quot;POD_URL&quot;).substr(0, prefix2.length) !== prefix2) {&#13;&#10;&#9;Session.Property(&quot;POD_URL&quot;) = prefix1 + Session.Property(&quot;POD_URL&quot;);&#13;&#10;}&#13;&#10;&#13;&#10;var podUrlRE = /^(https:\/\/)(www.)?[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-zA-Z]{2,}(:[0-9]{1,5})?(\/[a-zA-Z0-9-_.+!*&apos;(),;/?:@=&amp;$]*)?$/;&#13;&#10;var podUrlTest = podUrlRE.test(Session.Property(&quot;POD_URL&quot;));&#13;&#10;if (!podUrlTest) {&#13;&#10;&#9;Session.Property(&quot;INVALID_POD_URL&quot;) = &quot;invalid&quot;;&#13;&#10;} else {&#13;&#10;&#9;Session.Property(&quot;INVALID_POD_URL&quot;) = &quot;valid&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;var autoLaunchPath = Session.Property(&quot;AUTO_LAUNCH_PATH&quot;);&#13;&#10;if (autoLaunchPath) {&#13;&#10;&#9;Session.Property(&quot;AUTO_LAUNCH_PATH&quot;) = autoLaunchPath.replace(/\\/g, &quot;/&quot;);&#13;&#10;}&#13;&#10;&#13;&#10;Session.Property(&quot;ALWAYS_ON_TOP&quot;) = &quot;false&quot;;            &#13;&#10;Session.Property(&quot;AUTO_START&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;MINIMIZE_ON_CLOSE&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;BRING_TO_FRONT&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;CUSTOM_TITLE_BAR&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;DEV_TOOLS_ENABLED&quot;) = &quot;false&quot;;&#13;&#10;&#13;&#10;Session.Property(&quot;MEDIA&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;LOCATION&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;NOTIFICATIONS&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;MIDI_SYSEX&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;POINTER_LOCK&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;FULL_SCREEN&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;OPEN_EXTERNAL&quot;) = &quot;false&quot;;&#13;&#10;&#13;&#10;if (Session.Property(&quot;ALWAYS_ON_TOP_CB&quot;) &amp;&amp; Session.Property(&quot;ALWAYS_ON_TOP_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;ALWAYS_ON_TOP&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;MINIMIZE_ON_CLOSE_CB&quot;) &amp;&amp; Session.Property(&quot;MINIMIZE_ON_CLOSE_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;MINIMIZE_ON_CLOSE&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;AUTO_START_CB&quot;) &amp;&amp; Session.Property(&quot;AUTO_START_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;AUTO_START&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;BRING_TO_FRONT_CB&quot;) &amp;&amp; Session.Property(&quot;BRING_TO_FRONT_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;BRING_TO_FRONT&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;CUSTOM_TITLE_BAR_CB&quot;) &amp;&amp; Session.Property(&quot;CUSTOM_TITLE_BAR_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;CUSTOM_TITLE_BAR&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;DEV_TOOLS_CB&quot;) &amp;&amp; Session.Property(&quot;DEV_TOOLS_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;DEV_TOOLS_ENABLED&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;MEDIA_CB&quot;) &amp;&amp; Session.Property(&quot;MEDIA_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;MEDIA&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;LOCATION_CB&quot;) &amp;&amp; Session.Property(&quot;LOCATION_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;LOCATION&quot;) = &quot;true&quot;;    &#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;NOTIFICATIONS_CB&quot;) &amp;&amp; Session.Property(&quot;NOTIFICATIONS_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;NOTIFICATIONS&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;MIDI_SYSEX_CB&quot;) &amp;&amp; Session.Property(&quot;MIDI_SYSEX_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;MIDI_SYSEX&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;POINTER_LOCK_CB&quot;) &amp;&amp; Session.Property(&quot;POINTER_LOCK_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;POINTER_LOCK&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;FULL_SCREEN_CB&quot;) &amp;&amp; Session.Property(&quot;FULL_SCREEN_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;FULL_SCREEN&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;OPEN_EXTERNAL_CB&quot;) &amp;&amp; Session.Property(&quot;OPEN_EXTERNAL_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;OPEN_EXTERNAL&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;" WithoutSeq="true"/>
+    <ROW Action="PodUrlValidation" Type="101" Target="Script Text" TargetUnformatted="var prefix1 = &quot;https://&quot;;&#13;&#10;var prefix2 = &quot;http://&quot;;&#13;&#10;&#13;&#10;Session.Property(&quot;POD_URL&quot;) = Session.Property(&quot;POD_URL&quot;).replace(/^\s\s*/, &apos;&apos;).replace(/\s\s*$/, &apos;&apos;);&#13;&#10;&#13;&#10;if (!Session.Property(&quot;POD_URL&quot;) || Session.Property(&quot;POD_URL&quot;) === &quot;&quot; || Session.Property(&quot;POD_URL&quot;) === &quot;https://[POD].symphony.com&quot;) {&#13;&#10;&#9;Session.Property(&quot;INVALID_POD_URL&quot;) = &quot;invalid&quot;;&#13;&#10;} else if (Session.Property(&quot;POD_URL&quot;).substr(0, prefix1.length) !== prefix1 &amp;&amp; Session.Property(&quot;POD_URL&quot;).substr(0, prefix2.length) !== prefix2) {&#13;&#10;&#9;Session.Property(&quot;POD_URL&quot;) = prefix1 + Session.Property(&quot;POD_URL&quot;);&#13;&#10;}&#13;&#10;&#13;&#10;var podUrlRE = /^(https:\/\/)(www.)?[a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-zA-Z]{2,}(:[0-9]{1,5})?(\/[a-zA-Z0-9-_.+!*&apos;(),;/?:@=&amp;$]*)?$/;&#13;&#10;var podUrlTest = podUrlRE.test(Session.Property(&quot;POD_URL&quot;));&#13;&#10;if (!podUrlTest) {&#13;&#10;&#9;Session.Property(&quot;INVALID_POD_URL&quot;) = &quot;invalid&quot;;&#13;&#10;} else {&#13;&#10;&#9;Session.Property(&quot;INVALID_POD_URL&quot;) = &quot;valid&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;var autoLaunchPath = Session.Property(&quot;AUTO_LAUNCH_PATH&quot;);&#13;&#10;if (autoLaunchPath) {&#13;&#10;&#9;Session.Property(&quot;AUTO_LAUNCH_PATH&quot;) = autoLaunchPath.replace(/\\/g, &quot;/&quot;);&#13;&#10;}&#13;&#10;&#13;&#10;Session.Property(&quot;ALWAYS_ON_TOP&quot;) = &quot;DISABLED&quot;;            &#13;&#10;Session.Property(&quot;AUTO_START&quot;) = &quot;DISABLED&quot;;&#13;&#10;Session.Property(&quot;MINIMIZE_ON_CLOSE&quot;) = &quot;DISABLED&quot;;&#13;&#10;Session.Property(&quot;BRING_TO_FRONT&quot;) = &quot;DISABLED&quot;;&#13;&#10;Session.Property(&quot;CUSTOM_TITLE_BAR&quot;) = &quot;DISABLED&quot;;&#13;&#10;Session.Property(&quot;DEV_TOOLS_ENABLED&quot;) = &quot;false&quot;;&#13;&#10;&#13;&#10;Session.Property(&quot;MEDIA&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;LOCATION&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;NOTIFICATIONS&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;MIDI_SYSEX&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;POINTER_LOCK&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;FULL_SCREEN&quot;) = &quot;false&quot;;&#13;&#10;Session.Property(&quot;OPEN_EXTERNAL&quot;) = &quot;false&quot;;&#13;&#10;&#13;&#10;if (Session.Property(&quot;ALWAYS_ON_TOP_CB&quot;) &amp;&amp; Session.Property(&quot;ALWAYS_ON_TOP_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;ALWAYS_ON_TOP&quot;) = &quot;ENABLED&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;MINIMIZE_ON_CLOSE_CB&quot;) &amp;&amp; Session.Property(&quot;MINIMIZE_ON_CLOSE_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;MINIMIZE_ON_CLOSE&quot;) = &quot;ENABLED&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;AUTO_START_CB&quot;) &amp;&amp; Session.Property(&quot;AUTO_START_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;AUTO_START&quot;) = &quot;ENABLED&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;BRING_TO_FRONT_CB&quot;) &amp;&amp; Session.Property(&quot;BRING_TO_FRONT_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;BRING_TO_FRONT&quot;) = &quot;ENABLED&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;CUSTOM_TITLE_BAR_CB&quot;) &amp;&amp; Session.Property(&quot;CUSTOM_TITLE_BAR_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;CUSTOM_TITLE_BAR&quot;) = &quot;ENABLED&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;DEV_TOOLS_CB&quot;) &amp;&amp; Session.Property(&quot;DEV_TOOLS_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;DEV_TOOLS_ENABLED&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;MEDIA_CB&quot;) &amp;&amp; Session.Property(&quot;MEDIA_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;MEDIA&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;LOCATION_CB&quot;) &amp;&amp; Session.Property(&quot;LOCATION_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;LOCATION&quot;) = &quot;true&quot;;    &#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;NOTIFICATIONS_CB&quot;) &amp;&amp; Session.Property(&quot;NOTIFICATIONS_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;NOTIFICATIONS&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;MIDI_SYSEX_CB&quot;) &amp;&amp; Session.Property(&quot;MIDI_SYSEX_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;MIDI_SYSEX&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;POINTER_LOCK_CB&quot;) &amp;&amp; Session.Property(&quot;POINTER_LOCK_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;POINTER_LOCK&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;FULL_SCREEN_CB&quot;) &amp;&amp; Session.Property(&quot;FULL_SCREEN_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;FULL_SCREEN&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;&#13;&#10;if (Session.Property(&quot;OPEN_EXTERNAL_CB&quot;) &amp;&amp; Session.Property(&quot;OPEN_EXTERNAL_CB&quot;) === &quot;true&quot;)&#13;&#10;{&#13;&#10;    Session.Property(&quot;OPEN_EXTERNAL&quot;) = &quot;true&quot;;&#13;&#10;}&#13;&#10;" WithoutSeq="true"/>
     <ROW Action="PowerShellScriptInline" Type="65" Source="PowerShellScriptLauncher.dll" Target="RunPowerShellScript" Options="1" AdditionalSeq="AI_DATA_SETTER_1"/>
     <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:[AI_UserProgramFiles][Manufacturer]\[ProductName]"/>
     <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
     <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
     <ROW Action="SsoCheckbox" Type="101" Target="Script Text" TargetUnformatted="var ssoUrl = &quot;/login/sso/initsso&quot;;&#13;&#10;Session.Property(&quot;POD_URL&quot;) = Session.Property(&quot;POD_URL&quot;).substr(0, Session.Property(&quot;POD_URL&quot;).length - ssoUrl.length);" WithoutSeq="true"/>
+    <ROW Action="StopProcess" Type="65" Source="aicustact.dll" Target="StopProcess" WithoutSeq="true" Options="1" AdditionalSeq="AI_DATA_SETTER_4"/>
     <ROW Action="UninstallPreviousVersions" Type="65" Source="aicustact.dll" Target="UninstallPreviousVersions" Options="1"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiDialogComponent">
     <ROW Dialog="AdvanceSettings" HCentering="50" VCentering="50" Width="370" Height="270" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel"/>
+    <ROW Dialog="CloseSymphonyDialog" HCentering="50" VCentering="50" Width="370" Height="270" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel"/>
     <ROW Dialog="InstallationDlg" HCentering="50" VCentering="50" Width="370" Height="270" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel"/>
     <ROW Dialog="SettingsDlg" HCentering="50" VCentering="50" Width="370" Height="270" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel"/>
     <ROW Dialog="UrlValidationDlg" HCentering="50" VCentering="50" Width="370" Height="270" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel"/>
@@ -676,12 +727,10 @@
     <ROW Action="AI_DOWNGRADE" Condition="AI_NEWERPRODUCTFOUND AND (UILevel &lt;&gt; 5)" Sequence="210"/>
     <ROW Action="AI_STORE_LOCATION" Condition="(Not Installed) OR REINSTALL" Sequence="1502"/>
     <ROW Action="AI_PREPARE_UPGRADE" Condition="AI_UPGRADE=&quot;No&quot; AND (Not Installed)" Sequence="1399"/>
-    <ROW Action="AI_ResolveKnownFolders" Sequence="55"/>
+    <ROW Action="AI_ResolveKnownFolders" Sequence="53"/>
     <ROW Action="AI_GetArpIconPath" Sequence="1402"/>
-    <ROW Action="KillParagon" Sequence="54"/>
-    <ROW Action="AI_DATA_SETTER_2" Sequence="52"/>
-    <ROW Action="KillRenderer" Sequence="57"/>
-    <ROW Action="AI_DATA_SETTER" Sequence="56"/>
+    <ROW Action="KillRenderer" Sequence="55"/>
+    <ROW Action="AI_DATA_SETTER" Sequence="54"/>
     <ROW Action="AI_SETMIXINSTLOCATION" Sequence="749"/>
     <ROW Action="AI_AiBackupImmediate" Sequence="1401"/>
     <ROW Action="AI_AiBackupRollback" Sequence="1501"/>
@@ -710,6 +759,9 @@
     <ROW Condition="(VersionNT &lt;&gt; 500)" Description="[ProductName] cannot be installed on [WindowsTypeNT50Display]." DescriptionLocId="AI.LaunchCondition.NoNT50" IsPredefined="true" Builds="DefaultBuild"/>
     <ROW Condition="(VersionNT64 OR ((VersionNT &lt;&gt; 501) OR (ServicePackLevel = 3))) AND ((VersionNT &lt;&gt; 502) OR (ServicePackLevel = 2))" Description="[ProductName] cannot be installed on [WindowsTypeNT5XDisplay]." DescriptionLocId="AI.LaunchCondition.NoNT5X" IsPredefined="true" Builds="DefaultBuild"/>
     <ROW Condition="VersionNT" Description="[ProductName] cannot be installed on [WindowsType9XDisplay]." DescriptionLocId="AI.LaunchCondition.No9X" IsPredefined="true" Builds="DefaultBuild"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiListBoxComponent">
+    <ROW Property="FileInUseProcess" Order="1" Value="Symphony.exe" Text="Symphony"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiRadioButtonComponent">
     <ROW Property="AI_InstallPerUser" Order="1" Value="1" X="17" Y="10" Width="158" Height="11" Text="Only for me ([LogonUser])" TextLocId="RadioButton.Text.InstallTypeDlg#1" MsiKey="AI_InstallPerUser#1"/>
@@ -747,6 +799,7 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiTextStyleComponent">
     <ROW TextStyle="DlgFontBold8_DlgFontBold8" FaceName="Tahoma" Size="8" Color="0" StyleBits="1"/>
+    <ROW TextStyle="VerdanaBold13_VerdanaBold13" FaceName="Verdana" Size="13" Color="0" StyleBits="1"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiThemeComponent">
     <ATTRIBUTE name="UsedTheme" value="classic"/>
@@ -756,19 +809,19 @@
     <ROW UpgradeCode="[|UpgradeCode]" VersionMin="[|ProductVersion]" Attributes="2" ActionProperty="AI_NEWERPRODUCTFOUND"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.TxtUpdateComponent">
-    <ROW Name="BringToFront" TxtUpdateSet="Symphony.config" FindPattern="&quot;bringToFront&quot;\s*:\s*false," ReplacePattern="&quot;bringToFront&quot; : [BRING_TO_FRONT]," Options="19" Order="4" FileEncoding="-1"/>
-    <ROW Name="LaunchOnStartup" TxtUpdateSet="Symphony.config" FindPattern="&quot;launchOnStartup&quot;\s*:\s*true," ReplacePattern="&quot;launchOnStartup&quot; : [AUTO_START]," Options="19" Order="3" FileEncoding="-1"/>
+    <ROW Name="BringToFront" TxtUpdateSet="Symphony.config" FindPattern="&quot;bringToFront&quot;\s*:\s*&quot;DISABLED&quot;," ReplacePattern="&quot;bringToFront&quot; : &quot;[BRING_TO_FRONT]&quot;," Options="19" Order="4" FileEncoding="-1"/>
+    <ROW Name="LaunchOnStartup" TxtUpdateSet="Symphony.config" FindPattern="&quot;launchOnStartup&quot;\s*:\s*&quot;ENABLED&quot;," ReplacePattern="&quot;launchOnStartup&quot; : &quot;[AUTO_START]&quot;," Options="19" Order="3" FileEncoding="-1"/>
     <ROW Name="MidiSysex" TxtUpdateSet="Symphony.config" FindPattern="&quot;midiSysex&quot;\s*:\s*true," ReplacePattern="&quot;midiSysex&quot; : [MIDI_SYSEX]," Options="19" Order="8" FileEncoding="-1"/>
     <ROW Name="OpenExternal" TxtUpdateSet="Symphony.config" FindPattern="&quot;openExternal&quot;\s*:\s*true" ReplacePattern="&quot;openExternal&quot; : [OPEN_EXTERNAL]" Options="19" Order="11" FileEncoding="-1"/>
     <ROW Name="Url" TxtUpdateSet="Symphony.config" FindPattern="&quot;url&quot;\s*:\s*&quot;.*&quot;" ReplacePattern="&quot;url&quot;: &quot;[POD_URL]&quot;" Options="19" Order="0" FileEncoding="-1"/>
     <ROW Name="Notifications" TxtUpdateSet="Symphony.config" FindPattern="&quot;notifications&quot;\s*:\s*true," ReplacePattern="&quot;notifications&quot; : [NOTIFICATIONS]," Options="19" Order="7" FileEncoding="-1"/>
-    <ROW Name="MinimizeOnClose" TxtUpdateSet="Symphony.config" FindPattern="&quot;minimizeOnClose&quot;\s*:\s*true," ReplacePattern="&quot;minimizeOnClose&quot; : [MINIMIZE_ON_CLOSE]," Options="19" Order="1" FileEncoding="-1"/>
+    <ROW Name="MinimizeOnClose" TxtUpdateSet="Symphony.config" FindPattern="&quot;minimizeOnClose&quot;\s*:\s*&quot;ENABLED&quot;," ReplacePattern="&quot;minimizeOnClose&quot; : &quot;[MINIMIZE_ON_CLOSE]&quot;," Options="19" Order="1" FileEncoding="-1"/>
     <ROW Name="PointerLock" TxtUpdateSet="Symphony.config" FindPattern="&quot;pointerLock&quot;\s*:\s*true," ReplacePattern="&quot;pointerLock&quot; : [POINTER_LOCK]," Options="19" Order="9" FileEncoding="-1"/>
-    <ROW Name="AlwaysOnTop" TxtUpdateSet="Symphony.config" FindPattern="&quot;alwaysOnTop&quot;\s*:\s*false" ReplacePattern="&quot;alwaysOnTop&quot; : [ALWAYS_ON_TOP]" Options="19" Order="2" FileEncoding="-1"/>
+    <ROW Name="AlwaysOnTop" TxtUpdateSet="Symphony.config" FindPattern="&quot;alwaysOnTop&quot;\s*:\s*&quot;DISABLED&quot;" ReplacePattern="&quot;alwaysOnTop&quot; : &quot;[ALWAYS_ON_TOP]&quot;" Options="19" Order="2" FileEncoding="-1"/>
     <ROW Name="Media" TxtUpdateSet="Symphony.config" FindPattern="&quot;media&quot;\s*:\s*true," ReplacePattern="&quot;media&quot; : [MEDIA]," Options="19" Order="5" FileEncoding="-1"/>
     <ROW Name="Location" TxtUpdateSet="Symphony.config" FindPattern="&quot;geolocation&quot;\s*:\s*true," ReplacePattern="&quot;geolocation&quot; : [LOCATION]," Options="275" Order="6" FileEncoding="-1"/>
     <ROW Name="FullScreen" TxtUpdateSet="Symphony.config" FindPattern="&quot;fullscreen&quot;\s*:\s*true," ReplacePattern="&quot;fullscreen&quot; : [FULL_SCREEN]," Options="19" Order="10" FileEncoding="-1"/>
-    <ROW Name="CustomTitleBar" TxtUpdateSet="Symphony.config" FindPattern="&quot;isCustomTitleBar&quot;\s*:\s*true," ReplacePattern="&quot;isCustomTitleBar&quot; : [CUSTOM_TITLE_BAR]," Options="19" Order="12" FileEncoding="-1"/>
+    <ROW Name="CustomTitleBar" TxtUpdateSet="Symphony.config" FindPattern="&quot;isCustomTitleBar&quot;\s*:\s*&quot;ENABLED&quot;," ReplacePattern="&quot;isCustomTitleBar&quot; : &quot;[CUSTOM_TITLE_BAR]&quot;," Options="19" Order="12" FileEncoding="-1"/>
     <ROW Name="DevTools" TxtUpdateSet="Symphony.config" FindPattern="&quot;devToolsEnabled&quot;\s*:\s*true," ReplacePattern="&quot;devToolsEnabled&quot; : [DEV_TOOLS_ENABLED]," Options="19" Order="13" FileEncoding="-1"/>
     <ROW Name="AutoLaunchPath" TxtUpdateSet="Symphony.config" FindPattern="&quot;autoLaunchPath&quot;\s*:\s*&quot;&quot;" ReplacePattern="&quot;autoLaunchPath&quot; : &quot;[AUTO_LAUNCH_PATH]&quot;" Options="19" Order="14" FileEncoding="-1"/>
   </COMPONENT>

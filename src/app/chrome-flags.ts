@@ -1,31 +1,34 @@
 import { app, session } from 'electron';
 
 import { logger } from '../common/logger';
-import { config, IConfig } from './config-handler';
+import { CloudConfigDataTypes, config, IConfig } from './config-handler';
 
 // Set default flags
 logger.info(`chrome-flags: Setting mandatory chrome flags`, { flag: { 'ssl-version-fallback-min': 'tls1.2' } });
 app.commandLine.appendSwitch('ssl-version-fallback-min', 'tls1.2');
 
 // Special args that need to be excluded as part of the chrome command line switch
-const specialArgs = [ '--url', '--multiInstance', '--userDataPath=', 'symphony://', '--inspect-brk', '--inspect', '--logPath', '--no-sandbox' ];
+const specialArgs = [ '--url', '--multiInstance', '--userDataPath=', 'symphony://', '--inspect-brk', '--inspect', '--logPath' ];
 
 /**
  * Sets chrome flags
  */
 export const setChromeFlags = () => {
     logger.info(`chrome-flags: Checking if we need to set chrome flags!`);
-    const { customFlags } = config.getGlobalConfigFields([ 'customFlags' ]) as IConfig;
 
+    const flagsConfig = config.getConfigFields(['customFlags', 'disableGpu']) as IConfig;
+    const { disableThrottling } = config.getCloudConfigFields([ 'disableThrottling' ]) as any;
     const configFlags: object = {
-        'auth-negotiate-delegate-whitelist': customFlags.authServerWhitelist,
-        'auth-server-whitelist': customFlags.authNegotiateDelegateWhitelist,
+        'auth-negotiate-delegate-whitelist': flagsConfig.customFlags.authServerWhitelist,
+        'auth-server-whitelist': flagsConfig.customFlags.authNegotiateDelegateWhitelist,
         'disable-background-timer-throttling': 'true',
-        'disable-d3d11': customFlags.disableGpu || null,
-        'disable-gpu': customFlags.disableGpu || null,
-        'disable-gpu-compositing': customFlags.disableGpu || null,
-        'disable-renderer-backgrounding': customFlags.disableThrottling || null,
+        'disable-d3d11': flagsConfig.disableGpu || null,
+        'disable-gpu': flagsConfig.disableGpu || null,
+        'disable-gpu-compositing': flagsConfig.disableGpu || null,
     };
+    if (flagsConfig.customFlags.disableThrottling === CloudConfigDataTypes.ENABLED || disableThrottling === CloudConfigDataTypes.ENABLED) {
+        configFlags['disable-renderer-backgrounding'] = 'true';
+    }
 
     for (const key in configFlags) {
         if (!Object.prototype.hasOwnProperty.call(configFlags, key)) {
@@ -72,7 +75,7 @@ export const setChromeFlags = () => {
  */
 export const setSessionProperties = () => {
     logger.info(`chrome-flags: Settings session properties`);
-    const { customFlags } = config.getGlobalConfigFields([ 'customFlags' ]) as IConfig;
+    const { customFlags } = config.getConfigFields([ 'customFlags' ]) as IConfig;
 
     if (session.defaultSession && customFlags && customFlags.authServerWhitelist && customFlags.authServerWhitelist !== '') {
         session.defaultSession.allowNTLMCredentialsForDomains(customFlags.authServerWhitelist);

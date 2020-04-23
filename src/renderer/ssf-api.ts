@@ -1,6 +1,5 @@
 import { ipcRenderer, remote } from 'electron';
 const os = remote.require('os');
-
 import { buildNumber, searchAPIVersion } from '../../package.json';
 import { ICustomBrowserWindow } from '../app/window-handler';
 import {
@@ -8,7 +7,9 @@ import {
     apiName,
     IBadgeCount,
     IBoundsChange,
+    ICPUUsage,
     ILogMsg,
+    IMediaPermission,
     IRestartFloaterData,
     IScreenSharingIndicator,
     IScreenSharingIndicatorOptions,
@@ -90,6 +91,13 @@ const throttledSetIsInMeetingStatus = throttle((isInMeeting) => {
     local.ipcRenderer.send(apiName.symphonyApi, {
         cmd: apiCmds.setIsInMeeting,
         isInMeeting,
+    });
+}, 1000);
+
+const throttledSetCloudConfig = throttle((data) => {
+    ipcRenderer.send(apiName.symphonyApi, {
+        cmd: apiCmds.setCloudConfig,
+        cloudConfig: data,
     });
 }, 1000);
 
@@ -468,6 +476,35 @@ export class SSFApi {
      */
     public registerRestartFloater(callback: (args: IRestartFloaterData) => void): void {
         local.restartFloater = callback;
+    }
+
+    /**
+     * Allows JS to set the PMP & ACP cloud config
+     *
+     * @param data {ICloudConfig}
+     */
+    public setCloudConfig(data: {}): void {
+        throttledSetCloudConfig(data);
+    }
+
+    /**
+     * get CPU usage
+     */
+    public async getCPUUsage(): Promise<ICPUUsage> {
+        return Promise.resolve(
+            await process.getCPUUsage(),
+        );
+    }
+
+    /**
+     * Check media permission
+     */
+    public async checkMediaPermission(): Promise<IMediaPermission> {
+       return Promise.resolve({
+            camera: remote.systemPreferences.getMediaAccessStatus('camera'),
+            microphone: remote.systemPreferences.getMediaAccessStatus('microphone'),
+            screen: remote.systemPreferences.getMediaAccessStatus('screen'),
+        });
     }
 
 }

@@ -7,13 +7,16 @@ import * as path from 'path';
 import { format, parse } from 'url';
 import { apiName } from '../common/api-interface';
 
-import { isDevEnv, isLinux, isMac } from '../common/env';
+import { isDevEnv, isLinux, isMac, isNodeEnv } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { getGuid } from '../common/utils';
 import { whitelistHandler } from '../common/whitelist-handler';
-import { config, ICustomRectangle } from './config-handler';
+import { autoLaunchInstance } from './auto-launch-controller';
+import { CloudConfigDataTypes, config, IConfig, ICustomRectangle } from './config-handler';
+import { memoryMonitor } from './memory-monitor';
 import { screenSnippet } from './screen-snippet-handler';
+import { updateAlwaysOnTop } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
 interface IStyles {
@@ -28,7 +31,8 @@ enum styleNames {
 }
 
 const checkValidWindow = true;
-const { url: configUrl, ctWhitelist } = config.getGlobalConfigFields([ 'url', 'ctWhitelist' ]);
+const { url: configUrl } = config.getGlobalConfigFields([ 'url' ]);
+const { ctWhitelist } = config.getConfigFields([ 'ctWhitelist' ]);
 
 // Network status check variables
 const networkStatusCheckInterval = 10 * 1000;
@@ -56,11 +60,11 @@ export const preventWindowNavigation = (browserWindow: BrowserWindow, isPopOutWi
     if (!browserWindow || !windowExists(browserWindow)) {
         return;
     }
-    logger.info(`window-utils: preventing window from navigating!`);
+    logger.info(`window-utils: preventing window from navigating!`, isPopOutWindow);
 
-    const listener = (e: Electron.Event, winUrl: string) => {
+    const listener = async (e: Electron.Event, winUrl: string) => {
         if (!winUrl.startsWith('http' || 'https')) {
-            logger.info(`window-utils: ${winUrl} doesn't start with http or https, so, not navigating!`);
+            logger.error(`window-utils: ${winUrl} doesn't start with http or https, so, not navigating!`);
             e.preventDefault();
             return;
         }
@@ -70,13 +74,13 @@ export const preventWindowNavigation = (browserWindow: BrowserWindow, isPopOutWi
             if (!isValid) {
                 e.preventDefault();
                 if (browserWindow && windowExists(browserWindow)) {
-                    // @ts-ignore
-                    electron.dialog.showMessageBox(browserWindow, {
+                    const response = await electron.dialog.showMessageBox(browserWindow, {
                         type: 'warning',
                         buttons: [ 'OK' ],
                         title: i18n.t('Not Allowed')(),
-                        message: `${i18n.t(`Sorry, you are not allowed to access this website`)} (${winUrl}), ${i18n.t('please contact your administrator for more details')}`,
+                        message: `${i18n.t(`Sorry, you are not allowed to access this website`)()} (${winUrl}), ${i18n.t('please contact your administrator for more details')()}`,
                     });
+                    logger.info(`window-utils: received ${response} response from dialog`);
                 }
             }
         }
@@ -86,8 +90,6 @@ export const preventWindowNavigation = (browserWindow: BrowserWindow, isPopOutWi
             || winUrl === browserWindow.webContents.getURL()) {
             return;
         }
-
-        e.preventDefault();
     };
 
     browserWindow.webContents.on('will-navigate', listener);
@@ -120,6 +122,8 @@ export const createComponentWindow = (
         width: 300,
         ...opts,
         webPreferences: {
+            sandbox: !isNodeEnv,
+            nodeIntegration: isNodeEnv,
             preload: path.join(__dirname, '../renderer/_preload-component.js'),
             devTools: false,
         },
@@ -514,7 +518,7 @@ export const isSymphonyReachable = (window: ICustomBrowserWindow | null) => {
         fetch(podUrl, { method: 'GET' }).then((rsp) => {
             if (rsp.status === 200 && windowHandler.isOnline) {
                 logger.info(`window-utils: pod ${podUrl} is reachable, loading main window!`);
-                window.loadURL(podUrl);
+                window.loadURL(configUrl);
                 if (networkStatusCheckIntervalId) {
                     clearInterval(networkStatusCheckIntervalId);
                     networkStatusCheckIntervalId = null;
@@ -544,6 +548,9 @@ export const reloadWindow = (browserWindow: ICustomBrowserWindow) => {
     if (windowName === apiName.mainWindowName) {
         logger.info(`window-utils: reloading the main window`);
         browserWindow.reload();
+
+        windowHandler.execCmd(windowHandler.screenShareIndicatorFrameUtil, []);
+
         return;
     }
     // Send an event to SFE that restarts the pop-out window
@@ -582,6 +589,36 @@ export const getWindowByName = (windowName: string): BrowserWindow | undefined =
     });
 };
 
+export const updateFeaturesForCloudConfig = async (): Promise<void> => {
+    const {
+        alwaysOnTop: isAlwaysOnTop,
+        launchOnStartup,
+        memoryRefresh,
+        memoryThreshold,
+    } = config.getConfigFields([
+        'launchOnStartup',
+        'alwaysOnTop',
+        'memoryRefresh',
+        'memoryThreshold',
+    ]) as IConfig;
+
+    const mainWindow = windowHandler.getMainWindow();
+
+    // Update Always on top feature
+    await updateAlwaysOnTop(isAlwaysOnTop === CloudConfigDataTypes.ENABLED, false, false);
+
+    // Update launch on start up
+    launchOnStartup === CloudConfigDataTypes.ENABLED ? autoLaunchInstance.enableAutoLaunch() : autoLaunchInstance.disableAutoLaunch();
+
+    if (mainWindow && windowExists(mainWindow)) {
+        if (memoryRefresh) {
+            logger.info(`window-utils: updating the memory threshold`, memoryThreshold);
+            memoryMonitor.setMemoryThreshold(parseInt(memoryThreshold, 10));
+            mainWindow.webContents.send('initialize-memory-refresh');
+        }
+    }
+};
+
 /**
  * Monitors network requests and displays red banner on failure
  */
@@ -605,14 +642,16 @@ export const monitorNetworkInterception = () => {
 
     if (mainWindow && windowExists(mainWindow)) {
         isNetworkMonitorInitialized = true;
-        mainWindow.webContents.session.webRequest.onErrorOccurred(filter,(details) => {
+        mainWindow.webContents.session.webRequest.onErrorOccurred(filter,async (details) => {
             if (!mainWindow || !windowExists(mainWindow)) {
                 return;
             }
-            if (windowHandler.isWebPageLoading
-                && details.error === 'net::ERR_INTERNET_DISCONNECTED'
+            const manaUrl: string = await mainWindow.webContents.executeJavaScript('document.location.href');
+            const isMana = manaUrl && manaUrl.includes('client-bff');
+            if (!isMana && windowHandler.isWebPageLoading
+                && (details.error === 'net::ERR_INTERNET_DISCONNECTED'
                 || details.error === 'net::ERR_NETWORK_CHANGED'
-                || details.error === 'net::ERR_NAME_NOT_RESOLVED') {
+                || details.error === 'net::ERR_NAME_NOT_RESOLVED')) {
 
                 logger.error(`window-utils: URL failed to load`, details);
                 mainWindow.webContents.send('show-banner', { show: true, bannerType: 'error', url: podUrl });

@@ -6,31 +6,86 @@ import * as util from 'util';
 import { buildNumber } from '../../package.json';
 import { isDevEnv, isElectronQA, isLinux, isMac } from '../common/env';
 import { logger } from '../common/logger';
-import { pick } from '../common/utils';
+import { filterOutSelectedValues, pick } from '../common/utils';
 
 const writeFile = util.promisify(fs.writeFile);
 
-export interface IConfig {
+export enum CloudConfigDataTypes {
+    NOT_SET = 'NOT_SET',
+    ENABLED = 'ENABLED',
+    DISABLED = 'DISABLED',
+}
+
+export enum ClientSwitchType {
+    CLIENT_1_5 = 'CLIENT_1_5',
+    CLIENT_2_0 = 'CLIENT_2_0',
+    CLIENT_2_0_DAILY = 'CLIENT_2_0_DAILY',
+}
+
+export interface IGlobalConfig {
     url: string;
-    minimizeOnClose: boolean;
-    launchOnStartup: boolean;
-    alwaysOnTop: boolean;
-    bringToFront: boolean;
-    whitelistUrl: string;
-    isCustomTitleBar: boolean;
-    memoryRefresh: boolean;
-    devToolsEnabled: boolean;
     contextIsolation: boolean;
+}
+
+export interface IConfig {
+    minimizeOnClose: CloudConfigDataTypes;
+    launchOnStartup: CloudConfigDataTypes;
+    alwaysOnTop: CloudConfigDataTypes;
+    bringToFront: CloudConfigDataTypes;
+    whitelistUrl: string;
+    isCustomTitleBar: CloudConfigDataTypes;
+    memoryRefresh: CloudConfigDataTypes;
+    memoryThreshold: string;
+    disableGpu: boolean;
+    devToolsEnabled: boolean;
     ctWhitelist: string[];
     podWhitelist: string[];
-    configVersion: string;
-    buildNumber: string;
     autoLaunchPath: string;
-    notificationSettings: INotificationSetting;
     permissions: IPermission;
     customFlags: ICustomFlag;
+    buildNumber?: string;
+    configVersion?: string;
+    notificationSettings: INotificationSetting;
     mainWinPos?: ICustomRectangle;
     locale?: string;
+    clientSwitch: ClientSwitchType;
+}
+
+export interface ICloudConfig {
+    configVersion?: string;
+    podLevelEntitlements: IPodLevelEntitlements;
+    acpFeatureLevelEntitlements: IACPFeatureLevelEntitlements;
+    pmpEntitlements: IPMPEntitlements;
+}
+
+export interface IPodLevelEntitlements {
+    minimizeOnClose: CloudConfigDataTypes;
+    isCustomTitleBar: CloudConfigDataTypes;
+    alwaysOnTop: CloudConfigDataTypes;
+    memoryRefresh: CloudConfigDataTypes;
+    bringToFront: CloudConfigDataTypes;
+    disableThrottling: CloudConfigDataTypes;
+    launchOnStartup: CloudConfigDataTypes;
+    memoryThreshold: string;
+    ctWhitelist: string;
+    podWhitelist: string;
+    authNegotiateDelegateWhitelist: string;
+    whitelistUrl: string;
+    authServerWhitelist: string;
+    autoLaunchPath: string;
+}
+
+export interface IACPFeatureLevelEntitlements {
+    devToolsEnabled: boolean;
+    permissions: IPermission;
+}
+
+export interface IPMPEntitlements {
+    minimizeOnClose: CloudConfigDataTypes;
+    bringToFront: CloudConfigDataTypes;
+    memoryRefresh: CloudConfigDataTypes;
+    refreshAppThreshold: CloudConfigDataTypes;
+    disableThrottling: CloudConfigDataTypes;
 }
 
 export interface IPermission {
@@ -46,8 +101,7 @@ export interface IPermission {
 export interface ICustomFlag {
     authServerWhitelist: string;
     authNegotiateDelegateWhitelist: string;
-    disableGpu: boolean;
-    disableThrottling: boolean;
+    disableThrottling: CloudConfigDataTypes;
 }
 
 export interface INotificationSetting {
@@ -61,17 +115,21 @@ export interface ICustomRectangle extends Partial<Electron.Rectangle> {
 }
 
 class Config {
-    private userConfig: IConfig | {};
-    private globalConfig: IConfig | {};
+    public userConfig: IConfig | {};
+    public globalConfig: IConfig | {};
+    public cloudConfig: ICloudConfig | {};
+    public filteredCloudConfig: ICloudConfig | {};
     private isFirstTime: boolean = true;
     private readonly configFileName: string;
     private readonly userConfigPath: string;
     private readonly appPath: string;
     private readonly globalConfigPath: string;
+    private readonly cloudConfigPath: string;
 
     constructor() {
         this.configFileName = 'Symphony.config';
         this.userConfigPath = path.join(app.getPath('userData'), this.configFileName);
+        this.cloudConfigPath = path.join(app.getPath('userData'), 'cloudConfig.config');
         this.appPath = isDevEnv ? app.getAppPath() : path.dirname(app.getPath('exe'));
         this.globalConfigPath = isDevEnv
             ? path.join(this.appPath, path.join('config', this.configFileName))
@@ -83,8 +141,11 @@ class Config {
 
         this.globalConfig = {};
         this.userConfig = {};
+        this.cloudConfig = {};
+        this.filteredCloudConfig = {};
         this.readUserConfig();
         this.readGlobalConfig();
+        this.readCloudConfig();
 
         this.checkFirstTimeLaunch();
     }
@@ -96,8 +157,9 @@ class Config {
      * @param fields
      */
     public getConfigFields(fields: string[]): IConfig {
-        logger.info(`config-handler: Trying to get config values for the fields`, fields);
-        return { ...this.getGlobalConfigFields(fields), ...this.getUserConfigFields(fields) } as IConfig;
+        const configFields = { ...this.getGlobalConfigFields(fields), ...this.getUserConfigFields(fields), ...this.getFilteredCloudConfigFields(fields) } as IConfig;
+        logger.info(`config-handler: getting combined config values for the fields ${fields}`, configFields);
+        return configFields;
     }
 
     /**
@@ -106,8 +168,9 @@ class Config {
      * @param fields {Array}
      */
     public getUserConfigFields(fields: string[]): IConfig {
-        logger.info(`config-handler: Trying to get user config values for the fields`, fields);
-        return pick(this.userConfig, fields) as IConfig;
+        const userConfigData = pick(this.userConfig, fields) as IConfig;
+        logger.info(`config-handler: getting user config values for the fields ${fields}`, userConfigData);
+        return userConfigData;
     }
 
     /**
@@ -115,9 +178,34 @@ class Config {
      *
      * @param fields {Array}
      */
-    public getGlobalConfigFields(fields: string[]): IConfig {
-        logger.info(`config-handler: Trying to get global config values for the fields`, fields);
-        return pick(this.globalConfig, fields) as IConfig;
+    public getGlobalConfigFields(fields: string[]): IGlobalConfig {
+        const globalConfigData = pick(this.globalConfig, fields) as IGlobalConfig;
+        logger.info(`config-handler: getting global config values for the fields ${fields}`, globalConfigData);
+        return globalConfigData;
+    }
+
+    /**
+     * Returns filtered & prioritised fields from cloud config file
+     *
+     * @param fields {Array}
+     */
+    public getFilteredCloudConfigFields(fields: string[]): IConfig | {} {
+        const filteredCloudConfigData = pick(this.filteredCloudConfig, fields) as IConfig;
+        logger.info(`config-handler: getting filtered cloud config values for the ${fields}`, filteredCloudConfigData);
+        return filteredCloudConfigData;
+    }
+
+    /**
+     * Returns the actual cloud config with priority
+     * @param fields
+     */
+    public getCloudConfigFields(fields: string[]): IConfig {
+        const { acpFeatureLevelEntitlements, podLevelEntitlements, pmpEntitlements } = this.cloudConfig as ICloudConfig;
+        const cloudConfig = { ...acpFeatureLevelEntitlements, ...podLevelEntitlements, ...pmpEntitlements };
+        logger.info(`config-handler: prioritized cloud config data`, cloudConfig);
+        const cloudConfigData = pick(cloudConfig, fields) as IConfig;
+        logger.info(`config-handler: getting prioritized cloud config values for the fields ${fields}`, cloudConfigData);
+        return cloudConfigData;
     }
 
     /**
@@ -134,6 +222,25 @@ class Config {
         } catch (error) {
             logger.error(`config-handler: failed to update user config file with ${data}`, error);
             dialog.showErrorBox(`Update failed`, `Failed to update user config due to error: ${error}`);
+        }
+    }
+
+    /**
+     * updates new data to the cloud config
+     *
+     * @param data {IConfig}
+     */
+    public async updateCloudConfig(data: Partial<ICloudConfig>): Promise<void> {
+        logger.info(`config-handler: Updating the cloud config data from SFE: `, data);
+        this.cloudConfig = { ...this.cloudConfig, ...data };
+        // recalculate cloud config when we have data from SFE
+        this.filterCloudConfig();
+        logger.info(`config-handler: prioritized and filtered cloud config: `, this.filteredCloudConfig);
+        try {
+            await writeFile(this.cloudConfigPath, JSON.stringify(this.cloudConfig), { encoding: 'utf8' });
+            logger.info(`config-handler: writing cloud config values to file`);
+        } catch (error) {
+            logger.error(`config-handler: failed to update cloud config file with ${data}`, error);
         }
     }
 
@@ -157,7 +264,6 @@ class Config {
                 minimizeOnClose,
                 launchOnStartup,
                 alwaysOnTop,
-                url,
                 memoryRefresh,
                 bringToFront,
                 isCustomTitleBar,
@@ -167,6 +273,21 @@ class Config {
             logger.info(`config-handler: setting first time launch for build`, buildNumber);
             return await this.updateUserConfig(filteredFields);
         }
+    }
+
+    /**
+     * filters out the cloud config
+     */
+    private filterCloudConfig(): void {
+        const { acpFeatureLevelEntitlements, podLevelEntitlements, pmpEntitlements } = this.cloudConfig as ICloudConfig;
+
+        // Filter out some values
+        const filteredACP = filterOutSelectedValues(acpFeatureLevelEntitlements, [ true, 'NOT_SET', '', [] ]);
+        const filteredPod = filterOutSelectedValues(podLevelEntitlements, [ true, 'NOT_SET', '', [] ]);
+        const filteredPMP = filterOutSelectedValues(pmpEntitlements, [ true, 'NOT_SET', '', [] ]);
+
+        // priority is PMP > ACP > SDA
+        this.filteredCloudConfig = { ...filteredACP, ...filteredPod, ...filteredPMP };
     }
 
     /**
@@ -200,8 +321,9 @@ class Config {
         if (!fs.existsSync(this.userConfigPath)) {
             // Need to wait until app ready event to access user data
             await app.whenReady();
+            await this.readGlobalConfig();
             logger.info(`config-handler: user config doesn't exist! will create new one and update config`);
-            await this.updateUserConfig({ configVersion: app.getVersion().toString(), buildNumber } as IConfig);
+            await this.updateUserConfig({ configVersion: app.getVersion().toString(), buildNumber, ...this.globalConfig } as IConfig);
         }
         this.userConfig = this.parseConfigData(fs.readFileSync(this.userConfigPath, 'utf8'));
         logger.info(`config-handler: User configuration: `, this.userConfig);
@@ -213,6 +335,23 @@ class Config {
     private readGlobalConfig() {
         this.globalConfig = this.parseConfigData(fs.readFileSync(this.globalConfigPath, 'utf8'));
         logger.info(`config-handler: Global configuration: `, this.globalConfig);
+    }
+
+    /**
+     * Reads and stores the cloud config file
+     *
+     * If cloud config doesn't exits?
+     * this creates a new one with { }
+     */
+    private async readCloudConfig() {
+        if (!fs.existsSync(this.cloudConfigPath)) {
+            await app.whenReady();
+            await this.updateCloudConfig({ configVersion: app.getVersion().toString() });
+        }
+        this.cloudConfig = this.parseConfigData(fs.readFileSync(this.cloudConfigPath, 'utf8'));
+        // recalculate cloud config when we the application starts
+        this.filterCloudConfig();
+        logger.info(`config-handler: Cloud configuration: `, this.userConfig);
     }
 
     /**

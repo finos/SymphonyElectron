@@ -35,6 +35,9 @@ export enum apiCmds {
     swiftSearch = 'swift-search',
     getConfigUrl = 'get-config-url',
     registerRestartFloater = 'register-restart-floater',
+    setCloudConfig = 'set-cloud-config',
+    getCPUUsage = 'get-cpu-usage',
+    checkMediaPermission = 'check-media-permission',
 }
 
 export enum apiName {
@@ -67,6 +70,7 @@ export interface IApiArgs {
     type: string;
     logName: string;
     logs: ILogs;
+    cloudConfig: object;
 }
 
 export type WindowTypes = 'screen-picker' | 'screen-sharing-indicator' | 'notification-settings';
@@ -140,6 +144,17 @@ export interface IVersionInfo {
     buildNumber: string;
     apiVer: string;
     searchApiVer: string;
+}
+
+export interface ICPUUsage {
+    percentCPUUsage: number;
+    idleWakeupsPerSecond: number;
+}
+
+export interface IMediaPermission {
+    camera: string;
+    microphone: string;
+    screen: string;
 }
 
 export interface ILogMsg {

@@ -6,7 +6,7 @@ import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
 import { throttle } from '../common/utils';
 import { notification } from '../renderer/notification';
-import { config } from './config-handler';
+import { CloudConfigDataTypes, config } from './config-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 import { showPopupMenu, windowExists } from './window-utils';
 
@@ -146,14 +146,18 @@ export const activate = (windowName: string, shouldFocus: boolean = true): void 
  *
  * @param shouldSetAlwaysOnTop {boolean} - Whether to enable always on top or not
  * @param shouldActivateMainWindow {boolean} - Whether to active main window
+ * @param shouldUpdateUserConfig {boolean} - whether to update config file
  */
 export const updateAlwaysOnTop = async (
     shouldSetAlwaysOnTop: boolean,
     shouldActivateMainWindow: boolean = true,
+    shouldUpdateUserConfig: boolean = true,
 ): Promise<void> => {
     logger.info(`window-actions: Should we set always on top? ${shouldSetAlwaysOnTop}!`);
     const browserWins: ICustomBrowserWindow[] = BrowserWindow.getAllWindows() as ICustomBrowserWindow[];
-    await config.updateUserConfig({ alwaysOnTop: shouldSetAlwaysOnTop });
+    if (shouldUpdateUserConfig) {
+        await config.updateUserConfig({ alwaysOnTop: shouldSetAlwaysOnTop ? CloudConfigDataTypes.ENABLED : CloudConfigDataTypes.NOT_SET });
+    }
     if (browserWins.length > 0) {
         browserWins
             .filter((browser) => typeof browser.notificationData !== 'object')
@@ -285,13 +289,14 @@ export const removeWindowEventListener = (window: BrowserWindow): void => {
  * @param message {string} - custom message displayed to the user
  * @param callback {function}
  */
-export const handleSessionPermissions = (permission: boolean, message: string, callback: (permission: boolean) => void): void => {
+export const handleSessionPermissions = async (permission: boolean, message: string, callback: (permission: boolean) => void): Promise<void> => {
     logger.info(`window-action: permission is ->`, { type: message, permission });
 
     if (!permission) {
         const browserWindow = BrowserWindow.getFocusedWindow();
         if (browserWindow && !browserWindow.isDestroyed()) {
-            dialog.showMessageBox(browserWindow, { type: 'error', title: `${i18n.t('Permission Denied')()}!`, message });
+            const response = await dialog.showMessageBox(browserWindow, { type: 'error', title: `${i18n.t('Permission Denied')()}!`, message });
+            logger.error(`window-actions: permissions message box closed with response`, response);
         }
     }
 
@@ -310,7 +315,7 @@ export const handlePermissionRequests = (webContents: Electron.webContents): voi
     }
     const { session } = webContents;
 
-    const { permissions } = config.getGlobalConfigFields([ 'permissions' ]);
+    const { permissions } = config.getConfigFields([ 'permissions' ]);
     if (!permissions) {
         logger.error('permissions configuration is invalid, so, everything will be true by default!');
         return;

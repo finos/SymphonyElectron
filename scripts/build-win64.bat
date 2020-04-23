@@ -6,7 +6,7 @@ echo %PATH%
 
 set DISABLE_REBUILD=true
 set NODE_REQUIRED_VERSION=12.13.1
-set SNYK_API_TOKEN=885953dc-9469-443c-984d-524352d54116
+set SNYK_ORG=sda
 
 set PATH=%PATH%;C:\Program Files\nodejs\;C:\Program Files\Git\cmd
 echo %PATH%
@@ -27,8 +27,10 @@ WHERE snyk
 if %ERRORLEVEL% NEQ 0 (
   echo "Snyk does not exist! Installing and setting it up"
   call npm i snyk -g
-  call snyk config set api=%SNYK_API_TOKEN%
 )
+echo "Setting snyk org to %SNYK_ORG% and api token to %SNYK_API_TOKEN%"
+call snyk config set org=%SNYK_ORG%
+call snyk config set api=%SNYK_API_TOKEN%
 
 :: Below command replaces buildVersion with the appropriate build number from jenkins
 sed -i -e "s/\"buildNumber\"[[:space:]]*\:[[:space:]]*\".*\"/\"buildNumber\":\"%PARENT_BUILD_VERSION%\"/g" package.json
@@ -42,7 +44,7 @@ call npm install
 
 # Run Snyk Security Tests
 echo "Running snyk security tests"
-call snyk test --file=package.json
+call snyk test --file=package.json --org=%SNYK_ORG%
 
 :: Set expiry if required
 IF "%EXPIRY_PERIOD%"=="" (

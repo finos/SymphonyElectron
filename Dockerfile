@@ -22,6 +22,9 @@ RUN apt-get install -y \
     libssl-dev \
     libx11-dev \
     libxkbfile-dev \
+    libxtst-dev \
+    libpng-dev \
+    zlib1g-dev \
     rpm
 
 # install node

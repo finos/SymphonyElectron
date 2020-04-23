@@ -6,11 +6,16 @@ jest.mock('electron-log');
 
 jest.mock('../src/app/config-handler', () => {
     return {
+        CloudConfigDataTypes: {
+            NOT_SET: 'NOT_SET',
+            ENABLED: 'ENABLED',
+            DISABLED: 'DISABLED',
+        },
         config: {
             getGlobalConfigFields: jest.fn(() => ''),
             getConfigFields: jest.fn(() => {
                 return {
-                    launchOnStartup: true,
+                    launchOnStartup: 'ENABLED',
                 };
             }),
             updateUserConfig: jest.fn(),
@@ -23,7 +28,7 @@ describe('auto launch controller', async () => {
     beforeEach(() => {
         jest.spyOn(config, 'getConfigFields').mockImplementation(() => {
             return {
-                launchOnStartup: true,
+                launchOnStartup: 'ENABLED',
             };
         });
         jest.clearAllMocks();
@@ -61,7 +66,7 @@ describe('auto launch controller', async () => {
     it('should disable AutoLaunch when `handleAutoLaunch` is called', async () => {
         jest.spyOn(config, 'getConfigFields').mockImplementation(() => {
             return {
-                launchOnStartup: false,
+                launchOnStartup: 'DISABLED',
             };
         });
         const spyFn = 'disableAutoLaunch';

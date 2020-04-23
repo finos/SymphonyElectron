@@ -18,7 +18,9 @@ gulp.task('clean', function() {
  */
 gulp.task('compile', function() {
     return tsProject.src()
+        .pipe(sourcemaps.init())
         .pipe(tsProject())
+        .pipe(sourcemaps.write('.'))
         .on('error', (err) => console.log(err))
         .pipe(gulp.dest('lib/'))
 });
@@ -51,6 +53,12 @@ gulp.task('copy', function () {
 gulp.task('setExpiry', function (done) {
     // Set expiry of 15 days for test builds we create from CI
     const expiryDays = process.argv[4] || 15;
+    if (expiryDays < 1) {
+        console.log(`Not setting expiry as the value provided is ${expiryDays}`);
+        done();
+        return;
+    }
+
     console.log(`Setting expiry to ${expiryDays} days`);
     const milliseconds = 24*60*60*1000;
     const expiryTime = new Date().getTime() + (expiryDays * milliseconds);

@@ -1,22 +1,29 @@
+import { ChildProcess, ExecException, execFile } from 'child_process';
 import * as electron from 'electron';
-import { app, BrowserWindow, BrowserWindowConstructorOptions, crashReporter, globalShortcut, ipcMain } from 'electron';
+import {
+    app,
+    BrowserWindow,
+    BrowserWindowConstructorOptions,
+    crashReporter,
+    DesktopCapturerSource,
+    globalShortcut,
+    ipcMain,
+} from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 import { format, parse } from 'url';
 
-import { ChildProcess, ExecException, execFile } from 'child_process';
 import { apiName, WindowTypes } from '../common/api-interface';
-import { isDevEnv, isMac, isWindowsOS } from '../common/env';
+import { isDevEnv, isLinux, isMac, isNodeEnv, isWindowsOS } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { getCommandLineArgs, getGuid } from '../common/utils';
 import { notification } from '../renderer/notification';
 import { AppMenu } from './app-menu';
 import { handleChildWindow } from './child-window-handler';
-import { config, IConfig } from './config-handler';
+import { ClientSwitchType, CloudConfigDataTypes, config, IConfig, IGlobalConfig } from './config-handler';
 import { SpellChecker } from './spell-check-handler';
 import { checkIfBuildExpired } from './ttl-handler';
-import DesktopCapturerSource = Electron.DesktopCapturerSource;
 import { versionHandler } from './version-handler';
 import { handlePermissionRequests, monitorWindowActions } from './window-actions';
 import {
@@ -47,8 +54,6 @@ export interface ICustomBrowserWindow extends Electron.BrowserWindow {
 const DEFAULT_WIDTH: number = 900;
 const DEFAULT_HEIGHT: number = 900;
 
-const {devToolsEnabled} = config.getGlobalConfigFields(['devToolsEnabled']);
-
 export class WindowHandler {
 
     /**
@@ -71,15 +76,18 @@ export class WindowHandler {
     public isAutoReload: boolean;
     public isOnline: boolean;
     public url: string | undefined;
+    public startUrl!: string;
+    public currentClient: ClientSwitchType = ClientSwitchType.CLIENT_1_5;
     public willQuitApp: boolean = false;
     public spellchecker: SpellChecker | undefined;
     public isCustomTitleBar: boolean;
     public isWebPageLoading: boolean = true;
+    public screenShareIndicatorFrameUtil: string;
 
     private readonly contextIsolation: boolean;
     private readonly backgroundThrottling: boolean;
     private readonly windowOpts: ICustomBrowserWindowConstructorOpts;
-    private readonly globalConfig: IConfig;
+    private readonly globalConfig: IGlobalConfig;
     private readonly config: IConfig;
     // Window reference
     private readonly windows: object;
@@ -92,22 +100,23 @@ export class WindowHandler {
     private screenSharingFrameWindow: Electron.BrowserWindow | null = null;
     private basicAuthWindow: Electron.BrowserWindow | null = null;
     private notificationSettingsWindow: Electron.BrowserWindow | null = null;
-    private screenShareIndicatorFrameUtil: string;
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Use these variables only on initial setup
-        this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings', 'alwaysOnTop', 'locale' ]);
-        this.globalConfig = config.getGlobalConfigFields(['url', 'contextIsolation', 'customFlags']);
-        const {url, contextIsolation, customFlags}: IConfig = this.globalConfig;
+        this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings', 'alwaysOnTop', 'locale', 'customFlags', 'clientSwitch' ]);
+        logger.info(`window-handler: main windows initialized with following config data`, this.config);
+        this.globalConfig = config.getGlobalConfigFields([ 'url', 'contextIsolation' ]);
+        const { disableThrottling } = config.getCloudConfigFields([ 'disableThrottling' ]) as any;
+        const { url, contextIsolation }: IGlobalConfig = this.globalConfig;
+        const { customFlags } = this.config;
 
         this.windows = {};
         this.contextIsolation = contextIsolation || false;
-        this.backgroundThrottling = !customFlags.disableThrottling;
-        this.contextIsolation = contextIsolation || false;
-        this.isCustomTitleBar = isWindowsOS && this.config.isCustomTitleBar;
+        this.backgroundThrottling = (customFlags.disableThrottling !== CloudConfigDataTypes.ENABLED || disableThrottling !== CloudConfigDataTypes.ENABLED);
+        this.isCustomTitleBar = isWindowsOS && this.config.isCustomTitleBar === CloudConfigDataTypes.ENABLED;
         this.windowOpts = {
             ...this.getWindowOpts({
-                alwaysOnTop: this.config.alwaysOnTop || false,
+                alwaysOnTop: this.config.alwaysOnTop === CloudConfigDataTypes.ENABLED || false,
                 frame: !this.isCustomTitleBar,
                 minHeight: 300,
                 minWidth: 300,
@@ -119,10 +128,18 @@ export class WindowHandler {
         this.isAutoReload = false;
         this.isOnline = true;
 
-        this.screenShareIndicatorFrameUtil = !isWindowsOS ? '' : isDevEnv
-            ? path.join(__dirname,
-                '../../../node_modules/screen-share-indicator-frame/ScreenShareIndicatorFrame.exe')
-            : path.join(path.dirname(app.getPath('exe')), 'ScreenShareIndicatorFrame.exe');
+        this.screenShareIndicatorFrameUtil = '';
+        if (isWindowsOS) {
+            this.screenShareIndicatorFrameUtil = isDevEnv
+                ? path.join(__dirname,
+                    '../../../node_modules/screen-share-indicator-frame/ScreenShareIndicatorFrame.exe')
+                : path.join(path.dirname(app.getPath('exe')), 'ScreenShareIndicatorFrame.exe');
+        } else if (isMac) {
+            this.screenShareIndicatorFrameUtil = isDevEnv
+                ? path.join(__dirname,
+                    '../../../node_modules/screen-share-indicator-frame/SymphonyScreenShareIndicator')
+                : path.join(path.dirname(app.getPath('exe')), '../node_modules/screen-share-indicator-frame/SymphonyScreenShareIndicator');
+        }
 
         this.appMenu = null;
         const locale: LocaleType = (this.config.locale || app.getLocale()) as LocaleType;
@@ -141,7 +158,7 @@ export class WindowHandler {
     /**
      * Starting point of the app
      */
-    public createApplication() {
+    public async createApplication() {
 
         this.updateVersionInfo();
         this.spellchecker = new SpellChecker();
@@ -177,7 +194,7 @@ export class WindowHandler {
         // Event needed to hide native menu bar on Windows 10 as we use custom menu bar
         this.mainWindow.webContents.once('did-start-loading', () => {
             logger.info(`window-handler: main window web contents started loading!`);
-            if ((this.config.isCustomTitleBar && isWindowsOS) && this.mainWindow && windowExists(this.mainWindow)) {
+            if ((this.config.isCustomTitleBar === CloudConfigDataTypes.ENABLED && isWindowsOS) && this.mainWindow && windowExists(this.mainWindow)) {
                 this.mainWindow.setMenuBarVisibility(false);
             }
             // monitors network connection and
@@ -194,7 +211,7 @@ export class WindowHandler {
         if (urlFromCmd) {
             const commandLineUrl = urlFromCmd.substr(6);
             logger.info(`window-handler: trying to set url ${commandLineUrl} from command line.`);
-            const { podWhitelist } = config.getGlobalConfigFields([ 'podWhitelist' ]);
+            const { podWhitelist } = config.getConfigFields([ 'podWhitelist' ]);
             logger.info(`window-handler: checking pod whitelist.`);
             if (podWhitelist.length > 0) {
                 logger.info(`window-handler: pod whitelist is not empty ${podWhitelist}`);
@@ -211,6 +228,7 @@ export class WindowHandler {
             }
         }
 
+        this.startUrl = this.url;
         // loads the main window with url from config/cmd line
         this.mainWindow.loadURL(this.url);
         // check for build expiry in case of test builds
@@ -226,6 +244,13 @@ export class WindowHandler {
             }
             this.url = this.mainWindow.webContents.getURL();
 
+            logger.info(`window-handler: client switch from config is ${this.config.clientSwitch}`);
+
+            const parsedUrl = parse(this.url);
+            if (this.url.startsWith('https://corporate.symphony.com') && this.url.indexOf(`https://${parsedUrl.hostname}/client/index.html`) !== -1) {
+                this.switchClient(this.config.clientSwitch ? this.config.clientSwitch : ClientSwitchType.CLIENT_2_0);
+            }
+
             // Injects custom title bar and snack bar css into the webContents
             await injectStyles(this.mainWindow, this.isCustomTitleBar);
 
@@ -237,7 +262,7 @@ export class WindowHandler {
                 isMainWindow: true,
             });
             this.appMenu = new AppMenu();
-            const { permissions } = config.getGlobalConfigFields(['permissions']);
+            const { permissions } = config.getConfigFields([ 'permissions' ]);
             this.mainWindow.webContents.send('is-screen-share-enabled', permissions.media);
         });
 
@@ -296,8 +321,8 @@ export class WindowHandler {
                 return this.destroyAllWindows();
             }
 
-            const {minimizeOnClose} = config.getConfigFields(['minimizeOnClose']);
-            if (minimizeOnClose) {
+            const { minimizeOnClose } = config.getConfigFields([ 'minimizeOnClose' ]);
+            if (minimizeOnClose === CloudConfigDataTypes.ENABLED) {
                 event.preventDefault();
                 this.mainWindow.minimize();
                 return;
@@ -314,6 +339,9 @@ export class WindowHandler {
 
         this.mainWindow.once('closed', () => {
             logger.info(`window-handler: main window closed, destroying all windows!`);
+            if (isWindowsOS || isMac) {
+                this.execCmd(this.screenShareIndicatorFrameUtil, []);
+            }
             this.destroyAllWindows();
         });
 
@@ -390,7 +418,7 @@ export class WindowHandler {
                     if (browserWindow && windowExists(browserWindow)) {
                         browserWindow.destroy();
 
-                        if (isWindowsOS) {
+                        if (isWindowsOS || isMac) {
                             this.execCmd(this.screenShareIndicatorFrameUtil, []);
                         } else {
                             if (this.screenSharingFrameWindow && windowExists(this.screenSharingFrameWindow)) {
@@ -508,11 +536,12 @@ export class WindowHandler {
         const selectedParentWindow = getWindowByName(windowName);
 
         const opts: BrowserWindowConstructorOptions = this.getWindowOpts({
-            width: 550,
-            height: isWindowsOS ? 745 : 705,
+            width: 440,
+            height: 315,
             modal: true,
             alwaysOnTop: isMac,
             resizable: false,
+            fullscreenable: false,
         }, {
             devTools: false,
         });
@@ -531,7 +560,18 @@ export class WindowHandler {
         this.aboutAppWindow.webContents.once('did-finish-load', async () => {
             const ABOUT_SYMPHONY_NAMESPACE = 'AboutSymphony';
             const versionLocalised = i18n.t('Version', ABOUT_SYMPHONY_NAMESPACE)();
+            const { hostname } = parse(this.url || this.globalConfig.url);
+            const userConfig = config.userConfig;
+            const globalConfig = config.globalConfig;
+            const cloudConfig = config.cloudConfig;
+            const filteredConfig = config.filteredCloudConfig;
+            const finalConfig = { ...globalConfig, ...userConfig, ...filteredConfig };
             const aboutInfo = {
+                userConfig,
+                globalConfig,
+                cloudConfig,
+                finalConfig,
+                hostname,
                 buildNumber: versionHandler.versionInfo.buildNumber,
                 clientVersion: versionHandler.versionInfo.clientVersion,
                 sfeVersion: versionHandler.versionInfo.sfeVersion,
@@ -565,6 +605,7 @@ export class WindowHandler {
             height: isMac ? 519 : 523,
             width: 580,
             show: false,
+            fullscreenable: false,
         }, {
             devTools: false,
         });
@@ -588,12 +629,22 @@ export class WindowHandler {
         });
         ipcMain.once('screen-source-selected', (_event, source) => {
             if (source != null) {
-                if (isWindowsOS) {
-                    logger.info(`window-handler: screen-source-selected`, source, id);
+                logger.info(`window-handler: screen-source-selected`, source, id);
+                if (isWindowsOS || isMac) {
                     const type = source.id.split(':')[0];
                     if (type === 'window') {
                         const hwnd = source.id.split(':')[1];
                         this.execCmd(this.screenShareIndicatorFrameUtil, [ hwnd ]);
+                    } else if (isMac && type === 'screen') {
+                        const dispId = source.id.split(':')[1];
+                        this.execCmd(this.screenShareIndicatorFrameUtil, [ dispId ]);
+                    } else if (isWindowsOS && type === 'screen') {
+                        logger.info('window-handler: source.display_id: ' + source.display_id);
+                        if (source.display_id !== '') {
+                            this.execCmd(this.screenShareIndicatorFrameUtil, [ source.display_id ]);
+                        } else {
+                            this.execCmd(this.screenShareIndicatorFrameUtil, [ '0' ]);
+                        }
                     }
                 }
             }
@@ -705,7 +756,7 @@ export class WindowHandler {
                 if (app.isReady()) {
                     screens = electron.screen.getAllDisplays();
                 }
-                const {position, display} = config.getConfigFields(['notificationSettings']).notificationSettings;
+                const { position, display } = config.getConfigFields([ 'notificationSettings' ]).notificationSettings;
                 this.notificationSettingsWindow.webContents.send('notification-settings-data', {screens, position, display});
             }
         });
@@ -771,6 +822,7 @@ export class WindowHandler {
                 titleBarStyle: 'customButtonsOnHover',
                 minimizable: false,
                 maximizable: false,
+                title: 'Screen Sharing Indicator - Symphony',
             }, {
                 devTools: false,
             }), ...{winKey: streamId},
@@ -782,28 +834,28 @@ export class WindowHandler {
             });
         }
 
+        logger.info('window-handler: createScreenSharingIndicatorWindow, displayId: ' + displayId);
         if (displayId !== '') {
-            const displays = electron.screen.getAllDisplays();
-
-            displays.forEach((element) => {
-                if (displayId === element.id.toString()) {
-                    if (isWindowsOS) {
+            if (isLinux) {
+                const displays = electron.screen.getAllDisplays();
+                displays.forEach((element) => {
+                    logger.info('window-handler: element.id.toString(): ' + element.id.toString());
+                    if (displayId === element.id.toString()) {
                         logger.info(`window-handler: element:`, element);
-                        this.execCmd(this.screenShareIndicatorFrameUtil, [ displayId ]);
-                    } else {
-                        this.createScreenSharingFrameWindow('screen-sharing-frame',
-                        element.workArea.width,
-                        element.workArea.height,
-                        element.workArea.x,
-                        element.workArea.y);
+                            this.createScreenSharingFrameWindow('screen-sharing-frame',
+                            element.workArea.width,
+                            element.workArea.height,
+                            element.workArea.x,
+                            element.workArea.y);
                     }
-                }
-            });
+                });
+            }
         }
 
         this.screenSharingIndicatorWindow = createComponentWindow('screen-sharing-indicator', opts);
         this.moveWindow(this.screenSharingIndicatorWindow, topPositionOfIndicatorScreen);
         this.screenSharingIndicatorWindow.setVisibleOnAllWorkspaces(true);
+        this.screenSharingIndicatorWindow.setSkipTaskbar(true);
         this.screenSharingIndicatorWindow.webContents.once('did-finish-load', () => {
             if (!this.screenSharingIndicatorWindow || !windowExists(this.screenSharingIndicatorWindow)) {
                 return;
@@ -908,6 +960,28 @@ export class WindowHandler {
     }
 
     /**
+     * Executes the given command via a child process
+     *
+     * @param util {string}
+     * @param utilArgs {ReadonlyArray<string>}
+     */
+    public execCmd(util: string, utilArgs: ReadonlyArray<string>): Promise<ChildProcess> {
+        logger.info(`window handler: execCmd: util: ${util} utilArgs: ${utilArgs}`);
+        return new Promise<ChildProcess>((resolve, reject) => {
+            return execFile(util, utilArgs, (error: ExecException | null) => {
+                if (error) {
+                    logger.info(`window handler: execCmd: error: ${error}`);
+                }
+                if (error && error.killed) {
+                    // processs was killed, just resolve with no data.
+                    return reject(error);
+                }
+                resolve();
+            });
+        });
+    }
+
+    /**
      * Sets the about panel details for macOS
      */
     private setAboutPanel() {
@@ -933,14 +1007,49 @@ export class WindowHandler {
         globalShortcut.register(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I', this.onRegisterDevtools);
         globalShortcut.register('CmdOrCtrl+R', this.onReload);
 
+        // Hack to switch between Client 1.5, Mana-stable and Mana-daily
+        if (this.url && this.url.startsWith('https://corporate.symphony.com')) {
+            globalShortcut.register(isMac ? 'Cmd+Alt+1' : 'Ctrl+Shift+1', () => this.switchClient(ClientSwitchType.CLIENT_1_5));
+            globalShortcut.register(isMac ? 'Cmd+Alt+2' : 'Ctrl+Shift+2', () => this.switchClient(ClientSwitchType.CLIENT_2_0));
+            globalShortcut.register(isMac ? 'Cmd+Alt+3' : 'Ctrl+Shift+3', () => this.switchClient(ClientSwitchType.CLIENT_2_0_DAILY));
+        } else {
+            logger.info('Switch between clients not supported for this POD-url');
+        }
+
+        if (isMac) {
+            globalShortcut.register('CmdOrCtrl+Plus', this.onZoomIn);
+            globalShortcut.register('CmdOrCtrl+=', this.onZoomIn);
+        }
+
         app.on('browser-window-focus', () => {
             globalShortcut.register(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I', this.onRegisterDevtools);
             globalShortcut.register('CmdOrCtrl+R', this.onReload);
+            if (isMac) {
+                globalShortcut.register('CmdOrCtrl+Plus', this.onZoomIn);
+                globalShortcut.register('CmdOrCtrl+=', this.onZoomIn);
+            }
+            if (this.url && this.url.startsWith('https://corporate.symphony.com')) {
+                globalShortcut.register(isMac ? 'Cmd+Alt+1' : 'Ctrl+Shift+1', () => this.switchClient(ClientSwitchType.CLIENT_1_5));
+                globalShortcut.register(isMac ? 'Cmd+Alt+2' : 'Ctrl+Shift+2', () => this.switchClient(ClientSwitchType.CLIENT_2_0));
+                globalShortcut.register(isMac ? 'Cmd+Alt+3' : 'Ctrl+Shift+3', () => this.switchClient(ClientSwitchType.CLIENT_2_0_DAILY));
+            } else {
+                logger.info('Switch between clients not supported for this POD-url');
+            }
         });
 
         app.on('browser-window-blur', () => {
             globalShortcut.unregister(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I');
             globalShortcut.unregister('CmdOrCtrl+R');
+            if (isMac) {
+                globalShortcut.unregister('CmdOrCtrl+Plus');
+                globalShortcut.unregister('CmdOrCtrl+=');
+            }
+            // Unregister shortcuts related to client switch
+            if (this.url && this.url.startsWith('https://corporate.symphony.com')) {
+                globalShortcut.unregister(isMac ? 'Cmd+Alt+1' : 'Ctrl+Shift+1');
+                globalShortcut.unregister(isMac ? 'Cmd+Alt+2' : 'Ctrl+Shift+2');
+                globalShortcut.unregister(isMac ? 'Cmd+Alt+3' : 'Ctrl+Shift+3');
+            }
         });
     }
 
@@ -953,6 +1062,7 @@ export class WindowHandler {
         if (!focusedWindow || !windowExists(focusedWindow)) {
             return;
         }
+        const { devToolsEnabled } = config.getConfigFields([ 'devToolsEnabled' ]);
         if (devToolsEnabled) {
             focusedWindow.webContents.toggleDevTools();
             return;
@@ -970,6 +1080,68 @@ export class WindowHandler {
             return;
         }
         reloadWindow(focusedWindow as ICustomBrowserWindow);
+    }
+
+    /**
+     * This is a workarround untill we have a
+     * fix on the electron framework
+     * https://github.com/electron/electron/issues/15496
+     */
+    private onZoomIn(): void {
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+        if (!focusedWindow || !windowExists(focusedWindow)) {
+            return;
+        }
+        // electron/lib/browser/api/menu-item-roles.js row 159
+        const currentZoomLevel = focusedWindow.webContents.getZoomLevel();
+        focusedWindow.webContents.setZoomLevel(currentZoomLevel + 0.5);
+    }
+
+    /**
+     * Switch between clients 1.5, 2.0 and 2.0 daily
+     * @param clientSwitch client switch you want to switch to.
+     */
+    private async switchClient(clientSwitch: ClientSwitchType): Promise<void> {
+
+        if (this.currentClient && this.currentClient === clientSwitch) {
+            logger.info(`window handler: already in the same client ${clientSwitch}. Not switching!`);
+            return;
+        }
+        logger.info(`window handler: switch to client ${clientSwitch}`);
+        logger.info(`window handler: currentClient: ${this.currentClient}`);
+        this.currentClient = clientSwitch;
+
+        if (!this.mainWindow || !windowExists(this.mainWindow)) {
+            logger.info(`window-handler: switch client - main window web contents destroyed already! exiting`);
+            return;
+        }
+        try {
+            if (!this.url) {
+                this.url = this.globalConfig.url;
+            }
+            const parsedUrl = parse(this.url);
+            const manaPath = 'client-bff';
+            const manaChannel = 'daily';
+            const csrfToken = await this.mainWindow.webContents.executeJavaScript(`localStorage.getItem('x-km-csrf-token')`);
+            switch (this.currentClient) {
+                case ClientSwitchType.CLIENT_1_5:
+                    this.url = this.startUrl + `?x-km-csrf-token=${csrfToken}`;
+                    break;
+                case ClientSwitchType.CLIENT_2_0:
+                    this.url = `https://${parsedUrl.hostname}/${manaPath}/index.html?x-km-csrf-token=${csrfToken}`;
+                    break;
+                case ClientSwitchType.CLIENT_2_0_DAILY:
+                    this.url = `https://${parsedUrl.hostname}/${manaPath}/${manaChannel}/index.html?x-km-csrf-token=${csrfToken}`;
+                    break;
+                default:
+                    this.url = this.globalConfig.url + `?x-km-csrf-token=${csrfToken}`;
+            }
+            await config.updateUserConfig({ clientSwitch });
+            this.config.clientSwitch = clientSwitch;
+            await this.mainWindow.loadURL(this.url);
+        } catch (e) {
+            logger.error(`window-handler: failed to switch client because of error ${e}`);
+        }
     }
 
     /**
@@ -1021,9 +1193,9 @@ export class WindowHandler {
     private getWindowOpts(windowOpts: Electron.BrowserWindowConstructorOptions, webPreferences: Electron.WebPreferences): ICustomBrowserWindowConstructorOpts {
         const defaultPreferencesOpts = {
             ...{
-                sandbox: true,
-                nodeIntegration: false,
-                contextIsolation: this.contextIsolation,
+                sandbox: !isNodeEnv,
+                nodeIntegration: isNodeEnv,
+                contextIsolation: isNodeEnv ? false : this.contextIsolation,
                 backgroundThrottling: this.backgroundThrottling,
             }, ...webPreferences,
         };
@@ -1035,26 +1207,6 @@ export class WindowHandler {
 
         return {...defaultWindowOpts, ...windowOpts};
     }
-
-    /**
-     * Executes the given command via a child process
-     *
-     * @param util {string}
-     * @param utilArgs {ReadonlyArray<string>}
-     */
-    private execCmd(util: string, utilArgs: ReadonlyArray<string>): Promise<ChildProcess> {
-        logger.info(`window handler: execCmd: util: ${util} utilArgs: ${utilArgs}`);
-        return new Promise<ChildProcess>((resolve, reject) => {
-            return execFile(util, utilArgs, (error: ExecException | null) => {
-                if (error && error.killed) {
-                    // processs was killed, just resolve with no data.
-                    return reject(error);
-                }
-                resolve();
-            });
-        });
-    }
-
 }
 
 const windowHandler = new WindowHandler();

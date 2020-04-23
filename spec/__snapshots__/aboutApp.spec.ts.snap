@@ -32,20 +32,30 @@ exports[`about app should render correctly 1`] = `
       </p>
     </div>
   </div>
-  <hr />
   <div
     className="AboutApp-main-container"
   >
     <section>
-      <h4>
-        Symphony
-      </h4>
       <ul
         className="AboutApp-symphony-section"
       >
         <li>
           <b>
+            POD:
+          </b>
+           
+          N/A
+        </li>
+        <li>
+          <b>
             SBE:
+          </b>
+           
+          N/A (N/A)
+        </li>
+        <li>
+          <b>
+            SDA:
           </b>
            
           N/A (N/A)
@@ -57,114 +67,9 @@ exports[`about app should render correctly 1`] = `
            
           N/A
         </li>
-        <li>
-          <b>
-            SDA:
-          </b>
-           
-          N/A (N/A)
-        </li>
-      </ul>
-    </section>
-    <section>
-      <h4>
-        Electron
-      </h4>
-      <ul
-        className="AboutApp-electron-section"
-      >
-        <li>
-          <b>
-            Electron:
-          </b>
-           
-          N/A
-        </li>
-        <li>
-          <b>
-            Chrome:
-          </b>
-           
-          N/A
-        </li>
-        <li>
-          <b>
-            V8:
-          </b>
-           
-          N/A
-        </li>
-        <li>
-          <b>
-            Node:
-          </b>
-           
-          N/A
-        </li>
-      </ul>
-    </section>
-    <section>
-      <h4>
-        Others
-      </h4>
-      <ul
-        className="AboutApp-others-section"
-      >
-        <li>
-          <b>
-            openssl:
-          </b>
-           
-          N/A
-        </li>
-        <li>
-          <b>
-            zlib:
-          </b>
-           
-          N/A
-        </li>
-        <li>
-          <b>
-            uv:
-          </b>
-           
-          N/A
-        </li>
-        <li>
-          <b>
-            ares:
-          </b>
-           
-          N/A
-        </li>
-        <li>
-          <b>
-            http_parser:
-          </b>
-           
-          N/A
-        </li>
-        <li>
-          <b>
-            Swift Search
-            :
-          </b>
-           
-          N/A
-        </li>
-        <li>
-          <b>
-            Swift Search API
-            :
-          </b>
-           
-          N/A
-        </li>
       </ul>
     </section>
   </div>
-  <hr />
   <div>
     <button
       className="AboutApp-copy-button"

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 NODE_REQUIRED_VERSION=v12.13.1
-SNYK_API_TOKEN=885953dc-9469-443c-984d-524352d54116
+SNYK_ORG=sda
 
 # Check basic dependencies
 if ! [ -x "$(command -v git)" ]; then
@@ -43,8 +43,10 @@ fi
 if ! [ -x "$(command -v snyk)" ]; then
   echo 'Snyk does not exist! Installing and setting it up' >&2
   npm install -g snyk
-  snyk config set api=$SNYK_API_TOKEN
 fi
+echo "Setting snyk org to $SNYK_ORG and api token to $SNYK_API_TOKEN"
+snyk config set org="$SNYK_ORG"
+snyk config set api="$SNYK_API_TOKEN"
 
 if ! [ -x "$(command -v /usr/local/bin/packagesbuild)" ]; then
   echo 'Packages build does not exist! Please set it up before running this script!' >&2
@@ -71,6 +73,7 @@ fi
 
 codesign --force --options runtime -s "Developer ID Application: Symphony Communication Services LLC" library/lz4.exec
 codesign --force --options runtime -s "Developer ID Application: Symphony Communication Services LLC" library/indexvalidator.exec
+codesign --force --options runtime -s "Developer ID Application: Symphony Communication Services LLC" node_modules/screen-share-indicator-frame/SymphonyScreenShareIndicator
 
 PKG_VERSION=$(node -e "console.log(require('./package.json').version);")
 
@@ -80,7 +83,7 @@ npm install
 
 # Run Snyk Security Tests
 echo "Running snyk security tests"
-snyk test --file=package.json
+snyk test --file=package.json --org="$SNYK_ORG"
 
 # Replace url in config
 echo "Setting default pod url to https://corporate.symphony.com"

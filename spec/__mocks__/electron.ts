@@ -173,6 +173,13 @@ const getCurrentWindow = jest.fn(() => {
     };
 });
 
+const clipboard = {
+    write: jest.fn(),
+    readTest: jest.fn(() => {
+        return '';
+    }),
+};
+
 export const dialog = {
     showMessageBox: jest.fn(),
     showErrorBox: jest.fn(),
@@ -198,4 +205,5 @@ export const session = {
 export const remote = {
     app,
     getCurrentWindow,
+    clipboard,
 };

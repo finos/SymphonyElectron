@@ -1,5 +1,5 @@
 import { app, BrowserWindow } from 'electron';
-import electronLog, { ILogLevel as LogLevel, transports } from 'electron-log';
+import electronLog, { LogLevel, transports } from 'electron-log';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
@@ -250,7 +250,7 @@ class Logger {
             const filePath = path.join(this.logPath, file);
             const stat = fs.statSync(filePath);
             const fileTimestamp = new Date(util.inspect(stat.mtime)).getTime();
-            if (fileTimestamp < deleteTimeStamp) {
+            if ((fileTimestamp < deleteTimeStamp) && fs.existsSync(filePath)) {
                 fs.unlinkSync(filePath);
             }
         });

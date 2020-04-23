@@ -144,6 +144,27 @@
         <button id='bring-to-front-without-focus'>bring to front without focus</button>
 
         <hr>
+        <p>Measure cpu usage:</p>
+        <button id='button-get-cpu-usage'>Get CPU usage</button>
+        <input type="text" id='text-cpu-usage' />
+
+        <hr>
+        <p>Check Media Permission:</p>
+        <button id='check-media-permission'>Check media permission</button>
+        <br>
+        <table  >
+            <tr>
+                <th>Camera permission</th>
+                <th>Microphone permission</th>
+                <th>Screen permission</th>
+            </tr>
+            <tr>
+                <td id="camera-permission"></td>
+                <td id="microphone-permission"></td>
+                <td id="screen-permission"></td>
+            </tr>
+        </table>
+        <hr>
         <p>Get Media Sources:</p>
         <button id='get-sources'>Open screen picker & screensharing indicator</button>
         <br>
@@ -210,6 +231,8 @@
                 notification: 'notification',
                 closeNotification: 'close-notification',
                 registerRestartFloater: 'register-restart-floater',
+                getCPUUsage: 'get-cpu-usage',
+                checkMediaPermission: 'check-media-permission',
         };
         let requestId = 0;
 
@@ -259,12 +282,16 @@
                 const ssfNotificationHandler = new window.ssf.Notification(notf.title, notf);
                 const onclick = (event) => {
                     event.target.close();
-                    alert('notification clicked: ' + event.target.data.hello);
+                    if (!process.env.NODE_ENV) {
+                        alert('notification clicked: ' + event.target.data.hello);
+                    }
                 };
                 ssfNotificationHandler.addEventListener('click', onclick);
 
                 const onclose = () => {
-                    alert('notification closed');
+                    if (!process.env.NODE_ENV) {
+                        alert('notification closed');
+                    }
                 };
                 ssfNotificationHandler.addEventListener('close', onclose);
 
@@ -504,6 +531,14 @@
                 case 'restart-floater-callback':
                     onRestartFloater(data);
                     break;
+                case 'get-cpu-usage-callback':
+                    handleResponse(data);
+                    console.log(event.data);
+                    break;
+                case 'check-media-permission-callback':
+                    handleResponse(data);
+                    console.log(event.data);
+                    break;
                 default:
                     console.log(event.data);
             }
@@ -604,6 +639,63 @@
         };
 
         /**
+         * Get CPU usage
+         */
+        const cpuMeasurement = document.getElementById('button-get-cpu-usage');
+
+        cpuMeasurement.addEventListener('click', () => {
+            console.log('Start measure CPU !!!');
+
+            if (window.ssf) {
+                ssf.getCPUUsage.then((cpuUsage) => {
+                    console.log('get-cpu-usage, cpuUsage: ' + JSON.stringify(cpuUsage));
+                    document.getElementById('text-cpu-usage').value = cpuUsage.percentCPUUsage;
+                });
+            } else {
+                postRequest(apiCmds.getCPUUsage, null, {
+                    successCallback: (cpuUsage) => {
+                        console.log('get-cpu-usage, cpuUsage: ' + JSON.stringify(cpuUsage));
+                        document.getElementById('text-cpu-usage').value = cpuUsage.percentCPUUsage;
+                    }
+                });
+            }
+        });
+
+        /**
+         * Check media permission
+         */
+        const mediaPermission = document.getElementById('check-media-permission');
+        mediaPermission.addEventListener('click', () => {
+            let cameraPermission = document.getElementById('camera-permission');
+            let microphonePermission = document.getElementById('microphone-permission');
+            let screenPermission = document.getElementById('screen-permission');
+            if (navigator.appVersion.indexOf("Mac") != -1) {
+                if (window.ssf) {
+                    ssf.checkMediaPermission().then((mediaPermission) => {
+                        console.log('check-media-permission, mediaPermission: ' + JSON.stringify(mediaPermission));
+                        cameraPermission.innerText = mediaPermission.camera;
+                        microphonePermission.innerText = mediaPermission.microphone;
+                        screenPermission.innerText = mediaPermission.screen;
+                    });
+                } else {
+                    postRequest(apiCmds.checkMediaPermission, null, {
+                        successCallback: (mediaPermission) => {
+                            console.log('check-media-permission, mediaPermission: ' + JSON.stringify(mediaPermission));
+                            cameraPermission.innerText = mediaPermission.camera;
+                            microphonePermission.innerText = mediaPermission.microphone;
+                            screenPermission.innerText = mediaPermission.screen;
+                        }
+                    });
+                }
+            } else {
+                const notImplementedText = 'Not implemented for windows';
+                cameraPermission.innerText = notImplementedText;
+                microphonePermission.innerText = notImplementedText;
+                screenPermission.innerText = notImplementedText;
+            }
+        });
+
+        /**
          * Desktop capture
          */
         const getSources = document.getElementById('get-sources');
@@ -669,6 +761,7 @@
                     if (event.type === 'stopRequested') {
                         stream.getVideoTracks().forEach(t => t.stop());
                         document.getElementById('video').srcObject = null;
+                        ssf.closeScreenSharingIndicator(stream.id)
                     }
                 });
             } else {

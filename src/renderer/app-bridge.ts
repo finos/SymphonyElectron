@@ -166,10 +166,27 @@ export class AppBridge {
             case apiCmds.registerRestartFloater:
                 ssf.registerRestartFloater(this.callbackHandlers.restartFloater);
                 break;
+            case apiCmds.setCloudConfig:
+                ssf.setCloudConfig(data as object);
+                break;
             case apiCmds.swiftSearch:
                 if (ssInstance) {
                     ssInstance.handleMessageEvents(data);
                 }
+                break;
+            case apiCmds.getCPUUsage:
+                const cpuUsage = await ssf.getCPUUsage();
+                this.broadcastMessage('get-cpu-usage-callback', {
+                    requestId: data.requestId,
+                    response: cpuUsage,
+                });
+                break;
+            case apiCmds.checkMediaPermission:
+                const mediaPermission = await ssf.checkMediaPermission();
+                this.broadcastMessage('check-media-permission-callback', {
+                    requestId: data.requestId,
+                    response: mediaPermission,
+                });
                 break;
         }
     }

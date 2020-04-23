@@ -1,14 +1,21 @@
 import { shallow } from 'enzyme';
 import * as React from 'react';
 import AboutApp from '../src/renderer/components/about-app';
-import { ipcRenderer } from './__mocks__/electron';
+import { ipcRenderer, remote } from './__mocks__/electron';
 
 describe('about app', () => {
     const aboutAppDataLabel = 'about-app-data';
     const aboutDataMock = {
-        buildNumber: '4.x.x',
+        userConfig: {},
+        globalConfig: {},
+        cloudConfig: {},
+        finalConfig: {},
+        appName: 'Symphony',
+        versionLocalised: 'Version',
         clientVersion: '1',
-        version: 'x.x.x',
+        buildNumber: '4.x.x',
+        hostname: 'N/A',
+        sfeVersion: 'N/A',
         sdaVersion: '3.8.0',
         sdaBuildNumber: '0',
         electronVersion: '3.1.11',
@@ -21,7 +28,7 @@ describe('about app', () => {
         aresVersion: '9.10',
         httpParserVersion: '11.12',
         swiftSearchVersion: '1.55.3-beta.1',
-        swiftSerchSupportedVersion: '1.55.3',
+        swiftSearchSupportedVersion: 'N/A',
     };
     const onLabelEvent = 'on';
     const removeListenerLabelEvent = 'removeListener';
@@ -51,5 +58,15 @@ describe('about app', () => {
         shallow(React.createElement(AboutApp));
         ipcRenderer.send('about-app-data', aboutDataMock);
         expect(spy).toBeCalledWith(aboutDataMock);
+    });
+
+    it('should copy the correct data on to clipboard', () => {
+        const spyMount = jest.spyOn(remote.clipboard, 'write');
+        const wrapper = shallow(React.createElement(AboutApp));
+        ipcRenderer.send('about-app-data', aboutDataMock);
+        const copyButtonSelector = `button.AboutApp-copy-button[title="Copy all the version information in this page"]`;
+        wrapper.find(copyButtonSelector).simulate('click');
+        const expectedData = { text: JSON.stringify(aboutDataMock, null, 4) };
+        expect(spyMount).toBeCalledWith(expectedData, 'clipboard');
     });
 });
