@@ -4,6 +4,8 @@ import { i18n } from '../../common/i18n-preload';
 
 interface IState {
     url: string;
+    message: string;
+    urlValid: boolean;
 }
 
 const WELCOME_NAMESPACE = 'Welcome';
@@ -18,6 +20,8 @@ export default class Welcome extends React.Component<{}, IState> {
         super(props);
         this.state = {
             url: 'https://my.symphony.com',
+            message: '',
+            urlValid: false,
         };
         this.updateState = this.updateState.bind(this);
     }
@@ -26,7 +30,7 @@ export default class Welcome extends React.Component<{}, IState> {
      * Render the component
      */
     public render(): JSX.Element {
-        const { url } = this.state;
+        const { url, message } = this.state;
         return (
             <div className='Welcome' lang={i18n.getLocale()}>
                 <div className='Welcome-image-container'>
@@ -37,8 +41,13 @@ export default class Welcome extends React.Component<{}, IState> {
                 </div>
                 <div className='Welcome-main-container'>
                     <h3 className='Welcome-name'>Pod URL</h3>
-                    <input type='text' value={url} onChange={this.updatePodUrl.bind(this)}/>
-                    <button className='Welcome-continue-button' onClick={this.eventHandlers.onSetPodUrl}>
+                    <input type='url' placeholder={url}
+                           pattern='https?://.+'
+                           required
+                           onChange={this.updatePodUrl.bind(this)}/>
+                    <label className='Welcome-message-label'>{message}</label>
+                    <button className='Welcome-continue-button'
+                            onClick={this.eventHandlers.onSetPodUrl}>
                         {i18n.t('Continue', WELCOME_NAMESPACE)()}
                     </button>
                 </div>
@@ -64,7 +73,10 @@ export default class Welcome extends React.Component<{}, IState> {
      * Set pod url and pass it to the main process
      */
     public setPodUrl(): void {
-        const { url } = this.state;
+        const { url, urlValid } = this.state;
+        if (!urlValid) {
+            return;
+        }
         ipcRenderer.send('set-pod-url', url);
     }
 
@@ -73,7 +85,13 @@ export default class Welcome extends React.Component<{}, IState> {
      * @param _event
      */
     public updatePodUrl(_event): void {
-        this.updateState(_event, {url: _event.target.value});
+        const url = _event.target.value;
+        const match = url.match(/(https?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&/=]*)/g) != null;
+        if (!match) {
+            this.updateState(_event, { url: this.state.url, message: 'Please enter a valid url', urlValid: false });
+            return;
+        }
+        this.updateState(_event, { url, message: '', urlValid: true });
     }
 
     /**

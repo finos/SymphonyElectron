@@ -9,6 +9,7 @@ import DownloadManager from './components/download-manager';
 import MessageBanner from './components/message-banner';
 import NetworkError from './components/network-error';
 import SnackBar from './components/snack-bar';
+import Welcome from './components/welcome';
 import WindowsTitleBar from './components/windows-title-bar';
 import { SSFApi } from './ssf-api';
 
@@ -146,6 +147,20 @@ ipcRenderer.on('page-load', (_event, { locale, resources, enableCustomTitleBar }
     // initialize red banner
     banner.initBanner();
     banner.showBanner(false, 'error');
+});
+
+ipcRenderer.on('page-load-welcome', (_event, data) => {
+    const { locale, resource } = data;
+    i18n.setResource(locale, resource);
+    // Renders component as soon as the page is ready
+    document.title = i18n.t('WelcomeText', 'Welcome')();
+    const styles = document.createElement('link');
+    styles.rel = 'stylesheet';
+    styles.type = 'text/css';
+    styles.href = `./styles/welcome.css`;
+    document.getElementsByTagName('head')[0].appendChild(styles);
+    const element = React.createElement(Welcome);
+    ReactDOM.render(element, document.getElementById('Root'));
 });
 
 // When the window fails to load
