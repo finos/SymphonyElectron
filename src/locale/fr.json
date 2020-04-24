@@ -196,9 +196,13 @@
   "Updating Title bar style requires Symphony to relaunch.": "La mise à jour du style de la barre de titre nécessite le redémarrage de Symphony.",
   "View": "Visualiser",
   "Welcome": {
-    "WelcomeText": "Welcome",
+    "Continue": "Continue",
+    "Enable Single Sign On": "Enable Single Sign On",
+    "Please enter a valid url": "Please enter a valid url",
+    "PodUrl": "Pod URL",
+    "SSO": "SSO",
     "Symphony Logo": "Symphony",
-    "Continue": "Continue"
+    "WelcomeText": "Welcome"
   },
   "Window": "Fenêtre",
   "Would you like to restart and apply these new settings now?": "Voulez-vous redémarrer et appliquer ce nouveau paramètre maintenant?",

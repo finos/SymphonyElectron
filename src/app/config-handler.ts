@@ -22,12 +22,8 @@ export enum ClientSwitchType {
     CLIENT_2_0_DAILY = 'CLIENT_2_0_DAILY',
 }
 
-export interface IGlobalConfig {
-    url: string;
-    contextIsolation: boolean;
-}
-
 export interface IConfig {
+    url: string;
     minimizeOnClose: CloudConfigDataTypes;
     launchOnStartup: CloudConfigDataTypes;
     alwaysOnTop: CloudConfigDataTypes;
@@ -49,6 +45,11 @@ export interface IConfig {
     mainWinPos?: ICustomRectangle;
     locale?: string;
     clientSwitch: ClientSwitchType;
+}
+
+export interface IGlobalConfig {
+    url: string;
+    contextIsolation: boolean;
 }
 
 export interface ICloudConfig {
@@ -214,13 +215,13 @@ class Config {
      * @param data {IConfig}
      */
     public async updateUserConfig(data: Partial<IConfig>): Promise<void> {
-        logger.info(`config-handler: updating user config values with the data`, data);
+        logger.info(`config-handler: updating user config values with the data`, JSON.stringify(data));
         this.userConfig = { ...this.userConfig, ...data };
         try {
             await writeFile(this.userConfigPath, JSON.stringify(this.userConfig), { encoding: 'utf8' });
-            logger.info(`config-handler: updated user config values with the data ${data}`);
+            logger.info(`config-handler: updated user config values with the data ${JSON.stringify(data)}`);
         } catch (error) {
-            logger.error(`config-handler: failed to update user config file with ${data}`, error);
+            logger.error(`config-handler: failed to update user config file with ${JSON.stringify(data)}`, error);
             dialog.showErrorBox(`Update failed`, `Failed to update user config due to error: ${error}`);
         }
     }

@@ -6,6 +6,7 @@ interface IState {
     url: string;
     message: string;
     urlValid: boolean;
+    sso: boolean;
 }
 
 const WELCOME_NAMESPACE = 'Welcome';
@@ -21,7 +22,8 @@ export default class Welcome extends React.Component<{}, IState> {
         this.state = {
             url: 'https://my.symphony.com',
             message: '',
-            urlValid: false,
+            urlValid: true,
+            sso: false,
         };
         this.updateState = this.updateState.bind(this);
     }
@@ -30,7 +32,7 @@ export default class Welcome extends React.Component<{}, IState> {
      * Render the component
      */
     public render(): JSX.Element {
-        const { url, message } = this.state;
+        const { url, message, urlValid, sso } = this.state;
         return (
             <div className='Welcome' lang={i18n.getLocale()}>
                 <div className='Welcome-image-container'>
@@ -40,13 +42,25 @@ export default class Welcome extends React.Component<{}, IState> {
                     />
                 </div>
                 <div className='Welcome-main-container'>
-                    <h3 className='Welcome-name'>Pod URL</h3>
-                    <input type='url' placeholder={url}
-                           pattern='https?://.+'
-                           required
-                           onChange={this.updatePodUrl.bind(this)}/>
+                    <h3 className='Welcome-name'>{i18n.t('Pod URL', WELCOME_NAMESPACE)()}</h3>
+                    <div className='Welcome-main-container-input-div'>
+                        <div className='Welcome-main-container-input-selection'>
+                            <input className='Welcome-main-container-podurl-box'
+                                   type='url' value={url}
+                                   onChange={this.updatePodUrl.bind(this)}>
+                            </input>
+                        </div>
+                        <div className='Welcome-main-container-sso-box'
+                             title={i18n.t('Enable Single Sign On', WELCOME_NAMESPACE)()}>
+                            <label>
+                                <input type='checkbox' checked={sso} onChange={this.updateSsoCheckbox.bind(this)}/>
+                                {i18n.t('SSO', WELCOME_NAMESPACE)()}
+                            </label>
+                        </div>
+                    </div>
                     <label className='Welcome-message-label'>{message}</label>
-                    <button className='Welcome-continue-button'
+                    <button className={!urlValid ? 'Welcome-continue-button-disabled' : 'Welcome-continue-button'}
+                            disabled={!urlValid}
                             onClick={this.eventHandlers.onSetPodUrl}>
                         {i18n.t('Continue', WELCOME_NAMESPACE)()}
                     </button>
@@ -73,11 +87,8 @@ export default class Welcome extends React.Component<{}, IState> {
      * Set pod url and pass it to the main process
      */
     public setPodUrl(): void {
-        const { url, urlValid } = this.state;
-        if (!urlValid) {
-            return;
-        }
-        ipcRenderer.send('set-pod-url', url);
+        const { url, sso } = this.state;
+        ipcRenderer.send('set-pod-url', sso ? `${url}/login/sso/initsso` : url);
     }
 
     /**
@@ -88,10 +99,30 @@ export default class Welcome extends React.Component<{}, IState> {
         const url = _event.target.value;
         const match = url.match(/(https?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&/=]*)/g) != null;
         if (!match) {
-            this.updateState(_event, { url: this.state.url, message: 'Please enter a valid url', urlValid: false });
+            this.updateState(_event, {
+                url,
+                message: i18n.t('Please enter a valid url', WELCOME_NAMESPACE)(),
+                urlValid: false,
+                sso: this.state.sso,
+            });
             return;
         }
-        this.updateState(_event, { url, message: '', urlValid: true });
+        this.updateState(_event, { url, message: '', urlValid: true, sso: this.state.sso });
+    }
+
+    /**
+     * Update the SSO checkbox
+     * @param _event Event occurred upon action
+     * on the checkbox
+     */
+    public updateSsoCheckbox(_event): void {
+        const ssoCheckBox = _event.target.checked;
+        this.updateState(_event, {
+            url: this.state.url,
+            message: this.state.message,
+            urlValid: this.state.urlValid,
+            sso: ssoCheckBox,
+        });
     }
 
     /**
