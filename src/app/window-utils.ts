@@ -125,7 +125,7 @@ export const createComponentWindow = (
             sandbox: !isNodeEnv,
             nodeIntegration: isNodeEnv,
             preload: path.join(__dirname, '../renderer/_preload-component.js'),
-            devTools: true,
+            devTools: false,
         },
     };
 

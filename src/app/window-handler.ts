@@ -218,6 +218,8 @@ export class WindowHandler {
                     isMaximized = true;
                     isFullScreen = false;
                     this.mainWindow.resizable = true;
+                    this.mainWindow.maximizable = true;
+                    this.mainWindow.fullScreenable = true;
                 } else {
                     logger.info(`window-handler: url ${commandLineUrl} from command line is NOT WHITELISTED in the config file.`);
                 }
@@ -228,6 +230,8 @@ export class WindowHandler {
                 isMaximized = true;
                 isFullScreen = false;
                 this.mainWindow.resizable = true;
+                this.mainWindow.maximizable = true;
+                this.mainWindow.fullScreenable = true;
             }
         }
 
