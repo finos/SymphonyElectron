@@ -76,6 +76,7 @@ if (ssfWindow.ssf) {
         registerRestartFloater: ssfWindow.ssf.registerRestartFloater,
         setCloudConfig: ssfWindow.ssf.setCloudConfig,
         checkMediaPermission: ssfWindow.ssf.checkMediaPermission,
+        capabilities: {bug19017: true}, // flag to enable RTC patch fixing electron bug https://github.com/electron/electron/issues/19017
     });
 }
 
