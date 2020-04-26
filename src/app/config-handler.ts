@@ -324,7 +324,7 @@ class Config {
             await app.whenReady();
             await this.readGlobalConfig();
             logger.info(`config-handler: user config doesn't exist! will create new one and update config`);
-            const newUserConfig = this.globalConfig as IConfig;
+            const newUserConfig = JSON.parse(JSON.stringify(this.globalConfig)) as IConfig;
             delete newUserConfig.url;
             await this.updateUserConfig({ configVersion: app.getVersion().toString(), buildNumber, ...newUserConfig } as IConfig);
         }
