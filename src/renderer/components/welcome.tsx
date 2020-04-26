@@ -88,7 +88,11 @@ export default class Welcome extends React.Component<{}, IState> {
      */
     public setPodUrl(): void {
         const { url, sso } = this.state;
-        ipcRenderer.send('set-pod-url', sso ? `${url}/login/sso/initsso` : url);
+        let ssoPath = '/login/sso/initsso';
+        if (url.endsWith('/')) {
+            ssoPath = 'login/sso/initsso';
+        }
+        ipcRenderer.send('set-pod-url', sso ? `${url}${ssoPath}` : url);
     }
 
     /**
