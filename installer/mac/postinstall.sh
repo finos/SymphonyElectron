@@ -15,22 +15,13 @@ always_on_top=$(sed -n '4p' ${settingsFilePath});
 bring_to_front=$(sed -n '5p' ${settingsFilePath});
 dev_tools_enabled=$(sed -n '6p' ${settingsFilePath});
 
-if [ "$pod_url" == "" ]; then
-    pod_url="https://my.symphony.com"
-fi
-
+## If any of the above values turn out to be empty, set default values ##
+if [ "$pod_url" == "" ]; then pod_url="https://my.symphony.com"; fi
 if [ "$minimize_on_close" == "" ] || [ "$minimize_on_close" == 'true' ]; then minimize_on_close='ENABLED'; else minimize_on_close='DISABLED'; fi
-
 if [ "$launch_on_startup" == "" ] || [ "$launch_on_startup" == 'true' ]; then launch_on_startup='ENABLED'; else launch_on_startup='DISABLED'; fi
-
 if [ "$always_on_top" == "" ] || [ "$always_on_top" == 'false' ]; then always_on_top='DISABLED'; else always_on_top='ENABLED'; fi
-
 if [ "$bring_to_front" == "" ] || [ "$bring_to_front" == 'false' ]; then bring_to_front='DISABLED'; else bring_to_front='ENABLED'; fi
-
-if [ "$dev_tools_enabled" == "" ]; then
-    dev_tools_enabled=true;
-fi
-
+if [ "$dev_tools_enabled" == "" ]; then dev_tools_enabled=true; fi
 pod_url_escaped=$(sed 's#[&/\]#\\&#g' <<<"$pod_url")
 
 ## Replace the default settings with the user selected settings ##
@@ -41,9 +32,6 @@ sed -i "" -E "s#\"launchOnStartup\" ?: ?\"([Ee][Nn][Aa][Bb][Ll][Ee][Dd]|[Dd][Ii]
 sed -i "" -E "s#\"bringToFront\" ?: ?\"([Ee][Nn][Aa][Bb][Ll][Ee][Dd]|[Dd][Ii][Ss][Aa][Bb][Ll][Ee][Dd])\"#\"bringToFront\":\ \"$bring_to_front\"#g" ${newPath}
 sed -i "" -E "s#\"devToolsEnabled\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"devToolsEnabled\":\ $dev_tools_enabled#g" ${newPath}
 
-## Remove the temp settings file created ##
-rm -f ${settingsFilePath}
-
 ## Get Symphony Permissions from the temp file ##
 media=$(sed -n '1p' ${permissionsFilePath});
 geo_location=$(sed -n '2p' ${permissionsFilePath});
@@ -53,33 +41,14 @@ pointer_lock=$(sed -n '5p' ${permissionsFilePath});
 full_screen=$(sed -n '6p' ${permissionsFilePath});
 open_external_app=$(sed -n '7p' ${permissionsFilePath});
 
-if [ "$media" == "" ]; then
-    media=true;
-fi
-
-if [ "$geo_location" == "" ]; then
-    geo_location=true;
-fi
-
-if [ "$notifications" == "" ]; then
-    notifications=true;
-fi
-
-if [ "$midi_sysex" == "" ]; then
-    midi_sysex=true;
-fi
-
-if [ "$pointer_lock" == "" ]; then
-    pointer_lock=true;
-fi
-
-if [ "$full_screen" == "" ]; then
-    full_screen=true;
-fi
-
-if [ "$open_external_app" == "" ]; then
-    open_external_app=true;
-fi
+## If any of the above values turn out to be empty, set default values ##
+if [ "$media" == "" ]; then media=true; fi
+if [ "$geo_location" == "" ]; then geo_location=true; fi
+if [ "$notifications" == "" ]; then notifications=true; fi
+if [ "$midi_sysex" == "" ]; then midi_sysex=true; fi
+if [ "$pointer_lock" == "" ]; then pointer_lock=true;fi
+if [ "$full_screen" == "" ]; then full_screen=true; fi
+if [ "$open_external_app" == "" ]; then open_external_app=true; fi
 
 ## Replace the default permissions with the user selected permissions ##
 sed -i "" -E "s#\"media\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"media\":\ $media#g" ${newPath}
@@ -90,6 +59,6 @@ sed -i "" -E "s#\"pointerLock\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"po
 sed -i "" -E "s#\"fullscreen\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"fullscreen\":\ $full_screen#g" ${newPath}
 sed -i "" -E "s#\"openExternal\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"openExternal\":\ $open_external_app#g" ${newPath}
 
-
-## Remove the temp permissions file created ##
+## Remove the temp settings & permissions file created ##
+rm -f ${settingsFilePath}
 rm -f ${permissionsFilePath}
