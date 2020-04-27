@@ -196,10 +196,10 @@
   "Updating Title bar style requires Symphony to relaunch.": "タイトルバーのスタイルを更新するには、Symphonyが再起動する必要があります。",
   "View": "ビュー",
   "Welcome": {
-    "Continue": "継続する",
+    "Continue": "持続する",
     "Enable Single Sign On": "シングルサインオンを有効にする",
     "Please enter a valid url": "有効なURLを入力してください",
-    "Pod URL": "ERLの下",
+    "Pod URL": "ポッドURL",
     "SSO": "SSO",
     "Symphony Logo": "Symphony",
     "WelcomeText": "ようこそ"

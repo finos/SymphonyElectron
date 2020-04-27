@@ -198,9 +198,9 @@
   "View": "Visualiser",
   "Welcome": {
     "Continue": "Continuer",
-    "Enable Single Sign On": "Activer la connexion unique",
+    "Enable Single Sign On": "Activer la SSO",
     "Please enter a valid url": "Veuillez saisir une URL valide",
-    "Pod URL": "Sous ERL",
+    "Pod URL": "URL du pod",
     "SSO": "SSO",
     "Symphony Logo": "Symphony",
     "WelcomeText": "Bienvenue"
