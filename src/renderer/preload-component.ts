@@ -10,6 +10,7 @@ import NotificationSettings from './components/notification-settings';
 import ScreenPicker from './components/screen-picker';
 import ScreenSharingFrame from './components/screen-sharing-frame';
 import ScreenSharingIndicator from './components/screen-sharing-indicator';
+import Welcome from './components/welcome';
 
 const enum components {
     aboutApp = 'about-app',
@@ -19,6 +20,7 @@ const enum components {
     basicAuth = 'basic-auth',
     notification = 'notification-comp',
     notificationSettings = 'notification-settings',
+    welcome = 'welcome',
 }
 
 const loadStyle = (style) => {
@@ -71,6 +73,11 @@ const load = () => {
             document.title = i18n.t('Notification Settings - Symphony', 'NotificationSettings')();
             loadStyle(components.notificationSettings);
             component = NotificationSettings;
+            break;
+        case components.welcome:
+            document.title = i18n.t('WelcomeText', 'Welcome')();
+            loadStyle(components.welcome);
+            component = Welcome;
             break;
     }
     const element = React.createElement(component);
