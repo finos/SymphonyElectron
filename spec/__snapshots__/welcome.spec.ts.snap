@@ -1,0 +1,63 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`welcome should render correctly 1`] = `
+<div
+  className="Welcome"
+  lang="en-US"
+>
+  <div
+    className="Welcome-image-container"
+  >
+    <img
+      alt="Symphony Logo"
+      src="../renderer/assets/symphony-logo-plain.png"
+    />
+  </div>
+  <div
+    className="Welcome-main-container"
+  >
+    <h3
+      className="Welcome-name"
+    >
+      Pod URL
+    </h3>
+    <div
+      className="Welcome-main-container-input-div"
+    >
+      <div
+        className="Welcome-main-container-input-selection"
+      >
+        <input
+          className="Welcome-main-container-podurl-box"
+          onChange={[Function]}
+          type="url"
+          value="https://my.symphony.com"
+        />
+      </div>
+      <div
+        className="Welcome-main-container-sso-box"
+        title="Enable Single Sign On"
+      >
+        <label>
+          <input
+            checked={false}
+            onChange={[Function]}
+            type="checkbox"
+          />
+          SSO
+        </label>
+      </div>
+    </div>
+    <label
+      className="Welcome-message-label"
+    />
+    <button
+      className="Welcome-continue-button"
+      disabled={false}
+      onClick={[Function]}
+    >
+      Continue
+    </button>
+  </div>
+</div>
+`;

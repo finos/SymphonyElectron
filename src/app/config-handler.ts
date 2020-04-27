@@ -22,12 +22,8 @@ export enum ClientSwitchType {
     CLIENT_2_0_DAILY = 'CLIENT_2_0_DAILY',
 }
 
-export interface IGlobalConfig {
-    url: string;
-    contextIsolation: boolean;
-}
-
 export interface IConfig {
+    url: string;
     minimizeOnClose: CloudConfigDataTypes;
     launchOnStartup: CloudConfigDataTypes;
     alwaysOnTop: CloudConfigDataTypes;
@@ -49,6 +45,11 @@ export interface IConfig {
     mainWinPos?: ICustomRectangle;
     locale?: string;
     clientSwitch: ClientSwitchType;
+}
+
+export interface IGlobalConfig {
+    url: string;
+    contextIsolation: boolean;
 }
 
 export interface ICloudConfig {
@@ -214,13 +215,13 @@ class Config {
      * @param data {IConfig}
      */
     public async updateUserConfig(data: Partial<IConfig>): Promise<void> {
-        logger.info(`config-handler: updating user config values with the data`, data);
+        logger.info(`config-handler: updating user config values with the data`, JSON.stringify(data));
         this.userConfig = { ...this.userConfig, ...data };
         try {
             await writeFile(this.userConfigPath, JSON.stringify(this.userConfig), { encoding: 'utf8' });
-            logger.info(`config-handler: updated user config values with the data ${data}`);
+            logger.info(`config-handler: updated user config values with the data ${JSON.stringify(data)}`);
         } catch (error) {
-            logger.error(`config-handler: failed to update user config file with ${data}`, error);
+            logger.error(`config-handler: failed to update user config file with ${JSON.stringify(data)}`, error);
             dialog.showErrorBox(`Update failed`, `Failed to update user config due to error: ${error}`);
         }
     }
@@ -323,7 +324,8 @@ class Config {
             await app.whenReady();
             await this.readGlobalConfig();
             logger.info(`config-handler: user config doesn't exist! will create new one and update config`);
-            await this.updateUserConfig({ configVersion: app.getVersion().toString(), buildNumber, ...this.globalConfig } as IConfig);
+            const { url, ...rest } = this.globalConfig as IConfig;
+            await this.updateUserConfig({ configVersion: app.getVersion().toString(), buildNumber, ...rest } as IConfig);
         }
         this.userConfig = this.parseConfigData(fs.readFileSync(this.userConfigPath, 'utf8'));
         logger.info(`config-handler: User configuration: `, this.userConfig);

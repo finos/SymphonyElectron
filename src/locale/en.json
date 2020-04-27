@@ -195,6 +195,15 @@
   "Undo": "Undo",
   "Updating Title bar style requires Symphony to relaunch.": "Updating Title bar style requires Symphony to relaunch.",
   "View": "View",
+  "Welcome": {
+    "Continue": "Continue",
+    "Enable Single Sign On": "Enable Single Sign On",
+    "Please enter a valid url": "Please enter a valid url",
+    "Pod URL": "Pod URL",
+    "SSO": "SSO",
+    "Symphony Logo": "Symphony",
+    "WelcomeText": "Welcome"
+  },
   "Window": "Window",
   "Would you like to restart and apply these new settings now?": "Would you like to restart and apply these new settings now?",
   "Your administrator has disabled": "Your administrator has disabled",
