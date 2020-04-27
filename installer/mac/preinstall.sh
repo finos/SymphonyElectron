@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Kill the existing running instance
-sudo killall Symphony
-
 delete_app()
 {
     # Delete the installed version only if it is older than the installing version

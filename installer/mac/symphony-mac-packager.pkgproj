@@ -9,7 +9,7 @@
 			<array>
 				<dict>
 					<key>APPLICATION_ID</key>
-					<string>com.symphony.symphony-desktop</string>
+					<string>com.symphony.electron-desktop</string>
 					<key>STATE</key>
 					<true/>
 				</dict>
