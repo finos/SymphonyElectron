@@ -704,7 +704,7 @@
 						<key>VALUE</key>
 						<dict>
 							<key>PATH</key>
-							<string>/Users/vishwas/Code/symphony/SymphonyElectron/installer/mac/intro.html</string>
+							<string>intro.html</string>
 							<key>PATH_TYPE</key>
 							<integer>1</integer>
 						</dict>
