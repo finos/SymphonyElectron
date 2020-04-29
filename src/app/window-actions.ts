@@ -1,4 +1,4 @@
-import { BrowserWindow, dialog } from 'electron';
+import { BrowserWindow, dialog, PermissionRequestHandlerHandlerDetails, systemPreferences } from 'electron';
 
 import { apiName, IBoundsChange, KeyCodes } from '../common/api-interface';
 import { isLinux, isMac, isWindowsOS } from '../common/env';
@@ -303,6 +303,31 @@ export const handleSessionPermissions = async (permission: boolean, message: str
     return callback(permission);
 };
 
+const handleMediaPermissions = async (permission: boolean, message: string, callback: (permission: boolean) => void, details: PermissionRequestHandlerHandlerDetails): Promise<void> => {
+    logger.info(`window-action: permission is ->`, { type: message, permission });
+    const systemAudioPermission = await systemPreferences.askForMediaAccess('microphone');
+    const systemVideoPermission = await systemPreferences.askForMediaAccess('camera');
+
+    if (!permission) {
+        const browserWindow = BrowserWindow.getFocusedWindow();
+        if (browserWindow && !browserWindow.isDestroyed()) {
+            const response = await dialog.showMessageBox(browserWindow, { type: 'error', title: `${i18n.t('Permission Denied')()}!`, message });
+            logger.error(`window-actions: permissions message box closed with response`, response);
+        }
+    }
+
+    if (details.mediaTypes) {
+        if (details.mediaTypes.includes('audio') && !systemAudioPermission) {
+            return callback(false);
+        }
+        if (details.mediaTypes.includes('video') && !systemVideoPermission) {
+            return callback(false);
+        }
+    }
+
+    return callback(permission);
+};
+
 /**
  * Sets permission requests for the window
  *
@@ -321,10 +346,11 @@ export const handlePermissionRequests = (webContents: Electron.webContents): voi
         return;
     }
 
-    session.setPermissionRequestHandler((_webContents, permission, callback) => {
+    session.setPermissionRequestHandler((_webContents, permission, callback, details) => {
         switch (permission) {
             case Permissions.MEDIA:
-                return handleSessionPermissions(permissions.media, i18n.t('Your administrator has disabled sharing your camera, microphone, and speakers. Please contact your admin for help', PERMISSIONS_NAMESPACE)(), callback);
+                return handleMediaPermissions(permissions.media, i18n.t('Your administrator has disabled sharing your camera, microphone, and speakers. Please contact your admin for help', PERMISSIONS_NAMESPACE)(), callback, details);
+                // return handleSessionPermissions(permissions.media, i18n.t('Your administrator has disabled sharing your camera, microphone, and speakers. Please contact your admin for help', PERMISSIONS_NAMESPACE)(), callback);
             case Permissions.LOCATION:
                 return handleSessionPermissions(permissions.geolocation, i18n.t('Your administrator has disabled sharing your location. Please contact your admin for help', PERMISSIONS_NAMESPACE)(), callback);
             case Permissions.NOTIFICATIONS:
