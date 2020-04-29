@@ -305,8 +305,15 @@ export const handleSessionPermissions = async (permission: boolean, message: str
 
 const handleMediaPermissions = async (permission: boolean, message: string, callback: (permission: boolean) => void, details: PermissionRequestHandlerHandlerDetails): Promise<void> => {
     logger.info(`window-action: permission is ->`, { type: message, permission });
-    const systemAudioPermission = await systemPreferences.askForMediaAccess('microphone');
-    const systemVideoPermission = await systemPreferences.askForMediaAccess('camera');
+    let systemAudioPermission;
+    let systemVideoPermission;
+    if (isMac) {
+        systemAudioPermission = await systemPreferences.askForMediaAccess('microphone');
+        systemVideoPermission = await systemPreferences.askForMediaAccess('camera');
+    } else {
+        systemAudioPermission = true;
+        systemVideoPermission = true;
+    }
 
     if (!permission) {
         const browserWindow = BrowserWindow.getFocusedWindow();
@@ -316,7 +323,7 @@ const handleMediaPermissions = async (permission: boolean, message: string, call
         }
     }
 
-    if (details.mediaTypes) {
+    if (details.mediaTypes && isMac) {
         if (details.mediaTypes.includes('audio') && !systemAudioPermission) {
             return callback(false);
         }
@@ -350,7 +357,6 @@ export const handlePermissionRequests = (webContents: Electron.webContents): voi
         switch (permission) {
             case Permissions.MEDIA:
                 return handleMediaPermissions(permissions.media, i18n.t('Your administrator has disabled sharing your camera, microphone, and speakers. Please contact your admin for help', PERMISSIONS_NAMESPACE)(), callback, details);
-                // return handleSessionPermissions(permissions.media, i18n.t('Your administrator has disabled sharing your camera, microphone, and speakers. Please contact your admin for help', PERMISSIONS_NAMESPACE)(), callback);
             case Permissions.LOCATION:
                 return handleSessionPermissions(permissions.geolocation, i18n.t('Your administrator has disabled sharing your location. Please contact your admin for help', PERMISSIONS_NAMESPACE)(), callback);
             case Permissions.NOTIFICATIONS:
