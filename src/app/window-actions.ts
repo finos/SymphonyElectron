@@ -303,6 +303,17 @@ export const handleSessionPermissions = async (permission: boolean, message: str
     return callback(permission);
 };
 
+/**
+ * Modified version of handleSessionPermissions that takes an additional details param.
+ *
+ * Verifies the permission both against SDA permissions, and systemPermissions (macOS only).
+ * Displays a dialog if permission is disabled by administrator
+ *
+ * @param permission {boolean} - config value to a specific permission (only supports media permissions)
+ * @param message {string} - custom message displayed to the user
+ * @param callback {function}
+ * @param details {PermissionRequestHandlerHandlerDetails} - object passed along with certain permission types. see {@link https://www.electronjs.org/docs/api/session#sessetpermissionrequesthandlerhandler}
+ */
 const handleMediaPermissions = async (permission: boolean, message: string, callback: (permission: boolean) => void, details: PermissionRequestHandlerHandlerDetails): Promise<void> => {
     logger.info(`window-action: permission is ->`, { type: message, permission });
     let systemAudioPermission;
