@@ -254,7 +254,7 @@ export class WindowHandler {
         // check for build expiry in case of test builds
         this.checkExpiry(this.mainWindow);
         // need this for postMessage origin
-        this.mainWindow.origin = this.globalConfig.url;
+        this.mainWindow.origin = this.url;
 
         // Event needed to hide native menu bar on Windows 10 as we use custom menu bar
         this.mainWindow.webContents.once('did-start-loading', () => {
