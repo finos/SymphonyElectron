@@ -9,7 +9,7 @@
 			<array>
 				<dict>
 					<key>APPLICATION_ID</key>
-					<string>com.symphony.symphony-desktop</string>
+					<string>com.symphony.electron-desktop</string>
 					<key>STATE</key>
 					<true/>
 				</dict>
@@ -494,7 +494,7 @@
 				<key>FOLLOW_SYMBOLIC_LINKS</key>
 				<false/>
 				<key>IDENTIFIER</key>
-				<string>com.symphony.symphony-desktop</string>
+				<string>com.symphony.electron-desktop</string>
 				<key>LOCATION</key>
 				<integer>0</integer>
 				<key>NAME</key>
@@ -510,7 +510,7 @@
 				<key>USE_HFS+_COMPRESSION</key>
 				<false/>
 				<key>VERSION</key>
-				<string>2.0.0</string>
+				<string>8.0.0</string>
 			</dict>
 			<key>TYPE</key>
 			<integer>0</integer>
@@ -663,17 +663,6 @@
 				</dict>
 				<dict>
 					<key>ICPRESENTATION_CHAPTER_VIEW_CONTROLLER_CLASS</key>
-					<string>ICPresentationViewInstallerPluginController</string>
-					<key>ICPRESENTATION_CHAPTER_VIEW_CONTROLLER_INSTALLERPLUGIN_PATH</key>
-					<dict>
-						<key>PATH</key>
-						<string>SymphonySettingsPlugin.bundle</string>
-						<key>PATH_TYPE</key>
-						<integer>1</integer>
-					</dict>
-				</dict>
-				<dict>
-					<key>ICPRESENTATION_CHAPTER_VIEW_CONTROLLER_CLASS</key>
 					<string>ICPresentationViewDestinationSelectController</string>
 					<key>INSTALLER_PLUGIN</key>
 					<string>TargetSelect</string>
@@ -717,7 +706,7 @@
 							<key>PATH</key>
 							<string>intro.html</string>
 							<key>PATH_TYPE</key>
-							<integer>3</integer>
+							<integer>1</integer>
 						</dict>
 					</dict>
 				</array>
@@ -766,7 +755,7 @@
 						<key>IC_REQUIREMENT_OS_DISTRIBUTION_TYPE</key>
 						<integer>0</integer>
 						<key>IC_REQUIREMENT_OS_MINIMUM_VERSION</key>
-						<integer>100700</integer>
+						<integer>100900</integer>
 					</dict>
 					<key>IC_REQUIREMENT_CHECK_TYPE</key>
 					<integer>1</integer>
@@ -781,11 +770,11 @@
 				</dict>
 				<dict>
 					<key>BEHAVIOR</key>
-					<integer>3</integer>
+					<integer>2</integer>
 					<key>DICTIONARY</key>
 					<dict>
 						<key>IC_REQUIREMENT_RAM_MINIMUM_SIZE_INDEX</key>
-						<integer>5</integer>
+						<integer>6</integer>
 					</dict>
 					<key>IC_REQUIREMENT_CHECK_TYPE</key>
 					<integer>0</integer>
@@ -800,7 +789,7 @@
 				</dict>
 				<dict>
 					<key>BEHAVIOR</key>
-					<integer>3</integer>
+					<integer>2</integer>
 					<key>DICTIONARY</key>
 					<dict>
 						<key>IC_REQUIREMENT_CPU_ARCHITECTURE_FAMILY</key>
@@ -810,7 +799,7 @@
 						<key>IC_REQUIREMENT_CPU_MINIMUM_CPU_CORES_COUNT</key>
 						<integer>1</integer>
 						<key>IC_REQUIREMENT_CPU_MINIMUM_FREQUENCY</key>
-						<integer>0</integer>
+						<integer>2000000</integer>
 						<key>IC_REQUIREMENT_CPU_POWERPC_ARCHITECTURE_TYPE</key>
 						<integer>0</integer>
 					</dict>

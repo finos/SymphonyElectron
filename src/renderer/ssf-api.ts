@@ -1,6 +1,5 @@
 import { ipcRenderer, remote } from 'electron';
 const os = remote.require('os');
-
 import { buildNumber, searchAPIVersion } from '../../package.json';
 import { ICustomBrowserWindow } from '../app/window-handler';
 import {
@@ -8,6 +7,7 @@ import {
     apiName,
     IBadgeCount,
     IBoundsChange,
+    ICPUUsage,
     ILogMsg,
     IMediaPermission,
     IRestartFloaterData,
@@ -485,6 +485,15 @@ export class SSFApi {
      */
     public setCloudConfig(data: {}): void {
         throttledSetCloudConfig(data);
+    }
+
+    /**
+     * get CPU usage
+     */
+    public async getCPUUsage(): Promise<ICPUUsage> {
+        return Promise.resolve(
+            await process.getCPUUsage(),
+        );
     }
 
     /**

@@ -1,4 +1,4 @@
-import { ipcRenderer, webFrame } from 'electron';
+import { contextBridge, ipcRenderer, webFrame } from 'electron';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { apiCmds, apiName } from '../common/api-interface';
@@ -9,6 +9,7 @@ import DownloadManager from './components/download-manager';
 import MessageBanner from './components/message-banner';
 import NetworkError from './components/network-error';
 import SnackBar from './components/snack-bar';
+import Welcome from './components/welcome';
 import WindowsTitleBar from './components/windows-title-bar';
 import { SSFApi } from './ssf-api';
 
@@ -45,6 +46,39 @@ const createAPI = () => {
 };
 
 createAPI();
+
+if (ssfWindow.ssf) {
+    // New context bridge api that exposes all the methods on to window object
+    contextBridge.exposeInMainWorld('manaSSF', {
+        CryptoLib: ssfWindow.ssf.CryptoLib,
+        Search: ssfWindow.ssf.Search,
+        Notification: ssfWindow.ssf.Notification,
+        getMediaSource: ssfWindow.ssf.getMediaSource,
+        activate: ssfWindow.ssf.activate,
+        bringToFront: ssfWindow.ssf.bringToFront,
+        getVersionInfo: ssfWindow.ssf.getVersionInfo,
+        registerActivityDetection: ssfWindow.ssf.registerActivityDetection,
+        registerBoundsChange: ssfWindow.ssf.registerBoundsChange,
+        registerLogger: ssfWindow.ssf.registerLogger,
+        registerProtocolHandler: ssfWindow.ssf.registerProtocolHandler,
+        registerLogRetriever: ssfWindow.ssf.registerLogRetriever,
+        sendLogs: ssfWindow.ssf.sendLogs,
+        registerAnalyticsEvent: ssfWindow.ssf.registerAnalyticsEvent,
+        ScreenSnippet: ssfWindow.ssf.ScreenSnippet,
+        openScreenSnippet: ssfWindow.ssf.openScreenSnippet,
+        closeScreenSnippet: ssfWindow.ssf.closeScreenSnippet,
+        setBadgeCount: ssfWindow.ssf.setBadgeCount,
+        setLocale: ssfWindow.ssf.setLocale,
+        setIsInMeeting: ssfWindow.ssf.setIsInMeeting,
+        showNotificationSettings: ssfWindow.ssf.showNotificationSettings,
+        showScreenSharingIndicator: ssfWindow.ssf.showScreenSharingIndicator,
+        openScreenSharingIndicator: ssfWindow.ssf.openScreenSharingIndicator,
+        closeScreenSharingIndicator: ssfWindow.ssf.closeScreenSharingIndicator,
+        registerRestartFloater: ssfWindow.ssf.registerRestartFloater,
+        setCloudConfig: ssfWindow.ssf.setCloudConfig,
+        checkMediaPermission: ssfWindow.ssf.checkMediaPermission,
+    });
+}
 
 /**
  * Returns a random number that is between (min - max)
@@ -113,6 +147,20 @@ ipcRenderer.on('page-load', (_event, { locale, resources, enableCustomTitleBar }
     // initialize red banner
     banner.initBanner();
     banner.showBanner(false, 'error');
+});
+
+ipcRenderer.on('page-load-welcome', (_event, data) => {
+    const { locale, resource } = data;
+    i18n.setResource(locale, resource);
+    // Renders component as soon as the page is ready
+    document.title = i18n.t('WelcomeText', 'Welcome')();
+    const styles = document.createElement('link');
+    styles.rel = 'stylesheet';
+    styles.type = 'text/css';
+    styles.href = `./styles/welcome.css`;
+    document.getElementsByTagName('head')[0].appendChild(styles);
+    const element = React.createElement(Welcome);
+    ReactDOM.render(element, document.getElementById('Root'));
 });
 
 // When the window fails to load

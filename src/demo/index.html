@@ -144,6 +144,11 @@
         <button id='bring-to-front-without-focus'>bring to front without focus</button>
 
         <hr>
+        <p>Measure cpu usage:</p>
+        <button id='button-get-cpu-usage'>Get CPU usage</button>
+        <input type="text" id='text-cpu-usage' />
+
+        <hr>
         <p>Check Media Permission:</p>
         <button id='check-media-permission'>Check media permission</button>
         <br>
@@ -226,6 +231,7 @@
                 notification: 'notification',
                 closeNotification: 'close-notification',
                 registerRestartFloater: 'register-restart-floater',
+                getCPUUsage: 'get-cpu-usage',
                 checkMediaPermission: 'check-media-permission',
         };
         let requestId = 0;
@@ -525,6 +531,10 @@
                 case 'restart-floater-callback':
                     onRestartFloater(data);
                     break;
+                case 'get-cpu-usage-callback':
+                    handleResponse(data);
+                    console.log(event.data);
+                    break;
                 case 'check-media-permission-callback':
                     handleResponse(data);
                     console.log(event.data);
@@ -627,6 +637,29 @@
             }
             activityTimer = startActivityInterval();
         };
+
+        /**
+         * Get CPU usage
+         */
+        const cpuMeasurement = document.getElementById('button-get-cpu-usage');
+
+        cpuMeasurement.addEventListener('click', () => {
+            console.log('Start measure CPU !!!');
+
+            if (window.ssf) {
+                ssf.getCPUUsage.then((cpuUsage) => {
+                    console.log('get-cpu-usage, cpuUsage: ' + JSON.stringify(cpuUsage));
+                    document.getElementById('text-cpu-usage').value = cpuUsage.percentCPUUsage;
+                });
+            } else {
+                postRequest(apiCmds.getCPUUsage, null, {
+                    successCallback: (cpuUsage) => {
+                        console.log('get-cpu-usage, cpuUsage: ' + JSON.stringify(cpuUsage));
+                        document.getElementById('text-cpu-usage').value = cpuUsage.percentCPUUsage;
+                    }
+                });
+            }
+        });
 
         /**
          * Check media permission

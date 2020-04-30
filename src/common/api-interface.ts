@@ -36,6 +36,7 @@ export enum apiCmds {
     getConfigUrl = 'get-config-url',
     registerRestartFloater = 'register-restart-floater',
     setCloudConfig = 'set-cloud-config',
+    getCPUUsage = 'get-cpu-usage',
     checkMediaPermission = 'check-media-permission',
 }
 
@@ -143,6 +144,11 @@ export interface IVersionInfo {
     buildNumber: string;
     apiVer: string;
     searchApiVer: string;
+}
+
+export interface ICPUUsage {
+    percentCPUUsage: number;
+    idleWakeupsPerSecond: number;
 }
 
 export interface IMediaPermission {
