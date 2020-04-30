@@ -58,6 +58,7 @@ if (ssfWindow.ssf) {
         bringToFront: ssfWindow.ssf.bringToFront,
         getVersionInfo: ssfWindow.ssf.getVersionInfo,
         registerActivityDetection: ssfWindow.ssf.registerActivityDetection,
+        registerDownloadHandler: ssfWindow.ssf.registerDownloadHandler,
         registerBoundsChange: ssfWindow.ssf.registerBoundsChange,
         registerLogger: ssfWindow.ssf.registerLogger,
         registerProtocolHandler: ssfWindow.ssf.registerProtocolHandler,

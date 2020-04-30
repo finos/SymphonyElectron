@@ -6,6 +6,7 @@ import { logger } from '../common/logger';
 import { activityDetection } from './activity-detection';
 import { analytics } from './analytics-handler';
 import { CloudConfigDataTypes, config, ICloudConfig } from './config-handler';
+import { downloadHandler } from './download-handler';
 import { memoryMonitor } from './memory-monitor';
 import { protocolHandler } from './protocol-handler';
 import { finalizeLogExports, registerLogRetriever } from './reports-handler';
@@ -85,6 +86,9 @@ ipcMain.on(apiName.symphonyApi, async (event: Electron.IpcMainEvent, arg: IApiAr
                 activityDetection.setWindowAndThreshold(event.sender, arg.period);
             }
             break;
+        case apiCmds.registerDownloadHandler:
+            downloadHandler.setWindow(event.sender);
+            break;
         case apiCmds.showNotificationSettings:
             if (typeof arg.windowName === 'string') {
                 windowHandler.createNotificationSettingsWindow(arg.windowName);
@@ -146,6 +150,19 @@ ipcMain.on(apiName.symphonyApi, async (event: Electron.IpcMainEvent, arg: IApiAr
             if (typeof arg.path === 'string') {
                 downloadManagerAction(arg.type, arg.path);
             }
+            break;
+        case apiCmds.openDownloadItem:
+            if (typeof arg.id === 'string') {
+                downloadHandler.openFile(arg.id);
+            }
+            break;
+        case apiCmds.showDownloadItem:
+            if (typeof arg.id === 'string') {
+                downloadHandler.showInFinder(arg.id);
+            }
+            break;
+        case apiCmds.clearDownloadItems:
+            downloadHandler.clearDownloadItems();
             break;
         case apiCmds.isMisspelled:
             if (typeof arg.word === 'string') {
