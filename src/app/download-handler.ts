@@ -53,12 +53,8 @@ class DownloadHandler {
         });
     }
 
-    private window: Electron.WebContents | null;
+    private window!: Electron.WebContents | null;
     private items: IDownloadManager[] = [];
-
-    constructor() {
-        this.window = null;
-    }
 
     /**
      * Sets the window for the download handler

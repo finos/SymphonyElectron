@@ -1,4 +1,5 @@
 import { activityDetection } from '../src/app/activity-detection';
+import { downloadHandler } from "../src/app/download-handler";
 import '../src/app/main-api-handler';
 import { protocolHandler } from '../src/app/protocol-handler';
 import { screenSnippet } from '../src/app/screen-snippet-handler';
@@ -93,6 +94,17 @@ jest.mock('../src/app/activity-detection', () => {
         },
     };
 });
+
+jest.mock('../src/app/download-handler', () => {
+    return {
+        downloadHandler: {
+            setWindow: jest.fn(),
+            openFile: jest.fn(),
+            showInFinder: jest.fn(),
+            clearDownloadItems: jest.fn(),
+        }
+    }
+})
 
 jest.mock('../src/common/i18n');
 
@@ -199,6 +211,67 @@ describe('main api handler', () => {
             const expectedValue = [ { send: expect.any(Function) }, 3 ];
             ipcMain.send(apiName.symphonyApi, value);
             expect(spy).toBeCalledWith(...expectedValue);
+        });
+
+        it('should call `registerDownloadHandler` correctly', () => {
+            const spy = jest.spyOn(downloadHandler, 'setWindow');
+            const value = {
+                cmd: apiCmds.registerDownloadHandler,
+            };
+            const expectedValue = [ { send: expect.any(Function) } ];
+            ipcMain.send(apiName.symphonyApi, value);
+            expect(spy).toBeCalledWith(...expectedValue);
+        });
+
+        it('should call `openFile` correctly', () => {
+            const spy = jest.spyOn(downloadHandler, 'openFile');
+            const value = {
+                cmd: apiCmds.openDownloadItem,
+                id: '12345678',
+            };
+            const expectedValue = '12345678';
+            ipcMain.send(apiName.symphonyApi, value);
+            expect(spy).toBeCalledWith(expectedValue);
+        });
+
+        it('should not call `openFile` if id is not a string', () => {
+            const spy = jest.spyOn(downloadHandler, 'openFile');
+            const value = {
+                cmd: apiCmds.openDownloadItem,
+                id: 10,
+            };
+            ipcMain.send(apiName.symphonyApi, value);
+            expect(spy).not.toBeCalled();
+        });
+
+        it('should call `showFile` correctly', () => {
+            const spy = jest.spyOn(downloadHandler, 'showInFinder');
+            const value = {
+                cmd: apiCmds.showDownloadItem,
+                id: `12345678`,
+            };
+            const expectedValue = '12345678';
+            ipcMain.send(apiName.symphonyApi, value);
+            expect(spy).toBeCalledWith(expectedValue);
+        });
+
+        it('should not call `showFile` if id is not a string', () => {
+            const spy = jest.spyOn(downloadHandler, 'showInFinder');
+            const value = {
+                cmd: apiCmds.showDownloadItem,
+                id: 10,
+            };
+            ipcMain.send(apiName.symphonyApi, value);
+            expect(spy).not.toBeCalled();
+        });
+
+        it('should call `clearItems` correctly', () => {
+            const spy = jest.spyOn(downloadHandler, 'clearDownloadItems');
+            const value = {
+                cmd: apiCmds.clearDownloadItems,
+            };
+            ipcMain.send(apiName.symphonyApi, value);
+            expect(spy).toBeCalled();
         });
 
         it('should call `showNotificationSettings` correctly', () => {
