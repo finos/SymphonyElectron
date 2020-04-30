@@ -156,7 +156,6 @@ export class WindowHandler {
         } catch (e) {
             throw new Error('failed to init crash report');
         }
-
     }
 
     /**
@@ -409,6 +408,7 @@ export class WindowHandler {
 
         // Handle pop-outs window
         handleChildWindow(this.mainWindow.webContents);
+
         return this.mainWindow;
     }
 
