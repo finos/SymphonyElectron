@@ -37,7 +37,7 @@ fi
 
 if ! [ -x "$(command -v gulp)" ]; then
   echo 'Gulp does not exist! Installing it!' >&2
-  npm install -g gulp
+  npm install -g gulp gulp-cli
 fi
 
 if ! [ -x "$(command -v snyk)" ]; then
@@ -98,7 +98,7 @@ echo "Setting package version in pre install script to ${PKG_VERSION}"
 sed -i -e "s/CURRENT_VERSION=APP_VERSION/CURRENT_VERSION=${PKG_VERSION}/g" ./installer/mac/preinstall.sh
 
 # Set expiry period for TTL builds
-if [ -z "$EXPIRY_PERIOD" ]; then
+if [ "$EXPIRY_PERIOD" == "0" ] || [ "$EXPIRY_PERIOD" == 0 ]; then
   echo 'Expiry period not set, so, not creating expiry for the build'
 else
   gulp setExpiry --period ${EXPIRY_PERIOD}
