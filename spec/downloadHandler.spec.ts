@@ -8,6 +8,12 @@ jest.mock('../src/app/window-handler', () => {
     };
 });
 
+jest.mock('../src/app/window-utils', () => {
+    return {
+        windowExists: jest.fn(() => true),
+    };
+});
+
 describe('download handler', () => {
     let downloadHandlerInstance;
 
