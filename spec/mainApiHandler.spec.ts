@@ -1,5 +1,5 @@
 import { activityDetection } from '../src/app/activity-detection';
-import { downloadHandler } from "../src/app/download-handler";
+import { downloadHandler } from '../src/app/download-handler';
 import '../src/app/main-api-handler';
 import { protocolHandler } from '../src/app/protocol-handler';
 import { screenSnippet } from '../src/app/screen-snippet-handler';
@@ -102,9 +102,9 @@ jest.mock('../src/app/download-handler', () => {
             openFile: jest.fn(),
             showInFinder: jest.fn(),
             clearDownloadItems: jest.fn(),
-        }
-    }
-})
+        },
+    };
+});
 
 jest.mock('../src/common/i18n');
 
