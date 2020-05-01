@@ -9,6 +9,7 @@ import { IScreenSnippet } from '../common/api-interface';
 import { isDevEnv, isElectronQA, isLinux, isMac, isWindowsOS } from '../common/env';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
+import { ClientSwitchType } from './config-handler';
 import { updateAlwaysOnTop } from './window-actions';
 import { windowHandler } from './window-handler';
 import { windowExists } from './window-utils';
@@ -59,14 +60,21 @@ class ScreenSnippet {
         }
         logger.info(`screen-snippet-handler: Starting screen capture!`);
         this.outputFileName = path.join(this.tempDir, 'symphonyImage-' + Date.now() + '.png');
-        this.captureUtilArgs = isMac
-            ? [ '-i', '-s', '-t', 'png', this.outputFileName ]
-            : [ this.outputFileName, i18n.getLocale() ];
+        if (isMac) {
+            this.captureUtilArgs = [ '-i', '-s', '-t', 'png', this.outputFileName ];
+        } else if (isWindowsOS) {
+            if (windowHandler.currentClient === ClientSwitchType.CLIENT_1_5) {
+                this.captureUtilArgs = [ this.outputFileName, i18n.getLocale() ];
+            } else {
+                this.captureUtilArgs = [ '--no-annotate', this.outputFileName, i18n.getLocale() ];
+            }
+        } else if (isLinux) {
+            this.captureUtilArgs = ['-a', '-f', this.outputFileName];
+        } else {
+            this.captureUtilArgs = [];
+        }
         this.focusedWindow = BrowserWindow.getFocusedWindow();
 
-        if (isLinux) {
-            this.captureUtilArgs = ['-a', '-f', this.outputFileName];
-        }
         logger.info(`screen-snippet-handler: Capturing snippet with file ${this.outputFileName} and args ${this.captureUtilArgs}!`);
 
         // only allow one screen capture at a time.
