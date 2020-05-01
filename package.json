@@ -37,7 +37,9 @@
     "copy:darwin": "ncp config 'node_modules/electron/dist/Electron.app/Contents/config'",
     "copy:win32": "ncp config node_modules\\electron\\dist\\config",
     "unpacked-mac": "npm run prebuild && npm run test && ./node_modules/.bin/electron-builder build --mac --dir",
-    "unpacked-win": "npm run prebuild && npm run test && node_modules\\.bin\\electron-builder build --win --x64 --dir"
+    "unpacked-win": "npm run prebuild && npm run test && node_modules\\.bin\\electron-builder build --win --x64 --dir",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "build": {
     "appId": "com.symphony.electron-desktop",
@@ -159,7 +161,8 @@
     "react-dom": "16.13.0",
     "ref-napi": "1.4.3",
     "shell-path": "2.1.0",
-    "systeminformation": "4.23.0"
+    "systeminformation": "4.23.0",
+    "snyk": "^1.316.1"
   },
   "optionalDependencies": {
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#v1.0.7",
@@ -174,5 +177,6 @@
     "ignoredByWatcher": [
       "!lib/src/**/*.js"
     ]
-  }
+  },
+  "snyk": true
 }
