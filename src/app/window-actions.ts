@@ -1,4 +1,4 @@
-import { BrowserWindow, dialog } from 'electron';
+import { BrowserWindow, dialog, PermissionRequestHandlerHandlerDetails, systemPreferences } from 'electron';
 
 import { apiName, IBoundsChange, KeyCodes } from '../common/api-interface';
 import { isLinux, isMac, isWindowsOS } from '../common/env';
@@ -304,6 +304,49 @@ export const handleSessionPermissions = async (permission: boolean, message: str
 };
 
 /**
+ * Modified version of handleSessionPermissions that takes an additional details param.
+ *
+ * Verifies the permission both against SDA permissions, and systemPermissions (macOS only).
+ * Displays a dialog if permission is disabled by administrator
+ *
+ * @param permission {boolean} - config value to a specific permission (only supports media permissions)
+ * @param message {string} - custom message displayed to the user
+ * @param callback {function}
+ * @param details {PermissionRequestHandlerHandlerDetails} - object passed along with certain permission types. see {@link https://www.electronjs.org/docs/api/session#sessetpermissionrequesthandlerhandler}
+ */
+const handleMediaPermissions = async (permission: boolean, message: string, callback: (permission: boolean) => void, details: PermissionRequestHandlerHandlerDetails): Promise<void> => {
+    logger.info(`window-action: permission is ->`, { type: message, permission });
+    let systemAudioPermission;
+    let systemVideoPermission;
+    if (isMac) {
+        systemAudioPermission = await systemPreferences.askForMediaAccess('microphone');
+        systemVideoPermission = await systemPreferences.askForMediaAccess('camera');
+    } else {
+        systemAudioPermission = true;
+        systemVideoPermission = true;
+    }
+
+    if (!permission) {
+        const browserWindow = BrowserWindow.getFocusedWindow();
+        if (browserWindow && !browserWindow.isDestroyed()) {
+            const response = await dialog.showMessageBox(browserWindow, { type: 'error', title: `${i18n.t('Permission Denied')()}!`, message });
+            logger.error(`window-actions: permissions message box closed with response`, response);
+        }
+    }
+
+    if (details.mediaTypes && isMac) {
+        if (details.mediaTypes.includes('audio') && !systemAudioPermission) {
+            return callback(false);
+        }
+        if (details.mediaTypes.includes('video') && !systemVideoPermission) {
+            return callback(false);
+        }
+    }
+
+    return callback(permission);
+};
+
+/**
  * Sets permission requests for the window
  *
  * @param webContents {Electron.webContents}
@@ -321,10 +364,10 @@ export const handlePermissionRequests = (webContents: Electron.webContents): voi
         return;
     }
 
-    session.setPermissionRequestHandler((_webContents, permission, callback) => {
+    session.setPermissionRequestHandler((_webContents, permission, callback, details) => {
         switch (permission) {
             case Permissions.MEDIA:
-                return handleSessionPermissions(permissions.media, i18n.t('Your administrator has disabled sharing your camera, microphone, and speakers. Please contact your admin for help', PERMISSIONS_NAMESPACE)(), callback);
+                return handleMediaPermissions(permissions.media, i18n.t('Your administrator has disabled sharing your camera, microphone, and speakers. Please contact your admin for help', PERMISSIONS_NAMESPACE)(), callback, details);
             case Permissions.LOCATION:
                 return handleSessionPermissions(permissions.geolocation, i18n.t('Your administrator has disabled sharing your location. Please contact your admin for help', PERMISSIONS_NAMESPACE)(), callback);
             case Permissions.NOTIFICATIONS:
