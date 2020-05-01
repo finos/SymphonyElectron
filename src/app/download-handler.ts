@@ -135,7 +135,7 @@ class DownloadHandler {
         if (this.window && !this.window.isDestroyed()) {
             logger.info(`download-handler: Download completed! Informing the client!`);
             this.window.send('download-completed', this.items.map((item) => {
-                return {id: item._id, fileDisplayName: item.fileDisplayName};
+                return {id: item._id, fileDisplayName: item.fileDisplayName, fileSize: item.total};
             }));
         }
     }
