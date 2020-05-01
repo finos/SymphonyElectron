@@ -8,7 +8,7 @@ interface IDownloadManager {
     _id: string;
     fileName: string;
     savedPath: string;
-    total: number;
+    total: string;
     flashing: boolean;
     count: number;
 }

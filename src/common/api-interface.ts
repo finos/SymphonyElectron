@@ -38,6 +38,10 @@ export enum apiCmds {
     setCloudConfig = 'set-cloud-config',
     getCPUUsage = 'get-cpu-usage',
     checkMediaPermission = 'check-media-permission',
+    registerDownloadHandler = 'register-download-handler',
+    openDownloadItem = 'open-download-item',
+    showDownloadItem = 'show-download-item',
+    clearDownloadItems = 'clear-download-items',
 }
 
 export enum apiName {
@@ -149,6 +153,16 @@ export interface IVersionInfo {
 export interface ICPUUsage {
     percentCPUUsage: number;
     idleWakeupsPerSecond: number;
+}
+
+export interface IDownloadManager {
+    _id: string;
+    fileName: string;
+    fileDisplayName: string;
+    savedPath: string;
+    total: number;
+    flashing?: boolean;
+    count?: number;
 }
 
 export interface IMediaPermission {

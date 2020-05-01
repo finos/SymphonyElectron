@@ -61,6 +61,7 @@ export class AppBridge {
         onNotificationCallback: (event, data) => this.notificationCallback(event, data),
         onAnalyticsEventCallback: (data) => this.analyticsEventCallback(data),
         restartFloater: (data) => this.restartFloater(data),
+        onDownloadItemCallback: (data) => this.onDownloadItemCallback(data),
     };
 
     constructor() {
@@ -108,6 +109,19 @@ export class AppBridge {
                     ssf.setBadgeCount(data as number);
                 }
                 break;
+            case apiCmds.openDownloadItem:
+                if (typeof data === 'string') {
+                    ssf.openDownloadItem(data as string);
+                }
+                break;
+            case apiCmds.showDownloadItem:
+                if (typeof data === 'string') {
+                    ssf.showDownloadItem(data as string);
+                }
+                break;
+            case apiCmds.clearDownloadItems:
+                ssf.clearDownloadItems();
+                break;
             case apiCmds.setLocale:
                 if (typeof data === 'string') {
                     ssf.setLocale(data as string);
@@ -115,6 +129,9 @@ export class AppBridge {
                 break;
             case apiCmds.registerActivityDetection:
                 ssf.registerActivityDetection(data as number, this.callbackHandlers.onActivityCallback);
+                break;
+            case apiCmds.registerDownloadHandler:
+                ssf.registerDownloadHandler(this.callbackHandlers.onDownloadItemCallback);
                 break;
             case apiCmds.openScreenSnippet:
                 ssf.openScreenSnippet(this.callbackHandlers.onScreenSnippetCallback);
@@ -241,6 +258,14 @@ export class AppBridge {
      */
     private analyticsEventCallback(arg: IAnalyticsData): void {
         this.broadcastMessage('analytics-event-callback', arg);
+    }
+
+    /**
+     * Broadcast download item event
+     * @param arg {object}
+     */
+    private onDownloadItemCallback(arg: object): void {
+        this.broadcastMessage('download-handler-callback', arg);
     }
 
     /**
