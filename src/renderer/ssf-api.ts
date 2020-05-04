@@ -102,21 +102,21 @@ const throttledSetCloudConfig = throttle((data) => {
     });
 }, 1000);
 
-const throttledOpenDownloadItem = throttle((id: string) => {
+const throttledOpenDownloadedItem = throttle((id: string) => {
     ipcRenderer.send(apiName.symphonyApi, {
         cmd: apiCmds.openDownloadItem,
         id,
     });
 }, 1000);
 
-const throttledShowDownloadItem = throttle((id: string) => {
+const throttledShowDownloadedItem = throttle((id: string) => {
     ipcRenderer.send(apiName.symphonyApi, {
         cmd: apiCmds.showDownloadItem,
         id,
     });
 }, 1000);
 
-const throttledClearDownloadItems = throttle(() => {
+const throttledClearDownloadedItems = throttle(() => {
     ipcRenderer.send(apiName.symphonyApi, {
         cmd: apiCmds.clearDownloadItems,
     });
@@ -526,23 +526,23 @@ export class SSFApi {
      * Open Downloaded item
      * @param id ID of the item
      */
-    public openDownloadItem(id: string): void {
-        throttledOpenDownloadItem(id);
+    public openDownloadedItem(id: string): void {
+        throttledOpenDownloadedItem(id);
     }
 
     /**
      * Show downloaded item in finder / explorer
      * @param id ID of the item
      */
-    public showDownloadItem(id: string): void {
-        throttledShowDownloadItem(id);
+    public showDownloadedItem(id: string): void {
+        throttledShowDownloadedItem(id);
     }
 
     /**
      * Clears downloaded items
      */
-    public clearDownloadItems(): void {
-        throttledClearDownloadItems();
+    public clearDownloadedItems(): void {
+        throttledClearDownloadedItems();
     }
 
     /**

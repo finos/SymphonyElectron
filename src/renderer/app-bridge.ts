@@ -111,16 +111,16 @@ export class AppBridge {
                 break;
             case apiCmds.openDownloadItem:
                 if (typeof data === 'string') {
-                    ssf.openDownloadItem(data as string);
+                    ssf.openDownloadedItem(data as string);
                 }
                 break;
             case apiCmds.showDownloadItem:
                 if (typeof data === 'string') {
-                    ssf.showDownloadItem(data as string);
+                    ssf.showDownloadedItem(data as string);
                 }
                 break;
             case apiCmds.clearDownloadItems:
-                ssf.clearDownloadItems();
+                ssf.clearDownloadedItems();
                 break;
             case apiCmds.setLocale:
                 if (typeof data === 'string') {

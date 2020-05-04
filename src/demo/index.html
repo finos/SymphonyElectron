@@ -866,7 +866,7 @@
             }
             const id = items[items.length - 1].id;
             if (window.ssf) {
-                window.ssf.openDownloadItem(id);
+                window.ssf.openDownloadedItem(id);
             } else {
                 postMessage(apiCmds.openDownloadItem, id);
             }
@@ -878,7 +878,7 @@
             }
             const id = items[items.length - 1].id;
             if (window.ssf) {
-                window.ssf.showDownloadItem(id);
+                window.ssf.showDownloadedItem(id);
             } else {
                 postMessage(apiCmds.showDownloadItem, id);
             }
@@ -887,7 +887,7 @@
         document.getElementById('close-download-manager').addEventListener('click', () => {
             items = [];
             if (window.ssf) {
-                window.ssf.clearDownloadItems();
+                window.ssf.clearDownloadedItems();
             } else {
                 postMessage(apiCmds.clearDownloadItems);
             }
