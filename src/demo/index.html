@@ -95,6 +95,9 @@
         <div id="footer" class="hidden">
             <div id="download-manager-footer" class="download-bar"></div>
         </div>
+        <input type="button" id="open-download-item" value="Open Latest Item">
+        <input type="button" id="show-download-item" value="Show Latest Item in Finder">
+        <input type="button" id="close-download-manager" value="Close Download Manager">
         <br>
         <hr>
         <p>
@@ -211,6 +214,10 @@
                 sendLogs: 'send-logs',
                 registerAnalyticHandler: 'register-analytic-handler',
                 registerActivityDetection: 'register-activity-detection',
+                registerDownloadHandler: 'register-download-handler',
+                openDownloadItem: 'open-download-item',
+                showDownloadItem: 'show-download-item',
+                clearDownloadItems: 'clear-download-items',
                 showNotificationSettings: 'show-notification-settings',
                 sanitize: 'sanitize',
                 bringToFront: 'bring-to-front',
@@ -539,6 +546,10 @@
                     handleResponse(data);
                     console.log(event.data);
                     break;
+                case 'download-handler-callback':
+                    onDownload(data);
+                    console.log(event.data);
+                    break;
                 default:
                     console.log(event.data);
             }
@@ -578,6 +589,21 @@
 
         function onBoundsChange(arg) {
             console.log('bounds changed for=', arg)
+        }
+
+        if (window.ssf) {
+            ssf.registerDownloadHandler(onDownload);
+        } else {
+            postMessage(apiCmds.registerDownloadHandler);
+        }
+
+        function onDownload(data) {
+            if (data && data.status === 'download-completed') {
+                items = data.items;
+                console.log('Download completed!', data.items);
+            } else {
+                console.log('Download failed!');
+            }
         }
 
         /**
@@ -804,6 +830,7 @@
             }
         });
 
+        let items = [];
         /**
          * Download Manager api handler
          */
@@ -831,7 +858,40 @@
             const filename = "bye.txt";
             const text = document.getElementById("text-val").value;
             download(filename, text);
-        }, false);
+        }, false)
+
+        document.getElementById('open-download-item').addEventListener('click', () => {
+            if (!items || items.length < 1) {
+                alert('No files downloaded! Try again!');
+            }
+            const id = items[items.length - 1].id;
+            if (window.ssf) {
+                window.ssf.openDownloadItem(id);
+            } else {
+                postMessage(apiCmds.openDownloadItem, id);
+            }
+        });
+
+        document.getElementById('show-download-item').addEventListener('click', () => {
+            if (!items || items.length < 1) {
+                alert('No files downloaded! Try again!');
+            }
+            const id = items[items.length - 1].id;
+            if (window.ssf) {
+                window.ssf.showDownloadItem(id);
+            } else {
+                postMessage(apiCmds.showDownloadItem, id);
+            }
+        });
+
+        document.getElementById('close-download-manager').addEventListener('click', () => {
+            items = [];
+            if (window.ssf) {
+                window.ssf.clearDownloadItems();
+            } else {
+                postMessage(apiCmds.clearDownloadItems);
+            }
+        });
 
     </script>
 </html>

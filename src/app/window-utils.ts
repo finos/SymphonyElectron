@@ -14,6 +14,7 @@ import { getGuid } from '../common/utils';
 import { whitelistHandler } from '../common/whitelist-handler';
 import { autoLaunchInstance } from './auto-launch-controller';
 import { CloudConfigDataTypes, config, IConfig, ICustomRectangle } from './config-handler';
+import { downloadHandler, IDownloadManager } from './download-handler';
 import { memoryMonitor } from './memory-monitor';
 import { screenSnippet } from './screen-snippet-handler';
 import { updateAlwaysOnTop } from './window-actions';
@@ -401,13 +402,30 @@ export const handleDownloadManager = (_event, item: Electron.DownloadItem, webCo
     // Send file path when download is complete
     item.once('done', (_e, state) => {
         if (state === 'completed') {
-            const data = {
+            const data: IDownloadManager = {
                 _id: getGuid(),
                 savedPath: item.getSavePath() || '',
                 total: filesize(item.getTotalBytes() || 0),
                 fileName: item.getFilename() || 'No name',
             };
+            logger.info('window-utils: Download completed, informing download manager');
             webContents.send('downloadCompleted', data);
+            downloadHandler.onDownloadSuccess(data);
+        } else {
+            logger.info('window-utils: Download failed, informing download manager');
+            downloadHandler.onDownloadFailed();
+        }
+    });
+
+    item.on('updated', (_e, state) => {
+        if (state === 'interrupted') {
+            logger.info('window-utils: Download is interrupted but can be resumed');
+        } else if (state === 'progressing') {
+            if (item.isPaused()) {
+                logger.info('window-utils: Download is paused');
+            } else {
+                logger.info(`window-utils: Received bytes: ${item.getReceivedBytes()}`);
+            }
         }
     });
 };

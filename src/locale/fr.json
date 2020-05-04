@@ -195,6 +195,15 @@
   "Undo": "Annuler la dernière opération",
   "Updating Title bar style requires Symphony to relaunch.": "La mise à jour du style de la barre de titre nécessite le redémarrage de Symphony.",
   "View": "Visualiser",
+  "Welcome": {
+    "Continue": "Continuer",
+    "Enable Single Sign On": "Activer la SSO",
+    "Please enter a valid url": "Veuillez saisir une URL valide",
+    "Pod URL": "URL du pod",
+    "SSO": "SSO",
+    "Symphony Logo": "Symphony",
+    "WelcomeText": "Bienvenue"
+  },
   "Window": "Fenêtre",
   "Would you like to restart and apply these new settings now?": "Voulez-vous redémarrer et appliquer ce nouveau paramètre maintenant?",
   "Your administrator has disabled": "Votre administrateur a désactivé",
