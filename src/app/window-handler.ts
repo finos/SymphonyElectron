@@ -83,6 +83,7 @@ export class WindowHandler {
     public isCustomTitleBar: boolean;
     public isWebPageLoading: boolean = true;
     public screenShareIndicatorFrameUtil: string;
+    public shouldShowWelcomeScreen: boolean = false;
 
     private readonly contextIsolation: boolean;
     private readonly backgroundThrottling: boolean;
@@ -93,7 +94,6 @@ export class WindowHandler {
     // Window reference
     private readonly windows: object;
 
-    private shouldShowWelcomeScreen: boolean = false;
     private loadFailError: string | undefined;
     private mainWindow: ICustomBrowserWindow | null = null;
     private aboutAppWindow: Electron.BrowserWindow | null = null;
@@ -164,7 +164,6 @@ export class WindowHandler {
      */
     public async createApplication() {
 
-        await this.updateVersionInfo();
         this.spellchecker = new SpellChecker();
         logger.info(`window-handler: initialized spellchecker module with locale ${this.spellchecker.locale}`);
 
@@ -184,6 +183,22 @@ export class WindowHandler {
             this.windowOpts.resizable = false;
             this.windowOpts.maximizable = false;
             this.windowOpts.fullscreenable = false;
+
+            if (this.config.mainWinPos && this.config.mainWinPos.height) {
+                this.config.mainWinPos.height = DEFAULT_HEIGHT;
+            }
+
+            if (this.config.mainWinPos && this.config.mainWinPos.width) {
+                this.config.mainWinPos.width = DEFAULT_WIDTH;
+            }
+
+            if (this.config.mainWinPos && this.config.mainWinPos.x) {
+                this.config.mainWinPos.x = undefined;
+            }
+
+            if (this.config.mainWinPos && this.config.mainWinPos.y) {
+                this.config.mainWinPos.y = undefined;
+            }
         }
 
         // set window opts with additional config
@@ -250,9 +265,11 @@ export class WindowHandler {
             this.handleWelcomeScreen();
         }
         // loads the main window with url from config/cmd line
-        this.mainWindow.loadURL(this.url);
+        await this.mainWindow.loadURL(this.url);
         // check for build expiry in case of test builds
-        this.checkExpiry(this.mainWindow);
+        await this.checkExpiry(this.mainWindow);
+        // update version info from server
+        this.updateVersionInfo();
         // need this for postMessage origin
         this.mainWindow.origin = this.url;
 
@@ -445,7 +462,7 @@ export class WindowHandler {
         });
 
         ipcMain.on('set-pod-url', async (_event, newPodUrl: string) => {
-            await config.updateUserConfig({url: newPodUrl, mainWinPos: { ...this.mainWindow!.getPosition(), ...{ height: 900, width: 900 } } });
+            await config.updateUserConfig({url: newPodUrl});
             app.relaunch();
             app.exit();
         });
