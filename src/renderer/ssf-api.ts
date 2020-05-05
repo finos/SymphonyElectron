@@ -104,21 +104,21 @@ const throttledSetCloudConfig = throttle((data) => {
 
 const throttledOpenDownloadedItem = throttle((id: string) => {
     ipcRenderer.send(apiName.symphonyApi, {
-        cmd: apiCmds.openDownloadItem,
+        cmd: apiCmds.openDownloadedItem,
         id,
     });
 }, 1000);
 
 const throttledShowDownloadedItem = throttle((id: string) => {
     ipcRenderer.send(apiName.symphonyApi, {
-        cmd: apiCmds.showDownloadItem,
+        cmd: apiCmds.showDownloadedItem,
         id,
     });
 }, 1000);
 
 const throttledClearDownloadedItems = throttle(() => {
     ipcRenderer.send(apiName.symphonyApi, {
-        cmd: apiCmds.clearDownloadItems,
+        cmd: apiCmds.clearDownloadedItems,
     });
 }, 1000);
 

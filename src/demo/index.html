@@ -215,9 +215,9 @@
                 registerAnalyticHandler: 'register-analytic-handler',
                 registerActivityDetection: 'register-activity-detection',
                 registerDownloadHandler: 'register-download-handler',
-                openDownloadItem: 'open-download-item',
-                showDownloadItem: 'show-download-item',
-                clearDownloadItems: 'clear-download-items',
+                openDownloadedItem: 'open-downloaded-item',
+                showDownloadedItem: 'show-downloaded-item',
+                clearDownloadedItems: 'clear-downloaded-items',
                 showNotificationSettings: 'show-notification-settings',
                 sanitize: 'sanitize',
                 bringToFront: 'bring-to-front',
@@ -868,7 +868,7 @@
             if (window.ssf) {
                 window.ssf.openDownloadedItem(id);
             } else {
-                postMessage(apiCmds.openDownloadItem, id);
+                postMessage(apiCmds.openDownloadedItem, id);
             }
         });
 
@@ -880,7 +880,7 @@
             if (window.ssf) {
                 window.ssf.showDownloadedItem(id);
             } else {
-                postMessage(apiCmds.showDownloadItem, id);
+                postMessage(apiCmds.showDownloadedItem, id);
             }
         });
 
@@ -889,7 +889,7 @@
             if (window.ssf) {
                 window.ssf.clearDownloadedItems();
             } else {
-                postMessage(apiCmds.clearDownloadItems);
+                postMessage(apiCmds.clearDownloadedItems);
             }
         });
 

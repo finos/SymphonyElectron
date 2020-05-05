@@ -101,7 +101,7 @@ jest.mock('../src/app/download-handler', () => {
             setWindow: jest.fn(),
             openFile: jest.fn(),
             showInFinder: jest.fn(),
-            clearDownloadItems: jest.fn(),
+            clearDownloadedItems: jest.fn(),
         },
     };
 });
@@ -226,7 +226,7 @@ describe('main api handler', () => {
         it('should call `openFile` correctly', () => {
             const spy = jest.spyOn(downloadHandler, 'openFile');
             const value = {
-                cmd: apiCmds.openDownloadItem,
+                cmd: apiCmds.openDownloadedItem,
                 id: '12345678',
             };
             const expectedValue = '12345678';
@@ -237,7 +237,7 @@ describe('main api handler', () => {
         it('should not call `openFile` if id is not a string', () => {
             const spy = jest.spyOn(downloadHandler, 'openFile');
             const value = {
-                cmd: apiCmds.openDownloadItem,
+                cmd: apiCmds.openDownloadedItem,
                 id: 10,
             };
             ipcMain.send(apiName.symphonyApi, value);
@@ -247,7 +247,7 @@ describe('main api handler', () => {
         it('should call `showFile` correctly', () => {
             const spy = jest.spyOn(downloadHandler, 'showInFinder');
             const value = {
-                cmd: apiCmds.showDownloadItem,
+                cmd: apiCmds.showDownloadedItem,
                 id: `12345678`,
             };
             const expectedValue = '12345678';
@@ -258,7 +258,7 @@ describe('main api handler', () => {
         it('should not call `showFile` if id is not a string', () => {
             const spy = jest.spyOn(downloadHandler, 'showInFinder');
             const value = {
-                cmd: apiCmds.showDownloadItem,
+                cmd: apiCmds.showDownloadedItem,
                 id: 10,
             };
             ipcMain.send(apiName.symphonyApi, value);
@@ -266,9 +266,9 @@ describe('main api handler', () => {
         });
 
         it('should call `clearItems` correctly', () => {
-            const spy = jest.spyOn(downloadHandler, 'clearDownloadItems');
+            const spy = jest.spyOn(downloadHandler, 'clearDownloadedItems');
             const value = {
-                cmd: apiCmds.clearDownloadItems,
+                cmd: apiCmds.clearDownloadedItems,
             };
             ipcMain.send(apiName.symphonyApi, value);
             expect(spy).toBeCalled();

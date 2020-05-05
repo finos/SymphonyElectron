@@ -100,7 +100,7 @@ class DownloadHandler {
     /**
      * Clears download items
      */
-    public clearDownloadItems(): void {
+    public clearDownloadedItems(): void {
         this.items = [];
     }
 
