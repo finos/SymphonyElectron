@@ -223,6 +223,10 @@ const setSpecificAlwaysOnTop = () => {
  * @param window {BrowserWindow}
  */
 export const monitorWindowActions = (window: BrowserWindow): void => {
+    if (windowHandler.shouldShowWelcomeScreen) {
+        logger.info(`Not saving window position as we are showing the welcome window!`);
+        return;
+    }
     if (!window || window.isDestroyed()) {
         return;
     }
