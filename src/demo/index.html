@@ -599,8 +599,8 @@
 
         function onDownload(data) {
             if (data && data.status === 'download-completed') {
-                items = data.items;
-                console.log('Download completed!', data.items);
+                downloadedItem = data.item;
+                console.log('Download completed!', data.item);
             } else {
                 console.log('Download failed!');
             }
@@ -830,7 +830,7 @@
             }
         });
 
-        let items = [];
+        let downloadedItem;
         /**
          * Download Manager api handler
          */
@@ -861,10 +861,10 @@
         }, false)
 
         document.getElementById('open-download-item').addEventListener('click', () => {
-            if (!items || items.length < 1) {
+            if (!downloadedItem) {
                 alert('No files downloaded! Try again!');
             }
-            const id = items[items.length - 1].id;
+            const id = downloadedItem.id;
             if (window.ssf) {
                 window.ssf.openDownloadedItem(id);
             } else {
@@ -873,10 +873,10 @@
         });
 
         document.getElementById('show-download-item').addEventListener('click', () => {
-            if (!items || items.length < 1) {
+            if (!downloadedItem || downloadedItem.length < 1) {
                 alert('No files downloaded! Try again!');
             }
-            const id = items[items.length - 1].id;
+            const id = downloadedItem.id;
             if (window.ssf) {
                 window.ssf.showDownloadedItem(id);
             } else {
@@ -885,7 +885,7 @@
         });
 
         document.getElementById('close-download-manager').addEventListener('click', () => {
-            items = [];
+            downloadedItem = undefined;
             if (window.ssf) {
                 window.ssf.clearDownloadedItems();
             } else {

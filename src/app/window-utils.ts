@@ -14,7 +14,7 @@ import { getGuid } from '../common/utils';
 import { whitelistHandler } from '../common/whitelist-handler';
 import { autoLaunchInstance } from './auto-launch-controller';
 import { CloudConfigDataTypes, config, IConfig, ICustomRectangle } from './config-handler';
-import { downloadHandler, IDownloadManager } from './download-handler';
+import { downloadHandler, IDownloadItem } from './download-handler';
 import { memoryMonitor } from './memory-monitor';
 import { screenSnippet } from './screen-snippet-handler';
 import { updateAlwaysOnTop } from './window-actions';
@@ -401,7 +401,7 @@ export const handleDownloadManager = (_event, item: Electron.DownloadItem, webCo
     // Send file path when download is complete
     item.once('done', (_e, state) => {
         if (state === 'completed') {
-            const data: IDownloadManager = {
+            const data: IDownloadItem = {
                 _id: getGuid(),
                 savedPath: item.getSavePath() || '',
                 total: filesize(item.getTotalBytes() || 0),

@@ -1,13 +1,14 @@
 import { ipcRenderer, remote } from 'electron';
 const os = remote.require('os');
 import { buildNumber, searchAPIVersion } from '../../package.json';
+import { IDownloadItem } from '../app/download-handler';
 import { ICustomBrowserWindow } from '../app/window-handler';
 import {
     apiCmds,
     apiName,
     IBadgeCount,
     IBoundsChange,
-    ICPUUsage, IDownloadManager,
+    ICPUUsage,
     ILogMsg,
     IMediaPermission,
     IRestartFloaterData,
@@ -654,9 +655,9 @@ local.ipcRenderer.on('activity', (_event: Event, idleTime: number) => {
     }
 });
 
-local.ipcRenderer.on('download-completed', (_event: Event, downloadItems: IDownloadManager[]) => {
-    if (typeof downloadItems === 'object' && typeof local.downloadManagerCallback === 'function') {
-        local.downloadManagerCallback({status: 'download-completed', items: downloadItems});
+local.ipcRenderer.on('download-completed', (_event: Event, downloadItem: IDownloadItem) => {
+    if (typeof downloadItem === 'object' && typeof local.downloadManagerCallback === 'function') {
+        local.downloadManagerCallback({status: 'download-completed', item: downloadItem});
     }
 });
 
