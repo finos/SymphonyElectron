@@ -507,14 +507,13 @@ export class WindowHandler {
 
                     if (browserWindow && windowExists(browserWindow)) {
                         browserWindow.destroy();
-
-                        if (isWindowsOS || isMac) {
-                            this.execCmd(this.screenShareIndicatorFrameUtil, []);
-                        } else {
-                            if (this.screenSharingFrameWindow && windowExists(this.screenSharingFrameWindow)) {
-                                this.screenSharingFrameWindow.close();
-                            }
-                        }
+                    }
+                }
+                if (isWindowsOS || isMac) {
+                    this.execCmd(this.screenShareIndicatorFrameUtil, []);
+                } else {
+                    if (this.screenSharingFrameWindow && windowExists(this.screenSharingFrameWindow)) {
+                        this.screenSharingFrameWindow.close();
                     }
                 }
                 break;
