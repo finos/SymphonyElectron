@@ -61,7 +61,8 @@
       "library/cryptoLib.dylib",
       "library/dictionary",
       "library/lz4.exec",
-      "node_modules/screen-share-indicator-frame/SymphonyScreenShareIndicator"
+      "node_modules/screen-share-indicator-frame/SymphonyScreenShareIndicator",
+      "installer/mac/SymphonySettingsPlugin.bundle/Contents/MacOS/SymphonySettingsPlugin"
     ],
     "mac": {
       "category": "public.app-category.business",

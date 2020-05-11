@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="16096" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="16096"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="InstallerSection">
+            <connections>
+                <outlet property="firstPane" destination="Qsn-FY-4qK" id="Dhh-1H-QYh"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customObject id="Qsn-FY-4qK" customClass="MyInstallerPane">
+            <connections>
+                <outlet property="contentView" destination="TUK-W2-vig" id="gTd-A7-dof"/>
+                <outlet property="parentSection" destination="-2" id="FB7-UV-e8k"/>
+                <outlet property="podUrlAlertTextBox" destination="lha-ib-BpX" id="2Hp-DE-0mS"/>
+                <outlet property="podUrlTextBox" destination="bt3-SN-uKp" id="rpG-WU-oG1"/>
+                <outlet property="ssoCheckBox" destination="YPX-1k-Fs4" id="laJ-aN-s7A"/>
+            </connections>
+        </customObject>
+        <customView id="TUK-W2-vig" userLabel="View">
+            <rect key="frame" x="0.0" y="0.0" width="445" height="365"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <subviews>
+                <tabView toolTip="Pod Settings" fixedFrame="YES" drawsBackground="NO" allowsTruncatedLabels="NO" type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="QyG-6U-OmT">
+                    <rect key="frame" x="0.0" y="0.0" width="445" height="365"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <font key="font" metaFont="message"/>
+                    <tabViewItems>
+                        <tabViewItem label="Settings" identifier="" id="bcH-AH-92V">
+                            <view key="view" id="ltw-L5-z8g">
+                                <rect key="frame" x="0.0" y="0.0" width="445" height="365"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <subviews>
+                                    <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bt3-SN-uKp">
+                                        <rect key="frame" x="152" y="253" width="237" height="22"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="https://[POD].symphony.com" drawsBackground="YES" usesSingleLineMode="YES" id="4WS-yY-IPf">
+                                            <font key="font" metaFont="message"/>
+                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hdX-B9-o0w">
+                                        <rect key="frame" x="15" y="256" width="131" height="17"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Symphony Pod URL" id="R21-b3-R67">
+                                            <font key="font" metaFont="systemBold"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <textField verticalHuggingPriority="750" fixedFrame="YES" allowsExpansionToolTips="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lha-ib-BpX">
+                                        <rect key="frame" x="145" y="277" width="274" height="22"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" state="on" id="BfU-TS-qd2">
+                                            <font key="font" metaFont="menu" size="11"/>
+                                            <color key="textColor" name="systemRedColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YPX-1k-Fs4">
+                                        <rect key="frame" x="150" y="212" width="49" height="18"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="check" title="SSO" bezelStyle="regularSquare" imagePosition="left" inset="2" id="dgn-Hd-UcT">
+                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="message"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="handleSSOCheckboxStateChange:" target="Qsn-FY-4qK" id="LyC-VX-uCH"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </view>
+                        </tabViewItem>
+                    </tabViewItems>
+                </tabView>
+            </subviews>
+            <point key="canvasLocation" x="152.5" y="186.5"/>
+        </customView>
+    </objects>
+</document>
