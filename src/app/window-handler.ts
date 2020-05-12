@@ -267,6 +267,15 @@ export class WindowHandler {
             this.handleWelcomeScreen();
         }
 
+        // loads the main window with url from config/cmd line
+        this.mainWindow.loadURL(this.url);
+        // check for build expiry in case of test builds
+        this.checkExpiry(this.mainWindow);
+        // update version info from server
+        this.updateVersionInfo();
+        // need this for postMessage origin
+        this.mainWindow.origin = this.url;
+
         // Event needed to hide native menu bar on Windows 10 as we use custom menu bar
         this.mainWindow.webContents.once('did-start-loading', () => {
             logger.info(`window-handler: main window web contents started loading!`);
@@ -421,15 +430,6 @@ export class WindowHandler {
         // Handle pop-outs window
         handleChildWindow(this.mainWindow.webContents);
 
-        // loads the main window with url from config/cmd line
-        await this.mainWindow.loadURL(this.url);
-        // check for build expiry in case of test builds
-        await this.checkExpiry(this.mainWindow);
-        // update version info from server
-        this.updateVersionInfo();
-        // need this for postMessage origin
-        this.mainWindow.origin = this.url;
-
         return this.mainWindow;
     }
 
@@ -509,14 +509,13 @@ export class WindowHandler {
 
                     if (browserWindow && windowExists(browserWindow)) {
                         browserWindow.destroy();
-
-                        if (isWindowsOS || isMac) {
-                            this.execCmd(this.screenShareIndicatorFrameUtil, []);
-                        } else {
-                            if (this.screenSharingFrameWindow && windowExists(this.screenSharingFrameWindow)) {
-                                this.screenSharingFrameWindow.close();
-                            }
-                        }
+                    }
+                }
+                if (isWindowsOS || isMac) {
+                    this.execCmd(this.screenShareIndicatorFrameUtil, []);
+                } else {
+                    if (this.screenSharingFrameWindow && windowExists(this.screenSharingFrameWindow)) {
+                        this.screenSharingFrameWindow.close();
                     }
                 }
                 break;
@@ -721,6 +720,12 @@ export class WindowHandler {
             this.addWindow(opts.winKey, this.screenPickerWindow);
         });
         ipcMain.once('screen-source-selected', (_event, source) => {
+            const displays = electron.screen.getAllDisplays();
+            logger.info('window-utils: displays.length: ' + displays.length);
+            for (let i = 0, len = displays.length; i < len; i++) {
+                logger.info('window-utils: display[' + i + ']: ' + JSON.stringify(displays[ i ]));
+            }
+
             if (source != null) {
                 logger.info(`window-handler: screen-source-selected`, source, id);
                 if (isWindowsOS || isMac) {
@@ -736,7 +741,13 @@ export class WindowHandler {
                         if (source.display_id !== '') {
                             this.execCmd(this.screenShareIndicatorFrameUtil, [ source.display_id ]);
                         } else {
-                            this.execCmd(this.screenShareIndicatorFrameUtil, [ '0' ]);
+                            const dispId = source.id.split(':')[1];
+                            const keyId = 'id';
+
+                            logger.info('window-utils: dispId: ' + dispId);
+                            logger.info('window-utils: displays [' + dispId + '] [id]: ' + displays [dispId] [ keyId ]);
+
+                            this.execCmd(this.screenShareIndicatorFrameUtil, [ displays [dispId] [ keyId ].toString() ]);
                         }
                     }
                 }
