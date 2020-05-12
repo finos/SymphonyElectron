@@ -265,6 +265,15 @@ export class WindowHandler {
             this.handleWelcomeScreen();
         }
 
+        // loads the main window with url from config/cmd line
+        this.mainWindow.loadURL(this.url);
+        // check for build expiry in case of test builds
+        this.checkExpiry(this.mainWindow);
+        // update version info from server
+        this.updateVersionInfo();
+        // need this for postMessage origin
+        this.mainWindow.origin = this.url;
+
         // Event needed to hide native menu bar on Windows 10 as we use custom menu bar
         this.mainWindow.webContents.once('did-start-loading', () => {
             logger.info(`window-handler: main window web contents started loading!`);
@@ -418,15 +427,6 @@ export class WindowHandler {
 
         // Handle pop-outs window
         handleChildWindow(this.mainWindow.webContents);
-
-        // loads the main window with url from config/cmd line
-        await this.mainWindow.loadURL(this.url);
-        // check for build expiry in case of test builds
-        await this.checkExpiry(this.mainWindow);
-        // update version info from server
-        this.updateVersionInfo();
-        // need this for postMessage origin
-        this.mainWindow.origin = this.url;
 
         return this.mainWindow;
     }
