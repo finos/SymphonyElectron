@@ -85,6 +85,7 @@ export class WindowHandler {
     public screenShareIndicatorFrameUtil: string;
     public shouldShowWelcomeScreen: boolean = false;
 
+    private readonly defaultPodUrl: string = 'https://my.symphony.com';
     private readonly contextIsolation: boolean;
     private readonly backgroundThrottling: boolean;
     private readonly windowOpts: ICustomBrowserWindowConstructorOpts;
@@ -174,8 +175,9 @@ export class WindowHandler {
         this.url = WindowHandler.getValidUrl(this.userConfig.url ? this.userConfig.url : this.globalConfig.url);
         logger.info(`window-handler: setting url ${this.url} from config file!`);
 
-        if (this.globalConfig.url.startsWith('https://my.symphony.com') && !this.userConfig.url) {
+        if (config.isFirstTimeLaunch()) {
             this.shouldShowWelcomeScreen = true;
+            this.url = this.defaultPodUrl;
             isMaximized = false;
             isFullScreen = false;
             DEFAULT_HEIGHT = 333;
@@ -264,6 +266,15 @@ export class WindowHandler {
         if (this.shouldShowWelcomeScreen) {
             this.handleWelcomeScreen();
         }
+
+        // loads the main window with url from config/cmd line
+        this.mainWindow.loadURL(this.url);
+        // check for build expiry in case of test builds
+        this.checkExpiry(this.mainWindow);
+        // update version info from server
+        this.updateVersionInfo();
+        // need this for postMessage origin
+        this.mainWindow.origin = this.url;
 
         // Event needed to hide native menu bar on Windows 10 as we use custom menu bar
         this.mainWindow.webContents.once('did-start-loading', () => {
@@ -419,15 +430,6 @@ export class WindowHandler {
         // Handle pop-outs window
         handleChildWindow(this.mainWindow.webContents);
 
-        // loads the main window with url from config/cmd line
-        await this.mainWindow.loadURL(this.url);
-        // check for build expiry in case of test builds
-        await this.checkExpiry(this.mainWindow);
-        // update version info from server
-        this.updateVersionInfo();
-        // need this for postMessage origin
-        this.mainWindow.origin = this.url;
-
         return this.mainWindow;
     }
 
@@ -441,7 +443,7 @@ export class WindowHandler {
             return;
         }
 
-        if (this.url.startsWith('https://my.symphony.com')) {
+        if (this.url.startsWith(this.defaultPodUrl)) {
             this.url = format({
                 pathname: require.resolve('../renderer/react-window.html'),
                 protocol: 'file',
