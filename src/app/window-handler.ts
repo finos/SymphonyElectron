@@ -510,7 +510,8 @@ export class WindowHandler {
                     }
                 }
                 if (isWindowsOS || isMac) {
-                    setTimeout(() => this.execCmd(this.screenShareIndicatorFrameUtil, []), 300);
+                    const timeoutValue = 300;
+                    setTimeout(() => this.execCmd(this.screenShareIndicatorFrameUtil, []), timeoutValue);
                 } else {
                     if (this.screenSharingFrameWindow && windowExists(this.screenSharingFrameWindow)) {
                         this.screenSharingFrameWindow.close();
