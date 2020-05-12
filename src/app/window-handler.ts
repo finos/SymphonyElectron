@@ -718,6 +718,12 @@ export class WindowHandler {
             this.addWindow(opts.winKey, this.screenPickerWindow);
         });
         ipcMain.once('screen-source-selected', (_event, source) => {
+            const displays = electron.screen.getAllDisplays();
+            logger.info('window-utils: displays.length: ' + displays.length);
+            for (let i = 0, len = displays.length; i < len; i++) {
+                logger.info('window-utils: display[' + i + ']: ' + JSON.stringify(displays[ i ]));
+            }
+
             if (source != null) {
                 logger.info(`window-handler: screen-source-selected`, source, id);
                 if (isWindowsOS || isMac) {
