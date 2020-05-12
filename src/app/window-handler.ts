@@ -739,7 +739,13 @@ export class WindowHandler {
                         if (source.display_id !== '') {
                             this.execCmd(this.screenShareIndicatorFrameUtil, [ source.display_id ]);
                         } else {
-                            this.execCmd(this.screenShareIndicatorFrameUtil, [ '0' ]);
+                            const dispId = source.id.split(':')[1];
+                            const keyId = 'id';
+
+                            logger.info('window-utils: dispId: ' + dispId);
+                            logger.info('window-utils: displays [' + dispId + '] [id]: ' + displays [dispId] [ keyId ]);
+
+                            this.execCmd(this.screenShareIndicatorFrameUtil, [ displays [dispId] [ keyId ].toString() ]);
                         }
                     }
                 }
