@@ -42,10 +42,10 @@
     <ROW Property="POD_URL" Value="https://my.symphony.com" Type="4"/>
     <ROW Property="POINTER_LOCK" Value="true"/>
     <ROW Property="POINTER_LOCK_CB" Value="true"/>
-    <ROW Property="ProductCode" Value="1033:{49DECF65-B0D7-4ACB-9B19-A53DEF3AF2CE} " Type="16"/>
+    <ROW Property="ProductCode" Value="1033:{F2B07D22-C1A8-454C-BD46-208B20B270F8} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="Symphony"/>
-    <ROW Property="ProductVersion" Value="8.0.0" Type="32"/>
+    <ROW Property="ProductVersion" Value="9.0.0" Type="32"/>
     <ROW Property="REBOOT" MultiBuildValue="DefaultBuild:ReallySuppress"/>
     <ROW Property="RUNAPPLICATION" Value="1" Type="4"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
@@ -115,7 +115,7 @@
     <ROW Directory="vendor_Dir" Directory_Parent="spawnrx_Dir" DefaultDir="vendor"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
-    <ROW Component="AI_CustomARPName" ComponentId="{83C68D22-B3BF-4F48-B0F1-7B1D9D07EF20}" Directory_="APPDIR" Attributes="4" KeyPath="DisplayName" Options="1"/>
+    <ROW Component="AI_CustomARPName" ComponentId="{DB6D5BC2-769E-4CEE-AF28-44E76F259CA7}" Directory_="APPDIR" Attributes="4" KeyPath="DisplayName" Options="1"/>
     <ROW Component="AI_DisableModify" ComponentId="{DA4E8013-2F4B-493A-90A8-BD729DA7EE2C}" Directory_="APPDIR" Attributes="260" KeyPath="NoModify" Options="1"/>
     <ROW Component="Jobber.exe" ComponentId="{761861CF-BEB6-4808-9F56-E57E4D6D98A8}" Directory_="jobber_Dir" Attributes="0" KeyPath="Jobber.exe"/>
     <ROW Component="PodUrl" ComponentId="{EA80D82D-BC65-4075-A9A8-F53E2B2513CE}" Directory_="APPDIR" Attributes="260" KeyPath="PodUrl"/>
@@ -279,7 +279,7 @@
     <ROW Path="&lt;AI_DICTS&gt;ui_en.ail"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.DigCertStoreComponent">
-    <ROW DigitalCertificate="Wrapper.Windows.Product.RSA.pkcs12.pfx" TimeStampUrl="http://timestamp.verisign.com/scripts/timstamp.dll" SignerDescription="[|ProductName]" DescriptionUrl="https://www.symphony.com" SignOptions="7" SignTool="0" UseSha256="1" Password="4A99BAA4D493EE030480AF53BA42EA11CCFB627AB1800400DA9692073D68C522A10A4FD0B5F78525294E51AC7194D55B5EE1D31F"/>
+    <ROW DigitalCertificate="Wrapper.Windows.Product.RSA.pkcs12.pfx" TimeStampUrl="http://timestamp.verisign.com/scripts/timstamp.dll" SignerDescription="[|ProductName]" DescriptionUrl="https://www.symphony.com" SignOptions="0" SignTool="0" UseSha256="1" Password="4A99BAA4D493EE030480AF53BA42EA11CCFB627AB1800400DA9692073D68C522A10A4FD0B5F78525294E51AC7194D55B5EE1D31F"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.FragmentComponent">
     <ROW Fragment="CommonUI.aip" Path="&lt;AI_FRAGS&gt;CommonUI.aip"/>
