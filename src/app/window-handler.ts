@@ -512,7 +512,8 @@ export class WindowHandler {
                     }
                 }
                 if (isWindowsOS || isMac) {
-                    this.execCmd(this.screenShareIndicatorFrameUtil, []);
+                    const timeoutValue = 300;
+                    setTimeout(() => this.execCmd(this.screenShareIndicatorFrameUtil, []), timeoutValue);
                 } else {
                     if (this.screenSharingFrameWindow && windowExists(this.screenSharingFrameWindow)) {
                         this.screenSharingFrameWindow.close();
@@ -742,10 +743,8 @@ export class WindowHandler {
                         } else {
                             const dispId = source.id.split(':')[1];
                             const keyId = 'id';
-
                             logger.info('window-utils: dispId: ' + dispId);
                             logger.info('window-utils: displays [' + dispId + '] [id]: ' + displays [dispId] [ keyId ]);
-
                             this.execCmd(this.screenShareIndicatorFrameUtil, [ displays [dispId] [ keyId ].toString() ]);
                         }
                     }
