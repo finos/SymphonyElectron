@@ -257,6 +257,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
     private updateTitleBar(): void {
         const { isFullScreen, titleBarHeight } = this.state;
         const contentWrapper = document.getElementById('content-wrapper');
+        const appView = document.getElementsByClassName('AppView-root-3')[0] as HTMLElement;
         const root = document.getElementById('root');
         const railContainer = document.getElementsByClassName('ReactRail-container-2')[0] as HTMLElement;
         const railList = document.getElementsByClassName('railList')[0] as HTMLElement;
@@ -271,9 +272,18 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
         }
 
         if (root) {
+            const rootChild = root.firstElementChild as HTMLElement;
+            if (rootChild && rootChild.style && rootChild.style.height === '100vh') {
+                rootChild.style.height = isFullScreen ? '100vh' : `calc(100vh - ${titleBarHeight})`;
+            }
+            root.style.height = isFullScreen ? '100vh' : `calc(100vh - ${titleBarHeight})`;
             root.style.marginTop = isFullScreen ? '0px' : titleBarHeight;
         } else if (contentWrapper) {
             contentWrapper.style.marginTop = isFullScreen ? '0px' : titleBarHeight;
+        }
+
+        if (appView) {
+            appView.style.height = isFullScreen ? '100vh' : `calc(100vh - ${titleBarHeight})`;
         }
         if (isFullScreen) {
             document.body.style.removeProperty('margin-top');
