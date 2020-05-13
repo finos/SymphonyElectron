@@ -546,23 +546,7 @@
 				<key>APPAREANCES</key>
 				<dict>
 					<key>DARK_AQUA</key>
-					<dict>
-						<key>ALIGNMENT</key>
-						<integer>4</integer>
-						<key>BACKGROUND_PATH</key>
-						<dict>
-							<key>PATH</key>
-							<string>background.png</string>
-							<key>PATH_TYPE</key>
-							<integer>3</integer>
-						</dict>
-						<key>CUSTOM</key>
-						<true/>
-						<key>LAYOUT_DIRECTION</key>
-						<integer>0</integer>
-						<key>SCALING</key>
-						<integer>1</integer>
-					</dict>
+					<dict/>
 					<key>LIGHT_AQUA</key>
 					<dict>
 						<key>ALIGNMENT</key>

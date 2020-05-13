@@ -6,7 +6,7 @@ import { windowExists } from './window-utils';
 
 const DOWNLOAD_MANAGER_NAMESPACE = 'DownloadManager';
 
-export interface IDownloadManager {
+export interface IDownloadItem {
     _id: string;
     fileName: string;
     fileDisplayName?: string;
@@ -22,9 +22,9 @@ class DownloadHandler {
      * Checks and constructs file name
      *
      * @param fileName {String} Filename
-     * @param item {IDownloadManager} Download Item
+     * @param item {IDownloadItem} Download Item
      */
-    private static getFileDisplayName(fileName: string, item: IDownloadManager): string {
+    private static getFileDisplayName(fileName: string, item: IDownloadItem): string {
         /* If it exists, add a count to the name like how Chrome does */
         if (item.count && item.count > 0) {
             const extLastIndex = fileName.lastIndexOf('.');
@@ -54,7 +54,7 @@ class DownloadHandler {
     }
 
     private window!: Electron.WebContents | null;
-    private items: IDownloadManager[] = [];
+    private items: IDownloadItem[] = [];
 
     /**
      * Sets the window for the download handler
@@ -100,7 +100,7 @@ class DownloadHandler {
     /**
      * Clears download items
      */
-    public clearDownloadItems(): void {
+    public clearDownloadedItems(): void {
         this.items = [];
     }
 
@@ -108,7 +108,7 @@ class DownloadHandler {
      * Handle a successful download
      * @param item Download item
      */
-    public onDownloadSuccess(item: IDownloadManager): void {
+    public onDownloadSuccess(item: IDownloadItem): void {
         let itemCount = 0;
         for (const existingItem of this.items) {
             if (item.fileName === existingItem.fileName) {
@@ -118,7 +118,7 @@ class DownloadHandler {
         item.count = itemCount;
         item.fileDisplayName = DownloadHandler.getFileDisplayName(item.fileName, item);
         this.items.push(item);
-        this.sendDownloadCompleted();
+        this.sendDownloadCompleted(item);
     }
 
     /**
@@ -131,12 +131,12 @@ class DownloadHandler {
     /**
      * Send download completed event to the renderer process
      */
-    private sendDownloadCompleted(): void {
+    private sendDownloadCompleted(item: IDownloadItem): void {
         if (this.window && !this.window.isDestroyed()) {
             logger.info(`download-handler: Download completed! Informing the client!`);
-            this.window.send('download-completed', this.items.map((item) => {
-                return {id: item._id, fileDisplayName: item.fileDisplayName, fileSize: item.total};
-            }));
+            this.window.send('download-completed', {
+                id: item._id, fileDisplayName: item.fileDisplayName, fileSize: item.total,
+            });
         }
     }
 

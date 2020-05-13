@@ -39,9 +39,9 @@ export enum apiCmds {
     getCPUUsage = 'get-cpu-usage',
     checkMediaPermission = 'check-media-permission',
     registerDownloadHandler = 'register-download-handler',
-    openDownloadItem = 'open-download-item',
-    showDownloadItem = 'show-download-item',
-    clearDownloadItems = 'clear-download-items',
+    openDownloadedItem = 'open-downloaded-item',
+    showDownloadedItem = 'show-downloaded-item',
+    clearDownloadedItems = 'clear-downloaded-items',
 }
 
 export enum apiName {

@@ -1,13 +1,14 @@
 import { ipcRenderer, remote } from 'electron';
 const os = remote.require('os');
 import { buildNumber, searchAPIVersion } from '../../package.json';
+import { IDownloadItem } from '../app/download-handler';
 import { ICustomBrowserWindow } from '../app/window-handler';
 import {
     apiCmds,
     apiName,
     IBadgeCount,
     IBoundsChange,
-    ICPUUsage, IDownloadManager,
+    ICPUUsage,
     ILogMsg,
     IMediaPermission,
     IRestartFloaterData,
@@ -102,23 +103,23 @@ const throttledSetCloudConfig = throttle((data) => {
     });
 }, 1000);
 
-const throttledOpenDownloadItem = throttle((id: string) => {
+const throttledOpenDownloadedItem = throttle((id: string) => {
     ipcRenderer.send(apiName.symphonyApi, {
-        cmd: apiCmds.openDownloadItem,
+        cmd: apiCmds.openDownloadedItem,
         id,
     });
 }, 1000);
 
-const throttledShowDownloadItem = throttle((id: string) => {
+const throttledShowDownloadedItem = throttle((id: string) => {
     ipcRenderer.send(apiName.symphonyApi, {
-        cmd: apiCmds.showDownloadItem,
+        cmd: apiCmds.showDownloadedItem,
         id,
     });
 }, 1000);
 
-const throttledClearDownloadItems = throttle(() => {
+const throttledClearDownloadedItems = throttle(() => {
     ipcRenderer.send(apiName.symphonyApi, {
-        cmd: apiCmds.clearDownloadItems,
+        cmd: apiCmds.clearDownloadedItems,
     });
 }, 1000);
 
@@ -526,23 +527,23 @@ export class SSFApi {
      * Open Downloaded item
      * @param id ID of the item
      */
-    public openDownloadItem(id: string): void {
-        throttledOpenDownloadItem(id);
+    public openDownloadedItem(id: string): void {
+        throttledOpenDownloadedItem(id);
     }
 
     /**
      * Show downloaded item in finder / explorer
      * @param id ID of the item
      */
-    public showDownloadItem(id: string): void {
-        throttledShowDownloadItem(id);
+    public showDownloadedItem(id: string): void {
+        throttledShowDownloadedItem(id);
     }
 
     /**
      * Clears downloaded items
      */
-    public clearDownloadItems(): void {
-        throttledClearDownloadItems();
+    public clearDownloadedItems(): void {
+        throttledClearDownloadedItems();
     }
 
     /**
@@ -654,9 +655,9 @@ local.ipcRenderer.on('activity', (_event: Event, idleTime: number) => {
     }
 });
 
-local.ipcRenderer.on('download-completed', (_event: Event, downloadItems: IDownloadManager[]) => {
-    if (typeof downloadItems === 'object' && typeof local.downloadManagerCallback === 'function') {
-        local.downloadManagerCallback({status: 'download-completed', items: downloadItems});
+local.ipcRenderer.on('download-completed', (_event: Event, downloadItem: IDownloadItem) => {
+    if (typeof downloadItem === 'object' && typeof local.downloadManagerCallback === 'function') {
+        local.downloadManagerCallback({status: 'download-completed', item: downloadItem});
     }
 });
 

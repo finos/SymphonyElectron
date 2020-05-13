@@ -151,18 +151,18 @@ ipcMain.on(apiName.symphonyApi, async (event: Electron.IpcMainEvent, arg: IApiAr
                 downloadManagerAction(arg.type, arg.path);
             }
             break;
-        case apiCmds.openDownloadItem:
+        case apiCmds.openDownloadedItem:
             if (typeof arg.id === 'string') {
                 downloadHandler.openFile(arg.id);
             }
             break;
-        case apiCmds.showDownloadItem:
+        case apiCmds.showDownloadedItem:
             if (typeof arg.id === 'string') {
                 downloadHandler.showInFinder(arg.id);
             }
             break;
-        case apiCmds.clearDownloadItems:
-            downloadHandler.clearDownloadItems();
+        case apiCmds.clearDownloadedItems:
+            downloadHandler.clearDownloadedItems();
             break;
         case apiCmds.isMisspelled:
             if (typeof arg.word === 'string') {

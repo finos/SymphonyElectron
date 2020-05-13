@@ -4,7 +4,7 @@ import { apiCmds, apiName } from '../../common/api-interface';
 import { i18n } from '../../common/i18n-preload';
 
 const DOWNLOAD_MANAGER_NAMESPACE = 'DownloadManager';
-interface IDownloadManager {
+interface IDownloadItem {
     _id: string;
     fileName: string;
     savedPath: string;
@@ -14,14 +14,14 @@ interface IDownloadManager {
 }
 
 interface IManagerState {
-    items: IDownloadManager[];
+    items: IDownloadItem[];
     showMainComponent: boolean;
 }
 
 export default class DownloadManager {
 
     private readonly eventHandlers = {
-        onInjectItem: (_event, item: IDownloadManager) => this.injectItem(item),
+        onInjectItem: (_event, item: IDownloadItem) => this.injectItem(item),
     };
     private readonly itemsContainer: HTMLElement | null;
     private readonly closeButton: HTMLElement | null;
@@ -81,10 +81,10 @@ export default class DownloadManager {
     /**
      * Loop through the items downloaded
      *
-     * @param item {IDownloadManager}
+     * @param item {IDownloadItem}
      */
-    private renderItem(item: IDownloadManager): void {
-        const { _id, total, fileName }: IDownloadManager = item;
+    private renderItem(item: IDownloadItem): void {
+        const { _id, total, fileName }: IDownloadItem = item;
         const fileDisplayName = this.getFileDisplayName(fileName, item);
         const itemContainer = document.getElementById('download-main');
         const parsedItem = this.domParser.parseFromString(`
@@ -139,9 +139,9 @@ export default class DownloadManager {
     /**
      * Inject items to global var
      *
-     * @param args {IDownloadManager}
+     * @param args {IDownloadItem}
      */
-    private injectItem(args: IDownloadManager): void {
+    private injectItem(args: IDownloadItem): void {
         const { items } = this.state;
         let itemCount = 0;
         for (const item of items) {
@@ -251,9 +251,9 @@ export default class DownloadManager {
      * Checks and constructs file name
      *
      * @param fileName {String}
-     * @param item {IDownloadManager}
+     * @param item {IDownloadItem}
      */
-    private getFileDisplayName(fileName: string, item: IDownloadManager): string {
+    private getFileDisplayName(fileName: string, item: IDownloadItem): string {
         /* If it exists, add a count to the name like how Chrome does */
         if (item.count > 0) {
             const extLastIndex = fileName.lastIndexOf('.');

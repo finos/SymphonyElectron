@@ -215,9 +215,9 @@
                 registerAnalyticHandler: 'register-analytic-handler',
                 registerActivityDetection: 'register-activity-detection',
                 registerDownloadHandler: 'register-download-handler',
-                openDownloadItem: 'open-download-item',
-                showDownloadItem: 'show-download-item',
-                clearDownloadItems: 'clear-download-items',
+                openDownloadedItem: 'open-downloaded-item',
+                showDownloadedItem: 'show-downloaded-item',
+                clearDownloadedItems: 'clear-downloaded-items',
                 showNotificationSettings: 'show-notification-settings',
                 sanitize: 'sanitize',
                 bringToFront: 'bring-to-front',
@@ -599,8 +599,8 @@
 
         function onDownload(data) {
             if (data && data.status === 'download-completed') {
-                items = data.items;
-                console.log('Download completed!', data.items);
+                downloadedItem = data.item;
+                console.log('Download completed!', data.item);
             } else {
                 console.log('Download failed!');
             }
@@ -830,7 +830,7 @@
             }
         });
 
-        let items = [];
+        let downloadedItem;
         /**
          * Download Manager api handler
          */
@@ -861,35 +861,35 @@
         }, false)
 
         document.getElementById('open-download-item').addEventListener('click', () => {
-            if (!items || items.length < 1) {
+            if (!downloadedItem) {
                 alert('No files downloaded! Try again!');
             }
-            const id = items[items.length - 1].id;
+            const id = downloadedItem.id;
             if (window.ssf) {
-                window.ssf.openDownloadItem(id);
+                window.ssf.openDownloadedItem(id);
             } else {
-                postMessage(apiCmds.openDownloadItem, id);
+                postMessage(apiCmds.openDownloadedItem, id);
             }
         });
 
         document.getElementById('show-download-item').addEventListener('click', () => {
-            if (!items || items.length < 1) {
+            if (!downloadedItem || downloadedItem.length < 1) {
                 alert('No files downloaded! Try again!');
             }
-            const id = items[items.length - 1].id;
+            const id = downloadedItem.id;
             if (window.ssf) {
-                window.ssf.showDownloadItem(id);
+                window.ssf.showDownloadedItem(id);
             } else {
-                postMessage(apiCmds.showDownloadItem, id);
+                postMessage(apiCmds.showDownloadedItem, id);
             }
         });
 
         document.getElementById('close-download-manager').addEventListener('click', () => {
-            items = [];
+            downloadedItem = undefined;
             if (window.ssf) {
-                window.ssf.clearDownloadItems();
+                window.ssf.clearDownloadedItems();
             } else {
-                postMessage(apiCmds.clearDownloadItems);
+                postMessage(apiCmds.clearDownloadedItems);
             }
         });
 

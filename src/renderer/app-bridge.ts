@@ -109,18 +109,18 @@ export class AppBridge {
                     ssf.setBadgeCount(data as number);
                 }
                 break;
-            case apiCmds.openDownloadItem:
+            case apiCmds.openDownloadedItem:
                 if (typeof data === 'string') {
-                    ssf.openDownloadItem(data as string);
+                    ssf.openDownloadedItem(data as string);
                 }
                 break;
-            case apiCmds.showDownloadItem:
+            case apiCmds.showDownloadedItem:
                 if (typeof data === 'string') {
-                    ssf.showDownloadItem(data as string);
+                    ssf.showDownloadedItem(data as string);
                 }
                 break;
-            case apiCmds.clearDownloadItems:
-                ssf.clearDownloadItems();
+            case apiCmds.clearDownloadedItems:
+                ssf.clearDownloadedItems();
                 break;
             case apiCmds.setLocale:
                 if (typeof data === 'string') {

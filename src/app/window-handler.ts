@@ -83,7 +83,9 @@ export class WindowHandler {
     public isCustomTitleBar: boolean;
     public isWebPageLoading: boolean = true;
     public screenShareIndicatorFrameUtil: string;
+    public shouldShowWelcomeScreen: boolean = false;
 
+    private readonly defaultPodUrl: string = 'https://my.symphony.com';
     private readonly contextIsolation: boolean;
     private readonly backgroundThrottling: boolean;
     private readonly windowOpts: ICustomBrowserWindowConstructorOpts;
@@ -93,7 +95,6 @@ export class WindowHandler {
     // Window reference
     private readonly windows: object;
 
-    private shouldShowWelcomeScreen: boolean = false;
     private loadFailError: string | undefined;
     private mainWindow: ICustomBrowserWindow | null = null;
     private aboutAppWindow: Electron.BrowserWindow | null = null;
@@ -164,7 +165,6 @@ export class WindowHandler {
      */
     public async createApplication() {
 
-        await this.updateVersionInfo();
         this.spellchecker = new SpellChecker();
         logger.info(`window-handler: initialized spellchecker module with locale ${this.spellchecker.locale}`);
 
@@ -175,8 +175,9 @@ export class WindowHandler {
         this.url = WindowHandler.getValidUrl(this.userConfig.url ? this.userConfig.url : this.globalConfig.url);
         logger.info(`window-handler: setting url ${this.url} from config file!`);
 
-        if (this.globalConfig.url.startsWith('https://my.symphony.com') && !this.userConfig.url) {
+        if (config.isFirstTimeLaunch()) {
             this.shouldShowWelcomeScreen = true;
+            this.url = this.defaultPodUrl;
             isMaximized = false;
             isFullScreen = false;
             DEFAULT_HEIGHT = 333;
@@ -184,6 +185,22 @@ export class WindowHandler {
             this.windowOpts.resizable = false;
             this.windowOpts.maximizable = false;
             this.windowOpts.fullscreenable = false;
+
+            if (this.config.mainWinPos && this.config.mainWinPos.height) {
+                this.config.mainWinPos.height = DEFAULT_HEIGHT;
+            }
+
+            if (this.config.mainWinPos && this.config.mainWinPos.width) {
+                this.config.mainWinPos.width = DEFAULT_WIDTH;
+            }
+
+            if (this.config.mainWinPos && this.config.mainWinPos.x) {
+                this.config.mainWinPos.x = undefined;
+            }
+
+            if (this.config.mainWinPos && this.config.mainWinPos.y) {
+                this.config.mainWinPos.y = undefined;
+            }
         }
 
         // set window opts with additional config
@@ -249,10 +266,13 @@ export class WindowHandler {
         if (this.shouldShowWelcomeScreen) {
             this.handleWelcomeScreen();
         }
+
         // loads the main window with url from config/cmd line
         this.mainWindow.loadURL(this.url);
         // check for build expiry in case of test builds
         this.checkExpiry(this.mainWindow);
+        // update version info from server
+        this.updateVersionInfo();
         // need this for postMessage origin
         this.mainWindow.origin = this.url;
 
@@ -409,6 +429,7 @@ export class WindowHandler {
 
         // Handle pop-outs window
         handleChildWindow(this.mainWindow.webContents);
+
         return this.mainWindow;
     }
 
@@ -422,7 +443,7 @@ export class WindowHandler {
             return;
         }
 
-        if (this.url.startsWith('https://my.symphony.com')) {
+        if (this.url.startsWith(this.defaultPodUrl)) {
             this.url = format({
                 pathname: require.resolve('../renderer/react-window.html'),
                 protocol: 'file',
@@ -445,7 +466,7 @@ export class WindowHandler {
         });
 
         ipcMain.on('set-pod-url', async (_event, newPodUrl: string) => {
-            await config.updateUserConfig({url: newPodUrl, mainWinPos: { ...this.mainWindow!.getPosition(), ...{ height: 900, width: 900 } } });
+            await config.updateUserConfig({url: newPodUrl});
             app.relaunch();
             app.exit();
         });
@@ -488,14 +509,13 @@ export class WindowHandler {
 
                     if (browserWindow && windowExists(browserWindow)) {
                         browserWindow.destroy();
-
-                        if (isWindowsOS || isMac) {
-                            this.execCmd(this.screenShareIndicatorFrameUtil, []);
-                        } else {
-                            if (this.screenSharingFrameWindow && windowExists(this.screenSharingFrameWindow)) {
-                                this.screenSharingFrameWindow.close();
-                            }
-                        }
+                    }
+                }
+                if (isWindowsOS || isMac) {
+                    this.execCmd(this.screenShareIndicatorFrameUtil, []);
+                } else {
+                    if (this.screenSharingFrameWindow && windowExists(this.screenSharingFrameWindow)) {
+                        this.screenSharingFrameWindow.close();
                     }
                 }
                 break;
@@ -699,6 +719,12 @@ export class WindowHandler {
             this.addWindow(opts.winKey, this.screenPickerWindow);
         });
         ipcMain.once('screen-source-selected', (_event, source) => {
+            const displays = electron.screen.getAllDisplays();
+            logger.info('window-utils: displays.length: ' + displays.length);
+            for (let i = 0, len = displays.length; i < len; i++) {
+                logger.info('window-utils: display[' + i + ']: ' + JSON.stringify(displays[ i ]));
+            }
+
             if (source != null) {
                 logger.info(`window-handler: screen-source-selected`, source, id);
                 if (isWindowsOS || isMac) {
@@ -714,7 +740,13 @@ export class WindowHandler {
                         if (source.display_id !== '') {
                             this.execCmd(this.screenShareIndicatorFrameUtil, [ source.display_id ]);
                         } else {
-                            this.execCmd(this.screenShareIndicatorFrameUtil, [ '0' ]);
+                            const dispId = source.id.split(':')[1];
+                            const keyId = 'id';
+
+                            logger.info('window-utils: dispId: ' + dispId);
+                            logger.info('window-utils: displays [' + dispId + '] [id]: ' + displays [dispId] [ keyId ]);
+
+                            this.execCmd(this.screenShareIndicatorFrameUtil, [ displays [dispId] [ keyId ].toString() ]);
                         }
                     }
                 }

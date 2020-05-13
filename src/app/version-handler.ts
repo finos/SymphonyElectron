@@ -83,6 +83,11 @@ class VersionHandler {
 
             const hostname = nodeURL.parse(this.mainUrl).hostname;
             const protocol = nodeURL.parse(this.mainUrl).protocol;
+
+            if (protocol && protocol.startsWith('file')) {
+                return;
+            }
+
             const versionApiPath = '/webcontroller/HealthCheck/version/advanced';
 
             const url = `${protocol}//${hostname}${versionApiPath}`;
