@@ -460,8 +460,21 @@ export class WindowHandler {
                 return;
             }
             if (this.url.indexOf('welcome')) {
-                this.mainWindow.webContents.send('page-load-welcome', { locale: i18n.getLocale(), resource: i18n.loadedResources });
-                this.mainWindow.webContents.send('welcome', { url: this.startUrl, message: '', urlValid: true, sso: false });
+                this.mainWindow.webContents.send('page-load-welcome', {
+                    locale: i18n.getLocale(),
+                    resource: i18n.loadedResources,
+                });
+                const userConfigUrl = this.userConfig.url
+                && this.userConfig.url.indexOf('/login/sso/initsso') > -1 ?
+                    this.userConfig.url.slice(0, this.userConfig.url.indexOf('/login/sso/initsso'))
+                    : this.userConfig.url;
+
+                this.mainWindow.webContents.send('welcome', {
+                    url: userConfigUrl || this.startUrl,
+                    message: '',
+                    urlValid: true,
+                    sso: false,
+                });
             }
         });
 
