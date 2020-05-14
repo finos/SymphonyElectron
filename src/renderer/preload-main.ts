@@ -156,8 +156,8 @@ ipcRenderer.on('page-load', (_event, { locale, resources, enableCustomTitleBar }
 ipcRenderer.on('page-load-welcome', (_event, data) => {
     const { locale, resource } = data;
     i18n.setResource(locale, resource);
-    // Renders component as soon as the page is ready
-    document.title = i18n.t('WelcomeText', 'Welcome')();
+
+    document.title = 'Welcome';
     const styles = document.createElement('link');
     styles.rel = 'stylesheet';
     styles.type = 'text/css';
