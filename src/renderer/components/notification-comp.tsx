@@ -4,7 +4,7 @@ import * as React from 'react';
 import { i18n } from '../../common/i18n-preload';
 
 const whiteColorRegExp = new RegExp(/^(?:white|#fff(?:fff)?|rgba?\(\s*255\s*,\s*255\s*,\s*255\s*(?:,\s*1\s*)?\))$/i);
-const darkTheme = [ '#b5616a', '#ab8ead', '#ebc875', '#a3be77', '#58c6ff', '#ebab58' ];
+const darkTheme = [ '#e23030', '#b5616a', '#ab8ead', '#ebc875', '#a3be77', '#58c6ff', '#ebab58' ];
 type Theme = '' | 'light' | 'dark';
 
 interface IState {
