@@ -74,12 +74,23 @@
             <input type='checkbox' id='flash'/>
         </p>
         <p>
+            <label for='isExternal'>external:</label>
+            <input type='checkbox' id='isExternal'/>
+        </p>
+        <p>Change theme:<p>
+            <select id="select-theme" name="theme">
+                <option value="">select</option>
+                <option value="dark">dark</option>
+                <option value="light">light</option>
+            </select>
+            <br>
+        <p>
             <label for='sticky'>sticky:</label>
             <input type='checkbox' id='sticky'/>
         </p>
         <p>
             <label for='color'>color:</label>
-            <input type='text' id='color' value='white'/>
+            <input type='text' id='color' value='#FFFFFF'/>
         </p>
         <p>
             <label for='tag'>tag:</label>
@@ -262,6 +273,7 @@
             var body = document.getElementById('body').value;
             var imageUrl = document.getElementById('image').value;
             var shouldFlash = document.getElementById('flash').checked;
+            var isExternal = document.getElementById('isExternal').checked;
             var shouldStick = document.getElementById('sticky').checked;
             var color = document.getElementById('color').value;
             var tag = document.getElementById('tag').value;
@@ -269,6 +281,7 @@
 
             num++;
 
+            var theme = document.getElementById('select-theme').value
             var notf = {
                 id: num,
                 title,
@@ -277,11 +290,12 @@
                 flash: shouldFlash,
                 color: color || 'white',
                 sticky: shouldStick,
+                isExternal: isExternal,
+                theme: theme,
                 data: {
                     hello: `Notification with id ${num} clicked')`
                 },
                 tag: tag,
-                company: company,
                 method: 'notification',
             };
 

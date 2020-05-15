@@ -111,6 +111,8 @@ export enum KeyCodes {
     Alt = 18,
 }
 
+type Theme = '' | 'light' | 'dark';
+
 /**
  * Notification
  */
@@ -125,6 +127,8 @@ export interface INotificationData {
     sticky: boolean;
     company: string;
     displayTime: number;
+    isExternal: boolean;
+    theme: Theme;
 }
 
 export enum NotificationActions {

@@ -24,8 +24,8 @@ type startCorner = 'upper-right' | 'upper-left' | 'lower-right' | 'lower-left';
 const notificationSettings = {
     startCorner: 'upper-right' as startCorner,
     display: '',
-    width: 380,
-    height: 100,
+    width: 344,
+    height: 64,
     totalHeight: 0,
     totalWidth: 0,
     corner: {
@@ -38,7 +38,7 @@ const notificationSettings = {
     },
     templatePath: '',
     maxVisibleNotifications: 6,
-    borderRadius: 5,
+    borderRadius: 8,
     displayTime: 5000,
     animationSteps: 5,
     animationStepMs: 5,
@@ -436,8 +436,8 @@ class Notification extends NotificationHandler {
      */
     private getNotificationOpts(): Electron.BrowserWindowConstructorOptions {
         return {
-            width: 380,
-            height: 100,
+            width: 344,
+            height: 64,
             alwaysOnTop: true,
             skipTaskbar: true,
             resizable: true,
