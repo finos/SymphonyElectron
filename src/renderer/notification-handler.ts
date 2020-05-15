@@ -65,7 +65,7 @@ export default class NotificationHandler {
      */
     public setupNotificationPosition() {
         // This feature only applies to windows & mac
-        if (isLinux || !app.isReady()) {
+        if (!app.isReady()) {
             return;
         }
 
@@ -78,8 +78,8 @@ export default class NotificationHandler {
         }
 
         const display = this.externalDisplay || electron.screen.getPrimaryDisplay();
-        this.settings.corner.x = display.workArea.x - (isMac ? 20 : 10);
-        this.settings.corner.y = display.workArea.y + (isMac ? 20 : 10);
+        this.settings.corner.x = display.workArea.x - (isMac || isLinux ? 20 : 10);
+        this.settings.corner.y = display.workArea.y + (isMac || isLinux ? 20 : 10);
 
         // update corner x/y based on corner of screen where notification should appear
         const workAreaWidth = display.workAreaSize.width;
