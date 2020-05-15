@@ -44,7 +44,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
             id: 0,
             color: '',
             flash: false,
-            isExternal: true,
+            isExternal: false,
             theme: '',
         };
         this.updateState = this.updateState.bind(this);
