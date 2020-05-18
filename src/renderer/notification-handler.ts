@@ -78,24 +78,30 @@ export default class NotificationHandler {
         }
 
         const display = this.externalDisplay || electron.screen.getPrimaryDisplay();
-        this.settings.corner.x = display.workArea.x - (isMac || isLinux ? 20 : 10);
-        this.settings.corner.y = display.workArea.y + (isMac || isLinux ? 20 : 10);
+        this.settings.corner.x = display.workArea.x;
+        this.settings.corner.y = display.workArea.y;
 
         // update corner x/y based on corner of screen where notification should appear
         const workAreaWidth = display.workAreaSize.width;
         const workAreaHeight = display.workAreaSize.height;
+        const offSet = (isMac || isLinux ? 20 : 10);
         switch (this.settings.startCorner) {
             case 'upper-right':
-                this.settings.corner.x += workAreaWidth;
+                this.settings.corner.x += workAreaWidth - offSet;
+                this.settings.corner.y += offSet;
                 break;
             case 'lower-right':
-                this.settings.corner.x += workAreaWidth;
-                this.settings.corner.y += workAreaHeight;
+                this.settings.corner.x += workAreaWidth - offSet;
+                this.settings.corner.y += workAreaHeight - offSet;
                 break;
             case 'lower-left':
-                this.settings.corner.y += workAreaHeight;
+                this.settings.corner.x += offSet;
+                this.settings.corner.y += workAreaHeight - offSet;
                 break;
             case 'upper-left':
+                this.settings.corner.x += offSet;
+                this.settings.corner.y += offSet;
+                break;
             default:
                 // no change needed
                 break;
