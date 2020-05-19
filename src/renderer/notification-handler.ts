@@ -64,8 +64,8 @@ export default class NotificationHandler {
      * Initializes / resets the notification positional values
      */
     public setupNotificationPosition() {
-        // This feature only applies to windows
-        if (isMac || isLinux || !app.isReady()) {
+        // This feature only applies to windows & mac
+        if (!app.isReady()) {
             return;
         }
 
@@ -84,18 +84,24 @@ export default class NotificationHandler {
         // update corner x/y based on corner of screen where notification should appear
         const workAreaWidth = display.workAreaSize.width;
         const workAreaHeight = display.workAreaSize.height;
+        const offSet = (isMac || isLinux ? 20 : 10);
         switch (this.settings.startCorner) {
             case 'upper-right':
-                this.settings.corner.x += workAreaWidth;
+                this.settings.corner.x += workAreaWidth - offSet;
+                this.settings.corner.y += offSet;
                 break;
             case 'lower-right':
-                this.settings.corner.x += workAreaWidth;
-                this.settings.corner.y += workAreaHeight;
+                this.settings.corner.x += workAreaWidth - offSet;
+                this.settings.corner.y += workAreaHeight - offSet;
                 break;
             case 'lower-left':
-                this.settings.corner.y += workAreaHeight;
+                this.settings.corner.x += offSet;
+                this.settings.corner.y += workAreaHeight - offSet;
                 break;
             case 'upper-left':
+                this.settings.corner.x += offSet;
+                this.settings.corner.y += offSet;
+                break;
             default:
                 // no change needed
                 break;

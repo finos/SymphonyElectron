@@ -1,12 +1,12 @@
 @import "theme";
 
 .light {
-  --text-color: #4a4a4a;
-  --logo-bg: url('../assets/symphony-logo-black.png');
+  --text-color: #525760;
+  --logo-bg: url('../assets/symphony-logo.png');
 }
 .dark {
-  --text-color: #000000;
-  --logo-bg: url('../assets/symphony-logo-white.png');
+  --text-color: #FFFFFF;
+  --logo-bg: url('../assets/symphony-logo.png');
 }
 
 body {
@@ -17,8 +17,8 @@ body {
 }
 
 .container {
-  width: 380px;
-  height: 100px;
+  width: 344px;
+  height: 64px;
   display: flex;
   justify-content: center;
   background-color: #ffffff;
@@ -26,16 +26,32 @@ body {
   position: relative;
   line-height: 15px;
   box-sizing: border-box;
-  border-radius: 5px;
+  border-radius: 8px;
+
+  &:hover .close {
+    visibility: visible;
+  }
+}
+
+.ext-border {
+  border: 2px solid #f6b202;
+  border-radius: 8px;
+  width: 340px;
+  height: 60px;
+  position: absolute;
 }
 
 .header {
-  width: 245px;
-  min-width: 230px;
+  width: 232px;
+  min-width: 215px;
   margin: auto;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+}
+
+.title-container {
+  display: flex;
 }
 
 .user-profile-pic-container {
@@ -43,35 +59,61 @@ body {
   display: flex;
 }
 
-.user-profile-pic {
-  height: 43px;
+.user-name-text-container {
+  display: flex;
+  height: 40px;
   border-radius: 4px;
-  width: 43px;
+  border: 1px solid rgba(82, 87, 96, .32);
+  margin: 12px;
+  width: 40px;
+  background: #FFFFFF;
+}
+
+.user-name-text {
+  font-size: 14px;
+  line-height: 24px;
+  align-items: center;
+  margin: auto;
+  text-align: center;
+  color: #008EFF;
+}
+
+.ext-badge-container {
+  height: 16px;
+  width: 32px;
+  margin: auto 8px;
+  align-items: center;
+}
+
+.user-profile-pic {
+  height: 40px;
+  border-radius: 50%;
+  width: 40px;
+  margin: 12px;
 }
 
 .close {
-  width: 16px;
-  height: 80px;
-  display: flex;
-  margin: auto;
-  opacity: 0.54;
-  font-size: 12px;
-  color: #CCC;
-  cursor: pointer;
+  position: absolute;
+  right: 0;
+  visibility: hidden;
+  padding: 0 5.5px 5.5px 5.5px;
 }
 
 .title {
   font-family: sans-serif;
-  font-weight: 700;
-  width: 100%;
+  font-weight: 600;
+  width: auto;
+  max-width: 175px;
   overflow-wrap: break-word;
   font-size: 14px;
+  font-style: normal;
   overflow: hidden;
-  display: -webkit-box;
   -webkit-line-clamp: 1;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  line-height: 24px;
   -webkit-box-orient: vertical;
   cursor: default;
-  text-overflow: ellipsis;
   color: var(--text-color);
 }
 
@@ -88,13 +130,13 @@ body {
 
 .message {
   font-family: sans-serif;
-  width: 100%;
+  width: 220px;
   overflow-wrap: break-word;
   font-size: 12px;
-  margin-top: 5px;
+  line-height: 16px;
   overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
+  white-space: nowrap;
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   cursor: default;
   text-overflow: ellipsis;
@@ -102,13 +144,12 @@ body {
 }
 
 .logo-container {
+  margin: 10px;
   display: flex;
   align-items: center;
 }
 
 .logo {
-  margin-left: 5px;
-  opacity: 0.6;
-  width: 43px;
+  width: 40px;
   content: var(--logo-bg);
 }
