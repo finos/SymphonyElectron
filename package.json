@@ -120,7 +120,7 @@
     "browserify": "16.5.1",
     "cross-env": "5.2.0",
     "del": "3.0.0",
-    "electron": "9.0.0-beta.22",
+    "electron": "9.0.0",
     "electron-builder": "22.6.0",
     "electron-builder-squirrel-windows": "20.38.3",
     "electron-icon-maker": "0.0.4",
