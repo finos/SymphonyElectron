@@ -125,6 +125,7 @@ Typically you'll want to set content: url("") and adjust the width property
     border-radius: 0;
     padding: 10px 15px;
     cursor: default;
+    align-content: center;
 }
 
 .title-bar-button:hover {
