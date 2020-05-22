@@ -68,7 +68,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
         if (theme) {
             themeClassName = theme;
         } else if (darkTheme.includes(color.toLowerCase())) {
-            themeClassName = 'light';
+            themeClassName = 'blackText';
         } else {
             themeClassName = color && color.match(whiteColorRegExp) ? 'light' : 'dark';
         }
