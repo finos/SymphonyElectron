@@ -119,8 +119,9 @@ type Theme = '' | 'light' | 'dark';
 export interface INotificationData {
     id: number;
     title: string;
-    text: string;
+    body: string;
     image: string;
+    icon: string;
     flash: boolean;
     color: string;
     tag: string;
