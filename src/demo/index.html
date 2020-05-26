@@ -320,6 +320,9 @@
                     alert('error=' + event.result);
                 };
                 ssfNotificationHandler.addEventListener('error', onerror);
+            } else if (window.manaSSF) {
+                const callback = () => { console.log('notification clicked') };
+                window.manaSSF.showNotification(notf, callback);
             } else {
                 window.postMessage({ method: 'notification', data: notf }, '*');
             }

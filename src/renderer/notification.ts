@@ -192,7 +192,31 @@ class Notification extends NotificationHandler {
             notificationWindow.displayTimer = timeoutId;
         }
 
-        notificationWindow.webContents.send('notification-data', data);
+        const {
+            title,
+            company,
+            body,
+            image,
+            icon,
+            id,
+            color,
+            flash,
+            isExternal,
+            theme,
+        } = data;
+
+        notificationWindow.webContents.send('notification-data', {
+            title,
+            company,
+            body,
+            image,
+            icon,
+            id,
+            color,
+            flash,
+            isExternal,
+            theme,
+        });
         notificationWindow.showInactive();
     }
 
