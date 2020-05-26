@@ -4,7 +4,7 @@ import { config } from '../app/config-handler';
 import { createComponentWindow, windowExists } from '../app/window-utils';
 import { AnimationQueue } from '../common/animation-queue';
 import { apiName, INotificationData, NotificationActions } from '../common/api-interface';
-import { isNodeEnv } from '../common/env';
+import { isNodeEnv, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
 import NotificationHandler from './notification-handler';
 
@@ -464,10 +464,11 @@ class Notification extends NotificationHandler {
             height: 64,
             alwaysOnTop: true,
             skipTaskbar: true,
-            resizable: true,
+            resizable: isWindowsOS,
             show: false,
             frame: false,
             transparent: true,
+            fullscreenable: false,
             acceptFirstMouse: true,
             title: 'Notification - Symphony',
             webPreferences: {
