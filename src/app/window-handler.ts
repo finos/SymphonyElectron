@@ -938,6 +938,7 @@ export class WindowHandler {
                 minimizable: false,
                 maximizable: false,
                 title: 'Screen Sharing Indicator - Symphony',
+                closable: false,
             }, {
                 devTools: false,
             }), ...{winKey: streamId},

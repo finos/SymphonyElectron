@@ -15,6 +15,7 @@ const getMainWindow = {
     isAlwaysOnTop: jest.fn(() => true),
     setMenuBarVisibility: jest.fn(),
     setAlwaysOnTop: jest.fn(),
+    setFullScreenable: jest.fn(),
 };
 
 jest.mock('../src/common/env', () => {
