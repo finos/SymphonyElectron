@@ -973,6 +973,7 @@ export class WindowHandler {
         this.moveWindow(this.screenSharingIndicatorWindow, topPositionOfIndicatorScreen);
         this.screenSharingIndicatorWindow.setVisibleOnAllWorkspaces(true);
         this.screenSharingIndicatorWindow.setSkipTaskbar(true);
+        this.screenSharingIndicatorWindow.setAlwaysOnTop(true, 'screen-saver');
         this.screenSharingIndicatorWindow.webContents.once('did-finish-load', () => {
             if (!this.screenSharingIndicatorWindow || !windowExists(this.screenSharingIndicatorWindow)) {
                 return;
