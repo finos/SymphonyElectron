@@ -27,7 +27,6 @@
     "lint:spec": "tslint --project tsconfig.spec.json",
     "packed-linux": "npm run prebuild && npm run test && ./node_modules/.bin/electron-builder build --linux",
     "packed-mac": "npm run unpacked-mac && packagesbuild -v installer/mac/symphony-mac-packager.pkgproj",
-    "postinstall": "rm -rf node_modules/app-builder-lib/electron-osx-sign && ln -s $(pwd)/node_modules/electron-osx-sign node_modules/app-builder-lib",
     "prebuild": "run-s compile rebuild browserify",
     "rebuild": "electron-rebuild -f",
     "start": "run-s compile browserify && cross-env ELECTRON_DEV=true electron .",
