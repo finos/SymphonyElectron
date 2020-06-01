@@ -70,15 +70,18 @@ class DownloadHandler {
      *
      * @param id {string} File ID
      */
-    public openFile(id: string): void {
+    public async openFile(id: string): Promise<void> {
         const filePath = this.getFilePath(id);
 
-        const openResponse = fs.existsSync(`${filePath}`) && shell.openItem(`${filePath}`);
+        const openResponse = fs.existsSync(`${filePath}`);
         if (openResponse) {
-            return;
+            const result = await shell.openPath(`${filePath}`);
+            if (result === '') {
+                return;
+            }
         }
 
-        DownloadHandler.showDialog();
+        await DownloadHandler.showDialog();
     }
 
     /**

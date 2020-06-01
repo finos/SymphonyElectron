@@ -73,13 +73,15 @@ fi
 
 codesign --force --options runtime -s "Developer ID Application: Symphony Communication Services LLC" library/lz4.exec
 codesign --force --options runtime -s "Developer ID Application: Symphony Communication Services LLC" library/indexvalidator.exec
-codesign --force --options runtime -s "Developer ID Application: Symphony Communication Services LLC" node_modules/screen-share-indicator-frame/SymphonyScreenShareIndicator
 
 PKG_VERSION=$(node -e "console.log(require('./package.json').version);")
 
 # Install app dependencies
 echo "Installing dependencies"
 npm install
+
+echo "Signing screen share indicator"
+codesign --force --options runtime -s "Developer ID Application: Symphony Communication Services LLC" node_modules/screen-share-indicator-frame/SymphonyScreenShareIndicator
 
 # Run Snyk Security Tests
 echo "Running snyk security tests"

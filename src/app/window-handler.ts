@@ -728,7 +728,6 @@ export class WindowHandler {
 
             this.screenPickerWindow.webContents.setZoomFactor(1);
             this.screenPickerWindow.webContents.setVisualZoomLevelLimits(1, 1);
-            this.screenPickerWindow.webContents.setLayoutZoomLevelLimits(0, 0);
 
             this.screenPickerWindow.webContents.send('screen-picker-data', {sources, id});
             this.addWindow(opts.winKey, this.screenPickerWindow);
