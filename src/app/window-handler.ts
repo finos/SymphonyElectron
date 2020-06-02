@@ -85,7 +85,7 @@ export class WindowHandler {
     public screenShareIndicatorFrameUtil: string;
     public shouldShowWelcomeScreen: boolean = false;
 
-    private readonly defaultPodUrl: string = 'https://my.symphony.com';
+    private readonly defaultPodUrl: string = 'https://[POD].symphony.com';
     private readonly contextIsolation: boolean;
     private readonly backgroundThrottling: boolean;
     private readonly windowOpts: ICustomBrowserWindowConstructorOpts;
@@ -472,7 +472,7 @@ export class WindowHandler {
                 this.mainWindow.webContents.send('welcome', {
                     url: userConfigUrl || this.startUrl,
                     message: '',
-                    urlValid: true,
+                    urlValid: false,
                     sso: false,
                 });
             }

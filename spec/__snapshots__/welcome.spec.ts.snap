@@ -31,7 +31,7 @@ exports[`welcome should render correctly 1`] = `
           className="Welcome-main-container-podurl-box"
           onChange={[Function]}
           type="url"
-          value="https://my.symphony.com"
+          value="https://[POD].symphony.com"
         />
       </div>
       <div
@@ -52,8 +52,8 @@ exports[`welcome should render correctly 1`] = `
       className="Welcome-message-label"
     />
     <button
-      className="Welcome-continue-button"
-      disabled={false}
+      className="Welcome-continue-button-disabled"
+      disabled={true}
       onClick={[Function]}
     >
       Continue
