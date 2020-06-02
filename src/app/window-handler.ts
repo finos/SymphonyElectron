@@ -21,7 +21,7 @@ import { getCommandLineArgs, getGuid } from '../common/utils';
 import { notification } from '../renderer/notification';
 import { AppMenu } from './app-menu';
 import { handleChildWindow } from './child-window-handler';
-import { ClientSwitchType, CloudConfigDataTypes, config, IConfig, IGlobalConfig } from './config-handler';
+import { CloudConfigDataTypes, config, IConfig, IGlobalConfig } from './config-handler';
 import { SpellChecker } from './spell-check-handler';
 import { checkIfBuildExpired } from './ttl-handler';
 import { versionHandler } from './version-handler';
@@ -39,6 +39,12 @@ import {
     reloadWindow,
     windowExists,
 } from './window-utils';
+
+enum ClientSwitchType {
+    CLIENT_1_5 = 'CLIENT_1_5',
+    CLIENT_2_0 = 'CLIENT_2_0',
+    CLIENT_2_0_DAILY = 'CLIENT_2_0_DAILY',
+}
 
 interface ICustomBrowserWindowConstructorOpts extends Electron.BrowserWindowConstructorOptions {
     winKey: string;
@@ -77,7 +83,7 @@ export class WindowHandler {
     public isOnline: boolean;
     public url: string | undefined;
     public startUrl!: string;
-    public currentClient: ClientSwitchType = ClientSwitchType.CLIENT_1_5;
+    public isMana: boolean = false;
     public willQuitApp: boolean = false;
     public spellchecker: SpellChecker | undefined;
     public isCustomTitleBar: boolean;
@@ -295,13 +301,14 @@ export class WindowHandler {
                 return;
             }
             this.url = this.mainWindow.webContents.getURL();
-
-            logger.info(`window-handler: client switch from config is ${this.config.clientSwitch}`);
-
-            const parsedUrl = parse(this.url);
-            if (this.url.startsWith('https://corporate.symphony.com') && this.url.indexOf(`https://${parsedUrl.hostname}/client/index.html`) !== -1) {
-                this.switchClient(this.config.clientSwitch ? this.config.clientSwitch : ClientSwitchType.CLIENT_2_0);
+            logger.info('window-handler: did-finish-load, url: ' + this.url);
+            const manaPath = 'client-bff';
+            if (this.url.includes(manaPath)) {
+                this.isMana = true;
+            } else {
+                this.isMana = false;
             }
+            logger.info('window-handler: isMana: ' + this.isMana);
 
             // Injects custom title bar and snack bar css into the webContents
             await injectStyles(this.mainWindow, this.isCustomTitleBar);
@@ -1219,14 +1226,7 @@ export class WindowHandler {
      * @param clientSwitch client switch you want to switch to.
      */
     private async switchClient(clientSwitch: ClientSwitchType): Promise<void> {
-
-        if (this.currentClient && this.currentClient === clientSwitch) {
-            logger.info(`window handler: already in the same client ${clientSwitch}. Not switching!`);
-            return;
-        }
         logger.info(`window handler: switch to client ${clientSwitch}`);
-        logger.info(`window handler: currentClient: ${this.currentClient}`);
-        this.currentClient = clientSwitch;
 
         if (!this.mainWindow || !windowExists(this.mainWindow)) {
             logger.info(`window-handler: switch client - main window web contents destroyed already! exiting`);
@@ -1240,7 +1240,7 @@ export class WindowHandler {
             const manaPath = 'client-bff';
             const manaChannel = 'daily';
             const csrfToken = await this.mainWindow.webContents.executeJavaScript(`localStorage.getItem('x-km-csrf-token')`);
-            switch (this.currentClient) {
+            switch (clientSwitch) {
                 case ClientSwitchType.CLIENT_1_5:
                     this.url = this.startUrl + `?x-km-csrf-token=${csrfToken}`;
                     break;
@@ -1253,8 +1253,6 @@ export class WindowHandler {
                 default:
                     this.url = this.globalConfig.url + `?x-km-csrf-token=${csrfToken}`;
             }
-            await config.updateUserConfig({ clientSwitch });
-            this.config.clientSwitch = clientSwitch;
             await this.mainWindow.loadURL(this.url);
         } catch (e) {
             logger.error(`window-handler: failed to switch client because of error ${e}`);

@@ -9,7 +9,6 @@ import { IScreenSnippet } from '../common/api-interface';
 import { isDevEnv, isElectronQA, isLinux, isMac, isWindowsOS } from '../common/env';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
-import { ClientSwitchType } from './config-handler';
 import { updateAlwaysOnTop } from './window-actions';
 import { windowHandler } from './window-handler';
 import { windowExists } from './window-utils';
@@ -63,10 +62,10 @@ class ScreenSnippet {
         if (isMac) {
             this.captureUtilArgs = [ '-i', '-s', '-t', 'png', this.outputFileName ];
         } else if (isWindowsOS) {
-            if (windowHandler.currentClient === ClientSwitchType.CLIENT_1_5) {
-                this.captureUtilArgs = [ this.outputFileName, i18n.getLocale() ];
-            } else {
+            if (windowHandler.isMana) {
                 this.captureUtilArgs = [ '--no-annotate', this.outputFileName, i18n.getLocale() ];
+            } else {
+                this.captureUtilArgs = [ this.outputFileName, i18n.getLocale() ];
             }
         } else if (isLinux) {
             this.captureUtilArgs = ['-a', '-f', this.outputFileName];
