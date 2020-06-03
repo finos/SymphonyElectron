@@ -20,9 +20,9 @@ export default class Welcome extends React.Component<{}, IState> {
     constructor(props) {
         super(props);
         this.state = {
-            url: 'https://my.symphony.com',
+            url: 'https://[POD].symphony.com',
             message: '',
-            urlValid: true,
+            urlValid: false,
             sso: false,
         };
         this.updateState = this.updateState.bind(this);
@@ -100,9 +100,9 @@ export default class Welcome extends React.Component<{}, IState> {
      * @param _event
      */
     public updatePodUrl(_event): void {
-        const url = _event.target.value;
+        const url = _event.target.value.trim();
         const match = url.match(/(https?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&/=]*)/g) != null;
-        if (!match) {
+        if (url === 'https://[POD].symphony.com' || !match) {
             this.updateState(_event, {
                 url,
                 message: i18n.t('Please enter a valid url', WELCOME_NAMESPACE)(),

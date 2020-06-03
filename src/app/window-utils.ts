@@ -355,7 +355,7 @@ export const getBounds = (winPos: ICustomRectangle | Electron.Rectangle | undefi
  * @param type
  * @param filePath
  */
-export const downloadManagerAction = (type, filePath): void => {
+export const downloadManagerAction = async (type, filePath): Promise<void> => {
     const focusedWindow = electron.BrowserWindow.getFocusedWindow();
     const message = i18n.t('The file you are trying to open cannot be found in the specified path.', DOWNLOAD_MANAGER_NAMESPACE)();
     const title = i18n.t('File not Found', DOWNLOAD_MANAGER_NAMESPACE)();
@@ -365,11 +365,12 @@ export const downloadManagerAction = (type, filePath): void => {
     }
 
     if (type === 'open') {
-        let openResponse = fs.existsSync(`${filePath}`);
-        if (openResponse) {
-            openResponse = electron.shell.openItem(`${filePath}`);
+        const fileExists = fs.existsSync(`${filePath}`);
+        let openFileResponse;
+        if (fileExists) {
+            openFileResponse = await electron.shell.openPath(filePath);
         }
-        if (!openResponse && focusedWindow && !focusedWindow.isDestroyed()) {
+        if ((openFileResponse !== '') && focusedWindow && !focusedWindow.isDestroyed()) {
             electron.dialog.showMessageBox(focusedWindow, {
                 message,
                 title,
