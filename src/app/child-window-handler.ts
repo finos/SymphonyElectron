@@ -2,7 +2,7 @@ import { BrowserWindow, WebContents } from 'electron';
 
 import { parse as parseQuerystring } from 'querystring';
 import { format, parse, Url } from 'url';
-import { isDevEnv, isWindowsOS } from '../common/env';
+import { isWindowsOS } from '../common/env';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
 import { getGuid } from '../common/utils';
@@ -17,7 +17,7 @@ import {
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 import {
     getBounds,
-    handleCertificateProxyVerification,
+    // handleCertificateProxyVerification,
     injectStyles,
     preventWindowNavigation,
 } from './window-utils';
@@ -211,9 +211,9 @@ export const handleChildWindow = (webContents: WebContents): void => {
                     handleChildWindow(browserWin.webContents);
 
                     // Certificate verification proxy
-                    if (!isDevEnv) {
-                        browserWin.webContents.session.setCertificateVerifyProc(handleCertificateProxyVerification);
-                    }
+                    // if (!isDevEnv) {
+                    //    browserWin.webContents.session.setCertificateVerifyProc(handleCertificateProxyVerification);
+                    // }
 
                     // Updates media permissions for preload context
                     const { permissions } = config.getConfigFields([ 'permissions' ]);
