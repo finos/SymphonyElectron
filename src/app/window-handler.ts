@@ -479,7 +479,7 @@ export class WindowHandler {
                 this.mainWindow.webContents.send('welcome', {
                     url: userConfigUrl || this.startUrl,
                     message: '',
-                    urlValid: false,
+                    urlValid: !!userConfigUrl,
                     sso: false,
                 });
             }
