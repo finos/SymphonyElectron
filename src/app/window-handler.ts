@@ -181,7 +181,7 @@ export class WindowHandler {
         this.url = WindowHandler.getValidUrl(this.userConfig.url ? this.userConfig.url : this.globalConfig.url);
         logger.info(`window-handler: setting url ${this.url} from config file!`);
 
-        if (config.isFirstTimeLaunch()) {
+        if (config.isFirstTimeLaunch() && this.globalConfig.url.indexOf('https://my.symphony.com') >= 0) {
             this.shouldShowWelcomeScreen = true;
             this.url = this.defaultPodUrl;
             isMaximized = false;

@@ -2,6 +2,26 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "dev",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "${workspaceFolder}/node_modules/electron/dist/Electron.app/Contents/MacOS/Electron",
+      "windows": {
+        "runtimeExecutable": "${workspaceFolder}/node_modules/electron/dist/Electron.exe"
+      },
+      "args": ["."],
+      "env": {
+        "ELECTRON_DEBUGGING": "true",
+        "ELECTRON_DEV": "true"
+      },
+      "outputCapture": "std",
+      "sourceMaps": true,
+      "outFiles": [
+        "${workspaceFolder}/lib/**/*.js"
+      ]
+    },
+    {
       "name": "corp",
       "type": "node",
       "request": "launch",
@@ -22,7 +42,27 @@
       ]
     },
     {
-      "name": "corp",
+      "name": "mana",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "${workspaceFolder}/node_modules/electron/dist/Electron.app/Contents/MacOS/Electron",
+      "windows": {
+        "runtimeExecutable": "${workspaceFolder}/node_modules/electron/dist/Electron.exe"
+      },
+      "args": [".", "--url=https://local-dev.symphony.com:9090"],
+      "env": {
+        "ELECTRON_DEBUGGING": "true",
+        "ELECTRON_DEV": "true"
+      },
+      "outputCapture": "std",
+      "sourceMaps": true,
+      "outFiles": [
+        "${workspaceFolder}/lib/**/*.js"
+      ]
+    }
+    {
+      "name": "demo",
       "type": "node",
       "request": "launch",
       "cwd": "${workspaceFolder}",
