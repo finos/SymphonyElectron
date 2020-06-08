@@ -377,6 +377,9 @@ export class WindowHandler {
 
             if (this.willQuitApp) {
                 logger.info(`window-handler: app is quitting, destroying all windows!`);
+                if (this.mainWindow && this.mainWindow.webContents.isDevToolsOpened()) {
+                    this.mainWindow.webContents.closeDevTools();
+                }
                 return this.destroyAllWindows();
             }
 
