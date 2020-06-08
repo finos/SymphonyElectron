@@ -562,7 +562,11 @@ export class WindowHandler {
                 if (browserWindow && windowExists(browserWindow)) {
                     // Closes only child windows
                     if (browserWindow.winName !== apiName.mainWindowName && browserWindow.winName !== apiName.notificationWindowName) {
-                        browserWindow.close();
+                        if (browserWindow.closable) {
+                            browserWindow.close();
+                        } else {
+                            browserWindow.destroy();
+                        }
                     }
                 }
             });
