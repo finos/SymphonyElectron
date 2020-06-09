@@ -164,7 +164,7 @@
   },
   "optionalDependencies": {
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#v1.0.9",
-    "screen-share-indicator-frame": "git+https://github.com/symphonyoss/ScreenShareIndicatorFrame.git#v1.4.8",
+    "screen-share-indicator-frame": "git+https://github.com/symphonyoss/ScreenShareIndicatorFrame.git#v1.4.9",
     "swift-search": "2.0.2"
   },
   "ava": {
