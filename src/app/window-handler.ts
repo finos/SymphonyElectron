@@ -404,6 +404,7 @@ export class WindowHandler {
             if (isWindowsOS || isMac) {
                 this.execCmd(this.screenShareIndicatorFrameUtil, []);
             }
+            this.closeAllWindow();
             this.destroyAllWindows();
         });
 
