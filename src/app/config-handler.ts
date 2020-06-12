@@ -278,7 +278,7 @@ class Config {
             logger.info(`config-handler: setting first time launch for build`, buildNumber);
             return await this.updateUserConfig(filteredFields);
         }
-        await this.updateUserConfig({ buildNumber });
+        await this.updateUserConfig({ buildNumber, installVariant: this.installVariant });
     }
 
     /**
