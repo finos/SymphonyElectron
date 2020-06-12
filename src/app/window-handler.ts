@@ -40,6 +40,8 @@ import {
     windowExists,
 } from './window-utils';
 
+const windowSize: string | null = getCommandLineArgs(process.argv, '--window-size', false);
+
 enum ClientSwitchType {
     CLIENT_1_5 = 'CLIENT_1_5',
     CLIENT_2_0 = 'CLIENT_2_0',
@@ -206,6 +208,20 @@ export class WindowHandler {
 
             if (this.config.mainWinPos && this.config.mainWinPos.y) {
                 this.config.mainWinPos.y = undefined;
+            }
+        }
+
+        logger.info('window-handler: windowSize: ' + JSON.stringify(windowSize));
+        if (windowSize) {
+            const args = windowSize.split('=');
+            const sizes = args[1].split(',');
+            logger.info('window-handler: windowSize: args: ' + JSON.stringify(args));
+            logger.info('window-handler: windowSize: sizes: ' + JSON.stringify(sizes));
+            DEFAULT_WIDTH = Number(sizes[0]);
+            DEFAULT_HEIGHT = Number(sizes[1]);
+            if (this.config.mainWinPos ) {
+                this.config.mainWinPos.width = DEFAULT_WIDTH;
+                this.config.mainWinPos.height = DEFAULT_HEIGHT;
             }
         }
 
