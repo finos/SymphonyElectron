@@ -55,6 +55,7 @@
     "extraFiles": [
       "config/Symphony.config",
       "config/titleBarStyles.css",
+      "config/InstallVariant.info",
       "dictionaries/**",
       "library/libsymphonysearch.dylib",
       "library/indexvalidator.exec",
