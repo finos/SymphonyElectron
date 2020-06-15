@@ -4,8 +4,10 @@
 settingsFilePath='/tmp/sym_settings.txt'
 permissionsFilePath='/tmp/sym_permissions.txt'
 installPath="$2"
-configPath="/Symphony.app/Contents/config/Symphony.config"
-newPath=${installPath}${configPath}
+configPath="/Symphony.app/Contents/config"
+configFilePath="${installPath}${configPath}/Symphony.config"
+installVariantPath="${installPath}${configPath}/InstallVariant.info"
+newPath=${configFilePath}
 
 ## Get Symphony Settings from the temp file ##
 pod_url=$(sed -n '1p' ${settingsFilePath});
@@ -62,3 +64,5 @@ sed -i "" -E "s#\"openExternal\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"o
 ## Remove the temp settings & permissions file created ##
 rm -f ${settingsFilePath}
 rm -f ${permissionsFilePath}
+
+uuidgen > ${installVariantPath}
