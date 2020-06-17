@@ -32,7 +32,7 @@ script:
   - node --version
   - npm --version
   - npm run rebuild
-  - npm run test:spectron
+  - npm run test
 
 cache:
   directories:
