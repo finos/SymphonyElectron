@@ -639,6 +639,7 @@ export const updateFeaturesForCloudConfig = async (): Promise<void> => {
 
 /**
  * Monitors network requests and displays red banner on failure
+ * @param url: Pod URL to be loaded after network is active again
  */
 export const monitorNetworkInterception = (url: string) => {
     if (isNetworkMonitorInitialized) {
