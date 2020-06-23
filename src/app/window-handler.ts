@@ -306,7 +306,7 @@ export class WindowHandler {
             }
             // monitors network connection and
             // displays error banner on failure
-            monitorNetworkInterception();
+            monitorNetworkInterception(this.url || this.userConfig.url || this.globalConfig.url);
         });
 
         this.mainWindow.webContents.on('did-finish-load', async () => {
@@ -358,7 +358,7 @@ export class WindowHandler {
                         if (this.mainWindow && windowExists(this.mainWindow)) {
                             this.mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '..', '/renderer/styles/network-error.css'), 'utf8').toString());
                             this.mainWindow.webContents.send('network-error', {error: this.loadFailError});
-                            isSymphonyReachable(this.mainWindow);
+                            isSymphonyReachable(this.mainWindow, this.url || this.userConfig.url || this.globalConfig.url);
                         }
                     }
                 } catch (error) {

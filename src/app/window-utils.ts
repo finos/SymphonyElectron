@@ -32,7 +32,6 @@ enum styleNames {
 }
 
 const checkValidWindow = true;
-const { url: configUrl } = config.getGlobalConfigFields([ 'url' ]);
 const { ctWhitelist } = config.getConfigFields([ 'ctWhitelist' ]);
 
 // Network status check variables
@@ -518,8 +517,9 @@ export const handleCertificateProxyVerification = (
  * every 10sec, on active reloads the given window
  *
  * @param window {ICustomBrowserWindow}
+ * @param url Pod URL to load
  */
-export const isSymphonyReachable = (window: ICustomBrowserWindow | null) => {
+export const isSymphonyReachable = (window: ICustomBrowserWindow | null, url: string) => {
     if (networkStatusCheckIntervalId) {
         return;
     }
@@ -527,7 +527,7 @@ export const isSymphonyReachable = (window: ICustomBrowserWindow | null) => {
         return;
     }
     networkStatusCheckIntervalId = setInterval(() => {
-        const { hostname, protocol } = parse(configUrl);
+        const { hostname, protocol } = parse(url);
         if (!hostname || !protocol) {
             return;
         }
@@ -536,7 +536,7 @@ export const isSymphonyReachable = (window: ICustomBrowserWindow | null) => {
         fetch(podUrl, { method: 'GET' }).then((rsp) => {
             if (rsp.status === 200 && windowHandler.isOnline) {
                 logger.info(`window-utils: pod ${podUrl} is reachable, loading main window!`);
-                window.loadURL(configUrl);
+                window.loadURL(url);
                 if (networkStatusCheckIntervalId) {
                     clearInterval(networkStatusCheckIntervalId);
                     networkStatusCheckIntervalId = null;
@@ -640,11 +640,10 @@ export const updateFeaturesForCloudConfig = async (): Promise<void> => {
 /**
  * Monitors network requests and displays red banner on failure
  */
-export const monitorNetworkInterception = () => {
+export const monitorNetworkInterception = (url: string) => {
     if (isNetworkMonitorInitialized) {
         return;
     }
-    const { url } = config.getGlobalConfigFields( [ 'url' ] );
     const { hostname, protocol } = parse(url);
 
     if (!hostname || !protocol) {
