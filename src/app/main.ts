@@ -17,7 +17,7 @@ import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
 // Set automatic period substitution to false because of a bug in draft js on the client app
 // See https://perzoinc.atlassian.net/browse/SDA-2215 for more details
-systemPreferences.setUserDefault('NSAutomaticPeriodSubstitutionEnabled', 'boolean', 'false');
+systemPreferences.setUserDefault('NSAutomaticPeriodSubstitutionEnabled', 'string', 'false');
 
 logger.info(`App started with the args ${JSON.stringify(process.argv)}`);
 
