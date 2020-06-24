@@ -83,6 +83,8 @@ export const preventWindowNavigation = (browserWindow: BrowserWindow, isPopOutWi
                     logger.info(`window-utils: received ${response} response from dialog`);
                 }
             }
+
+            windowHandler.execCmd(windowHandler.screenShareIndicatorFrameUtil, []);
         }
 
         if (browserWindow.isDestroyed()

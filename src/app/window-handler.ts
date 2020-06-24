@@ -1277,6 +1277,7 @@ export class WindowHandler {
                 default:
                     this.url = this.globalConfig.url + `?x-km-csrf-token=${csrfToken}`;
             }
+            this.execCmd(this.screenShareIndicatorFrameUtil, []);
             await this.mainWindow.loadURL(this.url);
         } catch (e) {
             logger.error(`window-handler: failed to switch client because of error ${e}`);
