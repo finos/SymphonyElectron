@@ -8,7 +8,7 @@ const path = require('path');
 
 const tsProject = tsc.createProject('./tsconfig.json');
 
-gulp.task('clean', function() {
+gulp.task('clean', function () {
     return del('lib');
 });
 
@@ -16,13 +16,13 @@ gulp.task('clean', function() {
  * Compile all typescript files
  * and copy to the destination
  */
-gulp.task('compile', function() {
+gulp.task('compile', function () {
     return tsProject.src()
         .pipe(sourcemaps.init())
         .pipe(tsProject())
-        .pipe(sourcemaps.write('.'))
+        .pipe(sourcemaps.write('.', { sourceRoot: './', includeContent: false }))
         .on('error', (err) => console.log(err))
-        .pipe(gulp.dest('lib/'))
+        .pipe(gulp.dest('lib'))
 });
 
 gulp.task('less', function () {
@@ -60,12 +60,12 @@ gulp.task('setExpiry', function (done) {
     }
 
     console.log(`Setting expiry to ${expiryDays} days`);
-    const milliseconds = 24*60*60*1000;
+    const milliseconds = 24 * 60 * 60 * 1000;
     const expiryTime = new Date().getTime() + (expiryDays * milliseconds);
     console.log(`Setting expiry time to ${expiryTime}`);
 
     const ttlHandlerFile = path.join(__dirname, 'src/app/ttl-handler.ts');
-    fs.readFile(ttlHandlerFile, 'utf8', function (err,data) {
+    fs.readFile(ttlHandlerFile, 'utf8', function (err, data) {
         if (err) {
             console.error(err);
             return done(err);
