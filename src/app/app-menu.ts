@@ -77,6 +77,7 @@ export class AppMenu {
 
     private readonly menuItemConfigFields: string[];
     private disableGpu: boolean;
+    private enableRendererLogs: boolean;
 
     constructor() {
         this.menuList = [];
@@ -84,6 +85,7 @@ export class AppMenu {
         this.menuItemConfigFields = [ 'minimizeOnClose', 'launchOnStartup', 'alwaysOnTop', 'bringToFront', 'memoryRefresh', 'isCustomTitleBar', 'devToolsEnabled' ];
         this.cloudConfig = config.getFilteredCloudConfigFields(this.menuItemConfigFields);
         this.disableGpu = config.getConfigFields(['disableGpu']).disableGpu;
+        this.enableRendererLogs = config.getConfigFields(['enableRendererLogs']).enableRendererLogs;
         this.buildMenu();
         // send initial analytic
         if (!initialAnalyticsSent) {
@@ -462,6 +464,21 @@ export class AppMenu {
                             : i18n.t('Disable GPU')(),
                         click: () => {
                             gpuRestartDialog(!this.disableGpu);
+                            },
+                    },
+                    {
+                        label: i18n.t('Enable Renderer Logs')(),
+                        type: 'checkbox',
+                        checked: this.enableRendererLogs,
+                        click: async () => {
+                            if (this.enableRendererLogs) {
+                                this.enableRendererLogs = false;
+                            } else {
+                                this.enableRendererLogs = true;
+                            }
+                            const enableRendererLogs = this.enableRendererLogs;
+                            await config.updateUserConfig({ enableRendererLogs });
+                            logger.info('New value for enableRendererLogs: ' + this.enableRendererLogs);
                         },
                     } ],
                 }, {
