@@ -385,6 +385,25 @@ export class WindowHandler {
             response === 0 ? this.mainWindow.reload() : this.mainWindow.close();
         });
 
+        this.mainWindow.webContents.on('console-message', (_event, level, message, _line, _sourceId) => {
+            const { enableRendererLogs } = config.getConfigFields([ 'enableRendererLogs' ]);
+            if (enableRendererLogs) {
+                if (this.mainWindow) {
+                    if (level === 0) {
+                        logger.debug('renderer ' + this.mainWindow.winName + ': ' + message);
+                    } else if (level === 1) {
+                        logger.info('renderer ' + this.mainWindow.winName + ': ' + message);
+                    } else if (level === 2) {
+                        logger.warn('renderer ' + this.mainWindow.winName + ': ' + message);
+                    } else if (level === 3) {
+                        logger.error('renderer ' + this.mainWindow.winName + ': ' + message);
+                    } else {
+                        logger.info('renderer ' + this.mainWindow.winName + ': ' + message);
+                    }
+                }
+            }
+        });
+
         // Handle main window close
         this.mainWindow.on('close', (event) => {
             if (!this.mainWindow || !windowExists(this.mainWindow)) {
