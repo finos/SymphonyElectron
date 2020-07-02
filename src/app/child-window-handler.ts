@@ -200,6 +200,25 @@ export const handleChildWindow = (webContents: WebContents): void => {
                 // Update initial bound changes
                 sendInitialBoundChanges(browserWin);
 
+                browserWin.webContents.on('console-message', (_event, level, message, _line, _sourceId) => {
+                    const { enableRendererLogs } = config.getConfigFields([ 'enableRendererLogs' ]);
+                    if (enableRendererLogs) {
+                        if (browserWin) {
+                            if (level === 0) {
+                                logger.debug('renderer ' + browserWin.title + ': ' + message);
+                            } else if (level === 1) {
+                                logger.info('renderer ' + browserWin.title + ': ' + message);
+                            } else if (level === 2) {
+                                logger.warn('renderer ' + browserWin.title + ': ' + message);
+                            } else if (level === 3) {
+                                logger.error('renderer ' + browserWin.title + ': ' + message);
+                            } else {
+                                logger.info('renderer ' + browserWin.title + ': ' + message);
+                            }
+                        }
+                    }
+                });
+
                 // Remove all attached event listeners
                 browserWin.on('close', () => {
                     logger.info(`child-window-handler: close event occurred for window with url ${newWinUrl}!`);

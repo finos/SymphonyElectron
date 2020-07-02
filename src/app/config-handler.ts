@@ -26,6 +26,7 @@ export interface IConfig {
     memoryRefresh: CloudConfigDataTypes;
     memoryThreshold: string;
     disableGpu: boolean;
+    enableRendererLogs: boolean;
     devToolsEnabled: boolean;
     ctWhitelist: string[];
     podWhitelist: string[];
