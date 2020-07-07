@@ -56,7 +56,6 @@
   "Dev Tools has been disabled! Please contact your system administrator to enable it!": "開発ツールが無効になっています。システム管理者に連絡して、有効にしてください。",
   "Disable Hamburger menu": "ハンバーガーメニューを無効にする",
   "Disable GPU": "GPUを無効にする",
-  "Enable Renderer Logs": "Enable Renderer Logs",
   "DownloadManager": {
     "downloaded": "ダウンロード済み",
     "File not Found": "ファイルが見つかりません",
