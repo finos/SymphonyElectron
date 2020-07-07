@@ -46,7 +46,6 @@ position:
   - authServerWhitelist: This is a list of domains that would be included for auto authentication. More details [here](./ad-sso-authentication.md)
   - authNegotiateDelegateWhitelist: This is a list of domains that would be included for auto authentication. More details [here](./ad-sso-authentication.md)
   - disableGpu: This disables hardware acceleration. The options available are "true" and "false"
-  - enableRendererLogs: This enables printouts from renderer. The options available are "true" and "false"
 - permissions: These are a set of fine grained controls that admins can use to control certain peripherals of the system being used from the SDA.
   - media: This includes the camera, microphone and audio. If set to "true", all these permissions are allowed to be used by the SDA.
   - geolocation: This includes the user location that is requested by the app. If set to "true", this permission is allowed to be used by the SDA.
