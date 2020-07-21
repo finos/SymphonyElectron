@@ -727,9 +727,6 @@ export class WindowHandler {
                 cloudConfig,
                 finalConfig,
                 hostname,
-                buildNumber: versionHandler.versionInfo.buildNumber,
-                clientVersion: versionHandler.versionInfo.clientVersion,
-                sfeVersion: versionHandler.versionInfo.sfeVersion,
                 versionLocalised,
                 ...versionHandler.versionInfo,
             };
