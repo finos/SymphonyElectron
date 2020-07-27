@@ -335,7 +335,6 @@ export class WindowHandler {
                 resources: i18n.loadedResources,
                 enableCustomTitleBar: this.isCustomTitleBar,
                 isMainWindow: true,
-                isContextIsolationEnabled: this.contextIsolation,
             });
             this.appMenu = new AppMenu();
             const { permissions } = config.getConfigFields([ 'permissions' ]);

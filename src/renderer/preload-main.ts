@@ -48,6 +48,45 @@ const createAPI = () => {
 
 createAPI();
 
+if (ssfWindow.ssf) {
+    // New context bridge api that exposes all the methods on to window object
+    contextBridge.exposeInMainWorld('manaSSF', {
+        CryptoLib: ssfWindow.ssf.CryptoLib,
+        Search: ssfWindow.ssf.Search,
+        Notification: ssfWindow.ssf.Notification,
+        getMediaSource: ssfWindow.ssf.getMediaSource,
+        activate: ssfWindow.ssf.activate,
+        bringToFront: ssfWindow.ssf.bringToFront,
+        getVersionInfo: ssfWindow.ssf.getVersionInfo,
+        registerActivityDetection: ssfWindow.ssf.registerActivityDetection,
+        registerDownloadHandler: ssfWindow.ssf.registerDownloadHandler,
+        openDownloadedItem: ssfWindow.ssf.openDownloadedItem,
+        showDownloadedItem: ssfWindow.ssf.showDownloadedItem,
+        clearDownloadedItems: ssfWindow.ssf.clearDownloadedItems,
+        registerBoundsChange: ssfWindow.ssf.registerBoundsChange,
+        registerLogger: ssfWindow.ssf.registerLogger,
+        registerProtocolHandler: ssfWindow.ssf.registerProtocolHandler,
+        registerLogRetriever: ssfWindow.ssf.registerLogRetriever,
+        sendLogs: ssfWindow.ssf.sendLogs,
+        registerAnalyticsEvent: ssfWindow.ssf.registerAnalyticsEvent,
+        ScreenSnippet: ssfWindow.ssf.ScreenSnippet,
+        openScreenSnippet: ssfWindow.ssf.openScreenSnippet,
+        closeScreenSnippet: ssfWindow.ssf.closeScreenSnippet,
+        setBadgeCount: ssfWindow.ssf.setBadgeCount,
+        setLocale: ssfWindow.ssf.setLocale,
+        setIsInMeeting: ssfWindow.ssf.setIsInMeeting,
+        showNotificationSettings: ssfWindow.ssf.showNotificationSettings,
+        showScreenSharingIndicator: ssfWindow.ssf.showScreenSharingIndicator,
+        openScreenSharingIndicator: ssfWindow.ssf.openScreenSharingIndicator,
+        closeScreenSharingIndicator: ssfWindow.ssf.closeScreenSharingIndicator,
+        registerRestartFloater: ssfWindow.ssf.registerRestartFloater,
+        setCloudConfig: ssfWindow.ssf.setCloudConfig,
+        checkMediaPermission: ssfWindow.ssf.checkMediaPermission,
+        showNotification: notification.showNotification,
+        closeNotification: notification.hideNotification,
+    });
+}
+
 /**
  * Returns a random number that is between (min - max)
  * if min is 4hrs and max is 12hrs then the
@@ -79,46 +118,7 @@ const monitorMemory = (time)  => {
 };
 
 // When the window is completely loaded
-ipcRenderer.on('page-load', (_event, { locale, resources, enableCustomTitleBar, isContextIsolationEnabled }) => {
-
-    if (ssfWindow.ssf && isContextIsolationEnabled) {
-        // New context bridge api that exposes all the methods on to window object
-        contextBridge.exposeInMainWorld('manaSSF', {
-            CryptoLib: ssfWindow.ssf.CryptoLib,
-            Search: ssfWindow.ssf.Search,
-            Notification: ssfWindow.ssf.Notification,
-            getMediaSource: ssfWindow.ssf.getMediaSource,
-            activate: ssfWindow.ssf.activate,
-            bringToFront: ssfWindow.ssf.bringToFront,
-            getVersionInfo: ssfWindow.ssf.getVersionInfo,
-            registerActivityDetection: ssfWindow.ssf.registerActivityDetection,
-            registerDownloadHandler: ssfWindow.ssf.registerDownloadHandler,
-            openDownloadedItem: ssfWindow.ssf.openDownloadedItem,
-            showDownloadedItem: ssfWindow.ssf.showDownloadedItem,
-            clearDownloadedItems: ssfWindow.ssf.clearDownloadedItems,
-            registerBoundsChange: ssfWindow.ssf.registerBoundsChange,
-            registerLogger: ssfWindow.ssf.registerLogger,
-            registerProtocolHandler: ssfWindow.ssf.registerProtocolHandler,
-            registerLogRetriever: ssfWindow.ssf.registerLogRetriever,
-            sendLogs: ssfWindow.ssf.sendLogs,
-            registerAnalyticsEvent: ssfWindow.ssf.registerAnalyticsEvent,
-            ScreenSnippet: ssfWindow.ssf.ScreenSnippet,
-            openScreenSnippet: ssfWindow.ssf.openScreenSnippet,
-            closeScreenSnippet: ssfWindow.ssf.closeScreenSnippet,
-            setBadgeCount: ssfWindow.ssf.setBadgeCount,
-            setLocale: ssfWindow.ssf.setLocale,
-            setIsInMeeting: ssfWindow.ssf.setIsInMeeting,
-            showNotificationSettings: ssfWindow.ssf.showNotificationSettings,
-            showScreenSharingIndicator: ssfWindow.ssf.showScreenSharingIndicator,
-            openScreenSharingIndicator: ssfWindow.ssf.openScreenSharingIndicator,
-            closeScreenSharingIndicator: ssfWindow.ssf.closeScreenSharingIndicator,
-            registerRestartFloater: ssfWindow.ssf.registerRestartFloater,
-            setCloudConfig: ssfWindow.ssf.setCloudConfig,
-            checkMediaPermission: ssfWindow.ssf.checkMediaPermission,
-            showNotification: notification.showNotification,
-            closeNotification: notification.hideNotification,
-        });
-    }
+ipcRenderer.on('page-load', (_event, { locale, resources, enableCustomTitleBar }) => {
 
     i18n.setResource(locale, resources);
 
