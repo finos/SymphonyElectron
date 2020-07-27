@@ -42,6 +42,7 @@ export interface IConfig {
 }
 
 export interface IGlobalConfig {
+    contextOriginUrl: string;
     url: string;
     contextIsolation: boolean;
 }
