@@ -117,7 +117,7 @@ export class WindowHandler {
         this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings', 'alwaysOnTop', 'locale', 'customFlags', 'clientSwitch' ]);
         logger.info(`window-handler: main windows initialized with following config data`, this.config);
 
-        this.globalConfig = config.getGlobalConfigFields([ 'url', 'contextIsolation' ]);
+        this.globalConfig = config.getGlobalConfigFields([ 'url', 'contextIsolation', 'contextOriginUrl' ]);
         this.userConfig = config.getUserConfigFields([ 'url' ]);
 
         const { customFlags } = this.config;
@@ -296,7 +296,7 @@ export class WindowHandler {
         // update version info from server
         this.updateVersionInfo();
         // need this for postMessage origin
-        this.mainWindow.origin = this.url;
+        this.mainWindow.origin = this.globalConfig.contextOriginUrl || this.url;
 
         // Event needed to hide native menu bar on Windows 10 as we use custom menu bar
         this.mainWindow.webContents.once('did-start-loading', () => {
