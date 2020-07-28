@@ -69,9 +69,15 @@ if (!isDevEnv) {
 /**
  * Main function that init the application
  */
+let oneStart = false;
 const startApplication = async () => {
     await app.whenReady();
-    logger.info(`main: app is ready, performing initial checks`);
+    if (oneStart) {
+        return;
+    }
+
+    logger.info('main: app is ready, performing initial checks oneStart: ' + oneStart);
+    oneStart = true;
     createAppCacheFile();
     if (config.isFirstTimeLaunch()) {
         logger.info(`main: This is a first time launch! will update config and handle auto launch`);
