@@ -1,7 +1,7 @@
 ## Prerequisites
 
 ### Windows
-- NodeJS version >= 8.9.4 (corresponds to electron 2.0.2)
+- NodeJS version >= 12.x.y (corresponds to electron 9.x.y)
 - Microsoft Visual Studio 2015 Community or Paid (C++ and .NET/C# development tools)
 - Python >= 2.7.1
 - Dot Net 3.5 SP1
@@ -15,7 +15,7 @@
 
 ### Mac
 - Xcode command line tools. Or better, XCode latest version
-- NodeJS version >= 8.9.4 (corresponds to electron 2.0.2)
+- NodeJS version >= 12.x.y (corresponds to electron 9.x.y)
 - [Sudre Packages](http://s.sudre.free.fr/Software/Packages/about.html)
 
 #### Notes
@@ -26,23 +26,24 @@
 - npm install
 - npm run demo (runs platform specific commands)
 
-Remember to set this.origin to '*' in app-bridge.ts when running the demo. Search 
-for // DEMO-APP: and comment that line back in. Make sure to comment it out again 
-before you commit.
+*Note*: 
+- Remember to set this.origin to '*' in `app-bridge.ts` when running the demo. 
+- Search for // DEMO-APP: and comment that line back in. 
+- Make sure to comment it out again before you commit.
 
 ## Build Instructions:
 
-### Mac
+### Mac 🖥
 - npm install
 - npm run dev (to run locally)
-- to build mac app:
+- To build the macOS app:
   * npm run unpacked-mac
   * The distributable is created in the `dist/mac` directory
 - to build mac package (installer):  
   * npm run packed-mac
   * The .pkg file will be generated in the `installer/mac/build` directory
 
-### Windows
+### Windows 💻
 - npm install
 - npm run dev (to run locally)
 - To build windows unpacked exe:
@@ -53,31 +54,7 @@ before you commit.
   * The distributable is created in the `dist/win-ia32-unpacked` directory
 - To create msi (installer):
   * Run the advanced installer script located in `installer/win` directory
-  * There are two configuration files one each for 64-bit and 32-bit
   
-### Linux (Docker Instruction) 🐳
-- Download and install Docker daemon [here](https://www.docker.com/products/docker-desktop)
-- Run the below docker commands under the project directory
-- To generate and tag the container
-`docker build -t linux:6.0.0 --build-arg REPO=https://github.com/symphonyoss/SymphonyElectron --build-arg BRANCH=linux .`
-- To make sure the image is created and tagged correctly
-`docker images`
-- To run the docker image and generate the linux builds 🎉
-`docker run --name linux linux:6.0.0`
-- To copy the builds
-`docker cp linux:/SymphonyElectron/dist/symphony-6.1.0.x86_64.rpm ~/Desktop`
-`docker cp linux:/SymphonyElectron/dist/symphony_6.1.0_amd64.deb ~/Desktop`
-
-
-##### Other use full docker commands
-- To connect to the interactive bash
-`docker run -i -t linux:6.0.0 /bin/bash`
-- To delete all stopper containers
-`docker system prune -a`
-- To delete the container/image
-`docker rmi -f linux:6.0.0`
-
-
 #### MSI command line options:
 - To install for all users (admin required): msiexec.exe /i Symphony-x64.msi ALLUSERS=1
 - To install per user: msiexec.exe /i Symphony-x64.msi ALLUSERS=""
@@ -99,7 +76,28 @@ before you commit.
   * POINTER_LOCK (Boolean)
   * OPEN_EXTERNAL (Boolean)
 
-## Start URL
+### Linux 🐳
+- Download and install Docker daemon [here](https://www.docker.com/products/docker-desktop)
+- Run the below docker commands under the project directory
+- To generate and tag the container
+`docker build -t linux:6.0.0 --build-arg REPO=https://github.com/symphonyoss/SymphonyElectron --build-arg BRANCH=linux .`
+- To make sure the image is created and tagged correctly
+`docker images`
+- To run the docker image and generate the linux builds 🎉
+`docker run --name linux linux:6.0.0`
+- To copy the builds
+`docker cp linux:/SymphonyElectron/dist/symphony-6.1.0.x86_64.rpm ~/Desktop`
+`docker cp linux:/SymphonyElectron/dist/symphony_6.1.0_amd64.deb ~/Desktop`
+
+##### Other useful docker commands
+- To connect to the interactive bash
+`docker run -i -t linux:6.0.0 /bin/bash`
+- To delete all stopper containers
+`docker system prune -a`
+- To delete the container/image
+`docker rmi -f linux:6.0.0`
+
+## Change POD URL
 - To change the start url (i.e., pod url), edit config/Symphony.config and change 'url' variable. if no protocol provided, then https will be added.
 - The installer will include file config/Symphony.config next to executable. Changes in this file will effect all users.  
 
@@ -109,8 +107,8 @@ before you commit.
 ### Unit tests and Code Coverage
 - [Jest framework](http://facebook.github.io/jest/) is used to run tests
 - Use `npm run test:unit` to run unit tests
-- Code coverage reports are placed in [coverage](../../out/coverage) directory
-- To check the test run report, see the [dist](../../out) directory
+- Code coverage reports are captured under [coverage](../../out/coverage)
+- To check the test run report, see the [out](../../out) directory
 - See the [tests](./tests) directory to find all the unit tests
 
 ### Spectron Tests
@@ -122,11 +120,11 @@ before you commit.
 
 ## Logging
 - Local logging is enabled for dev environments using the module [electron-log](https://www.npmjs.com/package/electron-log)
-- On macOS, the logs are stored under `~/Library/Logs/<app name>/log.log`
-- On Windows, the logs are stored under `%USERPROFILE%\AppData\Roaming\<app name>\log.log`
-- Remote logging is enabled for local and production cases and are sent to the backend server via the remote objects
+- On macOS, the logs are stored under `~/Library/Logs/Electron/app_<timestamp>.log`
+- On Windows, the logs are stored under `%USERPROFILE%\AppData\Roaming\Electron\app_<timestamp>.log`
+- On Linux, the logs are stored under `~/.config/Electron/logs/app_<timestamp>.log`
 
 ## Misc notes
-- If desiring to run against server without proper cert use cmd line option: --ignore-certificate-errors
+- If you need to run against a POD without proper cert use cmd line option: --ignore-certificate-errors
 - To start additional instance with custom data directory (if you want seperate user) use cmd line options: --multiInstance --userDataPath=`<path to data dir>`
 - If directory doesn't exist, it will be created
