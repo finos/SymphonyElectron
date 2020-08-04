@@ -326,6 +326,17 @@ export class WindowHandler {
             }
             logger.info('window-handler: isMana: ' + this.isMana);
 
+            if (this.url && this.url.startsWith('https://corporate.symphony.com')) {
+                const daily = 'daily';
+                if (this.url.includes(manaPath)) {
+                    if (this.url.includes(daily)) {
+                        this.mainWindow.setTitle('Symphony 2.0 - Daily');
+                    } else {
+                        this.mainWindow.setTitle('Symphony 2.0');
+                    }
+                }
+            }
+
             // Injects custom title bar and snack bar css into the webContents
             await injectStyles(this.mainWindow, this.isCustomTitleBar);
 
