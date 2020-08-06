@@ -712,7 +712,22 @@ export class WindowHandler {
         this.aboutAppWindow = createComponentWindow('about-app', opts);
         this.moveWindow(this.aboutAppWindow);
         this.aboutAppWindow.setVisibleOnAllWorkspaces(true);
+
         this.aboutAppWindow.webContents.once('did-finish-load', async () => {
+            let client = '';
+            if (this.url && this.url.startsWith('https://corporate.symphony.com')) {
+                const manaPath = 'client-bff';
+                const daily = 'daily';
+                if (this.url.includes(manaPath)) {
+                    if (this.url.includes(daily)) {
+                        client = 'Symphony 2.0 - Daily';
+                    } else {
+                        client = 'Symphony 2.0';
+                    }
+                } else {
+                    client = 'Symphony Classic';
+                }
+            }
             const ABOUT_SYMPHONY_NAMESPACE = 'AboutSymphony';
             const versionLocalised = i18n.t('Version', ABOUT_SYMPHONY_NAMESPACE)();
             const { hostname } = parse(this.url || this.globalConfig.url);
@@ -729,6 +744,7 @@ export class WindowHandler {
                 hostname,
                 versionLocalised,
                 ...versionHandler.versionInfo,
+                client,
             };
             if (this.aboutAppWindow && windowExists(this.aboutAppWindow)) {
                 this.aboutAppWindow.webContents.send('about-app-data', aboutInfo);
