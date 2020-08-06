@@ -66,6 +66,7 @@ exports[`about app should render correctly 1`] = `
           </b>
            
           N/A
+           
         </li>
       </ul>
     </section>
