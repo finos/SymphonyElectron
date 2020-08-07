@@ -27,6 +27,7 @@ interface IState {
     httpParserVersion?: string;
     swiftSearchVersion?: string;
     swiftSearchSupportedVersion?: string;
+    client?: string;
 }
 
 const ABOUT_SYMPHONY_NAMESPACE = 'AboutSymphony';
@@ -75,7 +76,7 @@ export default class AboutApp extends React.Component<{}, IState> {
      */
     public render(): JSX.Element {
         const { clientVersion, buildNumber, hostname, sfeVersion,
-            sdaVersion, sdaBuildNumber,
+            sdaVersion, sdaBuildNumber, client,
         } = this.state;
 
         const appName = remote.app.getName() || 'Symphony';
@@ -103,7 +104,7 @@ export default class AboutApp extends React.Component<{}, IState> {
                             <li><b>POD:</b> {hostname || 'N/A'}</li>
                             <li><b>SBE:</b> {podVersion}</li>
                             <li><b>SDA:</b> {sdaVersionBuild}</li>
-                            <li><b>SFE:</b> {sfeVersion}</li>
+                            <li><b>SFE:</b> {sfeVersion} {client}</li>
                         </ul>
                     </section>
                 </div>
