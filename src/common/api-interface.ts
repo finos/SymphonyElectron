@@ -42,6 +42,7 @@ export enum apiCmds {
     openDownloadedItem = 'open-downloaded-item',
     showDownloadedItem = 'show-downloaded-item',
     clearDownloadedItems = 'clear-downloaded-items',
+    restartApp = 'restart-app',
 }
 
 export enum apiName {

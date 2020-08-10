@@ -123,6 +123,12 @@ const throttledClearDownloadedItems = throttle(() => {
     });
 }, 1000);
 
+const throttledRestart = throttle(() => {
+    ipcRenderer.send(apiName.symphonyApi, {
+        cmd: apiCmds.restartApp,
+    });
+}, 1000);
+
 let cryptoLib: ICryptoLib | null;
 try {
     cryptoLib = remote.require('../app/crypto-handler.js').cryptoLibrary;
@@ -544,6 +550,13 @@ export class SSFApi {
      */
     public clearDownloadedItems(): void {
         throttledClearDownloadedItems();
+    }
+
+    /**
+     * Restart the app
+     */
+    public restartApp(): void {
+        throttledRestart();
     }
 
     /**

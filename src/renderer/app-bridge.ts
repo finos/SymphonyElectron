@@ -122,6 +122,9 @@ export class AppBridge {
             case apiCmds.clearDownloadedItems:
                 ssf.clearDownloadedItems();
                 break;
+            case apiCmds.restartApp:
+                ssf.restartApp();
+                break;
             case apiCmds.setLocale:
                 if (typeof data === 'string') {
                     ssf.setLocale(data as string);
@@ -161,13 +164,13 @@ export class AppBridge {
                 ssf.closeScreenSharingIndicator(data.streamId as string);
                 break;
             case apiCmds.getMediaSource:
-                ssf.getMediaSource(data as ICustomSourcesOptions, this.callbackHandlers.onMediaSourceCallback);
+                await ssf.getMediaSource(data as ICustomSourcesOptions, this.callbackHandlers.onMediaSourceCallback);
                 break;
             case apiCmds.notification:
                 notification.showNotification(data as INotificationData, this.callbackHandlers.onNotificationCallback);
                 break;
             case apiCmds.closeNotification:
-                notification.hideNotification(data as number);
+                await notification.hideNotification(data as number);
                 break;
             case apiCmds.showNotificationSettings:
                 ssf.showNotificationSettings();
