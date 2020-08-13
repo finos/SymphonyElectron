@@ -30,7 +30,7 @@ class ScreenSnippet {
         } else {
             this.tempDir = path.join(app.getPath('userData'), 'temp');
             if (!fs.existsSync(this.tempDir)) {
-                fs.mkdirSync(this.tempDir);
+                fs.mkdirSync(this.tempDir, {recursive: true});
             }
         }
         this.captureUtil = isMac ? '/usr/sbin/screencapture' : isDevEnv
