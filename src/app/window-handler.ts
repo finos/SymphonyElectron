@@ -256,9 +256,9 @@ export class WindowHandler {
                     this.shouldShowWelcomeScreen = false;
                     isMaximized = true;
                     isFullScreen = false;
-                    this.mainWindow.resizable = true;
-                    this.mainWindow.maximizable = true;
-                    this.mainWindow.fullScreenable = true;
+                    this.mainWindow.setResizable(true);
+                    this.mainWindow.setMaximizable(true);
+                    this.mainWindow.setFullScreenable(true);
                 } else {
                     logger.info(`window-handler: url ${commandLineUrl} from command line is NOT WHITELISTED in the config file.`);
                 }
@@ -268,9 +268,9 @@ export class WindowHandler {
                 this.shouldShowWelcomeScreen = false;
                 isMaximized = true;
                 isFullScreen = false;
-                this.mainWindow.resizable = true;
-                this.mainWindow.maximizable = true;
-                this.mainWindow.fullScreenable = true;
+                this.mainWindow.setResizable(true);
+                this.mainWindow.setMaximizable(true);
+                this.mainWindow.setFullScreenable(true);
             }
         }
 
@@ -601,7 +601,7 @@ export class WindowHandler {
                 if (browserWindow && windowExists(browserWindow)) {
                     // Closes only child windows
                     if (browserWindow.winName !== apiName.mainWindowName && browserWindow.winName !== apiName.notificationWindowName) {
-                        if (browserWindow.closable) {
+                        if (browserWindow.isClosable()) {
                             browserWindow.close();
                         } else {
                             browserWindow.destroy();

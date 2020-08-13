@@ -206,15 +206,15 @@ export const handleChildWindow = (webContents: WebContents): void => {
                     if (enableRendererLogs) {
                         if (browserWin) {
                             if (level === 0) {
-                                logger.debug('renderer ' + browserWin.title + ': ' + message);
+                                logger.debug('renderer ' + browserWin.getTitle() + ': ' + message);
                             } else if (level === 1) {
-                                logger.info('renderer ' + browserWin.title + ': ' + message);
+                                logger.info('renderer ' + browserWin.getTitle() + ': ' + message);
                             } else if (level === 2) {
-                                logger.warn('renderer ' + browserWin.title + ': ' + message);
+                                logger.warn('renderer ' + browserWin.getTitle() + ': ' + message);
                             } else if (level === 3) {
-                                logger.error('renderer ' + browserWin.title + ': ' + message);
+                                logger.error('renderer ' + browserWin.getTitle() + ': ' + message);
                             } else {
-                                logger.info('renderer ' + browserWin.title + ': ' + message);
+                                logger.info('renderer ' + browserWin.getTitle() + ': ' + message);
                             }
                         }
                     }

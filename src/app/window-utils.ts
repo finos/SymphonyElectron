@@ -369,9 +369,9 @@ export const downloadManagerAction = async (type, filePath): Promise<void> => {
         const fileExists = fs.existsSync(`${filePath}`);
         let openFileResponse;
         if (fileExists) {
-            openFileResponse = await electron.shell.openPath(filePath);
+            openFileResponse = await electron.shell.openItem(filePath);
         }
-        if ((openFileResponse !== '') && focusedWindow && !focusedWindow.isDestroyed()) {
+        if ((openFileResponse === false) && focusedWindow && !focusedWindow.isDestroyed()) {
             electron.dialog.showMessageBox(focusedWindow, {
                 message,
                 title,

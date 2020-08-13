@@ -75,8 +75,8 @@ class DownloadHandler {
 
         const openResponse = fs.existsSync(`${filePath}`);
         if (openResponse) {
-            const result = await shell.openPath(`${filePath}`);
-            if (result === '') {
+            const result = await shell.openItem(`${filePath}`);
+            if (result === false) {
                 return;
             }
         }
