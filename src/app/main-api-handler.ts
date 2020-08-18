@@ -5,6 +5,7 @@ import { LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { activityDetection } from './activity-detection';
 import { analytics } from './analytics-handler';
+import appStateHandler from './app-state-handler';
 import { CloudConfigDataTypes, config, ICloudConfig } from './config-handler';
 import { downloadHandler } from './download-handler';
 import { memoryMonitor } from './memory-monitor';
@@ -163,6 +164,9 @@ ipcMain.on(apiName.symphonyApi, async (event: Electron.IpcMainEvent, arg: IApiAr
             break;
         case apiCmds.clearDownloadedItems:
             downloadHandler.clearDownloadedItems();
+            break;
+        case apiCmds.restartApp:
+            appStateHandler.restart();
             break;
         case apiCmds.isMisspelled:
             if (typeof arg.word === 'string') {

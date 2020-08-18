@@ -84,6 +84,7 @@ if (ssfWindow.ssf) {
         checkMediaPermission: ssfWindow.ssf.checkMediaPermission,
         showNotification: notification.showNotification,
         closeNotification: notification.hideNotification,
+        restartApp: ssfWindow.ssf.restartApp,
     });
 }
 

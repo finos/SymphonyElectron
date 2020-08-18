@@ -207,6 +207,7 @@
                 <td id="cpu-arch"></td>
             </tr>
         </table>
+    <input type="button" id="restart-app" value="Restart App"/>
     </body>
     <script>
 
@@ -251,6 +252,7 @@
                 registerRestartFloater: 'register-restart-floater',
                 getCPUUsage: 'get-cpu-usage',
                 checkMediaPermission: 'check-media-permission',
+                restartApp: 'restart-app',
         };
         let requestId = 0;
 
@@ -907,6 +909,14 @@
                 window.ssf.clearDownloadedItems();
             } else {
                 postMessage(apiCmds.clearDownloadedItems);
+            }
+        });
+
+        document.getElementById('restart-app').addEventListener('click', () => {
+            if (window.ssf) {
+                window.ssf.restartApp();
+            } else {
+                postMessage(apiCmds.restartApp);
             }
         });
 
