@@ -18,7 +18,11 @@ class Script
 		// desired contents of installation, and then we can simplify this bit.
         var project = new ManagedProject(productName,
             new Dir(@"%ProgramFiles%\" + productName,
-                new File(@"..\..\dist\win-unpacked\Symphony.exe"),
+                new File(@"..\..\dist\win-unpacked\Symphony.exe",
+					// Create two shortcuts to the main Symphony.exe file, one on the desktop and one in the program menu
+                    new FileShortcut(productName, @"%Desktop%") { IconFile = @"..\..\images\icon.ico" },
+                    new FileShortcut(productName, @"%ProgramMenu%") { IconFile = @"..\..\images\icon.ico" }
+                ),
                 new File(@"..\..\dist\win-unpacked\chrome_100_percent.pak"),
                 new File(@"..\..\dist\win-unpacked\chrome_200_percent.pak"),
                 new File(@"..\..\dist\win-unpacked\d3dcompiler_47.dll"),
