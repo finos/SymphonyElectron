@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="6fe30b47-2577-43ad-9195-1861ca25889c" Name="My Product" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="6fe30b47-2577-43ad-9195-1861ba25889b" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="My_Product.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="INSTALLDIR" Name="My Product">
+
+            <Component Id="Component.MyApp.exe_1864749224" Guid="6fe30b47-2577-43ad-9195-18618cb1a091">
+              <File Id="MyApp.exe_1864749224" Source="..\SimpleService\MyApp.exe" />
+
+              <ServiceInstall Id="WixSharp.TestSvc" Name="WixSharp.TestSvc" DisplayName="WixSharp.TestSvc" Description="WixSharp.TestSvc" Type="ownProcess" Start="auto" ErrorControl="normal">
+                <ServiceDependency Id="Dnscache" />
+                <ServiceDependency Id="Dhcp" />
+
+                <ServiceConfig DelayedAutoStart="yes" PreShutdownDelay="180000" ServiceSid="none" OnInstall="yes" OnReinstall="no" OnUninstall="no" />
+                <ServiceConfig FirstFailureActionType="restart" SecondFailureActionType="restart" ThirdFailureActionType="runCommand" ProgramCommandLine="MyApp.exe -run" RebootMessage="Failure actions do not specify reboot" ResetPeriodInDays="1" RestartServiceDelayInSeconds="30" xmlns="http://schemas.microsoft.com/wix/UtilExtension" />
+              </ServiceInstall>
+
+              <ServiceControl Id="StopWixSharp.TestSvc" Name="WixSharp.TestSvc" Stop="both" Wait="yes" />
+              <ServiceControl Id="StartWixSharp.TestSvc" Name="WixSharp.TestSvc" Start="install" Wait="no" />
+              <ServiceControl Id="RemoveWixSharp.TestSvc" Name="WixSharp.TestSvc" Remove="uninstall" Wait="yes" />
+            </Component>
+
+            <Component Id="Component.MyApp2.exe_3048258640" Guid="6fe30b47-2577-43ad-9195-18614406f729">
+              <File Id="MyApp2.exe_3048258640" Source="..\SimpleService\MyApp2.exe" />
+
+              <ServiceInstall Id="WixSharp.TestSvc2_" Name="WixSharp.TestSvc2" DisplayName="WixSharp.TestSvc2" Description="WixSharp.TestSvc2" Type="ownProcess" Start="auto" ErrorControl="normal">
+                <ServiceDependency Id="Dnscache" />
+                <ServiceDependency Id="Dhcp" />
+
+                <ServiceConfig DelayedAutoStart="yes" PreShutdownDelay="180000" ServiceSid="none" OnInstall="yes" OnReinstall="no" OnUninstall="no" />
+                <ServiceConfig FirstFailureActionType="restart" SecondFailureActionType="restart" ThirdFailureActionType="runCommand" ProgramCommandLine="MyApp.exe -run" RebootMessage="Failure actions do not specify reboot" ResetPeriodInDays="1" RestartServiceDelayInSeconds="30" xmlns="http://schemas.microsoft.com/wix/UtilExtension" />
+              </ServiceInstall>
+
+              <ServiceControl Id="StopWixSharp.TestSvc2_" Name="WixSharp.TestSvc2" Stop="both" Wait="yes" />
+              <ServiceControl Id="StartWixSharp.TestSvc2_" Name="WixSharp.TestSvc2" Start="install" Wait="no" />
+              <ServiceControl Id="RemoveWixSharp.TestSvc2_" Name="WixSharp.TestSvc2" Remove="uninstall" Wait="yes" />
+            </Component>
+
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <UIRef Id="WixUI_Minimal" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.MyApp.exe_1864749224" />
+      <ComponentRef Id="Component.MyApp2.exe_3048258640" />
+    </Feature>
+
+  </Product>
+</Wix>
+

@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="6f330b47-2577-43ad-9095-1861ca25889c" Name="MyProduct" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="6f330b47-2577-43ad-9095-1861ba25889b" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" Platform="x64" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="MyProduct.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder" Name="ProgramFiles64Folder">
+        <Directory Id="ProgramFiles64Folder.My_Company" Name="My Company">
+          <Directory Id="INSTALLDIR" Name="My Product">
+
+            <Component Id="Component.readme.txt_418774667" Guid="6f330b47-2577-43ad-9095-18611e6ae9ef" Win64="yes">
+              <File Id="readme.txt_418774667" Source="readme.txt" />
+            </Component>
+
+          </Directory>
+        </Directory>
+      </Directory>
+
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+
+        <Component Id="Registry.1" Guid="6f330b47-2577-43ad-9095-1861b742561a" Win64="no" KeyPath="yes">
+          <RegistryKey Root="HKLM" Key="Software\My Company\My Product">
+            <RegistryValue Id="Message" Type="string" KeyPath="no" Value="Hello" Name="Message" />
+          </RegistryKey>
+
+          <CreateFolder />
+          <RemoveFolder Id="ProgramFilesFolder" On="uninstall" />
+        </Component>
+
+      </Directory>
+    </Directory>
+
+    <Feature Id="MyApp_Binaries" Title="MyApp Binaries" Absent="allow" Level="1">
+      <ComponentRef Id="Component.readme.txt_418774667" />
+      <ComponentRef Id="Registry.1" />
+    </Feature>
+
+  </Product>
+</Wix>
+

@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="6fe30b47-2577-43ad-9095-1861ca25889c" Name="My Product" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="6fe30b47-2577-43ad-9095-1861ba25889b" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="My_Product.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="ProgramFilesFolder.My_Company.My_Product" Name="My Product">
+            <Directory Id="INSTALLDIR" Name="Notepad">
+
+              <Component Id="Component.notepad.exe_1018292846" Guid="6fe30b47-2577-43ad-9095-186140109ee7">
+                <File Id="notepad.exe_1018292846" Source="C:\WINDOWS\system32\notepad.exe" />
+
+                <ProgId Id="my.file" Advertise="no" Description="my file" Icon="notepad.exe_1018292846" IconIndex="0">
+                  <Extension Id="my" ContentType="application/my">
+                    <Verb TargetFile="notepad.exe_1018292846" Id="open" Command="open" Argument="&quot;%1&quot;" />
+                  </Extension>
+                </ProgId>
+              </Component>
+
+            </Directory>
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.notepad.exe_1018292846" />
+    </Feature>
+
+  </Product>
+</Wix>
+

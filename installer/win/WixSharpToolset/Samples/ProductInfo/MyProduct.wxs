@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="6f330b47-2577-43ad-9095-1861ca25889c" Name="MyProduct" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="6f330b47-2577-43ad-9095-1861ba25889b" Manufacturer="My Company">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="MyProduct.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="INSTALLDIR" Name="My Product">
+
+            <Component Id="Component.readme.txt_1240382565" Guid="6f330b47-2577-43ad-9095-18615005cac4">
+              <File Id="readme.txt_1240382565" Source="readme.txt" />
+            </Component>
+
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <UI />
+
+    <Icon Id="app_icon.ico" SourceFile="app_icon.ico" />
+
+    <CustomAction Id="Set_ARPINSTALLLOCATION" Property="ARPINSTALLLOCATION" Value="[INSTALLDIR]" Return="check" Execute="immediate" />
+    <CustomAction Id="Set_ARPNOMODIFY" Property="ARPNOMODIFY" Value="True" Return="check" Execute="immediate" />
+
+    <UIRef Id="WixUI_Minimal" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Property Id="ARPCOMMENTS" Value="Simple test msi" />
+    <Property Id="ARPCONTACT" Value="Product owner" />
+    <Property Id="ARPHELPLINK" Value="https://github.com/oleg-shilo/wixsharp/support" />
+    <Property Id="ARPHELPTELEPHONE" Value="111-222-333-444" />
+    <Property Id="ARPPRODUCTICON" Value="app_icon.ico" />
+    <Property Id="ARPREADME" Value="https://github.com/oleg-shilo/wixsharp/manual" />
+    <Property Id="ARPURLINFOABOUT" Value="https://github.com/oleg-shilo/wixsharp/About" />
+    <Property Id="ARPURLUPDATEINFO" Value="https://github.com/oleg-shilo/wixsharp/update" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.readme.txt_1240382565" />
+    </Feature>
+
+    <InstallExecuteSequence>
+      <Custom Action="Set_ARPINSTALLLOCATION" After="CostFinalize"> (NOT Installed) </Custom>
+      <Custom Action="Set_ARPNOMODIFY" After="CostFinalize"> (NOT Installed) </Custom>
+    </InstallExecuteSequence>
+
+  </Product>
+</Wix>
+

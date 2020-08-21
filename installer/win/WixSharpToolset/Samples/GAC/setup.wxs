@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="3b5b575b-8a8f-43ac-aa09-7729d5d72eac" Name="CustomActionTest" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="3b5b575b-8a8f-43ac-aa09-7729c5d72eab" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="CustomActionTest.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="INSTALLDIR" Name="My Product">
+
+            <Component Id="Component.CSScriptLibrary.dll_1569211984" Guid="3b5b575b-8a8f-43ac-aa09-77291ca41c4d">
+              <File Id="CSScriptLibrary.dll_1569211984" Source="CSScriptLibrary.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="CSScriptLibrary.dll_1569211984" ProcessorArchitecture="msil">
+                <NativeImage Id="NativeImage" Platform="32bit" xmlns="http://schemas.microsoft.com/wix/NetFxExtension" />
+              </File>
+            </Component>
+
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.CSScriptLibrary.dll_1569211984" />
+    </Feature>
+
+  </Product>
+</Wix>
+

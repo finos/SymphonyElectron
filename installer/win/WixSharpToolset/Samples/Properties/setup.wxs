@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="cabfa15e-2f95-4473-bfd5-ecde0af6fb10" Name="PropertiesTest" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="cabfa15e-2f95-4473-bfd5-ecdefaf6fb0f" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="PropertiesTest.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="INSTALLDIR" Name="PropertiesTest">
+
+          <Component Id="Component.INSTALLDIR.EmptyDirectory" Guid="cabfa15e-2f95-4473-bfd5-ecde1c39eaf1" KeyPath="yes">
+            <CreateFolder />
+            <RemoveFolder Id="INSTALLDIR" On="uninstall" />
+          </Component>
+
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <UI />
+
+    <CustomAction Id="ShowGritting" BinaryKey="ShowGritting_File" DllEntry="ShowGritting" Return="check" Execute="immediate" />
+    <CustomAction Id="Set_WixQuietExec_notepad.exe" Property="WixQuietExecCmdLine" Value="&quot;notepad.exe&quot; [NOTEPAD_FILE]" />
+    <CustomAction Id="WixQuietExec_notepad.exe" BinaryKey="WixCA" DllEntry="WixQuietExec" Return="check" Execute="immediate" />
+
+    <Binary Id="ShowGritting_File" SourceFile="%this%.CA.dll" />
+
+    <Property Id="Gritting" Value="Hello World!" />
+    <Property Id="Title" Value="Properties Test" Hidden="yes" />
+    <Property Id="NOTEPAD_FILE" Value="C:\boot.ini" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.INSTALLDIR.EmptyDirectory" />
+    </Feature>
+
+    <InstallExecuteSequence>
+      <Custom Action="ShowGritting" After="InstallInitialize"> (NOT Installed) </Custom>
+      <Custom Action="Set_WixQuietExec_notepad.exe" After="ShowGritting"> (NOT Installed) </Custom>
+      <Custom Action="WixQuietExec_notepad.exe" After="Set_WixQuietExec_notepad.exe"> (NOT Installed) </Custom>
+    </InstallExecuteSequence>
+
+  </Product>
+</Wix>
+

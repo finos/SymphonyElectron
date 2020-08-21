@@ -1,0 +1,192 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="6fe30b47-2577-43ad-9095-1861ca25889c" Name="My Product" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="6fe30b47-2577-43ad-9095-1861ba25889b" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" InstallPrivileges="elevated" Languages="1033" />
+    <Media Id="1" Cabinet="My_Product.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="INSTALLDIR" Name="My Product">
+
+            <Component Id="Component.myapp_exe" Guid="6fe30b47-2577-43ad-9095-186160f21aed">
+              <File Id="myapp_exe" Source="AppFiles\MyApp.exe">
+                <Shortcut Id="Shortcut.myapp_exe.MyApp" WorkingDirectory="INSTALLDIR" Directory="My_Product.1" Name="MyApp.lnk" />
+                <Shortcut Id="Shortcut.myapp_exe.MyApp.1" WorkingDirectory="INSTALLDIR" Directory="DesktopFolder" Name="MyApp.lnk" />
+              </File>
+
+              <RegistryKey Root="HKCU" Key="Software\WixSharp\Used">
+                <RegistryValue Value="0" Type="string" KeyPath="yes" />
+              </RegistryKey>
+            </Component>
+
+            <Component Id="Component.registrator_exe" Guid="6fe30b47-2577-43ad-9095-186185ea9955">
+              <File Id="registrator_exe" Source="AppFiles\Registrator.exe" />
+            </Component>
+
+            <Component Id="Component.Readme.txt_279978952" Guid="6fe30b47-2577-43ad-9095-186104a11156">
+              <File Id="Readme.txt_279978952" Source="AppFiles\Readme.txt" />
+            </Component>
+
+            <Component Id="Component.MyApp.ico_978421111" Guid="6fe30b47-2577-43ad-9095-1861a4ef108d">
+              <File Id="MyApp.ico_978421111" Source="AppFiles\MyApp.ico" />
+            </Component>
+
+            <Component Id="Component.Uninstall_MyApp" Guid="6fe30b47-2577-43ad-9095-18614b454462">
+              <Shortcut Id="INSTALLDIR.Uninstall_MyApp" WorkingDirectory="System64Folder" Target="[System64Folder]msiexec.exe" Arguments="/x [ProductCode]" Name="Uninstall MyApp.lnk" />
+
+              <CreateFolder />
+              <RemoveFolder Id="INSTALLDIR" On="uninstall" />
+
+              <RegistryKey Root="HKCU" Key="Software\WixSharp\Used">
+                <RegistryValue Value="0" Type="string" KeyPath="yes" />
+              </RegistryKey>
+            </Component>
+
+          </Directory>
+
+          <Component Id="ProgramFilesFolder.My_Company" Guid="6fe30b47-2577-43ad-9095-1861c5635c14" KeyPath="yes">
+            <RemoveFolder Id="ProgramFilesFolder.My_Company" On="uninstall" />
+          </Component>
+
+        </Directory>
+
+        <Component Id="Registry.1" Guid="6fe30b47-2577-43ad-9095-1861b742561a" KeyPath="yes">
+          <RegistryKey Root="HKLM" Key="Software\My Product">
+            <RegistryValue Id="ExePath" Type="string" KeyPath="no" Value="[INSTALLDIR]MyApp.exe" Name="ExePath" />
+          </RegistryKey>
+
+          <CreateFolder />
+          <RemoveFolder Id="ProgramFilesFolder" On="uninstall" />
+        </Component>
+
+      </Directory>
+
+      <Directory Id="StartupFolder" Name="StartupFolder">
+
+        <Component Id="Component.MyApp_" Guid="6fe30b47-2577-43ad-9095-186185567670">
+          <Shortcut Id="StartupFolder.MyApp_" WorkingDirectory="INSTALLDIR" Target="[INSTALLDIR]MyApp.exe" Name="MyApp.lnk" />
+
+          <CreateFolder />
+
+          <RegistryKey Root="HKCU" Key="Software\WixSharp\Used">
+            <RegistryValue Value="0" Type="string" KeyPath="yes" />
+          </RegistryKey>
+        </Component>
+
+      </Directory>
+
+      <Directory Id="ProgramMenuFolder" Name="ProgramMenuFolder">
+        <Directory Id="My_Company" Name="My Company">
+          <Directory Id="My_Product.1" Name="My Product">
+
+            <Component Id="Component.Uninstall_MyApp.1" Guid="6fe30b47-2577-43ad-9095-18617e97157f">
+              <Shortcut Id="My_Product.1.Uninstall_MyApp.1" WorkingDirectory="System64Folder" Target="[System64Folder]msiexec.exe" Arguments="/x [ProductCode]" Name="Uninstall MyApp.lnk" />
+
+              <CreateFolder />
+              <RemoveFolder Id="My_Product.1" On="uninstall" />
+
+              <RegistryKey Root="HKCU" Key="Software\WixSharp\Used">
+                <RegistryValue Value="0" Type="string" KeyPath="yes" />
+              </RegistryKey>
+            </Component>
+
+          </Directory>
+
+          <Component Id="My_Company" Guid="6fe30b47-2577-43ad-9095-186144d63144">
+            <RemoveFolder Id="My_Company" On="uninstall" />
+
+            <RegistryKey Root="HKCU" Key="Software\WixSharp\Used">
+              <RegistryValue Value="0" Type="string" KeyPath="yes" />
+            </RegistryKey>
+          </Component>
+
+        </Directory>
+      </Directory>
+
+      <Directory Id="DesktopFolder" Name="DesktopFolder">
+
+        <Component Id="Component.DesktopFolder.EmptyDirectory" Guid="6fe30b47-2577-43ad-9095-1861f93f29a1">
+          <CreateFolder />
+
+          <RegistryKey Root="HKCU" Key="Software\WixSharp\Used">
+            <RegistryValue Value="0" Type="string" KeyPath="yes" />
+          </RegistryKey>
+        </Component>
+
+      </Directory>
+
+      <Component Id="TARGETDIR" Guid="6fe30b47-2577-43ad-9095-18612df5f80e" KeyPath="yes">
+        <CreateFolder />
+        <RemoveFolder Id="TARGETDIR" On="uninstall" />
+      </Component>
+
+    </Directory>
+
+    <UI />
+
+    <WixVariable Id="WixUILicenseRtf" Value="E:\PrivateData\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\AllInOne\AppFiles\License.rtf" />
+
+    <CustomAction Id="registrator_exe" ExeCommand="" FileKey="registrator_exe" Return="check" Execute="immediate" />
+    <CustomAction Id="registrator_exe.1" ExeCommand="/u" FileKey="registrator_exe" Return="check" Execute="immediate" />
+    <CustomAction Id="VBScript" Script="vbscript" Return="ignore" Execute="immediate"><![CDATA[MsgBox "Executing VBScript code..."]]></CustomAction>
+    <CustomAction Id="VBScriptFile" BinaryKey="VBScriptFile_File" VBScriptCall="Execute" Return="ignore" Execute="immediate" />
+    <CustomAction Id="notepad.exe" ExeCommand="&quot;[WindowsFolder]\notepad.exe&quot; readme.txt" Return="asyncNoWait" Execute="immediate" Directory="INSTALLDIR" />
+    <CustomAction Id="MyManagedAction" BinaryKey="MyManagedAction_File" DllEntry="MyManagedAction" Return="check" Execute="immediate" />
+    <CustomAction Id="myapp_exe" ExeCommand="" FileKey="myapp_exe" Return="asyncNoWait" Execute="immediate" />
+    <CustomAction Id="WixSharp_SetProperty_WIXSHARP_RESILIENT_SOURCE_DIR" Property="WIXSHARP_RESILIENT_SOURCE_DIR" Value="[INSTALLDIR]" Return="check" Execute="immediate" />
+    <CustomAction Id="WixSharp_SetProperty_SOURCELIST" Property="SOURCELIST" Value="[WIXSHARP_RESILIENT_SOURCE_DIR]" Return="check" Execute="immediate" />
+    <CustomAction Id="WixSharp_SetPackageName_Action" BinaryKey="WixSharp_SetPackageName_Action_File" DllEntry="WixSharp_SetPackageName_Action" Return="ignore" Execute="immediate" />
+    <CustomAction Id="Set_WixSharp_RemoveResilientPackage_Action_Props" Property="WixSharp_RemoveResilientPackage_Action" Value="WIXSHARP_RESILIENT_SOURCE_DIR=[WIXSHARP_RESILIENT_SOURCE_DIR];WIXSHARP_PACKAGENAME=[WIXSHARP_PACKAGENAME];INSTALLDIR=[INSTALLDIR];UILevel=[UILevel];ProductCode=[ProductCode];ADDLOCAL=[ADDLOCAL];ADDFEATURES=[ADDFEATURES]" />
+    <CustomAction Id="WixSharp_RemoveResilientPackage_Action" BinaryKey="WixSharp_SetPackageName_Action_File" DllEntry="WixSharp_RemoveResilientPackage_Action" Return="ignore" Impersonate="no" Execute="deferred" />
+    <CustomAction Id="Set_WixSharp_CreateResilientPackage_Action_Props" Property="WixSharp_CreateResilientPackage_Action" Value="UserSID=[UserSID];OriginalDatabase=[OriginalDatabase];ALLUSERS=[ALLUSERS];WIXSHARP_RESILIENT_SOURCE_DIR=[WIXSHARP_RESILIENT_SOURCE_DIR];INSTALLDIR=[INSTALLDIR];UILevel=[UILevel];ProductCode=[ProductCode];ADDLOCAL=[ADDLOCAL];ADDFEATURES=[ADDFEATURES]" />
+    <CustomAction Id="WixSharp_CreateResilientPackage_Action" BinaryKey="WixSharp_SetPackageName_Action_File" DllEntry="WixSharp_CreateResilientPackage_Action" Return="ignore" Impersonate="no" Execute="deferred" />
+
+    <Binary Id="VBScriptFile_File" SourceFile="CustomActions\Sample.vbs" />
+    <Binary Id="MyManagedAction_File" SourceFile="%this%.CA.dll" />
+    <Binary Id="WixSharp_SetPackageName_Action_File" SourceFile="WixSharp.CA.dll" />
+
+    <UIRef Id="WixUI_Mondo" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Feature Id="MyApp_Binaries" Title="MyApp Binaries" Absent="allow" Level="1">
+      <ComponentRef Id="Component.myapp_exe" />
+      <ComponentRef Id="Component.registrator_exe" />
+      <ComponentRef Id="Component.MyApp.ico_978421111" />
+      <ComponentRef Id="Component.Uninstall_MyApp" />
+      <ComponentRef Id="Component.MyApp_" />
+      <ComponentRef Id="Component.Uninstall_MyApp.1" />
+      <ComponentRef Id="Component.DesktopFolder.EmptyDirectory" />
+      <ComponentRef Id="Registry.1" />
+      <ComponentRef Id="TARGETDIR" />
+      <ComponentRef Id="ProgramFilesFolder.My_Company" />
+      <ComponentRef Id="My_Company" />
+    </Feature>
+
+    <Feature Id="MyApp_Documentation" Title="MyApp Documentation" Absent="allow" Level="1">
+      <ComponentRef Id="Component.Readme.txt_279978952" />
+      <ComponentRef Id="TARGETDIR" />
+      <ComponentRef Id="ProgramFilesFolder.My_Company" />
+      <ComponentRef Id="My_Company" />
+    </Feature>
+
+    <InstallExecuteSequence>
+      <Custom Action="registrator_exe" After="InstallExecute"> (NOT Installed) </Custom>
+      <Custom Action="registrator_exe.1" Before="InstallExecute"> (Installed) </Custom>
+      <Custom Action="VBScript" After="InstallFinalize"> (NOT Installed) </Custom>
+      <Custom Action="VBScriptFile" After="InstallFinalize"> (NOT Installed) </Custom>
+      <Custom Action="notepad.exe" After="InstallFinalize"> (NOT Installed) </Custom>
+      <Custom Action="MyManagedAction" After="notepad.exe"> (NOT Installed) </Custom>
+      <Custom Action="myapp_exe" After="InstallExecute"> (NOT Installed) </Custom>
+      <Custom Action="WixSharp_SetProperty_WIXSHARP_RESILIENT_SOURCE_DIR" Before="InstallInitialize">WIXSHARP_RESILIENT_SOURCE_DIR=""</Custom>
+      <Custom Action="WixSharp_SetProperty_SOURCELIST" Before="PublishProduct"> (NOT Installed) </Custom>
+      <Custom Action="WixSharp_SetPackageName_Action" Before="InstallInitialize"> (REMOVE="ALL") </Custom>
+      <Custom Action="Set_WixSharp_RemoveResilientPackage_Action_Props" Before="RemoveFiles" />
+      <Custom Action="WixSharp_RemoveResilientPackage_Action" After="Set_WixSharp_RemoveResilientPackage_Action_Props"> (REMOVE="ALL") </Custom>
+      <Custom Action="Set_WixSharp_CreateResilientPackage_Action_Props" Before="InstallFinalize" />
+      <Custom Action="WixSharp_CreateResilientPackage_Action" After="Set_WixSharp_CreateResilientPackage_Action_Props"><![CDATA[( (NOT Installed)  OR REINSTALL<>"")]]></Custom>
+    </InstallExecuteSequence>
+
+  </Product>
+</Wix>
+

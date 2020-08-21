@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="7809fccc-073d-467f-a7fb-ae600fa6dded" Name="My Product" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="7809fccc-073d-467f-a7fb-ae60ffa6ddec" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="My_Product.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="INSTALLDIR" Name="My Product">
+
+          <Component Id="Component.myapp.exe_572060024" Guid="7809fccc-073d-467f-a7fb-ae606a0df91c">
+            <File Id="myapp.exe_572060024" Source="myapp.exe" KeyPath="yes">
+              <Shortcut Id="Shortcut.myapp.exe_572060024.My_App" WorkingDirectory="INSTALLDIR" Directory="ProgramMenuFolder.My_Product" Name="My App.lnk" Advertise="yes" />
+            </File>
+          </Component>
+
+        </Directory>
+      </Directory>
+
+      <Directory Id="ProgramMenuFolder" Name="ProgramMenuFolder">
+        <Directory Id="ProgramMenuFolder.My_Product" Name="My Product">
+
+          <Component Id="Component.ProgramMenuFolder.My_Product.EmptyDirectory" Guid="7809fccc-073d-467f-a7fb-ae604d72a601">
+            <CreateFolder />
+            <RemoveFolder Id="ProgramMenuFolder.My_Product" On="uninstall" />
+
+            <RegistryKey Root="HKCU" Key="Software\WixSharp\Used">
+              <RegistryValue Value="0" Type="string" KeyPath="yes" />
+            </RegistryKey>
+          </Component>
+
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <UI />
+
+    <CustomAction Id="WixSharp_InitRuntime_Action" BinaryKey="WixSharp_InitRuntime_Action_File" DllEntry="WixSharp_InitRuntime_Action" Return="check" Execute="immediate" />
+    <CustomAction Id="WixSharp_BeforeInstall_Action" BinaryKey="WixSharp_InitRuntime_Action_File" DllEntry="WixSharp_BeforeInstall_Action" Return="check" Execute="immediate" />
+
+    <Binary Id="WixSharp_InitRuntime_Action_File" SourceFile="WixSharp.CA.dll" />
+
+    <UIRef Id="WixUI_InstallDir" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Property Id="WixSharp_BeforeInstall_Handlers" Value="setup.cs, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|Script|&lt;Main&gt;b__1" />
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.myapp.exe_572060024" />
+      <ComponentRef Id="Component.ProgramMenuFolder.My_Product.EmptyDirectory" />
+    </Feature>
+
+    <InstallExecuteSequence>
+      <Custom Action="WixSharp_InitRuntime_Action" Before="AppSearch"> (1) </Custom>
+      <Custom Action="WixSharp_BeforeInstall_Action" Before="InstallFiles">1</Custom>
+    </InstallExecuteSequence>
+
+  </Product>
+</Wix>
+

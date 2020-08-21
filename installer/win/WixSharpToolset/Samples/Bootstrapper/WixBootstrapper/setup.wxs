@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" xmlns:bal="http://schemas.microsoft.com/wix/BalExtension" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension" xmlns:dep="http://schemas.microsoft.com/wix/DependencyExtension">
+  <Bundle Name="My Product" AboutUrl="https://github.com/oleg-shilo/wixsharp/" IconSourceFile="app_icon.ico" UpgradeCode="6f330b47-2577-43ad-9095-1861bb25889b" Version="2.0.0.0" dep:ProviderKey="01234567-8901-2345-6789-012345678901" >
+    <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.HyperlinkLicense">
+      <Payload SourceFile="licence.html" />
+
+      <bal:WixStandardBootstrapperApplication ShowVersion="yes" ShowFilesInUse="yes" LogoFile="logo.png" LicenseUrl="licence.html" />
+    </BootstrapperApplicationRef>
+
+    <Variable Name="LogFileLocation" Value="C:\temp\setup.log" Persisted="yes" bal:Overridable="yes" />
+
+    <Chain>
+      <PackageGroupRef Id="NetFx40Web" />
+
+      <MsiPackage DisplayInternalUI="yes" Visible="yes" SourceFile="CRT.msi">
+        <MsiProperty Name="PACKAGE_PROPERTY" Value="[BundleVariable]" />
+        <MsiProperty Name="WIXBUNDLEORIGINALSOURCE" Value="[WixBundleOriginalSource]" />
+      </MsiPackage>
+
+      <MsiPackage DisplayInternalUI="yes" SourceFile="My Product.msi">
+        <Payload SourceFile="script.dll" />
+
+        <MsiProperty Name="WIXBUNDLEORIGINALSOURCE" Value="[WixBundleOriginalSource]" />
+      </MsiPackage>
+    </Chain>
+
+    <util:RegistrySearchRef Id="RegistrySearch1" />
+
+    <util:FileSearchRef Id="FileSearch1" />
+
+    <Log PathVariable="LogFileLocation" />
+  </Bundle>
+
+  <Fragment >
+    <util:RegistrySearch Key="SOFTWARE\Microsoft\Net Framework Setup\NDP\v4\Full" Value="Version" Variable="Netfx4FullVersion" Root="HKLM" Id="RegistrySearch1" />
+
+    <util:FileSearch Path="[ProgramFilesFolder]Adobe\adobe.exe" Variable="AdobeInstalled" Result="exists" Id="FileSearch1" />
+  </Fragment>
+</Wix>
+

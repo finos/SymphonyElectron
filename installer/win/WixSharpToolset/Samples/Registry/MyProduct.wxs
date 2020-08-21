@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="6f330b47-2577-43ad-9095-1861ca25889c" Name="MyProduct" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="6f330b47-2577-43ad-9095-1861ba25889b" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="MyProduct.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="INSTALLDIR" Name="My Product">
+
+            <Component Id="Component.readme.txt_1240382565" Guid="6f330b47-2577-43ad-9095-18615005cac4">
+              <File Id="readme.txt_1240382565" Source="readme.txt" />
+            </Component>
+
+            <Component Id="RemoveRegistryKey" Guid="6f330b47-2577-43ad-9095-18615e65d734" KeyPath="yes">
+              <RemoveRegistryKey Id="RemoveRegistryKey" Root="HKLM" Key="Software\My Company\My Product" Action="removeOnUninstall" />
+
+              <CreateFolder />
+              <RemoveFolder Id="INSTALLDIR" On="uninstall" />
+            </Component>
+
+          </Directory>
+
+          <Component Id="ProgramFilesFolder.My_Company" Guid="6f330b47-2577-43ad-9095-1861c5635c14" KeyPath="yes">
+            <RemoveFolder Id="ProgramFilesFolder.My_Company" On="uninstall" />
+          </Component>
+
+        </Directory>
+
+        <Component Id="Registry.1" Guid="6f330b47-2577-43ad-9095-1861b742561a" KeyPath="yes">
+          <RegistryKey Root="HKLM" Key="Software\My Company\My Product">
+            <RegistryValue Id="LICENSE_KEY" Type="binary" KeyPath="no" Value="01020304" Name="LICENSE_KEY">
+              <Permission Read="yes" User="usr" />
+            </RegistryValue>
+          </RegistryKey>
+
+          <CreateFolder />
+          <RemoveFolder Id="ProgramFilesFolder" On="uninstall" />
+        </Component>
+
+        <Component Id="Registry.2" Guid="6f330b47-2577-43ad-9095-1861b743561a">
+          <RegistryKey Root="HKLM" Key="Software\My Company\My Product">
+            <RegistryValue Id="Message" Type="string" KeyPath="yes" Value="Hello" Name="Message" />
+          </RegistryKey>
+
+          <CreateFolder />
+        </Component>
+
+        <Component Id="Registry.3" Guid="6f330b47-2577-43ad-9095-1861b744561a">
+          <RegistryKey Root="HKLM" Key="Software\My Company\My Product">
+            <RegistryValue Id="Count" Type="integer" KeyPath="yes" Value="777" Name="Count" />
+          </RegistryKey>
+
+          <CreateFolder />
+        </Component>
+
+        <Component Id="Registry.4" Guid="6f330b47-2577-43ad-9095-1861b73d561a">
+          <RegistryKey Root="HKLM" Key="Software\My Company\My Product">
+            <RegistryValue Id="Index" Type="integer" KeyPath="yes" Value="333" Name="Index" />
+          </RegistryKey>
+
+          <CreateFolder />
+        </Component>
+
+        <Component Id="Registry.5" Guid="6f330b47-2577-43ad-9095-1861b73e561a">
+          <RegistryKey Root="HKCR" Key="test\shell\open\command">
+            <RegistryValue Id="RegValue" Type="expandable" KeyPath="yes" Value="&quot;[INSTALLDIR]test.exe&quot; &quot;%1&quot;" />
+          </RegistryKey>
+
+          <CreateFolder />
+        </Component>
+
+        <Component Id="Registry.6" Guid="6f330b47-2577-43ad-9095-1861b73f561a">
+          <RegistryKey Root="HKCR" Key="test\shell\open\command2">
+            <RegistryValue Id="RegValue.1" Type="expandable" KeyPath="yes" Value="&quot;[CommonAppDataFolder]test.exe&quot; &quot;%1&quot;" />
+          </RegistryKey>
+
+          <CreateFolder />
+        </Component>
+
+      </Directory>
+
+      <Component Id="TARGETDIR" Guid="6f330b47-2577-43ad-9095-18612df5f80e" KeyPath="yes">
+        <RemoveFolder Id="TARGETDIR" On="uninstall" />
+      </Component>
+
+    </Directory>
+
+    <Feature Id="MyApp_Binaries" Title="MyApp Binaries" Absent="allow" Level="1">
+      <ComponentRef Id="Component.readme.txt_1240382565" />
+      <ComponentRef Id="Registry.1" />
+      <ComponentRef Id="Registry.2" />
+      <ComponentRef Id="Registry.3" />
+      <ComponentRef Id="Registry.4" />
+      <ComponentRef Id="Registry.5" />
+      <ComponentRef Id="Registry.6" />
+      <ComponentRef Id="RemoveRegistryKey" />
+      <ComponentRef Id="ProgramFilesFolder.My_Company" />
+      <ComponentRef Id="TARGETDIR" />
+    </Feature>
+
+  </Product>
+</Wix>
+

@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="6f330b47-2577-43ad-9095-1861ca25889c" Name="MyProduct" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="6f330b47-2577-43ad-9095-1861ba25889b" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="MyProduct.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="INSTALLDIR" Name="My Product">
+
+            <Component Id="Component.MyApp.exe_1263008064" Guid="6f330b47-2577-43ad-9095-1861fd85162f">
+              <File Id="MyApp.exe_1263008064" Source="Files\Bin\MyApp.exe" />
+            </Component>
+
+            <Component Id="MyOtherUser" Guid="6f330b47-2577-43ad-9095-1861abcf8028" KeyPath="yes">
+              <User Id="MyOtherUser" Name="James" CreateUser="yes" Password="Password1" xmlns="http://schemas.microsoft.com/wix/UtilExtension" />
+
+              <CreateFolder />
+              <RemoveFolder Id="INSTALLDIR" On="uninstall" />
+            </Component>
+
+            <Component Id="MyDatabase0_" Guid="6f330b47-2577-43ad-9095-1861f3e60004" KeyPath="yes">
+              <SqlDatabase Id="MyDatabase0_" CreateOnInstall="yes" Database="MyDatabase0" Server=".\SqlExpress" xmlns="http://schemas.microsoft.com/wix/SqlExtension">
+                <SqlScript Id="script" BinaryKey="script" ExecuteOnInstall="yes" />
+
+                <SqlString Id="SqlString" ExecuteOnInstall="yes" SQL="alter login Bryce with password = 'Password1'" />
+              </SqlDatabase>
+
+              <CreateFolder />
+            </Component>
+
+            <Component Id="script.1" Guid="6f330b47-2577-43ad-9095-18616f92ba0e" KeyPath="yes">
+              <SqlScript Id="script.1" BinaryKey="script" ExecuteOnInstall="yes" SqlDb="MyDatabase" xmlns="http://schemas.microsoft.com/wix/SqlExtension" />
+
+              <CreateFolder />
+            </Component>
+
+            <Component Id="SqlString.1" Guid="6f330b47-2577-43ad-9095-186105924dc9" KeyPath="yes">
+              <SqlString Id="SqlString.1" ExecuteOnInstall="yes" SQL="alter login Bryce with password = 'Password1'" SqlDb="MyDatabase" xmlns="http://schemas.microsoft.com/wix/SqlExtension" />
+
+              <CreateFolder />
+            </Component>
+
+          </Directory>
+
+          <Component Id="ProgramFilesFolder.My_Company" Guid="6f330b47-2577-43ad-9095-1861c5635c14" KeyPath="yes">
+            <RemoveFolder Id="ProgramFilesFolder.My_Company" On="uninstall" />
+          </Component>
+
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <User Id="James" Name="James" Password="Password1" xmlns="http://schemas.microsoft.com/wix/UtilExtension" />
+
+    <SqlDatabase Id="MyDatabase" Database="MyDatabase0" Server=".\SqlExpress" xmlns="http://schemas.microsoft.com/wix/SqlExtension" />
+
+    <Binary Id="script" SourceFile="script.sql" />
+
+    <UIRef Id="WixUI_Minimal" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="MyOtherUser" />
+      <ComponentRef Id="MyDatabase0_" />
+      <ComponentRef Id="Component.MyApp.exe_1263008064" />
+      <ComponentRef Id="ProgramFilesFolder.My_Company" />
+    </Feature>
+
+    <Feature Id="Install" Title="Install" Absent="allow" Level="1">
+      <Condition Level="1"><![CDATA[ (NOT Installed) ]]></Condition>
+
+      <ComponentRef Id="script.1" />
+      <ComponentRef Id="ProgramFilesFolder.My_Company" />
+    </Feature>
+
+    <Feature Id="Update" Title="Update" Absent="allow" Level="1">
+      <Condition Level="1"><![CDATA[ (Installed) ]]></Condition>
+
+      <ComponentRef Id="SqlString.1" />
+      <ComponentRef Id="ProgramFilesFolder.My_Company" />
+    </Feature>
+
+  </Product>
+</Wix>
+

@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="6f330b47-2577-43ad-9095-1861ba25889c" Name="MyProduct" Language="1033" Codepage="Windows-1252" Version="!(bind.FileVersion.MyApp_file)" UpgradeCode="6f330b47-2577-43ad-9095-1861ba25889b" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" Id="6f330b47-2577-43ad-9095-1861ba25889c" />
+    <Media Id="1" Cabinet="MyProduct.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="MY_INSTALLDIR" Name="My Product">
+
+            <Component Id="Component.MyApp_file" Guid="6f330b47-2577-43ad-9095-186104b50ff9">
+              <File Id="MyApp_file" Source="Files\Bin\MyApp.exe" Name="app.exe" />
+
+              <ProgId Id="cstm.file" Advertise="yes" Description="cstm file" Icon="IconFile">
+                <Extension Id="cstm" ContentType="application/custom">
+                  <Verb Sequence="1" Id="open" Command="open" Argument="&quot;%1&quot;" />
+                </Extension>
+              </ProgId>
+
+              <CreateFolder>
+                <Permission User="Everyone" GenericAll="yes" />
+              </CreateFolder>
+            </Component>
+
+            <Directory Id="MY_INSTALLDIR.Docs" Name="Docs">
+              <Directory Id="MY_INSTALLDIR.Docs.Manual" Name="Manual">
+
+                <Component Id="Component.Manual.txt_90490314" Guid="6f330b47-2577-43ad-9095-1861b6bfcf84" NeverOverwrite="yes">
+                  <File Id="Manual.txt_90490314" Source="Files\Docs\Manual.txt" />
+                </Component>
+
+              </Directory>
+            </Directory>
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <Icon Id="IconFile" SourceFile="wixsharp.ico" />
+
+    <UI />
+
+    <CustomAction Id="WixSharp_SetProperty_WIXSHARP_RESILIENT_SOURCE_DIR" Property="WIXSHARP_RESILIENT_SOURCE_DIR" Value="[MY_INSTALLDIR]" Return="check" Execute="immediate" />
+    <CustomAction Id="WixSharp_SetProperty_SOURCELIST" Property="SOURCELIST" Value="[WIXSHARP_RESILIENT_SOURCE_DIR]" Return="check" Execute="immediate" />
+    <CustomAction Id="WixSharp_SetPackageName_Action" BinaryKey="WixSharp_SetPackageName_Action_File" DllEntry="WixSharp_SetPackageName_Action" Return="ignore" Execute="immediate" />
+    <CustomAction Id="Set_WixSharp_RemoveResilientPackage_Action_Props" Property="WixSharp_RemoveResilientPackage_Action" Value="WIXSHARP_RESILIENT_SOURCE_DIR=[WIXSHARP_RESILIENT_SOURCE_DIR];WIXSHARP_PACKAGENAME=[WIXSHARP_PACKAGENAME];INSTALLDIR=[INSTALLDIR];UILevel=[UILevel];ProductCode=[ProductCode];ADDLOCAL=[ADDLOCAL];ADDFEATURES=[ADDFEATURES]" />
+    <CustomAction Id="WixSharp_RemoveResilientPackage_Action" BinaryKey="WixSharp_SetPackageName_Action_File" DllEntry="WixSharp_RemoveResilientPackage_Action" Return="ignore" Impersonate="no" Execute="deferred" />
+    <CustomAction Id="Set_WixSharp_CreateResilientPackage_Action_Props" Property="WixSharp_CreateResilientPackage_Action" Value="UserSID=[UserSID];OriginalDatabase=[OriginalDatabase];ALLUSERS=[ALLUSERS];WIXSHARP_RESILIENT_SOURCE_DIR=[WIXSHARP_RESILIENT_SOURCE_DIR];INSTALLDIR=[INSTALLDIR];UILevel=[UILevel];ProductCode=[ProductCode];ADDLOCAL=[ADDLOCAL];ADDFEATURES=[ADDFEATURES]" />
+    <CustomAction Id="WixSharp_CreateResilientPackage_Action" BinaryKey="WixSharp_SetPackageName_Action_File" DllEntry="WixSharp_CreateResilientPackage_Action" Return="ignore" Impersonate="no" Execute="deferred" />
+
+    <Binary Id="WixSharp_SetPackageName_Action_File" SourceFile="WixSharp.CA.dll" />
+
+    <UIRef Id="WixUI_Minimal" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Property Id="PropName" Value="&lt;your value&gt;" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.MyApp_file" />
+      <ComponentRef Id="Component.Manual.txt_90490314" />
+    </Feature>
+
+    <InstallExecuteSequence>
+      <Custom Action="WixSharp_SetProperty_WIXSHARP_RESILIENT_SOURCE_DIR" Before="InstallInitialize">WIXSHARP_RESILIENT_SOURCE_DIR=""</Custom>
+      <Custom Action="WixSharp_SetProperty_SOURCELIST" Before="PublishProduct"> (NOT Installed) </Custom>
+      <Custom Action="WixSharp_SetPackageName_Action" Before="InstallInitialize"> (REMOVE="ALL") </Custom>
+      <Custom Action="Set_WixSharp_RemoveResilientPackage_Action_Props" Before="RemoveFiles" />
+      <Custom Action="WixSharp_RemoveResilientPackage_Action" After="Set_WixSharp_RemoveResilientPackage_Action_Props"> (REMOVE="ALL") </Custom>
+      <Custom Action="Set_WixSharp_CreateResilientPackage_Action_Props" Before="InstallFinalize" />
+      <Custom Action="WixSharp_CreateResilientPackage_Action" After="Set_WixSharp_CreateResilientPackage_Action_Props"><![CDATA[( (NOT Installed)  OR REINSTALL<>"")]]></Custom>
+    </InstallExecuteSequence>
+
+  </Product>
+</Wix>
+

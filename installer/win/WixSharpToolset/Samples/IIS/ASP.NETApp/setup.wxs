@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="6fe30b47-2577-43ad-9095-1861ca25889c" Name="My Product" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="6fe30b47-2577-43ad-9095-1861ba25889b" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="My_Product.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.MyCompany" Name="MyCompany">
+          <Directory Id="INSTALLDIR" Name="MyWebApp">
+
+            <Component Id="Component.Default.aspx_784634900" Guid="6fe30b47-2577-43ad-9095-1861cf348e05">
+              <File Id="Default.aspx_784634900" Source="MyWebApp\Default.aspx" />
+
+              <WebVirtualDir Id="VirtDir" Alias="MyWebApp" Directory="INSTALLDIR" WebSite="WebSite" xmlns="http://schemas.microsoft.com/wix/IIsExtension">
+                <WebApplication Id="TestWebApplication" Name="Test" />
+              </WebVirtualDir>
+
+              <WebSite Id="WebSite" Description="My Web Site" Directory="INSTALLDIR" xmlns="http://schemas.microsoft.com/wix/IIsExtension">
+                <WebAddress Id="WebSite_Address1" IP="*" Port="81" />
+              </WebSite>
+
+              <WebVirtualDir Id="VirtDir.1" Alias="MyWebApp1" Directory="INSTALLDIR" WebSite="WebSite" xmlns="http://schemas.microsoft.com/wix/IIsExtension">
+                <WebApplication Id="Test1WebApplication" Name="Test1" />
+              </WebVirtualDir>
+            </Component>
+
+            <Component Id="Component.Default.aspx.cs_3770058355" Guid="6fe30b47-2577-43ad-9095-1861c862035d">
+              <File Id="Default.aspx.cs_3770058355" Source="MyWebApp\Default.aspx.cs" />
+            </Component>
+
+            <Component Id="Component.Default.aspx.designer.cs_3200545301" Guid="6fe30b47-2577-43ad-9095-186134a8105b">
+              <File Id="Default.aspx.designer.cs_3200545301" Source="MyWebApp\Default.aspx.designer.cs" />
+            </Component>
+
+            <Component Id="Component.Web.config_2381553740" Guid="6fe30b47-2577-43ad-9095-1861eccd22ee">
+              <File Id="Web.config_2381553740" Source="MyWebApp\Web.config" />
+            </Component>
+
+            <Directory Id="INSTALLDIR.AdminWeb2" Name="AdminWeb2">
+
+              <Component Id="Component.Default.aspx_2854300520" Guid="6fe30b47-2577-43ad-9095-1861add14b94">
+                <File Id="Default.aspx_2854300520" Source="MyWebApp\AdminWeb2\Default.aspx" />
+              </Component>
+
+              <Component Id="Component.INSTALLDIR.AdminWeb2.VirtDir" Guid="6fe30b47-2577-43ad-9095-18615e1184d2" KeyPath="yes">
+                <WebVirtualDir Id="VirtDir.2" Alias="MyWebApp2" Directory="INSTALLDIR.AdminWeb2" WebSite="WebSite.1" xmlns="http://schemas.microsoft.com/wix/IIsExtension">
+                  <WebApplication Id="Test2WebApplication" Name="Test2" WebAppPool="MyWebApp2_AppPool" />
+                </WebVirtualDir>
+
+                <WebSite Id="WebSite.1" Description="NewSite2" Directory="INSTALLDIR.AdminWeb2" xmlns="http://schemas.microsoft.com/wix/IIsExtension">
+                  <WebAddress Id="WebSite.1_Address1" IP="*" Port="8082" />
+                </WebSite>
+
+                <WebAppPool Id="MyWebApp2_AppPool" Name="MyWebApp2" Identity="applicationPoolIdentity" xmlns="http://schemas.microsoft.com/wix/IIsExtension" />
+
+                <CreateFolder />
+                <RemoveFolder Id="INSTALLDIR.AdminWeb2" On="uninstall" />
+              </Component>
+
+              <Component Id="MyWebAppDefault.Component.Id" Guid="6fe30b47-2577-43ad-9095-18613085da43" KeyPath="yes">
+                <WebAppPool Id="MyWebAppDefault.WebAppPool.Id" Name="MyWebAppDefault" Identity="localSystem" xmlns="http://schemas.microsoft.com/wix/IIsExtension" />
+
+                <WebSite Id="MyWebAppDefault.WebSite.Id" Description="MyWebAppDefault" Directory="INSTALLDIR.AdminWeb2" xmlns="http://schemas.microsoft.com/wix/IIsExtension">
+                  <WebAddress Id="AllUnassigned" Port="8088" />
+
+                  <WebApplication Id="MyWebAppDefault.WebSiteApplication.Id" WebAppPool="MyWebAppDefault.WebAppPool.Id" Name="MyWebAppDefault" />
+                </WebSite>
+
+                <CreateFolder />
+              </Component>
+
+            </Directory>
+
+            <Directory Id="INSTALLDIR.AdminWeb3" Name="AdminWeb3">
+
+              <Component Id="Component.Default.aspx_3907574779" Guid="6fe30b47-2577-43ad-9095-186190342767">
+                <File Id="Default.aspx_3907574779" Source="MyWebApp\AdminWeb3\Default.aspx" />
+
+                <WebVirtualDir Id="VirtDir.3" Alias="MyWebApp3" Directory="INSTALLDIR.AdminWeb3" WebSite="WebSite.2" xmlns="http://schemas.microsoft.com/wix/IIsExtension">
+                  <WebApplication Id="Test3WebApplication" Name="Test3" WebAppPool="MyWebApp3_AppPool" />
+                </WebVirtualDir>
+
+                <WebSite Id="WebSite.2" Description="NewSite3" Directory="INSTALLDIR.AdminWeb3" xmlns="http://schemas.microsoft.com/wix/IIsExtension">
+                  <WebAddress Id="WebSite.2_Address1" IP="*" Port="8083" />
+                </WebSite>
+
+                <WebAppPool Id="MyWebApp3_AppPool" Name="MyWebApp3" Identity="applicationPoolIdentity" xmlns="http://schemas.microsoft.com/wix/IIsExtension" />
+              </Component>
+
+            </Directory>
+          </Directory>
+
+          <Component Id="ProgramFilesFolder.MyCompany" Guid="6fe30b47-2577-43ad-9095-186112e20308" KeyPath="yes">
+            <RemoveFolder Id="ProgramFilesFolder.MyCompany" On="uninstall" />
+          </Component>
+
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.Default.aspx_784634900" />
+      <ComponentRef Id="Component.Default.aspx.cs_3770058355" />
+      <ComponentRef Id="Component.Default.aspx.designer.cs_3200545301" />
+      <ComponentRef Id="Component.Web.config_2381553740" />
+      <ComponentRef Id="Component.Default.aspx_2854300520" />
+      <ComponentRef Id="Component.INSTALLDIR.AdminWeb2.VirtDir" />
+      <ComponentRef Id="MyWebAppDefault.Component.Id" />
+      <ComponentRef Id="Component.Default.aspx_3907574779" />
+      <ComponentRef Id="ProgramFilesFolder.MyCompany" />
+    </Feature>
+
+  </Product>
+</Wix>
+

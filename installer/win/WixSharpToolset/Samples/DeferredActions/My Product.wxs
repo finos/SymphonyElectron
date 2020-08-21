@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="6fe30b47-2577-43ad-9195-1861ca25889c" Name="My Product" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="6fe30b47-2577-43ad-9195-1861ba25889b" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="My_Product.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="INSTALLDIR" Name="My Product">
+
+            <Component Id="Component.MyApp.exe_3984491948" Guid="6fe30b47-2577-43ad-9195-186105d81766">
+              <File Id="MyApp.exe_3984491948" Source="Files\MyApp.exe" />
+            </Component>
+
+            <Component Id="Component.MyApp.exe.config_204103885" Guid="6fe30b47-2577-43ad-9195-1861718825f8">
+              <File Id="MyApp.exe.config_204103885" Source="Files\MyApp.exe.config" />
+
+              <XmlFile Id="XmlFile" Action="setValue" ElementPath="//configuration/appSettings/add[\[]@key='AppName'[\]]/@value" Value="My App" File="[#MyApp.exe.config_204103885]" xmlns="http://schemas.microsoft.com/wix/UtilExtension" />
+              <XmlFile Id="XmlFile.1" Action="setValue" ElementPath="//configuration/connectionStrings/add[\[]@name='Server1'[\]]/@connectionString" Value="DataSource=(localdb)/v11.0;IntegratedSecurity=true" File="[#MyApp.exe.config_204103885]" xmlns="http://schemas.microsoft.com/wix/UtilExtension" />
+              <XmlFile Id="XmlFile.2" Action="setValue" ElementPath="//configuration/connectionStrings/add[\[]@name='Server1'[\]]/@providerName" Value="System.Data.SqlClient" File="[#MyApp.exe.config_204103885]" xmlns="http://schemas.microsoft.com/wix/UtilExtension" />
+            </Component>
+
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <UI />
+
+    <CustomAction Id="Set_OnInstall_Props" Property="OnInstall" Value="CONFIG_FILE=[INSTALLDIR]MyApp.exe.config;APP_FILE=[INSTALLDIR]MyApp.exe;DATABASE_CONNECTION_STRING=[DATABASE_CONNECTION_STRING];INSTALLDIR=[INSTALLDIR];UILevel=[UILevel];ProductCode=[ProductCode];ADDLOCAL=[ADDLOCAL];ADDFEATURES=[ADDFEATURES]" />
+    <CustomAction Id="OnInstall" BinaryKey="OnInstall_File" DllEntry="OnInstall" Return="check" Impersonate="no" Execute="deferred" />
+    <CustomAction Id="WixSharp_InitRuntime_Action" BinaryKey="WixSharp_InitRuntime_Action_File" DllEntry="WixSharp_InitRuntime_Action" Return="check" Execute="immediate" />
+    <CustomAction Id="Set_WixSharp_AfterInstall_Action_Props" Property="WixSharp_AfterInstall_Action" Value="WixSharp_AfterInstall_Handlers=[WixSharp_AfterInstall_Handlers];WIXSHARP_RUNTIME_DATA=[WIXSHARP_RUNTIME_DATA];INSTALLDIR=[INSTALLDIR];UILevel=[UILevel];ProductName=[ProductName];INSTALLDIR=[INSTALLDIR];UILevel=[UILevel];ProductCode=[ProductCode];ADDLOCAL=[ADDLOCAL];ADDFEATURES=[ADDFEATURES]" />
+    <CustomAction Id="WixSharp_AfterInstall_Action" BinaryKey="WixSharp_InitRuntime_Action_File" DllEntry="WixSharp_AfterInstall_Action" Return="check" Impersonate="no" Execute="deferred" />
+
+    <Binary Id="OnInstall_File" SourceFile="%this%.CA.dll" />
+    <Binary Id="WixSharp_InitRuntime_Action_File" SourceFile="WixSharp.CA.dll" />
+
+    <UIRef Id="WixUI_Minimal" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Property Id="WixSharp_AfterInstall_Handlers" Value="setup.cs, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|Script|Project_AfterInstall" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.MyApp.exe_3984491948" />
+      <ComponentRef Id="Component.MyApp.exe.config_204103885" />
+    </Feature>
+
+    <InstallExecuteSequence>
+      <Custom Action="Set_OnInstall_Props" After="InstallFiles" />
+      <Custom Action="OnInstall" After="Set_OnInstall_Props"> (NOT Installed) </Custom>
+      <Custom Action="WixSharp_InitRuntime_Action" Before="AppSearch"> (1) </Custom>
+      <Custom Action="Set_WixSharp_AfterInstall_Action_Props" After="InstallFiles" />
+      <Custom Action="WixSharp_AfterInstall_Action" After="Set_WixSharp_AfterInstall_Action_Props">1</Custom>
+    </InstallExecuteSequence>
+
+  </Product>
+</Wix>
+

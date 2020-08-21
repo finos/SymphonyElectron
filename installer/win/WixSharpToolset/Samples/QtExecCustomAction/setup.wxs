@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="c58bfdfa-047f-4327-ac10-1de28c12dd2c" Name="CustomActionTest" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="c58bfdfa-047f-4327-ac10-1de27c12dd2b" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="CustomActionTest.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="INSTALLDIR" Name="ProgramFilesFolder">
+
+        <Component Id="Component.INSTALLDIR.EmptyDirectory" Guid="c58bfdfa-047f-4327-ac10-1de29e55cc0d" KeyPath="yes">
+          <CreateFolder />
+          <RemoveFolder Id="INSTALLDIR" On="uninstall" />
+        </Component>
+
+      </Directory>
+
+      <Component Id="TARGETDIR" Guid="c58bfdfa-047f-4327-ac10-1de2efe24d9e" KeyPath="yes">
+        <CreateFolder />
+        <RemoveFolder Id="TARGETDIR" On="uninstall" />
+      </Component>
+
+    </Directory>
+
+    <UI />
+
+    <CustomAction Id="Set_WixQuietExec_notepad.exe" Property="WixQuietExecCmdLine" Value="&quot;notepad.exe&quot; C:\boot.ini" />
+    <CustomAction Id="WixQuietExec_notepad.exe" BinaryKey="WixCA" DllEntry="WixQuietExec" Return="check" Execute="immediate" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.INSTALLDIR.EmptyDirectory" />
+      <ComponentRef Id="TARGETDIR" />
+    </Feature>
+
+    <InstallExecuteSequence>
+      <Custom Action="Set_WixQuietExec_notepad.exe" After="InstallInitialize"> (NOT Installed) </Custom>
+      <Custom Action="WixQuietExec_notepad.exe" After="Set_WixQuietExec_notepad.exe"> (NOT Installed) </Custom>
+    </InstallExecuteSequence>
+
+  </Product>
+</Wix>
+

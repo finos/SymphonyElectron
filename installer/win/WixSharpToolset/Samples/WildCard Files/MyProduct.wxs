@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="ac19c6e4-9724-4e90-8ac7-6e69c4ab7563" Name="MyProduct" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="ac19c6e4-9724-4e90-8ac7-6e69b4ab7562" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="MyProduct.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.MyCompany" Name="MyCompany">
+          <Directory Id="INSTALLDIR" Name="MyProduct">
+
+            <Component Id="Component.some.dll_3523078776" Guid="ac19c6e4-9724-4e90-8ac7-6e69a2819b78">
+              <File Id="some.dll_3523078776" Source="Release\Bin\some.dll">
+                <NativeImage Id="NativeImage" Platform="32bit" xmlns="http://schemas.microsoft.com/wix/NetFxExtension" />
+              </File>
+            </Component>
+
+            <Component Id="Component.some.exe_1183967844" Guid="ac19c6e4-9724-4e90-8ac7-6e693204462a">
+              <File Id="some.exe_1183967844" Source="Release\Bin\some.exe">
+                <Shortcut Id="Shortcut.some.exe_1183967844.some.exe" WorkingDirectory="INSTALLDIR" Directory="INSTALLDIR" Name="some.exe.lnk" />
+                <Shortcut Id="Shortcut.some.exe_1183967844.some.exe.1" WorkingDirectory="INSTALLDIR" Directory="DesktopFolder" Name="some.exe.lnk" />
+              </File>
+
+              <RegistryKey Root="HKCU" Key="Software\WixSharp\Used">
+                <RegistryValue Value="0" Type="string" KeyPath="yes" />
+              </RegistryKey>
+            </Component>
+
+            <Component Id="Component.Uninstall_MyProduct" Guid="ac19c6e4-9724-4e90-8ac7-6e692419dccb">
+              <Shortcut Id="INSTALLDIR.Uninstall_MyProduct" WorkingDirectory="System64Folder" Target="[System64Folder]msiexec.exe" Arguments="/x [ProductCode]" Name="Uninstall MyProduct.lnk" />
+
+              <CreateFolder />
+              <RemoveFolder Id="INSTALLDIR" On="uninstall" />
+
+              <RegistryKey Root="HKCU" Key="Software\WixSharp\Used">
+                <RegistryValue Value="0" Type="string" KeyPath="yes" />
+              </RegistryKey>
+            </Component>
+
+            <Directory Id="GlobalResources" Name="GlobalResources">
+
+              <Component Id="Component.some.res_3677318861" Guid="ac19c6e4-9724-4e90-8ac7-6e693fea269e">
+                <File Id="some.res_3677318861" Source="Release\Bin\GlobalResources\some.res" />
+              </Component>
+
+            </Directory>
+
+            <Directory Id="Images" Name="Images">
+
+              <Component Id="Component.some.bmp_2336491725" Guid="ac19c6e4-9724-4e90-8ac7-6e6917cce59b">
+                <File Id="some.bmp_2336491725" Source="Release\Bin\Images\some.bmp" />
+              </Component>
+
+            </Directory>
+          </Directory>
+
+          <Component Id="ProgramFilesFolder.MyCompany" Guid="ac19c6e4-9724-4e90-8ac7-6e690c68f0cf" KeyPath="yes">
+            <RemoveFolder Id="ProgramFilesFolder.MyCompany" On="uninstall" />
+          </Component>
+
+        </Directory>
+      </Directory>
+
+      <Directory Id="DesktopFolder" Name="DesktopFolder">
+
+        <Component Id="Component.DesktopFolder.EmptyDirectory" Guid="ac19c6e4-9724-4e90-8ac7-6e69f3c51668">
+          <CreateFolder />
+
+          <RegistryKey Root="HKCU" Key="Software\WixSharp\Used">
+            <RegistryValue Value="0" Type="string" KeyPath="yes" />
+          </RegistryKey>
+        </Component>
+
+      </Directory>
+
+      <Component Id="TARGETDIR" Guid="ac19c6e4-9724-4e90-8ac7-6e69277be5d5" KeyPath="yes">
+        <CreateFolder />
+        <RemoveFolder Id="TARGETDIR" On="uninstall" />
+      </Component>
+
+    </Directory>
+
+    <UIRef Id="WixUI_FeatureTree" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.some.dll_3523078776" />
+      <ComponentRef Id="Component.some.exe_1183967844" />
+      <ComponentRef Id="Component.Uninstall_MyProduct" />
+      <ComponentRef Id="Component.some.res_3677318861" />
+      <ComponentRef Id="Component.some.bmp_2336491725" />
+      <ComponentRef Id="Component.DesktopFolder.EmptyDirectory" />
+      <ComponentRef Id="TARGETDIR" />
+      <ComponentRef Id="ProgramFilesFolder.MyCompany" />
+    </Feature>
+
+  </Product>
+</Wix>
+

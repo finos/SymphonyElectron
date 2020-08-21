@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Fragment>
+        <DirectoryRef Id="INSTALLDIR">
+            <Component Id="cmpAF93927AA83D52382825BB909D17F342" Guid="*">
+                <File Id="fil958B360CB0144CA6837CFFB5F435E5B4" Source="$(var.ExampleConsoleApp.TargetDir)\ExampleConsoleApp.exe" />
+            </Component>
+            <Component Id="cmp00C90E0A031610E7AF0D64BA4A689D0A" Guid="*">
+                <File Id="fil132E7443CC73195CF14A209030C8E656" Source="$(var.ExampleConsoleApp.TargetDir)\ExampleConsoleApp.exe.config" />
+            </Component>
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <ComponentGroup Id="ExampleConsoleApp.Binaries">
+            <ComponentRef Id="cmpAF93927AA83D52382825BB909D17F342" />
+            <ComponentRef Id="cmp00C90E0A031610E7AF0D64BA4A689D0A" />
+        </ComponentGroup>
+    </Fragment>
+    <Fragment>
+        <ComponentGroup Id="ExampleConsoleApp.Content" />
+    </Fragment>
+    <Fragment>
+        <ComponentGroup Id="ExampleConsoleApp.Satellites" />
+    </Fragment>
+</Wix>

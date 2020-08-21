@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+    <DirectoryRef Id="INSTALLDIR2">
+      <Component Id="component" Guid="F9971885-8150-476C-86AE-EC693A59C8DF" DiskId="1">
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+</Wix>

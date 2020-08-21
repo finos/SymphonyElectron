@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="37c26b82-b014-4f62-a6f0-79ed4343fd66" Name="LocalizationTest" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="37c26b82-b014-4f62-a6f0-79ed3343fd65" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="LocalizationTest.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="INSTALLDIR" Name="LocalizationTest">
+
+          <Component Id="Component.Uninstall_Localization_Test" Guid="37c26b82-b014-4f62-a6f0-79ed7b05bc6d">
+            <Shortcut Id="INSTALLDIR.Uninstall_Localization_Test" WorkingDirectory="System64Folder" Target="[System64Folder]msiexec.exe" Arguments="/x [ProductCode]" Name="Uninstall Localization Test.lnk" />
+
+            <CreateFolder />
+            <RemoveFolder Id="INSTALLDIR" On="uninstall" />
+
+            <RegistryKey Root="HKCU" Key="Software\WixSharp\Used">
+              <RegistryValue Value="0" Type="string" KeyPath="yes" />
+            </RegistryKey>
+          </Component>
+
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <UIRef Id="WixUI_Mondo" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.Uninstall_Localization_Test" />
+    </Feature>
+
+  </Product>
+</Wix>
+

@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="00b08a8a-f11f-4e07-a5b5-c854b925ccc7" Name="MyProduct" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="00b08a8a-f11f-4e07-a5b5-c854a925ccc6" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="MyProduct.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="DIR1" Name="root1">
+
+        <Component Id="Component.setup.cs_1283611568" Guid="00b08a8a-f11f-4e07-a5b5-c854c587910c">
+          <File Id="setup.cs_1283611568" Source="setup.cs" />
+        </Component>
+
+      </Directory>
+
+      <Directory Id="DIR2" Name="root2">
+        <Directory Id="DIR2.Doc" Name="Doc">
+
+          <Component Id="Component.manual.txt_918759154" Guid="00b08a8a-f11f-4e07-a5b5-c8544bad851f">
+            <File Id="manual.txt_918759154" Source="files\Doc\manual.txt" />
+          </Component>
+
+        </Directory>
+
+        <Directory Id="DIR2.Licence" Name="Licence">
+
+          <Component Id="Component.Licence.txt_1548369733" Guid="00b08a8a-f11f-4e07-a5b5-c8547e6171ba">
+            <File Id="Licence.txt_1548369733" Source="files\Licence\Licence.txt" />
+          </Component>
+
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <UI />
+
+    <CustomAction Id="WixSharp_InitRuntime_Action" BinaryKey="WixSharp_InitRuntime_Action_File" DllEntry="WixSharp_InitRuntime_Action" Return="check" Execute="immediate" />
+    <CustomAction Id="WixSharp_Load_Action" BinaryKey="WixSharp_InitRuntime_Action_File" DllEntry="WixSharp_Load_Action" Return="check" Execute="immediate" />
+
+    <Binary Id="WixSharp_InitRuntime_Action_File" SourceFile="WixSharp.CA.dll" />
+
+    <Property Id="WixSharp_Load_Handlers" Value="setup.cs, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|Script|Project_Load" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.setup.cs_1283611568" />
+      <ComponentRef Id="Component.manual.txt_918759154" />
+      <ComponentRef Id="Component.Licence.txt_1548369733" />
+    </Feature>
+
+    <InstallExecuteSequence>
+      <Custom Action="WixSharp_InitRuntime_Action" Before="AppSearch"> (1) </Custom>
+      <Custom Action="WixSharp_Load_Action" Before="AppSearch">1</Custom>
+    </InstallExecuteSequence>
+
+  </Product>
+</Wix>
+

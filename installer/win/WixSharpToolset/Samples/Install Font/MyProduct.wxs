@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="6f330b47-2577-43ad-9095-1861ca25889c" Name="MyProduct" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="6f330b47-2577-43ad-9095-1861ba25889b" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="MyProduct.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="INSTALLDIR" Name="My Product">
+
+            <Component Id="asm" Guid="6f330b47-2577-43ad-9095-18610a49a413">
+              <File Id="readme.txt_1240382565" Source="readme.txt" />
+            </Component>
+
+          </Directory>
+        </Directory>
+      </Directory>
+
+      <Directory Id="FontsFolder" Name="FontsFolder">
+
+        <Component Id="Component.FreeSansBold.ttf_2862435338" Guid="6f330b47-2577-43ad-9095-1861af20aebd">
+          <File Id="FreeSansBold.ttf_2862435338" Source="FreeSansBold.ttf" TrueType="yes" />
+        </Component>
+
+      </Directory>
+    </Directory>
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="asm" />
+      <ComponentRef Id="Component.FreeSansBold.ttf_2862435338" />
+    </Feature>
+
+  </Product>
+</Wix>
+

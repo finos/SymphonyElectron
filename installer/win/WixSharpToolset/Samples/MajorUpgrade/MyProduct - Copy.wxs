@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="6f330b47-2577-43ad-9095-1861ca31dfd4" Name="MyProduct" Language="1033" Codepage="Windows-1252" Version="1.0.709.10040" UpgradeCode="6f330b47-2577-43ad-9095-1861ba25889b" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="MyProduct.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="INSTALLDIR" Name="My Product">
+
+            <Component Id="Component.MyApp.exe_85306700" Guid="6f330b47-2577-43ad-9095-1861c7288fec">
+              <File Id="MyApp.exe_85306700" Source="Files\1\MyApp.exe" />
+            </Component>
+
+            <Component Id="Component.MyApp.cs_1059803837" Guid="6f330b47-2577-43ad-9095-18617ea82378">
+              <File Id="MyApp.cs_1059803837" Source="Files\1\MyApp.cs" />
+            </Component>
+
+            <Component Id="Component.readme.txt_1263094208" Guid="6f330b47-2577-43ad-9095-186195724ecc">
+              <File Id="readme.txt_1263094208" Source="Files\1\readme.txt" />
+            </Component>
+
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <UI />
+
+    <Upgrade Id="6f330b47-2577-43ad-9095-1861ba25889b">
+      <UpgradeVersion Minimum="0.0.0.0" Maximum="1.0.709.10040" IncludeMinimum="yes" IncludeMaximum="no" Property="UPGRADEFOUND" />
+      <UpgradeVersion Minimum="1.0.709.10040" IncludeMinimum="no" Property="NEWPRODUCTFOUND" />
+    </Upgrade>
+
+    <CustomAction Id="WixSharp_InitRuntime_Action" BinaryKey="WixSharp_InitRuntime_Action_File" DllEntry="WixSharp_InitRuntime_Action" Return="check" Execute="immediate" />
+    <CustomAction Id="WixSharp_BeforeInstall_Action" BinaryKey="WixSharp_InitRuntime_Action_File" DllEntry="WixSharp_BeforeInstall_Action" Return="check" Execute="immediate" />
+    <CustomAction Id="PreventDowngrading" Error="Newer version already installed" />
+
+    <Binary Id="WixSharp_InitRuntime_Action_File" SourceFile="WixSharp.CA.dll" />
+
+    <UIRef Id="WixUI_Minimal" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Property Id="WixSharp_BeforeInstall_Handlers" Value="MajorUpgrade1, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|Script|project_BeforeInstall" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.MyApp.exe_85306700" />
+      <ComponentRef Id="Component.MyApp.cs_1059803837" />
+      <ComponentRef Id="Component.readme.txt_1263094208" />
+    </Feature>
+
+    <InstallExecuteSequence>
+      <Custom Action="WixSharp_InitRuntime_Action" Before="AppSearch"> (1) </Custom>
+      <Custom Action="WixSharp_BeforeInstall_Action" Before="InstallFiles">1</Custom>
+      <Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWPRODUCTFOUND</Custom>
+
+      <RemoveExistingProducts After="InstallInitialize" />
+    </InstallExecuteSequence>
+
+    <InstallUISequence>
+      <Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWPRODUCTFOUND</Custom>
+    </InstallUISequence>
+
+  </Product>
+</Wix>
+

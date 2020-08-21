@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
+  <Product Id="6f330b47-2577-43ad-9095-1861ca25889c" Name="ManagedSetup" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="6f330b47-2577-43ad-9095-1861ba25889b" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="ManagedSetup.cab" EmbedCab="yes" />
+
+    <Condition Message="Please install .Net 4.5 First"><![CDATA[ (NETFRAMEWORK45 >= "#378389") ]]></Condition>
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="INSTALLDIR" Name="My Product">
+
+            <Component Id="Component.MyApp.exe_1037639828" Guid="6f330b47-2577-43ad-9095-186182364b5b">
+              <File Id="MyApp.exe_1037639828" Source="..\Files\bin\MyApp.exe" />
+            </Component>
+
+            <Directory Id="INSTALLDIR.Docs" Name="Docs">
+
+              <Component Id="Component.readme.txt_397842600" Guid="6f330b47-2577-43ad-9095-18614039ec6c">
+                <File Id="readme.txt_397842600" Source="readme.txt" />
+              </Component>
+
+              <Component Id="Component.tutorial.txt_955353750" Guid="6f330b47-2577-43ad-9095-1861213d9034">
+                <File Id="tutorial.txt_955353750" Source="..\Files\Docs\tutorial.txt" />
+              </Component>
+
+              <Component Id="Component.Manual.txt_1690594722" Guid="6f330b47-2577-43ad-9095-18612e17ea9c">
+                <File Id="Manual.txt_1690594722" Source="..\Files\Docs\Manual.txt" />
+              </Component>
+
+              <Component Id="Component.DevManual.txt_575968111" Guid="6f330b47-2577-43ad-9095-186136a2bc74">
+                <File Id="DevManual.txt_575968111" Source="..\Files\Docs\DevManual.txt" />
+              </Component>
+
+            </Directory>
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <PropertyRef Id="NETFRAMEWORK45" />
+
+    <UI />
+
+    <UI>
+      <EmbeddedUI Id="WixSharp_EmbeddedUI_Asm" SourceFile="Managed Setup\CustomUISequence\WixSharp.UI.CA.dll" />
+    </UI>
+
+    <CustomAction Id="WixSharp_InitRuntime_Action" BinaryKey="WixSharp_InitRuntime_Action_File" DllEntry="WixSharp_InitRuntime_Action" Return="check" Execute="immediate" />
+    <CustomAction Id="Set_CancelRequestHandler_Props" Property="CancelRequestHandler" Value="UpgradeCode=[UpgradeCode];INSTALLDIR=[INSTALLDIR];UILevel=[UILevel];ProductCode=[ProductCode];ADDLOCAL=[ADDLOCAL];ADDFEATURES=[ADDFEATURES]" />
+    <CustomAction Id="CancelRequestHandler" BinaryKey="WixSharp_InitRuntime_Action_File" DllEntry="CancelRequestHandler" Return="check" Impersonate="no" Execute="deferred" />
+    <CustomAction Id="WixSharp_Load_Action" BinaryKey="WixSharp_InitRuntime_Action_File" DllEntry="WixSharp_Load_Action" Return="check" Execute="immediate" />
+    <CustomAction Id="Set_ARPINSTALLLOCATION" Property="ARPINSTALLLOCATION" Value="[INSTALLDIR]" Return="check" Execute="immediate" />
+
+    <Binary Id="WixSharp_InitRuntime_Action_File" SourceFile="Managed Setup\CustomUISequence\WixSharp.CA.dll" />
+    <Binary Id="ui_shell_icon" SourceFile="app.ico" />
+    <Binary Id="WixSharp_UIText" SourceFile="Managed Setup\CustomUISequence\ManagedSetup.wxl" />
+    <Binary Id="WixSharp_LicenceFile" SourceFile="Managed Setup\CustomUISequence\ManagedSetup.licence.rtf" />
+    <Binary Id="WixUI_Bmp_Dialog" SourceFile="Managed Setup\CustomUISequence\ManagedSetup.dialog_bmp.png" />
+    <Binary Id="WixUI_Bmp_Banner" SourceFile="Managed Setup\CustomUISequence\ManagedSetup.dialog_banner.png" />
+
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Property Id="WixSharpUI_TreeNode_TexOnlyDrawing" Value="true" />
+    <Property Id="WixSharp_UI_INSTALLDIR" Value="INSTALLDIR" />
+    <Property Id="UAC_REVEALER_ENABLED" Value="true" />
+    <Property Id="UAC_WARNING" Value="Wait for UAC prompt to appear on the taskbar." />
+    <Property Id="WixSharp_InstallDialogs" Value="WixSharp.UI, Version=1.14.2.0, Culture=neutral, PublicKeyToken=3775edd25acc43c2|WixSharp.UI.Forms.WelcomeDialog&#xA;WixSharp.UI, Version=1.14.2.0, Culture=neutral, PublicKeyToken=3775edd25acc43c2|WixSharp.UI.Forms.ProgressDialog&#xA;WixSharp.UI, Version=1.14.2.0, Culture=neutral, PublicKeyToken=3775edd25acc43c2|WixSharp.UI.Forms.ExitDialog" />
+    <Property Id="WixSharp_ModifyDialogs" Value="WixSharp.UI, Version=1.14.2.0, Culture=neutral, PublicKeyToken=3775edd25acc43c2|WixSharp.UI.Forms.MaintenanceTypeDialog&#xA;WixSharp.UI, Version=1.14.2.0, Culture=neutral, PublicKeyToken=3775edd25acc43c2|WixSharp.UI.Forms.FeaturesDialog&#xA;WixSharp.UI, Version=1.14.2.0, Culture=neutral, PublicKeyToken=3775edd25acc43c2|WixSharp.UI.Forms.ProgressDialog&#xA;WixSharp.UI, Version=1.14.2.0, Culture=neutral, PublicKeyToken=3775edd25acc43c2|WixSharp.UI.Forms.ExitDialog" />
+    <Property Id="WixSharp_UIInitialized_Handlers" Value="setup.cs, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|Script|CheckCompatibility" />
+    <Property Id="WixSharp_UILoaded_Handlers" Value="setup.cs, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|Script|Project_UILoaded" />
+    <Property Id="WixSharp_Load_Handlers" Value="setup.cs, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|Script|CheckCompatibility" />
+
+    <Feature Id="Binaries" Title="Binaries" Absent="disallow" Level="1" Description="Product binaries">
+      <ComponentRef Id="Component.MyApp.exe_1037639828" />
+    </Feature>
+
+    <Feature Id="Documentation" Title="Documentation" Absent="allow" Level="1" Description="Product documentation (manuals and user guides)" Display="expand">
+      <ComponentRef Id="Component.readme.txt_397842600" />
+
+      <Feature Id="Tutorials" Title="Tutorials" Absent="allow" Level="2" Description="Product tutorials" Display="expand">
+        <ComponentRef Id="Component.tutorial.txt_955353750" />
+
+        <Feature Id="Manuals" Title="Manuals" Absent="allow" Level="2" Description="Product Manuals" Display="expand">
+          <Feature Id="User_Manuals" Title="User Manuals" Absent="allow" Level="2" Description="User Manuals">
+            <ComponentRef Id="Component.Manual.txt_1690594722" />
+          </Feature>
+
+          <Feature Id="Developer_Manuals" Title="Developer Manuals" Absent="allow" Level="2" Description="Developer Manuals">
+            <ComponentRef Id="Component.DevManual.txt_575968111" />
+          </Feature>
+        </Feature>
+      </Feature>
+    </Feature>
+
+    <InstallExecuteSequence>
+      <Custom Action="WixSharp_InitRuntime_Action" Before="AppSearch"> (1) </Custom>
+      <Custom Action="Set_CancelRequestHandler_Props" Before="InstallFinalize" />
+      <Custom Action="CancelRequestHandler" After="Set_CancelRequestHandler_Props"> (NOT (REMOVE="ALL")) </Custom>
+      <Custom Action="WixSharp_Load_Action" Before="AppSearch">1</Custom>
+      <Custom Action="Set_ARPINSTALLLOCATION" After="CostFinalize"> (NOT Installed) </Custom>
+    </InstallExecuteSequence>
+
+  </Product>
+</Wix>
+

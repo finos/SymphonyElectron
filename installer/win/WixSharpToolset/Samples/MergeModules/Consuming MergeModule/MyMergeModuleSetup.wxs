@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="a89fa512-02ba-4828-a0b8-8f52441797f0" Name="MyMergeModuleSetup" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="a89fa512-02ba-4828-a0b8-8f52341797ef" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="INSTALLDIR" Name="My Company">
+          <Merge Id="MyMergeModule.msm" FileCompression="yes" Language="1033" SourceFile="Files\MyMergeModule.msm" DiskId="1" />
+          <Merge Id="MyMergeModule1.msm" FileCompression="yes" Language="1033" SourceFile="Files\MyMergeModule1.msm" DiskId="1" />
+        </Directory>
+
+        <Component Id="foo" Guid="a89fa512-02ba-4828-a0b8-8f52c97e9c98" KeyPath="yes">
+          <Environment Id="foo" Name="foo" Value="bar" Action="set" />
+
+          <CreateFolder />
+          <RemoveFolder Id="ProgramFilesFolder" On="uninstall" />
+        </Component>
+
+      </Directory>
+
+      <Component Id="TARGETDIR" Guid="a89fa512-02ba-4828-a0b8-8f52a7e70762" KeyPath="yes">
+        <RemoveFolder Id="TARGETDIR" On="uninstall" />
+      </Component>
+
+    </Directory>
+
+    <MediaTemplate CompressionLevel="none" EmbedCab="no" />
+
+    <UIRef Id="WixUI_FeatureTree" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="foo" />
+
+      <Feature Id="Feature_A" Title="Feature A" Absent="allow" Level="1" Description="Feature A description">
+        <ComponentRef Id="TARGETDIR" />
+      </Feature>
+
+      <Feature Id="Feature_B" Title="Feature B" Absent="allow" Level="1" Description="Feature B description">
+        <MergeRef Id="MyMergeModule.msm" />
+        <MergeRef Id="MyMergeModule1.msm" />
+
+        <ComponentRef Id="TARGETDIR" />
+      </Feature>
+
+      <ComponentRef Id="TARGETDIR" />
+    </Feature>
+
+  </Product>
+</Wix>
+
