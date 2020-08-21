@@ -54,7 +54,7 @@ class Script
                     new File(@"..\..\library\tar-win.exe")
                 ),
                 new Dir(@"locales",
-                    new Files(@"C:\symphony\SymphonyElectron\node_modules\electron\dist\locales\*.*")
+                    new Files(@"..\..\node_modules\electron\dist\locales\*.*")
                 ),
                 new Dir(@"resources",
                     new DirFiles(@"..\..\dist\win-unpacked\resources\*.*"),
