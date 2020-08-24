@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+  <Product Id="0361a9cf-5337-4351-9a56-facd958dafcf" Name="CustomActionTest" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="0361a9cf-5337-4351-9a56-facd858dafce" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="CustomActionTest.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="INSTALLDIR" Name="My Product">
+
+            <Component Id="Component.registrator_exe" Guid="0361a9cf-5337-4351-9a56-facd5052c088">
+              <File Id="registrator_exe" Source="Files\Registrator.exe" />
+            </Component>
+
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <UI />
+
+    <SetProperty Id="Install_Rollback" Before="Install_Rollback" Sequence="execute" Value="Prop=Rollback;INSTALLDIR=[INSTALLDIR];UILevel=[UILevel];ProductCode=[ProductCode];ADDLOCAL=[ADDLOCAL];ADDFEATURES=[ADDFEATURES]" />
+
+    <CustomActionRef Id="WixFailWhenDeferred" />
+
+    <CustomAction Id="registrator_exe" ExeCommand="" FileKey="registrator_exe" Return="check" Execute="deferred" />
+    <CustomAction Id="registrator_exe_Rollback" ExeCommand="/u" FileKey="registrator_exe" Return="check" Execute="rollback" />
+    <CustomAction Id="registrator_exe.1" ExeCommand="/u" FileKey="registrator_exe" Return="check" Execute="deferred" />
+    <CustomAction Id="registrator_exe.1_Rollback" ExeCommand="" FileKey="registrator_exe" Return="check" Execute="rollback" />
+    <CustomAction Id="Set_Install_Props" Property="Install" Value="Prop=Install;INSTALLDIR=[INSTALLDIR];UILevel=[UILevel];ProductCode=[ProductCode];ADDLOCAL=[ADDLOCAL];ADDFEATURES=[ADDFEATURES]" />
+    <CustomAction Id="Install" BinaryKey="Install_File" DllEntry="Install" Return="check" Impersonate="no" Execute="deferred" />
+    <CustomAction Id="Install_Rollback" BinaryKey="Install_File" DllEntry="Rollback" Return="check" Impersonate="no" Execute="rollback" />
+
+    <Binary Id="Install_File" SourceFile="%this%.CA.dll" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.registrator_exe" />
+    </Feature>
+
+    <InstallExecuteSequence>
+      <Custom Action="registrator_exe" After="InstallFiles"> (NOT Installed) </Custom>
+      <Custom Action="registrator_exe_Rollback" Before="registrator_exe"> (NOT Installed) </Custom>
+      <Custom Action="registrator_exe.1" Before="RemoveFiles"> (Installed) </Custom>
+      <Custom Action="registrator_exe.1_Rollback" Before="registrator_exe.1"> (Installed) </Custom>
+      <Custom Action="Set_Install_Props" After="InstallFiles" />
+      <Custom Action="Install" After="Set_Install_Props"> (NOT Installed) </Custom>
+      <Custom Action="Install_Rollback" Before="Install"> (NOT Installed) </Custom>
+      <Custom Action="WixFailWhenDeferred" Before="InstallFinalize">1</Custom>
+    </InstallExecuteSequence>
+
+  </Product>
+</Wix>
+

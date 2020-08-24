@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:iis="http://schemas.microsoft.com/wix/IIsExtension">
+  <Product Id="6fe30b47-2577-43ad-9095-1861ca25889c" Name="My Product" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="6fe30b47-2577-43ad-9095-1861ba25889b" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="My_Product.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.MyCompany" Name="MyCompany">
+          <Directory Id="INSTALLDIR" Name="MyWebApp">
+
+            <Component Id="Component.Default.aspx_784634900" Guid="6fe30b47-2577-43ad-9095-1861cf348e05">
+              <File Id="Default.aspx_784634900" Source="MyWebApp\Default.aspx" />
+
+              <iis:WebVirtualDir Id="MyWebApp" Alias="MyWebApp" Directory="INSTALLDIR" WebSite="DefaultWebSite">
+                <iis:WebApplication Id="TestWebApplication" Name="Test" />
+              </iis:WebVirtualDir>
+            </Component>
+
+            <Component Id="Component.Default.aspx.cs_3770058355" Guid="6fe30b47-2577-43ad-9095-1861c862035d">
+              <File Id="Default.aspx.cs_3770058355" Source="MyWebApp\Default.aspx.cs" />
+            </Component>
+
+            <Component Id="Component.Default.aspx.designer.cs_3200545301" Guid="6fe30b47-2577-43ad-9095-186134a8105b">
+              <File Id="Default.aspx.designer.cs_3200545301" Source="MyWebApp\Default.aspx.designer.cs" />
+            </Component>
+
+            <Component Id="Component.Web.config_2381553740" Guid="6fe30b47-2577-43ad-9095-1861eccd22ee">
+              <File Id="Web.config_2381553740" Source="MyWebApp\Web.config" />
+            </Component>
+
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <UIRef Id="WixUI_Minimal" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.Default.aspx_784634900" />
+      <ComponentRef Id="Component.Default.aspx.cs_3770058355" />
+      <ComponentRef Id="Component.Default.aspx.designer.cs_3200545301" />
+      <ComponentRef Id="Component.Web.config_2381553740" />
+    </Feature>
+
+    <iis:WebSite Id="DefaultWebSite" Description="Default Web Site" Directory="INSTALLDIR">
+      <iis:WebAddress Id="AllUnassigned" Port="80" />
+    </iis:WebSite>
+
+  </Product>
+</Wix>
+

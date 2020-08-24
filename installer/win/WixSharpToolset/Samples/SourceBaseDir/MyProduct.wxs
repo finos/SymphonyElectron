@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="fc62fc81-1434-4415-a6e6-3a6b636011cd" Name="MyProduct" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="fc62fc81-1434-4415-a6e6-3a6b536011cc" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="MyProduct.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.MyCompany" Name="MyCompany">
+          <Directory Id="INSTALLDIR" Name="MyProduct">
+
+            <Component Id="Component.Uninstall_MyProduct" Guid="fc62fc81-1434-4415-a6e6-3a6bc3ce7835">
+              <Shortcut Id="INSTALLDIR.Uninstall_MyProduct" WorkingDirectory="System64Folder" Target="[System64Folder]msiexec.exe" Arguments="/x [ProductCode]" Name="Uninstall MyProduct.lnk" />
+
+              <CreateFolder />
+              <RemoveFolder Id="INSTALLDIR" On="uninstall" />
+
+              <RegistryKey Root="HKCU" Key="Software\WixSharp\Used">
+                <RegistryValue Value="0" Type="string" KeyPath="yes" />
+              </RegistryKey>
+            </Component>
+
+            <Directory Id="INSTALLDIR.Bin" Name="Bin">
+
+              <Component Id="Component.some.dll_1628375699" Guid="fc62fc81-1434-4415-a6e6-3a6b4c988e72">
+                <File Id="some.dll_1628375699" Source="Bin\some.dll" />
+              </Component>
+
+              <Component Id="Component.some.exe_533888823" Guid="fc62fc81-1434-4415-a6e6-3a6bf97a10a8">
+                <File Id="some.exe_533888823" Source="Bin\some.exe" />
+              </Component>
+
+              <Directory Id="INSTALLDIR.Bin.GlobalResources" Name="GlobalResources">
+
+                <Component Id="Component.some.res_67167620" Guid="fc62fc81-1434-4415-a6e6-3a6b74b70bae">
+                  <File Id="some.res_67167620" Source="Bin\GlobalResources\some.res" />
+                </Component>
+
+              </Directory>
+
+              <Directory Id="INSTALLDIR.Bin.Images" Name="Images">
+
+                <Component Id="Component.some.bmp_61764517" Guid="fc62fc81-1434-4415-a6e6-3a6b5c095b87">
+                  <File Id="some.bmp_61764517" Source="Bin\Images\some.bmp" />
+                </Component>
+
+              </Directory>
+            </Directory>
+          </Directory>
+
+          <Component Id="ProgramFilesFolder.MyCompany" Guid="fc62fc81-1434-4415-a6e6-3a6bab1d8c39" KeyPath="yes">
+            <RemoveFolder Id="ProgramFilesFolder.MyCompany" On="uninstall" />
+          </Component>
+
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <UIRef Id="WixUI_Minimal" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.Uninstall_MyProduct" />
+      <ComponentRef Id="Component.some.dll_1628375699" />
+      <ComponentRef Id="Component.some.exe_533888823" />
+      <ComponentRef Id="Component.some.res_67167620" />
+      <ComponentRef Id="Component.some.bmp_61764517" />
+      <ComponentRef Id="ProgramFilesFolder.MyCompany" />
+    </Feature>
+
+  </Product>
+</Wix>
+

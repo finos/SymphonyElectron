@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="3bca9131-7b5f-4586-8b10-992023e01120" Name="CustomActionTest" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="3bca9131-7b5f-4586-8b10-992013e0111f" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="CustomActionTest.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="INSTALLDIR" Name="ProgramFilesFolder">
+
+        <Component Id="Component.INSTALLDIR.EmptyDirectory" Guid="3bca9131-7b5f-4586-8b10-992035230001" KeyPath="yes">
+          <CreateFolder />
+          <RemoveFolder Id="INSTALLDIR" On="uninstall" />
+        </Component>
+
+      </Directory>
+
+      <Component Id="TARGETDIR" Guid="3bca9131-7b5f-4586-8b10-992086b08192" KeyPath="yes">
+        <CreateFolder />
+        <RemoveFolder Id="TARGETDIR" On="uninstall" />
+      </Component>
+
+    </Directory>
+
+    <UI />
+
+    <CustomAction Id="RunAsAdminInstall" BinaryKey="RunAsAdminInstall_File" DllEntry="RunAsAdminInstall" Return="check" Execute="immediate" />
+    <CustomAction Id="MyCheckSql" BinaryKey="RunAsAdminInstall_File" DllEntry="MyCheckSql" Return="check" Execute="immediate" />
+    <CustomAction Id="MyCheckMvc4_" BinaryKey="RunAsAdminInstall_File" DllEntry="MyCheckMvc4" Return="check" Execute="immediate" />
+    <CustomAction Id="CompareVersionAtUpgrade" BinaryKey="RunAsAdminInstall_File" DllEntry="CompareVersionAtUpgrade" Return="check" Execute="immediate" />
+    <CustomAction Id="MyAdminAction" BinaryKey="RunAsAdminInstall_File" DllEntry="MyAdminAction" Return="check" Execute="immediate" />
+
+    <Binary Id="RunAsAdminInstall_File" SourceFile="%this%.CA.dll" />
+
+    <UIRef Id="WixUI_Minimal" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.INSTALLDIR.EmptyDirectory" />
+      <ComponentRef Id="TARGETDIR" />
+    </Feature>
+
+    <InstallUISequence>
+      <Custom Action="RunAsAdminInstall" Before="LaunchConditions"> (NOT Installed) </Custom>
+      <Custom Action="MyCheckSql" Before="LaunchConditions"> (NOT Installed) </Custom>
+      <Custom Action="MyCheckMvc4_" Before="LaunchConditions"> (NOT Installed) </Custom>
+      <Custom Action="CompareVersionAtUpgrade" Before="LaunchConditions"> (NOT Installed) </Custom>
+    </InstallUISequence>
+
+    <AdminExecuteSequence>
+      <Custom Action="MyAdminAction" After="InstallInitialize"> (NOT Installed) </Custom>
+    </AdminExecuteSequence>
+
+  </Product>
+</Wix>
+

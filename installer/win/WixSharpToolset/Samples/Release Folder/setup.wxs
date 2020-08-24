@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="5a096a4d-0740-498c-9b02-fca9b1b6d024" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="5a096a4d-0740-498c-9b02-fca9a1b6d023" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="ManagedProject.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="INSTALLDIR" Name="ProgramFilesFolder">
+
+        <Component Id="Component.INSTALLDIR.EmptyDirectory" Guid="5a096a4d-0740-498c-9b02-fca9c3f9bf05" KeyPath="yes">
+          <CreateFolder />
+          <RemoveFolder Id="INSTALLDIR" On="uninstall" />
+        </Component>
+
+      </Directory>
+
+      <Component Id="TARGETDIR" Guid="5a096a4d-0740-498c-9b02-fca914864096" KeyPath="yes">
+        <CreateFolder />
+        <RemoveFolder Id="TARGETDIR" On="uninstall" />
+      </Component>
+
+    </Directory>
+
+    <UI />
+
+    <CustomAction Id="WixSharp_InitRuntime_Action" BinaryKey="WixSharp_InitRuntime_Action_File" DllEntry="WixSharp_InitRuntime_Action" Return="check" Execute="immediate" />
+
+    <Binary Id="WixSharp_InitRuntime_Action_File" SourceFile="E:\PrivateData\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\Release Folder\WixSharp.CA.dll" />
+
+    <UIRef Id="WixUI_Minimal" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.INSTALLDIR.EmptyDirectory" />
+      <ComponentRef Id="TARGETDIR" />
+
+      <ComponentGroupRef Id="TestApp1.Binaries" />
+      <ComponentGroupRef Id="TestApp1.Content" />
+      <ComponentGroupRef Id="TestApp1.Satellites" />
+    </Feature>
+
+    <InstallExecuteSequence>
+      <Custom Action="WixSharp_InitRuntime_Action" Before="AppSearch"> (1) </Custom>
+    </InstallExecuteSequence>
+
+  </Product>
+
+  <Fragment xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <DirectoryRef Id="TestApp1.Binaries">
+
+      <Component Id="cmp7592BB5F45EBDD917B8F1C3E4C160FBF" Guid="*">
+        <File Id="fil30C27C93EDD2F1CB5BE0559AFD7874B0" Source="E:\PrivateData\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\Release Folder\TestApps\TestApp1\bin\Debug\TestApp1.exe" />
+      </Component>
+
+      <Component Id="cmp3719A4CCE183F147C0961FF144885BCA" Guid="*">
+        <File Id="fil561D5202407BFC0CEDF732B54D0648F2" Source="E:\PrivateData\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\Release Folder\TestApps\TestApp1\bin\Debug\TestApp1.exe.config" />
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+
+  <Fragment xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <ComponentGroup Id="TestApp1.Binaries">
+      <ComponentRef Id="cmp7592BB5F45EBDD917B8F1C3E4C160FBF" />
+      <ComponentRef Id="cmp3719A4CCE183F147C0961FF144885BCA" />
+    </ComponentGroup>
+  </Fragment>
+
+  <Fragment xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <ComponentGroup Id="TestApp1.Content" />
+  </Fragment>
+
+  <Fragment xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <ComponentGroup Id="TestApp1.Satellites" />
+  </Fragment>
+</Wix>
+

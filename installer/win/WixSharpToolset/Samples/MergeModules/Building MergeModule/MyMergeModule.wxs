@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Module Id="MyMergeModule" Codepage="Windows-1252" Language="1033" Version="1.0.0.0">
+    <Package InstallerVersion="200" SummaryCodepage="Windows-1252" Languages="1033" Id="98a64fab-2b9b-4bc4-93e3-2dfc4e03a7c8" Manufacturer="oleg.shilo" xmlns="http://schemas.microsoft.com/wix/2006/wi" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="INSTALLDIR" Name="My Company">
+
+          <Component Id="Component.File1.txt_1459774263" Guid="98a64fab-2b9b-4bc4-93e3-2dfc9d45fe92">
+            <File Id="File1.txt_1459774263" Source="File1.txt" />
+          </Component>
+
+          <Component Id="Component.File2.txt_1477528736" Guid="98a64fab-2b9b-4bc4-93e3-2dfc13751c70">
+            <File Id="File2.txt_1477528736" Source="File2.txt" />
+          </Component>
+
+        </Directory>
+      </Directory>
+    </Directory>
+
+  </Module>
+</Wix>
+

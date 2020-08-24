@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="6f330b47-2577-43ad-9095-1861ca25889c" Name="My Product" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="6f330b47-2577-43ad-9095-1861ba25889b" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="My_Product.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="INSTALLDIR" Name="My Product">
+
+            <Component Id="Component.Readme.txt_368133026" Guid="6f330b47-2577-43ad-9095-1861d32f243b">
+              <File Id="Readme.txt_368133026" Source="Readme.txt" />
+            </Component>
+
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <UI />
+
+    <CustomAction Id="notepad.exe" ExeCommand="&quot;[WindowsFolder]\notepad.exe&quot; readme.txt" Return="asyncNoWait" Execute="immediate" Directory="INSTALLDIR" />
+
+    <UIRef Id="WixUI_Minimal" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.Readme.txt_368133026" />
+    </Feature>
+
+    <InstallExecuteSequence>
+      <Custom Action="notepad.exe" After="InstallFinalize"><![CDATA[(NOT Installed) AND (UILevel > 3)]]></Custom>
+    </InstallExecuteSequence>
+
+  </Product>
+</Wix>
+

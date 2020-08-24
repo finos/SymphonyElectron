@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="56aa1540-0a8b-439a-abe6-840de0aae250" Name="RebootTest" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="56aa1540-0a8b-439a-abe6-840dd0aae24f" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="RebootTest.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="INSTALLDIR" Name="ProgramFilesFolder">
+
+        <Component Id="Component.INSTALLDIR.EmptyDirectory" Guid="56aa1540-0a8b-439a-abe6-840df2edd131" KeyPath="yes">
+          <CreateFolder />
+          <RemoveFolder Id="INSTALLDIR" On="uninstall" />
+        </Component>
+
+      </Directory>
+
+      <Component Id="TARGETDIR" Guid="56aa1540-0a8b-439a-abe6-840d437a52c2" KeyPath="yes">
+        <CreateFolder />
+        <RemoveFolder Id="TARGETDIR" On="uninstall" />
+      </Component>
+
+    </Directory>
+
+    <UI>
+      <Error Id="9000"><![CDATA[You need to reboot the system.
+Do you want to reboot now?]]></Error>
+    </UI>
+
+    <CustomAction Id="PromptToReboot" BinaryKey="PromptToReboot_File" DllEntry="PromptToReboot" Return="check" Execute="immediate" />
+
+    <Binary Id="PromptToReboot_File" SourceFile="%this%.CA.dll" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.INSTALLDIR.EmptyDirectory" />
+      <ComponentRef Id="TARGETDIR" />
+    </Feature>
+
+    <InstallExecuteSequence>
+      <Custom Action="PromptToReboot" After="InstallInitialize"> (NOT Installed) </Custom>
+    </InstallExecuteSequence>
+
+  </Product>
+</Wix>
+

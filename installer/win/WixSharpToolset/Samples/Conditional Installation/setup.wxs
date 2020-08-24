@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="6fe30b47-2577-43ad-9095-1861ca25889c" Name="My Product" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="6fe30b47-2577-43ad-9095-1861ba25889b" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="My_Product.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="INSTALLDIR" Name="My Product">
+
+            <Component Id="Component.MyApp.exe_2499220369" Guid="6fe30b47-2577-43ad-9095-18617bc0697d">
+              <File Id="MyApp.exe_2499220369" Source="AppFiles\MyApp.exe">
+                <Shortcut Id="Shortcut.MyApp.exe_2499220369.MyApp" WorkingDirectory="INSTALLDIR" Directory="My_Product.1" Name="MyApp.lnk" />
+              </File>
+
+              <RegistryKey Root="HKCU" Key="Software\WixSharp\Used">
+                <RegistryValue Value="0" Type="string" KeyPath="yes" />
+              </RegistryKey>
+            </Component>
+
+            <Component Id="Component.Uninstall_MyApp" Guid="6fe30b47-2577-43ad-9095-18614b454462">
+              <Shortcut Id="INSTALLDIR.Uninstall_MyApp" WorkingDirectory="System64Folder" Target="[System64Folder]msiexec.exe" Arguments="/x [ProductCode]" Name="Uninstall MyApp.lnk" />
+
+              <CreateFolder />
+              <RemoveFolder Id="INSTALLDIR" On="uninstall" />
+
+              <RegistryKey Root="HKCU" Key="Software\WixSharp\Used">
+                <RegistryValue Value="0" Type="string" KeyPath="yes" />
+              </RegistryKey>
+            </Component>
+
+          </Directory>
+
+          <Component Id="ProgramFilesFolder.My_Company" Guid="6fe30b47-2577-43ad-9095-1861c5635c14" KeyPath="yes">
+            <RemoveFolder Id="ProgramFilesFolder.My_Company" On="uninstall" />
+          </Component>
+
+        </Directory>
+      </Directory>
+
+      <Directory Id="ProgramMenuFolder" Name="ProgramMenuFolder">
+        <Directory Id="ProgramMenuFolder.My_Company" Name="My Company">
+          <Directory Id="My_Product.1" Name="My Product">
+
+            <Component Id="Component.Uninstall_MyApp.1" Guid="6fe30b47-2577-43ad-9095-18617e97157f">
+              <Shortcut Id="My_Product.1.Uninstall_MyApp.1" WorkingDirectory="System64Folder" Target="[System64Folder]msiexec.exe" Arguments="/x [ProductCode]" Name="Uninstall MyApp.lnk" />
+
+              <CreateFolder />
+              <RemoveFolder Id="My_Product.1" On="uninstall" />
+
+              <RegistryKey Root="HKCU" Key="Software\WixSharp\Used">
+                <RegistryValue Value="0" Type="string" KeyPath="yes" />
+              </RegistryKey>
+            </Component>
+
+          </Directory>
+
+          <Component Id="ProgramMenuFolder.My_Company" Guid="6fe30b47-2577-43ad-9095-1861e74d6e0a">
+            <RemoveFolder Id="ProgramMenuFolder.My_Company" On="uninstall" />
+
+            <RegistryKey Root="HKCU" Key="Software\WixSharp\Used">
+              <RegistryValue Value="0" Type="string" KeyPath="yes" />
+            </RegistryKey>
+          </Component>
+
+        </Directory>
+      </Directory>
+
+      <Directory Id="DesktopFolder" Name="DesktopFolder">
+
+        <Component Id="Component.MyApp_" Guid="6fe30b47-2577-43ad-9095-186185567670">
+          <Condition>INSTALLDESKTOPSHORTCUT="yes"</Condition>
+
+          <Shortcut Id="DesktopFolder.MyApp_" WorkingDirectory="INSTALLDIR" Target="[INSTALLDIR]MyApp.exe" Name="MyApp.lnk" />
+
+          <CreateFolder />
+
+          <RegistryKey Root="HKCU" Key="Software\WixSharp\Used">
+            <RegistryValue Value="0" Type="string" KeyPath="yes" />
+          </RegistryKey>
+        </Component>
+
+      </Directory>
+
+      <Component Id="TARGETDIR" Guid="6fe30b47-2577-43ad-9095-18612df5f80e" KeyPath="yes">
+        <RemoveFolder Id="TARGETDIR" On="uninstall" />
+      </Component>
+
+    </Directory>
+
+    <UI />
+
+    <CustomAction Id="MyAction" BinaryKey="MyAction_File" DllEntry="MyAction" Return="ignore" Execute="immediate" />
+
+    <Binary Id="MyAction_File" SourceFile="%this%.CA.dll" />
+
+    <Property Id="INSTALLDESKTOPSHORTCUT" Value="no" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.MyApp.exe_2499220369" />
+      <ComponentRef Id="Component.Uninstall_MyApp" />
+      <ComponentRef Id="Component.Uninstall_MyApp.1" />
+      <ComponentRef Id="Component.MyApp_" />
+      <ComponentRef Id="ProgramFilesFolder.My_Company" />
+      <ComponentRef Id="ProgramMenuFolder.My_Company" />
+      <ComponentRef Id="TARGETDIR" />
+    </Feature>
+
+    <InstallUISequence>
+      <Custom Action="MyAction" Before="LaunchConditions"> (NOT Installed) </Custom>
+    </InstallUISequence>
+
+  </Product>
+</Wix>
+

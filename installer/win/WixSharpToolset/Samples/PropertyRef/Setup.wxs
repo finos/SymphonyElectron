@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
+  <Product Id="e4dd5144-459b-4d9f-94dd-3aef08a80a48" Name="Setup" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="e4dd5144-459b-4d9f-94dd-3aeff8a80a47" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="Setup.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="INSTALLDIR" Name="ProgramFilesFolder">
+
+        <Component Id="Component.INSTALLDIR.EmptyDirectory" Guid="e4dd5144-459b-4d9f-94dd-3aef1aebf929" KeyPath="yes">
+          <CreateFolder />
+          <RemoveFolder Id="INSTALLDIR" On="uninstall" />
+        </Component>
+
+      </Directory>
+
+      <Component Id="TARGETDIR" Guid="e4dd5144-459b-4d9f-94dd-3aef6b787aba" KeyPath="yes">
+        <CreateFolder />
+        <RemoveFolder Id="TARGETDIR" On="uninstall" />
+      </Component>
+
+    </Directory>
+
+    <PropertyRef Id="NETFRAMEWORK20" />
+
+    <UI />
+
+    <CustomAction Id="MyAction" BinaryKey="MyAction_File" DllEntry="MyAction" Return="check" Execute="immediate" />
+
+    <Binary Id="MyAction_File" SourceFile="%this%.CA.dll" />
+
+    <UIRef Id="WixUI_Minimal" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.INSTALLDIR.EmptyDirectory" />
+      <ComponentRef Id="TARGETDIR" />
+    </Feature>
+
+    <InstallExecuteSequence>
+      <Custom Action="MyAction" After="InstallInitialize"> (NOT (REMOVE="ALL")) </Custom>
+    </InstallExecuteSequence>
+
+  </Product>
+</Wix>
+

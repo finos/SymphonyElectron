@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="f15aa41a-6f42-4c0f-ab5e-95d4eb8119eb" Name="Setup" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="f15aa41a-6f42-4c0f-ab5e-95d4db8119ea" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="Setup.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="INSTALLDIR" Name="My Product">
+
+            <Component Id="Component.MyApp.exe_3984491948" Guid="f15aa41a-6f42-4c0f-ab5e-95d42634a8b5">
+              <File Id="MyApp.exe_3984491948" Source="Files\MyApp.exe" />
+            </Component>
+
+            <Component Id="Component.DotNET_2.0_Manual.txt_3320879757" Guid="f15aa41a-6f42-4c0f-ab5e-95d40c25aac9">
+              <Condition>NETFRAMEWORK20="#1"</Condition>
+              <File Id="DotNET_2.0_Manual.txt_3320879757" Source="Files\DotNET 2.0 Manual.txt" />
+            </Component>
+
+            <Component Id="Component.DotNET_3.0_Manual.txt_3894379730" Guid="f15aa41a-6f42-4c0f-ab5e-95d47499134f">
+              <Condition>NETFRAMEWORK30="#1"</Condition>
+              <File Id="DotNET_3.0_Manual.txt_3894379730" Source="Files\DotNET 3.0 Manual.txt" />
+            </Component>
+
+            <Component Id="Component.DotNET_3.5_Manual.txt_3894375755" Guid="f15aa41a-6f42-4c0f-ab5e-95d4a18c8e9a">
+              <Condition>NETFRAMEWORK35="#1"</Condition>
+              <File Id="DotNET_3.5_Manual.txt_3894375755" Source="Files\DotNET 3.5 Manual.txt" />
+            </Component>
+
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <UIRef Id="WixUI_Minimal" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Property Id="NETFRAMEWORK20" Value="0">
+      <RegistrySearch Id="NETFRAMEWORK20_RegSearch" Root="HKLM" Key="Software\Microsoft\NET Framework Setup\NDP\v2.0.50727" Type="raw" Name="Install" Win64="no" />
+    </Property>
+
+    <Property Id="NETFRAMEWORK30" Value="0">
+      <RegistrySearch Id="NETFRAMEWORK30_RegSearch" Root="HKLM" Key="Software\Microsoft\NET Framework Setup\NDP\v3.0" Type="raw" Name="Install" Win64="no" />
+    </Property>
+
+    <Property Id="NETFRAMEWORK35" Value="0">
+      <RegistrySearch Id="NETFRAMEWORK35_RegSearch" Root="HKLM" Key="Software\Microsoft\NET Framework Setup\NDP\v3.5" Type="raw" Name="Install" Win64="no" />
+    </Property>
+
+    <Property Id="SQL_BROWSER_LOCATION">
+      <RegistrySearch Id="RegistrySearch" Root="HKLM" Name="ImagePath" Key="SYSTEM\CurrentControlSet\services\SQLBrowser" Type="file">
+        <FileSearch Id="FileSearch" Name="sqlbrowser.exe" />
+      </RegistrySearch>
+    </Property>
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.MyApp.exe_3984491948" />
+      <ComponentRef Id="Component.DotNET_2.0_Manual.txt_3320879757" />
+      <ComponentRef Id="Component.DotNET_3.0_Manual.txt_3894379730" />
+      <ComponentRef Id="Component.DotNET_3.5_Manual.txt_3894375755" />
+    </Feature>
+
+  </Product>
+</Wix>
+

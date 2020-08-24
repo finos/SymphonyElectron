@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="6f330b47-2577-43ad-9095-1861cb258778" Name="My Product" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="6f330b47-2577-43ad-9095-1861bb258777" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" InstallScope="perMachine" Languages="1033" />
+    <Media Id="1" Cabinet="My_Product.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="INSTALLDIR" Name="My Product">
+
+            <Component Id="Component.readme.txt_1240382565" Guid="6f330b47-2577-43ad-9095-18615105c9a0">
+              <File Id="readme.txt_1240382565" Source="readme.txt" />
+            </Component>
+
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+
+    <UIRef Id="WixUI_Minimal" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.readme.txt_1240382565" />
+    </Feature>
+
+  </Product>
+</Wix>
+

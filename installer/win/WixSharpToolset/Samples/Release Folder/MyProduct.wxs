@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="6f330b47-2577-43ad-9095-1561ca25889c" Name="MyProduct" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="6f330b47-2577-43ad-9095-1561ba25889b" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="MyProduct.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="INSTALLDIR" Name="My Product">
+
+            <Component Id="Component.MyApp.exe_1038742200" Guid="6f330b47-2577-43ad-9095-15614c241bdb">
+              <File Id="MyApp.exe_1038742200" Source="test\MyApp.exe" />
+            </Component>
+
+            <Component Id="Component.Uninstall_My_Product" Guid="6f330b47-2577-43ad-9095-1561838d17e2">
+              <Shortcut Id="INSTALLDIR.Uninstall_My_Product" WorkingDirectory="System64Folder" Target="[System64Folder]msiexec.exe" Arguments="/x [ProductCode]" Name="Uninstall My Product.lnk" />
+
+              <CreateFolder />
+              <RemoveFolder Id="INSTALLDIR" On="uninstall" />
+
+              <RegistryKey Root="HKCU" Key="Software\WixSharp\Used">
+                <RegistryValue Value="0" Type="string" KeyPath="yes" />
+              </RegistryKey>
+            </Component>
+
+          </Directory>
+
+          <Component Id="ProgramFilesFolder.My_Company" Guid="6f330b47-2577-43ad-9095-1561c5635c14" KeyPath="yes">
+            <RemoveFolder Id="ProgramFilesFolder.My_Company" On="uninstall" />
+          </Component>
+
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <UIRef Id="WixUI_Minimal" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.MyApp.exe_1038742200" />
+      <ComponentRef Id="Component.Uninstall_My_Product" />
+      <ComponentRef Id="ProgramFilesFolder.My_Company" />
+    </Feature>
+
+  </Product>
+</Wix>
+

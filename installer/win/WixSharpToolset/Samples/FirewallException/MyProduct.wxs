@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="6f330b47-2577-43ad-9095-1861ca25889c" Name="MyProduct" Language="1049" Codepage="1251" Version="1.0.0.0" UpgradeCode="6f330b47-2577-43ad-9095-1861ba25889b" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="1251" Languages="1049" Id="6f330b47-2577-43ad-9095-1861ca25889c" />
+    <Media Id="1" Cabinet="MyProduct.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="INSTALLDIR" Name="My Product">
+
+            <Component Id="Component.MyApp.exe_1263008064" Guid="6f330b47-2577-43ad-9095-1861fd85162f">
+              <File Id="MyApp.exe_1263008064" Source="Files\Bin\MyApp.exe">
+                <FirewallException Id="MyApp" Name="MyApp" xmlns="http://schemas.microsoft.com/wix/FirewallExtension">
+                  <RemoteAddress>127.0.0.1</RemoteAddress>
+                  <RemoteAddress>127.0.0.2</RemoteAddress>
+                  <RemoteAddress>127.0.0.3</RemoteAddress>
+                </FirewallException>
+              </File>
+            </Component>
+
+            <Component Id="notepad" Guid="6f330b47-2577-43ad-9095-1861fc5e14ab" KeyPath="yes">
+              <FirewallException Id="notepad" Name="notepad" Port="8080" xmlns="http://schemas.microsoft.com/wix/FirewallExtension">
+                <RemoteAddress>127.0.0.1</RemoteAddress>
+                <RemoteAddress>127.0.0.2</RemoteAddress>
+                <RemoteAddress>127.0.0.3</RemoteAddress>
+              </FirewallException>
+
+              <CreateFolder />
+              <RemoveFolder Id="INSTALLDIR" On="uninstall" />
+            </Component>
+
+          </Directory>
+
+          <Component Id="ProgramFilesFolder.My_Company" Guid="6f330b47-2577-43ad-9095-1861c5635c14" KeyPath="yes">
+            <RemoveFolder Id="ProgramFilesFolder.My_Company" On="uninstall" />
+          </Component>
+
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <UIRef Id="WixUI_InstallDir" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="notepad" />
+      <ComponentRef Id="Component.MyApp.exe_1263008064" />
+      <ComponentRef Id="ProgramFilesFolder.My_Company" />
+    </Feature>
+
+  </Product>
+</Wix>
+

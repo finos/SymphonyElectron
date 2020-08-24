@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="6f330b47-2577-43ad-9095-1861ca25889c" Name="MyProduct" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="6f330b47-2577-43ad-9095-1861ba25889b" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="MyProduct.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="INSTALLDIR" Name="My Product">
+
+            <Component Id="Component.MyApp.exe_1263008064" Guid="6f330b47-2577-43ad-9095-1861fd85162f">
+              <File Id="MyApp.exe_1263008064" Source="Files\Bin\MyApp.exe" />
+            </Component>
+
+            <Directory Id="INSTALLDIR.Docs" Name="Docs">
+              <Directory Id="INSTALLDIR.Docs.Manual" Name="Manual">
+
+                <Component Id="Component.Manual.txt_90490314" Guid="6f330b47-2577-43ad-9095-1861b6bfcf84">
+                  <File Id="Manual.txt_90490314" Source="Files\Docs\Manual.txt" />
+                </Component>
+
+              </Directory>
+            </Directory>
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <UI />
+
+    <CustomAction Id="ReadInstallDir" BinaryKey="ReadInstallDir_File" DllEntry="ReadInstallDir" Return="ignore" Execute="firstSequence" />
+    <CustomAction Id="Set_SaveInstallDir_Props" Property="SaveInstallDir" Value="INSTALLDIR=[INSTALLDIR];INSTALLDIR=[INSTALLDIR];UILevel=[UILevel];ProductCode=[ProductCode];ADDLOCAL=[ADDLOCAL];ADDFEATURES=[ADDFEATURES]" />
+    <CustomAction Id="SaveInstallDir" BinaryKey="ReadInstallDir_File" DllEntry="SaveInstallDir" Return="check" Impersonate="no" Execute="deferred" />
+
+    <Binary Id="ReadInstallDir_File" SourceFile="%this%.CA.dll" />
+
+    <UIRef Id="WixUI_InstallDir" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.MyApp.exe_1263008064" />
+      <ComponentRef Id="Component.Manual.txt_90490314" />
+    </Feature>
+
+    <InstallExecuteSequence>
+      <Custom Action="ReadInstallDir" Before="AppSearch"> (NOT Installed) </Custom>
+      <Custom Action="Set_SaveInstallDir_Props" After="InstallFiles" />
+      <Custom Action="SaveInstallDir" After="Set_SaveInstallDir_Props"> (NOT Installed) </Custom>
+    </InstallExecuteSequence>
+
+    <InstallUISequence>
+      <Custom Action="ReadInstallDir" Before="AppSearch"> (NOT Installed) </Custom>
+    </InstallUISequence>
+
+  </Product>
+</Wix>
+

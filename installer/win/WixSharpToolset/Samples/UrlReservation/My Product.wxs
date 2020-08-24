@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension" xmlns:http="http://schemas.microsoft.com/wix/HttpExtension">
+  <Product Id="ec18f80d-2528-4c85-848a-b485501b6524" Name="My Product" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="ec18f80d-2528-4c85-848a-b485401b6523" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="My_Product.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="INSTALLDIR" Name="My Product">
+
+            <Component Id="Component.MyApp.exe_714655504" Guid="ec18f80d-2528-4c85-848a-b4855c898361">
+              <File Id="MyApp.exe_714655504" Source="File\MyApp.exe" />
+
+              <ServiceInstall Id="WixSharp.TestSvc" Name="WixSharp.TestSvc" DisplayName="WixSharp.TestSvc" Description="WixSharp.TestSvc" Type="ownProcess" Start="auto" ErrorControl="normal">
+                <ServiceDependency Id="Dnscache" />
+                <ServiceDependency Id="Dhcp" />
+
+                <ServiceConfig DelayedAutoStart="yes" PreShutdownDelay="180000" ServiceSid="none" OnInstall="yes" OnReinstall="no" OnUninstall="no" />
+
+                <http:UrlReservation Id="SeervicesUrl" Url="http://+:4131/url/device_service/" HandleExisting="fail">
+                  <http:UrlAce Id="SeervicesUrl" Rights="all" SecurityPrincipal="*S-1-1-0" />
+                </http:UrlReservation>
+
+                <http:UrlReservation Id="SeervicesUrl1" Url="http://+:4191/url/device_service/" Sddl="*S-1-1-0" HandleExisting="ignore" />
+
+                <util:ServiceConfig FirstFailureActionType="restart" SecondFailureActionType="restart" ThirdFailureActionType="runCommand" ProgramCommandLine="MyApp.exe -run" RebootMessage="Failure actions do not specify reboot" ResetPeriodInDays="1" RestartServiceDelayInSeconds="30" />
+              </ServiceInstall>
+
+              <ServiceControl Id="StopWixSharp.TestSvc" Name="WixSharp.TestSvc" Stop="both" Wait="yes" />
+              <ServiceControl Id="StartWixSharp.TestSvc" Name="WixSharp.TestSvc" Start="install" Wait="no" />
+              <ServiceControl Id="RemoveWixSharp.TestSvc" Name="WixSharp.TestSvc" Remove="uninstall" Wait="yes" />
+            </Component>
+
+            <Component Id="UrlReservation" Guid="ec18f80d-2528-4c85-848a-b48515e0ca11" KeyPath="yes">
+              <http:UrlReservation Id="UrlReservation" Url="http://+:2131/url/device_service/" HandleExisting="replace">
+                <http:UrlAce Id="UrlAce" Rights="register" SecurityPrincipal="*S-1-1-0" />
+              </http:UrlReservation>
+
+              <CreateFolder />
+              <RemoveFolder Id="INSTALLDIR" On="uninstall" />
+            </Component>
+
+          </Directory>
+
+          <Component Id="ProgramFilesFolder.My_Company" Guid="ec18f80d-2528-4c85-848a-b4854b59399c" KeyPath="yes">
+            <RemoveFolder Id="ProgramFilesFolder.My_Company" On="uninstall" />
+          </Component>
+
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <UIRef Id="WixUI_Minimal" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="UrlReservation" />
+      <ComponentRef Id="Component.MyApp.exe_714655504" />
+      <ComponentRef Id="ProgramFilesFolder.My_Company" />
+    </Feature>
+
+  </Product>
+</Wix>
+

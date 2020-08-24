@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="99ef6aba-14c4-47a8-903e-1ae83bf052cb" Name="MyProduct" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="99ef6aba-14c4-47a8-903e-1ae82bf052ca" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="MyProduct.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="INSTALLDIR" Name="My Product">
+
+            <Component Id="Component.readme.txt_1240382565" Guid="99ef6aba-14c4-47a8-903e-1ae8c1d094f3">
+              <File Id="readme.txt_1240382565" Source="readme.txt" />
+            </Component>
+
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <UI />
+
+    <CloseApplication Id="notepad" Target="notepad.exe" Timeout="15" Sequence="1" CloseMessage="yes" ElevatedCloseMessage="no" ElevatedEndSessionMessage="no" EndSessionMessage="no" PromptToContinue="no" RebootPrompt="no" xmlns="http://schemas.microsoft.com/wix/UtilExtension" />
+
+    <CustomAction Id="MyAction" BinaryKey="MyAction_File" DllEntry="MyAction" Return="ignore" Execute="immediate" />
+
+    <Binary Id="MyAction_File" SourceFile="%this%.CA.dll" />
+
+    <UIRef Id="WixUI_Minimal" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.readme.txt_1240382565" />
+    </Feature>
+
+    <InstallExecuteSequence>
+      <Custom Action="MyAction" After="InstallFinalize"> (NOT Installed) </Custom>
+    </InstallExecuteSequence>
+
+  </Product>
+</Wix>
+

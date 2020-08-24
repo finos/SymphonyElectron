@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="a9e85c93-c711-4c2a-a87f-0294ca67a1e1" Name="CustomActionTest" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="a9e85c93-c711-4c2a-a87f-0294ba67a1e0" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="CustomActionTest.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="INSTALLDIR" Name="My Product">
+
+            <Component Id="Component.readme.txt_1240382565" Guid="a9e85c93-c711-4c2a-a87f-02945047e309">
+              <File Id="readme.txt_1240382565" Source="readme.txt" />
+            </Component>
+
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <UI />
+
+    <CustomAction Id="MyAction" BinaryKey="MyAction_File" DllEntry="MyAction" Return="ignore" Execute="immediate" />
+    <CustomAction Id="Set_WixQuietExec_notepad.exe" Property="WixQuietExecCmdLine" Value="&quot;notepad.exe&quot; [WEBPOOL_NAME]" />
+    <CustomAction Id="WixQuietExec_notepad.exe" BinaryKey="WixCA" DllEntry="WixQuietExec" Return="check" Execute="immediate" />
+
+    <Binary Id="MyAction_File" SourceFile="%this%.CA.dll" />
+
+    <Property Id="WEBPOOL_NAME" Value="empty" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.readme.txt_1240382565" />
+    </Feature>
+
+    <InstallExecuteSequence>
+      <Custom Action="MyAction" After="InstallInitialize"> (NOT Installed) </Custom>
+      <Custom Action="Set_WixQuietExec_notepad.exe" After="MyAction"> (NOT Installed) </Custom>
+      <Custom Action="WixQuietExec_notepad.exe" After="Set_WixQuietExec_notepad.exe"> (NOT Installed) </Custom>
+    </InstallExecuteSequence>
+
+  </Product>
+</Wix>
+

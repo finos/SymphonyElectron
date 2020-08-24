@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="ce5e340b-ec9f-437e-9851-dc1a2c533004" Name="PropertiesTest" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="ce5e340b-ec9f-437e-9851-dc1a1c533003" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="PropertiesTest.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="INSTALLDIR" Name="ProgramFilesFolder">
+
+        <Component Id="Component.INSTALLDIR.EmptyDirectory" Guid="ce5e340b-ec9f-437e-9851-dc1a3e961fe5" KeyPath="yes">
+          <CreateFolder />
+          <RemoveFolder Id="INSTALLDIR" On="uninstall" />
+        </Component>
+
+      </Directory>
+
+      <Component Id="TARGETDIR" Guid="ce5e340b-ec9f-437e-9851-dc1a8f23a076" KeyPath="yes">
+        <CreateFolder />
+        <RemoveFolder Id="TARGETDIR" On="uninstall" />
+      </Component>
+
+    </Directory>
+
+    <UI />
+
+    <CustomAction Id="SetProp_Gritting" Property="Gritting" Value="Hello World!" Return="check" Execute="immediate" />
+    <CustomAction Id="SetProp_Title" Property="Title" Value="SetProperties Test" Return="check" Execute="immediate" />
+    <CustomAction Id="SetProp_NOTEPAD_FILE" Property="NOTEPAD_FILE" Value="C:\boot.ini" Return="check" Execute="immediate" />
+    <CustomAction Id="ShowGritting" BinaryKey="ShowGritting_File" DllEntry="ShowGritting" Return="check" Execute="immediate" />
+    <CustomAction Id="Set_WixQuietExec_notepad.exe" Property="WixQuietExecCmdLine" Value="&quot;notepad.exe&quot; [NOTEPAD_FILE]" />
+    <CustomAction Id="WixQuietExec_notepad.exe" BinaryKey="WixCA" DllEntry="WixQuietExec" Return="check" Execute="immediate" />
+
+    <Binary Id="ShowGritting_File" SourceFile="%this%.CA.dll" />
+
+    <Property Id="Gritting" Value="empty" />
+    <Property Id="Title" Value="empty" />
+    <Property Id="NOTEPAD_FILE" Value="empty" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.INSTALLDIR.EmptyDirectory" />
+      <ComponentRef Id="TARGETDIR" />
+    </Feature>
+
+    <InstallExecuteSequence>
+      <Custom Action="SetProp_Gritting" After="InstallInitialize"> (NOT Installed) </Custom>
+      <Custom Action="SetProp_Title" After="SetProp_Gritting"> (NOT Installed) </Custom>
+      <Custom Action="SetProp_NOTEPAD_FILE" Before="AppSearch"> (NOT Installed) </Custom>
+      <Custom Action="ShowGritting" After="SetProp_NOTEPAD_FILE"> (NOT Installed) </Custom>
+      <Custom Action="Set_WixQuietExec_notepad.exe" After="ShowGritting"> (NOT Installed) </Custom>
+      <Custom Action="WixQuietExec_notepad.exe" After="Set_WixQuietExec_notepad.exe"> (NOT Installed) </Custom>
+    </InstallExecuteSequence>
+
+  </Product>
+</Wix>
+

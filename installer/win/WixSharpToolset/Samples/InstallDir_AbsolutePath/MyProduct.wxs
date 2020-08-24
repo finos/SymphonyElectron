@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="0133c393-477b-46d4-a00f-6a7cbab065b3" Name="MyProduct" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="0133c393-477b-46d4-a00f-6a7caab065b2" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="MyProduct.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="INSTALLDIR" Name="ABSOLUTEPATH">
+
+        <Component Id="Component.setup.cs_3188024032" Guid="0133c393-477b-46d4-a00f-6a7cf048cd7a">
+          <File Id="setup.cs_3188024032" Source="setup.cs" />
+        </Component>
+
+      </Directory>
+
+      <Directory Id="TARGETDIR1" Name="ABSOLUTEPATH1">
+        <Directory Id="TARGETDIR1.Doc" Name="Doc">
+
+          <Component Id="Component.manual.txt_235678844" Guid="0133c393-477b-46d4-a00f-6a7c44b87f3a">
+            <File Id="manual.txt_235678844" Source="files\Doc\manual.txt" />
+          </Component>
+
+        </Directory>
+
+        <Directory Id="TARGETDIR1.Licence" Name="Licence">
+
+          <Component Id="Component.Licence.txt_3906952352" Guid="0133c393-477b-46d4-a00f-6a7c294d46a3">
+            <File Id="Licence.txt_3906952352" Source="files\Licence\Licence.txt" />
+          </Component>
+
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <UI />
+
+    <CustomAction Id="WixSharp_InitRuntime_Action" BinaryKey="WixSharp_InitRuntime_Action_File" DllEntry="WixSharp_InitRuntime_Action" Return="check" Execute="immediate" />
+    <CustomAction Id="Set_WixSharp_AfterInstall_Action_Props" Property="WixSharp_AfterInstall_Action" Value="WixSharp_AfterInstall_Handlers=[WixSharp_AfterInstall_Handlers];WIXSHARP_RUNTIME_DATA=[WIXSHARP_RUNTIME_DATA];INSTALLDIR=[INSTALLDIR];UILevel=[UILevel];ProductName=[ProductName];INSTALLDIR=[INSTALLDIR];UILevel=[UILevel];ProductCode=[ProductCode];ADDLOCAL=[ADDLOCAL];ADDFEATURES=[ADDFEATURES]" />
+    <CustomAction Id="WixSharp_AfterInstall_Action" BinaryKey="WixSharp_InitRuntime_Action_File" DllEntry="WixSharp_AfterInstall_Action" Return="check" Impersonate="no" Execute="deferred" />
+    <CustomAction Id="Set_DirAbsolutePath" Property="INSTALLDIR" Value="C:\MyCompany2" />
+    <CustomAction Id="Set_DirAbsolutePath1" Property="TARGETDIR1" Value="C:\MyCompany\MyProduct" />
+
+    <Binary Id="WixSharp_InitRuntime_Action_File" SourceFile="WixSharp.CA.dll" />
+
+    <Property Id="WixSharp_AfterInstall_Handlers" Value="setup.cs, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|Script|Project_AfterInstall" />
+    <Property Id="INSTALLDIR_ABSOLUTEPATH" Value="C:\MyCompany2" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.setup.cs_3188024032" />
+      <ComponentRef Id="Component.manual.txt_235678844" />
+      <ComponentRef Id="Component.Licence.txt_3906952352" />
+    </Feature>
+
+    <InstallExecuteSequence>
+      <Custom Action="WixSharp_InitRuntime_Action" Before="AppSearch"> (1) </Custom>
+      <Custom Action="Set_WixSharp_AfterInstall_Action_Props" After="InstallFiles" />
+      <Custom Action="WixSharp_AfterInstall_Action" After="Set_WixSharp_AfterInstall_Action_Props">1</Custom>
+      <Custom Action="Set_DirAbsolutePath" Before="AppSearch">(NOT Installed) AND (UILevel &lt; 5) AND (INSTALLDIR = ABSOLUTEPATH)</Custom>
+      <Custom Action="Set_DirAbsolutePath1" Before="AppSearch">(NOT Installed) AND (UILevel &lt; 5) AND (TARGETDIR1 = ABSOLUTEPATH1)</Custom>
+    </InstallExecuteSequence>
+
+    <InstallUISequence>
+      <Custom Action="Set_DirAbsolutePath" Before="AppSearch">(NOT Installed) AND (UILevel = 5) AND (INSTALLDIR = ABSOLUTEPATH)</Custom>
+      <Custom Action="Set_DirAbsolutePath1" Before="AppSearch">(NOT Installed) AND (UILevel = 5) AND (TARGETDIR1 = ABSOLUTEPATH1)</Custom>
+    </InstallUISequence>
+
+  </Product>
+</Wix>
+

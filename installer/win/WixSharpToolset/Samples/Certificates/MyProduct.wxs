@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="6f330b47-2577-43ad-9095-1861ca25889c" Name="MyProduct" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="6f330b47-2577-43ad-9095-1861ba25889b" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="MyProduct.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="INSTALLDIR" Name="My Product">
+
+            <Component Id="Component.MyApp.exe_1263008064" Guid="6f330b47-2577-43ad-9095-1861fd85162f">
+              <File Id="MyApp.exe_1263008064" Source="Files\Bin\MyApp.exe" />
+            </Component>
+
+            <Directory Id="INSTALLDIR.Docs" Name="Docs">
+              <Directory Id="INSTALLDIR.Docs.Manual" Name="Manual">
+
+                <Component Id="Component.Manual.txt_90490314" Guid="6f330b47-2577-43ad-9095-1861b6bfcf84" NeverOverwrite="yes">
+                  <File Id="Manual.txt_90490314" Source="Files\Docs\Manual.txt" />
+                </Component>
+
+              </Directory>
+            </Directory>
+
+            <Component Id="NameOfCert" Guid="6f330b47-2577-43ad-9095-1861c5cc97d9" KeyPath="yes">
+              <Certificate Id="NameOfCert" BinaryKey="mycert" Name="NameOfCert" StoreLocation="localMachine" StoreName="personal" xmlns="http://schemas.microsoft.com/wix/IIsExtension" />
+
+              <CreateFolder />
+              <RemoveFolder Id="INSTALLDIR" On="uninstall" />
+            </Component>
+
+            <Component Id="NameOfCert2_" Guid="6f330b47-2577-43ad-9095-186144216db4" KeyPath="yes">
+              <Certificate Id="NameOfCert2_" CertificatePath="Path\to\cert\file" Name="NameOfCert2" Request="no" StoreLocation="currentUser" StoreName="personal" xmlns="http://schemas.microsoft.com/wix/IIsExtension" />
+
+              <CreateFolder />
+            </Component>
+
+          </Directory>
+
+          <Component Id="ProgramFilesFolder.My_Company" Guid="6f330b47-2577-43ad-9095-1861c5635c14" KeyPath="yes">
+            <RemoveFolder Id="ProgramFilesFolder.My_Company" On="uninstall" />
+          </Component>
+
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <Binary Id="mycert" SourceFile="Files\mycert.cer" />
+
+    <UIRef Id="WixUI_InstallDir" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="NameOfCert" />
+      <ComponentRef Id="NameOfCert2_" />
+      <ComponentRef Id="Component.MyApp.exe_1263008064" />
+      <ComponentRef Id="Component.Manual.txt_90490314" />
+      <ComponentRef Id="ProgramFilesFolder.My_Company" />
+    </Feature>
+
+  </Product>
+</Wix>
+

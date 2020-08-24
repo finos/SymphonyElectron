@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="1adf5503-75f1-4ebc-adc5-8260d1808a5c" Name="MyProduct" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="1adf5503-75f1-4ebc-adc5-8260c1808a5b" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="MyProduct.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="INSTALLDIR" Name="My Product">
+
+            <Component Id="Component.MyApp.exe_4109771830" Guid="1adf5503-75f1-4ebc-adc5-82604dbd4d9b">
+              <File Id="MyApp.exe_4109771830" Source="..\Install Files\Files\Bin\MyApp.exe" />
+            </Component>
+
+            <Component Id="config.ini" Guid="1adf5503-75f1-4ebc-adc5-8260e8a4621e" KeyPath="yes">
+              <IniFile Id="config.ini" Name="config.ini" Action="createLine" Directory="INSTALLDIR" Key="enabled" Section="discovery" Value="false" />
+
+              <CreateFolder />
+              <RemoveFolder Id="INSTALLDIR" On="uninstall" />
+            </Component>
+
+            <Component Id="config.ini.1" Guid="1adf5503-75f1-4ebc-adc5-8260b6bc46f9" KeyPath="yes">
+              <IniFile Id="config.ini.1" Name="config.ini" Action="createLine" Directory="INSTALLDIR" Key="enabled_server" Section="info" Value="[IP_ADRESS]" />
+
+              <CreateFolder />
+            </Component>
+
+          </Directory>
+
+          <Component Id="ProgramFilesFolder.My_Company" Guid="1adf5503-75f1-4ebc-adc5-8260ccbe5ed4" KeyPath="yes">
+            <RemoveFolder Id="ProgramFilesFolder.My_Company" On="uninstall" />
+          </Component>
+
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <CloseApplication Target="MyApp.exe" Timeout="5" Sequence="1" CloseMessage="yes" ElevatedCloseMessage="no" ElevatedEndSessionMessage="no" EndSessionMessage="no" PromptToContinue="no" RebootPrompt="no" xmlns="http://schemas.microsoft.com/wix/UtilExtension" />
+
+    <UIRef Id="WixUI_InstallDir" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Property Id="IP_ADRESS" Value="127.0.0.1" />
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="config.ini" />
+      <ComponentRef Id="config.ini.1" />
+      <ComponentRef Id="Component.MyApp.exe_4109771830" />
+      <ComponentRef Id="ProgramFilesFolder.My_Company" />
+    </Feature>
+
+  </Product>
+</Wix>
+

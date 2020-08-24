@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="6f330b47-2577-43ad-9095-1861ca25889c" Name="MyProduct" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="6f330b47-2577-43ad-9095-1861ba25889b" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" Id="6f330b47-2577-43ad-9095-1861ca25889c" />
+    <Media Id="1" Cabinet="MyProduct.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="INSTALLDIR" Name="My Product">
+
+            <Component Id="Component.MyApp.exe_1263008064" Guid="6f330b47-2577-43ad-9095-1861fd85162f">
+              <File Id="MyApp.exe_1263008064" Source="Files\Bin\MyApp.exe" />
+            </Component>
+
+            <Component Id="Component.Manual.txt_1988094941" Guid="6f330b47-2577-43ad-9095-1861a979aa8e">
+              <File Id="Manual.txt_1988094941" Source="Files\Docs\Manual.txt">
+                <PermissionEx User="Everyone" GenericExecute="yes" GenericRead="yes" xmlns="http://schemas.microsoft.com/wix/UtilExtension" />
+                <PermissionEx User="Administrator" Append="yes" Delete="yes" Write="yes" xmlns="http://schemas.microsoft.com/wix/UtilExtension" />
+              </File>
+            </Component>
+
+            <Directory Id="INSTALLDIR.Docs" Name="Docs">
+
+              <Component Id="Component.INSTALLDIR.Docs.EmptyDirectory" Guid="6f330b47-2577-43ad-9095-1861d14d9aed" KeyPath="yes">
+                <CreateFolder />
+                <RemoveFolder Id="INSTALLDIR.Docs" On="uninstall" />
+              </Component>
+
+            </Directory>
+
+            <Directory Id="INSTALLDIR.Docs2" Name="Docs2">
+
+              <Component Id="Component.DirPermission" Guid="6f330b47-2577-43ad-9095-186183cff837" KeyPath="yes">
+                <CreateFolder>
+                  <PermissionEx User="Everyone" GenericAll="yes" xmlns="http://schemas.microsoft.com/wix/UtilExtension" />
+                </CreateFolder>
+                <RemoveFolder Id="INSTALLDIR.Docs2" On="uninstall" />
+              </Component>
+
+            </Directory>
+
+            <Directory Id="INSTALLDIR.Empty" Name="Empty">
+
+              <Component Id="Component.INSTALLDIR.Empty.EmptyDirectory" Guid="6f330b47-2577-43ad-9095-186111f7eb0c" KeyPath="yes">
+                <CreateFolder />
+                <RemoveFolder Id="INSTALLDIR.Empty" On="uninstall" />
+              </Component>
+
+            </Directory>
+          </Directory>
+
+          <Component Id="ProgramFilesFolder.My_Company" Guid="6f330b47-2577-43ad-9095-1861c5635c14" KeyPath="yes">
+            <CreateFolder />
+            <RemoveFolder Id="ProgramFilesFolder.My_Company" On="uninstall" />
+          </Component>
+
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <UIRef Id="WixUI_InstallDir" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.MyApp.exe_1263008064" />
+      <ComponentRef Id="Component.Manual.txt_1988094941" />
+      <ComponentRef Id="Component.INSTALLDIR.Docs.EmptyDirectory" />
+      <ComponentRef Id="Component.DirPermission" />
+      <ComponentRef Id="Component.INSTALLDIR.Empty.EmptyDirectory" />
+      <ComponentRef Id="ProgramFilesFolder.My_Company" />
+    </Feature>
+
+  </Product>
+</Wix>
+

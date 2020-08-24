@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="6f330b47-2577-43ad-9095-1861ca25889c" Name="My Product" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="6f330b47-2577-43ad-9095-1861ba25889b" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="My_Product.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="INSTALLDIR" Name="dynamic_installdir">
+
+        <Component Id="Component.MyApp.exe_1977262049" Guid="6f330b47-2577-43ad-9095-1861c1df3b88">
+          <File Id="MyApp.exe_1977262049" Source="Files\Bin\MyApp.exe" />
+        </Component>
+
+        <Directory Id="INSTALLDIR.Docs" Name="Docs">
+          <Directory Id="INSTALLDIR.Docs.Manual" Name="Manual">
+
+            <Component Id="Component.Manual.txt_718440008" Guid="6f330b47-2577-43ad-9095-18610d5255b7">
+              <File Id="Manual.txt_718440008" Source="Files\Docs\Manual.txt" />
+            </Component>
+
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <UI />
+
+    <CustomAction Id="GetInstanceDir" BinaryKey="GetInstanceDir_File" DllEntry="GetInstanceDir" Return="check" Execute="immediate" />
+
+    <Binary Id="GetInstanceDir_File" SourceFile="%this%.CA.dll" />
+
+    <UIRef Id="WixUI_InstallDir" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Property Id="INSTANCEID" Value="Default" />
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.MyApp.exe_1977262049" />
+      <ComponentRef Id="Component.Manual.txt_718440008" />
+    </Feature>
+
+    <InstallUISequence>
+      <Custom Action="GetInstanceDir" Before="LaunchConditions"> (NOT (REMOVE="ALL")) </Custom>
+    </InstallUISequence>
+
+    <InstanceTransforms Property="INSTANCEID">
+      <Instance Id="FirstInstance" ProductCode="4b4facc3-3d93-4e64-accd-68959ea3026b" ProductName="My Product FirstInstance" />
+      <Instance Id="SecondInstance" ProductCode="acb8af79-a388-4521-b526-e54768e28d7b" ProductName="My Product SecondInstance" />
+      <Instance Id="ThirdInstance" ProductCode="98dbef3d-e088-4bca-a031-3a215b2df995" ProductName="My Product ThirdInstance" />
+    </InstanceTransforms>
+
+  </Product>
+</Wix>
+

@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="03ed8240-3f7c-4e81-b358-81a40e9fc39b" Name="HeatAggregatedMsi" Language="1033" Codepage="Windows-1252" Version="1.0.0.0" UpgradeCode="03ed8240-3f7c-4e81-b358-81a4fe9fc39a" Manufacturer="oleg.shilo">
+    <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
+    <Media Id="1" Cabinet="HeatAggregatedMsi.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
+        <Directory Id="ProgramFilesFolder.My_Company" Name="My Company">
+          <Directory Id="INSTALLDIR" Name="My Product">
+
+            <Component Id="Component.Setup.cs_415440" Guid="03ed8240-3f7c-4e81-b358-81a4a447fa2c">
+              <File Id="Setup.cs_415440" Source="E:\PrivateData\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\Release Folder\Setup.cs" />
+            </Component>
+
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <UI />
+
+    <CustomAction Id="WixSharp_InitRuntime_Action" BinaryKey="WixSharp_InitRuntime_Action_File" DllEntry="WixSharp_InitRuntime_Action" Return="check" Execute="immediate" />
+
+    <Binary Id="WixSharp_InitRuntime_Action_File" SourceFile="E:\PrivateData\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\Release Folder\WixSharp.CA.dll" />
+
+    <UIRef Id="WixUI_Minimal" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Feature Id="Complete" Title="Complete" Absent="allow" Level="1">
+      <ComponentRef Id="Component.Setup.cs_415440" />
+
+      <ComponentGroupRef Id="TestApp1.Binaries" />
+      <ComponentGroupRef Id="TestApp1.Content" />
+      <ComponentGroupRef Id="TestApp1.Satellites" />
+      <ComponentGroupRef Id="TestApp2.Binaries" />
+      <ComponentGroupRef Id="TestApp2.Content" />
+      <ComponentGroupRef Id="TestApp2.Satellites" />
+    </Feature>
+
+    <InstallExecuteSequence>
+      <Custom Action="WixSharp_InitRuntime_Action" Before="AppSearch"> (1) </Custom>
+    </InstallExecuteSequence>
+
+  </Product>
+
+  <Fragment xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <DirectoryRef Id="INSTALLDIR">
+
+      <Component Id="cmp7592BB5F45EBDD917B8F1C3E4C160FBF" Guid="*">
+        <File Id="fil30C27C93EDD2F1CB5BE0559AFD7874B0" Source="$(var.TestApp1.TargetDir)\TestApp1.exe" />
+      </Component>
+
+      <Component Id="cmp3719A4CCE183F147C0961FF144885BCA" Guid="*">
+        <File Id="fil561D5202407BFC0CEDF732B54D0648F2" Source="$(var.TestApp1.TargetDir)\TestApp1.exe.config" />
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+
+  <Fragment xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <ComponentGroup Id="TestApp1.Binaries">
+      <ComponentRef Id="cmp7592BB5F45EBDD917B8F1C3E4C160FBF" />
+      <ComponentRef Id="cmp3719A4CCE183F147C0961FF144885BCA" />
+    </ComponentGroup>
+  </Fragment>
+
+  <Fragment xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <ComponentGroup Id="TestApp1.Satellites" />
+  </Fragment>
+
+  <Fragment xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <ComponentGroup Id="TestApp1.Content" />
+  </Fragment>
+
+  <Fragment xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <DirectoryRef Id="INSTALLDIR">
+
+      <Component Id="cmpD8C428069F77385B80CFBF47D5766BBF" Guid="*">
+        <File Id="fil8158B7321A75893A5902F5A7B4F02122" Source="$(var.TestApp2.TargetDir)\TestApp2.exe" />
+      </Component>
+
+      <Component Id="cmp07BA5A67B65059CB92DF139CB9DD7060" Guid="*">
+        <File Id="filF4775B20A2F840122ED421B5078B2671" Source="$(var.TestApp2.TargetDir)\TestApp2.exe.config" />
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+
+  <Fragment xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <ComponentGroup Id="TestApp2.Binaries">
+      <ComponentRef Id="cmpD8C428069F77385B80CFBF47D5766BBF" />
+      <ComponentRef Id="cmp07BA5A67B65059CB92DF139CB9DD7060" />
+    </ComponentGroup>
+  </Fragment>
+
+  <Fragment xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <ComponentGroup Id="TestApp2.Satellites" />
+  </Fragment>
+
+  <Fragment xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <ComponentGroup Id="TestApp2.Content" />
+  </Fragment>
+</Wix>
+
