@@ -97,6 +97,5 @@ echo "copy msi result to target dir"
 copy "%AIP%-SetupFiles\%AIP%.msi" "%targetsDir%\%archiveName%.msi"
 
 echo Building new installer with wix#
-REM pushd "installer\win"
 call "BuildWixSharpInstaller.bat"
-REM popd
+copy "Symphony.msi" "%targetsDir%\Wix-%archiveName%.msi"
