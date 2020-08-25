@@ -1,5 +1,7 @@
 @echo off
 
+echo "Running jenkins-win64.bat"
+
 call "scripts\build-win64.bat"
 
 echo "updating 64 bit installer file with hashed passwd..."
