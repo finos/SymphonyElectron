@@ -56,7 +56,6 @@
   "Dev Tools has been disabled! Please contact your system administrator to enable it!": "Dev Tools a été désactivé ! Veuillez contacter votre administrateur système pour l’activer !",
   "Disable Hamburger menu": "Désactiver le menu Hamburger",
   "Disable GPU": "Désactiver le GPU",
-  "Enable Renderer Logs": "Enable Renderer Logs",
   "DownloadManager": {
     "downloaded": "téléchargé",
     "File not Found": "Fichier non trouvé",
