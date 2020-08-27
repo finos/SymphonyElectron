@@ -95,3 +95,7 @@ if NOT EXIST %AIP%-SetupFiles/%AIP%.msi (
 
 echo "copy msi result to target dir"
 copy "%AIP%-SetupFiles\%AIP%.msi" "%targetsDir%\%archiveName%.msi"
+
+echo Building new installer with wix#
+call "BuildWixSharpInstaller.bat"
+copy "Symphony.msi" "%targetsDir%\Experimental-%archiveName%.msi"
