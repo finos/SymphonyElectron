@@ -56,7 +56,7 @@
   "Dev Tools has been disabled! Please contact your system administrator to enable it!": "Dev Tools has been disabled! Please contact your system administrator to enable it!",
   "Disable Hamburger menu": "Disable Hamburger menu",
   "Disable GPU": "Disable GPU",
-  "Enable Renderer Logs": "Enable Renderer Logs",
+  "Enable Renderer Logs": "Enable Console logs",
   "DownloadManager": {
     "downloaded": "downloaded",
     "File not Found": "File not Found",
