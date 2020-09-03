@@ -4,6 +4,7 @@
 //css_ref WixSharp.UI.dll;
 
 using WixSharp;
+using Microsoft.Deployment.WindowsInstaller;
 
 class Script
 {
@@ -108,7 +109,142 @@ class Script
         var version = System.Environment.GetEnvironmentVariable("SYMVER");
         project.Version = new System.Version(version);
         
+        // Declare all the custom properties we want to use, and assign them default values. It is possible to override 
+        // these when running the installer, but if not specified, the defaults will be used.
+        project.Properties = new[]
+        {
+            new PublicProperty("ALWAYS_ON_TOP", "DISABLED" ),
+            new PublicProperty("AUTO_LAUNCH_PATH", "[|]"),
+            new PublicProperty("AUTO_START", "ENABLED"),
+            new PublicProperty("BRING_TO_FRONT", "DISABLED"),
+            new PublicProperty("CUSTOM_TITLE_BAR", "ENABLED"),
+            new PublicProperty("DEV_TOOLS_ENABLED", "true"),
+            new PublicProperty("FULL_SCREEN", "true"),
+            new PublicProperty("FULL_SCREEN_CB", "true"),
+            new PublicProperty("LOCATION", "true"),
+            new PublicProperty("MEDIA", "true"),
+            new PublicProperty("MIDI_SYSEX", "true"),
+            new PublicProperty("MIDI_SYSEX_CB", "true"),
+            new PublicProperty("MINIMIZE_ON_CLOSE", "ENABLED"),
+            new PublicProperty("NOTIFICATIONS", "true"),
+            new PublicProperty("OPEN_EXTERNAL", "true"),
+            new PublicProperty("OPEN_EXTERNAL_CB", "true"),
+            new PublicProperty("POD_URL", "https://my.symphony.com"),
+            new PublicProperty("POINTER_LOCK", "true"),
+            new PublicProperty("POINTER_LOCK_CB", "true")
+        };
+
+        // Define the custom actions we want to run, and at what point of the installation we want to execute them.
+        project.Actions = new WixSharp.Action[]
+        {
+            // InstallVariant
+            //
+            // We want to be able to display the POD URL dialog every time SDA starts after a reinstall, regardless of
+            // whether it is a new version or the same version, but we don't want to display it if no reinstallation 
+            // have been done. To detect this, we always write a new GUID to the fill InstallVariant.info on every
+            // installation. 
+            new ElevatedManagedAction(CustomActions.InstallVariant, Return.check, When.After, Step.InstallFiles, Condition.NOT_Installed )
+            {
+                // INSTALLDIR is a built-in property, and we need it to know which path to write the InstallVariant to
+                UsesProperties = "INSTALLDIR"
+            },
+            
+            // UpdateConfig
+            //
+            // After installation, the Symphony.config file needs to be updated with values from the install properties,
+            // either their default values as specified above, or with the overridden value if an override was specified
+            // on the command line when the installer was started.
+            new ElevatedManagedAction(CustomActions.UpdateConfig, Return.check, When.After, Step.InstallFiles, Condition.NOT_Installed )
+            {
+                // The UpdateConfig action needs the built-in property INSTALLDIR as well as most of the custom properties
+                UsesProperties = "INSTALLDIR,POD_URL,MINIMIZE_ON_CLOSE,ALWAYS_ON_TOP,AUTO_START,BRING_TO_FRONT,MEDIA,LOCATION,NOTIFICATIONS,MIDI_SYSEX,POINTER_LOCK,FULL_SCREEN,OPEN_EXTERNAL,CUSTOM_TITLE_BAR,DEV_TOOLS_ENABLED,AUTO_LAUNCH_PATH"
+            }
+        };
+
         // Generate an MSI from all settings done above
         Compiler.BuildMsi(project);
     }
+}
+
+public class CustomActions
+{
+    // InstallVariant custom action
+    [CustomAction]
+    public static ActionResult InstallVariant(Session session)
+    {
+        try
+        {
+            // Create the InstallVariant.info file
+            var installDir = session.Property("INSTALLDIR");
+            var filename = System.IO.Path.Combine(installDir, @"config\InstallVariant.info");
+            var installVariantFile = new System.IO.StreamWriter(filename);
+            
+            // Generate new GUID for each time we install, and write it as a text string to the file
+            var guid = System.Guid.NewGuid();           
+            installVariantFile.Write(guid.ToString());
+            
+            installVariantFile.Close();
+        }
+        catch (System.Exception e)
+        {
+            session.Log("Error executing InstallVariant: " + e.ToString() );
+            return ActionResult.Failure;
+        }
+        return ActionResult.Success;
+    }
+
+    // UpdateConfig custom action
+    [CustomAction]
+    public static ActionResult UpdateConfig(Session session)
+    {
+        try
+        {
+            // Read the Symphony.config file
+            var installDir = session.Property("INSTALLDIR");
+            var filename = System.IO.Path.Combine(installDir, @"config\Symphony.config");
+            string data = System.IO.File.ReadAllText(filename);
+
+            // Replace all the relevant settings with values from the properties
+            data = ReplaceProperty(data, "url", session.Property("POD_URL"));
+            data = ReplaceProperty(data, "minimizeOnClose", session.Property("MINIMIZE_ON_CLOSE"));
+            data = ReplaceProperty(data, "alwaysOnTop", session.Property("ALWAYS_ON_TOP"));
+            data = ReplaceProperty(data, "launchOnStartup", session.Property("AUTO_START"));
+            data = ReplaceProperty(data, "bringToFront", session.Property("BRING_TO_FRONT"));
+            data = ReplaceProperty(data, "media", session.Property("MEDIA"));
+            data = ReplaceProperty(data, "geolocation", session.Property("LOCATION"));
+            data = ReplaceProperty(data, "notifications", session.Property("NOTIFICATIONS"));
+            data = ReplaceProperty(data, "midiSysex", session.Property("MIDI_SYSEX"));
+            data = ReplaceProperty(data, "pointerLock", session.Property("POINTER_LOCK"));
+            data = ReplaceProperty(data, "fullscreen", session.Property("FULL_SCREEN"));
+            data = ReplaceProperty(data, "openExternal", session.Property("OPEN_EXTERNAL"));
+            data = ReplaceProperty(data, "isCustomTitleBar", session.Property("CUSTOM_TITLE_BAR"));
+            data = ReplaceProperty(data, "devToolsEnabled", session.Property("DEV_TOOLS_ENABLED"));
+            data = ReplaceProperty(data, "autoLaunchPath", session.Property("AUTO_LAUNCH_PATH"));
+
+            // Write the contents back to the file
+            System.IO.File.WriteAllText(filename, data);
+        }
+        catch (System.Exception e)
+        {
+            session.Log("Error executing UpdateConfig: " + e.ToString() );
+            return ActionResult.Failure;
+        }
+        return ActionResult.Success;
+    }   
+
+    // Helper function called by UpdadeConfig action, for each config file value that needs to be
+    // replaced by a value taken from the property. `data` is the entire contents of the config file.
+    // `name` is the name of the setting in the config file (for example "url" or "minimizeOnClose".
+    // `value` is the value to insert for the setting, and needs to be grabbed from the propery
+    // collection before calling the function. The function returns the full config file content with
+    // the requested replacement performed.
+    static string ReplaceProperty( string data, string name, string value )
+    {
+        // Using regular expressions to replace the existing value in the config file with the 
+        // one from the property. This is the same as the regex we used to have in the old
+        // Advanced Installer, which looked like this: "url"\s*:\s*".*" => "url": "[POD_URL]"
+        return System.Text.RegularExpressions.Regex.Replace(data, @"""" + name + @"""\s*:\s*"".*""",
+            @"""" + name + @""":""" + value.Trim() + @"""");
+    }
+
 }
