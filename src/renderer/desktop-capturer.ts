@@ -121,7 +121,7 @@ export const getSource = async (options: ICustomSourcesOptions, callback: Callba
     }
 
     const updatedSources = sources
-        .filter((source) => isWindowsOS ? source.name !== NOTIFICATION_WINDOW_TITLE : true)
+        .filter((source) => source.name !== NOTIFICATION_WINDOW_TITLE)
         .map((source) => {
         return Object.assign({}, source, {
             thumbnail: source.thumbnail.toDataURL(),
