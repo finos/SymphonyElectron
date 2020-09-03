@@ -51,6 +51,8 @@ export enum apiName {
     notificationWindowName = 'notification-window',
 }
 
+export const NOTIFICATION_WINDOW_TITLE = 'Notification - Symphony';
+
 export interface IApiArgs {
     memoryInfo: Electron.ProcessMemoryInfo;
     word: string;

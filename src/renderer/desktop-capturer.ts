@@ -6,7 +6,7 @@ import {
     SourcesOptions,
 } from 'electron';
 
-import { apiCmds, apiName } from '../common/api-interface';
+import { apiCmds, apiName, NOTIFICATION_WINDOW_TITLE } from '../common/api-interface';
 import { isWindowsOS } from '../common/env';
 import { i18n } from '../common/i18n-preload';
 
@@ -120,7 +120,9 @@ export const getSource = async (options: ICustomSourcesOptions, callback: Callba
 
     }
 
-    const updatedSources = sources.map((source) => {
+    const updatedSources = sources
+        .filter((source) => source.name !== NOTIFICATION_WINDOW_TITLE)
+        .map((source) => {
         return Object.assign({}, source, {
             thumbnail: source.thumbnail.toDataURL(),
         });
