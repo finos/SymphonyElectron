@@ -98,4 +98,4 @@ copy "%AIP%-SetupFiles\%AIP%.msi" "%targetsDir%\%archiveName%.msi"
 
 echo Building new installer with wix#
 call "BuildWixSharpInstaller.bat"
-copy "Symphony.msi" "%targetsDir%\Experimental-%archiveName%.msi"
+copy "WixSharpInstaller\Symphony.msi" "%targetsDir%\Experimental-%archiveName%.msi"
