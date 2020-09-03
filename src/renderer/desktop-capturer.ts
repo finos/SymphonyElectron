@@ -120,7 +120,9 @@ export const getSource = async (options: ICustomSourcesOptions, callback: Callba
 
     }
 
-    const updatedSources = sources.map((source) => {
+    const updatedSources = sources
+        .filter((source) => isWindowsOS ? source.name !== 'Notification - Symphony' : true)
+        .map((source) => {
         return Object.assign({}, source, {
             thumbnail: source.thumbnail.toDataURL(),
         });
