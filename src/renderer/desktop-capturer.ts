@@ -6,7 +6,7 @@ import {
     SourcesOptions,
 } from 'electron';
 
-import { apiCmds, apiName } from '../common/api-interface';
+import { apiCmds, apiName, NOTIFICATION_WINDOW_TITLE } from '../common/api-interface';
 import { isWindowsOS } from '../common/env';
 import { i18n } from '../common/i18n-preload';
 
@@ -121,7 +121,7 @@ export const getSource = async (options: ICustomSourcesOptions, callback: Callba
     }
 
     const updatedSources = sources
-        .filter((source) => isWindowsOS ? source.name !== 'Notification - Symphony' : true)
+        .filter((source) => isWindowsOS ? source.name !== NOTIFICATION_WINDOW_TITLE : true)
         .map((source) => {
         return Object.assign({}, source, {
             thumbnail: source.thumbnail.toDataURL(),

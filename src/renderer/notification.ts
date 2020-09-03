@@ -3,7 +3,7 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import { config } from '../app/config-handler';
 import { createComponentWindow, windowExists } from '../app/window-utils';
 import { AnimationQueue } from '../common/animation-queue';
-import { apiName, INotificationData, NotificationActions } from '../common/api-interface';
+import { apiName, INotificationData, NOTIFICATION_WINDOW_TITLE, NotificationActions } from '../common/api-interface';
 import { isNodeEnv, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
 import NotificationHandler from './notification-handler';
@@ -470,7 +470,7 @@ class Notification extends NotificationHandler {
             transparent: true,
             fullscreenable: false,
             acceptFirstMouse: true,
-            title: 'Notification - Symphony',
+            title: NOTIFICATION_WINDOW_TITLE,
             webPreferences: {
                 sandbox: !isNodeEnv,
                 nodeIntegration: isNodeEnv,
