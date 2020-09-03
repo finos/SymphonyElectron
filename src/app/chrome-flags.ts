@@ -25,7 +25,7 @@ export const setChromeFlags = () => {
         'disable-d3d11': flagsConfig.disableGpu || null,
         'disable-gpu': flagsConfig.disableGpu || null,
         'disable-gpu-compositing': flagsConfig.disableGpu || null,
-        'enable-experimental-web-platform-features': 'true',
+        'enable-blink-features': 'RTCInsertableStreams',
     };
     if (flagsConfig.customFlags.disableThrottling === CloudConfigDataTypes.ENABLED || disableThrottling === CloudConfigDataTypes.ENABLED) {
         configFlags['disable-renderer-backgrounding'] = 'true';

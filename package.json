@@ -155,7 +155,7 @@
     "electron-fetch": "1.4.0",
     "electron-log": "4.0.7",
     "electron-spellchecker": "git+https://github.com/symphonyoss/electron-spellchecker.git#v2.0.4",
-    "ffi-napi": "2.4.6",
+    "ffi-napi": "3.0.0",
     "filesize": "6.1.0",
     "react": "16.13.0",
     "react-dom": "16.13.0",
