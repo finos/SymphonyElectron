@@ -1,9 +1,15 @@
-//css_dir ..\..\..\;
+//css_dir ..\WixSharpToolset\;
 //css_ref System.Core.dll;
+//css_ref System.Windows.Forms.dll;
 //css_ref Wix_bin\SDK\Microsoft.Deployment.WindowsInstaller.dll;
 //css_ref WixSharp.UI.dll;
+//css_imp WelcomeDlg.cs;
+//css_imp WelcomeDlg.designer.cs;
+//css_imp ExitDlg.cs;
+//css_imp ExitDlg.designer.cs;
 
 using WixSharp;
+using WixSharp.Forms;
 using Microsoft.Deployment.WindowsInstaller;
 
 class Script
@@ -160,6 +166,18 @@ class Script
                 UsesProperties = "INSTALLDIR,POD_URL,MINIMIZE_ON_CLOSE,ALWAYS_ON_TOP,AUTO_START,BRING_TO_FRONT,MEDIA,LOCATION,NOTIFICATIONS,MIDI_SYSEX,POINTER_LOCK,FULL_SCREEN,OPEN_EXTERNAL,CUSTOM_TITLE_BAR,DEV_TOOLS_ENABLED,AUTO_LAUNCH_PATH"
             }
         };
+
+        // Use our own Symphony branded bitmap for installation dialogs
+        project.BannerImage = "Banner.jpg";
+        project.BackgroundImage = "Tabloid.jpg";
+
+        // Define our own installation flow, using a mix of custom dialogs (defined in their own files) and built-in dialogs
+        project.ManagedUI = new ManagedUI();
+        project.ManagedUI.InstallDialogs.Add<Symphony.WelcomeDlg>()
+                                        .Add(Dialogs.InstallDir)
+                                        .Add(Dialogs.Progress)
+                                        .Add<Symphony.ExitDlg>();
+
 
         // Generate an MSI from all settings done above
         Compiler.BuildMsi(project);
