@@ -9,32 +9,11 @@ const DOWNLOAD_MANAGER_NAMESPACE = 'DownloadManager';
 export interface IDownloadItem {
     _id: string;
     fileName: string;
-    fileDisplayName?: string;
     savedPath: string;
     total: string;
-    flashing?: boolean;
-    count?: number;
 }
 
 class DownloadHandler {
-
-    /**
-     * Checks and constructs file name
-     *
-     * @param fileName {String} Filename
-     * @param item {IDownloadItem} Download Item
-     */
-    private static getFileDisplayName(fileName: string, item: IDownloadItem): string {
-        /* If it exists, add a count to the name like how Chrome does */
-        if (item.count && item.count > 0) {
-            const extLastIndex = fileName.lastIndexOf('.');
-            const fileCount = ' (' + item.count + ')';
-
-            fileName = fileName.slice(0, extLastIndex) + fileCount + fileName.slice(extLastIndex);
-        }
-        return fileName;
-    }
-
     /**
      * Show dialog for failed cases
      */
@@ -112,14 +91,6 @@ class DownloadHandler {
      * @param item Download item
      */
     public onDownloadSuccess(item: IDownloadItem): void {
-        let itemCount = 0;
-        for (const existingItem of this.items) {
-            if (item.fileName === existingItem.fileName) {
-                itemCount++;
-            }
-        }
-        item.count = itemCount;
-        item.fileDisplayName = DownloadHandler.getFileDisplayName(item.fileName, item);
         this.items.push(item);
         this.sendDownloadCompleted(item);
     }
@@ -138,7 +109,7 @@ class DownloadHandler {
         if (this.window && !this.window.isDestroyed()) {
             logger.info(`download-handler: Download completed! Informing the client!`);
             this.window.send('download-completed', {
-                id: item._id, fileDisplayName: item.fileDisplayName, fileSize: item.total,
+                id: item._id, fileDisplayName: item.fileName, fileSize: item.total,
             });
         }
     }
