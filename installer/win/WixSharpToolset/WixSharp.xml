@@ -14243,6 +14243,11 @@
             The .NET4.7.2 installed. This condition is to be used in Project.SetNetFxPrerequisite.
             </summary>
         </member>
+        <member name="F:WixSharp.Condition.Net48_Installed">
+            <summary>
+            The .NET4.8 installed. This condition is to be used in Project.SetNetFxPrerequisite.
+            </summary>
+        </member>
         <member name="F:WixSharp.Condition.Net30_SP_Installed">
             <summary>
             The .NET3.0 SP installed. This condition is to be used in Project.SetNetFxPrerequisite.
@@ -15007,6 +15012,36 @@
             <value>
             The namespace.
             </value>
+        </member>
+        <member name="T:WixSharp.ProcessExtensions">
+            <summary>
+            Extension methods for <see cref="T:System.Diagnostics.Process"/>
+            </summary>
+        </member>
+        <member name="M:WixSharp.ProcessExtensions.StartElevated(System.String,System.String)">
+            <summary>
+            Starts a process resource by specifying the name of an application and a set of command-line arguments,
+            and associates the resource with a new System.Diagnostics.Process component.
+            </summary>
+            <param name="fileName">Gets or sets the application or document to start.</param>
+            <param name="args">Gets or sets the set of command-line arguments to use when starting the application.</param>
+            <returns>A new <see cref="T:System.Diagnostics.Process"/> component that is associated with the process, or null, if no process resource is started (for example, if an existing process is reused).</returns>
+        </member>
+        <member name="M:WixSharp.ProcessExtensions.Start(System.String,System.String)">
+            <summary>
+            Starts a process resource by specifying the name of an application and a set of command-line arguments,
+            and associates the resource with a new System.Diagnostics.Process component.
+            </summary>
+            <param name="fileName">Gets or sets the application or document to start.</param>
+            <param name="args">Gets or sets the set of command-line arguments to use when starting the application.</param>
+            <returns>A new <see cref="T:System.Diagnostics.Process"/> component that is associated with the process, or null, if no process resource is started (for example, if an existing process is reused).</returns>
+        </member>
+        <member name="M:WixSharp.ProcessExtensions.Wait(System.Diagnostics.Process)">
+            <summary>
+            Instructs the <see cref="T:System.Diagnostics.Process"/> component to wait indefinitely for the associated process to exit.
+            </summary>
+            <param name="process">An instance of <see cref="T:System.Diagnostics.Process"/> component that is running.</param>
+            <returns>An instance of <see cref="T:System.Diagnostics.Process"/> component that is running.</returns>
         </member>
         <member name="T:WixSharp.FeatureSet">
              <summary>
@@ -18762,10 +18797,23 @@
             <param name="message">The error message that explains the reason for the exception.</param>
             <param name="innerException">The exception that is the cause of the current exception. If the <paramref name="innerException" /> parameter is not a null reference, the current exception is raised in a catch block that handles the inner exception.</param>
         </member>
+        <member name="T:WixSharp.WixSharpException">
+            <summary>
+            Generic WixSharp exception class.
+            </summary>
+            <seealso cref="T:System.ApplicationException" />
+        </member>
+        <member name="M:WixSharp.WixSharpException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:WixSharp.WixSharpException"/> class.
+            </summary>
+            <param name="message">The message.</param>
+        </member>
         <member name="T:WixSharp.ValidationException">
             <summary>
             Generic validation exception class.
             </summary>
+            <seealso cref="T:System.ApplicationException" />
         </member>
         <member name="M:WixSharp.ValidationException.#ctor(System.String)">
             <summary>
