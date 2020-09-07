@@ -403,11 +403,12 @@ export const handleDownloadManager = (_event, item: Electron.DownloadItem, webCo
     // Send file path when download is complete
     item.once('done', (_e, state) => {
         if (state === 'completed') {
+            const savePathSplit = item.getSavePath()?.split('/');
             const data: IDownloadItem = {
                 _id: getGuid(),
                 savedPath: item.getSavePath() || '',
                 total: filesize(item.getTotalBytes() || 0),
-                fileName: item.getFilename() || 'No name',
+                fileName: savePathSplit[savePathSplit.length - 1] || 'No name',
             };
             logger.info('window-utils: Download completed, informing download manager');
             webContents.send('downloadCompleted', data);
