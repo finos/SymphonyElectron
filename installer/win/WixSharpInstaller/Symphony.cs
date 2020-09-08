@@ -11,6 +11,7 @@
 using WixSharp;
 using WixSharp.Forms;
 using Microsoft.Deployment.WindowsInstaller;
+using Microsoft.Win32;
 
 class Script
 {
@@ -18,10 +19,10 @@ class Script
     {
         // The name "Symphony" is used in a lot of places, for paths, shortut names and installer filename, so define it once
         var productName = "Symphony";
-        
+
         // Create a wixsharp project instance and assign the project name to it, and a hierarchy of all files to include
-        // Files are taken from multiple locations, and not all files in each location should be included, which is why 
-        // the file list is rather long and explicit. At some point we might make the `dist` folder match exactly the 
+        // Files are taken from multiple locations, and not all files in each location should be included, which is why
+        // the file list is rather long and explicit. At some point we might make the `dist` folder match exactly the
         // desired contents of installation, and then we can simplify this bit.
         var project = new ManagedProject(productName,
             new Dir(@"%ProgramFiles%\" + productName,
@@ -105,17 +106,20 @@ class Script
             ),
 
             // Add a launch condition to require Windows Server 2008 or later
-            // The property values to compare against can be found here: 
+            // The property values to compare against can be found here:
             //    https://docs.microsoft.com/en-us/windows/win32/msi/operating-system-property-values
-            new LaunchCondition("VersionNT>=600 AND WindowsBuild>=6001", "OS not supported")            
+            new LaunchCondition("VersionNT>=600 AND WindowsBuild>=6001", "OS not supported"),
+            
+			// Add registry entry used by protocol handler to launch symphony when opening symphony:// URIs
+            new RegValue(WixSharp.RegistryHive.ClassesRoot, productName + @"\shell\open\command", "", "\"[INSTALLDIR]Symphony.exe\" \"%1\"")            
         );
-        
+
         // The build script which calls the wix# builder, will be run from a command environment which has %SYMVER% set.
         // So we just extract that version string, create a Version object from it, and pass it to out project definition.
         var version = System.Environment.GetEnvironmentVariable("SYMVER");
         project.Version = new System.Version(version);
-        
-        // Declare all the custom properties we want to use, and assign them default values. It is possible to override 
+
+        // Declare all the custom properties we want to use, and assign them default values. It is possible to override
         // these when running the installer, but if not specified, the defaults will be used.
         project.Properties = new[]
         {
@@ -146,15 +150,15 @@ class Script
             // InstallVariant
             //
             // We want to be able to display the POD URL dialog every time SDA starts after a reinstall, regardless of
-            // whether it is a new version or the same version, but we don't want to display it if no reinstallation 
+            // whether it is a new version or the same version, but we don't want to display it if no reinstallation
             // have been done. To detect this, we always write a new GUID to the fill InstallVariant.info on every
-            // installation. 
+            // installation.
             new ElevatedManagedAction(CustomActions.InstallVariant, Return.check, When.After, Step.InstallFiles, Condition.NOT_Installed )
             {
                 // INSTALLDIR is a built-in property, and we need it to know which path to write the InstallVariant to
                 UsesProperties = "INSTALLDIR"
             },
-            
+
             // UpdateConfig
             //
             // After installation, the Symphony.config file needs to be updated with values from the install properties,
@@ -164,7 +168,14 @@ class Script
             {
                 // The UpdateConfig action needs the built-in property INSTALLDIR as well as most of the custom properties
                 UsesProperties = "INSTALLDIR,POD_URL,MINIMIZE_ON_CLOSE,ALWAYS_ON_TOP,AUTO_START,BRING_TO_FRONT,MEDIA,LOCATION,NOTIFICATIONS,MIDI_SYSEX,POINTER_LOCK,FULL_SCREEN,OPEN_EXTERNAL,CUSTOM_TITLE_BAR,DEV_TOOLS_ENABLED,AUTO_LAUNCH_PATH"
-            }
+            },
+
+            // CleanRegistry
+            //
+            // We have some registry keys which are added by the SDA application when it is first launched. This custom
+            // action will clean up those keys on uninstall. The name/location of keys have changed between different
+            // versions of SDA, so we clean up all known variations, and ignore any missing ones.
+            new ElevatedManagedAction(CustomActions.CleanRegistry, Return.ignore, When.After, Step.RemoveFiles, Condition.Installed )
         };
 
         // Use our own Symphony branded bitmap for installation dialogs
@@ -177,6 +188,10 @@ class Script
                                         .Add(Dialogs.InstallDir)
                                         .Add(Dialogs.Progress)
                                         .Add<Symphony.ExitDlg>();
+        project.ManagedUI.ModifyDialogs.Add(Dialogs.MaintenanceType)
+                                       .Add(Dialogs.Progress)
+                                       .Add<Symphony.ExitDlg>();
+
 
 
         // Generate an MSI from all settings done above
@@ -196,11 +211,11 @@ public class CustomActions
             var installDir = session.Property("INSTALLDIR");
             var filename = System.IO.Path.Combine(installDir, @"config\InstallVariant.info");
             var installVariantFile = new System.IO.StreamWriter(filename);
-            
+
             // Generate new GUID for each time we install, and write it as a text string to the file
-            var guid = System.Guid.NewGuid();           
+            var guid = System.Guid.NewGuid();
             installVariantFile.Write(guid.ToString());
-            
+
             installVariantFile.Close();
         }
         catch (System.Exception e)
@@ -248,7 +263,7 @@ public class CustomActions
             return ActionResult.Failure;
         }
         return ActionResult.Success;
-    }   
+    }
 
     // Helper function called by UpdadeConfig action, for each config file value that needs to be
     // replaced by a value taken from the property. `data` is the entire contents of the config file.
@@ -258,11 +273,68 @@ public class CustomActions
     // the requested replacement performed.
     static string ReplaceProperty( string data, string name, string value )
     {
-        // Using regular expressions to replace the existing value in the config file with the 
+        // Using regular expressions to replace the existing value in the config file with the
         // one from the property. This is the same as the regex we used to have in the old
         // Advanced Installer, which looked like this: "url"\s*:\s*".*" => "url": "[POD_URL]"
         return System.Text.RegularExpressions.Regex.Replace(data, @"""" + name + @"""\s*:\s*"".*""",
             @"""" + name + @""":""" + value.Trim() + @"""");
     }
 
+    // CleanRegistry custom action
+    [CustomAction]
+    public static ActionResult CleanRegistry(Session session)
+    {
+        try
+        {
+            // Remove registry keys added for auto-launch
+
+            using( var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true) )
+            {
+                if (key != null)
+                {
+                    key.DeleteValue("Symphony", false);
+                    key.DeleteValue("com.symphony.electron-desktop", false);
+                    key.DeleteValue("electron.app.Symphony", false);
+                }
+            }
+            using( var key = Registry.Users.OpenSubKey(@"\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\Run", true) )
+            {
+                if (key != null)
+                {
+                    key.DeleteValue("Symphony", false);
+                }
+            }
+
+
+            // Remove registry keys added by protocol handlers
+
+            using( var key = Registry.CurrentUser.OpenSubKey(@"Software\Classes", true) )
+            {
+                if (key != null)
+                {
+                    key.DeleteSubKeyTree("symphony", false);
+                }
+            }
+            using( var key = Registry.LocalMachine.OpenSubKey(@"Software\Classes", true) )
+            {
+                if (key != null)
+                {
+                    key.DeleteSubKeyTree("symphony", false);
+                }
+            }
+            using( var key = Registry.ClassesRoot.OpenSubKey(@"\", true) )
+            {
+                if (key != null)
+                {
+                    key.DeleteSubKeyTree("symphony", false);
+                }
+            }
+        }
+        catch (System.Exception e)
+        {
+            session.Log("Error executing CleanRegistry: " + e.ToString() );
+            return ActionResult.Success;
+        }
+        return ActionResult.Success;
+    }
 }
