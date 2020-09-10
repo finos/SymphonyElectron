@@ -22,18 +22,26 @@ namespace Symphony
 
         void dialog_Load(object sender, System.EventArgs e)
         {
-            // Populate the dynamic UI elements that can't be set at compile time (background image and 
+            // Populate the dynamic UI elements that can't be set at compile time (background image and
             // the label containing user name)
             this.backgroundPanel.BackgroundImage = Runtime.Session.GetResourceBitmap("WixUI_Bmp_Dialog");
             this.radioButtonCurrentUser.Text = "Only for me (" + getUserName() + ")";
+            if( Runtime.Session["ALLUSERS"] != "" )
+            {
+                    this.radioButtonAllUsers.Checked = true;
+            }
+            else
+            {
+                   this.radioButtonCurrentUser.Checked = true;
+            }
         }
 
         void next_Click(object sender, System.EventArgs e)
         {
             // To enable Wix to use the "MSIINSTALLPERUSER" property being set below, ALLUSERS must be set to 2
-            Runtime.Session["ALLUSERS"] = "2"; 
-            
-            
+            Runtime.Session["ALLUSERS"] = "2";
+
+
             if (radioButtonCurrentUser.Checked)
             {
                 // Install for current user
@@ -42,10 +50,10 @@ namespace Symphony
             } else if (radioButtonAllUsers.Checked)
             {
                 // Install for all users
-                Runtime.Session["MSIINSTALLPERUSER"] = ""; // per-machine                 
+                Runtime.Session["MSIINSTALLPERUSER"] = ""; // per-machine
                 Runtime.Session["INSTALLDIR"] = System.Environment.ExpandEnvironmentVariables(@"%PROGRAMFILES%\" + Runtime.ProductName);
             }
-            
+
             Shell.GoNext();
         }
 
