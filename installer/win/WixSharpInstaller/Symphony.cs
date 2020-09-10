@@ -110,7 +110,7 @@ class Script
             //    https://docs.microsoft.com/en-us/windows/win32/msi/operating-system-property-values
             new LaunchCondition("VersionNT>=600 AND WindowsBuild>=6001", "OS not supported"),
             
-			// Add registry entry used by protocol handler to launch symphony when opening symphony:// URIs
+            // Add registry entry used by protocol handler to launch symphony when opening symphony:// URIs
             new RegValue(WixSharp.RegistryHive.ClassesRoot, productName + @"\shell\open\command", "", "\"[INSTALLDIR]Symphony.exe\" \"%1\"")            
         );
 
@@ -123,25 +123,23 @@ class Script
         // these when running the installer, but if not specified, the defaults will be used.
         project.Properties = new[]
         {
+            new PublicProperty("ALLUSERS", "true"),
             new PublicProperty("ALWAYS_ON_TOP", "DISABLED" ),
-            new PublicProperty("AUTO_LAUNCH_PATH", "[|]"),
+            new PublicProperty("AUTO_LAUNCH_PATH", ""),
             new PublicProperty("AUTO_START", "ENABLED"),
             new PublicProperty("BRING_TO_FRONT", "DISABLED"),
             new PublicProperty("CUSTOM_TITLE_BAR", "ENABLED"),
             new PublicProperty("DEV_TOOLS_ENABLED", "true"),
             new PublicProperty("FULL_SCREEN", "true"),
-            new PublicProperty("FULL_SCREEN_CB", "true"),
             new PublicProperty("LOCATION", "true"),
             new PublicProperty("MEDIA", "true"),
             new PublicProperty("MIDI_SYSEX", "true"),
-            new PublicProperty("MIDI_SYSEX_CB", "true"),
             new PublicProperty("MINIMIZE_ON_CLOSE", "ENABLED"),
             new PublicProperty("NOTIFICATIONS", "true"),
             new PublicProperty("OPEN_EXTERNAL", "true"),
-            new PublicProperty("OPEN_EXTERNAL_CB", "true"),
             new PublicProperty("POD_URL", "https://my.symphony.com"),
             new PublicProperty("POINTER_LOCK", "true"),
-            new PublicProperty("POINTER_LOCK_CB", "true")
+            new Property("MSIINSTALLPERUSER", "1")
         };
 
         // Define the custom actions we want to run, and at what point of the installation we want to execute them.
