@@ -175,8 +175,9 @@ class Logger {
      * @param logLevel {LogLevel} - Different type of log levels
      * @param message {string} - Log message
      * @param data {array} - extra data to be logged
+     * @param sendToCloud {boolean} - wehether to send the logs on to cloud
      */
-    private log(logLevel: LogLevel, message: string, data: any[] = []): void {
+    public log(logLevel: LogLevel, message: string, data: any[] = [], sendToCloud: boolean = true): void {
         if (data && data.length > 0) {
             data.forEach((param) => {
                 message += `, '${param && typeof param}': ${JSON.stringify(param)}`;
@@ -193,7 +194,9 @@ class Logger {
                 default: electronLog.info(message);
             }
         }
-        this.sendToCloud(this.formatLogMsg(logLevel, message));
+        if (sendToCloud) {
+            this.sendToCloud(this.formatLogMsg(logLevel, message));
+        }
     }
 
     /**
