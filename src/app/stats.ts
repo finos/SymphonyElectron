@@ -1,6 +1,5 @@
 import { app } from 'electron';
 import * as os from 'os';
-import * as si from 'systeminformation';
 import { logger } from '../common/logger';
 
 export class AppStats {
@@ -17,7 +16,6 @@ export class AppStats {
         this.logAppMetrics();
         this.logConfigurationData();
         this.logAppEvents();
-        this.logAllStats();
     }
 
     /**
@@ -96,17 +94,6 @@ export class AppStats {
         logger.info(`stats: Resources Path? ${process.resourcesPath}`);
         logger.info(`stats: Chrome Version? ${process.versions.chrome}`);
         logger.info(`stats: Electron Version? ${process.versions.electron}`);
-    }
-
-    /**
-     * Log all system statistics
-     */
-    private async logAllStats() {
-        try {
-            logger.info(`All Data: ${JSON.stringify(await si.getAllData())}`);
-        } catch (e) {
-            logger.error(`Error gathering all data: ${e}`);
-        }
     }
 }
 
