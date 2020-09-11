@@ -11,6 +11,7 @@ import { config } from './config-handler';
 import {
     handlePermissionRequests,
     monitorWindowActions,
+    onConsoleMessages,
     removeWindowEventListener,
     sendInitialBoundChanges,
 } from './window-actions';
@@ -175,6 +176,7 @@ export const handleChildWindow = (webContents: WebContents): void => {
                 }
                 windowHandler.addWindow(newWinKey, browserWin);
                 const { url } = config.getGlobalConfigFields([ 'url' ]);
+                const { enableRendererLogs } = config.getConfigFields([ 'enableRendererLogs' ]);
                 browserWin.webContents.send('page-load', {
                     isWindowsOS,
                     locale: i18n.getLocale(),
@@ -201,24 +203,9 @@ export const handleChildWindow = (webContents: WebContents): void => {
                 // Update initial bound changes
                 sendInitialBoundChanges(browserWin);
 
-                browserWin.webContents.on('console-message', (_event, level, message, _line, _sourceId) => {
-                    const { enableRendererLogs } = config.getConfigFields([ 'enableRendererLogs' ]);
-                    if (enableRendererLogs) {
-                        if (browserWin) {
-                            if (level === 0) {
-                                logger.debug('renderer ' + browserWin.title + ': ' + message);
-                            } else if (level === 1) {
-                                logger.info('renderer ' + browserWin.title + ': ' + message);
-                            } else if (level === 2) {
-                                logger.warn('renderer ' + browserWin.title + ': ' + message);
-                            } else if (level === 3) {
-                                logger.error('renderer ' + browserWin.title + ': ' + message);
-                            } else {
-                                logger.info('renderer ' + browserWin.title + ': ' + message);
-                            }
-                        }
-                    }
-                });
+                if (enableRendererLogs) {
+                    browserWin.webContents.on('console-message', onConsoleMessages);
+                }
 
                 // Remove all attached event listeners
                 browserWin.on('close', () => {
