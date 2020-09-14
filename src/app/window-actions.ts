@@ -389,3 +389,51 @@ export const handlePermissionRequests = (webContents: Electron.webContents): voi
         }
     });
 };
+
+/**
+ * Writes renderer logs to log file
+ * @param _event
+ * @param level
+ * @param message
+ * @param _line
+ * @param _sourceId
+ */
+export const onConsoleMessages = (_event, level, message, _line, _sourceId) => {
+    if (level === 0) {
+        logger.log('error', `renderer: ${message}`, [], false);
+    } else if (level === 1) {
+        logger.log('info', `renderer: ${message}`, [], false);
+    } else if (level === 2) {
+        logger.log('warn', `renderer: ${message}`, [], false);
+    } else if (level === 3) {
+        logger.log('error', `renderer: ${message}`, [], false);
+    } else {
+        logger.log('info', `renderer: ${message}`, [], false);
+    }
+};
+
+/**
+ * Unregisters renderer logs from all the available browser window
+ */
+export const unregisterConsoleMessages = () => {
+    const browserWindows = BrowserWindow.getAllWindows();
+    for (const browserWindow of browserWindows) {
+        if (!browserWindow || !windowExists(browserWindow)) {
+            return;
+        }
+        browserWindow.webContents.removeListener('console-message', onConsoleMessages);
+    }
+};
+
+/**
+ * registers renderer logs from all the available browser window
+ */
+export const registerConsoleMessages = () => {
+    const browserWindows = BrowserWindow.getAllWindows();
+    for (const browserWindow of browserWindows) {
+        if (!browserWindow || !windowExists(browserWindow)) {
+            return;
+        }
+        browserWindow.webContents.on('console-message', onConsoleMessages);
+    }
+};
