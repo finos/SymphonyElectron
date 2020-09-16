@@ -802,10 +802,12 @@ export class WindowHandler {
                             this.execCmd(this.screenShareIndicatorFrameUtil, [ source.display_id ]);
                         } else {
                             const dispId = source.id.split(':')[1];
+                            const clampedDispId = Math.min(dispId, displays.length - 1);
                             const keyId = 'id';
                             logger.info('window-utils: dispId: ' + dispId);
-                            logger.info('window-utils: displays [' + dispId + '] [id]: ' + displays [dispId] [ keyId ]);
-                            this.execCmd(this.screenShareIndicatorFrameUtil, [ displays [dispId] [ keyId ].toString() ]);
+                            logger.info('window-utils: clampedDispId: ' + clampedDispId);
+                            logger.info('window-utils: displays [' + clampedDispId + '] [id]: ' + displays [clampedDispId] [ keyId ]);
+                            this.execCmd(this.screenShareIndicatorFrameUtil, [ displays [clampedDispId] [ keyId ].toString() ]);
                         }
                     }
                 }
