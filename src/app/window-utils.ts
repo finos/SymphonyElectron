@@ -403,7 +403,7 @@ export const handleDownloadManager = (_event, item: Electron.DownloadItem, webCo
     // Send file path when download is complete
     item.once('done', (_e, state) => {
         if (state === 'completed') {
-            const savePathSplit = item.getSavePath()?.split('/');
+            const savePathSplit = item.getSavePath()?.split(path.sep);
             const data: IDownloadItem = {
                 _id: getGuid(),
                 savedPath: item.getSavePath() || '',
