@@ -5,6 +5,8 @@
 //css_ref WixSharp.UI.dll;
 //css_imp WelcomeDlg.cs;
 //css_imp WelcomeDlg.designer.cs;
+//css_imp CloseDlg.cs;
+//css_imp CloseDlg.designer.cs;
 //css_imp ExitDlg.cs;
 //css_imp ExitDlg.designer.cs;
 
@@ -197,6 +199,7 @@ class Script
         // Define our own installation flow, using a mix of custom dialogs (defined in their own files) and built-in dialogs
         project.ManagedUI = new ManagedUI();
         project.ManagedUI.InstallDialogs.Add<Symphony.WelcomeDlg>()
+                                        .Add<Symphony.CloseDlg>()
                                         .Add(Dialogs.InstallDir)
                                         .Add(Dialogs.Progress)
                                         .Add<Symphony.ExitDlg>();
@@ -204,11 +207,45 @@ class Script
                                        .Add(Dialogs.Progress)
                                        .Add<Symphony.ExitDlg>();
 
+        project.Load += project_Load;
 
+        project.Platform = Platform.x64;
 
         // Generate an MSI from all settings done above
         Compiler.BuildMsi(project);
     }
+
+    static void project_Load(SetupEventArgs e)
+    {
+        try
+        {
+            // Try to close all running symphony instances before installing
+            System.Diagnostics.Process.GetProcessesByName("Symphony").ForEach(p => {
+                if( System.IO.Path.GetFileName(p.MainModule.FileName) =="Symphony.exe")
+                {
+                    if( !p.HasExited )
+                    {
+                        p.Kill();
+                        p.WaitForExit();
+                    }
+                }
+            });
+        }
+        catch (System.ComponentModel.Win32Exception ex)
+        {
+            // We always seem to get this specific exception triggered, but the application still close down correctly.
+            // The exception descriptionis "Only part of a ReadProcessMemory or WriteProcessMemory request was completed".
+            // We ignore that specific exception, so as not to put false error outputs into the log.
+            if (ex.NativeErrorCode != 299) {
+                e.Session.Log("Error trying to close all Symphony instances: " + ex.ToString() );
+            }
+        }
+        catch (System.Exception ex)
+        {
+            e.Session.Log("Error trying to close all Symphony instances: " + ex.ToString() );
+        }
+    }
+
 }
 
 public class CustomActions
