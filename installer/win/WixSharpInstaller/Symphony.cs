@@ -234,7 +234,7 @@ class Script
         catch (System.ComponentModel.Win32Exception ex)
         {
             // We always seem to get this specific exception triggered, but the application still close down correctly.
-            // The exception descriptionis "Only part of a ReadProcessMemory or WriteProcessMemory request was completed".
+            // The exception description is "Only part of a ReadProcessMemory or WriteProcessMemory request was completed".
             // We ignore that specific exception, so as not to put false error outputs into the log.
             if (ex.NativeErrorCode != 299) {
                 e.Session.Log("Error trying to close all Symphony instances: " + ex.ToString() );
