@@ -13,7 +13,7 @@ import { autoLaunchInstance as autoLaunch } from './auto-launch-controller';
 import { CloudConfigDataTypes, config, IConfig } from './config-handler';
 import { gpuRestartDialog, titleBarChangeDialog } from './dialog-handler';
 import { exportCrashDumps, exportLogs } from './reports-handler';
-import { updateAlwaysOnTop } from './window-actions';
+import { registerConsoleMessages, unregisterConsoleMessages, updateAlwaysOnTop } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 import { reloadWindow, windowExists } from './window-utils';
 
@@ -473,8 +473,10 @@ export class AppMenu {
                         click: async () => {
                             if (this.enableRendererLogs) {
                                 this.enableRendererLogs = false;
+                                unregisterConsoleMessages();
                             } else {
                                 this.enableRendererLogs = true;
+                                registerConsoleMessages();
                             }
                             const enableRendererLogs = this.enableRendererLogs;
                             await config.updateUserConfig({ enableRendererLogs });

@@ -25,7 +25,7 @@ import { CloudConfigDataTypes, config, IConfig, IGlobalConfig } from './config-h
 import { SpellChecker } from './spell-check-handler';
 import { checkIfBuildExpired } from './ttl-handler';
 import { versionHandler } from './version-handler';
-import { handlePermissionRequests, monitorWindowActions } from './window-actions';
+import { handlePermissionRequests, monitorWindowActions, onConsoleMessages } from './window-actions';
 import {
     createComponentWindow,
     didVerifyAndRestoreWindow,
@@ -114,7 +114,7 @@ export class WindowHandler {
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Use these variables only on initial setup
-        this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings', 'alwaysOnTop', 'locale', 'customFlags', 'clientSwitch' ]);
+        this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings', 'alwaysOnTop', 'locale', 'customFlags', 'clientSwitch', 'enableRendererLogs' ]);
         logger.info(`window-handler: main windows initialized with following config data`, this.config);
 
         this.globalConfig = config.getGlobalConfigFields([ 'url', 'contextIsolation', 'contextOriginUrl' ]);
@@ -385,25 +385,6 @@ export class WindowHandler {
             response === 0 ? this.mainWindow.reload() : this.mainWindow.close();
         });
 
-        this.mainWindow.webContents.on('console-message', (_event, level, message, _line, _sourceId) => {
-            const { enableRendererLogs } = config.getConfigFields([ 'enableRendererLogs' ]);
-            if (enableRendererLogs) {
-                if (this.mainWindow) {
-                    if (level === 0) {
-                        logger.debug('renderer ' + this.mainWindow.winName + ': ' + message);
-                    } else if (level === 1) {
-                        logger.info('renderer ' + this.mainWindow.winName + ': ' + message);
-                    } else if (level === 2) {
-                        logger.warn('renderer ' + this.mainWindow.winName + ': ' + message);
-                    } else if (level === 3) {
-                        logger.error('renderer ' + this.mainWindow.winName + ': ' + message);
-                    } else {
-                        logger.info('renderer ' + this.mainWindow.winName + ': ' + message);
-                    }
-                }
-            }
-        });
-
         // Handle main window close
         this.mainWindow.on('close', (event) => {
             if (!this.mainWindow || !windowExists(this.mainWindow)) {
@@ -475,6 +456,10 @@ export class WindowHandler {
 
         // Handle pop-outs window
         handleChildWindow(this.mainWindow.webContents);
+
+        if (this.config.enableRendererLogs) {
+            this.mainWindow.webContents.on('console-message', onConsoleMessages);
+        }
 
         return this.mainWindow;
     }
@@ -818,10 +803,12 @@ export class WindowHandler {
                             this.execCmd(this.screenShareIndicatorFrameUtil, [ source.display_id ]);
                         } else {
                             const dispId = source.id.split(':')[1];
+                            const clampedDispId = Math.min(dispId, displays.length - 1);
                             const keyId = 'id';
                             logger.info('window-utils: dispId: ' + dispId);
-                            logger.info('window-utils: displays [' + dispId + '] [id]: ' + displays [dispId] [ keyId ]);
-                            this.execCmd(this.screenShareIndicatorFrameUtil, [ displays [dispId] [ keyId ].toString() ]);
+                            logger.info('window-utils: clampedDispId: ' + clampedDispId);
+                            logger.info('window-utils: displays [' + clampedDispId + '] [id]: ' + displays [clampedDispId] [ keyId ]);
+                            this.execCmd(this.screenShareIndicatorFrameUtil, [ displays [clampedDispId] [ keyId ].toString() ]);
                         }
                     }
                 }
