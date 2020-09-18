@@ -13,16 +13,16 @@ namespace Symphony
 
         void dialog_Load(object sender, System.EventArgs e)
         {
-			// Detect if Symphony is running
+            // Detect if Symphony is running
             bool isRunning = System.Diagnostics.Process.GetProcessesByName("Symphony").Length > 0;
             if (isRunning)
-			{
-				// If it is running, disable the "next" button
-				this.next.Enabled = false;
-			}
-			else
             {
-				// If it is not running, skip this dialog
+                // If it is running, disable the "next" button
+                this.next.Enabled = false;
+            }
+            else
+            {
+                // If it is not running, skip this dialog
                 Shell.GoNext();
             }
 
@@ -33,8 +33,8 @@ namespace Symphony
 
         void closeButton_Click(object sender, System.EventArgs e)
         {
-			// The "Close Symphony" button is just to get users consent to close the app.
-			// Actually closing the app will be done later in the flow.
+            // The "Close Symphony" button is just to get users consent to close the app.
+            // Actually closing the app will be done later in the flow.
             Shell.GoNext();
         }
 
