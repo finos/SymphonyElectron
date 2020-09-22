@@ -5,6 +5,8 @@
 //css_ref WixSharp.UI.dll;
 //css_imp WelcomeDlg.cs;
 //css_imp WelcomeDlg.designer.cs;
+//css_imp CloseDlg.cs;
+//css_imp CloseDlg.designer.cs;
 //css_imp ExitDlg.cs;
 //css_imp ExitDlg.designer.cs;
 
@@ -109,15 +111,29 @@ class Script
             // The property values to compare against can be found here:
             //    https://docs.microsoft.com/en-us/windows/win32/msi/operating-system-property-values
             new LaunchCondition("VersionNT>=600 AND WindowsBuild>=6001", "OS not supported"),
-            
+
             // Add registry entry used by protocol handler to launch symphony when opening symphony:// URIs
-            new RegValue(WixSharp.RegistryHive.ClassesRoot, productName + @"\shell\open\command", "", "\"[INSTALLDIR]Symphony.exe\" \"%1\"")            
+            new RegValue(WixSharp.RegistryHive.ClassesRoot, productName + @"\shell\open\command", "", "\"[INSTALLDIR]Symphony.exe\" \"%1\"")
         );
 
         // The build script which calls the wix# builder, will be run from a command environment which has %SYMVER% set.
         // So we just extract that version string, create a Version object from it, and pass it to out project definition.
         var version = System.Environment.GetEnvironmentVariable("SYMVER");
         project.Version = new System.Version(version);
+
+        // To get the correct behaviour with upgrading the product, the product GUID needs to be different for every build,
+        // but the UpgradeCode needs to stay the same. If we wanted to make a new major version and allow it to be installed
+        // side-by-side with the previous version, we would generate a new UpgradeCode for the new version onwards.
+        // More details can be found in this stackoverflow post:
+        //      https://stackoverflow.com/a/26344742
+        project.GUID = System.Guid.NewGuid();
+        project.UpgradeCode = new System.Guid("{a9b448c9-f065-41a4-87c3-da527c6a389b}");
+
+        // Don't allow installation of earlier versions, but do allow installing the same version as is already installed.
+        project.MajorUpgrade = new MajorUpgrade();
+        project.MajorUpgrade.AllowDowngrades = false;
+        project.MajorUpgrade.AllowSameVersionUpgrades = true;
+        project.MajorUpgrade.DowngradeErrorMessage = "A more recent version of Symphony is already installed on this computer.";
 
         // Declare all the custom properties we want to use, and assign them default values. It is possible to override
         // these when running the installer, but if not specified, the defaults will be used.
@@ -183,6 +199,7 @@ class Script
         // Define our own installation flow, using a mix of custom dialogs (defined in their own files) and built-in dialogs
         project.ManagedUI = new ManagedUI();
         project.ManagedUI.InstallDialogs.Add<Symphony.WelcomeDlg>()
+                                        .Add<Symphony.CloseDlg>()
                                         .Add(Dialogs.InstallDir)
                                         .Add(Dialogs.Progress)
                                         .Add<Symphony.ExitDlg>();
@@ -190,11 +207,45 @@ class Script
                                        .Add(Dialogs.Progress)
                                        .Add<Symphony.ExitDlg>();
 
+        project.Load += project_Load;
 
+        project.Platform = Platform.x64;
 
         // Generate an MSI from all settings done above
         Compiler.BuildMsi(project);
     }
+
+    static void project_Load(SetupEventArgs e)
+    {
+        try
+        {
+            // Try to close all running symphony instances before installing
+            System.Diagnostics.Process.GetProcessesByName("Symphony").ForEach(p => {
+                if( System.IO.Path.GetFileName(p.MainModule.FileName) =="Symphony.exe")
+                {
+                    if( !p.HasExited )
+                    {
+                        p.Kill();
+                        p.WaitForExit();
+                    }
+                }
+            });
+        }
+        catch (System.ComponentModel.Win32Exception ex)
+        {
+            // We always seem to get this specific exception triggered, but the application still close down correctly.
+            // The exception description is "Only part of a ReadProcessMemory or WriteProcessMemory request was completed".
+            // We ignore that specific exception, so as not to put false error outputs into the log.
+            if (ex.NativeErrorCode != 299) {
+                e.Session.Log("Error trying to close all Symphony instances: " + ex.ToString() );
+            }
+        }
+        catch (System.Exception ex)
+        {
+            e.Session.Log("Error trying to close all Symphony instances: " + ex.ToString() );
+        }
+    }
+
 }
 
 public class CustomActions
