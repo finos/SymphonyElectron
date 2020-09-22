@@ -1,0 +1,29 @@
+#
+# Your Crowdin credentials
+#
+"project_id": "420172"                    # Crowdin project Settings > API & Webhooks > API > Project Id
+"api_token_env": "CROWDIN_PERSONAL_TOKEN" # Low priority: superseded by user-specific credentials file ~/.crowdin.yaml
+"base_path": "."
+"base_url": "https://api.crowdin.com"
+
+#
+# Choose file structure in Crowdin
+# e.g. true or false
+#
+"preserve_hierarchy": true
+
+#
+# Files configuration
+#
+files:
+  [
+    {
+      "source": "/src/locale/en-US.json",
+      "translation": "/src/locale/%locale%.json",
+    },
+    # Duplicate file
+    {
+      "source": "/src/locale/en.json",
+      "translation": "/src/locale/%two_letters_code%.json",
+    },
+  ]
