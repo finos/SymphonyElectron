@@ -28,7 +28,7 @@ class Script
         // desired contents of installation, and then we can simplify this bit.
         var project = new ManagedProject(productName,
             new Dir(@"%ProgramFiles%\" + productName,
-                new File(@"..\..\..\dist\win-unpacked\Symphony.exe",
+                new File(new Id("symphony_exe"), @"..\..\..\dist\win-unpacked\Symphony.exe",
                     // Create two shortcuts to the main Symphony.exe file, one on the desktop and one in the program menu
                     new FileShortcut(productName, @"%Desktop%") { IconFile = @"..\..\..\images\icon.ico" },
                     new FileShortcut(productName, @"%ProgramMenu%") { IconFile = @"..\..\..\images\icon.ico" }
@@ -189,7 +189,10 @@ class Script
             // We have some registry keys which are added by the SDA application when it is first launched. This custom
             // action will clean up those keys on uninstall. The name/location of keys have changed between different
             // versions of SDA, so we clean up all known variations, and ignore any missing ones.
-            new ElevatedManagedAction(CustomActions.CleanRegistry, Return.ignore, When.After, Step.RemoveFiles, Condition.Installed )
+            new ElevatedManagedAction(CustomActions.CleanRegistry, Return.ignore, When.After, Step.RemoveFiles, Condition.Installed ),
+
+            // Start Symphony after installation is complete
+            new InstalledFileAction("symphony_exe", "", Return.asyncNoWait, When.After, Step.InstallFinalize, Condition.NOT_Installed)
         };
 
         // Use our own Symphony branded bitmap for installation dialogs
