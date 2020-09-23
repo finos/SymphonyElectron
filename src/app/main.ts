@@ -86,6 +86,8 @@ const startApplication = async () => {
             await autoLaunchInstance.handleAutoLaunch();
         }
     }
+    // Picks global config values and updates them in the user config
+    await config.updateUserConfigOnStart();
     // Setup session properties only after app ready
     setSessionProperties();
     await windowHandler.createApplication();

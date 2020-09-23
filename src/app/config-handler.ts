@@ -148,6 +148,7 @@ class Config {
         this.userConfig = {};
         this.cloudConfig = {};
         this.filteredCloudConfig = {};
+
         this.readUserConfig();
         this.readGlobalConfig();
         this.readInstallVariant();
@@ -223,7 +224,7 @@ class Config {
         logger.info(`config-handler: updating user config values with the data`, JSON.stringify(data));
         this.userConfig = { ...this.userConfig, ...data };
         try {
-            await writeFile(this.userConfigPath, JSON.stringify(this.userConfig), { encoding: 'utf8' });
+            await writeFile(this.userConfigPath, JSON.stringify(this.userConfig, null, 2), { encoding: 'utf8' });
             logger.info(`config-handler: updated user config values with the data ${JSON.stringify(data)}`);
         } catch (error) {
             logger.error(`config-handler: failed to update user config file with ${JSON.stringify(data)}`, error);
@@ -243,7 +244,7 @@ class Config {
         this.filterCloudConfig();
         logger.info(`config-handler: prioritized and filtered cloud config: `, this.filteredCloudConfig);
         try {
-            await writeFile(this.cloudConfigPath, JSON.stringify(this.cloudConfig), { encoding: 'utf8' });
+            await writeFile(this.cloudConfigPath, JSON.stringify(this.cloudConfig, null, 2), { encoding: 'utf8' });
             logger.info(`config-handler: writing cloud config values to file`);
         } catch (error) {
             logger.error(`config-handler: failed to update cloud config file with ${data}`, error);
@@ -281,6 +282,27 @@ class Config {
             return await this.updateUserConfig(filteredFields);
         }
         await this.updateUserConfig({ buildNumber, installVariant: this.installVariant });
+    }
+
+    /**
+     * Updates user config on start by fetching new settings from the global config
+     * @private
+     */
+    public async updateUserConfigOnStart() {
+        logger.info(`config-handler: updating user config with the latest global config values`);
+        const latestGlobalConfig = this.globalConfig as IConfig;
+        await this.updateUserConfig({
+            whitelistUrl: latestGlobalConfig.whitelistUrl,
+            memoryThreshold: latestGlobalConfig.memoryThreshold,
+            devToolsEnabled: latestGlobalConfig.devToolsEnabled,
+            disableGpu: latestGlobalConfig.disableGpu,
+            enableRendererLogs: latestGlobalConfig.enableRendererLogs,
+            ctWhitelist: latestGlobalConfig.ctWhitelist,
+            podWhitelist: latestGlobalConfig.podWhitelist,
+            permissions: latestGlobalConfig.permissions,
+            autoLaunchPath: latestGlobalConfig.autoLaunchPath,
+            customFlags: latestGlobalConfig.customFlags,
+        });
     }
 
     /**
@@ -342,6 +364,9 @@ class Config {
      * Reads a stores the global config file
      */
     private readGlobalConfig() {
+        if (!fs.existsSync(this.globalConfigPath)) {
+            throw new Error(`Global config file missing! App will not run as expected!`);
+        }
         this.globalConfig = this.parseConfigData(fs.readFileSync(this.globalConfigPath, 'utf8'));
         logger.info(`config-handler: Global configuration: `, this.globalConfig);
     }
