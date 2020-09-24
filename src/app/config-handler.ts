@@ -291,12 +291,12 @@ class Config {
     public async updateUserConfigOnStart() {
         logger.info(`config-handler: updating user config with the latest global config values`);
         const latestGlobalConfig = this.globalConfig as IConfig;
+        // The properties set below are typically controlled by IT admins, so, we copy
+        // all the values from global config to the user config on SDA relaunch
         await this.updateUserConfig({
             whitelistUrl: latestGlobalConfig.whitelistUrl,
             memoryThreshold: latestGlobalConfig.memoryThreshold,
             devToolsEnabled: latestGlobalConfig.devToolsEnabled,
-            disableGpu: latestGlobalConfig.disableGpu,
-            enableRendererLogs: latestGlobalConfig.enableRendererLogs,
             ctWhitelist: latestGlobalConfig.ctWhitelist,
             podWhitelist: latestGlobalConfig.podWhitelist,
             permissions: latestGlobalConfig.permissions,
