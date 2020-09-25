@@ -1,3 +1,5 @@
+jest.mock('electron-log');
+
 jest.mock('../src/app/window-actions', () => {
     return {
         activate: jest.fn(),
@@ -15,6 +17,20 @@ jest.mock('../src/common/env', () => {
         isWindowsOS: false,
         isLinux: false,
         isMac: true,
+    };
+});
+
+jest.mock('../src/common/logger', () => {
+    return {
+        logger: {
+            setLoggerWindow: jest.fn(),
+            error: jest.fn(),
+            warn: jest.fn(),
+            info: jest.fn(),
+            verbose: jest.fn(),
+            debug: jest.fn(),
+            silly: jest.fn(),
+        },
     };
 });
 
