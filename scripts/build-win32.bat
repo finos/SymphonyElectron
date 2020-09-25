@@ -54,7 +54,7 @@ echo D | xcopy /y "C:\jenkins\workspace\tronlibraries\library" "library"
 echo "Installing dependencies..."
 call npm install
 
-# Run Snyk Security Tests
+:: Run Snyk Security Tests
 echo "Running snyk security tests"
 call snyk test --file=package.json --org=%SNYK_ORG%
 
