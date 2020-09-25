@@ -110,6 +110,7 @@
     "url": "https://support.symphony.com"
   },
   "devDependencies": {
+    "@types/cheerio": "^0.22.22",
     "@types/enzyme": "3.9.0",
     "@types/ffi-napi": "2.4.1",
     "@types/jest": "23.3.12",
