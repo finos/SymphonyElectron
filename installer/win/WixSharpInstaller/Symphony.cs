@@ -9,6 +9,8 @@
 //css_imp CloseDlg.designer.cs;
 //css_imp ExitDlg.cs;
 //css_imp ExitDlg.designer.cs;
+//css_imp MaintenanceDlg.cs;
+//css_imp MaintenanceDlg.designer.cs;
 
 using WixSharp;
 using WixSharp.Forms;
@@ -206,7 +208,8 @@ class Script
                                         .Add(Dialogs.InstallDir)
                                         .Add(Dialogs.Progress)
                                         .Add<Symphony.ExitDlg>();
-        project.ManagedUI.ModifyDialogs.Add(Dialogs.MaintenanceType)
+        project.ManagedUI.ModifyDialogs.Add<Symphony.MaintenanceDlg>()
+                                       .Add(Dialogs.MaintenanceType)
                                        .Add(Dialogs.Progress)
                                        .Add<Symphony.ExitDlg>();
 

@@ -18,6 +18,8 @@ const getMainWindow = {
     setFullScreenable: jest.fn(),
 };
 
+jest.mock('electron-log');
+
 jest.mock('../src/common/env', () => {
     return {
         isWindowsOS: true,
@@ -52,12 +54,26 @@ jest.mock('../src/app/window-actions', () => {
     };
 });
 
+jest.mock('../src/common/logger', () => {
+    return {
+        logger: {
+            setLoggerWindow: jest.fn(),
+            error: jest.fn(),
+            warn: jest.fn(),
+            info: jest.fn(),
+            verbose: jest.fn(),
+            debug: jest.fn(),
+            silly: jest.fn(),
+        },
+    };
+});
+
 describe('child window handle', () => {
-    const frameName = { };
+    const frameName = {};
     const disposition = 'new-window';
     const newWinOptions = {
         webPreferences: jest.fn(),
-        webContents: { ...ipcRenderer, ...getMainWindow, webContents: ipcRenderer},
+        webContents: { ...ipcRenderer, ...getMainWindow, webContents: ipcRenderer },
     };
 
     it('should call `did-start-loading` correctly on WindowOS', () => {
@@ -82,7 +98,7 @@ describe('child window handle', () => {
         handleChildWindow(ipcRenderer as any);
         ipcRenderer.send('new-window', ...args);
         ipcRenderer.send('did-finish-load');
-        expect(spy).lastCalledWith('page-load',  {
+        expect(spy).lastCalledWith('page-load', {
             enableCustomTitleBar: false,
             isMainWindow: false,
             isWindowsOS: true,

@@ -110,7 +110,8 @@
     "url": "https://support.symphony.com"
   },
   "devDependencies": {
-    "@types/enzyme": "3.9.0",
+    "@types/cheerio": "^0.22.22",
+    "@types/enzyme": "^3.10.7",
     "@types/ffi-napi": "2.4.1",
     "@types/jest": "23.3.12",
     "@types/node": "^12.12.43",
@@ -127,9 +128,9 @@
     "electron-icon-maker": "0.0.4",
     "electron-osx-sign": "^0.4.16",
     "electron-rebuild": "1.10.1",
-    "enzyme": "3.9.0",
-    "enzyme-adapter-react-16": "1.10.0",
-    "enzyme-to-json": "3.3.5",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.10.0",
+    "enzyme-to-json": "^3.3.5",
     "gulp": "4.0.0",
     "gulp-less": "4.0.1",
     "gulp-sourcemaps": "2.6.4",
