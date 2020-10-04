@@ -11,6 +11,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repositories: 'symphonyoss/SymphonyElectron'
-          period: 1460
+          period: 30
           charts: true
           sort-by: 'COMMENTS'
