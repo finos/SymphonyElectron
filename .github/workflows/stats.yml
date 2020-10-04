@@ -9,8 +9,8 @@ jobs:
       - name: Run pull request stats
         uses: flowwer-dev/pull-request-stats@v1
         with:
-          token: ${{ secrets.ADD_A_PERSONAL_ACCESS_TOKEN }}
-          repositories: 'username/repo1,username/repo2,username/repo3'
-          period: 7
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repositories: 'symphonyoss/SymphonyElectron'
+          period: 1460
           charts: true
           sort-by: 'COMMENTS'
