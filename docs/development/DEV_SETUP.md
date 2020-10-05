@@ -10,17 +10,17 @@
 #### Notes
 - C++ tools are required to recompile node modules
 - Dot NET/C# tools required to compile screen-snippet module
-- Open 'Developer Command Prompt for VS2015'. This sets paths to visual studio build tools
-- Advanced installer is required to create msi installer
+- Open 'Developer Command Prompt for VS2015'. This sets paths to visual studio build tools.
+- The advanced installer is required to create msi installer
 
 ### Mac
-- Xcode command line tools. Or better, XCode latest version
+- Xcode command line tools. Or better, Xcode latest version
 - NodeJS version >= 12.x.y (corresponds to electron 9.x.y)
 - [Sudre Packages](http://s.sudre.free.fr/Software/Packages/about.html)
 
 #### Notes
 - Ensure you have accepted the XCode license agreement
-- Sudre packages is used to create a .pkg installer file 
+- We use Sudre packages to create a .pkg installer file 
 
 ## Run demo:
 - npm install
@@ -28,7 +28,7 @@
 
 *Note*: 
 - Remember to set this.origin to '*' in `app-bridge.ts` when running the demo. 
-- Search for // DEMO-APP: and comment that line back in. 
+- Search for `// DEMO-APP:` and comment that line back in. 
 - Make sure to comment it out again before you commit.
 
 ## Build Instructions:
@@ -37,21 +37,21 @@
 - npm install
 - npm run dev (to run locally)
 - To build the macOS app:
-  * npm run unpacked-mac
+  * Run the command `npm run unpacked-mac`
   * The distributable is created in the `dist/mac` directory
-- to build mac package (installer):  
-  * npm run packed-mac
+- To build mac package (installer):  
+  * Run the command `npm run packed-mac`
   * The .pkg file will be generated in the `installer/mac/build` directory
 
 ### Windows 💻
 - npm install
 - npm run dev (to run locally)
 - To build windows unpacked exe:
-  * npm run unpacked-win
+  * Run the command `npm run unpacked-win`
   * The distributable is created in the `dist/win-unpacked` directory
-- To build windows 32 bit unpacked exe (installer):
-  * npm run unpacked-win-x86
-  * The distributable is created in the `dist/win-ia32-unpacked` directory
+- To build windows 64-bit unpacked exe:
+  * Run the command `npm run unpacked-win`
+  * The distributable is created in the `dist/win-unpacked` directory
 - To create msi (installer):
   * Run the advanced installer script located in `installer/win` directory
   
@@ -99,7 +99,10 @@
 
 ## Change POD URL
 - To change the start url (i.e., pod url), edit config/Symphony.config and change 'url' variable. if no protocol provided, then https will be added.
-- The installer will include file config/Symphony.config next to executable. Changes in this file will effect all users.  
+- The installer will include file config/Symphony.config next to executable. Changes in this file will affect all
+ users.
+- Alternatively, to run against a specific pod, launch Symphony (SDA) with the command line parameter `--url=pod_url
+`. With this, you don't have to change the config/Symphony.config file every time.
 
 ## Tests
 - Use `npm test` to run all the tests
@@ -107,11 +110,11 @@
 ### Unit tests and Code Coverage
 - [Jest framework](http://facebook.github.io/jest/) is used to run tests
 - Use `npm run test:unit` to run unit tests
-- Code coverage reports are captured under [coverage](../../out/coverage)
-- To check the test run report, see the [out](../../out) directory
-- See the [tests](./tests) directory to find all the unit tests
+- We capture the Code coverage reports under [coverage](out/coverage)
+- To check the test run report, see the [out](out/) directory
+- See the [tests](spec/) directory to find all the unit tests
 
-### Spectron Tests
+### Spectron Tests (UI)
 - [AVA](https://github.com/avajs/ava) is used to run Spectron tests
 - Use `npm run test:spectron` to run spectron tests
 - To compile spectron tests `npm run compile:spec`
@@ -119,12 +122,14 @@
 - Spectron - Application logs can be found in `~/Library/Logs/Electron/`  
 
 ## Logging
-- Local logging is enabled for dev environments using the module [electron-log](https://www.npmjs.com/package/electron-log)
-- On macOS, the logs are stored under `~/Library/Logs/Electron/app_<timestamp>.log`
-- On Windows, the logs are stored under `%USERPROFILE%\AppData\Roaming\Electron\app_<timestamp>.log`
-- On Linux, the logs are stored under `~/.config/Electron/logs/app_<timestamp>.log`
+- We enable local logging for dev environments using the module [electron-log](https://www.npmjs.com/package
+/electron-log)
+- On macOS, we store the logs under `~/Library/Logs/Electron/app_<timestamp>.log`
+- On Windows, we store the logs under `%USERPROFILE%\AppData\Roaming\Electron\app_<timestamp>.log`
+- On Linux, we store the logs under `~/.config/Electron/logs/app_<timestamp>.log`
 
 ## Misc notes
 - If you need to run against a POD without proper cert use cmd line option: --ignore-certificate-errors
-- To start additional instance with custom data directory (if you want seperate user) use cmd line options: --multiInstance --userDataPath=`<path to data dir>`
+- To start an additional instance with custom data directory (if you want seperate user) use cmd line options
+: --multiInstance --userDataPath=`<path to data dir>`
 - If directory doesn't exist, it will be created
