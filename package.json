@@ -122,7 +122,7 @@
     "browserify": "16.5.1",
     "cross-env": "5.2.0",
     "del": "3.0.0",
-    "electron": "9.2.1",
+    "electron": "9.3.2",
     "electron-builder": "22.7.0",
     "electron-builder-squirrel-windows": "20.38.3",
     "electron-icon-maker": "0.0.4",
@@ -164,7 +164,7 @@
     "shell-path": "2.1.0"
   },
   "optionalDependencies": {
-    "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#v1.0.9",
+    "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#v1.0.11",
     "screen-share-indicator-frame": "git+https://github.com/symphonyoss/ScreenShareIndicatorFrame.git#v1.4.10",
     "swift-search": "2.0.2"
   },
