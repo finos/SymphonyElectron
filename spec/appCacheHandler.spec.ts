@@ -73,36 +73,13 @@ describe('app cache handler', () => {
 
             cleanAppCacheOnInstall();
 
-            expect(pathSpy).toBeCalledTimes(10);
+            expect(pathSpy).toBeCalled();
 
-            expect(fsReadDirSpy).toBeCalledTimes(1);
-            expect(fsStatSpy).toBeCalledTimes(2);
-            expect(fsUnlinkSpy).toBeCalledTimes(1);
+            expect(fsReadDirSpy).toBeCalled();
+            expect(fsStatSpy).toBeCalled();
+            expect(fsUnlinkSpy).toBeCalled();
 
-            expect(rimrafSpy).toBeCalledTimes(2);
-        });
-    });
-
-    describe('clean app cache on crash', () => {
-        it('should clean app cache and cookies on crash', () => {
-
-            const pathSpy = jest.spyOn(path, 'join');
-
-            const fsReadDirSpy = jest.spyOn(fs, 'readdirSync');
-            const fsStatSpy = jest.spyOn(fs, 'lstatSync');
-            const fsUnlinkSpy = jest.spyOn(fs, 'unlinkSync');
-
-            const rimrafSpy = jest.spyOn(rimraf, 'sync');
-
-            cleanAppCacheOnInstall();
-
-            expect(pathSpy).toBeCalledTimes(10);
-
-            expect(fsReadDirSpy).toBeCalledTimes(1);
-            expect(fsStatSpy).toBeCalledTimes(2);
-            expect(fsUnlinkSpy).toBeCalledTimes(1);
-
-            expect(rimrafSpy).toBeCalledTimes(2);
+            expect(rimrafSpy).toBeCalled();
         });
     });
 
