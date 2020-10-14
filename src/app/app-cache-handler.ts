@@ -4,6 +4,7 @@ import * as path from 'path';
 import * as rimraf from 'rimraf';
 
 import { logger } from '../common/logger';
+import { appCrashRestartDialog } from './dialog-handler';
 
 // Cache check file path
 const userDataPath: string = app.getPath('userData');
@@ -73,11 +74,14 @@ export const cleanAppCacheOnCrash = (window: BrowserWindow): void => {
     const events = ['unresponsive', 'crashed', 'plugin-crashed'];
 
     events.forEach((windowEvent: any) => {
-        window.webContents.on(windowEvent, () => {
+        window.webContents.on(windowEvent, async () => {
             logger.info(`app-cache-handler: Window Event '${windowEvent}' occurred. Clearing cache & restarting app`);
-            cleanOldCache();
-            app.relaunch();
-            app.exit();
+            const response = await appCrashRestartDialog();
+            if (response === 0) {
+                cleanOldCache();
+                app.relaunch();
+                app.exit();
+            }
         });
     });
 };

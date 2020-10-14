@@ -68,7 +68,7 @@ electron.app.on('certificate-error', async (event, webContents, url, error, _cer
 
     const browserWin = electron.BrowserWindow.fromWebContents(webContents);
     if (browserWin && windowExists(browserWin)) {
-        const {response} = await electron.dialog.showMessageBox(browserWin, {
+        const { response } = await electron.dialog.showMessageBox(browserWin, {
             type: 'warning',
             buttons: [
                 i18n.t('Allow')(),
@@ -111,7 +111,7 @@ export const showLoadFailure = async (browserWindow: Electron.BrowserWindow, url
     if (showDialog) {
         const { response } = await electron.dialog.showMessageBox(browserWindow, {
             type: 'error',
-            buttons: [ i18n.t('Reload')(), i18n.t('Ignore')() ],
+            buttons: [i18n.t('Reload')(), i18n.t('Ignore')()],
             defaultId: 0,
             cancelId: 1,
             noLink: true,
@@ -157,13 +157,13 @@ export const titleBarChangeDialog = async (isNativeStyle: CloudConfigDataTypes) 
         title: i18n.t('Relaunch Application')(),
         message: i18n.t('Updating Title bar style requires Symphony to relaunch.')(),
         detail: i18n.t('Note: When Hamburger menu is disabled, you can trigger the main menu by pressing the Alt key.')(),
-        buttons: [ i18n.t('Relaunch')(), i18n.t('Cancel')() ],
+        buttons: [i18n.t('Relaunch')(), i18n.t('Cancel')()],
         cancelId: 1,
     };
     const { response } = await electron.dialog.showMessageBox(focusedWindow, options);
     if (response === 0) {
         logger.error(`test`, isNativeStyle);
-        await config.updateUserConfig({ isCustomTitleBar:  isNativeStyle });
+        await config.updateUserConfig({ isCustomTitleBar: isNativeStyle });
         app.relaunch();
         app.exit();
     }
@@ -182,7 +182,7 @@ export const gpuRestartDialog = async (disableGpu: boolean) => {
         type: 'question',
         title: i18n.t('Relaunch Application')(),
         message: i18n.t('Would you like to restart and apply these new settings now?')(),
-        buttons: [ i18n.t('Restart')(), i18n.t('Later')() ],
+        buttons: [i18n.t('Restart')(), i18n.t('Later')()],
         cancelId: 1,
     };
     const { response } = await electron.dialog.showMessageBox(focusedWindow, options);
@@ -191,4 +191,23 @@ export const gpuRestartDialog = async (disableGpu: boolean) => {
         app.relaunch();
         app.exit();
     }
+};
+
+/**
+ * Displays a dialog to restart app upon app being unresponsive or crashed
+ */
+export const appCrashRestartDialog = async (): Promise<number> => {
+    const focusedWindow = electron.BrowserWindow.getFocusedWindow();
+    if (!focusedWindow || !windowExists(focusedWindow)) {
+        return -1;
+    }
+    const options = {
+        type: 'question',
+        title: i18n.t('Restart Application')(),
+        message: i18n.t('It looks like the app is not responding, would you like to restart the app?')(),
+        buttons: [i18n.t('Restart')(), i18n.t('Cancel')()],
+        cancelId: 1,
+    };
+    const { response } = await electron.dialog.showMessageBox(focusedWindow, options);
+    return response;
 };
