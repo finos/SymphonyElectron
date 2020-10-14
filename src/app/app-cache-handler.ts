@@ -1,10 +1,10 @@
-import { app, BrowserWindow, session } from 'electron';
+import { app, BrowserWindow, dialog, session } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as rimraf from 'rimraf';
+import { i18n } from '../common/i18n';
 
 import { logger } from '../common/logger';
-import { appCrashRestartDialog } from './dialog-handler';
 
 // Cache check file path
 const userDataPath: string = app.getPath('userData');
@@ -76,7 +76,20 @@ export const cleanAppCacheOnCrash = (window: BrowserWindow): void => {
     events.forEach((windowEvent: any) => {
         window.webContents.on(windowEvent, async () => {
             logger.info(`app-cache-handler: Window Event '${windowEvent}' occurred. Clearing cache & restarting app`);
-            const response = await appCrashRestartDialog();
+            const focusedWindow = BrowserWindow.getFocusedWindow();
+            if (!focusedWindow || (typeof focusedWindow.isDestroyed === 'function' && focusedWindow.isDestroyed())) {
+                return;
+            }
+            const options = {
+                type: 'question',
+                title: i18n.t('Relaunch Application')(),
+                message: i18n.t('Oops! Something went wrong. Would you like to restart the app?')(),
+                buttons: [i18n.t('Restart')(), i18n.t('Cancel')()],
+                cancelId: 1,
+            };
+
+            const { response } = await dialog.showMessageBox(focusedWindow, options);
+
             if (response === 0) {
                 cleanOldCache();
                 app.relaunch();

@@ -192,22 +192,3 @@ export const gpuRestartDialog = async (disableGpu: boolean) => {
         app.exit();
     }
 };
-
-/**
- * Displays a dialog to restart app upon app being unresponsive or crashed
- */
-export const appCrashRestartDialog = async (): Promise<number> => {
-    const focusedWindow = electron.BrowserWindow.getFocusedWindow();
-    if (!focusedWindow || !windowExists(focusedWindow)) {
-        return -1;
-    }
-    const options = {
-        type: 'question',
-        title: i18n.t('Relaunch Application')(),
-        message: i18n.t('Oops! Something went wrong. Would you like to restart the app?')(),
-        buttons: [i18n.t('Restart')(), i18n.t('Cancel')()],
-        cancelId: 1,
-    };
-    const { response } = await electron.dialog.showMessageBox(focusedWindow, options);
-    return response;
-};
