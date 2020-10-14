@@ -51,7 +51,7 @@ namespace Symphony
             {
                 // Install for all users
                 Runtime.Session["MSIINSTALLPERUSER"] = ""; // per-machine
-                Runtime.Session["INSTALLDIR"] = System.Environment.ExpandEnvironmentVariables(@"%PROGRAMFILES%\" + Runtime.ProductName);
+                Runtime.Session["INSTALLDIR"] = Runtime.Session["PROGRAMSFOLDER"] + @"\" + Runtime.ProductName;
             }
 
             Shell.GoNext();
