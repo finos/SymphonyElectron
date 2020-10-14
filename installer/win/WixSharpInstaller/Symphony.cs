@@ -157,7 +157,8 @@ class Script
             new PublicProperty("OPEN_EXTERNAL", "true"),
             new PublicProperty("POD_URL", "https://my.symphony.com"),
             new PublicProperty("POINTER_LOCK", "true"),
-            new Property("MSIINSTALLPERUSER", "1")
+            new Property("MSIINSTALLPERUSER", "1"),
+            new Property("PROGRAMSFOLDER", System.Environment.ExpandEnvironmentVariables(@"%PROGRAMFILES%"))
         };
 
         // Define the custom actions we want to run, and at what point of the installation we want to execute them.
