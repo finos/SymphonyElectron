@@ -203,8 +203,8 @@ export const appCrashRestartDialog = async (): Promise<number> => {
     }
     const options = {
         type: 'question',
-        title: i18n.t('Restart Application')(),
-        message: i18n.t('It looks like the app is not responding, would you like to restart the app?')(),
+        title: i18n.t('Relaunch Application')(),
+        message: i18n.t('Oops! Something went wrong. Would you like to restart the app?')(),
         buttons: [i18n.t('Restart')(), i18n.t('Cancel')()],
         cancelId: 1,
     };
