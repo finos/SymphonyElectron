@@ -46,12 +46,12 @@ namespace Symphony
             {
                 // Install for current user
                 Runtime.Session["MSIINSTALLPERUSER"] = "1"; // per-user
-                Runtime.Session["INSTALLDIR"] = System.Environment.ExpandEnvironmentVariables(@"%LOCALAPPDATA%\Apps\" + Runtime.ProductName);
+                Runtime.Session["INSTALLDIR"] = System.Environment.ExpandEnvironmentVariables(@"%LOCALAPPDATA%\Apps\Symphony\" + Runtime.ProductName);
             } else if (radioButtonAllUsers.Checked)
             {
                 // Install for all users
                 Runtime.Session["MSIINSTALLPERUSER"] = ""; // per-machine
-                Runtime.Session["INSTALLDIR"] = Runtime.Session["PROGRAMSFOLDER"] + @"\" + Runtime.ProductName;
+                Runtime.Session["INSTALLDIR"] = Runtime.Session["PROGRAMSFOLDER"]  + @"\Symphony\" + Runtime.ProductName;
             }
 
             Shell.GoNext();
