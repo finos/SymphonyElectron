@@ -19,6 +19,7 @@ import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { getCommandLineArgs, getGuid } from '../common/utils';
 import { notification } from '../renderer/notification';
+import { cleanAppCacheOnCrash } from './app-cache-handler';
 import { AppMenu } from './app-menu';
 import { handleChildWindow } from './child-window-handler';
 import { CloudConfigDataTypes, config, IConfig, IGlobalConfig } from './config-handler';
@@ -114,14 +115,14 @@ export class WindowHandler {
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Use these variables only on initial setup
-        this.config = config.getConfigFields([ 'isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings', 'alwaysOnTop', 'locale', 'customFlags', 'clientSwitch', 'enableRendererLogs' ]);
+        this.config = config.getConfigFields(['isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings', 'alwaysOnTop', 'locale', 'customFlags', 'clientSwitch', 'enableRendererLogs']);
         logger.info(`window-handler: main windows initialized with following config data`, this.config);
 
-        this.globalConfig = config.getGlobalConfigFields([ 'url', 'contextIsolation', 'contextOriginUrl' ]);
-        this.userConfig = config.getUserConfigFields([ 'url' ]);
+        this.globalConfig = config.getGlobalConfigFields(['url', 'contextIsolation', 'contextOriginUrl']);
+        this.userConfig = config.getUserConfigFields(['url']);
 
         const { customFlags } = this.config;
-        const { disableThrottling } = config.getCloudConfigFields([ 'disableThrottling' ]) as any;
+        const { disableThrottling } = config.getCloudConfigFields(['disableThrottling']) as any;
 
         this.windows = {};
         this.contextIsolation = this.globalConfig.contextIsolation || false;
@@ -159,9 +160,9 @@ export class WindowHandler {
         i18n.setLocale(locale);
 
         try {
-            const extra = {podUrl: this.userConfig.url ? this.userConfig.url : this.globalConfig.url, process: 'main'};
-            const defaultOpts = {uploadToServer: false, companyName: 'Symphony', submitURL: ''};
-            crashReporter.start({...defaultOpts, extra});
+            const extra = { podUrl: this.userConfig.url ? this.userConfig.url : this.globalConfig.url, process: 'main' };
+            const defaultOpts = { uploadToServer: false, companyName: 'Symphony', submitURL: '' };
+            crashReporter.start({ ...defaultOpts, extra });
         } catch (e) {
             throw new Error('failed to init crash report');
         }
@@ -178,7 +179,7 @@ export class WindowHandler {
 
         logger.info('window-handler: createApplication mainWinPos: ' + JSON.stringify(this.config.mainWinPos));
 
-        let {isFullScreen, isMaximized} = this.config.mainWinPos ? this.config.mainWinPos : {isFullScreen: false, isMaximized: false};
+        let { isFullScreen, isMaximized } = this.config.mainWinPos ? this.config.mainWinPos : { isFullScreen: false, isMaximized: false };
 
         this.url = WindowHandler.getValidUrl(this.userConfig.url ? this.userConfig.url : this.globalConfig.url);
         logger.info(`window-handler: setting url ${this.url} from config file!`);
@@ -219,7 +220,7 @@ export class WindowHandler {
             logger.info('window-handler: windowSize: sizes: ' + JSON.stringify(sizes));
             DEFAULT_WIDTH = Number(sizes[0]);
             DEFAULT_HEIGHT = Number(sizes[1]);
-            if (this.config.mainWinPos ) {
+            if (this.config.mainWinPos) {
                 this.config.mainWinPos.width = DEFAULT_WIDTH;
                 this.config.mainWinPos.height = DEFAULT_HEIGHT;
             }
@@ -245,7 +246,7 @@ export class WindowHandler {
         if (urlFromCmd) {
             const commandLineUrl = urlFromCmd.substr(6);
             logger.info(`window-handler: trying to set url ${commandLineUrl} from command line.`);
-            const { podWhitelist } = config.getConfigFields([ 'podWhitelist' ]);
+            const { podWhitelist } = config.getConfigFields(['podWhitelist']);
             logger.info(`window-handler: checking pod whitelist.`);
             if (podWhitelist.length > 0) {
                 logger.info(`window-handler: pod whitelist is not empty ${podWhitelist}`);
@@ -289,6 +290,7 @@ export class WindowHandler {
             this.handleWelcomeScreen();
         }
 
+        cleanAppCacheOnCrash(this.mainWindow);
         // loads the main window with url from config/cmd line
         this.mainWindow.loadURL(this.url);
         // check for build expiry in case of test builds
@@ -337,7 +339,7 @@ export class WindowHandler {
                 isMainWindow: true,
             });
             this.appMenu = new AppMenu();
-            const { permissions } = config.getConfigFields([ 'permissions' ]);
+            const { permissions } = config.getConfigFields(['permissions']);
             this.mainWindow.webContents.send('is-screen-share-enabled', permissions.media);
         });
 
@@ -357,7 +359,7 @@ export class WindowHandler {
                     if (href === 'data:text/html,chromewebdata' || href === 'chrome-error://chromewebdata/') {
                         if (this.mainWindow && windowExists(this.mainWindow)) {
                             this.mainWindow.webContents.insertCSS(fs.readFileSync(path.join(__dirname, '..', '/renderer/styles/network-error.css'), 'utf8').toString());
-                            this.mainWindow.webContents.send('network-error', {error: this.loadFailError});
+                            this.mainWindow.webContents.send('network-error', { error: this.loadFailError });
                             isSymphonyReachable(this.mainWindow, this.url || this.userConfig.url || this.globalConfig.url);
                         }
                     }
@@ -399,7 +401,7 @@ export class WindowHandler {
                 return this.destroyAllWindows();
             }
 
-            const { minimizeOnClose } = config.getConfigFields([ 'minimizeOnClose' ]);
+            const { minimizeOnClose } = config.getConfigFields(['minimizeOnClose']);
             if (minimizeOnClose === CloudConfigDataTypes.ENABLED) {
                 event.preventDefault();
                 this.mainWindow.minimize();
@@ -496,7 +498,7 @@ export class WindowHandler {
                     resource: i18n.loadedResources,
                 });
                 const userConfigUrl = this.userConfig.url
-                && this.userConfig.url.indexOf('/login/sso/initsso') > -1 ?
+                    && this.userConfig.url.indexOf('/login/sso/initsso') > -1 ?
                     this.userConfig.url.slice(0, this.userConfig.url.indexOf('/login/sso/initsso'))
                     : this.userConfig.url;
 
@@ -510,7 +512,7 @@ export class WindowHandler {
         });
 
         ipcMain.on('set-pod-url', async (_event, newPodUrl: string) => {
-            await config.updateUserConfig({url: newPodUrl});
+            await config.updateUserConfig({ url: newPodUrl });
             app.relaunch();
             app.exit();
         });
@@ -777,14 +779,14 @@ export class WindowHandler {
             this.screenPickerWindow.webContents.setZoomFactor(1);
             this.screenPickerWindow.webContents.setVisualZoomLevelLimits(1, 1);
 
-            this.screenPickerWindow.webContents.send('screen-picker-data', {sources, id});
+            this.screenPickerWindow.webContents.send('screen-picker-data', { sources, id });
             this.addWindow(opts.winKey, this.screenPickerWindow);
         });
         ipcMain.once('screen-source-selected', (_event, source) => {
             const displays = electron.screen.getAllDisplays();
             logger.info('window-utils: displays.length: ' + displays.length);
             for (let i = 0, len = displays.length; i < len; i++) {
-                logger.info('window-utils: display[' + i + ']: ' + JSON.stringify(displays[ i ]));
+                logger.info('window-utils: display[' + i + ']: ' + JSON.stringify(displays[i]));
             }
 
             if (source != null) {
@@ -793,22 +795,22 @@ export class WindowHandler {
                     const type = source.id.split(':')[0];
                     if (type === 'window') {
                         const hwnd = source.id.split(':')[1];
-                        this.execCmd(this.screenShareIndicatorFrameUtil, [ hwnd ]);
+                        this.execCmd(this.screenShareIndicatorFrameUtil, [hwnd]);
                     } else if (isMac && type === 'screen') {
                         const dispId = source.id.split(':')[1];
-                        this.execCmd(this.screenShareIndicatorFrameUtil, [ dispId ]);
+                        this.execCmd(this.screenShareIndicatorFrameUtil, [dispId]);
                     } else if (isWindowsOS && type === 'screen') {
                         logger.info('window-handler: source.display_id: ' + source.display_id);
                         if (source.display_id !== '') {
-                            this.execCmd(this.screenShareIndicatorFrameUtil, [ source.display_id ]);
+                            this.execCmd(this.screenShareIndicatorFrameUtil, [source.display_id]);
                         } else {
                             const dispId = source.id.split(':')[1];
                             const clampedDispId = Math.min(dispId, displays.length - 1);
                             const keyId = 'id';
                             logger.info('window-utils: dispId: ' + dispId);
                             logger.info('window-utils: clampedDispId: ' + clampedDispId);
-                            logger.info('window-utils: displays [' + clampedDispId + '] [id]: ' + displays [clampedDispId] [ keyId ]);
-                            this.execCmd(this.screenShareIndicatorFrameUtil, [ displays [clampedDispId] [ keyId ].toString() ]);
+                            logger.info('window-utils: displays [' + clampedDispId + '] [id]: ' + displays[clampedDispId][keyId]);
+                            this.execCmd(this.screenShareIndicatorFrameUtil, [displays[clampedDispId][keyId].toString()]);
                         }
                     }
                 }
@@ -856,7 +858,7 @@ export class WindowHandler {
             if (!this.basicAuthWindow || !windowExists(this.basicAuthWindow)) {
                 return;
             }
-            this.basicAuthWindow.webContents.send('basic-auth-data', {hostname, isValidCredentials: isMultipleTries});
+            this.basicAuthWindow.webContents.send('basic-auth-data', { hostname, isValidCredentials: isMultipleTries });
         });
         const closeBasicAuth = (_event, shouldClearSettings = true) => {
             if (shouldClearSettings) {
@@ -869,7 +871,7 @@ export class WindowHandler {
         };
 
         const login = (_event, arg) => {
-            const {username, password} = arg;
+            const { username, password } = arg;
             callback(username, password);
             closeBasicAuth(null, false);
         };
@@ -921,17 +923,17 @@ export class WindowHandler {
                 if (app.isReady()) {
                     screens = electron.screen.getAllDisplays();
                 }
-                const { position, display } = config.getConfigFields([ 'notificationSettings' ]).notificationSettings;
-                this.notificationSettingsWindow.webContents.send('notification-settings-data', {screens, position, display});
+                const { position, display } = config.getConfigFields(['notificationSettings']).notificationSettings;
+                this.notificationSettingsWindow.webContents.send('notification-settings-data', { screens, position, display });
             }
         });
 
         this.addWindow(opts.winKey, this.notificationSettingsWindow);
 
         ipcMain.once('notification-settings-update', async (_event, args) => {
-            const {display, position} = args;
+            const { display, position } = args;
             try {
-                await config.updateUserConfig({notificationSettings: {display, position}});
+                await config.updateUserConfig({ notificationSettings: { display, position } });
             } catch (e) {
                 logger.error(`NotificationSettings: Could not update user config file error`, e);
             }
@@ -991,7 +993,7 @@ export class WindowHandler {
                 closable: false,
             }, {
                 devTools: false,
-            }), ...{winKey: streamId},
+            }), ...{ winKey: streamId },
         };
         if (opts.width && opts.height) {
             opts = Object.assign({}, opts, {
@@ -1008,7 +1010,7 @@ export class WindowHandler {
                     logger.info('window-handler: element.id.toString(): ' + element.id.toString());
                     if (displayId === element.id.toString()) {
                         logger.info(`window-handler: element:`, element);
-                            this.createScreenSharingFrameWindow('screen-sharing-frame',
+                        this.createScreenSharingFrameWindow('screen-sharing-frame',
                             element.workArea.width,
                             element.workArea.height,
                             element.workArea.x,
@@ -1027,7 +1029,7 @@ export class WindowHandler {
             if (!this.screenSharingIndicatorWindow || !windowExists(this.screenSharingIndicatorWindow)) {
                 return;
             }
-            this.screenSharingIndicatorWindow.webContents.send('screen-sharing-indicator-data', {id, streamId});
+            this.screenSharingIndicatorWindow.webContents.send('screen-sharing-indicator-data', { id, streamId });
         });
         const stopScreenSharing = (_event, indicatorId) => {
             if (id === indicatorId) {
@@ -1229,7 +1231,7 @@ export class WindowHandler {
         if (!focusedWindow || !windowExists(focusedWindow)) {
             return;
         }
-        const { devToolsEnabled } = config.getConfigFields([ 'devToolsEnabled' ]);
+        const { devToolsEnabled } = config.getConfigFields(['devToolsEnabled']);
         if (devToolsEnabled) {
             focusedWindow.webContents.toggleDevTools();
             return;
@@ -1333,7 +1335,7 @@ export class WindowHandler {
             type: 'error',
             title: i18n.t('Build expired')(),
             message: i18n.t('Sorry, this is a test build and it has expired. Please contact your administrator to get a production build.')(),
-            buttons: [ i18n.t('Quit')() ],
+            buttons: [i18n.t('Quit')()],
             cancelId: 0,
         };
 
@@ -1364,7 +1366,7 @@ export class WindowHandler {
             winKey: getGuid(),
         };
 
-        return {...defaultWindowOpts, ...windowOpts};
+        return { ...defaultWindowOpts, ...windowOpts };
     }
 }
 

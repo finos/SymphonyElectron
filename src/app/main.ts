@@ -5,7 +5,7 @@ import * as shellPath from 'shell-path';
 import { isDevEnv, isElectronQA, isLinux, isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
-import { cleanUpAppCache, createAppCacheFile } from './app-cache-handler';
+import { cleanAppCacheOnInstall, cleanUpAppCache, createAppCacheFile } from './app-cache-handler';
 import { autoLaunchInstance } from './auto-launch-controller';
 import { setChromeFlags, setSessionProperties } from './chrome-flags';
 import { config } from './config-handler';
@@ -81,6 +81,7 @@ const startApplication = async () => {
     createAppCacheFile();
     if (config.isFirstTimeLaunch()) {
         logger.info(`main: This is a first time launch! will update config and handle auto launch`);
+        cleanAppCacheOnInstall();
         await config.setUpFirstTimeLaunch();
         if (!isLinux) {
             await autoLaunchInstance.handleAutoLaunch();
@@ -142,7 +143,7 @@ app.on('window-all-closed', () => {
 /**
  * Creates a new empty cache file when the app is quit
  */
-app.on('quit',  () => {
+app.on('quit', () => {
     logger.info(`main: quitting the app!`);
     cleanUpAppCache();
 });
