@@ -1029,6 +1029,8 @@ export class WindowHandler {
             if (!this.screenSharingIndicatorWindow || !windowExists(this.screenSharingIndicatorWindow)) {
                 return;
             }
+            this.screenSharingIndicatorWindow.webContents.setZoomFactor(1);
+            this.screenSharingIndicatorWindow.webContents.setVisualZoomLevelLimits(1, 1);
             this.screenSharingIndicatorWindow.webContents.send('screen-sharing-indicator-data', { id, streamId });
         });
         const stopScreenSharing = (_event, indicatorId) => {
