@@ -205,10 +205,10 @@ class Script
         // Define our own installation flow, using a mix of custom dialogs (defined in their own files) and built-in dialogs
         project.ManagedUI = new ManagedUI();
         project.ManagedUI.InstallDialogs.Add<Symphony.WelcomeDlg>()
-                                        .Add<Symphony.CloseDlg>()
                                         .Add(Dialogs.InstallDir)
                                         .Add(Dialogs.Progress)
-                                        .Add<Symphony.ExitDlg>();
+                                        .Add<Symphony.ExitDlg>()
+                                        .Add<Symphony.CloseDlg>();
         project.ManagedUI.ModifyDialogs.Add<Symphony.MaintenanceDlg>()
                                        .Add(Dialogs.MaintenanceType)
                                        .Add(Dialogs.Progress)
