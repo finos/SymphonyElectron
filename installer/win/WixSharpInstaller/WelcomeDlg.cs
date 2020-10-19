@@ -54,7 +54,18 @@ namespace Symphony
                 Runtime.Session["INSTALLDIR"] = Runtime.Session["PROGRAMSFOLDER"]  + @"\Symphony\" + Runtime.ProductName;
             }
 
-            Shell.GoNext();
+            // Detect if Symphony is running
+            bool isRunning = System.Diagnostics.Process.GetProcessesByName("Symphony").Length > 0;
+            if (isRunning)
+            {
+                // If it is running, continue to the "Close Symphony" screen
+                Shell.GoTo<Symphony.CloseDlg>();
+            }
+            else
+            {
+                // If it is not running, proceed to InstallDir dialog
+                Shell.GoNext();
+            }
         }
 
         void cancel_Click(object sender, System.EventArgs e)
