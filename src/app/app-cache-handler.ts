@@ -14,14 +14,13 @@ const cacheCheckFilePath: string = path.join(userDataPath, 'CacheCheck');
  * Cleans old cache
  */
 const cleanOldCache = (): void => {
-    const configFilename = 'Symphony.config';
-    const cloudConfigFilename = 'cloudConfig.config';
+    const fileRemovalList = ['blob_storage', 'Cache', 'Cookies', 'temp', 'Cookies-journal', 'GPUCache'];
 
     const files = fs.readdirSync(userDataPath);
 
     files.forEach((file) => {
         const filePath = path.join(userDataPath, file);
-        if (file === configFilename || file === cloudConfigFilename) {
+        if (!fileRemovalList.includes(file)) {
             return;
         }
 
