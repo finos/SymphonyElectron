@@ -8,7 +8,7 @@ jest.mock('fs', () => ({
     writeFileSync: jest.fn(),
     existsSync: jest.fn(() => true),
     unlinkSync: jest.fn(),
-    readdirSync: jest.fn(() => ['fake1', 'fake2', 'Symphony.config', 'cloudConfig.config']),
+    readdirSync: jest.fn(() => ['Cache', 'GPUCache', 'Symphony.config', 'cloudConfig.config']),
     lstatSync: jest.fn(() => {
         return {
             isDirectory: jest.fn(() => true),
