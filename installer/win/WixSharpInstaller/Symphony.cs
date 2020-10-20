@@ -254,6 +254,7 @@ class Script
         }
     }
 
+    // Display a confirmation dialog when uninstalling Symphony, and cancel uninstall unless user confirms.
     static void project_BeforeInstall(SetupEventArgs e)
     {
         try
