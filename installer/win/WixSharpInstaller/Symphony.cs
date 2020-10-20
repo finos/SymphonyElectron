@@ -215,6 +215,7 @@ class Script
                                        .Add<Symphony.ExitDlg>();
 
         project.Load += project_Load;
+        project.BeforeInstall += project_BeforeInstall;
 
         project.Platform = Platform.x64;
 
@@ -253,6 +254,25 @@ class Script
         }
     }
 
+    static void project_BeforeInstall(SetupEventArgs e)
+    {
+        try
+        {
+            if (e.IsUninstalling)
+            {
+                var result = System.Windows.Forms.MessageBox.Show("Are you sure you want to uninstall this product?",
+                    "Windows Installer", System.Windows.Forms.MessageBoxButtons.YesNo);
+                if (result != System.Windows.Forms.DialogResult.Yes)
+                {
+                    e.Result = ActionResult.UserExit; // Signal to installer to exit
+                }
+            }
+        }
+        catch (System.Exception ex)
+        {
+            e.Session.Log("Error displaying uninstall confirmation dialog: " + ex.ToString() );
+        }
+    }
 }
 
 public class CustomActions
