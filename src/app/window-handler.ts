@@ -1263,6 +1263,11 @@ export class WindowHandler {
         if (!focusedWindow || !windowExists(focusedWindow)) {
             return;
         }
+
+        if (focusedWindow.getTitle() === 'Screen Sharing Indicator - Symphony') {
+            return;
+        }
+
         // electron/lib/browser/api/menu-item-roles.js row 159
         const currentZoomLevel = focusedWindow.webContents.getZoomLevel();
         focusedWindow.webContents.setZoomLevel(currentZoomLevel + 0.5);
