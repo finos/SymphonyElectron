@@ -70,7 +70,11 @@ namespace Symphony
 
         void cancel_Click(object sender, System.EventArgs e)
         {
-            Shell.Cancel();
+            if( System.Windows.Forms.MessageBox.Show("Are you sure you want to cancel Symphony installation?",
+                "Symphony Setup", System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes )
+            {
+                Shell.Cancel();
+            }
         }
     }
 }

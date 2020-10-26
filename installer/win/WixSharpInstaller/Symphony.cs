@@ -7,10 +7,16 @@
 //css_imp WelcomeDlg.designer.cs;
 //css_imp CloseDlg.cs;
 //css_imp CloseDlg.designer.cs;
+//css_imp InstallDirDialog.cs
+//css_imp InstallDirDialog.Designer.cs
 //css_imp ExitDlg.cs;
 //css_imp ExitDlg.designer.cs;
 //css_imp MaintenanceDlg.cs;
 //css_imp MaintenanceDlg.designer.cs;
+//css_imp ProgressDialog.cs
+//css_imp ProgressDialog.Designer.cs
+//css_imp MaintenanceTypeDialog.cs;
+//css_imp MaintenanceTypeDialog.designer.cs;
 
 using WixSharp;
 using WixSharp.Forms;
@@ -205,17 +211,20 @@ class Script
         // Define our own installation flow, using a mix of custom dialogs (defined in their own files) and built-in dialogs
         project.ManagedUI = new ManagedUI();
         project.ManagedUI.InstallDialogs.Add<Symphony.WelcomeDlg>()
-                                        .Add(Dialogs.InstallDir)
-                                        .Add(Dialogs.Progress)
+                                        .Add<Symphony.InstallDirDialog>()
+                                        .Add<Symphony.ProgressDialog>()
                                         .Add<Symphony.ExitDlg>()
                                         .Add<Symphony.CloseDlg>();
         project.ManagedUI.ModifyDialogs.Add<Symphony.MaintenanceDlg>()
-                                       .Add(Dialogs.MaintenanceType)
-                                       .Add(Dialogs.Progress)
+                                       .Add<Symphony.MaintenanceTypeDialog>()
+                                        .Add<Symphony.ProgressDialog>()
                                        .Add<Symphony.ExitDlg>();
 
         project.Load += project_Load;
         project.BeforeInstall += project_BeforeInstall;
+
+        project.ControlPanelInfo.NoRepair = true;
+        project.ControlPanelInfo.NoModify = true;
 
         project.Platform = Platform.x64;
 
@@ -259,7 +268,7 @@ class Script
     {
         try
         {
-            if (e.IsUninstalling)
+            if (e.IsUninstalling && e.Session["REMOVE"] == "ALL")
             {
                 var result = System.Windows.Forms.MessageBox.Show("Are you sure you want to uninstall this product?",
                     "Windows Installer", System.Windows.Forms.MessageBoxButtons.YesNo);
