@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace Symphony
 {
-    public partial class WelcomeDlg : WixSharp.UI.Forms.ManagedForm, IManagedDialog
+    public partial class WelcomeDialog : WixSharp.UI.Forms.ManagedForm, IManagedDialog
     {
         // Helper function to retrive the user name of the current user. The user name returned from
         // windows can be on the form DOMAIN\USER or USER@DOMAIN. This function strips away the domain
@@ -15,7 +15,7 @@ namespace Symphony
             return slashIndex > -1 ? name.Substring(slashIndex + 1) : name.Substring(0, name.IndexOf("@"));
         }
 
-        public WelcomeDlg()
+        public WelcomeDialog()
         {
             InitializeComponent();
         }
@@ -59,7 +59,7 @@ namespace Symphony
             if (isRunning)
             {
                 // If it is running, continue to the "Close Symphony" screen
-                Shell.GoTo<Symphony.CloseDlg>();
+                Shell.GoTo<Symphony.CloseDialog>();
             }
             else
             {

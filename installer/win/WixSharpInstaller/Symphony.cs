@@ -3,16 +3,16 @@
 //css_ref System.Windows.Forms.dll;
 //css_ref Wix_bin\SDK\Microsoft.Deployment.WindowsInstaller.dll;
 //css_ref WixSharp.UI.dll;
-//css_imp WelcomeDlg.cs;
-//css_imp WelcomeDlg.designer.cs;
-//css_imp CloseDlg.cs;
-//css_imp CloseDlg.designer.cs;
+//css_imp WelcomeDialog.cs;
+//css_imp WelcomeDialog.designer.cs;
+//css_imp CloseDialog.cs;
+//css_imp CloseDialog.designer.cs;
 //css_imp InstallDirDialog.cs
 //css_imp InstallDirDialog.Designer.cs
-//css_imp ExitDlg.cs;
-//css_imp ExitDlg.designer.cs;
-//css_imp MaintenanceDlg.cs;
-//css_imp MaintenanceDlg.designer.cs;
+//css_imp ExitDialog.cs;
+//css_imp ExitDialog.designer.cs;
+//css_imp MaintenanceDialog.cs;
+//css_imp MaintenanceDialog.designer.cs;
 //css_imp ProgressDialog.cs
 //css_imp ProgressDialog.Designer.cs
 //css_imp MaintenanceTypeDialog.cs;
@@ -210,15 +210,15 @@ class Script
 
         // Define our own installation flow, using a mix of custom dialogs (defined in their own files) and built-in dialogs
         project.ManagedUI = new ManagedUI();
-        project.ManagedUI.InstallDialogs.Add<Symphony.WelcomeDlg>()
+        project.ManagedUI.InstallDialogs.Add<Symphony.WelcomeDialog>()
                                         .Add<Symphony.InstallDirDialog>()
                                         .Add<Symphony.ProgressDialog>()
-                                        .Add<Symphony.ExitDlg>()
-                                        .Add<Symphony.CloseDlg>();
-        project.ManagedUI.ModifyDialogs.Add<Symphony.MaintenanceDlg>()
+                                        .Add<Symphony.ExitDialog>()
+                                        .Add<Symphony.CloseDialog>();
+        project.ManagedUI.ModifyDialogs.Add<Symphony.MaintenanceDialog>()
                                        .Add<Symphony.MaintenanceTypeDialog>()
-                                        .Add<Symphony.ProgressDialog>()
-                                       .Add<Symphony.ExitDlg>();
+                                       .Add<Symphony.ProgressDialog>()
+                                       .Add<Symphony.ExitDialog>();
 
         project.Load += project_Load;
         project.BeforeInstall += project_BeforeInstall;

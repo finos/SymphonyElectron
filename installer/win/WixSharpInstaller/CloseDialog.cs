@@ -3,12 +3,12 @@ using System.Drawing;
 
 namespace Symphony
 {
-    public partial class CloseDlg : WixSharp.UI.Forms.ManagedForm, IManagedDialog
+    public partial class CloseDialog : WixSharp.UI.Forms.ManagedForm, IManagedDialog
     {
         const int WelcomeDlgIndex = 0;
         const int InstallDirIndex = 1;
 
-        public CloseDlg()
+        public CloseDialog()
         {
             InitializeComponent();
         }

@@ -3,9 +3,9 @@ using System.Drawing;
 
 namespace Symphony
 {
-    public partial class MaintenanceDlg : WixSharp.UI.Forms.ManagedForm, IManagedDialog
+    public partial class MaintenanceDialog : WixSharp.UI.Forms.ManagedForm, IManagedDialog
     {
-        public MaintenanceDlg()
+        public MaintenanceDialog()
         {
             InitializeComponent();
         }

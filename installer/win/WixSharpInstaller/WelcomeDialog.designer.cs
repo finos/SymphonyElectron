@@ -1,7 +1,7 @@
 ﻿// This file is created and modified from the visual form designer in Visual Studio, so shouldn't need to be modified by hand
 namespace Symphony
 {
-    partial class MaintenanceDlg
+    partial class WelcomeDialog
     {
         /// <summary>
         /// Required designer variable.
@@ -34,11 +34,16 @@ namespace Symphony
             this.next = new System.Windows.Forms.Button();
             this.cancel = new System.Windows.Forms.Button();
             this.backgroundPanel = new System.Windows.Forms.Panel();
+            this.panelInstallType = new System.Windows.Forms.Panel();
+            this.radioButtonAllUsers = new System.Windows.Forms.RadioButton();
+            this.radioButtonCurrentUser = new System.Windows.Forms.RadioButton();
+            this.labelInstallType = new System.Windows.Forms.Label();
             this.labelBody = new System.Windows.Forms.Label();
             this.labelHeader = new System.Windows.Forms.Label();
             this.bottomPanel.SuspendLayout();
             this.tableLayoutbackgroundPanel.SuspendLayout();
             this.backgroundPanel.SuspendLayout();
+            this.panelInstallType.SuspendLayout();
             this.SuspendLayout();
             // 
             // bottomPanel
@@ -101,12 +106,55 @@ namespace Symphony
             // 
             this.backgroundPanel.BackColor = System.Drawing.Color.White;
             this.backgroundPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.backgroundPanel.Controls.Add(this.panelInstallType);
+            this.backgroundPanel.Controls.Add(this.labelInstallType);
             this.backgroundPanel.Controls.Add(this.labelBody);
             this.backgroundPanel.Controls.Add(this.labelHeader);
             this.backgroundPanel.Location = new System.Drawing.Point(-3, -1);
             this.backgroundPanel.Name = "backgroundPanel";
             this.backgroundPanel.Size = new System.Drawing.Size(502, 309);
             this.backgroundPanel.TabIndex = 10;
+            // 
+            // panelInstallType
+            // 
+            this.panelInstallType.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.panelInstallType.Controls.Add(this.radioButtonAllUsers);
+            this.panelInstallType.Controls.Add(this.radioButtonCurrentUser);
+            this.panelInstallType.Location = new System.Drawing.Point(192, 174);
+            this.panelInstallType.Name = "panelInstallType";
+            this.panelInstallType.Size = new System.Drawing.Size(241, 69);
+            this.panelInstallType.TabIndex = 4;
+            // 
+            // radioButtonAllUsers
+            // 
+            this.radioButtonAllUsers.AutoSize = true;
+            this.radioButtonAllUsers.Location = new System.Drawing.Point(26, 38);
+            this.radioButtonAllUsers.Name = "radioButtonAllUsers";
+            this.radioButtonAllUsers.Size = new System.Drawing.Size(159, 17);
+            this.radioButtonAllUsers.TabIndex = 3;
+            this.radioButtonAllUsers.Text = "For all users (admin required)";
+            this.radioButtonAllUsers.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonCurrentUser
+            // 
+            this.radioButtonCurrentUser.AutoSize = true;
+            this.radioButtonCurrentUser.Checked = true;
+            this.radioButtonCurrentUser.Location = new System.Drawing.Point(26, 15);
+            this.radioButtonCurrentUser.Name = "radioButtonCurrentUser";
+            this.radioButtonCurrentUser.Size = new System.Drawing.Size(87, 17);
+            this.radioButtonCurrentUser.TabIndex = 2;
+            this.radioButtonCurrentUser.TabStop = true;
+            this.radioButtonCurrentUser.Text = "Only for me ()";
+            this.radioButtonCurrentUser.UseVisualStyleBackColor = true;
+            // 
+            // labelInstallType
+            // 
+            this.labelInstallType.AutoSize = true;
+            this.labelInstallType.Location = new System.Drawing.Point(188, 158);
+            this.labelInstallType.Name = "labelInstallType";
+            this.labelInstallType.Size = new System.Drawing.Size(133, 13);
+            this.labelInstallType.TabIndex = 3;
+            this.labelInstallType.Text = "Select the installation type:";
             // 
             // labelBody
             // 
@@ -115,7 +163,8 @@ namespace Symphony
             this.labelBody.Name = "labelBody";
             this.labelBody.Size = new System.Drawing.Size(232, 52);
             this.labelBody.TabIndex = 1;
-            this.labelBody.Text = "The Setup Wizard will allow you to change the way\r\nSymphony features are installed on your computer or even\r\nto remove Symphony from your computer.  Click \"Next\" to\r\ncontinue or \"Cancel\" to exit the Setup Wizard.";
+            this.labelBody.Text = "Symphony allows you to:\r\n - Collaborate securely\r\n - Communicate via messages, vo" +
+    "ice, and video\r\n - Connect with colleagues and coworkers\r\n";
             // 
             // labelHeader
             // 
@@ -126,14 +175,14 @@ namespace Symphony
             this.labelHeader.Name = "labelHeader";
             this.labelHeader.Size = new System.Drawing.Size(246, 40);
             this.labelHeader.TabIndex = 0;
-            this.labelHeader.Text = "Welcome to the Symphony\r\nSetup Wizard";
+            this.labelHeader.Text = "Thanks for downloading \r\nSymphony";
             // 
-            // MaintenanceDlg
+            // WelcomeDialog
             // 
             this.ClientSize = new System.Drawing.Size(494, 361);
             this.Controls.Add(this.backgroundPanel);
             this.Controls.Add(this.bottomPanel);
-            this.Name = "MaintenanceDlg";
+            this.Name = "WelcomeDialog";
             this.Text = "Symphony Setup";
             this.Load += new System.EventHandler(this.dialog_Load);
             this.bottomPanel.ResumeLayout(false);
@@ -141,6 +190,8 @@ namespace Symphony
             this.tableLayoutbackgroundPanel.PerformLayout();
             this.backgroundPanel.ResumeLayout(false);
             this.backgroundPanel.PerformLayout();
+            this.panelInstallType.ResumeLayout(false);
+            this.panelInstallType.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -153,5 +204,9 @@ namespace Symphony
         private System.Windows.Forms.Panel backgroundPanel;
         private System.Windows.Forms.Label labelHeader;
         private System.Windows.Forms.Label labelBody;
+        private System.Windows.Forms.Label labelInstallType;
+        private System.Windows.Forms.Panel panelInstallType;
+        private System.Windows.Forms.RadioButton radioButtonAllUsers;
+        private System.Windows.Forms.RadioButton radioButtonCurrentUser;
     }
 }
