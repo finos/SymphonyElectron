@@ -1,0 +1,112 @@
+@import "theme";
+
+@white: rgb(255, 255, 255, 1);
+@version-text-color: rgb(47, 47, 47, 1);
+@text-padding: 10px;
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  background-color: white;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.SnippingTool:lang(ja-JP) {
+  font-family: @font-family-ja;
+
+  h4 {
+    margin: 3px 0;
+  }
+
+  .SnippingTool-symphony-section {
+    padding-left: 10px;
+  }
+}
+
+.SnippingTool:lang(fr-FR) {
+
+  .SnippingTool-symphony-section {
+    padding-left: 10px;
+  }
+}
+
+.SnippingTool {
+  display: flex;
+  flex-direction: column;
+  font-family: @font-family;
+
+  &-header {
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+    margin-top: 12px;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    justify-items: center;
+  }
+
+  &-snip-button-draw {
+    background: white;
+    border-radius: 4px;
+  }
+
+  &-snip-button-highlight {
+    margin-left: 30px;
+    background: white;
+    border-radius: 4px;
+  }
+
+  &-snip-button-erase {
+    margin-left: 30px;
+    background: white;
+    border-radius: 4px;
+  }
+
+  &-snip-button-image {
+    width: 10px;
+    height: 16px;
+  }
+
+  &-image-container {
+    text-align: center;
+    margin: 0px 0 10px;
+    background: linear-gradient(0deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.96)), #525760;
+  }
+
+  &-image-container img {
+    width: 800px;
+  }
+
+  &-done-button {
+    text-transform: capitalize;
+  }
+
+  &-done-button {
+    box-shadow: none;
+    border: none;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    text-align: center;
+    padding: 10px 32px;
+    display: inline-block;
+    text-decoration: none;
+    line-height: 12px;
+    background-color: #3da2fd;
+    color: #ffffff;
+    cursor: pointer;
+    text-transform: uppercase;
+    float: right;
+    margin: 10px 30px 4px 0;
+
+    &:focus {
+      box-shadow: 0 0 10px rgba(61, 162, 253, 1);
+      outline: none;
+    }
+  }
+
+}

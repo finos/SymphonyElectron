@@ -10,7 +10,9 @@
       "windows": {
         "runtimeExecutable": "${workspaceFolder}/node_modules/electron/dist/Electron.exe"
       },
-      "args": ["."],
+      "args": [
+        "."
+      ],
       "env": {
         "ELECTRON_DEBUGGING": "true",
         "ELECTRON_DEV": "true"
@@ -30,7 +32,10 @@
       "windows": {
         "runtimeExecutable": "${workspaceFolder}/node_modules/electron/dist/Electron.exe"
       },
-      "args": [".", "--url=https://corporate.symphony.com"],
+      "args": [
+        ".",
+        "--url=https://corporate.symphony.com"
+      ],
       "env": {
         "ELECTRON_DEBUGGING": "true",
         "ELECTRON_DEV": "true"
@@ -50,7 +55,10 @@
       "windows": {
         "runtimeExecutable": "${workspaceFolder}/node_modules/electron/dist/Electron.exe"
       },
-      "args": [".", "--url=https://local-dev.symphony.com:9090"],
+      "args": [
+        ".",
+        "--url=https://local-dev.symphony.com:9090"
+      ],
       "env": {
         "ELECTRON_DEBUGGING": "true",
         "ELECTRON_DEV": "true"
@@ -70,7 +78,10 @@
       "windows": {
         "runtimeExecutable": "${workspaceFolder}/node_modules/electron/dist/Electron.exe"
       },
-      "args": [".", "--url=${workspaceFolder}/src/demo/index.html"],
+      "args": [
+        ".",
+        "--url=file://${workspaceFolder}/src/demo/index.html"
+      ],
       "env": {
         "ELECTRON_DEBUGGING": "true",
         "ELECTRON_DEV": "true"

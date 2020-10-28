@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -60,12 +60,12 @@ class ScreenSnippet {
         logger.info(`screen-snippet-handler: Starting screen capture!`);
         this.outputFileName = path.join(this.tempDir, 'symphonyImage-' + Date.now() + '.png');
         if (isMac) {
-            this.captureUtilArgs = [ '-i', '-s', '-t', 'png', this.outputFileName ];
+            this.captureUtilArgs = ['-i', '-s', '-t', 'png', this.outputFileName];
         } else if (isWindowsOS) {
             if (windowHandler.isMana) {
-                this.captureUtilArgs = [ '--no-annotate', this.outputFileName, i18n.getLocale() ];
+                this.captureUtilArgs = ['--no-annotate', this.outputFileName, i18n.getLocale()];
             } else {
-                this.captureUtilArgs = [ this.outputFileName, i18n.getLocale() ];
+                this.captureUtilArgs = [this.outputFileName, i18n.getLocale()];
             }
         } else if (isLinux) {
             this.captureUtilArgs = ['-a', '-f', this.outputFileName];
@@ -83,10 +83,17 @@ class ScreenSnippet {
         }
         try {
             await this.execCmd(this.captureUtil, this.captureUtilArgs);
-            const { message, data, type }: IScreenSnippet = await this.convertFileToData();
-            logger.info(`screen-snippet-handler: Snippet captured! Sending data to SFE`);
-            webContents.send('screen-snippet-data', { message, data, type });
-            await this.verifyAndUpdateAlwaysOnTop();
+            windowHandler.createSnippingToolWindow(this.outputFileName);
+            ipcMain.on('upload-snippet', async (_event, snipImage: string) => {
+                windowHandler.closeSnippingToolWindow();
+                if (snipImage) {
+                    this.outputFileName = snipImage;
+                }
+                const { message, data, type }: IScreenSnippet = await this.convertFileToData();
+                logger.info(`screen-snippet-handler: Snippet captured! Sending data to SFE`);
+                webContents.send('screen-snippet-data', { message, data, type });
+                await this.verifyAndUpdateAlwaysOnTop();
+            });
         } catch (error) {
             await this.verifyAndUpdateAlwaysOnTop();
             logger.error(`screen-snippet-handler: screen capture failed with error: ${error}!`);

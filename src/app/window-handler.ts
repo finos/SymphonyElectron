@@ -112,6 +112,7 @@ export class WindowHandler {
     private screenSharingFrameWindow: Electron.BrowserWindow | null = null;
     private basicAuthWindow: Electron.BrowserWindow | null = null;
     private notificationSettingsWindow: Electron.BrowserWindow | null = null;
+    private snippingToolWindow: Electron.BrowserWindow | null = null;
 
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Use these variables only on initial setup
@@ -737,6 +738,65 @@ export class WindowHandler {
                 this.aboutAppWindow.webContents.send('about-app-data', aboutInfo);
             }
         });
+    }
+
+    /**
+     * Creates the snipping tool window
+     */
+    public createSnippingToolWindow(snipImage: string): void {
+
+        // Prevents creating multiple instances
+        if (didVerifyAndRestoreWindow(this.snippingToolWindow)) {
+            return;
+        }
+
+        const parentWindow = BrowserWindow.getFocusedWindow();
+
+        const opts: ICustomBrowserWindowConstructorOpts = this.getWindowOpts({
+            width: 800,
+            height: 600,
+            modal: false,
+            alwaysOnTop: isMac,
+            resizable: false,
+            fullscreenable: false,
+        }, {
+            devTools: true,
+        });
+
+        if (this.mainWindow && windowExists(this.mainWindow) && this.mainWindow.isAlwaysOnTop()) {
+            opts.alwaysOnTop = true;
+        }
+
+        if (isWindowsOS && parentWindow) {
+            opts.parent = parentWindow;
+        }
+
+        this.snippingToolWindow = createComponentWindow('snipping-tool', opts);
+        this.moveWindow(this.snippingToolWindow);
+        this.snippingToolWindow.setVisibleOnAllWorkspaces(true);
+
+        this.snippingToolWindow.webContents.once('did-finish-load', async () => {
+            const snippingToolInfo = {
+                snipImage,
+            };
+            if (this.snippingToolWindow && windowExists(this.snippingToolWindow)) {
+                this.snippingToolWindow.webContents.send('snipping-tool-data', snippingToolInfo);
+            }
+        });
+
+        this.snippingToolWindow.once('closed', () => {
+            this.removeWindow(opts.winKey);
+            this.screenPickerWindow = null;
+        });
+    }
+
+    /**
+     * Closes the snipping tool window
+     */
+    public closeSnippingToolWindow() {
+        if (this.snippingToolWindow && windowExists(this.snippingToolWindow)) {
+            this.snippingToolWindow.close();
+        }
     }
 
     /**
