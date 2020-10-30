@@ -743,7 +743,9 @@ export class WindowHandler {
     /**
      * Creates the snipping tool window
      */
-    public createSnippingToolWindow(snipImage: string): void {
+    public createSnippingToolWindow(snipImage: string, dimensions?: {
+        height: number | undefined, width: number | undefined,
+    }): void {
 
         // Prevents creating multiple instances
         if (didVerifyAndRestoreWindow(this.snippingToolWindow)) {
@@ -753,11 +755,11 @@ export class WindowHandler {
         const parentWindow = BrowserWindow.getFocusedWindow();
 
         const opts: ICustomBrowserWindowConstructorOpts = this.getWindowOpts({
-            width: 800,
-            height: 600,
+            width: dimensions?.width || 800,
+            height: dimensions?.height || 600,
             modal: false,
             alwaysOnTop: isMac,
-            resizable: false,
+            resizable: true,
             fullscreenable: false,
         }, {
             devTools: true,
@@ -778,6 +780,8 @@ export class WindowHandler {
         this.snippingToolWindow.webContents.once('did-finish-load', async () => {
             const snippingToolInfo = {
                 snipImage,
+                height: dimensions?.height,
+                width: dimensions?.width,
             };
             if (this.snippingToolWindow && windowExists(this.snippingToolWindow)) {
                 this.snippingToolWindow.webContents.send('snipping-tool-data', snippingToolInfo);

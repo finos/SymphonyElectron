@@ -42,12 +42,23 @@ body {
   &-header {
     display: flex;
     flex-direction: row;
-    text-align: center;
-    margin-top: 12px;
-    align-items: center;
-    align-content: center;
+    margin-top: 20px;
     justify-content: center;
-    justify-items: center;
+    text-align: center;
+  }
+
+  &-header-draw-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    text-align: center;
+  }
+
+  &-header-clear-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    text-align: center;
   }
 
   &-snip-button-draw {
@@ -67,19 +78,33 @@ body {
     border-radius: 4px;
   }
 
+  &-snip-button-undo {
+    margin-left: 30px;
+    background: white;
+    border-radius: 4px;
+  }
+
+  &-snip-button-redo {
+    margin-left: 30px;
+    background: white;
+    border-radius: 4px;
+  }
+
+  &-snip-button-clear {
+    margin-left: 30px;
+    background: white;
+    border-radius: 4px;
+  }
+
   &-snip-button-image {
-    width: 10px;
+    width: 14px;
     height: 16px;
   }
 
   &-image-container {
     text-align: center;
-    margin: 0px 0 10px;
+    margin: 10px 0 20px;
     background: linear-gradient(0deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.96)), #525760;
-  }
-
-  &-image-container img {
-    width: 800px;
   }
 
   &-done-button {

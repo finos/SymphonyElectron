@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import * as fs from 'fs';
+import sizeOf from 'image-size';
 import * as os from 'os';
 import * as path from 'path';
 
@@ -83,17 +84,9 @@ class ScreenSnippet {
         }
         try {
             await this.execCmd(this.captureUtil, this.captureUtilArgs);
-            windowHandler.createSnippingToolWindow(this.outputFileName);
-            ipcMain.on('upload-snippet', async (_event, snipImage: string) => {
-                windowHandler.closeSnippingToolWindow();
-                if (snipImage) {
-                    this.outputFileName = snipImage;
-                }
-                const { message, data, type }: IScreenSnippet = await this.convertFileToData();
-                logger.info(`screen-snippet-handler: Snippet captured! Sending data to SFE`);
-                webContents.send('screen-snippet-data', { message, data, type });
-                await this.verifyAndUpdateAlwaysOnTop();
-            });
+            const dimensions = this.getImageSize();
+            windowHandler.createSnippingToolWindow(this.outputFileName, dimensions);
+            this.uploadSnippet(webContents);
         } catch (error) {
             await this.verifyAndUpdateAlwaysOnTop();
             logger.error(`screen-snippet-handler: screen capture failed with error: ${error}!`);
@@ -203,6 +196,40 @@ class ScreenSnippet {
             await updateAlwaysOnTop(true, false, false);
             this.shouldUpdateAlwaysOnTop = false;
         }
+    }
+
+    /**
+     * Gets the height & width of an image
+     */
+    private getImageSize(): {
+        height: number | undefined, width: number | undefined,
+    } | undefined {
+        if (!this.outputFileName) {
+            return undefined;
+        }
+
+        const dimensions = sizeOf(this.outputFileName);
+        return {
+            height: dimensions.height,
+            width: dimensions.width,
+        };
+    }
+
+    /**
+     * Uploads a screen snippet
+     * @param webContents A browser window's web contents object
+     */
+    private uploadSnippet(webContents: Electron.webContents) {
+        ipcMain.on('upload-snippet', async (_event, snipImage: string) => {
+            windowHandler.closeSnippingToolWindow();
+            if (snipImage) {
+                this.outputFileName = snipImage;
+            }
+            const { message, data, type }: IScreenSnippet = await this.convertFileToData();
+            logger.info(`screen-snippet-handler: Snippet captured! Sending data to SFE`);
+            webContents.send('screen-snippet-data', { message, data, type });
+            await this.verifyAndUpdateAlwaysOnTop();
+        });
     }
 }
 
