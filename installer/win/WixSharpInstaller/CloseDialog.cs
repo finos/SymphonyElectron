@@ -5,9 +5,6 @@ namespace Symphony
 {
     public partial class CloseDialog : WixSharp.UI.Forms.ManagedForm, IManagedDialog
     {
-        const int WelcomeDlgIndex = 0;
-        const int InstallDirIndex = 1;
-
         public CloseDialog()
         {
             InitializeComponent();
@@ -16,7 +13,7 @@ namespace Symphony
         void dialog_Load(object sender, System.EventArgs e)
         {
             // Detect if Symphony is running
-            bool isRunning = System.Diagnostics.Process.GetProcessesByName("Symphony").Length > 0;
+            bool isRunning = System.Diagnostics.Process.GetProcessesByName("Symphony").Length > 1;
             if (isRunning)
             {
                 // If it is running, disable the "next" button
@@ -32,17 +29,12 @@ namespace Symphony
         {
             // The "Close Symphony" button is just to get users consent to close the app.
             // Actually closing the app will be done later in the flow.
-            Shell.GoTo(InstallDirIndex);
-        }
-
-        void back_Click(object sender, System.EventArgs e)
-        {
-            Shell.GoTo(WelcomeDlgIndex);
+            Shell.GoNext();
         }
 
         void next_Click(object sender, System.EventArgs e)
         {
-            Shell.GoTo(InstallDirIndex);
+            Shell.GoNext();
         }
 
         void cancel_Click(object sender, System.EventArgs e)

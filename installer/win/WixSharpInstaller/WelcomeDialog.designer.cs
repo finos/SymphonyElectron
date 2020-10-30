@@ -179,6 +179,7 @@ namespace Symphony
             // 
             // WelcomeDialog
             // 
+            this.ControlBox = false;
             this.ClientSize = new System.Drawing.Size(494, 361);
             this.Controls.Add(this.backgroundPanel);
             this.Controls.Add(this.bottomPanel);

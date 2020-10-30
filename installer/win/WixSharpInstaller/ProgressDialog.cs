@@ -59,7 +59,7 @@ namespace Symphony
 
             var fontSize = waitPrompt.Font.Size;
             float scaling = 1;
-            waitPrompt.Font = new Font(waitPrompt.Font.Name, fontSize * scaling, FontStyle.Italic);
+            waitPrompt.Font = new Font(waitPrompt.Font.Name, fontSize * scaling, FontStyle.Regular);
         }
 
         /// <summary>
@@ -70,20 +70,17 @@ namespace Symphony
         {
             if (Runtime.Session.IsUninstalling())
             {
-                dialogText.Text =
-                Text = "[ProgressDlgTitleRemoving]";
+                dialogText.Text = "[ProgressDlgTitleRemoving]";
                 description.Text = "[ProgressDlgTextRemoving]";
             }
             else if (Runtime.Session.IsRepairing())
             {
-                dialogText.Text =
-                Text = "[ProgressDlgTextRepairing]";
+                dialogText.Text = "[ProgressDlgTextRepairing]";
                 description.Text = "[ProgressDlgTitleRepairing]";
             }
             else if (Runtime.Session.IsInstalling())
             {
-                dialogText.Text =
-                Text = "[ProgressDlgTitleInstalling]";
+                dialogText.Text = "[ProgressDlgTitleInstalling]";
                 description.Text = "[ProgressDlgTextInstalling]";
             }
 

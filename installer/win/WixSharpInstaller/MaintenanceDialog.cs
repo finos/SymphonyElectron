@@ -1,5 +1,4 @@
 using WixSharp;
-using System.Drawing;
 
 namespace Symphony
 {
@@ -10,24 +9,21 @@ namespace Symphony
             InitializeComponent();
         }
 
-        void dialog_Load(object sender, System.EventArgs e)
+        private void MaintenanceDialog_Shown(object sender, System.EventArgs e)
         {
-            // Populate the dynamic UI elements that can't be set at compile time (background image)
-            this.backgroundPanel.BackgroundImage = Runtime.Session.GetResourceBitmap("WixUI_Bmp_Dialog");
-        }
-
-        void next_Click(object sender, System.EventArgs e)
-        {
-            Shell.GoNext();
-        }
-
-        void cancel_Click(object sender, System.EventArgs e)
-        {
-            if( System.Windows.Forms.MessageBox.Show("Are you sure you want to cancel Symphony installation?",
-                "Symphony Setup", System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes )
+            // Detect if Symphony is running
+            bool isRunning = System.Diagnostics.Process.GetProcessesByName("Symphony").Length > 1;
+            if (isRunning)
             {
-                Shell.Cancel();
+                // If it is running, continue to the "Close Symphony" screen
+                Shell.GoNext();
+            }
+            else
+            {
+                // If it is not running, proceed to progress dialog
+                Shell.GoTo<Symphony.ProgressDialog>();
             }
         }
+
     }
 }

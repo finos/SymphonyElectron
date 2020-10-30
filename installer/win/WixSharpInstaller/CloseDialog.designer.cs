@@ -31,7 +31,6 @@ namespace Symphony
         {
             this.bottomPanel = new System.Windows.Forms.Panel();
             this.tableLayoutbackgroundPanel = new System.Windows.Forms.TableLayoutPanel();
-            this.back = new System.Windows.Forms.Button();
             this.next = new System.Windows.Forms.Button();
             this.cancel = new System.Windows.Forms.Button();
             this.backgroundPanel = new System.Windows.Forms.Panel();
@@ -64,7 +63,6 @@ namespace Symphony
             this.tableLayoutbackgroundPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutbackgroundPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 14F));
             this.tableLayoutbackgroundPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutbackgroundPanel.Controls.Add(this.back, 1, 0);
             this.tableLayoutbackgroundPanel.Controls.Add(this.next, 2, 0);
             this.tableLayoutbackgroundPanel.Controls.Add(this.cancel, 4, 0);
             this.tableLayoutbackgroundPanel.Location = new System.Drawing.Point(0, 3);
@@ -73,19 +71,6 @@ namespace Symphony
             this.tableLayoutbackgroundPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutbackgroundPanel.Size = new System.Drawing.Size(491, 43);
             this.tableLayoutbackgroundPanel.TabIndex = 7;
-            //
-            // back
-            //
-            this.back.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.back.AutoSize = true;
-            this.back.Location = new System.Drawing.Point(208, 10);
-            this.back.MinimumSize = new System.Drawing.Size(75, 0);
-            this.back.Name = "back";
-            this.back.Size = new System.Drawing.Size(77, 23);
-            this.back.TabIndex = 0;
-            this.back.Text = "[WixUIBack]";
-            this.back.UseVisualStyleBackColor = true;
-            this.back.Click += new System.EventHandler(this.back_Click);
             //
             // next
             //
@@ -159,6 +144,7 @@ namespace Symphony
             //
             // CloseDialog
             //
+            this.ControlBox = false;
             this.ClientSize = new System.Drawing.Size(494, 361);
             this.Controls.Add(this.backgroundPanel);
             this.Controls.Add(this.bottomPanel);
@@ -177,7 +163,6 @@ namespace Symphony
         #endregion
         private System.Windows.Forms.Panel bottomPanel;
         private System.Windows.Forms.TableLayoutPanel tableLayoutbackgroundPanel;
-        private System.Windows.Forms.Button back;
         private System.Windows.Forms.Button next;
         private System.Windows.Forms.Button cancel;
         private System.Windows.Forms.Panel backgroundPanel;

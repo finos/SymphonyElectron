@@ -39,7 +39,6 @@ namespace Symphony
             this.banner = new System.Windows.Forms.PictureBox();
             this.bottomPanel = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.back = new System.Windows.Forms.Button();
             this.next = new System.Windows.Forms.Button();
             this.cancel = new System.Windows.Forms.Button();
             this.bottomBorder = new System.Windows.Forms.Panel();
@@ -137,7 +136,6 @@ namespace Symphony
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 14F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.Controls.Add(this.back, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.next, 2, 0);
             this.tableLayoutPanel1.Controls.Add(this.cancel, 4, 0);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 3);
@@ -146,19 +144,6 @@ namespace Symphony
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(491, 43);
             this.tableLayoutPanel1.TabIndex = 7;
-            //
-            // back
-            //
-            this.back.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.back.AutoSize = true;
-            this.back.Enabled = false;
-            this.back.Location = new System.Drawing.Point(222, 10);
-            this.back.MinimumSize = new System.Drawing.Size(75, 0);
-            this.back.Name = "back";
-            this.back.Size = new System.Drawing.Size(77, 23);
-            this.back.TabIndex = 0;
-            this.back.Text = "[WixUIBack]";
-            this.back.UseVisualStyleBackColor = true;
             //
             // next
             //
@@ -243,7 +228,7 @@ namespace Symphony
             this.Controls.Add(this.description);
             this.Controls.Add(this.currentActionLabel);
             this.Name = "ProgressDialog";
-            this.Text = "[ProgressDlg_Title]";
+            this.Text = "Symphony Setup";
             this.Load += new System.EventHandler(this.ProgressDialog_Load);
             this.topPanel.ResumeLayout(false);
             this.topPanel.PerformLayout();
@@ -269,7 +254,6 @@ namespace Symphony
         private System.Windows.Forms.Panel bottomBorder;
         private System.Windows.Forms.Panel topBorder;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.Button back;
         private System.Windows.Forms.Button next;
         private System.Windows.Forms.Button cancel;
         private System.Windows.Forms.Label waitPrompt;

@@ -28,11 +28,19 @@ namespace Symphony
             this.radioButtonCurrentUser.Text = "Only for me (" + getUserName() + ")";
             if( Runtime.Session["ALLUSERS"] != "" )
             {
-                    this.radioButtonAllUsers.Checked = true;
+                this.radioButtonAllUsers.Checked = true;
             }
             else
             {
-                   this.radioButtonCurrentUser.Checked = true;
+               this.radioButtonCurrentUser.Checked = true;
+            }
+
+            // Detect if Symphony is running
+            bool isRunning = System.Diagnostics.Process.GetProcessesByName("Symphony").Length > 1;
+            if (!isRunning)
+            {
+                // If it is not running, change the label of the "Next" button to "Install" as the CloseDialog will be skipped
+                this.next.Text = "Install";
             }
         }
 
@@ -46,7 +54,7 @@ namespace Symphony
             {
                 // Install for current user
                 Runtime.Session["MSIINSTALLPERUSER"] = "1"; // per-user
-                Runtime.Session["INSTALLDIR"] = System.Environment.ExpandEnvironmentVariables(@"%LOCALAPPDATA%\Apps\Symphony\" + Runtime.ProductName);
+                Runtime.Session["INSTALLDIR"] = System.Environment.ExpandEnvironmentVariables(@"%LOCALAPPDATA%\Programs\Symphony\" + Runtime.ProductName);
             } else if (radioButtonAllUsers.Checked)
             {
                 // Install for all users
@@ -55,16 +63,16 @@ namespace Symphony
             }
 
             // Detect if Symphony is running
-            bool isRunning = System.Diagnostics.Process.GetProcessesByName("Symphony").Length > 0;
+            bool isRunning = System.Diagnostics.Process.GetProcessesByName("Symphony").Length > 1;
             if (isRunning)
             {
                 // If it is running, continue to the "Close Symphony" screen
-                Shell.GoTo<Symphony.CloseDialog>();
+                Shell.GoNext();
             }
             else
             {
-                // If it is not running, proceed to InstallDir dialog
-                Shell.GoNext();
+                // If it is not running, proceed to progress dialog
+                Shell.GoTo<Symphony.ProgressDialog>();
             }
         }
 
