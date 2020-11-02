@@ -203,6 +203,7 @@ namespace Symphony
         void cancel_Click(object sender, EventArgs e)
         {
             showingCancelConfirmation = true;
+            // TODO: Localization
             if (System.Windows.Forms.MessageBox.Show("Are you sure you want to cancel Symphony installation?",
                 "Symphony Setup", System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
