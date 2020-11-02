@@ -1,7 +1,7 @@
 ﻿// This file is created and modified from the visual form designer in Visual Studio, so shouldn't need to be modified by hand
 namespace Symphony
 {
-    partial class ExitDlg
+    partial class ExitDialog
     {
         /// <summary>
         /// Required designer variable.
@@ -30,10 +30,10 @@ namespace Symphony
         private void InitializeComponent()
         {
             // 
-            // ExitDlg
+            // ExitDialog
             // 
-            this.Name = "ExitDlg";
-            this.Load += new System.EventHandler(this.ExitDlg_Load);
+            this.Name = "ExitDialog";
+            this.Load += new System.EventHandler(this.ExitDialog_Load);
 
         }
 
