@@ -753,16 +753,30 @@ export class WindowHandler {
         }
 
         const parentWindow = BrowserWindow.getFocusedWindow();
+        const MIN_HEIGHT = 312;
+        const MIN_WIDTH = 320;
+        const CONTAINER_HEIGHT = 124;
+
+        let windowHeight = dimensions?.height ? (dimensions.height + CONTAINER_HEIGHT) : 600;
+        let windowWidth = dimensions?.width || 800;
+
+        if (dimensions && dimensions.height && dimensions.height < MIN_HEIGHT) {
+            windowHeight = MIN_HEIGHT + CONTAINER_HEIGHT;
+        }
+
+        if (dimensions && dimensions.width && dimensions.width < MIN_WIDTH) {
+            windowWidth = MIN_WIDTH;
+        }
 
         const opts: ICustomBrowserWindowConstructorOpts = this.getWindowOpts({
-            width: dimensions?.width || 800,
-            height: dimensions?.height || 600,
+            width: windowWidth,
+            height: windowHeight,
             modal: false,
-            alwaysOnTop: isMac,
-            resizable: true,
+            alwaysOnTop: false,
+            resizable: false,
             fullscreenable: false,
         }, {
-            devTools: true,
+            devTools: false,
         });
 
         if (this.mainWindow && windowExists(this.mainWindow) && this.mainWindow.isAlwaysOnTop()) {
