@@ -65,7 +65,9 @@ exports[`Snipping Tool should render correctly 1`] = `
     <img
       alt="Symphony Logo"
       className="SnippetImage"
+      height={600}
       src="Screen-Snippet"
+      width={800}
     />
   </main>
   <footer>
