@@ -35,7 +35,7 @@ export default class SnippingTool extends React.Component<{}, IState> {
    * Renders the Snipping tool
    */
   public render(): JSX.Element {
-    const { snipImage } = this.state;
+    const { snipImage, width, height } = this.state;
     return (
       <div className='SnippingTool' lang={i18n.getLocale()}>
         <header>
@@ -84,6 +84,8 @@ export default class SnippingTool extends React.Component<{}, IState> {
         <main>
           <img
             src={snipImage}
+            width={width}
+            height={height}
             className='SnippetImage'
             alt={i18n.t('Symphony Logo', SNIPPING_TOOL_NAMESPACE)()}
           />
