@@ -3,14 +3,16 @@
 //css_ref System.Windows.Forms.dll;
 //css_ref Wix_bin\SDK\Microsoft.Deployment.WindowsInstaller.dll;
 //css_ref WixSharp.UI.dll;
-//css_imp WelcomeDlg.cs;
-//css_imp WelcomeDlg.designer.cs;
-//css_imp CloseDlg.cs;
-//css_imp CloseDlg.designer.cs;
-//css_imp ExitDlg.cs;
-//css_imp ExitDlg.designer.cs;
-//css_imp MaintenanceDlg.cs;
-//css_imp MaintenanceDlg.designer.cs;
+//css_imp WelcomeDialog.cs;
+//css_imp WelcomeDialog.designer.cs;
+//css_imp CloseDialog.cs;
+//css_imp CloseDialog.designer.cs;
+//css_imp ProgressDialog.cs
+//css_imp ProgressDialog.Designer.cs
+//css_imp ExitDialog.cs;
+//css_imp ExitDialog.designer.cs;
+//css_imp MaintenanceDialog.cs;
+//css_imp MaintenanceDialog.designer.cs;
 
 using WixSharp;
 using WixSharp.Forms;
@@ -128,14 +130,21 @@ class Script
         // side-by-side with the previous version, we would generate a new UpgradeCode for the new version onwards.
         // More details can be found in this stackoverflow post:
         //      https://stackoverflow.com/a/26344742
-        project.GUID = System.Guid.NewGuid();
-        project.UpgradeCode = new System.Guid("{a9b448c9-f065-41a4-87c3-da527c6a389b}");
-
-        // Don't allow installation of earlier versions, but do allow installing the same version as is already installed.
-        project.MajorUpgrade = new MajorUpgrade();
-        project.MajorUpgrade.AllowDowngrades = false;
-        project.MajorUpgrade.AllowSameVersionUpgrades = true;
-        project.MajorUpgrade.DowngradeErrorMessage = "A more recent version of Symphony is already installed on this computer.";
+        project.GUID = new System.Guid("{4042AD1C-90E1-4032-B6B9-2BF6A4214096}");
+        project.ProductId =  System.Guid.NewGuid();
+        project.UpgradeCode = new System.Guid("{36402281-8141-4797-8A90-07CFA75EFA55}");    
+       
+        // Allow any versions to be upgraded/downgraded freely        
+        project.MajorUpgradeStrategy = MajorUpgradeStrategy.Default;
+        project.MajorUpgradeStrategy.RemoveExistingProductAfter = Step.InstallInitialize;
+        project.MajorUpgradeStrategy.UpgradeVersions.Minimum = "0.0.0";
+        project.MajorUpgradeStrategy.UpgradeVersions.Maximum = null; // No max version limit
+        project.MajorUpgradeStrategy.UpgradeVersions.IncludeMaximum = true;
+        project.MajorUpgradeStrategy.UpgradeVersions.IncludeMinimum = true;
+        project.MajorUpgradeStrategy.PreventDowngradingVersions.Minimum = "0.0.0";
+        project.MajorUpgradeStrategy.PreventDowngradingVersions.Maximum = "0.0.0";
+        project.MajorUpgradeStrategy.PreventDowngradingVersions.IncludeMaximum = true;
+        project.MajorUpgradeStrategy.PreventDowngradingVersions.IncludeMinimum = true;
 
         // Declare all the custom properties we want to use, and assign them default values. It is possible to override
         // these when running the installer, but if not specified, the defaults will be used.
@@ -170,7 +179,7 @@ class Script
             // whether it is a new version or the same version, but we don't want to display it if no reinstallation
             // have been done. To detect this, we always write a new GUID to the fill InstallVariant.info on every
             // installation.
-            new ElevatedManagedAction(CustomActions.InstallVariant, Return.check, When.After, Step.InstallFiles, Condition.NOT_Installed )
+            new ElevatedManagedAction(CustomActions.InstallVariant, Return.check, When.After, Step.InstallFiles, Condition.NOT_BeingRemoved )
             {
                 // INSTALLDIR is a built-in property, and we need it to know which path to write the InstallVariant to
                 UsesProperties = "INSTALLDIR"
@@ -181,7 +190,7 @@ class Script
             // After installation, the Symphony.config file needs to be updated with values from the install properties,
             // either their default values as specified above, or with the overridden value if an override was specified
             // on the command line when the installer was started.
-            new ElevatedManagedAction(CustomActions.UpdateConfig, Return.check, When.After, Step.InstallFiles, Condition.NOT_Installed )
+            new ElevatedManagedAction(CustomActions.UpdateConfig, Return.check, When.After, Step.InstallFiles, Condition.NOT_BeingRemoved )
             {
                 // The UpdateConfig action needs the built-in property INSTALLDIR as well as most of the custom properties
                 UsesProperties = "INSTALLDIR,POD_URL,MINIMIZE_ON_CLOSE,ALWAYS_ON_TOP,AUTO_START,BRING_TO_FRONT,MEDIA,LOCATION,NOTIFICATIONS,MIDI_SYSEX,POINTER_LOCK,FULL_SCREEN,OPEN_EXTERNAL,CUSTOM_TITLE_BAR,DEV_TOOLS_ENABLED,AUTO_LAUNCH_PATH"
@@ -192,10 +201,10 @@ class Script
             // We have some registry keys which are added by the SDA application when it is first launched. This custom
             // action will clean up those keys on uninstall. The name/location of keys have changed between different
             // versions of SDA, so we clean up all known variations, and ignore any missing ones.
-            new ElevatedManagedAction(CustomActions.CleanRegistry, Return.ignore, When.After, Step.RemoveFiles, Condition.Installed ),
+            new ElevatedManagedAction(CustomActions.CleanRegistry, Return.ignore, When.After, Step.RemoveFiles, Condition.BeingUninstalled ),
 
             // Start Symphony after installation is complete
-            new InstalledFileAction("symphony_exe", "", Return.asyncNoWait, When.After, Step.InstallFinalize, Condition.NOT_Installed)
+            new InstalledFileAction(new Id("symphony_exe"), "", Return.asyncNoWait, When.After, Step.InstallFinalize, Condition.NOT_BeingRemoved)
         };
 
         // Use our own Symphony branded bitmap for installation dialogs
@@ -204,18 +213,20 @@ class Script
 
         // Define our own installation flow, using a mix of custom dialogs (defined in their own files) and built-in dialogs
         project.ManagedUI = new ManagedUI();
-        project.ManagedUI.InstallDialogs.Add<Symphony.WelcomeDlg>()
-                                        .Add(Dialogs.InstallDir)
-                                        .Add(Dialogs.Progress)
-                                        .Add<Symphony.ExitDlg>()
-                                        .Add<Symphony.CloseDlg>();
-        project.ManagedUI.ModifyDialogs.Add<Symphony.MaintenanceDlg>()
-                                       .Add(Dialogs.MaintenanceType)
-                                       .Add(Dialogs.Progress)
-                                       .Add<Symphony.ExitDlg>();
+        project.ManagedUI.InstallDialogs.Add<Symphony.WelcomeDialog>()
+                                        .Add<Symphony.CloseDialog>()
+                                        .Add<Symphony.ProgressDialog>()
+                                        .Add<Symphony.ExitDialog>();
+        project.ManagedUI.ModifyDialogs.Add<Symphony.MaintenanceDialog>()
+                                       .Add<Symphony.CloseDialog>()
+                                       .Add<Symphony.ProgressDialog>()
+                                       .Add<Symphony.ExitDialog>();
 
         project.Load += project_Load;
-        project.BeforeInstall += project_BeforeInstall;
+
+        project.ControlPanelInfo.NoRepair = true;
+        project.ControlPanelInfo.NoModify = true;
+        project.ControlPanelInfo.ProductIcon = @"..\..\..\images\icon.ico";
 
         project.Platform = Platform.x64;
 
@@ -251,27 +262,6 @@ class Script
         catch (System.Exception ex)
         {
             e.Session.Log("Error trying to close all Symphony instances: " + ex.ToString() );
-        }
-    }
-
-    // Display a confirmation dialog when uninstalling Symphony, and cancel uninstall unless user confirms.
-    static void project_BeforeInstall(SetupEventArgs e)
-    {
-        try
-        {
-            if (e.IsUninstalling)
-            {
-                var result = System.Windows.Forms.MessageBox.Show("Are you sure you want to uninstall this product?",
-                    "Windows Installer", System.Windows.Forms.MessageBoxButtons.YesNo);
-                if (result != System.Windows.Forms.DialogResult.Yes)
-                {
-                    e.Result = ActionResult.UserExit; // Signal to installer to exit
-                }
-            }
-        }
-        catch (System.Exception ex)
-        {
-            e.Session.Log("Error displaying uninstall confirmation dialog: " + ex.ToString() );
         }
     }
 }

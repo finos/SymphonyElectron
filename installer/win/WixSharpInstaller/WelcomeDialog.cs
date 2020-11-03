@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace Symphony
 {
-    public partial class WelcomeDlg : WixSharp.UI.Forms.ManagedForm, IManagedDialog
+    public partial class WelcomeDialog : WixSharp.UI.Forms.ManagedForm, IManagedDialog
     {
         // Helper function to retrive the user name of the current user. The user name returned from
         // windows can be on the form DOMAIN\USER or USER@DOMAIN. This function strips away the domain
@@ -15,7 +15,7 @@ namespace Symphony
             return slashIndex > -1 ? name.Substring(slashIndex + 1) : name.Substring(0, name.IndexOf("@"));
         }
 
-        public WelcomeDlg()
+        public WelcomeDialog()
         {
             InitializeComponent();
         }
@@ -28,11 +28,19 @@ namespace Symphony
             this.radioButtonCurrentUser.Text = "Only for me (" + getUserName() + ")";
             if( Runtime.Session["ALLUSERS"] != "" )
             {
-                    this.radioButtonAllUsers.Checked = true;
+                this.radioButtonAllUsers.Checked = true;
             }
             else
             {
-                   this.radioButtonCurrentUser.Checked = true;
+               this.radioButtonCurrentUser.Checked = true;
+            }
+
+            // Detect if Symphony is running
+            bool isRunning = System.Diagnostics.Process.GetProcessesByName("Symphony").Length > 1;
+            if (!isRunning)
+            {
+                // If it is not running, change the label of the "Next" button to "Install" as the CloseDialog will be skipped
+                this.next.Text = "Install";
             }
         }
 
@@ -46,7 +54,7 @@ namespace Symphony
             {
                 // Install for current user
                 Runtime.Session["MSIINSTALLPERUSER"] = "1"; // per-user
-                Runtime.Session["INSTALLDIR"] = System.Environment.ExpandEnvironmentVariables(@"%LOCALAPPDATA%\Apps\Symphony\" + Runtime.ProductName);
+                Runtime.Session["INSTALLDIR"] = System.Environment.ExpandEnvironmentVariables(@"%LOCALAPPDATA%\Programs\Symphony\" + Runtime.ProductName);
             } else if (radioButtonAllUsers.Checked)
             {
                 // Install for all users
@@ -55,22 +63,27 @@ namespace Symphony
             }
 
             // Detect if Symphony is running
-            bool isRunning = System.Diagnostics.Process.GetProcessesByName("Symphony").Length > 0;
+            bool isRunning = System.Diagnostics.Process.GetProcessesByName("Symphony").Length > 1;
             if (isRunning)
             {
                 // If it is running, continue to the "Close Symphony" screen
-                Shell.GoTo<Symphony.CloseDlg>();
+                Shell.GoNext();
             }
             else
             {
-                // If it is not running, proceed to InstallDir dialog
-                Shell.GoNext();
+                // If it is not running, proceed to progress dialog
+                Shell.GoTo<Symphony.ProgressDialog>();
             }
         }
 
         void cancel_Click(object sender, System.EventArgs e)
         {
-            Shell.Cancel();
+            // TODO: Localization
+            if( System.Windows.Forms.MessageBox.Show("Are you sure you want to cancel Symphony installation?",
+                "Symphony Setup", System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes )
+            {
+                Shell.Cancel();
+            }
         }
     }
 }
