@@ -2,11 +2,7 @@ import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { i18n } from '../../common/i18n-preload';
 
-interface IState {
-  snipImage: string;
-  height: number;
-  width: number;
-}
+const { useState, useEffect } = React;
 
 interface IProps {
   drawEnabled: boolean;
@@ -16,170 +12,113 @@ interface IProps {
 
 const SNIPPING_TOOL_NAMESPACE = 'ScreenSnippet';
 
-export default class SnippingTool extends React.Component<IProps, IState> {
-  private readonly eventHandlers = {
-    onDraw: () => this.draw(),
-    onHighlight: () => this.highlight(),
-    onErase: () => this.erase(),
-    onDone: () => this.done(),
-    onUndo: () => this.undo(),
-    onRedo: () => this.redo(),
-    onClear: () => this.clear(),
+const SnippingTool: React.FunctionComponent<IProps> = ({drawEnabled, highlightEnabled, eraseEnabled}) => {
+
+  const [screenSnippet, setScreenSnippet] = useState('Screen-Snippet');
+  const [imageDimensions, setImageDimensions] = useState({height: 600, width: 800});
+
+  const getSnipImageData = (_event, {snipImage, height, width}) => {
+    setScreenSnippet(snipImage);
+    setImageDimensions({height, width});
   };
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      snipImage: 'Screen-Snippet',
-      height: 600,
-      width: 800,
+  ipcRenderer.on('snipping-tool-data', getSnipImageData);
+
+  useEffect(() => {
+    return () => {
+      ipcRenderer.removeListener('snipping-tool-data', getSnipImageData);
     };
-    this.updateState = this.updateState.bind(this);
-  }
+  }, []);
 
-  /**
-   * Renders the Snipping tool
-   */
-  public render(): JSX.Element {
-    const { snipImage, width, height } = this.state;
-    return (
-      <div className='SnippingTool' lang={i18n.getLocale()}>
-        <header>
-          <div className='DrawActions'>
-            <button
-              className={
-                this.props.drawEnabled ? 'ActionButtonSelected' : 'ActionButton'
-              }
-              onClick={this.eventHandlers.onDraw}
-            >
-              <img src='../renderer/assets/snip-draw.svg' />
-            </button>
-            <button
-              className={
-                this.props.highlightEnabled
-                  ? 'ActionButtonSelected'
-                  : 'ActionButton'
-              }
-              onClick={this.eventHandlers.onHighlight}
-            >
-              <img src='../renderer/assets/snip-highlight.svg' />
-            </button>
-            <button
-              className={
-                this.props.eraseEnabled
-                  ? 'ActionButtonSelected'
-                  : 'ActionButton'
-              }
-              onClick={this.eventHandlers.onErase}
-            >
-              <img src='../renderer/assets/snip-erase.svg' />
-            </button>
-          </div>
-          <div className='ClearActions'>
-            <button
-              className='ActionButton'
-              onClick={this.eventHandlers.onUndo}
-            >
-              <img src='../renderer/assets/snip-undo.svg' />
-            </button>
-            <button
-              className='ActionButton'
-              onClick={this.eventHandlers.onRedo}
-            >
-              <img src='../renderer/assets/snip-redo.svg' />
-            </button>
-            <button
-              className='ClearButton'
-              onClick={this.eventHandlers.onClear}
-            >
-              {i18n.t('Clear', SNIPPING_TOOL_NAMESPACE)()}
-            </button>
-          </div>
-        </header>
+  const usePen = () => {
+    // setTool("pen");
+    // setShouldRenderPenColorPicker(shouldRenderPenColorPicker => !shouldRenderPenColorPicker);
+    // setShouldRenderHighlightColorPicker(false);
+  };
 
-        <main>
-          <img
-            src={snipImage}
-            width={width}
-            height={height}
-            className='SnippetImage'
-            alt={i18n.t('Symphony Logo', SNIPPING_TOOL_NAMESPACE)()}
-          />
-        </main>
+  const useHighlight = () => {
+    // setTool("highlight");
+    // setShouldRenderHighlightColorPicker(shouldRenderHighlightColorPicker => !shouldRenderHighlightColorPicker);
+    // setShouldRenderPenColorPicker(false);
+  };
 
-        <footer>
-          <button onClick={this.eventHandlers.onDone}>
-            {i18n.t('Done', SNIPPING_TOOL_NAMESPACE)()}
+  const useEraser = () => {
+    // setTool("eraser");
+  };
+
+  const clear = () => {
+    // const updPaths = [...paths];
+    // updPaths.map((p) => {
+    //   p.shouldShow = false;
+    //   return p;
+    // });
+    // setPaths(updPaths);
+  };
+
+  const done = () => {
+    ipcRenderer.send('upload-snippet', screenSnippet);
+  };
+
+  return (
+    <div className='SnippingTool' lang={i18n.getLocale()}>
+      <header>
+        <div className='DrawActions'>
+          <button
+            className={
+              drawEnabled ? 'ActionButtonSelected' : 'ActionButton'
+            }
+            onClick={usePen}
+          >
+            <img src='../renderer/assets/snip-draw.svg' />
           </button>
-        </footer>
-      </div>
-    );
-  }
+          <button
+            className={
+              highlightEnabled
+                ? 'ActionButtonSelected'
+                : 'ActionButton'
+            }
+            onClick={useHighlight}
+          >
+            <img src='../renderer/assets/snip-highlight.svg' />
+          </button>
+          <button
+            className={
+              eraseEnabled
+                ? 'ActionButtonSelected'
+                : 'ActionButton'
+            }
+            onClick={useEraser}
+          >
+            <img src='../renderer/assets/snip-erase.svg' />
+          </button>
+        </div>
+        <div className='ClearActions'>
+          <button
+            className='ClearButton'
+            onClick={clear}
+          >
+            {i18n.t('Clear', SNIPPING_TOOL_NAMESPACE)()}
+          </button>
+        </div>
+      </header>
 
-  public componentDidMount(): void {
-    ipcRenderer.on('snipping-tool-data', this.updateState);
-  }
+      <main>
+        <img
+          src={screenSnippet}
+          width={imageDimensions.width}
+          height={imageDimensions.height}
+          className='SnippetImage'
+          alt={i18n.t('Screen snippet', SNIPPING_TOOL_NAMESPACE)()}
+        />
+      </main>
 
-  public componentWillUnmount(): void {
-    ipcRenderer.removeListener('snipping-tool-data', this.updateState);
-  }
+      <footer>
+        <button onClick={done}>
+          {i18n.t('Done', SNIPPING_TOOL_NAMESPACE)()}
+        </button>
+      </footer>
+    </div>
+  );
+};
 
-  /**
-   * Sets the app state
-   *
-   * @param _event
-   * @param data {Object} { snipImage }
-   */
-  private updateState(_event, data: object): void {
-    this.setState(data as IState);
-  }
-
-  /**
-   * Draws annotation on top of an image
-   */
-  private draw(): void {
-    throw new Error('Method not implemented.');
-  }
-
-  /**
-   * Supports highlighting an image through an annotation
-   */
-  private highlight() {
-    throw new Error('Method not implemented.');
-  }
-
-  /**
-   * Erases annotations from an image
-   */
-  private erase() {
-    throw new Error('Method not implemented.');
-  }
-
-  /**
-   * Processes an image after annotations are drawn
-   */
-  private done() {
-    ipcRenderer.send('upload-snippet', this.state.snipImage);
-  }
-
-  /**
-   * Undo an action
-   */
-  private undo() {
-    throw new Error('Method not implemented');
-  }
-
-  /**
-   * Redo an action
-   */
-  private redo() {
-    throw new Error('Method not implemented.');
-  }
-
-  /**
-   * Clears all annotations from an image
-   */
-  private clear() {
-    throw new Error('Method not implemented');
-  }
-}
+export default SnippingTool;
