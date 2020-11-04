@@ -106,6 +106,7 @@ class ScreenSnippet {
     try {
       await this.execCmd(this.captureUtil, this.captureUtilArgs);
       if (windowHandler.isMana) {
+        windowHandler.closeSnippingToolWindow();
         const dimensions = this.getImageSize();
         windowHandler.createSnippingToolWindow(this.outputFileName, dimensions);
         this.uploadSnippet(webContents);
