@@ -8,9 +8,15 @@ interface IState {
   width: number;
 }
 
+interface IProps {
+  drawEnabled: boolean;
+  highlightEnabled: boolean;
+  eraseEnabled: boolean;
+}
+
 const SNIPPING_TOOL_NAMESPACE = 'ScreenSnippet';
 
-export default class SnippingTool extends React.Component<{}, IState> {
+export default class SnippingTool extends React.Component<IProps, IState> {
   private readonly eventHandlers = {
     onDraw: () => this.draw(),
     onHighlight: () => this.highlight(),
@@ -41,19 +47,29 @@ export default class SnippingTool extends React.Component<{}, IState> {
         <header>
           <div className='DrawActions'>
             <button
-              className='ActionButton'
+              className={
+                this.props.drawEnabled ? 'ActionButtonSelected' : 'ActionButton'
+              }
               onClick={this.eventHandlers.onDraw}
             >
               <img src='../renderer/assets/snip-draw.svg' />
             </button>
             <button
-              className='ActionButton'
+              className={
+                this.props.highlightEnabled
+                  ? 'ActionButtonSelected'
+                  : 'ActionButton'
+              }
               onClick={this.eventHandlers.onHighlight}
             >
               <img src='../renderer/assets/snip-highlight.svg' />
             </button>
             <button
-              className='ActionButton'
+              className={
+                this.props.eraseEnabled
+                  ? 'ActionButtonSelected'
+                  : 'ActionButton'
+              }
               onClick={this.eventHandlers.onErase}
             >
               <img src='../renderer/assets/snip-erase.svg' />
@@ -76,7 +92,7 @@ export default class SnippingTool extends React.Component<{}, IState> {
               className='ClearButton'
               onClick={this.eventHandlers.onClear}
             >
-              Clear
+              {i18n.t('Clear', SNIPPING_TOOL_NAMESPACE)()}
             </button>
           </div>
         </header>
