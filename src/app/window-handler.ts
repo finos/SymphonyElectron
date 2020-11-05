@@ -126,7 +126,10 @@ export class WindowHandler {
         const { disableThrottling } = config.getCloudConfigFields(['disableThrottling']) as any;
 
         this.windows = {};
-        this.contextIsolation = this.globalConfig.contextIsolation || false;
+        this.contextIsolation = true;
+        if (this.globalConfig.contextIsolation !== undefined) {
+            this.contextIsolation = this.globalConfig.contextIsolation;
+        }
         this.backgroundThrottling = (customFlags.disableThrottling !== CloudConfigDataTypes.ENABLED || disableThrottling !== CloudConfigDataTypes.ENABLED);
         this.isCustomTitleBar = isWindowsOS && this.config.isCustomTitleBar === CloudConfigDataTypes.ENABLED;
         this.windowOpts = {

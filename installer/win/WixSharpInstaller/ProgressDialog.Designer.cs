@@ -170,6 +170,7 @@ namespace Symphony
             this.cancel.Text = "[WixUICancel]";
             this.cancel.UseVisualStyleBackColor = true;
             this.cancel.Click += new System.EventHandler(this.cancel_Click);
+            this.cancel.Enabled = false;
             //
             // bottomBorder
             //
