@@ -38,22 +38,6 @@ exports[`Snipping Tool should render correctly 1`] = `
       className="ClearActions"
     >
       <button
-        className="ActionButton"
-        onClick={[Function]}
-      >
-        <img
-          src="../renderer/assets/snip-undo.svg"
-        />
-      </button>
-      <button
-        className="ActionButton"
-        onClick={[Function]}
-      >
-        <img
-          src="../renderer/assets/snip-redo.svg"
-        />
-      </button>
-      <button
         className="ClearButton"
         onClick={[Function]}
       >
@@ -63,7 +47,7 @@ exports[`Snipping Tool should render correctly 1`] = `
   </header>
   <main>
     <img
-      alt="Symphony Logo"
+      alt="Screen snippet"
       className="SnippetImage"
       height={600}
       src="Screen-Snippet"
