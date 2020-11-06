@@ -43,11 +43,11 @@ class ScreenSnippet {
     this.captureUtil = isMac
       ? '/usr/sbin/screencapture'
       : isDevEnv
-      ? path.join(
+        ? path.join(
           __dirname,
           '../../../node_modules/screen-snippet/ScreenSnippet.exe',
         )
-      : path.join(path.dirname(app.getPath('exe')), 'ScreenSnippet.exe');
+        : path.join(path.dirname(app.getPath('exe')), 'ScreenSnippet.exe');
 
     if (isLinux) {
       this.captureUtil = '/usr/bin/gnome-screenshot';
@@ -259,9 +259,9 @@ class ScreenSnippet {
    */
   private getImageSize():
     | {
-        height: number | undefined;
-        width: number | undefined;
-      }
+      height: number | undefined;
+      width: number | undefined;
+    }
     | undefined {
     if (!this.outputFileName) {
       return undefined;
