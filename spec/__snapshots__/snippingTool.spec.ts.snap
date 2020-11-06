@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Snipping Tool should render correctly 1`] = `
+<div
+  className="SnippingTool"
+  lang="en-US"
+>
+  <header>
+    <div
+      className="DrawActions"
+    >
+      <button
+        className="ActionButton"
+        onClick={[Function]}
+      >
+        <img
+          src="../renderer/assets/snip-draw.svg"
+        />
+      </button>
+      <button
+        className="ActionButton"
+        onClick={[Function]}
+      >
+        <img
+          src="../renderer/assets/snip-highlight.svg"
+        />
+      </button>
+      <button
+        className="ActionButton"
+        onClick={[Function]}
+      >
+        <img
+          src="../renderer/assets/snip-erase.svg"
+        />
+      </button>
+    </div>
+    <div
+      className="ClearActions"
+    >
+      <button
+        className="ClearButton"
+        onClick={[Function]}
+      >
+        Clear
+      </button>
+    </div>
+  </header>
+  <main>
+    <img
+      alt="Screen snippet"
+      className="SnippetImage"
+      height={600}
+      src="Screen-Snippet"
+      width={800}
+    />
+  </main>
+  <footer>
+    <button
+      onClick={[Function]}
+    >
+      Done
+    </button>
+  </footer>
+</div>
+`;
