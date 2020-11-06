@@ -279,7 +279,7 @@ class ScreenSnippet {
    * @param webContents A browser window's web contents object
    */
   private uploadSnippet(webContents: Electron.webContents) {
-    ipcMain.on('upload-snippet', async (_event, snipImage: string) => {
+    ipcMain.once('upload-snippet', async (_event, snipImage: string) => {
       windowHandler.closeSnippingToolWindow();
       if (snipImage) {
         this.outputFileName = snipImage;
