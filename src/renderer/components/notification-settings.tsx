@@ -118,7 +118,7 @@ export default class NotificationSettings extends React.Component<{}, IState> {
                     type='radio'
                     name='position'
                     checked={this.state.position === id}
-                    value={id}/>
+                    value={id} />
             </div>
         );
     }
@@ -174,7 +174,7 @@ export default class NotificationSettings extends React.Component<{}, IState> {
     }
 
     /**
-     * Sets the About app state
+     * Sets the component state
      *
      * @param _event
      * @param data {Object} { buildNumber, clientVersion, version }

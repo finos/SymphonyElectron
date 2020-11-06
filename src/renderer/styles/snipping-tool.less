@@ -1,0 +1,182 @@
+@import 'theme';
+
+@white: rgb(255, 255, 255, 1);
+@version-text-color: rgb(47, 47, 47, 1);
+@text-padding: 10px;
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  background-color: white;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.SnippingTool:lang(ja-JP) {
+  font-family: @font-family-ja;
+
+  h4 {
+    margin: 3px 0;
+  }
+
+  .SnippingTool-symphony-section {
+    padding-left: 10px;
+  }
+}
+
+.SnippingTool:lang(fr-FR) {
+  .SnippingTool-symphony-section {
+    padding-left: 10px;
+  }
+}
+
+.SnippingTool {
+  display: flex;
+  flex-direction: column;
+  font-family: @font-family;
+
+  header {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    text-align: center;
+    padding: 4px 0;
+    max-height: 48px;
+
+    .ActionButton {
+      margin-left: 24px;
+      background: white;
+      border-radius: 4px;
+      cursor: pointer;
+      padding: 4px 0;
+      border: none;
+
+      &:first-child {
+        margin-left: 0;
+      }
+
+      img {
+        width: 24px;
+        height: 24px;
+      }
+    }
+
+    .ActionButtonSelected {
+      margin-left: 24px;
+      background: white;
+      border-radius: 4px;
+      cursor: pointer;
+      padding: 4px 0;
+      border: 2px solid #008eff;
+      box-sizing: border-box;
+      border-radius: 4px;
+
+      &:first-child {
+        margin-left: 0;
+      }
+
+      img {
+        width: 24px;
+        height: 24px;
+      }
+    }
+
+    .ClearButton {
+      display: block;
+      padding: 4px 10px;
+      border: 2px solid #7c7f86;
+      border-radius: 16px;
+      color: #7c7f86;
+      font-weight: 600;
+      font-size: 12px;
+      line-height: 16px;
+      margin-left: 24px;
+      text-transform: uppercase;
+      cursor: pointer;
+      background-color: #ffffff;
+    }
+
+    .DrawActions {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .ClearActions {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      text-align: center;
+      position: absolute;
+      right: 24px;
+      align-items: center;
+
+      .ActionButton {
+        img {
+          width: 16px;
+        }
+      }
+    }
+  }
+
+  main {
+    text-align: center;
+    margin: 0;
+    background: linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 0.96),
+        rgba(255, 255, 255, 0.96)
+      ),
+      #525760;
+
+      .SnippetImage {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 2px 32px 4px 0;
+    max-height: 72px;
+
+    button {
+      box-shadow: none;
+      border: none;
+      border-radius: 16px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-align: center;
+      padding: 8px 24px;
+      display: inline-block;
+      text-decoration: none;
+      line-height: 16px;
+      background-color: #008eff;
+      color: rgba(255, 255, 255, 0.96);
+      cursor: pointer;
+      text-transform: uppercase;
+      margin: 10px 30px 4px 0;
+
+      &:focus {
+        box-shadow: 0 0 10px rgba(61, 162, 253, 1);
+        outline: none;
+      }
+    }
+  }
+
+  @media only screen and (max-width: 400px) {
+    header {
+      .ClearActions {
+        position: relative;
+        right: auto;
+        margin-left: 24px;
+      }
+    }
+  }
+}

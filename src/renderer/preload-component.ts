@@ -10,6 +10,7 @@ import NotificationSettings from './components/notification-settings';
 import ScreenPicker from './components/screen-picker';
 import ScreenSharingFrame from './components/screen-sharing-frame';
 import ScreenSharingIndicator from './components/screen-sharing-indicator';
+import SnippingTool from './components/snipping-tool';
 import Welcome from './components/welcome';
 
 const enum components {
@@ -21,6 +22,7 @@ const enum components {
     notification = 'notification-comp',
     notificationSettings = 'notification-settings',
     welcome = 'welcome',
+    snippingTool = 'snipping-tool',
 }
 
 const loadStyle = (style) => {
@@ -47,26 +49,31 @@ const load = () => {
             break;
         case components.screenPicker:
             loadStyle(components.screenPicker);
-            document.title = 'Screen Picker - Symphony';
+            document.title = i18n.t('Screen Picker - Symphony')();
             component = ScreenPicker;
             break;
         case components.screenSharingIndicator:
             loadStyle(components.screenSharingIndicator);
-            document.title = 'Screen Sharing Indicator - Symphony';
+            document.title = i18n.t('Screen Sharing Indicator - Symphony')();
             component = ScreenSharingIndicator;
             break;
         case components.screenSharingFrame:
             loadStyle(components.screenSharingFrame);
             component = ScreenSharingFrame;
             break;
+        case components.snippingTool:
+            loadStyle(components.snippingTool);
+            document.title = i18n.t('Symphony')();
+            component = SnippingTool;
+            break;
         case components.basicAuth:
             loadStyle(components.basicAuth);
-            document.title = 'Basic Authentication - Symphony';
+            document.title = i18n.t('Basic Authentication - Symphony')();
             component = BasicAuth;
             break;
         case components.notification:
             loadStyle(components.notification);
-            document.title = 'Notification - Symphony';
+            document.title = i18n.t('Notification - Symphony')();
             component = NotificationComp;
             break;
         case components.notificationSettings:

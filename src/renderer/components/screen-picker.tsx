@@ -148,7 +148,7 @@ export default class ScreenPicker extends React.Component<{}, IState> {
                         id={source.id}
                         onClick={() => this.eventHandlers.onSelect(source)}>
                         <div className='ScreenPicker-screen-section-box'>
-                            <img className='ScreenPicker-img-wrapper' src={source.thumbnail as any} alt='thumbnail image'/>
+                            <img className='ScreenPicker-img-wrapper' src={source.thumbnail as any} alt='thumbnail image' />
                         </div>
                         <div className='ScreenPicker-screen-source-title'>{screenName}</div>
                     </div>,
@@ -161,7 +161,7 @@ export default class ScreenPicker extends React.Component<{}, IState> {
                         id={source.id}
                         onClick={() => this.eventHandlers.onSelect(source)}>
                         <div className='ScreenPicker-screen-section-box'>
-                            <img className='ScreenPicker-img-wrapper' src={source.thumbnail as any} alt='thumbnail image'/>
+                            <img className='ScreenPicker-img-wrapper' src={source.thumbnail as any} alt='thumbnail image' />
                         </div>
                         <div className='ScreenPicker-screen-source-title'>{source.name}</div>
                     </div>,
@@ -173,8 +173,8 @@ export default class ScreenPicker extends React.Component<{}, IState> {
         if (!this.isScreensAvailable && !this.isApplicationsAvailable) {
             return (
                 <div className='ScreenPicker-error-content'>
-                <span className='error-message'>
-                    {i18n.t('No screens or applications are currently available.', SCREEN_PICKER_NAMESPACE)()}
+                    <span className='error-message'>
+                        {i18n.t('No screens or applications are currently available.', SCREEN_PICKER_NAMESPACE)()}
                     </span>
                 </div>
             );
@@ -205,7 +205,7 @@ export default class ScreenPicker extends React.Component<{}, IState> {
                     onChange={this.eventHandlers.onToggle('screens')}
                 />,
                 <label className={classNames('screens', { hidden: !this.isScreensAvailable })}
-                       htmlFor='screen-tab'
+                    htmlFor='screen-tab'
                 >
                     {i18n.t('Screens', SCREEN_PICKER_NAMESPACE)()}
                 </label>,
@@ -218,7 +218,7 @@ export default class ScreenPicker extends React.Component<{}, IState> {
                     onChange={this.eventHandlers.onToggle('applications')}
                 />,
                 <label className={classNames('applications', { hidden: !this.isApplicationsAvailable })}
-                       htmlFor='application-tab'
+                    htmlFor='application-tab'
                 >
                     {i18n.t('Applications', SCREEN_PICKER_NAMESPACE)()}
                 </label>,
@@ -235,7 +235,7 @@ export default class ScreenPicker extends React.Component<{}, IState> {
                     onChange={this.eventHandlers.onToggle('screens')}
                 />,
                 <label className={classNames('screens', { hidden: !this.isScreensAvailable })}
-                       htmlFor='screen-tab'
+                    htmlFor='screen-tab'
                 >
                     {i18n.t('Screens', SCREEN_PICKER_NAMESPACE)()}
                 </label>,
@@ -252,7 +252,7 @@ export default class ScreenPicker extends React.Component<{}, IState> {
                     onChange={this.eventHandlers.onToggle('applications')}
                 />,
                 <label className={classNames('applications', { hidden: !this.isApplicationsAvailable })}
-                       htmlFor='application-tab'
+                    htmlFor='application-tab'
                 >
                     {i18n.t('Applications', SCREEN_PICKER_NAMESPACE)()}
                 </label>,
@@ -372,14 +372,14 @@ export default class ScreenPicker extends React.Component<{}, IState> {
 
         // Find the next item to be selected
         const nextIndex = (this.currentIndex + index + sources.length) % sources.length;
-        if (sources[ nextIndex ] && sources[ nextIndex ].id) {
+        if (sources[nextIndex] && sources[nextIndex].id) {
             // Updates the selected source
-            this.setState({ selectedSource: sources[ nextIndex ] });
+            this.setState({ selectedSource: sources[nextIndex] });
         }
     }
 
     /**
-     * Sets the About app state
+     * Sets the component state
      *
      * @param _event
      * @param data {Object}
