@@ -570,6 +570,8 @@ export const reloadWindow = (browserWindow: ICustomBrowserWindow) => {
         logger.info(`window-utils: reloading the main window`);
         browserWindow.reload();
 
+        windowHandler.closeAllWindow();
+
         windowHandler.execCmd(windowHandler.screenShareIndicatorFrameUtil, []);
 
         return;
