@@ -12,6 +12,11 @@ exports[`Snipping Tool should render correctly 1`] = `
       <button
         className="ActionButton"
         onClick={[Function]}
+        style={
+          Object {
+            "border": "2px solid rgba(0, 142, 255, 1)",
+          }
+        }
       >
         <img
           src="../renderer/assets/snip-draw.svg"
@@ -45,14 +50,17 @@ exports[`Snipping Tool should render correctly 1`] = `
       </button>
     </div>
   </header>
+  ;
   <main>
-    <img
-      alt="Screen snippet"
-      className="SnippetImage"
-      height={600}
-      src="Screen-Snippet"
-      width={800}
-    />
+    <div>
+      <img
+        alt="Screen snippet"
+        className="SnippetImage"
+        height={600}
+        src="Screen-Snippet"
+        width={800}
+      />
+    </div>
   </main>
   <footer>
     <button

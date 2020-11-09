@@ -47,40 +47,27 @@ body {
     max-height: 48px;
 
     .ActionButton {
-      margin-left: 24px;
+      width: 24px;
+      height: 24px;
+      margin-left: 15px;
       background: white;
       border-radius: 4px;
       cursor: pointer;
       padding: 4px 0;
       border: none;
-
-      &:first-child {
-        margin-left: 0;
-      }
-
-      img {
-        width: 24px;
-        height: 24px;
-      }
-    }
-
-    .ActionButtonSelected {
-      margin-left: 24px;
-      background: white;
-      border-radius: 4px;
-      cursor: pointer;
-      padding: 4px 0;
-      border: 2px solid #008eff;
       box-sizing: border-box;
       border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 2px solid white;
 
       &:first-child {
         margin-left: 0;
       }
 
-      img {
-        width: 24px;
-        height: 24px;
+      &:focus {
+        outline: none;
       }
     }
 
@@ -179,4 +166,42 @@ body {
       }
     }
   }
+}
+
+.colorPicker {
+  display: flex;
+  flex-direction: row;
+  margin: 4px;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  height: 40px;
+  background: #FFFFFF;
+  box-shadow: 0px 4px 16px rgba(15, 27, 36, 0.14), 0px 4px 8px rgba(15, 27, 36, 0.26);
+  border-radius: 24px;
+  }
+
+.enclosingCircle {
+  width: 24px;
+  height: 24px;
+  background: #FFFFFF;
+  border-radius: 50%;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+  margin: 8px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+.colorDot {
+  border-radius: 50%;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+  width: 8px;
+  height: 8px;
+  background: #000028;
 }
