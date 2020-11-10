@@ -1,7 +1,6 @@
 import { ipcRenderer, remote } from 'electron';
 import * as React from 'react';
 import { i18n } from '../../common/i18n-preload';
-
 interface IState {
     userConfig: object;
     globalConfig: object;
@@ -133,7 +132,8 @@ export default class AboutApp extends React.Component<{}, IState> {
     public copy(): void {
         const data = this.state;
         if (data) {
-            remote.clipboard.write({ text: JSON.stringify(data, null, 4) }, 'clipboard');
+            const data2 = JSON.parse(JSON.stringify(data).split('"clientVersion":').join('"sbeVersion":'));
+            remote.clipboard.write({ text: JSON.stringify(data2, null, 4) }, 'clipboard');
         }
     }
 
