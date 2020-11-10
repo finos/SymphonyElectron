@@ -132,7 +132,11 @@ export default class AboutApp extends React.Component<{}, IState> {
     public copy(): void {
         const data = this.state;
         if (data) {
-            const data2 = JSON.parse(JSON.stringify(data).split('"clientVersion":').join('"sbeVersion":'));
+            const { clientVersion, ...rest } = this.state;
+            const data = { ...{ sbeVersion: clientVersion }, ...rest };
+            if (data) {
+                remote.clipboard.write({ text: JSON.stringify(data, null, 4) }, 'clipboard');
+            }
             remote.clipboard.write({ text: JSON.stringify(data2, null, 4) }, 'clipboard');
         }
     }
