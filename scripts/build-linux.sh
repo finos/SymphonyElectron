@@ -2,6 +2,7 @@
 
 NODE_REQUIRED_VERSION=v12.13.1
 SNYK_ORG=sda
+SNYK_PROJECT_NAME="Symphony Desktop Application"
 
 if ! [ -x "$(command -v git)" ]; then
   echo 'GIT does not exist! Please set it up before running this script!' >&2
@@ -69,7 +70,8 @@ npm install
 
 # Run Snyk Security Tests
 echo "Running snyk security tests"
-snyk test --file=package.json --org="$SNYK_ORG"
+snyk test --file=package-lock.json --org="$SNYK_ORG"
+snyk monitor --file=package-lock.json --org="$SNYK_ORG" --project-name="$SNYK_PROJECT_NAME"
 
 # replace url in config
 echo "Setting default pod url to https://corporate.symphony.com"
