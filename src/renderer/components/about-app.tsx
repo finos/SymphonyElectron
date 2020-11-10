@@ -137,7 +137,6 @@ export default class AboutApp extends React.Component<{}, IState> {
             if (data) {
                 remote.clipboard.write({ text: JSON.stringify(data, null, 4) }, 'clipboard');
             }
-            remote.clipboard.write({ text: JSON.stringify(data2, null, 4) }, 'clipboard');
         }
     }
 
