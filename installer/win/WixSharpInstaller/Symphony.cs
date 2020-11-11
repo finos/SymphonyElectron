@@ -233,28 +233,35 @@ class Script
         // Generate an MSI from all settings done above
         Compiler.BuildMsi(project);
     }
+    
+    static void KillSymphonyProcesses() 
+    {
+        System.Diagnostics.Process.GetProcessesByName("Symphony").ForEach(p => {
+            if( System.IO.Path.GetFileName(p.MainModule.FileName) =="Symphony.exe")
+            {
+                if( !p.HasExited )
+                {
+                    p.Kill();
+                    p.WaitForExit();
+                }
+            }
+        });
+    }
 
     static void project_Load(SetupEventArgs e)
     {
         try
         {
             // Try to close all running symphony instances before installing
-            System.Diagnostics.Process.GetProcessesByName("Symphony").ForEach(p => {
-                if( System.IO.Path.GetFileName(p.MainModule.FileName) =="Symphony.exe")
-                {
-                    if( !p.HasExited )
-                    {
-                        p.Kill();
-                        p.WaitForExit();
-                    }
-                }
-            });
+            KillSymphonyProcesses();
             
             // When force terminating Symphony, sometimes this is detected as the renderer process crashing.
             // As this message would confuse users, we wait a short time and then kill all Symphony instances
             // again, which would ensure that the dialog about renderer crash will not be shown.
 
+            KillSymphonyProcesses(); // Try again immediately, for fast systems which shows dialog quickly
             System.Threading.Thread.Sleep(500);
+            KillSymphonyProcesses(); // Try yet again after half a second for slow systems which takes time to show dialog
 
             // Try to close all running symphony instances again
             System.Diagnostics.Process.GetProcessesByName("Symphony").ForEach(p => {
