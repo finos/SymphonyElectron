@@ -6,13 +6,13 @@ import { ipcRenderer, remote } from './__mocks__/electron';
 describe('about app', () => {
     const aboutAppDataLabel = 'about-app-data';
     const aboutDataMock = {
+        sbeVersion: '1',
         userConfig: {},
         globalConfig: {},
         cloudConfig: {},
         finalConfig: {},
         appName: 'Symphony',
         versionLocalised: 'Version',
-        clientVersion: '1',
         buildNumber: '4.x.x',
         hostname: 'N/A',
         sfeVersion: 'N/A',

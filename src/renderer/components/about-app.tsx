@@ -1,7 +1,6 @@
 import { ipcRenderer, remote } from 'electron';
 import * as React from 'react';
 import { i18n } from '../../common/i18n-preload';
-
 interface IState {
     userConfig: object;
     globalConfig: object;
@@ -131,7 +130,8 @@ export default class AboutApp extends React.Component<{}, IState> {
      * Copies the version info on to the clipboard
      */
     public copy(): void {
-        const data = this.state;
+        const { clientVersion, ...rest } = this.state;
+        const data = { ...{ sbeVersion: clientVersion }, ...rest };
         if (data) {
             remote.clipboard.write({ text: JSON.stringify(data, null, 4) }, 'clipboard');
         }
