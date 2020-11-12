@@ -441,7 +441,7 @@ export class WindowHandler {
       } else {
         this.isMana = false;
       }
-      logger.info('window-handler: isMana: ' + this.isMana);
+        logger.info('window-handler: isMana: ' + this.isMana);
 
       // Injects custom title bar and snack bar css into the webContents
       await injectStyles(this.mainWindow, this.isCustomTitleBar);
@@ -963,14 +963,14 @@ export class WindowHandler {
     }
 
     const parentWindow = BrowserWindow.getFocusedWindow();
-    const MIN_HEIGHT = 312;
-    const MIN_WIDTH = 320;
-    const CONTAINER_HEIGHT = 124;
+    const MIN_HEIGHT = 320;
+    const MIN_WIDTH = 312;
+    const CONTAINER_HEIGHT = 120;
 
     let windowHeight = dimensions?.height
       ? dimensions.height + CONTAINER_HEIGHT
-      : 600;
-    let windowWidth = dimensions?.width || 800;
+      : 320;
+    let windowWidth = dimensions?.width || 312;
 
     if (dimensions && dimensions.height && dimensions.height < MIN_HEIGHT) {
       windowHeight = MIN_HEIGHT + CONTAINER_HEIGHT;
