@@ -65,7 +65,7 @@ let {
 let initialAnalyticsSent = false;
 
 const menuItemsArray = Object.keys(menuSections)
-    .map((key) => menuSections[ key ])
+    .map((key) => menuSections[key])
     .filter((value) => isMac ?
         true : value !== menuSections.about);
 
@@ -82,7 +82,7 @@ export class AppMenu {
     constructor() {
         this.menuList = [];
         this.locale = i18n.getLocale();
-        this.menuItemConfigFields = [ 'minimizeOnClose', 'launchOnStartup', 'alwaysOnTop', 'bringToFront', 'memoryRefresh', 'isCustomTitleBar', 'devToolsEnabled' ];
+        this.menuItemConfigFields = ['minimizeOnClose', 'launchOnStartup', 'alwaysOnTop', 'bringToFront', 'memoryRefresh', 'isCustomTitleBar', 'devToolsEnabled'];
         this.cloudConfig = config.getFilteredCloudConfigFields(this.menuItemConfigFields);
         this.disableGpu = config.getConfigFields(['disableGpu']).disableGpu;
         this.enableRendererLogs = config.getConfigFields(['enableRendererLogs']).enableRendererLogs;
@@ -107,12 +107,12 @@ export class AppMenu {
         this.updateGlobals();
 
         this.menuList = menuItemsArray.reduce((map: Electron.MenuItemConstructorOptions, key: string) => {
-            map[ key ] = this.buildMenuKey(key);
+            map[key] = this.buildMenuKey(key);
             return map;
         }, this.menuList || {});
 
         const template = Object.keys(this.menuList)
-            .map((key) => this.menuList[ key ]);
+            .map((key) => this.menuList[key]);
 
         this.menu = Menu.buildFromTemplate(template);
         logger.info(`app-menu: built menu from the provided template`);
@@ -262,17 +262,17 @@ export class AppMenu {
         logger.info(`app-menu: building view menu`);
         return {
             label: i18n.t('View')(),
-            submenu: [ {
+            submenu: [{
                 accelerator: 'CmdOrCtrl+R',
                 click: (_item, focusedWindow) => focusedWindow ? reloadWindow(focusedWindow as ICustomBrowserWindow) : null,
                 label: i18n.t('Reload')(),
             },
-                this.buildSeparator(),
-                this.assignRoleOrLabel({ role: 'resetZoom', label: i18n.t('Actual Size')() }),
-                this.assignRoleOrLabel({ role: 'zoomIn', label: i18n.t('Zoom In')() }),
-                this.assignRoleOrLabel({ role: 'zoomOut', label: i18n.t('Zoom Out')() }),
-                this.buildSeparator(),
-                this.assignRoleOrLabel({ role: 'togglefullscreen', label: i18n.t('Toggle Full Screen')() }),
+            this.buildSeparator(),
+            this.assignRoleOrLabel({ role: 'resetZoom', label: i18n.t('Actual Size')() }),
+            this.assignRoleOrLabel({ role: 'zoomIn', label: i18n.t('Zoom In')() }),
+            this.assignRoleOrLabel({ role: 'zoomOut', label: i18n.t('Zoom Out')() }),
+            this.buildSeparator(),
+            this.assignRoleOrLabel({ role: 'togglefullscreen', label: i18n.t('Toggle Full Screen')() }),
             ],
         };
     }
@@ -378,7 +378,7 @@ export class AppMenu {
                         const defaultSession = session.defaultSession;
                         if (defaultSession) {
                             await defaultSession.clearCache();
-                            focusedWindow.reload();
+                            reloadWindow(focusedWindow as ICustomBrowserWindow);
                         }
                     }
                 },
@@ -430,7 +430,7 @@ export class AppMenu {
             label: i18n.t('Help')(),
             role: 'help',
             submenu:
-                [ {
+                [{
                     click: () => shell.openExternal(i18n.t('Help Url')()),
                     label: i18n.t('Symphony Help')(),
                 }, {
@@ -438,7 +438,7 @@ export class AppMenu {
                     label: i18n.t('Learn More')(),
                 }, {
                     label: i18n.t('Troubleshooting')(),
-                    submenu: [ {
+                    submenu: [{
                         click: async () => exportLogs(),
                         label: showLogsLabel,
                     }, {
@@ -464,7 +464,7 @@ export class AppMenu {
                             : i18n.t('Disable GPU')(),
                         click: () => {
                             gpuRestartDialog(!this.disableGpu);
-                            },
+                        },
                     },
                     {
                         label: i18n.t('Enable Renderer Logs')(),
@@ -482,7 +482,7 @@ export class AppMenu {
                             await config.updateUserConfig({ enableRendererLogs });
                             logger.info('New value for enableRendererLogs: ' + this.enableRendererLogs);
                         },
-                    } ],
+                    }],
                 }, {
                     label: i18n.t('About Symphony')(),
                     visible: isWindowsOS || isLinux,
@@ -490,7 +490,7 @@ export class AppMenu {
                         const windowName = focusedWindow ? (focusedWindow as ICustomBrowserWindow).winName : '';
                         windowHandler.createAboutAppWindow(windowName);
                     },
-                } ],
+                }],
         };
     }
 
@@ -517,13 +517,13 @@ export class AppMenu {
         }
 
         if (isMac) {
-            return label ? { role, label, accelerator: role ? macAccelerator[ role ] : '' }
-                : { role, accelerator: role ? macAccelerator[ role ] : '' };
+            return label ? { role, label, accelerator: role ? macAccelerator[role] : '' }
+                : { role, accelerator: role ? macAccelerator[role] : '' };
         }
 
         if (isWindowsOS) {
-            return label ? { role, label, accelerator: role ? windowsAccelerator[ role ] : '' }
-                : { role, accelerator: role ? windowsAccelerator[ role ] : '' };
+            return label ? { role, label, accelerator: role ? windowsAccelerator[role] : '' }
+                : { role, accelerator: role ? windowsAccelerator[role] : '' };
         }
 
         return label ? { role, label } : { role };

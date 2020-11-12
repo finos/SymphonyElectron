@@ -133,12 +133,12 @@ export default class AboutApp extends React.Component<{}, IState> {
     public copy(): void {
         const data = this.state;
         if (data) {
-            remote.clipboard.write({ text: JSON.stringify(data, null, 4) }, 'clipboard' );
+            remote.clipboard.write({ text: JSON.stringify(data, null, 4) }, 'clipboard');
         }
     }
 
     /**
-     * Sets the About app state
+     * Sets the component state
      *
      * @param _event
      * @param data {Object} { buildNumber, clientVersion, version }

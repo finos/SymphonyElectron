@@ -32,7 +32,7 @@ enum styleNames {
 }
 
 const checkValidWindow = true;
-const { ctWhitelist } = config.getConfigFields([ 'ctWhitelist' ]);
+const { ctWhitelist } = config.getConfigFields(['ctWhitelist']);
 
 // Network status check variables
 const networkStatusCheckInterval = 10 * 1000;
@@ -76,7 +76,7 @@ export const preventWindowNavigation = (browserWindow: BrowserWindow, isPopOutWi
                 if (browserWindow && windowExists(browserWindow)) {
                     const response = await electron.dialog.showMessageBox(browserWindow, {
                         type: 'warning',
-                        buttons: [ 'OK' ],
+                        buttons: ['OK'],
                         title: i18n.t('Not Allowed')(),
                         message: `${i18n.t(`Sorry, you are not allowed to access this website`)()} (${winUrl}), ${i18n.t('please contact your administrator for more details')()}`,
                     });
@@ -317,7 +317,7 @@ export const getBounds = (winPos: ICustomRectangle | Electron.Rectangle | undefi
     const displays = electron.screen.getAllDisplays();
 
     for (let i = 0, len = displays.length; i < len; i++) {
-        const bounds = displays[ i ].bounds;
+        const bounds = displays[i].bounds;
         logger.info('window-utils: getBounds, bounds: ' + JSON.stringify(bounds));
         if (winPos.x >= bounds.x && winPos.y >= bounds.y &&
             ((winPos.x + winPos.width) <= (bounds.x + bounds.width)) &&
@@ -570,6 +570,8 @@ export const reloadWindow = (browserWindow: ICustomBrowserWindow) => {
         logger.info(`window-utils: reloading the main window`);
         browserWindow.reload();
 
+        windowHandler.closeAllWindow();
+
         windowHandler.execCmd(windowHandler.screenShareIndicatorFrameUtil, []);
 
         return;
@@ -659,11 +661,11 @@ export const monitorNetworkInterception = (url: string) => {
     logger.info('window-utils: monitoring network interception for url', podUrl);
 
     // Filter applied w.r.t pod url
-    const filter = { urls: [ podUrl + '*' ] };
+    const filter = { urls: [podUrl + '*'] };
 
     if (mainWindow && windowExists(mainWindow)) {
         isNetworkMonitorInitialized = true;
-        mainWindow.webContents.session.webRequest.onErrorOccurred(filter,async (details) => {
+        mainWindow.webContents.session.webRequest.onErrorOccurred(filter, async (details) => {
             if (!mainWindow || !windowExists(mainWindow)) {
                 return;
             }
@@ -671,8 +673,8 @@ export const monitorNetworkInterception = (url: string) => {
             const isMana = manaUrl && manaUrl.includes('client-bff');
             if (!isMana && windowHandler.isWebPageLoading
                 && (details.error === 'net::ERR_INTERNET_DISCONNECTED'
-                || details.error === 'net::ERR_NETWORK_CHANGED'
-                || details.error === 'net::ERR_NAME_NOT_RESOLVED')) {
+                    || details.error === 'net::ERR_NETWORK_CHANGED'
+                    || details.error === 'net::ERR_NAME_NOT_RESOLVED')) {
 
                 logger.error(`window-utils: URL failed to load`, details);
                 mainWindow.webContents.send('show-banner', { show: true, bannerType: 'error', url: podUrl });

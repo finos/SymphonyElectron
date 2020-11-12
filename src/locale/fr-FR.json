@@ -31,7 +31,6 @@
   "Build expired": "Construit expiré",
   "Cancel": "Annuler",
   "Certificate Error": "Erreur de certificat",
-  "Changing GPU settings requires Symphony to relaunch.": "La modification des paramètres du GPU nécessite la relance de Symphony.",
   "Clear cache and Reload": "Vider le cache et rafraîchir Symphony",
   "Close": "Fermer",
   "ContextMenu": {
@@ -159,7 +158,8 @@
     "Erase": "Effacer",
     "Highlight": "Surligner",
     "Pen": "Stylo",
-    "Snipping Tool": "Outil Capture"
+    "Snipping Tool": "Outil Capture",
+    "Clear": "Claire"
   },
   "Select All": "Tout sélectionner",
   "Services": "Services",

@@ -55,18 +55,18 @@ export default class BasicAuth extends React.Component<{}, IState> {
                 <form id='basicAuth' name='Basic Auth' action='Login' onSubmit={this.eventHandlers.onSubmit}>
                     <table className='form'>
                         <tbody>
-                        <tr>
-                            <td id='username-text'>{i18n.t('User name:', BASIC_AUTH_NAMESPACE)()}</td>
-                            <td>
-                                <input id='username' name='username' title='Username' onChange={this.eventHandlers.onChange} required/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td id='password-text'>{i18n.t('Password:', BASIC_AUTH_NAMESPACE)()}</td>
-                            <td>
-                                <input name='password' id='password' type='password' title='Password' onChange={this.eventHandlers.onChange} required/>
-                            </td>
-                        </tr>
+                            <tr>
+                                <td id='username-text'>{i18n.t('User name:', BASIC_AUTH_NAMESPACE)()}</td>
+                                <td>
+                                    <input id='username' name='username' title='Username' onChange={this.eventHandlers.onChange} required />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td id='password-text'>{i18n.t('Password:', BASIC_AUTH_NAMESPACE)()}</td>
+                                <td>
+                                    <input name='password' id='password' type='password' title='Password' onChange={this.eventHandlers.onChange} required />
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                     <div className='footer'>
@@ -89,7 +89,7 @@ export default class BasicAuth extends React.Component<{}, IState> {
      */
     private change(event): void {
         this.setState({
-            [ (event.target as any).id ]: (event.target as any).value,
+            [(event.target as any).id]: (event.target as any).value,
         } as IState);
     }
 
@@ -111,7 +111,7 @@ export default class BasicAuth extends React.Component<{}, IState> {
     }
 
     /**
-     * Sets the About app state
+     * Sets the component state
      *
      * @param _event
      * @param data {Object} { hostname, isValidCredentials }
