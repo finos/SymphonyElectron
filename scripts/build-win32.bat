@@ -7,6 +7,7 @@ echo %PATH%
 set DISABLE_REBUILD=true
 set NODE_REQUIRED_VERSION=12.13.1
 set SNYK_ORG=sda
+set SNYK_PROJECT_NAME="Symphony Desktop Application"
 
 set PATH=%PATH%;C:\Program Files\nodejs\;C:\Program Files\Git\cmd
 echo %PATH%
@@ -56,7 +57,8 @@ call npm install
 
 # Run Snyk Security Tests
 echo "Running snyk security tests"
-call snyk test --file=package.json --org=%SNYK_ORG%
+call snyk test --file=package-lock.json --org=%SNYK_ORG%
+call snyk monitor --file=package-lock.json --org=%SNYK_ORG% --project-name=%SNYK_PROJECT_NAME%
 
 :: Set expiry if required
 IF "%EXPIRY_PERIOD%"=="" (
