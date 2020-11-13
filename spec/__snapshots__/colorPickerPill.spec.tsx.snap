@@ -1,0 +1,174 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<ColorPickerPill/> should render chosen dots as larger 1`] = `
+<div
+  className="ColorPicker"
+>
+  <div
+    className="EnclosingCircle"
+    data-testid="colorDot rgba(0, 0, 0, 0.64)"
+    key="rgba(0, 0, 0, 0.64)"
+    onClick={[Function]}
+  >
+    <div
+      className="ColorDot"
+      style={
+        Object {
+          "background": "rgba(0, 0, 0, 0.64)",
+          "border": undefined,
+          "cursor": "pointer",
+          "height": "24px",
+          "width": "24px",
+        }
+      }
+    />
+  </div>
+  <div
+    className="EnclosingCircle"
+    data-testid="colorDot rgba(233, 0, 0, 0.64)"
+    key="rgba(233, 0, 0, 0.64)"
+    onClick={[Function]}
+  >
+    <div
+      className="ColorDot"
+      style={
+        Object {
+          "background": "rgba(233, 0, 0, 0.64)",
+          "border": undefined,
+          "cursor": "pointer",
+          "height": "8px",
+          "width": "8px",
+        }
+      }
+    />
+  </div>
+</div>
+`;
+
+exports[`<ColorPickerPill/> should render correctly 1`] = `
+<div
+  className="ColorPicker"
+>
+  <div
+    className="EnclosingCircle"
+    data-testid="colorDot rgba(0, 142, 255, 0.64)"
+    key="rgba(0, 142, 255, 0.64)"
+    onClick={[Function]}
+  >
+    <div
+      className="ColorDot"
+      style={
+        Object {
+          "background": "rgba(0, 142, 255, 0.64)",
+          "border": undefined,
+          "cursor": "pointer",
+          "height": "8px",
+          "width": "8px",
+        }
+      }
+    />
+  </div>
+  <div
+    className="EnclosingCircle"
+    data-testid="colorDot rgba(38, 196, 58, 0.64)"
+    key="rgba(38, 196, 58, 0.64)"
+    onClick={[Function]}
+  >
+    <div
+      className="ColorDot"
+      style={
+        Object {
+          "background": "rgba(38, 196, 58, 0.64)",
+          "border": undefined,
+          "cursor": "pointer",
+          "height": "8px",
+          "width": "8px",
+        }
+      }
+    />
+  </div>
+  <div
+    className="EnclosingCircle"
+    data-testid="colorDot rgba(246, 178, 2, 0.64)"
+    key="rgba(246, 178, 2, 0.64)"
+    onClick={[Function]}
+  >
+    <div
+      className="ColorDot"
+      style={
+        Object {
+          "background": "rgba(246, 178, 2, 0.64)",
+          "border": undefined,
+          "cursor": "pointer",
+          "height": "8px",
+          "width": "8px",
+        }
+      }
+    />
+  </div>
+  <div
+    className="EnclosingCircle"
+    data-testid="colorDot rgba(233, 0, 0, 0.64)"
+    key="rgba(233, 0, 0, 0.64)"
+    onClick={[Function]}
+  >
+    <div
+      className="ColorDot"
+      style={
+        Object {
+          "background": "rgba(233, 0, 0, 0.64)",
+          "border": undefined,
+          "cursor": "pointer",
+          "height": "8px",
+          "width": "8px",
+        }
+      }
+    />
+  </div>
+</div>
+`;
+
+exports[`<ColorPickerPill/> should render outlined dot if provided in props 1`] = `
+<div
+  className="ColorPicker"
+>
+  <div
+    className="EnclosingCircle"
+    data-testid="colorDot rgba(246, 178, 2, 1)"
+    key="rgba(246, 178, 2, 1)"
+    onClick={[Function]}
+  >
+    <div
+      className="ColorDot"
+      style={
+        Object {
+          "background": "rgba(246, 178, 2, 1)",
+          "border": undefined,
+          "cursor": "pointer",
+          "height": "8px",
+          "width": "8px",
+        }
+      }
+    />
+  </div>
+  <div
+    className="EnclosingCircle"
+    data-testid="colorDot rgba(255, 255, 255, 1)"
+    key="rgba(255, 255, 255, 1)"
+    onClick={[Function]}
+  >
+    <div
+      className="ColorDot"
+      style={
+        Object {
+          "background": "rgba(255, 255, 255, 1)",
+          "border": "solid 1px rgba(0, 0, 0, 1)",
+          "cursor": "pointer",
+          "height": "6px",
+          "width": "6px",
+        }
+      }
+    />
+  </div>
+</div>
+`;

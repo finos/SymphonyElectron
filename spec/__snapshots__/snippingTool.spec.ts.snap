@@ -11,12 +11,14 @@ exports[`Snipping Tool should render correctly 1`] = `
     >
       <button
         className="ActionButton"
+        data-testid="pen-button"
         onClick={[Function]}
         style={
           Object {
             "border": "2px solid rgba(0, 142, 255, 1)",
           }
         }
+        title="Pen"
       >
         <img
           src="../renderer/assets/snip-draw.svg"
@@ -24,7 +26,9 @@ exports[`Snipping Tool should render correctly 1`] = `
       </button>
       <button
         className="ActionButton"
+        data-testid="highlight-button"
         onClick={[Function]}
+        title="Highlight"
       >
         <img
           src="../renderer/assets/snip-highlight.svg"
@@ -32,7 +36,9 @@ exports[`Snipping Tool should render correctly 1`] = `
       </button>
       <button
         className="ActionButton"
+        data-testid="erase-button"
         onClick={[Function]}
+        title="Erase"
       >
         <img
           src="../renderer/assets/snip-erase.svg"
@@ -44,26 +50,39 @@ exports[`Snipping Tool should render correctly 1`] = `
     >
       <button
         className="ClearButton"
+        data-testid="clear-button"
         onClick={[Function]}
       >
         Clear
       </button>
     </div>
   </header>
-  ;
-  <main>
-    <div>
-      <img
-        alt="Screen snippet"
-        className="SnippetImage"
-        height={600}
-        src="Screen-Snippet"
-        width={800}
-      />
-    </div>
+  <main
+    style={
+      Object {
+        "minHeight": 200,
+      }
+    }
+  >
+    <AnnotateArea
+      chosenTool="PEN"
+      highlightColor="rgba(0, 142, 255, 0.64)"
+      imageDimensions={
+        Object {
+          "height": 600,
+          "width": 800,
+        }
+      }
+      onChange={[Function]}
+      paths={Array []}
+      penColor="rgba(0, 142, 255, 1)"
+      screenSnippetPath="Screen-Snippet"
+    />
   </main>
   <footer>
     <button
+      className="DoneButton"
+      data-testid="done-button"
       onClick={[Function]}
     >
       Done
