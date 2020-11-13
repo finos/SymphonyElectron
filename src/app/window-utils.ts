@@ -669,9 +669,7 @@ export const monitorNetworkInterception = (url: string) => {
             if (!mainWindow || !windowExists(mainWindow)) {
                 return;
             }
-            const manaUrl: string = await mainWindow.webContents.executeJavaScript('document.location.href');
-            const isMana = manaUrl && manaUrl.includes('client-bff');
-            if (!isMana && windowHandler.isWebPageLoading
+            if (!windowHandler.isMana && windowHandler.isWebPageLoading
                 && (details.error === 'net::ERR_INTERNET_DISCONNECTED'
                     || details.error === 'net::ERR_NETWORK_CHANGED'
                     || details.error === 'net::ERR_NAME_NOT_RESOLVED')) {
