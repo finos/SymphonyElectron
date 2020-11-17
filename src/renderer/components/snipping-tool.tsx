@@ -1,11 +1,12 @@
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { i18n } from '../../common/i18n-preload';
+import AnnotateArea from './annotate-area';
 import ColorPickerPill, { IColor } from './color-picker-pill';
 
-const { useState, useCallback, useRef, useEffect } = React;
+const { useState, useRef, useEffect } = React;
 
-enum Tool {
+export enum Tool {
   pen = 'PEN',
   highlight = 'HIGHLIGHT',
   eraser = 'ERASER',
@@ -32,6 +33,12 @@ export interface ISvgPath {
   shouldShow: boolean;
 }
 
+export interface IImageDimensions {
+  width: number;
+  height: number;
+}
+
+const MIN_ANNOTATE_AREA_HEIGHT = 200;
 const availablePenColors: IColor[] = [
   { rgbaColor: 'rgba(0, 0, 40, 1)' },
   { rgbaColor: 'rgba(0, 142, 255, 1)' },
@@ -48,19 +55,15 @@ const availableHighlightColors: IColor[] = [
 const SNIPPING_TOOL_NAMESPACE = 'ScreenSnippet';
 
 const SnippingTool = () => {
-  // State and ref preparation functions
+  // State preparation functions
 
-  const [screenSnippet, setScreenSnippet] = useState('Screen-Snippet');
+  const [screenSnippetPath, setScreenSnippetPath] = useState('Screen-Snippet');
   const [imageDimensions, setImageDimensions] = useState({
     height: 600,
     width: 800,
   });
   const [paths, setPaths] = useState<IPath[]>([]);
   const [chosenTool, setChosenTool] = useState(Tool.pen);
-  const [annotateAreaLocation, setAnnotateAreaLocation] = useState({
-    left: 0,
-    top: 0,
-  });
   const [penColor, setPenColor] = useState('rgba(0, 142, 255, 1)');
   const [highlightColor, setHighlightColor] = useState(
     'rgba(0, 142, 255, 0.64)',
@@ -74,7 +77,7 @@ const SnippingTool = () => {
   );
 
   const getSnipImageData = ({ }, { snipImage, height, width }) => {
-    setScreenSnippet(snipImage);
+    setScreenSnippetPath(snipImage);
     setImageDimensions({ height, width });
   };
 
@@ -84,12 +87,6 @@ const SnippingTool = () => {
     return () => {
       ipcRenderer.removeListener('snipping-tool-data', getSnipImageData);
     };
-  }, []);
-
-  const annotateRef = useCallback((domNode) => {
-    if (domNode) {
-      setAnnotateAreaLocation(domNode.getBoundingClientRect());
-    }
   }, []);
 
   // Hook that alerts clicks outside of the passed ref
@@ -151,22 +148,10 @@ const SnippingTool = () => {
   };
 
   const clear = () => {
-    const updPaths = [...paths];
-    updPaths.map((p) => {
-      p.shouldShow = false;
-      return p;
-    });
-    setPaths(updPaths);
+    // Clear logic here
   };
 
   // Utility functions
-
-  const getMousePosition = (e: React.MouseEvent) => {
-    return {
-      x: e.pageX - annotateAreaLocation.left,
-      y: e.pageY - annotateAreaLocation.top,
-    };
-  };
 
   const markChosenColor = (colors: IColor[], chosenColor: string) => {
     return colors.map((color) => {
@@ -192,9 +177,8 @@ const SnippingTool = () => {
     return undefined;
   };
 
-  const done = (e) => {
-    getMousePosition(e);
-    ipcRenderer.send('upload-snippet', screenSnippet);
+  const done = () => {
+    ipcRenderer.send('upload-snippet', screenSnippetPath);
   };
 
   return (
@@ -202,39 +186,50 @@ const SnippingTool = () => {
       <header>
         <div className='DrawActions'>
           <button
+            data-testid='pen-button'
             style={getBorderStyle(Tool.pen)}
             className='ActionButton'
             onClick={usePen}
+            title={i18n.t('Pen', SNIPPING_TOOL_NAMESPACE)()}
           >
             <img src='../renderer/assets/snip-draw.svg' />
           </button>
           <button
+            data-testid='highlight-button'
             style={getBorderStyle(Tool.highlight)}
             className='ActionButton'
             onClick={useHighlight}
+            title={i18n.t('Highlight', SNIPPING_TOOL_NAMESPACE)()}
           >
             <img src='../renderer/assets/snip-highlight.svg' />
           </button>
           <button
+            data-testid='erase-button'
             style={getBorderStyle(Tool.eraser)}
             className='ActionButton'
             onClick={useEraser}
+            title={i18n.t('Erase', SNIPPING_TOOL_NAMESPACE)()}
           >
             <img src='../renderer/assets/snip-erase.svg' />
           </button>
         </div>
         <div className='ClearActions'>
-          <button className='ClearButton' onClick={clear}>
+          <button
+            data-testid='clear-button'
+            className='ClearButton'
+            onClick={clear}
+          >
             {i18n.t('Clear', SNIPPING_TOOL_NAMESPACE)()}
           </button>
         </div>
-      </header>;
+      </header>
 
       {
         shouldRenderPenColorPicker && (
           <div style={{ marginTop: '64px', position: 'absolute', left: '50%' }} ref={colorPickerRef}>
             <div style={{ position: 'relative', left: '-50%' }}>
               <ColorPickerPill
+                data-testid='pen-colorpicker'
                 availableColors={markChosenColor(availablePenColors, penColor)}
                 onChange={penColorChosen}
               />
@@ -247,6 +242,7 @@ const SnippingTool = () => {
           <div style={{ marginTop: '64px', position: 'absolute', left: '50%' }} ref={colorPickerRef}>
             <div style={{ position: 'relative', left: '-50%' }}>
               <ColorPickerPill
+                data-testid='highlight-colorpicker'
                 availableColors={markChosenColor(
                   availableHighlightColors,
                   highlightColor,
@@ -258,20 +254,22 @@ const SnippingTool = () => {
         )
       }
 
-      <main>
-        <div ref={annotateRef}>
-          <img
-            src={screenSnippet}
-            width={imageDimensions.width}
-            height={imageDimensions.height}
-            className='SnippetImage'
-            alt={i18n.t('Screen snippet', SNIPPING_TOOL_NAMESPACE)()}
-          />
-        </div>
+      <main style={{ minHeight: MIN_ANNOTATE_AREA_HEIGHT }}>
+        <AnnotateArea
+          paths={paths}
+          highlightColor={highlightColor}
+          penColor={penColor}
+          onChange={setPaths}
+          imageDimensions={imageDimensions}
+          screenSnippetPath={screenSnippetPath}
+          chosenTool={chosenTool}
+        />
       </main>
-
       <footer>
-        <button onClick={done}>
+        <button
+          data-testid='done-button'
+          className='DoneButton'
+          onClick={done}>
           {i18n.t('Done', SNIPPING_TOOL_NAMESPACE)()}
         </button>
       </footer>

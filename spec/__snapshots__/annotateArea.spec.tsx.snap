@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<AnnotateArea/> should render correctly 1`] = `
+<svg
+  data-testid="annotate-area"
+  height={800}
+  id="annotate"
+  onMouseDown={[Function]}
+  onMouseLeave={[Function]}
+  onMouseMove={[Function]}
+  onMouseUp={[Function]}
+  style={
+    Object {
+      "cursor": "crosshair",
+    }
+  }
+  width={800}
+>
+  <image
+    className="SnippetImage"
+    height={800}
+    id="screenSnippet"
+    width={800}
+    x={0}
+    xlinkHref="very-nice-path"
+    y={0}
+  />
+</svg>
+`;

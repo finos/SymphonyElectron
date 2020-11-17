@@ -15,6 +15,13 @@ body {
   width: 100%;
 }
 
+button {
+  &:focus {
+    user-select: none;
+    outline: none;
+  }
+}
+
 .SnippingTool:lang(ja-JP) {
   font-family: @font-family-ja;
 
@@ -43,8 +50,8 @@ body {
     flex-direction: row;
     justify-content: center;
     text-align: center;
-    padding: 4px 0;
-    max-height: 48px;
+    align-items: center;
+    height: 48px;
 
     .ActionButton {
       width: 24px;
@@ -65,25 +72,21 @@ body {
       &:first-child {
         margin-left: 0;
       }
-
-      &:focus {
-        outline: none;
-      }
     }
 
     .ClearButton {
       display: block;
-      padding: 4px 10px;
       border: 2px solid #7c7f86;
       border-radius: 16px;
       color: #7c7f86;
       font-weight: 600;
       font-size: 12px;
       line-height: 16px;
-      margin-left: 24px;
       text-transform: uppercase;
       cursor: pointer;
       background-color: #ffffff;
+      height: 24px;
+      width: 68px;
     }
 
     .DrawActions {
@@ -95,22 +98,20 @@ body {
 
     .ClearActions {
       display: flex;
+      flex: none;
       flex-direction: row;
       justify-content: center;
       text-align: center;
       position: absolute;
-      right: 24px;
+      right: 20px;
       align-items: center;
-
-      .ActionButton {
-        img {
-          width: 16px;
-        }
-      }
     }
   }
 
   main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     margin: 0;
     background: linear-gradient(
@@ -119,6 +120,8 @@ body {
         rgba(255, 255, 255, 0.96)
       ),
       #525760;
+      height: 100%;
+      width: 100%;
 
       .SnippetImage {
       width: 100%;
@@ -129,18 +132,17 @@ body {
 
   footer {
     display: flex;
+    align-items: center;
     justify-content: flex-end;
-    padding: 2px 32px 4px 0;
-    max-height: 72px;
+    height: 72px;
 
-    button {
+    .DoneButton {
       box-shadow: none;
       border: none;
       border-radius: 16px;
       font-size: 0.75rem;
       font-weight: 600;
       text-align: center;
-      padding: 8px 24px;
       display: inline-block;
       text-decoration: none;
       line-height: 16px;
@@ -148,27 +150,18 @@ body {
       color: rgba(255, 255, 255, 0.96);
       cursor: pointer;
       text-transform: uppercase;
-      margin: 10px 30px 4px 0;
+      margin-right: 32px;
+      height: 32px;
+      width: 80px;
 
       &:focus {
         box-shadow: 0 0 10px rgba(61, 162, 253, 1);
-        outline: none;
-      }
-    }
-  }
-
-  @media only screen and (max-width: 400px) {
-    header {
-      .ClearActions {
-        position: relative;
-        right: auto;
-        margin-left: 24px;
       }
     }
   }
 }
 
-.colorPicker {
+.ColorPicker {
   display: flex;
   flex-direction: row;
   margin: 4px;
@@ -181,7 +174,7 @@ body {
   border-radius: 24px;
   }
 
-.enclosingCircle {
+.EnclosingCircle {
   width: 24px;
   height: 24px;
   background: #FFFFFF;
@@ -196,7 +189,7 @@ body {
   display: flex;
 }
 
-.colorDot {
+.ColorDot {
   border-radius: 50%;
   flex: none;
   order: 0;

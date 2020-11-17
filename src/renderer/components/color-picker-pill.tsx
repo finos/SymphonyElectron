@@ -38,7 +38,7 @@ const ColorPickerPill = (props: IColorPickerPillProps) => {
     return (
       <div
         key={color.rgbaColor}
-        className='enclosingCircle'
+        className='EnclosingCircle'
         onClick={chooseColor}
         data-testid={'colorDot ' + color.rgbaColor}
       >
@@ -50,14 +50,14 @@ const ColorPickerPill = (props: IColorPickerPillProps) => {
             cursor: 'pointer',
             border: hasOutline ? border : undefined,
           }}
-          className='colorDot'
+          className='ColorDot'
         />
       </div>
     );
   };
 
   return (
-    <div className='colorPicker'>
+    <div className='ColorPicker'>
       {props.availableColors.map((color) => ColorDot(color))}
     </div>
   );
