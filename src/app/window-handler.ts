@@ -425,6 +425,8 @@ export class WindowHandler {
     });
 
     this.mainWindow.webContents.on('did-finish-load', async () => {
+      // reset to false when the client reloads
+      this.isMana = false;
       logger.info(`window-handler: main window web contents finished loading!`);
       // early exit if the window has already been destroyed
       if (!this.mainWindow || !windowExists(this.mainWindow)) {
@@ -435,13 +437,6 @@ export class WindowHandler {
       }
       this.url = this.mainWindow.webContents.getURL();
       logger.info('window-handler: did-finish-load, url: ' + this.url);
-      const manaPath = 'client-bff';
-      if (this.url.includes(manaPath)) {
-        this.isMana = true;
-      } else {
-        this.isMana = false;
-      }
-        logger.info('window-handler: isMana: ' + this.isMana);
 
       // Injects custom title bar and snack bar css into the webContents
       await injectStyles(this.mainWindow, this.isCustomTitleBar);

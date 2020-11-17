@@ -201,7 +201,15 @@ ipcMain.on(apiName.symphonyApi, async (event: Electron.IpcMainEvent, arg: IApiAr
             if (windowHandler.appMenu) {
                 windowHandler.appMenu.buildMenu();
             }
+            break;
+        case apiCmds.setIsMana:
+            if (typeof arg.isMana === 'boolean') {
+                windowHandler.isMana = arg.isMana;
+                logger.info('window-handler: isMana: ' + windowHandler.isMana);
+            }
+            break;
         default:
+            break;
     }
 
 });

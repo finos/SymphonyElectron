@@ -150,7 +150,7 @@ class Script
         // these when running the installer, but if not specified, the defaults will be used.
         project.Properties = new[]
         {
-            new PublicProperty("ALLUSERS", "true"),
+            new PublicProperty("ALLUSERS", "1"),
             new PublicProperty("ALWAYS_ON_TOP", "DISABLED" ),
             new PublicProperty("AUTO_LAUNCH_PATH", ""),
             new PublicProperty("AUTO_START", "ENABLED"),
@@ -252,6 +252,22 @@ class Script
     {
         try
         {
+            // "ALLUSERS" will be set to "2" if installing through UI, so the "MSIINSTALLPERUSER" property can be used so the user can choose install scope
+            if (e.Session["ALLUSERS"] != "2" )
+            {
+                // If "ALLUSERS" is "1" or "", this is a quiet command line installation, and we need to set the right paths here, since the UI haven't
+                if (e.Session["ALLUSERS"] == "")
+                {
+                    // Install for current user
+                    e.Session["INSTALLDIR"] = System.Environment.ExpandEnvironmentVariables(@"%LOCALAPPDATA%\Programs\Symphony\" + e.ProductName);
+                } 
+                else 
+                {
+                    // Install for all users
+                    e.Session["INSTALLDIR"] = e.Session["PROGRAMSFOLDER"]  + @"\Symphony\" + e.ProductName;
+                }
+            }
+
             // Try to close all running symphony instances before installing
             KillSymphonyProcesses();
             
