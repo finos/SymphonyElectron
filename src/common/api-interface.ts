@@ -43,6 +43,7 @@ export enum apiCmds {
     showDownloadedItem = 'show-downloaded-item',
     clearDownloadedItems = 'clear-downloaded-items',
     restartApp = 'restart-app',
+    setIsMana = 'set-is-mana',
 }
 
 export enum apiName {
@@ -78,6 +79,7 @@ export interface IApiArgs {
     logName: string;
     logs: ILogs;
     cloudConfig: object;
+    isMana: boolean;
 }
 
 export type WindowTypes = 'screen-picker' | 'screen-sharing-indicator' | 'notification-settings';

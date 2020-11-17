@@ -51,6 +51,7 @@ createAPI();
 if (ssfWindow.ssf) {
     // New context bridge api that exposes all the methods on to window object
     contextBridge.exposeInMainWorld('manaSSF', {
+        setIsMana: ssfWindow.ssf.setIsMana,
         CryptoLib: ssfWindow.ssf.CryptoLib,
         Search: ssfWindow.ssf.Search,
         Notification: ssfWindow.ssf.Notification,
