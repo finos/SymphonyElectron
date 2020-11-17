@@ -44,6 +44,7 @@ jest.mock('../src/app/window-handler', () => {
             createScreenSharingIndicatorWindow: jest.fn(),
             isOnline: false,
             updateVersionInfo: jest.fn(),
+            isMana: false,
         },
     };
 });
@@ -404,6 +405,16 @@ describe('main api handler', () => {
             const expectedValue = [ 2, '/Users/symphony/SymphonyElectron/src/app/main-api-handler.ts' ];
             ipcMain.send(apiName.symphonyApi, value);
             expect(spy).toBeCalledWith(...expectedValue);
+        });
+
+        it('should call `setIsMana` correctly', () => {
+            const value = {
+                cmd: apiCmds.setIsMana,
+                isMana: true,
+            };
+            expect(windowHandler.isMana).toBe(false);
+            ipcMain.send(apiName.symphonyApi, value);
+            expect(windowHandler.isMana).toBe(true);
         });
     });
 });

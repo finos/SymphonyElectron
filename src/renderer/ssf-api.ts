@@ -579,6 +579,17 @@ export class SSFApi {
         });
     }
 
+    /**
+     * Sets whether the client is running on mana
+     * @param isMana
+     */
+    public setIsMana(isMana: boolean): void {
+        ipcRenderer.send(apiName.symphonyApi, {
+            cmd: apiCmds.setIsMana,
+            isMana,
+        });
+    }
+
 }
 
 /**
