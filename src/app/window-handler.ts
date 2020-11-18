@@ -960,7 +960,7 @@ export class WindowHandler {
     const parentWindow = BrowserWindow.getFocusedWindow();
     const MIN_HEIGHT = 312;
     const MIN_WIDTH = 320;
-    const CONTAINER_HEIGHT = 140;
+    const CONTAINER_HEIGHT = 190;
     let height: number = dimensions?.height || 0;
     const width: number = dimensions?.width || 0;
 

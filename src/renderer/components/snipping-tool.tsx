@@ -38,7 +38,6 @@ export interface IImageDimensions {
   height: number;
 }
 
-const MIN_ANNOTATE_AREA_HEIGHT = 200;
 const availablePenColors: IColor[] = [
   { rgbaColor: 'rgba(0, 0, 40, 1)' },
   { rgbaColor: 'rgba(0, 142, 255, 1)' },
@@ -254,16 +253,18 @@ const SnippingTool = () => {
         )
       }
 
-      <main style={{ minHeight: MIN_ANNOTATE_AREA_HEIGHT }}>
-        <AnnotateArea
-          paths={paths}
-          highlightColor={highlightColor}
-          penColor={penColor}
-          onChange={setPaths}
-          imageDimensions={imageDimensions}
-          screenSnippetPath={screenSnippetPath}
-          chosenTool={chosenTool}
-        />
+      <main>
+        <div className='imageContainer'>
+          <AnnotateArea
+            paths={paths}
+            highlightColor={highlightColor}
+            penColor={penColor}
+            onChange={setPaths}
+            imageDimensions={imageDimensions}
+            screenSnippetPath={screenSnippetPath}
+            chosenTool={chosenTool}
+          />
+        </div>
       </main>
       <footer>
         <button
