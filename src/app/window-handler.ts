@@ -962,7 +962,8 @@ export class WindowHandler {
     const MIN_HEIGHT = 312;
     const MIN_WIDTH = 320;
     const OS_PADDING = 25;
-    const CONTAINER_HEIGHT = 190;
+    const CONTAINER_HEIGHT = 175;
+    const OS_PADDING = 25;
     let height: number = dimensions?.height || 0;
     let width: number = dimensions?.width || 0;
 
@@ -990,7 +991,7 @@ export class WindowHandler {
     const opts: ICustomBrowserWindowConstructorOpts = this.getWindowOpts(
       {
         width,
-        height: height + CONTAINER_HEIGHT,
+        height: windowHeight,
         minHeight: MIN_HEIGHT,
         minWidth: MIN_WIDTH,
         modal: false,
