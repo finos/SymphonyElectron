@@ -1,4 +1,4 @@
-import { compareVersions, formatString, getCommandLineArgs, getGuid, throttle } from '../src/common/utils';
+import { compareVersions, formatString, getCommandLineArgs, getGuid, throttle, calculatePercentage } from '../src/common/utils';
 
 describe('utils', () => {
     describe('`compareVersions`', () => {
@@ -147,6 +147,16 @@ describe('utils', () => {
             jest.runTimersToTime(1000);
             tempFn();
             expect(functionMock).toBeCalledTimes(2);
+        });
+    });
+
+    describe('calculatePercentage', () => {
+        it('should calculate the percentage correctly', () => {
+            expect(calculatePercentage(1440, 90)).toBe(1296);
+        });
+
+        it('should calculate the percentage correctly for 50', () => {
+            expect(calculatePercentage(500, 50)).toBe(250);
         });
     });
 });
