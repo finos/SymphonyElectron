@@ -990,7 +990,7 @@ export class WindowHandler {
     const opts: ICustomBrowserWindowConstructorOpts = this.getWindowOpts(
       {
         width,
-        height: windowHeight,
+        height: height + CONTAINER_HEIGHT,
         minHeight: MIN_HEIGHT,
         minWidth: MIN_WIDTH,
         modal: false,
