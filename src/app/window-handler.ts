@@ -958,27 +958,26 @@ export class WindowHandler {
     }
 
     const parentWindow = BrowserWindow.getFocusedWindow();
-    const MIN_HEIGHT = 320;
-    const MIN_WIDTH = 312;
-    const CONTAINER_HEIGHT = 120;
+    const MIN_HEIGHT = 312;
+    const MIN_WIDTH = 320;
+    const CONTAINER_HEIGHT = 140;
+    let height: number = dimensions?.height || 0;
+    const width: number = dimensions?.width || 0;
 
-    let windowHeight = dimensions?.height
-      ? dimensions.height + CONTAINER_HEIGHT
-      : 320;
-    let windowWidth = dimensions?.width || 312;
-
-    if (dimensions && dimensions.height && dimensions.height < MIN_HEIGHT) {
-      windowHeight = MIN_HEIGHT + CONTAINER_HEIGHT;
-    }
-
-    if (dimensions && dimensions.width && dimensions.width < MIN_WIDTH) {
-      windowWidth = MIN_WIDTH;
+    if (parentWindow) {
+      const { bounds: { height: sHeight } } = electron.screen.getDisplayMatching(parentWindow.getBounds());
+      // decrease image height when there is no space for the container window
+      if ((sHeight - height) < CONTAINER_HEIGHT) {
+        height -= CONTAINER_HEIGHT;
+      }
     }
 
     const opts: ICustomBrowserWindowConstructorOpts = this.getWindowOpts(
       {
-        width: windowWidth,
-        height: windowHeight,
+        width,
+        height: height + CONTAINER_HEIGHT,
+        minHeight: MIN_HEIGHT,
+        minWidth: MIN_WIDTH,
         modal: false,
         alwaysOnTop: false,
         resizable: false,
@@ -1008,8 +1007,8 @@ export class WindowHandler {
     this.snippingToolWindow.webContents.once('did-finish-load', async () => {
       const snippingToolInfo = {
         snipImage,
-        height: dimensions?.height,
-        width: dimensions?.width,
+        height,
+        width,
       };
       if (this.snippingToolWindow && windowExists(this.snippingToolWindow)) {
         this.snippingToolWindow.webContents.send(
