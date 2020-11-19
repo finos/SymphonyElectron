@@ -117,8 +117,14 @@ class Script
             new LaunchCondition("VersionNT>=600 AND WindowsBuild>=6001", "OS not supported"),
 
             // Add registry entry used by protocol handler to launch symphony when opening symphony:// URIs
-            new RegValue(WixSharp.RegistryHive.ClassesRoot, productName + @"\shell\open\command", "", "\"[INSTALLDIR]Symphony.exe\" \"%1\"")
-        );
+            new RegValue(WixSharp.RegistryHive.ClassesRoot, productName + @"\shell\open\command", "", "\"[INSTALLDIR]Symphony.exe\" \"%1\""),
+
+            // When installing or uninstalling, we want Symphony to be closed down, but the standard way of sending a WM_CLOSE message 
+            // will not work for us, as we have a "minimize on close" option, which stops the app from terminating on WM_CLOSE. So we 
+            // instruct the installer to not send a Close message, but instead send the EndSession message, and we have a custom event 
+            // handler in the SDA code which listens for this message, and ensures app termination when it is received.
+            new CloseApplication("Symphony.exe", false) { EndSessionMessage = true }        
+            );
 
         // The build script which calls the wix# builder, will be run from a command environment which has %SYMVER% set.
         // So we just extract that version string, create a Version object from it, and pass it to out project definition.
@@ -234,62 +240,43 @@ class Script
         Compiler.BuildMsi(project);
     }
     
-    static void KillSymphonyProcesses() 
-    {
-        System.Diagnostics.Process.GetProcessesByName("Symphony").ForEach(p => {
-            if( System.IO.Path.GetFileName(p.MainModule.FileName) =="Symphony.exe")
-            {
-                if( !p.HasExited )
-                {
-                    p.Kill();
-                    p.WaitForExit();
-                }
-            }
-        });
-    }
 
     static void project_Load(SetupEventArgs e)
     {
         try
         {
-            // "ALLUSERS" will be set to "2" if installing through UI, so the "MSIINSTALLPERUSER" property can be used so the user can choose install scope
-            if (e.Session["ALLUSERS"] != "2" )
+            if (e.IsInstalling || e.IsUpgrading)
             {
-                // If "ALLUSERS" is "1" or "", this is a quiet command line installation, and we need to set the right paths here, since the UI haven't
-                if (e.Session["ALLUSERS"] == "")
+                // "ALLUSERS" will be set to "2" if installing through UI, so the "MSIINSTALLPERUSER" property can be used so the user can choose install scope
+                if (e.Session["ALLUSERS"] != "2" )
                 {
-                    // Install for current user
-                    e.Session["INSTALLDIR"] = System.Environment.ExpandEnvironmentVariables(@"%LOCALAPPDATA%\Programs\Symphony\" + e.ProductName);
-                } 
-                else 
-                {
-                    // Install for all users
-                    e.Session["INSTALLDIR"] = e.Session["PROGRAMSFOLDER"]  + @"\Symphony\" + e.ProductName;
-                }
-            }
-
-            // Try to close all running symphony instances before installing
-            KillSymphonyProcesses();
-            
-            // When force terminating Symphony, sometimes this is detected as the renderer process crashing.
-            // As this message would confuse users, we wait a short time and then kill all Symphony instances
-            // again, which would ensure that the dialog about renderer crash will not be shown.
-
-            KillSymphonyProcesses(); // Try again immediately, for fast systems which shows dialog quickly
-            System.Threading.Thread.Sleep(500);
-            KillSymphonyProcesses(); // Try yet again after half a second for slow systems which takes time to show dialog
-
-            // Try to close all running symphony instances again
-            System.Diagnostics.Process.GetProcessesByName("Symphony").ForEach(p => {
-                if( System.IO.Path.GetFileName(p.MainModule.FileName) =="Symphony.exe")
-                {
-                    if( !p.HasExited )
+                    // If "ALLUSERS" is "1" or "", this is a quiet command line installation, and we need to set the right paths here, since the UI haven't
+                    if (e.Session["ALLUSERS"] == "")
                     {
-                        p.Kill();
-                        p.WaitForExit();
+                        // Install for current user
+                        e.Session["INSTALLDIR"] = System.Environment.ExpandEnvironmentVariables(@"%LOCALAPPDATA%\Programs\Symphony\" + e.ProductName);
+                    } 
+                    else 
+                    {
+                        // Install for all users
+                        e.Session["INSTALLDIR"] = e.Session["PROGRAMSFOLDER"]  + @"\Symphony\" + e.ProductName;
                     }
-                }
-            });
+                }                              
+                
+                // Try to close all running symphony instances before installing. Since we have started using the EndSession message to tell the app to exit,
+                // we don't really need to force terminate anymore. But the older versions of SDA does not listen for the EndSession event, so we still need
+                // this code to ensure older versions gets shut down properly.
+                System.Diagnostics.Process.GetProcessesByName("Symphony").ForEach(p => {
+                    if( System.IO.Path.GetFileName(p.MainModule.FileName) =="Symphony.exe")
+                    {
+                        if( !p.HasExited )
+                        {
+                            p.Kill();
+                            p.WaitForExit();
+                        }
+                    }
+                });
+            }
         }
         catch (System.ComponentModel.Win32Exception ex)
         {
