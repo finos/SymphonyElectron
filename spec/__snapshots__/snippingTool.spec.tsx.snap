@@ -63,19 +63,19 @@ exports[`Snipping Tool should render correctly 1`] = `
     >
       <AnnotateArea
         chosenTool="PEN"
-        data-testid="annotate-component"highlightColor="rgba(0, 142, 255, 0.64)"
-        imageDimensions={
-          Object {
-            "height": 600,
-            "width": 800,
-          }
+        data-testid="annotate-component"
+      highlightColor="rgba(0, 142, 255, 0.64)"
+      imageDimensions={
+        Object {
+          "height": 600,
+          "width": 800,
         }
-        onChange={[Function]}
-        paths={Array []}
-        penColor="rgba(0, 142, 255, 1)"
-        screenSnippetPath="Screen-Snippet"
-      />
-    </div>
+      }
+      onChange={[Function]}
+      paths={Array []}
+      penColor="rgba(0, 142, 255, 1)"
+      screenSnippetPath="Screen-Snippet"
+    /></div>
   </main>
   <footer>
     <button

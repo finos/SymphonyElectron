@@ -961,7 +961,6 @@ export class WindowHandler {
     const parentWindow = BrowserWindow.getFocusedWindow();
     const MIN_HEIGHT = 312;
     const MIN_WIDTH = 320;
-    const OS_PADDING = 25;
     const CONTAINER_HEIGHT = 175;
     const OS_PADDING = 25;
     let height: number = dimensions?.height || 0;
