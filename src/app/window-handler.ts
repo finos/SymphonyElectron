@@ -231,10 +231,13 @@ export class WindowHandler {
             ...this.windowOpts, ...getBounds(this.config.mainWinPos, DEFAULT_WIDTH, DEFAULT_HEIGHT),
         }) as ICustomBrowserWindow;
 
+        logger.info('window-handler: isWindowsOS: ' + isWindowsOS);
+
         if (isWindowsOS) {
             // SDA-1720 when Symphony on secondary screen is wider than main screen, the window on secondary is clapmed to the width of main screen
             // Only happens on windows (BrowserWindow)
-            this.mainWindow.setBounds(getBounds(this.config.mainWinPos, DEFAULT_WIDTH, DEFAULT_HEIGHT) as Electron.Rectangle);
+            // this.mainWindow.setBounds(getBounds(this.config.mainWinPos, DEFAULT_WIDTH, DEFAULT_HEIGHT) as Electron.Rectangle);
+            logger.info('window-handler: getBounds: ' + JSON.stringify(getBounds(this.config.mainWinPos, DEFAULT_WIDTH, DEFAULT_HEIGHT) as Electron.Rectangle));
         }
 
         logger.info('window-handler: this.mainWindow.getBounds: ' + JSON.stringify(this.mainWindow.getBounds()));
