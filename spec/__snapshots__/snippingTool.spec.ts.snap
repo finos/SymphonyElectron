@@ -57,27 +57,25 @@ exports[`Snipping Tool should render correctly 1`] = `
       </button>
     </div>
   </header>
-  <main
-    style={
-      Object {
-        "minHeight": 200,
-      }
-    }
-  >
-    <AnnotateArea
-      chosenTool="PEN"
-      highlightColor="rgba(0, 142, 255, 0.64)"
-      imageDimensions={
-        Object {
-          "height": 600,
-          "width": 800,
+  <main>
+    <div
+      className="imageContainer"
+    >
+      <AnnotateArea
+        chosenTool="PEN"
+        highlightColor="rgba(0, 142, 255, 0.64)"
+        imageDimensions={
+          Object {
+            "height": 600,
+            "width": 800,
+          }
         }
-      }
-      onChange={[Function]}
-      paths={Array []}
-      penColor="rgba(0, 142, 255, 1)"
-      screenSnippetPath="Screen-Snippet"
-    />
+        onChange={[Function]}
+        paths={Array []}
+        penColor="rgba(0, 142, 255, 1)"
+        screenSnippetPath="Screen-Snippet"
+      />
+    </div>
   </main>
   <footer>
     <button

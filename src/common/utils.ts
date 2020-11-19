@@ -235,3 +235,12 @@ export const formatString = (str: string, data?: object): string => {
     }
     return str;
 };
+
+/**
+ * Calculates the percentage of a number with the given percentage
+ * @param value
+ * @param percentage
+ */
+export const calculatePercentage = (value: number, percentage: number) => {
+    return value * percentage * 0.01;
+};
