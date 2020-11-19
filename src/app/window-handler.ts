@@ -534,6 +534,19 @@ export class WindowHandler {
       },
     );
 
+    // When uninstalling Symphony, the installer needs to tell the app to close down
+    // The dedault way of doing this, is to send the 'close' event to the app, but
+    // since we intercept and ignore the 'close' event if the user have turned on the
+    // option "minimize on close", we use an alternative way of signalling that the
+    // application should terminate. The installer sends the 'session-end' message
+    // instead of the 'close' message, and when we receive it, we quit the app.
+    this.mainWindow.on('session-end', () => {
+      logger.info(
+        `window-handler: session-end received`,
+      );
+      app.quit();
+    });
+
     // Handle main window close
     this.mainWindow.on('close', (event) => {
       if (!this.mainWindow || !windowExists(this.mainWindow)) {
