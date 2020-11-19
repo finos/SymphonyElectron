@@ -2,7 +2,7 @@ import * as React from 'react';
 
 export interface IColorPickerPillProps {
   availableColors: IColor[];
-  onChange: (color: string) => void;
+  onChange: (color: IColor) => void;
 }
 
 export interface IColor {
@@ -32,7 +32,7 @@ const ColorPickerPill = (props: IColorPickerPillProps) => {
     const widthAndHeight = getWidthAndHeight();
 
     const chooseColor = () => {
-      props.onChange(color.rgbaColor);
+      props.onChange(color);
     };
 
     return (

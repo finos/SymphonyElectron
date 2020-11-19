@@ -230,18 +230,26 @@ class ScreenSnippet {
       }
       // remove tmp file (async)
       if (this.outputFileName) {
-        fs.unlink(this.outputFileName, (removeErr) => {
-          logger.info(
-            `screen-snippet-handler: cleaning up temp snippet file: ${this.outputFileName}!`,
-          );
-          if (removeErr) {
-            logger.error(
-              `screen-snippet-handler: error removing temp snippet file: ${this.outputFileName}, err: ${removeErr}`,
-            );
-          }
-        });
+        this.deleteFile(this.outputFileName);
       }
     }
+  }
+
+  /**
+   * Deletes a locally stored file
+   * @param filePath Path for the file to delete
+   */
+  private deleteFile(filePath: string) {
+    fs.unlink(filePath, (removeErr) => {
+      logger.info(
+        `screen-snippet-handler: cleaning up temp snippet file: ${filePath}!`,
+      );
+      if (removeErr) {
+        logger.error(
+          `screen-snippet-handler: error removing temp snippet file: ${filePath}, err: ${removeErr}`,
+        );
+      }
+    });
   }
 
   /**
@@ -279,20 +287,19 @@ class ScreenSnippet {
    * @param webContents A browser window's web contents object
    */
   private uploadSnippet(webContents: Electron.webContents) {
-    ipcMain.once('upload-snippet', async (_event, snipImage: string) => {
+    ipcMain.once('upload-snippet', async (_event, snippetData: { screenSnippetPath: string, base64PngData: string }) => {
       windowHandler.closeSnippingToolWindow();
-      if (snipImage) {
-        this.outputFileName = snipImage;
-      }
-      const {
-        message,
+      const [type, data] = snippetData.base64PngData.split(',');
+      const payload = {
+        message: 'SUCCESS',
         data,
         type,
-      }: IScreenSnippet = await this.convertFileToData();
+      };
+      this.deleteFile(snippetData.screenSnippetPath);
       logger.info(
         `screen-snippet-handler: Snippet captured! Sending data to SFE`,
       );
-      webContents.send('screen-snippet-data', { message, data, type });
+      webContents.send('screen-snippet-data', payload);
       await this.verifyAndUpdateAlwaysOnTop();
     });
   }
