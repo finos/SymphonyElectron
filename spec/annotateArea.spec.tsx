@@ -37,7 +37,7 @@ describe('<AnnotateArea/>', () => {
         expect(defaultProps.onChange).toHaveBeenCalledWith([{
             color: 'rgba(38, 196, 58, 1)',
             key: 'path0',
-            points: [{ x: 0, y: 0 }],
+            points: [{ x: 2, y: 1 }],
             shouldShow: true,
             strokeWidth: 5,
         }]);
@@ -88,5 +88,33 @@ describe('<AnnotateArea/>', () => {
     it('should not render any path if no path is provided in props', () => {
         const wrapper = shallow(<AnnotateArea {...defaultProps} />);
         expect(wrapper.find('[data-testid="path0"]').exists()).toEqual(false);
+    });
+
+    it('should call onChange with hidden path if clicked on path with tool eraser', () => {
+        const pathProps = {
+            paths: [{
+                points: [{ x: 0, y: 0 }],
+                shouldShow: true,
+                strokeWidth: 5,
+                color: 'rgba(233, 0, 0, 0.64)',
+                key: 'path0',
+            }],
+            highlightColor: 'rgba(233, 0, 0, 0.64)',
+            penColor: 'rgba(38, 196, 58, 1)',
+            onChange: jest.fn(),
+            imageDimensions: { width: 800, height: 800 },
+            chosenTool: Tool.eraser,
+            screenSnippetPath: 'very-nice-path',
+        };
+        const wrapper = shallow(<AnnotateArea {...pathProps} />);
+        const path = wrapper.find('[data-testid="path0"]');
+        path.simulate('click');
+        expect(pathProps.onChange).toHaveBeenCalledWith([{
+            color: 'rgba(233, 0, 0, 0.64)',
+            key: 'path0',
+            points: [{ x: 0, y: 0 }],
+            shouldShow: false,
+            strokeWidth: 5,
+        }]);
     });
 });

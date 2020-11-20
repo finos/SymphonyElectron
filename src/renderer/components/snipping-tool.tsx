@@ -38,12 +38,16 @@ export interface IImageDimensions {
   height: number;
 }
 
+export interface ISnippingToolProps {
+  existingPaths?: IPath[];
+}
+
 const availablePenColors: IColor[] = [
   { rgbaColor: 'rgba(0, 0, 40, 1)' },
   { rgbaColor: 'rgba(0, 142, 255, 1)' },
   { rgbaColor: 'rgba(38, 196, 58, 1)' },
   { rgbaColor: 'rgba(246, 178, 2, 1)' },
-  { rgbaColor: 'rgba(255, 255, 255, 1)', outline: 'rgba(0, 0, 0, 1)' },
+  { rgbaColor: 'rgba(255, 255, 255, 1)', outline: 'rgba(207, 208, 210, 1)' },
 ];
 const availableHighlightColors: IColor[] = [
   { rgbaColor: 'rgba(0, 142, 255, 0.64)' },
@@ -53,7 +57,7 @@ const availableHighlightColors: IColor[] = [
 ];
 const SNIPPING_TOOL_NAMESPACE = 'ScreenSnippet';
 
-const SnippingTool = () => {
+const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPaths }) => {
   // State preparation functions
 
   const [screenSnippetPath, setScreenSnippetPath] = useState('Screen-Snippet');
@@ -61,11 +65,11 @@ const SnippingTool = () => {
     height: 600,
     width: 800,
   });
-  const [paths, setPaths] = useState<IPath[]>([]);
+  const [paths, setPaths] = useState<IPath[]>(existingPaths || []);
   const [chosenTool, setChosenTool] = useState(Tool.pen);
-  const [penColor, setPenColor] = useState('rgba(0, 142, 255, 1)');
-  const [highlightColor, setHighlightColor] = useState(
-    'rgba(0, 142, 255, 0.64)',
+  const [penColor, setPenColor] = useState<IColor>({ rgbaColor: 'rgba(0, 142, 255, 1)' });
+  const [highlightColor, setHighlightColor] = useState<IColor>(
+    { rgbaColor: 'rgba(0, 142, 255, 0.64)' },
   );
   const [
     shouldRenderHighlightColorPicker,
@@ -80,15 +84,9 @@ const SnippingTool = () => {
     setImageDimensions({ height, width });
   };
 
-  ipcRenderer.on('snipping-tool-data', getSnipImageData);
+  ipcRenderer.once('snipping-tool-data', getSnipImageData);
 
-  useEffect(() => {
-    return () => {
-      ipcRenderer.removeListener('snipping-tool-data', getSnipImageData);
-    };
-  }, []);
-
-  // Hook that alerts clicks outside of the passed ref
+  // Hook that alerts clicks outside of the passed refs
   const useClickOutsideExaminer = (
     colorPickerRf: React.RefObject<HTMLDivElement>,
     penRf: React.RefObject<HTMLButtonElement>,
@@ -120,12 +118,12 @@ const SnippingTool = () => {
 
   // State mutating functions
 
-  const penColorChosen = (color: string) => {
+  const penColorChosen = (color: IColor) => {
     setPenColor(color);
     setShouldRenderPenColorPicker(false);
   };
 
-  const highlightColorChosen = (color: string) => {
+  const highlightColorChosen = (color: IColor) => {
     setHighlightColor(color);
     setShouldRenderHighlightColorPicker(false);
   };
@@ -147,10 +145,57 @@ const SnippingTool = () => {
   };
 
   const clear = () => {
-    // Clear logic here
+    const updPaths = [...paths];
+    updPaths.map((p) => {
+      p.shouldShow = false;
+      return p;
+    });
+    setPaths(updPaths);
   };
 
   // Utility functions
+
+  const getBase64PngData = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = imageDimensions.width;
+    canvas.height = imageDimensions.height;
+
+    // Creates an in memory canvas for mounting img data without adding it to the DOM
+    const ctx = canvas?.getContext('2d') as CanvasRenderingContext2D;
+
+    if (!ctx) {
+      // Will only be the case in headless browsers, such as with unit tests
+      return 'NO CANVAS';
+    }
+
+    // Creates an in memory img without adding it to the DOM
+    const img = document.createElement('img');
+
+    const svg = document.getElementById('annotate-area') as HTMLImageElement;
+    // Parses SVG image to XML data
+    const svgData = new XMLSerializer().serializeToString(svg);
+    // Adds the extracted XML data to the in memory img
+    img.setAttribute(
+      'src',
+      'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData))),
+    );
+    const screenSnippet = document.getElementById('screenSnippet') as HTMLImageElement;
+
+    return new Promise((resolve, reject) => {
+      // Listens to when the img is loaded in memory and adds the data from the SVG paths + screenSnippet to the canvas
+      img.onload = () => {
+        ctx.drawImage(screenSnippet, 0, 0);
+        ctx.drawImage(img, 0, 0);
+        try {
+          // Extracts base 64 png img data from the canvas
+          const data = canvas.toDataURL('image/png');
+          resolve(data);
+        } catch (e) {
+          reject(e);
+        }
+      };
+    });
+  };
 
   const markChosenColor = (colors: IColor[], chosenColor: string) => {
     return colors.map((color) => {
@@ -167,17 +212,20 @@ const SnippingTool = () => {
       return undefined;
     }
     if (chosenTool === Tool.pen) {
-      return { border: '2px solid ' + penColor };
+      const color = penColor.outline ? penColor.outline : penColor.rgbaColor;
+      return { border: '2px solid ' + color };
     } else if (chosenTool === Tool.highlight) {
-      return { border: '2px solid ' + highlightColor };
+      const color = highlightColor.outline ? highlightColor.outline : highlightColor.rgbaColor;
+      return { border: '2px solid ' + color };
     } else if (chosenTool === Tool.eraser) {
       return { border: '2px solid #008EFF' };
     }
     return undefined;
   };
 
-  const done = () => {
-    ipcRenderer.send('upload-snippet', screenSnippetPath);
+  const done = async () => {
+    const base64PngData = await getBase64PngData();
+    ipcRenderer.send('upload-snippet', { screenSnippetPath, base64PngData });
   };
 
   return (
@@ -229,7 +277,7 @@ const SnippingTool = () => {
             <div style={{ position: 'relative', left: '-50%' }}>
               <ColorPickerPill
                 data-testid='pen-colorpicker'
-                availableColors={markChosenColor(availablePenColors, penColor)}
+                availableColors={markChosenColor(availablePenColors, penColor.rgbaColor)}
                 onChange={penColorChosen}
               />
             </div>
@@ -244,7 +292,7 @@ const SnippingTool = () => {
                 data-testid='highlight-colorpicker'
                 availableColors={markChosenColor(
                   availableHighlightColors,
-                  highlightColor,
+                  highlightColor.rgbaColor,
                 )}
                 onChange={highlightColorChosen}
               />
@@ -256,9 +304,10 @@ const SnippingTool = () => {
       <main>
         <div className='imageContainer'>
           <AnnotateArea
-            paths={paths}
-            highlightColor={highlightColor}
-            penColor={penColor}
+            data-testid='annotate-component'
+          paths={paths}
+          highlightColor={highlightColor.rgbaColor}
+            penColor={penColor.rgbaColor}
             onChange={setPaths}
             imageDimensions={imageDimensions}
             screenSnippetPath={screenSnippetPath}

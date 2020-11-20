@@ -33,12 +33,28 @@ const MIN_ANNOTATE_AREA_WIDTH = 312;
 const PEN_WIDTH = 5;
 const HIGHLIGHT_WIDTH = 28;
 
-const AnnotateArea: React.FunctionComponent<IAnnotateAreaProps> = ({ paths, highlightColor, penColor, onChange, imageDimensions, chosenTool, screenSnippetPath }) => {
+const AnnotateArea: React.FunctionComponent<IAnnotateAreaProps> = ({
+  paths,
+  highlightColor,
+  penColor,
+  onChange,
+  imageDimensions,
+  chosenTool,
+  screenSnippetPath,
+}) => {
   const [isDrawing, setIsDrawing] = useState(false);
 
   const maybeErasePath = (key: string) => {
-    // erase logic here
-    return key;
+    if (chosenTool === Tool.eraser) {
+      const updPaths = [...paths];
+      updPaths.map((p) => {
+        if (p && p.key === key) {
+          p.shouldShow = false;
+        }
+        return p;
+      });
+      onChange(updPaths);
+    }
   };
 
   const stopDrawing = () => {
@@ -59,10 +75,12 @@ const AnnotateArea: React.FunctionComponent<IAnnotateAreaProps> = ({ paths, high
   // Render and preparing render functions
 
   const addHighlightPoint = (paths: IPath[], point: IPoint) => {
-    const activePath = paths[paths.length - 1];
-    const shouldShow = true;
-    const key = 'path' + paths.length;
-    if (!isDrawing) {
+    if (isDrawing) {
+      const activePath = paths[paths.length - 1];
+      activePath.points.push(point);
+    } else {
+      const shouldShow = true;
+      const key = 'path' + paths.length;
       paths.push({
         points: [point],
         color: highlightColor,
@@ -70,17 +88,17 @@ const AnnotateArea: React.FunctionComponent<IAnnotateAreaProps> = ({ paths, high
         shouldShow,
         key,
       });
-    } else {
-      activePath.points.push(point);
     }
     return paths;
   };
 
   const addPenPoint = (paths: IPath[], point: IPoint) => {
-    const activePath = paths[paths.length - 1];
-    const shouldShow = true;
-    const key = 'path' + paths.length;
-    if (!isDrawing) {
+    if (isDrawing) {
+      const activePath = paths[paths.length - 1];
+      activePath.points.push(point);
+    } else {
+      const shouldShow = true;
+      const key = 'path' + paths.length;
       paths.push({
         points: [point],
         color: penColor,
@@ -88,21 +106,19 @@ const AnnotateArea: React.FunctionComponent<IAnnotateAreaProps> = ({ paths, high
         shouldShow,
         key,
       });
-    } else {
-      activePath.points.push(point);
     }
     return paths;
   };
 
   const addPathPoint = (e: React.MouseEvent) => {
     const p = [...paths];
-    const mousePos = getMousePosition(e);
-    lazy.update({ x: mousePos.x, y: mousePos.y });
-    const point: IPoint = lazy.getBrushCoordinates();
+    const mousePos: IPoint = getMousePosition(e);
     if (chosenTool === Tool.highlight) {
+      lazy.update({ x: mousePos.x, y: mousePos.y });
+      const point: IPoint = lazy.getBrushCoordinates();
       onChange(addHighlightPoint(p, point));
     } else {
-      onChange(addPenPoint(p, point));
+      onChange(addPenPoint(p, mousePos));
     }
     if (!isDrawing) {
       setIsDrawing(true);
@@ -204,7 +220,7 @@ const AnnotateArea: React.FunctionComponent<IAnnotateAreaProps> = ({ paths, high
     <svg
       data-testid='annotate-area'
       style={{ cursor: 'crosshair' }}
-      id='annotate'
+      id='annotate-area'
       width={imageDimensions.width}
       height={imageDimensions.height}
       onMouseDown={handleMouseDown}

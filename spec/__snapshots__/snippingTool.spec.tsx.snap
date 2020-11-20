@@ -63,6 +63,7 @@ exports[`Snipping Tool should render correctly 1`] = `
     >
       <AnnotateArea
         chosenTool="PEN"
+        data-testid="annotate-component"
         highlightColor="rgba(0, 142, 255, 0.64)"
         imageDimensions={
           Object {

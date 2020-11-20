@@ -4,7 +4,7 @@ exports[`<AnnotateArea/> should render correctly 1`] = `
 <svg
   data-testid="annotate-area"
   height={800}
-  id="annotate"
+  id="annotate-area"
   onMouseDown={[Function]}
   onMouseLeave={[Function]}
   onMouseMove={[Function]}
