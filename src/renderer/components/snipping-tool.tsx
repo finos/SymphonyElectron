@@ -225,7 +225,6 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPat
 
   const done = async () => {
     const base64PngData = await getBase64PngData();
-    // const base64PngData = 'await getBase64PngData();';
     ipcRenderer.send('upload-snippet', { screenSnippetPath, base64PngData });
   };
 
