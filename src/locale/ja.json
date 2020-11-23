@@ -155,11 +155,11 @@
   },
   "ScreenSnippet": {
     "Done": "完了",
-    "Erase": "消去",
-    "Highlight": "強調",
+    "Erase": "消去する",
+    "Highlight": "ハイライト",
     "Pen": "ペン",
     "Snipping Tool": "切り取りツール",
-    "Clear": "晴れ"
+    "Clear": "消去"
   },
   "Select All": "すべてを選択",
   "Services": "サービス",
