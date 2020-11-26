@@ -60,7 +60,7 @@
       "outFiles": [
         "${workspaceFolder}/lib/**/*.js"
       ]
-    }
+    },
     {
       "name": "demo",
       "type": "node",
