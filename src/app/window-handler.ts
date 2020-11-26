@@ -309,18 +309,17 @@ export class WindowHandler {
         const logEvents = [
             'did-fail-provisional-load', 'did-frame-finish-load',
             'did-start-loading', 'did-stop-loading', 'will-redirect',
-            'did-navigate', 'did-navigate-in-page', 'destroyed', 'preload-error',
+            'did-navigate', 'did-navigate-in-page', 'preload-error',
         ];
 
         logEvents.forEach((windowEvent: any) => {
-            this.mainWindow?.webContents.on(windowEvent, (event: Electron.Event) => {
+            this.mainWindow?.webContents.on(windowEvent, () => {
                 logger.info(`window-handler: Main Window Event Occurred: ${windowEvent}`);
-                logger.info(`Event details: ${JSON.stringify(event)}`);
             });
         });
 
         this.mainWindow.once('ready-to-show', (event: Electron.Event) => {
-            logger.info(`window-handler: Main Window ready to show: ${JSON.stringify(event)}`);
+            logger.info(`window-handler: Main Window ready to show: ${event}`);
         });
 
         this.mainWindow.webContents.on('did-finish-load', async () => {

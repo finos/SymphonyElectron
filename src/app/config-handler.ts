@@ -403,9 +403,12 @@ class Config {
         }
         logger.info(`config-handler: install variant is the same as the existing one, not a first time launch`);
         this.isFirstTime = false;
-        if (this.bootCount) {
+        this.bootCount = (this.getConfigFields(['bootCount']) as IConfig).bootCount;
+        if (this.bootCount !== undefined) {
             this.bootCount++;
             await this.updateUserConfig({ bootCount: this.bootCount });
+        } else {
+            await this.updateUserConfig({ bootCount: 0 });
         }
     }
 }
