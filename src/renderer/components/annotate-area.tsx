@@ -1,6 +1,6 @@
 import { LazyBrush } from 'lazy-brush';
 import * as React from 'react';
-import { IImageDimensions, IPath, IPoint, Tool } from './snipping-tool';
+import { IDimensions, IPath, IPoint, Tool } from './snipping-tool';
 
 const { useState } = React;
 
@@ -17,9 +17,10 @@ export interface IAnnotateAreaProps {
   highlightColor: string;
   penColor: string;
   onChange: (paths: IPath[]) => void;
-  imageDimensions: IImageDimensions;
+  imageDimensions: IDimensions;
+  annotateAreaDimensions: IDimensions;
   chosenTool: Tool;
-  screenSnippetPath: string;
+  backgroundImagePath?: string;
 }
 
 const lazy = new LazyBrush({
@@ -27,9 +28,6 @@ const lazy = new LazyBrush({
   enabled: true,
   initialPoint: { x: 0, y: 0 },
 });
-const TOP_MENU_HEIGHT = 48;
-const MIN_ANNOTATE_AREA_HEIGHT = 200;
-const MIN_ANNOTATE_AREA_WIDTH = 312;
 const PEN_WIDTH = 5;
 const HIGHLIGHT_WIDTH = 28;
 
@@ -40,7 +38,8 @@ const AnnotateArea: React.FunctionComponent<IAnnotateAreaProps> = ({
   onChange,
   imageDimensions,
   chosenTool,
-  screenSnippetPath,
+  backgroundImagePath,
+  annotateAreaDimensions,
 }) => {
   const [isDrawing, setIsDrawing] = useState(false);
 
@@ -66,10 +65,19 @@ const AnnotateArea: React.FunctionComponent<IAnnotateAreaProps> = ({
   // Utility functions
 
   const getMousePosition = (e: React.MouseEvent) => {
-    // We need to offset for elements in the window that is not the annotate area
-    const x = imageDimensions.width >= MIN_ANNOTATE_AREA_WIDTH ? e.pageX : e.pageX - (MIN_ANNOTATE_AREA_WIDTH - imageDimensions.width) / 2;
-    const y = imageDimensions.height >= MIN_ANNOTATE_AREA_HEIGHT ? (e.pageY - TOP_MENU_HEIGHT) : (e.pageY - ((MIN_ANNOTATE_AREA_HEIGHT - imageDimensions.height) / 2) - TOP_MENU_HEIGHT);
-    return { x, y };
+    const target = document.getElementById('annotate-area');
+    if (target) {
+      const rect = target.getBoundingClientRect();
+      // Offseting the scrolled X and Y inside the annotate area
+      return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      };
+    }
+    return {
+      x: e.clientX,
+      y: e.clientY,
+    };
   };
 
   // Render and preparing render functions
@@ -113,12 +121,12 @@ const AnnotateArea: React.FunctionComponent<IAnnotateAreaProps> = ({
   const addPathPoint = (e: React.MouseEvent) => {
     const p = [...paths];
     const mousePos: IPoint = getMousePosition(e);
+    lazy.update({ x: mousePos.x, y: mousePos.y });
+    const point: IPoint = lazy.getBrushCoordinates();
     if (chosenTool === Tool.highlight) {
-      lazy.update({ x: mousePos.x, y: mousePos.y });
-      const point: IPoint = lazy.getBrushCoordinates();
       onChange(addHighlightPoint(p, point));
     } else {
-      onChange(addPenPoint(p, mousePos));
+      onChange(addPenPoint(p, point));
     }
     if (!isDrawing) {
       setIsDrawing(true);
@@ -216,29 +224,46 @@ const AnnotateArea: React.FunctionComponent<IAnnotateAreaProps> = ({
     addPathPoint(e);
   };
 
+  const getAnnotateWrapperStyle = () => {
+    const shouldShowScrollBars =
+      imageDimensions.height > annotateAreaDimensions.height ||
+      imageDimensions.width > annotateAreaDimensions.width;
+    return {
+      width: annotateAreaDimensions.width,
+      height: annotateAreaDimensions.height,
+      ...(shouldShowScrollBars && { overflow: 'scroll' }),
+    };
+  };
+
   return (
-    <svg
-      data-testid='annotate-area'
-      style={{ cursor: 'crosshair' }}
-      id='annotate-area'
-      width={imageDimensions.width}
-      height={imageDimensions.height}
-      onMouseDown={handleMouseDown}
-      onMouseUp={stopDrawing}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={stopDrawing}
-    >
-      <image
-        x={0}
-        y={0}
-        id='screenSnippet'
-        xlinkHref={screenSnippetPath}
+    <div
+      id='annotate-wrapper'
+      style={getAnnotateWrapperStyle()}>
+      <svg
+        data-testid='annotate-area'
+        style={{ cursor: 'crosshair' }}
+        id='annotate-area'
         width={imageDimensions.width}
         height={imageDimensions.height}
-        className='SnippetImage'
-      />
-      {renderPaths(getSvgPathsData(paths))}
-    </svg>
+        onMouseDown={handleMouseDown}
+        onMouseUp={stopDrawing}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={stopDrawing}
+      >
+        {
+          backgroundImagePath &&
+          <image
+            x={0}
+            y={0}
+            id='backgroundImage'
+            xlinkHref={backgroundImagePath}
+            width={imageDimensions.width}
+            height={imageDimensions.height}
+          />}
+        {renderPaths(getSvgPathsData(paths))}
+      </svg>
+    </div>
+
   );
 };
 
