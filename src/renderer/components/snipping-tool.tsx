@@ -4,7 +4,7 @@ import { i18n } from '../../common/i18n-preload';
 import AnnotateArea from './annotate-area';
 import ColorPickerPill, { IColor } from './color-picker-pill';
 
-const { useState, useRef, useEffect } = React;
+const { useState, useRef, useEffect, useLayoutEffect } = React;
 
 export enum Tool {
   pen = 'PEN',
@@ -25,15 +25,7 @@ export interface IPoint {
   y: number;
 }
 
-export interface ISvgPath {
-  svgPath: string;
-  key: string;
-  strokeWidth: number;
-  color: string;
-  shouldShow: boolean;
-}
-
-export interface IImageDimensions {
+export interface IDimensions {
   width: number;
   height: number;
 }
@@ -60,8 +52,12 @@ const SNIPPING_TOOL_NAMESPACE = 'ScreenSnippet';
 const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPaths }) => {
   // State preparation functions
 
-  const [screenSnippetPath, setScreenSnippetPath] = useState('Screen-Snippet');
+  const [screenSnippetPath, setScreenSnippetPath] = useState('');
   const [imageDimensions, setImageDimensions] = useState({
+    height: 600,
+    width: 800,
+  });
+  const [annotateAreaDimensions, setAnnotateAreaDimensions] = useState({
     height: 600,
     width: 800,
   });
@@ -79,12 +75,24 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPat
     false,
   );
 
-  const getSnipImageData = ({ }, { snipImage, height, width }) => {
+  const getSnipImageData = ({ }, {
+    snipImage,
+    annotateAreaHeight,
+    annotateAreaWidth,
+    snippetImageHeight,
+    snippetImageWidth,
+  }) => {
     setScreenSnippetPath(snipImage);
-    setImageDimensions({ height, width });
+    setImageDimensions({ height: snippetImageHeight, width: snippetImageWidth });
+    setAnnotateAreaDimensions({ height: annotateAreaHeight, width: annotateAreaWidth });
   };
 
+  useLayoutEffect(() => {
   ipcRenderer.once('snipping-tool-data', getSnipImageData);
+    return () => {
+      ipcRenderer.removeListener('snipping-tool-data', getSnipImageData);
+    };
+  }, []);
 
   // Hook that alerts clicks outside of the passed refs
   const useClickOutsideExaminer = (
@@ -179,12 +187,12 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPat
       'src',
       'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData))),
     );
-    const screenSnippet = document.getElementById('screenSnippet') as HTMLImageElement;
+    const backgroundImage = document.getElementById('backgroundImage') as HTMLImageElement;
 
     return new Promise((resolve, reject) => {
       // Listens to when the img is loaded in memory and adds the data from the SVG paths + screenSnippet to the canvas
       img.onload = () => {
-        ctx.drawImage(screenSnippet, 0, 0);
+        ctx.drawImage(backgroundImage, 0, 0);
         ctx.drawImage(img, 0, 0);
         try {
           // Extracts base 64 png img data from the canvas
@@ -310,8 +318,9 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPat
             penColor={penColor.rgbaColor}
             onChange={setPaths}
             imageDimensions={imageDimensions}
-            screenSnippetPath={screenSnippetPath}
+            backgroundImagePath={screenSnippetPath}
             chosenTool={chosenTool}
+            annotateAreaDimensions={annotateAreaDimensions}
           />
         </div>
       </main>

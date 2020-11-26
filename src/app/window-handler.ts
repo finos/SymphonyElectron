@@ -963,8 +963,10 @@ export class WindowHandler {
     const MIN_WIDTH = 320;
     const CONTAINER_HEIGHT = 175;
     const OS_PADDING = 25;
-    let height: number = dimensions?.height || 0;
-    let width: number = dimensions?.width || 0;
+    const snippetImageHeight = dimensions?.height || 0;
+    const snippetImageWidth = dimensions?.width || 0;
+    let annotateAreaHeight = snippetImageHeight;
+    let annotateAreaWidth = snippetImageWidth;
 
     if (parentWindow) {
       const { bounds: { height: sHeight, width: sWidth } } = electron.screen.getDisplayMatching(parentWindow.getBounds());
@@ -972,24 +974,24 @@ export class WindowHandler {
       // This calculation is to make sure the
       // snippet window does not cover the entire screen
       const maxScreenHeight: number = calculatePercentage(sHeight, 90);
-      if (height > maxScreenHeight) {
-        height = maxScreenHeight;
+      if (annotateAreaHeight > maxScreenHeight) {
+        annotateAreaHeight = maxScreenHeight;
       }
       const maxScreenWidth: number = calculatePercentage(sWidth, 90);
-      if (width > maxScreenWidth) {
-        width = maxScreenWidth;
+      if (annotateAreaWidth > maxScreenWidth) {
+        annotateAreaWidth = maxScreenWidth;
       }
 
       // decrease image height when there is no space for the container window
-      if ((sHeight - height) < CONTAINER_HEIGHT) {
-        height -= CONTAINER_HEIGHT;
+      if ((sHeight - annotateAreaHeight) < CONTAINER_HEIGHT) {
+        annotateAreaHeight -= CONTAINER_HEIGHT;
       }
     }
-    const windowHeight = height + CONTAINER_HEIGHT - OS_PADDING;
+    const windowHeight = annotateAreaHeight + CONTAINER_HEIGHT - OS_PADDING;
 
     const opts: ICustomBrowserWindowConstructorOpts = this.getWindowOpts(
       {
-        width,
+        width: annotateAreaWidth,
         height: windowHeight,
         minHeight: MIN_HEIGHT,
         minWidth: MIN_WIDTH,
@@ -1022,8 +1024,10 @@ export class WindowHandler {
     this.snippingToolWindow.webContents.once('did-finish-load', async () => {
       const snippingToolInfo = {
         snipImage,
-        height,
-        width,
+        annotateAreaHeight,
+        annotateAreaWidth,
+        snippetImageHeight,
+        snippetImageWidth,
       };
       if (this.snippingToolWindow && windowExists(this.snippingToolWindow)) {
         this.snippingToolWindow.webContents.send(

@@ -13,7 +13,7 @@ describe('Snipping Tool', () => {
 
   it('should set up a "once" listener for snipping-tool-data event on mounting', () => {
     const spy = jest.spyOn(ipcRenderer, 'once');
-    shallow(React.createElement(SnippingTool));
+    mount(React.createElement(SnippingTool));
     expect(spy).toBeCalledWith('snipping-tool-data', expect.any(Function));
   });
 
@@ -61,7 +61,7 @@ describe('Snipping Tool', () => {
     await waitForPromisesToResolve();
     expect(spy).toBeCalledWith('upload-snippet', {
       base64PngData: 'NO CANVAS',
-      screenSnippetPath: 'Screen-Snippet',
+      screenSnippetPath: '',
     });
   });
 });
