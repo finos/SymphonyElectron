@@ -71,8 +71,8 @@ if (!isDevEnv) {
  */
 const restartOnFirstInstall = async (): Promise<void> => {
     const bootCount = config.getBootCount();
-    if (bootCount !== undefined && bootCount < 1) {
-        logger.warn(`Boot count fits the criteria of lesser than or equal to 1, restarting the app`);
+    if (bootCount !== undefined && bootCount === 1) {
+        logger.warn(`Boot count fits the criteria of equal to 1, restarting the app`);
         app.relaunch();
         app.quit();
     }
@@ -94,7 +94,6 @@ const startApplication = async () => {
         }
     }
     await app.whenReady();
-    restartOnFirstInstall();
     if (oneStart) {
         return;
     }
@@ -104,6 +103,7 @@ const startApplication = async () => {
     createAppCacheFile();
     setSessionProperties();
     await windowHandler.createApplication();
+    restartOnFirstInstall();
     logger.info(`main: created application`);
 };
 
