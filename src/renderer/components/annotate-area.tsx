@@ -1,5 +1,6 @@
 import { LazyBrush } from 'lazy-brush';
 import * as React from 'react';
+import { analytics, AnalyticsElements, ScreenSnippetActionTypes } from './../../app/analytics-handler';
 import { IDimensions, IPath, IPoint, Tool } from './snipping-tool';
 
 const { useState } = React;
@@ -224,6 +225,14 @@ const AnnotateArea: React.FunctionComponent<IAnnotateAreaProps> = ({
     addPathPoint(e);
   };
 
+  const handleMouseUp = () => {
+    stopDrawing();
+    analytics.track({
+      element: AnalyticsElements.SCREEN_SNIPPET,
+      action_type: ScreenSnippetActionTypes.ANNOTATE_ADDED,
+    });
+  };
+
   const getAnnotateWrapperStyle = () => {
     const shouldShowScrollBars =
       imageDimensions.height > annotateAreaDimensions.height ||
@@ -246,7 +255,7 @@ const AnnotateArea: React.FunctionComponent<IAnnotateAreaProps> = ({
         width={imageDimensions.width}
         height={imageDimensions.height}
         onMouseDown={handleMouseDown}
-        onMouseUp={stopDrawing}
+        onMouseUp={handleMouseUp}
         onMouseMove={handleMouseMove}
         onMouseLeave={stopDrawing}
       >

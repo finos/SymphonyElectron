@@ -1,9 +1,14 @@
 import { mount, shallow } from 'enzyme';
 import * as React from 'react';
 import SnippingTool from '../src/renderer/components/snipping-tool';
+import * as analyticsHandler from './../src/app/analytics-handler';
 import { ipcRenderer } from './__mocks__/electron';
 
 const waitForPromisesToResolve = () => new Promise((resolve) => setTimeout(resolve));
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
 
 describe('Snipping Tool', () => {
   it('should render correctly', () => {
@@ -15,6 +20,23 @@ describe('Snipping Tool', () => {
     const spy = jest.spyOn(ipcRenderer, 'once');
     mount(React.createElement(SnippingTool));
     expect(spy).toBeCalledWith('snipping-tool-data', expect.any(Function));
+  });
+
+  it('should send capture_taken BI event on component mount', () => {
+    const spy = jest.spyOn(analyticsHandler.analytics, 'track');
+    const expectedValue = { action_type: 'capture_taken', element: 'ScreenSnippet' };
+    mount(React.createElement(SnippingTool));
+    expect(spy).toBeCalledWith(expectedValue);
+  });
+
+  it('should send capture_sent BI event when clicking done', async () => {
+    const spy = jest.spyOn(analyticsHandler.analytics, 'track');
+    const expectedValue = { action_type: 'capture_sent', element: 'ScreenSnippet' };
+    const wrapper = mount(React.createElement(SnippingTool));
+    wrapper.find('[data-testid="done-button"]').simulate('click');
+    wrapper.update();
+    await waitForPromisesToResolve();
+    expect(spy).toBeCalledWith(expectedValue);
   });
 
   it('should render pen color picker when clicked on pen', () => {

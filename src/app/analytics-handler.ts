@@ -1,7 +1,7 @@
 export interface IAnalyticsData {
-    element: string;
-    action_type: MenuActionTypes;
-    action_result: string;
+    element: AnalyticsElements;
+    action_type: MenuActionTypes | ScreenSnippetActionTypes;
+    action_result?: AnalyticsActions;
 }
 
 export enum MenuActionTypes {
@@ -13,6 +13,12 @@ export enum MenuActionTypes {
     REFRESH_APP_IN_IDLE = 'refresh_app_in_idle',
 }
 
+export enum ScreenSnippetActionTypes {
+    CAPTURE_TAKEN = 'capture_taken',
+    ANNOTATE_ADDED = 'annotate_added',
+    CAPTURE_SENT = 'capture_sent',
+}
+
 export enum AnalyticsActions {
     ENABLED = 'ON',
     DISABLED = 'OFF',
@@ -20,6 +26,7 @@ export enum AnalyticsActions {
 
 export enum AnalyticsElements {
     MENU = 'Menu',
+    SCREEN_SNIPPET = 'ScreenSnippet',
 }
 
 const MAX_EVENT_QUEUE_LENGTH = 50;
@@ -61,7 +68,7 @@ class Analytics {
             return;
         }
         this.analyticsEventQueue.push(eventData);
-        // don't store more than 100 msgs. keep most recent log msgs.
+        // don't store more than 50 msgs. keep most recent log msgs.
         if (this.analyticsEventQueue.length > MAX_EVENT_QUEUE_LENGTH) {
             this.analyticsEventQueue.shift();
         }

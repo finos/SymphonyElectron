@@ -991,8 +991,8 @@ export class WindowHandler {
 
     const opts: ICustomBrowserWindowConstructorOpts = this.getWindowOpts(
       {
-        width: annotateAreaWidth,
-        height: windowHeight,
+        width: annotateAreaWidth < MIN_WIDTH ? MIN_WIDTH : annotateAreaWidth,
+        height: windowHeight < MIN_HEIGHT ? MIN_HEIGHT : windowHeight,
         minHeight: MIN_HEIGHT,
         minWidth: MIN_WIDTH,
         modal: false,

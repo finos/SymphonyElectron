@@ -2,6 +2,7 @@ import { mount } from 'enzyme';
 import * as React from 'react';
 import AnnotateArea from '../src/renderer/components/annotate-area';
 import { Tool } from '../src/renderer/components/snipping-tool';
+import * as analyticsHandler from './../src/app/analytics-handler';
 
 const defaultProps = {
     paths: [],
@@ -123,5 +124,15 @@ describe('<AnnotateArea/>', () => {
             shouldShow: false,
             strokeWidth: 5,
         }]);
+    });
+
+    it('should send capture_taken BI event on component mount', () => {
+        const spy = jest.spyOn(analyticsHandler.analytics, 'track');
+        const expectedValue = { action_type: 'annotate_added', element: 'ScreenSnippet' };
+        const wrapper = mount(<AnnotateArea {...defaultProps} />);
+        const area = wrapper.find('[data-testid="annotate-area"]');
+        area.simulate('mousedown', { pageX: 2, pageY: 49 });
+        area.simulate('mouseup');
+        expect(spy).toBeCalledWith(expectedValue);
     });
 });
