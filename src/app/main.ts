@@ -67,18 +67,24 @@ if (!isDevEnv) {
 }
 
 /**
- * Main function that init the application
+ * Restarts the app in case of network issues
  */
-let oneStart = false;
-const startApplication = async () => {
-    await app.whenReady();
-    if (oneStart) {
-        return;
+const restartOnFirstInstall = async (): Promise<void> => {
+    const bootCount = config.getBootCount();
+    if (bootCount !== undefined && bootCount < 1) {
+        logger.warn(`Boot count fits the criteria of lesser than or equal to 1, restarting the app`);
+        app.relaunch();
+        app.quit();
     }
+    logger.warn(`Boot count does not fit the criteria of lesser than or equal to 1, not restarting the app`);
+};
 
-    logger.info('main: app is ready, performing initial checks oneStart: ' + oneStart);
-    oneStart = true;
-    createAppCacheFile();
+let oneStart = false;
+
+/**
+ * Main function that initialises the application
+ */
+const startApplication = async () => {
     if (config.isFirstTimeLaunch()) {
         logger.info(`main: This is a first time launch! will update config and handle auto launch`);
         cleanAppCacheOnInstall();
@@ -87,7 +93,15 @@ const startApplication = async () => {
             await autoLaunchInstance.handleAutoLaunch();
         }
     }
-    // Setup session properties only after app ready
+    await app.whenReady();
+    restartOnFirstInstall();
+    if (oneStart) {
+        return;
+    }
+
+    logger.info('main: app is ready, performing initial checks oneStart: ' + oneStart);
+    oneStart = true;
+    createAppCacheFile();
     setSessionProperties();
     await windowHandler.createApplication();
     logger.info(`main: created application`);

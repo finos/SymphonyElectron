@@ -1,4 +1,4 @@
-import { app, net } from 'electron';
+import { net } from 'electron';
 import * as nodeURL from 'url';
 import { buildNumber, clientVersion, optionalDependencies, searchAPIVersion, sfeVersion, version } from '../../package.json';
 import { logger } from '../common/logger';
@@ -171,8 +171,6 @@ class VersionHandler {
                 res.on('error', (error: Error) => {
                     logger.error(`version-handler: Error getting SFE version data from the server! ${error}`);
                     resolve(this.versionInfo);
-                    // Restart the app to resolve network issues
-                    this.restart();
                     return;
                 });
 
@@ -194,19 +192,6 @@ class VersionHandler {
 
             requestSfeVersion.end();
         });
-    }
-
-    /**
-     * Restarts the app in case of network issues
-     */
-    private async restart(): Promise<void> {
-        const bootCount = config.getBootCount();
-        if (bootCount && bootCount <= 1) {
-            logger.warn(`Boot count fits the criteria of lesser than or equal to 1, restarting the app`);
-            app.relaunch();
-            app.quit();
-        }
-        logger.warn(`Boot count does not fit the criteria of lesser than or equal to 1, not restarting the app`);
     }
 
 }
