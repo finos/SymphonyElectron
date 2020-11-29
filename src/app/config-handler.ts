@@ -39,6 +39,7 @@ export interface IConfig {
     mainWinPos?: ICustomRectangle;
     locale?: string;
     installVariant?: string;
+    bootCount?: number;
 }
 
 export interface IGlobalConfig {
@@ -117,6 +118,7 @@ class Config {
     public filteredCloudConfig: ICloudConfig | {};
     private isFirstTime: boolean = true;
     private installVariant: string | undefined;
+    private bootCount: number | undefined;
     private readonly configFileName: string;
     private readonly installVariantFilename: string;
     private readonly installVariantPath: string;
@@ -278,10 +280,19 @@ class Config {
             // update to the new build number
             filteredFields.buildNumber = buildNumber;
             filteredFields.installVariant = this.installVariant;
+            filteredFields.bootCount = 0;
             logger.info(`config-handler: setting first time launch for build`, buildNumber);
             return await this.updateUserConfig(filteredFields);
         }
-        await this.updateUserConfig({ buildNumber, installVariant: this.installVariant });
+        await this.updateUserConfig({ buildNumber, installVariant: this.installVariant, bootCount: this.bootCount });
+    }
+
+    /**
+     * Gets the boot count for an SDA installation
+     */
+    public getBootCount(): number | undefined {
+        logger.info(`config-handler: Current boot count is ${this.bootCount}`);
+        return this.bootCount;
     }
 
     /**
@@ -312,9 +323,9 @@ class Config {
         const { acpFeatureLevelEntitlements, podLevelEntitlements, pmpEntitlements } = this.cloudConfig as ICloudConfig;
 
         // Filter out some values
-        const filteredACP = filterOutSelectedValues(acpFeatureLevelEntitlements, [ true, 'NOT_SET', '', [] ]);
-        const filteredPod = filterOutSelectedValues(podLevelEntitlements, [ true, 'NOT_SET', '', [] ]);
-        const filteredPMP = filterOutSelectedValues(pmpEntitlements, [ true, 'NOT_SET', '', [] ]);
+        const filteredACP = filterOutSelectedValues(acpFeatureLevelEntitlements, [true, 'NOT_SET', '', []]);
+        const filteredPod = filterOutSelectedValues(podLevelEntitlements, [true, 'NOT_SET', '', []]);
+        const filteredPMP = filterOutSelectedValues(pmpEntitlements, [true, 'NOT_SET', '', []]);
 
         // priority is PMP > ACP > SDA
         this.filteredCloudConfig = { ...filteredACP, ...filteredPod, ...filteredPMP };
@@ -406,16 +417,25 @@ class Config {
         if (!installVariant) {
             logger.info(`config-handler: there's no install variant found, this is a first time launch`);
             this.isFirstTime = true;
+            this.bootCount = 0;
             return;
         }
 
         if (installVariant && typeof installVariant === 'string' && installVariant !== this.installVariant) {
             logger.info(`config-handler: install variant found is of a different instance, this is a first time launch`);
             this.isFirstTime = true;
+            this.bootCount = 0;
             return;
         }
         logger.info(`config-handler: install variant is the same as the existing one, not a first time launch`);
         this.isFirstTime = false;
+        this.bootCount = (this.getConfigFields(['bootCount']) as IConfig).bootCount;
+        if (this.bootCount !== undefined) {
+            this.bootCount++;
+            await this.updateUserConfig({ bootCount: this.bootCount });
+        } else {
+            await this.updateUserConfig({ bootCount: 0 });
+        }
     }
 }
 

@@ -386,6 +386,7 @@ export class WindowHandler {
 
     cleanAppCacheOnCrash(this.mainWindow);
     // loads the main window with url from config/cmd line
+    logger.info(`Loading main window with url ${this.url}`);
     this.mainWindow.loadURL(this.url);
     // check for build expiry in case of test builds
     this.checkExpiry(this.mainWindow);
@@ -410,6 +411,22 @@ export class WindowHandler {
       monitorNetworkInterception(
         this.url || this.userConfig.url || this.globalConfig.url,
       );
+    });
+
+    const logEvents = [
+      'did-fail-provisional-load', 'did-frame-finish-load',
+      'did-start-loading', 'did-stop-loading', 'will-redirect',
+      'did-navigate', 'did-navigate-in-page', 'preload-error',
+    ];
+
+    logEvents.forEach((windowEvent: any) => {
+      this.mainWindow?.webContents.on(windowEvent, () => {
+        logger.info(`window-handler: Main Window Event Occurred: ${windowEvent}`);
+      });
+    });
+
+    this.mainWindow.once('ready-to-show', (event: Electron.Event) => {
+      logger.info(`window-handler: Main Window ready to show: ${event}`);
     });
 
     this.mainWindow.webContents.on('did-finish-load', async () => {
