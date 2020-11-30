@@ -1,10 +1,11 @@
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { i18n } from '../../common/i18n-preload';
+import { analytics, AnalyticsElements, ScreenSnippetActionTypes } from './../../app/analytics-handler';
 import AnnotateArea from './annotate-area';
 import ColorPickerPill, { IColor } from './color-picker-pill';
 
-const { useState, useRef, useEffect } = React;
+const { useState, useRef, useEffect, useLayoutEffect } = React;
 
 export enum Tool {
   pen = 'PEN',
@@ -25,15 +26,7 @@ export interface IPoint {
   y: number;
 }
 
-export interface ISvgPath {
-  svgPath: string;
-  key: string;
-  strokeWidth: number;
-  color: string;
-  shouldShow: boolean;
-}
-
-export interface IImageDimensions {
+export interface IDimensions {
   width: number;
   height: number;
 }
@@ -60,8 +53,12 @@ const SNIPPING_TOOL_NAMESPACE = 'ScreenSnippet';
 const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPaths }) => {
   // State preparation functions
 
-  const [screenSnippetPath, setScreenSnippetPath] = useState('Screen-Snippet');
+  const [screenSnippetPath, setScreenSnippetPath] = useState('');
   const [imageDimensions, setImageDimensions] = useState({
+    height: 600,
+    width: 800,
+  });
+  const [annotateAreaDimensions, setAnnotateAreaDimensions] = useState({
     height: 600,
     width: 800,
   });
@@ -79,12 +76,28 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPat
     false,
   );
 
-  const getSnipImageData = ({ }, { snipImage, height, width }) => {
+  const getSnipImageData = ({ }, {
+    snipImage,
+    annotateAreaHeight,
+    annotateAreaWidth,
+    snippetImageHeight,
+    snippetImageWidth,
+  }) => {
     setScreenSnippetPath(snipImage);
-    setImageDimensions({ height, width });
+    setImageDimensions({ height: snippetImageHeight, width: snippetImageWidth });
+    setAnnotateAreaDimensions({ height: annotateAreaHeight, width: annotateAreaWidth });
   };
 
+  useLayoutEffect(() => {
   ipcRenderer.once('snipping-tool-data', getSnipImageData);
+    analytics.track({
+      element: AnalyticsElements.SCREEN_SNIPPET,
+      action_type: ScreenSnippetActionTypes.CAPTURE_TAKEN,
+    });
+  return () => {
+    ipcRenderer.removeListener('snipping-tool-data', getSnipImageData);
+  };
+  }, []);
 
   // Hook that alerts clicks outside of the passed refs
   const useClickOutsideExaminer = (
@@ -168,6 +181,16 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPat
       return 'NO CANVAS';
     }
 
+    const backgroundImage = document.getElementById('backgroundImage') as HTMLImageElement;
+
+    // Fast lane in case there is no drawn SVG paths
+    if (paths.length === 0) {
+      ctx.drawImage(backgroundImage, 0, 0);
+      // Extracts base 64 png img data from the canvas
+      const data = canvas.toDataURL('image/png');
+      return data;
+    }
+
     // Creates an in memory img without adding it to the DOM
     const img = document.createElement('img');
 
@@ -179,12 +202,11 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPat
       'src',
       'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData))),
     );
-    const screenSnippet = document.getElementById('screenSnippet') as HTMLImageElement;
 
     return new Promise((resolve, reject) => {
       // Listens to when the img is loaded in memory and adds the data from the SVG paths + screenSnippet to the canvas
       img.onload = () => {
-        ctx.drawImage(screenSnippet, 0, 0);
+        ctx.drawImage(backgroundImage, 0, 0);
         ctx.drawImage(img, 0, 0);
         try {
           // Extracts base 64 png img data from the canvas
@@ -225,6 +247,10 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPat
 
   const done = async () => {
     const base64PngData = await getBase64PngData();
+    analytics.track({
+      element: AnalyticsElements.SCREEN_SNIPPET,
+      action_type: ScreenSnippetActionTypes.CAPTURE_SENT,
+    });
     ipcRenderer.send('upload-snippet', { screenSnippetPath, base64PngData });
   };
 
@@ -310,8 +336,9 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPat
             penColor={penColor.rgbaColor}
             onChange={setPaths}
             imageDimensions={imageDimensions}
-            screenSnippetPath={screenSnippetPath}
+            backgroundImagePath={screenSnippetPath}
             chosenTool={chosenTool}
+            annotateAreaDimensions={annotateAreaDimensions}
           />
         </div>
       </main>
