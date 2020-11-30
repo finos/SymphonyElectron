@@ -16,6 +16,7 @@ describe('about app', () => {
         buildNumber: '4.x.x',
         hostname: 'N/A',
         sfeVersion: 'N/A',
+        sfeClientType: '1.5',
         sdaVersion: '3.8.0',
         sdaBuildNumber: '0',
         electronVersion: '3.1.11',

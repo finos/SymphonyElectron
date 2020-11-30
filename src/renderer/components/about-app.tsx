@@ -12,6 +12,7 @@ interface IState {
     buildNumber: string;
     hostname: string;
     sfeVersion: string;
+    sfeClientType: string;
     versionLocalised?: string;
     sdaVersion?: string;
     sdaBuildNumber?: string;
@@ -53,6 +54,7 @@ export default class AboutApp extends React.Component<{}, IState> {
             buildNumber: 'N/A',
             hostname: 'N/A',
             sfeVersion: 'N/A',
+            sfeClientType: 'N/A',
             sdaVersion: 'N/A',
             sdaBuildNumber: 'N/A',
             electronVersion: 'N/A',
@@ -75,13 +77,18 @@ export default class AboutApp extends React.Component<{}, IState> {
      */
     public render(): JSX.Element {
         const { clientVersion, buildNumber, hostname, sfeVersion,
-            sdaVersion, sdaBuildNumber, client,
+            sfeClientType, sdaVersion, sdaBuildNumber, client,
         } = this.state;
 
         const appName = remote.app.getName() || 'Symphony';
         const copyright = `\xA9 ${new Date().getFullYear()} ${appName}`;
         const podVersion = `${clientVersion} (${buildNumber})`;
         const sdaVersionBuild = `${sdaVersion} (${sdaBuildNumber})`;
+        let sfeClientTypeName = 'SFE';
+        if (sfeClientType !== '1.5') {
+            sfeClientTypeName = 'SFE-Lite';
+        }
+
         return (
             <div className='AboutApp' lang={i18n.getLocale()}>
                 <div className='AboutApp-header-container'>
@@ -103,7 +110,7 @@ export default class AboutApp extends React.Component<{}, IState> {
                             <li><b>POD:</b> {hostname || 'N/A'}</li>
                             <li><b>SBE:</b> {podVersion}</li>
                             <li><b>SDA:</b> {sdaVersionBuild}</li>
-                            <li><b>SFE:</b> {sfeVersion} {client}</li>
+                            <li><b>{sfeClientTypeName}:</b> {sfeVersion} {client}</li>
                         </ul>
                     </section>
                 </div>

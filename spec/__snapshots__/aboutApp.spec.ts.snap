@@ -62,7 +62,8 @@ exports[`about app should render correctly 1`] = `
         </li>
         <li>
           <b>
-            SFE:
+            SFE-Lite
+            :
           </b>
            
           N/A

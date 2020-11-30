@@ -41,6 +41,7 @@ test('about-app: verify copy button with few data validation', async (t) => {
     t.true(clipboard.hasOwnProperty('appName'));
     t.true(clipboard.hasOwnProperty('clientVersion'));
     t.true(clipboard.hasOwnProperty('sfeVersion'));
+    t.true(clipboard.hasOwnProperty('sfeClientType'));
     t.true(clipboard.hasOwnProperty('sdaVersion'));
     t.true(clipboard.hasOwnProperty('sdaBuildNumber'));
     robotActions.closeWindow();
