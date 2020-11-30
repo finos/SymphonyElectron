@@ -76,7 +76,8 @@ class VersionHandler {
             }
 
             if (!this.mainUrl) {
-                logger.error(`version-handler: Unable to get pod url for getting version data from server! Setting defaults!`);
+                logger.error(`version-handler: Unable to get pod url for getting version data from server!`);
+                logger.info(`version-handler: Setting defaults -> ${JSON.stringify(this.versionInfo)}`);
                 resolve(this.versionInfo);
                 return;
             }
