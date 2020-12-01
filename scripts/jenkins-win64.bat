@@ -106,3 +106,9 @@ if NOT EXIST c:\electron-installer\signing.bat (
 
 call c:\electron-installer\signing.bat
 copy "WixSharpInstaller\Symphony.msi" "%targetsDir%\Experimental-%archiveName%.msi"
+
+where /q markdown-pdf
+if NOT ERRORLEVEL 0 (
+    npm install -g markdown-pdf
+)
+markdown-pdf install_instructions_win.md -o "%targetsDir%\Install-Instructions-Experimental-%archiveName%.pdf"
