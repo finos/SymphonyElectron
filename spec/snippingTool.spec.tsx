@@ -82,7 +82,7 @@ describe('Snipping Tool', () => {
     wrapper.update();
     await waitForPromisesToResolve();
     expect(spy).toBeCalledWith('upload-snippet', {
-      base64PngData: 'NO CANVAS',
+      mergedImageData: 'MERGE_FAIL',
       screenSnippetPath: '',
     });
   });
