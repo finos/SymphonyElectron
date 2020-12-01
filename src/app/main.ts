@@ -5,7 +5,7 @@ import * as shellPath from 'shell-path';
 import { isDevEnv, isElectronQA, isLinux, isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
-import { cleanAppCacheOnInstall, cleanUpAppCache, createAppCacheFile } from './app-cache-handler';
+import { cleanUpAppCache, createAppCacheFile } from './app-cache-handler';
 import { autoLaunchInstance } from './auto-launch-controller';
 import { setChromeFlags, setSessionProperties } from './chrome-flags';
 import { config } from './config-handler';
@@ -67,26 +67,12 @@ if (!isDevEnv) {
 }
 
 /**
- * Restarts the app in case of network issues
- */
-const restartOnFirstInstall = async (): Promise<void> => {
-    const bootCount = config.getBootCount();
-    if (bootCount !== undefined && bootCount === 1) {
-        logger.warn(`Boot count fits the criteria of equal to 1, restarting the app`);
-        app.relaunch();
-        app.quit();
-    }
-    logger.warn(`Boot count does not fit the criteria of lesser than or equal to 1, not restarting the app`);
-};
-
-/**
  * Main function that initialises the application
  */
 let oneStart = false;
 const startApplication = async () => {
     if (config.isFirstTimeLaunch()) {
         logger.info(`main: This is a first time launch! will update config and handle auto launch`);
-        cleanAppCacheOnInstall();
         await config.setUpFirstTimeLaunch();
         if (!isLinux) {
             await autoLaunchInstance.handleAutoLaunch();
@@ -104,7 +90,6 @@ const startApplication = async () => {
     await config.updateUserConfigOnStart();
     setSessionProperties();
     await windowHandler.createApplication();
-    restartOnFirstInstall();
     logger.info(`main: created application`);
 };
 
