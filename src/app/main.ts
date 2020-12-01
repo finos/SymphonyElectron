@@ -87,7 +87,6 @@ let oneStart = false;
 const startApplication = async () => {
     if (config.isFirstTimeLaunch()) {
         logger.info(`main: This is a first time launch! will update config and handle auto launch`);
-        cleanAppCacheOnInstall();
         await config.setUpFirstTimeLaunch();
         if (!isLinux) {
             await autoLaunchInstance.handleAutoLaunch();
@@ -103,7 +102,6 @@ const startApplication = async () => {
     createAppCacheFile();
     setSessionProperties();
     await windowHandler.createApplication();
-    restartOnFirstInstall();
     logger.info(`main: created application`);
 };
 
