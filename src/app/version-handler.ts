@@ -1,6 +1,6 @@
 import { net } from 'electron';
 import * as nodeURL from 'url';
-import { buildNumber, clientVersion, optionalDependencies, searchAPIVersion, sfeVersion, version } from '../../package.json';
+import { buildNumber, clientVersion, optionalDependencies, searchAPIVersion, sfeClientType, sfeVersion, version } from '../../package.json';
 import { logger } from '../common/logger';
 import { config, IGlobalConfig } from './config-handler';
 
@@ -8,6 +8,7 @@ interface IVersionInfo {
     clientVersion: string;
     buildNumber: string;
     sfeVersion: string;
+    sfeClientType: string;
     sdaVersion: string;
     sdaBuildNumber: string;
     electronVersion: string;
@@ -35,6 +36,7 @@ class VersionHandler {
             clientVersion,
             buildNumber,
             sfeVersion,
+            sfeClientType,
             sdaVersion: version,
             sdaBuildNumber: buildNumber,
             electronVersion: process.versions.electron,
@@ -77,6 +79,7 @@ class VersionHandler {
 
             if (!this.mainUrl) {
                 logger.error(`version-handler: Unable to get pod url for getting version data from server! Setting defaults!`);
+                logger.info(`version-handler: Setting defaults -> ${JSON.stringify(this.versionInfo)}`);
                 resolve(this.versionInfo);
                 return;
             }
@@ -139,8 +142,22 @@ class VersionHandler {
 
             request.end();
 
+            logger.info('version-handler: mainUrl: ' + mainUrl);
+            logger.info('version-handler: hostname: ' + hostname);
+
             /* Get SFE version */
-            const urlSfeVersion = `${protocol}//${hostname}/client/version.json`;
+            let urlSfeVersion;
+            if (mainUrl?.includes('/client-bff/')) {
+                if (mainUrl?.includes('/client-bff/daily/')) {
+                    urlSfeVersion = `${protocol}//${hostname}/client-bff/daily/version.json`;
+                } else {
+                    urlSfeVersion = `${protocol}//${hostname}/client-bff/version.json`;
+                }
+                this.versionInfo.sfeClientType = '2.0';
+            } else {
+                urlSfeVersion = `${protocol}//${hostname}/client/version.json`;
+                this.versionInfo.sfeClientType = '1.5';
+            }
             logger.info(`version-handler: Trying to get SFE version info for the URL: ${urlSfeVersion}`);
 
             const requestSfeVersion = net.request(urlSfeVersion);
@@ -158,7 +175,9 @@ class VersionHandler {
 
                         this.versionInfo.sfeVersion = this.sfeVersionInfo[key];
 
-                        logger.info(`version-handler: Updated SFE version info from server! ${JSON.stringify(this.versionInfo)}`);
+                        logger.info('version-handler: SFE-version: ' + this.sfeVersionInfo[key]);
+
+                        logger.info(`version-handler: Updated SFE version info from server! ${JSON.stringify(this.versionInfo, null, 3)}`);
                         resolve(this.versionInfo);
                     } catch (error) {
                         logger.error(`version-handler: Error getting SFE version data from the server! ${error}`);

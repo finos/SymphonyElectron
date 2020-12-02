@@ -5,7 +5,7 @@ import * as shellPath from 'shell-path';
 import { isDevEnv, isElectronQA, isLinux, isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
-import { cleanAppCacheOnInstall, cleanUpAppCache, createAppCacheFile } from './app-cache-handler';
+import { cleanUpAppCache, createAppCacheFile } from './app-cache-handler';
 import { autoLaunchInstance } from './auto-launch-controller';
 import { setChromeFlags, setSessionProperties } from './chrome-flags';
 import { config } from './config-handler';
@@ -67,10 +67,17 @@ if (!isDevEnv) {
 }
 
 /**
- * Main function that init the application
+ * Main function that initialises the application
  */
 let oneStart = false;
 const startApplication = async () => {
+    if (config.isFirstTimeLaunch()) {
+        logger.info(`main: This is a first time launch! will update config and handle auto launch`);
+        await config.setUpFirstTimeLaunch();
+        if (!isLinux) {
+            await autoLaunchInstance.handleAutoLaunch();
+        }
+    }
     await app.whenReady();
     if (oneStart) {
         return;
@@ -79,17 +86,8 @@ const startApplication = async () => {
     logger.info('main: app is ready, performing initial checks oneStart: ' + oneStart);
     oneStart = true;
     createAppCacheFile();
-    if (config.isFirstTimeLaunch()) {
-        logger.info(`main: This is a first time launch! will update config and handle auto launch`);
-        cleanAppCacheOnInstall();
-        await config.setUpFirstTimeLaunch();
-        if (!isLinux) {
-            await autoLaunchInstance.handleAutoLaunch();
-        }
-    }
     // Picks global config values and updates them in the user config
     await config.updateUserConfigOnStart();
-    // Setup session properties only after app ready
     setSessionProperties();
     await windowHandler.createApplication();
     logger.info(`main: created application`);
