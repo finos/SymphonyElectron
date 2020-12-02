@@ -1,5 +1,6 @@
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
+import { svgAsPngUri } from 'save-svg-as-png';
 import { i18n } from '../../common/i18n-preload';
 import { analytics, AnalyticsElements, ScreenSnippetActionTypes } from './../../app/analytics-handler';
 import AnnotateArea from './annotate-area';
@@ -168,57 +169,6 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPat
 
   // Utility functions
 
-  const getBase64PngData = () => {
-    const canvas = document.createElement('canvas');
-    canvas.width = imageDimensions.width;
-    canvas.height = imageDimensions.height;
-
-    // Creates an in memory canvas for mounting img data without adding it to the DOM
-    const ctx = canvas?.getContext('2d') as CanvasRenderingContext2D;
-
-    if (!ctx) {
-      // Will only be the case in headless browsers, such as with unit tests
-      return 'NO CANVAS';
-    }
-
-    const backgroundImage = document.getElementById('backgroundImage') as HTMLImageElement;
-
-    // Fast lane in case there is no drawn SVG paths
-    if (paths.length === 0) {
-      ctx.drawImage(backgroundImage, 0, 0);
-      // Extracts base 64 png img data from the canvas
-      const data = canvas.toDataURL('image/png');
-      return data;
-    }
-
-    // Creates an in memory img without adding it to the DOM
-    const img = document.createElement('img');
-
-    const svg = document.getElementById('annotate-area') as HTMLImageElement;
-    // Parses SVG image to XML data
-    const svgData = new XMLSerializer().serializeToString(svg);
-    // Adds the extracted XML data to the in memory img
-    img.setAttribute(
-      'src',
-      'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData))),
-    );
-
-    return new Promise((resolve, reject) => {
-      // Listens to when the img is loaded in memory and adds the data from the SVG paths + screenSnippet to the canvas
-      img.onload = () => {
-        ctx.drawImage(backgroundImage, 0, 0);
-        ctx.drawImage(img, 0, 0);
-        try {
-          // Extracts base 64 png img data from the canvas
-          const data = canvas.toDataURL('image/png');
-          resolve(data);
-        } catch (e) {
-          reject(e);
-        }
-      };
-    });
-  };
-
   const markChosenColor = (colors: IColor[], chosenColor: string) => {
     return colors.map((color) => {
       if (color.rgbaColor === chosenColor) {
@@ -246,12 +196,13 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPat
   };
 
   const done = async () => {
-    const base64PngData = await getBase64PngData();
+    const svg = document.getElementById('annotate-area');
+    const mergedImageData = svg ? await svgAsPngUri(document.getElementById('annotate-area'), {}) : 'MERGE_FAIL';
     analytics.track({
       element: AnalyticsElements.SCREEN_SNIPPET,
       action_type: ScreenSnippetActionTypes.CAPTURE_SENT,
     });
-    ipcRenderer.send('upload-snippet', { screenSnippetPath, base64PngData });
+    ipcRenderer.send('upload-snippet', { screenSnippetPath, mergedImageData });
   };
 
   return (

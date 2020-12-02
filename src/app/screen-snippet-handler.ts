@@ -287,20 +287,28 @@ class ScreenSnippet {
    * @param webContents A browser window's web contents object
    */
   private uploadSnippet(webContents: Electron.webContents) {
-    ipcMain.once('upload-snippet', async (_event, snippetData: { screenSnippetPath: string, base64PngData: string }) => {
-      windowHandler.closeSnippingToolWindow();
-      const [type, data] = snippetData.base64PngData.split(',');
-      const payload = {
-        message: 'SUCCESS',
-        data,
-        type,
-      };
-      this.deleteFile(snippetData.screenSnippetPath);
-      logger.info(
-        `screen-snippet-handler: Snippet captured! Sending data to SFE`,
-      );
-      webContents.send('screen-snippet-data', payload);
-      await this.verifyAndUpdateAlwaysOnTop();
+    ipcMain.once('upload-snippet', async (_event, snippetData: { screenSnippetPath: string, mergedImageData: string }) => {
+      try {
+        windowHandler.closeSnippingToolWindow();
+        const [type, data] = snippetData.mergedImageData.split(',');
+        const payload = {
+          message: 'SUCCESS',
+          data,
+          type,
+        };
+        logger.info(
+          `screen-snippet-handler: Snippet captured! Sending data to SFE`,
+        );
+        webContents.send('screen-snippet-data', payload);
+        await this.verifyAndUpdateAlwaysOnTop();
+      } catch (error) {
+        await this.verifyAndUpdateAlwaysOnTop();
+        logger.error(
+          `screen-snippet-handler: screen capture failed with error: ${error}!`,
+        );
+      } finally {
+        this.deleteFile(snippetData.screenSnippetPath);
+      }
     });
   }
 }
