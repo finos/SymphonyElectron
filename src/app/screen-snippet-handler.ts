@@ -296,20 +296,19 @@ class ScreenSnippet {
           data,
           type,
         };
-        this.deleteFile(snippetData.screenSnippetPath);
         logger.info(
           `screen-snippet-handler: Snippet captured! Sending data to SFE`,
         );
         webContents.send('screen-snippet-data', payload);
         await this.verifyAndUpdateAlwaysOnTop();
-      }
-      catch (error) {
+      } catch (error) {
         await this.verifyAndUpdateAlwaysOnTop();
         logger.error(
           `screen-snippet-handler: screen capture failed with error: ${error}!`,
         );
+      } finally {
+        this.deleteFile(snippetData.screenSnippetPath);
       }
-
     });
   }
 }
