@@ -111,4 +111,5 @@ copy "WixSharpInstaller\Symphony.msi" "%targetsDir%\Experimental-%archiveName%.m
 if ERRORLEVEL 1 (
     call npm install -g markdown-pdf
 )
-%appdata%\npm\markdown-pdf install_instructions_win.md -o "%targetsDir%\Install-Instructions-Experimental-%archiveName%.pdf"
+%appdata%\npm\markdown-pdf install_instructions_win.md
+
