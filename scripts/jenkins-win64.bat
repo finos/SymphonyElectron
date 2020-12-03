@@ -113,6 +113,6 @@ if ERRORLEVEL 1 (
     call npm install -g markdown-pdf
 )
 echo Generating install instructions
-%appdata%\npm\markdown-pdf install_instructions_win.md
+call %appdata%\npm\markdown-pdf install_instructions_win.md
 echo Install instructions generated: %targetsDir%\Install-Instructions-Experimental-%archiveName%.pdf
 copy install_instructions_win.pdf "%targetsDir%\Install-Instructions-Experimental-%archiveName%.pdf"
