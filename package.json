@@ -167,6 +167,7 @@
     "react-dom": "16.13.0",
     "ref-napi": "1.4.3",
     "rimraf": "^3.0.2",
+    "save-svg-as-png": "^1.4.17",
     "shell-path": "2.1.0"
   },
   "optionalDependencies": {
