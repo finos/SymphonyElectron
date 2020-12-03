@@ -114,5 +114,4 @@ if ERRORLEVEL 1 (
 )
 echo Generating install instructions
 call %appdata%\npm\markdown-pdf install_instructions_win.md
-echo Install instructions generated: %targetsDir%\Install-Instructions-Experimental-%archiveName%.pdf
 copy install_instructions_win.pdf "%targetsDir%\Install-Instructions-Experimental-%archiveName%.pdf"
