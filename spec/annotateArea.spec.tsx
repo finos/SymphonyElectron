@@ -126,10 +126,55 @@ describe('<AnnotateArea/>', () => {
         }]);
     });
 
-    it('should send capture_taken BI event on component mount', () => {
+    it('should send annotate_erased if clicked on path with tool eraser', () => {
         const spy = jest.spyOn(analyticsHandler.analytics, 'track');
-        const expectedValue = { action_type: 'annotate_added', element: 'ScreenSnippet' };
+        const pathProps = {
+            paths: [{
+                points: [{ x: 0, y: 0 }],
+                shouldShow: true,
+                strokeWidth: 5,
+                color: 'rgba(233, 0, 0, 0.64)',
+                key: 'path0',
+            }],
+            highlightColor: 'rgba(233, 0, 0, 0.64)',
+            penColor: 'rgba(38, 196, 58, 1)',
+            onChange: jest.fn(),
+            imageDimensions: { width: 800, height: 800 },
+            annotateAreaDimensions: { width: 800, height: 800 },
+            chosenTool: Tool.eraser,
+            screenSnippetPath: 'very-nice-path',
+        };
+        const wrapper = mount(<AnnotateArea {...pathProps} />);
+        const path = wrapper.find('[data-testid="path0"]');
+        const expectedValue = { action_type: 'annotate_erased', element: 'screen_capture_annotate' };
+        path.simulate('click');
+        expect(spy).toBeCalledWith(expectedValue);
+    });
+
+    it('should send annotate_added_pen event when drawn with pen', () => {
+        const spy = jest.spyOn(analyticsHandler.analytics, 'track');
+        const expectedValue = { action_type: 'annotate_added_pen', element: 'screen_capture_annotate' };
         const wrapper = mount(<AnnotateArea {...defaultProps} />);
+        const area = wrapper.find('[data-testid="annotate-area"]');
+        area.simulate('mousedown', { pageX: 2, pageY: 49 });
+        area.simulate('mouseup');
+        expect(spy).toBeCalledWith(expectedValue);
+    });
+
+    it('should send annotate_added_highlight event when drawn with highlight', () => {
+        const highlightProps = {
+            paths: [],
+            highlightColor: 'rgba(233, 0, 0, 0.64)',
+            penColor: 'rgba(38, 196, 58, 1)',
+            onChange: jest.fn(),
+            imageDimensions: { width: 800, height: 800 },
+            annotateAreaDimensions: { width: 800, height: 800 },
+            chosenTool: Tool.highlight,
+            screenSnippetPath: 'very-nice-path',
+        };
+        const spy = jest.spyOn(analyticsHandler.analytics, 'track');
+        const expectedValue = { action_type: 'annotate_added_highlight', element: 'screen_capture_annotate' };
+        const wrapper = mount(<AnnotateArea {...highlightProps} />);
         const area = wrapper.find('[data-testid="annotate-area"]');
         area.simulate('mousedown', { pageX: 2, pageY: 49 });
         area.simulate('mouseup');

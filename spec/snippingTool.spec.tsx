@@ -22,18 +22,28 @@ describe('Snipping Tool', () => {
     expect(spy).toBeCalledWith('snipping-tool-data', expect.any(Function));
   });
 
-  it('should send capture_taken BI event on component mount', () => {
+  it('should send screenshot_taken BI event on component mount', () => {
     const spy = jest.spyOn(analyticsHandler.analytics, 'track');
-    const expectedValue = { action_type: 'capture_taken', element: 'ScreenSnippet' };
+    const expectedValue = { action_type: 'screenshot_taken', element: 'screen_capture_annotate' };
     mount(React.createElement(SnippingTool));
     expect(spy).toBeCalledWith(expectedValue);
   });
 
   it('should send capture_sent BI event when clicking done', async () => {
     const spy = jest.spyOn(analyticsHandler.analytics, 'track');
-    const expectedValue = { action_type: 'capture_sent', element: 'ScreenSnippet' };
+    const expectedValue = { action_type: 'annotate_done', element: 'screen_capture_annotate' };
     const wrapper = mount(React.createElement(SnippingTool));
     wrapper.find('[data-testid="done-button"]').simulate('click');
+    wrapper.update();
+    await waitForPromisesToResolve();
+    expect(spy).toBeCalledWith(expectedValue);
+  });
+
+  it('should send annotate_cleared BI event when clicking clear', async () => {
+    const spy = jest.spyOn(analyticsHandler.analytics, 'track');
+    const expectedValue = { action_type: 'annotate_cleared', element: 'screen_capture_annotate' };
+    const wrapper = mount(React.createElement(SnippingTool));
+    wrapper.find('[data-testid="clear-button"]').simulate('click');
     wrapper.update();
     await waitForPromisesToResolve();
     expect(spy).toBeCalledWith(expectedValue);

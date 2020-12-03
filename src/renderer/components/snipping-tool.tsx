@@ -92,8 +92,8 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPat
   useLayoutEffect(() => {
   ipcRenderer.once('snipping-tool-data', getSnipImageData);
     analytics.track({
-      element: AnalyticsElements.SCREEN_SNIPPET,
-      action_type: ScreenSnippetActionTypes.CAPTURE_TAKEN,
+      element: AnalyticsElements.SCREEN_CAPTURE_ANNOTATE,
+      action_type: ScreenSnippetActionTypes.SCREENSHOT_TAKEN,
     });
   return () => {
     ipcRenderer.removeListener('snipping-tool-data', getSnipImageData);
@@ -165,6 +165,10 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPat
       return p;
     });
     setPaths(updPaths);
+    analytics.track({
+      element: AnalyticsElements.SCREEN_CAPTURE_ANNOTATE,
+      action_type: ScreenSnippetActionTypes.ANNOTATE_CLEARED,
+    });
   };
 
   // Utility functions
@@ -199,8 +203,8 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPat
     const svg = document.getElementById('annotate-area');
     const mergedImageData = svg ? await svgAsPngUri(document.getElementById('annotate-area'), {}) : 'MERGE_FAIL';
     analytics.track({
-      element: AnalyticsElements.SCREEN_SNIPPET,
-      action_type: ScreenSnippetActionTypes.CAPTURE_SENT,
+      element: AnalyticsElements.SCREEN_CAPTURE_ANNOTATE,
+      action_type: ScreenSnippetActionTypes.ANNOTATE_DONE,
     });
     ipcRenderer.send('upload-snippet', { screenSnippetPath, mergedImageData });
   };
