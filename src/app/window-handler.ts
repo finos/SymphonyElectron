@@ -896,9 +896,6 @@ export class WindowHandler {
         resizable: false,
         fullscreenable: false,
       },
-      {
-        devTools: isDevEnv,
-      },
     );
 
     if (
@@ -1017,9 +1014,6 @@ export class WindowHandler {
         resizable: false,
         fullscreenable: false,
       },
-      {
-        devTools: isDevEnv,
-      },
     );
 
     if (
@@ -1095,9 +1089,6 @@ export class WindowHandler {
         width: 580,
         show: false,
         fullscreenable: false,
-      },
-      {
-        devTools: isDevEnv,
       },
     );
     const focusedWindow = BrowserWindow.getFocusedWindow();
@@ -1207,9 +1198,6 @@ export class WindowHandler {
         autoHideMenuBar: true,
         resizable: false,
       },
-      {
-        devTools: isDevEnv,
-      },
     );
     opts.parent = window;
     this.basicAuthWindow = createComponentWindow('basic-auth', opts);
@@ -1265,9 +1253,6 @@ export class WindowHandler {
         maximizable: false,
         fullscreenable: false,
         autoHideMenuBar: true,
-      },
-      {
-        devTools: isDevEnv,
       },
     );
     // This prevents creating multiple instances of the
@@ -1382,9 +1367,6 @@ export class WindowHandler {
           title: 'Screen Sharing Indicator - Symphony',
           closable: false,
         },
-        {
-          devTools: isDevEnv,
-        },
       ),
       ...{ winKey: streamId },
     };
@@ -1492,9 +1474,6 @@ export class WindowHandler {
         frame: false,
         transparent: true,
         alwaysOnTop: true,
-      },
-      {
-        devTools: isDevEnv,
       },
     );
 
@@ -1832,7 +1811,7 @@ export class WindowHandler {
    */
   private getWindowOpts(
     windowOpts: Electron.BrowserWindowConstructorOptions,
-    webPreferences: Electron.WebPreferences,
+    webPreferences?: Electron.WebPreferences,
   ): ICustomBrowserWindowConstructorOpts {
     const defaultPreferencesOpts = {
       ...{
@@ -1840,6 +1819,7 @@ export class WindowHandler {
         nodeIntegration: isNodeEnv,
         contextIsolation: isNodeEnv ? false : this.contextIsolation,
         backgroundThrottling: this.backgroundThrottling,
+        devTools: isDevEnv,
       },
       ...webPreferences,
     };
