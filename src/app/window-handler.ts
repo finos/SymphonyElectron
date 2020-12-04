@@ -1070,6 +1070,59 @@ export class WindowHandler {
   }
 
   /**
+   * Draw red frame on shared screen application
+   *
+   */
+  public drawScreenShareIndicatorFrame(source) {
+    const displays = electron.screen.getAllDisplays();
+    logger.info('window-utils: displays.length: ' + displays.length);
+    for (let i = 0, len = displays.length; i < len; i++) {
+      logger.info(
+        'window-utils: display[' + i + ']: ' + JSON.stringify(displays[i]),
+      );
+    }
+
+    if (source != null) {
+      logger.info('window-handler: drawScreenShareIndicatorFrame');
+
+      if (isWindowsOS || isMac) {
+        const type = source.id.split(':')[0];
+        if (type === 'window') {
+          const hwnd = source.id.split(':')[1];
+          this.execCmd(this.screenShareIndicatorFrameUtil, [hwnd]);
+        } else if (isMac && type === 'screen') {
+          const dispId = source.id.split(':')[1];
+          this.execCmd(this.screenShareIndicatorFrameUtil, [dispId]);
+        } else if (isWindowsOS && type === 'screen') {
+          logger.info(
+            'window-handler: source.display_id: ' + source.display_id,
+          );
+          if (source.display_id !== '') {
+            this.execCmd(this.screenShareIndicatorFrameUtil, [
+              source.display_id,
+            ]);
+          } else {
+            const dispId = source.id.split(':')[1];
+            const clampedDispId = Math.min(dispId, displays.length - 1);
+            const keyId = 'id';
+            logger.info('window-utils: dispId: ' + dispId);
+            logger.info('window-utils: clampedDispId: ' + clampedDispId);
+            logger.info(
+              'window-utils: displays [' +
+              clampedDispId +
+              '] [id]: ' +
+              displays[clampedDispId][keyId],
+            );
+            this.execCmd(this.screenShareIndicatorFrameUtil, [
+              displays[clampedDispId][keyId].toString(),
+            ]);
+          }
+        }
+      }
+    }
+  }
+
+  /**
    * Creates a screen picker window
    *
    * @param window
@@ -1121,52 +1174,19 @@ export class WindowHandler {
       });
       this.addWindow(opts.winKey, this.screenPickerWindow);
     });
-    ipcMain.once('screen-source-selected', (_event, source) => {
-      const displays = electron.screen.getAllDisplays();
-      logger.info('window-utils: displays.length: ' + displays.length);
-      for (let i = 0, len = displays.length; i < len; i++) {
-        logger.info(
-          'window-utils: display[' + i + ']: ' + JSON.stringify(displays[i]),
-        );
-      }
 
+    ipcMain.on('screen-source-select', (_event, source) => {
       if (source != null) {
-        logger.info(`window-handler: screen-source-selected`, source, id);
-        if (isWindowsOS || isMac) {
-          const type = source.id.split(':')[0];
-          if (type === 'window') {
-            const hwnd = source.id.split(':')[1];
-            this.execCmd(this.screenShareIndicatorFrameUtil, [hwnd]);
-          } else if (isMac && type === 'screen') {
-            const dispId = source.id.split(':')[1];
-            this.execCmd(this.screenShareIndicatorFrameUtil, [dispId]);
-          } else if (isWindowsOS && type === 'screen') {
-            logger.info(
-              'window-handler: source.display_id: ' + source.display_id,
-            );
-            if (source.display_id !== '') {
-              this.execCmd(this.screenShareIndicatorFrameUtil, [
-                source.display_id,
-              ]);
-            } else {
-              const dispId = source.id.split(':')[1];
-              const clampedDispId = Math.min(dispId, displays.length - 1);
-              const keyId = 'id';
-              logger.info('window-utils: dispId: ' + dispId);
-              logger.info('window-utils: clampedDispId: ' + clampedDispId);
-              logger.info(
-                'window-utils: displays [' +
-                clampedDispId +
-                '] [id]: ' +
-                displays[clampedDispId][keyId],
-              );
-              this.execCmd(this.screenShareIndicatorFrameUtil, [
-                displays[clampedDispId][keyId].toString(),
-              ]);
-            }
-          }
-        }
+        logger.info(`window-handler: screen-source-select`, source, id);
+
+        this.drawScreenShareIndicatorFrame(source);
       }
+    });
+
+    ipcMain.once('screen-source-selected', (_event, source) => {
+      logger.info(`window-handler: screen-source-selected`, source, id);
+
+      this.drawScreenShareIndicatorFrame(source);
 
       window.send('start-share' + id, source);
       if (this.screenPickerWindow && windowExists(this.screenPickerWindow)) {
