@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer, remote, webFrame } from 'electron';
+import { contextBridge, ipcRenderer, webFrame } from 'electron';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { apiCmds, apiName } from '../common/api-interface';
@@ -22,7 +22,6 @@ const minMemoryFetchInterval = 4 * 60 * 60 * 1000;
 const maxMemoryFetchInterval = 12 * 60 * 60 * 1000;
 const snackBar = new SnackBar();
 const banner = new MessageBanner();
-const notification = remote.require('../renderer/notification').notification;
 
 /**
  * creates API exposed from electron.
@@ -83,8 +82,8 @@ if (ssfWindow.ssf) {
         registerRestartFloater: ssfWindow.ssf.registerRestartFloater,
         setCloudConfig: ssfWindow.ssf.setCloudConfig,
         checkMediaPermission: ssfWindow.ssf.checkMediaPermission,
-        showNotification: notification.showNotification,
-        closeNotification: notification.hideNotification,
+        showNotification: ssfWindow.ssf.showNotification,
+        closeNotification: ssfWindow.ssf.closeNotification,
         restartApp: ssfWindow.ssf.restartApp,
     });
 }

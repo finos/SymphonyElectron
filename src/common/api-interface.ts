@@ -44,6 +44,7 @@ export enum apiCmds {
     clearDownloadedItems = 'clear-downloaded-items',
     restartApp = 'restart-app',
     setIsMana = 'set-is-mana',
+    showNotification = 'show-notification',
 }
 
 export enum apiName {
@@ -80,6 +81,8 @@ export interface IApiArgs {
     logs: ILogs;
     cloudConfig: object;
     isMana: boolean;
+    notificationOpts: object;
+    notificationId: number;
 }
 
 export type WindowTypes = 'screen-picker' | 'screen-sharing-indicator' | 'notification-settings';
@@ -126,7 +129,7 @@ export interface INotificationData {
     title: string;
     body: string;
     image: string;
-    icon: string;
+    icon?: string;
     flash: boolean;
     color: string;
     tag: string;
@@ -135,11 +138,14 @@ export interface INotificationData {
     displayTime: number;
     isExternal: boolean;
     theme: Theme;
+    isElectronNotification?: boolean;
+    callback?: () => void;
 }
 
 export enum NotificationActions {
     notificationClicked = 'notification-clicked',
     notificationClosed = 'notification-closed',
+    notificationReply = 'notification-reply',
 }
 
 /**
@@ -204,3 +210,7 @@ export interface IRestartFloaterData {
     windowName: string;
     bounds: Electron.Rectangle;
 }
+
+export type Reply = string;
+export type ElectronNotificationData = Reply | object;
+export type NotificationActionCallback = (event: NotificationActions, data: INotificationData) => void;

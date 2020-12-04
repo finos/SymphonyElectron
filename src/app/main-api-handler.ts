@@ -1,6 +1,6 @@
 import { BrowserWindow, ipcMain } from 'electron';
 
-import { apiCmds, apiName, IApiArgs } from '../common/api-interface';
+import { apiCmds, apiName, IApiArgs, INotificationData } from '../common/api-interface';
 import { LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { activityDetection } from './activity-detection';
@@ -9,6 +9,7 @@ import appStateHandler from './app-state-handler';
 import { CloudConfigDataTypes, config, ICloudConfig } from './config-handler';
 import { downloadHandler } from './download-handler';
 import { memoryMonitor } from './memory-monitor';
+import notificationHelper from './notifications/notification-helper';
 import { protocolHandler } from './protocol-handler';
 import { finalizeLogExports, registerLogRetriever } from './reports-handler';
 import { screenSnippet } from './screen-snippet-handler';
@@ -206,6 +207,17 @@ ipcMain.on(apiName.symphonyApi, async (event: Electron.IpcMainEvent, arg: IApiAr
             if (typeof arg.isMana === 'boolean') {
                 windowHandler.isMana = arg.isMana;
                 logger.info('window-handler: isMana: ' + windowHandler.isMana);
+            }
+            break;
+        case apiCmds.showNotification:
+            if (typeof arg.notificationOpts === 'object') {
+                const opts = arg.notificationOpts as INotificationData;
+                notificationHelper.showNotification(opts);
+            }
+            break;
+        case apiCmds.closeNotification:
+            if (typeof arg.notificationId === 'number') {
+                await notificationHelper.closeNotification(arg.notificationId);
             }
             break;
         default:
