@@ -897,7 +897,7 @@ export class WindowHandler {
         fullscreenable: false,
       },
       {
-        devTools: false,
+        devTools: isDevEnv,
       },
     );
 
@@ -1018,7 +1018,7 @@ export class WindowHandler {
         fullscreenable: false,
       },
       {
-        devTools: false,
+        devTools: isDevEnv,
       },
     );
 
@@ -1097,7 +1097,7 @@ export class WindowHandler {
         fullscreenable: false,
       },
       {
-        devTools: false,
+        devTools: isDevEnv,
       },
     );
     const focusedWindow = BrowserWindow.getFocusedWindow();
@@ -1208,7 +1208,7 @@ export class WindowHandler {
         resizable: false,
       },
       {
-        devTools: false,
+        devTools: isDevEnv,
       },
     );
     opts.parent = window;
@@ -1267,7 +1267,7 @@ export class WindowHandler {
         autoHideMenuBar: true,
       },
       {
-        devTools: false,
+        devTools: isDevEnv,
       },
     );
     // This prevents creating multiple instances of the
@@ -1383,7 +1383,7 @@ export class WindowHandler {
           closable: false,
         },
         {
-          devTools: false,
+          devTools: isDevEnv,
         },
       ),
       ...{ winKey: streamId },
@@ -1494,7 +1494,7 @@ export class WindowHandler {
         alwaysOnTop: true,
       },
       {
-        devTools: false,
+        devTools: isDevEnv,
       },
     );
 
