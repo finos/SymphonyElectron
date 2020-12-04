@@ -1194,6 +1194,7 @@ export class WindowHandler {
       }
     });
     this.screenPickerWindow.once('closed', () => {
+      this.execCmd(this.screenShareIndicatorFrameUtil, []);
       this.removeWindow(opts.winKey);
       this.screenPickerWindow = null;
     });
