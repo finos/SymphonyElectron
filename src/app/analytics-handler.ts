@@ -14,9 +14,12 @@ export enum MenuActionTypes {
 }
 
 export enum ScreenSnippetActionTypes {
-    CAPTURE_TAKEN = 'capture_taken',
-    ANNOTATE_ADDED = 'annotate_added',
-    CAPTURE_SENT = 'capture_sent',
+    SCREENSHOT_TAKEN = 'screenshot_taken',
+    ANNOTATE_ADDED_PEN = 'annotate_added_pen',
+    ANNOTATE_ADDED_HIGHLIGHT = 'annotate_added_highlight',
+    ANNOTATE_DONE = 'annotate_done',
+    ANNOTATE_CLEARED = 'annotate_cleared',
+    ANNOTATE_ERASED = 'annotate_erased',
 }
 
 export enum AnalyticsActions {
@@ -26,7 +29,7 @@ export enum AnalyticsActions {
 
 export enum AnalyticsElements {
     MENU = 'Menu',
-    SCREEN_SNIPPET = 'ScreenSnippet',
+    SCREEN_CAPTURE_ANNOTATE = 'screen_capture_annotate',
 }
 
 const MAX_EVENT_QUEUE_LENGTH = 50;
