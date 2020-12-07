@@ -113,6 +113,8 @@ export class WindowHandler {
     private basicAuthWindow: Electron.BrowserWindow | null = null;
     private notificationSettingsWindow: Electron.BrowserWindow | null = null;
 
+    private finishedLoading: boolean;
+
     constructor(opts?: Electron.BrowserViewConstructorOptions) {
         // Use these variables only on initial setup
         this.config = config.getConfigFields(['isCustomTitleBar', 'mainWinPos', 'minimizeOnClose', 'notificationSettings', 'alwaysOnTop', 'locale', 'customFlags', 'clientSwitch', 'enableRendererLogs']);
@@ -142,6 +144,8 @@ export class WindowHandler {
         this.isAutoReload = false;
         this.isOnline = true;
 
+        this.finishedLoading = false;
+
         this.screenShareIndicatorFrameUtil = '';
         if (isWindowsOS) {
             this.screenShareIndicatorFrameUtil = isDevEnv
@@ -166,7 +170,7 @@ export class WindowHandler {
         } catch (e) {
             throw new Error('failed to init crash report');
         }
-
+        this.listenForLoad();
     }
 
     /**
@@ -332,11 +336,7 @@ export class WindowHandler {
             this.url = this.mainWindow.webContents.getURL();
             logger.info('window-handler: did-finish-load, url: ' + this.url);
             const manaPath = 'client-bff';
-            if (this.url.includes(manaPath)) {
-                this.isMana = true;
-            } else {
-                this.isMana = false;
-            }
+            this.isMana = this.url.includes(manaPath);
             logger.info('window-handler: isMana: ' + this.isMana);
 
             // Injects custom title bar and snack bar css into the webContents
@@ -499,6 +499,8 @@ export class WindowHandler {
             if (!this.url || !this.mainWindow) {
                 return;
             }
+            logger.info(`Main window finished loading.`);
+            this.finishedLoading = true;
             if (this.url.indexOf('welcome')) {
                 this.mainWindow.webContents.send('page-load-welcome', {
                     locale: i18n.getLocale(),
@@ -1211,6 +1213,15 @@ export class WindowHandler {
                 globalShortcut.unregister(isMac ? 'Cmd+Alt+3' : 'Ctrl+Shift+3');
             }
         });
+    }
+
+    private listenForLoad() {
+        setTimeout(() => {
+            if (!this.finishedLoading) {
+                app.relaunch();
+                app.exit();
+            }
+        }, 25 * 1000);
     }
 
     /**

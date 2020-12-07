@@ -79,10 +79,6 @@ const startApplication = async () => {
             await autoLaunchInstance.handleAutoLaunch();
         }
     }
-    if (config.getBootCount() === 1) {
-        app.relaunch();
-        app.exit();
-    }
     await app.whenReady();
     if (oneStart) {
         return;
