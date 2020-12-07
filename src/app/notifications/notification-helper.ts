@@ -25,9 +25,9 @@ class NotificationHelper {
             const electronToast = new ElectronNotification(options, this.notificationCallback);
             this.electronNotification.set(options.id, electronToast);
             electronToast.show();
-        } else {
-            notification.showNotification(options, this.notificationCallback);
+            return;
         }
+        notification.showNotification(options, this.notificationCallback);
     }
 
     /**
@@ -41,14 +41,13 @@ class NotificationHelper {
             if (electronNotification) {
                 electronNotification.close();
             }
-        } else {
-            await notification.hideNotification(id);
+            return;
         }
+        await notification.hideNotification(id);
     }
 
     /**
-     * Method that sends the notification actions event
-     * on to web client
+     * Sends the notification actions event to the web client
      *
      * @param event {NotificationActions}
      * @param data {ElectronNotificationData}
