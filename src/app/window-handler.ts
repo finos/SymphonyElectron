@@ -84,6 +84,9 @@ export interface ICustomBrowserWindow extends Electron.BrowserWindow {
 let DEFAULT_WIDTH: number = 900;
 let DEFAULT_HEIGHT: number = 900;
 
+// Timeout on restarting SDA in case it's stuck
+const LISTEN_TIMEOUT: number = 25 * 1000;
+
 export class WindowHandler {
   /**
    * Verifies if the url is valid and
@@ -133,6 +136,8 @@ export class WindowHandler {
   private basicAuthWindow: Electron.BrowserWindow | null = null;
   private notificationSettingsWindow: Electron.BrowserWindow | null = null;
   private snippingToolWindow: Electron.BrowserWindow | null = null;
+
+  private finishedLoading: boolean;
 
   constructor(opts?: Electron.BrowserViewConstructorOptions) {
     // Use these variables only on initial setup
@@ -194,6 +199,8 @@ export class WindowHandler {
     this.isAutoReload = false;
     this.isOnline = true;
 
+    this.finishedLoading = false;
+
     this.screenShareIndicatorFrameUtil = '';
     if (isWindowsOS) {
       this.screenShareIndicatorFrameUtil = isDevEnv
@@ -238,6 +245,8 @@ export class WindowHandler {
     } catch (e) {
       throw new Error('failed to init crash report');
     }
+
+    this.listenForLoad();
   }
 
   /**
@@ -440,7 +449,14 @@ export class WindowHandler {
         );
         return;
       }
+      this.finishedLoading = true;
       this.url = this.mainWindow.webContents.getURL();
+      if (this.url.indexOf('about:blank') === 0) {
+        logger.info(`Looks like about:blank got loaded which may lead to blank screen`);
+        logger.info(`Reloading the app to check if it resolves the issue`);
+        await this.mainWindow.loadURL(this.userConfig.url || this.globalConfig.url);
+        return;
+      }
       logger.info('window-handler: did-finish-load, url: ' + this.url);
 
       // Injects custom title bar and snack bar css into the webContents
@@ -663,6 +679,7 @@ export class WindowHandler {
       if (!this.url || !this.mainWindow) {
         return;
       }
+      logger.info(`finished loading welcome screen.`);
       if (this.url.indexOf('welcome')) {
         this.mainWindow.webContents.send('page-load-welcome', {
           locale: i18n.getLocale(),
@@ -970,8 +987,8 @@ export class WindowHandler {
     const parentWindow = BrowserWindow.getFocusedWindow();
     // Prevents creating multiple instances
     if (didVerifyAndRestoreWindow(this.snippingToolWindow) || !parentWindow) {
-      return;
       logger.error('window-handler: Could not open snipping tool window');
+      return;
     }
 
     const OS_PADDING = 25;
@@ -1580,6 +1597,23 @@ export class WindowHandler {
         resolve();
       });
     });
+  }
+
+  /**
+   * Listens for app load timeouts and reloads if required
+   */
+  private listenForLoad() {
+    setTimeout(async () => {
+      if (!this.finishedLoading) {
+        logger.info(`window-handler: Pod load failed on launch`);
+        if (this.mainWindow && windowExists(this.mainWindow)) {
+          logger.info(`window-handler: Trying to reload.`);
+          await this.mainWindow.loadURL(this.url || this.userConfig.url || this.globalConfig.url);
+          return;
+        }
+        logger.error(`window-handler: Cannot reload as main window does not exist`);
+      }
+    }, LISTEN_TIMEOUT);
   }
 
   /**
