@@ -335,7 +335,7 @@ export class WindowHandler {
             }
             this.finishedLoading = true;
             this.url = this.mainWindow.webContents.getURL();
-            if (this.url.indexOf('about:blank') !== -1) {
+            if (this.url.indexOf('about:blank') === 0) {
                 logger.info(`Looks like about:blank got loaded which may lead to blank screen`);
                 logger.info(`Restarting app to check if it resolves the issue`);
                 app.relaunch();
