@@ -340,9 +340,9 @@ export class WindowHandler {
             this.url = this.mainWindow.webContents.getURL();
             if (this.url.indexOf('about:blank') === 0) {
                 logger.info(`Looks like about:blank got loaded which may lead to blank screen`);
-                logger.info(`Restarting app to check if it resolves the issue`);
-                app.relaunch();
-                app.exit();
+                logger.info(`Reloading app to check if it resolves the issue`);
+                await this.mainWindow.loadURL(this.userConfig.url || this.globalConfig.url);
+                return;
             }
             logger.info('window-handler: did-finish-load, url: ' + this.url);
             const manaPath = 'client-bff';
