@@ -333,7 +333,14 @@ export class WindowHandler {
                 logger.info(`window-handler: main window web contents destroyed already! exiting`);
                 return;
             }
+            this.finishedLoading = true;
             this.url = this.mainWindow.webContents.getURL();
+            if (this.url.indexOf('about:blank') !== -1) {
+                logger.info(`Looks like about:blank got loaded which may lead to blank screen`);
+                logger.info(`Restarting app to check if it resolves the issue`);
+                app.relaunch();
+                app.exit();
+            }
             logger.info('window-handler: did-finish-load, url: ' + this.url);
             const manaPath = 'client-bff';
             this.isMana = this.url.includes(manaPath);
@@ -499,8 +506,7 @@ export class WindowHandler {
             if (!this.url || !this.mainWindow) {
                 return;
             }
-            logger.info(`Main window finished loading.`);
-            this.finishedLoading = true;
+            logger.info(`finished loading welcome screen.`);
             if (this.url.indexOf('welcome')) {
                 this.mainWindow.webContents.send('page-load-welcome', {
                     locale: i18n.getLocale(),
