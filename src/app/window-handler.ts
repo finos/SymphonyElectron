@@ -84,6 +84,9 @@ export interface ICustomBrowserWindow extends Electron.BrowserWindow {
 let DEFAULT_WIDTH: number = 900;
 let DEFAULT_HEIGHT: number = 900;
 
+// Timeout on restarting SDA in case it's stuck
+const LISTEN_TIMEOUT: number = 25 * 1000;
+
 export class WindowHandler {
   /**
    * Verifies if the url is valid and
@@ -133,6 +136,8 @@ export class WindowHandler {
   private basicAuthWindow: Electron.BrowserWindow | null = null;
   private notificationSettingsWindow: Electron.BrowserWindow | null = null;
   private snippingToolWindow: Electron.BrowserWindow | null = null;
+
+  private finishedLoading: boolean;
 
   constructor(opts?: Electron.BrowserViewConstructorOptions) {
     // Use these variables only on initial setup
@@ -194,6 +199,8 @@ export class WindowHandler {
     this.isAutoReload = false;
     this.isOnline = true;
 
+    this.finishedLoading = false;
+
     this.screenShareIndicatorFrameUtil = '';
     if (isWindowsOS) {
       this.screenShareIndicatorFrameUtil = isDevEnv
@@ -238,6 +245,8 @@ export class WindowHandler {
     } catch (e) {
       throw new Error('failed to init crash report');
     }
+
+    this.listenForLoad();
   }
 
   /**
@@ -440,7 +449,14 @@ export class WindowHandler {
         );
         return;
       }
+      this.finishedLoading = true;
       this.url = this.mainWindow.webContents.getURL();
+      if (this.url.indexOf('about:blank') === 0) {
+        logger.info(`Looks like about:blank got loaded which may lead to blank screen`);
+        logger.info(`Reloading the app to check if it resolves the issue`);
+        await this.mainWindow.loadURL(this.userConfig.url || this.globalConfig.url);
+        return;
+      }
       logger.info('window-handler: did-finish-load, url: ' + this.url);
 
       // Injects custom title bar and snack bar css into the webContents
@@ -663,6 +679,7 @@ export class WindowHandler {
       if (!this.url || !this.mainWindow) {
         return;
       }
+      logger.info(`finished loading welcome screen.`);
       if (this.url.indexOf('welcome')) {
         this.mainWindow.webContents.send('page-load-welcome', {
           locale: i18n.getLocale(),
@@ -962,53 +979,62 @@ export class WindowHandler {
    */
   public createSnippingToolWindow(
     snipImage: string,
-    dimensions?: {
-      height: number | undefined;
-      width: number | undefined;
+    snipDimensions: {
+      height: number;
+      width: number;
     },
   ): void {
+    const parentWindow = BrowserWindow.getFocusedWindow();
     // Prevents creating multiple instances
-    if (didVerifyAndRestoreWindow(this.snippingToolWindow)) {
+    if (didVerifyAndRestoreWindow(this.snippingToolWindow) || !parentWindow) {
+      logger.error('window-handler: Could not open snipping tool window');
       return;
     }
 
-    const parentWindow = BrowserWindow.getFocusedWindow();
-    const MIN_HEIGHT = 312;
-    const MIN_WIDTH = 320;
-    const CONTAINER_HEIGHT = 175;
     const OS_PADDING = 25;
-    const snippetImageHeight = dimensions?.height || 0;
-    const snippetImageWidth = dimensions?.width || 0;
-    let annotateAreaHeight = snippetImageHeight;
-    let annotateAreaWidth = snippetImageWidth;
+    const MIN_TOOL_HEIGHT = 312;
+    const MIN_TOOL_WIDTH = 320;
+    const BUTTON_BAR_TOP_HEIGHT = 48;
+    const BUTTON_BAR_BOTTOM_HEIGHT = 72;
+    const BUTTON_BARS_HEIGHT = BUTTON_BAR_TOP_HEIGHT + BUTTON_BAR_BOTTOM_HEIGHT;
 
-    if (parentWindow) {
-      const { bounds: { height: sHeight, width: sWidth } } = electron.screen.getDisplayMatching(parentWindow.getBounds());
+    const display = electron.screen.getDisplayMatching(parentWindow.getBounds());
+    const workAreaSize = display.workAreaSize;
+    const maxToolHeight = Math.floor(calculatePercentage(workAreaSize.height, 90));
+    const maxToolWidth = Math.floor(calculatePercentage(workAreaSize.width, 90));
+    const availableAnnotateAreaHeight = maxToolHeight - BUTTON_BARS_HEIGHT;
+    const availableAnnotateAreaWidth = maxToolWidth;
 
-      // This calculation is to make sure the
-      // snippet window does not cover the entire screen
-      const maxScreenHeight: number = calculatePercentage(sHeight, 90);
-      if (annotateAreaHeight > maxScreenHeight) {
-        annotateAreaHeight = maxScreenHeight;
-      }
-      const maxScreenWidth: number = calculatePercentage(sWidth, 90);
-      if (annotateAreaWidth > maxScreenWidth) {
-        annotateAreaWidth = maxScreenWidth;
-      }
+    const annotateAreaHeight = snipDimensions.height > availableAnnotateAreaHeight ?
+      availableAnnotateAreaHeight :
+      snipDimensions.height;
+    const annotateAreaWidth = snipDimensions.width > availableAnnotateAreaWidth ?
+      availableAnnotateAreaWidth :
+      snipDimensions.width;
 
-      // decrease image height when there is no space for the container window
-      if ((sHeight - annotateAreaHeight) < CONTAINER_HEIGHT) {
-        annotateAreaHeight -= CONTAINER_HEIGHT;
-      }
+    let toolHeight: number;
+    let toolWidth: number;
+
+    if (snipDimensions.height + BUTTON_BARS_HEIGHT >= maxToolHeight) {
+      toolHeight = maxToolHeight + OS_PADDING;
+    } else if (snipDimensions.height + BUTTON_BARS_HEIGHT <= MIN_TOOL_HEIGHT) {
+      toolHeight = MIN_TOOL_HEIGHT + OS_PADDING;
+    } else {
+      toolHeight = snipDimensions.height + BUTTON_BARS_HEIGHT + OS_PADDING;
     }
-    const windowHeight = annotateAreaHeight + CONTAINER_HEIGHT - OS_PADDING;
+
+    if (snipDimensions.width >= maxToolWidth) {
+      toolWidth = maxToolWidth;
+    } else if (snipDimensions.width <= MIN_TOOL_WIDTH) {
+      toolWidth = MIN_TOOL_WIDTH;
+    } else {
+      toolWidth = snipDimensions.width;
+    }
 
     const opts: ICustomBrowserWindowConstructorOpts = this.getWindowOpts(
       {
-        width: annotateAreaWidth < MIN_WIDTH ? MIN_WIDTH : annotateAreaWidth,
-        height: windowHeight < MIN_HEIGHT ? MIN_HEIGHT : windowHeight,
-        minHeight: MIN_HEIGHT,
-        minWidth: MIN_WIDTH,
+        width: toolWidth,
+        height: toolHeight,
         modal: false,
         alwaysOnTop: false,
         resizable: false,
@@ -1032,15 +1058,19 @@ export class WindowHandler {
     this.moveWindow(this.snippingToolWindow);
     this.snippingToolWindow.setVisibleOnAllWorkspaces(true);
 
+    this.snippingToolWindow.webContents.openDevTools();
+
     this.snippingToolWindow.webContents.once('did-finish-load', async () => {
       const snippingToolInfo = {
         snipImage,
         annotateAreaHeight,
         annotateAreaWidth,
-        snippetImageHeight,
-        snippetImageWidth,
+        snippetImageHeight: snipDimensions.height,
+        snippetImageWidth: snipDimensions.width,
       };
       if (this.snippingToolWindow && windowExists(this.snippingToolWindow)) {
+        logger.info('window-handler: Opening snipping tool window with size: ', { toolHeight, toolWidth });
+        logger.info('window-handler: Opening snipping tool content with metadata: ', snippingToolInfo);
         this.snippingToolWindow.webContents.send(
           'snipping-tool-data',
           snippingToolInfo,
@@ -1567,6 +1597,23 @@ export class WindowHandler {
         resolve();
       });
     });
+  }
+
+  /**
+   * Listens for app load timeouts and reloads if required
+   */
+  private listenForLoad() {
+    setTimeout(async () => {
+      if (!this.finishedLoading) {
+        logger.info(`window-handler: Pod load failed on launch`);
+        if (this.mainWindow && windowExists(this.mainWindow)) {
+          logger.info(`window-handler: Trying to reload.`);
+          await this.mainWindow.loadURL(this.url || this.userConfig.url || this.globalConfig.url);
+          return;
+        }
+        logger.error(`window-handler: Cannot reload as main window does not exist`);
+      }
+    }, LISTEN_TIMEOUT);
   }
 
   /**

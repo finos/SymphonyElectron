@@ -106,12 +106,17 @@ class ScreenSnippet {
     try {
       await this.execCmd(this.captureUtil, this.captureUtilArgs);
       if (windowHandler.isMana) {
-        windowHandler.closeSnippingToolWindow();
         const dimensions = this.getImageSize();
-        windowHandler.createSnippingToolWindow(this.outputFileName, dimensions);
+        const imageSize = { width: dimensions?.width || -1, height: dimensions?.height || -1 };
+        if (imageSize.width === -1 || imageSize.width === -1) {
+          logger.error('screen-snippet-handler: Could not get image size');
+          return;
+        }
+        windowHandler.closeSnippingToolWindow();
+        windowHandler.createSnippingToolWindow(this.outputFileName, imageSize);
         this.uploadSnippet(webContents);
-        return;
-      }
+      return;
+    }
       const {
         message,
         data,
