@@ -1215,6 +1215,10 @@ export class WindowHandler {
         });
     }
 
+    /**
+     * Listens for did-finish-load events
+     * @private
+     */
     private listenForLoad() {
         setTimeout(() => {
             if (!this.finishedLoading) {
