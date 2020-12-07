@@ -63,6 +63,9 @@ export interface ICustomBrowserWindow extends Electron.BrowserWindow {
 let DEFAULT_WIDTH: number = 900;
 let DEFAULT_HEIGHT: number = 900;
 
+// Timeout on restarting SDA in case it's stuck
+const LISTEN_TIMEOUT: number = 25 * 1000;
+
 export class WindowHandler {
 
     /**
@@ -1231,7 +1234,7 @@ export class WindowHandler {
                 app.relaunch();
                 app.exit();
             }
-        }, 25 * 1000);
+        }, LISTEN_TIMEOUT);
     }
 
     /**
