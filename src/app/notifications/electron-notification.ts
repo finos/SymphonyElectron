@@ -19,10 +19,21 @@ export class ElectronNotification extends Notification {
         this.once('reply', this.onReply);
     }
 
+    /**
+     * Notification on click handler
+     * @param _event
+     * @private
+     */
     private onClick(_event: Event) {
         this.callback(NotificationActions.notificationClicked, this.options);
     }
 
+    /**
+     * Notification reply handler
+     * @param _event
+     * @param reply
+     * @private
+     */
     private onReply(_event: Event, reply: string) {
         this.callback(NotificationActions.notificationReply, this.options, reply);
     }

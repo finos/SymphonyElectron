@@ -64,6 +64,11 @@ class NotificationHelper {
         }
     }
 
+    /**
+     * Return the correct icon based on platform
+     * @param options
+     * @private
+     */
     private getIcon(options: INotificationData): string | undefined {
         return isWindowsOS ? options.icon : undefined;
     }
