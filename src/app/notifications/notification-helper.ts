@@ -51,16 +51,16 @@ class NotificationHelper {
      *
      * @param event {NotificationActions}
      * @param data {ElectronNotificationData}
-     * @param extraData {ElectronNotificationData}
+     * @param notificationData {ElectronNotificationData}
      */
     public notificationCallback(
         event: NotificationActions,
         data: ElectronNotificationData,
-        extraData: ElectronNotificationData,
+        notificationData: ElectronNotificationData,
     ) {
         const mainWindow = windowHandler.getMainWindow();
         if (mainWindow && windowExists(mainWindow) && mainWindow.webContents) {
-            mainWindow.webContents.send('notification-actions', { event, data, extraData });
+            mainWindow.webContents.send('notification-actions', { event, data, notificationData });
         }
     }
 

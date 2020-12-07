@@ -6,7 +6,7 @@ export class ElectronNotification extends Notification {
     private callback: (
         actionType: NotificationActions,
         data: INotificationData,
-        extraData?: ElectronNotificationData,
+        notificationData?: ElectronNotificationData,
     ) => void;
     private options: INotificationData;
 

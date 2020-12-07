@@ -814,7 +814,7 @@ local.ipcRenderer.on('restart-floater', (_event, { windowName, bounds }: IRestar
 local.ipcRenderer.on('notification-actions', (_event, args) => {
     const callback = notificationActionCallbacks.get(args.data.id);
     const data = args.data;
-    data.extraData = args.extraData;
+    data.notificationData = args.notificationData;
     if (args && callback) {
         callback(args.event, data);
     }
