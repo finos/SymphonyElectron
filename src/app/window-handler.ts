@@ -1058,8 +1058,6 @@ export class WindowHandler {
     this.moveWindow(this.snippingToolWindow);
     this.snippingToolWindow.setVisibleOnAllWorkspaces(true);
 
-    this.snippingToolWindow.webContents.openDevTools();
-
     this.snippingToolWindow.webContents.once('did-finish-load', async () => {
       const snippingToolInfo = {
         snipImage,
