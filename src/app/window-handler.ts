@@ -1225,14 +1225,18 @@ export class WindowHandler {
     }
 
     /**
-     * Listens for did-finish-load events
-     * @private
+     * Listens for app load events and reloads if required
      */
     private listenForLoad() {
-        setTimeout(() => {
+        setTimeout(async () => {
             if (!this.finishedLoading) {
-                app.relaunch();
-                app.exit();
+                logger.info(`window-handler: Pod load failed on launch`);
+                if (this.mainWindow && windowExists(this.mainWindow)) {
+                    logger.info(`window-handler: Trying to reload.`);
+                    await this.mainWindow.loadURL(this.url || this.userConfig.url || this.globalConfig.url);
+                    return;
+                }
+                logger.error(`window-handler: Cannot reload as main window does not exist`);
             }
         }, LISTEN_TIMEOUT);
     }
