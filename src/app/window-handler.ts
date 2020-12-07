@@ -962,53 +962,62 @@ export class WindowHandler {
    */
   public createSnippingToolWindow(
     snipImage: string,
-    dimensions?: {
-      height: number | undefined;
-      width: number | undefined;
+    snipDimensions: {
+      height: number;
+      width: number;
     },
   ): void {
-    // Prevents creating multiple instances
-    if (didVerifyAndRestoreWindow(this.snippingToolWindow)) {
-      return;
-    }
-
     const parentWindow = BrowserWindow.getFocusedWindow();
-    const MIN_HEIGHT = 312;
-    const MIN_WIDTH = 320;
-    const CONTAINER_HEIGHT = 175;
-    const OS_PADDING = 25;
-    const snippetImageHeight = dimensions?.height || 0;
-    const snippetImageWidth = dimensions?.width || 0;
-    let annotateAreaHeight = snippetImageHeight;
-    let annotateAreaWidth = snippetImageWidth;
-
-    if (parentWindow) {
-      const { bounds: { height: sHeight, width: sWidth } } = electron.screen.getDisplayMatching(parentWindow.getBounds());
-
-      // This calculation is to make sure the
-      // snippet window does not cover the entire screen
-      const maxScreenHeight: number = calculatePercentage(sHeight, 90);
-      if (annotateAreaHeight > maxScreenHeight) {
-        annotateAreaHeight = maxScreenHeight;
-      }
-      const maxScreenWidth: number = calculatePercentage(sWidth, 90);
-      if (annotateAreaWidth > maxScreenWidth) {
-        annotateAreaWidth = maxScreenWidth;
-      }
-
-      // decrease image height when there is no space for the container window
-      if ((sHeight - annotateAreaHeight) < CONTAINER_HEIGHT) {
-        annotateAreaHeight -= CONTAINER_HEIGHT;
-      }
+    // Prevents creating multiple instances
+    if (didVerifyAndRestoreWindow(this.snippingToolWindow) || !parentWindow) {
+      return;
+      logger.error('window-handler: Could not open snipping tool window');
     }
-    const windowHeight = annotateAreaHeight + CONTAINER_HEIGHT - OS_PADDING;
+
+    const OS_PADDING = 25;
+    const MIN_TOOL_HEIGHT = 312;
+    const MIN_TOOL_WIDTH = 320;
+    const BUTTON_BAR_TOP_HEIGHT = 48;
+    const BUTTON_BAR_BOTTOM_HEIGHT = 72;
+    const BUTTON_BARS_HEIGHT = BUTTON_BAR_TOP_HEIGHT + BUTTON_BAR_BOTTOM_HEIGHT;
+
+    const display = electron.screen.getDisplayMatching(parentWindow.getBounds());
+    const workAreaSize = display.workAreaSize;
+    const maxToolHeight = Math.floor(calculatePercentage(workAreaSize.height, 90));
+    const maxToolWidth = Math.floor(calculatePercentage(workAreaSize.width, 90));
+    const availableAnnotateAreaHeight = maxToolHeight - BUTTON_BARS_HEIGHT;
+    const availableAnnotateAreaWidth = maxToolWidth;
+
+    const annotateAreaHeight = snipDimensions.height > availableAnnotateAreaHeight ?
+      availableAnnotateAreaHeight :
+      snipDimensions.height;
+    const annotateAreaWidth = snipDimensions.width > availableAnnotateAreaWidth ?
+      availableAnnotateAreaWidth :
+      snipDimensions.width;
+
+    let toolHeight: number;
+    let toolWidth: number;
+
+    if (snipDimensions.height + BUTTON_BARS_HEIGHT >= maxToolHeight) {
+      toolHeight = maxToolHeight + OS_PADDING;
+    } else if (snipDimensions.height + BUTTON_BARS_HEIGHT <= MIN_TOOL_HEIGHT) {
+      toolHeight = MIN_TOOL_HEIGHT + OS_PADDING;
+    } else {
+      toolHeight = snipDimensions.height + BUTTON_BARS_HEIGHT + OS_PADDING;
+    }
+
+    if (snipDimensions.width >= maxToolWidth) {
+      toolWidth = maxToolWidth;
+    } else if (snipDimensions.width <= MIN_TOOL_WIDTH) {
+      toolWidth = MIN_TOOL_WIDTH;
+    } else {
+      toolWidth = snipDimensions.width;
+    }
 
     const opts: ICustomBrowserWindowConstructorOpts = this.getWindowOpts(
       {
-        width: annotateAreaWidth < MIN_WIDTH ? MIN_WIDTH : annotateAreaWidth,
-        height: windowHeight < MIN_HEIGHT ? MIN_HEIGHT : windowHeight,
-        minHeight: MIN_HEIGHT,
-        minWidth: MIN_WIDTH,
+        width: toolWidth,
+        height: toolHeight,
         modal: false,
         alwaysOnTop: false,
         resizable: false,
@@ -1032,15 +1041,19 @@ export class WindowHandler {
     this.moveWindow(this.snippingToolWindow);
     this.snippingToolWindow.setVisibleOnAllWorkspaces(true);
 
+    this.snippingToolWindow.webContents.openDevTools();
+
     this.snippingToolWindow.webContents.once('did-finish-load', async () => {
       const snippingToolInfo = {
         snipImage,
         annotateAreaHeight,
         annotateAreaWidth,
-        snippetImageHeight,
-        snippetImageWidth,
+        snippetImageHeight: snipDimensions.height,
+        snippetImageWidth: snipDimensions.width,
       };
       if (this.snippingToolWindow && windowExists(this.snippingToolWindow)) {
+        logger.info('window-handler: Opening snipping tool window with size: ', { toolHeight, toolWidth });
+        logger.info('window-handler: Opening snipping tool content with metadata: ', snippingToolInfo);
         this.snippingToolWindow.webContents.send(
           'snipping-tool-data',
           snippingToolInfo,
