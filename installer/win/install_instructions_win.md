@@ -31,6 +31,27 @@ or
     msiexec /i Symphony.msi /q ALLUSERS=""
 
 
+
+-------------------------------------------------------------------
+### APPDIR
+
+Expected values:
+
+* Full file path for target location to install Symphony to
+
+The default value differs depending on ALLUSERS setting.
+
+* %LOCALAPPDATA%\Programs\Symphony\Symphony
+  If installing *Only for me* (ALLUSERS="")
+* %PROGRAMFILES%\Symphony\Symphony
+  If installing *For all users* (ALLUSERS="1")
+
+#### Example
+
+    msiexec /i Symphony.msi /q APPDIR="C:\Program Files\Symphony"
+
+
+
 -------------------------------------------------------------------
 ### ALWAYS_ON_TOP
 
