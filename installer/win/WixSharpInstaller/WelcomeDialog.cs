@@ -49,17 +49,30 @@ namespace Symphony
             // To enable Wix to use the "MSIINSTALLPERUSER" property being set below, ALLUSERS must be set to 2
             Runtime.Session["ALLUSERS"] = "2";
 
-
+            var installDir = "";
             if (radioButtonCurrentUser.Checked)
             {
                 // Install for current user
                 Runtime.Session["MSIINSTALLPERUSER"] = "1"; // per-user
                 Runtime.Session["INSTALLDIR"] = System.Environment.ExpandEnvironmentVariables(@"%LOCALAPPDATA%\Programs\Symphony\" + Runtime.ProductName);
-            } else if (radioButtonAllUsers.Checked)
+            }
+            else if (radioButtonAllUsers.Checked)
             {
                 // Install for all users
                 Runtime.Session["MSIINSTALLPERUSER"] = ""; // per-machine
                 Runtime.Session["INSTALLDIR"] = Runtime.Session["PROGRAMSFOLDER"]  + @"\Symphony\" + Runtime.ProductName;
+            }
+
+            // Set INSTALLDIR
+            if( Runtime.Session["APPDIR"] != "" )
+            {
+                // If APPDIR param was specified, just use that as is
+                Runtime.Session["INSTALLDIR"] = Runtime.Session["APPDIR"];
+            }
+            else
+            {
+                // Apply the install dir as determined by radio buttons
+                Runtime.Session["INSTALLDIR"] = installDir;
             }
 
             // Detect if Symphony is running
