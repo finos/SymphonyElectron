@@ -119,11 +119,11 @@ class Script
             // Add registry entry used by protocol handler to launch symphony when opening symphony:// URIs
             new RegValue(WixSharp.RegistryHive.ClassesRoot, productName + @"\shell\open\command", "", "\"[INSTALLDIR]Symphony.exe\" \"%1\""),
 
-            // When installing or uninstalling, we want Symphony to be closed down, but the standard way of sending a WM_CLOSE message 
-            // will not work for us, as we have a "minimize on close" option, which stops the app from terminating on WM_CLOSE. So we 
-            // instruct the installer to not send a Close message, but instead send the EndSession message, and we have a custom event 
+            // When installing or uninstalling, we want Symphony to be closed down, but the standard way of sending a WM_CLOSE message
+            // will not work for us, as we have a "minimize on close" option, which stops the app from terminating on WM_CLOSE. So we
+            // instruct the installer to not send a Close message, but instead send the EndSession message, and we have a custom event
             // handler in the SDA code which listens for this message, and ensures app termination when it is received.
-            new CloseApplication("Symphony.exe", false) { EndSessionMessage = true }        
+            new CloseApplication("Symphony.exe", false) { EndSessionMessage = true }
             );
 
         // The build script which calls the wix# builder, will be run from a command environment which has %SYMVER% set.
@@ -138,9 +138,9 @@ class Script
         //      https://stackoverflow.com/a/26344742
         project.GUID = new System.Guid("{4042AD1C-90E1-4032-B6B9-2BF6A4214096}");
         project.ProductId =  System.Guid.NewGuid();
-        project.UpgradeCode = new System.Guid("{36402281-8141-4797-8A90-07CFA75EFA55}");    
-       
-        // Allow any versions to be upgraded/downgraded freely        
+        project.UpgradeCode = new System.Guid("{36402281-8141-4797-8A90-07CFA75EFA55}");
+
+        // Allow any versions to be upgraded/downgraded freely
         project.MajorUpgradeStrategy = MajorUpgradeStrategy.Default;
         project.MajorUpgradeStrategy.RemoveExistingProductAfter = Step.InstallInitialize;
         project.MajorUpgradeStrategy.UpgradeVersions.Minimum = "0.0.0";
@@ -156,6 +156,7 @@ class Script
         // these when running the installer, but if not specified, the defaults will be used.
         project.Properties = new[]
         {
+            new PublicProperty("APPDIR", ""),
             new PublicProperty("ALLUSERS", "1"),
             new PublicProperty("ALWAYS_ON_TOP", "DISABLED" ),
             new PublicProperty("AUTO_LAUNCH_PATH", ""),
@@ -239,7 +240,7 @@ class Script
         // Generate an MSI from all settings done above
         Compiler.BuildMsi(project);
     }
-    
+
 
     static void project_Load(SetupEventArgs e)
     {
@@ -250,19 +251,25 @@ class Script
                 // "ALLUSERS" will be set to "2" if installing through UI, so the "MSIINSTALLPERUSER" property can be used so the user can choose install scope
                 if (e.Session["ALLUSERS"] != "2" )
                 {
-                    // If "ALLUSERS" is "1" or "", this is a quiet command line installation, and we need to set the right paths here, since the UI haven't
-                    if (e.Session["ALLUSERS"] == "")
+                    // If "ALLUSERS" is "1" or "", this is a quiet command line installation, and we need to set the right paths here, since the UI haven't.
+
+                    if (e.Session["APPDIR"] != "")
+                    {
+                        // If "APPDIR" param was specified, just use that as is
+                        e.Session["INSTALLDIR"] = e.Session["APPDIR"];
+                    }
+                    else if (e.Session["ALLUSERS"] == "")
                     {
                         // Install for current user
                         e.Session["INSTALLDIR"] = System.Environment.ExpandEnvironmentVariables(@"%LOCALAPPDATA%\Programs\Symphony\" + e.ProductName);
-                    } 
-                    else 
+                    }
+                    else
                     {
                         // Install for all users
                         e.Session["INSTALLDIR"] = e.Session["PROGRAMSFOLDER"]  + @"\Symphony\" + e.ProductName;
                     }
-                }                              
-                
+                }
+
                 // Try to close all running symphony instances before installing. Since we have started using the EndSession message to tell the app to exit,
                 // we don't really need to force terminate anymore. But the older versions of SDA does not listen for the EndSession event, so we still need
                 // this code to ensure older versions gets shut down properly.
