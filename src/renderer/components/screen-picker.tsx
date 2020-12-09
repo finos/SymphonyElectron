@@ -278,6 +278,10 @@ export default class ScreenPicker extends React.Component<{}, IState> {
      */
     private select(selectedSource: ICustomDesktopCapturerSource): void {
         this.setState({ selectedSource });
+
+        if (selectedSource) {
+            ipcRenderer.send('screen-source-select', selectedSource);
+        }
     }
 
     /**
