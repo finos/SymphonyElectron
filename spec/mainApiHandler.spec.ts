@@ -107,6 +107,15 @@ jest.mock('../src/app/download-handler', () => {
     };
 });
 
+jest.mock('../src/app/notifications/notification-helper', () => {
+    return {
+        notificationHelper: {
+            showNotification: jest.fn(),
+            closeNotification: jest.fn(),
+        },
+    };
+});
+
 jest.mock('../src/common/i18n');
 
 describe('main api handler', () => {
