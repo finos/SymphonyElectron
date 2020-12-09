@@ -94,7 +94,7 @@ if NOT EXIST %AIP%-SetupFiles/%AIP%.msi (
 )
 
 echo "copy msi result to target dir"
-copy "%AIP%-SetupFiles\%AIP%.msi" "%targetsDir%\%archiveName%.msi"
+copy "%AIP%-SetupFiles\%AIP%.msi" "%targetsDir%\Legacy-%archiveName%.msi"
 
 echo Building new installer with wix#
 call "BuildWixSharpInstaller.bat"
@@ -105,7 +105,7 @@ if NOT EXIST c:\electron-installer\signing.bat (
 )
 
 call c:\electron-installer\signing.bat
-copy "WixSharpInstaller\Symphony.msi" "%targetsDir%\Experimental-%archiveName%.msi"
+copy "WixSharpInstaller\Symphony.msi" "%targetsDir%\%archiveName%.msi"
 
 echo Setup for install instructions
 %SystemRoot%\System32\where.exe /q markdown-pdf
@@ -114,4 +114,4 @@ if ERRORLEVEL 1 (
 )
 echo Generating install instructions
 call %appdata%\npm\markdown-pdf install_instructions_win.md
-copy install_instructions_win.pdf "%targetsDir%\Install-Instructions-Experimental-%archiveName%.pdf"
+copy install_instructions_win.pdf "%targetsDir%\Install-Instructions-%archiveName%.pdf"
