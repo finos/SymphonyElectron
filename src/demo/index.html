@@ -53,6 +53,13 @@
         <hr>
         <p>Notifications:<p>
         <button id='notf'>show notification</button>
+        <div>
+        <p>
+            <button id='closeNotification'>close notification</button>
+            <input type='number' id='notificationTag' value='Notification Tag to close'/>
+        </p>
+        </div>
+        <p id='reply'>Reply content will display here</p>
         <p>
             <label for='title'>title:</label>
             <input type='text' id='title' value='Notification Demo'/>
@@ -76,6 +83,10 @@
         <p>
             <label for='isExternal'>external:</label>
             <input type='checkbox' id='isExternal'/>
+        </p>
+        <p>
+            <label for='isNativeNotification'>Native Electron Notification:</label>
+            <input type='checkbox' id='isNativeNotification'/>
         </p>
         <p>Change theme:<p>
             <select id="select-theme" name="theme">
@@ -267,6 +278,7 @@
         });
 
         var notfEl = document.getElementById('notf');
+        var closeNotificationEl = document.getElementById('closeNotification');
         var num = 0;
 
         // note: notification will close when clicked
@@ -280,6 +292,7 @@
             var color = document.getElementById('color').value;
             var tag = document.getElementById('tag').value;
             var company = document.getElementById('company').value;
+            var isNativeNotification = document.getElementById('isNativeNotification').checked;
 
             num++;
 
@@ -298,6 +311,8 @@
                     hello: `Notification with id ${num} clicked')`
                 },
                 tag: tag,
+                isElectronNotification: isNativeNotification,
+                hasReply: true,
                 method: 'notification',
             };
 
@@ -323,13 +338,22 @@
                 };
                 ssfNotificationHandler.addEventListener('error', onerror);
             } else if (window.manaSSF) {
-                const callback = () => { console.log('notification clicked') };
+                const callback = (event, data) => {
+                    document.getElementById('reply').innerText = data.notificationData;
+                };
                 window.manaSSF.showNotification(notf, callback);
             } else {
                 window.postMessage({ method: 'notification', data: notf }, '*');
             }
 
         });
+
+        closeNotificationEl.addEventListener('click', () => {
+            if (window.manaSSF) {
+                const id = document.getElementById('notificationTag').value;
+                window.manaSSF.closeNotification(parseInt(id));
+            }
+        })
 
         /**
          * Badge Count

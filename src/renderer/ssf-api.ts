@@ -11,6 +11,7 @@ import {
     ICPUUsage,
     ILogMsg,
     IMediaPermission,
+    INotificationData,
     IRestartFloaterData,
     IScreenSharingIndicator,
     IScreenSharingIndicatorOptions,
@@ -18,6 +19,7 @@ import {
     IVersionInfo,
     KeyCodes,
     LogLevel,
+    NotificationActionCallback,
 } from '../common/api-interface';
 import { i18n, LocaleType } from '../common/i18n-preload';
 import { throttle } from '../common/utils';
@@ -50,6 +52,8 @@ export interface ILocalObject {
 const local: ILocalObject = {
     ipcRenderer,
 };
+
+const notificationActionCallbacks = new Map<number, NotificationActionCallback>();
 
 // Throttle func
 const throttledSetBadgeCount = throttle((count) => {
@@ -217,7 +221,7 @@ export class SSFApi {
             containerIdentifier: appName,
             containerVer: appVer,
             buildNumber,
-            apiVer: '2.0.0',
+            apiVer: '3.0.0',
             cpuArch,
             // Only need to bump if there are any breaking changes.
             searchApiVer: searchAPIVersion,
@@ -590,6 +594,39 @@ export class SSFApi {
         });
     }
 
+    /**
+     * Displays a notification from the main process
+     * @param notificationOpts {INotificationData}
+     * @param notificationCallback {NotificationActionCallback}
+     */
+    public showNotification(notificationOpts: INotificationData, notificationCallback: NotificationActionCallback): void {
+        // Store callbacks based on notification id so,
+        // we can use this to trigger on notification action
+        if (typeof notificationOpts.id === 'number') {
+            notificationActionCallbacks.set(notificationOpts.id, notificationCallback);
+        }
+        // ipc does not support sending Functions, Promises, Symbols, WeakMaps,
+        // or WeakSets will throw an exception
+        if (notificationOpts.callback) {
+            delete notificationOpts.callback;
+        }
+        ipcRenderer.send(apiName.symphonyApi, {
+            cmd: apiCmds.showNotification,
+            notificationOpts,
+        });
+    }
+
+    /**
+     * Closes a specific notification based on id
+     * @param notificationId {number} Id of a notification
+     */
+    public closeNotification(notificationId: number): void {
+        ipcRenderer.send(apiName.symphonyApi, {
+            cmd: apiCmds.closeNotification,
+            notificationId,
+        });
+    }
+
 }
 
 /**
@@ -767,6 +804,19 @@ local.ipcRenderer.on('analytics-callback', (_event, arg: object) => {
 local.ipcRenderer.on('restart-floater', (_event, { windowName, bounds }: IRestartFloaterData) => {
     if (typeof local.restartFloater === 'function' && windowName) {
         local.restartFloater({ windowName, bounds });
+    }
+});
+
+/**
+ * An event triggered by the main process on notification actions
+ * @param {INotificationData}
+ */
+local.ipcRenderer.on('notification-actions', (_event, args) => {
+    const callback = notificationActionCallbacks.get(args.data.id);
+    const data = args.data;
+    data.notificationData = args.notificationData;
+    if (args && callback) {
+        callback(args.event, data);
     }
 });
 
