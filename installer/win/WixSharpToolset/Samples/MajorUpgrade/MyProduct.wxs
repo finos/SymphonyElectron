@@ -55,7 +55,7 @@
       <Custom Action="WixSharp_BeforeInstall_Action" Before="InstallFiles">1</Custom>
       <Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWPRODUCTFOUND</Custom>
 
-      <RemoveExistingProducts After="InstallFinalize" />
+      <RemoveExistingProducts After="InstallInitialize" />
     </InstallExecuteSequence>
 
     <InstallUISequence>

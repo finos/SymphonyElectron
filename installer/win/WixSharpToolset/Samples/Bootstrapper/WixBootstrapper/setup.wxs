@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" xmlns:bal="http://schemas.microsoft.com/wix/BalExtension" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension" xmlns:dep="http://schemas.microsoft.com/wix/DependencyExtension">
   <Bundle Name="My Product" AboutUrl="https://github.com/oleg-shilo/wixsharp/" IconSourceFile="app_icon.ico" UpgradeCode="6f330b47-2577-43ad-9095-1861bb25889b" Version="2.0.0.0" dep:ProviderKey="01234567-8901-2345-6789-012345678901" >
-    <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.HyperlinkLicense">
-      <Payload SourceFile="licence.html" />
+    <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.RtfLicense">
+      <Payload SourceFile="logo.png" />
 
-      <bal:WixStandardBootstrapperApplication ShowVersion="yes" ShowFilesInUse="yes" LogoFile="logo.png" LicenseUrl="licence.html" />
+      <bal:WixStandardBootstrapperApplication ShowVersion="yes" ShowFilesInUse="yes" LogoFile="logo.png" LicenseFile="licence.rtf" />
     </BootstrapperApplicationRef>
+
 
     <Variable Name="LogFileLocation" Value="C:\temp\setup.log" Persisted="yes" bal:Overridable="yes" />
 

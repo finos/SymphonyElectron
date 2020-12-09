@@ -10,7 +10,7 @@ using Microsoft.Deployment.WindowsInstaller;
 using WixSharp;
 using WixSharp.CommonTasks;
 
-static class Script
+internal static class Script
 {
     static public void Main()
     {
@@ -52,6 +52,8 @@ static class Script
                     new PathFileAction(@"%WindowsFolder%\notepad.exe", "readme.txt", @"INSTALLDIR", Return.asyncNoWait, When.After, Step.InstallFinalize, Condition.NOT_Installed),
 
                     new ManagedAction(CustomActions.MyManagedAction, "%this%"),
+					
+                    new LaunchApplicationFromExitDialog(exeId: "myapp_exe", description: "Launch app"),
 
                     new InstalledFileAction("myapp_exe", ""));
 
@@ -66,9 +68,13 @@ static class Script
             // Optionally enable an ability to repair the installation even when the original MSI is no longer available.
             project.EnableResilientPackage();
 
+            // Uncomment to optionally enable the full UI for "Uninstall/Change" button in the Control Panel.
+            // project.EnableUninstallFullUI("[#myapp_exe],0");
+
             // project.PreserveTempFiles = true;
             project.WixSourceGenerated += Compiler_WixSourceGenerated;
             project.BuildMsi();
+
             // project.BuildMsiCmd();
         }
         catch (System.Exception ex)
@@ -77,7 +83,7 @@ static class Script
         }
     }
 
-    static void Compiler_WixSourceGenerated(System.Xml.Linq.XDocument document)
+    private static void Compiler_WixSourceGenerated(System.Xml.Linq.XDocument document)
     {
         document.Root.Descendants("Shortcut")
                      .ToList()

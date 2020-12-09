@@ -1,0 +1,16 @@
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\Managed Setup\obj\ConsoleSetup.csproj.GenerateResource.cache
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\Managed Setup\obj\ConsoleSetup.csproj.CoreCompileInputs.cache
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\Managed Setup\obj\ConsoleSetup.csproj.CopyComplete
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\Managed Setup\WixSharp.Msi.dll
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\Managed Setup\WixSharp.Msi.xml
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\Managed Setup\obj\WixSharp.UI.Properties.Resources.resources
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\Managed Setup\ConsoleSetup.exe.config
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\Managed Setup\obj\ConsoleSetup.exe
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\Managed Setup\obj\ConsoleSetup.pdb
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\Managed Setup\ConsoleSetup.exe
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\Managed Setup\ConsoleSetup.pdb
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\Releaseddd\ConsoleSetup.exe.config
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\Releaseddd\ConsoleSetup.exe
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\Releaseddd\ConsoleSetup.pdb
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\Releaseddd\WixSharp.Msi.dll
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\Releaseddd\WixSharp.Msi.xml

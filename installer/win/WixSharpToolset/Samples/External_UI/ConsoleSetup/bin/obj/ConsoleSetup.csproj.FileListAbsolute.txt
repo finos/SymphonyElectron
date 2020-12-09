@@ -1,0 +1,12 @@
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\Release\ConsoleSetup.exe.config
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\Release\ConsoleSetup.exe
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\Release\ConsoleSetup.pdb
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\Release\WixSharp.Msi.dll
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\Release\WixSharp.Msi.xml
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\obj\ConsoleSetup.csprojAssemblyReference.cache
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\obj\WixSharp.UI.Properties.Resources.resources
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\obj\ConsoleSetup.csproj.GenerateResource.cache
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\obj\ConsoleSetup.csproj.CoreCompileInputs.cache
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\obj\ConsoleSetup.csproj.CopyComplete
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\obj\ConsoleSetup.exe
+E:\Galos\Projects\WixSharp\Source\src\WixSharp.Samples\Wix# Samples\External_UI\ConsoleSetup\bin\obj\ConsoleSetup.pdb

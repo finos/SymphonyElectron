@@ -29,6 +29,8 @@
               <File Id="MyApp2.exe_3048258640" Source="..\SimpleService\MyApp2.exe" />
 
               <ServiceInstall Id="WixSharp.TestSvc2_" Name="WixSharp.TestSvc2" DisplayName="WixSharp.TestSvc2" Description="WixSharp.TestSvc2" Type="ownProcess" Start="auto" ErrorControl="normal">
+                <PermissionEx ServicePauseContinue="yes" ServiceQueryStatus="yes" ServiceStart="yes" ServiceStop="yes" ServiceUserDefinedControl="yes" User="Everyone" xmlns="http://schemas.microsoft.com/wix/UtilExtension" />
+
                 <ServiceDependency Id="Dnscache" />
                 <ServiceDependency Id="Dhcp" />
 
