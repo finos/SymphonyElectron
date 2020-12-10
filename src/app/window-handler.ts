@@ -114,6 +114,7 @@ export class WindowHandler {
   public spellchecker: SpellChecker | undefined;
   public isCustomTitleBar: boolean;
   public isWebPageLoading: boolean = true;
+  public isLoggedIn: boolean = false;
   public screenShareIndicatorFrameUtil: string;
   public shouldShowWelcomeScreen: boolean = false;
 
@@ -611,9 +612,7 @@ export class WindowHandler {
 
     // Reloads the Symphony
     ipcMain.on('reload-symphony', () => {
-      if (this.mainWindow && windowExists(this.mainWindow)) {
-        this.mainWindow.loadURL(this.url || this.globalConfig.url);
-      }
+      this.reloadSymphony();
     });
 
     // Certificate verification proxy
@@ -1640,6 +1639,23 @@ export class WindowHandler {
   }
 
   /**
+   * Reloads symphony in case of network failures
+   */
+  public reloadSymphony() {
+    if (this.mainWindow && windowExists(this.mainWindow)) {
+      // If the client is fully loaded, upon network interruption, load that
+      if (this.isLoggedIn) {
+        logger.info(`window-utils: user has logged in, getting back to Symphony app`);
+        this.mainWindow.loadURL(this.url || this.userConfig.url || this.globalConfig.url);
+        return;
+      }
+      // If not, revert to loading the starting pod url
+      logger.info(`window-utils: user hasn't logged in yet, loading login page again`);
+      this.mainWindow.loadURL(this.userConfig.url || this.globalConfig.url);
+    }
+  }
+
+  /**
    * Listens for app load timeouts and reloads if required
    */
   private listenForLoad() {
@@ -1917,6 +1933,7 @@ export class WindowHandler {
 
     return { ...defaultWindowOpts, ...windowOpts };
   }
+
 }
 
 const windowHandler = new WindowHandler();

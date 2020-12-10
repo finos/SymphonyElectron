@@ -539,7 +539,7 @@ export const isSymphonyReachable = (window: ICustomBrowserWindow | null, url: st
         fetch(podUrl, { method: 'GET' }).then((rsp) => {
             if (rsp.status === 200 && windowHandler.isOnline) {
                 logger.info(`window-utils: pod ${podUrl} is reachable, loading main window!`);
-                window.loadURL(url);
+                windowHandler.reloadSymphony();
                 if (networkStatusCheckIntervalId) {
                     clearInterval(networkStatusCheckIntervalId);
                     networkStatusCheckIntervalId = null;

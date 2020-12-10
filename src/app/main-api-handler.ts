@@ -61,6 +61,7 @@ ipcMain.on(apiName.symphonyApi, async (event: Electron.IpcMainEvent, arg: IApiAr
             // Set this to false once the SFE is completely loaded
             // so, we can prevent from showing error banners
             windowHandler.isWebPageLoading = false;
+            windowHandler.isLoggedIn = true;
             break;
         case apiCmds.registerLogRetriever:
             registerLogRetriever(event.sender, arg.logName);
@@ -105,7 +106,7 @@ ipcMain.on(apiName.symphonyApi, async (event: Electron.IpcMainEvent, arg: IApiAr
         case apiCmds.bringToFront:
             // validates the user bring to front config and activates the wrapper
             if (typeof arg.reason === 'string' && arg.reason === 'notification') {
-                const { bringToFront } = config.getConfigFields([ 'bringToFront' ]);
+                const { bringToFront } = config.getConfigFields(['bringToFront']);
                 if (bringToFront === CloudConfigDataTypes.ENABLED) {
                     activate(arg.windowName, false);
                 }
@@ -185,7 +186,7 @@ ipcMain.on(apiName.symphonyApi, async (event: Electron.IpcMainEvent, arg: IApiAr
             }
             break;
         case apiCmds.getConfigUrl:
-            const { url } = config.getGlobalConfigFields([ 'url' ]);
+            const { url } = config.getGlobalConfigFields(['url']);
             event.returnValue = url;
             break;
         case apiCmds.registerAnalyticsHandler:
