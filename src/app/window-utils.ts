@@ -539,13 +539,7 @@ export const isSymphonyReachable = (window: ICustomBrowserWindow | null, url: st
         fetch(podUrl, { method: 'GET' }).then((rsp) => {
             if (rsp.status === 200 && windowHandler.isOnline) {
                 logger.info(`window-utils: pod ${podUrl} is reachable, loading main window!`);
-                if (windowHandler.isLoggedIn) {
-                    logger.info(`window-utils: user has logged in, getting back to Symphony app`);
-                    window.loadURL(url);
-                } else {
-                    logger.info(`window-utils: user hasn't logged in yet, loading login page again`);
-                    window.loadURL(windowHandler.url || url);
-                }
+                windowHandler.reloadSymphony();
                 if (networkStatusCheckIntervalId) {
                     clearInterval(networkStatusCheckIntervalId);
                     networkStatusCheckIntervalId = null;
