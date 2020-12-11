@@ -16,6 +16,7 @@ import {
 } from '../common/env';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
+import { analytics, AnalyticsElements, ScreenSnippetActionTypes } from './analytics-handler';
 import { updateAlwaysOnTop } from './window-actions';
 import { windowHandler } from './window-handler';
 import { windowExists } from './window-utils';
@@ -115,6 +116,7 @@ class ScreenSnippet {
         windowHandler.closeSnippingToolWindow();
         windowHandler.createSnippingToolWindow(this.outputFileName, imageSize);
         this.uploadSnippet(webContents);
+        this.sendAnalytics();
       return;
     }
       const {
@@ -316,6 +318,16 @@ class ScreenSnippet {
       }
     });
   }
+
+  /**
+   * Send analytics data to analytics module
+   */
+  private sendAnalytics() {
+    ipcMain.on('send-tracking-data-to-main', async (_event, eventData: { element: AnalyticsElements, type: ScreenSnippetActionTypes }) => {
+      analytics.track({element: eventData.element, action_type: eventData.type});
+    });
+  }
+
 }
 
 const screenSnippet = new ScreenSnippet();
