@@ -115,3 +115,11 @@ npm run unpacked-mac
 # Create .pkg installer
 echo "Creating .pkg"
 /usr/local/bin/packagesbuild -v installer/mac/symphony-mac-packager.pkgproj
+
+echo "Generating PDF for installation instructions"
+if ! [ -x "$(command -v snyk)" ]; then
+  echo 'Markdown PDF does not exist! Installing it' >&2
+  npm install -g markdown-pdf
+fi
+markdown-pdf installer/mac/install_instructions_mac.md
+copy install_instructions_mac.pdf "%targetsDir%\Install-Instructions-macOS-%archiveName%.pdf"
