@@ -2,7 +2,7 @@ import { mount } from 'enzyme';
 import * as React from 'react';
 import AnnotateArea from '../src/renderer/components/annotate-area';
 import { Tool } from '../src/renderer/components/snipping-tool';
-import * as analyticsHandler from './../src/app/analytics-handler';
+import { ipcRenderer } from './__mocks__/electron';
 
 const defaultProps = {
     paths: [],
@@ -127,7 +127,7 @@ describe('<AnnotateArea/>', () => {
     });
 
     it('should send annotate_erased if clicked on path with tool eraser', () => {
-        const spy = jest.spyOn(analyticsHandler.analytics, 'track');
+        const spy = jest.spyOn(ipcRenderer, 'send');
         const pathProps = {
             paths: [{
                 points: [{ x: 0, y: 0 }],
@@ -146,19 +146,19 @@ describe('<AnnotateArea/>', () => {
         };
         const wrapper = mount(<AnnotateArea {...pathProps} />);
         const path = wrapper.find('[data-testid="path0"]');
-        const expectedValue = { action_type: 'annotate_erased', element: 'screen_capture_annotate' };
+        const expectedValue = { type: 'annotate_erased', element: 'screen_capture_annotate' };
         path.simulate('click');
-        expect(spy).toBeCalledWith(expectedValue);
+        expect(spy).toBeCalledWith('send-tracking-data-to-main', expectedValue);
     });
 
     it('should send annotate_added_pen event when drawn with pen', () => {
-        const spy = jest.spyOn(analyticsHandler.analytics, 'track');
-        const expectedValue = { action_type: 'annotate_added_pen', element: 'screen_capture_annotate' };
+        const spy = jest.spyOn(ipcRenderer, 'send');
+        const expectedValue = { type: 'annotate_added_pen', element: 'screen_capture_annotate' };
         const wrapper = mount(<AnnotateArea {...defaultProps} />);
         const area = wrapper.find('[data-testid="annotate-area"]');
         area.simulate('mousedown', { pageX: 2, pageY: 49 });
         area.simulate('mouseup');
-        expect(spy).toBeCalledWith(expectedValue);
+        expect(spy).toBeCalledWith('send-tracking-data-to-main', expectedValue);
     });
 
     it('should send annotate_added_highlight event when drawn with highlight', () => {
@@ -172,12 +172,12 @@ describe('<AnnotateArea/>', () => {
             chosenTool: Tool.highlight,
             screenSnippetPath: 'very-nice-path',
         };
-        const spy = jest.spyOn(analyticsHandler.analytics, 'track');
-        const expectedValue = { action_type: 'annotate_added_highlight', element: 'screen_capture_annotate' };
+        const spy = jest.spyOn(ipcRenderer, 'send');
+        const expectedValue = { type: 'annotate_added_highlight', element: 'screen_capture_annotate' };
         const wrapper = mount(<AnnotateArea {...highlightProps} />);
         const area = wrapper.find('[data-testid="annotate-area"]');
         area.simulate('mousedown', { pageX: 2, pageY: 49 });
         area.simulate('mouseup');
-        expect(spy).toBeCalledWith(expectedValue);
+        expect(spy).toBeCalledWith('send-tracking-data-to-main', expectedValue);
     });
 });

@@ -1,7 +1,6 @@
 import { mount, shallow } from 'enzyme';
 import * as React from 'react';
 import SnippingTool from '../src/renderer/components/snipping-tool';
-import * as analyticsHandler from './../src/app/analytics-handler';
 import { ipcRenderer } from './__mocks__/electron';
 
 const waitForPromisesToResolve = () => new Promise((resolve) => setTimeout(resolve));
@@ -23,30 +22,30 @@ describe('Snipping Tool', () => {
   });
 
   it('should send screenshot_taken BI event on component mount', () => {
-    const spy = jest.spyOn(analyticsHandler.analytics, 'track');
-    const expectedValue = { action_type: 'screenshot_taken', element: 'screen_capture_annotate' };
+    const spy = jest.spyOn(ipcRenderer, 'send');
+    const expectedValue = { type: 'screenshot_taken', element: 'screen_capture_annotate' };
     mount(React.createElement(SnippingTool));
-    expect(spy).toBeCalledWith(expectedValue);
+    expect(spy).toBeCalledWith('send-tracking-data-to-main', expectedValue);
   });
 
   it('should send capture_sent BI event when clicking done', async () => {
-    const spy = jest.spyOn(analyticsHandler.analytics, 'track');
-    const expectedValue = { action_type: 'annotate_done', element: 'screen_capture_annotate' };
+    const spy = jest.spyOn(ipcRenderer, 'send');
+    const expectedValue = { type: 'annotate_done', element: 'screen_capture_annotate' };
     const wrapper = mount(React.createElement(SnippingTool));
     wrapper.find('[data-testid="done-button"]').simulate('click');
     wrapper.update();
     await waitForPromisesToResolve();
-    expect(spy).toBeCalledWith(expectedValue);
+    expect(spy).toBeCalledWith('send-tracking-data-to-main', expectedValue);
   });
 
   it('should send annotate_cleared BI event when clicking clear', async () => {
-    const spy = jest.spyOn(analyticsHandler.analytics, 'track');
-    const expectedValue = { action_type: 'annotate_cleared', element: 'screen_capture_annotate' };
+    const spy = jest.spyOn(ipcRenderer, 'send');
+    const expectedValue = { type: 'annotate_cleared', element: 'screen_capture_annotate' };
     const wrapper = mount(React.createElement(SnippingTool));
     wrapper.find('[data-testid="clear-button"]').simulate('click');
     wrapper.update();
     await waitForPromisesToResolve();
-    expect(spy).toBeCalledWith(expectedValue);
+    expect(spy).toBeCalledWith('send-tracking-data-to-main', expectedValue);
   });
 
   it('should render pen color picker when clicked on pen', () => {
