@@ -116,17 +116,18 @@ npm run unpacked-mac
 echo "Creating .pkg"
 /usr/local/bin/packagesbuild -v installer/mac/symphony-mac-packager.pkgproj
 
-echo "Generating PDF for installation instructions"
 if ! [ -x "$(command -v markdown-pdf)" ]; then
   echo 'Markdown PDF does not exist! Installing it' >&2
   npm install -g markdown-pdf
 fi
 
 ARCHIVE_NAME="${PKG_VERSION}_${PARENT_BUILD_VERSION}"
+
+echo "Generating PDF for installation instructions"
 markdown-pdf installer/mac/install_instructions_mac.md
 
 if [ "${EXPIRY_PERIOD}" != "0" ]; then
-  cp install_instructions_mac.pdf "targets/Install-Instructions-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}-TTL-${EXPIRY_PERIOD}.pdf"
+  cp installer/mac/install_instructions_mac.pdf "targets/Install-Instructions-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}-TTL-${EXPIRY_PERIOD}.pdf"
 else
-  cp install_instructions_mac.pdf "targets/Install-Instructions-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}.pdf"
+  cp installer/mac/install_instructions_mac.pdf "targets/Install-Instructions-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}.pdf"
 fi
