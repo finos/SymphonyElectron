@@ -126,6 +126,9 @@ ARCHIVE_NAME="${PKG_VERSION}_${PARENT_BUILD_VERSION}"
 echo "Generating PDF for installation instructions"
 markdown-pdf installer/mac/install_instructions_mac.md
 
+# Create targets directory
+mkdir -p targets
+
 if [ "${EXPIRY_PERIOD}" != "0" ]; then
   cp installer/mac/install_instructions_mac.pdf "targets/Install-Instructions-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}-TTL-${EXPIRY_PERIOD}.pdf"
 else
