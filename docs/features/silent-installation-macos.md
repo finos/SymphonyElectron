@@ -26,7 +26,15 @@ The parameters that should be configured in `sym_settings.txt` are listed below.
 - Bring to Front
 - Dev Tools Enabled
 
-You can find a sample [sample here](../../installer/mac/sym_settings.txt).
+You can find a sample below:
+```
+https://corporate.symphony.com/login/sso/initsso
+ENABLED
+ENABLED
+DISABLED
+DISABLED
+ENABLED
+```
 
 ## sym_permissions.txt
 
@@ -40,8 +48,16 @@ The parameters that should be configured in `sym_permissions.txt` are listed bel
 - Full Screen
 - Open External App
 
-You can find a [sample here](../../installer/mac/sym_permissions.txt).
-
+You can find a sample below:
+```
+ENABLED
+ENABLED
+ENABLED
+ENABLED
+ENABLED
+ENABLED
+ENABLED
+```
 
 # Installation
 
@@ -55,6 +71,58 @@ To install the package, use the below command with appropriate changes to the pa
 
 We've also provisioned a shell script that can be used to cut out all of the above manual processes. You'll just need to edit the script to set appropriate values (for which we've added comments in the script) for the parameters which are self-explanatory.
 
-You can find the [script here](../../installer/mac/installation_script.txt).
+You can find the script below. Ensure that you copy the below content to a shell script and provide executable permissions.
 
-Ensure that you change extension of the above script to `.sh` and set executable permission.
+```
+#!/usr/bin/env bash
+
+## Set the path where the package file exists
+package_path=/Users/johndoe/Downloads/SDA.pkg
+
+## DO NOT CHANGE THIS
+settings_temp_file="/tmp/sym_settings.txt"
+
+## Set the POD URL and other user related settings.
+## Note, all the user related settings should be either "ENABLED", "DISABLED" or "NOT_SET"
+pod_url="https://corporate.symphony.com/login/sso/initsso"
+minimize_on_close="ENABLED"
+launch_on_startup="ENABLED"
+always_on_top="DISABLED"
+bring_to_front="DISABLED"
+dev_tools_enabled="ENABLED"
+
+## DO NOT CHANGE THIS
+sudo echo ${pod_url} > ${settings_temp_file}
+sudo echo ${minimize_on_close} >> ${settings_temp_file}
+sudo echo ${launch_on_startup} >> ${settings_temp_file}
+sudo echo ${always_on_top} >> ${settings_temp_file}
+sudo echo ${bring_to_front} >> ${settings_temp_file}
+sudo echo ${dev_tools_enabled} >> ${settings_temp_file}
+
+## DO NOT CHANGE THIS
+permissions_temp_file="/tmp/sym_permissions.txt"
+
+## Set the permissions. By default, it should be "ENABLED" for all unless you know what you are doing
+media="ENABLED"
+geo_location="ENABLED"
+notifications="ENABLED"
+midi_sysex="ENABLED"
+pointer_lock="ENABLED"
+full_screen="ENABLED"
+open_external_app="ENABLED"
+
+## DO NOT CHANGE THIS
+sudo echo ${media} > ${permissions_temp_file}
+sudo echo ${geo_location} >> ${permissions_temp_file}
+sudo echo ${notifications} >> ${permissions_temp_file}
+sudo echo ${midi_sysex} >> ${permissions_temp_file}
+sudo echo ${pointer_lock} >> ${permissions_temp_file}
+sudo echo ${full_screen} >> ${permissions_temp_file}
+sudo echo ${open_external_app} >> ${permissions_temp_file}
+
+sudo installer -store -pkg ${package_path} -target /
+
+rm -rf ${settings_temp_file}
+rm -rf ${permissions_temp_file}
+
+```

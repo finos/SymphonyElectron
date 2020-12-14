@@ -1,6 +1,0 @@
-https://corporate.symphony.com/login/sso/initsso
-ENABLED
-ENABLED
-DISABLED
-DISABLED
-ENABLED
