@@ -1214,7 +1214,12 @@ export class WindowHandler {
       if (source != null) {
         logger.info(`window-handler: screen-source-select`, source, id);
 
-        this.drawScreenShareIndicatorFrame(source);
+        this.execCmd(this.screenShareIndicatorFrameUtil, []);
+        const timeoutValue = 300;
+        setTimeout(
+          () => this.drawScreenShareIndicatorFrame(source),
+          timeoutValue,
+        );
       }
     });
 
