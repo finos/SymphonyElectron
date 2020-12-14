@@ -1,7 +1,7 @@
 import { LazyBrush } from 'lazy-brush';
 import * as React from 'react';
-import { analytics, AnalyticsElements, ScreenSnippetActionTypes } from './../../app/analytics-handler';
-import { IDimensions, IPath, IPoint, Tool } from './snipping-tool';
+import { AnalyticsElements, ScreenSnippetActionTypes } from './../../app/analytics-handler';
+import { IDimensions, IPath, IPoint, sendAnalyticsToMain, Tool } from './snipping-tool';
 
 const { useState } = React;
 
@@ -50,10 +50,7 @@ const AnnotateArea: React.FunctionComponent<IAnnotateAreaProps> = ({
       updPaths.map((p) => {
         if (p && p.key === key) {
           p.shouldShow = false;
-          analytics.track({
-            element: AnalyticsElements.SCREEN_CAPTURE_ANNOTATE,
-            action_type: ScreenSnippetActionTypes.ANNOTATE_ERASED,
-          });
+          sendAnalyticsToMain(AnalyticsElements.SCREEN_CAPTURE_ANNOTATE, ScreenSnippetActionTypes.ANNOTATE_ERASED);
         }
         return p;
       });
@@ -232,16 +229,10 @@ const AnnotateArea: React.FunctionComponent<IAnnotateAreaProps> = ({
   const handleMouseUp = () => {
     stopDrawing();
     if (chosenTool === Tool.pen) {
-      analytics.track({
-        element: AnalyticsElements.SCREEN_CAPTURE_ANNOTATE,
-        action_type: ScreenSnippetActionTypes.ANNOTATE_ADDED_PEN,
-      });
+      sendAnalyticsToMain(AnalyticsElements.SCREEN_CAPTURE_ANNOTATE, ScreenSnippetActionTypes.ANNOTATE_ADDED_PEN);
     }
     if (chosenTool === Tool.highlight) {
-      analytics.track({
-        element: AnalyticsElements.SCREEN_CAPTURE_ANNOTATE,
-        action_type: ScreenSnippetActionTypes.ANNOTATE_ADDED_HIGHLIGHT,
-      });
+      sendAnalyticsToMain(AnalyticsElements.SCREEN_CAPTURE_ANNOTATE, ScreenSnippetActionTypes.ANNOTATE_ADDED_HIGHLIGHT);
     }
   };
 

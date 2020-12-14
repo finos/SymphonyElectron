@@ -2,7 +2,7 @@ import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { svgAsPngUri } from 'save-svg-as-png';
 import { i18n } from '../../common/i18n-preload';
-import { analytics, AnalyticsElements, ScreenSnippetActionTypes } from './../../app/analytics-handler';
+import { AnalyticsElements, ScreenSnippetActionTypes } from './../../app/analytics-handler';
 import AnnotateArea from './annotate-area';
 import ColorPickerPill, { IColor } from './color-picker-pill';
 
@@ -51,6 +51,10 @@ const availableHighlightColors: IColor[] = [
 ];
 const SNIPPING_TOOL_NAMESPACE = 'ScreenSnippet';
 
+export const sendAnalyticsToMain = (element: AnalyticsElements, type: ScreenSnippetActionTypes): void => {
+  ipcRenderer.send('send-tracking-data-to-main', { element, type });
+};
+
 const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPaths }) => {
   // State preparation functions
 
@@ -91,10 +95,7 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPat
 
   useLayoutEffect(() => {
   ipcRenderer.once('snipping-tool-data', getSnipImageData);
-    analytics.track({
-      element: AnalyticsElements.SCREEN_CAPTURE_ANNOTATE,
-      action_type: ScreenSnippetActionTypes.SCREENSHOT_TAKEN,
-    });
+  sendAnalyticsToMain(AnalyticsElements.SCREEN_CAPTURE_ANNOTATE, ScreenSnippetActionTypes.SCREENSHOT_TAKEN);
   return () => {
     ipcRenderer.removeListener('snipping-tool-data', getSnipImageData);
   };
@@ -165,10 +166,7 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPat
       return p;
     });
     setPaths(updPaths);
-    analytics.track({
-      element: AnalyticsElements.SCREEN_CAPTURE_ANNOTATE,
-      action_type: ScreenSnippetActionTypes.ANNOTATE_CLEARED,
-    });
+    sendAnalyticsToMain(AnalyticsElements.SCREEN_CAPTURE_ANNOTATE, ScreenSnippetActionTypes.ANNOTATE_CLEARED);
   };
 
   // Utility functions
@@ -202,10 +200,7 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPat
   const done = async () => {
     const svg = document.getElementById('annotate-area');
     const mergedImageData = svg ? await svgAsPngUri(document.getElementById('annotate-area'), {}) : 'MERGE_FAIL';
-    analytics.track({
-      element: AnalyticsElements.SCREEN_CAPTURE_ANNOTATE,
-      action_type: ScreenSnippetActionTypes.ANNOTATE_DONE,
-    });
+    sendAnalyticsToMain(AnalyticsElements.SCREEN_CAPTURE_ANNOTATE, ScreenSnippetActionTypes.ANNOTATE_DONE );
     ipcRenderer.send('upload-snippet', { screenSnippetPath, mergedImageData });
   };
 

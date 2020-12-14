@@ -986,10 +986,17 @@ export class WindowHandler {
       width: number;
     },
   ): void {
-    const parentWindow = BrowserWindow.getFocusedWindow();
     // Prevents creating multiple instances
-    if (didVerifyAndRestoreWindow(this.snippingToolWindow) || !parentWindow) {
+    if (didVerifyAndRestoreWindow(this.snippingToolWindow)) {
       logger.error('window-handler: Could not open snipping tool window');
+      return;
+    }
+
+    const electronWindows = BrowserWindow.getAllWindows();
+    const mainWindow = electronWindows[0];
+
+    if (!mainWindow) {
+      logger.error('window-handler: Could not get main window');
       return;
     }
 
@@ -1000,7 +1007,7 @@ export class WindowHandler {
     const BUTTON_BAR_BOTTOM_HEIGHT = 72;
     const BUTTON_BARS_HEIGHT = BUTTON_BAR_TOP_HEIGHT + BUTTON_BAR_BOTTOM_HEIGHT;
 
-    const display = electron.screen.getDisplayMatching(parentWindow.getBounds());
+    const display = electron.screen.getDisplayMatching(mainWindow.getBounds());
     const workAreaSize = display.workAreaSize;
     const maxToolHeight = Math.floor(calculatePercentage(workAreaSize.height, 90));
     const maxToolWidth = Math.floor(calculatePercentage(workAreaSize.width, 90));
@@ -1055,8 +1062,8 @@ export class WindowHandler {
       opts.alwaysOnTop = true;
     }
 
-    if (isWindowsOS && parentWindow) {
-      opts.parent = parentWindow;
+    if (isWindowsOS && mainWindow) {
+      opts.parent = mainWindow;
     }
 
     this.snippingToolWindow = createComponentWindow('snipping-tool', opts);
@@ -1072,8 +1079,9 @@ export class WindowHandler {
         snippetImageWidth: snipDimensions.width,
       };
       if (this.snippingToolWindow && windowExists(this.snippingToolWindow)) {
-        logger.info('window-handler: Opening snipping tool window with size: ', { toolHeight, toolWidth });
-        logger.info('window-handler: Opening snipping tool content with metadata: ', snippingToolInfo);
+        logger.info('window-handler: Opening snipping tool window on display: ' + JSON.stringify(display));
+        logger.info('window-handler: Opening snipping tool window with size: ' + JSON.stringify({ toolHeight, toolWidth }));
+        logger.info('window-handler: Opening snipping tool content with metadata: ' + JSON.stringify(snippingToolInfo));
         this.snippingToolWindow.webContents.send(
           'snipping-tool-data',
           snippingToolInfo,
@@ -1206,7 +1214,12 @@ export class WindowHandler {
       if (source != null) {
         logger.info(`window-handler: screen-source-select`, source, id);
 
-        this.drawScreenShareIndicatorFrame(source);
+        this.execCmd(this.screenShareIndicatorFrameUtil, []);
+        const timeoutValue = 300;
+        setTimeout(
+          () => this.drawScreenShareIndicatorFrame(source),
+          timeoutValue,
+        );
       }
     });
 
