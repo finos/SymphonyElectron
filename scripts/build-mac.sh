@@ -1,7 +1,12 @@
 #!/bin/bash
 
+# Unlock the keychain
+echo "Unlocking keychain"
+security -v unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+
 NODE_REQUIRED_VERSION=v12.13.1
 SNYK_ORG=sda
+SNYK_PROJECT_NAME="Symphony Desktop Application"
 
 # Check basic dependencies
 if ! [ -x "$(command -v git)" ]; then
@@ -85,7 +90,8 @@ codesign --force --options runtime -s "Developer ID Application: Symphony Commun
 
 # Run Snyk Security Tests
 echo "Running snyk security tests"
-snyk test --file=package.json --org="$SNYK_ORG"
+snyk test --file=package-lock.json --org="$SNYK_ORG"
+snyk monitor --file=package-lock.json --org="$SNYK_ORG" --project-name="$SNYK_PROJECT_NAME"
 
 # Replace url in config
 echo "Setting default pod url to https://my.symphony.com"
@@ -113,3 +119,39 @@ npm run unpacked-mac
 # Create .pkg installer
 echo "Creating .pkg"
 /usr/local/bin/packagesbuild -v installer/mac/symphony-mac-packager.pkgproj
+
+PACKAGE=installer/mac/build/Symphony.pkg
+if [ ! -e ${PACKAGE} ]; then
+  echo "BUILD PACKAGE FAILED: package not created: ${PACKAGE}"
+  exit 1
+fi
+echo "Package created: ${PACKAGE}"
+
+# Sign the app
+PKG_VERSION=$(node -e "console.log(require('./package.json').version);")
+echo "Signing Package: ${PACKAGE}"
+SIGNED_PACKAGE=installer/mac/build/Symphony_Signed_${PKG_VERSION}_${PARENT_BUILD_VERSION}.pkg
+productsign --sign "Developer ID Installer: Symphony Communication Services LLC" $PACKAGE $SIGNED_PACKAGE
+echo "Signing Package complete: ${PACKAGE}"
+
+# Notarize the app
+xcrun altool --notarize-app --primary-bundle-id "$BUNDLE_ID" --username "$APPLE_ID" --password "$APPLE_ID_PASSWORD" --file $SIGNED_PACKAGE > /tmp/notarize.txt
+cat /tmp/notarize.txt
+REQUEST_ID=$(sed -n '2p' /tmp/notarize.txt)
+REQUEST_ID=$(echo $REQUEST_ID | cut -d "=" -f 2)
+echo "$REQUEST_ID"
+#xcrun altool --notarization-info $REQUEST_ID --username "$APPLE_ID" --password "$APPLE_ID_PASSWORD"
+#xcrun stapler staple $SIGNED_PACKAGE
+#stapler validate --verbose $SIGNED_PACKAGE
+
+# Create targets directory
+mkdir -p targets
+
+# Attach artifacts to build
+if [ "${EXPIRY_PERIOD}" != "0" ]; then
+  cp $SIGNED_PACKAGE "targets/Symphony-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}-TTL-${EXPIRY_PERIOD}.pkg"
+else
+  cp $SIGNED_PACKAGE "targets/Symphony-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}.pkg"
+fi
+
+echo "All done, job successfull :)"
