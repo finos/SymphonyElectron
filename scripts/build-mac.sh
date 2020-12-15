@@ -153,6 +153,9 @@ fi
 echo "Generating PDF for installation instructions"
 markdown-pdf installer/mac/install_instructions_mac.md
 
+echo "Generate release notes"
+markdown-pdf RELEASE_NOTES.md
+
 # Create targets directory
 mkdir -p targets
 
@@ -160,9 +163,11 @@ mkdir -p targets
 if [ "${EXPIRY_PERIOD}" != "0" ]; then
   cp $SIGNED_PACKAGE "targets/Symphony-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}-TTL-${EXPIRY_PERIOD}.pkg"
   cp installer/mac/install_instructions_mac.pdf "targets/Install-Instructions-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}-TTL-${EXPIRY_PERIOD}.pdf"
+  cp RELEASE_NOTES.pdf "targets/Release-Notes-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}-TTL-${EXPIRY_PERIOD}.pdf"
 else
   cp $SIGNED_PACKAGE "targets/Symphony-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}.pkg"
   cp installer/mac/install_instructions_mac.pdf "targets/Install-Instructions-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}.pdf"
+  cp RELEASE_NOTES.pdf "targets/Release-Notes-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}.pdf"
 fi
 
 echo "All done, job successfull :)"
