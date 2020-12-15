@@ -114,4 +114,9 @@ if ERRORLEVEL 1 (
 )
 echo Generating install instructions
 call %appdata%\npm\markdown-pdf install_instructions_win.md
+
+echo Generate release notes
+call %appdata%\npm\markdown-pdf RELEASE_NOTES.md
+
 copy install_instructions_win.pdf "%targetsDir%\Install-Instructions-%archiveName%.pdf"
+copy RELEASE_NOTES.pdf "%targetsDir%\Release-Notes-%archiveName%.pdf"
