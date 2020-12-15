@@ -126,11 +126,16 @@ ARCHIVE_NAME="${PKG_VERSION}_${PARENT_BUILD_VERSION}"
 echo "Generating PDF for installation instructions"
 markdown-pdf installer/mac/install_instructions_mac.md
 
+echo "Generate release notes"
+markdown-pdf RELEASE_NOTES.md
+
 # Create targets directory
 mkdir -p targets
 
 if [ "${EXPIRY_PERIOD}" != "0" ]; then
   cp installer/mac/install_instructions_mac.pdf "targets/Install-Instructions-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}-TTL-${EXPIRY_PERIOD}.pdf"
+  cp RELEASE_NOTES.pdf "targets/Release-Notes-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}-TTL-${EXPIRY_PERIOD}.pdf"
 else
   cp installer/mac/install_instructions_mac.pdf "targets/Install-Instructions-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}.pdf"
+  cp RELEASE_NOTES.pdf "targets/Release-Notes-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}.pdf"
 fi
