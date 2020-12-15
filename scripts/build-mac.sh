@@ -1,6 +1,10 @@
 #!/bin/bash
 
-NODE_REQUIRED_VERSION=v12.13.1
+# Unlock the keychain
+echo "Unlocking keychain"
+security -v unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+
+NODE_REQUIRED_VERSION=v12.18.3
 SNYK_ORG=sda
 SNYK_PROJECT_NAME="Symphony Desktop Application"
 
@@ -116,12 +120,35 @@ npm run unpacked-mac
 echo "Creating .pkg"
 /usr/local/bin/packagesbuild -v installer/mac/symphony-mac-packager.pkgproj
 
+PACKAGE=installer/mac/build/Symphony.pkg
+if [ ! -e ${PACKAGE} ]; then
+  echo "BUILD PACKAGE FAILED: package not created: ${PACKAGE}"
+  exit 1
+fi
+echo "Package created: ${PACKAGE}"
+
+# Sign the app
+PKG_VERSION=$(node -e "console.log(require('./package.json').version);")
+echo "Signing Package: ${PACKAGE}"
+SIGNED_PACKAGE=installer/mac/build/Symphony_Signed_${PKG_VERSION}_${PARENT_BUILD_VERSION}.pkg
+productsign --sign "Developer ID Installer: Symphony Communication Services LLC" $PACKAGE $SIGNED_PACKAGE
+echo "Signing Package complete: ${PACKAGE}"
+
+# Notarize the app
+xcrun altool --notarize-app --primary-bundle-id "$BUNDLE_ID" --username "$APPLE_ID" --password "$APPLE_ID_PASSWORD" --file $SIGNED_PACKAGE > /tmp/notarize.txt
+cat /tmp/notarize.txt
+REQUEST_ID=$(sed -n '2p' /tmp/notarize.txt)
+REQUEST_ID=$(echo $REQUEST_ID | cut -d "=" -f 2)
+echo "$REQUEST_ID"
+#xcrun altool --notarization-info $REQUEST_ID --username "$APPLE_ID" --password "$APPLE_ID_PASSWORD"
+#xcrun stapler staple $SIGNED_PACKAGE
+#stapler validate --verbose $SIGNED_PACKAGE
+
+# Generate Installation Instructions PDF
 if ! [ -x "$(command -v markdown-pdf)" ]; then
   echo 'Markdown PDF does not exist! Installing it' >&2
   npm install -g markdown-pdf
 fi
-
-ARCHIVE_NAME="${PKG_VERSION}_${PARENT_BUILD_VERSION}"
 
 echo "Generating PDF for installation instructions"
 markdown-pdf installer/mac/install_instructions_mac.md
@@ -129,8 +156,11 @@ markdown-pdf installer/mac/install_instructions_mac.md
 # Create targets directory
 mkdir -p targets
 
+# Attach artifacts to build
 if [ "${EXPIRY_PERIOD}" != "0" ]; then
+  cp $SIGNED_PACKAGE "targets/Symphony-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}-TTL-${EXPIRY_PERIOD}.pkg"
   cp installer/mac/install_instructions_mac.pdf "targets/Install-Instructions-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}-TTL-${EXPIRY_PERIOD}.pdf"
 else
+  cp $SIGNED_PACKAGE "targets/Symphony-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}.pkg"
   cp installer/mac/install_instructions_mac.pdf "targets/Install-Instructions-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}.pdf"
 fi
