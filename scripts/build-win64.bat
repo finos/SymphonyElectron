@@ -149,7 +149,14 @@ if NOT EXIST %AIP%-SetupFiles/%AIP%.msi (
 echo "Copying MSI result to target dir"
 copy "%AIP%-SetupFiles\%AIP%.msi" "%targetsDir%\%archiveName%.msi"
 
-echo "Building new installer"
+echo "Building new installer with Wix Sharp"
+call "BuildWixSharpInstaller.bat"
+
+if NOT EXIST %SIGNING_FILE_PATH% (
+    echo Signing failed, 'signing.bat' not found.
+    exit /b -1
+)
+
 call %SIGNING_FILE_PATH%
 copy "WixSharpInstaller\Symphony.msi" "%targetsDir%\%archiveName%.msi"
 
