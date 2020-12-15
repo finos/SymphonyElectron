@@ -148,3 +148,20 @@ if NOT EXIST %AIP%-SetupFiles/%AIP%.msi (
 
 echo "Copying MSI result to target dir"
 copy "%AIP%-SetupFiles\%AIP%.msi" "%targetsDir%\%archiveName%.msi"
+
+echo "Building new installer"
+call %SIGNING_FILE_PATH%
+copy "WixSharpInstaller\Symphony.msi" "%targetsDir%\%archiveName%.msi"
+
+echo "Setting up markdown to pdf package"
+%SystemRoot%\System32\where.exe /q markdown-pdf
+if ERRORLEVEL 1 (
+    echo "Markdown to PDF package missing, installing it now."
+    call npm install -g markdown-pdf
+)
+
+echo "Generating installation instructions"
+call %appdata%\npm\markdown-pdf install_instructions_win.md
+copy install_instructions_win.pdf "%targetsDir%\Install-Instructions-%archiveName%.pdf"
+
+echo "All done, job successfull :)"

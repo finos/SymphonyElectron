@@ -164,3 +164,5 @@ else
   cp $SIGNED_PACKAGE "targets/Symphony-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}.pkg"
   cp installer/mac/install_instructions_mac.pdf "targets/Install-Instructions-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}.pdf"
 fi
+
+echo "All done, job successfull :)"
