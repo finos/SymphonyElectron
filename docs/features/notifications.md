@@ -20,6 +20,9 @@ We support the following set of notifications along with badge / taskbar count o
 ## macOS
 macOS notifications are native chrome notifications which appear like any other desktop app notifications on a Mac.
 Emojis are supported in the toast.
+
+- Inline reply
+
 ![notifications_mac.png](assets/notifications_mac.png)
 
 ## Windows
@@ -28,10 +31,11 @@ Windows notifications are custom built to support the following use cases:
 - Position in the screen
 - Custom screen (in case of multiple displays connected)
 - Flash a notification
+- Inline reply
+- Quick reactions (👍)
 
 ![Notification_screen.png](assets/Notification_screen.png)
-![Top Right Notification](assets/top_right_notification.png)
-![Bottom Right Notification](assets/bottom_right_notification.png)
+![New Custom Notification](assets/custom_notifications.gif)
 
 On Windows 7 & 10, emojis are supported in the toast.
 
