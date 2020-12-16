@@ -6,9 +6,9 @@
 
 ### 9.2.0
 
-1. SDA-2402 CLIENT Annotate screen capture - PHASE 1
-2. SDA-2404 CLIENT Toast Action: Phase 1 
-3. SDA-2385 CORE Windows Wix installer
+1. [SDA-2402 CLIENT Annotate screen capture - PHASE 1](https://perzoinc.atlassian.net/browse/SDA-2402)
+2. [SDA-2404 CLIENT Toast Action: Phase 1](https://perzoinc.atlassian.net/browse/SDA-2404)
+3. [SDA-2385 CORE Windows Wix installer](https://perzoinc.atlassian.net/browse/SDA-2385)
 
 * 9.3.5 (Electron-version)
 * 83    (Chromium-version)
