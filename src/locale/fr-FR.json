@@ -131,6 +131,7 @@
   "Redo": "Répéter la dernière opération",
   "Refresh app when idle": "Rafraîchir Symphony pendant les périodes d'inactivité",
   "Relaunch": "Redémarrer",
+  "Reply": "Réponse",
   "Restart": "Redémarrer",
   "Relaunch Application": "Redémarrer l'application",
   "Reload": "Recharger",
@@ -162,6 +163,7 @@
     "Clear": "Effacer"
   },
   "Select All": "Tout sélectionner",
+  "Send": "Envoyer",
   "Services": "Services",
   "Show All": "Tout afficher",
   "Show crash dump in Explorer": "Afficher rapport de crash dans Explorateur",

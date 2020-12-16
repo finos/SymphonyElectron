@@ -140,6 +140,7 @@ export interface INotificationData {
     theme: Theme;
     isElectronNotification?: boolean;
     callback?: () => void;
+    hasReply?: boolean;
 }
 
 export enum NotificationActions {

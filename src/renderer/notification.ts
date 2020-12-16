@@ -51,7 +51,8 @@ class Notification extends NotificationHandler {
         onCleanUpInactiveNotification: () => this.cleanUpInactiveNotification(),
         onCreateNotificationWindow: (data: INotificationData) => this.createNotificationWindow(data),
         onMouseOver: (_event, windowId) => this.onMouseOver(windowId),
-        onMouseLeave: (_event, windowId) => this.onMouseLeave(windowId),
+        onMouseLeave: (_event, windowId, isInputHidden) => this.onMouseLeave(windowId, isInputHidden),
+        onShowReply: (_event, windowId) => this.onShowReply(windowId),
     };
     private activeNotifications: Electron.BrowserWindow[] = [];
     private inactiveWindows: Electron.BrowserWindow[] = [];
@@ -73,6 +74,10 @@ class Notification extends NotificationHandler {
         });
         ipcMain.on('notification-mouseenter', this.funcHandlers.onMouseOver);
         ipcMain.on('notification-mouseleave', this.funcHandlers.onMouseLeave);
+        ipcMain.on('notification-on-reply', (_event, windowId, replyText) => {
+            this.onNotificationReply(windowId, replyText);
+        });
+        ipcMain.on('show-reply', this.funcHandlers.onShowReply);
         // Update latest notification settings from config
         app.on('ready', () => this.updateNotificationSettings());
         this.cleanUpTimer = setInterval(this.funcHandlers.onCleanUpInactiveNotification, CLEAN_UP_INTERVAL);
@@ -182,6 +187,8 @@ class Notification extends NotificationHandler {
         if (notificationWindow.displayTimer) {
             clearTimeout(notificationWindow.displayTimer);
         }
+        // Reset notification window size to default
+        notificationWindow.setSize(notificationSettings.width, notificationSettings.height, true);
         // Move notification to top
         notificationWindow.moveTop();
 
@@ -203,6 +210,7 @@ class Notification extends NotificationHandler {
             flash,
             isExternal,
             theme,
+            hasReply,
         } = data;
 
         notificationWindow.webContents.send('notification-data', {
@@ -216,6 +224,7 @@ class Notification extends NotificationHandler {
             flash,
             isExternal,
             theme,
+            hasReply,
         });
         notificationWindow.showInactive();
     }
@@ -285,6 +294,24 @@ class Notification extends NotificationHandler {
             if (typeof callback === 'function') {
                 callback(NotificationActions.notificationClosed, data);
             }
+        }
+    }
+
+    /**
+     * Handles notification reply action which updates client
+     * @param clientId {number}
+     * @param replyText {string}
+     */
+    public onNotificationReply(clientId: number, replyText: string): void {
+        const browserWindow = this.getNotificationWindow(clientId);
+        if (browserWindow && windowExists(browserWindow) && browserWindow.notificationData) {
+            const data = browserWindow.notificationData;
+            const callback = this.notificationCallbacks[ clientId ];
+            if (typeof callback === 'function') {
+                callback(NotificationActions.notificationReply, data, replyText);
+            }
+            this.notificationClosed(clientId);
+            this.hideNotification(clientId);
         }
     }
 
@@ -434,14 +461,19 @@ class Notification extends NotificationHandler {
      * Start a new timer to close the notification
      *
      * @param windowId
+     * @param isInputHidden {boolean} - whether the inline reply is hidden
      */
-    private onMouseLeave(windowId: number): void {
+    private onMouseLeave(windowId: number, isInputHidden: boolean): void {
         const notificationWindow = this.getNotificationWindow(windowId);
         if (!notificationWindow || !windowExists(notificationWindow)) {
             return;
         }
 
         if (notificationWindow.notificationData && notificationWindow.notificationData.sticky) {
+            return;
+        }
+
+        if (!isInputHidden) {
             return;
         }
 
@@ -453,6 +485,22 @@ class Notification extends NotificationHandler {
                 await this.hideNotification(notificationWindow.clientId);
             }, displayTime);
         }
+    }
+
+    /**
+     * Increase the notification height to
+     * make space for reply input element
+     *
+     * @param windowId
+     * @private
+     */
+    private onShowReply(windowId: number): void {
+        const notificationWindow = this.getNotificationWindow(windowId);
+        if (!notificationWindow || !windowExists(notificationWindow)) {
+            return;
+        }
+        clearTimeout(notificationWindow.displayTimer);
+        notificationWindow.setSize(344, 104, true);
     }
 
     /**
