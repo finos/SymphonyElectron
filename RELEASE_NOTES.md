@@ -26,10 +26,10 @@
 
 ### SDA 9.1.3
 
-1. SDA-2559 CORE Remove Cache on New Install
-2. SDA-2359 CORE Instinet Prod - SDA blank screen 
-3. SDA-2524 CORE Unpreventable top-level navigation
-4. SDA-2525 CORE Context isolation bypass via prevented window.open
+1. [SDA-2559 CORE Remove Cache on New Install](https://perzoinc.atlassian.net/browse/SDA-2559)
+2. [SDA-2359 CORE Instinet Prod - SDA blank screen](https://perzoinc.atlassian.net/browse/SDA-2359)
+3. [SDA-2524 CORE Unpreventable top-level navigation](https://perzoinc.atlassian.net/browse/SDA-2524)
+4. [SDA-2525 CORE Context isolation bypass via prevented window.open](https://perzoinc.atlassian.net/browse/SDA-2525)
 
 * 9.3.2 (Electron-version)
 * 83    (Chromium-version)
