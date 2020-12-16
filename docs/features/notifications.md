@@ -25,12 +25,12 @@ We support OS native notifications for users who'd like to keep it simple. This 
 ![notifications_mac.png](assets/notifications_mac.png)
 ![notifications_mac_2.png](assets/notifications_mac_2.png)
 
-## HTML Notification (Window, MacOS, Linux)
+## Custom SDA Notification (Windows, macOS, Linux)
 Notifications are custom built to support the following use cases:
 - Custom Color
 - Position in the screen
 - Custom screen (in case of multiple displays connected)
-- Flash a notification
+- Flashing a notification to call for attention
 - Inline reply
 - Quick reactions (👍)
 - Emojis
