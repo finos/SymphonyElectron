@@ -1,16 +1,31 @@
 @import "theme";
+@inputWidth: 270px;
 
 .blackText {
   --text-color: #000000;
+  --button-bg-color: #52575f;
+  --button-test-color: #FFFFFF;
   --logo-bg: url('../assets/symphony-logo.png');
 }
 .light {
   --text-color: #525760;
+  --button-bg-color: linear-gradient(0deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.72)), #525760;
+  --button-test-color: #000000;
   --logo-bg: url('../assets/symphony-logo.png');
 }
 .dark {
   --text-color: #FFFFFF;
+  --button-bg-color: #52575f;
+  --button-test-color: #FFFFFF;
   --logo-bg: url('../assets/symphony-logo.png');
+}
+
+.big {
+  --border-height: 98px;
+}
+
+.small {
+  --border-height: 58px;
 }
 
 body {
@@ -30,19 +45,34 @@ body {
   position: relative;
   line-height: 15px;
   box-sizing: border-box;
-  border-radius: 8px;
+  flex-direction: column;
+  border-radius: 10px;
 
   &:hover .close {
     visibility: visible;
   }
 }
 
+.external-border {
+  border: 3px solid #f6b202;
+}
+
+.main-container {
+  height: 64px;
+  display: flex;
+  justify-content: center;
+  background-color: #ffffff;
+  overflow: hidden;
+  position: relative;
+  line-height: 15px;
+}
+
 .ext-border {
-  border: 2px solid #f6b202;
-  border-radius: 8px;
-  width: 340px;
-  height: 60px;
-  position: absolute;
+  border: 3px solid #f6b202;
+  border-radius: 10px;
+  width: 338px;
+  height: var(--border-height);
+  position: fixed;
 }
 
 .header {
@@ -96,11 +126,122 @@ body {
   margin: 12px;
 }
 
-.close {
+.actions-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  z-index: 5;
+}
+
+.action-button {
+  border-radius: 16px;
+  padding: 2px 10px;
+  background: var(--button-bg-color);
+  color: var(--button-test-color);
+  flex: none;
+  font-weight: 600;
+  border-style: none;
+  font-size: 12px;
+  line-height: 16px;
+  align-items: center;
+  text-align: center;
+  text-transform: uppercase;
+  order: 0;
+  flex-grow: 0;
+  font-style: normal;
+  margin: 4px 8px 4px 0;
+  font-family: @font-family;
+  outline: none;
+}
+
+.action-button:hover {
+  background: #A5A8AC;
+}
+
+.rte-container {
+  width: 100%;
+  display: flex;
+}
+
+.input-container {
+  width: 100%;
+  outline: none;
+}
+
+.input-border {
+  height: 2px;
+  left: 8px;
+  right: 8px;
+  top: 0;
+  background: #008EFF;
+  margin: 0 8px;
+}
+
+.input-caret-container {
+  position: absolute;
+  left: 8px;
+  top: 60px;
+  opacity: 0;
+  border: 0;
+  padding: 0;
+  margin-bottom: 0;
+  background: transparent;
+  height: 38px;
+  width: @inputWidth;
+  outline: none;
+  color: transparent;
+  text-shadow: 0 0 0 black;
+  z-index: -3;
+  white-space: pre;
+  margin-left: 8px;
+  display: inline-block;
+  max-width: 330px;
+}
+
+.custom-input {
+  font-size: 14px;
+  display: inline-block;
+  max-width: @inputWidth;
+}
+
+.input-caret {
+  position: absolute;
+  width: 2px;
+  height: 20px;
+  border-radius: 1px;
+  margin: 8px 8px;
+  background: transparent;
+}
+
+.input-caret-focus {
+  -webkit-animation: 1s blink step-end infinite;
+}
+
+input {
+  width: @inputWidth;
+  height: 38px;
+  border: none;
+  outline: none;
+  margin-left: 8px;
+  font-size: 14px;
+  caret-color: transparent;
+  color: var(--text-color);
+}
+
+.rte-button-container {
+  display: flex;
   position: absolute;
   right: 0;
-  visibility: hidden;
-  padding: 0 5.5px 5.5px 5.5px;
+  bottom: 0;
+  padding: 7px 13px;
+}
+
+.rte-button {
+  align-self: center;
+  padding: 3px;
+  background: none;
+  border: none;
+  color: var(--text-color);
 }
 
 .title {
@@ -156,4 +297,13 @@ body {
 .logo {
   width: 40px;
   content: var(--logo-bg);
+}
+
+@-webkit-keyframes blink {
+  from, to {
+    background: transparent;
+  }
+  50% {
+    background: #008EFF;
+  }
 }
