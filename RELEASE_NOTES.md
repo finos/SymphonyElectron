@@ -49,10 +49,10 @@
 
 ### SDA 9.0.3
 
-1. SDA-2287 Context Isolation: Missing Hamburger menu when setting contextIsolation = false
-2. SDA-2285 Memory Refresh: Update electron API to support memory refresh in 9.x version
-3. RTC-8098 RTC/SDA:  "Meeting failed" to many meetings from SDA 9.0.x
-4. SDA-2229 [WFC] Unable to login to Symphony on SDA but able to login using Chrome on a macOS
+1. [SDA-2287 Context Isolation: Missing Hamburger menu when setting contextIsolation = false](https://perzoinc.atlassian.net/browse/SDA-2287)
+2. [SDA-2285 Memory Refresh: Update electron API to support memory refresh in 9.x version](https://perzoinc.atlassian.net/browse/SDA-2285)
+3. [RTC-8098 RTC/SDA:  "Meeting failed" to many meetings from SDA 9.0.x](https://perzoinc.atlassian.net/browse/RTC-8098)
+4. [SDA-2229 [WFC] Unable to login to Symphony on SDA but able to login using Chrome on a macOS](https://perzoinc.atlassian.net/browse/SDA-2229)
 
 * 9.2.1 (Electron-version)
 * 83    (Chromium-version)
