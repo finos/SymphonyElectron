@@ -17,9 +17,8 @@ We support the following set of notifications along with badge / taskbar count o
 - Wall Posts
 - Signals
 
-## Electron native notification (MacOS)
-macOS notifications are native chrome notifications which appear like any other desktop app notifications on a Mac.
-Emojis are supported in the toast.
+## OS Native notification
+We support OS native notifications for users who'd like to keep it simple. This is the same as what you see with toasts in any other apps (on Windows and macOS). Emojis and Quick Replies are supported in the notification.
 
 - Inline reply
 
