@@ -236,12 +236,28 @@ input {
   padding: 7px 13px;
 }
 
-.rte-button {
+.rte-thumbsup-button {
+  width: 25px;
+  height: 25px;
   align-self: center;
   padding: 3px;
-  background: none;
+  background: url('../assets/notification-thumbsup.svg') no-repeat center;
   border: none;
   color: var(--text-color);
+}
+
+.rte-send-button {
+  width: 25px;
+  height: 25px;
+  align-self: center;
+  padding: 3px;
+  background: url('../assets/notification-send-button-enabled.svg') no-repeat center;
+  border: none;
+  color: var(--text-color);
+}
+
+.rte-send-button:disabled {
+  background: url('../assets/notification-send-button-disabled.svg') no-repeat center;
 }
 
 .title {

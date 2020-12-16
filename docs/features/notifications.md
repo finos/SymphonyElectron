@@ -17,27 +17,27 @@ We support the following set of notifications along with badge / taskbar count o
 - Wall Posts
 - Signals
 
-## macOS
+## Electron native notification (MacOS)
 macOS notifications are native chrome notifications which appear like any other desktop app notifications on a Mac.
 Emojis are supported in the toast.
 
 - Inline reply
 
 ![notifications_mac.png](assets/notifications_mac.png)
+![notifications_mac_2.png](assets/notifications_mac_2.png)
 
-## Windows
-Windows notifications are custom built to support the following use cases:
+## HTML Notification (Window, MacOS, Linux)
+Notifications are custom built to support the following use cases:
 - Custom Color
 - Position in the screen
 - Custom screen (in case of multiple displays connected)
 - Flash a notification
 - Inline reply
 - Quick reactions (👍)
+- Emojis
 
 ![Notification_screen.png](assets/Notification_screen.png)
 ![New Custom Notification](assets/custom_notifications.gif)
-
-On Windows 7 & 10, emojis are supported in the toast.
 
 # Example
 N/A
