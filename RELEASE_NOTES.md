@@ -18,8 +18,8 @@
 
 ### SDA 9.1.4
 
-1. SDA-2694 [Point72] blank screen windows-only
-2. SDA-2731 Blank screen after upgrade (fresh installation) windows-only
+1. [SDA-2694 Point72 blank screen windows-only](https://perzoinc.atlassian.net/browse/SDA-2694)
+2. [SDA-2731 Blank screen after upgrade (fresh installation) windows-only](https://perzoinc.atlassian.net/browse/SDA-2731)
 
 * 9.3.5 (Electron-version)
 * 83    (Chromium-version)
