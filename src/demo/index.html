@@ -339,7 +339,9 @@
                 ssfNotificationHandler.addEventListener('error', onerror);
             } else if (window.manaSSF) {
                 const callback = (event, data) => {
-                    document.getElementById('reply').innerText = data.notificationData;
+                    if (event === 'notification-reply') {
+                        document.getElementById('reply').innerText = data.notificationData;
+                    }
                 };
                 window.manaSSF.showNotification(notf, callback);
             } else {
