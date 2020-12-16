@@ -36,10 +36,10 @@
 
 ### SDA 9.1.2
 
-1. SDA-2417 Add E2EE encryption flag requested by RTC part2
-2. SDA-2418 CORE Barclays - SDA 6.x - 9.x takes noticeably longer to start than 3.x
-3. SDA-2406 CORE GS Prod: Mac SDA 6.1 polling for python3, pip3 and other packages
-4. SDA-2465 CORE GS - SDA/RTC - Exception when started Screen Share
+1. [SDA-2417 Add E2EE encryption flag requested by RTC part2](https://perzoinc.atlassian.net/browse/SDA-2417)
+2. [SDA-2418 CORE Barclays - SDA 6.x - 9.x takes noticeably longer to start than 3.x](https://perzoinc.atlassian.net/browse/SDA-2418)
+3. [SDA-2406 CORE GS Prod: Mac SDA 6.1 polling for python3, pip3 and other packages](https://perzoinc.atlassian.net/browse/SDA-2406)
+4. [SDA-2465 CORE GS - SDA/RTC - Exception when started Screen Share](https://perzoinc.atlassian.net/browse/SDA-2465)
 
 * 9.2.1 (Electron-version)
 * 83    (Chromium-version)
