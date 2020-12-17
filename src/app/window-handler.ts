@@ -1088,6 +1088,7 @@ export class WindowHandler {
         snippetImageWidth: scaledImageDimensions.width,
       };
       if (this.snippingToolWindow && windowExists(this.snippingToolWindow)) {
+        this.snippingToolWindow.webContents.setZoomFactor(1);
         const windowBounds = this.snippingToolWindow.getBounds();
         logger.info('window-handler: Opening snipping tool window on display: ' + JSON.stringify(display));
         logger.info('window-handler: Opening snipping tool window with size: ' + JSON.stringify({ toolHeight, toolWidth }));
