@@ -281,8 +281,8 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPat
         <div className='imageContainer'>
           <AnnotateArea
             data-testid='annotate-component'
-          paths={paths}
-          highlightColor={highlightColor.rgbaColor}
+            paths={paths}
+            highlightColor={highlightColor.rgbaColor}
             penColor={penColor.rgbaColor}
             onChange={setPaths}
             imageDimensions={imageDimensions}

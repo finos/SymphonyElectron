@@ -992,6 +992,11 @@ export class WindowHandler {
       return;
     }
 
+    logger.info('window-handler, createSnippingToolWindow: Receiving snippet props: ' + JSON.stringify({ snipImage, snipDimensions }));
+
+    const allDisplays = electron.screen.getAllDisplays();
+    logger.info('window-handler, createSnippingToolWindow: User has these displays: ' + JSON.stringify(allDisplays));
+
     const electronWindows = BrowserWindow.getAllWindows();
     const mainWindow = electronWindows[0];
 
@@ -1013,31 +1018,35 @@ export class WindowHandler {
     const maxToolWidth = Math.floor(calculatePercentage(workAreaSize.width, 90));
     const availableAnnotateAreaHeight = maxToolHeight - BUTTON_BARS_HEIGHT;
     const availableAnnotateAreaWidth = maxToolWidth;
+    const scaleFactor = display.scaleFactor;
+    const scaledImageDimensions = { height: Math.floor(snipDimensions.height / scaleFactor), width: Math.floor(snipDimensions.width / scaleFactor) };
+    logger.info('window-handler, createSnippingToolWindow: Image will open with scaled dimensions: ' + JSON.stringify(scaledImageDimensions));
+    // const scaledImageDimensions = snipDimensions;
 
-    const annotateAreaHeight = snipDimensions.height > availableAnnotateAreaHeight ?
+    const annotateAreaHeight = scaledImageDimensions.height > availableAnnotateAreaHeight ?
       availableAnnotateAreaHeight :
-      snipDimensions.height;
-    const annotateAreaWidth = snipDimensions.width > availableAnnotateAreaWidth ?
+      scaledImageDimensions.height;
+    const annotateAreaWidth = scaledImageDimensions.width > availableAnnotateAreaWidth ?
       availableAnnotateAreaWidth :
-      snipDimensions.width;
+      scaledImageDimensions.width;
 
     let toolHeight: number;
     let toolWidth: number;
 
-    if (snipDimensions.height + BUTTON_BARS_HEIGHT >= maxToolHeight) {
+    if (scaledImageDimensions.height + BUTTON_BARS_HEIGHT >= maxToolHeight) {
       toolHeight = maxToolHeight + OS_PADDING;
-    } else if (snipDimensions.height + BUTTON_BARS_HEIGHT <= MIN_TOOL_HEIGHT) {
+    } else if (scaledImageDimensions.height + BUTTON_BARS_HEIGHT <= MIN_TOOL_HEIGHT) {
       toolHeight = MIN_TOOL_HEIGHT + OS_PADDING;
     } else {
-      toolHeight = snipDimensions.height + BUTTON_BARS_HEIGHT + OS_PADDING;
+      toolHeight = scaledImageDimensions.height + BUTTON_BARS_HEIGHT + OS_PADDING;
     }
 
-    if (snipDimensions.width >= maxToolWidth) {
+    if (scaledImageDimensions.width >= maxToolWidth) {
       toolWidth = maxToolWidth;
-    } else if (snipDimensions.width <= MIN_TOOL_WIDTH) {
+    } else if (scaledImageDimensions.width <= MIN_TOOL_WIDTH) {
       toolWidth = MIN_TOOL_WIDTH;
     } else {
-      toolWidth = snipDimensions.width;
+      toolWidth = scaledImageDimensions.width;
     }
 
     const opts: ICustomBrowserWindowConstructorOpts = this.getWindowOpts(
@@ -1050,7 +1059,7 @@ export class WindowHandler {
         fullscreenable: false,
       },
       {
-        devTools: isDevEnv,
+        devTools: true,
       },
     );
 
@@ -1075,13 +1084,20 @@ export class WindowHandler {
         snipImage,
         annotateAreaHeight,
         annotateAreaWidth,
-        snippetImageHeight: snipDimensions.height,
-        snippetImageWidth: snipDimensions.width,
+        snippetImageHeight: scaledImageDimensions.height,
+        snippetImageWidth: scaledImageDimensions.width,
       };
       if (this.snippingToolWindow && windowExists(this.snippingToolWindow)) {
+        const windowBounds = this.snippingToolWindow.getBounds();
         logger.info('window-handler: Opening snipping tool window on display: ' + JSON.stringify(display));
         logger.info('window-handler: Opening snipping tool window with size: ' + JSON.stringify({ toolHeight, toolWidth }));
         logger.info('window-handler: Opening snipping tool content with metadata: ' + JSON.stringify(snippingToolInfo));
+        logger.info('window-handler: Actual window size: ' + JSON.stringify(windowBounds));
+        if (windowBounds.height !== toolHeight || windowBounds.width !== toolWidth) {
+          logger.info('window-handler: Could not create window with correct size, resizing with setBounds');
+          this.snippingToolWindow.setBounds({ height: toolHeight, width: toolWidth });
+          logger.info('window-handler: window bounds after resizing: ' + JSON.stringify(this.snippingToolWindow.getBounds()));
+        }
         this.snippingToolWindow.webContents.send(
           'snipping-tool-data',
           snippingToolInfo,
@@ -1090,6 +1106,8 @@ export class WindowHandler {
     });
 
     this.snippingToolWindow.once('closed', () => {
+      logger.info('window-handler, createSnippingToolWindow: Closing snipping window, attempting to delete temp snip image');
+      this.deleteFile(snipImage);
       this.removeWindow(opts.winKey);
       this.screenPickerWindow = null;
     });
@@ -1648,6 +1666,23 @@ export class WindowHandler {
         }
         resolve();
       });
+    });
+  }
+
+  /**
+   * Deletes a locally stored file
+   * @param filePath Path for the file to delete
+   */
+  public deleteFile(filePath: string) {
+    fs.unlink(filePath, (removeErr) => {
+      logger.info(
+        `window-handler: cleaning up temp snippet file: ${filePath}!`,
+      );
+      if (removeErr) {
+        logger.info(
+          `window-handler: error removing temp snippet file, is probably already removed: ${filePath}, err: ${removeErr}`,
+        );
+      }
     });
   }
 
