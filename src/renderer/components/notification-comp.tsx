@@ -1,10 +1,11 @@
+import classNames from 'classnames';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
 
 import { i18n } from '../../common/i18n-preload';
 
 const whiteColorRegExp = new RegExp(/^(?:white|#fff(?:fff)?|rgba?\(\s*255\s*,\s*255\s*,\s*255\s*(?:,\s*1\s*)?\))$/i);
-const darkTheme = ['#e23030', '#b5616a', '#ab8ead', '#ebc875', '#a3be77', '#58c6ff', '#ebab58'];
+const darkTheme = [ '#e23030', '#b5616a', '#ab8ead', '#ebc875', '#a3be77', '#58c6ff', '#ebab58' ];
 type Theme = '' | 'light' | 'dark';
 
 interface IState {
@@ -18,9 +19,18 @@ interface IState {
     flash: boolean;
     isExternal: boolean;
     theme: Theme;
+    hasReply: boolean;
+    isInputHidden: boolean;
+    containerHeight: number;
+    canSendMessage: boolean;
 }
 
-type mouseEventButton = React.MouseEvent<HTMLDivElement>;
+type mouseEventButton = React.MouseEvent<HTMLDivElement> | React.MouseEvent<HTMLButtonElement>;
+type keyboardEvent = React.KeyboardEvent<HTMLInputElement>;
+
+// Notification container height
+const CONTAINER_HEIGHT = 64;
+const CONTAINER_HEIGHT_WITH_INPUT = 104;
 
 export default class NotificationComp extends React.Component<{}, IState> {
 
@@ -30,8 +40,15 @@ export default class NotificationComp extends React.Component<{}, IState> {
         onContextMenu: (event) => this.contextMenu(event),
         onMouseEnter: (winKey) => (_event: mouseEventButton) => this.onMouseEnter(winKey),
         onMouseLeave: (winKey) => (_event: mouseEventButton) => this.onMouseLeave(winKey),
+        onOpenReply: (winKey) => (event: mouseEventButton) => this.onOpenReply(event, winKey),
+        onThumbsUp: () => (_event: mouseEventButton) => this.onThumbsUp(),
+        onReply: (winKey) => (_event: mouseEventButton) => this.onReply(winKey),
+        onKeyUp: (winKey) => (event: keyboardEvent) => this.onKeyUp(event, winKey),
     };
     private flashTimer: NodeJS.Timer | undefined;
+    private customInput: React.RefObject<HTMLSpanElement>;
+    private inputCaret: React.RefObject<HTMLDivElement>;
+    private input: React.RefObject<HTMLInputElement>;
 
     constructor(props) {
         super(props);
@@ -46,8 +63,19 @@ export default class NotificationComp extends React.Component<{}, IState> {
             flash: false,
             isExternal: false,
             theme: '',
+            isInputHidden: true,
+            hasReply: false,
+            containerHeight: CONTAINER_HEIGHT,
+            canSendMessage: false,
         };
         this.updateState = this.updateState.bind(this);
+        this.setInputCaretPosition = this.setInputCaretPosition.bind(this);
+        this.resetNotificationData = this.resetNotificationData.bind(this);
+        this.getInputValue = this.getInputValue.bind(this);
+
+        this.customInput = React.createRef();
+        this.inputCaret = React.createRef();
+        this.input = React.createRef();
     }
 
     public componentDidMount(): void {
@@ -63,7 +91,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
      * Renders the custom title bar
      */
     public render(): JSX.Element {
-        const { title, body, image, icon, id, color, isExternal, theme } = this.state;
+        const { title, body, id, color, isExternal, theme, isInputHidden, containerHeight, hasReply, canSendMessage } = this.state;
         let themeClassName;
         if (theme) {
             themeClassName = theme;
@@ -74,50 +102,89 @@ export default class NotificationComp extends React.Component<{}, IState> {
         }
 
         const bgColor = { backgroundColor: color || '#ffffff' };
+        const containerClass = classNames('container', { 'external-border': isExternal });
 
         return (
-            <div className='container'
-                role='alert'
-                style={bgColor}
-                onContextMenu={this.eventHandlers.onContextMenu}
-                onClick={this.eventHandlers.onClick(id)}
-                onMouseEnter={this.eventHandlers.onMouseEnter(id)}
-                onMouseLeave={this.eventHandlers.onMouseLeave(id)}
-            >
-                {isExternal ? <div className='ext-border' /> : null}
-                <div className='logo-container'>
-                    <div className='logo'>
-                        <svg width='40' height='40' viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                            <path d='M0 20C0 12.1746 0 8.26188 1.80534 5.41094C2.72586 3.95728 3.95728 2.72586 5.41094 1.80534C8.26188 0 12.1746 0 20 0C27.8254 0 31.7381 0 34.5891 1.80534C36.0427 2.72586 37.2741 3.95728 38.1947 5.41094C40 8.26188 40 12.1746 40 20C40 27.8254 40 31.7381 38.1947 34.5891C37.2741 36.0427 36.0427 37.2741 34.5891 38.1947C31.7381 40 27.8254 40 20 40C12.1746 40 8.26188 40 5.41094 38.1947C3.95728 37.2741 2.72586 36.0427 1.80534 34.5891C0 31.7381 0 27.8254 0 20Z' fill='#000028' />
-                            <path d='M0 20C0 12.1746 0 8.26188 1.80534 5.41094C2.72586 3.95728 3.95728 2.72586 5.41094 1.80534C8.26188 0 12.1746 0 20 0C27.8254 0 31.7381 0 34.5891 1.80534C36.0427 2.72586 37.2741 3.95728 38.1947 5.41094C40 8.26188 40 12.1746 40 20C40 27.8254 40 31.7381 38.1947 34.5891C37.2741 36.0427 36.0427 37.2741 34.5891 38.1947C31.7381 40 27.8254 40 20 40C12.1746 40 8.26188 40 5.41094 38.1947C3.95728 37.2741 2.72586 36.0427 1.80534 34.5891C0 31.7381 0 27.8254 0 20Z' fill='url(#paint0_linear)' />
-                            <path d='M28 17.1029V13.4094C28 12.6528 27.56 11.9425 26.8467 11.5534C25.7833 10.9728 23.48 10 20 10C16.52 10 14.2167 10.9728 13.1533 11.5565C12.44 11.9425 12 12.6528 12 13.4094V18.9559L24.6667 22.3529V24.8235C24.6667 25.1571 24.44 25.3918 24.0533 25.5678L20 27.4485L15.9233 25.5585C15.56 25.3918 15.3333 25.1571 15.3333 24.8235V22.9706L12 22.0441V24.8235C12 26.3491 12.9433 27.6462 14.4433 28.3225L20 31L25.5333 28.3349C27.0567 27.6462 28 26.3491 28 24.8235V20.1912L15.3333 16.7941V13.9746C16.24 13.57 17.78 13.0882 20 13.0882C22.22 13.0882 23.76 13.57 24.6667 13.9746V16.1765L28 17.1029Z' fill='#0098FF' />
-                            <path d='M28 17.1029V13.4094C28 12.6528 27.56 11.9425 26.8467 11.5534C25.7833 10.9728 23.48 10 20 10C16.52 10 14.2167 10.9728 13.1533 11.5565C12.44 11.9425 12 12.6528 12 13.4094V18.9559L24.6667 22.3529V24.8235C24.6667 25.1571 24.44 25.3918 24.0533 25.5678L20 27.4485L15.9233 25.5585C15.56 25.3918 15.3333 25.1571 15.3333 24.8235V22.9706L12 22.0441V24.8235C12 26.3491 12.9433 27.6462 14.4433 28.3225L20 31L25.5333 28.3349C27.0567 27.6462 28 26.3491 28 24.8235V20.1912L15.3333 16.7941V13.9746C16.24 13.57 17.78 13.0882 20 13.0882C22.22 13.0882 23.76 13.57 24.6667 13.9746V16.1765L28 17.1029Z' fill='url(#paint1_radial)' />
-                            <defs>
-                                <linearGradient id='paint0_linear' x1='20' y1='0' x2='20' y2='40' gradientUnits='userSpaceOnUse'>
-                                    <stop stopColor='white' stopOpacity='0.2' />
-                                    <stop offset='1' stopColor='white' stopOpacity='0' />
-                                </linearGradient>
-                                <radialGradient id='paint1_radial' cx='0' cy='0' r='1' gradientUnits='userSpaceOnUse' gradientTransform='translate(20.0278 10) rotate(90) scale(14.2187 20.1481)'>
-                                    <stop stopColor='white' stopOpacity='0.4' />
-                                    <stop offset='1' stopColor='white' stopOpacity='0' />
-                                </radialGradient>
-                            </defs>
-                        </svg>
+            <div className={containerClass} style={{ height: containerHeight }}>
+                <div
+                    className='main-container'
+                    role='alert'
+                    style={bgColor}
+                    onContextMenu={this.eventHandlers.onContextMenu}
+                    onClick={this.eventHandlers.onClick(id)}
+                    onMouseEnter={this.eventHandlers.onMouseEnter(id)}
+                    onMouseLeave={this.eventHandlers.onMouseLeave(id)}
+                >
+                    <div className='logo-container'>
+                        <div className='logo'>
+                            <img src='../renderer/assets/notification-symphony-logo.svg' alt='Symphony logo'/>
+                        </div>
+                    </div>
+                    <div className='header'>
+                        <div className='title-container'>
+                            <span className={`title ${themeClassName}`}>{title}</span>
+                            {this.renderExtBadge(isExternal)}
+                        </div>
+                        <span className={`message ${themeClassName}`}>{body}</span>
+                    </div>
+                    <div className='actions-container'>
+                        <button
+                            className={`action-button ${themeClassName}`}
+                            title={i18n.t('Close')()}
+                            onClick={this.eventHandlers.onClose(id)}
+                        >
+                            {i18n.t('Close')()}
+                        </button>
+                        <button
+                            className={`action-button ${themeClassName}`}
+                            style={{ visibility: hasReply ? 'visible' : 'hidden' }}
+                            title={i18n.t('Reply')()}
+                            onClick={this.eventHandlers.onOpenReply(id)}
+                        >
+                            {i18n.t('Reply')()}
+                        </button>
                     </div>
                 </div>
-                <div className='header'>
-                    <div className='title-container'>
-                        <span className={`title ${themeClassName}`}>{title}</span>
-                        {this.renderExtBadge(isExternal)}
+                <div style={{
+                    ...{ display: isInputHidden ? 'none' : 'flex' },
+                    ...bgColor,
+                }} className='rte-container'>
+                    <div className='input-container'>
+                        <div className='input-border'/>
+                        <div className='input-caret-container'>
+                            <span ref={this.customInput} className='custom-input'/>
+                        </div>
+                        <div ref={this.inputCaret} className='input-caret'/>
+                        <input
+                            style={bgColor}
+                            className={themeClassName}
+                            autoFocus={true}
+                            onInput={this.setInputCaretPosition}
+                            onKeyDown={this.setInputCaretPosition}
+                            onKeyUp={this.eventHandlers.onKeyUp(id)}
+                            onChange={this.setInputCaretPosition}
+                            onClick={this.setInputCaretPosition}
+                            onPaste={this.setInputCaretPosition}
+                            onCut={this.setInputCaretPosition}
+                            onCopy={this.setInputCaretPosition}
+                            onMouseDown={this.setInputCaretPosition}
+                            onMouseUp={this.setInputCaretPosition}
+                            onFocus={() => this.animateCaret(true)}
+                            onBlur={() => this.animateCaret(false)}
+                            ref={this.input}/>
                     </div>
-                    <span className={`message ${themeClassName}`}>{body}</span>
-                </div>
-                {this.renderProfile(icon, image, title)}
-                <div className='close' title={i18n.t('Close')()} onClick={this.eventHandlers.onClose(id)}>
-                    <svg width='8' height='8' viewBox='0 0 8 8' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                        <path d='M1.35355 0.646447C1.15829 0.451184 0.841709 0.451184 0.646447 0.646447C0.451184 0.841709 0.451184 1.15829 0.646447 1.35355L3.29289 4L0.646447 6.64645C0.451185 6.84171 0.451185 7.15829 0.646447 7.35356C0.841709 7.54882 1.15829 7.54882 1.35355 7.35356L4 4.70711L6.64645 7.35355C6.84171 7.54882 7.15829 7.54882 7.35355 7.35355C7.54882 7.15829 7.54882 6.84171 7.35355 6.64645L4.70711 4L7.35355 1.35356C7.54882 1.15829 7.54882 0.84171 7.35355 0.646448C7.15829 0.451186 6.84171 0.451186 6.64645 0.646448L4 3.29289L1.35355 0.646447Z' fill='#525760' />
-                        <path d='M1.35355 0.646447C1.15829 0.451184 0.841709 0.451184 0.646447 0.646447C0.451184 0.841709 0.451184 1.15829 0.646447 1.35355L3.29289 4L0.646447 6.64645C0.451185 6.84171 0.451185 7.15829 0.646447 7.35356C0.841709 7.54882 1.15829 7.54882 1.35355 7.35356L4 4.70711L6.64645 7.35355C6.84171 7.54882 7.15829 7.54882 7.35355 7.35355C7.54882 7.15829 7.54882 6.84171 7.35355 6.64645L4.70711 4L7.35355 1.35356C7.54882 1.15829 7.54882 0.84171 7.35355 0.646448C7.15829 0.451186 6.84171 0.451186 6.64645 0.646448L4 3.29289L1.35355 0.646447Z' fill='white' fill-opacity='0.96' />
-                    </svg>
+                    <div className='rte-button-container'>
+                        <button
+                            className={`rte-thumbsup-button ${themeClassName}`}
+                            onClick={this.eventHandlers.onThumbsUp()}
+                        />
+                        <button
+                            className={`rte-send-button ${themeClassName}`}
+                            onClick={this.eventHandlers.onReply(id)}
+                            disabled={!canSendMessage}
+                            title={i18n.t('Send')()}
+                        />
+                    </div>
                 </div>
             </div>
         );
@@ -133,35 +200,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
         }
         return (
             <div className='ext-badge-container'>
-                <svg width='32' height='16' viewBox='0 0 32 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                    <rect width='32' height='16' rx='8' fill='#F6B202' />
-                    <rect width='32' height='16' rx='8' fill='white' fill-opacity='0.24' />
-                    <path d='M11.4414 13H6.72461V4.59766H11.2539V5.78125H8.11914V8.16016H11.0078V9.33789H8.11914V11.8223H11.4414V13ZM19.3574 13H17.6875L15.9648 9.91797C15.9141 9.82422 15.8574 9.69141 15.7949 9.51953H15.7715C15.7363 9.60547 15.6777 9.73828 15.5957 9.91797L13.8203 13H12.1387L14.8926 8.77539L12.3613 4.59766H14.0664L15.584 7.43359C15.6816 7.62109 15.7695 7.80859 15.8477 7.99609H15.8652C15.9785 7.75 16.0762 7.55469 16.1582 7.41016L17.7344 4.59766H19.3047L16.7148 8.76367L19.3574 13ZM26.1191 5.78125H23.7051V13H22.3105V5.78125H19.9023V4.59766H26.1191V5.78125Z' fill='#525760' />
-                    <path d='M11.4414 13H6.72461V4.59766H11.2539V5.78125H8.11914V8.16016H11.0078V9.33789H8.11914V11.8223H11.4414V13ZM19.3574 13H17.6875L15.9648 9.91797C15.9141 9.82422 15.8574 9.69141 15.7949 9.51953H15.7715C15.7363 9.60547 15.6777 9.73828 15.5957 9.91797L13.8203 13H12.1387L14.8926 8.77539L12.3613 4.59766H14.0664L15.584 7.43359C15.6816 7.62109 15.7695 7.80859 15.8477 7.99609H15.8652C15.9785 7.75 16.0762 7.55469 16.1582 7.41016L17.7344 4.59766H19.3047L16.7148 8.76367L19.3574 13ZM26.1191 5.78125H23.7051V13H22.3105V5.78125H19.9023V4.59766H26.1191V5.78125Z' fill='black' fill-opacity='0.24' />
-                </svg>
-            </div>
-        );
-    }
-
-    /**
-     * Renders user profile image if present else use
-     * the first char of the notification title
-     *
-     * @param icon
-     * @param image
-     * @param title
-     */
-    private renderProfile(icon: string, image: string, title: string): JSX.Element {
-        if (icon || image) {
-            return (
-                <div className='user-profile-pic-container'>
-                    <img src={image || icon || '../renderer/assets/symphony-default-profile-pic.png'} className='user-profile-pic' alt='user profile picture' />
-                </div>
-            );
-        }
-        return (
-            <div className='user-name-text-container'>
-                <span className='user-name-text'>{title.substr(0, 1)}</span>
+                <img src='../renderer/assets/notification-ext-badge.svg' alt='ext-badge'/>
             </div>
         );
     }
@@ -210,7 +249,35 @@ export default class NotificationComp extends React.Component<{}, IState> {
      * @param id {number}
      */
     private onMouseLeave(id: number): void {
-        ipcRenderer.send('notification-mouseleave', id);
+        const { isInputHidden } = this.state;
+        ipcRenderer.send('notification-mouseleave', id, isInputHidden);
+    }
+
+    /**
+     * Insets a thumbs up emoji
+     * @private
+     */
+    private onThumbsUp(): void {
+        if (this.input.current) {
+            const input = this.input.current.value;
+            this.input.current.value = input + '👍';
+            this.setInputCaretPosition();
+            this.input.current.focus();
+        }
+    }
+
+    /**
+     * Handles reply action
+     * @param id
+     * @private
+     */
+    private onReply(id: number): void {
+        let replyText = this.getInputValue();
+        if (replyText) {
+            // need to replace 👍 with :thumbsup: to make sure client displays the correct emoji
+            replyText = replyText.replace(/👍/g, replyText.length <= 2 ? ':thumbsup: ' : ':thumbsup:');
+            ipcRenderer.send('notification-on-reply', id, replyText);
+        }
     }
 
     /**
@@ -223,6 +290,83 @@ export default class NotificationComp extends React.Component<{}, IState> {
     }
 
     /**
+     * Displays an input on the notification
+     *
+     * @private
+     */
+    private onOpenReply(event, id) {
+        event.stopPropagation();
+        ipcRenderer.send('show-reply', id);
+        this.setState({
+            isInputHidden: false,
+            hasReply: false,
+            containerHeight: CONTAINER_HEIGHT_WITH_INPUT,
+        }, () => {
+            this.input.current?.focus();
+        });
+    }
+
+    /**
+     * Trim and returns the input value
+     * @private
+     */
+    private getInputValue(): string | undefined {
+        return this.input.current?.value.trim();
+    }
+
+    /**
+     * Handles key up event and enter keyCode
+     *
+     * @param event
+     * @param id
+     * @private
+     */
+    private onKeyUp(event, id) {
+        this.setInputCaretPosition();
+        if (event.key === 'Enter' || event.keyCode === 13) {
+            this.onReply(id);
+        }
+    }
+
+    /**
+     * Moves the custom input caret based on input text
+     * @private
+     */
+    private setInputCaretPosition() {
+        if (this.customInput.current) {
+            if (this.input.current) {
+                const inputText = this.input.current.value || '';
+                const selectionStart = this.input.current.selectionStart || 0;
+                this.customInput.current.innerText = inputText.substring(0, selectionStart).replace(/\n$/, '\n\u0001');
+                this.setState({
+                    canSendMessage: inputText.trim().length > 0,
+                });
+            }
+
+            const rects = this.customInput.current.getClientRects();
+            const lastRect = rects && rects[ rects.length - 1 ];
+
+            const x = lastRect && lastRect.width || 0;
+            if (this.inputCaret.current) {
+                this.inputCaret.current.style.left = x + 'px';
+            }
+        }
+    }
+
+    /**
+     * Adds blinking animation to input caret
+     * @param hasFocus
+     * @private
+     */
+    private animateCaret(hasFocus: boolean) {
+        if (hasFocus) {
+            this.inputCaret.current?.classList.add('input-caret-focus');
+        } else {
+            this.inputCaret.current?.classList.remove('input-caret-focus');
+        }
+    }
+
+    /**
      * Sets the component state
      *
      * @param _event
@@ -231,7 +375,12 @@ export default class NotificationComp extends React.Component<{}, IState> {
     private updateState(_event, data): void {
         const { color, flash } = data;
         data.color = (color && !color.startsWith('#')) ? '#' + color : color;
+        data.isInputHidden = true;
+        data.containerHeight = CONTAINER_HEIGHT;
+
+        this.resetNotificationData();
         this.setState(data as IState);
+
         if (this.flashTimer) {
             clearInterval(this.flashTimer);
         }
@@ -246,5 +395,16 @@ export default class NotificationComp extends React.Component<{}, IState> {
                 }
             }, 1000);
         }
+    }
+
+    /**
+     * Reset data for new notification
+     * @private
+     */
+    private resetNotificationData(): void {
+        if (this.input.current) {
+            this.input.current.value = '';
+        }
+        this.setInputCaretPosition();
     }
 }

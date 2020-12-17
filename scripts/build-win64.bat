@@ -106,6 +106,7 @@ IF "%EXPIRY_PERIOD%"=="0" (
 
 set installerDir="%CD%\installer\win"
 set distDir="%CD%\dist"
+set rootDir="%CD%"
 
 if NOT EXIST "%PFX_DIR%\%PFX_FILE%" (
   echo "can not find .pfx file" "%pfxDir%\%pfxFile%"
@@ -170,5 +171,10 @@ if ERRORLEVEL 1 (
 echo "Generating installation instructions"
 call %appdata%\npm\markdown-pdf install_instructions_win.md
 copy install_instructions_win.pdf "%targetsDir%\Install-Instructions-%archiveName%.pdf"
+
+echo Generate release notes
+cd %rootDir%
+call %appdata%\npm\markdown-pdf RELEASE_NOTES.md
+copy RELEASE_NOTES.pdf "%targetsDir%\Release-Notes-%archiveName%.pdf"
 
 echo "All done, job successfull :)"

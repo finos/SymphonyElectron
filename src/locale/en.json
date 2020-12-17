@@ -131,6 +131,7 @@
   "Redo": "Redo",
   "Refresh app when idle": "Refresh app when idle",
   "Relaunch": "Relaunch",
+  "Reply": "Reply",
   "Restart": "Restart",
   "Relaunch Application": "Relaunch Application",
   "Reload": "Reload",
@@ -162,6 +163,7 @@
     "Clear": "Clear"
   },
   "Select All": "Select All",
+  "Send": "Send",
   "Services": "Services",
   "Show All": "Show All",
   "Show crash dump in Explorer": "Show crash dump in Explorer",
