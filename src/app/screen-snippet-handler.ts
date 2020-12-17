@@ -1,6 +1,5 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, nativeImage } from 'electron';
 import * as fs from 'fs';
-import sizeOf from 'image-size';
 import * as os from 'os';
 import * as path from 'path';
 
@@ -26,7 +25,7 @@ const readFile = util.promisify(fs.readFile);
 class ScreenSnippet {
   private readonly tempDir: string;
   private readonly captureUtil: string;
-  private outputFileName: string | undefined;
+  private outputFilePath: string | undefined;
   private captureUtilArgs: ReadonlyArray<string> | undefined;
   private child: ChildProcess | undefined;
   private focusedWindow: BrowserWindow | null = null;
@@ -70,31 +69,31 @@ class ScreenSnippet {
       }
     }
     logger.info(`screen-snippet-handler: Starting screen capture!`);
-    this.outputFileName = path.join(
+    this.outputFilePath = path.join(
       this.tempDir,
       'symphonyImage-' + Date.now() + '.png',
     );
     if (isMac) {
-      this.captureUtilArgs = ['-i', '-s', '-t', 'png', this.outputFileName];
+      this.captureUtilArgs = ['-i', '-s', '-t', 'png', this.outputFilePath];
     } else if (isWindowsOS) {
       if (windowHandler.isMana) {
         this.captureUtilArgs = [
           '--no-annotate',
-          this.outputFileName,
+          this.outputFilePath,
           i18n.getLocale(),
         ];
       } else {
-        this.captureUtilArgs = [this.outputFileName, i18n.getLocale()];
+        this.captureUtilArgs = [this.outputFilePath, i18n.getLocale()];
       }
     } else if (isLinux) {
-      this.captureUtilArgs = ['-a', '-f', this.outputFileName];
+      this.captureUtilArgs = ['-a', '-f', this.outputFilePath];
     } else {
       this.captureUtilArgs = [];
     }
     this.focusedWindow = BrowserWindow.getFocusedWindow();
 
     logger.info(
-      `screen-snippet-handler: Capturing snippet with file ${this.outputFileName} and args ${this.captureUtilArgs}!`,
+      `screen-snippet-handler: Capturing snippet with file ${this.outputFilePath} and args ${this.captureUtilArgs}!`,
     );
 
     // only allow one screen capture at a time.
@@ -107,14 +106,15 @@ class ScreenSnippet {
     try {
       await this.execCmd(this.captureUtil, this.captureUtilArgs);
       if (windowHandler.isMana) {
-        const dimensions = this.getImageSize();
-        const imageSize = { width: dimensions?.width || -1, height: dimensions?.height || -1 };
-        if (imageSize.width === -1 || imageSize.width === -1) {
+        logger.info('screen-snippet-handler: Attempting to extract image dimensions from: ' + this.outputFilePath);
+        const dimensions = this.getImageDimensions(this.outputFilePath);
+        logger.info('screen-snippet-handler: Extracted dimensions from image: ' + JSON.stringify(dimensions));
+        if (!dimensions) {
           logger.error('screen-snippet-handler: Could not get image size');
           return;
         }
         windowHandler.closeSnippingToolWindow();
-        windowHandler.createSnippingToolWindow(this.outputFileName, imageSize);
+        windowHandler.createSnippingToolWindow(this.outputFilePath, dimensions);
         this.uploadSnippet(webContents);
         this.sendAnalytics();
       return;
@@ -125,14 +125,14 @@ class ScreenSnippet {
         type,
       }: IScreenSnippet = await this.convertFileToData();
       logger.info(
-        `screen-snippet-handler: Snippet captured! Sending data to SFE`,
+        `screen-snippet-handler: Snippet captured! Sending data straight to SFE without opening annotate tool`,
       );
       webContents.send('screen-snippet-data', { message, data, type });
       await this.verifyAndUpdateAlwaysOnTop();
     } catch (error) {
       await this.verifyAndUpdateAlwaysOnTop();
       logger.error(
-        `screen-snippet-handler: screen capture failed with error: ${error}!`,
+        `screen-snippet-handler: screen capture failed, user probably escaped the capture. Error: ${error}!`,
       );
     }
   }
@@ -208,13 +208,13 @@ class ScreenSnippet {
    */
   private async convertFileToData(): Promise<IScreenSnippet> {
     try {
-      if (!this.outputFileName) {
+      if (!this.outputFilePath) {
         logger.info(
           `screen-snippet-handler: screen capture failed! output file doesn't exist!`,
         );
         return { message: 'output file name is required', type: 'ERROR' };
       }
-      const data = await readFile(this.outputFileName);
+      const data = await readFile(this.outputFilePath);
       if (!data) {
         logger.info(
           `screen-snippet-handler: screen capture failed! data doesn't exist!`,
@@ -235,28 +235,7 @@ class ScreenSnippet {
       if (this.focusedWindow && windowExists(this.focusedWindow)) {
         this.focusedWindow.moveTop();
       }
-      // remove tmp file (async)
-      if (this.outputFileName) {
-        this.deleteFile(this.outputFileName);
-      }
     }
-  }
-
-  /**
-   * Deletes a locally stored file
-   * @param filePath Path for the file to delete
-   */
-  private deleteFile(filePath: string) {
-    fs.unlink(filePath, (removeErr) => {
-      logger.info(
-        `screen-snippet-handler: cleaning up temp snippet file: ${filePath}!`,
-      );
-      if (removeErr) {
-        logger.error(
-          `screen-snippet-handler: error removing temp snippet file: ${filePath}, err: ${removeErr}`,
-        );
-      }
-    });
   }
 
   /**
@@ -270,23 +249,17 @@ class ScreenSnippet {
   }
 
   /**
-   * Gets the height & width of an image
+   * Gets the dimensions of an image
+   * @param filePath path to file to get image dimensions of
    */
-  private getImageSize():
-    | {
-      height: number | undefined;
-      width: number | undefined;
-    }
-    | undefined {
-    if (!this.outputFileName) {
-      return undefined;
-    }
+  private getImageDimensions(filePath: string): {
+    height: number;
+    width: number;
+  } {
+    const img = nativeImage.createFromPath(filePath);
+    const size = img.getSize();
 
-    const dimensions = sizeOf(this.outputFileName);
-    return {
-      height: dimensions.height,
-      width: dimensions.width,
-    };
+    return size;
   }
 
   /**
@@ -303,25 +276,21 @@ class ScreenSnippet {
           data,
           type,
         };
-        logger.info(
-          `screen-snippet-handler: Snippet captured! Sending data to SFE`,
-        );
+        logger.info('screen-snippet-handler: Snippet uploaded correctly, sending payload to SFE');
         webContents.send('screen-snippet-data', payload);
         await this.verifyAndUpdateAlwaysOnTop();
       } catch (error) {
         await this.verifyAndUpdateAlwaysOnTop();
         logger.error(
-          `screen-snippet-handler: screen capture failed with error: ${error}!`,
+          `screen-snippet-handler: upload of screen capture failed with error: ${error}!`,
         );
-      } finally {
-        this.deleteFile(snippetData.screenSnippetPath);
       }
     });
   }
 
-  /**
-   * Send analytics data to analytics module
-   */
+    /**
+     * Send analytics data to analytics module
+     */
   private sendAnalytics() {
     ipcMain.on('send-tracking-data-to-main', async (_event, eventData: { element: AnalyticsElements, type: ScreenSnippetActionTypes }) => {
       analytics.track({element: eventData.element, action_type: eventData.type});

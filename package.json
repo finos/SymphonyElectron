@@ -161,7 +161,6 @@
     "electron-spellchecker": "git+https://github.com/symphonyoss/electron-spellchecker.git#v2.0.4",
     "ffi-napi": "3.0.0",
     "filesize": "6.1.0",
-    "image-size": "^0.9.3",
     "lazy-brush": "^1.0.1",
     "react": "16.13.0",
     "react-dom": "16.13.0",
