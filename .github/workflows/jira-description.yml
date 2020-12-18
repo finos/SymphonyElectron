@@ -15,5 +15,4 @@ jobs:
           jira-token: ${{ secrets.JIRA_TOKEN }}
           jira-base-url: ${{ secrets.JIRA_BASE_URL }}
           custom-issue-number-regexp: '^\d+'
-          jira-project-key: 'SDA'
           use: 'both'
