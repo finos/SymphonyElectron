@@ -148,7 +148,7 @@ describe('<AnnotateArea/>', () => {
         const path = wrapper.find('[data-testid="path0"]');
         const expectedValue = { type: 'annotate_erased', element: 'screen_capture_annotate' };
         path.simulate('click');
-        expect(spy).toBeCalledWith('send-tracking-data-to-main', expectedValue);
+        expect(spy).toBeCalledWith('snippet-analytics-data', expectedValue);
     });
 
     it('should send annotate_added_pen event when drawn with pen', () => {
@@ -158,7 +158,7 @@ describe('<AnnotateArea/>', () => {
         const area = wrapper.find('[data-testid="annotate-area"]');
         area.simulate('mousedown', { pageX: 2, pageY: 49 });
         area.simulate('mouseup');
-        expect(spy).toBeCalledWith('send-tracking-data-to-main', expectedValue);
+        expect(spy).toBeCalledWith('snippet-analytics-data', expectedValue);
     });
 
     it('should send annotate_added_highlight event when drawn with highlight', () => {
@@ -178,6 +178,6 @@ describe('<AnnotateArea/>', () => {
         const area = wrapper.find('[data-testid="annotate-area"]');
         area.simulate('mousedown', { pageX: 2, pageY: 49 });
         area.simulate('mouseup');
-        expect(spy).toBeCalledWith('send-tracking-data-to-main', expectedValue);
+        expect(spy).toBeCalledWith('snippet-analytics-data', expectedValue);
     });
 });

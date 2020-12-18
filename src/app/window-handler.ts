@@ -1021,7 +1021,6 @@ export class WindowHandler {
     const scaleFactor = display.scaleFactor;
     const scaledImageDimensions = { height: Math.floor(snipDimensions.height / scaleFactor), width: Math.floor(snipDimensions.width / scaleFactor) };
     logger.info('window-handler, createSnippingToolWindow: Image will open with scaled dimensions: ' + JSON.stringify(scaledImageDimensions));
-    // const scaledImageDimensions = snipDimensions;
 
     const annotateAreaHeight = scaledImageDimensions.height > availableAnnotateAreaHeight ?
       availableAnnotateAreaHeight :

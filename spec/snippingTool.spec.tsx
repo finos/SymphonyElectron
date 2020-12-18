@@ -25,7 +25,7 @@ describe('Snipping Tool', () => {
     const spy = jest.spyOn(ipcRenderer, 'send');
     const expectedValue = { type: 'screenshot_taken', element: 'screen_capture_annotate' };
     mount(React.createElement(SnippingTool));
-    expect(spy).toBeCalledWith('send-tracking-data-to-main', expectedValue);
+    expect(spy).toBeCalledWith('snippet-analytics-data', expectedValue);
   });
 
   it('should send capture_sent BI event when clicking done', async () => {
@@ -35,7 +35,7 @@ describe('Snipping Tool', () => {
     wrapper.find('[data-testid="done-button"]').simulate('click');
     wrapper.update();
     await waitForPromisesToResolve();
-    expect(spy).toBeCalledWith('send-tracking-data-to-main', expectedValue);
+    expect(spy).toBeCalledWith('snippet-analytics-data', expectedValue);
   });
 
   it('should send annotate_cleared BI event when clicking clear', async () => {
@@ -45,7 +45,7 @@ describe('Snipping Tool', () => {
     wrapper.find('[data-testid="clear-button"]').simulate('click');
     wrapper.update();
     await waitForPromisesToResolve();
-    expect(spy).toBeCalledWith('send-tracking-data-to-main', expectedValue);
+    expect(spy).toBeCalledWith('snippet-analytics-data', expectedValue);
   });
 
   it('should render pen color picker when clicked on pen', () => {

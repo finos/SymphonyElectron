@@ -52,6 +52,10 @@ class ScreenSnippet {
     if (isLinux) {
       this.captureUtil = '/usr/bin/gnome-screenshot';
     }
+
+    ipcMain.on('snippet-analytics-data', async (_event, eventData: { element: AnalyticsElements, type: ScreenSnippetActionTypes }) => {
+      analytics.track({ element: eventData.element, action_type: eventData.type });
+    });
   }
 
   /**
@@ -116,7 +120,6 @@ class ScreenSnippet {
         windowHandler.closeSnippingToolWindow();
         windowHandler.createSnippingToolWindow(this.outputFilePath, dimensions);
         this.uploadSnippet(webContents);
-        this.sendAnalytics();
       return;
     }
       const {
@@ -287,16 +290,6 @@ class ScreenSnippet {
       }
     });
   }
-
-    /**
-     * Send analytics data to analytics module
-     */
-  private sendAnalytics() {
-    ipcMain.on('send-tracking-data-to-main', async (_event, eventData: { element: AnalyticsElements, type: ScreenSnippetActionTypes }) => {
-      analytics.track({element: eventData.element, action_type: eventData.type});
-    });
-  }
-
 }
 
 const screenSnippet = new ScreenSnippet();
