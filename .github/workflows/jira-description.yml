@@ -1,0 +1,19 @@
+name: JIRA Description
+
+on:
+  pull_request_target:
+    types: [opened, edited]
+
+jobs:
+  add-jira-description:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: cakeinpanic/jira-description-action@v0.2.0
+        name: jira-description-action
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          jira-token: ${{ secrets.JIRA_TOKEN }}
+          jira-base-url: ${{ secrets.JIRA_BASE_URL }}
+          custom-issue-number-regexp: '^\d+'
+          jira-project-name: 'SDA'
+          use: 'both'
