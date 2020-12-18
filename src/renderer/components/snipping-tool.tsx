@@ -52,7 +52,7 @@ const availableHighlightColors: IColor[] = [
 const SNIPPING_TOOL_NAMESPACE = 'ScreenSnippet';
 
 export const sendAnalyticsToMain = (element: AnalyticsElements, type: ScreenSnippetActionTypes): void => {
-  ipcRenderer.send('send-tracking-data-to-main', { element, type });
+  ipcRenderer.send('snippet-analytics-data', { element, type });
 };
 
 const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPaths }) => {

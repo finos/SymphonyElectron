@@ -53,7 +53,7 @@ class ScreenSnippet {
       this.captureUtil = '/usr/bin/gnome-screenshot';
     }
 
-    ipcMain.on('send-tracking-data-to-main', async (_event, eventData: { element: AnalyticsElements, type: ScreenSnippetActionTypes }) => {
+    ipcMain.on('snippet-analytics-data', async (_event, eventData: { element: AnalyticsElements, type: ScreenSnippetActionTypes }) => {
       analytics.track({ element: eventData.element, action_type: eventData.type });
     });
   }
