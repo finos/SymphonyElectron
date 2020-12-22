@@ -147,8 +147,8 @@ if NOT EXIST %AIP%-SetupFiles/%AIP%.msi (
 	exit /b -1
 )
 
-echo "Copying MSI result to target dir"
-copy "%AIP%-SetupFiles\%AIP%.msi" "%targetsDir%\%archiveName%.msi"
+echo "Copying Legacy MSI installer to target dir"
+copy "%AIP%-SetupFiles\%AIP%.msi" "%targetsDir%\Legacy-%archiveName%.msi"
 
 echo "Building new installer with Wix Sharp"
 call "BuildWixSharpInstaller.bat"
@@ -157,8 +157,9 @@ if NOT EXIST %SIGNING_FILE_PATH% (
     echo Signing failed, 'signing.bat' not found.
     exit /b -1
 )
-
 call %SIGNING_FILE_PATH%
+
+echo "Copying New MSI installer to target dir"
 copy "WixSharpInstaller\Symphony.msi" "%targetsDir%\%archiveName%.msi"
 
 echo "Setting up markdown to pdf package"
