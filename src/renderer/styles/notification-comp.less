@@ -84,6 +84,10 @@ body {
   align-items: flex-start;
 }
 
+.header:lang(fr-FR) {
+  min-width: 190px;
+}
+
 .title-container {
   display: flex;
 }
@@ -156,6 +160,14 @@ body {
 
 .action-button:hover {
   background: #A5A8AC;
+}
+
+.action-button:lang(fr-FR) {
+  width: 86px;
+}
+
+.action-button:lang(ja-JP) {
+ width: 60px;
 }
 
 .rte-container {
@@ -246,6 +258,13 @@ input {
   color: var(--text-color);
 }
 
+.rte-thumbsup-button:focus, .rte-send-button:focus {
+  outline: none;
+}
+.rte-send-button:focus:not(:hover):not(:active), .rte-thumbsup-button:focus:not(:hover):not(:active) {
+  outline: #008EFF auto 1px;
+}
+
 .rte-send-button {
   width: 25px;
   height: 25px;
@@ -278,6 +297,10 @@ input {
   color: var(--text-color);
 }
 
+.external-border .title {
+  max-width: 142px;
+}
+
 .company {
   font-family: sans-serif;
   font-size: 11px;
@@ -291,7 +314,7 @@ input {
 
 .message {
   font-family: sans-serif;
-  width: 220px;
+  width: 205px;
   overflow-wrap: break-word;
   font-size: 12px;
   line-height: 16px;
@@ -302,6 +325,10 @@ input {
   cursor: default;
   text-overflow: ellipsis;
   color: var(--text-color);
+}
+
+.message:lang(fr-FR) {
+  width: 182px;
 }
 
 .logo-container {

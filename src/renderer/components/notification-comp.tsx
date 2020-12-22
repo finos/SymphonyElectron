@@ -105,7 +105,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
         const containerClass = classNames('container', { 'external-border': isExternal });
 
         return (
-            <div className={containerClass} style={{ height: containerHeight }}>
+            <div className={containerClass} style={{ height: containerHeight }} lang={i18n.getLocale()}>
                 <div
                     className='main-container'
                     role='alert'
