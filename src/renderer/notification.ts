@@ -11,6 +11,7 @@ import NotificationHandler from './notification-handler';
 // const MAX_QUEUE_SIZE = 30;
 const CLEAN_UP_INTERVAL = 60 * 1000; // Closes inactive notification
 const animationQueue = new AnimationQueue();
+const CONTAINER_HEIGHT_WITH_INPUT = 104; // Notification container height
 
 interface ICustomBrowserWindow extends Electron.BrowserWindow {
     winName: string;
@@ -117,7 +118,8 @@ class Notification extends NotificationHandler {
 
             for (const window of this.activeNotifications) {
                 const notificationWin = window as ICustomBrowserWindow;
-                if (window && notificationWin.notificationData.tag === data.tag) {
+                const winHeight = windowExists(notificationWin) && notificationWin.getBounds().height;
+                if (window && notificationWin.notificationData.tag === data.tag && winHeight < CONTAINER_HEIGHT_WITH_INPUT) {
                     this.setNotificationContent(notificationWin, data);
                     return;
                 }
@@ -191,6 +193,8 @@ class Notification extends NotificationHandler {
         notificationWindow.setSize(notificationSettings.width, notificationSettings.height, true);
         // Move notification to top
         notificationWindow.moveTop();
+        // Reset alwaysOnTop level to normal
+        notificationWindow.setAlwaysOnTop(true, 'normal');
 
         if (!data.sticky) {
             timeoutId = setTimeout(async () => {
@@ -500,7 +504,8 @@ class Notification extends NotificationHandler {
             return;
         }
         clearTimeout(notificationWindow.displayTimer);
-        notificationWindow.setSize(344, 104, true);
+        notificationWindow.setAlwaysOnTop(true, 'pop-up-menu');
+        notificationWindow.setSize(344, CONTAINER_HEIGHT_WITH_INPUT, true);
     }
 
     /**
