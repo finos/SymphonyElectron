@@ -415,6 +415,20 @@ class Notification extends NotificationHandler {
                 if (windowExists(window)) {
                     this.renderNotification(window, data);
                 }
+                // This is a workaround to make sure the notification
+                // with visible input always stays on top of normal notifications
+                if (isWindowsOS) {
+                    this.activeNotifications.forEach((activeNotification) => {
+                        if (!activeNotification || !windowExists(activeNotification)) {
+                            return;
+                        }
+                        const [, height] = activeNotification.getSize();
+                        // Height of notification window with input will be 104
+                        if (height > notificationSettings.height) {
+                            activeNotification.moveTop();
+                        }
+                    });
+                }
                 return resolve(window);
             });
         });
