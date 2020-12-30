@@ -7,9 +7,11 @@ import { ElectronNotification } from './electron-notification';
 
 class NotificationHelper {
     private electronNotification: Map<number, ElectronNotification>;
+    private activeElectronNotification: Map<string, ElectronNotification>;
 
     constructor() {
         this.electronNotification = new Map<number, ElectronNotification>();
+        this.activeElectronNotification = new Map<string, ElectronNotification>();
     }
 
     /**
@@ -22,8 +24,19 @@ class NotificationHelper {
         if (options.isElectronNotification) {
             // MacOS: Electron notification only supports static image path
             options.icon = this.getIcon(options);
+
+            // This is replace notification with same tag
+            if (this.activeElectronNotification.has(options.tag)) {
+                const electronNotification = this.activeElectronNotification.get(options.tag);
+                if (electronNotification) {
+                    electronNotification.close();
+                }
+                this.activeElectronNotification.delete(options.tag);
+            }
+
             const electronToast = new ElectronNotification(options, this.notificationCallback);
             this.electronNotification.set(options.id, electronToast);
+            this.activeElectronNotification.set(options.tag, electronToast);
             electronToast.show();
             return;
         }
