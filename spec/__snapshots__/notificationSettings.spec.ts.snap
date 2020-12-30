@@ -1,0 +1,133 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Notification Settings should mount, unmount and render component should render the component 1`] = `
+<div
+  className="content"
+>
+  <header
+    className="header"
+  >
+    <span
+      className="header-title"
+    >
+      Set Notification Position
+    </span>
+  </header>
+  <div
+    className="form"
+  >
+    <label
+      className="display-label"
+    >
+      Show on display
+    </label>
+    <div
+      className="display-container"
+      id="screens"
+    >
+      <select
+        className="display-selector"
+        id="screen-selector"
+        onChange={[Function]}
+        title="position"
+        value={1}
+      />
+    </div>
+    <label
+      className="position-label"
+    >
+      Position
+    </label>
+    <div
+      className="position-container"
+    >
+      <div
+        className="button-set-left"
+      >
+        <div
+          className="position-button-container"
+        >
+          <button
+            className="position-button upper-left"
+            id="upper-left"
+            name="position"
+            onClick={[Function]}
+            type="button"
+            value="upper-left"
+          >
+            Top Left
+          </button>
+        </div>
+        <div
+          className="position-button-container"
+        >
+          <button
+            className="position-button lower-left"
+            id="lower-left"
+            name="position"
+            onClick={[Function]}
+            type="button"
+            value="lower-left"
+          >
+            Bottom Left
+          </button>
+        </div>
+      </div>
+      <div
+        className="button-set-right"
+      >
+        <div
+          className="position-button-container"
+        >
+          <button
+            className="position-button position-button-selected upper-right"
+            id="upper-right"
+            name="position"
+            onClick={[Function]}
+            type="button"
+            value="upper-right"
+          >
+            Top Right
+          </button>
+        </div>
+        <div
+          className="position-button-container"
+        >
+          <button
+            className="position-button lower-right"
+            id="lower-right"
+            name="position"
+            onClick={[Function]}
+            type="button"
+            value="lower-right"
+          >
+            Bottom Right
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer
+    className="footer"
+  >
+    <div
+      className="footer-button-container"
+    >
+      <button
+        className="footer-button footer-button-dismiss"
+        id="cancel"
+        onClick={[Function]}
+      >
+        CANCEL
+      </button>
+      <button
+        className="footer-button footer-button-ok"
+        id="ok-button"
+        onClick={[Function]}
+      >
+        OK
+      </button>
+    </div>
+  </footer>
+</div>
+`;

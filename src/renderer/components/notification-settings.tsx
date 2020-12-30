@@ -15,16 +15,9 @@ interface IState {
 }
 
 /**
- * Window that display app version and copyright info
+ * Notification Window component
  */
 export default class NotificationSettings extends React.Component<{}, IState> {
-
-    private readonly eventHandlers = {
-        onTogglePosition: (e: React.ChangeEvent<HTMLInputElement>) => this.togglePosition(e),
-        onDisplaySelect: (e: React.ChangeEvent<HTMLSelectElement>) => this.selectDisplay(e),
-        onClose: () => this.close(),
-        onSubmit: () => this.submit(),
-    };
 
     constructor(props) {
         super(props);
@@ -37,102 +30,72 @@ export default class NotificationSettings extends React.Component<{}, IState> {
     }
 
     /**
-     * main render function
+     * Renders the notification settings window
      */
     public render(): JSX.Element {
         return (
             <div className='content'>
+
                 <header className='header'>
-                    <span className='header__title'>
-                        {i18n.t('Notification Settings', NOTIFICATION_SETTINGS_NAMESPACE)()}
+                    <span className='header-title'>
+                        {i18n.t('Set Notification Position', NOTIFICATION_SETTINGS_NAMESPACE)()}
                     </span>
                 </header>
+
                 <div className='form'>
-                    <form>
-                        <label className='label'>{i18n.t('Monitor', NOTIFICATION_SETTINGS_NAMESPACE)()}</label>
-                        <div id='screens' className='main'>
-                            <label>
-                                {i18n.t('Notification shown on Monitor:  ', NOTIFICATION_SETTINGS_NAMESPACE)()}
-                            </label>
-                            <select
-                                className='selector'
-                                id='screen-selector'
-                                title='position'
-                                value={this.state.display}
-                                onChange={this.eventHandlers.onDisplaySelect}
-                            >
-                                {this.renderScreens()}
-                            </select>
+                    <label className='display-label'>{i18n.t('Show on display', NOTIFICATION_SETTINGS_NAMESPACE)()}</label>
+                    <div id='screens' className='display-container'>
+                        <select
+                            className='display-selector'
+                            id='screen-selector'
+                            title='position'
+                            value={this.state.display}
+                            onChange={this.selectDisplay.bind(this)}
+                        >
+                            {this.renderScreens()}
+                        </select>
+                    </div>
+
+                    <label className='position-label'>{i18n.t('Position', NOTIFICATION_SETTINGS_NAMESPACE)()}</label>
+                    <div className='position-container'>
+                        <div className='button-set-left'>
+                            {this.renderPositionButton('upper-left', 'Top Left')}
+                            {this.renderPositionButton('lower-left', 'Bottom Left')}
                         </div>
-                        <label className='label'>{i18n.t('Position', NOTIFICATION_SETTINGS_NAMESPACE)()}</label>
-                        <div className='main'>
-                            <div className='first-set'>
-                                {this.renderRadioButtons('upper-left', 'Top Left')}
-                                {this.renderRadioButtons('lower-left', 'Bottom Left')}
-                            </div>
-                            <div className='second-set'>
-                                {this.renderRadioButtons('upper-right', 'Top Right')}
-                                {this.renderRadioButtons('lower-right', 'Bottom Right')}
-                            </div>
+                        <div className='button-set-right'>
+                            {this.renderPositionButton('upper-right', 'Top Right')}
+                            {this.renderPositionButton('lower-right', 'Bottom Right')}
                         </div>
-                    </form>
+                    </div>
                 </div>
+
                 <footer className='footer'>
-                    <div className='buttonLayout'>
-                        <button id='cancel' className='buttonDismiss' onClick={this.eventHandlers.onClose}>
+                    <div className='footer-button-container'>
+                        <button id='cancel' className='footer-button footer-button-dismiss' onClick={this.close.bind(this)}>
                             {i18n.t('CANCEL', NOTIFICATION_SETTINGS_NAMESPACE)()}
                         </button>
-                        <button id='ok-button' className='button' onClick={this.eventHandlers.onSubmit}>
+                        <button id='ok-button' className='footer-button footer-button-ok' onClick={this.submit.bind(this)}>
                             {i18n.t('OK', NOTIFICATION_SETTINGS_NAMESPACE)()}
                         </button>
                     </div>
                 </footer>
+
             </div>
         );
     }
 
+    /**
+     * Handles event when the component is mounted
+     */
     public componentDidMount(): void {
         ipcRenderer.on('notification-settings-data', this.updateState);
     }
 
+    /**
+     * Handles event when the component is unmounted
+     */
     public componentWillUnmount(): void {
         ipcRenderer.removeListener('notification-settings-data', this.updateState);
-    }
-
-    /**
-     * Renders all 4 different notification position options
-     *
-     * @param id
-     * @param content
-     */
-    private renderRadioButtons(id: startCorner, content: string): JSX.Element {
-        return (
-            <div className='radio'>
-                <label className='radio__label' htmlFor={id}>
-                    {i18n.t(`${content}`, NOTIFICATION_SETTINGS_NAMESPACE)()}
-                </label>
-                <input
-                    onChange={this.eventHandlers.onTogglePosition}
-                    className={id}
-                    id={id}
-                    type='radio'
-                    name='position'
-                    checked={this.state.position === id}
-                    value={id} />
-            </div>
-        );
-    }
-
-    /**
-     * Renders the drop down list of available screen
-     */
-    private renderScreens(): JSX.Element[] {
-        const { screens } = this.state;
-        return screens.map((screen, index) => {
-            return (
-                <option id={String(screen.id)} key={screen.id} value={screen.id}>{index + 1}</option>
-            );
-        });
     }
 
     /**
@@ -140,25 +103,25 @@ export default class NotificationSettings extends React.Component<{}, IState> {
      *
      * @param event
      */
-    private selectDisplay(event): void {
+    public selectDisplay(event): void {
         this.setState({ display: event.target.value });
     }
 
     /**
-     * Updated the selected notification position
+     * Updates the selected notification position
      *
      * @param event
      */
-    private togglePosition(event): void {
+    public togglePosition(event): void {
         this.setState({
-            position: event.currentTarget.value,
+            position: event.target.id,
         });
     }
 
     /**
-     * Sends the user selected notification settings options
+     * Submits the new settings to the main process
      */
-    private submit(): void {
+    public submit(): void {
         const { position, display } = this.state;
         ipcRenderer.send('notification-settings-update', { position, display });
     }
@@ -166,10 +129,46 @@ export default class NotificationSettings extends React.Component<{}, IState> {
     /**
      * Closes the notification settings window
      */
-    private close(): void {
+    public close(): void {
         ipcRenderer.send(apiName.symphonyApi, {
             cmd: apiCmds.closeWindow,
             windowType: 'notification-settings',
+        });
+    }
+
+    /**
+     * Renders the position buttons
+     *
+     * @param id
+     * @param content
+     */
+    private renderPositionButton(id: startCorner, content: string): JSX.Element {
+        const style = this.state.position === id ? `position-button position-button-selected ${id}` : `position-button ${id}`;
+        return (
+            <div className='position-button-container'>
+                <button
+                    onClick={this.togglePosition.bind(this)}
+                    className={style}
+                    id={id} type='button'
+                    name='position'
+                    value={id}
+                >
+                    {i18n.t(`${content}`, NOTIFICATION_SETTINGS_NAMESPACE)()}
+                </button>
+            </div>
+        );
+    }
+
+    /**
+     * Renders the drop down list of available screens
+     */
+    private renderScreens(): JSX.Element[] {
+        const { screens } = this.state;
+        return screens.map((screen, index) => {
+            const screenId = screen.id;
+            return (
+                <option id={String(screenId)} key={screenId} value={screenId}>{index + 1}/{screens.length}</option>
+            );
         });
     }
 
