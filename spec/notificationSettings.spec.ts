@@ -7,8 +7,15 @@ describe('Notification Settings', () => {
     const notificationSettingsLabel = 'notification-settings-data';
     const notificationSettingsMock = {
         position: 'upper-right',
-        screens: [],
-        display: '6713899'
+        screens: [
+            {
+                id: '6713899',
+            },
+            {
+                id: '3512909',
+            },
+        ],
+        display: '6713899',
     };
     const onLabelEvent = 'on';
     const sendEvent = 'send';
@@ -52,7 +59,7 @@ describe('Notification Settings', () => {
             const notificationSettingsMock = {
                 position: 'upper-right',
                 screens: [],
-                display: '6713899'
+                display: '6713899',
             };
 
             const spy = jest.spyOn(NotificationSettings.prototype, 'setState');
@@ -77,7 +84,7 @@ describe('Notification Settings', () => {
             const notificationSettingsMock = {
                 position: 'upper-right',
                 screens: [],
-                display: '6713899'
+                display: '6713899',
             };
 
             const spy = jest.spyOn(NotificationSettings.prototype, 'setState');
@@ -99,7 +106,7 @@ describe('Notification Settings', () => {
             const notificationSettingsMock = {
                 position: 'bottom-right',
                 screens: [],
-                display: '6713899'
+                display: '6713899',
             };
 
             const spy = jest.spyOn(NotificationSettings.prototype, 'setState');
@@ -121,7 +128,7 @@ describe('Notification Settings', () => {
             const notificationSettingsMock = {
                 position: 'upper-left',
                 screens: [],
-                display: '6713899'
+                display: '6713899',
             };
 
             const spy = jest.spyOn(NotificationSettings.prototype, 'setState');
@@ -143,7 +150,7 @@ describe('Notification Settings', () => {
             const notificationSettingsMock = {
                 position: 'lower-left',
                 screens: [],
-                display: '6713899'
+                display: '6713899',
             };
 
             const spy = jest.spyOn(NotificationSettings.prototype, 'setState');
@@ -167,7 +174,7 @@ describe('Notification Settings', () => {
             const notificationSettingsMock = {
                 position: 'lower-left',
                 screens: [],
-                display: '6713899'
+                display: '6713899',
             };
 
             const spy = jest.spyOn(ipcRenderer, sendEvent);
@@ -182,7 +189,7 @@ describe('Notification Settings', () => {
             input.simulate('click');
 
             expect(closeButtonSpy).toBeCalled();
-            expect(spy).toBeCalledWith("symphony-api", {
+            expect(spy).toBeCalledWith('symphony-api', {
                 cmd: 'close-window',
                 windowType: 'notification-settings',
             });
@@ -192,7 +199,7 @@ describe('Notification Settings', () => {
             const notificationSettingsMock = {
                 position: 'lower-left',
                 screens: [],
-                display: '6713899'
+                display: '6713899',
             };
 
             const spy = jest.spyOn(ipcRenderer, sendEvent);
@@ -207,9 +214,9 @@ describe('Notification Settings', () => {
             input.simulate('click');
 
             expect(closeButtonSpy).toBeCalled();
-            expect(spy).toBeCalledWith("notification-settings-update", {
+            expect(spy).toBeCalledWith('notification-settings-update', {
                 position: 'lower-left',
-                display: '6713899'
+                display: '6713899',
             });
         });
     });
