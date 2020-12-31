@@ -107,7 +107,9 @@
     "Position": "Position",
     "Symphony - Configure Notification Position": "Symphony - Configurer la position des notifications",
     "Top Left": "Gauche supérieure",
-    "Top Right": "Droite supérieure"
+    "Top Right": "Droite supérieure",
+    "Show on display": "Afficher sur écran",
+    "Set Notification Position": "Définir la position de notification"
   },
   "Oops! Looks like we have had a crash.": "Oops! On dirait que nous avons eu un crash.",
   "Oops! Looks like we have had a crash. Please reload or close this window.": "Oops! On dirait que nous avons eu un crash. Veuillez recharger ou fermer cette fenêtre.",

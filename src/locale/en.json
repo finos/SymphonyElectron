@@ -107,7 +107,9 @@
     "Position": "Position",
     "Symphony - Configure Notification Position": "Symphony - Configure Notification Position",
     "Top Left": "Top Left",
-    "Top Right": "Top Right"
+    "Top Right": "Top Right",
+    "Show on display": "Show on display",
+    "Set Notification Position": "Set Notification Position"
   },
   "Oops! Looks like we have had a crash.": "Oops! Looks like we have had a crash.",
   "Oops! Looks like we have had a crash. Please reload or close this window.": "Oops! Looks like we have had a crash. Please reload or close this window.",

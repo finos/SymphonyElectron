@@ -1336,8 +1336,8 @@ export class WindowHandler {
   public createNotificationSettingsWindow(windowName: string): void {
     const opts = this.getWindowOpts(
       {
-        width: 460,
-        height: 360,
+        width: 540,
+        height: 440,
         show: false,
         modal: true,
         minimizable: false,
