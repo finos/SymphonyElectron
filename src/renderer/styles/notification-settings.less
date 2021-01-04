@@ -30,8 +30,8 @@ body {
   padding: 16px;
 }
 
-.header__title {
-  font-weight: 500;
+.header-title {
+  font-weight: 300;
   font-style: normal;
   margin: 0 0 0 4px;
   font-size: 1.4rem;
@@ -49,51 +49,104 @@ body {
   margin: 0 auto;
 }
 
-.selector {
-  padding: 0 9px 0 16px;
-  cursor: pointer;
-  margin-left: 10px;
+.display-label {
+  width: 304px;
+  height: 16px;
+
+  font-size: 12px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+  color: #525760;
 }
 
-.main {
+.display-container {
+  margin-bottom: 20px;
+  margin-top: 5px;
+}
+
+.display-selector {
+  padding: 0 20px 0 30px;
+  cursor: pointer;
+
+  width: 304px;
+  height: 32px;
+
+  border: 2px solid #7C7F86;
+  border-radius: 2px;
+  background-color: #FFFFFF;
+}
+
+.position-label {
+  font-size: 12px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  width: 304px;
+  height: 16px;
+  color: #525760;
+}
+
+.position-container {
   display: flex;
   flex-direction: row;
-  margin-bottom: 20px;
-  height: 100%;
-  border: 1px solid #ccc !important;
-  padding: 10px;
 
-  .first-set {
+  width: 304px;
+  height: 100%;
+
+  left: 8px;
+  top: 102px;
+
+  border-radius: 4px;
+
+  margin-bottom: 20px;
+  margin-top: 5px;
+
+  background: #F8F8F9;
+
+  .button-set-left {
     flex-grow: 1;
   }
 
-  .second-set {
+  .button-set-right {
     flex-grow: 1;
     text-align: right;
   }
 }
 
-.radio {
+.position-button-container {
   line-height: 1.7;
 
-  .upper-right, .lower-right {
-    float: right;
-    margin-top: 6px;
+  .position-button {
+    width: 116px;
+    height: 32px;
+
+    top: 1px;
+
+    margin: 20px 20px 20px 20px;
+
+    border: 2px solid #7C7F86;
+    border-radius: 4px;
+    box-sizing: border-box;
+
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    align-items: center;
+    color: #17181B;
   }
 
-  .upper-left, .lower-left {
+  .position-button-selected {
+    background-color: #008EFF;
+  }
+
+  .upper-left,
+  .lower-left {
     float: left;
-    margin-top: 6px;
   }
-}
 
-.radio__label {
-  cursor: pointer;
-  padding: 5px;
-
-  input {
-    cursor: pointer;
+  .upper-right,
+  .lower-right {
+    float: right;
   }
+
 }
 
 .footer {
@@ -103,12 +156,28 @@ body {
   align-items: center;
 }
 
-.buttonLayout {
+.footer-button-container {
   margin-left: auto;
   display: flex;
   align-items: center;
-}
 
-.buttonDismiss {
-  margin-right: 10px;
+  .footer-button {
+    border: 2px solid #7C7F86;
+    border-radius: 4px;
+    box-sizing: border-box;
+
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    align-items: center;
+  }
+
+  .footer-button-ok {
+    margin-right: 5px;
+  }
+
+  .footer-button-dismiss {
+    margin-right: 10px;
+  }
+
 }

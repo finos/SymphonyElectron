@@ -107,7 +107,9 @@
     "Position": "位置",
     "Symphony - Configure Notification Position": "Symphony - 通知位置の設定",
     "Top Left": "左上",
-    "Top Right": "右上"
+    "Top Right": "右上",
+    "Show on display": "ディスプレイに表示",
+    "Set Notification Position": "通知位置を設定する"
   },
   "Oops! Looks like we have had a crash.": "おっと！クラッシュしたようです。",
   "Oops! Looks like we have had a crash. Please reload or close this window.": "おっと！クラッシュしたようです。このウィンドウを再度読み込むか閉じてください｡",
