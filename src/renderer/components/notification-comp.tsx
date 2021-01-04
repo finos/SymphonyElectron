@@ -177,7 +177,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
                         <button
                             className={`rte-thumbsup-button ${themeClassName}`}
                             onClick={this.eventHandlers.onThumbsUp()}
-                        />
+                        >👍</button>
                         <button
                             className={`rte-send-button ${themeClassName}`}
                             onClick={this.eventHandlers.onReply(id)}
