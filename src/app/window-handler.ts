@@ -1337,7 +1337,7 @@ export class WindowHandler {
     const opts = this.getWindowOpts(
       {
         width: 540,
-        height: 440,
+        height: 455,
         show: false,
         modal: true,
         minimizable: false,
