@@ -117,11 +117,17 @@ class ScreenSnippet {
           logger.error('screen-snippet-handler: Could not get image size');
           return;
         }
+
+        if (dimensions.width === 0 && dimensions.height === 0) {
+          logger.info('screen-snippet-handler: no screen capture picture');
+          return;
+        }
+
         windowHandler.closeSnippingToolWindow();
         windowHandler.createSnippingToolWindow(this.outputFilePath, dimensions);
         this.uploadSnippet(webContents);
-      return;
-    }
+        return;
+      }
       const {
         message,
         data,
