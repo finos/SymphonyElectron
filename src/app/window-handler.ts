@@ -997,10 +997,7 @@ export class WindowHandler {
     const allDisplays = electron.screen.getAllDisplays();
     logger.info('window-handler, createSnippingToolWindow: User has these displays: ' + JSON.stringify(allDisplays));
 
-    const electronWindows = BrowserWindow.getAllWindows();
-    const mainWindow = electronWindows[0];
-
-    if (!mainWindow) {
+    if (!this.mainWindow) {
       logger.error('window-handler: Could not get main window');
       return;
     }
@@ -1012,7 +1009,7 @@ export class WindowHandler {
     const BUTTON_BAR_BOTTOM_HEIGHT = 72;
     const BUTTON_BARS_HEIGHT = BUTTON_BAR_TOP_HEIGHT + BUTTON_BAR_BOTTOM_HEIGHT;
 
-    const display = electron.screen.getDisplayMatching(mainWindow.getBounds());
+    const display = electron.screen.getDisplayMatching(this.mainWindow.getBounds());
     const workAreaSize = display.workAreaSize;
     const maxToolHeight = Math.floor(calculatePercentage(workAreaSize.height, 90));
     const maxToolWidth = Math.floor(calculatePercentage(workAreaSize.width, 90));
@@ -1070,8 +1067,8 @@ export class WindowHandler {
       opts.alwaysOnTop = true;
     }
 
-    if (isWindowsOS && mainWindow) {
-      opts.parent = mainWindow;
+    if (isWindowsOS && this.mainWindow) {
+      opts.parent = this.mainWindow;
     }
 
     this.snippingToolWindow = createComponentWindow('snipping-tool', opts);
