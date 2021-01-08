@@ -17,6 +17,8 @@ interface ISettings {
     maxVisibleNotifications: number;
     animationSteps: number;
     animationStepMs: number;
+    spacing: number;
+    differentialHeight: number;
 }
 
 interface ICorner {
@@ -114,18 +116,25 @@ export default class NotificationHandler {
     /**
      * Find next possible insert position (on top)
      */
-    public calcNextInsertPos(activeNotificationLength) {
-        if (activeNotificationLength < this.settings.maxVisibleNotifications) {
+    public calcNextInsertPos(activeNotifications) {
+        let nextNotificationY: number = 0;
+        activeNotifications.forEach((notification) => {
+            if (notification && windowExists(notification)) {
+                const [, height] = notification.getSize();
+                nextNotificationY += height > this.settings.height ? 112 : 72;
+            }
+        });
+        if (activeNotifications.length < this.settings.maxVisibleNotifications) {
             switch (this.settings.startCorner) {
                 case 'upper-right':
                 case 'upper-left':
-                    this.nextInsertPos.y = this.settings.corner.y + (this.settings.totalHeight * activeNotificationLength);
+                    this.nextInsertPos.y = this.settings.corner.y + nextNotificationY;
                     break;
 
                 default:
                 case 'lower-right':
                 case 'lower-left':
-                    this.nextInsertPos.y = this.settings.corner.y - (this.settings.totalHeight * (activeNotificationLength + 1));
+                    this.nextInsertPos.y = this.settings.corner.y - (nextNotificationY + 72);
                     break;
             }
         }
@@ -136,8 +145,10 @@ export default class NotificationHandler {
      *
      * @param startPos {number}
      * @param activeNotifications {ICustomBrowserWindow[]}
+     * @param height {number} height of the closed notification
+     * @param isReset {boolean} whether to reset all notification position
      */
-    public moveNotificationDown(startPos, activeNotifications) {
+    public moveNotificationDown(startPos, activeNotifications, height: number = 0, isReset: boolean = false) {
         if (startPos >= activeNotifications || startPos === -1) {
             return;
         }
@@ -149,42 +160,100 @@ export default class NotificationHandler {
         asyncMap(notificationPosArray, (i, done) => {
             // Get notification to move
             const notificationWindow = activeNotifications[i];
+            if (!windowExists(notificationWindow)) {
+                return;
+            }
+            const [, y] = notificationWindow.getPosition();
 
             // Calc new y position
             let newY;
             switch (this.settings.startCorner) {
                 case 'upper-right':
                 case 'upper-left':
-                    newY = this.settings.corner.y + (this.settings.totalHeight * i);
+                    newY = isReset
+                        ? this.settings.corner.y + (this.settings.totalHeight * i)
+                        : (y - height - this.settings.spacing);
                     break;
                 default:
                 case 'lower-right':
                 case 'lower-left':
-                    newY = this.settings.corner.y - (this.settings.totalHeight * (i + 1));
+                    newY = isReset
+                        ? this.settings.corner.y - (this.settings.totalHeight * (i + 1))
+                        : (y + height + this.settings.spacing);
                     break;
             }
 
+            this.animateNotificationPosition(notificationWindow, newY, done);
+        });
+    }
+
+    /**
+     * Moves the notification by one step
+     *
+     * @param startPos {number}
+     * @param activeNotifications {ICustomBrowserWindow[]}
+     */
+    public moveNotificationUp(startPos, activeNotifications) {
+        if (startPos >= activeNotifications || startPos === -1) {
+            return;
+        }
+        if (this.settings.startCorner === 'lower-right' || this.settings.startCorner === 'lower-left') {
+            startPos -= 1;
+        }
+        // Build array with index of affected notifications
+        const notificationPosArray: number[] = [];
+        for (let i = startPos; i < activeNotifications.length; i++) {
+            notificationPosArray.push(i);
+        }
+        asyncMap(notificationPosArray, (i, done) => {
+            // Get notification to move
+            const notificationWindow = activeNotifications[i];
             if (!windowExists(notificationWindow)) {
                 return;
             }
+            const [, y] = notificationWindow.getPosition();
 
-            // Get startPos, calc step size and start animationInterval
-            const startY = notificationWindow.getPosition()[1];
-            const step = (newY - startY) / this.settings.animationSteps;
-            let curStep = 1;
-            const animationInterval = setInterval(() => {
-                // Abort condition
-                if (curStep === this.settings.animationSteps) {
-                    this.setWindowPosition(notificationWindow, this.settings.firstPos.x, newY);
-                    clearInterval(animationInterval);
-                    done(null, 'done');
-                    return;
-                }
-                // Move one step down
-                this.setWindowPosition(notificationWindow, this.settings.firstPos.x, startY + curStep * step);
-                curStep++;
-            }, this.settings.animationStepMs);
+            // Calc new y position
+            let newY;
+            switch (this.settings.startCorner) {
+                case 'upper-right':
+                case 'upper-left':
+                    newY = y + this.settings.differentialHeight;
+                    break;
+                default:
+                case 'lower-right':
+                case 'lower-left':
+                    newY = y - this.settings.differentialHeight;
+                    break;
+            }
+
+            this.animateNotificationPosition(notificationWindow, newY, done);
         });
+    }
+
+    /**
+     * Get startPos, calc step size and start animationInterval
+     * @param notificationWindow
+     * @param newY
+     * @param done
+     * @private
+     */
+    private animateNotificationPosition(notificationWindow, newY, done) {
+        const startY = notificationWindow.getPosition()[1];
+        const step = (newY - startY) / this.settings.animationSteps;
+        let curStep = 1;
+        const animationInterval = setInterval(() => {
+            // Abort condition
+            if (curStep === this.settings.animationSteps) {
+                this.setWindowPosition(notificationWindow, this.settings.firstPos.x, newY);
+                clearInterval(animationInterval);
+                done(null, 'done');
+                return;
+            }
+            // Move one step down
+            this.setWindowPosition(notificationWindow, this.settings.firstPos.x, startY + curStep * step);
+            curStep++;
+        }, this.settings.animationStepMs);
     }
 
     /**
