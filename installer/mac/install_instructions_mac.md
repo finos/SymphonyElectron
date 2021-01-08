@@ -37,7 +37,7 @@ ENABLED
 ENABLED
 DISABLED
 DISABLED
-ENABLED
+true
 ```
 
 Your POD takes care of SSO as well
@@ -48,7 +48,7 @@ ENABLED
 ENABLED
 DISABLED
 DISABLED
-ENABLED
+true
 ```
 
 ## sym_permissions.txt
@@ -65,13 +65,13 @@ The parameters that should be configured in `sym_permissions.txt` are listed bel
 
 You can find a sample below:
 ```
-ENABLED
-ENABLED
-ENABLED
-ENABLED
-ENABLED
-ENABLED
-ENABLED
+true
+true
+true
+true
+true
+true
+true
 ```
 
 # Installation
@@ -100,12 +100,12 @@ settings_temp_file="/tmp/sym_settings.txt"
 ## Set the POD URL and other user related settings.
 ## Note, all the user related settings should be either "ENABLED", "DISABLED" or "NOT_SET"
 pod_url="https://corporate.symphony.com/login/sso/initsso"
-context_origin_url=""
+context_origin_url="https://corporate.symphony.com"
 minimize_on_close="ENABLED"
 launch_on_startup="ENABLED"
 always_on_top="DISABLED"
 bring_to_front="DISABLED"
-dev_tools_enabled="ENABLED"
+dev_tools_enabled=true
 
 ## DO NOT CHANGE THIS
 sudo echo ${pod_url} > ${settings_temp_file}
@@ -120,13 +120,13 @@ sudo echo ${dev_tools_enabled} >> ${settings_temp_file}
 permissions_temp_file="/tmp/sym_permissions.txt"
 
 ## Set the permissions. By default, it should be "ENABLED" for all unless you know what you are doing
-media="ENABLED"
-geo_location="ENABLED"
-notifications="ENABLED"
-midi_sysex="ENABLED"
-pointer_lock="ENABLED"
-full_screen="ENABLED"
-open_external_app="ENABLED"
+media=true
+geo_location=true
+notifications=true
+midi_sysex=true
+pointer_lock=true
+full_screen=true
+open_external_app=true
 
 ## DO NOT CHANGE THIS
 sudo echo ${media} > ${permissions_temp_file}
@@ -141,5 +141,6 @@ sudo installer -store -pkg ${package_path} -target /
 
 rm -rf ${settings_temp_file}
 rm -rf ${permissions_temp_file}
+
 
 ```
