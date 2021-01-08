@@ -368,6 +368,20 @@ Expected values:
 
 
 -------------------------------------------------------------------
+### CONTEXT_ORIGIN_URL
+
+Expected values:
+
+* Your actual POD URL and not the SSO URL
+  (default is "" )
+
+#### Example
+
+    msiexec /i Symphony.msi /q CONTEXT_ORIGIN_URL="https://my.symphony.com"
+
+
+
+-------------------------------------------------------------------
 ### POINTER_LOCK
 
 Expected values:

@@ -20,15 +20,30 @@ SDA can be automatically installed from the terminal. The process of customizing
 The parameters that should be configured in `sym_settings.txt` are listed below. They need to be in the same order as they'll be picked up by the installer in the same order. Do not skip any parameters.
 
 - Pod Url
+- Context Origin Url (Only required if your Pod url is set to your SSO provider URL, otherwise, leave it blank.)
 - Minimize On Close
 - Launch On Startup
 - Always on Top
 - Bring to Front
 - Dev Tools Enabled
 
-You can find a sample below:
+You can find samples below:
+
+Your SSO URL is set as the POD URL
 ```
-https://corporate.symphony.com/login/sso/initsso
+https://mysso.mycompany.com/login/sso/initsso
+https://mypod.symphony.com
+ENABLED
+ENABLED
+DISABLED
+DISABLED
+ENABLED
+```
+
+Your POD takes care of SSO as well
+```
+https://mypod.symphony.com/login/sso/initsso
+
 ENABLED
 ENABLED
 DISABLED
@@ -85,6 +100,7 @@ settings_temp_file="/tmp/sym_settings.txt"
 ## Set the POD URL and other user related settings.
 ## Note, all the user related settings should be either "ENABLED", "DISABLED" or "NOT_SET"
 pod_url="https://corporate.symphony.com/login/sso/initsso"
+context_origin_url=""
 minimize_on_close="ENABLED"
 launch_on_startup="ENABLED"
 always_on_top="DISABLED"
@@ -93,6 +109,7 @@ dev_tools_enabled="ENABLED"
 
 ## DO NOT CHANGE THIS
 sudo echo ${pod_url} > ${settings_temp_file}
+sudo echo ${context_origin_url} >> ${settings_temp_file}
 sudo echo ${minimize_on_close} >> ${settings_temp_file}
 sudo echo ${launch_on_startup} >> ${settings_temp_file}
 sudo echo ${always_on_top} >> ${settings_temp_file}
