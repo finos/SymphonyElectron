@@ -44,6 +44,8 @@ const notificationSettings = {
     animationSteps: 5,
     animationStepMs: 5,
     logging: true,
+    spacing: 8,
+    differentialHeight: 40,
 };
 
 class Notification extends NotificationHandler {
@@ -193,8 +195,6 @@ class Notification extends NotificationHandler {
         notificationWindow.setSize(notificationSettings.width, notificationSettings.height, true);
         // Move notification to top
         notificationWindow.moveTop();
-        // Reset alwaysOnTop level to normal
-        notificationWindow.setAlwaysOnTop(true, 'normal');
 
         if (!data.sticky) {
             timeoutId = setTimeout(async () => {
@@ -241,6 +241,7 @@ class Notification extends NotificationHandler {
     public async hideNotification(clientId: number): Promise<void> {
         const browserWindow = this.getNotificationWindow(clientId);
         if (browserWindow && windowExists(browserWindow)) {
+            const [, height] = browserWindow.getSize();
             // send empty to reset the state
             const pos = this.activeNotifications.indexOf(browserWindow);
             this.activeNotifications.splice(pos, 1);
@@ -252,7 +253,7 @@ class Notification extends NotificationHandler {
                 browserWindow.close();
             }
 
-            this.moveNotificationDown(pos, this.activeNotifications);
+            this.moveNotificationDown(pos, this.activeNotifications, height);
 
             if (this.notificationQueue.length > 0 && this.activeNotifications.length < this.settings.maxVisibleNotifications) {
                 const notificationData = this.notificationQueue[0];
@@ -345,7 +346,7 @@ class Notification extends NotificationHandler {
 
         // recalculate notification position
         this.setupNotificationPosition();
-        this.moveNotificationDown(0, this.activeNotifications);
+        this.moveNotificationDown(0, this.activeNotifications, 0, true);
     }
 
     /**
@@ -415,20 +416,6 @@ class Notification extends NotificationHandler {
                 if (windowExists(window)) {
                     this.renderNotification(window, data);
                 }
-                // This is a workaround to make sure the notification
-                // with visible input always stays on top of normal notifications
-                if (isWindowsOS) {
-                    this.activeNotifications.forEach((activeNotification) => {
-                        if (!activeNotification || !windowExists(activeNotification)) {
-                            return;
-                        }
-                        const [, height] = activeNotification.getSize();
-                        // Height of notification window with input will be 104
-                        if (height > notificationSettings.height) {
-                            activeNotification.moveTop();
-                        }
-                    });
-                }
                 return resolve(window);
             });
         });
@@ -441,7 +428,7 @@ class Notification extends NotificationHandler {
      * @param data {INotificationData}
      */
     private renderNotification(notificationWindow, data): void {
-        this.calcNextInsertPos(this.activeNotifications.length);
+        this.calcNextInsertPos(this.activeNotifications);
         this.setWindowPosition(notificationWindow, this.nextInsertPos.x, this.nextInsertPos.y);
         this.setNotificationContent(notificationWindow, { ...data, windowId: notificationWindow.id });
         this.activeNotifications.push(notificationWindow);
@@ -518,8 +505,9 @@ class Notification extends NotificationHandler {
             return;
         }
         clearTimeout(notificationWindow.displayTimer);
-        notificationWindow.setAlwaysOnTop(true, 'pop-up-menu');
         notificationWindow.setSize(344, CONTAINER_HEIGHT_WITH_INPUT, true);
+        const pos = this.activeNotifications.indexOf(notificationWindow) + 1;
+        this.moveNotificationUp(pos, this.activeNotifications);
     }
 
     /**

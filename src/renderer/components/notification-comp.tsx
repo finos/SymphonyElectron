@@ -275,7 +275,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
         let replyText = this.getInputValue();
         if (replyText) {
             // need to replace 👍 with :thumbsup: to make sure client displays the correct emoji
-            replyText = replyText.replace(/👍/g, replyText.length <= 2 ? ':thumbsup: ' : ':thumbsup:');
+            replyText = replyText.replace(/👍/g, ':thumbsup: ');
             ipcRenderer.send('notification-on-reply', id, replyText);
         }
     }
