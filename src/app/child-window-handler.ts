@@ -65,7 +65,7 @@ const getParsedUrl = (url: string): Url => {
     const parsedUrl = parse(url);
 
     if (!parsedUrl.protocol || parsedUrl.protocol !== 'https') {
-        logger.info(`child-window-handler: The url ${url} doesn't have a valid protocol or is not https, so, adding https!`);
+        logger.info(`child-window-handler: The url ${url} doesn't have a valid protocol. Adding https as protocol.`);
         parsedUrl.protocol = 'https:';
         parsedUrl.slashes = true;
     }
