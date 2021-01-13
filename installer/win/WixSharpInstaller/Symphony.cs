@@ -172,6 +172,7 @@ class Script
             new PublicProperty("NOTIFICATIONS", "true"),
             new PublicProperty("OPEN_EXTERNAL", "true"),
             new PublicProperty("POD_URL", "https://my.symphony.com"),
+            new PublicProperty("CONTEXT_ORIGIN_URL", ""),
             new PublicProperty("POINTER_LOCK", "true"),
             new Property("MSIINSTALLPERUSER", "1"),
             new Property("PROGRAMSFOLDER", System.Environment.ExpandEnvironmentVariables(@"%PROGRAMFILES%"))
@@ -200,7 +201,7 @@ class Script
             new ElevatedManagedAction(CustomActions.UpdateConfig, Return.check, When.After, Step.InstallFiles, Condition.NOT_BeingRemoved )
             {
                 // The UpdateConfig action needs the built-in property INSTALLDIR as well as most of the custom properties
-                UsesProperties = "INSTALLDIR,POD_URL,MINIMIZE_ON_CLOSE,ALWAYS_ON_TOP,AUTO_START,BRING_TO_FRONT,MEDIA,LOCATION,NOTIFICATIONS,MIDI_SYSEX,POINTER_LOCK,FULL_SCREEN,OPEN_EXTERNAL,CUSTOM_TITLE_BAR,DEV_TOOLS_ENABLED,AUTO_LAUNCH_PATH"
+                UsesProperties = "INSTALLDIR,POD_URL,CONTEXT_ORIGIN_URL,MINIMIZE_ON_CLOSE,ALWAYS_ON_TOP,AUTO_START,BRING_TO_FRONT,MEDIA,LOCATION,NOTIFICATIONS,MIDI_SYSEX,POINTER_LOCK,FULL_SCREEN,OPEN_EXTERNAL,CUSTOM_TITLE_BAR,DEV_TOOLS_ENABLED,AUTO_LAUNCH_PATH"
             },
 
             // CleanRegistry
@@ -341,6 +342,7 @@ public class CustomActions
 
             // Replace all the relevant settings with values from the properties
             data = ReplaceProperty(data, "url", session.Property("POD_URL"));
+            data = ReplaceProperty(data, "contextOriginUrl", session.Property("CONTEXT_ORIGIN_URL"));
             data = ReplaceProperty(data, "minimizeOnClose", session.Property("MINIMIZE_ON_CLOSE"));
             data = ReplaceProperty(data, "alwaysOnTop", session.Property("ALWAYS_ON_TOP"));
             data = ReplaceProperty(data, "launchOnStartup", session.Property("AUTO_START"));
