@@ -1,4 +1,4 @@
-import { ChildProcess, ExecException, execFile } from 'child_process';
+import {ChildProcess, ExecException, execFile} from 'child_process';
 import * as electron from 'electron';
 import {
   app,
@@ -7,41 +7,26 @@ import {
   crashReporter,
   DesktopCapturerSource,
   globalShortcut,
-  ipcMain,
+  ipcMain
 } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
-import { format, parse } from 'url';
+import {format, parse} from 'url';
 
-import { apiName, WindowTypes } from '../common/api-interface';
-import {
-  isDevEnv,
-  isLinux,
-  isMac,
-  isNodeEnv,
-  isWindowsOS,
-} from '../common/env';
-import { i18n, LocaleType } from '../common/i18n';
-import { logger } from '../common/logger';
-import { calculatePercentage, getCommandLineArgs, getGuid } from '../common/utils';
-import { notification } from '../renderer/notification';
-import { cleanAppCacheOnCrash } from './app-cache-handler';
-import { AppMenu } from './app-menu';
-import { handleChildWindow } from './child-window-handler';
-import {
-  CloudConfigDataTypes,
-  config,
-  IConfig,
-  IGlobalConfig,
-} from './config-handler';
-import { SpellChecker } from './spell-check-handler';
-import { checkIfBuildExpired } from './ttl-handler';
-import { versionHandler } from './version-handler';
-import {
-  handlePermissionRequests,
-  monitorWindowActions,
-  onConsoleMessages,
-} from './window-actions';
+import {apiName, WindowTypes} from '../common/api-interface';
+import {isDevEnv, isLinux, isMac, isNodeEnv, isWindowsOS,} from '../common/env';
+import {i18n, LocaleType} from '../common/i18n';
+import {logger} from '../common/logger';
+import {calculatePercentage, getCommandLineArgs, getGuid} from '../common/utils';
+import {notification} from '../renderer/notification';
+import {cleanAppCacheOnCrash} from './app-cache-handler';
+import {AppMenu} from './app-menu';
+import {handleChildWindow} from './child-window-handler';
+import {CloudConfigDataTypes, config, IConfig, IGlobalConfig,} from './config-handler';
+import {SpellChecker} from './spell-check-handler';
+import {checkIfBuildExpired} from './ttl-handler';
+import {versionHandler} from './version-handler';
+import {handlePermissionRequests, monitorWindowActions, onConsoleMessages,} from './window-actions';
 import {
   createComponentWindow,
   didVerifyAndRestoreWindow,
@@ -407,12 +392,14 @@ export class WindowHandler {
 
     // Event needed to hide native menu bar on Windows 10 as we use custom menu bar
     this.mainWindow.webContents.once('did-start-loading', () => {
-      logger.info(`window-handler: main window web contents started loading!`);
+      logger.info(`window-handler: main window web contents started loading for url ${this.mainWindow?.webContents.getURL()}!`);
+      this.finishedLoading = false;
+      this.listenForLoad();
       if (
-        this.config.isCustomTitleBar === CloudConfigDataTypes.ENABLED &&
-        isWindowsOS &&
-        this.mainWindow &&
-        windowExists(this.mainWindow)
+          this.config.isCustomTitleBar === CloudConfigDataTypes.ENABLED &&
+          isWindowsOS &&
+          this.mainWindow &&
+          windowExists(this.mainWindow)
       ) {
         this.mainWindow.setMenuBarVisibility(false);
       }
@@ -1708,8 +1695,11 @@ export class WindowHandler {
       if (!this.finishedLoading) {
         logger.info(`window-handler: Pod load failed on launch`);
         if (this.mainWindow && windowExists(this.mainWindow)) {
-          logger.info(`window-handler: Trying to reload.`);
-          await this.mainWindow.loadURL(this.url || this.userConfig.url || this.globalConfig.url);
+          const webContentsUrl = this.mainWindow.webContents.getURL();
+          logger.info(`window-handler: Current main window url is ${webContentsUrl}.`);
+          const reloadUrl = webContentsUrl || this.userConfig.url || this.globalConfig.url;
+          logger.info(`window-handler: Trying to reload ${reloadUrl}.`);
+          await this.mainWindow.loadURL(reloadUrl);
           return;
         }
         logger.error(`window-handler: Cannot reload as main window does not exist`);
