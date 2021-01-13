@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Compile &amp; Build" type="CompoundRunConfigurationType">
+    <toRun name="Browserify Preload Component" type="js.build_tools.npm" />
+    <toRun name="Compile" type="js.build_tools.npm" />
+    <toRun name="Browserify Preload" type="js.build_tools.npm" />
+    <method v="2" />
+  </configuration>
+</component>
