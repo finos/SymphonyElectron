@@ -1,4 +1,4 @@
-import {ChildProcess, ExecException, execFile} from 'child_process';
+import { ChildProcess, ExecException, execFile } from 'child_process';
 import * as electron from 'electron';
 import {
     app,
@@ -7,26 +7,26 @@ import {
     crashReporter,
     DesktopCapturerSource,
     globalShortcut,
-    ipcMain
+    ipcMain,
 } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
-import {format, parse} from 'url';
+import { format, parse } from 'url';
 
-import {apiName, WindowTypes} from '../common/api-interface';
-import {isDevEnv, isLinux, isMac, isNodeEnv, isWindowsOS} from '../common/env';
-import {i18n, LocaleType} from '../common/i18n';
-import {logger} from '../common/logger';
-import {calculatePercentage, getCommandLineArgs, getGuid} from '../common/utils';
-import {notification} from '../renderer/notification';
-import {cleanAppCacheOnCrash} from './app-cache-handler';
-import {AppMenu} from './app-menu';
-import {handleChildWindow} from './child-window-handler';
-import {CloudConfigDataTypes, config, IConfig, IGlobalConfig} from './config-handler';
-import {SpellChecker} from './spell-check-handler';
-import {checkIfBuildExpired} from './ttl-handler';
-import {versionHandler} from './version-handler';
-import {handlePermissionRequests, monitorWindowActions, onConsoleMessages} from './window-actions';
+import { apiName, WindowTypes } from '../common/api-interface';
+import { isDevEnv, isLinux, isMac, isNodeEnv, isWindowsOS } from '../common/env';
+import { i18n, LocaleType } from '../common/i18n';
+import { logger } from '../common/logger';
+import { calculatePercentage, getCommandLineArgs, getGuid } from '../common/utils';
+import { notification } from '../renderer/notification';
+import { cleanAppCacheOnCrash } from './app-cache-handler';
+import { AppMenu } from './app-menu';
+import { handleChildWindow } from './child-window-handler';
+import { CloudConfigDataTypes, config, IConfig, IGlobalConfig } from './config-handler';
+import { SpellChecker } from './spell-check-handler';
+import { checkIfBuildExpired } from './ttl-handler';
+import { versionHandler } from './version-handler';
+import { handlePermissionRequests, monitorWindowActions, onConsoleMessages } from './window-actions';
 import {
     createComponentWindow,
     didVerifyAndRestoreWindow,
@@ -73,6 +73,22 @@ let DEFAULT_HEIGHT: number = 900;
 const LISTEN_TIMEOUT: number = 25 * 1000;
 
 export class WindowHandler {
+
+    /**
+     * Verifies if the url is valid and
+     * forcefully appends https if not present
+     *
+     * @param configURL {string}
+     */
+    private static getValidUrl(configURL: string): string {
+        const parsedUrl = parse(configURL);
+
+        if (!parsedUrl.protocol || parsedUrl.protocol !== 'https') {
+            parsedUrl.protocol = 'https:';
+            parsedUrl.slashes = true;
+        }
+        return format(parsedUrl);
+    }
     public appMenu: AppMenu | null;
     public isAutoReload: boolean;
     public isOnline: boolean;
@@ -214,22 +230,6 @@ export class WindowHandler {
         }
 
         this.listenForLoad();
-    }
-
-    /**
-     * Verifies if the url is valid and
-     * forcefully appends https if not present
-     *
-     * @param configURL {string}
-     */
-    private static getValidUrl(configURL: string): string {
-        const parsedUrl = parse(configURL);
-
-        if (!parsedUrl.protocol || parsedUrl.protocol !== 'https') {
-            parsedUrl.protocol = 'https:';
-            parsedUrl.slashes = true;
-        }
-        return format(parsedUrl);
     }
 
     /**
