@@ -20,20 +20,35 @@ SDA can be automatically installed from the terminal. The process of customizing
 The parameters that should be configured in `sym_settings.txt` are listed below. They need to be in the same order as they'll be picked up by the installer in the same order. Do not skip any parameters.
 
 - Pod Url
+- Context Origin Url (Only required if your Pod url is set to your SSO provider URL, otherwise, leave it blank.)
 - Minimize On Close
 - Launch On Startup
 - Always on Top
 - Bring to Front
 - Dev Tools Enabled
 
-You can find a sample below:
+You can find samples below:
+
+Your SSO URL is set as the POD URL
 ```
-https://corporate.symphony.com/login/sso/initsso
+https://mysso.mycompany.com/login/sso/initsso
+https://mypod.symphony.com
 ENABLED
 ENABLED
 DISABLED
 DISABLED
+true
+```
+
+Your POD takes care of SSO as well
+```
+https://mypod.symphony.com/login/sso/initsso
+
 ENABLED
+ENABLED
+DISABLED
+DISABLED
+true
 ```
 
 ## sym_permissions.txt
@@ -50,13 +65,13 @@ The parameters that should be configured in `sym_permissions.txt` are listed bel
 
 You can find a sample below:
 ```
-ENABLED
-ENABLED
-ENABLED
-ENABLED
-ENABLED
-ENABLED
-ENABLED
+true
+true
+true
+true
+true
+true
+true
 ```
 
 # Installation
@@ -85,14 +100,16 @@ settings_temp_file="/tmp/sym_settings.txt"
 ## Set the POD URL and other user related settings.
 ## Note, all the user related settings should be either "ENABLED", "DISABLED" or "NOT_SET"
 pod_url="https://corporate.symphony.com/login/sso/initsso"
+context_origin_url="https://corporate.symphony.com"
 minimize_on_close="ENABLED"
 launch_on_startup="ENABLED"
 always_on_top="DISABLED"
 bring_to_front="DISABLED"
-dev_tools_enabled="ENABLED"
+dev_tools_enabled=true
 
 ## DO NOT CHANGE THIS
 sudo echo ${pod_url} > ${settings_temp_file}
+sudo echo ${context_origin_url} >> ${settings_temp_file}
 sudo echo ${minimize_on_close} >> ${settings_temp_file}
 sudo echo ${launch_on_startup} >> ${settings_temp_file}
 sudo echo ${always_on_top} >> ${settings_temp_file}
@@ -103,13 +120,13 @@ sudo echo ${dev_tools_enabled} >> ${settings_temp_file}
 permissions_temp_file="/tmp/sym_permissions.txt"
 
 ## Set the permissions. By default, it should be "ENABLED" for all unless you know what you are doing
-media="ENABLED"
-geo_location="ENABLED"
-notifications="ENABLED"
-midi_sysex="ENABLED"
-pointer_lock="ENABLED"
-full_screen="ENABLED"
-open_external_app="ENABLED"
+media=true
+geo_location=true
+notifications=true
+midi_sysex=true
+pointer_lock=true
+full_screen=true
+open_external_app=true
 
 ## DO NOT CHANGE THIS
 sudo echo ${media} > ${permissions_temp_file}
@@ -124,5 +141,6 @@ sudo installer -store -pkg ${package_path} -target /
 
 rm -rf ${settings_temp_file}
 rm -rf ${permissions_temp_file}
+
 
 ```
