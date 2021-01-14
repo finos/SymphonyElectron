@@ -12,6 +12,12 @@ interface IState {
     position: startCorner;
     screens: Electron.Display[];
     display: number;
+    theme: Themes;
+}
+
+export enum Themes {
+    LIGHT = 'light',
+    DARK = 'dark',
 }
 
 /**
@@ -25,6 +31,7 @@ export default class NotificationSettings extends React.Component<{}, IState> {
             position: 'upper-right',
             screens: [],
             display: 1,
+            theme: Themes.LIGHT,
         };
         this.updateState = this.updateState.bind(this);
     }
@@ -33,20 +40,27 @@ export default class NotificationSettings extends React.Component<{}, IState> {
      * Renders the notification settings window
      */
     public render(): JSX.Element {
-        return (
-            <div className='content'>
+        if (this.state.theme === Themes.DARK) {
+            document.body.classList.add('dark-mode');
+        }
 
-                <header className='header'>
+        return (
+            <div className='content' style={this.state.theme === Themes.DARK ? { backgroundColor: '#25272B' } : undefined} >
+                <header
+                    className='header'
+                    style={this.state.theme === Themes.DARK ? { color: 'white', borderBottom: '1px solid #525760' } : undefined}>
                     <span className='header-title'>
                         {i18n.t('Set Notification Position', NOTIFICATION_SETTINGS_NAMESPACE)()}
                     </span>
                 </header>
-
                 <div className='form'>
-                    <label className='display-label'>{i18n.t('Show on display', NOTIFICATION_SETTINGS_NAMESPACE)()}</label>
+                    <label className='display-label' style={this.state.theme === Themes.DARK ? { color: 'white' } : undefined}>
+                        {i18n.t('Show on display', NOTIFICATION_SETTINGS_NAMESPACE)()}
+                    </label>
                     <div id='screens' className='display-container'>
                         <select
                             className='display-selector'
+                            style={this.state.theme === Themes.DARK ? { border: '2px solid #767A81', backgroundColor: '#25272B', color: 'white' } : undefined}
                             id='screen-selector'
                             title='position'
                             value={this.state.display}
@@ -55,9 +69,10 @@ export default class NotificationSettings extends React.Component<{}, IState> {
                             {this.renderScreens()}
                         </select>
                     </div>
-
-                    <label className='position-label'>{i18n.t('Position', NOTIFICATION_SETTINGS_NAMESPACE)()}</label>
-                    <div className='position-container'>
+                    <label className='position-label' style={this.state.theme === Themes.DARK ? { color: 'white' } : undefined}>
+                        {i18n.t('Position', NOTIFICATION_SETTINGS_NAMESPACE)()}
+                    </label>
+                    <div className='position-container' style={this.state.theme === Themes.DARK ? { background: '#2E3136' } : undefined}>
                         <div className='button-set-left'>
                             {this.renderPositionButton('upper-left', 'Top Left')}
                             {this.renderPositionButton('lower-left', 'Bottom Left')}
@@ -68,18 +83,24 @@ export default class NotificationSettings extends React.Component<{}, IState> {
                         </div>
                     </div>
                 </div>
-
-                <footer className='footer'>
+                <footer className='footer' style={this.state.theme === Themes.DARK ? { borderTop: '1px solid #525760' } : undefined}>
                     <div className='footer-button-container'>
-                        <button id='cancel' className='footer-button footer-button-dismiss' onClick={this.close.bind(this)}>
+                        <button
+                            id='cancel'
+                            className='footer-button footer-button-dismiss'
+                            onClick={this.close.bind(this)}
+                            style={this.state.theme === Themes.DARK ? { backgroundColor: '#25272B', color: 'white' } : undefined}>
                             {i18n.t('CANCEL', NOTIFICATION_SETTINGS_NAMESPACE)()}
                         </button>
-                        <button id='ok-button' className='footer-button footer-button-ok' onClick={this.submit.bind(this)}>
+                        <button
+                            id='ok-button'
+                            className='footer-button footer-button-ok'
+                            onClick={this.submit.bind(this)}
+                            style={this.state.theme === Themes.DARK ? { backgroundColor: '#25272B', color: 'white' } : undefined}>
                             {i18n.t('OK', NOTIFICATION_SETTINGS_NAMESPACE)()}
                         </button>
                     </div>
                 </footer>
-
             </div>
         );
     }
@@ -143,13 +164,16 @@ export default class NotificationSettings extends React.Component<{}, IState> {
      * @param content
      */
     private renderPositionButton(id: startCorner, content: string): JSX.Element {
-        const style = this.state.position === id ? `position-button position-button-selected ${id}` : `position-button ${id}`;
+        const style = this.getPositionButtonStyle(id);
         return (
             <div className='position-button-container'>
                 <button
                     onClick={this.togglePosition.bind(this)}
-                    className={style}
-                    id={id} type='button'
+                    className='position-button'
+                    style={style}
+                    id={id}
+                    data-testid={id}
+                    type='button'
                     name='position'
                     value={id}
                 >
@@ -157,6 +181,23 @@ export default class NotificationSettings extends React.Component<{}, IState> {
                 </button>
             </div>
         );
+    }
+
+    /**
+     * Gets the text color and background color of a position button
+     *
+     * @param id
+     */
+    private getPositionButtonStyle(id: string): React.CSSProperties {
+        let style: React.CSSProperties;
+        if (this.state.position === id) {
+            style = { backgroundColor: '#008EFF', color: 'white' };
+        } else if (this.state.theme === Themes.DARK) {
+            style = { backgroundColor: '#25272B', color: 'white' };
+        } else {
+            style = { backgroundColor: '#F8F8F9', color: '#17181B' };
+        }
+        return style;
     }
 
     /**

@@ -48,10 +48,17 @@ exports[`Notification Settings should mount, unmount and render component should
           className="position-button-container"
         >
           <button
-            className="position-button upper-left"
+            className="position-button"
+            data-testid="upper-left"
             id="upper-left"
             name="position"
             onClick={[Function]}
+            style={
+              Object {
+                "backgroundColor": "#F8F8F9",
+                "color": "#17181B",
+              }
+            }
             type="button"
             value="upper-left"
           >
@@ -62,10 +69,17 @@ exports[`Notification Settings should mount, unmount and render component should
           className="position-button-container"
         >
           <button
-            className="position-button lower-left"
+            className="position-button"
+            data-testid="lower-left"
             id="lower-left"
             name="position"
             onClick={[Function]}
+            style={
+              Object {
+                "backgroundColor": "#F8F8F9",
+                "color": "#17181B",
+              }
+            }
             type="button"
             value="lower-left"
           >
@@ -80,10 +94,17 @@ exports[`Notification Settings should mount, unmount and render component should
           className="position-button-container"
         >
           <button
-            className="position-button position-button-selected upper-right"
+            className="position-button"
+            data-testid="upper-right"
             id="upper-right"
             name="position"
             onClick={[Function]}
+            style={
+              Object {
+                "backgroundColor": "#008EFF",
+                "color": "white",
+              }
+            }
             type="button"
             value="upper-right"
           >
@@ -94,10 +115,17 @@ exports[`Notification Settings should mount, unmount and render component should
           className="position-button-container"
         >
           <button
-            className="position-button lower-right"
+            className="position-button"
+            data-testid="lower-right"
             id="lower-right"
             name="position"
             onClick={[Function]}
+            style={
+              Object {
+                "backgroundColor": "#F8F8F9",
+                "color": "#17181B",
+              }
+            }
             type="button"
             value="lower-right"
           >

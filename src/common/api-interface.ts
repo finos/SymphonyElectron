@@ -83,7 +83,10 @@ export interface IApiArgs {
     isMana: boolean;
     notificationOpts: object;
     notificationId: number;
+    theme: Themes;
 }
+
+export type Themes = 'light' | 'dark';
 
 export type WindowTypes = 'screen-picker' | 'screen-sharing-indicator' | 'notification-settings';
 

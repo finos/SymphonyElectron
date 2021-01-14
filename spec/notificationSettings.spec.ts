@@ -16,6 +16,7 @@ describe('Notification Settings', () => {
             },
         ],
         display: '6713899',
+        theme: 'light'
     };
     const onLabelEvent = 'on';
     const sendEvent = 'send';
@@ -85,6 +86,7 @@ describe('Notification Settings', () => {
                 position: 'upper-right',
                 screens: [],
                 display: '6713899',
+                theme: 'light',
             };
 
             const spy = jest.spyOn(NotificationSettings.prototype, 'setState');
@@ -93,8 +95,7 @@ describe('Notification Settings', () => {
             const wrapper = shallow(React.createElement(NotificationSettings));
             ipcRenderer.send('notification-settings-data', notificationSettingsMock);
 
-            const positionButton = `button.upper-right`;
-            const input = wrapper.find(positionButton);
+            const input = wrapper.find('[data-testid="upper-right"]');
 
             input.simulate('click', { target: { value: 'upper-right' } });
 
@@ -115,8 +116,7 @@ describe('Notification Settings', () => {
             const wrapper = shallow(React.createElement(NotificationSettings));
             ipcRenderer.send('notification-settings-data', notificationSettingsMock);
 
-            const positionButton = `button.lower-right`;
-            const input = wrapper.find(positionButton);
+            const input = wrapper.find('[data-testid="lower-right"]');
 
             input.simulate('click', { target: { value: 'lower-right' } });
 
@@ -137,8 +137,7 @@ describe('Notification Settings', () => {
             const wrapper = shallow(React.createElement(NotificationSettings));
             ipcRenderer.send('notification-settings-data', notificationSettingsMock);
 
-            const positionButton = `button.upper-left`;
-            const input = wrapper.find(positionButton);
+            const input = wrapper.find('[data-testid="upper-left"]');
 
             input.simulate('click', { target: { value: 'upper-left' } });
 
@@ -159,8 +158,7 @@ describe('Notification Settings', () => {
             const wrapper = shallow(React.createElement(NotificationSettings));
             ipcRenderer.send('notification-settings-data', notificationSettingsMock);
 
-            const positionButton = `button.lower-left`;
-            const input = wrapper.find(positionButton);
+            const input = wrapper.find('[data-testid="lower-left"]');
 
             input.simulate('click', { target: { value: 'lower-left' } });
 

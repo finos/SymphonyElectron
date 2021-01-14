@@ -12,6 +12,13 @@ body {
   margin: 0;
   height: 100%;
   font-family: @font-family;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.dark-mode {
+  background-color: #25272B;
+  color: white;
 }
 
 .content {
@@ -28,6 +35,7 @@ body {
   border-bottom: 1px solid rgba(0, 0, 0, .1);
   margin-bottom: 20px;
   padding: 16px;
+  color: @color;
 }
 
 .header-title {
@@ -41,7 +49,6 @@ body {
   white-space: nowrap;
   overflow: hidden;
   width: 100%;
-  color: @color;
 }
 
 .form {
@@ -131,10 +138,7 @@ body {
     line-height: 20px;
     align-items: center;
     color: #17181B;
-  }
-
-  .position-button-selected {
-    background-color: #008EFF;
+    cursor: pointer;
   }
 
   .upper-left,
@@ -170,6 +174,7 @@ body {
     font-size: 14px;
     line-height: 20px;
     align-items: center;
+    cursor: pointer;
   }
 
   .footer-button-ok {

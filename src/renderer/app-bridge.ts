@@ -173,7 +173,7 @@ export class AppBridge {
                 await notification.hideNotification(data as number);
                 break;
             case apiCmds.showNotificationSettings:
-                ssf.showNotificationSettings();
+                ssf.showNotificationSettings(data);
                 break;
             case apiCmds.setIsInMeeting:
                 if (typeof data === 'boolean') {

@@ -93,8 +93,8 @@ ipcMain.on(apiName.symphonyApi, async (event: Electron.IpcMainEvent, arg: IApiAr
             downloadHandler.setWindow(event.sender);
             break;
         case apiCmds.showNotificationSettings:
-            if (typeof arg.windowName === 'string') {
-                windowHandler.createNotificationSettingsWindow(arg.windowName);
+            if (typeof arg.windowName === 'string' && typeof arg.theme === 'string') {
+                windowHandler.createNotificationSettingsWindow(arg.windowName, arg.theme);
             }
             break;
         case apiCmds.sanitize:

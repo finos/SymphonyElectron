@@ -289,10 +289,10 @@ describe('main api handler', () => {
             const value = {
                 cmd: apiCmds.showNotificationSettings,
                 windowName: 'notification-settings',
+                theme: 'light',
             };
-            const expectedValue = 'notification-settings';
             ipcMain.send(apiName.symphonyApi, value);
-            expect(spy).toBeCalledWith(expectedValue);
+            expect(spy).toBeCalledWith('notification-settings', 'light');
         });
 
         it('should call `sanitize` correctly', () => {

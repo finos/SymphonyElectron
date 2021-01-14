@@ -433,11 +433,12 @@ export class SSFApi {
     /**
      * Opens a modal window to configure notification preference.
      */
-    public showNotificationSettings(): void {
+    public showNotificationSettings(data: string): void {
         const windowName = (remote.getCurrentWindow() as ICustomBrowserWindow).winName;
         local.ipcRenderer.send(apiName.symphonyApi, {
             cmd: apiCmds.showNotificationSettings,
             windowName,
+            theme: data,
         });
     }
 
