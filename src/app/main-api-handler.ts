@@ -94,7 +94,8 @@ ipcMain.on(apiName.symphonyApi, async (event: Electron.IpcMainEvent, arg: IApiAr
             break;
         case apiCmds.showNotificationSettings:
             if (typeof arg.windowName === 'string') {
-                windowHandler.createNotificationSettingsWindow(arg.windowName);
+                const theme = arg.theme ? arg.theme : 'light';
+                windowHandler.createNotificationSettingsWindow(arg.windowName, theme);
             }
             break;
         case apiCmds.sanitize:

@@ -13,7 +13,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { format, parse } from 'url';
 
-import { apiName, WindowTypes } from '../common/api-interface';
+import { apiName, Themes, WindowTypes } from '../common/api-interface';
 import { isDevEnv, isLinux, isMac, isNodeEnv, isWindowsOS } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
@@ -1323,7 +1323,7 @@ export class WindowHandler {
      *
      * @param windowName
      */
-    public createNotificationSettingsWindow(windowName: string): void {
+    public createNotificationSettingsWindow(windowName: string, theme: Themes): void {
         const opts = this.getWindowOpts(
             {
                 width: 540,
@@ -1370,7 +1370,7 @@ export class WindowHandler {
                 ]).notificationSettings;
                 this.notificationSettingsWindow.webContents.send(
                     'notification-settings-data',
-                    {screens, position, display},
+                    {screens, position, display, theme},
                 );
             }
         });
