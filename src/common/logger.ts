@@ -251,10 +251,12 @@ class Logger {
         const deleteTimeStamp = new Date().getTime() - (5 * 24 * 60 * 60 * 1000);
         files.forEach((file) => {
             const filePath = path.join(this.logPath, file);
-            const stat = fs.statSync(filePath);
-            const fileTimestamp = new Date(util.inspect(stat.mtime)).getTime();
-            if ((fileTimestamp < deleteTimeStamp) && fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath);
+            if (fs.existsSync(filePath)) {
+                const stat = fs.statSync(filePath);
+                const fileTimestamp = new Date(util.inspect(stat.mtime)).getTime();
+                if ((fileTimestamp < deleteTimeStamp)) {
+                    fs.unlinkSync(filePath);
+                }
             }
         });
     }
