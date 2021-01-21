@@ -378,6 +378,8 @@ export default class NotificationComp extends React.Component<{}, IState> {
         data.isInputHidden = true;
         data.containerHeight = CONTAINER_HEIGHT;
 
+        data.color = this.isValidColor(data.color) ? data.color : '';
+
         this.resetNotificationData();
         this.setState(data as IState);
 
@@ -395,6 +397,15 @@ export default class NotificationComp extends React.Component<{}, IState> {
                 }
             }, 1000);
         }
+    }
+
+    /**
+     * Validates the color
+     * @param color
+     * @private
+     */
+    private isValidColor(color: string): boolean {
+        return /^#([A-Fa-f0-9]{6})/.test(color);
     }
 
     /**
