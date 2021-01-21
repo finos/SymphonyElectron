@@ -29,8 +29,8 @@ type mouseEventButton = React.MouseEvent<HTMLDivElement> | React.MouseEvent<HTML
 type keyboardEvent = React.KeyboardEvent<HTMLInputElement>;
 
 // Notification container height
-const CONTAINER_HEIGHT = 64;
-const CONTAINER_HEIGHT_WITH_INPUT = 104;
+const CONTAINER_HEIGHT = 100;
+const CONTAINER_HEIGHT_WITH_INPUT = 132;
 
 export default class NotificationComp extends React.Component<{}, IState> {
 

@@ -27,6 +27,8 @@ interface ICorner {
 }
 
 type startCorner = 'upper-right' | 'upper-left' | 'lower-right' | 'lower-left';
+const NEXT_INSERT_POSITION = 108;
+const NEXT_INSERT_POSITION_WITH_INPUT = 140;
 
 export default class NotificationHandler {
     public settings: ISettings;
@@ -121,7 +123,7 @@ export default class NotificationHandler {
         activeNotifications.forEach((notification) => {
             if (notification && windowExists(notification)) {
                 const [, height] = notification.getSize();
-                nextNotificationY += height > this.settings.height ? 112 : 72;
+                nextNotificationY += height > this.settings.height ? NEXT_INSERT_POSITION_WITH_INPUT : NEXT_INSERT_POSITION;
             }
         });
         if (activeNotifications.length < this.settings.maxVisibleNotifications) {
@@ -134,7 +136,7 @@ export default class NotificationHandler {
                 default:
                 case 'lower-right':
                 case 'lower-left':
-                    this.nextInsertPos.y = this.settings.corner.y - (nextNotificationY + 72);
+                    this.nextInsertPos.y = this.settings.corner.y - (nextNotificationY + NEXT_INSERT_POSITION);
                     break;
             }
         }
