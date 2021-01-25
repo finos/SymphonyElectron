@@ -1218,7 +1218,7 @@ export class WindowHandler {
             this.addWindow(opts.winKey, this.screenPickerWindow);
         });
 
-        ipcMain.on('screen-source-select', (_event, source) => {
+        const screenSourceSelect = (_event, source) => {
             if (source != null) {
                 logger.info(`window-handler: screen-source-select`, source, id);
 
@@ -1229,12 +1229,15 @@ export class WindowHandler {
                     timeoutValue,
                 );
             }
-        });
+        };
+
+        ipcMain.on('screen-source-select', screenSourceSelect);
 
         ipcMain.once('screen-source-selected', (_event, source) => {
             logger.info(`window-handler: screen-source-selected`, source, id);
-
-            this.drawScreenShareIndicatorFrame(source);
+            if (source == null) {
+                this.execCmd(this.screenShareIndicatorFrameUtil, []);
+            }
 
             window.send('start-share' + id, source);
             if (this.screenPickerWindow && windowExists(this.screenPickerWindow)) {
@@ -1242,7 +1245,7 @@ export class WindowHandler {
             }
         });
         this.screenPickerWindow.once('closed', () => {
-            this.execCmd(this.screenShareIndicatorFrameUtil, []);
+            ipcMain.removeListener('screen-source-select', screenSourceSelect);
             this.removeWindow(opts.winKey);
             this.screenPickerWindow = null;
         });
