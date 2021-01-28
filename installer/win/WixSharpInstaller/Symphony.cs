@@ -243,7 +243,8 @@ class Script
         project.ControlPanelInfo.NoRepair = true;
         project.ControlPanelInfo.NoModify = true;
         project.ControlPanelInfo.ProductIcon = @"..\..\..\images\icon.ico";
-
+        project.ControlPanelInfo.Manufacturer = "Symphony";
+        
         project.Platform = Platform.x64;
 
         // Generate an MSI from all settings done above
