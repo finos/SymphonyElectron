@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 
+import { analytics, AnalyticsElements, ToastNotificationActionTypes } from '../app/analytics-handler';
 import { config } from '../app/config-handler';
 import { createComponentWindow, windowExists } from '../app/window-utils';
 import { AnimationQueue } from '../common/animation-queue';
@@ -73,9 +74,18 @@ class Notification extends NotificationHandler {
   constructor(opts) {
     super(opts);
     ipcMain.on('close-notification', (_event, windowId) => {
-      // removes the event listeners on the client side
-      this.notificationClosed(windowId);
-      this.hideNotification(windowId);
+    const browserWindow = this.getNotificationWindow(windowId);
+        if (browserWindow && windowExists(browserWindow) && browserWindow.notificationData) {
+            const notificationData = (browserWindow.notificationData as any).data;
+            analytics.track({
+                element: AnalyticsElements.TOAST_NOTIFICATION,
+                action_type: ToastNotificationActionTypes.TOAST_CLOSED,
+                extra_data: notificationData || {},
+            });
+        }
+        // removes the event listeners on the client side
+        this.notificationClosed(windowId);
+        this.hideNotification(windowId);
     });
 
     ipcMain.on('notification-clicked', (_event, windowId) => {
