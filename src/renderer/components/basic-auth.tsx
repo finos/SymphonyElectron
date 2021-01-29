@@ -32,16 +32,22 @@ export default class BasicAuth extends React.Component<{}, IState> {
     this.updateState = this.updateState.bind(this);
   }
 
+  /**
+   * Callback to handle event when a component is mounted
+   */
   public componentDidMount(): void {
     ipcRenderer.on('basic-auth-data', this.updateState);
   }
 
+  /**
+   * Callback to handle event when a component is unmounted
+   */
   public componentWillUnmount(): void {
     ipcRenderer.removeListener('basic-auth-data', this.updateState);
   }
 
   /**
-   * main render function
+   * Renders the component
    */
   public render(): JSX.Element {
     const { hostname, isValidCredentials } = this.state;

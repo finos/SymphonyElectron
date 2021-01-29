@@ -50,6 +50,9 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
     );
   }
 
+  /**
+   * Callback to handle event when a component is mounted
+   */
   public componentDidMount(): void {
     const target = document.querySelector('title');
     this.observer = new MutationObserver((mutations) => {
@@ -72,6 +75,9 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
     }, 10000);
   }
 
+  /**
+   * Callback to handle event when a component is unmounted
+   */
   public componentWillUnmount(): void {
     if (this.observer) {
       this.observer.disconnect();
@@ -79,7 +85,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
   }
 
   /**
-   * Renders the custom title bar
+   * Renders the component
    */
   public render(): JSX.Element | null {
     const { title, isFullScreen } = this.state;

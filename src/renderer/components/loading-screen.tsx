@@ -28,16 +28,22 @@ export default class LoadingScreen extends React.Component<{}, IState> {
     this.updateState = this.updateState.bind(this);
   }
 
+  /**
+   * Callback to handle event when a component is mounted
+   */
   public componentDidMount(): void {
     ipcRenderer.on('loading-screen-data', this.updateState);
   }
 
+  /**
+   * Callback to handle event when a component is unmounted
+   */
   public componentWillUnmount(): void {
     ipcRenderer.removeListener('loading-screen-data', this.updateState);
   }
 
   /**
-   * main render function
+   * Renders the component
    */
   public render(): JSX.Element {
     const { error } = this.state;

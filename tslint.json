@@ -23,7 +23,6 @@
     ],
     "no-empty": true,
     "no-unused-expression": true,
-    "no-use-before-declare": true,
     "no-implicit-dependencies": [true, "dev", "optional"],
     "no-object-literal-type-assertion": false,
     "no-var-requires": true,

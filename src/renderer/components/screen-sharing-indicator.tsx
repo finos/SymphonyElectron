@@ -35,7 +35,7 @@ export default class ScreenSharingIndicator extends React.Component<
   }
 
   /**
-   * main render function
+   * Renders the component
    */
   public render(): JSX.Element {
     const { id } = this.state;
@@ -64,10 +64,16 @@ export default class ScreenSharingIndicator extends React.Component<
     );
   }
 
+  /**
+   * Callback to handle event when a component is mounted
+   */
   public componentDidMount(): void {
     ipcRenderer.on('screen-sharing-indicator-data', this.updateState);
   }
 
+  /**
+   * Callback to handle event when a component is unmounted
+   */
   public componentWillUnmount(): void {
     ipcRenderer.removeListener(
       'screen-sharing-indicator-data',

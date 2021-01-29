@@ -92,17 +92,23 @@ export default class NotificationComp extends React.Component<{}, IState> {
     this.input = React.createRef();
   }
 
+  /**
+   * Callback to handle event when a component is mounted
+   */
   public componentDidMount(): void {
     ipcRenderer.on('notification-data', this.updateState);
   }
 
+  /**
+   * Callback to handle event when a component is unmounted
+   */
   public componentWillUnmount(): void {
     ipcRenderer.removeListener('notification-data', this.updateState);
     this.clearFlashInterval();
   }
 
   /**
-   * Renders the custom title bar
+   * Renders the component
    */
   public render(): JSX.Element {
     const {

@@ -63,6 +63,9 @@ export default class ScreenPicker extends React.Component<{}, IState> {
     this.renderTabTitles = this.renderTabTitles.bind(this);
   }
 
+  /**
+   * Callback to handle event when a component is mounted
+   */
   public componentDidMount(): void {
     ipcRenderer.on('screen-picker-data', this.updateState);
     document.addEventListener('keyup', this.handleKeyUpPress, true);
@@ -71,13 +74,16 @@ export default class ScreenPicker extends React.Component<{}, IState> {
     }
   }
 
+  /**
+   * Callback to handle event when a component is unmounted
+   */
   public componentWillUnmount(): void {
     ipcRenderer.removeListener('screen-picker-data', this.updateState);
     document.removeEventListener('keyup', this.handleKeyUpPress, true);
   }
 
   /**
-   * main render function
+   * Renders the component
    */
   public render(): JSX.Element {
     const { sources, selectedSource } = this.state;

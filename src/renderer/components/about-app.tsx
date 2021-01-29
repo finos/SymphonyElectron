@@ -72,7 +72,7 @@ export default class AboutApp extends React.Component<{}, IState> {
   }
 
   /**
-   * main render function
+   * Renders the component
    */
   public render(): JSX.Element {
     const {
@@ -144,10 +144,16 @@ export default class AboutApp extends React.Component<{}, IState> {
     );
   }
 
+  /**
+   * Callback to handle event when a component is mounted
+   */
   public componentDidMount(): void {
     ipcRenderer.on('about-app-data', this.updateState);
   }
 
+  /**
+   * Callback to handle event when a component is unmounted
+   */
   public componentWillUnmount(): void {
     ipcRenderer.removeListener('about-app-data', this.updateState);
   }
