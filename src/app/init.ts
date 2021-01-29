@@ -1,4 +1,4 @@
-import { app } from 'electron';
+import { app, crashReporter } from 'electron';
 import * as path from 'path';
 
 import { isDevEnv, isNodeEnv } from '../common/env';
@@ -38,6 +38,14 @@ if (userDataPath) {
 }
 
 logger.info(`init: Fetch user data path`, app.getPath('userData'));
+
+logger.info(`Crashes directory: ${app.getPath('crashDumps')}`);
+crashReporter.start({
+  submitURL: '',
+  uploadToServer: false,
+  ignoreSystemCrashHandler: false,
+});
+logger.info(`Crash Reporter started`);
 
 // Log app statistics
 appStats.logStats();
