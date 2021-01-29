@@ -15,7 +15,11 @@ import {
 } from '../common/env';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
-import { analytics, AnalyticsElements, ScreenSnippetActionTypes } from './analytics-handler';
+import {
+  analytics,
+  AnalyticsElements,
+  ScreenSnippetActionTypes,
+} from './analytics-handler';
 import { updateAlwaysOnTop } from './window-actions';
 import { windowHandler } from './window-handler';
 import { windowExists } from './window-utils';
@@ -43,19 +47,31 @@ class ScreenSnippet {
     this.captureUtil = isMac
       ? '/usr/sbin/screencapture'
       : isDevEnv
-        ? path.join(
+      ? path.join(
           __dirname,
           '../../../node_modules/screen-snippet/ScreenSnippet.exe',
         )
-        : path.join(path.dirname(app.getPath('exe')), 'ScreenSnippet.exe');
+      : path.join(path.dirname(app.getPath('exe')), 'ScreenSnippet.exe');
 
     if (isLinux) {
       this.captureUtil = '/usr/bin/gnome-screenshot';
     }
 
-    ipcMain.on('snippet-analytics-data', async (_event, eventData: { element: AnalyticsElements, type: ScreenSnippetActionTypes }) => {
-      analytics.track({ element: eventData.element, action_type: eventData.type });
-    });
+    ipcMain.on(
+      'snippet-analytics-data',
+      async (
+        _event,
+        eventData: {
+          element: AnalyticsElements;
+          type: ScreenSnippetActionTypes;
+        },
+      ) => {
+        analytics.track({
+          element: eventData.element,
+          action_type: eventData.type,
+        });
+      },
+    );
   }
 
   /**
@@ -110,9 +126,15 @@ class ScreenSnippet {
     try {
       await this.execCmd(this.captureUtil, this.captureUtilArgs);
       if (windowHandler.isMana) {
-        logger.info('screen-snippet-handler: Attempting to extract image dimensions from: ' + this.outputFilePath);
+        logger.info(
+          'screen-snippet-handler: Attempting to extract image dimensions from: ' +
+            this.outputFilePath,
+        );
         const dimensions = this.getImageDimensions(this.outputFilePath);
-        logger.info('screen-snippet-handler: Extracted dimensions from image: ' + JSON.stringify(dimensions));
+        logger.info(
+          'screen-snippet-handler: Extracted dimensions from image: ' +
+            JSON.stringify(dimensions),
+        );
         if (!dimensions) {
           logger.error('screen-snippet-handler: Could not get image size');
           return;
@@ -190,17 +212,17 @@ class ScreenSnippet {
   private execCmd(
     captureUtil: string,
     captureUtilArgs: ReadonlyArray<string>,
-  ): Promise<ChildProcess> {
+  ): Promise<void> {
     logger.info(
       `screen-snippet-handlers: execCmd ${captureUtil} ${captureUtilArgs}`,
     );
-    return new Promise<ChildProcess>((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       return (this.child = execFile(
         captureUtil,
         captureUtilArgs,
         (error: ExecException | null) => {
           if (error && error.killed) {
-            // processs was killed, just resolve with no data.
+            // process was killed, just resolve with no data.
             return reject(error);
           }
           resolve();
@@ -261,7 +283,9 @@ class ScreenSnippet {
    * Gets the dimensions of an image
    * @param filePath path to file to get image dimensions of
    */
-  private getImageDimensions(filePath: string): {
+  private getImageDimensions(
+    filePath: string,
+  ): {
     height: number;
     width: number;
   } {
@@ -276,25 +300,33 @@ class ScreenSnippet {
    * @param webContents A browser window's web contents object
    */
   private uploadSnippet(webContents: Electron.webContents) {
-    ipcMain.once('upload-snippet', async (_event, snippetData: { screenSnippetPath: string, mergedImageData: string }) => {
-      try {
-        windowHandler.closeSnippingToolWindow();
-        const [type, data] = snippetData.mergedImageData.split(',');
-        const payload = {
-          message: 'SUCCESS',
-          data,
-          type,
-        };
-        logger.info('screen-snippet-handler: Snippet uploaded correctly, sending payload to SFE');
-        webContents.send('screen-snippet-data', payload);
-        await this.verifyAndUpdateAlwaysOnTop();
-      } catch (error) {
-        await this.verifyAndUpdateAlwaysOnTop();
-        logger.error(
-          `screen-snippet-handler: upload of screen capture failed with error: ${error}!`,
-        );
-      }
-    });
+    ipcMain.once(
+      'upload-snippet',
+      async (
+        _event,
+        snippetData: { screenSnippetPath: string; mergedImageData: string },
+      ) => {
+        try {
+          windowHandler.closeSnippingToolWindow();
+          const [type, data] = snippetData.mergedImageData.split(',');
+          const payload = {
+            message: 'SUCCESS',
+            data,
+            type,
+          };
+          logger.info(
+            'screen-snippet-handler: Snippet uploaded correctly, sending payload to SFE',
+          );
+          webContents.send('screen-snippet-data', payload);
+          await this.verifyAndUpdateAlwaysOnTop();
+        } catch (error) {
+          await this.verifyAndUpdateAlwaysOnTop();
+          logger.error(
+            `screen-snippet-handler: upload of screen capture failed with error: ${error}!`,
+          );
+        }
+      },
+    );
   }
 }
 

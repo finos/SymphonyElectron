@@ -23,6 +23,7 @@
     "demo": "run-os",
     "demo:win32": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file:///src/demo/index.html",
     "demo:darwin": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/src/demo/index.html",
+    "format": "pretty-quick",
     "lint": "run-s lint:*",
     "lint:project": "tslint --project tsconfig.json",
     "lint:spec": "tslint --project tsconfig.spec.json",
@@ -189,7 +190,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "pretty-quick --staged"
+      "pre-commit": "pretty-quick --staged && npm run lint"
     }
   }
 }

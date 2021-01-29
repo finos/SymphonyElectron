@@ -1,7 +1,11 @@
 import { app, MenuItem } from 'electron';
 import * as path from 'path';
 
-import { ContextMenuBuilder, DictionarySync, SpellCheckHandler } from 'electron-spellchecker';
+import {
+  ContextMenuBuilder,
+  DictionarySync,
+  SpellCheckHandler,
+} from 'electron-spellchecker';
 import { isDevEnv, isMac } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
@@ -9,123 +13,139 @@ import { ICustomBrowserWindow } from './window-handler';
 import { reloadWindow } from './window-utils';
 
 export class SpellChecker {
-    public locale: LocaleType = 'en-US';
-    private readonly spellCheckHandler: SpellCheckHandler;
-    private readonly dictionaryPath: string | undefined;
-    private readonly dictionarySync: DictionarySync;
+  public locale: LocaleType = 'en-US';
+  private readonly spellCheckHandler: SpellCheckHandler;
+  private readonly dictionaryPath: string | undefined;
+  private readonly dictionarySync: DictionarySync;
 
-    constructor() {
-        const dictionariesDirName = 'dictionaries';
-        if (isDevEnv) {
-            this.dictionaryPath = path.join(app.getAppPath(), dictionariesDirName);
-        } else {
-            const execPath = path.dirname(app.getPath('exe'));
-            this.dictionaryPath = path.join(execPath, (isMac) ? '..' : '', dictionariesDirName);
-        }
-        this.dictionarySync = new DictionarySync(this.dictionaryPath);
-        this.spellCheckHandler = new SpellCheckHandler(this.dictionarySync);
-        this.spellCheckHandler.automaticallyIdentifyLanguages = false;
-        // language is switched w.r.t to the current system language.
-        if (!isMac) {
-            const sysLocale = app.getLocale() || 'en-US';
-            this.spellCheckHandler.switchLanguage(sysLocale);
-        }
-
-        app.on('web-contents-created', (_event, webContents): void => {
-            this.attachToWebContents(webContents);
-        });
+  constructor() {
+    const dictionariesDirName = 'dictionaries';
+    if (isDevEnv) {
+      this.dictionaryPath = path.join(app.getAppPath(), dictionariesDirName);
+    } else {
+      const execPath = path.dirname(app.getPath('exe'));
+      this.dictionaryPath = path.join(
+        execPath,
+        isMac ? '..' : '',
+        dictionariesDirName,
+      );
+    }
+    this.dictionarySync = new DictionarySync(this.dictionaryPath);
+    this.spellCheckHandler = new SpellCheckHandler(this.dictionarySync);
+    this.spellCheckHandler.automaticallyIdentifyLanguages = false;
+    // language is switched w.r.t to the current system language.
+    if (!isMac) {
+      const sysLocale = app.getLocale() || 'en-US';
+      this.spellCheckHandler.switchLanguage(sysLocale);
     }
 
-    /**
-     * Attaches context-menu event for every webContents
-     *
-     * @param webContents {Electron.WebContents}
-     */
-    public attachToWebContents(webContents: Electron.WebContents): void {
-        const contextMenuBuilder = new ContextMenuBuilder(this.spellCheckHandler, webContents, false, this.processMenu);
+    app.on('web-contents-created', (_event, webContents): void => {
+      this.attachToWebContents(webContents);
+    });
+  }
+
+  /**
+   * Attaches context-menu event for every webContents
+   *
+   * @param webContents {Electron.WebContents}
+   */
+  public attachToWebContents(webContents: Electron.WebContents): void {
+    const contextMenuBuilder = new ContextMenuBuilder(
+      this.spellCheckHandler,
+      webContents,
+      false,
+      this.processMenu,
+    );
+    contextMenuBuilder.setAlternateStringFormatter(this.getStringTable());
+    this.locale = i18n.getLocale();
+    logger.info(
+      `spell-check-handler: Building context menu with locale ${this.locale}!`,
+    );
+    const contextMenuListener = (_event, info) => {
+      if (this.locale !== i18n.getLocale()) {
         contextMenuBuilder.setAlternateStringFormatter(this.getStringTable());
         this.locale = i18n.getLocale();
-        logger.info(`spell-check-handler: Building context menu with locale ${this.locale}!`);
-        const contextMenuListener = (_event, info) => {
-            if (this.locale !== i18n.getLocale()) {
-                contextMenuBuilder.setAlternateStringFormatter(this.getStringTable());
-                this.locale = i18n.getLocale();
-            }
-            contextMenuBuilder.showPopupMenu(info);
-        };
+      }
+      contextMenuBuilder.showPopupMenu(info);
+    };
 
-        webContents.on('context-menu', contextMenuListener);
-        webContents.once('destroyed', () => {
-            webContents.removeListener('context-menu', contextMenuListener);
-        });
+    webContents.on('context-menu', contextMenuListener);
+    webContents.once('destroyed', () => {
+      webContents.removeListener('context-menu', contextMenuListener);
+    });
+  }
+
+  /**
+   * Predicts if the given text is misspelled
+   * @param text
+   */
+  public isMisspelled(text: string): boolean {
+    if (!this.spellCheckHandler) {
+      return false;
     }
+    return this.spellCheckHandler.isMisspelled(text);
+  }
 
-    /**
-     * Predicts if the given text is misspelled
-     * @param text
-     */
-    public isMisspelled(text: string): boolean {
-        if (!this.spellCheckHandler) {
-            return false;
-        }
-        return this.spellCheckHandler.isMisspelled(text);
+  /**
+   * Builds the string table for context menu
+   *
+   * @return {Object} - String table for context menu
+   */
+  private getStringTable(): object {
+    const namespace = 'ContextMenu';
+    return {
+      copyMail: () => i18n.t('Copy Email Address', namespace)(),
+      copyLinkUrl: () => i18n.t('Copy Link', namespace)(),
+      openLinkUrl: () => i18n.t('Open Link', namespace)(),
+      copyImageUrl: () => i18n.t('Copy Image URL', namespace)(),
+      copyImage: () => i18n.t('Copy Image', namespace)(),
+      addToDictionary: () => i18n.t('Add to Dictionary', namespace)(),
+      lookUpDefinition: (lookup) => {
+        const formattedString = i18n.t(
+          'Look Up {searchText}',
+          namespace,
+        )({ searchText: lookup.word });
+        return formattedString || `Look Up ${lookup.word}`;
+      },
+      searchGoogle: () => i18n.t('Search with Google', namespace)(),
+      cut: () => i18n.t('Cut')(),
+      copy: () => i18n.t('Copy')(),
+      paste: () => i18n.t('Paste')(),
+      inspectElement: () => i18n.t('Inspect Element', namespace)(),
+    };
+  }
+
+  /**
+   * Method to add default menu items to the
+   * menu that was generated by ContextMenuBuilder
+   *
+   * This method get invoked by electron-spellchecker
+   * before showing the context menu
+   *
+   * @param menu
+   * @returns menu
+   */
+  private processMenu(menu: Electron.Menu): Electron.Menu {
+    let isLink = false;
+    menu.items.map((item) => {
+      if (item.label === 'Copy Link') {
+        isLink = true;
+      }
+      return item;
+    });
+
+    if (!isLink) {
+      menu.append(new MenuItem({ type: 'separator' }));
+      menu.append(
+        new MenuItem({
+          accelerator: 'CmdOrCtrl+R',
+          label: i18n.t('Reload')(),
+          click: (_menuItem, browserWindow, _event) => {
+            reloadWindow(browserWindow as ICustomBrowserWindow);
+          },
+        }),
+      );
     }
-
-    /**
-     * Builds the string table for context menu
-     *
-     * @return {Object} - String table for context menu
-     */
-    private getStringTable(): object {
-        const namespace = 'ContextMenu';
-        return {
-            copyMail: () => i18n.t('Copy Email Address', namespace)(),
-            copyLinkUrl: () => i18n.t('Copy Link', namespace)(),
-            openLinkUrl: () => i18n.t('Open Link', namespace)(),
-            copyImageUrl: () => i18n.t('Copy Image URL', namespace)(),
-            copyImage: () => i18n.t('Copy Image', namespace)(),
-            addToDictionary: () => i18n.t('Add to Dictionary', namespace)(),
-            lookUpDefinition: (lookup) => {
-                const formattedString = i18n.t('Look Up {searchText}', namespace)( { searchText: lookup.word });
-                return formattedString || `Look Up ${lookup.word}`;
-            },
-            searchGoogle: () => i18n.t('Search with Google', namespace)(),
-            cut: () => i18n.t('Cut')(),
-            copy: () => i18n.t('Copy')(),
-            paste: () => i18n.t('Paste')(),
-            inspectElement: () => i18n.t('Inspect Element', namespace)(),
-        };
-    }
-
-    /**
-     * Method to add default menu items to the
-     * menu that was generated by ContextMenuBuilder
-     *
-     * This method get invoked by electron-spellchecker
-     * before showing the context menu
-     *
-     * @param menu
-     * @returns menu
-     */
-    private processMenu(menu: Electron.Menu): Electron.Menu {
-        let isLink = false;
-        menu.items.map((item) => {
-            if (item.label === 'Copy Link') {
-                isLink = true;
-            }
-            return item;
-        });
-
-        if (!isLink) {
-            menu.append(new MenuItem({ type: 'separator' }));
-            menu.append(new MenuItem({
-                accelerator: 'CmdOrCtrl+R',
-                label: i18n.t('Reload')(),
-                click: (_menuItem, browserWindow , _event) => {
-                    reloadWindow(browserWindow as ICustomBrowserWindow);
-                },
-            }));
-        }
-        return menu;
-    }
+    return menu;
+  }
 }
