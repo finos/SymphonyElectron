@@ -1,13 +1,15 @@
 import { ChildProcess, ExecException, execFile } from 'child_process';
-import * as electron from 'electron';
 import {
   app,
   BrowserWindow,
   BrowserWindowConstructorOptions,
   crashReporter,
   DesktopCapturerSource,
+  dialog,
   globalShortcut,
   ipcMain,
+  screen,
+  shell,
 } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -556,7 +558,7 @@ export class WindowHandler {
           return;
         }
         logger.info(`window-handler: main window crashed!`);
-        const { response } = await electron.dialog.showMessageBox({
+        const { response } = await dialog.showMessageBox({
           type: 'error',
           title: i18n.t('Renderer Process Crashed')(),
           message: i18n.t(
@@ -843,9 +845,7 @@ export class WindowHandler {
    */
   public moveWindow(windowToMove: BrowserWindow, fixedYPosition?: number) {
     if (this.mainWindow && windowExists(this.mainWindow)) {
-      const display = electron.screen.getDisplayMatching(
-        this.mainWindow.getBounds(),
-      );
+      const display = screen.getDisplayMatching(this.mainWindow.getBounds());
 
       logger.info(
         'window-handler: moveWindow, display: ' +
@@ -951,15 +951,11 @@ export class WindowHandler {
       if (this.url && this.url.startsWith('https://corporate.symphony.com')) {
         const manaPath = 'client-bff';
         const daily = 'daily';
-        if (this.url.includes(manaPath)) {
-          if (this.url.includes(daily)) {
-            client = 'Symphony 2.0 - Daily';
-          } else {
-            client = 'Symphony 2.0';
-          }
-        } else {
-          client = 'Symphony Classic';
-        }
+        client = this.url.includes(manaPath)
+          ? this.url.includes(daily)
+            ? 'Symphony 2.0 - Daily'
+            : 'Symphony 2.0'
+          : 'Symphony Classic';
       }
       const ABOUT_SYMPHONY_NAMESPACE = 'AboutSymphony';
       const versionLocalised = i18n.t('Version', ABOUT_SYMPHONY_NAMESPACE)();
@@ -1013,7 +1009,7 @@ export class WindowHandler {
         }),
     );
 
-    const allDisplays = electron.screen.getAllDisplays();
+    const allDisplays = screen.getAllDisplays();
     logger.info(
       'window-handler, createSnippingToolWindow: User has these displays: ' +
         JSON.stringify(allDisplays),
@@ -1031,9 +1027,7 @@ export class WindowHandler {
     const BUTTON_BAR_BOTTOM_HEIGHT = 72;
     const BUTTON_BARS_HEIGHT = BUTTON_BAR_TOP_HEIGHT + BUTTON_BAR_BOTTOM_HEIGHT;
 
-    const display = electron.screen.getDisplayMatching(
-      this.mainWindow.getBounds(),
-    );
+    const display = screen.getDisplayMatching(this.mainWindow.getBounds());
     const workAreaSize = display.workAreaSize;
     const maxToolHeight = Math.floor(
       calculatePercentage(workAreaSize.height, 90),
@@ -1191,7 +1185,7 @@ export class WindowHandler {
    *
    */
   public drawScreenShareIndicatorFrame(source) {
-    const displays = electron.screen.getAllDisplays();
+    const displays = screen.getAllDisplays();
     logger.info('window-utils: displays.length: ' + displays.length);
     for (let i = 0, len = displays.length; i < len; i++) {
       logger.info(
@@ -1443,7 +1437,7 @@ export class WindowHandler {
       ) {
         let screens: Electron.Display[] = [];
         if (app.isReady()) {
-          screens = electron.screen.getAllDisplays();
+          screens = screen.getAllDisplays();
         }
         const { position, display } = config.getConfigFields([
           'notificationSettings',
@@ -1502,10 +1496,10 @@ export class WindowHandler {
   ): void {
     const indicatorScreen =
       (displayId &&
-        electron.screen
+        screen
           .getAllDisplays()
           .filter((d) => displayId.includes(d.id.toString()))[0]) ||
-      electron.screen.getPrimaryDisplay();
+      screen.getPrimaryDisplay();
 
     const topPositionOfIndicatorScreen = 16;
 
@@ -1538,10 +1532,13 @@ export class WindowHandler {
       ...{ winKey: streamId },
     };
     if (opts.width && opts.height) {
-      opts = Object.assign({}, opts, {
-        x: screenRect.x + Math.round((screenRect.width - opts.width) / 2),
-        y: screenRect.y + topPositionOfIndicatorScreen,
-      });
+      opts = {
+        ...opts,
+        ...{
+          x: screenRect.x + Math.round((screenRect.width - opts.width) / 2),
+          y: screenRect.y + topPositionOfIndicatorScreen,
+        },
+      };
     }
 
     logger.info(
@@ -1550,7 +1547,7 @@ export class WindowHandler {
     );
     if (displayId !== '') {
       if (isLinux) {
-        const displays = electron.screen.getAllDisplays();
+        const displays = screen.getAllDisplays();
         displays.forEach((element) => {
           logger.info(
             'window-handler: element.id.toString(): ' + element.id.toString(),
@@ -1688,7 +1685,7 @@ export class WindowHandler {
    */
   public openUrlInDefaultBrowser(urlToOpen) {
     if (urlToOpen) {
-      electron.shell.openExternal(urlToOpen);
+      shell.openExternal(urlToOpen);
       logger.info(
         `window-handler: opened url ${urlToOpen} in the default browser!`,
       );
@@ -1720,12 +1717,9 @@ export class WindowHandler {
    * @param util {string}
    * @param utilArgs {ReadonlyArray<string>}
    */
-  public execCmd(
-    util: string,
-    utilArgs: ReadonlyArray<string>,
-  ): Promise<ChildProcess> {
+  public execCmd(util: string, utilArgs: ReadonlyArray<string>): Promise<void> {
     logger.info(`window handler: execCmd: util: ${util} utilArgs: ${utilArgs}`);
-    return new Promise<ChildProcess>((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       return execFile(util, utilArgs, (error: ExecException | null) => {
         if (error) {
           logger.info(`window handler: execCmd: error: ${error}`);
@@ -2029,12 +2023,9 @@ export class WindowHandler {
       cancelId: 0,
     };
 
-    const { response } = await electron.dialog.showMessageBox(
-      browserWindow,
-      options,
-    );
+    const { response } = await dialog.showMessageBox(browserWindow, options);
     if (response === 0) {
-      electron.app.exit();
+      app.exit();
     }
   }
 

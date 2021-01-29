@@ -196,7 +196,8 @@ class Notification extends NotificationHandler {
       event.preventDefault();
     });
 
-    return await this.didFinishLoad(notificationWindow, data);
+    await this.didFinishLoad(notificationWindow, data);
+    return;
   }
 
   /**
@@ -410,11 +411,11 @@ class Notification extends NotificationHandler {
   public async cleanUp(): Promise<void> {
     animationQueue.clear();
     this.notificationQueue = [];
-    const activeNotificationWindows = Object.assign(
-      [],
-      this.activeNotifications,
-    );
-    const inactiveNotificationWindows = Object.assign([], this.inactiveWindows);
+    const activeNotificationWindows = {
+      ...[],
+      ...this.activeNotifications,
+    };
+    const inactiveNotificationWindows = { ...[], ...this.inactiveWindows };
     for (const activeWindow of activeNotificationWindows) {
       if (activeWindow && windowExists(activeWindow)) {
         await this.hideNotification(

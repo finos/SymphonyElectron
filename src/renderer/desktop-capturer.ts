@@ -151,9 +151,12 @@ export const getSource = async (
   const updatedSources = sources
     .filter((source) => source.name !== NOTIFICATION_WINDOW_TITLE)
     .map((source) => {
-      return Object.assign({}, source, {
-        thumbnail: source.thumbnail.toDataURL(),
-      });
+      return {
+        ...source,
+        ...{
+          thumbnail: source.thumbnail.toDataURL(),
+        },
+      };
     });
 
   ipcRenderer.send(apiName.symphonyApi, {

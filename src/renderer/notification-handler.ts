@@ -1,6 +1,5 @@
 import * as asyncMap from 'async.map';
-import { app } from 'electron';
-import * as electron from 'electron';
+import { app, screen } from 'electron';
 
 import { windowExists } from '../app/window-utils';
 import { isLinux, isMac } from '../common/env';
@@ -45,9 +44,9 @@ export default class NotificationHandler {
     this.setupNotificationPosition();
 
     app.once('ready', () => {
-      electron.screen.on('display-added', this.eventHandlers.onSetup);
-      electron.screen.on('display-removed', this.eventHandlers.onSetup);
-      electron.screen.on('display-metrics-changed', this.eventHandlers.onSetup);
+      screen.on('display-added', this.eventHandlers.onSetup);
+      screen.on('display-removed', this.eventHandlers.onSetup);
+      screen.on('display-metrics-changed', this.eventHandlers.onSetup);
     });
   }
 
@@ -77,7 +76,7 @@ export default class NotificationHandler {
       return;
     }
 
-    const screens = electron.screen.getAllDisplays();
+    const screens = screen.getAllDisplays();
     if (screens && screens.length >= 0) {
       this.externalDisplay = screens.find((screen) => {
         const screenId = screen.id.toString();
@@ -85,7 +84,7 @@ export default class NotificationHandler {
       });
     }
 
-    const display = this.externalDisplay || electron.screen.getPrimaryDisplay();
+    const display = this.externalDisplay || screen.getPrimaryDisplay();
     this.settings.corner.x = display.workArea.x;
     this.settings.corner.y = display.workArea.y;
 

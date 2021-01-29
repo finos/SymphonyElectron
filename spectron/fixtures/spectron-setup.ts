@@ -60,7 +60,8 @@ export const stopApplication = async (
   if (!application || !application.isRunning()) {
     return;
   }
-  return await application.stop();
+  await application.stop();
+  return;
 };
 
 /**

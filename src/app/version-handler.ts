@@ -181,13 +181,11 @@ class VersionHandler {
       logger.info('version-handler: hostname: ' + hostname);
 
       /* Get SFE version */
-      let urlSfeVersion;
+      let urlSfeVersion: string;
       if (mainUrl?.includes('/client-bff/')) {
-        if (mainUrl?.includes('/client-bff/daily/')) {
-          urlSfeVersion = `${protocol}//${hostname}/client-bff/daily/version.json`;
-        } else {
-          urlSfeVersion = `${protocol}//${hostname}/client-bff/version.json`;
-        }
+        urlSfeVersion = mainUrl?.includes('/client-bff/daily/')
+          ? `${protocol}//${hostname}/client-bff/daily/version.json`
+          : `${protocol}//${hostname}/client-bff/version.json`;
         this.versionInfo.sfeClientType = '2.0';
       } else {
         urlSfeVersion = `${protocol}//${hostname}/client/version.json`;

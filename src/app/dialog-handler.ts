@@ -1,5 +1,4 @@
-import * as electron from 'electron';
-import { app } from 'electron';
+import { app, BrowserWindow, dialog } from 'electron';
 
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
@@ -7,10 +6,10 @@ import { CloudConfigDataTypes, config } from './config-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 import { windowExists } from './window-utils';
 
-let currentAuthURL;
+let currentAuthURL: string;
 let tries = 0;
 
-electron.app.on('login', (event, webContents, request, authInfo, callback) => {
+app.on('login', (event, webContents, request, authInfo, callback) => {
   event.preventDefault();
 
   // This check is to determine whether the request is for the same
@@ -25,7 +24,7 @@ electron.app.on('login', (event, webContents, request, authInfo, callback) => {
 
   // name of the host to display
   const hostname = authInfo.host || authInfo.realm;
-  const browserWin: ICustomBrowserWindow = electron.BrowserWindow.fromWebContents(
+  const browserWin: ICustomBrowserWindow = BrowserWindow.fromWebContents(
     webContents,
   ) as ICustomBrowserWindow;
 
@@ -61,7 +60,7 @@ let ignoreAllCertErrors = false;
  * Note: the dialog is synchronous so further processing is blocked until
  * user provides a response.
  */
-electron.app.on(
+app.on(
   'certificate-error',
   async (event, webContents, url, error, _certificate, callback) => {
     // TODO: Add logic verify custom certificate
@@ -76,9 +75,9 @@ electron.app.on(
 
     event.preventDefault();
 
-    const browserWin = electron.BrowserWindow.fromWebContents(webContents);
+    const browserWin = BrowserWindow.fromWebContents(webContents);
     if (browserWin && windowExists(browserWin)) {
-      const { response } = await electron.dialog.showMessageBox(browserWin, {
+      const { response } = await dialog.showMessageBox(browserWin, {
         type: 'warning',
         buttons: [i18n.t('Allow')(), i18n.t('Deny')(), i18n.t('Ignore All')()],
         defaultId: 1,
@@ -125,7 +124,7 @@ export const showLoadFailure = async (
   }
 
   if (showDialog) {
-    const { response } = await electron.dialog.showMessageBox(browserWindow, {
+    const { response } = await dialog.showMessageBox(browserWindow, {
       type: 'error',
       buttons: [i18n.t('Reload')(), i18n.t('Ignore')()],
       defaultId: 0,
@@ -174,7 +173,7 @@ export const showNetworkConnectivityError = (
 export const titleBarChangeDialog = async (
   isNativeStyle: CloudConfigDataTypes,
 ) => {
-  const focusedWindow = electron.BrowserWindow.getFocusedWindow();
+  const focusedWindow = BrowserWindow.getFocusedWindow();
   if (!focusedWindow || !windowExists(focusedWindow)) {
     return;
   }
@@ -190,10 +189,7 @@ export const titleBarChangeDialog = async (
     buttons: [i18n.t('Relaunch')(), i18n.t('Cancel')()],
     cancelId: 1,
   };
-  const { response } = await electron.dialog.showMessageBox(
-    focusedWindow,
-    options,
-  );
+  const { response } = await dialog.showMessageBox(focusedWindow, options);
   if (response === 0) {
     logger.error(`test`, isNativeStyle);
     await config.updateUserConfig({ isCustomTitleBar: isNativeStyle });
@@ -207,7 +203,7 @@ export const titleBarChangeDialog = async (
  * @param disableGpu
  */
 export const gpuRestartDialog = async (disableGpu: boolean) => {
-  const focusedWindow = electron.BrowserWindow.getFocusedWindow();
+  const focusedWindow = BrowserWindow.getFocusedWindow();
   if (!focusedWindow || !windowExists(focusedWindow)) {
     return;
   }
@@ -220,10 +216,7 @@ export const gpuRestartDialog = async (disableGpu: boolean) => {
     buttons: [i18n.t('Restart')(), i18n.t('Later')()],
     cancelId: 1,
   };
-  const { response } = await electron.dialog.showMessageBox(
-    focusedWindow,
-    options,
-  );
+  const { response } = await dialog.showMessageBox(focusedWindow, options);
   await config.updateUserConfig({ disableGpu });
   if (response === 0) {
     app.relaunch();

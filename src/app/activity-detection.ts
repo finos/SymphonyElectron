@@ -1,5 +1,4 @@
-import * as electron from 'electron';
-import { app } from 'electron';
+import { app, powerMonitor } from 'electron';
 import Timer = NodeJS.Timer;
 
 import { logger } from '../common/logger';
@@ -44,7 +43,7 @@ class ActivityDetection {
     if (app.isReady()) {
       logger.info(`activity-detection: Starting activity monitor`);
       this.queryInterval = setInterval(() => {
-        const idleTime = electron.powerMonitor.getSystemIdleTime();
+        const idleTime = powerMonitor.getSystemIdleTime();
         this.activity(idleTime);
       }, this.idleThreshold);
     }
@@ -81,7 +80,7 @@ class ActivityDetection {
       // when user goes inactive
       this.timer = setInterval(() => {
         if (app.isReady()) {
-          const activeTime = electron.powerMonitor.getSystemIdleTime();
+          const activeTime = powerMonitor.getSystemIdleTime();
           this.activity(activeTime);
         }
       }, 1000);

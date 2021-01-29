@@ -212,17 +212,17 @@ class ScreenSnippet {
   private execCmd(
     captureUtil: string,
     captureUtilArgs: ReadonlyArray<string>,
-  ): Promise<ChildProcess> {
+  ): Promise<void> {
     logger.info(
       `screen-snippet-handlers: execCmd ${captureUtil} ${captureUtilArgs}`,
     );
-    return new Promise<ChildProcess>((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       return (this.child = execFile(
         captureUtil,
         captureUtilArgs,
         (error: ExecException | null) => {
           if (error && error.killed) {
-            // processs was killed, just resolve with no data.
+            // process was killed, just resolve with no data.
             return reject(error);
           }
           resolve();

@@ -381,6 +381,8 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
    * @param state
    */
   private updateState(state: Partial<IState>) {
-    this.setState((s) => Object.assign(s, state));
+    this.setState((s) => {
+      return { ...s, ...state };
+    });
   }
 }

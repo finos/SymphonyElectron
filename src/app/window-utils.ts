@@ -1,5 +1,12 @@
-import * as electron from 'electron';
-import { app, BrowserWindow, nativeImage } from 'electron';
+import {
+  app,
+  BrowserWindow,
+  dialog,
+  nativeImage,
+  screen,
+  shell,
+} from 'electron';
+import electron = require('electron');
 import fetch from 'electron-fetch';
 import * as filesize from 'filesize';
 import * as fs from 'fs';
@@ -88,7 +95,7 @@ export const preventWindowNavigation = (
       if (!isValid) {
         e.preventDefault();
         if (browserWindow && windowExists(browserWindow)) {
-          const response = await electron.dialog.showMessageBox(browserWindow, {
+          const response = await dialog.showMessageBox(browserWindow, {
             type: 'warning',
             buttons: ['OK'],
             title: i18n.t('Not Allowed')(),
@@ -352,7 +359,7 @@ export const getBounds = (
   if (!winPos || !winPos.x || !winPos.y || !winPos.width || !winPos.height) {
     return { width: defaultWidth, height: defaultHeight };
   }
-  const displays = electron.screen.getAllDisplays();
+  const displays = screen.getAllDisplays();
 
   for (let i = 0, len = displays.length; i < len; i++) {
     const bounds = displays[i].bounds;
@@ -368,9 +375,7 @@ export const getBounds = (
   }
 
   // Fit in the middle of immediate display
-  const display = electron.screen.getDisplayMatching(
-    winPos as electron.Rectangle,
-  );
+  const display = screen.getDisplayMatching(winPos as electron.Rectangle);
 
   if (display) {
     // Check that defaultWidth fits
@@ -402,7 +407,7 @@ export const getBounds = (
  * @param filePath
  */
 export const downloadManagerAction = async (type, filePath): Promise<void> => {
-  const focusedWindow = electron.BrowserWindow.getFocusedWindow();
+  const focusedWindow = BrowserWindow.getFocusedWindow();
   const message = i18n.t(
     'The file you are trying to open cannot be found in the specified path.',
     DOWNLOAD_MANAGER_NAMESPACE,
@@ -417,14 +422,14 @@ export const downloadManagerAction = async (type, filePath): Promise<void> => {
     const fileExists = fs.existsSync(`${filePath}`);
     let openFileResponse;
     if (fileExists) {
-      openFileResponse = await electron.shell.openPath(filePath);
+      openFileResponse = await shell.openPath(filePath);
     }
     if (
       openFileResponse !== '' &&
       focusedWindow &&
       !focusedWindow.isDestroyed()
     ) {
-      electron.dialog.showMessageBox(focusedWindow, {
+      dialog.showMessageBox(focusedWindow, {
         message,
         title,
         type: 'error',
@@ -433,9 +438,9 @@ export const downloadManagerAction = async (type, filePath): Promise<void> => {
     return;
   }
   if (fs.existsSync(filePath)) {
-    electron.shell.showItemInFolder(filePath);
+    shell.showItemInFolder(filePath);
   } else {
-    electron.dialog.showMessageBox(focusedWindow, {
+    dialog.showMessageBox(focusedWindow, {
       message,
       title,
       type: 'error',
@@ -569,7 +574,8 @@ export const injectStyles = async (
     });
   }
 
-  return await readAndInsertCSS(mainWindow);
+  await readAndInsertCSS(mainWindow);
+  return;
 };
 
 /**

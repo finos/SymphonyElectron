@@ -1,6 +1,5 @@
 import * as archiver from 'archiver';
-import { app, BrowserWindow, dialog, shell } from 'electron';
-import * as electron from 'electron';
+import { app, BrowserWindow, crashReporter, dialog, shell } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -185,7 +184,7 @@ export const exportLogs = (): void => {
  */
 export const exportCrashDumps = (): void => {
   const FILE_EXTENSIONS = isMac ? ['.dmp'] : ['.dmp', '.txt'];
-  const crashesDirectory = (electron.crashReporter as any).getCrashesDirectory();
+  const crashesDirectory = (crashReporter as any).getCrashesDirectory();
   const source = isMac ? crashesDirectory + '/completed' : crashesDirectory;
   const focusedWindow = BrowserWindow.getFocusedWindow();
 
@@ -195,7 +194,7 @@ export const exportCrashDumps = (): void => {
       focusedWindow &&
       !focusedWindow.isDestroyed())
   ) {
-    electron.dialog.showMessageBox(focusedWindow as BrowserWindow, {
+    dialog.showMessageBox(focusedWindow as BrowserWindow, {
       message: i18n.t('No crashes available to share')(),
       title: i18n.t('Failed!')(),
       type: 'error',
@@ -207,16 +206,15 @@ export const exportCrashDumps = (): void => {
     isMac || isLinux ? '/crashes_symphony_' : '\\crashes_symphony_';
   const timestamp = new Date().getTime();
 
-  const destination =
-    electron.app.getPath('downloads') + destPath + timestamp + '.zip';
+  const destination = app.getPath('downloads') + destPath + timestamp + '.zip';
 
   generateArchiveForDirectory(source, destination, FILE_EXTENSIONS, [])
     .then(() => {
-      electron.shell.showItemInFolder(destination);
+      shell.showItemInFolder(destination);
     })
     .catch((err) => {
       if (focusedWindow && !focusedWindow.isDestroyed()) {
-        electron.dialog.showMessageBox(focusedWindow, {
+        dialog.showMessageBox(focusedWindow, {
           message: `${i18n.t(
             'Unable to generate crash reports due to ',
           )()} ${err}`,

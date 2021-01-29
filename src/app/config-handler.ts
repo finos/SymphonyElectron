@@ -197,11 +197,11 @@ class Config {
    * @param fields
    */
   public getConfigFields(fields: string[]): IConfig {
-    const configFields = {
+    const configFields: IConfig = {
       ...this.getGlobalConfigFields(fields),
       ...this.getUserConfigFields(fields),
       ...this.getFilteredCloudConfigFields(fields),
-    } as IConfig;
+    };
     logger.info(
       `config-handler: getting combined config values for the fields ${fields}`,
       configFields,
@@ -380,7 +380,8 @@ class Config {
         `config-handler: setting first time launch for build`,
         buildNumber,
       );
-      return await this.updateUserConfig(filteredFields);
+      await this.updateUserConfig(filteredFields);
+      return;
     }
     await this.updateUserConfig({
       buildNumber,

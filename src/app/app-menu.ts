@@ -32,28 +32,32 @@ export const menuSections = {
   edit: 'edit',
   view: 'view',
   window: 'window',
-  help: 'help', // tslint:disable-line
+  help: 'help',
 };
 
-const windowsAccelerator = Object.assign({
-  close: 'Ctrl+W',
-  copy: 'Ctrl+C',
-  cut: 'Ctrl+X',
-  minimize: 'Ctrl+M',
-  paste: 'Ctrl+V',
-  pasteAndMatchStyle: 'Ctrl+Shift+V',
-  redo: 'Ctrl+Y',
-  resetZoom: 'Ctrl+0',
-  selectAll: 'Ctrl+A',
-  togglefullscreen: 'F11',
-  undo: 'Ctrl+Z',
-  zoomIn: 'Ctrl+=',
-  zoomOut: 'Ctrl+-',
-});
+const windowsAccelerator = {
+  ...{
+    close: 'Ctrl+W',
+    copy: 'Ctrl+C',
+    cut: 'Ctrl+X',
+    minimize: 'Ctrl+M',
+    paste: 'Ctrl+V',
+    pasteAndMatchStyle: 'Ctrl+Shift+V',
+    redo: 'Ctrl+Y',
+    resetZoom: 'Ctrl+0',
+    selectAll: 'Ctrl+A',
+    togglefullscreen: 'F11',
+    undo: 'Ctrl+Z',
+    zoomIn: 'Ctrl+=',
+    zoomOut: 'Ctrl+-',
+  },
+};
 
-const macAccelerator = Object.assign({
-  zoomIn: 'CommandOrControl+Plus',
-});
+const macAccelerator = {
+  ...{
+    zoomIn: 'CommandOrControl+Plus',
+  },
+};
 
 let {
   minimizeOnClose,

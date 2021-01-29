@@ -40,13 +40,14 @@ const saveWindowSettings = async (): Promise<void> => {
         mainWindow &&
         windowExists(mainWindow)
       ) {
-        mainWindow.webContents.send('boundsChange', {
+        const boundsChange: IBoundsChange = {
           x,
           y,
           width,
           height,
           windowName: browserWindow.winName,
-        } as IBoundsChange);
+        };
+        mainWindow.webContents.send('boundsChange', boundsChange);
       }
 
       // Update the config file
@@ -126,13 +127,14 @@ export const sendInitialBoundChanges = (childWindow: BrowserWindow): void => {
   }
   const { x, y, width, height } = childWindow.getBounds();
   const windowName = (childWindow as ICustomBrowserWindow).winName;
-  mainWindow.webContents.send('boundsChange', {
+  const boundsChange: IBoundsChange = {
     x,
     y,
     width,
     height,
     windowName,
-  } as IBoundsChange);
+  };
+  mainWindow.webContents.send('boundsChange', boundsChange);
   logger.info(
     `window-actions: Initial bounds sent for ${
       (childWindow as ICustomBrowserWindow).winName
