@@ -4,22 +4,22 @@ import { buildNumber, searchAPIVersion } from '../../package.json';
 import { IDownloadItem } from '../app/download-handler';
 import { ICustomBrowserWindow } from '../app/window-handler';
 import {
-    apiCmds,
-    apiName,
-    IBadgeCount,
-    IBoundsChange,
-    ICPUUsage,
-    ILogMsg,
-    IMediaPermission,
-    INotificationData,
-    IRestartFloaterData,
-    IScreenSharingIndicator,
-    IScreenSharingIndicatorOptions,
-    IScreenSnippet,
-    IVersionInfo,
-    KeyCodes,
-    LogLevel,
-    NotificationActionCallback,
+  apiCmds,
+  apiName,
+  IBadgeCount,
+  IBoundsChange,
+  ICPUUsage,
+  ILogMsg,
+  IMediaPermission,
+  INotificationData,
+  IRestartFloaterData,
+  IScreenSharingIndicator,
+  IScreenSharingIndicatorOptions,
+  IScreenSnippet,
+  IVersionInfo,
+  KeyCodes,
+  LogLevel,
+  NotificationActionCallback,
 } from '../common/api-interface';
 import { i18n, LocaleType } from '../common/i18n-preload';
 import { throttle } from '../common/utils';
@@ -31,603 +31,640 @@ let isAltKey: boolean = false;
 let isMenuOpen: boolean = false;
 
 interface ICryptoLib {
-    AESGCMEncrypt: (name: string, base64IV: string, base64AAD: string, base64Key: string, base64In: string) => string | null;
-    AESGCMDecrypt: (base64IV: string, base64AAD: string, base64Key: string, base64In: string) => string | null;
+  AESGCMEncrypt: (
+    name: string,
+    base64IV: string,
+    base64AAD: string,
+    base64Key: string,
+    base64In: string,
+  ) => string | null;
+  AESGCMDecrypt: (
+    base64IV: string,
+    base64AAD: string,
+    base64Key: string,
+    base64In: string,
+  ) => string | null;
 }
 
 export interface ILocalObject {
-    ipcRenderer;
-    logger?: (msg: ILogMsg, logLevel: LogLevel, showInConsole: boolean) => void;
-    activityDetectionCallback?: (arg: number) => void;
-    downloadManagerCallback?: (arg?: any) => void;
-    screenSnippetCallback?: (arg: IScreenSnippet) => void;
-    boundsChangeCallback?: (arg: IBoundsChange) => void;
-    screenSharingIndicatorCallback?: (arg: IScreenSharingIndicator) => void;
-    protocolActionCallback?: (arg: string) => void;
-    collectLogsCallback?: Array<( () => void )>;
-    analyticsEventHandler?: (arg: any) => void;
-    restartFloater?: (arg: IRestartFloaterData) => void;
+  ipcRenderer;
+  logger?: (msg: ILogMsg, logLevel: LogLevel, showInConsole: boolean) => void;
+  activityDetectionCallback?: (arg: number) => void;
+  downloadManagerCallback?: (arg?: any) => void;
+  screenSnippetCallback?: (arg: IScreenSnippet) => void;
+  boundsChangeCallback?: (arg: IBoundsChange) => void;
+  screenSharingIndicatorCallback?: (arg: IScreenSharingIndicator) => void;
+  protocolActionCallback?: (arg: string) => void;
+  collectLogsCallback?: Array<() => void>;
+  analyticsEventHandler?: (arg: any) => void;
+  restartFloater?: (arg: IRestartFloaterData) => void;
 }
 
 const local: ILocalObject = {
-    ipcRenderer,
+  ipcRenderer,
 };
 
-const notificationActionCallbacks = new Map<number, NotificationActionCallback>();
+const notificationActionCallbacks = new Map<
+  number,
+  NotificationActionCallback
+>();
 
 // Throttle func
 const throttledSetBadgeCount = throttle((count) => {
-    local.ipcRenderer.send(apiName.symphonyApi, {
-        cmd: apiCmds.setBadgeCount,
-        count,
-    });
+  local.ipcRenderer.send(apiName.symphonyApi, {
+    cmd: apiCmds.setBadgeCount,
+    count,
+  });
 }, 1000);
 
 const throttledSetLocale = throttle((locale) => {
-    local.ipcRenderer.send(apiName.symphonyApi, {
-        cmd: apiCmds.setLocale,
-        locale,
-    });
+  local.ipcRenderer.send(apiName.symphonyApi, {
+    cmd: apiCmds.setLocale,
+    locale,
+  });
 }, 1000);
 
 const throttledActivate = throttle((windowName) => {
-    local.ipcRenderer.send(apiName.symphonyApi, {
-        cmd: apiCmds.activate,
-        windowName,
-    });
+  local.ipcRenderer.send(apiName.symphonyApi, {
+    cmd: apiCmds.activate,
+    windowName,
+  });
 }, 1000);
 
 const throttledBringToFront = throttle((windowName, reason) => {
-    local.ipcRenderer.send(apiName.symphonyApi, {
-        cmd: apiCmds.bringToFront,
-        windowName,
-        reason,
-    });
+  local.ipcRenderer.send(apiName.symphonyApi, {
+    cmd: apiCmds.bringToFront,
+    windowName,
+    reason,
+  });
 }, 1000);
 
 const throttledCloseScreenShareIndicator = throttle((streamId) => {
-    ipcRenderer.send(apiName.symphonyApi, {
-        cmd: apiCmds.closeWindow,
-        windowType: 'screen-sharing-indicator',
-        winKey: streamId,
-    });
+  ipcRenderer.send(apiName.symphonyApi, {
+    cmd: apiCmds.closeWindow,
+    windowType: 'screen-sharing-indicator',
+    winKey: streamId,
+  });
 }, 1000);
 
 const throttledSetIsInMeetingStatus = throttle((isInMeeting) => {
-    local.ipcRenderer.send(apiName.symphonyApi, {
-        cmd: apiCmds.setIsInMeeting,
-        isInMeeting,
-    });
+  local.ipcRenderer.send(apiName.symphonyApi, {
+    cmd: apiCmds.setIsInMeeting,
+    isInMeeting,
+  });
 }, 1000);
 
 const throttledSetCloudConfig = throttle((data) => {
-    ipcRenderer.send(apiName.symphonyApi, {
-        cmd: apiCmds.setCloudConfig,
-        cloudConfig: data,
-    });
+  ipcRenderer.send(apiName.symphonyApi, {
+    cmd: apiCmds.setCloudConfig,
+    cloudConfig: data,
+  });
 }, 1000);
 
 const throttledOpenDownloadedItem = throttle((id: string) => {
-    ipcRenderer.send(apiName.symphonyApi, {
-        cmd: apiCmds.openDownloadedItem,
-        id,
-    });
+  ipcRenderer.send(apiName.symphonyApi, {
+    cmd: apiCmds.openDownloadedItem,
+    id,
+  });
 }, 1000);
 
 const throttledShowDownloadedItem = throttle((id: string) => {
-    ipcRenderer.send(apiName.symphonyApi, {
-        cmd: apiCmds.showDownloadedItem,
-        id,
-    });
+  ipcRenderer.send(apiName.symphonyApi, {
+    cmd: apiCmds.showDownloadedItem,
+    id,
+  });
 }, 1000);
 
 const throttledClearDownloadedItems = throttle(() => {
-    ipcRenderer.send(apiName.symphonyApi, {
-        cmd: apiCmds.clearDownloadedItems,
-    });
+  ipcRenderer.send(apiName.symphonyApi, {
+    cmd: apiCmds.clearDownloadedItems,
+  });
 }, 1000);
 
 const throttledRestart = throttle(() => {
-    ipcRenderer.send(apiName.symphonyApi, {
-        cmd: apiCmds.restartApp,
-    });
+  ipcRenderer.send(apiName.symphonyApi, {
+    cmd: apiCmds.restartApp,
+  });
 }, 1000);
 
 let cryptoLib: ICryptoLib | null;
 try {
-    cryptoLib = remote.require('../app/crypto-handler.js').cryptoLibrary;
+  cryptoLib = remote.require('../app/crypto-handler.js').cryptoLibrary;
 } catch (e) {
-    cryptoLib = null;
-    // tslint:disable-next-line
-    console.warn('Failed to initialize Crypto Lib. You\'ll need to include the Crypto library. Contact the developers for more details');
+  cryptoLib = null;
+  // tslint:disable-next-line
+  console.warn(
+    "Failed to initialize Crypto Lib. You'll need to include the Crypto library. Contact the developers for more details",
+  );
 }
 
 let swiftSearch: any;
 try {
-    swiftSearch = remote.require('swift-search').Search;
+  swiftSearch = remote.require('swift-search').Search;
 } catch (e) {
-    swiftSearch = null;
-    // tslint:disable-next-line
-    console.warn("Failed to initialize swift search. You'll need to include the search dependency. Contact the developers for more details");
+  swiftSearch = null;
+  // tslint:disable-next-line
+  console.warn(
+    "Failed to initialize swift search. You'll need to include the search dependency. Contact the developers for more details",
+  );
 }
 
 let swiftSearchUtils: any;
 try {
-    swiftSearchUtils = remote.require('swift-search').SearchUtils;
+  swiftSearchUtils = remote.require('swift-search').SearchUtils;
 } catch (e) {
-    swiftSearchUtils = null;
-    // tslint:disable-next-line
-    console.warn("Failed to initialize swift search utils. You'll need to include the search dependency. Contact the developers for more details");
+  swiftSearchUtils = null;
+  // tslint:disable-next-line
+  console.warn(
+    "Failed to initialize swift search utils. You'll need to include the search dependency. Contact the developers for more details",
+  );
 }
 
 let nextIndicatorId = 0;
 
 export class SSFApi {
+  /**
+   * Native encryption and decryption.
+   */
+  public CryptoLib: ICryptoLib | null = cryptoLib; // tslint:disable-line
 
-    /**
-     * Native encryption and decryption.
-     */
-    public CryptoLib: ICryptoLib | null = cryptoLib; // tslint:disable-line
+  public Search: any = swiftSearch; // tslint:disable-line
 
-    public Search: any = swiftSearch; // tslint:disable-line
+  public SearchUtils: any = swiftSearchUtils; // tslint:disable-line
 
-    public SearchUtils: any = swiftSearchUtils; // tslint:disable-line
+  public Notification = SSFNotificationHandler; // tslint:disable-line
 
-    public Notification = SSFNotificationHandler; // tslint:disable-line
+  /**
+   * Implements equivalent of desktopCapturer.getSources - that works in
+   * a sandboxed renderer process.
+   * see: https://electron.atom.io/docs/api/desktop-capturer/
+   * for interface: see documentation in desktopCapturer/getSource.js
+   *
+   * This opens a window and displays all the desktop sources
+   * and returns selected source
+   */
+  public getMediaSource = getSource;
 
-    /**
-     * Implements equivalent of desktopCapturer.getSources - that works in
-     * a sandboxed renderer process.
-     * see: https://electron.atom.io/docs/api/desktop-capturer/
-     * for interface: see documentation in desktopCapturer/getSource.js
-     *
-     * This opens a window and displays all the desktop sources
-     * and returns selected source
-     */
-    public getMediaSource = getSource;
+  /**
+   * Brings window forward and gives focus.
+   *
+   * @param  {String} windowName - Name of window. Note: main window name is 'main'
+   */
+  public activate(windowName: string) {
+    if (typeof windowName === 'string') {
+      throttledActivate(windowName);
+    }
+  }
 
-    /**
-     * Brings window forward and gives focus.
-     *
-     * @param  {String} windowName - Name of window. Note: main window name is 'main'
-     */
-    public activate(windowName: string) {
-        if (typeof windowName === 'string') {
-            throttledActivate(windowName);
-        }
+  /**
+   * Brings window forward and gives focus.
+   *
+   * @param  {String} windowName Name of window. Note: main window name is 'main'
+   * @param {String} reason, The reason for which the window is to be activated
+   */
+  public bringToFront(windowName: string, reason: string) {
+    if (typeof windowName === 'string') {
+      throttledBringToFront(windowName, reason);
+    }
+  }
+
+  /**
+   * Method that returns various version info
+   */
+  public getVersionInfo(): Promise<IVersionInfo> {
+    const appName = remote.app.getName();
+    const appVer = remote.app.getVersion();
+    const cpuArch = os.arch() || '';
+
+    return Promise.resolve({
+      containerIdentifier: appName,
+      containerVer: appVer,
+      buildNumber,
+      apiVer: '3.0.0',
+      cpuArch,
+      // Only need to bump if there are any breaking changes.
+      searchApiVer: searchAPIVersion,
+    });
+  }
+
+  /**
+   * Allows JS to register a activity detector that can be used by electron main process.
+   *
+   * @param  {Object} period - minimum user idle time in millisecond
+   * @param  {Object} activityDetectionCallback - function that can be called accepting
+   * @example registerActivityDetection(40000, func)
+   */
+  public registerActivityDetection(
+    period: number,
+    activityDetectionCallback: (arg: number) => void,
+  ): void {
+    if (typeof activityDetectionCallback === 'function') {
+      local.activityDetectionCallback = activityDetectionCallback;
+
+      // only main window can register
+      local.ipcRenderer.send(apiName.symphonyApi, {
+        cmd: apiCmds.registerActivityDetection,
+        period,
+      });
+    }
+  }
+
+  /**
+   * Registers the download handler
+   * @param downloadManagerCallback Callback to be triggered by the download handler
+   */
+  public registerDownloadHandler(
+    downloadManagerCallback: (arg: any) => void,
+  ): void {
+    if (typeof downloadManagerCallback === 'function') {
+      local.downloadManagerCallback = downloadManagerCallback;
     }
 
-    /**
-     * Brings window forward and gives focus.
-     *
-     * @param  {String} windowName Name of window. Note: main window name is 'main'
-     * @param {String} reason, The reason for which the window is to be activated
-     */
-    public bringToFront(windowName: string, reason: string) {
-        if (typeof windowName === 'string') {
-            throttledBringToFront(windowName, reason);
-        }
+    local.ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.registerDownloadHandler,
+    });
+  }
+
+  /**
+   * Allows JS to register a callback to be invoked when size/positions
+   * changes for any pop-out window (i.e., window.open). The main
+   * process will emit IPC event 'boundsChange' (see below). Currently
+   * only one window can register for bounds change.
+   * @param  {Function} callback Function invoked when bounds changes.
+   */
+  public registerBoundsChange(callback: (arg: IBoundsChange) => void): void {
+    if (typeof callback === 'function') {
+      local.boundsChangeCallback = callback;
+    }
+  }
+
+  /**
+   * Allows JS to register a logger that can be used by electron main process.
+   * @param  {Object} logger  function that can be called accepting
+   * object: {
+   *  logLevel: 'ERROR'|'CONFLICT'|'WARN'|'ACTION'|'INFO'|'DEBUG',
+   *  logDetails: String
+   *  }
+   */
+  public registerLogger(
+    logger: (msg: ILogMsg, logLevel: LogLevel, showInConsole: boolean) => void,
+  ): void {
+    if (typeof logger === 'function') {
+      local.logger = logger;
+
+      // only main window can register
+      local.ipcRenderer.send(apiName.symphonyApi, {
+        cmd: apiCmds.registerLogger,
+      });
+    }
+  }
+
+  /**
+   * Allows JS to register a protocol handler that can be used by the
+   * electron main process.
+   *
+   * @param protocolHandler {Function} callback will be called when app is
+   * invoked with registered protocol (e.g., symphony). The callback
+   * receives a single string argument: full uri that the app was
+   * invoked with e.g., symphony://?streamId=xyz123&streamType=chatroom
+   *
+   * Note: this function should only be called after client app is fully
+   * able for protocolHandler callback to be invoked.  It is possible
+   * the app was started using protocol handler, in this case as soon as
+   * this registration func is invoked then the protocolHandler callback
+   * will be immediately called.
+   */
+  public registerProtocolHandler(protocolHandler): void {
+    if (typeof protocolHandler === 'function') {
+      local.protocolActionCallback = protocolHandler;
+
+      local.ipcRenderer.send(apiName.symphonyApi, {
+        cmd: apiCmds.registerProtocolHandler,
+      });
+    }
+  }
+
+  /**
+   * Allows JS to register a log retriever that can be used by the
+   * electron main process to retrieve current logs.
+   */
+  public registerLogRetriever(collectLogs: () => void, logName: string): void {
+    if (typeof collectLogs === 'function') {
+      if (!local.collectLogsCallback) {
+        local.collectLogsCallback = new Array<() => void>();
+      }
+      local.collectLogsCallback.push(collectLogs);
+
+      local.ipcRenderer.send(apiName.symphonyApi, {
+        cmd: apiCmds.registerLogRetriever,
+        logName,
+      });
+    }
+  }
+
+  /**
+   * Send log files to main process when requested.
+   */
+  public sendLogs(logName: string, logFiles): void {
+    local.ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.sendLogs,
+      logs: { logName, logFiles },
+    });
+  }
+
+  /**
+   * Allows JS to register analytics event handler
+   * to pass analytics event data
+   *
+   * @param analyticsEventHandler
+   */
+  public registerAnalyticsEvent(analyticsEventHandler): void {
+    if (typeof analyticsEventHandler === 'function') {
+      local.analyticsEventHandler = analyticsEventHandler;
+
+      local.ipcRenderer.send(apiName.symphonyApi, {
+        cmd: apiCmds.registerAnalyticsHandler,
+      });
+    }
+  }
+
+  /**
+   * Expose old screen snippet api to support backward compatibility
+   *
+   * @deprecated
+   */
+  // tslint:disable-next-line
+  public ScreenSnippet = ScreenSnippetBcHandler;
+
+  /**
+   * Allow user to capture portion of screen
+   *
+   * @param screenSnippetCallback {function}
+   */
+  public openScreenSnippet(
+    screenSnippetCallback: (arg: IScreenSnippet) => void,
+  ): void {
+    if (typeof screenSnippetCallback === 'function') {
+      local.screenSnippetCallback = screenSnippetCallback;
+
+      local.ipcRenderer.send(apiName.symphonyApi, {
+        cmd: apiCmds.openScreenSnippet,
+      });
+    }
+  }
+
+  /**
+   * Cancel a screen capture in progress
+   */
+  public closeScreenSnippet(): void {
+    local.ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.closeScreenSnippet,
+    });
+  }
+
+  /**
+   * Sets the count on the tray icon to the given number.
+   *
+   * @param {number} count  count to be displayed
+   * note: count of 0 will remove the displayed count.
+   * note: for mac the number displayed will be 1 to infinity
+   * note: for windows the number displayed will be 1 to 99 and 99+
+   */
+  public setBadgeCount(count: number): void {
+    throttledSetBadgeCount(count);
+  }
+
+  /**
+   * Sets the language which updates the application locale
+   *
+   * @param {string} locale - language identifier and a region identifier
+   * @example: setLocale(en-US | ja-JP)
+   */
+  public setLocale(locale): void {
+    if (typeof locale === 'string') {
+      i18n.setLocale(locale as LocaleType);
+      throttledSetLocale(locale);
+    }
+  }
+
+  /**
+   * Sets if the user is in an active meeting
+   * will be used to handle memory refresh functionality
+   */
+  public setIsInMeeting(isInMeeting): void {
+    throttledSetIsInMeetingStatus(isInMeeting);
+  }
+
+  /**
+   * Opens a modal window to configure notification preference.
+   */
+  public showNotificationSettings(data: string): void {
+    const windowName = (remote.getCurrentWindow() as ICustomBrowserWindow)
+      .winName;
+    local.ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.showNotificationSettings,
+      windowName,
+      theme: data,
+    });
+  }
+
+  /**
+   * Shows a banner that informs user that the screen is being shared.
+   *
+   * @param options object with following fields:
+   *    - stream https://developer.mozilla.org/en-US/docs/Web/API/MediaStream/MediaStream object.
+   *             The indicator automatically destroys itself when stream becomes inactive (see MediaStream.active).
+   *    - displayId id of the display that is being shared or that contains the shared app
+   * @param callback callback function that will be called to handle events.
+   * Callback receives event object { type: string }. Types:
+   *    - 'error' - error occured. Event object contains 'reason' field.
+   *    - 'stopRequested' - user clicked "Stop Sharing" button.
+   */
+  public showScreenSharingIndicator(
+    options: IScreenSharingIndicatorOptions,
+    callback,
+  ): void {
+    const { displayId, stream } = options;
+
+    if (!stream || !stream.active || stream.getVideoTracks().length !== 1) {
+      callback({ type: 'error', reason: 'bad stream' });
+      return;
+    }
+    if (displayId && typeof displayId !== 'string') {
+      callback({ type: 'error', reason: 'bad displayId' });
+      return;
     }
 
-    /**
-     * Method that returns various version info
-     */
-    public getVersionInfo(): Promise<IVersionInfo> {
-        const appName = remote.app.getName();
-        const appVer = remote.app.getVersion();
-        const cpuArch = os.arch() || '';
+    const destroy = () => {
+      throttledCloseScreenShareIndicator(stream.id);
+      stream.removeEventListener('inactive', destroy);
+    };
 
-        return Promise.resolve({
-            containerIdentifier: appName,
-            containerVer: appVer,
-            buildNumber,
-            apiVer: '3.0.0',
-            cpuArch,
-            // Only need to bump if there are any breaking changes.
-            searchApiVer: searchAPIVersion,
-        });
+    stream.addEventListener('inactive', destroy);
+
+    if (typeof callback === 'function') {
+      local.screenSharingIndicatorCallback = callback;
+      ipcRenderer.send(apiName.symphonyApi, {
+        cmd: apiCmds.openScreenSharingIndicator,
+        displayId,
+        id: ++nextIndicatorId,
+        streamId: stream.id,
+      });
     }
+  }
 
-    /**
-     * Allows JS to register a activity detector that can be used by electron main process.
-     *
-     * @param  {Object} period - minimum user idle time in millisecond
-     * @param  {Object} activityDetectionCallback - function that can be called accepting
-     * @example registerActivityDetection(40000, func)
-     */
-    public registerActivityDetection(period: number, activityDetectionCallback: (arg: number) => void): void {
-        if (typeof activityDetectionCallback === 'function') {
-            local.activityDetectionCallback = activityDetectionCallback;
+  /**
+   * Shows a banner that informs user that the screen is being shared.
+   *
+   * @param options object with following fields:
+   *    - streamId unique id of stream
+   *    - displayId id of the display that is being shared or that contains the shared app
+   *    - requestId id to match the exact request
+   * @param callback callback function that will be called to handle events.
+   * Callback receives event object { type: string }. Types:
+   *    - 'error' - error occured. Event object contains 'reason' field.
+   *    - 'stopRequested' - user clicked "Stop Sharing" button.
+   */
+  public openScreenSharingIndicator(
+    options: IScreenSharingIndicatorOptions,
+    callback,
+  ): void {
+    const { displayId, requestId, streamId } = options;
 
-            // only main window can register
-            local.ipcRenderer.send(apiName.symphonyApi, {
-                cmd: apiCmds.registerActivityDetection,
-                period,
-            });
-        }
+    if (typeof callback === 'function') {
+      local.screenSharingIndicatorCallback = callback;
+      ipcRenderer.send(apiName.symphonyApi, {
+        cmd: apiCmds.openScreenSharingIndicator,
+        displayId,
+        id: requestId,
+        streamId,
+      });
     }
+  }
 
-    /**
-     * Registers the download handler
-     * @param downloadManagerCallback Callback to be triggered by the download handler
-     */
-    public registerDownloadHandler(downloadManagerCallback: (arg: any) => void): void {
-        if (typeof downloadManagerCallback === 'function') {
-            local.downloadManagerCallback = downloadManagerCallback;
-        }
+  /**
+   * Closes the screen sharing indicator
+   */
+  public closeScreenSharingIndicator(winKey: string): void {
+    throttledCloseScreenShareIndicator(winKey);
+  }
 
-        local.ipcRenderer.send(apiName.symphonyApi, {
-            cmd: apiCmds.registerDownloadHandler,
-        });
+  /**
+   * Allows JS to register a function to restart floater
+   * @param callback
+   */
+  public registerRestartFloater(
+    callback: (args: IRestartFloaterData) => void,
+  ): void {
+    local.restartFloater = callback;
+  }
+
+  /**
+   * Allows JS to set the PMP & ACP cloud config
+   *
+   * @param data {ICloudConfig}
+   */
+  public setCloudConfig(data: {}): void {
+    throttledSetCloudConfig(data);
+  }
+
+  /**
+   * Open Downloaded item
+   * @param id ID of the item
+   */
+  public openDownloadedItem(id: string): void {
+    throttledOpenDownloadedItem(id);
+  }
+
+  /**
+   * Show downloaded item in finder / explorer
+   * @param id ID of the item
+   */
+  public showDownloadedItem(id: string): void {
+    throttledShowDownloadedItem(id);
+  }
+
+  /**
+   * Clears downloaded items
+   */
+  public clearDownloadedItems(): void {
+    throttledClearDownloadedItems();
+  }
+
+  /**
+   * Restart the app
+   */
+  public restartApp(): void {
+    throttledRestart();
+  }
+
+  /**
+   * get CPU usage
+   */
+  public async getCPUUsage(): Promise<ICPUUsage> {
+    return Promise.resolve(await process.getCPUUsage());
+  }
+
+  /**
+   * Check media permission
+   */
+  public async checkMediaPermission(): Promise<IMediaPermission> {
+    return Promise.resolve({
+      camera: remote.systemPreferences.getMediaAccessStatus('camera'),
+      microphone: remote.systemPreferences.getMediaAccessStatus('microphone'),
+      screen: remote.systemPreferences.getMediaAccessStatus('screen'),
+    });
+  }
+
+  /**
+   * Sets whether the client is running on mana
+   * @param isMana
+   */
+  public setIsMana(isMana: boolean): void {
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.setIsMana,
+      isMana,
+    });
+  }
+
+  /**
+   * Displays a notification from the main process
+   * @param notificationOpts {INotificationData}
+   * @param notificationCallback {NotificationActionCallback}
+   */
+  public showNotification(
+    notificationOpts: INotificationData,
+    notificationCallback: NotificationActionCallback,
+  ): void {
+    // Store callbacks based on notification id so,
+    // we can use this to trigger on notification action
+    if (typeof notificationOpts.id === 'number') {
+      notificationActionCallbacks.set(
+        notificationOpts.id,
+        notificationCallback,
+      );
     }
-
-    /**
-     * Allows JS to register a callback to be invoked when size/positions
-     * changes for any pop-out window (i.e., window.open). The main
-     * process will emit IPC event 'boundsChange' (see below). Currently
-     * only one window can register for bounds change.
-     * @param  {Function} callback Function invoked when bounds changes.
-     */
-    public registerBoundsChange(callback: (arg: IBoundsChange) => void): void {
-        if (typeof callback === 'function') {
-            local.boundsChangeCallback = callback;
-        }
+    // ipc does not support sending Functions, Promises, Symbols, WeakMaps,
+    // or WeakSets will throw an exception
+    if (notificationOpts.callback) {
+      delete notificationOpts.callback;
     }
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.showNotification,
+      notificationOpts,
+    });
+  }
 
-    /**
-     * Allows JS to register a logger that can be used by electron main process.
-     * @param  {Object} logger  function that can be called accepting
-     * object: {
-     *  logLevel: 'ERROR'|'CONFLICT'|'WARN'|'ACTION'|'INFO'|'DEBUG',
-     *  logDetails: String
-     *  }
-     */
-    public registerLogger(logger: (msg: ILogMsg, logLevel: LogLevel, showInConsole: boolean) => void): void {
-        if (typeof logger === 'function') {
-            local.logger = logger;
-
-            // only main window can register
-            local.ipcRenderer.send(apiName.symphonyApi, {
-                cmd: apiCmds.registerLogger,
-            });
-        }
-    }
-
-    /**
-     * Allows JS to register a protocol handler that can be used by the
-     * electron main process.
-     *
-     * @param protocolHandler {Function} callback will be called when app is
-     * invoked with registered protocol (e.g., symphony). The callback
-     * receives a single string argument: full uri that the app was
-     * invoked with e.g., symphony://?streamId=xyz123&streamType=chatroom
-     *
-     * Note: this function should only be called after client app is fully
-     * able for protocolHandler callback to be invoked.  It is possible
-     * the app was started using protocol handler, in this case as soon as
-     * this registration func is invoked then the protocolHandler callback
-     * will be immediately called.
-     */
-    public registerProtocolHandler(protocolHandler): void {
-        if (typeof protocolHandler === 'function') {
-
-            local.protocolActionCallback = protocolHandler;
-
-            local.ipcRenderer.send(apiName.symphonyApi, {
-                cmd: apiCmds.registerProtocolHandler,
-            });
-
-        }
-    }
-
-    /**
-     * Allows JS to register a log retriever that can be used by the
-     * electron main process to retrieve current logs.
-     */
-    public registerLogRetriever(collectLogs: () => void, logName: string): void {
-        if (typeof collectLogs === 'function') {
-            if (!local.collectLogsCallback) {
-                local.collectLogsCallback = new Array<( () => void )>();
-            }
-            local.collectLogsCallback.push(collectLogs);
-
-            local.ipcRenderer.send(apiName.symphonyApi, {
-                cmd: apiCmds.registerLogRetriever,
-                logName,
-            });
-
-        }
-    }
-
-    /**
-     * Send log files to main process when requested.
-     */
-    public sendLogs(logName: string, logFiles): void {
-        local.ipcRenderer.send(apiName.symphonyApi, {
-            cmd: apiCmds.sendLogs,
-            logs: { logName, logFiles },
-        });
-    }
-
-    /**
-     * Allows JS to register analytics event handler
-     * to pass analytics event data
-     *
-     * @param analyticsEventHandler
-     */
-    public registerAnalyticsEvent(analyticsEventHandler): void {
-        if (typeof analyticsEventHandler === 'function') {
-            local.analyticsEventHandler = analyticsEventHandler;
-
-            local.ipcRenderer.send(apiName.symphonyApi, {
-                cmd: apiCmds.registerAnalyticsHandler,
-            });
-        }
-    }
-
-    /**
-     * Expose old screen snippet api to support backward compatibility
-     *
-     * @deprecated
-     */
-    // tslint:disable-next-line
-    public ScreenSnippet = ScreenSnippetBcHandler;
-
-    /**
-     * Allow user to capture portion of screen
-     *
-     * @param screenSnippetCallback {function}
-     */
-    public openScreenSnippet(screenSnippetCallback: (arg: IScreenSnippet) => void): void {
-        if (typeof screenSnippetCallback === 'function') {
-            local.screenSnippetCallback = screenSnippetCallback;
-
-            local.ipcRenderer.send(apiName.symphonyApi, {
-                cmd: apiCmds.openScreenSnippet,
-            });
-        }
-    }
-
-    /**
-     * Cancel a screen capture in progress
-     */
-    public closeScreenSnippet(): void {
-        local.ipcRenderer.send(apiName.symphonyApi, {
-            cmd: apiCmds.closeScreenSnippet,
-        });
-    }
-
-    /**
-     * Sets the count on the tray icon to the given number.
-     *
-     * @param {number} count  count to be displayed
-     * note: count of 0 will remove the displayed count.
-     * note: for mac the number displayed will be 1 to infinity
-     * note: for windows the number displayed will be 1 to 99 and 99+
-     */
-    public setBadgeCount(count: number): void {
-        throttledSetBadgeCount(count);
-    }
-
-    /**
-     * Sets the language which updates the application locale
-     *
-     * @param {string} locale - language identifier and a region identifier
-     * @example: setLocale(en-US | ja-JP)
-     */
-    public setLocale(locale): void {
-        if (typeof locale === 'string') {
-            i18n.setLocale(locale as LocaleType);
-            throttledSetLocale(locale);
-        }
-    }
-
-    /**
-     * Sets if the user is in an active meeting
-     * will be used to handle memory refresh functionality
-     */
-    public setIsInMeeting(isInMeeting): void {
-        throttledSetIsInMeetingStatus(isInMeeting);
-    }
-
-    /**
-     * Opens a modal window to configure notification preference.
-     */
-    public showNotificationSettings(data: string): void {
-        const windowName = (remote.getCurrentWindow() as ICustomBrowserWindow).winName;
-        local.ipcRenderer.send(apiName.symphonyApi, {
-            cmd: apiCmds.showNotificationSettings,
-            windowName,
-            theme: data,
-        });
-    }
-
-    /**
-     * Shows a banner that informs user that the screen is being shared.
-     *
-     * @param options object with following fields:
-     *    - stream https://developer.mozilla.org/en-US/docs/Web/API/MediaStream/MediaStream object.
-     *             The indicator automatically destroys itself when stream becomes inactive (see MediaStream.active).
-     *    - displayId id of the display that is being shared or that contains the shared app
-     * @param callback callback function that will be called to handle events.
-     * Callback receives event object { type: string }. Types:
-     *    - 'error' - error occured. Event object contains 'reason' field.
-     *    - 'stopRequested' - user clicked "Stop Sharing" button.
-     */
-    public showScreenSharingIndicator(options: IScreenSharingIndicatorOptions, callback): void {
-        const { displayId, stream } = options;
-
-        if (!stream || !stream.active || stream.getVideoTracks().length !== 1) {
-            callback({type: 'error', reason: 'bad stream'});
-            return;
-        }
-        if (displayId && typeof(displayId) !== 'string') {
-            callback({type: 'error', reason: 'bad displayId'});
-            return;
-        }
-
-        const destroy = () => {
-            throttledCloseScreenShareIndicator(stream.id);
-            stream.removeEventListener('inactive', destroy);
-        };
-
-        stream.addEventListener('inactive', destroy);
-
-        if (typeof callback === 'function') {
-            local.screenSharingIndicatorCallback = callback;
-            ipcRenderer.send(apiName.symphonyApi, {
-                cmd: apiCmds.openScreenSharingIndicator,
-                displayId,
-                id: ++nextIndicatorId,
-                streamId: stream.id,
-            });
-        }
-    }
-
-    /**
-     * Shows a banner that informs user that the screen is being shared.
-     *
-     * @param options object with following fields:
-     *    - streamId unique id of stream
-     *    - displayId id of the display that is being shared or that contains the shared app
-     *    - requestId id to match the exact request
-     * @param callback callback function that will be called to handle events.
-     * Callback receives event object { type: string }. Types:
-     *    - 'error' - error occured. Event object contains 'reason' field.
-     *    - 'stopRequested' - user clicked "Stop Sharing" button.
-     */
-    public openScreenSharingIndicator(options: IScreenSharingIndicatorOptions, callback): void {
-        const { displayId, requestId, streamId } = options;
-
-        if (typeof callback === 'function') {
-            local.screenSharingIndicatorCallback = callback;
-            ipcRenderer.send(apiName.symphonyApi, {
-                cmd: apiCmds.openScreenSharingIndicator,
-                displayId,
-                id: requestId,
-                streamId,
-            });
-        }
-    }
-
-    /**
-     * Closes the screen sharing indicator
-     */
-    public closeScreenSharingIndicator(winKey: string): void {
-        throttledCloseScreenShareIndicator(winKey);
-    }
-
-    /**
-     * Allows JS to register a function to restart floater
-     * @param callback
-     */
-    public registerRestartFloater(callback: (args: IRestartFloaterData) => void): void {
-        local.restartFloater = callback;
-    }
-
-    /**
-     * Allows JS to set the PMP & ACP cloud config
-     *
-     * @param data {ICloudConfig}
-     */
-    public setCloudConfig(data: {}): void {
-        throttledSetCloudConfig(data);
-    }
-
-    /**
-     * Open Downloaded item
-     * @param id ID of the item
-     */
-    public openDownloadedItem(id: string): void {
-        throttledOpenDownloadedItem(id);
-    }
-
-    /**
-     * Show downloaded item in finder / explorer
-     * @param id ID of the item
-     */
-    public showDownloadedItem(id: string): void {
-        throttledShowDownloadedItem(id);
-    }
-
-    /**
-     * Clears downloaded items
-     */
-    public clearDownloadedItems(): void {
-        throttledClearDownloadedItems();
-    }
-
-    /**
-     * Restart the app
-     */
-    public restartApp(): void {
-        throttledRestart();
-    }
-
-    /**
-     * get CPU usage
-     */
-    public async getCPUUsage(): Promise<ICPUUsage> {
-        return Promise.resolve(
-            await process.getCPUUsage(),
-        );
-    }
-
-    /**
-     * Check media permission
-     */
-    public async checkMediaPermission(): Promise<IMediaPermission> {
-       return Promise.resolve({
-            camera: remote.systemPreferences.getMediaAccessStatus('camera'),
-            microphone: remote.systemPreferences.getMediaAccessStatus('microphone'),
-            screen: remote.systemPreferences.getMediaAccessStatus('screen'),
-        });
-    }
-
-    /**
-     * Sets whether the client is running on mana
-     * @param isMana
-     */
-    public setIsMana(isMana: boolean): void {
-        ipcRenderer.send(apiName.symphonyApi, {
-            cmd: apiCmds.setIsMana,
-            isMana,
-        });
-    }
-
-    /**
-     * Displays a notification from the main process
-     * @param notificationOpts {INotificationData}
-     * @param notificationCallback {NotificationActionCallback}
-     */
-    public showNotification(notificationOpts: INotificationData, notificationCallback: NotificationActionCallback): void {
-        // Store callbacks based on notification id so,
-        // we can use this to trigger on notification action
-        if (typeof notificationOpts.id === 'number') {
-            notificationActionCallbacks.set(notificationOpts.id, notificationCallback);
-        }
-        // ipc does not support sending Functions, Promises, Symbols, WeakMaps,
-        // or WeakSets will throw an exception
-        if (notificationOpts.callback) {
-            delete notificationOpts.callback;
-        }
-        ipcRenderer.send(apiName.symphonyApi, {
-            cmd: apiCmds.showNotification,
-            notificationOpts,
-        });
-    }
-
-    /**
-     * Closes a specific notification based on id
-     * @param notificationId {number} Id of a notification
-     */
-    public closeNotification(notificationId: number): void {
-        ipcRenderer.send(apiName.symphonyApi, {
-            cmd: apiCmds.closeNotification,
-            notificationId,
-        });
-    }
-
+  /**
+   * Closes a specific notification based on id
+   * @param notificationId {number} Id of a notification
+   */
+  public closeNotification(notificationId: number): void {
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.closeNotification,
+      notificationId,
+    });
+  }
 }
 
 /**
@@ -642,8 +679,10 @@ export class SSFApi {
  *     count: number
  * }
  */
-local.ipcRenderer.on('create-badge-data-url', (_event: Event, arg: IBadgeCount) => {
-    const count = arg && arg.count || 0;
+local.ipcRenderer.on(
+  'create-badge-data-url',
+  (_event: Event, arg: IBadgeCount) => {
+    const count = (arg && arg.count) || 0;
 
     // create 32 x 32 img
     const radius = 16;
@@ -653,33 +692,34 @@ local.ipcRenderer.on('create-badge-data-url', (_event: Event, arg: IBadgeCount) 
 
     const ctx = canvas.getContext('2d');
     if (ctx) {
-        ctx.fillStyle = 'red';
-        ctx.beginPath();
-        ctx.arc(radius, radius, radius, 0, 2 * Math.PI, false);
-        ctx.fill();
-        ctx.textAlign = 'center';
-        ctx.fillStyle = 'white';
+      ctx.fillStyle = 'red';
+      ctx.beginPath();
+      ctx.arc(radius, radius, radius, 0, 2 * Math.PI, false);
+      ctx.fill();
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'white';
 
-        const text = count > 99 ? '99+' : count.toString();
-        if (text.length > 2) {
-            ctx.font = 'bold 18px sans-serif';
-            ctx.fillText(text, radius, 22);
-        } else if (text.length > 1) {
-            ctx.font = 'bold 24px sans-serif';
-            ctx.fillText(text, radius, 24);
-        } else {
-            ctx.font = 'bold 26px sans-serif';
-            ctx.fillText(text, radius, 26);
-        }
-        const dataUrl = canvas.toDataURL('image/png', 1.0);
+      const text = count > 99 ? '99+' : count.toString();
+      if (text.length > 2) {
+        ctx.font = 'bold 18px sans-serif';
+        ctx.fillText(text, radius, 22);
+      } else if (text.length > 1) {
+        ctx.font = 'bold 24px sans-serif';
+        ctx.fillText(text, radius, 24);
+      } else {
+        ctx.font = 'bold 26px sans-serif';
+        ctx.fillText(text, radius, 26);
+      }
+      const dataUrl = canvas.toDataURL('image/png', 1.0);
 
-        local.ipcRenderer.send(apiName.symphonyApi, {
-            cmd: apiCmds.badgeDataUrl,
-            count,
-            dataUrl,
-        });
+      local.ipcRenderer.send(apiName.symphonyApi, {
+        cmd: apiCmds.badgeDataUrl,
+        count,
+        dataUrl,
+      });
     }
-});
+  },
+);
 
 /**
  * An event triggered by the main process
@@ -691,18 +731,24 @@ local.ipcRenderer.on('create-badge-data-url', (_event: Event, arg: IBadgeCount) 
  *     type: 'ERROR' | 'image/jpg;base64',
  * }
  */
-local.ipcRenderer.on('screen-snippet-data', (_event: Event, arg: IScreenSnippet) => {
-    if (typeof arg === 'object' && typeof local.screenSnippetCallback === 'function') {
-        local.screenSnippetCallback(arg);
+local.ipcRenderer.on(
+  'screen-snippet-data',
+  (_event: Event, arg: IScreenSnippet) => {
+    if (
+      typeof arg === 'object' &&
+      typeof local.screenSnippetCallback === 'function'
+    ) {
+      local.screenSnippetCallback(arg);
     }
-});
+  },
+);
 
-local.ipcRenderer.on('collect-logs', ( _event: Event ) => {
-    if (local.collectLogsCallback) {
-        for (const callback of local.collectLogsCallback) {
-            callback();
-        }
+local.ipcRenderer.on('collect-logs', (_event: Event) => {
+  if (local.collectLogsCallback) {
+    for (const callback of local.collectLogsCallback) {
+      callback();
     }
+  }
 });
 
 /**
@@ -712,21 +758,33 @@ local.ipcRenderer.on('collect-logs', ( _event: Event ) => {
  * @param {number} idleTime - current system idle tick
  */
 local.ipcRenderer.on('activity', (_event: Event, idleTime: number) => {
-    if (typeof idleTime === 'number' && typeof local.activityDetectionCallback === 'function') {
-        local.activityDetectionCallback(idleTime);
-    }
+  if (
+    typeof idleTime === 'number' &&
+    typeof local.activityDetectionCallback === 'function'
+  ) {
+    local.activityDetectionCallback(idleTime);
+  }
 });
 
-local.ipcRenderer.on('download-completed', (_event: Event, downloadItem: IDownloadItem) => {
-    if (typeof downloadItem === 'object' && typeof local.downloadManagerCallback === 'function') {
-        local.downloadManagerCallback({status: 'download-completed', item: downloadItem});
+local.ipcRenderer.on(
+  'download-completed',
+  (_event: Event, downloadItem: IDownloadItem) => {
+    if (
+      typeof downloadItem === 'object' &&
+      typeof local.downloadManagerCallback === 'function'
+    ) {
+      local.downloadManagerCallback({
+        status: 'download-completed',
+        item: downloadItem,
+      });
     }
-});
+  },
+);
 
 local.ipcRenderer.on('download-failed', (_event: Event) => {
-    if (typeof local.downloadManagerCallback === 'function') {
-        local.downloadManagerCallback({status: 'download-failed'});
-    }
+  if (typeof local.downloadManagerCallback === 'function') {
+    local.downloadManagerCallback({ status: 'download-failed' });
+  }
 });
 
 /**
@@ -743,16 +801,23 @@ local.ipcRenderer.on('download-failed', (_event: Event) => {
  *
  */
 local.ipcRenderer.on('boundsChange', (_event, arg: IBoundsChange): void => {
-    const { x, y, height, width, windowName } = arg;
-    if (x && y && height && width && windowName && typeof local.boundsChangeCallback === 'function') {
-        local.boundsChangeCallback({
-            x,
-            y,
-            height,
-            width,
-            windowName,
-        });
-    }
+  const { x, y, height, width, windowName } = arg;
+  if (
+    x &&
+    y &&
+    height &&
+    width &&
+    windowName &&
+    typeof local.boundsChangeCallback === 'function'
+  ) {
+    local.boundsChangeCallback({
+      x,
+      y,
+      height,
+      width,
+      windowName,
+    });
+  }
 });
 
 /**
@@ -760,9 +825,12 @@ local.ipcRenderer.on('boundsChange', (_event, arg: IBoundsChange): void => {
  * when the screen sharing has been stopper
  */
 local.ipcRenderer.on('screen-sharing-stopped', (_event, id) => {
-    if (typeof local.screenSharingIndicatorCallback === 'function') {
-        local.screenSharingIndicatorCallback({ type: 'stopRequested', requestId: id });
-    }
+  if (typeof local.screenSharingIndicatorCallback === 'function') {
+    local.screenSharingIndicatorCallback({
+      type: 'stopRequested',
+      requestId: id,
+    });
+  }
 });
 
 /**
@@ -777,9 +845,9 @@ local.ipcRenderer.on('screen-sharing-stopped', (_event, id) => {
  *
  */
 local.ipcRenderer.on('log', (_event, arg) => {
-    if (arg && local.logger) {
-        local.logger(arg.msgs || [], arg.logLevel, arg.showInConsole);
-    }
+  if (arg && local.logger) {
+    local.logger(arg.msgs || [], arg.logLevel, arg.showInConsole);
+  }
 });
 
 /**
@@ -787,87 +855,93 @@ local.ipcRenderer.on('log', (_event, arg) => {
  * @param {String} arg - the protocol url
  */
 local.ipcRenderer.on('protocol-action', (_event, arg: string) => {
-    if (typeof local.protocolActionCallback === 'function' && typeof arg === 'string') {
-        local.protocolActionCallback(arg);
-    }
+  if (
+    typeof local.protocolActionCallback === 'function' &&
+    typeof arg === 'string'
+  ) {
+    local.protocolActionCallback(arg);
+  }
 });
 
 local.ipcRenderer.on('analytics-callback', (_event, arg: object) => {
-    if (typeof local.analyticsEventHandler === 'function' && arg) {
-        local.analyticsEventHandler(arg);
-    }
+  if (typeof local.analyticsEventHandler === 'function' && arg) {
+    local.analyticsEventHandler(arg);
+  }
 });
 
 /**
  * An event triggered by the main process to restart the child window
  * @param {IRestartFloaterData}
  */
-local.ipcRenderer.on('restart-floater', (_event, { windowName, bounds }: IRestartFloaterData) => {
+local.ipcRenderer.on(
+  'restart-floater',
+  (_event, { windowName, bounds }: IRestartFloaterData) => {
     if (typeof local.restartFloater === 'function' && windowName) {
-        local.restartFloater({ windowName, bounds });
+      local.restartFloater({ windowName, bounds });
     }
-});
+  },
+);
 
 /**
  * An event triggered by the main process on notification actions
  * @param {INotificationData}
  */
 local.ipcRenderer.on('notification-actions', (_event, args) => {
-    const callback = notificationActionCallbacks.get(args.data.id);
-    const data = args.data;
-    data.notificationData = args.notificationData;
-    if (args && callback) {
-        callback(args.event, data);
-    }
+  const callback = notificationActionCallbacks.get(args.data.id);
+  const data = args.data;
+  data.notificationData = args.notificationData;
+  if (args && callback) {
+    callback(args.event, data);
+  }
 });
 
 // Invoked whenever the app is reloaded/navigated
 const sanitize = (): void => {
-    if (window.name === apiName.mainWindowName) {
-        local.ipcRenderer.send(apiName.symphonyApi, {
-            cmd: apiCmds.sanitize,
-            windowName: window.name,
-        });
-    }
+  if (window.name === apiName.mainWindowName) {
+    local.ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.sanitize,
+      windowName: window.name,
+    });
+  }
 };
 
 // listens for the online/offline events and updates the main process
 const updateOnlineStatus = (): void => {
-    local.ipcRenderer.send(apiName.symphonyApi, {
-        cmd: apiCmds.isOnline,
-        isOnline: window.navigator.onLine,
-    });
+  local.ipcRenderer.send(apiName.symphonyApi, {
+    cmd: apiCmds.isOnline,
+    isOnline: window.navigator.onLine,
+  });
 };
 
 // Handle key down events
 const throttledKeyDown = throttle((event) => {
-    isAltKey = event.keyCode === KeyCodes.Alt;
-    if (event.keyCode === KeyCodes.Esc) {
-        local.ipcRenderer.send(apiName.symphonyApi, {
-            cmd: apiCmds.keyPress,
-            keyCode: event.keyCode,
-        });
-    }
+  isAltKey = event.keyCode === KeyCodes.Alt;
+  if (event.keyCode === KeyCodes.Esc) {
+    local.ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.keyPress,
+      keyCode: event.keyCode,
+    });
+  }
 }, 500);
 
 // Handle key up events
 const throttledKeyUp = throttle((event) => {
-    if (isAltKey && (event.keyCode === KeyCodes.Alt || KeyCodes.Esc)) {
-        isMenuOpen = !isMenuOpen;
-    }
-    if (isAltKey && isMenuOpen && event.keyCode === KeyCodes.Alt) {
-        local.ipcRenderer.send(apiName.symphonyApi, {
-            cmd: apiCmds.keyPress,
-            keyCode: event.keyCode,
-        });
-    }
+  if (isAltKey && (event.keyCode === KeyCodes.Alt || KeyCodes.Esc)) {
+    isMenuOpen = !isMenuOpen;
+  }
+  if (isAltKey && isMenuOpen && event.keyCode === KeyCodes.Alt) {
+    local.ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.keyPress,
+      keyCode: event.keyCode,
+    });
+  }
 }, 500);
 
 // Handle mouse down event
 const throttleMouseDown = throttle(() => {
-    if (isAltKey && isMenuOpen) {
-        isMenuOpen = !isMenuOpen;
-    }
+  if (isAltKey && isMenuOpen) {
+    isMenuOpen = !isMenuOpen;
+  }
 }, 500);
 
 /**
