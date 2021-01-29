@@ -40,6 +40,7 @@ import {
   IConfig,
   IGlobalConfig,
 } from './config-handler';
+import crashHandler from './crash-handler';
 import { SpellChecker } from './spell-check-handler';
 import { checkIfBuildExpired } from './ttl-handler';
 import { versionHandler } from './version-handler';
@@ -231,23 +232,6 @@ export class WindowHandler {
     const locale: LocaleType = (this.config.locale ||
       app.getLocale()) as LocaleType;
     i18n.setLocale(locale);
-
-    try {
-      const extra = {
-        podUrl: this.userConfig.url
-          ? this.userConfig.url
-          : this.globalConfig.url,
-        process: 'main',
-      };
-      const defaultOpts = {
-        uploadToServer: false,
-        companyName: 'Symphony',
-        submitURL: '',
-      };
-      crashReporter.start({ ...defaultOpts, extra });
-    } catch (e) {
-      throw new Error('failed to init crash report');
-    }
 
     this.listenForLoad();
   }
@@ -624,6 +608,14 @@ export class WindowHandler {
       this.closeAllWindow();
       this.destroyAllWindows();
     });
+
+    crashReporter.start({
+      submitURL: '',
+      uploadToServer: false,
+      ignoreSystemCrashHandler: false,
+    });
+
+    crashHandler.handleRendererCrash(this.mainWindow);
 
     // Reloads the Symphony
     ipcMain.on('reload-symphony', () => {

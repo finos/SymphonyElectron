@@ -153,6 +153,7 @@ export const Menu = {
 
 export const crashReporter = {
   start: jest.fn(),
+  getLastCrashReport: jest.fn(),
 };
 
 const getCurrentWindow = jest.fn(() => {

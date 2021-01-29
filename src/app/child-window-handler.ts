@@ -1,4 +1,4 @@
-import { BrowserWindow, WebContents } from 'electron';
+import { BrowserWindow, crashReporter, WebContents } from 'electron';
 
 import { parse as parseQuerystring } from 'querystring';
 import { format, parse, Url } from 'url';
@@ -8,6 +8,7 @@ import { logger } from '../common/logger';
 import { getGuid } from '../common/utils';
 import { whitelistHandler } from '../common/whitelist-handler';
 import { config } from './config-handler';
+import crashHandler from './crash-handler';
 import {
   handlePermissionRequests,
   monitorWindowActions,
@@ -261,6 +262,14 @@ export const handleChildWindow = (webContents: WebContents): void => {
           );
           removeWindowEventListener(browserWin);
         });
+
+        crashReporter.start({
+          submitURL: '',
+          uploadToServer: false,
+          ignoreSystemCrashHandler: false,
+        });
+
+        crashHandler.handleRendererCrash(browserWin);
 
         if (browserWin.webContents) {
           // validate link and create a child window or open in browser

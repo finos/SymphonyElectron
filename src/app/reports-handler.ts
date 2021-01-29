@@ -1,5 +1,5 @@
 import * as archiver from 'archiver';
-import { app, BrowserWindow, crashReporter, dialog, shell } from 'electron';
+import { app, BrowserWindow, dialog, shell } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -184,7 +184,7 @@ export const exportLogs = (): void => {
  */
 export const exportCrashDumps = (): void => {
   const FILE_EXTENSIONS = isMac ? ['.dmp'] : ['.dmp', '.txt'];
-  const crashesDirectory = (crashReporter as any).getCrashesDirectory();
+  const crashesDirectory = app.getPath('crashDumps');
   const source = isMac ? crashesDirectory + '/completed' : crashesDirectory;
   const focusedWindow = BrowserWindow.getFocusedWindow();
 
