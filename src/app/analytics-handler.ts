@@ -1,7 +1,14 @@
 export interface IAnalyticsData {
   element: AnalyticsElements;
-  action_type: MenuActionTypes | ScreenSnippetActionTypes;
+  action_type?: MenuActionTypes | ScreenSnippetActionTypes;
   action_result?: AnalyticsActions;
+}
+
+export interface ICrashData extends IAnalyticsData {
+  process: SDACrashProcess;
+  crashCause: string;
+  windowName: string;
+  miniDump?: string;
 }
 
 export enum MenuActionTypes {
@@ -30,6 +37,13 @@ export enum AnalyticsActions {
 export enum AnalyticsElements {
   MENU = 'Menu',
   SCREEN_CAPTURE_ANNOTATE = 'screen_capture_annotate',
+  SDA_CRASH = 'sda_crash',
+}
+
+export enum SDACrashProcess {
+  MAIN = 'main',
+  RENDERER = 'renderer',
+  GPU = 'gpu',
 }
 
 const MAX_EVENT_QUEUE_LENGTH = 50;
@@ -51,9 +65,12 @@ class Analytics {
       return;
     }
     if (this.analyticsEventQueue && this.analyticsEventQueue.length > 0) {
-      this.analyticsEventQueue.forEach((events) => {
+      this.analyticsEventQueue.forEach((eventData) => {
         if (this.preloadWindow && !this.preloadWindow.isDestroyed()) {
-          this.preloadWindow.send(analyticsCallback, events);
+          if (eventData.element === AnalyticsElements.SDA_CRASH) {
+            eventData = eventData as ICrashData;
+          }
+          this.preloadWindow.send(analyticsCallback, eventData);
         }
       });
       this.resetAnalytics();
@@ -66,12 +83,15 @@ class Analytics {
    * @param eventData {IAnalyticsData}
    */
   public track(eventData: IAnalyticsData): void {
+    if (eventData.element === AnalyticsElements.SDA_CRASH) {
+      eventData = eventData as ICrashData;
+    }
     if (this.preloadWindow && !this.preloadWindow.isDestroyed()) {
       this.preloadWindow.send(analyticsCallback, eventData);
       return;
     }
     this.analyticsEventQueue.push(eventData);
-    // don't store more than 50 msgs. keep most recent log msgs.
+    // don't store more than specified limit. keep most recent events.
     if (this.analyticsEventQueue.length > MAX_EVENT_QUEUE_LENGTH) {
       this.analyticsEventQueue.shift();
     }
