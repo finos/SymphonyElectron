@@ -144,7 +144,10 @@ export default class NotificationComp extends React.Component<{}, IState> {
     return (
       <div
         className={containerClass}
-        style={{ height: containerHeight }}
+        style={{
+          height: containerHeight,
+          backgroundColor: bgColor.backgroundColor,
+        }}
         lang={i18n.getLocale()}
       >
         <div
