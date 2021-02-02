@@ -1,4 +1,4 @@
-import { ChildProcess, ExecException, execFile } from 'child_process';
+import { ExecException, execFile } from 'child_process';
 import {
   app,
   BrowserWindow,
