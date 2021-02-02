@@ -41,8 +41,8 @@ type mouseEventButton =
 type keyboardEvent = React.KeyboardEvent<HTMLInputElement>;
 
 // Notification container height
-const CONTAINER_HEIGHT = 100;
-const CONTAINER_HEIGHT_WITH_INPUT = 132;
+const CONTAINER_HEIGHT = 88;
+const CONTAINER_HEIGHT_WITH_INPUT = 120;
 
 export default class NotificationComp extends React.Component<{}, IState> {
   private readonly eventHandlers = {
@@ -137,11 +137,17 @@ export default class NotificationComp extends React.Component<{}, IState> {
     const containerClass = classNames('container', {
       'external-border': isExternal,
     });
+    const actionButtonContainer = classNames('rte-button-container', {
+      'action-container-margin': !isInputHidden,
+    });
 
     return (
       <div
         className={containerClass}
-        style={{ height: containerHeight }}
+        style={{
+          height: containerHeight,
+          backgroundColor: bgColor.backgroundColor,
+        }}
         lang={i18n.getLocale()}
       >
         <div
@@ -188,7 +194,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
         </div>
         <div
           style={{
-            ...{ display: isInputHidden ? 'none' : 'flex' },
+            ...{ display: isInputHidden ? 'none' : 'block' },
             ...bgColor,
           }}
           className='rte-container'
@@ -218,7 +224,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
               ref={this.input}
             />
           </div>
-          <div className='rte-button-container'>
+          <div className={actionButtonContainer}>
             <button
               className={`rte-thumbsup-button ${themeClassName}`}
               onClick={this.eventHandlers.onThumbsUp()}
