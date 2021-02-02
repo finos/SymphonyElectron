@@ -16,7 +16,7 @@ import NotificationHandler from './notification-handler';
 // const MAX_QUEUE_SIZE = 30;
 const CLEAN_UP_INTERVAL = 60 * 1000; // Closes inactive notification
 const animationQueue = new AnimationQueue();
-const CONTAINER_HEIGHT_WITH_INPUT = 132; // Notification container height
+const CONTAINER_HEIGHT_WITH_INPUT = 120; // Notification container height
 
 interface ICustomBrowserWindow extends Electron.BrowserWindow {
   winName: string;
@@ -31,7 +31,7 @@ const notificationSettings = {
   startCorner: 'upper-right' as startCorner,
   display: '',
   width: 344,
-  height: 100,
+  height: 88,
   totalHeight: 0,
   totalWidth: 0,
   corner: {
@@ -607,7 +607,7 @@ class Notification extends NotificationHandler {
   private getNotificationOpts(): Electron.BrowserWindowConstructorOptions {
     return {
       width: 344,
-      height: 100,
+      height: 88,
       alwaysOnTop: true,
       skipTaskbar: true,
       resizable: isWindowsOS,

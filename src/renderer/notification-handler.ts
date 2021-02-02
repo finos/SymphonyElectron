@@ -26,8 +26,8 @@ interface ICorner {
 }
 
 type startCorner = 'upper-right' | 'upper-left' | 'lower-right' | 'lower-left';
-const NEXT_INSERT_POSITION = 108;
-const NEXT_INSERT_POSITION_WITH_INPUT = 140;
+const NEXT_INSERT_POSITION = 96;
+const NEXT_INSERT_POSITION_WITH_INPUT = 128;
 
 export default class NotificationHandler {
   public settings: ISettings;
