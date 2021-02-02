@@ -45,6 +45,11 @@ class CrashHandler {
         crashCause: _killed ? 'killed' : 'crashed',
       };
       analytics.track(eventData);
+      logger.info(
+        `crash-handler: GPU process crash event processed with data ${JSON.stringify(
+          eventData,
+        )}`,
+      );
     });
   }
 
@@ -65,6 +70,11 @@ class CrashHandler {
       crashCause: lastCrash.id,
     };
     analytics.track(eventData);
+    logger.info(
+      `crash-handler: Main process crash event processed with data ${JSON.stringify(
+        eventData,
+      )}`,
+    );
   }
 
   constructor() {
@@ -96,6 +106,11 @@ class CrashHandler {
           case 'oom':
             await CrashHandler.showMessageToUser(browserWindow);
             analytics.track(eventData);
+            logger.info(
+              `crash-handler: Renderer process crash event processed with data ${JSON.stringify(
+                eventData,
+              )}`,
+            );
             break;
           default:
             break;
