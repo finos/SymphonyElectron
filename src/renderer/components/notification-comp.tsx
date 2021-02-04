@@ -60,8 +60,6 @@ export default class NotificationComp extends React.Component<{}, IState> {
     onKeyUp: (winKey) => (event: keyboardEvent) => this.onKeyUp(event, winKey),
   };
   private flashTimer: NodeJS.Timer | undefined;
-  private customInput: React.RefObject<HTMLSpanElement>;
-  private inputCaret: React.RefObject<HTMLDivElement>;
   private input: React.RefObject<HTMLInputElement>;
 
   constructor(props) {
@@ -83,12 +81,10 @@ export default class NotificationComp extends React.Component<{}, IState> {
       canSendMessage: false,
     };
     this.updateState = this.updateState.bind(this);
-    this.setInputCaretPosition = this.setInputCaretPosition.bind(this);
+    this.onInputChange = this.onInputChange.bind(this);
     this.resetNotificationData = this.resetNotificationData.bind(this);
     this.getInputValue = this.getInputValue.bind(this);
 
-    this.customInput = React.createRef();
-    this.inputCaret = React.createRef();
     this.input = React.createRef();
   }
 
@@ -201,26 +197,12 @@ export default class NotificationComp extends React.Component<{}, IState> {
         >
           <div className='input-container'>
             <div className='input-border' />
-            <div className='input-caret-container'>
-              <span ref={this.customInput} className='custom-input' />
-            </div>
-            <div ref={this.inputCaret} className='input-caret' />
             <input
               style={bgColor}
               className={themeClassName}
               autoFocus={true}
-              onInput={this.setInputCaretPosition}
-              onKeyDown={this.setInputCaretPosition}
               onKeyUp={this.eventHandlers.onKeyUp(id)}
-              onChange={this.setInputCaretPosition}
-              onClick={this.setInputCaretPosition}
-              onPaste={this.setInputCaretPosition}
-              onCut={this.setInputCaretPosition}
-              onCopy={this.setInputCaretPosition}
-              onMouseDown={this.setInputCaretPosition}
-              onMouseUp={this.setInputCaretPosition}
-              onFocus={() => this.animateCaret(true)}
-              onBlur={() => this.animateCaret(false)}
+              onChange={this.onInputChange}
               ref={this.input}
             />
           </div>
@@ -317,7 +299,7 @@ export default class NotificationComp extends React.Component<{}, IState> {
     if (this.input.current) {
       const input = this.input.current.value;
       this.input.current.value = input + '👍';
-      this.setInputCaretPosition();
+      this.onInputChange();
       this.input.current.focus();
     }
   }
@@ -381,49 +363,21 @@ export default class NotificationComp extends React.Component<{}, IState> {
    * @private
    */
   private onKeyUp(event, id) {
-    this.setInputCaretPosition();
     if (event.key === 'Enter' || event.keyCode === 13) {
       this.onReply(id);
     }
   }
 
   /**
-   * Moves the custom input caret based on input text
+   * Updates the send button state based on input change
    * @private
    */
-  private setInputCaretPosition() {
-    if (this.customInput.current) {
-      if (this.input.current) {
-        const inputText = this.input.current.value || '';
-        const selectionStart = this.input.current.selectionStart || 0;
-        this.customInput.current.innerText = inputText
-          .substring(0, selectionStart)
-          .replace(/\n$/, '\n\u0001');
-        this.setState({
-          canSendMessage: inputText.trim().length > 0,
-        });
-      }
-
-      const rects = this.customInput.current.getClientRects();
-      const lastRect = rects && rects[rects.length - 1];
-
-      const x = (lastRect && lastRect.width) || 0;
-      if (this.inputCaret.current) {
-        this.inputCaret.current.style.left = x + 'px';
-      }
-    }
-  }
-
-  /**
-   * Adds blinking animation to input caret
-   * @param hasFocus
-   * @private
-   */
-  private animateCaret(hasFocus: boolean) {
-    if (hasFocus) {
-      this.inputCaret.current?.classList.add('input-caret-focus');
-    } else {
-      this.inputCaret.current?.classList.remove('input-caret-focus');
+  private onInputChange() {
+    if (this.input.current) {
+      const inputText = this.input.current.value || '';
+      this.setState({
+        canSendMessage: inputText.trim().length > 0,
+      });
     }
   }
 
@@ -477,6 +431,5 @@ export default class NotificationComp extends React.Component<{}, IState> {
     if (this.input.current) {
       this.input.current.value = '';
     }
-    this.setInputCaretPosition();
   }
 }
