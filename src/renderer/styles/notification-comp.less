@@ -182,9 +182,7 @@ body {
 
 .rte-container {
   width: 100%;
-  height: 38px;
-  position: absolute;
-  bottom: 0;
+  display: flex;
 }
 
 .input-container {
@@ -202,46 +200,6 @@ body {
   margin: 0 8px;
 }
 
-.input-caret-container {
-  position: absolute;
-  left: 8px;
-  top: 60px;
-  opacity: 0;
-  border: 0;
-  padding: 0;
-  margin-bottom: 0;
-  background: transparent;
-  height: 38px;
-  width: @inputWidth;
-  outline: none;
-  color: transparent;
-  text-shadow: 0 0 0 black;
-  z-index: -3;
-  white-space: pre;
-  margin-left: 8px;
-  display: inline-block;
-  max-width: 330px;
-}
-
-.custom-input {
-  font-size: 14px;
-  display: inline-block;
-  max-width: @inputWidth;
-}
-
-.input-caret {
-  position: absolute;
-  width: 2px;
-  height: 20px;
-  border-radius: 1px;
-  margin: 8px 8px;
-  background: transparent;
-}
-
-.input-caret-focus {
-  -webkit-animation: 1s blink step-end infinite;
-}
-
 input {
   width: @inputWidth;
   height: 38px;
@@ -249,7 +207,7 @@ input {
   outline: none;
   margin-left: 8px;
   font-size: 14px;
-  caret-color: transparent;
+  caret-color: #008eff;
   color: var(--text-color);
 }
 
