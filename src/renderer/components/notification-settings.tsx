@@ -89,7 +89,7 @@ export default class NotificationSettings extends React.Component<{}, IState> {
                   : undefined
               }
               id='screen-selector'
-              title='position'
+              title={i18n.t('Position', NOTIFICATION_SETTINGS_NAMESPACE)()}
               value={this.state.display}
               onChange={this.selectDisplay.bind(this)}
             >
@@ -101,9 +101,7 @@ export default class NotificationSettings extends React.Component<{}, IState> {
             style={
               this.state.theme === Themes.DARK ? { color: 'white' } : undefined
             }
-          >
-            {i18n.t('Position', NOTIFICATION_SETTINGS_NAMESPACE)()}
-          </label>
+          ></label>
           <div
             className='position-container'
             style={

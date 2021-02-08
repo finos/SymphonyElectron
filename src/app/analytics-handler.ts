@@ -1,7 +1,8 @@
 export interface IAnalyticsData {
   element: AnalyticsElements;
-  action_type?: MenuActionTypes | ScreenSnippetActionTypes;
+  action_type?: MenuActionTypes | ScreenSnippetActionTypes | ToastNotificationActionTypes;
   action_result?: AnalyticsActions;
+  extra_data?: object;
 }
 
 export interface ICrashData extends IAnalyticsData {
@@ -29,6 +30,10 @@ export enum ScreenSnippetActionTypes {
   ANNOTATE_ERASED = 'annotate_erased',
 }
 
+export enum ToastNotificationActionTypes {
+  TOAST_CLOSED = 'toast_closed',
+}
+
 export enum AnalyticsActions {
   ENABLED = 'ON',
   DISABLED = 'OFF',
@@ -37,6 +42,7 @@ export enum AnalyticsActions {
 export enum AnalyticsElements {
   MENU = 'Menu',
   SCREEN_CAPTURE_ANNOTATE = 'screen_capture_annotate',
+  TOAST_NOTIFICATION = 'toast_notification',
   SDA_CRASH = 'sda_crash',
 }
 
