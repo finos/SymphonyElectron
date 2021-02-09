@@ -34,8 +34,8 @@ class Script
             new Dir(@"%ProgramFiles%\" + productName,
                 new File(new Id("symphony_exe"), @"..\..\..\dist\win-unpacked\Symphony.exe",
                     // Create two shortcuts to the main Symphony.exe file, one on the desktop and one in the program menu
-                    new FileShortcut(productName, @"%Desktop%") { IconFile = @"..\..\..\images\icon.ico" },
-                    new FileShortcut(productName, @"%ProgramMenu%") { IconFile = @"..\..\..\images\icon.ico" }
+                    new ExeFileShortcut(productName, @"%Desktop%") { IconFile = @"..\..\..\images\icon.ico" },
+                    new ExeFileShortcut(productName, @"%ProgramMenu%") { IconFile = @"..\..\..\images\icon.ico" }
                 ),
                 new File(@"..\..\..\dist\win-unpacked\chrome_100_percent.pak"),
                 new File(@"..\..\..\dist\win-unpacked\chrome_200_percent.pak"),

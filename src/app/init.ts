@@ -16,9 +16,11 @@ const userDataPath =
   userDataPathArg &&
   userDataPathArg.substring(userDataPathArg.indexOf('=') + 1);
 
-// force sandbox: true for all BrowserWindow instances.
+// If we are running in production, sandbox the entire app
+// and set the app user model id for windows native notifications
 if (!isNodeEnv) {
   app.enableSandbox();
+  app.setAppUserModelId('symphony_exe');
 }
 
 // need to set this explicitly if using Squirrel
