@@ -2,7 +2,10 @@ import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { svgAsPngUri } from 'save-svg-as-png';
 import { i18n } from '../../common/i18n-preload';
-import { AnalyticsElements, ScreenSnippetActionTypes } from './../../app/analytics-handler';
+import {
+  AnalyticsElements,
+  ScreenSnippetActionTypes,
+} from './../../app/analytics-handler';
 import AnnotateArea from './annotate-area';
 import ColorPickerPill, { IColor } from './color-picker-pill';
 
@@ -51,11 +54,16 @@ const availableHighlightColors: IColor[] = [
 ];
 const SNIPPING_TOOL_NAMESPACE = 'ScreenSnippet';
 
-export const sendAnalyticsToMain = (element: AnalyticsElements, type: ScreenSnippetActionTypes): void => {
+export const sendAnalyticsToMain = (
+  element: AnalyticsElements,
+  type: ScreenSnippetActionTypes,
+): void => {
   ipcRenderer.send('snippet-analytics-data', { element, type });
 };
 
-const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPaths }) => {
+const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({
+  existingPaths,
+}) => {
   // State preparation functions
 
   const [screenSnippetPath, setScreenSnippetPath] = useState('');
@@ -69,10 +77,12 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPat
   });
   const [paths, setPaths] = useState<IPath[]>(existingPaths || []);
   const [chosenTool, setChosenTool] = useState(Tool.pen);
-  const [penColor, setPenColor] = useState<IColor>({ rgbaColor: 'rgba(0, 142, 255, 1)' });
-  const [highlightColor, setHighlightColor] = useState<IColor>(
-    { rgbaColor: 'rgba(0, 142, 255, 0.64)' },
-  );
+  const [penColor, setPenColor] = useState<IColor>({
+    rgbaColor: 'rgba(0, 142, 255, 1)',
+  });
+  const [highlightColor, setHighlightColor] = useState<IColor>({
+    rgbaColor: 'rgba(0, 142, 255, 0.64)',
+  });
   const [
     shouldRenderHighlightColorPicker,
     setShouldRenderHighlightColorPicker,
@@ -81,24 +91,36 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPat
     false,
   );
 
-  const getSnipImageData = ({ }, {
-    snipImage,
-    annotateAreaHeight,
-    annotateAreaWidth,
-    snippetImageHeight,
-    snippetImageWidth,
-  }) => {
+  const getSnipImageData = (
+    {},
+    {
+      snipImage,
+      annotateAreaHeight,
+      annotateAreaWidth,
+      snippetImageHeight,
+      snippetImageWidth,
+    },
+  ) => {
     setScreenSnippetPath(snipImage);
-    setImageDimensions({ height: snippetImageHeight, width: snippetImageWidth });
-    setAnnotateAreaDimensions({ height: annotateAreaHeight, width: annotateAreaWidth });
+    setImageDimensions({
+      height: snippetImageHeight,
+      width: snippetImageWidth,
+    });
+    setAnnotateAreaDimensions({
+      height: annotateAreaHeight,
+      width: annotateAreaWidth,
+    });
   };
 
   useLayoutEffect(() => {
-  ipcRenderer.once('snipping-tool-data', getSnipImageData);
-  sendAnalyticsToMain(AnalyticsElements.SCREEN_CAPTURE_ANNOTATE, ScreenSnippetActionTypes.SCREENSHOT_TAKEN);
-  return () => {
-    ipcRenderer.removeListener('snipping-tool-data', getSnipImageData);
-  };
+    ipcRenderer.once('snipping-tool-data', getSnipImageData);
+    sendAnalyticsToMain(
+      AnalyticsElements.SCREEN_CAPTURE_ANNOTATE,
+      ScreenSnippetActionTypes.SCREENSHOT_TAKEN,
+    );
+    return () => {
+      ipcRenderer.removeListener('snipping-tool-data', getSnipImageData);
+    };
   }, []);
 
   // Hook that alerts clicks outside of the passed refs
@@ -166,7 +188,10 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPat
       return p;
     });
     setPaths(updPaths);
-    sendAnalyticsToMain(AnalyticsElements.SCREEN_CAPTURE_ANNOTATE, ScreenSnippetActionTypes.ANNOTATE_CLEARED);
+    sendAnalyticsToMain(
+      AnalyticsElements.SCREEN_CAPTURE_ANNOTATE,
+      ScreenSnippetActionTypes.ANNOTATE_CLEARED,
+    );
   };
 
   // Utility functions
@@ -189,7 +214,9 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPat
       const color = penColor.outline ? penColor.outline : penColor.rgbaColor;
       return { border: '2px solid ' + color };
     } else if (chosenTool === Tool.highlight) {
-      const color = highlightColor.outline ? highlightColor.outline : highlightColor.rgbaColor;
+      const color = highlightColor.outline
+        ? highlightColor.outline
+        : highlightColor.rgbaColor;
       return { border: '2px solid ' + color };
     } else if (chosenTool === Tool.eraser) {
       return { border: '2px solid #008EFF' };
@@ -199,8 +226,13 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPat
 
   const done = async () => {
     const svg = document.getElementById('annotate-area');
-    const mergedImageData = svg ? await svgAsPngUri(document.getElementById('annotate-area'), {}) : 'MERGE_FAIL';
-    sendAnalyticsToMain(AnalyticsElements.SCREEN_CAPTURE_ANNOTATE, ScreenSnippetActionTypes.ANNOTATE_DONE );
+    const mergedImageData = svg
+      ? await svgAsPngUri(document.getElementById('annotate-area'), {})
+      : 'MERGE_FAIL';
+    sendAnalyticsToMain(
+      AnalyticsElements.SCREEN_CAPTURE_ANNOTATE,
+      ScreenSnippetActionTypes.ANNOTATE_DONE,
+    );
     ipcRenderer.send('upload-snippet', { screenSnippetPath, mergedImageData });
   };
 
@@ -247,35 +279,40 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPat
         </div>
       </header>
 
-      {
-        shouldRenderPenColorPicker && (
-          <div style={{ marginTop: '64px', position: 'absolute', left: '50%' }} ref={colorPickerRef}>
-            <div style={{ position: 'relative', left: '-50%' }}>
-              <ColorPickerPill
-                data-testid='pen-colorpicker'
-                availableColors={markChosenColor(availablePenColors, penColor.rgbaColor)}
-                onChange={penColorChosen}
-              />
-            </div>
+      {shouldRenderPenColorPicker && (
+        <div
+          style={{ marginTop: '64px', position: 'absolute', left: '50%' }}
+          ref={colorPickerRef}
+        >
+          <div style={{ position: 'relative', left: '-50%' }}>
+            <ColorPickerPill
+              data-testid='pen-colorpicker'
+              availableColors={markChosenColor(
+                availablePenColors,
+                penColor.rgbaColor,
+              )}
+              onChange={penColorChosen}
+            />
           </div>
-        )
-      }
-      {
-        shouldRenderHighlightColorPicker && (
-          <div style={{ marginTop: '64px', position: 'absolute', left: '50%' }} ref={colorPickerRef}>
-            <div style={{ position: 'relative', left: '-50%' }}>
-              <ColorPickerPill
-                data-testid='highlight-colorpicker'
-                availableColors={markChosenColor(
-                  availableHighlightColors,
-                  highlightColor.rgbaColor,
-                )}
-                onChange={highlightColorChosen}
-              />
-            </div>
+        </div>
+      )}
+      {shouldRenderHighlightColorPicker && (
+        <div
+          style={{ marginTop: '64px', position: 'absolute', left: '50%' }}
+          ref={colorPickerRef}
+        >
+          <div style={{ position: 'relative', left: '-50%' }}>
+            <ColorPickerPill
+              data-testid='highlight-colorpicker'
+              availableColors={markChosenColor(
+                availableHighlightColors,
+                highlightColor.rgbaColor,
+              )}
+              onChange={highlightColorChosen}
+            />
           </div>
-        )
-      }
+        </div>
+      )}
 
       <main>
         <div className='imageContainer'>
@@ -293,14 +330,11 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({ existingPat
         </div>
       </main>
       <footer>
-        <button
-          data-testid='done-button'
-          className='DoneButton'
-          onClick={done}>
+        <button data-testid='done-button' className='DoneButton' onClick={done}>
           {i18n.t('Done', SNIPPING_TOOL_NAMESPACE)()}
         </button>
       </footer>
-    </div >
+    </div>
   );
 };
 

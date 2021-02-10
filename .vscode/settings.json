@@ -3,4 +3,5 @@
     "typescript.tsdk": "./node_modules/typescript/lib",
     "editor.formatOnSave": true,
     "jestrunner.configPath": "jest-config.json",
+    "git.ignoreLimitWarning": true,
 }
