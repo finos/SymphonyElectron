@@ -14,86 +14,89 @@ import SnippingTool from './components/snipping-tool';
 import Welcome from './components/welcome';
 
 const enum components {
-    aboutApp = 'about-app',
-    screenPicker = 'screen-picker',
-    screenSharingIndicator = 'screen-sharing-indicator',
-    screenSharingFrame = 'screen-sharing-frame',
-    basicAuth = 'basic-auth',
-    notification = 'notification-comp',
-    notificationSettings = 'notification-settings',
-    welcome = 'welcome',
-    snippingTool = 'snipping-tool',
+  aboutApp = 'about-app',
+  screenPicker = 'screen-picker',
+  screenSharingIndicator = 'screen-sharing-indicator',
+  screenSharingFrame = 'screen-sharing-frame',
+  basicAuth = 'basic-auth',
+  notification = 'notification-comp',
+  notificationSettings = 'notification-settings',
+  welcome = 'welcome',
+  snippingTool = 'snipping-tool',
 }
 
 const loadStyle = (style) => {
-    const styles = document.createElement('link');
-    styles.rel = 'stylesheet';
-    styles.type = 'text/css';
-    styles.href = `./styles/${style}.css`;
-    document.getElementsByTagName('head')[0].appendChild(styles);
+  const styles = document.createElement('link');
+  styles.rel = 'stylesheet';
+  styles.type = 'text/css';
+  styles.href = `./styles/${style}.css`;
+  document.getElementsByTagName('head')[0].appendChild(styles);
 };
 
 /**
  * Loads the appropriate component
  */
 const load = () => {
-    const query = new URL(window.location.href).searchParams;
-    const componentName = query.get('componentName');
+  const query = new URL(window.location.href).searchParams;
+  const componentName = query.get('componentName');
 
-    let component;
-    switch (componentName) {
-        case components.aboutApp:
-            loadStyle(components.aboutApp);
-            component = AboutBox;
-            document.title = i18n.t('About Symphony', 'AboutSymphony')();
-            break;
-        case components.screenPicker:
-            loadStyle(components.screenPicker);
-            document.title = i18n.t('Screen Picker - Symphony')();
-            component = ScreenPicker;
-            break;
-        case components.screenSharingIndicator:
-            loadStyle(components.screenSharingIndicator);
-            document.title = i18n.t('Screen Sharing Indicator - Symphony')();
-            component = ScreenSharingIndicator;
-            break;
-        case components.screenSharingFrame:
-            loadStyle(components.screenSharingFrame);
-            component = ScreenSharingFrame;
-            break;
-        case components.snippingTool:
-            loadStyle(components.snippingTool);
-            document.title = i18n.t('Symphony')();
-            component = SnippingTool;
-            break;
-        case components.basicAuth:
-            loadStyle(components.basicAuth);
-            document.title = i18n.t('Basic Authentication - Symphony')();
-            component = BasicAuth;
-            break;
-        case components.notification:
-            loadStyle(components.notification);
-            document.title = i18n.t('Notification - Symphony')();
-            component = NotificationComp;
-            break;
-        case components.notificationSettings:
-            document.title = i18n.t('Notification Settings - Symphony', 'NotificationSettings')();
-            loadStyle(components.notificationSettings);
-            component = NotificationSettings;
-            break;
-        case components.welcome:
-            document.title = i18n.t('WelcomeText', 'Welcome')();
-            loadStyle(components.welcome);
-            component = Welcome;
-            break;
-    }
-    const element = React.createElement(component);
-    ReactDOM.render(element, document.getElementById('Root'));
+  let component;
+  switch (componentName) {
+    case components.aboutApp:
+      loadStyle(components.aboutApp);
+      component = AboutBox;
+      document.title = i18n.t('About Symphony', 'AboutSymphony')();
+      break;
+    case components.screenPicker:
+      loadStyle(components.screenPicker);
+      document.title = i18n.t('Screen Picker - Symphony')();
+      component = ScreenPicker;
+      break;
+    case components.screenSharingIndicator:
+      loadStyle(components.screenSharingIndicator);
+      document.title = i18n.t('Screen Sharing Indicator - Symphony')();
+      component = ScreenSharingIndicator;
+      break;
+    case components.screenSharingFrame:
+      loadStyle(components.screenSharingFrame);
+      component = ScreenSharingFrame;
+      break;
+    case components.snippingTool:
+      loadStyle(components.snippingTool);
+      document.title = i18n.t('Symphony')();
+      component = SnippingTool;
+      break;
+    case components.basicAuth:
+      loadStyle(components.basicAuth);
+      document.title = i18n.t('Basic Authentication - Symphony')();
+      component = BasicAuth;
+      break;
+    case components.notification:
+      loadStyle(components.notification);
+      document.title = i18n.t('Notification - Symphony')();
+      component = NotificationComp;
+      break;
+    case components.notificationSettings:
+      document.title = i18n.t(
+        'Notification Settings - Symphony',
+        'NotificationSettings',
+      )();
+      loadStyle(components.notificationSettings);
+      component = NotificationSettings;
+      break;
+    case components.welcome:
+      document.title = i18n.t('WelcomeText', 'Welcome')();
+      loadStyle(components.welcome);
+      component = Welcome;
+      break;
+  }
+  const element = React.createElement(component);
+  ReactDOM.render(element, document.getElementById('Root'));
 };
 
 ipcRenderer.on('page-load', (_event, data) => {
-    const { locale, resource } = data;
-    i18n.setResource(locale, resource);
-    // Renders component as soon as the page is ready
-    load();
+  const { locale, resource } = data;
+  i18n.setResource(locale, resource);
+  // Renders component as soon as the page is ready
+  load();
 });

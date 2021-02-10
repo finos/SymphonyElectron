@@ -211,6 +211,14 @@ class Script
             // versions of SDA, so we clean up all known variations, and ignore any missing ones.
             new ElevatedManagedAction(CustomActions.CleanRegistry, Return.ignore, When.After, Step.RemoveFiles, Condition.BeingUninstalled ),
 
+
+            // CleanRegistryCurrentUser
+            //
+            // The registry keys stored under HKEY_CURRENT_USER can not be accessed through an ElevatedManagedAction, as
+            // elevated actions run as a different user (local system account rather than current user) so those keys
+            // are removed in this action.
+            new ManagedAction(CustomActions.CleanRegistryCurrentUser, Return.ignore, When.After, Step.RemoveFiles, Condition.BeingUninstalled ),
+
             // Start Symphony after installation is complete
             new InstalledFileAction(new Id("symphony_exe"), "", Return.asyncNoWait, When.After, Step.InstallFinalize, Condition.NOT_BeingRemoved)
         };
@@ -235,7 +243,8 @@ class Script
         project.ControlPanelInfo.NoRepair = true;
         project.ControlPanelInfo.NoModify = true;
         project.ControlPanelInfo.ProductIcon = @"..\..\..\images\icon.ico";
-
+        project.ControlPanelInfo.Manufacturer = "Symphony";
+        
         project.Platform = Platform.x64;
 
         // Generate an MSI from all settings done above
@@ -392,15 +401,6 @@ public class CustomActions
         {
             // Remove registry keys added for auto-launch
 
-            using( var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true) )
-            {
-                if (key != null)
-                {
-                    key.DeleteValue("Symphony", false);
-                    key.DeleteValue("com.symphony.electron-desktop", false);
-                    key.DeleteValue("electron.app.Symphony", false);
-                }
-            }
             using( var key = Registry.Users.OpenSubKey(@"\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\Run", true) )
             {
                 if (key != null)
@@ -412,13 +412,6 @@ public class CustomActions
 
             // Remove registry keys added by protocol handlers
 
-            using( var key = Registry.CurrentUser.OpenSubKey(@"Software\Classes", true) )
-            {
-                if (key != null)
-                {
-                    key.DeleteSubKeyTree("symphony", false);
-                }
-            }
             using( var key = Registry.LocalMachine.OpenSubKey(@"Software\Classes", true) )
             {
                 if (key != null)
@@ -437,6 +430,42 @@ public class CustomActions
         catch (System.Exception e)
         {
             session.Log("Error executing CleanRegistry: " + e.ToString() );
+            return ActionResult.Success;
+        }
+        return ActionResult.Success;
+    }
+
+    // CleanRegistryCurrentUser custom action
+    [CustomAction]
+    public static ActionResult CleanRegistryCurrentUser(Session session)
+    {
+        try
+        {
+            // Remove registry keys added for auto-launch
+
+            using( var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true) )
+            {
+                if (key != null)
+                {
+                    key.DeleteValue("Symphony", false);
+                    key.DeleteValue("com.symphony.electron-desktop", false);
+                    key.DeleteValue("electron.app.Symphony", false);
+                }
+            }
+
+            // Remove registry keys added by protocol handlers
+
+            using( var key = Registry.CurrentUser.OpenSubKey(@"Software\Classes", true) )
+            {
+                if (key != null)
+                {
+                    key.DeleteSubKeyTree("symphony", false);
+                }
+            }
+        }
+        catch (System.Exception e)
+        {
+            session.Log("Error executing CleanRegistryCurrentUser: " + e.ToString() );
             return ActionResult.Success;
         }
         return ActionResult.Success;

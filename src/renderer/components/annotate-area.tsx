@@ -1,7 +1,16 @@
 import { LazyBrush } from 'lazy-brush';
 import * as React from 'react';
-import { AnalyticsElements, ScreenSnippetActionTypes } from './../../app/analytics-handler';
-import { IDimensions, IPath, IPoint, sendAnalyticsToMain, Tool } from './snipping-tool';
+import {
+  AnalyticsElements,
+  ScreenSnippetActionTypes,
+} from './../../app/analytics-handler';
+import {
+  IDimensions,
+  IPath,
+  IPoint,
+  sendAnalyticsToMain,
+  Tool,
+} from './snipping-tool';
 
 const { useState } = React;
 
@@ -50,7 +59,10 @@ const AnnotateArea: React.FunctionComponent<IAnnotateAreaProps> = ({
       updPaths.map((p) => {
         if (p && p.key === key) {
           p.shouldShow = false;
-          sendAnalyticsToMain(AnalyticsElements.SCREEN_CAPTURE_ANNOTATE, ScreenSnippetActionTypes.ANNOTATE_ERASED);
+          sendAnalyticsToMain(
+            AnalyticsElements.SCREEN_CAPTURE_ANNOTATE,
+            ScreenSnippetActionTypes.ANNOTATE_ERASED,
+          );
         }
         return p;
       });
@@ -229,10 +241,16 @@ const AnnotateArea: React.FunctionComponent<IAnnotateAreaProps> = ({
   const handleMouseUp = () => {
     stopDrawing();
     if (chosenTool === Tool.pen) {
-      sendAnalyticsToMain(AnalyticsElements.SCREEN_CAPTURE_ANNOTATE, ScreenSnippetActionTypes.ANNOTATE_ADDED_PEN);
+      sendAnalyticsToMain(
+        AnalyticsElements.SCREEN_CAPTURE_ANNOTATE,
+        ScreenSnippetActionTypes.ANNOTATE_ADDED_PEN,
+      );
     }
     if (chosenTool === Tool.highlight) {
-      sendAnalyticsToMain(AnalyticsElements.SCREEN_CAPTURE_ANNOTATE, ScreenSnippetActionTypes.ANNOTATE_ADDED_HIGHLIGHT);
+      sendAnalyticsToMain(
+        AnalyticsElements.SCREEN_CAPTURE_ANNOTATE,
+        ScreenSnippetActionTypes.ANNOTATE_ADDED_HIGHLIGHT,
+      );
     }
   };
 
@@ -248,9 +266,7 @@ const AnnotateArea: React.FunctionComponent<IAnnotateAreaProps> = ({
   };
 
   return (
-    <div
-      id='annotate-wrapper'
-      style={getAnnotateWrapperStyle()}>
+    <div id='annotate-wrapper' style={getAnnotateWrapperStyle()}>
       <svg
         data-testid='annotate-area'
         style={{ cursor: 'crosshair' }}
@@ -262,8 +278,7 @@ const AnnotateArea: React.FunctionComponent<IAnnotateAreaProps> = ({
         onMouseMove={handleMouseMove}
         onMouseLeave={stopDrawing}
       >
-        {
-          backgroundImagePath &&
+        {backgroundImagePath && (
           <image
             x={0}
             y={0}
@@ -271,11 +286,11 @@ const AnnotateArea: React.FunctionComponent<IAnnotateAreaProps> = ({
             xlinkHref={backgroundImagePath}
             width={imageDimensions.width}
             height={imageDimensions.height}
-          />}
+          />
+        )}
         {renderPaths(getSvgPathsData(paths))}
       </svg>
     </div>
-
   );
 };
 
