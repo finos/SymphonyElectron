@@ -158,6 +158,10 @@ if NOT EXIST %SIGNING_FILE_PATH% (
     exit /b -1
 )
 call %SIGNING_FILE_PATH%
+IF %errorlevel% neq 0 (
+	echo "Failed to sign installer"
+	exit /b -1
+)
 
 echo "Copying New MSI installer to target dir"
 copy "WixSharpInstaller\Symphony.msi" "%targetsDir%\%archiveName%.msi"
