@@ -1,10 +1,10 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-      {
-        "label": "build",
-        "type": "shell",
-        "command": "npx run-s compile browserify"
-      }
-    ]
-  }
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "npx run-s compile browserify"
+    }
+  ]
+}

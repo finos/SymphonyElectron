@@ -4,31 +4,32 @@ import { Application } from 'spectron';
 import { robotActions } from './fixtures/robot-actions';
 
 import {
-    getDemoFilePath, loadURL,
-    sleep,
-    startApplication,
-    stopApplication,
-    Timeouts,
+  getDemoFilePath,
+  loadURL,
+  sleep,
+  startApplication,
+  stopApplication,
+  Timeouts,
 } from './fixtures/spectron-setup';
 
 let app;
 
 test.before(async (t) => {
-    app = await startApplication() as Application;
-    t.true(app.isRunning());
+  app = (await startApplication()) as Application;
+  t.true(app.isRunning());
 });
 
 test.after.always(async () => {
-    await stopApplication(app);
+  await stopApplication(app);
 });
 
 test('fullscreen: verify application full screen feature', async (t) => {
-    await loadURL(app, getDemoFilePath());
-    await app.client.waitUntilWindowLoaded(Timeouts.fiveSec);
-    robotActions.toggleFullscreen();
-    t.true(await app.browserWindow.isFullScreen());
+  await loadURL(app, getDemoFilePath());
+  await app.client.waitUntilWindowLoaded(Timeouts.fiveSec);
+  robotActions.toggleFullscreen();
+  t.true(await app.browserWindow.isFullScreen());
 
-    await sleep(Timeouts.halfSec);
-    robot.keyTap('escape');
-    t.false(await app.browserWindow.isFullScreen());
+  await sleep(Timeouts.halfSec);
+  robot.keyTap('escape');
+  t.false(await app.browserWindow.isFullScreen());
 });
