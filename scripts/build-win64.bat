@@ -150,14 +150,57 @@ if NOT EXIST %AIP%-SetupFiles/%AIP%.msi (
 echo "Copying Legacy MSI installer to target dir"
 copy "%AIP%-SetupFiles\%AIP%.msi" "%targetsDir%\Legacy-%archiveName%.msi"
 
-echo "Building new installer with Wix Sharp"
-call "BuildWixSharpInstaller.bat"
-
 if NOT EXIST %SIGNING_FILE_PATH% (
     echo Signing failed, 'signing.bat' not found.
     exit /b -1
 )
-call %SIGNING_FILE_PATH%
+
+call %SIGNING_FILE_PATH% ..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\vendor\jobber\Jobber.exe
+IF %errorlevel% neq 0 (
+	echo "Signing failed"
+	exit /b -1
+)
+
+call %SIGNING_FILE_PATH% ..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\screen-share-indicator-frame\ScreenShareIndicatorFrame.exe
+IF %errorlevel% neq 0 (
+	echo "Signing failed"
+	exit /b -1
+)
+
+call %SIGNING_FILE_PATH% ..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\screen-snippet\ScreenSnippet.exe
+IF %errorlevel% neq 0 (
+	echo "Signing failed"
+	exit /b -1
+)
+
+call %SIGNING_FILE_PATH% ..\..\dist\win-unpacked\Symphony.exe
+IF %errorlevel% neq 0 (
+	echo "Signing failed"
+	exit /b -1
+)
+
+call %SIGNING_FILE_PATH% ..\..\library\indexvalidator-x64.exe
+IF %errorlevel% neq 0 (
+	echo "Signing failed"
+	exit /b -1
+)
+
+call %SIGNING_FILE_PATH% ..\..\library\lz4-win-x64.exe
+IF %errorlevel% neq 0 (
+	echo "Signing failed"
+	exit /b -1
+)
+
+call %SIGNING_FILE_PATH% ..\..\library\tar-win.exe
+IF %errorlevel% neq 0 (
+	echo "Signing failed"
+	exit /b -1
+)
+
+echo "Building new installer with Wix Sharp"
+call "BuildWixSharpInstaller.bat"
+
+call %SIGNING_FILE_PATH% WixSharpInstaller\Symphony.msi
 IF %errorlevel% neq 0 (
 	echo "Failed to sign installer"
 	exit /b -1
