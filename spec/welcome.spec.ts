@@ -4,129 +4,131 @@ import Welcome from '../src/renderer/components/welcome';
 import { ipcRenderer } from './__mocks__/electron';
 
 describe('welcome', () => {
-    const welcomeLabel = 'welcome';
-    const welcomeMock = {
-        url: 'https://my.symphony.com',
-        message: '',
-        urlValid: true,
-        sso: false,
+  const welcomeLabel = 'welcome';
+  const welcomeMock = {
+    url: 'https://my.symphony.com',
+    message: '',
+    urlValid: true,
+    sso: false,
+  };
+  const onLabelEvent = 'on';
+  const removeListenerLabelEvent = 'removeListener';
+
+  it('should render correctly', () => {
+    const wrapper = shallow(React.createElement(Welcome));
+    expect(wrapper).toMatchSnapshot();
+  });
+
+  it('should call `welcome` event when component is mounted', () => {
+    const spy = jest.spyOn(ipcRenderer, onLabelEvent);
+    shallow(React.createElement(Welcome));
+    expect(spy).toBeCalledWith(welcomeLabel, expect.any(Function));
+  });
+
+  it('should remove listener `welcome` when component is unmounted', () => {
+    const spyMount = jest.spyOn(ipcRenderer, onLabelEvent);
+    const spyUnmount = jest.spyOn(ipcRenderer, removeListenerLabelEvent);
+
+    const wrapper = shallow(React.createElement(Welcome));
+    expect(spyMount).toBeCalledWith(welcomeLabel, expect.any(Function));
+
+    wrapper.unmount();
+    expect(spyUnmount).toBeCalledWith(welcomeLabel, expect.any(Function));
+  });
+
+  it('should call `updateState` when component is mounted', () => {
+    const spy = jest.spyOn(Welcome.prototype, 'setState');
+    shallow(React.createElement(Welcome));
+
+    ipcRenderer.send('welcome', welcomeMock);
+
+    expect(spy).toBeCalledWith(welcomeMock);
+  });
+
+  it('should change pod url in text box', () => {
+    const podUrlMock = {
+      url: 'https://corporate.symphony.com',
+      message: '',
+      urlValid: true,
+      sso: false,
     };
-    const onLabelEvent = 'on';
-    const removeListenerLabelEvent = 'removeListener';
 
-    it('should render correctly', () => {
-        const wrapper = shallow(React.createElement(Welcome));
-        expect(wrapper).toMatchSnapshot();
+    const spy = jest.spyOn(Welcome.prototype, 'setState');
+    const updatePodUrlSpy = jest.spyOn(Welcome.prototype, 'updatePodUrl');
+
+    const wrapper = shallow(React.createElement(Welcome));
+    ipcRenderer.send('welcome', welcomeMock);
+
+    const welcomePodUrlBox = `input.Welcome-main-container-podurl-box`;
+    const input = wrapper.find(welcomePodUrlBox);
+
+    input.simulate('focus');
+    input.simulate('change', {
+      target: { value: 'https://corporate.symphony.com' },
     });
 
-    it('should call `welcome` event when component is mounted', () => {
-        const spy = jest.spyOn(ipcRenderer, onLabelEvent);
-        shallow(React.createElement(Welcome));
-        expect(spy).toBeCalledWith(welcomeLabel, expect.any(Function));
-    });
+    expect(updatePodUrlSpy).toBeCalled();
+    expect(spy).toBeCalledWith(podUrlMock);
+  });
 
-    it('should remove listener `welcome` when component is unmounted', () => {
-        const spyMount = jest.spyOn(ipcRenderer, onLabelEvent);
-        const spyUnmount = jest.spyOn(ipcRenderer, removeListenerLabelEvent);
+  it('should show message for invalid pod url', () => {
+    const podUrlMock = {
+      url: 'abcdef',
+      message: 'Please enter a valid url',
+      urlValid: false,
+      sso: false,
+    };
 
-        const wrapper = shallow(React.createElement(Welcome));
-        expect(spyMount).toBeCalledWith(welcomeLabel, expect.any(Function));
+    const spy = jest.spyOn(Welcome.prototype, 'setState');
+    const updatePodUrlSpy = jest.spyOn(Welcome.prototype, 'updatePodUrl');
 
-        wrapper.unmount();
-        expect(spyUnmount).toBeCalledWith(welcomeLabel, expect.any(Function));
-    });
+    const wrapper = shallow(React.createElement(Welcome));
+    ipcRenderer.send('welcome', welcomeMock);
 
-    it('should call `updateState` when component is mounted', () => {
-        const spy = jest.spyOn(Welcome.prototype, 'setState');
-        shallow(React.createElement(Welcome));
+    const welcomePodUrlBox = `input.Welcome-main-container-podurl-box`;
+    const input = wrapper.find(welcomePodUrlBox);
 
-        ipcRenderer.send('welcome', welcomeMock);
+    input.simulate('focus');
+    input.simulate('change', { target: { value: 'abcdef' } });
 
-        expect(spy).toBeCalledWith(welcomeMock);
-    });
+    expect(updatePodUrlSpy).toBeCalled();
+    expect(spy).toBeCalledWith(podUrlMock);
+  });
 
-    it('should change pod url in text box', () => {
-        const podUrlMock = {
-            url: 'https://corporate.symphony.com',
-            message: '',
-            urlValid: true,
-            sso: false,
-        };
+  it('should click sso checkbox', () => {
+    const podUrlMock = {
+      url: 'https://my.symphony.com',
+      message: '',
+      urlValid: true,
+      sso: true,
+    };
 
-        const spy = jest.spyOn(Welcome.prototype, 'setState');
-        const updatePodUrlSpy = jest.spyOn(Welcome.prototype, 'updatePodUrl');
+    const spy = jest.spyOn(Welcome.prototype, 'setState');
+    const updatePodUrlSpy = jest.spyOn(Welcome.prototype, 'updateSsoCheckbox');
 
-        const wrapper = shallow(React.createElement(Welcome));
-        ipcRenderer.send('welcome', welcomeMock);
+    const wrapper = shallow(React.createElement(Welcome));
+    ipcRenderer.send('welcome', welcomeMock);
 
-        const welcomePodUrlBox = `input.Welcome-main-container-podurl-box`;
-        const input = wrapper.find(welcomePodUrlBox);
+    const welcomePodUrlBox = `input[type="checkbox"]`;
+    const input = wrapper.find(welcomePodUrlBox);
 
-        input.simulate('focus');
-        input.simulate('change', {target: {value: 'https://corporate.symphony.com'}});
+    input.simulate('focus');
+    input.simulate('change', { target: { checked: true } });
 
-        expect(updatePodUrlSpy).toBeCalled();
-        expect(spy).toBeCalledWith(podUrlMock);
-    });
+    expect(updatePodUrlSpy).toBeCalled();
+    expect(spy).toBeCalledWith(podUrlMock);
+  });
 
-    it('should show message for invalid pod url', () => {
-        const podUrlMock = {
-            url: 'abcdef',
-            message: 'Please enter a valid url',
-            urlValid: false,
-            sso: false,
-        };
+  it('should set pod url', () => {
+    const spy = jest.spyOn(Welcome.prototype, 'setState');
+    const setPodUrlSpy = jest.spyOn(Welcome.prototype, 'setPodUrl');
 
-        const spy = jest.spyOn(Welcome.prototype, 'setState');
-        const updatePodUrlSpy = jest.spyOn(Welcome.prototype, 'updatePodUrl');
+    const wrapper = shallow(React.createElement(Welcome));
+    ipcRenderer.send('welcome', welcomeMock);
+    const welcomeContinueButton = `button.Welcome-continue-button`;
+    wrapper.find(welcomeContinueButton).simulate('click');
 
-        const wrapper = shallow(React.createElement(Welcome));
-        ipcRenderer.send('welcome', welcomeMock);
-
-        const welcomePodUrlBox = `input.Welcome-main-container-podurl-box`;
-        const input = wrapper.find(welcomePodUrlBox);
-
-        input.simulate('focus');
-        input.simulate('change', {target: {value: 'abcdef'}});
-
-        expect(updatePodUrlSpy).toBeCalled();
-        expect(spy).toBeCalledWith(podUrlMock);
-    });
-
-    it('should click sso checkbox', () => {
-        const podUrlMock = {
-            url: 'https://my.symphony.com',
-            message: '',
-            urlValid: true,
-            sso: true,
-        };
-
-        const spy = jest.spyOn(Welcome.prototype, 'setState');
-        const updatePodUrlSpy = jest.spyOn(Welcome.prototype, 'updateSsoCheckbox');
-
-        const wrapper = shallow(React.createElement(Welcome));
-        ipcRenderer.send('welcome', welcomeMock);
-
-        const welcomePodUrlBox = `input[type="checkbox"]`;
-        const input = wrapper.find(welcomePodUrlBox);
-
-        input.simulate('focus');
-        input.simulate('change', {target: {checked: true}});
-
-        expect(updatePodUrlSpy).toBeCalled();
-        expect(spy).toBeCalledWith(podUrlMock);
-    });
-
-    it('should set pod url', () => {
-        const spy = jest.spyOn(Welcome.prototype, 'setState');
-        const setPodUrlSpy = jest.spyOn(Welcome.prototype, 'setPodUrl');
-
-        const wrapper = shallow(React.createElement(Welcome));
-        ipcRenderer.send('welcome', welcomeMock);
-        const welcomeContinueButton = `button.Welcome-continue-button`;
-        wrapper.find(welcomeContinueButton).simulate('click');
-
-        expect(setPodUrlSpy).toBeCalled();
-        expect(spy).toBeCalledWith(welcomeMock);
-    });
+    expect(setPodUrlSpy).toBeCalled();
+    expect(spy).toBeCalledWith(welcomeMock);
+  });
 });

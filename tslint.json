@@ -1,59 +1,37 @@
 {
-  "extends": [
-    "tslint:recommended"
-  ],
+  "extends": ["tslint:latest", "tslint-config-prettier"],
   "linterOptions": {
-    "exclude": [
-      "**/*.json"
-    ]
+    "exclude": ["**/*.json"]
   },
   "rules": {
     "curly": true,
     "eofline": true,
-    "align": [
-      true,
-      "parameters"
-    ],
+    "align": [true, "parameters"],
     "class-name": true,
-    "indent": [
-      true,
-      "spaces"
-    ],
-    "max-line-length": [
-      true,
-      650
-    ],
+    "indent": [true, "spaces"],
+    "max-line-length": [true, 650],
     "no-shadowed-variable": false,
     "no-trailing-whitespace": true,
     "no-duplicate-variable": true,
     "no-var-keyword": true,
-    "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore", "allow-pascal-case"],
+    "variable-name": [
+      true,
+      "ban-keywords",
+      "check-format",
+      "allow-leading-underscore",
+      "allow-pascal-case"
+    ],
     "no-empty": true,
     "no-unused-expression": true,
-    "no-use-before-declare": true,
+    "no-implicit-dependencies": [true, "dev", "optional"],
+    "no-object-literal-type-assertion": false,
     "no-var-requires": true,
     "only-arrow-functions": true,
     "object-literal-sort-keys": false,
-    "no-console": [
-      true,
-      "log",
-      "error"
-    ],
-    "one-line": [
-      true,
-      "check-else",
-      "check-whitespace",
-      "check-open-brace"
-    ],
-    "quotemark": [
-      true,
-      "single",
-      "avoid-escape"
-    ],
-    "semicolon": [
-      true,
-      "always"
-    ],
+    "no-console": [true, "log", "error"],
+    "one-line": [true, "check-else", "check-whitespace", "check-open-brace"],
+    "quotemark": [true, "single", "avoid-escape"],
+    "semicolon": [true, "always", "ignore-bound-class-methods"],
     "typedef-whitespace": [
       true,
       {

@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run Demo" type="NodeJSConfigurationType" application-parameters=". --url=file://$PROJECT_DIR$/src/demo/index.html" path-to-node="$PROJECT_DIR$/node_modules/electron/dist/Electron.app/Contents/MacOS/Electron" working-dir="$PROJECT_DIR$">
+  <configuration default="false" name="Demo" type="NodeJSConfigurationType" application-parameters=". --url=file://$PROJECT_DIR$/src/demo/index.html" path-to-node="$PROJECT_DIR$/node_modules/electron/dist/Electron.app/Contents/MacOS/Electron" working-dir="$PROJECT_DIR$">
     <envs>
       <env name="ELECTRON_DEV" value="true" />
       <env name="ELECTRON_DEBUGGING" value="true" />
