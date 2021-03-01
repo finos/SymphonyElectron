@@ -434,16 +434,24 @@ class Notification extends NotificationHandler {
       ...this.activeNotifications,
     };
     const inactiveNotificationWindows = { ...[], ...this.inactiveWindows };
-    for (const activeWindow of activeNotificationWindows) {
-      if (activeWindow && windowExists(activeWindow)) {
-        await this.hideNotification(
-          (activeWindow as ICustomBrowserWindow).clientId,
-        );
+    if (activeNotificationWindows && Array.isArray(activeNotificationWindows)) {
+      for (const activeWindow of activeNotificationWindows) {
+        if (activeWindow && windowExists(activeWindow)) {
+          await this.hideNotification(
+            (activeWindow as ICustomBrowserWindow).clientId,
+          );
+        }
       }
     }
-    for (const inactiveWindow of inactiveNotificationWindows) {
-      if (inactiveWindow && windowExists(inactiveWindow)) {
-        inactiveWindow.close();
+
+    if (
+      inactiveNotificationWindows &&
+      Array.isArray(inactiveNotificationWindows)
+    ) {
+      for (const inactiveWindow of inactiveNotificationWindows) {
+        if (inactiveWindow && windowExists(inactiveWindow)) {
+          inactiveWindow.close();
+        }
       }
     }
 
