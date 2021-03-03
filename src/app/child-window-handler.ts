@@ -36,25 +36,18 @@ const MIN_HEIGHT = 300;
  */
 const verifyProtocolForNewUrl = (url: string): boolean => {
   const parsedUrl = parse(url);
-  if (!parsedUrl) {
+  if (!parsedUrl || !parsedUrl.protocol) {
     logger.info(
       `child-window-handler: The url ${url} doesn't have a protocol. Returning false for verification!`,
     );
     return false;
   }
 
+  const allowedProtocols = ['http:', 'https:', 'mailto:'];
   // url parse returns protocol with :
-  if (parsedUrl.protocol === 'https:') {
+  if (allowedProtocols.includes(parsedUrl.protocol)) {
     logger.info(
-      `child-window-handler: The url ${url} is a https url! Returning true for verification!`,
-    );
-    return true;
-  }
-
-  // url parse returns protocol with :
-  if (parsedUrl.protocol === 'http:') {
-    logger.info(
-      `child-window-handler: The url ${url} is a http url! Returning true for verification!`,
+      `child-window-handler: Protocol of the url ${url} is whitelisted! Returning true for verification!`,
     );
     return true;
   }
@@ -303,7 +296,7 @@ export const handleChildWindow = (webContents: WebContents): void => {
         return;
       }
       logger.info(`child-window-handler: new window url is ${newWinUrl} which is not of the same host,
-            so opening it in the default browser!`);
+            so opening it in the default app!`);
       windowHandler.openUrlInDefaultBrowser(newWinUrl);
     }
   };
