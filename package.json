@@ -156,6 +156,7 @@
     "typescript": "3.9.7"
   },
   "dependencies": {
+    "@types/fs-extra": "^9.0.8",
     "@types/lazy-brush": "^1.0.0",
     "archiver": "3.1.1",
     "async.map": "0.5.2",
