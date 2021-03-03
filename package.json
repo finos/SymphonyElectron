@@ -115,8 +115,9 @@
     "@types/cheerio": "^0.22.22",
     "@types/enzyme": "^3.10.7",
     "@types/ffi-napi": "2.4.1",
+    "@types/fs-extra": "^8.1.1",
     "@types/jest": "23.3.12",
-    "@types/node": "^12.13.1",
+    "@types/node": "^12.12.43",
     "@types/react": "16.8.3",
     "@types/react-dom": "16.0.9",
     "@types/ref-napi": "1.4.0",
@@ -156,7 +157,6 @@
     "typescript": "3.9.7"
   },
   "dependencies": {
-    "@types/fs-extra": "^9.0.8",
     "@types/lazy-brush": "^1.0.0",
     "archiver": "3.1.1",
     "async.map": "0.5.2",
