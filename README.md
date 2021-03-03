@@ -1,6 +1,6 @@
 [![FINOS - Incubating](https://cdn.jsdelivr.net/gh/finos/contrib-toolbox@master/images/badge-incubating.svg)](https://finosfoundation.atlassian.net/wiki/display/FINOS/Incubating)
 [![Symphony Software Foundation - Incubating](https://cdn.rawgit.com/symphonyoss/contrib-toolbox/master/images/ssf-badge-incubating.svg)](https://symphonyoss.atlassian.net/wiki/display/FM/Incubating)
-[![Build Status](https://travis-ci.org/symphonyoss/SymphonyElectron.svg?branch=master)](https://travis-ci.org/symphonyoss/SymphonyElectron)
+[![Continuous Integration](https://github.com/symphonyoss/SymphonyElectron/actions/workflows/ci.yml/badge.svg)](https://github.com/symphonyoss/SymphonyElectron/actions/workflows/ci.yml)
 [![Known Vulnerabilities](https://snyk.io/test/github/symphonyoss/SymphonyElectron/badge.svg?targetFile=package.json)](https://snyk.io/test/github/symphonyoss/SymphonyElectron?targetFile=package.json)
 
 # SymphonyElectron
@@ -8,7 +8,7 @@
 ## About:
 
 SymphonyElectron is a desktop client of the Symphony Communication Platform built for macOS, Windows 10, Windows 7
- and Linux (experimental)
+and Linux (experimental)
 . We've built this using the popular [electron](https://github.com/electron/electron) framework to support cross platform desktop apps loaded in a chromium container.
 
 ## Contributing
@@ -22,7 +22,7 @@ SymphonyElectron is a desktop client of the Symphony Communication Platform buil
 
 _NOTE:_ Commits and pull requests to FINOS repositories will only be accepted from those contributors with an active, executed Individual Contributor License Agreement (ICLA) with FINOS OR who are covered under an existing and active Corporate Contribution License Agreement (CCLA) executed with FINOS. Commits from individuals not covered under an ICLA or CCLA will be flagged and blocked by the FINOS Clabot tool. Please note that some CCLAs require individuals/employees to be explicitly named on the CCLA.
 
-*Need an ICLA? Unsure if you are covered under an existing CCLA? Email [help@finos.org](mailto:help@finos.org)*
+_Need an ICLA? Unsure if you are covered under an existing CCLA? Email [help@finos.org](mailto:help@finos.org)_
 
 ## Project Goals:
 
@@ -39,6 +39,7 @@ In order to achieve those goals Symphony is participating and working in close c
 Read [Dev Setup](docs/development/DEV_SETUP.md)
 
 ## License
+
 The code in this repository is distributed under the Apache License, Version 2.0.
 
 Copyright 2019 Symphony LLC
