@@ -164,7 +164,7 @@
     "electron-dl": "3.0.0",
     "electron-fetch": "1.4.0",
     "electron-log": "4.0.7",
-    "electron-spellchecker": "git+https://github.com/symphonyoss/electron-spellchecker.git#v2.0.4",
+    "electron-spellchecker": "git+https://github.com/symphonyoss/electron-spellchecker.git#v2.3.1",
     "ffi-napi": "3.0.0",
     "filesize": "6.1.0",
     "lazy-brush": "^1.0.1",
