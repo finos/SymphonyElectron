@@ -128,28 +128,6 @@ if EXIST %AIP%-SetupFiles (
 	rmdir /q /s %AIP%-SetupFiles
 )
 
-echo "Running Advanced Installer to build MSI"
-
-call AdvancedInstaller.com /edit %AIP%.aip /SetVersion %SYMVER%
-IF %errorlevel% neq 0 (
-	echo "failed to set advanced installer build version"
-	exit /b -1
-)
-
-call AdvancedInstaller.com /build %AIP%.aip
-IF %errorlevel% neq 0 (
-	echo "error returned from advanced installer:" %errorlevel%
-	exit /b -1
-)
-
-if NOT EXIST %AIP%-SetupFiles/%AIP%.msi (
-	echo "Failure - Did not produce MSI"
-	exit /b -1
-)
-
-echo "Copying Legacy MSI installer to target dir"
-copy "%AIP%-SetupFiles\%AIP%.msi" "%targetsDir%\Legacy-%archiveName%.msi"
-
 if NOT EXIST %SIGNING_FILE_PATH% (
     echo Signing failed, 'signing.bat' not found.
     exit /b -1
