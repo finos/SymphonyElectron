@@ -133,12 +133,6 @@ if NOT EXIST %SIGNING_FILE_PATH% (
     exit /b -1
 )
 
-call %SIGNING_FILE_PATH% ..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\vendor\jobber\Jobber.exe
-IF %errorlevel% neq 0 (
-	echo "Signing failed"
-	exit /b -1
-)
-
 call %SIGNING_FILE_PATH% ..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\screen-share-indicator-frame\ScreenShareIndicatorFrame.exe
 IF %errorlevel% neq 0 (
 	echo "Signing failed"
