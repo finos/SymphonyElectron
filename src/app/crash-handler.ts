@@ -1,4 +1,10 @@
-import { app, crashReporter, Details, dialog } from 'electron';
+import {
+  app,
+  crashReporter,
+  Details,
+  dialog,
+  RenderProcessGoneDetails,
+} from 'electron';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
 import {
@@ -36,13 +42,16 @@ class CrashHandler {
    * @private
    */
   private static handleGpuCrash() {
-    app.on('gpu-process-crashed', (_event: Event, _killed: boolean) => {
+    app.on('child-process-gone', (_event: Event, details: Details) => {
       logger.info(`crash-handler: GPU process crashed.`);
       const eventData: ICrashData = {
         element: AnalyticsElements.SDA_CRASH,
-        process: SDACrashProcess.GPU,
+        process:
+          details.type === 'GPU'
+            ? SDACrashProcess.GPU
+            : SDACrashProcess.RENDERER,
         windowName: 'main',
-        crashCause: _killed ? 'killed' : 'crashed',
+        crashCause: details.reason,
       };
       analytics.track(eventData);
       logger.info(
@@ -89,7 +98,7 @@ class CrashHandler {
   public handleRendererCrash(browserWindow: ICustomBrowserWindow) {
     browserWindow.webContents.on(
       'render-process-gone',
-      async (_event: Event, details: Details) => {
+      async (_event: Event, details: RenderProcessGoneDetails) => {
         logger.info(`crash-handler: Renderer process for ${browserWindow.winName} crashed.
             Reason is ${details.reason}`);
         const eventData: ICrashData = {

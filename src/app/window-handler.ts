@@ -8,6 +8,7 @@ import {
   dialog,
   globalShortcut,
   ipcMain,
+  RenderProcessGoneDetails,
   screen,
   shell,
 } from 'electron';
@@ -196,6 +197,7 @@ export class WindowHandler {
         },
         {
           preload: path.join(__dirname, '../renderer/_preload-main.js'),
+          enableRemoteModule: true,
         },
       ),
       ...opts,
@@ -535,9 +537,9 @@ export class WindowHandler {
     });
 
     this.mainWindow.webContents.on(
-      'crashed',
-      async (_event: Event, killed: boolean) => {
-        if (killed) {
+      'render-process-gone',
+      async (_event: Event, details: RenderProcessGoneDetails) => {
+        if (details.reason === 'killed') {
           logger.info(`window-handler: main window crashed (killed)!`);
           return;
         }
@@ -919,6 +921,7 @@ export class WindowHandler {
       },
       {
         devTools: isDevEnv,
+        enableRemoteModule: true,
       },
     );
 
@@ -1082,6 +1085,7 @@ export class WindowHandler {
       },
       {
         devTools: true,
+        enableRemoteModule: true,
       },
     );
 
@@ -1254,6 +1258,7 @@ export class WindowHandler {
       },
       {
         devTools: isDevEnv,
+        enableRemoteModule: true,
       },
     );
     const focusedWindow = BrowserWindow.getFocusedWindow();
@@ -1341,6 +1346,7 @@ export class WindowHandler {
       },
       {
         devTools: isDevEnv,
+        enableRemoteModule: true,
       },
     );
     opts.parent = window;
@@ -1403,6 +1409,7 @@ export class WindowHandler {
       },
       {
         devTools: isDevEnv,
+        enableRemoteModule: true,
       },
     );
     // This prevents creating multiple instances of the
@@ -1519,6 +1526,7 @@ export class WindowHandler {
         },
         {
           devTools: isDevEnv,
+          enableRemoteModule: true,
         },
       ),
       ...{ winKey: streamId },
@@ -1633,6 +1641,7 @@ export class WindowHandler {
       },
       {
         devTools: isDevEnv,
+        enableRemoteModule: true,
       },
     );
 
