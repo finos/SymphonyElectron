@@ -80,10 +80,6 @@ call powershell -Command "(get-content %installerFile%) | foreach-object {$_ -re
 
 echo "creating 64 bit msi..."
 
-rem add AdvancedInstaller.com to PATH
-set PATH="%PATH%";C:\Program Files\nodejs\;C:\Program Files (x86)\Caphyon\Advanced Installer 15.9\bin\x86
-echo %PATH%
-
 call node -e "console.log(require('./package.json').version);" > version.txt
 set /p baseVer=<version.txt
 
