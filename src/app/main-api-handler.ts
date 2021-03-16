@@ -251,6 +251,11 @@ ipcMain.on(
       case apiCmds.setIsMana:
         if (typeof arg.isMana === 'boolean') {
           windowHandler.isMana = arg.isMana;
+          // Update App Menu
+          const appMenu = windowHandler.appMenu;
+          if (appMenu && windowHandler.isMana) {
+            appMenu.buildMenu();
+          }
           logger.info('window-handler: isMana: ' + windowHandler.isMana);
         }
         break;
