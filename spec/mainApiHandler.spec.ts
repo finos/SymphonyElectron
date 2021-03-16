@@ -45,6 +45,10 @@ jest.mock('../src/app/window-handler', () => {
       isOnline: false,
       updateVersionInfo: jest.fn(),
       isMana: false,
+      appMenu: {
+        buildMenu: jest.fn(),
+      },
+      getMainWindow: jest.fn(),
     },
   };
 });
@@ -67,6 +71,7 @@ jest.mock('../src/common/logger', () => {
     logger: {
       setLoggerWindow: jest.fn(),
       error: jest.fn(),
+      info: jest.fn(),
     },
   };
 });
@@ -82,6 +87,11 @@ jest.mock('../src/app/config-handler', () => {
       getConfigFields: jest.fn(() => {
         return {
           bringToFront: 'ENABLED',
+        };
+      }),
+      getFilteredCloudConfigFields: jest.fn(() => {
+        return {
+          devToolsEnabled: true,
         };
       }),
     },
@@ -115,8 +125,6 @@ jest.mock('../src/app/notifications/notification-helper', () => {
     },
   };
 });
-
-jest.mock('../src/common/i18n');
 
 describe('main api handler', () => {
   beforeEach(() => {
@@ -428,6 +436,27 @@ describe('main api handler', () => {
       expect(windowHandler.isMana).toBe(false);
       ipcMain.send(apiName.symphonyApi, value);
       expect(windowHandler.isMana).toBe(true);
+    });
+    it('should call build menu when ismana set to true', () => {
+      const value = {
+        cmd: apiCmds.setIsMana,
+        isMana: true,
+      };
+      ipcMain.send(apiName.symphonyApi, value);
+      if (windowHandler.appMenu) {
+        expect(windowHandler.appMenu.buildMenu).toBeCalled();
+      }
+    });
+
+    it('should not call build menu when ismana set to false', () => {
+      const value = {
+        cmd: apiCmds.setIsMana,
+        isMana: false,
+      };
+      ipcMain.send(apiName.symphonyApi, value);
+      if (windowHandler.appMenu) {
+        expect(windowHandler.appMenu.buildMenu).not.toBeCalled();
+      }
     });
   });
 });

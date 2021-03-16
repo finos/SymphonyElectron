@@ -690,6 +690,82 @@ export const reloadWindow = (browserWindow: ICustomBrowserWindow) => {
 };
 
 /**
+ * Restrict the zoom in in 2.0
+ * @returns void
+ */
+export const zoomIn = () => {
+  const focusedWindow = BrowserWindow.getFocusedWindow();
+  if (!focusedWindow || !windowExists(focusedWindow)) {
+    return;
+  }
+
+  if (focusedWindow.getTitle() === 'Screen Sharing Indicator - Symphony') {
+    return;
+  }
+
+  const { webContents } = focusedWindow;
+  if (windowHandler.isMana) {
+    const zoomFactor = webContents.getZoomFactor();
+    if (zoomFactor < 1.5) {
+      if (zoomFactor < 0.7) {
+        webContents.setZoomFactor(0.7);
+      } else if (zoomFactor >= 0.7 && zoomFactor < 0.8) {
+        webContents.setZoomFactor(0.8);
+      } else if (zoomFactor >= 0.8 && zoomFactor < 0.9) {
+        webContents.setZoomFactor(0.9);
+      } else if (zoomFactor >= 0.9 && zoomFactor < 1.0) {
+        webContents.setZoomFactor(1.0);
+      } else if (zoomFactor >= 1.0 && zoomFactor < 1.1) {
+        webContents.setZoomFactor(1.1);
+      } else if (zoomFactor >= 1.1 && zoomFactor < 1.25) {
+        webContents.setZoomFactor(1.25);
+      } else if (zoomFactor >= 1.25 && zoomFactor < 1.5) {
+        webContents.setZoomFactor(1.5);
+      }
+    }
+  } else {
+    const currentZoomLevel = focusedWindow.webContents.getZoomLevel();
+    focusedWindow.webContents.setZoomLevel(currentZoomLevel + 0.5);
+  }
+};
+
+/**
+ * Restrict the zoom out in 2.0
+ * @returns void
+ */
+export const zoomOut = () => {
+  const focusedWindow = BrowserWindow.getFocusedWindow();
+  if (!focusedWindow || !windowExists(focusedWindow)) {
+    return;
+  }
+
+  if (focusedWindow.getTitle() === 'Screen Sharing Indicator - Symphony') {
+    return;
+  }
+
+  const { webContents } = focusedWindow;
+  if (windowHandler.isMana) {
+    const zoomFactor = webContents.getZoomFactor();
+    if (zoomFactor > 0.7) {
+      if (zoomFactor > 1.5) {
+        webContents.setZoomFactor(1.5);
+      } else if (zoomFactor > 1.25 && zoomFactor <= 1.5) {
+        webContents.setZoomFactor(1.25);
+      } else if (zoomFactor > 1.1 && zoomFactor <= 1.25) {
+        webContents.setZoomFactor(1.1);
+      } else if (zoomFactor > 1.0 && zoomFactor <= 1.1) {
+        webContents.setZoomFactor(1.0);
+      } else if (zoomFactor > 0.9 && zoomFactor <= 1.0) {
+        webContents.setZoomFactor(0.9);
+      } else if (zoomFactor > 0.8 && zoomFactor <= 0.9) {
+        webContents.setZoomFactor(0.8);
+      } else if (zoomFactor > 0.7 && zoomFactor <= 0.8) {
+        webContents.setZoomFactor(0.7);
+      }
+    }
+  }
+};
+/**
  * Verifies if window exists and restores/focuses the window
  *
  * @param browserWindow {ICustomBrowserWindow}
