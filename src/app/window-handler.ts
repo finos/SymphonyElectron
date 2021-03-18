@@ -2037,6 +2037,7 @@ export class WindowHandler {
         nodeIntegration: isNodeEnv,
         contextIsolation: isNodeEnv ? false : this.contextIsolation,
         backgroundThrottling: this.backgroundThrottling,
+        enableRemoteModule: true,
       },
       ...webPreferences,
     };

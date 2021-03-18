@@ -1,6 +1,6 @@
 :: Check to ensure that the VSDev command prompt is in the below location
 echo "Starting VSDev Command Prompt"
-call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\Tools\VsDevCmd.bat"
+call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat"
 
 echo %PATH%
 
@@ -17,6 +17,9 @@ echo %PATH%
 
 call nvm install %NODE_REQUIRED_VERSION%
 call nvm use %NODE_REQUIRED_VERSION%
+
+call npm config set msvs_version 2017
+set VCTargetsPath=C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\Common7\IDE\VC\VCTargets
 
 WHERE gulp
 if %ERRORLEVEL% NEQ 0 (
@@ -225,4 +228,4 @@ cd %rootDir%
 call %appdata%\npm\markdown-pdf RELEASE_NOTES.md
 copy RELEASE_NOTES.pdf "%targetsDir%\Release-Notes-%archiveName%.pdf"
 
-echo "All done, job successfull :)"
+echo "All done, job successful :)"
