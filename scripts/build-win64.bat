@@ -228,4 +228,4 @@ cd %rootDir%
 call %appdata%\npm\markdown-pdf RELEASE_NOTES.md
 copy RELEASE_NOTES.pdf "%targetsDir%\Release-Notes-%archiveName%.pdf"
 
-echo "All done, job successfull :)"
+echo "All done, job successful :)"
