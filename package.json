@@ -7,7 +7,7 @@
   "searchAPIVersion": "1.55.3",
   "sfeVersion": "0",
   "sfeClientType": "1.5",
-  "description": "Symphony desktop app (Foundation ODP)",
+  "description": "Symphony Desktop Application",
   "author": "Symphony OSS <help@finos.org>",
   "main": "lib/src/app/init.js",
   "types": "lib/src/app/init.d.ts",
