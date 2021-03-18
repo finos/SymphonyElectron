@@ -1086,6 +1086,7 @@ export class WindowHandler {
       },
       {
         devTools: true,
+        enableRemoteModule: true,
       },
     );
 
