@@ -409,6 +409,7 @@ class Notification extends NotificationHandler {
    * Closes all the notification windows and resets some configurations
    */
   public async cleanUp(): Promise<void> {
+    logger.info('notification: cleanUp');
     animationQueue.clear();
     this.notificationQueue = [];
     const activeNotificationWindows = {
@@ -416,16 +417,22 @@ class Notification extends NotificationHandler {
       ...this.activeNotifications,
     };
     const inactiveNotificationWindows = { ...[], ...this.inactiveWindows };
-    for (const activeWindow of activeNotificationWindows) {
-      if (activeWindow && windowExists(activeWindow)) {
-        await this.hideNotification(
-          (activeWindow as ICustomBrowserWindow).clientId,
-        );
+    if (activeNotificationWindows.length > 0) {
+      for (const activeWindow of activeNotificationWindows) {
+        logger.info('notification: qqq');
+        if (activeWindow && windowExists(activeWindow)) {
+          await this.hideNotification(
+            (activeWindow as ICustomBrowserWindow).clientId,
+          );
+        }
       }
     }
-    for (const inactiveWindow of inactiveNotificationWindows) {
-      if (inactiveWindow && windowExists(inactiveWindow)) {
-        inactiveWindow.close();
+    if (inactiveNotificationWindows.length > 0) {
+      for (const inactiveWindow of inactiveNotificationWindows) {
+        logger.info('notification: wwww');
+        if (inactiveWindow && windowExists(inactiveWindow)) {
+          inactiveWindow.close();
+        }
       }
     }
 

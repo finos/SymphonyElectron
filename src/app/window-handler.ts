@@ -789,11 +789,13 @@ export class WindowHandler {
    * Finds all the child window and closes it
    */
   public async closeAllWindow(): Promise<void> {
+    logger.info('window-handler: closeAllWindow');
     const browserWindows = BrowserWindow.getAllWindows();
     await notification.cleanUp();
     if (browserWindows && browserWindows.length) {
       browserWindows.forEach((win) => {
         const browserWindow = win as ICustomBrowserWindow;
+
         if (browserWindow && windowExists(browserWindow)) {
           // Closes only child windows
           if (
