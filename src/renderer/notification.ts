@@ -419,7 +419,6 @@ class Notification extends NotificationHandler {
     const inactiveNotificationWindows = { ...[], ...this.inactiveWindows };
     if (activeNotificationWindows.length > 0) {
       for (const activeWindow of activeNotificationWindows) {
-        logger.info('notification: qqq');
         if (activeWindow && windowExists(activeWindow)) {
           await this.hideNotification(
             (activeWindow as ICustomBrowserWindow).clientId,
@@ -429,7 +428,6 @@ class Notification extends NotificationHandler {
     }
     if (inactiveNotificationWindows.length > 0) {
       for (const inactiveWindow of inactiveNotificationWindows) {
-        logger.info('notification: wwww');
         if (inactiveWindow && windowExists(inactiveWindow)) {
           inactiveWindow.close();
         }
