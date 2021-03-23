@@ -706,7 +706,7 @@ export class WindowHandler {
           url: userConfigUrl || this.startUrl,
           message: '',
           urlValid: !!userConfigUrl,
-          sso: false,
+          sso: this.userConfig.url.indexOf('/login/sso/initsso') > -1,
         });
       }
     });
