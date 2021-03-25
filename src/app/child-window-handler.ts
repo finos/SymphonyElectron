@@ -43,7 +43,7 @@ const verifyProtocolForNewUrl = (url: string): boolean => {
     return false;
   }
 
-  const allowedProtocols = ['http:', 'https:', 'mailto:'];
+  const allowedProtocols = ['http:', 'https:', 'mailto:', 'symphony:'];
   // url parse returns protocol with :
   if (allowedProtocols.includes(parsedUrl.protocol)) {
     logger.info(
@@ -291,11 +291,11 @@ export const handleChildWindow = (webContents: WebContents): void => {
       }
       if (!verifyProtocolForNewUrl(newWinUrl)) {
         logger.info(
-          `child-window-handler: new window url protocol is not http or https, not performing any action!`,
+          `child-window-handler: new window url protocol is not valid, not performing any action!`,
         );
         return;
       }
-      logger.info(`child-window-handler: new window url is ${newWinUrl} which is not of the same host,
+      logger.info(`child-window-handler: new window url is ${newWinUrl} which is not of the same host / protocol,
             so opening it in the default app!`);
       windowHandler.openUrlInDefaultBrowser(newWinUrl);
     }
