@@ -1,0 +1,10 @@
+{
+  "name": "auto_update",
+  "version": "0.0.1",
+  "description": "SDA Auto Update",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "preinstall": "npm run build",
+    "build": "cl auto_update_helper.cpp /O2 /MT /nologo /link /SUBSYSTEM:CONSOLE"
+  }
+}
