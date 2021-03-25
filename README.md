@@ -42,4 +42,4 @@ Read [Dev Setup](docs/development/DEV_SETUP.md)
 
 The code in this repository is distributed under the Apache License, Version 2.0.
 
-Copyright 2019 Symphony LLC
+Copyright 2021 Symphony LLC
