@@ -689,6 +689,12 @@ export class WindowHandler {
       }
       logger.info(`finished loading welcome screen.`);
       if (this.url.indexOf('welcome')) {
+        const ssoValue =
+          this.userConfig.url &&
+          this.userConfig.url.indexOf('/login/sso/initsso') > -1
+            ? true
+            : false;
+
         this.mainWindow.webContents.send('page-load-welcome', {
           locale: i18n.getLocale(),
           resource: i18n.loadedResources,
@@ -706,7 +712,7 @@ export class WindowHandler {
           url: userConfigUrl || this.startUrl,
           message: '',
           urlValid: !!userConfigUrl,
-          sso: this.userConfig.url.indexOf('/login/sso/initsso') > -1,
+          sso: ssoValue,
         });
       }
     });
