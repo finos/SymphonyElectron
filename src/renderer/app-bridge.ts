@@ -94,6 +94,8 @@ export class AppBridge {
    * Switch case that validates and handle
    * incoming messages from postMessage
    *
+   * Is only used for 1.5.
+   *
    * @param event
    */
   private async handleMessage(event): Promise<void> {

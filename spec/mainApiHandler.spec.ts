@@ -38,6 +38,7 @@ jest.mock('../src/app/window-actions', () => {
 jest.mock('../src/app/window-handler', () => {
   return {
     windowHandler: {
+      closeAllWindows: jest.fn(),
       closeWindow: jest.fn(),
       createNotificationSettingsWindow: jest.fn(),
       createScreenPickerWindow: jest.fn(),
@@ -457,6 +458,15 @@ describe('main api handler', () => {
       if (windowHandler.appMenu) {
         expect(windowHandler.appMenu.buildMenu).not.toBeCalled();
       }
+    });
+
+    it('should call closeAllWindows on windowHandler correctly', () => {
+      const spy = jest.spyOn(windowHandler, 'closeAllWindows');
+      const value = {
+        cmd: apiCmds.closeAllWrapperWindows,
+      };
+      ipcMain.send(apiName.symphonyApi, value);
+      expect(spy).toBeCalled();
     });
   });
 });

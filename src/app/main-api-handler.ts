@@ -35,6 +35,7 @@ import {
 /**
  * Handle API related ipc messages from renderers. Only messages from windows
  * we have created are allowed.
+ * Used mainly for Mana to communicate with SDA
  */
 ipcMain.on(
   apiName.symphonyApi,
@@ -269,6 +270,9 @@ ipcMain.on(
         if (typeof arg.notificationId === 'number') {
           await notificationHelper.closeNotification(arg.notificationId);
         }
+        break;
+      case apiCmds.closeAllWrapperWindows:
+        windowHandler.closeAllWindows();
         break;
       default:
         break;

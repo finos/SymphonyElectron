@@ -607,7 +607,7 @@ export class WindowHandler {
       if (isWindowsOS || isMac) {
         this.execCmd(this.screenShareIndicatorFrameUtil, []);
       }
-      this.closeAllWindow();
+      this.closeAllWindows();
       this.destroyAllWindows();
     });
 
@@ -796,18 +796,14 @@ export class WindowHandler {
   /**
    * Finds all the child window and closes it
    */
-  public async closeAllWindow(): Promise<void> {
+  public closeAllWindows(): void {
     const browserWindows = BrowserWindow.getAllWindows();
-    await notification.cleanUp();
     if (browserWindows && browserWindows.length) {
       browserWindows.forEach((win) => {
         const browserWindow = win as ICustomBrowserWindow;
         if (browserWindow && windowExists(browserWindow)) {
           // Closes only child windows
-          if (
-            browserWindow.winName !== apiName.mainWindowName &&
-            browserWindow.winName !== apiName.notificationWindowName
-          ) {
+          if (browserWindow.winName !== apiName.mainWindowName) {
             if (browserWindow.closable) {
               browserWindow.close();
             } else {
@@ -817,6 +813,7 @@ export class WindowHandler {
         }
       });
     }
+    notification.cleanUp();
   }
 
   /**
