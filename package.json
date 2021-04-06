@@ -176,6 +176,7 @@
     "shell-path": "2.1.0"
   },
   "optionalDependencies": {
+    "auto-update": "file:auto_update",
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#v1.0.11",
     "screen-share-indicator-frame": "git+https://github.com/symphonyoss/ScreenShareIndicatorFrame.git#v1.4.10",
     "swift-search": "2.0.2"
