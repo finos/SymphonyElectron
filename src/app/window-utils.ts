@@ -323,7 +323,7 @@ export const showPopupMenu = (opts: Electron.PopupOptions): void => {
  *
  * @param windowName {string}
  */
-export const sanitize = async (windowName: string): Promise<void> => {
+export const sanitize = (windowName: string): void => {
   // To make sure the reload event is from the main window
   const mainWindow = windowHandler.getMainWindow();
   if (mainWindow && windowName === mainWindow.winName) {
@@ -335,7 +335,7 @@ export const sanitize = async (windowName: string): Promise<void> => {
       screenSnippet.killChildProcess();
     }
     // Closes all the child windows
-    await windowHandler.closeAllWindow();
+    windowHandler.closeAllWindows();
   }
 };
 
@@ -675,7 +675,7 @@ export const reloadWindow = (browserWindow: ICustomBrowserWindow) => {
     logger.info(`window-utils: reloading the main window`);
     browserWindow.reload();
 
-    windowHandler.closeAllWindow();
+    windowHandler.closeAllWindows();
 
     windowHandler.execCmd(windowHandler.screenShareIndicatorFrameUtil, []);
 

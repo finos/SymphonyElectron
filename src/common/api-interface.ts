@@ -45,6 +45,7 @@ export enum apiCmds {
   restartApp = 'restart-app',
   setIsMana = 'set-is-mana',
   showNotification = 'show-notification',
+  closeAllWrapperWindows = 'close-all-windows',
 }
 
 export enum apiName {
