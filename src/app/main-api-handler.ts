@@ -207,6 +207,7 @@ ipcMain.on(
       case apiCmds.setIsInMeeting:
         if (typeof arg.isInMeeting === 'boolean') {
           memoryMonitor.setMeetingStatus(arg.isInMeeting);
+          appStateHandler.preventDisplaySleep(arg.isInMeeting);
         }
         break;
       case apiCmds.memoryInfo:
