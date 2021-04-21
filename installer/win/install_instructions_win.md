@@ -210,6 +210,30 @@ or
 
 
 -------------------------------------------------------------------
+### LAUNCH_ON_INSTALL
+
+Expected values:
+
+* "true"
+  Symphony will be launched automatically after installation has completed (default)
+* "false"
+  Symphony will not be launched after installation has completed
+
+#### Example, install with launch on install enabled
+
+    msiexec /i Symphony.msi LAUNCH_ON_INSTALL="true"
+
+or
+
+    msiexec /i Symphony.msi /q
+
+#### Example, install with launch on install disabled
+
+    msiexec /i Symphony.msi LAUNCH_ON_INSTALL="false"
+
+
+
+-------------------------------------------------------------------
 ### LOCATION
 
 Expected values:
