@@ -166,6 +166,7 @@ class Script
             new PublicProperty("DEV_TOOLS_ENABLED", "true"),
             new PublicProperty("FULL_SCREEN", "true"),
             new PublicProperty("LOCATION", "true"),
+            new PublicProperty("LAUNCH_ON_INSTALL", "true"),
             new PublicProperty("MEDIA", "true"),
             new PublicProperty("MIDI_SYSEX", "true"),
             new PublicProperty("MINIMIZE_ON_CLOSE", "ENABLED"),
@@ -220,7 +221,10 @@ class Script
             new ManagedAction(CustomActions.CleanRegistryCurrentUser, Return.ignore, When.After, Step.RemoveFiles, Condition.BeingUninstalled ),
 
             // Start Symphony after installation is complete
-            new InstalledFileAction(new Id("symphony_exe"), "", Return.asyncNoWait, When.After, Step.InstallFinalize, Condition.NOT_BeingRemoved)
+            new ManagedAction(CustomActions.StartAfterInstall, Return.ignore, When.After, Step.InstallFinalize, Condition.NOT_BeingRemoved )
+            {
+                UsesProperties = "INSTALLDIR,LAUNCH_ON_INSTALL"
+            },
         };
 
         // Use our own Symphony branded bitmap for installation dialogs
@@ -467,6 +471,27 @@ public class CustomActions
         {
             session.Log("Error executing CleanRegistryCurrentUser: " + e.ToString() );
             return ActionResult.Success;
+        }
+        return ActionResult.Success;
+    }
+
+    // StartAfterInstall custom action
+    [CustomAction]
+    public static ActionResult StartAfterInstall(Session session)
+    {
+        try
+        {
+            if (session.Property("LAUNCH_ON_INSTALL")=="true") 
+            {
+                System.Diagnostics.Process process = new System.Diagnostics.Process();
+                process.StartInfo.FileName =  System.IO.Path.Combine(session.Property("INSTALLDIR"), "Symphony.exe");
+                process.Start();
+            }
+        }
+        catch (System.Exception e)
+        {
+            session.Log("Error executing StartAfterInstall: " + e.ToString() );
+            return ActionResult.Failure;
         }
         return ActionResult.Success;
     }
