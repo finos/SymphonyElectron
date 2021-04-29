@@ -239,6 +239,16 @@ ipcMain.on(
             '\\',
           );
         }
+        if (
+          podLevelEntitlements &&
+          podLevelEntitlements.userDataPath &&
+          podLevelEntitlements.userDataPath.match(/\\\\/g)
+        ) {
+          podLevelEntitlements.userDataPath = podLevelEntitlements.userDataPath.replace(
+            /\\+/g,
+            '\\',
+          );
+        }
         logger.info('main-api-handler: ignored other values from SFE', rest);
         await config.updateCloudConfig({
           podLevelEntitlements,

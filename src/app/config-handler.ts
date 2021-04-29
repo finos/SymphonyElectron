@@ -31,6 +31,7 @@ export interface IConfig {
   ctWhitelist: string[];
   podWhitelist: string[];
   autoLaunchPath: string;
+  userDataPath: string;
   permissions: IPermission;
   customFlags: ICustomFlag;
   buildNumber?: string;
@@ -70,6 +71,7 @@ export interface IPodLevelEntitlements {
   whitelistUrl: string;
   authServerWhitelist: string;
   autoLaunchPath: string;
+  userDataPath: string;
 }
 
 export interface IACPFeatureLevelEntitlements {
@@ -417,6 +419,7 @@ class Config {
       podWhitelist: latestGlobalConfig.podWhitelist,
       permissions: latestGlobalConfig.permissions,
       autoLaunchPath: latestGlobalConfig.autoLaunchPath,
+      userDataPath: latestGlobalConfig.userDataPath,
       customFlags: latestGlobalConfig.customFlags,
     });
   }

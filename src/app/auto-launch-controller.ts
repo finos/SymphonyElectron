@@ -28,7 +28,16 @@ class AutoLaunchController {
    * @return {Promise<void>}
    */
   public enableAutoLaunch(): void {
-    app.setLoginItemSettings({ openAtLogin: true, path: props.path });
+    const { userDataPath } = config.getConfigFields(['userDataPath']);
+    if (userDataPath === '') {
+      app.setLoginItemSettings({ openAtLogin: true, path: props.path });
+    } else {
+      app.setLoginItemSettings({
+        openAtLogin: true,
+        path: props.path,
+        args: ['--userDataPath="' + userDataPath + '"'],
+      });
+    }
     logger.info(`auto-launch-controller: Enabled auto launch!`);
   }
 

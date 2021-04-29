@@ -68,7 +68,14 @@ if (!isElectronQA) {
 
 // Electron sets the default protocol
 if (!isDevEnv) {
-  app.setAsDefaultProtocolClient('symphony');
+  const { userDataPath } = config.getConfigFields(['userDataPath']);
+  if (userDataPath === '') {
+    app.setAsDefaultProtocolClient('symphony');
+  } else {
+    app.setAsDefaultProtocolClient('symphony', process.execPath, [
+      '--userDataPath="' + userDataPath + '"',
+    ]);
+  }
 }
 
 /**
