@@ -428,3 +428,21 @@ or
     msiexec /i Symphony.msi /q POINTER_LOCK="false"
 
 
+
+-------------------------------------------------------------------
+### USER_DATA_PATH
+
+Expected values:
+
+* Full file path for location to store Symphony user data
+
+The default (if not specified, or if specified as empty string "") is 
+	
+	%LOCALAPPDATA%\Symphony\
+
+#### Example
+
+    msiexec /i Symphony.msi /q USER_DATA_PATH="z:\userdata\symphony"
+
+
+

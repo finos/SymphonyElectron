@@ -25,6 +25,9 @@ class Script
     {
         // The name "Symphony" is used in a lot of places, for paths, shortut names and installer filename, so define it once
         var productName = "Symphony";
+        
+        var userDataPathArgument = "--userDataPath=\"[USER_DATA_PATH]\"";
+
 
         // Create a wixsharp project instance and assign the project name to it, and a hierarchy of all files to include
         // Files are taken from multiple locations, and not all files in each location should be included, which is why
@@ -34,8 +37,14 @@ class Script
             new Dir(@"%ProgramFiles%\" + productName,
                 new File(new Id("symphony_exe"), @"..\..\..\dist\win-unpacked\Symphony.exe",
                     // Create two shortcuts to the main Symphony.exe file, one on the desktop and one in the program menu
-                    new FileShortcut(productName, @"%Desktop%") { IconFile = @"..\..\..\images\icon.ico" },
-                    new FileShortcut(productName, @"%ProgramMenu%") { IconFile = @"..\..\..\images\icon.ico" }
+                    new FileShortcut(productName, @"%Desktop%") { 
+                        IconFile = @"..\..\..\images\icon.ico",
+                        Arguments = userDataPathArgument
+                    },
+                    new FileShortcut(productName, @"%ProgramMenu%") { 
+                        IconFile = @"..\..\..\images\icon.ico", 
+                        Arguments = userDataPathArgument
+                    }
                 ),
                 new File(@"..\..\..\dist\win-unpacked\chrome_100_percent.pak"),
                 new File(@"..\..\..\dist\win-unpacked\chrome_200_percent.pak"),
@@ -116,8 +125,10 @@ class Script
             //    https://docs.microsoft.com/en-us/windows/win32/msi/operating-system-property-values
             new LaunchCondition("VersionNT>=600 AND WindowsBuild>=6001", "OS not supported"),
 
-            // Add registry entry used by protocol handler to launch symphony when opening symphony:// URIs
-            new RegValue(WixSharp.RegistryHive.ClassesRoot, productName + @"\shell\open\command", "", "\"[INSTALLDIR]Symphony.exe\" \"%1\""),
+            // Add registry entry used by protocol handler to launch symphony when opening symphony:// URIs         
+            new RegValue(WixSharp.RegistryHive.ClassesRoot, productName, "", "URL:symphony"),
+            new RegValue(WixSharp.RegistryHive.ClassesRoot, productName, "URL Protocol", ""),
+            new RegValue(WixSharp.RegistryHive.ClassesRoot, productName + @"\shell\open\command", "", "\"[INSTALLDIR]Symphony.exe\" " + userDataPathArgument + " \"%1\""),
 
             // When installing or uninstalling, we want Symphony to be closed down, but the standard way of sending a WM_CLOSE message
             // will not work for us, as we have a "minimize on close" option, which stops the app from terminating on WM_CLOSE. So we
@@ -175,6 +186,7 @@ class Script
             new PublicProperty("POD_URL", "https://my.symphony.com"),
             new PublicProperty("CONTEXT_ORIGIN_URL", ""),
             new PublicProperty("POINTER_LOCK", "true"),
+            new PublicProperty("USER_DATA_PATH", ""),
             new Property("MSIINSTALLPERUSER", "1"),
             new Property("PROGRAMSFOLDER", System.Environment.ExpandEnvironmentVariables(@"%PROGRAMFILES%"))
         };
@@ -202,7 +214,7 @@ class Script
             new ElevatedManagedAction(CustomActions.UpdateConfig, Return.check, When.After, Step.InstallFiles, Condition.NOT_BeingRemoved )
             {
                 // The UpdateConfig action needs the built-in property INSTALLDIR as well as most of the custom properties
-                UsesProperties = "INSTALLDIR,POD_URL,CONTEXT_ORIGIN_URL,MINIMIZE_ON_CLOSE,ALWAYS_ON_TOP,AUTO_START,BRING_TO_FRONT,MEDIA,LOCATION,NOTIFICATIONS,MIDI_SYSEX,POINTER_LOCK,FULL_SCREEN,OPEN_EXTERNAL,CUSTOM_TITLE_BAR,DEV_TOOLS_ENABLED,AUTO_LAUNCH_PATH"
+                UsesProperties = "INSTALLDIR,POD_URL,CONTEXT_ORIGIN_URL,MINIMIZE_ON_CLOSE,ALWAYS_ON_TOP,AUTO_START,BRING_TO_FRONT,MEDIA,LOCATION,NOTIFICATIONS,MIDI_SYSEX,POINTER_LOCK,FULL_SCREEN,OPEN_EXTERNAL,CUSTOM_TITLE_BAR,DEV_TOOLS_ENABLED,AUTO_LAUNCH_PATH,USER_DATA_PATH"
             },
 
             // CleanRegistry
@@ -223,7 +235,7 @@ class Script
             // Start Symphony after installation is complete
             new ManagedAction(CustomActions.StartAfterInstall, Return.ignore, When.After, Step.InstallFinalize, Condition.NOT_BeingRemoved )
             {
-                UsesProperties = "INSTALLDIR,LAUNCH_ON_INSTALL"
+                UsesProperties = "INSTALLDIR,LAUNCH_ON_INSTALL,USER_DATA_PATH"
             },
         };
 
@@ -369,7 +381,8 @@ public class CustomActions
             data = ReplaceProperty(data, "openExternal", session.Property("OPEN_EXTERNAL"));
             data = ReplaceProperty(data, "isCustomTitleBar", session.Property("CUSTOM_TITLE_BAR"));
             data = ReplaceProperty(data, "devToolsEnabled", session.Property("DEV_TOOLS_ENABLED"));
-            data = ReplaceProperty(data, "autoLaunchPath", session.Property("AUTO_LAUNCH_PATH"));
+            data = ReplaceProperty(data, "autoLaunchPath", FixPathFormat(session.Property("AUTO_LAUNCH_PATH")));
+            data = ReplaceProperty(data, "userDataPath", FixPathFormat(session.Property("USER_DATA_PATH")));
 
             // Write the contents back to the file
             System.IO.File.WriteAllText(filename, data);
@@ -397,6 +410,16 @@ public class CustomActions
             @"""" + name + @""":""" + value.Trim() + @"""");
     }
 
+	// When SDA is parsing the JSON config file, it will interpret backslash as an escape character,
+	// and will throw an error for invalid escape codes. To make a path valid for parsing, we need
+	// to replace each backslash with doubli backslash. After SDA have parsed the JSON, it will make
+	// the double backslash become single backslash again.
+    static string FixPathFormat( string path )
+    {
+        return path.Replace(@"\", @"\\");
+    }
+	
+	
     // CleanRegistry custom action
     [CustomAction]
     public static ActionResult CleanRegistry(Session session)
@@ -485,6 +508,9 @@ public class CustomActions
             {
                 System.Diagnostics.Process process = new System.Diagnostics.Process();
                 process.StartInfo.FileName =  System.IO.Path.Combine(session.Property("INSTALLDIR"), "Symphony.exe");
+                if( session.Property("USER_DATA_PATH") != "" ) {
+                    process.StartInfo.Arguments = "--userDataPath=\"" + session.Property("USER_DATA_PATH") + "\"";
+                }
                 process.Start();
             }
         }
