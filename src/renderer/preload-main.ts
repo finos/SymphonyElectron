@@ -204,7 +204,7 @@ ipcRenderer.on('initialize-memory-refresh', () => {
 });
 
 ipcRenderer.on('exit-html-fullscreen', async () => {
-  if (document && typeof document.exitFullscreen === 'function') {
+  if (document && document.fullscreenElement) {
     await document.exitFullscreen();
   }
 });
