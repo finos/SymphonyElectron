@@ -179,7 +179,7 @@
     "auto-update": "file:auto_update",
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#v2.0.0",
     "screen-share-indicator-frame": "git+https://github.com/symphonyoss/ScreenShareIndicatorFrame.git#v1.4.10",
-    "swift-search": "git+https://github.com/symphonyoss/SwiftSearch.git#v2.0.2"
+    "swift-search": "2.0.2"
   },
   "ava": {
     "failFast": true,
