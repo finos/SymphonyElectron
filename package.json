@@ -174,12 +174,12 @@
     "rimraf": "^3.0.2",
     "save-svg-as-png": "^1.4.17",
     "shell-path": "2.1.0",
-    "swift-search": "2.0.2",
-    "screen-share-indicator-frame": "git+https://github.com/symphonyoss/ScreenShareIndicatorFrame.git#v1.4.10"
+    "swift-search": "2.0.2"
   },
   "optionalDependencies": {
     "auto-update": "file:auto_update",
-    "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#v2.0.0"
+    "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#v2.0.0",
+    "screen-share-indicator-frame": "git+https://github.com/symphonyoss/ScreenShareIndicatorFrame.git#v1.4.10"
   },
   "ava": {
     "failFast": true,
