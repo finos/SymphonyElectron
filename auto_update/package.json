@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "description": "SDA Auto Update",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "preinstall": "npm run build",
-    "build": "cl auto_update_helper.cpp /O2 /MT /nologo /link /SUBSYSTEM:CONSOLE"
+    "test": "cl tests.cpp /O2 /MTd /D_DEBUG /D_CRTDBG_MAP_ALLOC /nologo /link /SUBSYSTEM:CONSOLE && tests.exe",
+    "preinstall": "npm run test && npm run build",
+    "build": "cl auto_update_helper.cpp /O2 /MT /nologo /link /SUBSYSTEM:CONSOLE && cl auto_update_service.cpp /O2 /MT /nologo /link /SUBSYSTEM:CONSOLE"
   }
 }
