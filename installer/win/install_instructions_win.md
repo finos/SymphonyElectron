@@ -1,11 +1,57 @@
 Windows Installer Instructions
 ==============================
 
+Silent installation
+-------------------
+
+The installer supports silent installation using the standard "msiexec" command from a command prompt. 
+This is done by specifying the /q command line flag
+
+#### Example
+
+    msiexec /i Symphony.msi /q
+
+As errors are not reported during silent installation, it is a good idea to enable logging when using 
+this option (see below).
+
+Note that the default installation path will require elevated user rights, so a silent install will 
+either have to be run from an Administrator command promp, or specify a different INSTALLDIR path 
+(see below) or the installation will silently fail (but an error will be logged if logging is enabled).
+
+
+Logging
+-------
+
+To get a detailed log of the installation and detailed reports of any errors, logging to file can be 
+enabled by specifying the /l* command line flag
+
+#### Example
+
+    msiexec /i Symphony.msi /l* symphony_install.log```
+
+
+Installation path
+-----------------
+
+By default, Symphony will be installed to the location
+
+    %LOCALAPPDATA%\Programs\Symphony
+
+which requires elevated user rights. If running a normal (not silent) installation, the user will get 
+the usual UAC prompt to grant access.
+
+To specify a different install location, the `INSTALLDIR` parameter can be specified
+
+#### Example
+
+    msiexec /i Symphony.msi INSTALLDIR="C:\MyLocation"
+
+
+
 Install parameters
 ------------------
 
-
-
+The following parameters are available to control other aspects of the installation.
 
 -------------------------------------------------------------------
 ### ALLUSERS
@@ -19,7 +65,7 @@ Expected values:
 
 #### Example, install *For all users*
 
-    msiexec /i Symphony.msi /q ALLUSERS="1"
+    msiexec /i Symphony.msi ALLUSERS="1"
 
 or
 
@@ -28,7 +74,7 @@ or
 
 #### Example, install *Only for me*
 
-    msiexec /i Symphony.msi /q ALLUSERS=""
+    msiexec /i Symphony.msi ALLUSERS=""
 
 
 
@@ -48,7 +94,7 @@ The default value differs depending on ALLUSERS setting.
 
 #### Example
 
-    msiexec /i Symphony.msi /q APPDIR="C:\Program Files\Symphony"
+    msiexec /i Symphony.msi APPDIR="C:\Program Files\Symphony"
 
 
 
@@ -64,7 +110,7 @@ Expected values:
 
 #### Example, install with always-on-top disabled
 
-    msiexec /i Symphony.msi /q ALWAYS_ON_TOP="DISABLED"
+    msiexec /i Symphony.msi ALWAYS_ON_TOP="DISABLED"
 
 or
 
@@ -72,7 +118,7 @@ or
 
 #### Example, install with always-on-top enabled
 
-    msiexec /i Symphony.msi /q ALWAYS_ON_TOP="ENABLED"
+    msiexec /i Symphony.msi ALWAYS_ON_TOP="ENABLED"
 
 
 
@@ -85,7 +131,7 @@ Expected values:
 
 #### Example
 
-    msiexec /i Symphony.msi /q AUTO_LAUNCH_PATH="C:\Program Files\internet explorer\iexplore.exe"
+    msiexec /i Symphony.msi AUTO_LAUNCH_PATH="C:\Program Files\internet explorer\iexplore.exe"
 
 
 
@@ -101,7 +147,7 @@ Expected values:
 
 #### Example, install with auto start enabled
 
-    msiexec /i Symphony.msi /q AUTO_START="ENABLED"
+    msiexec /i Symphony.msi AUTO_START="ENABLED"
 
 or
 
@@ -109,7 +155,7 @@ or
 
 #### Example, install with auto start disabled
 
-    msiexec /i Symphony.msi /q AUTO_START="DISABLED"
+    msiexec /i Symphony.msi AUTO_START="DISABLED"
 
 
 
@@ -125,7 +171,7 @@ Expected values:
 
 #### Example, install with bring-to-front disabled
 
-    msiexec /i Symphony.msi /q BRING_TO_FRONT="DISABLED"
+    msiexec /i Symphony.msi BRING_TO_FRONT="DISABLED"
 
 or
 
@@ -133,7 +179,7 @@ or
 
 #### Example, install with bring-to-front enabled
 
-    msiexec /i Symphony.msi /q BRING_TO_FRONT="ENABLED"
+    msiexec /i Symphony.msi BRING_TO_FRONT="ENABLED"
 
 
 
@@ -149,7 +195,7 @@ Expected values:
 
 #### Example, install with custom title bar enabled
 
-    msiexec /i Symphony.msi /q CUSTOM_TITLE_BAR="ENABLED"
+    msiexec /i Symphony.msi CUSTOM_TITLE_BAR="ENABLED"
 
 or
 
@@ -157,7 +203,7 @@ or
 
 #### Example, install with custom title bar disabled
 
-    msiexec /i Symphony.msi /q CUSTOM_TITLE_BAR="DISABLED"
+    msiexec /i Symphony.msi CUSTOM_TITLE_BAR="DISABLED"
 
 
 
@@ -173,7 +219,7 @@ Expected values:
 
 #### Example, install with dev tools enabled
 
-    msiexec /i Symphony.msi /q DEV_TOOLS_ENABLED="true"
+    msiexec /i Symphony.msi DEV_TOOLS_ENABLED="true"
 
 or
 
@@ -181,7 +227,7 @@ or
 
 #### Example, install with dev tools disabled
 
-    msiexec /i Symphony.msi /q DEV_TOOLS_ENABLED="false"
+    msiexec /i Symphony.msi DEV_TOOLS_ENABLED="false"
 
 
 
@@ -197,7 +243,7 @@ Expected values:
 
 #### Example, install with full screen enabled
 
-    msiexec /i Symphony.msi /q FULL_SCREEN="true"
+    msiexec /i Symphony.msi FULL_SCREEN="true"
 
 or
 
@@ -205,7 +251,7 @@ or
 
 #### Example, install with full screen disabled
 
-    msiexec /i Symphony.msi /q FULL_SCREEN="false"
+    msiexec /i Symphony.msi FULL_SCREEN="false"
 
 
 
@@ -245,7 +291,7 @@ Expected values:
 
 #### Example, install with location enabled
 
-    msiexec /i Symphony.msi /q LOCATION="true"
+    msiexec /i Symphony.msi LOCATION="true"
 
 or
 
@@ -253,7 +299,7 @@ or
 
 #### Example, install with location disabled
 
-    msiexec /i Symphony.msi /q LOCATION="false"
+    msiexec /i Symphony.msi LOCATION="false"
 
 
 
@@ -269,7 +315,7 @@ Expected values:
 
 #### Example, install with media enabled
 
-    msiexec /i Symphony.msi /q MEDIA="true"
+    msiexec /i Symphony.msi MEDIA="true"
 
 or
 
@@ -277,7 +323,7 @@ or
 
 #### Example, install with media disabled
 
-    msiexec /i Symphony.msi /q MEDIA="false"
+    msiexec /i Symphony.msi MEDIA="false"
 
 
 
@@ -293,7 +339,7 @@ Expected values:
 
 #### Example, install with Midi SysEx enabled
 
-    msiexec /i Symphony.msi /q MIDI_SYSEX="true"
+    msiexec /i Symphony.msi MIDI_SYSEX="true"
 
 or
 
@@ -301,7 +347,7 @@ or
 
 #### Example, install with Midi SysEx disabled
 
-    msiexec /i Symphony.msi /q MIDI_SYSEX="false"
+    msiexec /i Symphony.msi MIDI_SYSEX="false"
 
 
 
@@ -317,7 +363,7 @@ Expected values:
 
 #### Example, install with minimize-on-close enabled
 
-    msiexec /i Symphony.msi /q MINIMIZE_ON_CLOSE="ENABLED"
+    msiexec /i Symphony.msi MINIMIZE_ON_CLOSE="ENABLED"
 
 or
 
@@ -325,7 +371,7 @@ or
 
 #### Example, install with minimize-on-close disabled
 
-    msiexec /i Symphony.msi /q MINIMIZE_ON_CLOSE="DISABLED"
+    msiexec /i Symphony.msi MINIMIZE_ON_CLOSE="DISABLED"
 
 
 
@@ -341,7 +387,7 @@ Expected values:
 
 #### Example, install with notifications enabled
 
-    msiexec /i Symphony.msi /q NOTIFICATIONS="true"
+    msiexec /i Symphony.msi NOTIFICATIONS="true"
 
 or
 
@@ -349,7 +395,7 @@ or
 
 #### Example, install with notifications disabled
 
-    msiexec /i Symphony.msi /q NOTIFICATIONS="false"
+    msiexec /i Symphony.msi NOTIFICATIONS="false"
 
 
 
@@ -365,7 +411,7 @@ Expected values:
 
 #### Example, install with open external enabled
 
-    msiexec /i Symphony.msi /q OPEN_EXTERNAL="true"
+    msiexec /i Symphony.msi OPEN_EXTERNAL="true"
 
 or
 
@@ -373,7 +419,7 @@ or
 
 #### Example, install with open external disabled
 
-    msiexec /i Symphony.msi /q OPEN_EXTERNAL="false"
+    msiexec /i Symphony.msi OPEN_EXTERNAL="false"
 
 
 
@@ -387,7 +433,7 @@ Expected values:
 
 #### Example
 
-    msiexec /i Symphony.msi /q POD_URL="https://my.symphony.com"
+    msiexec /i Symphony.msi POD_URL="https://my.symphony.com"
 
 
 
@@ -401,7 +447,7 @@ Expected values:
 
 #### Example
 
-    msiexec /i Symphony.msi /q CONTEXT_ORIGIN_URL="https://my.symphony.com"
+    msiexec /i Symphony.msi CONTEXT_ORIGIN_URL="https://my.symphony.com"
 
 
 
@@ -417,7 +463,7 @@ Expected values:
 
 #### Example, install with pointer lock enabled
 
-    msiexec /i Symphony.msi /q POINTER_LOCK="true"
+    msiexec /i Symphony.msi POINTER_LOCK="true"
 
 or
 
@@ -425,7 +471,7 @@ or
 
 #### Example, install with pointer lock disabled
 
-    msiexec /i Symphony.msi /q POINTER_LOCK="false"
+    msiexec /i Symphony.msi POINTER_LOCK="false"
 
 
 
@@ -442,7 +488,7 @@ The default (if not specified, or if specified as empty string "") is
 
 #### Example
 
-    msiexec /i Symphony.msi /q USER_DATA_PATH="z:\userdata\symphony"
+    msiexec /i Symphony.msi USER_DATA_PATH="z:\userdata\symphony"
 
 
 
