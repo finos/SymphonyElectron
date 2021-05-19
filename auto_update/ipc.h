@@ -114,7 +114,6 @@ ipc_client_t* ipc_client_connect( char const* pipe_name ) {
         // Retry once if pipe was not found
         if( GetLastError() == ERROR_FILE_NOT_FOUND ) {
             Sleep( 1000 );
-            printf( "retry\n" );
             pipe = CreateFileA( 
                 expanded_pipe_name, // pipe name 
                 GENERIC_READ |      // read and write access 
@@ -296,7 +295,6 @@ DWORD WINAPI ipc_client_thread( LPVOID param ) {
             if( !fSuccess && GetLastError() == ERROR_IO_PENDING ) {
                 if( WaitForSingleObject( hEvent, 500 ) == WAIT_TIMEOUT ) {
                     CancelIoEx( context->pipe, &context->io );
-                    printf( "\n\nRETRY\n\n");
                     continue;
                 }
                 fSuccess = GetOverlappedResult( 

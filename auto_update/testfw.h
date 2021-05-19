@@ -3,7 +3,7 @@
 		  Licensing information can be found at the end of the file.
 ------------------------------------------------------------------------------
 
-testfw.h - v1.0 - Basic test framwework for C/C++.
+testfw.h - v1.1 - Basic test framwework for C/C++.
 
 Do this:
 	#define TESTFW_IMPLEMENTATION
@@ -15,8 +15,14 @@ before you include this file in *one* C/C++ file to create the implementation.
 
 #define TESTFW_INIT() testfw_init()
 #define TESTFW_SUMMARY() testfw_summary( __FILE__, __func__, __LINE__ )
-#define TESTFW_TEST_BEGIN( desc ) testfw_test_begin( desc, __FILE__, __func__, __LINE__ );
-#define TESTFW_TEST_END() testfw_test_end( __FILE__, __func__, __LINE__ )
+#if defined( _WIN32 ) && !defined( TESTFW_NO_SEH )
+    #define TESTFW_TEST_BEGIN( desc ) testfw_test_begin( desc, __FILE__, __func__, __LINE__ ); __try {
+    #define TESTFW_TEST_END() } __except( EXCEPTION_EXECUTE_HANDLER ) { testfw_exception( GetExceptionCode() ); } \
+        testfw_test_end( __FILE__, __func__, __LINE__ )
+#else
+    #define TESTFW_TEST_BEGIN( desc ) testfw_test_begin( desc, __FILE__, __func__, __LINE__ )
+    #define TESTFW_TEST_END() testfw_test_end( __FILE__, __func__, __LINE__ )
+#endif
 #define TESTFW_EXPECTED( expression ) testfw_expected( (expression) ? 1 : 0, #expression, __FILE__, __func__, __LINE__ )
 
 void testfw_init();
@@ -28,6 +34,9 @@ void testfw_print_test_desc();
 void testfw_print_failure( char const* filename, int line );
 void testfw_assertion_count_inc();
 void testfw_current_test_assertion_failed();
+#if defined( _WIN32 ) && !defined( TESTFW_NO_SEH )
+    void testfw_exception( unsigned int exception_code );
+#endif
 
 
 #endif /* testfw_h */
@@ -339,6 +348,98 @@ void testfw_test_end( char const* filename, char const* funcname, int line )
     memset( &testfw_internal_state.current_test, 0, sizeof( testfw_internal_state.current_test ) );    
     }
 
+
+#if defined( _WIN32 ) && !defined( TESTFW_NO_SEH )
+    void testfw_exception( unsigned int exception_code )
+        {
+        if( testfw_internal_must_be_in_test() ) return;
+
+        if( !testfw_internal_state.current_test.counted_as_failed ) 
+            {
+            testfw_internal_state.current_test.counted_as_failed = 1;
+            ++testfw_internal_state.tests_failed;
+            }
+
+        char exception_str[ 64 ];
+        switch( exception_code ) 
+            {
+            case EXCEPTION_ACCESS_VIOLATION:
+                strcpy( exception_str, "EXCEPTION_ACCESS_VIOLATION" );
+                break;
+            case EXCEPTION_DATATYPE_MISALIGNMENT:
+                strcpy( exception_str, "EXCEPTION_DATATYPE_MISALIGNMENT" );
+                break;
+            case EXCEPTION_BREAKPOINT:
+                strcpy( exception_str, "EXCEPTION_BREAKPOINT" );
+                break;
+            case EXCEPTION_SINGLE_STEP:
+                strcpy( exception_str, "EXCEPTION_SINGLE_STEP" );
+                break;
+            case EXCEPTION_ARRAY_BOUNDS_EXCEEDED:
+                strcpy( exception_str, "EXCEPTION_ARRAY_BOUNDS_EXCEEDED" );
+                break;
+            case EXCEPTION_FLT_DENORMAL_OPERAND:
+                strcpy( exception_str, "EXCEPTION_FLT_DENORMAL_OPERAND" );
+                break;
+            case EXCEPTION_FLT_DIVIDE_BY_ZERO:
+                strcpy( exception_str, "EXCEPTION_FLT_DIVIDE_BY_ZERO" );
+                break;
+            case EXCEPTION_FLT_INEXACT_RESULT:
+                strcpy( exception_str, "EXCEPTION_FLT_INEXACT_RESULT" );
+                break;
+            case EXCEPTION_FLT_INVALID_OPERATION:
+                strcpy( exception_str, "EXCEPTION_FLT_INVALID_OPERATION" );
+                break;
+            case EXCEPTION_FLT_OVERFLOW:
+                strcpy( exception_str, "EXCEPTION_FLT_OVERFLOW" );
+                break;
+            case EXCEPTION_FLT_STACK_CHECK:
+                strcpy( exception_str, "EXCEPTION_FLT_STACK_CHECK" );
+                break;
+            case EXCEPTION_FLT_UNDERFLOW:
+                strcpy( exception_str, "EXCEPTION_FLT_UNDERFLOW" );
+                break;
+            case EXCEPTION_INT_DIVIDE_BY_ZERO:
+                strcpy( exception_str, "EXCEPTION_INT_DIVIDE_BY_ZERO" );
+                break;
+            case EXCEPTION_INT_OVERFLOW:
+                strcpy( exception_str, "EXCEPTION_INT_OVERFLOW" );
+                break;
+            case EXCEPTION_PRIV_INSTRUCTION:
+                strcpy( exception_str, "EXCEPTION_PRIV_INSTRUCTION" );
+                break;
+            case EXCEPTION_IN_PAGE_ERROR:
+                strcpy( exception_str, "EXCEPTION_IN_PAGE_ERROR" );
+                break;
+            case EXCEPTION_ILLEGAL_INSTRUCTION:
+                strcpy( exception_str, "EXCEPTION_ILLEGAL_INSTRUCTION" );
+                break;
+            case EXCEPTION_NONCONTINUABLE_EXCEPTION:
+                strcpy( exception_str, "EXCEPTION_NONCONTINUABLE_EXCEPTION" );
+                break;
+            case EXCEPTION_STACK_OVERFLOW:
+                strcpy( exception_str, "EXCEPTION_STACK_OVERFLOW" );
+                break;
+            case EXCEPTION_INVALID_DISPOSITION:
+                strcpy( exception_str, "EXCEPTION_INVALID_DISPOSITION" );
+                break;
+            case EXCEPTION_GUARD_PAGE:
+                strcpy( exception_str, "EXCEPTION_GUARD_PAGE" );
+                break;
+            case EXCEPTION_INVALID_HANDLE:
+                strcpy( exception_str, "EXCEPTION_INVALID_HANDLE" );
+                break;
+            default:
+                sprintf( exception_str, "%X", exception_code );
+            }
+
+        testfw_print_test_desc();
+        TESTFW_PRINTF( "\n%s%s(%d): %sFAILED:%s\n", TESTFW_ANSI_GREY, testfw_internal_state.current_test.file, testfw_internal_state.current_test.line, TESTFW_ANSI_LIGHT_RED, 
+            TESTFW_ANSI_RESET );
+        TESTFW_PRINTF( "\n  %sEXCEPTION( %s%s%s )%s\n", TESTFW_ANSI_CYAN, TESTFW_ANSI_WHITE, exception_str, 
+            TESTFW_ANSI_CYAN, TESTFW_ANSI_RESET );
+        }
+#endif
 
 void testfw_current_test_assertion_failed()
     {
