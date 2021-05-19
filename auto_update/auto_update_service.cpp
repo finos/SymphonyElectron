@@ -10,6 +10,8 @@
 #pragma comment(lib, "advapi32.lib")
 #pragma comment(lib, "Shell32.lib")
 
+#define PIPE_NAME "symphony_sda_auto_update_ipc"
+
 #define SVCNAME TEXT("SDA Auto Update")
 
 SERVICE_STATUS          gSvcStatus; 
@@ -168,6 +170,35 @@ VOID WINAPI SvcMain( DWORD dwArgc, LPTSTR *lpszArgv )
 }
 
 
+// This routine is a simple function to print the client request to the console
+// and populate the reply buffer with a default data string. This is where you
+// would put the actual client request processing code that runs in the context
+// of an instance thread. Keep in mind the main thread will continue to wait for
+// and receive other client connections while the instance thread is working.
+void run_installer( char const* request, void* user_data, char* response, size_t capacity ) {
+    printf( "Client Request String:\"%s\"\n", request );
+
+	char command[ 512 ];
+	sprintf( command, "/i %s /q", request );
+
+    SHELLEXECUTEINFO ShExecInfo = { 0 };
+    ShExecInfo.cbSize = sizeof( SHELLEXECUTEINFO );
+    ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+    ShExecInfo.hwnd = NULL;
+    ShExecInfo.lpVerb = "open";
+    ShExecInfo.lpFile = "msiexec";        
+    ShExecInfo.lpParameters = command;   
+    ShExecInfo.lpDirectory = NULL;
+    ShExecInfo.nShow = SW_SHOW;
+    ShExecInfo.hInstApp = NULL; 
+    ShellExecuteEx( &ShExecInfo );
+    WaitForSingleObject( ShExecInfo.hProcess, INFINITE );
+    CloseHandle( ShExecInfo.hProcess );
+
+    strcpy( response, "OK" );
+}
+
+
 //
 // Purpose: 
 //   The service code
@@ -183,7 +214,7 @@ VOID WINAPI SvcMain( DWORD dwArgc, LPTSTR *lpszArgv )
 //
 VOID SvcInit( DWORD dwArgc, LPTSTR *lpszArgv)
 {
-    ipc_server_t* server = ipc_server_start();
+    ipc_server_t* server = ipc_server_start( PIPE_NAME, run_installer, NULL );
 	
     // TO_DO: Declare and set any required variables.
     //   Be sure to periodically call ReportSvcStatus() with 
@@ -295,4 +326,7 @@ VOID WINAPI SvcCtrlHandler( DWORD dwCtrl )
    } 
    
 }
+
+#define IPC_IMPLEMENTATION
+#include "ipc.h"
 
