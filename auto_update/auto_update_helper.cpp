@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include "ipc.h"
 
+#define PIPE_NAME "symphony_sda_auto_update_ipc"
 
 int main( int argc, char** argv ) {
     if( argc < 3 ) {
@@ -16,7 +17,7 @@ int main( int argc, char** argv ) {
     }
     char const* installer_filename = argv[ 1 ];
     char const* application_filename = argv[ 2 ];
-    ipc_client_t* client = ipc_client_connect();
+    ipc_client_t* client = ipc_client_connect( PIPE_NAME );
     ipc_client_send( client, installer_filename );
     char response[ 256 ];
     int size = 0;
@@ -29,7 +30,7 @@ int main( int argc, char** argv ) {
     }
     response[ size ] = '\0';
     printf( "%s\n", response );
-    ipc_client_connect();
+    ipc_client_connect( PIPE_NAME );
 
     int result = (int)(uintptr_t) ShellExecute( NULL, NULL, application_filename, 
         NULL, NULL, SW_SHOWNORMAL );
@@ -45,3 +46,7 @@ int main( int argc, char** argv ) {
 
     return EXIT_SUCCESS;
 }
+
+#define IPC_IMPLEMENTATION
+#include "ipc.h"
+
