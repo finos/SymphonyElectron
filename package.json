@@ -177,7 +177,7 @@
   },
   "optionalDependencies": {
     "auto-update": "file:auto_update",
-    "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#v2.1.0",
+    "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#v2.2.0",
     "screen-share-indicator-frame": "git+https://github.com/symphonyoss/ScreenShareIndicatorFrame.git#v1.4.10",
     "swift-search": "2.0.3"
   },
