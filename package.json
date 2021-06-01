@@ -178,7 +178,7 @@
   "optionalDependencies": {
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#v1.0.11",
     "screen-share-indicator-frame": "git+https://github.com/symphonyoss/ScreenShareIndicatorFrame.git#v1.4.10",
-    "swift-search": "2.0.2"
+    "swift-search": "2.0.3"
   },
   "ava": {
     "failFast": true,
