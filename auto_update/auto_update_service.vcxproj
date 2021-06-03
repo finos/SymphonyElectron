@@ -134,10 +134,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="auto_update_service.cpp" />
+    <ClCompile Include="auto_update_service.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ipc.h" />
+    <ClInclude Include="service.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
