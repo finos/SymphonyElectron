@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, nativeImage } from 'electron';
+import { app, BrowserWindow, clipboard, ipcMain, nativeImage } from 'electron';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -28,9 +28,10 @@ const readFile = util.promisify(fs.readFile);
 
 class ScreenSnippet {
   private readonly tempDir: string;
-  private readonly captureUtil: string;
+  private readonly isOldWindows: boolean;
   private outputFilePath: string | undefined;
-  private captureUtilArgs: ReadonlyArray<string> | undefined;
+  private captureUtil: string;
+  private captureUtilArgs: ReadonlyArray<string>;
   private child: ChildProcess | undefined;
   private focusedWindow: BrowserWindow | null = null;
   private shouldUpdateAlwaysOnTop: boolean = false;
@@ -44,18 +45,19 @@ class ScreenSnippet {
         fs.mkdirSync(this.tempDir);
       }
     }
-    this.captureUtil = isMac
-      ? '/usr/sbin/screencapture'
-      : isDevEnv
-      ? path.join(
-          __dirname,
-          '../../../node_modules/screen-snippet/ScreenSnippet.exe',
-        )
-      : path.join(path.dirname(app.getPath('exe')), 'ScreenSnippet.exe');
+    this.isOldWindows =
+      isWindowsOS &&
+      (parseInt(os.release().split('.')[0], 10) < 10 ||
+        parseInt(os.release().split('.')[2], 10) < 15002);
 
-    if (isLinux) {
-      this.captureUtil = '/usr/bin/gnome-screenshot';
-    }
+    logger.info(
+      `screen-snippet-handler: isOldWindows ${
+        this.isOldWindows
+      } os.release: ${os.release()}`,
+    );
+
+    this.captureUtil = '';
+    this.captureUtilArgs = [];
 
     ipcMain.on(
       'snippet-analytics-data',
@@ -93,23 +95,44 @@ class ScreenSnippet {
       this.tempDir,
       'symphonyImage-' + Date.now() + '.png',
     );
+
+    let usingClipboard = false;
     if (isMac) {
+      this.captureUtil = '/usr/sbin/screencapture';
       this.captureUtilArgs = ['-i', '-s', '-t', 'png', this.outputFilePath];
     } else if (isWindowsOS) {
       if (windowHandler.isMana) {
-        this.captureUtilArgs = [
-          '--no-annotate',
-          this.outputFilePath,
-          i18n.getLocale(),
-        ];
+        if (this.isOldWindows) {
+          this.captureUtil = isDevEnv
+            ? path.join(
+                __dirname,
+                '../../../node_modules/screen-snippet/ScreenSnippet.exe',
+              )
+            : path.join(path.dirname(app.getPath('exe')), 'ScreenSnippet.exe');
+          this.captureUtilArgs = [
+            '--no-annotate',
+            this.outputFilePath,
+            i18n.getLocale(),
+          ];
+        } else {
+          this.captureUtil = 'SnippingTool';
+          this.captureUtilArgs = ['/clip'];
+          usingClipboard = true;
+        }
       } else {
+        this.captureUtil = isDevEnv
+          ? path.join(
+              __dirname,
+              '../../../node_modules/screen-snippet/ScreenSnippet.exe',
+            )
+          : path.join(path.dirname(app.getPath('exe')), 'ScreenSnippet.exe');
         this.captureUtilArgs = [this.outputFilePath, i18n.getLocale()];
       }
     } else if (isLinux) {
+      this.captureUtil = '/usr/bin/gnome-screenshot';
       this.captureUtilArgs = ['-a', '-f', this.outputFilePath];
-    } else {
-      this.captureUtilArgs = [];
     }
+
     this.focusedWindow = BrowserWindow.getFocusedWindow();
 
     logger.info(
@@ -124,7 +147,17 @@ class ScreenSnippet {
       this.killChildProcess();
     }
     try {
-      await this.execCmd(this.captureUtil, this.captureUtilArgs);
+      if (usingClipboard) {
+        logger.info(
+          `screen-snippet-handler: Using clipboard when capturing screen snippet`,
+        );
+        clipboard.clear();
+        await this.execCmd(this.captureUtil, this.captureUtilArgs);
+        fs.writeFileSync(this.outputFilePath, clipboard.readImage().toPNG());
+        clipboard.clear();
+      } else {
+        await this.execCmd(this.captureUtil, this.captureUtilArgs);
+      }
       if (windowHandler.isMana) {
         logger.info(
           'screen-snippet-handler: Attempting to extract image dimensions from: ' +
@@ -172,7 +205,7 @@ class ScreenSnippet {
    * Cancels a screen capture and closes the snippet window
    */
   public async cancelCapture() {
-    if (!isWindowsOS) {
+    if (!isWindowsOS || windowHandler.isMana || this.captureUtil === '') {
       return;
     }
     logger.info(`screen-snippet-handler: Cancel screen capture!`);

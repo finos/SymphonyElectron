@@ -49,6 +49,7 @@ createAPI();
 
 if (ssfWindow.ssf) {
   // New context bridge api that exposes all the methods on to window object
+  // For Mana to communicate with SDA
   contextBridge.exposeInMainWorld('manaSSF', {
     setIsMana: ssfWindow.ssf.setIsMana,
     CryptoLib: ssfWindow.ssf.CryptoLib,
@@ -85,6 +86,7 @@ if (ssfWindow.ssf) {
     showNotification: ssfWindow.ssf.showNotification,
     closeNotification: ssfWindow.ssf.closeNotification,
     restartApp: ssfWindow.ssf.restartApp,
+    closeAllWrapperWindows: ssfWindow.ssf.closeAllWrapperWindows,
   });
 }
 
@@ -202,7 +204,7 @@ ipcRenderer.on('initialize-memory-refresh', () => {
 });
 
 ipcRenderer.on('exit-html-fullscreen', async () => {
-  if (document && typeof document.exitFullscreen === 'function') {
+  if (document && document.fullscreenElement) {
     await document.exitFullscreen();
   }
 });

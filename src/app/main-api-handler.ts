@@ -35,6 +35,7 @@ import {
 /**
  * Handle API related ipc messages from renderers. Only messages from windows
  * we have created are allowed.
+ * Used mainly for Mana to communicate with SDA
  */
 ipcMain.on(
   apiName.symphonyApi,
@@ -206,6 +207,7 @@ ipcMain.on(
       case apiCmds.setIsInMeeting:
         if (typeof arg.isInMeeting === 'boolean') {
           memoryMonitor.setMeetingStatus(arg.isInMeeting);
+          appStateHandler.preventDisplaySleep(arg.isInMeeting);
         }
         break;
       case apiCmds.memoryInfo:
@@ -261,6 +263,11 @@ ipcMain.on(
       case apiCmds.setIsMana:
         if (typeof arg.isMana === 'boolean') {
           windowHandler.isMana = arg.isMana;
+          // Update App Menu
+          const appMenu = windowHandler.appMenu;
+          if (appMenu && windowHandler.isMana) {
+            appMenu.buildMenu();
+          }
           logger.info('window-handler: isMana: ' + windowHandler.isMana);
         }
         break;
@@ -274,6 +281,9 @@ ipcMain.on(
         if (typeof arg.notificationId === 'number') {
           await notificationHelper.closeNotification(arg.notificationId);
         }
+        break;
+      case apiCmds.closeAllWrapperWindows:
+        windowHandler.closeAllWindows();
         break;
       default:
         break;

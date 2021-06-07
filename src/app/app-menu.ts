@@ -25,7 +25,7 @@ import {
   updateAlwaysOnTop,
 } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
-import { reloadWindow, windowExists } from './window-utils';
+import { reloadWindow, windowExists, zoomIn, zoomOut } from './window-utils';
 
 export const menuSections = {
   about: 'about',
@@ -56,6 +56,7 @@ const windowsAccelerator = {
 const macAccelerator = {
   ...{
     zoomIn: 'CommandOrControl+Plus',
+    zoomOut: 'CommandOrControl+-',
   },
 };
 
@@ -326,6 +327,17 @@ export class AppMenu {
    */
   private buildViewMenu(): Electron.MenuItemConstructorOptions {
     logger.info(`app-menu: building view menu`);
+
+    const zoomInAccelerator = isMac
+      ? macAccelerator.zoomIn
+      : isWindowsOS || isLinux
+      ? windowsAccelerator.zoomIn
+      : '';
+    const zoomOutAccelerator = isMac
+      ? macAccelerator.zoomOut
+      : isWindowsOS || isLinux
+      ? windowsAccelerator.zoomOut
+      : '';
     return {
       label: i18n.t('View')(),
       submenu: [
@@ -342,11 +354,13 @@ export class AppMenu {
           role: 'resetZoom',
           label: i18n.t('Actual Size')(),
         }),
-        this.assignRoleOrLabel({ role: 'zoomIn', label: i18n.t('Zoom In')() }),
-        this.assignRoleOrLabel({
-          role: 'zoomOut',
-          label: i18n.t('Zoom Out')(),
-        }),
+        this.zoomMenuBuilder(zoomInAccelerator, 'Zoom In', zoomIn, 'zoomIn'),
+        this.zoomMenuBuilder(
+          zoomOutAccelerator,
+          'Zoom Out',
+          zoomOut,
+          'zoomOut',
+        ),
         this.buildSeparator(),
         this.assignRoleOrLabel({
           role: 'togglefullscreen',
@@ -698,5 +712,25 @@ export class AppMenu {
         ? AnalyticsActions.ENABLED
         : AnalyticsActions.DISABLED,
     });
+  }
+
+  /**
+   * Build zoom menu for view section
+   */
+  private zoomMenuBuilder(
+    accelerator: string,
+    label: string,
+    action: () => void,
+    role: MenuItemConstructorOptions['role'],
+  ): MenuItemConstructorOptions {
+    if (windowHandler.isMana) {
+      return {
+        accelerator,
+        label: i18n.t(label)(),
+        click: (_item, focusedWindow) => (focusedWindow ? action() : null),
+      };
+    } else {
+      return this.assignRoleOrLabel({ role, label: i18n.t(label)() });
+    }
   }
 }

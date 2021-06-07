@@ -1,4 +1,18 @@
 # Release notes
+=======
+
+## SDA 9.3.x
+
+### 9.3.0
+
+- [SDA-3137 CORE Start Symphony-windows with command line parameter for userDataPath](https://perzoinc.atlassian.net/browse/SDA-3137)
+- [SDA-3079 CORE - Natwest - Prod - Unable to take screenshot of one Application](https://perzoinc.atlassian.net/browse/sda-3079)
+- [SDA-3102 State Street - Create a Property to suppress SDA from starting post install](https://perzoinc.atlassian.net/browse/sda-3102}
+
+- 9.4.1 (Electron-version)
+- 83 (Chromium-version)
+
+---
 
 ## SDA 9.2.x
 
