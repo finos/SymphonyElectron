@@ -62,8 +62,6 @@ import {
   preventWindowNavigation,
   reloadWindow,
   windowExists,
-  zoomIn,
-  zoomOut,
 } from './window-utils';
 
 const windowSize: string | null = getCommandLineArgs(
@@ -607,7 +605,7 @@ export class WindowHandler {
       if (isWindowsOS || isMac) {
         this.execCmd(this.screenShareIndicatorFrameUtil, []);
       }
-      this.closeAllWindows();
+      this.closeAllWindow();
       this.destroyAllWindows();
     });
 
@@ -689,12 +687,6 @@ export class WindowHandler {
       }
       logger.info(`finished loading welcome screen.`);
       if (this.url.indexOf('welcome')) {
-        const ssoValue =
-          this.userConfig.url &&
-          this.userConfig.url.indexOf('/login/sso/initsso') > -1
-            ? true
-            : false;
-
         this.mainWindow.webContents.send('page-load-welcome', {
           locale: i18n.getLocale(),
           resource: i18n.loadedResources,
@@ -712,7 +704,7 @@ export class WindowHandler {
           url: userConfigUrl || this.startUrl,
           message: '',
           urlValid: !!userConfigUrl,
-          sso: ssoValue,
+          sso: false,
         });
       }
     });
@@ -796,14 +788,18 @@ export class WindowHandler {
   /**
    * Finds all the child window and closes it
    */
-  public closeAllWindows(): void {
+  public async closeAllWindow(): Promise<void> {
     const browserWindows = BrowserWindow.getAllWindows();
+    await notification.cleanUp();
     if (browserWindows && browserWindows.length) {
       browserWindows.forEach((win) => {
         const browserWindow = win as ICustomBrowserWindow;
         if (browserWindow && windowExists(browserWindow)) {
           // Closes only child windows
-          if (browserWindow.winName !== apiName.mainWindowName) {
+          if (
+            browserWindow.winName !== apiName.mainWindowName &&
+            browserWindow.winName !== apiName.notificationWindowName
+          ) {
             if (browserWindow.closable) {
               browserWindow.close();
             } else {
@@ -813,7 +809,6 @@ export class WindowHandler {
         }
       });
     }
-    notification.cleanUp();
   }
 
   /**
@@ -1839,14 +1834,8 @@ export class WindowHandler {
     }
 
     if (isMac) {
-      globalShortcut.register('CmdOrCtrl+Plus', zoomIn);
-      globalShortcut.register('CmdOrCtrl+=', zoomIn);
-      if (this.isMana) {
-        globalShortcut.register('CmdOrCtrl+-', zoomOut);
-      }
-    } else if (this.isMana && (isWindowsOS || isLinux)) {
-      globalShortcut.register('Ctrl+=', zoomIn);
-      globalShortcut.register('Ctrl+-', zoomOut);
+      globalShortcut.register('CmdOrCtrl+Plus', this.onZoomIn);
+      globalShortcut.register('CmdOrCtrl+=', this.onZoomIn);
     }
 
     app.on('browser-window-focus', () => {
@@ -1856,16 +1845,9 @@ export class WindowHandler {
       );
       globalShortcut.register('CmdOrCtrl+R', this.onReload);
       if (isMac) {
-        globalShortcut.register('CmdOrCtrl+Plus', zoomIn);
-        globalShortcut.register('CmdOrCtrl+=', zoomIn);
-        if (this.isMana) {
-          globalShortcut.register('CmdOrCtrl+-', zoomOut);
-        }
-      } else if (this.isMana && (isWindowsOS || isLinux)) {
-        globalShortcut.register('Ctrl+=', zoomIn);
-        globalShortcut.register('Ctrl+-', zoomOut);
+        globalShortcut.register('CmdOrCtrl+Plus', this.onZoomIn);
+        globalShortcut.register('CmdOrCtrl+=', this.onZoomIn);
       }
-
       if (this.url && this.url.startsWith('https://corporate.symphony.com')) {
         globalShortcut.register(isMac ? 'Cmd+Alt+1' : 'Ctrl+Shift+1', () =>
           this.switchClient(ClientSwitchType.CLIENT_1_5),
@@ -1887,12 +1869,6 @@ export class WindowHandler {
       if (isMac) {
         globalShortcut.unregister('CmdOrCtrl+Plus');
         globalShortcut.unregister('CmdOrCtrl+=');
-        if (this.isMana) {
-          globalShortcut.unregister('CmdOrCtrl+-');
-        }
-      } else if (this.isMana && (isWindowsOS || isLinux)) {
-        globalShortcut.unregister('Ctrl+=');
-        globalShortcut.unregister('Ctrl+-');
       }
       // Unregister shortcuts related to client switch
       if (this.url && this.url.startsWith('https://corporate.symphony.com')) {
@@ -1932,6 +1908,26 @@ export class WindowHandler {
       return;
     }
     reloadWindow(focusedWindow as ICustomBrowserWindow);
+  }
+
+  /**
+   * This is a workarround untill we have a
+   * fix on the electron framework
+   * https://github.com/electron/electron/issues/15496
+   */
+  private onZoomIn(): void {
+    const focusedWindow = BrowserWindow.getFocusedWindow();
+    if (!focusedWindow || !windowExists(focusedWindow)) {
+      return;
+    }
+
+    if (focusedWindow.getTitle() === 'Screen Sharing Indicator - Symphony') {
+      return;
+    }
+
+    // electron/lib/browser/api/menu-item-roles.js row 159
+    const currentZoomLevel = focusedWindow.webContents.getZoomLevel();
+    focusedWindow.webContents.setZoomLevel(currentZoomLevel + 0.5);
   }
 
   /**

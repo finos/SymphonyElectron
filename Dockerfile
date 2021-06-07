@@ -1,5 +1,5 @@
 ARG REPO=https://github.com/symphonyoss/SymphonyElectron.git
-ARG BRANCH=main
+ARG BRANCH=master
 
 FROM ubuntu:latest
 

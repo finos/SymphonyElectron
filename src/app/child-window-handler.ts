@@ -36,18 +36,25 @@ const MIN_HEIGHT = 300;
  */
 const verifyProtocolForNewUrl = (url: string): boolean => {
   const parsedUrl = parse(url);
-  if (!parsedUrl || !parsedUrl.protocol) {
+  if (!parsedUrl) {
     logger.info(
       `child-window-handler: The url ${url} doesn't have a protocol. Returning false for verification!`,
     );
     return false;
   }
 
-  const allowedProtocols = ['http:', 'https:', 'mailto:', 'symphony:'];
   // url parse returns protocol with :
-  if (allowedProtocols.includes(parsedUrl.protocol)) {
+  if (parsedUrl.protocol === 'https:') {
     logger.info(
-      `child-window-handler: Protocol of the url ${url} is whitelisted! Returning true for verification!`,
+      `child-window-handler: The url ${url} is a https url! Returning true for verification!`,
+    );
+    return true;
+  }
+
+  // url parse returns protocol with :
+  if (parsedUrl.protocol === 'http:') {
+    logger.info(
+      `child-window-handler: The url ${url} is a http url! Returning true for verification!`,
     );
     return true;
   }
@@ -291,12 +298,12 @@ export const handleChildWindow = (webContents: WebContents): void => {
       }
       if (!verifyProtocolForNewUrl(newWinUrl)) {
         logger.info(
-          `child-window-handler: new window url protocol is not valid, not performing any action!`,
+          `child-window-handler: new window url protocol is not http or https, not performing any action!`,
         );
         return;
       }
-      logger.info(`child-window-handler: new window url is ${newWinUrl} which is not of the same host / protocol,
-            so opening it in the default app!`);
+      logger.info(`child-window-handler: new window url is ${newWinUrl} which is not of the same host,
+            so opening it in the default browser!`);
       windowHandler.openUrlInDefaultBrowser(newWinUrl);
     }
   };

@@ -524,12 +524,6 @@ export const handlePermissionRequests = (
             callback,
           );
         case Permissions.OPEN_EXTERNAL:
-          if (
-            details?.externalURL?.startsWith('symphony:') ||
-            details?.externalURL?.startsWith('mailto:')
-          ) {
-            return callback(true);
-          }
           return handleSessionPermissions(
             permissions.openExternal,
             i18n.t(

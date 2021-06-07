@@ -177,7 +177,6 @@ class Script
             new PublicProperty("DEV_TOOLS_ENABLED", "true"),
             new PublicProperty("FULL_SCREEN", "true"),
             new PublicProperty("LOCATION", "true"),
-            new PublicProperty("LAUNCH_ON_INSTALL", "true"),
             new PublicProperty("MEDIA", "true"),
             new PublicProperty("MIDI_SYSEX", "true"),
             new PublicProperty("MINIMIZE_ON_CLOSE", "ENABLED"),

@@ -63,17 +63,7 @@ export default class NotificationHandler {
     y: number = 0,
   ) {
     if (window && !window.isDestroyed()) {
-      try {
-        window.setPosition(parseInt(String(x), 10), parseInt(String(y), 10));
-      } catch (err) {
-        console.warn(
-          'Failed to set window position. x: ' +
-            x +
-            ' y: ' +
-            y +
-            '. Contact the developers for more details',
-        );
-      }
+      window.setPosition(parseInt(String(x), 10), parseInt(String(y), 10));
     }
   }
 

@@ -3,7 +3,6 @@ import { autoLaunchInstance } from '../src/app/auto-launch-controller';
 import { config } from '../src/app/config-handler';
 import { exportCrashDumps, exportLogs } from '../src/app/reports-handler';
 import { updateAlwaysOnTop } from '../src/app/window-actions';
-import { zoomIn, zoomOut } from '../src/app/window-utils';
 import * as envMock from '../src/common/env';
 import { logger } from '../src/common/logger';
 import { dialog, session, shell } from './__mocks__/electron';
@@ -81,7 +80,6 @@ jest.mock('../src/app/window-handler', () => {
     windowHandler: {
       createMoreInfoWindow: jest.fn(),
       getMainWindow: jest.fn(),
-      isMana: true,
     },
   };
 });
@@ -92,14 +90,6 @@ jest.mock('../src/common/logger', () => {
       error: jest.fn(),
       info: jest.fn(),
     },
-  };
-});
-
-jest.mock('../src/app/window-utils', () => {
-  return {
-    windowExists: jest.fn(() => true),
-    zoomIn: jest.fn(),
-    zoomOut: jest.fn(),
   };
 });
 
@@ -118,12 +108,6 @@ describe('app menu', () => {
 
   const findMenuItemBuildHelpMenu = (menuItemLabel: string) => {
     return appMenu.buildHelpMenu().submenu.find((menuItem) => {
-      return menuItem.label === menuItemLabel;
-    });
-  };
-
-  const findMenuItemBuildViewMenu = (menuItemLabel: string) => {
-    return appMenu.buildViewMenu().submenu.find((menuItem) => {
       return menuItem.label === menuItemLabel;
     });
   };
@@ -378,28 +362,6 @@ describe('app menu', () => {
           menuItem.click({}, focusedWindow);
           expect(spy).not.toBeCalledWith(null, expectedValue);
         });
-      });
-    });
-
-    describe('buildViewMenu', () => {
-      it('should call zoomIn when click is triggered', () => {
-        const focusedWindow = {
-          isDestroyed: jest.fn(() => false),
-          reload: jest.fn(),
-        };
-        const menuItem = findMenuItemBuildViewMenu('Zoom In');
-        menuItem.click(item, focusedWindow);
-        expect(zoomIn).toBeCalled();
-      });
-
-      it('should call zoomOut when click is triggered', () => {
-        const focusedWindow = {
-          isDestroyed: jest.fn(() => false),
-          reload: jest.fn(),
-        };
-        const menuItem = findMenuItemBuildViewMenu('Zoom Out');
-        menuItem.click(item, focusedWindow);
-        expect(zoomOut).toBeCalled();
       });
     });
   });

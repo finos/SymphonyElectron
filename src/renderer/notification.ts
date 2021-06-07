@@ -18,6 +18,7 @@ import { isNodeEnv, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
 import NotificationHandler from './notification-handler';
 
+// const MAX_QUEUE_SIZE = 30;
 const CLEAN_UP_INTERVAL = 60 * 1000; // Closes inactive notification
 const animationQueue = new AnimationQueue();
 const CONTAINER_HEIGHT_WITH_INPUT = 120; // Notification container height
@@ -67,8 +68,8 @@ class Notification extends NotificationHandler {
       this.onMouseLeave(windowId, isInputHidden),
     onShowReply: (_event, windowId) => this.onShowReply(windowId),
   };
-  private activeNotifications: ICustomBrowserWindow[] = [];
-  private inactiveWindows: ICustomBrowserWindow[] = [];
+  private activeNotifications: Electron.BrowserWindow[] = [];
+  private inactiveWindows: Electron.BrowserWindow[] = [];
   private cleanUpTimer: NodeJS.Timer;
   private notificationQueue: INotificationData[] = [];
 
@@ -149,13 +150,15 @@ class Notification extends NotificationHandler {
       }
 
       for (const window of this.activeNotifications) {
-        const winHeight = windowExists(window) && window.getBounds().height;
+        const notificationWin = window as ICustomBrowserWindow;
+        const winHeight =
+          windowExists(notificationWin) && notificationWin.getBounds().height;
         if (
           window &&
-          window.notificationData.tag === data.tag &&
+          notificationWin.notificationData.tag === data.tag &&
           winHeight < CONTAINER_HEIGHT_WITH_INPUT
         ) {
-          this.setNotificationContent(window, data);
+          this.setNotificationContent(notificationWin, data);
           return;
         }
       }
@@ -172,7 +175,7 @@ class Notification extends NotificationHandler {
 
     // Checks for the cashed window and use them
     if (this.inactiveWindows.length > 0) {
-      const inactiveWin = this.inactiveWindows[0];
+      const inactiveWin = this.inactiveWindows[0] as ICustomBrowserWindow;
       if (windowExists(inactiveWin)) {
         this.inactiveWindows.splice(0, 1);
         this.renderNotification(inactiveWin, data);
@@ -395,9 +398,14 @@ class Notification extends NotificationHandler {
   public getNotificationWindow(
     clientId: number,
   ): ICustomBrowserWindow | undefined {
-    return this.activeNotifications.find(
-      (notification) => notification.clientId === clientId,
-    );
+    const index: number = this.activeNotifications.findIndex((win) => {
+      const notificationWindow = win as ICustomBrowserWindow;
+      return notificationWindow.clientId === clientId;
+    });
+    if (index === -1) {
+      return;
+    }
+    return this.activeNotifications[index] as ICustomBrowserWindow;
   }
 
   /**
@@ -418,9 +426,27 @@ class Notification extends NotificationHandler {
   /**
    * Closes all the notification windows and resets some configurations
    */
-  public cleanUp(): void {
+  public async cleanUp(): Promise<void> {
     animationQueue.clear();
     this.notificationQueue = [];
+    const activeNotificationWindows = {
+      ...[],
+      ...this.activeNotifications,
+    };
+    const inactiveNotificationWindows = { ...[], ...this.inactiveWindows };
+    for (const activeWindow of activeNotificationWindows) {
+      if (activeWindow && windowExists(activeWindow)) {
+        await this.hideNotification(
+          (activeWindow as ICustomBrowserWindow).clientId,
+        );
+      }
+    }
+    for (const inactiveWindow of inactiveNotificationWindows) {
+      if (inactiveWindow && windowExists(inactiveWindow)) {
+        inactiveWindow.close();
+      }
+    }
+
     this.activeNotifications = [];
     this.inactiveWindows = [];
   }
@@ -430,7 +456,9 @@ class Notification extends NotificationHandler {
    * issue: ELECTRON-1382
    */
   public moveNotificationToTop(): void {
-    this.activeNotifications
+    const notificationWindows = this
+      .activeNotifications as ICustomBrowserWindow[];
+    notificationWindows
       .filter(
         (browserWindow) =>
           typeof browserWindow.notificationData === 'object' &&

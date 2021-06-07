@@ -628,15 +628,6 @@ export class SSFApi {
   }
 
   /**
-   * Closes all browser windows on SDA side, such as notifications, Screen snippet window, popped out chats etc
-   */
-  public closeAllWrapperWindows(): void {
-    ipcRenderer.send(apiName.symphonyApi, {
-      cmd: apiCmds.closeAllWrapperWindows,
-    });
-  }
-
-  /**
    * Displays a notification from the main process
    * @param notificationOpts {INotificationData}
    * @param notificationCallback {NotificationActionCallback}

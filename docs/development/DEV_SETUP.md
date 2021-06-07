@@ -2,14 +2,16 @@
 
 ### Windows
 - NodeJS version >= 12.x.y (corresponds to electron 9.x.y)
-- Microsoft Visual Studio 2017 Community or Paid (C++ and .NET/C# development tools)
+- Microsoft Visual Studio 2015 Community or Paid (C++ and .NET/C# development tools)
 - Python >= 2.7.1
-- Dot Net 3.5 SP1 or later
+- Dot Net 3.5 SP1
+- [Advanced Installer](https://www.advancedinstaller.com/)
 
 #### Notes
 - C++ tools are required to recompile node modules
 - Dot NET/C# tools required to compile screen-snippet module
-- Open 'Developer Command Prompt for VS2017'. This sets paths to visual studio build tools.
+- Open 'Developer Command Prompt for VS2015'. This sets paths to visual studio build tools.
+- The advanced installer is required to create msi installer
 
 ### Mac
 - Xcode command line tools. Or better, Xcode latest version
@@ -18,59 +20,18 @@
 
 #### Notes
 - Ensure you have accepted the XCode license agreement
-- We use Sudre packages to create a .pkg installer file
+- We use Sudre packages to create a .pkg installer file 
 
-## Running SDA
+## Run demo:
+- npm install
+- npm run demo (runs platform specific commands)
 
-- Set this.origin to '*' in `app-bridge.ts` when running the demo.
-- Search for `// DEMO-APP:` and comment that line back in.
+*Note*: 
+- Remember to set this.origin to '*' in `app-bridge.ts` when running the demo. 
+- Search for `// DEMO-APP:` and comment that line back in. 
 - Make sure to comment it out again before you commit.
 
-
-```
-# Install dependencies
-npm install
-
-# Build SDA
-npm run prebuild
-
-# Run against a POD
-cross-env ELECTRON_DEV=true electron . --url=https://corporate.symphony.com
-
-# Run the demo app
-npm run demo
-```
-
-## Tests
-
-```
-# Run all the tests
-npm run compile:spec
-npm run test
-
-# Specific Tests
-npm run test -- --match=spell*
-
-# Run Unit tests only
-npm run test:unit
-
-# Specific Unit tests
-npm run test:unit -- --match=spell*
-
-# Spectron tests only
-npm run compile:spec
-npm run test:spectron
-
-# Specific Spectron tests
-npm run test:spectron -- --match=spell*
-```
-
-### Code Coverage
-- We capture the Code coverage reports under [coverage](out/coverage)
-- To check the test run report, see the [out](out/) directory
-- See the [tests](spec/) directory to find all the unit tests
-
-## Packaging:
+## Build Instructions:
 
 ### Mac 🖥
 - npm install
@@ -78,7 +39,7 @@ npm run test:spectron -- --match=spell*
 - To build the macOS app:
   * Run the command `npm run unpacked-mac`
   * The distributable is created in the `dist/mac` directory
-- To build mac package (installer):
+- To build mac package (installer):  
   * Run the command `npm run packed-mac`
   * The .pkg file will be generated in the `installer/mac/build` directory
 
@@ -93,7 +54,7 @@ npm run test:spectron -- --match=spell*
   * The distributable is created in the `dist/win-unpacked` directory
 - To create msi (installer):
   * Run the advanced installer script located in `installer/win` directory
-
+  
 #### MSI command line options:
 - To install for all users (admin required): msiexec.exe /i Symphony-x64.msi ALLUSERS=1
 - To install per user: msiexec.exe /i Symphony-x64.msi ALLUSERS=""
@@ -136,22 +97,38 @@ npm run test:spectron -- --match=spell*
 - To delete the container/image
 `docker rmi -f linux:6.0.0`
 
-### Change POD URL
+## Change POD URL
 - To change the start url (i.e., pod url), edit config/Symphony.config and change 'url' variable. if no protocol provided, then https will be added.
 - The installer will include file config/Symphony.config next to executable. Changes in this file will affect all
  users.
 - Alternatively, to run against a specific pod, launch Symphony (SDA) with the command line parameter `--url=pod_url
 `. With this, you don't have to change the config/Symphony.config file every time.
 
-## Troubleshooting
-### Logging
+## Tests
+- Use `npm test` to run all the tests
+
+### Unit tests and Code Coverage
+- [Jest framework](http://facebook.github.io/jest/) is used to run tests
+- Use `npm run test:unit` to run unit tests
+- We capture the Code coverage reports under [coverage](out/coverage)
+- To check the test run report, see the [out](out/) directory
+- See the [tests](spec/) directory to find all the unit tests
+
+### Spectron Tests (UI)
+- [AVA](https://github.com/avajs/ava) is used to run Spectron tests
+- Use `npm run test:spectron` to run spectron tests
+- To compile spectron tests `npm run compile:spec`
+- To run specific test use example: `npm run test:spectron -- --match=spell*` runs only spellchecker related tests
+- Spectron - Application logs can be found in `~/Library/Logs/Electron/`  
+
+## Logging
 - We enable local logging for dev environments using the module [electron-log](https://www.npmjs.com/package
 /electron-log)
 - On macOS, we store the logs under `~/Library/Logs/Electron/app_<timestamp>.log`
 - On Windows, we store the logs under `%USERPROFILE%\AppData\Roaming\Electron\app_<timestamp>.log`
 - On Linux, we store the logs under `~/.config/Electron/logs/app_<timestamp>.log`
 
-### Customisation
+## Misc notes
 - If you need to run against a POD without proper cert use cmd line option: --ignore-certificate-errors
 - To start an additional instance with custom data directory (if you want seperate user) use cmd line options
 : --multiInstance --userDataPath=`<path to data dir>`
