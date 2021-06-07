@@ -1,6 +1,9 @@
 #ifndef ipc_h
 #define ipc_h
 
+#include <stdbool.h>
+#include <stddef.h>
+
 #define IPC_MESSAGE_MAX_LENGTH 512
 
 // client
@@ -345,7 +348,7 @@ DWORD WINAPI ipc_client_thread( LPVOID param ) {
         // TODO: consider if there are better ways to deal with the error. There might not be,
         // but then the user-code calling client send/receive might need some robust retry code
         if( !success || bytes_read == 0 ) {   
-            if (GetLastError() == ERROR_BROKEN_PIPE) {
+            if( GetLastError() == ERROR_BROKEN_PIPE ) {
                 //IPC_LOG( "ipc_client_thread: client disconnected.\n" ); 
             } else {
                 IPC_LOG( "ipc_client_thread ReadFile failed, LastError=%d.\n", GetLastError() ); 
@@ -391,6 +394,8 @@ DWORD WINAPI ipc_client_thread( LPVOID param ) {
         }
     }
 
+    // Signal that a disconnect has happened
+    context->request_handler( NULL, context->user_data, NULL, 0 ); 
    
     // Flush the pipe to allow the client to read the pipe's contents 
     // before disconnecting. Then disconnect the pipe, and close the 
