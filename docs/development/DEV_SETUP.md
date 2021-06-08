@@ -33,6 +33,20 @@
 
 ## Build Instructions:
 
+- Add Artifactory credentials to your home directory `.npmrc` file
+
+1. Login to https://repo.symphony.com/ in your browser
+2. Open https://repo.symphony.com/artifactory/webapp/#/profile
+3. Click generate token
+4. Execute `curl --location --request GET 'https://repo.symphony.com/artifactory/api/npm/auth' --header 'X-JFrog-Art-Api: <token from #3>'`
+5. Update ~/.npmrc with:
+
+```
+registry = https://repo.symphony.com/artifactory/api/npm/npm-virtual-dev/
+_auth = <auth value from #4>
+always-auth = true
+```
+
 ### Mac 🖥
 - npm install
 - npm run dev (to run locally)
