@@ -2075,7 +2075,9 @@ export class WindowHandler {
     let userAgent = mainWindow.webContents.getUserAgent();
     if (doOverrideUserAgents) {
       const electronUserAgentRegex = /(Electron[0-9\/.]*)/;
-      userAgent = userAgent.replace(electronUserAgentRegex, '');
+      userAgent = userAgent
+        .replace(electronUserAgentRegex, '')
+        .replace('  ', ' ');
     }
     return userAgent;
   }
