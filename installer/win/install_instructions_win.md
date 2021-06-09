@@ -430,7 +430,7 @@ Expected values:
 * "true"
   "Electron/X.X" is removed from user-agents.
 * "false"
-  User-agents are not modified.
+  User-agents are not modified (default)
 
 #### Example, install with user-agent override
 
