@@ -48,6 +48,7 @@ Add “/l* symphony_install.log” to get debug information from the install wri
 - OPEN_EXTERNAL (Boolean)
 - DEV_TOOLS_ENABLED (Boolean)
 - AUTO_LAUNCH_PATH (String)
+- OVERRIDE_USER_AGENT (Boolean)
 You'll need to quote the Boolean values when passing from the command line.
 
 #### Check-boxes (in the installer UI) that can be altered are listed below:
