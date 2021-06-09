@@ -501,3 +501,15 @@ Expected values:
   "Electron/X.X" is removed from user-agents.
 * "false"
   User-agents are not modified.
+
+#### Example, install with user-agent override
+
+    msiexec /i Symphony.msi OVERRIDE_USER_AGENT="true"
+
+#### Example, install without user-agent override
+
+    msiexec /i Symphony.msi OVERRIDE_USER_AGENT="false"
+
+or
+
+    msiexec /i Symphony.msi
