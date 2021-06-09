@@ -492,3 +492,12 @@ The default (if not specified, or if specified as empty string "") is
 
 
 
+-------------------------------------------------------------------
+### OVERRIDE_USER_AGENT
+
+Expected values:
+
+* "true"
+  "Electron/X.X" is removed from user-agents.
+* "false"
+  User-agents are not modified.
