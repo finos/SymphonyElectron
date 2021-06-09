@@ -47,6 +47,7 @@ export interface IGlobalConfig {
   contextOriginUrl: string;
   url: string;
   contextIsolation: boolean;
+  overrideUserAgent?: boolean;
 }
 
 export interface ICloudConfig {

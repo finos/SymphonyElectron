@@ -60,8 +60,12 @@ describe('chrome flags', () => {
   it('should call `setChromeFlags` correctly', () => {
     const spy = jest.spyOn(app.commandLine, 'appendSwitch');
     setChromeFlags();
-    expect(spy).nthCalledWith(1, 'auth-negotiate-delegate-whitelist', 'url');
-    expect(spy).nthCalledWith(2, 'auth-server-whitelist', 'whitelist');
+    expect(spy).nthCalledWith(
+      1,
+      'auth-negotiate-delegate-whitelist',
+      'whitelist',
+    );
+    expect(spy).nthCalledWith(2, 'auth-server-whitelist', 'url');
     expect(spy).nthCalledWith(3, 'disable-background-timer-throttling', 'true');
     expect(spy).nthCalledWith(4, 'disable-d3d11', true);
     expect(spy).nthCalledWith(5, 'disable-gpu', true);
@@ -79,8 +83,12 @@ describe('chrome flags', () => {
     });
     const spy = jest.spyOn(app.commandLine, 'appendSwitch');
     setChromeFlags();
-    expect(spy).nthCalledWith(1, 'auth-negotiate-delegate-whitelist', 'url');
-    expect(spy).nthCalledWith(2, 'auth-server-whitelist', 'whitelist');
+    expect(spy).nthCalledWith(
+      1,
+      'auth-negotiate-delegate-whitelist',
+      'whitelist',
+    );
+    expect(spy).nthCalledWith(2, 'auth-server-whitelist', 'url');
     expect(spy).nthCalledWith(3, 'disable-background-timer-throttling', 'true');
     expect(spy).not.nthCalledWith(4);
   });
@@ -166,8 +174,12 @@ describe('chrome flags', () => {
     it('should call `setChromeFlags` correctly', () => {
       const spy = jest.spyOn(app.commandLine, 'appendSwitch');
       setChromeFlags();
-      expect(spy).nthCalledWith(1, 'auth-negotiate-delegate-whitelist', 'url');
-      expect(spy).nthCalledWith(2, 'auth-server-whitelist', 'whitelist');
+      expect(spy).nthCalledWith(
+        1,
+        'auth-negotiate-delegate-whitelist',
+        'whitelist',
+      );
+      expect(spy).nthCalledWith(2, 'auth-server-whitelist', 'url');
       expect(spy).nthCalledWith(
         3,
         'disable-background-timer-throttling',

@@ -165,6 +165,7 @@ export class WindowHandler {
       'url',
       'contextIsolation',
       'contextOriginUrl',
+      'overrideUserAgent',
     ]);
     this.userConfig = config.getUserConfigFields(['url']);
 
@@ -383,7 +384,8 @@ export class WindowHandler {
     cleanAppCacheOnCrash(this.mainWindow);
     // loads the main window with url from config/cmd line
     logger.info(`Loading main window with url ${this.url}`);
-    this.mainWindow.loadURL(this.url);
+    const userAgent = this.getUserAgent(this.mainWindow);
+    this.mainWindow.loadURL(this.url, { userAgent });
     // check for build expiry in case of test builds
     this.checkExpiry(this.mainWindow);
     // update version info from server
@@ -454,9 +456,9 @@ export class WindowHandler {
           `Looks like about:blank got loaded which may lead to blank screen`,
         );
         logger.info(`Reloading the app to check if it resolves the issue`);
-        await this.mainWindow.loadURL(
-          this.userConfig.url || this.globalConfig.url,
-        );
+        const url = this.userConfig.url || this.globalConfig.url;
+        const userAgent = this.getUserAgent(this.mainWindow);
+        await this.mainWindow.loadURL(url, { userAgent });
         return;
       }
       logger.info('window-handler: did-finish-load, url: ' + this.url);
@@ -1752,8 +1754,10 @@ export class WindowHandler {
         logger.info(
           `window-utils: user has logged in, getting back to Symphony app`,
         );
+        const userAgent = this.getUserAgent(this.mainWindow);
         this.mainWindow.loadURL(
           this.url || this.userConfig.url || this.globalConfig.url,
+          { userAgent },
         );
         return;
       }
@@ -1761,7 +1765,10 @@ export class WindowHandler {
       logger.info(
         `window-utils: user hasn't logged in yet, loading login page again`,
       );
-      this.mainWindow.loadURL(this.userConfig.url || this.globalConfig.url);
+      const userAgent = this.getUserAgent(this.mainWindow);
+      this.mainWindow.loadURL(this.userConfig.url || this.globalConfig.url, {
+        userAgent,
+      });
     }
   }
 
@@ -1780,7 +1787,8 @@ export class WindowHandler {
           const reloadUrl =
             webContentsUrl || this.userConfig.url || this.globalConfig.url;
           logger.info(`window-handler: Trying to reload ${reloadUrl}.`);
-          await this.mainWindow.loadURL(reloadUrl);
+          const userAgent = this.getUserAgent(this.mainWindow);
+          await this.mainWindow.loadURL(reloadUrl, { userAgent });
           return;
         }
         logger.error(
@@ -1967,7 +1975,8 @@ export class WindowHandler {
           this.url = this.globalConfig.url + `?x-km-csrf-token=${csrfToken}`;
       }
       this.execCmd(this.screenShareIndicatorFrameUtil, []);
-      await this.mainWindow.loadURL(this.url);
+      const userAgent = this.getUserAgent(this.mainWindow);
+      await this.mainWindow.loadURL(this.url, { userAgent });
     } catch (e) {
       logger.error(
         `window-handler: failed to switch client because of error ${e}`,
@@ -2048,6 +2057,25 @@ export class WindowHandler {
     };
 
     return { ...defaultWindowOpts, ...windowOpts };
+  }
+
+  /**
+   * getUserAgent retrieves current window user-agent and updates it
+   * depending on global config setup
+   * Electron user-agent is removed due to Microsoft Azure not supporting SSO if found - cf SDA-3201
+   * @param mainWindow
+   * @returns updated user-agents
+   */
+  private getUserAgent(mainWindow: ICustomBrowserWindow): string {
+    const doOverrideUserAgents = !!this.globalConfig.overrideUserAgent;
+    let userAgent = mainWindow.webContents.getUserAgent();
+    if (doOverrideUserAgents) {
+      const electronUserAgentRegex = /(Electron[0-9\/.]*)/;
+      userAgent = userAgent
+        .replace(electronUserAgentRegex, '')
+        .replace('  ', ' ');
+    }
+    return userAgent;
   }
 }
 

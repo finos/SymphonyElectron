@@ -35,9 +35,8 @@ export const setChromeFlags = () => {
   ]) as any;
   const configFlags: object = {
     'auth-negotiate-delegate-whitelist':
-      flagsConfig.customFlags.authServerWhitelist,
-    'auth-server-whitelist':
       flagsConfig.customFlags.authNegotiateDelegateWhitelist,
+    'auth-server-whitelist': flagsConfig.customFlags.authServerWhitelist,
     'disable-background-timer-throttling': 'true',
     'disable-d3d11': flagsConfig.disableGpu || null,
     'disable-gpu': flagsConfig.disableGpu || null,
