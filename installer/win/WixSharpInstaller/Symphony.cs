@@ -373,18 +373,18 @@ public class CustomActions
             data = ReplaceProperty(data, "alwaysOnTop", session.Property("ALWAYS_ON_TOP"));
             data = ReplaceProperty(data, "launchOnStartup", session.Property("AUTO_START"));
             data = ReplaceProperty(data, "bringToFront", session.Property("BRING_TO_FRONT"));
-            data = ReplaceProperty(data, "media", session.Property("MEDIA"));
-            data = ReplaceProperty(data, "geolocation", session.Property("LOCATION"));
-            data = ReplaceProperty(data, "notifications", session.Property("NOTIFICATIONS"));
-            data = ReplaceProperty(data, "midiSysex", session.Property("MIDI_SYSEX"));
-            data = ReplaceProperty(data, "pointerLock", session.Property("POINTER_LOCK"));
-            data = ReplaceProperty(data, "fullscreen", session.Property("FULL_SCREEN"));
-            data = ReplaceProperty(data, "openExternal", session.Property("OPEN_EXTERNAL"));
             data = ReplaceProperty(data, "isCustomTitleBar", session.Property("CUSTOM_TITLE_BAR"));
-            data = ReplaceProperty(data, "devToolsEnabled", session.Property("DEV_TOOLS_ENABLED"));
             data = ReplaceProperty(data, "autoLaunchPath", FixPathFormat(session.Property("AUTO_LAUNCH_PATH")));
             data = ReplaceProperty(data, "userDataPath", FixPathFormat(session.Property("USER_DATA_PATH")));
-            data = ReplaceProperty(data, "overrideUserAgent", session.Property("OVERRIDE_USER_AGENT"));
+            data = ReplaceBooleanProperty(data, "pointerLock", session.Property("POINTER_LOCK"));
+            data = ReplaceBooleanProperty(data, "openExternal", session.Property("OPEN_EXTERNAL"));
+            data = ReplaceBooleanProperty(data, "notifications", session.Property("NOTIFICATIONS"));
+            data = ReplaceBooleanProperty(data, "midiSysex", session.Property("MIDI_SYSEX"));
+            data = ReplaceBooleanProperty(data, "media", session.Property("MEDIA"));
+            data = ReplaceBooleanProperty(data, "geolocation", session.Property("LOCATION"));
+            data = ReplaceBooleanProperty(data, "fullscreen", session.Property("FULL_SCREEN"));
+            data = ReplaceBooleanProperty(data, "devToolsEnabled", session.Property("DEV_TOOLS_ENABLED"));
+            data = ReplaceBooleanProperty(data, "overrideUserAgent", session.Property("OVERRIDE_USER_AGENT"));
 
             // Write the contents back to the file
             System.IO.File.WriteAllText(filename, data);
@@ -410,6 +410,21 @@ public class CustomActions
         // Advanced Installer, which looked like this: "url"\s*:\s*".*" => "url": "[POD_URL]"
         return System.Text.RegularExpressions.Regex.Replace(data, @"""" + name + @"""\s*:\s*"".*""",
             @"""" + name + @""":""" + value.Trim() + @"""");
+    }
+
+    // Helper function called by UpdadeConfig action, for each config file value that needs to be
+    // replaced by a value taken from the property. `data` is the entire contents of the config file.
+    // `name` is the name of the setting in the config file (for example "url" or "minimizeOnClose".
+    // `value` is the value to insert for the setting, and needs to be grabbed from the propery
+    // collection before calling the function. The function returns the full config file content with
+    // the requested replacement performed.
+    static string ReplaceBooleanProperty( string data, string name, string value )
+    {
+        // Using regular expressions to replace the existing value in the config file with the
+        // one from the property. This is the same as the regex we used to have in the old
+        // Advanced Installer, which looked like this: "url"\s*:\s*".*" => "url": "[POD_URL]"
+        return System.Text.RegularExpressions.Regex.Replace(data, @"""" + name + @"""\s*:\s*.[^,]*",
+            @"""" + name + @""":" + value.Trim());
     }
 
 	// When SDA is parsing the JSON config file, it will interpret backslash as an escape character,
