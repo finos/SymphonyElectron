@@ -423,7 +423,7 @@ public class CustomActions
         // Using regular expressions to replace the existing value in the config file with the
         // one from the property. This is the same as the regex we used to have in the old
         // Advanced Installer, which looked like this: "url"\s*:\s*".*" => "url": "[POD_URL]"
-        return System.Text.RegularExpressions.Regex.Replace(data, @"""" + name + @"""\s*:\s*.[^,]*",
+        return System.Text.RegularExpressions.Regex.Replace(data, @"""" + name + @"""\s*:\s*.[^,|\n|\r|\r\n]*",
             @"""" + name + @""":" + value.Trim());
     }
 
