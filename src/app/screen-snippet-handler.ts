@@ -45,10 +45,10 @@ class ScreenSnippet {
         fs.mkdirSync(this.tempDir);
       }
     }
-    this.isOldWindows =
-      isWindowsOS &&
-      (parseInt(os.release().split('.')[0], 10) < 10 ||
-        parseInt(os.release().split('.')[2], 10) < 15002);
+    this.isOldWindows = true;
+    // isWindowsOS &&
+    // (parseInt(os.release().split('.')[0], 10) < 10 ||
+    //   parseInt(os.release().split('.')[2], 10) < 15002);
 
     logger.info(
       `screen-snippet-handler: isOldWindows ${
