@@ -45,7 +45,7 @@ class ScreenSnippet {
         fs.mkdirSync(this.tempDir);
       }
     }
-    this.isOldWindows = true;
+    this.isOldWindows = isWindowsOS;
     // isWindowsOS &&
     // (parseInt(os.release().split('.')[0], 10) < 10 ||
     //   parseInt(os.release().split('.')[2], 10) < 15002);
