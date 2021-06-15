@@ -2074,10 +2074,8 @@ export class WindowHandler {
     const doOverrideUserAgents = !!this.globalConfig.overrideUserAgent;
     let userAgent = mainWindow.webContents.getUserAgent();
     if (doOverrideUserAgents) {
-      const electronUserAgentRegex = /(Electron[0-9\/.]*)/;
-      userAgent = userAgent
-        .replace(electronUserAgentRegex, '')
-        .replace('  ', ' ');
+      const electronUserAgentRegex = /Electron/;
+      userAgent = userAgent.replace(electronUserAgentRegex, 'ElectronSymphony');
     }
     return userAgent;
   }
