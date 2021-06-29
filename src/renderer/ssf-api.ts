@@ -1,5 +1,4 @@
-import { ipcRenderer, remote } from 'electron';
-const os = remote.require('os');
+import { ipcRenderer, remote, webFrame } from 'electron';
 import { buildNumber, searchAPIVersion } from '../../package.json';
 import { IDownloadItem } from '../app/download-handler';
 import { ICustomBrowserWindow } from '../app/window-handler';
@@ -26,6 +25,7 @@ import { throttle } from '../common/utils';
 import { getSource } from './desktop-capturer';
 import SSFNotificationHandler from './notification-ssf-hendler';
 import { ScreenSnippetBcHandler } from './screen-snippet-bc-handler';
+const os = remote.require('os');
 
 let isAltKey: boolean = false;
 let isMenuOpen: boolean = false;
@@ -69,27 +69,29 @@ const notificationActionCallbacks = new Map<
   NotificationActionCallback
 >();
 
+const DEFAULT_THROTTLE = 1000;
+
 // Throttle func
 const throttledSetBadgeCount = throttle((count) => {
   local.ipcRenderer.send(apiName.symphonyApi, {
     cmd: apiCmds.setBadgeCount,
     count,
   });
-}, 1000);
+}, DEFAULT_THROTTLE);
 
 const throttledSetLocale = throttle((locale) => {
   local.ipcRenderer.send(apiName.symphonyApi, {
     cmd: apiCmds.setLocale,
     locale,
   });
-}, 1000);
+}, DEFAULT_THROTTLE);
 
 const throttledActivate = throttle((windowName) => {
   local.ipcRenderer.send(apiName.symphonyApi, {
     cmd: apiCmds.activate,
     windowName,
   });
-}, 1000);
+}, DEFAULT_THROTTLE);
 
 const throttledBringToFront = throttle((windowName, reason) => {
   local.ipcRenderer.send(apiName.symphonyApi, {
@@ -97,7 +99,7 @@ const throttledBringToFront = throttle((windowName, reason) => {
     windowName,
     reason,
   });
-}, 1000);
+}, DEFAULT_THROTTLE);
 
 const throttledCloseScreenShareIndicator = throttle((streamId) => {
   ipcRenderer.send(apiName.symphonyApi, {
@@ -105,47 +107,54 @@ const throttledCloseScreenShareIndicator = throttle((streamId) => {
     windowType: 'screen-sharing-indicator',
     winKey: streamId,
   });
-}, 1000);
+}, DEFAULT_THROTTLE);
 
 const throttledSetIsInMeetingStatus = throttle((isInMeeting) => {
   local.ipcRenderer.send(apiName.symphonyApi, {
     cmd: apiCmds.setIsInMeeting,
     isInMeeting,
   });
-}, 1000);
+}, DEFAULT_THROTTLE);
 
 const throttledSetCloudConfig = throttle((data) => {
   ipcRenderer.send(apiName.symphonyApi, {
     cmd: apiCmds.setCloudConfig,
     cloudConfig: data,
   });
-}, 1000);
+}, DEFAULT_THROTTLE);
 
 const throttledOpenDownloadedItem = throttle((id: string) => {
   ipcRenderer.send(apiName.symphonyApi, {
     cmd: apiCmds.openDownloadedItem,
     id,
   });
-}, 1000);
+}, DEFAULT_THROTTLE);
 
 const throttledShowDownloadedItem = throttle((id: string) => {
   ipcRenderer.send(apiName.symphonyApi, {
     cmd: apiCmds.showDownloadedItem,
     id,
   });
-}, 1000);
+}, DEFAULT_THROTTLE);
 
 const throttledClearDownloadedItems = throttle(() => {
   ipcRenderer.send(apiName.symphonyApi, {
     cmd: apiCmds.clearDownloadedItems,
   });
-}, 1000);
+}, DEFAULT_THROTTLE);
 
 const throttledRestart = throttle(() => {
   ipcRenderer.send(apiName.symphonyApi, {
     cmd: apiCmds.restartApp,
   });
-}, 1000);
+}, DEFAULT_THROTTLE);
+
+const throttledSetZoomLevel = throttle((zoomLevel) => {
+  local.ipcRenderer.send(apiName.symphonyApi, {
+    cmd: apiCmds.setZoomLevel,
+    zoomLevel,
+  });
+}, DEFAULT_THROTTLE);
 
 let cryptoLib: ICryptoLib | null;
 try {
@@ -673,6 +682,28 @@ export class SSFApi {
       cmd: apiCmds.closeNotification,
       notificationId,
     });
+  }
+
+  /**
+   * Get zoom level
+   *
+   */
+  public getZoomLevel(): Promise<any> {
+    return new Promise((resolve) => {
+      resolve(webFrame.getZoomFactor());
+    });
+  }
+
+  /**
+   * Sets zoom level
+   *
+   * @param {string} zoomLevel - language identifier and a region identifier
+   * @example: setZoomLevel(0.9)
+   */
+  public setZoomLevel(zoomLevel): void {
+    if (typeof zoomLevel === 'number') {
+      throttledSetZoomLevel(zoomLevel);
+    }
   }
 }
 
