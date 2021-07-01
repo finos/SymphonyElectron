@@ -46,6 +46,7 @@ export enum apiCmds {
   setIsMana = 'set-is-mana',
   showNotification = 'show-notification',
   closeAllWrapperWindows = 'close-all-windows',
+  setZoomLevel = 'set-zoom-level',
 }
 
 export enum apiName {
@@ -85,6 +86,7 @@ export interface IApiArgs {
   notificationOpts: object;
   notificationId: number;
   theme: Themes;
+  zoomLevel: number;
 }
 
 export type Themes = 'light' | 'dark';

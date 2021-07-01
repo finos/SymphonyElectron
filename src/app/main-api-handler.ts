@@ -1,5 +1,4 @@
 import { BrowserWindow, ipcMain } from 'electron';
-
 import {
   apiCmds,
   apiName,
@@ -284,6 +283,13 @@ ipcMain.on(
         break;
       case apiCmds.closeAllWrapperWindows:
         windowHandler.closeAllWindows();
+        break;
+      case apiCmds.setZoomLevel:
+        if (typeof arg.zoomLevel === 'number') {
+          windowHandler
+            .getMainWindow()
+            ?.webContents.setZoomFactor(arg.zoomLevel as number);
+        }
         break;
       default:
         break;

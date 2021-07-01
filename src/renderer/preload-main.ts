@@ -87,6 +87,8 @@ if (ssfWindow.ssf) {
     closeNotification: ssfWindow.ssf.closeNotification,
     restartApp: ssfWindow.ssf.restartApp,
     closeAllWrapperWindows: ssfWindow.ssf.closeAllWrapperWindows,
+    setZoomLevel: ssfWindow.ssf.setZoomLevel,
+    getZoomLevel: ssfWindow.ssf.getZoomLevel,
   });
 }
 
