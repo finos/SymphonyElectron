@@ -26,8 +26,9 @@ interface ICorner {
 }
 
 type startCorner = 'upper-right' | 'upper-left' | 'lower-right' | 'lower-left';
-const NEXT_INSERT_POSITION = 96;
-const NEXT_INSERT_POSITION_WITH_INPUT = 128;
+const NEXT_INSERT_POSITION = 100;
+const NEXT_INSERT_POSITION_WITH_INPUT = 142;
+const NOTIFICATIONS_PADDING_SEPARATION = 12;
 
 export default class NotificationHandler {
   public settings: ISettings;
@@ -128,10 +129,11 @@ export default class NotificationHandler {
     activeNotifications.forEach((notification) => {
       if (notification && windowExists(notification)) {
         const [, height] = notification.getSize();
-        nextNotificationY +=
+        const shift =
           height > this.settings.height
             ? NEXT_INSERT_POSITION_WITH_INPUT
             : NEXT_INSERT_POSITION;
+        nextNotificationY += shift + NOTIFICATIONS_PADDING_SEPARATION;
       }
     });
     if (activeNotifications.length < this.settings.maxVisibleNotifications) {
@@ -287,10 +289,9 @@ export default class NotificationHandler {
    * Calculates the first and next notification insert position
    */
   private calculateDimensions() {
-    const vertSpace = 8;
-
     // Calc totalHeight & totalWidth
-    this.settings.totalHeight = this.settings.height + vertSpace;
+    this.settings.totalHeight =
+      this.settings.height + NOTIFICATIONS_PADDING_SEPARATION;
     this.settings.totalWidth = this.settings.width;
 
     let firstPosX;
