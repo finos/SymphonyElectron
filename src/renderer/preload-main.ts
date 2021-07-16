@@ -89,6 +89,7 @@ if (ssfWindow.ssf) {
     closeAllWrapperWindows: ssfWindow.ssf.closeAllWrapperWindows,
     setZoomLevel: ssfWindow.ssf.setZoomLevel,
     getZoomLevel: ssfWindow.ssf.getZoomLevel,
+    supportedSettings: ssfWindow.ssf.supportedSettings,
   });
 }
 

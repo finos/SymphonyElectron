@@ -20,8 +20,9 @@ import NotificationHandler from './notification-handler';
 
 const CLEAN_UP_INTERVAL = 60 * 1000; // Closes inactive notification
 const animationQueue = new AnimationQueue();
-const CONTAINER_HEIGHT_WITH_INPUT = 120; // Notification container height
-
+const CONTAINER_HEIGHT = 104; // Notification container height
+const CONTAINER_HEIGHT_WITH_INPUT = 146; // Notification container height including input field
+const CONTAINER_WIDTH = 363;
 interface ICustomBrowserWindow extends Electron.BrowserWindow {
   winName: string;
   notificationData: INotificationData;
@@ -34,8 +35,8 @@ type startCorner = 'upper-right' | 'upper-left' | 'lower-right' | 'lower-left';
 const notificationSettings = {
   startCorner: 'upper-right' as startCorner,
   display: '',
-  width: 344,
-  height: 88,
+  width: CONTAINER_WIDTH,
+  height: CONTAINER_HEIGHT,
   totalHeight: 0,
   totalWidth: 0,
   corner: {
@@ -54,7 +55,7 @@ const notificationSettings = {
   animationStepMs: 5,
   logging: true,
   spacing: 8,
-  differentialHeight: 32,
+  differentialHeight: 42,
 };
 
 class Notification extends NotificationHandler {
@@ -264,8 +265,8 @@ class Notification extends NotificationHandler {
       isExternal,
       theme,
       hasReply,
+      hasMention,
     } = data;
-
     notificationWindow.webContents.send('notification-data', {
       title,
       company,
@@ -278,6 +279,7 @@ class Notification extends NotificationHandler {
       isExternal,
       theme,
       hasReply,
+      hasMention,
     });
     notificationWindow.showInactive();
   }
@@ -586,7 +588,11 @@ class Notification extends NotificationHandler {
       return;
     }
     clearTimeout(notificationWindow.displayTimer);
-    notificationWindow.setSize(344, CONTAINER_HEIGHT_WITH_INPUT, true);
+    notificationWindow.setSize(
+      CONTAINER_WIDTH,
+      CONTAINER_HEIGHT_WITH_INPUT,
+      true,
+    );
     const pos = this.activeNotifications.indexOf(notificationWindow) + 1;
     this.moveNotificationUp(pos, this.activeNotifications);
   }
@@ -596,8 +602,8 @@ class Notification extends NotificationHandler {
    */
   private getNotificationOpts(): Electron.BrowserWindowConstructorOptions {
     return {
-      width: 344,
-      height: 88,
+      width: CONTAINER_WIDTH,
+      height: CONTAINER_HEIGHT,
       alwaysOnTop: true,
       skipTaskbar: true,
       resizable: isWindowsOS,
