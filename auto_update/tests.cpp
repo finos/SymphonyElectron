@@ -9,6 +9,10 @@
 #include <string.h>
 #include <windows.h>
 
+void disable_log( char const*, ... ) { };
+#define IPC_LOG_INFO disable_log
+#define IPC_LOG_ERROR disable_log 
+#define IPC_LOG_LAST_ERROR disable_log
 #include "ipc.h"
 
 bool pipe_exists( const char* pipe_name );
@@ -99,6 +103,7 @@ void ipc_tests() {
         bool message_received = false;
         ipc_server_t* server = ipc_server_start( "test_pipe", 
             []( char const* message, void* user_data, char*, size_t ) { 
+                if( !message ) return; // client disconnect
                 bool* message_received = (bool*) user_data;
                 *message_received = true;
                 TESTFW_EXPECTED( strcmp( message, "Test message" ) == 0 );
@@ -121,6 +126,7 @@ void ipc_tests() {
         TESTFW_TEST_BEGIN( "Can receive IPC response from server" );
         ipc_server_t* server = ipc_server_start( "test_pipe", 
             []( char const* message, void* user_data, char* response, size_t ) { 
+                if( !message ) return; // client disconnect
                 strcpy( response, "Test response" ); 
             }, NULL );
         TESTFW_EXPECTED( server != NULL );
@@ -141,6 +147,7 @@ void ipc_tests() {
         TESTFW_TEST_BEGIN( "Can send and receive long IPC messages" );
         ipc_server_t* server = ipc_server_start( "test_pipe", 
             []( char const* message, void* user_data, char* response, size_t capacity ) { 
+                if( !message ) return; // client disconnect
                 char expected_message[ IPC_MESSAGE_MAX_LENGTH ];
                 for( int i = 0; i < IPC_MESSAGE_MAX_LENGTH - 1; ++i ) {
                     expected_message[ i ] = 'A' + ( i % ( 'Z' - 'A' + 1 ) );
@@ -182,6 +189,7 @@ void ipc_tests() {
         int received_count = 0;
         ipc_server_t* server = ipc_server_start( "test_pipe", 
             []( char const* message, void* user_data, char* response, size_t ) { 
+                if( !message ) return; // client disconnect
                 int* received_count = (int*) user_data;
                 char expected_message[ IPC_MESSAGE_MAX_LENGTH ];
                 sprintf( expected_message, "Test message %d", *received_count );
