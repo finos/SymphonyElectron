@@ -150,6 +150,7 @@ export interface INotificationData {
   isElectronNotification?: boolean;
   callback?: () => void;
   hasReply?: boolean;
+  hasMention?: boolean;
 }
 
 export enum NotificationActions {

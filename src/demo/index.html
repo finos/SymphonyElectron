@@ -1,950 +1,1073 @@
 <html>
-    <head>
-        <style>
-            table {
-                border-collapse: collapse;
-                border-spacing: 0;
-            }
-            table, th, td {
-                padding: 5px;
-                border: 1px solid black;
-            }
+  <head>
+    <style>
+      table {
+        border-collapse: collapse;
+        border-spacing: 0;
+      }
+      table,
+      th,
+      td {
+        padding: 5px;
+        border: 1px solid black;
+      }
 
-            .yellow-dot {
-                height: 25px;
-                width: 25px;
-                background-color: yellow;
-                border-radius: 50%;
-                display: inline-block;
-            }
+      .yellow-dot {
+        height: 25px;
+        width: 25px;
+        background-color: yellow;
+        border-radius: 50%;
+        display: inline-block;
+      }
 
-            .green-dot {
-                height: 25px;
-                width: 25px;
-                background-color: green;
-                border-radius: 50%;
-                display: inline-block;
-            }
-            .origin-reminder {
-                background: lightyellow;
-                padding: 20px;
-                margin: 40px;
-                border: 2px solid black;
-                display: block;
-            }
-            .origin-reminder-tt {
-                font-weight: normal;
-                background: yellow;
-                padding-left: 10px;
-                padding-right: 10px;
-                padding-top: 3px;
-                padding-bottom: 3px;
-            }
-        </style>
-        <link rel="stylesheet" href="download-manager.css">
-    </head>
-    <body>
-        <h1>Symphony Electron API Demo</h1>
-        <div class='origin-reminder'>
-            <p><b>Remember to set <tt class='origin-reminder-tt'>this.origin</tt> to <tt class='origin-reminder-tt'>'*'</tt> in app-bridge.ts when using this API demo</b></p>
-            <p>Search for <tt class='origin-reminder-tt'>// DEMO-APP:</tt> and comment that line back in.
-            <u>Make sure to comment it out again before you commit.</u></p>
-        </div>
-        <hr>
-        <p>Notifications:<p>
-        <button id='notf'>show notification</button>
-        <div>
-        <p>
-            <button id='closeNotification'>close notification</button>
-            <input type='number' id='notificationTag' value='Notification Tag to close'/>
-        </p>
-        </div>
-        <p id='reply'>Reply content will display here</p>
-        <p>
-            <label for='title'>title:</label>
-            <input type='text' id='title' value='Notification Demo'/>
-        </p>
-        <p>
-            <label for='body'>body:</label>
-            <input type='text' id='body' value='Some message'/>
-        </p>
-        <p>
-            <label for='image'>image url:</label>
-            <input type='text' id='image' value='https://avatars0.githubusercontent.com/u/13243259?v=4&s=460'/>
-        </p>
-        <p>
-            <label for='company'>company:</label>
-            <input type='text' id='company' value='Symphony'/>
-        </p>
-        <p>
-            <label for='flash'>flash:</label>
-            <input type='checkbox' id='flash'/>
-        </p>
-        <p>
-            <label for='isExternal'>external:</label>
-            <input type='checkbox' id='isExternal'/>
-        </p>
-        <p>
-            <label for='isNativeNotification'>Native Electron Notification:</label>
-            <input type='checkbox' id='isNativeNotification'/>
-        </p>
-        <p>Change theme:<p>
-            <select id="select-theme" name="theme">
-                <option value="">select</option>
-                <option value="dark">dark</option>
-                <option value="light">light</option>
-            </select>
-            <br>
-        <p>
-            <label for='sticky'>sticky:</label>
-            <input type='checkbox' id='sticky'/>
-        </p>
-        <p>
-            <label for='color'>color:</label>
-            <input type='text' id='color' value='#FFFFFF'/>
-        </p>
-        <p>
-            <label for='tag'>tag:</label>
-            <input type='text' id='tag' value=''/>
-        </p>
-        <button id='open-config-win'>Open configure window</button>
-        <br>
-        <hr>
-        <textarea id="text-val" rows="4">Writes some thing to the file</textarea>
-        <br/>
-        <input type="button" id="download-file1" value="Download"/>
-        <input type="button" id="download-file2" value="Download"/>
-        <div id="footer" class="hidden">
-            <div id="download-manager-footer" class="download-bar"></div>
-        </div>
-        <input type="button" id="open-download-item" value="Open Latest Item">
-        <input type="button" id="show-download-item" value="Show Latest Item in Finder">
-        <input type="button" id="close-download-manager" value="Close Download Manager">
-        <br>
-        <hr>
-        <p>
-            Activity Detection:
-        <p>
-            <button id='activity-detection'>Init activity</button>
-            <span id='activity-status' class="green-dot"></span>
-        </p>
-        <br>
-        <hr>
-        <p>Change language:<p>
-        <select id="locale-select" name="locale">
-            <option value="en-US">en-US</option>
-            <option value="ja-JP">ja-JP</option>
-            <option value="fr-FR">fr-FR</option>
-        </select>
-            <button id="changeLocale">Submit</button>
-        <br>
-        <hr>
-        <p>Badge Count:<p>
-        <button id='inc-badge'>increment badge count</button>
-        <br>
-        <button id='clear-badge'>clear badge count</button>
-        <br>
-        <hr>
-        <p>Screen Snippet:</p>
-        <button id='snippet'>get snippet</button>
-        <p>snippet output:</p>
-        <image id='snippet-img'/>
-        <button id='cancel-snippet'>cancel snippet</button>
+      .green-dot {
+        height: 25px;
+        width: 25px;
+        background-color: green;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .origin-reminder {
+        background: lightyellow;
+        padding: 20px;
+        margin: 40px;
+        border: 2px solid black;
+        display: block;
+      }
+      .origin-reminder-tt {
+        font-weight: normal;
+        background: yellow;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-top: 3px;
+        padding-bottom: 3px;
+      }
+    </style>
+    <link rel="stylesheet" href="download-manager.css" />
+  </head>
+  <body>
+    <h1>Symphony Electron API Demo</h1>
+    <div class="origin-reminder">
+      <p>
+        <b
+          >Remember to set <tt class="origin-reminder-tt">this.origin</tt> to
+          <tt class="origin-reminder-tt">'*'</tt> in app-bridge.ts when using
+          this API demo</b
+        >
+      </p>
+      <p>
+        Search for <tt class="origin-reminder-tt">// DEMO-APP:</tt> and comment
+        that line back in.
+        <u>Make sure to comment it out again before you commit.</u>
+      </p>
+    </div>
+    <hr />
+    <p>Notifications:</p>
+    <p>
+      <button id="notf">show notification</button>
+    </p>
 
-        <hr>
-        <p>Logs:</p>
-        Filename <input type='text' id='log-filename' value='test_log.log'/>
-        <p>Contents</p>
-        <textarea id="log-contents" rows="4">Test log contents</textarea>
-        <p/>
-        Filename <input type='text' id='log-filename2' value=''/>
-        <p>Contents</p>
-        <textarea id="log-contents2" rows="4"></textarea>
+    <div>
+      <p>
+        <button id="closeNotification">close notification</button>
+        <input
+          type="number"
+          id="notificationTag"
+          value="Notification Tag to close"
+        />
+      </p>
+    </div>
+    <p id="reply">Reply content will display here</p>
+    <p>
+      <label for="title">title:</label>
+      <input type="text" id="title" value="Callam Davis" />
+    </p>
+    <p>
+      <label for="body">body:</label>
+      <input
+        type="text"
+        id="body"
+        value="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+      />
+    </p>
+    <p>
+      <label for="image">image url:</label>
+      <input
+        type="text"
+        id="image"
+        value="https://i.pinimg.com/originals/ea/11/fb/ea11fb152820f63d536e8396c89f81e9.jpg"
+      />
+    </p>
+    <p>
+      <label for="company">company:</label>
+      <input type="text" id="company" value="Symphony" />
+    </p>
+    <p>
+      <label for="flash">flash:</label>
+      <input type="checkbox" id="flash" />
+    </p>
+    <p>
+      <label for="isExternal">external:</label>
+      <input type="checkbox" id="isExternal" />
+    </p>
+    <p>
+      <label for="hasMention">has mention:</label>
+      <input type="checkbox" id="hasMention" />
+    </p>
+    <p>
+      <label for="isNativeNotification">Native Electron Notification:</label>
+      <input type="checkbox" id="isNativeNotification" />
+    </p>
+    <p>Change theme:</p>
+    <p>
+      <select id="select-theme" name="theme">
+        <option value="">select</option>
+        <option selected="selected" value="dark">dark</option>
+        <option value="light">light</option>
+      </select>
+      <br />
+    </p>
 
-        <hr>
-        <p>Window activate:</p>
-        <button id='open-win'>open window</button>
+    <p>
+      <label for="sticky">sticky:</label>
+      <input type="checkbox" id="sticky" />
+    </p>
+    <p>
+      <label for="color">color:</label>
+      <input type="text" id="color" value="" />
+    </p>
+    <p>
+      <label for="tag">tag:</label>
+      <input type="text" id="tag" value="" />
+    </p>
+    <button id="open-config-win">Open configure window</button>
+    <br />
+    <hr />
+    <textarea id="text-val" rows="4">Writes some thing to the file</textarea>
+    <br />
+    <input type="button" id="download-file1" value="Download" />
+    <input type="button" id="download-file2" value="Download" />
+    <div id="footer" class="hidden">
+      <div id="download-manager-footer" class="download-bar"></div>
+    </div>
+    <input type="button" id="open-download-item" value="Open Latest Item" />
+    <input
+      type="button"
+      id="show-download-item"
+      value="Show Latest Item in Finder"
+    />
+    <input
+      type="button"
+      id="close-download-manager"
+      value="Close Download Manager"
+    />
+    <br />
+    <hr />
+    <p>Activity Detection:</p>
 
-        <button id='bring-to-front'>bring window to front</button>
-        <button id='bring-to-front-without-focus'>bring to front without focus</button>
+    <p>
+      <button id="activity-detection">Init activity</button>
+      <span id="activity-status" class="green-dot"></span>
+    </p>
+    <br />
+    <hr />
+    <p>Change language:</p>
+    <p>
+      <select id="locale-select" name="locale">
+        <option value="en-US">en-US</option>
+        <option value="ja-JP">ja-JP</option>
+        <option value="fr-FR">fr-FR</option>
+      </select>
+      <button id="changeLocale">Submit</button>
+      <br />
+    </p>
 
-        <hr>
-        <p>Measure cpu usage:</p>
-        <button id='button-get-cpu-usage'>Get CPU usage</button>
-        <input type="text" id='text-cpu-usage' />
+    <hr />
+    <p>Badge Count:</p>
+    <p>
+      <button id="inc-badge">increment badge count</button>
+      <br />
+      <button id="clear-badge">clear badge count</button>
+      <br />
+    </p>
 
-        <hr>
-        <p>Check Media Permission:</p>
-        <button id='check-media-permission'>Check media permission</button>
-        <br>
-        <table  >
-            <tr>
-                <th>Camera permission</th>
-                <th>Microphone permission</th>
-                <th>Screen permission</th>
-            </tr>
-            <tr>
-                <td id="camera-permission"></td>
-                <td id="microphone-permission"></td>
-                <td id="screen-permission"></td>
-            </tr>
-        </table>
-        <hr>
-        <p>Get Media Sources:</p>
-        <button id='get-sources'>Open screen picker & screensharing indicator</button>
-        <br>
-        <video id='video' autoPlay loop muted style='max-width: 640px'></video>
+    <hr />
+    <p>Screen Snippet:</p>
+    <button id="snippet">get snippet</button>
+    <p>snippet output:</p>
+    <image id="snippet-img" />
+    <button id="cancel-snippet">cancel snippet</button>
 
-        <hr>
-        <p>Get Version Info:</p>
-        <button id='get-version'>get version info</button>
-        <br>
-        Version Info:
-        <table  >
-            <tr>
-                <th>API Version</th>
-                <th>Container Identifier</th>
-                <th>Container Version</th>
-                <th>Build Number</th>
-                <th>Search Api Version</th>
-                <th>CPU Arch</th>
-            </tr>
-            <tr>
-                <td id="api-version"></td>
-                <td id="container-identifier"></td>
-                <td id="container-ver"></td>
-                <td id="build-number"></td>
-                <td id="search-api-ver"></td>
-                <td id="cpu-arch"></td>
-            </tr>
-        </table>
-    <input type="button" id="restart-app" value="Restart App"/>
-    </body>
-    <script>
+    <hr />
+    <p>Logs:</p>
+    Filename <input type="text" id="log-filename" value="test_log.log" />
+    <p>Contents</p>
+    <textarea id="log-contents" rows="4">Test log contents</textarea>
+    <p />
+    Filename <input type="text" id="log-filename2" value="" />
+    <p>Contents</p>
+    <textarea id="log-contents2" rows="4"></textarea>
 
-        window.name = 'main';
+    <hr />
+    <p>Window activate:</p>
+    <button id="open-win">open window</button>
 
-        const apiCmds = {
-                isOnline: 'is-online',
-                getVersionInfo: 'get-version-info',
-                registerLogger: 'register-logger',
-                setBadgeCount: 'set-badge-count',
-                badgeDataUrl: 'badge-data-url',
-                activate: 'activate',
-                registerBoundsChange: 'register-bounds-change',
-                registerProtocolHandler: 'register-protocol-handler',
-                registerLogRetriever: 'register-log-retriever',
-                sendLogs: 'send-logs',
-                registerAnalyticHandler: 'register-analytic-handler',
-                registerActivityDetection: 'register-activity-detection',
-                registerDownloadHandler: 'register-download-handler',
-                openDownloadedItem: 'open-downloaded-item',
-                showDownloadedItem: 'show-downloaded-item',
-                clearDownloadedItems: 'clear-downloaded-items',
-                showNotificationSettings: 'show-notification-settings',
-                sanitize: 'sanitize',
-                bringToFront: 'bring-to-front',
-                openScreenPickerWindow: 'open-screen-picker-window',
-                popupMenu: 'popup-menu',
-                optimizeMemoryConsumption: 'optimize-memory-consumption',
-                optimizeMemoryRegister: 'optimize-memory-register',
-                setIsInMeeting: 'set-is-in-meeting',
-                setLocale: 'set-locale',
-                openScreenSnippet: 'open-screen-snippet',
-                closeScreenSnippet: 'close-screen-snippet',
-                keyPress: 'key-press',
-                closeWindow: 'close-window',
-                openScreenSharingIndicator: 'open-screen-sharing-indicator',
-                closeScreenSharingIndicator: 'close-screen-sharing-indicator',
-                downloadManagerAction: 'download-manager-action',
-                getMediaSource: 'get-media-source',
-                notification: 'notification',
-                closeNotification: 'close-notification',
-                registerRestartFloater: 'register-restart-floater',
-                getCPUUsage: 'get-cpu-usage',
-                checkMediaPermission: 'check-media-permission',
-                restartApp: 'restart-app',
+    <button id="bring-to-front">bring window to front</button>
+    <button id="bring-to-front-without-focus">
+      bring to front without focus
+    </button>
+
+    <hr />
+    <p>Measure cpu usage:</p>
+    <button id="button-get-cpu-usage">Get CPU usage</button>
+    <input type="text" id="text-cpu-usage" />
+
+    <hr />
+    <p>Check Media Permission:</p>
+    <button id="check-media-permission">Check media permission</button>
+    <br />
+    <table>
+      <tr>
+        <th>Camera permission</th>
+        <th>Microphone permission</th>
+        <th>Screen permission</th>
+      </tr>
+      <tr>
+        <td id="camera-permission"></td>
+        <td id="microphone-permission"></td>
+        <td id="screen-permission"></td>
+      </tr>
+    </table>
+    <hr />
+    <p>Get Media Sources:</p>
+    <button id="get-sources">
+      Open screen picker & screensharing indicator
+    </button>
+    <br />
+    <video id="video" autoplay loop muted style="max-width: 640px"></video>
+
+    <hr />
+    <p>Get Version Info:</p>
+    <button id="get-version">get version info</button>
+    <br />
+    Version Info:
+    <table>
+      <tr>
+        <th>API Version</th>
+        <th>Container Identifier</th>
+        <th>Container Version</th>
+        <th>Build Number</th>
+        <th>Search Api Version</th>
+        <th>CPU Arch</th>
+      </tr>
+      <tr>
+        <td id="api-version"></td>
+        <td id="container-identifier"></td>
+        <td id="container-ver"></td>
+        <td id="build-number"></td>
+        <td id="search-api-ver"></td>
+        <td id="cpu-arch"></td>
+      </tr>
+    </table>
+    <input type="button" id="restart-app" value="Restart App" />
+  </body>
+  <script>
+    window.name = 'main';
+
+    const apiCmds = {
+      isOnline: 'is-online',
+      getVersionInfo: 'get-version-info',
+      registerLogger: 'register-logger',
+      setBadgeCount: 'set-badge-count',
+      badgeDataUrl: 'badge-data-url',
+      activate: 'activate',
+      registerBoundsChange: 'register-bounds-change',
+      registerProtocolHandler: 'register-protocol-handler',
+      registerLogRetriever: 'register-log-retriever',
+      sendLogs: 'send-logs',
+      registerAnalyticHandler: 'register-analytic-handler',
+      registerActivityDetection: 'register-activity-detection',
+      registerDownloadHandler: 'register-download-handler',
+      openDownloadedItem: 'open-downloaded-item',
+      showDownloadedItem: 'show-downloaded-item',
+      clearDownloadedItems: 'clear-downloaded-items',
+      showNotificationSettings: 'show-notification-settings',
+      sanitize: 'sanitize',
+      bringToFront: 'bring-to-front',
+      openScreenPickerWindow: 'open-screen-picker-window',
+      popupMenu: 'popup-menu',
+      optimizeMemoryConsumption: 'optimize-memory-consumption',
+      optimizeMemoryRegister: 'optimize-memory-register',
+      setIsInMeeting: 'set-is-in-meeting',
+      setLocale: 'set-locale',
+      openScreenSnippet: 'open-screen-snippet',
+      closeScreenSnippet: 'close-screen-snippet',
+      keyPress: 'key-press',
+      closeWindow: 'close-window',
+      openScreenSharingIndicator: 'open-screen-sharing-indicator',
+      closeScreenSharingIndicator: 'close-screen-sharing-indicator',
+      downloadManagerAction: 'download-manager-action',
+      getMediaSource: 'get-media-source',
+      notification: 'notification',
+      closeNotification: 'close-notification',
+      registerRestartFloater: 'register-restart-floater',
+      getCPUUsage: 'get-cpu-usage',
+      checkMediaPermission: 'check-media-permission',
+      restartApp: 'restart-app',
+    };
+    let requestId = 0;
+
+    var openConfigWin = document.getElementById('open-config-win');
+
+    openConfigWin.addEventListener('click', function () {
+      if (window.ssf) {
+        ssf.showNotificationSettings();
+      } else {
+        postMessage(apiCmds.showNotificationSettings);
+      }
+    });
+
+    var notfEl = document.getElementById('notf');
+    var closeNotificationEl = document.getElementById('closeNotification');
+    var num = 0;
+
+    // note: notification will close when clicked
+    notfEl.addEventListener('click', function () {
+      var title = document.getElementById('title').value;
+      var body = document.getElementById('body').value;
+      var imageUrl = document.getElementById('image').value;
+      var shouldFlash = document.getElementById('flash').checked;
+      var isExternal = document.getElementById('isExternal').checked;
+      var hasMention = document.getElementById('hasMention').checked;
+      var shouldStick = document.getElementById('sticky').checked;
+      var color = document.getElementById('color').value;
+      var tag = document.getElementById('tag').value;
+      var company = document.getElementById('company').value;
+      var isNativeNotification = document.getElementById('isNativeNotification')
+        .checked;
+      num++;
+
+      var theme = document.getElementById('select-theme').value;
+      var notf = {
+        id: num,
+        title,
+        body: body + ' num=' + num + ' tag=' + tag,
+        image: imageUrl,
+        icon: imageUrl,
+        flash: shouldFlash,
+        color: color,
+        sticky: shouldStick,
+        isExternal: isExternal,
+        theme: theme,
+        data: {
+          hello: `Notification with id ${num} clicked')`,
+        },
+        tag: tag,
+        isElectronNotification: isNativeNotification,
+        hasReply: true,
+        hasMention: hasMention,
+        method: 'notification',
+      };
+      if (window.ssf) {
+        console.log(notf);
+        const ssfNotificationHandler = new window.ssf.Notification(
+          notf.title,
+          notf,
+        );
+        const onclick = (event) => {
+          event.target.close();
+          if (!process.env.NODE_ENV) {
+            alert('notification clicked: ' + event.target.data.hello);
+          }
         };
-        let requestId = 0;
+        ssfNotificationHandler.addEventListener('click', onclick);
 
-        var openConfigWin = document.getElementById('open-config-win');
+        const onclose = () => {
+          if (!process.env.NODE_ENV) {
+            alert('notification closed');
+          }
+        };
+        ssfNotificationHandler.addEventListener('close', onclose);
 
-        openConfigWin.addEventListener('click', function() {
-            if (window.ssf) {
-                ssf.showNotificationSettings();
-            } else {
-                postMessage(apiCmds.showNotificationSettings)
+        const onerror = (event) => {
+          alert('error=' + event.result);
+        };
+        ssfNotificationHandler.addEventListener('error', onerror);
+      } else if (window.manaSSF) {
+        const callback = (event, data) => {
+          if (event === 'notification-reply') {
+            document.getElementById('reply').innerText = data.notificationData;
+          }
+        };
+        window.manaSSF.showNotification(notf, callback);
+      } else {
+        window.postMessage({ method: 'notification', data: notf }, '*');
+      }
+    });
+
+    closeNotificationEl.addEventListener('click', () => {
+      if (window.manaSSF) {
+        const id = document.getElementById('notificationTag').value;
+        window.manaSSF.closeNotification(parseInt(id));
+      }
+    });
+
+    /**
+     * Badge Count
+     */
+    let badgeCount = 0;
+
+    const incBadgeEl = document.getElementById('inc-badge');
+    incBadgeEl.addEventListener('click', () => {
+      badgeCount++;
+      if (window.ssf) {
+        ssf.setBadgeCount(badgeCount);
+      } else {
+        postMessage(apiCmds.setBadgeCount, badgeCount);
+      }
+    });
+
+    const clearBadgeCount = document.getElementById('clear-badge');
+    clearBadgeCount.addEventListener('click', () => {
+      badgeCount = 0;
+      if (window.ssf) {
+        ssf.setBadgeCount(0);
+      } else {
+        postMessage(apiCmds.setBadgeCount, 0);
+      }
+    });
+
+    const snippetButton = document.getElementById('snippet');
+    snippetButton.addEventListener('click', () => {
+      if (window.ssf) {
+        const gotSnippet = (rsp) => {
+          if (rsp) {
+            if (rsp.type && rsp.type === 'ERROR') {
+              // called when some error occurs during capture
+              alert('error getting snippet' + rsp.message);
+            } else if (rsp.data && rsp.type === 'image/png;base64') {
+              const dataUrl = 'data:' + rsp.type + ',' + rsp.data;
+              const img = document.getElementById('snippet-img');
+              img.src = dataUrl;
             }
+          }
+        };
+        const screenSnippet = new window.ssf.ScreenSnippet();
+        screenSnippet.capture().then(gotSnippet).catch(gotSnippet);
+      } else {
+        postMessage(apiCmds.openScreenSnippet);
+      }
+    });
+
+    const cancelSnippetButton = document.getElementById('cancel-snippet');
+    cancelSnippetButton.addEventListener('click', () => {
+      if (window.ssf) {
+        const screenSnippet = new window.ssf.ScreenSnippet();
+        screenSnippet.cancelCapture();
+      } else {
+        postMessage(apiCmds.closeScreenSnippet);
+      }
+    });
+
+    let win;
+
+    const openWinButton = document.getElementById('open-win');
+    openWinButton.addEventListener('click', () => {
+      win = window.open(
+        'win.html?x=100&y=100',
+        'test-window',
+        'height=800,width=400',
+      );
+    });
+
+    const front = document.getElementById('bring-to-front');
+    front.addEventListener('click', () => {
+      if (window.ssf) {
+        window.ssf.activate(win.name);
+      } else {
+        postMessage(apiCmds.activate, win.name);
+      }
+    });
+
+    const frontWithoutFocus = document.getElementById(
+      'bring-to-front-without-focus',
+    );
+    frontWithoutFocus.addEventListener('click', () => {
+      if (window.ssf) {
+        window.ssf.bringToFront(win.name, 'notification');
+      } else {
+        postMessage(apiCmds.bringToFront, {
+          windowName: win.name,
+          reason: 'notification',
         });
+      }
+    });
 
-        var notfEl = document.getElementById('notf');
-        var closeNotificationEl = document.getElementById('closeNotification');
-        var num = 0;
+    var getVersionInfo = document.getElementById('get-version');
+    getVersionInfo.addEventListener('click', () => {
+      let apiVersionInfo = document.getElementById('api-version');
+      let containerIdentifier = document.getElementById('container-identifier');
+      let version = document.getElementById('container-ver');
+      let buildNumber = document.getElementById('build-number');
+      let searchApiVer = document.getElementById('search-api-ver');
+      let cpuArch = document.getElementById('cpu-arch');
+      if (window.ssf) {
+        ssf.getVersionInfo().then((versionInfo) => {
+          apiVersionInfo.innerText = versionInfo.apiVer;
+          containerIdentifier.innerText = versionInfo.containerIdentifier;
+          version.innerText = versionInfo.containerVer;
+          buildNumber.innerText = versionInfo.buildNumber;
+          searchApiVer.innerText = versionInfo.searchApiVer;
+          cpuArch.innerText = versionInfo.cpuArch;
+        });
+      } else {
+        postRequest(apiCmds.getVersionInfo, null, {
+          successCallback: (versionInfo) => {
+            apiVersionInfo.innerText = versionInfo.apiVer;
+            containerIdentifier.innerText = versionInfo.containerIdentifier;
+            version.innerText = versionInfo.containerVer;
+            buildNumber.innerText = versionInfo.buildNumber;
+            searchApiVer.innerText = versionInfo.searchApiVer;
+            cpuArch.innerText = versionInfo.cpuArch;
+          },
+        });
+      }
+    });
 
-        // note: notification will close when clicked
-        notfEl.addEventListener('click', function() {
-            var title = document.getElementById('title').value;
-            var body = document.getElementById('body').value;
-            var imageUrl = document.getElementById('image').value;
-            var shouldFlash = document.getElementById('flash').checked;
-            var isExternal = document.getElementById('isExternal').checked;
-            var shouldStick = document.getElementById('sticky').checked;
-            var color = document.getElementById('color').value;
-            var tag = document.getElementById('tag').value;
-            var company = document.getElementById('company').value;
-            var isNativeNotification = document.getElementById('isNativeNotification').checked;
+    /**
+     * Core post message api handler
+     */
+    const pending = [];
+    /**
+     * Delete the request once we get the response
+     * @returns {boolean}
+     * @param id
+     */
+    const forgetRequest = (id) => {
+      return delete pending[id];
+    };
 
-            num++;
+    const broadcastMessage = (method, data) => {
+      window.postMessage({ method: method, data: data }, window.origin);
+    };
+    /**
+     *
+     * @param method
+     * @param data
+     * @param handlers
+     */
+    const postRequest = (method, data = {}, handlers) => {
+      const request = Object.assign({ requestId: ++requestId }, data);
+      pending[request.requestId] = {
+        errorCallback: (error) => {
+          return (
+            handlers.errorCallback(error) && forgetRequest(request.requestId)
+          );
+        },
+        successCallback: (response) => {
+          return (
+            handlers.successCallback(response) &&
+            forgetRequest(request.requestId)
+          );
+        },
+      };
+      broadcastMessage(method, request);
+      return request.requestId;
+    };
 
-            var theme = document.getElementById('select-theme').value
-            var notf = {
-                id: num,
-                title,
-                body: (body + ' num=' + num + ' tag=' + tag),
-                image: imageUrl,
-                flash: shouldFlash,
-                color: color || 'white',
-                sticky: shouldStick,
-                isExternal: isExternal,
-                theme: theme,
-                data: {
-                    hello: `Notification with id ${num} clicked')`
+    const handleResponse = (data) => {
+      if (data && data.requestId) {
+        const id = data.requestId;
+        const content = data;
+        const resolver = pending[id];
+        if (!resolver) {
+          return;
+        }
+        if (content.error) {
+          resolver.errorCallback(content.error);
+          return;
+        }
+        if (content.response) {
+          resolver.successCallback(content.response);
+          return;
+        }
+        resolver.successCallback(content);
+      }
+    };
+
+    const postMessage = (method, data) => {
+      window.postMessage({ method, data }, '*');
+    };
+
+    const getTestLogs = () => {
+      if (document.getElementById('log-filename2').value == '') {
+        const filename = document.getElementById('log-filename').value;
+        const contents = document.getElementById('log-contents').value;
+        return [{ filename, contents }];
+      } else {
+        const filename1 = document.getElementById('log-filename').value;
+        const contents1 = document.getElementById('log-contents').value;
+        const filename2 = document.getElementById('log-filename2').value;
+        const contents2 = document.getElementById('log-contents2').value;
+        return [
+          { filename: filename1, contents: contents1 },
+          { filename: filename2, contents: contents2 },
+        ];
+      }
+    };
+
+    const logTypeTestLogs = 'TestLogs';
+
+    window.addEventListener('message', (event) => {
+      const { data, method } = event.data;
+      switch (method) {
+        case 'collect-logs':
+          if (window.ssf) {
+            window.ssf.sendLogs(logTypeTestLogs, getTestLogs());
+          } else {
+            postMessage(apiCmds.sendLogs, {
+              logName: logTypeTestLogs,
+              logFiles: getTestLogs(),
+            });
+          }
+          break;
+        case 'activity-callback':
+          activityCallback(data);
+          break;
+        case 'screen-snippet-callback':
+          if (data) {
+            if (data.type && data.type === 'ERROR') {
+              // called when some error occurs during capture
+              alert('error getting snippet' + data.message);
+            } else if (data.data && data.type === 'image/png;base64') {
+              const dataUrl = 'data:' + data.type + ',' + data.data;
+              const img = document.getElementById('snippet-img');
+              img.src = dataUrl;
+            }
+          }
+          break;
+        case 'media-source-callback':
+        case 'screen-sharing-indicator-callback':
+        case 'get-version-info-callback':
+          handleResponse(data);
+          console.log(event.data);
+          break;
+        case 'restart-floater-callback':
+          onRestartFloater(data);
+          break;
+        case 'get-cpu-usage-callback':
+          handleResponse(data);
+          console.log(event.data);
+          break;
+        case 'check-media-permission-callback':
+          handleResponse(data);
+          console.log(event.data);
+          break;
+        case 'download-handler-callback':
+          onDownload(data);
+          console.log(event.data);
+          break;
+        default:
+          console.log(event.data);
+      }
+    });
+
+    /**
+     * Log retriever
+     */
+    if (window.ssf) {
+      window.ssf.registerLogRetriever(logTypeTestLogs);
+    } else {
+      postMessage(apiCmds.registerLogRetriever, logTypeTestLogs);
+    }
+
+    /**
+     * Analytic events
+     */
+    const onAnalyticsEvent = (data) => {
+      console.log(`event logger`, data);
+    };
+
+    if (window.ssf) {
+      window.ssf.registerAnalyticsEvent(onAnalyticsEvent);
+    } else {
+      postMessage(apiCmds.registerAnalyticsHandler);
+    }
+
+    /**
+     * Bound Changes
+     */
+    // register callback to be notified when size/position changes for win.
+    if (window.ssf) {
+      ssf.registerBoundsChange(onBoundsChange);
+    } else {
+      postMessage(apiCmds.registerBoundsChange);
+    }
+
+    function onBoundsChange(arg) {
+      console.log('bounds changed for=', arg);
+    }
+
+    if (window.ssf) {
+      ssf.registerDownloadHandler(onDownload);
+    } else {
+      postMessage(apiCmds.registerDownloadHandler);
+    }
+
+    function onDownload(data) {
+      if (data && data.status === 'download-completed') {
+        downloadedItem = data.item;
+        console.log('Download completed!', data.item);
+      } else {
+        console.log('Download failed!');
+      }
+    }
+
+    /**
+     * Protocol handler
+     */
+    if (window.ssf) {
+      window.ssf.registerProtocolHandler();
+    } else {
+      postMessage(apiCmds.registerProtocolHandler);
+    }
+
+    const onRestartFloater = (data) => {
+      if (win) {
+        win.close();
+      }
+      win = window.open(
+        `win.html?x=${data.bounds.x}&y=${data.bounds.y},test-window`,
+        `height=${data.bounds.height},width=${data.bounds.width}}`,
+      );
+    };
+
+    /**
+     * Protocol handler
+     */
+    if (window.ssf) {
+      window.ssf.registerRestartFloater(onRestartFloater);
+    } else {
+      postMessage(apiCmds.registerRestartFloater);
+    }
+
+    /**
+     * Activity Detection
+     */
+    const activityDetection = document.getElementById('activity-detection');
+    const activityStatus = document.getElementById('activity-status');
+    activityDetection.addEventListener('click', () => {
+      if (window.ssf) {
+        window.ssf.registerActivityDetection(5000, activityCallback);
+        startActivityInterval();
+      } else {
+        postMessage(apiCmds.registerActivityDetection, 5000);
+        startActivityInterval();
+      }
+    });
+
+    let activityTimer;
+    const startActivityInterval = () => {
+      return setInterval(() => {
+        activityStatus.classList.remove('green-dot');
+        activityStatus.classList.add('yellow-dot');
+      }, 10000);
+    };
+    const activityCallback = (data) => {
+      activityStatus.classList.remove('yellow-dot');
+      activityStatus.classList.add('green-dot');
+      console.log(data);
+      if (activityTimer) {
+        clearInterval(activityTimer);
+        activityTimer = null;
+      }
+      activityTimer = startActivityInterval();
+    };
+
+    /**
+     * Get CPU usage
+     */
+    const cpuMeasurement = document.getElementById('button-get-cpu-usage');
+
+    cpuMeasurement.addEventListener('click', () => {
+      console.log('Start measure CPU !!!');
+
+      if (window.ssf) {
+        ssf.getCPUUsage.then((cpuUsage) => {
+          console.log('get-cpu-usage, cpuUsage: ' + JSON.stringify(cpuUsage));
+          document.getElementById('text-cpu-usage').value =
+            cpuUsage.percentCPUUsage;
+        });
+      } else {
+        postRequest(apiCmds.getCPUUsage, null, {
+          successCallback: (cpuUsage) => {
+            console.log('get-cpu-usage, cpuUsage: ' + JSON.stringify(cpuUsage));
+            document.getElementById('text-cpu-usage').value =
+              cpuUsage.percentCPUUsage;
+          },
+        });
+      }
+    });
+
+    /**
+     * Check media permission
+     */
+    const mediaPermission = document.getElementById('check-media-permission');
+    mediaPermission.addEventListener('click', () => {
+      let cameraPermission = document.getElementById('camera-permission');
+      let microphonePermission = document.getElementById(
+        'microphone-permission',
+      );
+      let screenPermission = document.getElementById('screen-permission');
+      if (navigator.appVersion.indexOf('Mac') != -1) {
+        if (window.ssf) {
+          ssf.checkMediaPermission().then((mediaPermission) => {
+            console.log(
+              'check-media-permission, mediaPermission: ' +
+                JSON.stringify(mediaPermission),
+            );
+            cameraPermission.innerText = mediaPermission.camera;
+            microphonePermission.innerText = mediaPermission.microphone;
+            screenPermission.innerText = mediaPermission.screen;
+          });
+        } else {
+          postRequest(apiCmds.checkMediaPermission, null, {
+            successCallback: (mediaPermission) => {
+              console.log(
+                'check-media-permission, mediaPermission: ' +
+                  JSON.stringify(mediaPermission),
+              );
+              cameraPermission.innerText = mediaPermission.camera;
+              microphonePermission.innerText = mediaPermission.microphone;
+              screenPermission.innerText = mediaPermission.screen;
+            },
+          });
+        }
+      } else {
+        const notImplementedText = 'Not implemented for windows';
+        cameraPermission.innerText = notImplementedText;
+        microphonePermission.innerText = notImplementedText;
+        screenPermission.innerText = notImplementedText;
+      }
+    });
+
+    /**
+     * Desktop capture
+     */
+    const getSources = document.getElementById('get-sources');
+    getSources.addEventListener('click', () => {
+      if (window.ssf) {
+        ssf.getMediaSource(
+          { types: ['window', 'screen'] },
+          function (error, source) {
+            if (error) throw error;
+            navigator.webkitGetUserMedia(
+              {
+                audio: false,
+                video: {
+                  mandatory: {
+                    chromeMediaSource: 'desktop',
+                    chromeMediaSourceId: source.id,
+                    minWidth: 1280,
+                    maxWidth: 1280,
+                    minHeight: 720,
+                    maxHeight: 720,
+                  },
                 },
-                tag: tag,
-                isElectronNotification: isNativeNotification,
-                hasReply: true,
-                method: 'notification',
-            };
-
-            if (window.ssf) {
-                const ssfNotificationHandler = new window.ssf.Notification(notf.title, notf);
-                const onclick = (event) => {
-                    event.target.close();
-                    if (!process.env.NODE_ENV) {
-                        alert('notification clicked: ' + event.target.data.hello);
-                    }
-                };
-                ssfNotificationHandler.addEventListener('click', onclick);
-
-                const onclose = () => {
-                    if (!process.env.NODE_ENV) {
-                        alert('notification closed');
-                    }
-                };
-                ssfNotificationHandler.addEventListener('close', onclose);
-
-                const onerror = (event) => {
-                    alert('error=' + event.result);
-                };
-                ssfNotificationHandler.addEventListener('error', onerror);
-            } else if (window.manaSSF) {
-                const callback = (event, data) => {
-                    if (event === 'notification-reply') {
-                        document.getElementById('reply').innerText = data.notificationData;
-                    }
-                };
-                window.manaSSF.showNotification(notf, callback);
-            } else {
-                window.postMessage({ method: 'notification', data: notf }, '*');
-            }
-
-        });
-
-        closeNotificationEl.addEventListener('click', () => {
-            if (window.manaSSF) {
-                const id = document.getElementById('notificationTag').value;
-                window.manaSSF.closeNotification(parseInt(id));
-            }
-        })
-
-        /**
-         * Badge Count
-         */
-        let badgeCount = 0;
-
-        const incBadgeEl = document.getElementById('inc-badge');
-        incBadgeEl.addEventListener('click', () => {
-            badgeCount++;
-            if (window.ssf) {
-                ssf.setBadgeCount(badgeCount);
-            } else {
-                postMessage(apiCmds.setBadgeCount, badgeCount);
-            }
-        });
-
-        const clearBadgeCount = document.getElementById('clear-badge');
-        clearBadgeCount.addEventListener('click', () => {
-            badgeCount = 0;
-            if (window.ssf) {
-                ssf.setBadgeCount(0);
-            } else {
-                postMessage(apiCmds.setBadgeCount, 0);
-            }
-        });
-
-        const snippetButton = document.getElementById('snippet');
-        snippetButton.addEventListener('click', () => {
-            if (window.ssf) {
-                const gotSnippet = (rsp) => {
-                    if (rsp) {
-                        if (rsp.type && rsp.type === 'ERROR') {
-                            // called when some error occurs during capture
-                            alert('error getting snippet' + rsp.message);
-                        } else if (rsp.data && rsp.type === 'image/png;base64') {
-                            const dataUrl = 'data:' + rsp.type + ',' + rsp.data;
-                            const img = document.getElementById('snippet-img');
-                            img.src = dataUrl;
-                        }
-                    }
-                };
-                const screenSnippet = new window.ssf.ScreenSnippet();
-                screenSnippet.capture().then(gotSnippet).catch(gotSnippet);
-            } else {
-                postMessage(apiCmds.openScreenSnippet)
-            }
-        });
-
-        const cancelSnippetButton = document.getElementById('cancel-snippet');
-        cancelSnippetButton.addEventListener('click', () => {
-            if (window.ssf) {
-                const screenSnippet = new window.ssf.ScreenSnippet();
-                screenSnippet.cancelCapture();
-            } else {
-                postMessage(apiCmds.closeScreenSnippet)
-            }
-        });
-
-        let win;
-
-        const openWinButton = document.getElementById('open-win');
-        openWinButton.addEventListener('click', () => {
-            win = window.open('win.html?x=100&y=100', 'test-window', 'height=800,width=400');
-        });
-
-        const front = document.getElementById('bring-to-front');
-        front.addEventListener('click', () => {
-            if (window.ssf) {
-                window.ssf.activate(win.name);
-            } else {
-                postMessage(apiCmds.activate, win.name);
-            }
-        });
-
-        const frontWithoutFocus = document.getElementById('bring-to-front-without-focus');
-        frontWithoutFocus.addEventListener('click', () => {
-            if (window.ssf) {
-                window.ssf.bringToFront(win.name, 'notification');
-            } else {
-                postMessage(apiCmds.bringToFront, { windowName: win.name, reason: 'notification' });
-            }
-        });
-
-        var getVersionInfo = document.getElementById('get-version');
-        getVersionInfo.addEventListener('click', () => {
-            let apiVersionInfo = document.getElementById('api-version');
-            let containerIdentifier = document.getElementById('container-identifier');
-            let version = document.getElementById('container-ver');
-            let buildNumber = document.getElementById('build-number');
-            let searchApiVer = document.getElementById('search-api-ver');
-            let cpuArch = document.getElementById('cpu-arch');
-            if (window.ssf) {
-                ssf.getVersionInfo().then((versionInfo) => {
-                    apiVersionInfo.innerText = versionInfo.apiVer;
-                    containerIdentifier.innerText = versionInfo.containerIdentifier;
-                    version.innerText = versionInfo.containerVer;
-                    buildNumber.innerText = versionInfo.buildNumber;
-                    searchApiVer.innerText = versionInfo.searchApiVer;
-                    cpuArch.innerText = versionInfo.cpuArch;
-                });
-            } else {
-                postRequest(apiCmds.getVersionInfo, null, {
-                    successCallback: (versionInfo) => {
-                        apiVersionInfo.innerText = versionInfo.apiVer;
-                        containerIdentifier.innerText = versionInfo.containerIdentifier;
-                        version.innerText = versionInfo.containerVer;
-                        buildNumber.innerText = versionInfo.buildNumber;
-                        searchApiVer.innerText = versionInfo.searchApiVer;
-                        cpuArch.innerText = versionInfo.cpuArch;
-                    }
-                });
-            }
-        });
-
-        /**
-         * Core post message api handler
-         */
-        const pending = [];
-        /**
-         * Delete the request once we get the response
-         * @returns {boolean}
-         * @param id
-         */
-        const forgetRequest = (id) => {
-            return delete pending[ id ];
+              },
+              (stream) => {
+                handleStream(stream, source.display_id);
+              },
+              handleError,
+            );
+          },
+        );
+      } else {
+        const successHandler = (data) => {
+          const constraints = {
+            mandatory: {
+              chromeMediaSource: 'desktop',
+              maxWidth: screen.width > 1920 ? 1920 : screen.width,
+              maxHeight: screen.height > 1080 ? 1080 : screen.height,
+              chromeMediaSourceId: data.source.id,
+            },
+            optional: [],
+          };
+          navigator.mediaDevices
+            .getUserMedia({ video: constraints })
+            .then((stream) => {
+              handleStream(stream, data.source.display_id);
+            });
         };
-
-        const broadcastMessage = (method, data) => {
-            window.postMessage({ method: method, data: data }, window.origin);
-        };
-        /**
-         *
-         * @param method
-         * @param data
-         * @param handlers
-         */
-        const postRequest = (method, data = {}, handlers) => {
-            const request = Object.assign({ requestId: ++requestId }, data);
-            pending[ request.requestId ] = {
-                errorCallback: (error) => {
-                    return handlers.errorCallback(error)
-                        && forgetRequest(request.requestId);
-                },
-                successCallback: (response) => {
-                    return handlers.successCallback(response)
-                        && forgetRequest(request.requestId);
-                },
-            };
-            broadcastMessage(method, request);
-            return request.requestId;
-        };
-
-        const handleResponse = (data) => {
-            if (data && data.requestId) {
-                const id = data.requestId;
-                const content = data;
-                const resolver = pending[ id ];
-                if (!resolver) {
-                    return;
-                }
-                if (content.error) {
-                    resolver.errorCallback(content.error);
-                    return;
-                }
-                if (content.response) {
-                    resolver.successCallback(content.response);
-                    return;
-                }
-                resolver.successCallback(content);
-            }
-        };
-
-        const postMessage = (method, data) => {
-            window.postMessage({ method, data }, '*');
-        };
-
-        const getTestLogs = () => {
-            if (document.getElementById('log-filename2').value == '') {
-                const filename = document.getElementById('log-filename').value;
-                const contents = document.getElementById('log-contents').value;
-                return [ { filename, contents }, ];
+        const errorHandler = (data) => {
+          if (data.error) {
+            if (data.error.message === 'User Cancelled') {
+              console.error('user canceled');
             } else {
-                const filename1 = document.getElementById('log-filename').value;
-                const contents1 = document.getElementById('log-contents').value;
-                const filename2 = document.getElementById('log-filename2').value;
-                const contents2 = document.getElementById('log-contents2').value;
-                return [ { filename: filename1, contents: contents1 }, 
-                    { filename: filename2, contents: contents2 }, ];
+              throw new Error(data.error);
             }
+          }
+        };
+        postRequest(
+          apiCmds.getMediaSource,
+          { types: ['window', 'screen'] },
+          {
+            successCallback: (data) => successHandler(data),
+            errorCallback: (error) => errorHandler(error),
+          },
+        );
+      }
+    });
+
+    const handleStream = (stream, displayId) => {
+      document.getElementById('video').srcObject = stream;
+      if (window.ssf) {
+        ssf.showScreenSharingIndicator(
+          {
+            stream,
+            displayId,
+          },
+          (event) => {
+            console.log('screen-sharing-indicator callback', event);
+            if (event.type === 'stopRequested') {
+              stream.getVideoTracks().forEach((t) => t.stop());
+              document.getElementById('video').srcObject = null;
+              ssf.closeScreenSharingIndicator(stream.id);
+            }
+          },
+        );
+      } else {
+        const success = (data) => {
+          if (data.error) {
+            if (data.error.message === 'User Cancelled') {
+              console.error('user canceled');
+            } else {
+              throw new Error(data.error);
+            }
+            return;
+          }
+          if (!data || typeof data.type !== 'string' || !requestId) {
+            console.error(
+              `screen-sharing-indicator-callback invalid args ${data}`,
+            );
+          } else {
+            console.log(`screen sharing will be stopped`);
+          }
+        };
+        postRequest(
+          apiCmds.openScreenSharingIndicator,
+          { streamId: stream.id, displayId },
+          {
+            successCallback: (data) => success(data),
+          },
+        );
+      }
+    };
+
+    const handleError = (e) => {
+      console.error(e);
+    };
+
+    /**
+     * Locale api handler
+     */
+    document.getElementById('changeLocale').addEventListener('click', () => {
+      const locale = document.getElementById('locale-select').value;
+      if (window.ssf) {
+        window.ssf.setLocale(locale);
+        document.location.reload();
+      } else {
+        postMessage(apiCmds.setLocale, locale);
+        document.location.reload();
+      }
+    });
+
+    let downloadedItem;
+    /**
+     * Download Manager api handler
+     */
+    const download = (filename, text) => {
+      const element = document.createElement('a');
+      element.setAttribute(
+        'href',
+        'data:text/plain;charset=utf-8,' + encodeURIComponent(text),
+      );
+      element.setAttribute('download', filename);
+
+      element.style.display = 'none';
+      document.body.appendChild(element);
+
+      element.click();
+
+      document.body.removeChild(element);
+    };
+
+    // Start file download.
+    document.getElementById('download-file1').addEventListener(
+      'click',
+      () => {
+        const filename = 'hello.txt';
+        const text = document.getElementById('text-val').value;
+        download(filename, text);
+      },
+      false,
+    );
+
+    document.getElementById('download-file2').addEventListener(
+      'click',
+      () => {
+        const filename = 'bye.txt';
+        const text = document.getElementById('text-val').value;
+        download(filename, text);
+      },
+      false,
+    );
+
+    document
+      .getElementById('open-download-item')
+      .addEventListener('click', () => {
+        if (!downloadedItem) {
+          alert('No files downloaded! Try again!');
         }
-
-        const logTypeTestLogs = 'TestLogs';
-
-        window.addEventListener('message', (event) => {
-            const { data, method } = event.data;
-            switch (method) {
-                case 'collect-logs':
-                    if (window.ssf) {
-                        window.ssf.sendLogs(logTypeTestLogs, getTestLogs());
-                    } else {
-                        postMessage( apiCmds.sendLogs, { logName: logTypeTestLogs, logFiles: getTestLogs() } );
-                    }
-                    break;
-                case 'activity-callback':
-                    activityCallback(data);
-                    break;
-                case 'screen-snippet-callback':
-                    if (data) {
-                        if (data.type && data.type === 'ERROR') {
-                            // called when some error occurs during capture
-                            alert('error getting snippet' + data.message);
-                        } else if (data.data && data.type === 'image/png;base64') {
-                            const dataUrl = 'data:' + data.type + ',' + data.data;
-                            const img = document.getElementById('snippet-img');
-                            img.src = dataUrl;
-                        }
-                    }
-                    break;
-                case 'media-source-callback':
-                case 'screen-sharing-indicator-callback':
-                case 'get-version-info-callback':
-                    handleResponse(data);
-                    console.log(event.data);
-                    break;
-                case 'restart-floater-callback':
-                    onRestartFloater(data);
-                    break;
-                case 'get-cpu-usage-callback':
-                    handleResponse(data);
-                    console.log(event.data);
-                    break;
-                case 'check-media-permission-callback':
-                    handleResponse(data);
-                    console.log(event.data);
-                    break;
-                case 'download-handler-callback':
-                    onDownload(data);
-                    console.log(event.data);
-                    break;
-                default:
-                    console.log(event.data);
-            }
-        });
-
-        /**
-         * Log retriever
-         */
+        const id = downloadedItem.id;
         if (window.ssf) {
-            window.ssf.registerLogRetriever(logTypeTestLogs);
+          window.ssf.openDownloadedItem(id);
         } else {
-            postMessage(apiCmds.registerLogRetriever, logTypeTestLogs);
+          postMessage(apiCmds.openDownloadedItem, id);
         }
+      });
 
-        /**
-         * Analytic events
-         */
-        const onAnalyticsEvent = (data) => {
-            console.log(`event logger`, data);
-        };
-
+    document
+      .getElementById('show-download-item')
+      .addEventListener('click', () => {
+        if (!downloadedItem || downloadedItem.length < 1) {
+          alert('No files downloaded! Try again!');
+        }
+        const id = downloadedItem.id;
         if (window.ssf) {
-            window.ssf.registerAnalyticsEvent(onAnalyticsEvent);
+          window.ssf.showDownloadedItem(id);
         } else {
-            postMessage(apiCmds.registerAnalyticsHandler);
+          postMessage(apiCmds.showDownloadedItem, id);
         }
+      });
 
-        /**
-         * Bound Changes
-         */
-        // register callback to be notified when size/position changes for win.
+    document
+      .getElementById('close-download-manager')
+      .addEventListener('click', () => {
+        downloadedItem = undefined;
         if (window.ssf) {
-            ssf.registerBoundsChange(onBoundsChange);
+          window.ssf.clearDownloadedItems();
         } else {
-            postMessage(apiCmds.registerBoundsChange);
+          postMessage(apiCmds.clearDownloadedItems);
         }
+      });
 
-        function onBoundsChange(arg) {
-            console.log('bounds changed for=', arg)
-        }
-
-        if (window.ssf) {
-            ssf.registerDownloadHandler(onDownload);
-        } else {
-            postMessage(apiCmds.registerDownloadHandler);
-        }
-
-        function onDownload(data) {
-            if (data && data.status === 'download-completed') {
-                downloadedItem = data.item;
-                console.log('Download completed!', data.item);
-            } else {
-                console.log('Download failed!');
-            }
-        }
-
-        /**
-         * Protocol handler
-         */
-        if (window.ssf) {
-            window.ssf.registerProtocolHandler();
-        } else {
-            postMessage(apiCmds.registerProtocolHandler);
-        }
-
-        const onRestartFloater = (data) => {
-            if (win) {
-                win.close();
-            }
-            win = window.open(`win.html?x=${data.bounds.x}&y=${data.bounds.y},test-window`, `height=${data.bounds.height},width=${data.bounds.width}}`);
-        };
-
-        /**
-         * Protocol handler
-         */
-        if (window.ssf) {
-            window.ssf.registerRestartFloater(onRestartFloater);
-        } else {
-            postMessage(apiCmds.registerRestartFloater);
-        }
-
-        /**
-         * Activity Detection
-         */
-        const activityDetection = document.getElementById('activity-detection');
-        const activityStatus = document.getElementById('activity-status');
-        activityDetection.addEventListener('click', () => {
-            if (window.ssf) {
-                window.ssf.registerActivityDetection(5000, activityCallback);
-                startActivityInterval();
-            } else {
-                postMessage(apiCmds.registerActivityDetection, 5000);
-                startActivityInterval();
-            }
-        });
-
-        let activityTimer;
-        const startActivityInterval = () => {
-            return setInterval(() => {
-                activityStatus.classList.remove('green-dot');
-                activityStatus.classList.add('yellow-dot');
-            }, 10000);
-        };
-        const activityCallback = (data) => {
-            activityStatus.classList.remove('yellow-dot');
-            activityStatus.classList.add('green-dot');
-            console.log(data);
-            if (activityTimer) {
-                clearInterval(activityTimer);
-                activityTimer = null;
-            }
-            activityTimer = startActivityInterval();
-        };
-
-        /**
-         * Get CPU usage
-         */
-        const cpuMeasurement = document.getElementById('button-get-cpu-usage');
-
-        cpuMeasurement.addEventListener('click', () => {
-            console.log('Start measure CPU !!!');
-
-            if (window.ssf) {
-                ssf.getCPUUsage.then((cpuUsage) => {
-                    console.log('get-cpu-usage, cpuUsage: ' + JSON.stringify(cpuUsage));
-                    document.getElementById('text-cpu-usage').value = cpuUsage.percentCPUUsage;
-                });
-            } else {
-                postRequest(apiCmds.getCPUUsage, null, {
-                    successCallback: (cpuUsage) => {
-                        console.log('get-cpu-usage, cpuUsage: ' + JSON.stringify(cpuUsage));
-                        document.getElementById('text-cpu-usage').value = cpuUsage.percentCPUUsage;
-                    }
-                });
-            }
-        });
-
-        /**
-         * Check media permission
-         */
-        const mediaPermission = document.getElementById('check-media-permission');
-        mediaPermission.addEventListener('click', () => {
-            let cameraPermission = document.getElementById('camera-permission');
-            let microphonePermission = document.getElementById('microphone-permission');
-            let screenPermission = document.getElementById('screen-permission');
-            if (navigator.appVersion.indexOf("Mac") != -1) {
-                if (window.ssf) {
-                    ssf.checkMediaPermission().then((mediaPermission) => {
-                        console.log('check-media-permission, mediaPermission: ' + JSON.stringify(mediaPermission));
-                        cameraPermission.innerText = mediaPermission.camera;
-                        microphonePermission.innerText = mediaPermission.microphone;
-                        screenPermission.innerText = mediaPermission.screen;
-                    });
-                } else {
-                    postRequest(apiCmds.checkMediaPermission, null, {
-                        successCallback: (mediaPermission) => {
-                            console.log('check-media-permission, mediaPermission: ' + JSON.stringify(mediaPermission));
-                            cameraPermission.innerText = mediaPermission.camera;
-                            microphonePermission.innerText = mediaPermission.microphone;
-                            screenPermission.innerText = mediaPermission.screen;
-                        }
-                    });
-                }
-            } else {
-                const notImplementedText = 'Not implemented for windows';
-                cameraPermission.innerText = notImplementedText;
-                microphonePermission.innerText = notImplementedText;
-                screenPermission.innerText = notImplementedText;
-            }
-        });
-
-        /**
-         * Desktop capture
-         */
-        const getSources = document.getElementById('get-sources');
-        getSources.addEventListener('click', () => {
-            if (window.ssf) {
-                ssf.getMediaSource({types: ['window', 'screen']}, function(error, source) {
-                    if (error) throw error;
-                    navigator.webkitGetUserMedia({
-                        audio: false,
-                        video: {
-                            mandatory: {
-                                chromeMediaSource: 'desktop',
-                                chromeMediaSourceId: source.id,
-                                minWidth: 1280,
-                                maxWidth: 1280,
-                                minHeight: 720,
-                                maxHeight: 720
-                            }
-                        }
-                    }, stream => {
-                        handleStream(stream, source.display_id);
-                    }, handleError);
-                });
-            } else {
-                const successHandler = (data) => {
-                    const constraints = {
-                        mandatory: {
-                            chromeMediaSource: 'desktop',
-                            maxWidth: screen.width > 1920 ? 1920 : screen.width,
-                            maxHeight: screen.height > 1080 ? 1080 : screen.height,
-                            chromeMediaSourceId: data.source.id
-                        },
-                        optional: []
-                    };
-                    navigator.mediaDevices.getUserMedia({ video: constraints }).then((stream) => {
-                        handleStream(stream, data.source.display_id);
-                    });
-                };
-                const errorHandler = (data) => {
-                    if (data.error) {
-                        if (data.error.message === 'User Cancelled') {
-                            console.error('user canceled');
-                        } else {
-                            throw new Error(data.error);
-                        }
-                    }
-                };
-                postRequest(apiCmds.getMediaSource, { types: ['window', 'screen'] }, {
-                    successCallback: (data) => successHandler(data),
-                    errorCallback: (error) => errorHandler(error),
-                });
-            }
-        });
-
-        const handleStream = (stream, displayId) => {
-            document.getElementById('video').srcObject = stream;
-            if (window.ssf) {
-                ssf.showScreenSharingIndicator({
-                    stream,
-                    displayId
-                }, (event) => {
-                    console.log('screen-sharing-indicator callback', event);
-                    if (event.type === 'stopRequested') {
-                        stream.getVideoTracks().forEach(t => t.stop());
-                        document.getElementById('video').srcObject = null;
-                        ssf.closeScreenSharingIndicator(stream.id)
-                    }
-                });
-            } else {
-                const success = (data) => {
-                    if (data.error) {
-                        if (data.error.message === 'User Cancelled') {
-                            console.error('user canceled');
-                        } else {
-                            throw new Error(data.error);
-                        }
-                        return;
-                    }
-                    if (!data || typeof data.type !== 'string' || !requestId) {
-                        console.error(`screen-sharing-indicator-callback invalid args ${data}`);
-                    } else {
-                        console.log(`screen sharing will be stopped`);
-                    }
-                };
-                postRequest(apiCmds.openScreenSharingIndicator, { streamId: stream.id, displayId }, {
-                    successCallback: (data) => success(data),
-                });
-            }
-        };
-
-        const handleError = (e) => {
-            console.error(e);
-        };
-
-        /**
-         * Locale api handler
-         */
-        document.getElementById('changeLocale').addEventListener('click', () => {
-            const locale = document.getElementById('locale-select').value;
-            if (window.ssf) {
-                window.ssf.setLocale(locale);
-                document.location.reload();
-            } else {
-                postMessage(apiCmds.setLocale, locale);
-                document.location.reload();
-            }
-        });
-
-        let downloadedItem;
-        /**
-         * Download Manager api handler
-         */
-        const download = (filename, text) => {
-            const element = document.createElement('a');
-            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-            element.setAttribute('download', filename);
-
-            element.style.display = 'none';
-            document.body.appendChild(element);
-
-            element.click();
-
-            document.body.removeChild(element);
-        };
-
-        // Start file download.
-        document.getElementById('download-file1').addEventListener('click', () => {
-            const filename = "hello.txt";
-            const text = document.getElementById("text-val").value;
-            download(filename, text);
-        }, false);
-
-        document.getElementById('download-file2').addEventListener('click', () => {
-            const filename = "bye.txt";
-            const text = document.getElementById("text-val").value;
-            download(filename, text);
-        }, false)
-
-        document.getElementById('open-download-item').addEventListener('click', () => {
-            if (!downloadedItem) {
-                alert('No files downloaded! Try again!');
-            }
-            const id = downloadedItem.id;
-            if (window.ssf) {
-                window.ssf.openDownloadedItem(id);
-            } else {
-                postMessage(apiCmds.openDownloadedItem, id);
-            }
-        });
-
-        document.getElementById('show-download-item').addEventListener('click', () => {
-            if (!downloadedItem || downloadedItem.length < 1) {
-                alert('No files downloaded! Try again!');
-            }
-            const id = downloadedItem.id;
-            if (window.ssf) {
-                window.ssf.showDownloadedItem(id);
-            } else {
-                postMessage(apiCmds.showDownloadedItem, id);
-            }
-        });
-
-        document.getElementById('close-download-manager').addEventListener('click', () => {
-            downloadedItem = undefined;
-            if (window.ssf) {
-                window.ssf.clearDownloadedItems();
-            } else {
-                postMessage(apiCmds.clearDownloadedItems);
-            }
-        });
-
-        document.getElementById('restart-app').addEventListener('click', () => {
-            if (window.ssf) {
-                window.ssf.restartApp();
-            } else {
-                postMessage(apiCmds.restartApp);
-            }
-        });
-
-    </script>
+    document.getElementById('restart-app').addEventListener('click', () => {
+      if (window.ssf) {
+        window.ssf.restartApp();
+      } else {
+        postMessage(apiCmds.restartApp);
+      }
+    });
+  </script>
 </html>
