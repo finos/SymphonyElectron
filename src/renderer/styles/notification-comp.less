@@ -184,6 +184,7 @@ body {
   height: 16px;
   width: 26px;
   margin-left: 8px;
+  padding-top: 1px;
   align-items: center;
 }
 
@@ -269,20 +270,18 @@ body {
       border: none;
       color: var(--text-color);
     }
-
-    .rte-send-button {
-      width: 25px;
-      height: 25px;
-      align-self: center;
-      padding: 3px;
-      background: url('../assets/notification-send-button-enabled.svg')
-        no-repeat center;
-      border: none;
-      color: var(--text-color);
-    }
   }
 }
-
+.rte-send-button {
+  width: 25px;
+  height: 25px;
+  align-self: center;
+  padding: 3px;
+  background: url('../assets/notification-send-button-enabled.svg') no-repeat
+    center;
+  border: none;
+  color: var(--text-color);
+}
 .rte-thumbsup-button:focus,
 .rte-send-button:focus {
   outline: none;
@@ -298,7 +297,7 @@ body {
 }
 
 .external-border .title {
-  max-width: 142px;
+  max-width: 142px !important;
 }
 
 .company {

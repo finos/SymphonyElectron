@@ -58,6 +58,8 @@ type keyboardEvent = React.KeyboardEvent<HTMLInputElement>;
 // Notification container height
 const CONTAINER_HEIGHT = 100;
 const CONTAINER_HEIGHT_WITH_INPUT = 142;
+const LIGHT_THEME = '#EAEBEC';
+const DARK_THEME = '#25272B';
 
 export default class NotificationComp extends React.Component<
   {},
@@ -466,10 +468,12 @@ export default class NotificationComp extends React.Component<
           currentColors.notificationBorderColor;
       } else {
         // in case of regular message without mention
-        currentColors.notificationBackgroundColor = color
+        // FYI: SDA versions prior to 9.2.3 do not support theme color properly, reason why SFE-lite is pushing notification default background color.
+        // For this reason, to be backward compatible, we check if sent color correspond to 'default' background color. If yes, we should ignore it and not consider it as a custom color.
+        currentColors.notificationBackgroundColor = this.isCustomColor(color)
           ? color
           : currentColors.regularFlashingNotificationBgColor;
-        currentColors.notificationBorderColor = color
+        currentColors.notificationBorderColor = this.isCustomColor(color)
           ? color
           : theme === Themes.DARK
           ? '#2996fd'
@@ -514,6 +518,7 @@ export default class NotificationComp extends React.Component<
     const { flash, theme, hasMention, isExternal } = this.state;
     if (flash && theme) {
       if (isExternal) {
+        customClasses.push('external-border');
         if (hasMention) {
           customClasses.push(`${theme}-ext-mention-flashing`);
         } else {
@@ -529,5 +534,18 @@ export default class NotificationComp extends React.Component<
       customClasses.push('external-border');
     }
     return customClasses;
+  }
+
+  /**
+   * SDA versions prior to 9.2.3 do not support theme color properly, reason why SFE-lite is pushing notification default background color and theme.
+   * For that reason, we try to identify if provided color is the default one or not.
+   * @param color color sent through SDABridge
+   * @returns boolean
+   */
+  private isCustomColor(color: string): boolean {
+    if (color && color !== LIGHT_THEME && color !== DARK_THEME) {
+      return true;
+    }
+    return false;
   }
 }
