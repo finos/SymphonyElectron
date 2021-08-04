@@ -23,11 +23,15 @@ const Colors = {
     regularFlashingNotificationBgColor: '#27588e',
     notificationBackgroundColor: '#27292c',
     notificationBorderColor: '#717681',
+    mentionBackgroundColor: '#99342c',
+    mentionBorderColor: '#ff5d50',
   },
   light: {
     regularFlashingNotificationBgColor: '#aad4f8',
     notificationBackgroundColor: '#f1f1f3',
     notificationBorderColor: 'transparent',
+    mentionBackgroundColor: '#fcc1b9',
+    mentionBorderColor: 'transparent',
   },
 };
 
@@ -460,9 +464,23 @@ export default class NotificationComp extends React.Component<
     const { theme, flash, isExternal, hasMention, color } = this.state;
     const currentColors =
       theme === Themes.DARK ? { ...Colors.dark } : { ...Colors.light };
+    const externalFlashingBackgroundColor =
+      theme === Themes.DARK ? '#70511f' : '#f6e5a6';
     if (flash && theme) {
       if (isExternal) {
-        currentColors.notificationBorderColor = '#F7CA3B';
+        if (!hasMention) {
+          currentColors.notificationBorderColor = '#F7CA3B';
+          currentColors.notificationBackgroundColor = externalFlashingBackgroundColor;
+          if (this.isCustomColor(color)) {
+            currentColors.notificationBorderColor = this.getThemedCustomBorderColor(
+              theme,
+              color,
+            );
+            currentColors.notificationBackgroundColor = color;
+          }
+        } else {
+          currentColors.notificationBorderColor = '#F7CA3B';
+        }
       } else if (hasMention) {
         currentColors.notificationBorderColor =
           currentColors.notificationBorderColor;
@@ -474,13 +492,26 @@ export default class NotificationComp extends React.Component<
           ? color
           : currentColors.regularFlashingNotificationBgColor;
         currentColors.notificationBorderColor = this.isCustomColor(color)
-          ? color
+          ? this.getThemedCustomBorderColor(theme, color)
           : theme === Themes.DARK
           ? '#2996fd'
           : 'transparent';
       }
-    } else if (!flash && color) {
-      currentColors.notificationBackgroundColor = currentColors.notificationBorderColor = color;
+    } else if (!flash) {
+      if (hasMention) {
+        currentColors.notificationBackgroundColor =
+          currentColors.mentionBackgroundColor;
+        currentColors.notificationBorderColor =
+          currentColors.mentionBorderColor;
+      } else if (this.isCustomColor(color)) {
+        currentColors.notificationBackgroundColor = color;
+        currentColors.notificationBorderColor = this.getThemedCustomBorderColor(
+          theme,
+          color,
+        );
+      } else if (isExternal) {
+        currentColors.notificationBorderColor = '#F7CA3B';
+      }
     }
     return currentColors;
   }
@@ -547,5 +578,45 @@ export default class NotificationComp extends React.Component<
       return true;
     }
     return false;
+  }
+
+  /**
+   * Function that allows to increase color brightness
+   * @param hex hes color
+   * @param percent percent
+   * @returns new hex color
+   */
+  private increaseBrightness(hex: string, percent: number) {
+    // strip the leading # if it's there
+    hex = hex.replace(/^\s*#|\s*$/g, '');
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+
+    return (
+      '#' +
+      // tslint:disable-next-line: no-bitwise
+      (0 | ((1 << 8) + r + ((256 - r) * percent) / 100))
+        .toString(16)
+        .substr(1) +
+      // tslint:disable-next-line: no-bitwise
+      (0 | ((1 << 8) + g + ((256 - g) * percent) / 100))
+        .toString(16)
+        .substr(1) +
+      // tslint:disable-next-line: no-bitwise
+      (0 | ((1 << 8) + b + ((256 - b) * percent) / 100)).toString(16).substr(1)
+    );
+  }
+
+  /**
+   * Returns custom border color
+   * @param theme current theme
+   * @param customColor color
+   * @returns custom border color
+   */
+  private getThemedCustomBorderColor(theme: string, customColor: string) {
+    return theme === Themes.DARK
+      ? this.increaseBrightness(customColor, 50)
+      : 'transparent';
   }
 }
