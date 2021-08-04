@@ -64,19 +64,15 @@
 }
 
 @keyframes light-ext-flashing {
-  0% {
-    background-color: @light-notification-bg-color;
-  }
   50% {
-    background-color: @light-external-flash-mention-bg-color;
+    background-color: @light-notification-bg-color;
+    border-color: @light-external-flash-border-color;
   }
 }
 
 @keyframes dark-ext-flashing {
-  0% {
-    background-color: @dark-notification-bg-color;
-  }
   50% {
-    background-color: @dark-external-flash-bg-color;
+    background-color: @dark-notification-bg-color;
+    border-color: @dark-external-flash-border-color;
   }
 }
