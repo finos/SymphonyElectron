@@ -27,6 +27,8 @@ import { getSource } from './desktop-capturer';
 import SSFNotificationHandler from './notification-ssf-hendler';
 import { ScreenSnippetBcHandler } from './screen-snippet-bc-handler';
 
+const SUPPORTED_SETTINGS = ['flashing-notifications'];
+
 let isAltKey: boolean = false;
 let isMenuOpen: boolean = false;
 
@@ -664,6 +666,14 @@ export class SSFApi {
       cmd: apiCmds.closeNotification,
       notificationId,
     });
+  }
+
+  /**
+   * Get SDA supported settings.
+   * @returns list of supported features
+   */
+  public supportedSettings(): string[] {
+    return SUPPORTED_SETTINGS || [];
   }
 }
 

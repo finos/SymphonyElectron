@@ -85,6 +85,7 @@ if (ssfWindow.ssf) {
     showNotification: ssfWindow.ssf.showNotification,
     closeNotification: ssfWindow.ssf.closeNotification,
     restartApp: ssfWindow.ssf.restartApp,
+    supportedSettings: ssfWindow.ssf.supportedSettings,
   });
 }
 
