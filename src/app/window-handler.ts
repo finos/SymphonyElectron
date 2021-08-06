@@ -948,10 +948,8 @@ export class WindowHandler {
     this.aboutAppWindow.webContents.once('did-finish-load', async () => {
       let client = '';
       if (this.url && this.url.startsWith('https://corporate.symphony.com')) {
-        const manaPath = 'client-bff';
-        const daily = 'daily';
-        client = this.url.includes(manaPath)
-          ? this.url.includes(daily)
+        client = this.url.includes('bff')
+          ? this.url.includes('daily')
             ? 'Symphony 2.0 - Daily'
             : 'Symphony 2.0'
           : 'Symphony Classic';
@@ -1960,8 +1958,6 @@ export class WindowHandler {
         this.url = this.globalConfig.url;
       }
       const parsedUrl = parse(this.url);
-      const manaPath = 'client-bff';
-      const manaChannel = 'daily';
       const csrfToken = await this.mainWindow.webContents.executeJavaScript(
         `localStorage.getItem('x-km-csrf-token')`,
       );
@@ -1970,10 +1966,10 @@ export class WindowHandler {
           this.url = this.startUrl + `?x-km-csrf-token=${csrfToken}`;
           break;
         case ClientSwitchType.CLIENT_2_0:
-          this.url = `https://${parsedUrl.hostname}/${manaPath}/index.html?x-km-csrf-token=${csrfToken}`;
+          this.url = `https://${parsedUrl.hostname}/client-bff/index.html?x-km-csrf-token=${csrfToken}`;
           break;
         case ClientSwitchType.CLIENT_2_0_DAILY:
-          this.url = `https://${parsedUrl.hostname}/${manaPath}/${manaChannel}/index.html?x-km-csrf-token=${csrfToken}`;
+          this.url = `https://${parsedUrl.hostname}/bff-daily/daily/index.html?x-km-csrf-token=${csrfToken}`;
           break;
         default:
           this.url = this.globalConfig.url + `?x-km-csrf-token=${csrfToken}`;
