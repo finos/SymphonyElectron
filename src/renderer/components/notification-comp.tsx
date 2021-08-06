@@ -70,7 +70,8 @@ export default class NotificationComp extends React.Component<
   INotificationState
 > {
   private readonly eventHandlers = {
-    onClose: (winKey) => (_event: mouseEventButton) => this.close(winKey),
+    onClose: (winKey) => (_event: mouseEventButton) =>
+      this.close(_event, winKey),
     onClick: (data) => (_event: mouseEventButton) => this.click(data),
     onContextMenu: (event) => this.contextMenu(event),
     onMouseEnter: (winKey) => (_event: mouseEventButton) =>
@@ -167,9 +168,13 @@ export default class NotificationComp extends React.Component<
         <div
           className={`close-button ${themeClassName}`}
           title={i18n.t('Close')()}
-          onClick={this.eventHandlers.onClose(id)}
         >
-          <img src={closeImgFilePath} alt='close' />
+          <img
+            src={closeImgFilePath}
+            title={i18n.t('Close')()}
+            alt='close'
+            onClick={this.eventHandlers.onClose(id)}
+          />
         </div>
         <div
           className='main-container'
@@ -308,7 +313,8 @@ export default class NotificationComp extends React.Component<
    *
    * @param id {number}
    */
-  private close(id: number): void {
+  private close(event: any, id: number): void {
+    event.stopPropagation();
     ipcRenderer.send('close-notification', id);
   }
 
@@ -429,10 +435,24 @@ export default class NotificationComp extends React.Component<
    */
   private updateState(_event, data): void {
     const { color } = data;
-    data.color = this.isValidColor(color) ? color : '';
+    // FYI: 1.5 sends hex color but without '#', reason why we check and add prefix if necessary.
+    // Goal is to keep backward compatibility with 1.5 colors (SDA v. 9.2.0)
+    const isOldColor = /^([A-Fa-f0-9]{6})/.test(color);
+    data.color = isOldColor
+      ? `#${color}`
+      : this.isValidColor(color)
+      ? color
+      : '';
     data.isInputHidden = true;
     data.containerHeight = CONTAINER_HEIGHT;
-    data.theme = data.theme ? data.theme : Themes.LIGHT;
+    // FYI: 1.5 doesn't send current theme. We need to deduce it from the color that is sent.
+    // Goal is to keep backward compatibility with 1.5 themes (SDA v. 9.2.0)
+    data.theme =
+      isOldColor && darkTheme.includes(data.color)
+        ? Themes.DARK
+        : data.theme
+        ? data.theme
+        : Themes.LIGHT;
     this.resetNotificationData();
     this.setState(data as INotificationState);
   }
