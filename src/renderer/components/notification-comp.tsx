@@ -70,7 +70,8 @@ export default class NotificationComp extends React.Component<
   INotificationState
 > {
   private readonly eventHandlers = {
-    onClose: (winKey) => (_event: mouseEventButton) => this.close(winKey),
+    onClose: (winKey) => (_event: mouseEventButton) =>
+      this.close(_event, winKey),
     onClick: (data) => (_event: mouseEventButton) => this.click(data),
     onContextMenu: (event) => this.contextMenu(event),
     onMouseEnter: (winKey) => (_event: mouseEventButton) =>
@@ -167,9 +168,13 @@ export default class NotificationComp extends React.Component<
         <div
           className={`close-button ${themeClassName}`}
           title={i18n.t('Close')()}
-          onClick={this.eventHandlers.onClose(id)}
         >
-          <img src={closeImgFilePath} title={i18n.t('Close')()} alt='close' />
+          <img
+            src={closeImgFilePath}
+            title={i18n.t('Close')()}
+            alt='close'
+            onClick={this.eventHandlers.onClose(id)}
+          />
         </div>
         <div
           className='main-container'
@@ -308,7 +313,8 @@ export default class NotificationComp extends React.Component<
    *
    * @param id {number}
    */
-  private close(id: number): void {
+  private close(event: any, id: number): void {
+    event.stopPropagation();
     ipcRenderer.send('close-notification', id);
   }
 
