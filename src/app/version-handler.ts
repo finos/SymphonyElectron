@@ -182,9 +182,9 @@ class VersionHandler {
 
       /* Get SFE version */
       let urlSfeVersion: string;
-      if (mainUrl?.includes('/client-bff/')) {
-        urlSfeVersion = mainUrl?.includes('/client-bff/daily/')
-          ? `${protocol}//${hostname}/client-bff/daily/version.json`
+      if (mainUrl?.includes('bff')) {
+        urlSfeVersion = mainUrl?.includes('/daily/')
+          ? `${protocol}//${hostname}/bff-daily/daily/version.json`
           : `${protocol}//${hostname}/client-bff/version.json`;
         this.versionInfo.sfeClientType = '2.0';
       } else {
