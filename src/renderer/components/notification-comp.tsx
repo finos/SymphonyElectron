@@ -41,7 +41,7 @@ interface INotificationState {
   company: string;
   body: string;
   image: string;
-  icon: string;
+  icon: string | undefined;
   id: number;
   color: string;
   flash: boolean;
@@ -263,11 +263,11 @@ export default class NotificationComp extends React.Component<
    * Renders image if provided otherwise renders symphony logo
    * @param imageUrl
    */
-  private renderImage(imageUrl: string): JSX.Element | undefined {
+  private renderImage(imageUrl: string | undefined): JSX.Element | undefined {
     let imgClass = 'default-logo';
     let url = '../renderer/assets/notification-symphony-logo.svg';
     let alt = 'Symphony logo';
-    const isDefaultUrl = imageUrl.includes('default.png');
+    const isDefaultUrl = imageUrl && imageUrl.includes('default.png');
     const shouldDisplayBadge = !!imageUrl && !isDefaultUrl;
     if (imageUrl && !isDefaultUrl) {
       imgClass = 'profile-picture';
