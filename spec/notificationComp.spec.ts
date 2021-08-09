@@ -34,6 +34,16 @@ describe('Toast notification component', () => {
     expect(imageContainer.exists()).toBeFalsy();
   });
 
+  it('should render Symphony logo if no icon sent - Client 1.5 settings use-case with "See sample" ', () => {
+    ipcRenderer.send(IPC_RENDERER_NOTIFICATION_DATA_CHANNEL, {
+      ...defaultProps,
+    });
+    const defaultLogoContainer = wrapper.find('.default-logo');
+    expect(defaultLogoContainer).toBeTruthy();
+    const imageContainer = wrapper.find('.profile-picture');
+    expect(imageContainer.exists()).toBeFalsy();
+  });
+
   it('should render Symphony logo if Symphony default image provided', () => {
     const logo = './default.png';
     ipcRenderer.send(IPC_RENDERER_NOTIFICATION_DATA_CHANNEL, {
