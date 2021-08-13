@@ -128,4 +128,16 @@ describe('Toast notification component', () => {
     toastNotificationReplyButton = wrapper.find(replyButtonSelector);
     expect(toastNotificationReplyButton.exists()).toBeTruthy();
   });
+
+  it('should trigger mouse hovering function while hovering a notification', async () => {
+    const spy = jest.spyOn(ipcRenderer, 'send');
+    const notificationContainer = wrapper.find(
+      '[data-testid="NOTIFICATION_CONTAINER"]',
+    );
+    expect(notificationContainer).toBeTruthy();
+    const closeButton = wrapper.find('[data-testid="CLOSE_BUTTON"]');
+    expect(closeButton.exists()).toBeTruthy();
+    notificationContainer.simulate('mouseenter');
+    expect(spy).toBeCalledWith('notification-mouseenter', 0);
+  });
 });
