@@ -157,6 +157,7 @@ export default class NotificationComp extends React.Component<
     containerCssClass += customCssClasses.join(' ');
     return (
       <div
+        data-testid='NOTIFICATION_CONTAINER'
         className={containerCssClass}
         style={{
           height: containerHeight,
@@ -164,6 +165,8 @@ export default class NotificationComp extends React.Component<
           borderColor: themeColors.notificationBorderColor,
         }}
         lang={i18n.getLocale()}
+        onMouseEnter={this.eventHandlers.onMouseEnter(id)}
+        onMouseLeave={this.eventHandlers.onMouseLeave(id)}
       >
         <div
           className={`close-button ${themeClassName}`}
@@ -181,8 +184,6 @@ export default class NotificationComp extends React.Component<
           role='alert'
           onContextMenu={this.eventHandlers.onContextMenu}
           onClick={this.eventHandlers.onClick(id)}
-          onMouseEnter={this.eventHandlers.onMouseEnter(id)}
-          onMouseLeave={this.eventHandlers.onMouseLeave(id)}
         >
           <div className='logo-container'>{this.renderImage(icon)}</div>
           <div className='notification-container'>
