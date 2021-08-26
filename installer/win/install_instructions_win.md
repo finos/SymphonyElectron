@@ -498,7 +498,7 @@ The default (if not specified, or if specified as empty string "") is
 Expected values:
 
 * "true"
-  "Electron/X.X" is removed from user-agents.
+  User-agent value "Electron/X.X" is replaced with "ElectronSymphony/X.X"
 * "false"
   User-agents are not modified (default)
 
