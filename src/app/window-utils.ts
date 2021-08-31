@@ -32,6 +32,7 @@ import { screenSnippet } from './screen-snippet-handler';
 import { updateAlwaysOnTop } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
+import { notification } from '../renderer/notification';
 interface IStyles {
   name: styleNames;
   content: string;
@@ -292,6 +293,9 @@ export const updateLocale = async (locale: LocaleType): Promise<void> => {
     logger.info(`window-utils: updating app menu with locale ${locale}!`);
     appMenu.update(locale);
   }
+
+  // Update notification after new locale
+  notification.cleanUpInactiveNotification();
 
   if (i18n.isValidLocale(locale)) {
     // Update user config file with latest locale changes

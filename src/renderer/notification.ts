@@ -428,6 +428,25 @@ class Notification extends NotificationHandler {
   }
 
   /**
+   * Closes the active notification after certain period
+   */
+  public cleanUpInactiveNotification() {
+    if (this.inactiveWindows.length > 0) {
+      logger.info('notification: cleaning up inactive notification windows', {
+        inactiveNotification: this.inactiveWindows.length,
+      });
+      this.inactiveWindows.forEach((window) => {
+        if (windowExists(window)) {
+          window.close();
+        }
+      });
+      logger.info(`notification: cleaned up inactive notification windows`, {
+        inactiveNotification: this.inactiveWindows.length,
+      });
+    }
+  }
+
+  /**
    * Brings all the notification to the top
    * issue: ELECTRON-1382
    */
@@ -506,25 +525,6 @@ class Notification extends NotificationHandler {
       windowId: notificationWindow.id,
     });
     this.activeNotifications.push(notificationWindow);
-  }
-
-  /**
-   * Closes the active notification after certain period
-   */
-  private cleanUpInactiveNotification() {
-    if (this.inactiveWindows.length > 0) {
-      logger.info('notification: cleaning up inactive notification windows', {
-        inactiveNotification: this.inactiveWindows.length,
-      });
-      this.inactiveWindows.forEach((window) => {
-        if (windowExists(window)) {
-          window.close();
-        }
-      });
-      logger.info(`notification: cleaned up inactive notification windows`, {
-        inactiveNotification: this.inactiveWindows.length,
-      });
-    }
   }
 
   /**
