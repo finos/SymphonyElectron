@@ -633,8 +633,13 @@ export class WindowHandler {
       );
     }
 
-    // Register global shortcuts
-    this.registerGlobalShortcuts();
+    app.on('browser-window-focus', () => {
+      this.registerGlobalShortcuts();
+    });
+
+    app.on('browser-window-blur', () => {
+      this.unregisterGlobalShortcuts();
+    });
 
     // Validate window navigation
     preventWindowNavigation(this.mainWindow, false);
@@ -1822,7 +1827,7 @@ export class WindowHandler {
    * Registers keyboard shortcuts or devtools
    */
   private registerGlobalShortcuts(): void {
-    logger.info(`window-handler: registering global shortcuts!`);
+    logger.info('window-handler: register global shortcuts!');
     globalShortcut.register(
       isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I',
       this.onRegisterDevtools,
@@ -1840,8 +1845,6 @@ export class WindowHandler {
       globalShortcut.register(isMac ? 'Cmd+Alt+3' : 'Ctrl+Shift+3', () =>
         this.switchClient(ClientSwitchType.CLIENT_2_0_DAILY),
       );
-    } else {
-      logger.info('Switch between clients not supported for this POD-url');
     }
 
     if (isMac) {
@@ -1854,59 +1857,32 @@ export class WindowHandler {
       globalShortcut.register('Ctrl+=', zoomIn);
       globalShortcut.register('Ctrl+-', zoomOut);
     }
+  }
 
-    app.on('browser-window-focus', () => {
-      globalShortcut.register(
-        isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I',
-        this.onRegisterDevtools,
-      );
-      globalShortcut.register('CmdOrCtrl+R', this.onReload);
-      if (isMac) {
-        globalShortcut.register('CmdOrCtrl+Plus', zoomIn);
-        globalShortcut.register('CmdOrCtrl+=', zoomIn);
-        if (this.isMana) {
-          globalShortcut.register('CmdOrCtrl+-', zoomOut);
-        }
-      } else if (this.isMana && (isWindowsOS || isLinux)) {
-        globalShortcut.register('Ctrl+=', zoomIn);
-        globalShortcut.register('Ctrl+-', zoomOut);
-      }
+  /**
+   * Registers keyboard shortcuts or devtools
+   */
+  private unregisterGlobalShortcuts(): void {
+    logger.info('window-handler: unregister global shortcuts!');
 
-      if (this.url && this.url.startsWith('https://corporate.symphony.com')) {
-        globalShortcut.register(isMac ? 'Cmd+Alt+1' : 'Ctrl+Shift+1', () =>
-          this.switchClient(ClientSwitchType.CLIENT_1_5),
-        );
-        globalShortcut.register(isMac ? 'Cmd+Alt+2' : 'Ctrl+Shift+2', () =>
-          this.switchClient(ClientSwitchType.CLIENT_2_0),
-        );
-        globalShortcut.register(isMac ? 'Cmd+Alt+3' : 'Ctrl+Shift+3', () =>
-          this.switchClient(ClientSwitchType.CLIENT_2_0_DAILY),
-        );
-      } else {
-        logger.info('Switch between clients not supported for this POD-url');
+    globalShortcut.unregister(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I');
+    globalShortcut.unregister('CmdOrCtrl+R');
+    if (isMac) {
+      globalShortcut.unregister('CmdOrCtrl+Plus');
+      globalShortcut.unregister('CmdOrCtrl+=');
+      if (this.isMana) {
+        globalShortcut.unregister('CmdOrCtrl+-');
       }
-    });
-
-    app.on('browser-window-blur', () => {
-      globalShortcut.unregister(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I');
-      globalShortcut.unregister('CmdOrCtrl+R');
-      if (isMac) {
-        globalShortcut.unregister('CmdOrCtrl+Plus');
-        globalShortcut.unregister('CmdOrCtrl+=');
-        if (this.isMana) {
-          globalShortcut.unregister('CmdOrCtrl+-');
-        }
-      } else if (this.isMana && (isWindowsOS || isLinux)) {
-        globalShortcut.unregister('Ctrl+=');
-        globalShortcut.unregister('Ctrl+-');
-      }
-      // Unregister shortcuts related to client switch
-      if (this.url && this.url.startsWith('https://corporate.symphony.com')) {
-        globalShortcut.unregister(isMac ? 'Cmd+Alt+1' : 'Ctrl+Shift+1');
-        globalShortcut.unregister(isMac ? 'Cmd+Alt+2' : 'Ctrl+Shift+2');
-        globalShortcut.unregister(isMac ? 'Cmd+Alt+3' : 'Ctrl+Shift+3');
-      }
-    });
+    } else if (this.isMana && (isWindowsOS || isLinux)) {
+      globalShortcut.unregister('Ctrl+=');
+      globalShortcut.unregister('Ctrl+-');
+    }
+    // Unregister shortcuts related to client switch
+    if (this.url && this.url.startsWith('https://corporate.symphony.com')) {
+      globalShortcut.unregister(isMac ? 'Cmd+Alt+1' : 'Ctrl+Shift+1');
+      globalShortcut.unregister(isMac ? 'Cmd+Alt+2' : 'Ctrl+Shift+2');
+      globalShortcut.unregister(isMac ? 'Cmd+Alt+3' : 'Ctrl+Shift+3');
+    }
   }
 
   /**
