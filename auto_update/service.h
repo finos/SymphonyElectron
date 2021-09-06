@@ -24,32 +24,6 @@ void service_cancel_sleep( void );
 #include <windows.h> 
 #include <stdio.h> 
 
-// Temporary logging for debugging, will be replaced by something better
-static struct {
-    FILE* fp;
-    CRITICAL_SECTION mutex;
-} g_log = { NULL };
-
-void logf( char const* format, ... ) {
-    if( !g_log.fp ) {
-        char path[ MAX_PATH ];
-        ExpandEnvironmentStringsA( "%LOCALAPPDATA%\\SdaAutoUpdate", path, MAX_PATH );
-        CreateDirectory( path, NULL );
-        strcat( path, "\\log.txt" );
-        g_log.fp = fopen( path, "w" );
-        InitializeCriticalSection( &g_log.mutex );
-    }
-    EnterCriticalSection( &g_log.mutex );
-    va_list args;
-    va_start( args, format );
-    vfprintf( g_log.fp,  format, args );
-    vprintf( format, args );
-    va_end( args );
-    fflush( g_log.fp );
-    LeaveCriticalSection( &g_log.mutex );
-}
-
-
 // Get an errror description for the last error from Windows, for logging purposes
 // TODO: thread safe return value
 char const* error_message( void  ) {
@@ -171,7 +145,9 @@ struct {
 
 // Thread proc for service. Just calls the user-provided main func
 DWORD WINAPI service_main_thread( LPVOID param ) { 
+    SERVICE_LOG_INFO( "Starting service main thread" );
     g_service.main_func();
+    SERVICE_LOG_INFO( "Terminating service main thread" );
     return EXIT_SUCCESS;
 }
 
@@ -180,6 +156,7 @@ DWORD WINAPI service_main_thread( LPVOID param ) {
 // notify the windows service manager of its status correctly, otherwise it
 // will be considerered unresponsive and closed
 VOID report_service_status( DWORD current_state, DWORD exit_code, DWORD wait_hint ) {
+    SERVICE_LOG_INFO( "Reporting service status, current_state=%u, exit_code=%u, wait_hint=%u", current_state, exit_code, wait_hint );
     static DWORD check_point = 1;
 
     g_service.service_status.dwServiceType = SERVICE_WIN32_OWN_PROCESS; 
@@ -202,24 +179,32 @@ VOID report_service_status( DWORD current_state, DWORD exit_code, DWORD wait_hin
 
     // Report the status of the service to the SCM.
     SetServiceStatus( g_service.status_handle, &g_service.service_status );
+    SERVICE_LOG_INFO( "Service statua reported" );
 }
 
 
 // Service control handler, used to signal the service to stop (if the user stops it
 // in the Services control panel)
 VOID WINAPI service_ctrl_handler( DWORD ctrl ) {
+    SERVICE_LOG_INFO( "Service control handler, ctrl=%u", ctrl );
     switch( ctrl ) {  
         case SERVICE_CONTROL_STOP: {
+            SERVICE_LOG_INFO( "SERVICE_CONTROL_STOP" );
+            SERVICE_LOG_INFO( "Reporting service status SERVICE_STOP_PENDING" );
             report_service_status( SERVICE_STOP_PENDING, NO_ERROR, 0 );
 
             // Signal the service to stop.
+            SERVICE_LOG_INFO( "Signaling service to stop" );
             SetEvent( g_service.stop_event );
             
+            SERVICE_LOG_INFO( "Reporting service status %u", g_service.service_status.dwCurrentState );
             report_service_status(g_service.service_status.dwCurrentState, NO_ERROR, 0);         
             return;
         } break;
 
         case SERVICE_CONTROL_INTERROGATE: {
+            SERVICE_LOG_INFO( "SERVICE_CONTROL_INTERROGATE" );
+            SERVICE_LOG_INFO( "Reporting service status SERVICE_STOP_PENDING" );
             report_service_status( g_service.service_status.dwCurrentState, NO_ERROR, 0 );
         } break; 
  
@@ -233,12 +218,12 @@ VOID WINAPI service_ctrl_handler( DWORD ctrl ) {
 
 // Main function of the service. Starts a thread to run the user-provided service function
 VOID WINAPI service_proc( DWORD argc, LPSTR *argv ) {
-    logf( "Service proc\n" );
+    SERVICE_LOG_INFO( "Starting service proc" );
 
     // Register the handler function for the service
     g_service.status_handle = RegisterServiceCtrlHandler( g_service.service_name,  service_ctrl_handler );
     if( !g_service.status_handle ) { 
-        logf( "Failed to register the service control handler\n" );
+        SERVICE_LOG_ERROR( "Failed to register the service control handler" );
         return; 
     } 
 
@@ -252,12 +237,13 @@ VOID WINAPI service_proc( DWORD argc, LPSTR *argv ) {
         FALSE,  // not signaled
         NULL);  // no name
     if ( g_service.stop_event == NULL ) {
-        logf( "No event\n" );
+        SERVICE_LOG_ERROR( "No event" );
         report_service_status( SERVICE_STOPPED, NO_ERROR, 0 );
         return;
     }
 
     // Start the thread which runs the user-provided main function
+    SERVICE_LOG_INFO( "Creating service main thread" );
     HANDLE thread = CreateThread( 
         NULL,                   // no security attribute 
         0,                      // default stack size 
@@ -268,22 +254,25 @@ VOID WINAPI service_proc( DWORD argc, LPSTR *argv ) {
 
     // Report to the SCM that the service is now up and running
     report_service_status( SERVICE_RUNNING, NO_ERROR, 0 );
-    logf( "Service started\n" );
+    SERVICE_LOG_INFO( "Service started" );
 
     // Wait until the service is stopped
     WaitForSingleObject( g_service.stop_event, INFINITE );
+    SERVICE_LOG_INFO( "Service stop requested" );
     
     // Flag the user-provided main func to exit
     g_service.is_running = false;
     SetEvent( g_service.sleep_event );
     
     // Wait until user-provided main func has exited
+    SERVICE_LOG_INFO( "Wait for service main thread to exit" );
     WaitForSingleObject( thread, INFINITE );
+    SERVICE_LOG_INFO( "Service main thread exited" );
 
     // Report to the SCM that the service has stopped
     report_service_status( SERVICE_STOPPED, NO_ERROR, 0 );
 
-    logf( "Exit service proc\n" );
+    SERVICE_LOG_INFO( "Service proc terminated" );
 }
 
 
@@ -291,7 +280,7 @@ VOID WINAPI service_proc( DWORD argc, LPSTR *argv ) {
 // The main_func provided should exit if service_is_running returns false
 void service_run( char const* service_name, service_main_func_t main_func ) {
     SetLastError( 0 );
-    logf( "Starting service\n" );
+    SERVICE_LOG_INFO( "Starting service" );
 
     // Initialize global state
     g_service.service_name = service_name;
@@ -309,12 +298,12 @@ void service_run( char const* service_name, service_main_func_t main_func ) {
         { NULL, NULL } 
     }; 
     if( !StartServiceCtrlDispatcher( dispatch_table ) ) { 
-        logf( "Error: LastError = %d %s\n", GetLastError(), error_message() );
+        SERVICE_LOG_LAST_ERROR( "StartServiceCtrlDispatcher" );
     } 
 
     // Cleanup
     CloseHandle( g_service.sleep_event );
-    logf( "Service stopped\n" );
+    SERVICE_LOG_INFO( "Service stopped" );
 }
 
 
