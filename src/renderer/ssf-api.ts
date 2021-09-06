@@ -25,6 +25,9 @@ import { throttle } from '../common/utils';
 import { getSource } from './desktop-capturer';
 import SSFNotificationHandler from './notification-ssf-hendler';
 import { ScreenSnippetBcHandler } from './screen-snippet-bc-handler';
+
+const SUPPORTED_SETTINGS = ['flashing-notifications'];
+
 const os = remote.require('os');
 
 let isAltKey: boolean = false;
@@ -704,6 +707,14 @@ export class SSFApi {
     if (typeof zoomLevel === 'number') {
       throttledSetZoomLevel(zoomLevel);
     }
+  }
+
+  /**
+   * Get SDA supported settings.
+   * @returns list of supported features
+   */
+  public supportedSettings(): string[] {
+    return SUPPORTED_SETTINGS || [];
   }
 }
 

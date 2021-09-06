@@ -1,0 +1,78 @@
+@import 'theme';
+@import 'variables';
+
+@keyframes dark-mention-flashing {
+  0% {
+    background-color: @dark-notification-bg-color;
+    border-color: @dark-notification-border-color;
+  }
+  50% {
+    background-color: @dark-mention-flash-bg-color;
+    border: 2px solid @dark-mention-flash-border-color;
+    box-shadow: 0px 2px 4px rgba(5, 6, 6, 0.16),
+      0px 12px 28px rgba(5, 6, 6, 0.64);
+  }
+}
+
+@keyframes light-mention-flashing {
+  0% {
+    background-color: @light-notification-bg-color;
+    border-color: @light-notification-border-color;
+  }
+  50% {
+    background-color: @light-mention-flash-mention-bg-color;
+    border-color: transparent;
+  }
+}
+
+@keyframes dark-ext-mention-flashing {
+  0% {
+    background-color: @dark-notification-bg-color;
+    border-color: @dark-external-flash-border-color;
+  }
+  50% {
+    background-color: @dark-mention-flash-bg-color;
+    border: 2px solid @dark-mention-flash-border-color;
+    box-shadow: 0px 2px 4px rgba(5, 6, 6, 0.16),
+      0px 12px 28px rgba(5, 6, 6, 0.64);
+  }
+}
+
+@keyframes light-ext-mention-flashing {
+  0% {
+    background-color: @light-notification-bg-color;
+    border-color: @light-external-flash-border-color;
+  }
+  50% {
+    background-color: @light-mention-flash-mention-bg-color;
+    border-color: @light-mention-flash-border-color;
+  }
+}
+
+@keyframes light-flashing {
+  50% {
+    background-color: @light-notification-bg-color;
+    border-color: transparent;
+  }
+}
+
+@keyframes dark-flashing {
+  50% {
+    background-color: @dark-notification-bg-color;
+    border-color: @dark-notification-border-color;
+  }
+}
+
+@keyframes light-ext-flashing {
+  50% {
+    background-color: @light-notification-bg-color;
+    border-color: @light-external-flash-border-color;
+  }
+}
+
+@keyframes dark-ext-flashing {
+  50% {
+    background-color: @dark-notification-bg-color;
+    border-color: @dark-external-flash-border-color;
+  }
+}
