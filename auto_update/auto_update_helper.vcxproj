@@ -135,7 +135,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="auto_update_helper.cpp" />
+    <ClCompile Include="auto_update_helper.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ipc.h" />
