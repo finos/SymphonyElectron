@@ -17,11 +17,28 @@
 #include <stdio.h>
 #include <time.h>
 #include <windows.h> 
+#include <wincrypt.h>
+#include <wintrust.h>
+#include <Softpub.h>
 
 #pragma comment(lib, "Shell32.lib")
+#pragma comment (lib, "wintrust.lib")
+#pragma comment(lib, "crypt32.lib")
 
 #define SERVICE_NAME "symphony_sda_auto_update_service"
 #define PIPE_NAME "symphony_sda_auto_update_ipc"
+
+
+// The digital certificate of an installation package is validate before it is installed
+// This is a list of certificate thumbprints for current and past Symphony certificates
+// Whenever a new certificate is taken into use, its thumbprint needs to be added here
+// or the installation packages signed with it will be rejected.
+
+struct { BYTE hash[ 20 ]; } thumbprints[] = {
+    /* 99b3333ac4457a4e21a527cc11040b28c15c1d3f */ 
+    "\x99\xb3\x33\x3a\xc4\x45\x7a\x4e\x21\xa5\x27\xcc\x11\x04\x0b\x28\xc1\x5c\x1d\x3f",
+};
+
 
 // Logging
 
@@ -162,9 +179,235 @@ void retrieve_buffered_log_line( char* response, size_t capacity ) {
 }
 
 
+// This is Microsofts code for verifying the digital signature of a file, taken from here:
+// https://docs.microsoft.com/en-us/windows/win32/seccrypto/example-c-program--verifying-the-signature-of-a-pe-file
+
+BOOL VerifyEmbeddedSignature( LPCWSTR pwszSourceFile ) {
+    LONG lStatus;
+    DWORD dwLastError;
+
+    // Initialize the WINTRUST_FILE_INFO structure.
+
+    WINTRUST_FILE_INFO FileData;
+    memset( &FileData, 0, sizeof( FileData ) );
+    FileData.cbStruct = sizeof( WINTRUST_FILE_INFO );
+    FileData.pcwszFilePath = pwszSourceFile;
+    FileData.hFile = NULL;
+    FileData.pgKnownSubject = NULL;
+
+    /*
+    WVTPolicyGUID specifies the policy to apply on the file
+    WINTRUST_ACTION_GENERIC_VERIFY_V2 policy checks:
+    
+    1) The certificate used to sign the file chains up to a root 
+    certificate located in the trusted root certificate store. This 
+    implies that the identity of the publisher has been verified by 
+    a certification authority.
+    
+    2) In cases where user interface is displayed (which this example
+    does not do), WinVerifyTrust will check for whether the  
+    end entity certificate is stored in the trusted publisher store,  
+    implying that the user trusts content from this publisher.
+    
+    3) The end entity certificate has sufficient permission to sign 
+    code, as indicated by the presence of a code signing EKU or no 
+    EKU.
+    */
+
+    GUID WVTPolicyGUID = WINTRUST_ACTION_GENERIC_VERIFY_V2;
+    WINTRUST_DATA WinTrustData;
+
+    // Initialize the WinVerifyTrust input data structure.
+
+    // Default all fields to 0.
+    memset( &WinTrustData, 0, sizeof( WinTrustData ) );
+
+    WinTrustData.cbStruct = sizeof( WinTrustData );
+    
+    // Use default code signing EKU.
+    WinTrustData.pPolicyCallbackData = NULL;
+
+    // No data to pass to SIP.
+    WinTrustData.pSIPClientData = NULL;
+
+    // Disable WVT UI.
+    WinTrustData.dwUIChoice = WTD_UI_NONE;
+
+    // No revocation checking.
+    WinTrustData.fdwRevocationChecks = WTD_REVOKE_NONE; 
+
+    // Verify an embedded signature on a file.
+    WinTrustData.dwUnionChoice = WTD_CHOICE_FILE;
+
+    // Verify action.
+    WinTrustData.dwStateAction = WTD_STATEACTION_VERIFY;
+
+    // Verification sets this value.
+    WinTrustData.hWVTStateData = NULL;
+
+    // Not used.
+    WinTrustData.pwszURLReference = NULL;
+
+    // This is not applicable if there is no UI because it changes 
+    // the UI to accommodate running applications instead of 
+    // installing applications.
+    WinTrustData.dwUIContext = 0;
+
+    // Set pFile.
+    WinTrustData.pFile = &FileData;
+
+    // WinVerifyTrust verifies signatures as specified by the GUID 
+    // and Wintrust_Data.
+    lStatus = WinVerifyTrust( NULL, &WVTPolicyGUID, &WinTrustData );
+
+	BOOL result = FALSE;
+    switch( lStatus )  {
+        case ERROR_SUCCESS:
+            /*
+            Signed file:
+                - Hash that represents the subject is trusted.
+
+                - Trusted publisher without any verification errors.
+
+                - UI was disabled in dwUIChoice. No publisher or 
+                    time stamp chain errors.
+
+                - UI was enabled in dwUIChoice and the user clicked 
+                    "Yes" when asked to install and run the signed 
+                    subject.
+            */
+            LOG_INFO( "The file is signed and the signature was verified." );
+			result = TRUE;
+            break;
+        
+        case TRUST_E_NOSIGNATURE:
+            // The file was not signed or had a signature 
+            // that was not valid.
+
+            // Get the reason for no signature.
+            dwLastError = GetLastError();
+            if( TRUST_E_NOSIGNATURE == dwLastError || TRUST_E_SUBJECT_FORM_UNKNOWN == dwLastError || TRUST_E_PROVIDER_UNKNOWN == dwLastError ) {
+                // The file was not signed.
+                LOG_ERROR( "The file is not signed." );
+            } else {
+                // The signature was not valid or there was an error 
+                // opening the file.
+                LOG_LAST_ERROR( "An unknown error occurred trying to verify the signature of the file." );
+            }
+
+            break;
+
+        case TRUST_E_EXPLICIT_DISTRUST:
+            // The hash that represents the subject or the publisher 
+            // is not allowed by the admin or user.
+            LOG_ERROR( "The signature is present, but specifically disallowed." );
+            break;
+
+        case TRUST_E_SUBJECT_NOT_TRUSTED:
+            // The user clicked "No" when asked to install and run.
+            LOG_ERROR( "The signature is present, but not trusted." );
+            break;
+
+        case CRYPT_E_SECURITY_SETTINGS:
+            /*
+            The hash that represents the subject or the publisher 
+            was not explicitly trusted by the admin and the 
+            admin policy has disabled user trust. No signature, 
+            publisher or time stamp errors.
+            */
+            LOG_ERROR( "CRYPT_E_SECURITY_SETTINGS - The hash "
+                "representing the subject or the publisher wasn't "
+                "explicitly trusted by the admin and admin policy "
+                "has disabled user trust. No signature, publisher "
+                "or timestamp errors.");
+            break;
+
+        default:
+            // The UI was disabled in dwUIChoice or the admin policy 
+            // has disabled user trust. lStatus contains the 
+            // publisher or time stamp chain error.
+            LOG_ERROR( "Error is: 0x%x.", lStatus );
+            break;
+    }
+
+    // Any hWVTStateData must be released by a call with close.
+    WinTrustData.dwStateAction = WTD_STATEACTION_CLOSE;
+    lStatus = WinVerifyTrust( NULL, &WVTPolicyGUID, &WinTrustData);
+
+    return result;
+}
+
+
+// Checks that the embedded signature is valid, and also checks that it is specifically
+// a known Symphony certificate, by looking for any of the certificate thumbprints listed
+// in the `thumbprints` array defined at the top of this file.
+
+BOOL validate_installer( char const* filename ) {
+    size_t length = 0;
+    mbstowcs_s( &length, NULL, 0, filename, _TRUNCATE );
+    wchar_t* wfilename = (wchar_t*) malloc( sizeof( wchar_t* ) * ( length + 1 ) );
+    mbstowcs_s( &length, wfilename, length, filename, strlen( filename ) );
+    BOOL signature_valid = VerifyEmbeddedSignature( wfilename );
+	if( !signature_valid ) {
+		free( wfilename );
+		return FALSE;
+	}
+
+    DWORD dwEncoding, dwContentType, dwFormatType;
+    HCERTSTORE hStore = NULL;
+    HCRYPTMSG hMsg = NULL;
+	BOOL result = CryptQueryObject( CERT_QUERY_OBJECT_FILE,
+		wfilename,
+		CERT_QUERY_CONTENT_FLAG_PKCS7_SIGNED_EMBED,
+		CERT_QUERY_FORMAT_FLAG_BINARY,
+		0,
+		&dwEncoding,
+		&dwContentType,
+		&dwFormatType,
+		&hStore,
+		&hMsg,
+		NULL );   
+    free( wfilename );
+	
+    if( !result ) {
+		LOG_LAST_ERROR( "CryptQueryObject failed" );
+		return FALSE;
+	}
+
+	BOOL found = FALSE;
+	for( int i = 0; i < sizeof( thumbprints ) / sizeof( *thumbprints ); ++i ) {
+		CRYPT_HASH_BLOB hash_blob = { 
+            sizeof( thumbprints[ i ].hash ) / sizeof( *(thumbprints[ i ].hash) ), 
+            thumbprints[ i ].hash 
+        };
+		CERT_CONTEXT const* cert_context = CertFindCertificateInStore(
+			hStore,
+			(X509_ASN_ENCODING | PKCS_7_ASN_ENCODING),
+			0,
+			CERT_FIND_HASH,
+			&hash_blob,
+			NULL );
+		
+        if( cert_context ) {
+			found = TRUE;
+			CertFreeCertificateContext( cert_context );
+		}
+	}
+	
+	CryptMsgClose( hMsg );
+	CertCloseStore( hStore, CERT_CLOSE_STORE_FORCE_FLAG );
+    return found;
+}
+
+
 // Runs msiexec with the supplied filename
-// TODO: logging/error handling
-bool run_installer( char const* filename ) {
+bool run_installer( char const* filename ) {    
+    // Reject installers which are not signed with a Symphony certificate
+    if( !validate_installer( filename ) ) {
+        LOG_ERROR( "The signature of %s could is not a valid Symphony signature" );
+        return false;
+    }
+
 	char command[ 512 ];
 	sprintf( command, "/i %s /q", filename );
 
@@ -185,6 +428,7 @@ bool run_installer( char const* filename ) {
         CloseHandle( ShExecInfo.hProcess );
         return exitCode == 0 ? true : false;
     } else {
+        LOG_LAST_ERROR( "Failed to run installer" );
         return false;
     }
 }
