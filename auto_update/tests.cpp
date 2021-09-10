@@ -78,9 +78,11 @@ void ipc_tests() {
                 clients[ i ] = ipc_client_connect( "test_pipe" );
                 TESTFW_EXPECTED( clients[ i ] );
             }
+			Sleep(100);
             for( int i = 0; i < sizeof( clients ) / sizeof( *clients ); ++i ) {
                 ipc_client_disconnect( clients[ i ] );
             }
+			Sleep(100);
         }
         ipc_server_stop( server );
         TESTFW_TEST_END();
