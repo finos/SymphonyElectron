@@ -28,7 +28,7 @@ class Script
         
         var userDataPathArgument = "--userDataPath=\"[USER_DATA_PATH]\"";
 
-        File updateService = new File(@"..\..\..\node_modules\auto_update\auto_update_service.exe");
+        File updateService = new File(@"..\..\..\node_modules\auto-update\auto_update_service.exe");
         updateService.ServiceInstaller = new ServiceInstaller
         {
             Name = "auto_update_service",
@@ -70,7 +70,7 @@ class Script
                     }
                 ),
                 updateService,
-                new File(@"..\..\..\node_modules\auto_update\auto_update_helper.exe"),
+                new File(@"..\..\..\node_modules\auto-update\auto_update_helper.exe"),
                 new File(@"..\..\..\dist\win-unpacked\chrome_100_percent.pak"),
                 new File(@"..\..\..\dist\win-unpacked\chrome_200_percent.pak"),
                 new File(@"..\..\..\dist\win-unpacked\d3dcompiler_47.dll"),
