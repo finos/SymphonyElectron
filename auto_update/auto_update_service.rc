@@ -1,0 +1,34 @@
+#define IDR_ICON 101
+IDR_ICON              ICON                      "icon.ico"
+
+#define VER_MAJOR 1
+#define VER_MINOR 0
+#define VER_REVISION 0
+
+
+
+#define INNER_TO_STR(x) #x
+#define TO_STR(x) INNER_TO_STR(x)
+#define VER_STRING TO_STR(VER_MAJOR) "." TO_STR(VER_MINOR) "." TO_STR(VER_REVISION) ".0"
+
+#define VS_VERSION_INFO 0x1L
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION     VER_MAJOR,VER_MINOR,VER_REVISION
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+            VALUE "FileDescription",  "Symphony Auto Update Service"
+            VALUE "ProductName",      "Symphony Auto Update Service"
+            VALUE "ProductVersion",   VER_STRING
+            VALUE "LegalCopyright",    "Copyright 2021 Symphony OSS"
+        END
+    END
+
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END

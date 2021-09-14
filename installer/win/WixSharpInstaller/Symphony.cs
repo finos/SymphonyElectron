@@ -28,7 +28,30 @@ class Script
         
         var userDataPathArgument = "--userDataPath=\"[USER_DATA_PATH]\"";
 
-
+        File updateService = new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\auto-update\auto_update_service.exe");
+        updateService.ServiceInstaller = new ServiceInstaller
+        {
+            Name = "auto_update_service",
+            DisplayName = "SDA Auto Update Service",
+            Description = "Symphony Desktop Application Auto Update Service",
+            FirstFailureActionType = FailureActionType.restart,
+            SecondFailureActionType = FailureActionType.restart,
+            ThirdFailureActionType = FailureActionType.restart,
+            RestartServiceDelayInSeconds = 60,
+            ResetPeriodInDays = 1,
+            ServiceSid = ServiceSid.none,
+            ConfigureServiceTrigger = ConfigureServiceTrigger.Install,
+            Type = SvcType.ownProcess,
+            Vital = true,
+            ErrorControl = SvcErrorControl.normal,
+            Start = SvcStartType.auto,
+            EraseDescription = false,
+            Interactive = false,
+            StartOn = SvcEvent.Install,
+            StopOn = SvcEvent.InstallUninstall_Wait,
+            RemoveOn = SvcEvent.Uninstall_Wait,
+        };  
+        
         // Create a wixsharp project instance and assign the project name to it, and a hierarchy of all files to include
         // Files are taken from multiple locations, and not all files in each location should be included, which is why
         // the file list is rather long and explicit. At some point we might make the `dist` folder match exactly the
@@ -46,6 +69,8 @@ class Script
                         Arguments = userDataPathArgument
                     }
                 ),
+                updateService,
+                new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\auto-update\auto_update_helper.exe"),
                 new File(@"..\..\..\dist\win-unpacked\chrome_100_percent.pak"),
                 new File(@"..\..\..\dist\win-unpacked\chrome_200_percent.pak"),
                 new File(@"..\..\..\dist\win-unpacked\d3dcompiler_47.dll"),
@@ -427,16 +452,16 @@ public class CustomActions
             @"""" + name + @""":" + value.Trim());
     }
 
-	// When SDA is parsing the JSON config file, it will interpret backslash as an escape character,
-	// and will throw an error for invalid escape codes. To make a path valid for parsing, we need
-	// to replace each backslash with doubli backslash. After SDA have parsed the JSON, it will make
-	// the double backslash become single backslash again.
+    // When SDA is parsing the JSON config file, it will interpret backslash as an escape character,
+    // and will throw an error for invalid escape codes. To make a path valid for parsing, we need
+    // to replace each backslash with doubli backslash. After SDA have parsed the JSON, it will make
+    // the double backslash become single backslash again.
     static string FixPathFormat( string path )
     {
         return path.Replace(@"\", @"\\");
     }
-	
-	
+    
+    
     // CleanRegistry custom action
     [CustomAction]
     public static ActionResult CleanRegistry(Session session)
