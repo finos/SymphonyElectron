@@ -9,12 +9,7 @@
 #include <string.h>
 #include <windows.h>
 
-void disable_log( char const* format, ... ) { 
-	va_list args;
-	va_start( args, format );
-	vprintf( format, args );
-	printf("\n");
-	va_end( args );
+void disable_log( char const*, ... ) { 
 };
 
 #define IPC_LOG_INFO disable_log
@@ -75,28 +70,22 @@ void ipc_tests() {
     }
 
 	{
-        printf( "\nTest start\n\n" );
         TESTFW_TEST_BEGIN( "Can connect multiple IPC clients multiple times" );
         ipc_server_t* server = ipc_server_start( "test_pipe", 
             []( char const*, void*, char*, size_t ) { }, NULL );
         TESTFW_EXPECTED( server != NULL );
         for( int j = 0; j < 10; ++j ) {
-            printf( "\nj: %d\n\n", j );
             ipc_client_t* clients[ 32 ];
             for( int i = 0; i < sizeof( clients ) / sizeof( *clients ); ++i ) {
-                printf( "\ni1: %d\n\n", i );
                 clients[ i ] = ipc_client_connect( "test_pipe" );
                 TESTFW_EXPECTED( clients[ i ] );
             }
             for( int i = 0; i < sizeof( clients ) / sizeof( *clients ); ++i ) {
-                printf( "\ni2: %d\n\n", i );
                 ipc_client_disconnect( clients[ i ] );
             }
         }
-        printf( "\nStop\n\n" );
         ipc_server_stop( server );
         TESTFW_TEST_END();
-        printf( "\nTest end\n\n" );
     }
 
     {
