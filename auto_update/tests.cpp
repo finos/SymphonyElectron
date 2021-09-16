@@ -10,7 +10,6 @@
 #include <windows.h>
 
 void disable_log( char const*, ... ) { };
-
 #define IPC_LOG_INFO disable_log
 #define IPC_LOG_ERROR disable_log 
 #define IPC_LOG_LAST_ERROR disable_log
