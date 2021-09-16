@@ -561,12 +561,36 @@ DWORD WINAPI ipc_server_thread( LPVOID param ) {
         // If we failed to create the pipe, we log the error and exit
         // TODO: Should we handle this some other way? perhaps report the error back to user
         if( server->pipe == INVALID_HANDLE_VALUE ) {
-            IPC_LOG_LAST_ERROR( "CreateNamedPipe failed: " ); 
-            LocalFree( acl );
-            LocalFree( sd );
-            FreeSid( sid );
-            IPC_LOG_ERROR( "[%u] Server thread terminated", GetCurrentThreadId() );
-            return EXIT_FAILURE;
+           
+            // If the failure was due to pipe busy, try again in a bit
+            if( GetLastError() == ERROR_PIPE_BUSY ) {
+                IPC_LOG_LAST_ERROR( "CreateNamedPipe failed: " ); 
+                IPC_LOG_INFO( "[%u] Pipe was busy, waiting a bit then trying once more.", GetCurrentThreadId() ); 
+                Sleep(1000);
+
+                server->pipe = CreateNamedPipeA( 
+                    server->expanded_pipe_name,// pipe name 
+                    PIPE_ACCESS_DUPLEX |      // read/write access 
+                    FILE_FLAG_OVERLAPPED,     // we use async I/O so that we can cancel ConnectNamedPipe operations
+                    PIPE_TYPE_MESSAGE |       // message type pipe 
+                    PIPE_READMODE_MESSAGE |   // message-read mode 
+                    PIPE_WAIT,                // blocking mode 
+                    MAX_CLIENT_CONNECTIONS,   // max. instances  
+                    IPC_MESSAGE_MAX_LENGTH,   // output buffer size 
+                    IPC_MESSAGE_MAX_LENGTH,   // input buffer size 
+                    0,                        // client time-out 
+                    &attribs );               // default security attribute 
+            }
+
+            if( server->pipe == INVALID_HANDLE_VALUE ) {
+                IPC_LOG_LAST_ERROR( "CreateNamedPipe failed: " ); 
+
+                LocalFree( acl );
+                LocalFree( sd );
+                FreeSid( sid );
+                IPC_LOG_ERROR( "[%u] Server thread terminated", GetCurrentThreadId() );
+                return EXIT_FAILURE;
+            }
         }
  
         // Signal to `ipc_server_start` that the server thread is now fully up and
