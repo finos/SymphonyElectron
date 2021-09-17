@@ -67,7 +67,6 @@ void ipc_tests() {
         TESTFW_TEST_END();
     }
 
-    /* Disabled because it fails on build server, but works when run locally. 
 	{
         TESTFW_TEST_BEGIN( "Can connect multiple IPC clients multiple times" );
         ipc_server_t* server = ipc_server_start( "test_pipe", 
@@ -85,7 +84,7 @@ void ipc_tests() {
         }
         ipc_server_stop( server );
         TESTFW_TEST_END();
-    }*/
+    }
 
     {
         TESTFW_TEST_BEGIN( "Can connect IPC client" );
