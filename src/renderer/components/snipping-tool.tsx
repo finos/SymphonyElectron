@@ -44,6 +44,7 @@ const availablePenColors: IColor[] = [
   { rgbaColor: 'rgba(0, 142, 255, 1)' },
   { rgbaColor: 'rgba(38, 196, 58, 1)' },
   { rgbaColor: 'rgba(246, 178, 2, 1)' },
+  { rgbaColor: 'rgba(233, 0, 0, 1)' },
   { rgbaColor: 'rgba(255, 255, 255, 1)', outline: 'rgba(207, 208, 210, 1)' },
 ];
 const availableHighlightColors: IColor[] = [
@@ -236,14 +237,32 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({
     ipcRenderer.send('upload-snippet', { screenSnippetPath, mergedImageData });
   };
 
+  // Removes focus styling from buttons when mouse is clicked
+  document.body.addEventListener('mousedown', () => {
+    document.body.classList.add('using-mouse');
+  });
+
+  // Re-enable focus styling when Tab is pressed
+  document.body.addEventListener('keydown', (event) => {
+    if (event.key === 'Tab') {
+      document.body.classList.remove('using-mouse');
+    }
+  });
+
+  const getLoweredAlphaColor = (rgbaColor: string) => {
+    const rgba = rgbaColor.split(',');
+    rgba[3] = '0.3'; // Set alpha to 0.3 since with 0.64 it's hard to see what is highlighted, but we want 0.64 for the buttons
+    return rgba.join(', ');
+  };
+
   return (
-    <div className='SnippingTool' lang={i18n.getLocale()}>
+    <div className='snipping-tool' lang={i18n.getLocale()}>
       <header>
-        <div className='DrawActions'>
+        <div className='draw-actions'>
           <button
             data-testid='pen-button'
             style={getBorderStyle(Tool.pen)}
-            className='ActionButton'
+            className='action-button'
             onClick={usePen}
             title={i18n.t('Pen', SNIPPING_TOOL_NAMESPACE)()}
           >
@@ -252,7 +271,7 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({
           <button
             data-testid='highlight-button'
             style={getBorderStyle(Tool.highlight)}
-            className='ActionButton'
+            className='action-button'
             onClick={useHighlight}
             title={i18n.t('Highlight', SNIPPING_TOOL_NAMESPACE)()}
           >
@@ -261,17 +280,17 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({
           <button
             data-testid='erase-button'
             style={getBorderStyle(Tool.eraser)}
-            className='ActionButton'
+            className='action-button'
             onClick={useEraser}
             title={i18n.t('Erase', SNIPPING_TOOL_NAMESPACE)()}
           >
             <img src='../renderer/assets/snip-erase.svg' />
           </button>
         </div>
-        <div className='ClearActions'>
+        <div className='clear-actions'>
           <button
             data-testid='clear-button'
-            className='ClearButton'
+            className='clear-button'
             onClick={clear}
           >
             {i18n.t('Clear', SNIPPING_TOOL_NAMESPACE)()}
@@ -315,11 +334,11 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({
       )}
 
       <main>
-        <div className='imageContainer'>
+        <div className='image-container'>
           <AnnotateArea
             data-testid='annotate-component'
             paths={paths}
-            highlightColor={highlightColor.rgbaColor}
+            highlightColor={getLoweredAlphaColor(highlightColor.rgbaColor)}
             penColor={penColor.rgbaColor}
             onChange={setPaths}
             imageDimensions={imageDimensions}
@@ -330,7 +349,11 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({
         </div>
       </main>
       <footer>
-        <button data-testid='done-button' className='DoneButton' onClick={done}>
+        <button
+          data-testid='done-button'
+          className='done-button'
+          onClick={done}
+        >
           {i18n.t('Done', SNIPPING_TOOL_NAMESPACE)()}
         </button>
       </footer>
