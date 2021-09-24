@@ -1,9 +1,5 @@
 @import 'theme';
 
-@white: rgb(255, 255, 255, 1);
-@version-text-color: rgb(47, 47, 47, 1);
-@text-padding: 10px;
-
 body {
   overflow: hidden;
   background-color: white;
@@ -15,33 +11,35 @@ body {
 button {
   user-select: none;
   &:focus {
-    user-select: none;
-    outline: none;
+    outline: 2px solid #008eff;
   }
 }
 
-.SnippingTool:lang(ja-JP) {
+body.using-mouse :focus {
+  outline: none;
+}
+
+.snipping-tool:lang(ja-JP) {
   font-family: @font-family-ja;
 
   h4 {
     margin: 3px 0;
   }
 
-  .SnippingTool-symphony-section {
+  .snipping-tool-symphony-section {
     padding-left: 10px;
   }
 }
 
-.SnippingTool:lang(fr-FR) {
-  .SnippingTool-symphony-section {
+.snipping-tool:lang(fr-FR) {
+  .snipping-tool-symphony-section {
     padding-left: 10px;
   }
 }
 
-.SnippingTool {
+.snipping-tool {
   display: flex;
   flex-direction: column;
-  font-family: @font-family;
   height: 100vh;
 
   header {
@@ -52,16 +50,13 @@ button {
     align-items: center;
     padding: 12px;
 
-    .ActionButton {
+    .action-button {
       width: 24px;
       height: 24px;
       margin-left: 15px;
       background: white;
       border-radius: 4px;
       cursor: pointer;
-      padding: 4px 0;
-      border: none;
-      box-sizing: border-box;
       border-radius: 4px;
       display: flex;
       justify-content: center;
@@ -73,29 +68,27 @@ button {
       }
     }
 
-    .ClearButton {
-      display: block;
+    .clear-button {
       border: 2px solid #7c7f86;
       border-radius: 16px;
+      background: white;
       color: #7c7f86;
       font-weight: 600;
       font-size: 12px;
-      line-height: 16px;
       text-transform: uppercase;
       cursor: pointer;
-      background-color: #ffffff;
       height: 24px;
       width: 68px;
     }
 
-    .DrawActions {
+    .draw-actions {
       display: flex;
       flex-direction: row;
       justify-content: center;
       text-align: center;
     }
 
-    .ClearActions {
+    .clear-actions {
       display: flex;
       flex: none;
       flex-direction: row;
@@ -117,14 +110,8 @@ button {
     width: 100%;
     display: flex;
     justify-content: center;
-    background: linear-gradient(
-        0deg,
-        rgba(255, 255, 255, 0.96),
-        rgba(255, 255, 255, 0.96)
-      ),
-      #525760;
 
-    .imageContainer {
+    .image-container {
       display: flex;
       align-items: center;
     }
@@ -137,32 +124,23 @@ button {
     padding-top: 16px;
     padding-bottom: 24px;
 
-    .DoneButton {
-      box-shadow: none;
+    .done-button {
       border: none;
       border-radius: 16px;
       font-size: 0.75rem;
       font-weight: 600;
-      text-align: center;
-      display: inline-block;
-      text-decoration: none;
-      line-height: 16px;
       background-color: #008eff;
-      color: rgba(255, 255, 255, 0.96);
+      color: white;
       cursor: pointer;
       text-transform: uppercase;
       margin-right: 32px;
       height: 32px;
       width: 80px;
-
-      &:focus {
-        box-shadow: 0 0 10px rgba(61, 162, 253, 1);
-      }
     }
   }
 }
 
-.ColorPicker {
+.color-picker {
   display: flex;
   flex-direction: row;
   margin: 4px;
@@ -170,19 +148,17 @@ button {
   justify-content: center;
   width: fit-content;
   height: 40px;
-  background: #FFFFFF;
-  box-shadow: 0px 4px 16px rgba(15, 27, 36, 0.14), 0px 4px 8px rgba(15, 27, 36, 0.26);
+  background: #ffffff;
+  box-shadow: 0px 4px 16px rgba(15, 27, 36, 0.14),
+    0px 4px 8px rgba(15, 27, 36, 0.26);
   border-radius: 24px;
-  }
+}
 
-.EnclosingCircle {
+.enclosing-circle {
   width: 24px;
   height: 24px;
-  background: #FFFFFF;
-  border-radius: 50%;
-  flex: none;
-  order: 0;
-  flex-grow: 0;
+  background: #ffffff;
+  border: none;
   margin: 8px;
   cursor: pointer;
   align-items: center;
@@ -190,12 +166,9 @@ button {
   display: flex;
 }
 
-.ColorDot {
+.color-dot {
   border-radius: 50%;
   flex: none;
-  order: 0;
-  flex-grow: 0;
   width: 8px;
   height: 8px;
-  background: #000028;
 }
