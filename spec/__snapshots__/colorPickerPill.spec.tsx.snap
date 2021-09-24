@@ -2,16 +2,17 @@
 
 exports[`<ColorPickerPill/> should render chosen dots as larger 1`] = `
 <div
-  className="ColorPicker"
+  className="color-picker"
 >
-  <div
-    className="EnclosingCircle"
+  <button
+    className="enclosing-circle"
     data-testid="colorDot rgba(0, 0, 0, 0.64)"
     key="rgba(0, 0, 0, 0.64)"
     onClick={[Function]}
+    tabIndex={0}
   >
     <div
-      className="ColorDot"
+      className="color-dot"
       style={
         Object {
           "background": "rgba(0, 0, 0, 0.64)",
@@ -22,15 +23,16 @@ exports[`<ColorPickerPill/> should render chosen dots as larger 1`] = `
         }
       }
     />
-  </div>
-  <div
-    className="EnclosingCircle"
+  </button>
+  <button
+    className="enclosing-circle"
     data-testid="colorDot rgba(233, 0, 0, 0.64)"
     key="rgba(233, 0, 0, 0.64)"
     onClick={[Function]}
+    tabIndex={0}
   >
     <div
-      className="ColorDot"
+      className="color-dot"
       style={
         Object {
           "background": "rgba(233, 0, 0, 0.64)",
@@ -41,22 +43,23 @@ exports[`<ColorPickerPill/> should render chosen dots as larger 1`] = `
         }
       }
     />
-  </div>
+  </button>
 </div>
 `;
 
 exports[`<ColorPickerPill/> should render correctly 1`] = `
 <div
-  className="ColorPicker"
+  className="color-picker"
 >
-  <div
-    className="EnclosingCircle"
+  <button
+    className="enclosing-circle"
     data-testid="colorDot rgba(0, 142, 255, 0.64)"
     key="rgba(0, 142, 255, 0.64)"
     onClick={[Function]}
+    tabIndex={0}
   >
     <div
-      className="ColorDot"
+      className="color-dot"
       style={
         Object {
           "background": "rgba(0, 142, 255, 0.64)",
@@ -67,15 +70,16 @@ exports[`<ColorPickerPill/> should render correctly 1`] = `
         }
       }
     />
-  </div>
-  <div
-    className="EnclosingCircle"
+  </button>
+  <button
+    className="enclosing-circle"
     data-testid="colorDot rgba(38, 196, 58, 0.64)"
     key="rgba(38, 196, 58, 0.64)"
     onClick={[Function]}
+    tabIndex={0}
   >
     <div
-      className="ColorDot"
+      className="color-dot"
       style={
         Object {
           "background": "rgba(38, 196, 58, 0.64)",
@@ -86,15 +90,16 @@ exports[`<ColorPickerPill/> should render correctly 1`] = `
         }
       }
     />
-  </div>
-  <div
-    className="EnclosingCircle"
+  </button>
+  <button
+    className="enclosing-circle"
     data-testid="colorDot rgba(246, 178, 2, 0.64)"
     key="rgba(246, 178, 2, 0.64)"
     onClick={[Function]}
+    tabIndex={0}
   >
     <div
-      className="ColorDot"
+      className="color-dot"
       style={
         Object {
           "background": "rgba(246, 178, 2, 0.64)",
@@ -105,15 +110,16 @@ exports[`<ColorPickerPill/> should render correctly 1`] = `
         }
       }
     />
-  </div>
-  <div
-    className="EnclosingCircle"
+  </button>
+  <button
+    className="enclosing-circle"
     data-testid="colorDot rgba(233, 0, 0, 0.64)"
     key="rgba(233, 0, 0, 0.64)"
     onClick={[Function]}
+    tabIndex={0}
   >
     <div
-      className="ColorDot"
+      className="color-dot"
       style={
         Object {
           "background": "rgba(233, 0, 0, 0.64)",
@@ -124,22 +130,23 @@ exports[`<ColorPickerPill/> should render correctly 1`] = `
         }
       }
     />
-  </div>
+  </button>
 </div>
 `;
 
 exports[`<ColorPickerPill/> should render outlined dot if provided in props 1`] = `
 <div
-  className="ColorPicker"
+  className="color-picker"
 >
-  <div
-    className="EnclosingCircle"
+  <button
+    className="enclosing-circle"
     data-testid="colorDot rgba(246, 178, 2, 1)"
     key="rgba(246, 178, 2, 1)"
     onClick={[Function]}
+    tabIndex={0}
   >
     <div
-      className="ColorDot"
+      className="color-dot"
       style={
         Object {
           "background": "rgba(246, 178, 2, 1)",
@@ -150,15 +157,16 @@ exports[`<ColorPickerPill/> should render outlined dot if provided in props 1`] 
         }
       }
     />
-  </div>
-  <div
-    className="EnclosingCircle"
+  </button>
+  <button
+    className="enclosing-circle"
     data-testid="colorDot rgba(255, 255, 255, 1)"
     key="rgba(255, 255, 255, 1)"
     onClick={[Function]}
+    tabIndex={0}
   >
     <div
-      className="ColorDot"
+      className="color-dot"
       style={
         Object {
           "background": "rgba(255, 255, 255, 1)",
@@ -169,6 +177,6 @@ exports[`<ColorPickerPill/> should render outlined dot if provided in props 1`] 
         }
       }
     />
-  </div>
+  </button>
 </div>
 `;
