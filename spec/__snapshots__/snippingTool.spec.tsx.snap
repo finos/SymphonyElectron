@@ -2,15 +2,15 @@
 
 exports[`Snipping Tool should render correctly 1`] = `
 <div
-  className="SnippingTool"
+  className="snipping-tool"
   lang="en-US"
 >
   <header>
     <div
-      className="DrawActions"
+      className="draw-actions"
     >
       <button
-        className="ActionButton"
+        className="action-button"
         data-testid="pen-button"
         onClick={[Function]}
         style={
@@ -25,7 +25,7 @@ exports[`Snipping Tool should render correctly 1`] = `
         />
       </button>
       <button
-        className="ActionButton"
+        className="action-button"
         data-testid="highlight-button"
         onClick={[Function]}
         title="Highlight"
@@ -35,7 +35,7 @@ exports[`Snipping Tool should render correctly 1`] = `
         />
       </button>
       <button
-        className="ActionButton"
+        className="action-button"
         data-testid="erase-button"
         onClick={[Function]}
         title="Erase"
@@ -46,10 +46,10 @@ exports[`Snipping Tool should render correctly 1`] = `
       </button>
     </div>
     <div
-      className="ClearActions"
+      className="clear-actions"
     >
       <button
-        className="ClearButton"
+        className="clear-button"
         data-testid="clear-button"
         onClick={[Function]}
       >
@@ -59,7 +59,7 @@ exports[`Snipping Tool should render correctly 1`] = `
   </header>
   <main>
     <div
-      className="imageContainer"
+      className="image-container"
     >
       <AnnotateArea
         annotateAreaDimensions={
@@ -71,7 +71,7 @@ exports[`Snipping Tool should render correctly 1`] = `
         backgroundImagePath=""
         chosenTool="PEN"
         data-testid="annotate-component"
-        highlightColor="rgba(0, 142, 255, 0.64)"
+        highlightColor="rgba(0,  142,  255, 0.3"
         imageDimensions={
           Object {
             "height": 600,
@@ -86,7 +86,7 @@ exports[`Snipping Tool should render correctly 1`] = `
   </main>
   <footer>
     <button
-      className="DoneButton"
+      className="done-button"
       data-testid="done-button"
       onClick={[Function]}
     >
