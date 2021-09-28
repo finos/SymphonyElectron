@@ -2,6 +2,17 @@
 
 ---
 
+## SDA 14.0.x
+
+### 14.0.0
+
+-
+
+- 14.0.1 (Electron-version)
+- 93 (Chromium-version)
+
+---
+
 ## SDA 9.3.x
 
 ### 9.3.0
