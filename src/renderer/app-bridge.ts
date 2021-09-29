@@ -246,6 +246,9 @@ export class AppBridge {
           response: mediaPermission,
         });
         break;
+      case apiCmds.autoUpdate:
+        ssf.autoUpdate(data.filename);
+        break;
     }
   }
 

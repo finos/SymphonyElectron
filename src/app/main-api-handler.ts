@@ -10,6 +10,7 @@ import { logger } from '../common/logger';
 import { activityDetection } from './activity-detection';
 import { analytics } from './analytics-handler';
 import appStateHandler from './app-state-handler';
+import { autoUpdate } from './auto-update-handler';
 import { CloudConfigDataTypes, config, ICloudConfig } from './config-handler';
 import { downloadHandler } from './download-handler';
 import { memoryMonitor } from './memory-monitor';
@@ -290,6 +291,9 @@ ipcMain.on(
             .getMainWindow()
             ?.webContents.setZoomFactor(arg.zoomLevel as number);
         }
+        break;
+      case apiCmds.autoUpdate:
+        autoUpdate.update(arg.filename);
         break;
       default:
         break;
