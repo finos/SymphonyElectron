@@ -1,4 +1,4 @@
-import { BrowserWindow, ipcMain } from 'electron';
+import { BrowserWindow, clipboard, ipcMain } from 'electron';
 import {
   apiCmds,
   apiName,
@@ -294,6 +294,14 @@ ipcMain.on(
         break;
       case apiCmds.autoUpdate:
         autoUpdate.update(arg.filename);
+        break;
+      case apiCmds.aboutAppClipBoardData:
+        if (arg.clipboard && arg.clipboardType) {
+          clipboard.write(
+            { text: JSON.stringify(arg.clipboard, null, 4) },
+            arg.clipboardType,
+          );
+        }
         break;
       default:
         break;

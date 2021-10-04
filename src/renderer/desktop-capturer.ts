@@ -2,7 +2,6 @@ import {
   desktopCapturer,
   DesktopCapturerSource,
   ipcRenderer,
-  remote,
   SourcesOptions,
 } from 'electron';
 
@@ -12,7 +11,6 @@ import {
   NOTIFICATION_WINDOW_TITLE,
 } from '../common/api-interface';
 import { isWindowsOS } from '../common/env';
-import { i18n } from '../common/i18n-preload';
 
 const includes = [''].includes;
 
@@ -94,7 +92,8 @@ export const getSource = async (
      * Setting captureWindow to false returns only screen sources
      * @type {boolean}
      */
-    captureWindow = remote.systemPreferences.isAeroGlassEnabled();
+    // TODO: remove remote module
+    captureWindow = false; // remote.systemPreferences.isAeroGlassEnabled();
   }
 
   if (captureWindow) {
@@ -106,7 +105,8 @@ export const getSource = async (
 
   // displays a dialog if media permissions are disable
   if (!isScreenShareEnabled) {
-    const focusedWindow = remote.BrowserWindow.getFocusedWindow();
+    // TODO: remove remote module
+    /*const focusedWindow = remote.BrowserWindow.getFocusedWindow();
     if (focusedWindow && !focusedWindow.isDestroyed()) {
       remote.dialog.showMessageBox(focusedWindow, {
         message: `${i18n.t(
@@ -122,7 +122,7 @@ export const getSource = async (
         requestId,
       });
       return;
-    }
+    }*/
   }
 
   id = getNextId();

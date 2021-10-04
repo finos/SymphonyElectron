@@ -265,9 +265,7 @@ export const isValidWindow = (
   }
   let result: boolean = false;
   if (browserWin && !browserWin.isDestroyed()) {
-    // @ts-ignore
-    const winKey = browserWin.webContents.browserWindowOptions.winKey;
-    result = windowHandler.hasWindow(winKey, browserWin);
+    result = windowHandler.hasWindow(browserWin);
   }
 
   if (!result) {

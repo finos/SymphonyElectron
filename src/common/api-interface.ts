@@ -48,6 +48,7 @@ export enum apiCmds {
   closeAllWrapperWindows = 'close-all-windows',
   setZoomLevel = 'set-zoom-level',
   autoUpdate = 'auto-update',
+  aboutAppClipBoardData = 'about-app-clip-board-data',
 }
 
 export enum apiName {
@@ -89,6 +90,8 @@ export interface IApiArgs {
   theme: Themes;
   zoomLevel: number;
   filename: string;
+  clipboard: string;
+  clipboardType: 'clipboard' | 'selection';
 }
 
 export type Themes = 'light' | 'dark';

@@ -1,4 +1,4 @@
-import { ipcRenderer, remote } from 'electron';
+import { ipcRenderer } from 'electron';
 import * as React from 'react';
 
 import { i18n } from '../../common/i18n-preload';
@@ -47,7 +47,7 @@ export default class LoadingScreen extends React.Component<{}, IState> {
    */
   public render(): JSX.Element {
     const { error } = this.state;
-    const appName = remote.app.getName() || 'Symphony';
+    const appName = 'Symphony';
 
     if (error) {
       return this.renderErrorContent(error);

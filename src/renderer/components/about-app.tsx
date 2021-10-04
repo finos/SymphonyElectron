@@ -1,5 +1,6 @@
-import { ipcRenderer, remote } from 'electron';
+import { ipcRenderer } from 'electron';
 import * as React from 'react';
+import { apiCmds, apiName } from '../../common/api-interface';
 import { i18n } from '../../common/i18n-preload';
 interface IState {
   userConfig: object;
@@ -86,7 +87,7 @@ export default class AboutApp extends React.Component<{}, IState> {
       client,
     } = this.state;
 
-    const appName = remote.app.getName() || 'Symphony';
+    const appName = 'Symphony';
     const copyright = `\xA9 ${new Date().getFullYear()} ${appName}`;
     const podVersion = `${clientVersion} (${buildNumber})`;
     const sdaVersionBuild = `${sdaVersion} (${sdaBuildNumber})`;
@@ -165,10 +166,11 @@ export default class AboutApp extends React.Component<{}, IState> {
     const { clientVersion, ...rest } = this.state;
     const data = { ...{ sbeVersion: clientVersion }, ...rest };
     if (data) {
-      remote.clipboard.write(
-        { text: JSON.stringify(data, null, 4) },
-        'clipboard',
-      );
+      ipcRenderer.send(apiName.symphonyApi, {
+        cmd: apiCmds.aboutAppClipBoardData,
+        clipboard: JSON.stringify(data, null, 4),
+        clipboardType: 'clipboard',
+      });
     }
   }
 

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { ipcRenderer, remote } from 'electron';
+import { ipcRenderer } from 'electron';
 import * as React from 'react';
 
 import { apiCmds, apiName } from '../../common/api-interface';
@@ -48,9 +48,9 @@ export default class ScreenSharingIndicator extends React.Component<
             .t(
               `You are sharing your screen on {appName}`,
               namespace,
-            )({ appName: remote.app.getName() })
-            .replace(remote.app.getName(), '')}
-          <span className='text-label2'>&nbsp;{remote.app.getName()}</span>
+            )({ appName: 'Symphony' })
+            .replace('Symphony', '')}
+          <span className='text-label2'>&nbsp;{'Symphony'}</span>
         </span>
         <span className='buttons'>
           <button

@@ -1,5 +1,3 @@
-import { remote } from 'electron';
-
 import { IAnalyticsData } from '../app/analytics-handler';
 import {
   apiCmds,
@@ -20,12 +18,12 @@ import {
 import { SSFApi } from './ssf-api';
 
 const ssf = new SSFApi();
-const notification = remote.require('../renderer/notification').notification;
 let ssInstance: any;
 
 try {
-  const SSAPIBridge = remote.require('swift-search').SSAPIBridge;
-  ssInstance = new SSAPIBridge();
+  // TODO: remove remote module
+  /*const SSAPIBridge = remote.require('swift-search').SSAPIBridge;
+  ssInstance = new SSAPIBridge();*/
 } catch (e) {
   ssInstance = null;
   console.warn(
@@ -80,10 +78,11 @@ export class AppBridge {
   constructor() {
     // starts with corporate pod and
     // will be updated with the global config url
-    const currentWindow = remote.getCurrentWindow();
+    // TODO: use ipc sync to get the origin
+    // const currentWindow = remote.getCurrentWindow();
     // @ts-ignore
-    this.origin = currentWindow.origin || '';
-    // this.origin = '*'; // DEMO-APP: Comment this line back in only to test demo-app - DO NOT COMMIT
+    // this.origin = currentWindow.origin || '';
+    this.origin = '*'; // DEMO-APP: Comment this line back in only to test demo-app - DO NOT COMMIT
     if (ssInstance && typeof ssInstance.setBroadcastMessage === 'function') {
       ssInstance.setBroadcastMessage(this.broadcastMessage);
     }
@@ -200,13 +199,13 @@ export class AppBridge {
         );
         break;
       case apiCmds.notification:
-        notification.showNotification(
+        ssf.showNotification(
           data as INotificationData,
           this.callbackHandlers.onNotificationCallback,
         );
         break;
       case apiCmds.closeNotification:
-        await notification.hideNotification(data as number);
+        await ssf.closeNotification(data as number);
         break;
       case apiCmds.showNotificationSettings:
         ssf.showNotificationSettings(data);

@@ -1,7 +1,6 @@
-import { ipcRenderer, remote, webFrame } from 'electron';
+import { ipcRenderer, webFrame } from 'electron';
 import { buildNumber, searchAPIVersion } from '../../package.json';
 import { IDownloadItem } from '../app/download-handler';
-import { ICustomBrowserWindow } from '../app/window-handler';
 import {
   apiCmds,
   apiName,
@@ -28,7 +27,8 @@ import { ScreenSnippetBcHandler } from './screen-snippet-bc-handler';
 
 const SUPPORTED_SETTINGS = ['flashing-notifications'];
 
-const os = remote.require('os');
+// TODO: fetch this from main
+// const os = remote.require('os');
 
 let isAltKey: boolean = false;
 let isMenuOpen: boolean = false;
@@ -161,7 +161,7 @@ const throttledSetZoomLevel = throttle((zoomLevel) => {
 
 let cryptoLib: ICryptoLib | null;
 try {
-  cryptoLib = remote.require('../app/crypto-handler.js').cryptoLibrary;
+  // cryptoLib = remote.require('../app/crypto-handler.js').cryptoLibrary;
 } catch (e) {
   cryptoLib = null;
   // tslint:disable-next-line
@@ -172,7 +172,7 @@ try {
 
 let swiftSearch: any;
 try {
-  swiftSearch = remote.require('swift-search').Search;
+  // swiftSearch = remote.require('swift-search').Search;
 } catch (e) {
   swiftSearch = null;
   // tslint:disable-next-line
@@ -183,7 +183,7 @@ try {
 
 let swiftSearchUtils: any;
 try {
-  swiftSearchUtils = remote.require('swift-search').SearchUtils;
+  // swiftSearchUtils = remote.require('swift-search').SearchUtils;
 } catch (e) {
   swiftSearchUtils = null;
   // tslint:disable-next-line
@@ -244,9 +244,10 @@ export class SSFApi {
    * Method that returns various version info
    */
   public getVersionInfo(): Promise<IVersionInfo> {
-    const appName = remote.app.getName();
-    const appVer = remote.app.getVersion();
-    const cpuArch = os.arch() || '';
+    // TODO: get these values from a single source
+    const appName = 'Symphony'; // remote.app.getName();
+    const appVer = '14.0.0'; // remote.app.getVersion();
+    const cpuArch = ''; // os.arch() || '';
 
     return Promise.resolve({
       containerIdentifier: appName,
@@ -481,11 +482,9 @@ export class SSFApi {
    * Opens a modal window to configure notification preference.
    */
   public showNotificationSettings(data: string): void {
-    const windowName = (remote.getCurrentWindow() as ICustomBrowserWindow)
-      .winName;
     local.ipcRenderer.send(apiName.symphonyApi, {
       cmd: apiCmds.showNotificationSettings,
-      windowName,
+      windowName: 'main',
       theme: data,
     });
   }
@@ -631,10 +630,11 @@ export class SSFApi {
    * Check media permission
    */
   public async checkMediaPermission(): Promise<IMediaPermission> {
+    // TODO: remove remote module
     return Promise.resolve({
-      camera: remote.systemPreferences.getMediaAccessStatus('camera'),
-      microphone: remote.systemPreferences.getMediaAccessStatus('microphone'),
-      screen: remote.systemPreferences.getMediaAccessStatus('screen'),
+      camera: "remote.systemPreferences.getMediaAccessStatus('camera')",
+      microphone: "remote.systemPreferences.getMediaAccessStatus('microphone')",
+      screen: "remote.systemPreferences.getMediaAccessStatus('screen')",
     });
   }
 

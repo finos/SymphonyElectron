@@ -837,12 +837,15 @@ export class WindowHandler {
   /**
    * Checks if the window and a key has a window
    *
-   * @param key {string}
    * @param window {Electron.BrowserWindow}
    */
-  public hasWindow(key: string, window: Electron.BrowserWindow): boolean {
-    const browserWindow = this.windows[key];
-    return browserWindow && window === browserWindow;
+  public hasWindow(window: Electron.BrowserWindow): boolean {
+    for (const key in this.windows) {
+      if (this.windows[key] === window) {
+        return true;
+      }
+    }
+    return this.aboutAppWindow === window;
   }
 
   /**

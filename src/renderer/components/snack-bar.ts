@@ -1,4 +1,3 @@
-import { remote } from 'electron';
 import Timer = NodeJS.Timer;
 
 import { i18n } from '../../common/i18n-preload';
@@ -6,10 +5,11 @@ import { i18n } from '../../common/i18n-preload';
 const SNACKBAR_NAMESPACE = 'SnackBar';
 
 export default class SnackBar {
-  private readonly eventHandlers = {
+  // TODO: remove remote module
+  /*  private readonly eventHandlers = {
     onShowSnackBar: () => this.showSnackBar(),
     onRemoveSnackBar: () => this.removeSnackBar(),
-  };
+  };*/
 
   private snackBarTimer: Timer | undefined;
   private domParser: DOMParser | undefined;
@@ -17,7 +17,8 @@ export default class SnackBar {
   private snackBar: HTMLElement | null = null;
 
   constructor() {
-    const browserWindow = remote.getCurrentWindow();
+    // TODO: move this to main
+    /*    const browserWindow = remote.getCurrentWindow();
     if (
       browserWindow &&
       typeof browserWindow.isDestroyed === 'function' &&
@@ -28,7 +29,7 @@ export default class SnackBar {
         'leave-full-screen',
         this.eventHandlers.onRemoveSnackBar,
       );
-    }
+    }*/
   }
 
   /**

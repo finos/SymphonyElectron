@@ -1,10 +1,11 @@
-import { remote } from 'electron';
+import { ipcRenderer } from 'electron';
 
 import {
+  apiCmds,
+  apiName,
   INotificationData,
   NotificationActions,
 } from '../common/api-interface';
-const notification = remote.require('../renderer/notification').notification;
 
 let latestID = 0;
 
@@ -16,20 +17,47 @@ export default class SSFNotificationHandler {
   public _data: INotificationData;
 
   private readonly id: number;
-  private readonly eventHandlers = {
-    onClick: (event: NotificationActions, _data: INotificationData) =>
-      this.notificationClicked(event),
-  };
   private notificationClickCallback: (({ target }) => {}) | undefined;
   private notificationCloseCallback: (({ target }) => {}) | undefined;
 
   constructor(title, options) {
     this.id = latestID;
     latestID++;
-    notification.showNotification(
-      { ...options, title, id: this.id },
-      this.eventHandlers.onClick,
-    );
+    const notificationOpts = { ...options, title, id: this.id };
+    // ipc does not support sending Functions, Promises, Symbols, WeakMaps,
+    // or WeakSets will throw an exception
+    if (notificationOpts.callback) {
+      delete notificationOpts.callback;
+    }
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.showNotification,
+      notificationOpts,
+    });
+
+    ipcRenderer.once('notification-actions', (_event, args) => {
+      if (args.id === this.id) {
+        switch (args.event) {
+          case NotificationActions.notificationClicked:
+            if (
+              this.notificationClickCallback &&
+              typeof this.notificationClickCallback === 'function'
+            ) {
+              this.notificationClickCallback({ target: this });
+            }
+            break;
+          case NotificationActions.notificationClosed:
+            if (
+              this.notificationCloseCallback &&
+              typeof this.notificationCloseCallback === 'function'
+            ) {
+              this.notificationCloseCallback({ target: this });
+            }
+            break;
+          default:
+            break;
+        }
+      }
+    });
     this._data = options.data;
   }
 
@@ -37,7 +65,10 @@ export default class SSFNotificationHandler {
    * Closes notification
    */
   public close(): void {
-    notification.hideNotification(this.id);
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.closeNotification,
+      notificationId: this.id,
+    });
   }
 
   /**
@@ -71,31 +102,6 @@ export default class SSFNotificationHandler {
           this.notificationCloseCallback = cb;
           break;
       }
-    }
-  }
-
-  /**
-   * Handles the callback based on the event name
-   *
-   * @param event {NotificationActions}
-   */
-  private notificationClicked(event: NotificationActions): void {
-    switch (event) {
-      case NotificationActions.notificationClicked:
-        if (
-          this.notificationClickCallback &&
-          typeof this.notificationClickCallback === 'function'
-        ) {
-          this.notificationClickCallback({ target: this });
-        }
-        break;
-      case NotificationActions.notificationClosed:
-        if (
-          this.notificationCloseCallback &&
-          typeof this.notificationCloseCallback === 'function'
-        ) {
-          this.notificationCloseCallback({ target: this });
-        }
     }
   }
 }

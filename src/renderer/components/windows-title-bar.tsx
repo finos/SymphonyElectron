@@ -1,4 +1,4 @@
-import { ipcRenderer, remote } from 'electron';
+import { ipcRenderer } from 'electron';
 import * as React from 'react';
 
 import { apiCmds, apiName } from '../../common/api-interface';
@@ -26,7 +26,8 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
 
   constructor(props) {
     super(props);
-    this.window = remote.getCurrentWindow();
+    // TODO: remove remote module
+    this.window = {} as any;
     this.state = {
       title: document.title || 'Symphony',
       isFullScreen: this.window.isFullScreen(),

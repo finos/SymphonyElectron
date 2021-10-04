@@ -1,4 +1,4 @@
-import { app, crashReporter, Details, dialog } from 'electron';
+import { app, crashReporter, dialog, RenderProcessGoneDetails } from 'electron';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
 import {
@@ -89,7 +89,7 @@ class CrashHandler {
   public handleRendererCrash(browserWindow: ICustomBrowserWindow) {
     browserWindow.webContents.on(
       'render-process-gone',
-      async (_event: Event, details: Details) => {
+      async (_event: Event, details: RenderProcessGoneDetails) => {
         logger.info(`crash-handler: Renderer process for ${browserWindow.winName} crashed.
             Reason is ${details.reason}`);
         const eventData: ICrashData = {
