@@ -22,10 +22,11 @@ import {
 import { i18n, LocaleType } from '../common/i18n-preload';
 import { throttle } from '../common/utils';
 import { getSource } from './desktop-capturer';
-import SSFNotificationHandler from './notification-ssf-hendler';
+import SSFNotificationHandler from './notification-ssf-handler';
 import { ScreenSnippetBcHandler } from './screen-snippet-bc-handler';
 
 const SUPPORTED_SETTINGS = ['flashing-notifications'];
+const MAIN_WINDOW_NAME = 'main';
 
 // TODO: fetch this from main
 // const os = remote.require('os');
@@ -484,7 +485,7 @@ export class SSFApi {
   public showNotificationSettings(data: string): void {
     local.ipcRenderer.send(apiName.symphonyApi, {
       cmd: apiCmds.showNotificationSettings,
-      windowName: 'main',
+      windowName: MAIN_WINDOW_NAME,
       theme: data,
     });
   }
@@ -632,9 +633,9 @@ export class SSFApi {
   public async checkMediaPermission(): Promise<IMediaPermission> {
     // TODO: remove remote module
     return Promise.resolve({
-      camera: "remote.systemPreferences.getMediaAccessStatus('camera')",
-      microphone: "remote.systemPreferences.getMediaAccessStatus('microphone')",
-      screen: "remote.systemPreferences.getMediaAccessStatus('screen')",
+      camera: 'remote.systemPreferences.getMediaAccessStatus("camera")',
+      microphone: 'remote.systemPreferences.getMediaAccessStatus("microphone")',
+      screen: 'remote.systemPreferences.getMediaAccessStatus("screen")',
     });
   }
 

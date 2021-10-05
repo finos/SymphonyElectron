@@ -1,7 +1,8 @@
 import { shallow } from 'enzyme';
 import * as React from 'react';
+import { apiCmds } from '../src/common/api-interface';
 import AboutApp from '../src/renderer/components/about-app';
-import { ipcRenderer, remote } from './__mocks__/electron';
+import { ipcRenderer } from './__mocks__/electron';
 
 describe('about app', () => {
   const aboutAppDataLabel = 'about-app-data';
@@ -32,6 +33,7 @@ describe('about app', () => {
     swiftSearchSupportedVersion: 'N/A',
   };
   const onLabelEvent = 'on';
+  const ipcSendEvent = 'send';
   const removeListenerLabelEvent = 'removeListener';
 
   it('should render correctly', () => {
@@ -62,12 +64,16 @@ describe('about app', () => {
   });
 
   it('should copy the correct data on to clipboard', () => {
-    const spyMount = jest.spyOn(remote.clipboard, 'write');
+    const spyIpc = jest.spyOn(ipcRenderer, ipcSendEvent);
     const wrapper = shallow(React.createElement(AboutApp));
     ipcRenderer.send('about-app-data', aboutDataMock);
     const copyButtonSelector = `button.AboutApp-copy-button[title="Copy all the version information in this page"]`;
     wrapper.find(copyButtonSelector).simulate('click');
-    const expectedData = { text: JSON.stringify(aboutDataMock, null, 4) };
-    expect(spyMount).toBeCalledWith(expectedData, 'clipboard');
+    const expectedData = {
+      cmd: apiCmds.aboutAppClipBoardData,
+      clipboard: JSON.stringify(aboutDataMock, null, 4),
+      clipboardType: 'clipboard',
+    };
+    expect(spyIpc).toBeCalledWith('symphony-api', expectedData);
   });
 });
