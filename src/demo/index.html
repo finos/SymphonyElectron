@@ -270,6 +270,14 @@
       </tr>
     </table>
     <input type="button" id="restart-app" value="Restart App" />
+
+    <hr />
+    <h1>Auto-update Test</h1>
+    Full path to MSI <input type="text" id="update-file" />
+    <br />
+    <button id="run-update">Update</button>
+    <hr />
+    <br />
   </body>
   <script>
     window.name = 'main';
@@ -314,6 +322,7 @@
       getCPUUsage: 'get-cpu-usage',
       checkMediaPermission: 'check-media-permission',
       restartApp: 'restart-app',
+      autoUpdate: 'auto-update',
     };
     let requestId = 0;
 
@@ -466,6 +475,17 @@
         screenSnippet.cancelCapture();
       } else {
         postMessage(apiCmds.closeScreenSnippet);
+      }
+    });
+
+    const runUpdateButton = document.getElementById('run-update');
+    runUpdateButton.addEventListener('click', () => {
+      const filename = document.getElementById('update-file').value;
+      if (window.ssf) {
+        const autoUpdate = new window.ssf.AutoUpdate();
+        autoUpdate.update(filename);
+      } else {
+        postMessage(apiCmds.autoUpdate, { filename: filename });
       }
     });
 

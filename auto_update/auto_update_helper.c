@@ -35,23 +35,23 @@ void internal_log( char const* file, int line, char const* func, char const* lev
         }
 
         time_t rawtime;
-	    struct tm* info;
-	    time( &rawtime );
-	    info = localtime( &rawtime );
-	    int offset = g_log.time_offset;
-	    int offs_s = offset % 60;
-	    offset -= offs_s;
-	    int offs_m = ( offset % (60 * 60) ) / 60;
-	    offset -= offs_m * 60;
-	    int offs_h = offset / ( 60 * 60 );
+        struct tm* info;
+        time( &rawtime );
+        info = localtime( &rawtime );
+        int offset = g_log.time_offset;
+        int offs_s = offset % 60;
+        offset -= offs_s;
+        int offs_m = ( offset % (60 * 60) ) / 60;
+        offset -= offs_m * 60;
+        int offs_h = offset / ( 60 * 60 );
 
-	    fprintf( g_log.file, "%d-%02d-%02d %02d:%02d:%02d:025 %+02d:%02d | %s | %s(%d) | %s: ", info->tm_year + 1900, info->tm_mon + 1, 
-		    info->tm_mday, info->tm_hour, info->tm_min, info->tm_sec, offs_h, offs_m, level, file, line, func );
-	    va_list args;
-	    va_start( args, format );
-	    vfprintf( g_log.file, format, args );
-	    va_end( args );
-	    fflush( g_log.file );
+        fprintf( g_log.file, "%d-%02d-%02d %02d:%02d:%02d:025 %+02d:%02d | %s | %s(%d) | %s: ", info->tm_year + 1900, info->tm_mon + 1, 
+            info->tm_mday, info->tm_hour, info->tm_min, info->tm_sec, offs_h, offs_m, level, file, line, func );
+        va_list args;
+        va_start( args, format );
+        vfprintf( g_log.file, format, args );
+        va_end( args );
+        fflush( g_log.file );
     }
 
     LeaveCriticalSection( &g_log.mutex );
@@ -146,6 +146,10 @@ int main( int argc, char** argv ) {
             while( size < sizeof( response ) - 1 && status == IPC_RECEIVE_STATUS_MORE_DATA ) {
                 status = ipc_client_receive( client, response + size, 
                     sizeof( response ) - size - 1, &temp_size );
+                if( status == IPC_RECEIVE_STATUS_ERROR ) {
+                    LOG_ERROR( "Receiving response failed" );
+                    break;
+                }
                 size += temp_size;
             }
             response[ size ] = '\0';
@@ -175,6 +179,10 @@ int main( int argc, char** argv ) {
                 while( size < sizeof( response ) - 1 && status == IPC_RECEIVE_STATUS_MORE_DATA ) {
                     status = ipc_client_receive( client, response + size, 
                         sizeof( response ) - size - 1, &temp_size );
+                    if( status == IPC_RECEIVE_STATUS_ERROR ) {
+                        LOG_ERROR( "Receiving response failed" );
+                        break;
+                    }
                     size += temp_size;
                 }
                 response[ size ] = '\0';

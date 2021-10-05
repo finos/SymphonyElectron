@@ -35,6 +35,9 @@
 // or the installation packages signed with it will be rejected.
 
 struct { BYTE hash[ 20 ]; } thumbprints[] = {
+    /* e846d3fb2a93007e921c3affcd7032f0186f116a */
+    "\xe8\x46\xd3\xfb\x2a\x93\x00\x7e\x92\x1c\x3a\xff\xcd\x70\x32\xf0\x18\x6f\x11\x6a",
+
     /* 99b3333ac4457a4e21a527cc11040b28c15c1d3f */ 
     "\x99\xb3\x33\x3a\xc4\x45\x7a\x4e\x21\xa5\x27\xcc\x11\x04\x0b\x28\xc1\x5c\x1d\x3f",
 };
@@ -68,36 +71,36 @@ void internal_log( char const* file, int line, char const* func, char const* lev
     }
 
     time_t rawtime;
-	struct tm* info;
-	time( &rawtime );
-	info = localtime( &rawtime );
-	int offset = g_log.time_offset;
-	int offs_s = offset % 60;
-	offset -= offs_s;
-	int offs_m = ( offset % (60 * 60) ) / 60;
-	offset -= offs_m * 60;
-	int offs_h = offset / ( 60 * 60 );
+    struct tm* info;
+    time( &rawtime );
+    info = localtime( &rawtime );
+    int offset = g_log.time_offset;
+    int offs_s = offset % 60;
+    offset -= offs_s;
+    int offs_m = ( offset % (60 * 60) ) / 60;
+    offset -= offs_m * 60;
+    int offs_h = offset / ( 60 * 60 );
 
     if( g_log.file ) {
-	    fprintf( g_log.file, "%d-%02d-%02d %02d:%02d:%02d:025 %+02d:%02d | %s | %s(%d) | %s: ", info->tm_year + 1900, info->tm_mon + 1, 
-		    info->tm_mday, info->tm_hour, info->tm_min, info->tm_sec, offs_h, offs_m, level, file, line, func );
-	    va_list args;
-	    va_start( args, format );
-	    vfprintf( g_log.file, format, args );
-	    va_end( args );
-	    fflush( g_log.file );
+        fprintf( g_log.file, "%d-%02d-%02d %02d:%02d:%02d:025 %+02d:%02d | %s | %s(%d) | %s: ", info->tm_year + 1900, info->tm_mon + 1, 
+            info->tm_mday, info->tm_hour, info->tm_min, info->tm_sec, offs_h, offs_m, level, file, line, func );
+        va_list args;
+        va_start( args, format );
+        vfprintf( g_log.file, format, args );
+        va_end( args );
+        fflush( g_log.file );
     }
 
     size_t len = IPC_MESSAGE_MAX_LENGTH;
     char* buffer = (char*) malloc( len + 1 );
-	size_t count = snprintf( buffer, len, "%d-%02d-%02d %02d:%02d:%02d:025 %+02d:%02d | %s | %s(%d) | %s: ", info->tm_year + 1900, info->tm_mon + 1, 
-		info->tm_mday, info->tm_hour, info->tm_min, info->tm_sec, offs_h, offs_m, level, file, line, func );
+    size_t count = snprintf( buffer, len, "%d-%02d-%02d %02d:%02d:%02d:025 %+02d:%02d | %s | %s(%d) | %s: ", info->tm_year + 1900, info->tm_mon + 1, 
+        info->tm_mday, info->tm_hour, info->tm_min, info->tm_sec, offs_h, offs_m, level, file, line, func );
     buffer[ count ] = '\0';
-	va_list args;
-	va_start( args, format );
-	count += vsnprintf( buffer + count, len - count, format, args );
+    va_list args;
+    va_start( args, format );
+    count += vsnprintf( buffer + count, len - count, format, args );
     buffer[ count ] = '\0';
-	va_end( args );
+    va_end( args );
 
     if( g_log.count >= g_log.capacity ) {
         g_log.capacity *= 2;
@@ -260,7 +263,7 @@ BOOL VerifyEmbeddedSignature( LPCWSTR pwszSourceFile ) {
     // and Wintrust_Data.
     lStatus = WinVerifyTrust( NULL, &WVTPolicyGUID, &WinTrustData );
 
-	BOOL result = FALSE;
+    BOOL result = FALSE;
     switch( lStatus )  {
         case ERROR_SUCCESS:
             /*
@@ -277,7 +280,7 @@ BOOL VerifyEmbeddedSignature( LPCWSTR pwszSourceFile ) {
                     subject.
             */
             LOG_INFO( "The file is signed and the signature was verified." );
-			result = TRUE;
+            result = TRUE;
             break;
         
         case TRUST_E_NOSIGNATURE:
@@ -348,54 +351,57 @@ BOOL validate_installer( char const* filename ) {
     wchar_t* wfilename = (wchar_t*) malloc( sizeof( wchar_t* ) * ( length + 1 ) );
     mbstowcs_s( &length, wfilename, length, filename, strlen( filename ) );
     BOOL signature_valid = VerifyEmbeddedSignature( wfilename );
-	if( !signature_valid ) {
-		free( wfilename );
-		return FALSE;
-	}
+    if( !signature_valid ) {
+        LOG_ERROR( "The installer was not signed with a valid certificate" );
+        free( wfilename );
+        return FALSE;
+    }
 
     DWORD dwEncoding, dwContentType, dwFormatType;
     HCERTSTORE hStore = NULL;
     HCRYPTMSG hMsg = NULL;
-	BOOL result = CryptQueryObject( CERT_QUERY_OBJECT_FILE,
-		wfilename,
-		CERT_QUERY_CONTENT_FLAG_PKCS7_SIGNED_EMBED,
-		CERT_QUERY_FORMAT_FLAG_BINARY,
-		0,
-		&dwEncoding,
-		&dwContentType,
-		&dwFormatType,
-		&hStore,
-		&hMsg,
-		NULL );   
+    BOOL result = CryptQueryObject( CERT_QUERY_OBJECT_FILE,
+        wfilename,
+        CERT_QUERY_CONTENT_FLAG_PKCS7_SIGNED_EMBED,
+        CERT_QUERY_FORMAT_FLAG_BINARY,
+        0,
+        &dwEncoding,
+        &dwContentType,
+        &dwFormatType,
+        &hStore,
+        &hMsg,
+        NULL );   
     free( wfilename );
-	
+    
     if( !result ) {
-		LOG_LAST_ERROR( "CryptQueryObject failed" );
-		return FALSE;
-	}
+        LOG_LAST_ERROR( "CryptQueryObject failed" );
+        return FALSE;
+    }
 
-	BOOL found = FALSE;
-	for( int i = 0; i < sizeof( thumbprints ) / sizeof( *thumbprints ); ++i ) {
-		CRYPT_HASH_BLOB hash_blob = { 
+    BOOL found = FALSE;
+    for( int i = 0; i < sizeof( thumbprints ) / sizeof( *thumbprints ); ++i ) {
+        CRYPT_HASH_BLOB hash_blob = { 
             sizeof( thumbprints[ i ].hash ) / sizeof( *(thumbprints[ i ].hash) ), 
             thumbprints[ i ].hash 
         };
-		CERT_CONTEXT const* cert_context = CertFindCertificateInStore(
-			hStore,
-			(X509_ASN_ENCODING | PKCS_7_ASN_ENCODING),
-			0,
-			CERT_FIND_HASH,
-			&hash_blob,
-			NULL );
-		
+        CERT_CONTEXT const* cert_context = CertFindCertificateInStore(
+            hStore,
+            (X509_ASN_ENCODING | PKCS_7_ASN_ENCODING),
+            0,
+            CERT_FIND_HASH,
+            &hash_blob,
+            NULL );
+        
         if( cert_context ) {
-			found = TRUE;
-			CertFreeCertificateContext( cert_context );
-		}
-	}
-	
-	CryptMsgClose( hMsg );
-	CertCloseStore( hStore, CERT_CLOSE_STORE_FORCE_FLAG );
+            found = TRUE;
+            CertFreeCertificateContext( cert_context );
+        }
+    }
+    if( !found ) {
+        LOG_ERROR( "The installer was not signed with a known Symphony certificate" );
+    }
+    CryptMsgClose( hMsg );
+    CertCloseStore( hStore, CERT_CLOSE_STORE_FORCE_FLAG );
     return found;
 }
 
@@ -407,9 +413,11 @@ bool run_installer( char const* filename ) {
         LOG_ERROR( "The signature of %s could is not a valid Symphony signature" );
         return false;
     }
+    LOG_INFO( "Signature of installer successfully validated" );
 
-	char command[ 512 ];
-	sprintf( command, "/i %s /q", filename );
+    char command[ 512 ];
+    sprintf( command, "/i %s /q", filename );
+    LOG_INFO( "MSI command: %s", command );
 
     SHELLEXECUTEINFO ShExecInfo = { 0 };
     ShExecInfo.cbSize = sizeof( SHELLEXECUTEINFO );
@@ -422,9 +430,12 @@ bool run_installer( char const* filename ) {
     ShExecInfo.nShow = SW_SHOW;
     ShExecInfo.hInstApp = NULL; 
     if( ShellExecuteEx( &ShExecInfo ) ) {
+        LOG_INFO( "ShellExecuteEx successful, waiting to finish" );
         WaitForSingleObject( ShExecInfo.hProcess, INFINITE );
+        LOG_INFO( "ShellExecuteEx finished" );
         DWORD exitCode = 0;
         GetExitCodeProcess( ShExecInfo.hProcess, &exitCode );
+        LOG_INFO( "ShellExecuteEx exit code: %d", exitCode );
         CloseHandle( ShExecInfo.hProcess );
         return exitCode == 0 ? true : false;
     } else {
@@ -451,8 +462,10 @@ void ipc_handler( char const* request, void* user_data, char* response, size_t c
         // "msi" - run installer
         LOG_INFO( "MSI command, running installer" );
         if( run_installer( request + 4 ) ) {
+            LOG_INFO( "Response: OK" );
             strcpy( response, "OK" );
         } else {
+            LOG_INFO( "Response: ERROR" );
             strcpy( response, "ERROR" );
         }
     } else if( strlen( request ) == 3 && stricmp( request, "log" ) == 0 ) {

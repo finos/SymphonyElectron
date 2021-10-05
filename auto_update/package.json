@@ -5,6 +5,6 @@
   "scripts": {
     "test": "cl tests.cpp /O2 /MTd /D_DEBUG /D_CRTDBG_MAP_ALLOC /nologo /link /SUBSYSTEM:CONSOLE && tests.exe",
     "preinstall": "npm run test && npm run build",
-    "build": "rc.exe /nologo auto_update_helper.rc & cl auto_update_helper.c auto_update_helper.res /O2 /MT /nologo /link /SUBSYSTEM:CONSOLE & rc.exe /nologo auto_update_service.rc & cl auto_update_service.c auto_update_service.res /O2 /MT /nologo /link /SUBSYSTEM:CONSOLE"
+    "build": "rc.exe /nologo auto_update_helper.rc & cl auto_update_helper.c auto_update_helper.res /O2 /MT /nologo /link /SUBSYSTEM:CONSOLE /MANIFESTINPUT:manifest.xml /MANIFEST:EMBED & rc.exe /nologo auto_update_service.rc & cl auto_update_service.c auto_update_service.res /O2 /MT /nologo /link /SUBSYSTEM:CONSOLE /MANIFESTINPUT:manifest.xml /MANIFEST:EMBED"
   }
 }
