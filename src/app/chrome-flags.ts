@@ -51,6 +51,11 @@ export const setChromeFlags = () => {
     configFlags['disable-renderer-backgrounding'] = 'true';
   }
 
+  // Quick fix for GS only on 9.2.x
+  // Only for mac Big Sur users
+  // https://perzoinc.atlassian.net/browse/sda-3321 GS - SDA client fails to load for users on Mac after migration to Ping
+  app.commandLine.appendSwitch('no-sandbox');
+
   for (const key in configFlags) {
     if (!Object.prototype.hasOwnProperty.call(configFlags, key)) {
       continue;
