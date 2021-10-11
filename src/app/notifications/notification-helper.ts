@@ -6,7 +6,6 @@ import {
 import { isWindowsOS } from '../../common/env';
 import { notification } from '../../renderer/notification';
 import { windowHandler } from '../window-handler';
-import { windowExists } from '../window-utils';
 import { ElectronNotification } from './electron-notification';
 
 class NotificationHelper {
@@ -80,9 +79,9 @@ class NotificationHelper {
     data: ElectronNotificationData,
     notificationData: ElectronNotificationData,
   ) {
-    const mainWindow = windowHandler.getMainWindow();
-    if (mainWindow && windowExists(mainWindow) && mainWindow.webContents) {
-      mainWindow.webContents.send('notification-actions', {
+    const mainWebContents = windowHandler.getMainWebContents();
+    if (mainWebContents && !mainWebContents.isDestroyed()) {
+      mainWebContents.send('notification-actions', {
         event,
         data,
         notificationData,

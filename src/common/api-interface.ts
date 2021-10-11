@@ -49,6 +49,10 @@ export enum apiCmds {
   setZoomLevel = 'set-zoom-level',
   autoUpdate = 'auto-update',
   aboutAppClipBoardData = 'about-app-clip-board-data',
+  closeMainWindow = 'close-main-window',
+  minimizeMainWindow = 'minimize-main-window',
+  maximizeMainWindow = 'maximize-main-window',
+  unmaximizeMainWindow = 'unmaximize-main-window',
 }
 
 export enum apiName {

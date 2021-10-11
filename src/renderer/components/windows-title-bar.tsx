@@ -13,7 +13,6 @@ interface IState {
 const TITLE_BAR_NAMESPACE = 'TitleBar';
 
 export default class WindowsTitleBar extends React.Component<{}, IState> {
-  private readonly window: Electron.BrowserWindow;
   private readonly eventHandlers = {
     onClose: () => this.close(),
     onMaximize: () => this.maximize(),
@@ -26,12 +25,10 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
 
   constructor(props) {
     super(props);
-    // TODO: remove remote module
-    this.window = {} as any;
     this.state = {
       title: document.title || 'Symphony',
-      isFullScreen: this.window.isFullScreen(),
-      isMaximized: this.window.isMaximized(),
+      isFullScreen: false,
+      isMaximized: true,
       titleBarHeight: '32px',
     };
     // Adds borders to the window
@@ -39,14 +36,14 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
 
     this.renderMaximizeButtons = this.renderMaximizeButtons.bind(this);
     // Event to capture and update icons
-    this.window.on('maximize', () => this.updateState({ isMaximized: true }));
-    this.window.on('unmaximize', () =>
+    ipcRenderer.on('maximize', () => this.updateState({ isMaximized: true }));
+    ipcRenderer.on('unmaximize', () =>
       this.updateState({ isMaximized: false }),
     );
-    this.window.on('enter-full-screen', () =>
+    ipcRenderer.on('enter-full-screen', () =>
       this.updateState({ isFullScreen: true }),
     );
-    this.window.on('leave-full-screen', () =>
+    ipcRenderer.on('leave-full-screen', () =>
       this.updateState({ isFullScreen: false }),
     );
   }
@@ -215,57 +212,46 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
    * Method that closes the browser window
    */
   public close(): void {
-    if (this.isValidWindow()) {
-      this.window.close();
-    }
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.closeMainWindow,
+    });
   }
 
   /**
    * Method that minimizes the browser window
    */
   public minimize(): void {
-    if (this.isValidWindow()) {
-      this.window.minimize();
-    }
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.minimizeMainWindow,
+    });
   }
 
   /**
    * Method that maximize the browser window
    */
   public maximize(): void {
-    if (this.isValidWindow()) {
-      this.window.maximize();
-      this.setState({ isMaximized: true });
-    }
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.maximizeMainWindow,
+    });
+    this.setState({ isMaximized: true });
   }
 
   /**
    * Method that unmaximize the browser window
    */
   public unmaximize(): void {
-    if (this.isValidWindow()) {
-      this.window.isFullScreen()
-        ? this.window.setFullScreen(false)
-        : this.window.unmaximize();
-    }
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.unmaximizeMainWindow,
+    });
   }
 
   /**
    * Method that popup the application menu
    */
   public showMenu(): void {
-    if (this.isValidWindow()) {
-      ipcRenderer.send(apiName.symphonyApi, {
-        cmd: apiCmds.popupMenu,
-      });
-    }
-  }
-
-  /**
-   * verifies if the this.window is valid and is not destroyed
-   */
-  public isValidWindow(): boolean {
-    return this.window && !this.window.isDestroyed();
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.popupMenu,
+    });
   }
 
   /**
@@ -292,6 +278,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
    */
   private updateTitleBar(): void {
     const { isFullScreen, titleBarHeight } = this.state;
+    // TODO: Remove all the below implementation once browserView is finished
     const contentWrapper = document.getElementById('content-wrapper');
     const appView = document.getElementsByClassName('jss1')[0] as HTMLElement;
     const root = document.getElementById('root');

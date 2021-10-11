@@ -8,8 +8,10 @@ import {
   dialog,
   globalShortcut,
   ipcMain,
+  RenderProcessGoneDetails,
   screen,
   shell,
+  WebContents,
 } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -58,9 +60,11 @@ import {
   handleDownloadManager,
   injectStyles,
   isSymphonyReachable,
+  loadBrowserViews,
   monitorNetworkInterception,
   preventWindowNavigation,
   reloadWindow,
+  viewExists,
   resetZoomLevel,
   windowExists,
   zoomIn,
@@ -90,9 +94,15 @@ export interface ICustomBrowserWindow extends Electron.BrowserWindow {
   origin?: string;
 }
 
+export interface ICustomBrowserView extends Electron.BrowserView {
+  winName: string;
+  notificationData?: object;
+  origin?: string;
+}
+
 // Default window width & height
-let DEFAULT_WIDTH: number = 900;
-let DEFAULT_HEIGHT: number = 900;
+export let DEFAULT_WIDTH: number = 900;
+export let DEFAULT_HEIGHT: number = 900;
 
 // Timeout on restarting SDA in case it's stuck
 const LISTEN_TIMEOUT: number = 25 * 1000;
@@ -113,6 +123,9 @@ export class WindowHandler {
     }
     return format(parsedUrl);
   }
+  public mainView: ICustomBrowserView | null;
+  public titleBarView: ICustomBrowserView | null;
+  public mainWebContents: WebContents | undefined;
   public appMenu: AppMenu | null;
   public isAutoReload: boolean;
   public isOnline: boolean;
@@ -233,6 +246,8 @@ export class WindowHandler {
     }
 
     this.appMenu = null;
+    this.mainView = null;
+    this.titleBarView = null;
     const locale: LocaleType = (this.config.locale ||
       app.getLocale()) as LocaleType;
     i18n.setLocale(locale);
@@ -388,7 +403,23 @@ export class WindowHandler {
     // loads the main window with url from config/cmd line
     logger.info(`Loading main window with url ${this.url}`);
     const userAgent = this.getUserAgent(this.mainWindow);
-    this.mainWindow.loadURL(this.url, { userAgent });
+
+    if (
+      this.config.isCustomTitleBar === CloudConfigDataTypes.ENABLED &&
+      isWindowsOS &&
+      this.mainWindow &&
+      windowExists(this.mainWindow)
+    ) {
+      this.mainWebContents = await loadBrowserViews(
+        this.mainWindow,
+        this.url,
+        userAgent,
+      );
+    } else {
+      this.mainWebContents = this.mainWindow.webContents;
+      await this.mainWindow.loadURL(this.url, { userAgent });
+    }
+
     // check for build expiry in case of test builds
     this.checkExpiry(this.mainWindow);
     // update version info from server
@@ -397,20 +428,12 @@ export class WindowHandler {
     this.mainWindow.origin = this.globalConfig.contextOriginUrl || this.url;
 
     // Event needed to hide native menu bar on Windows 10 as we use custom menu bar
-    this.mainWindow.webContents.once('did-start-loading', () => {
+    this.mainView?.webContents.once('did-start-loading', () => {
       logger.info(
-        `window-handler: main window web contents started loading for url ${this.mainWindow?.webContents.getURL()}!`,
+        `window-handler: main window web contents started loading for url ${this.mainView?.webContents.getURL()}!`,
       );
       this.finishedLoading = false;
       this.listenForLoad();
-      if (
-        this.config.isCustomTitleBar === CloudConfigDataTypes.ENABLED &&
-        isWindowsOS &&
-        this.mainWindow &&
-        windowExists(this.mainWindow)
-      ) {
-        this.mainWindow.setMenuBarVisibility(false);
-      }
       // monitors network connection and
       // displays error banner on failure
       monitorNetworkInterception(
@@ -453,15 +476,15 @@ export class WindowHandler {
         return;
       }
       this.finishedLoading = true;
-      this.url = this.mainWindow.webContents.getURL();
-      if (this.url.indexOf('about:blank') === 0) {
+      this.url = this.mainWebContents?.getURL();
+      if (this.url?.indexOf('about:blank') === 0) {
         logger.info(
           `Looks like about:blank got loaded which may lead to blank screen`,
         );
         logger.info(`Reloading the app to check if it resolves the issue`);
         const url = this.userConfig.url || this.globalConfig.url;
         const userAgent = this.getUserAgent(this.mainWindow);
-        await this.mainWindow.loadURL(url, { userAgent });
+        await this.mainWebContents?.loadURL(url, { userAgent });
         return;
       }
       logger.info('window-handler: did-finish-load, url: ' + this.url);
@@ -469,7 +492,7 @@ export class WindowHandler {
       // Injects custom title bar and snack bar css into the webContents
       await injectStyles(this.mainWindow, this.isCustomTitleBar);
 
-      this.mainWindow.webContents.send('page-load', {
+      this.mainWebContents?.send('page-load', {
         isWindowsOS,
         locale: i18n.getLocale(),
         resources: i18n.loadedResources,
@@ -478,13 +501,10 @@ export class WindowHandler {
       });
       this.appMenu = new AppMenu();
       const { permissions } = config.getConfigFields(['permissions']);
-      this.mainWindow.webContents.send(
-        'is-screen-share-enabled',
-        permissions.media,
-      );
+      this.mainWebContents?.send('is-screen-share-enabled', permissions.media);
     });
 
-    this.mainWindow.webContents.on(
+    this.mainWebContents.on(
       'did-fail-load',
       (_event, errorCode, errorDesc, validatedURL) => {
         logger.error(
@@ -494,13 +514,13 @@ export class WindowHandler {
       },
     );
 
-    this.mainWindow.webContents.on('did-stop-loading', async () => {
+    this.mainWebContents.on('did-stop-loading', async () => {
       if (this.mainWindow && windowExists(this.mainWindow)) {
-        this.mainWindow.webContents.send('page-load-failed', {
+        this.mainWebContents?.send('page-load-failed', {
           locale: i18n.getLocale(),
           resources: i18n.loadedResources,
         });
-        const href = await this.mainWindow.webContents.executeJavaScript(
+        const href = await this.mainWebContents?.executeJavaScript(
           'document.location.href',
         );
         try {
@@ -509,7 +529,7 @@ export class WindowHandler {
             href === 'chrome-error://chromewebdata/'
           ) {
             if (this.mainWindow && windowExists(this.mainWindow)) {
-              this.mainWindow.webContents.insertCSS(
+              this.mainWebContents?.insertCSS(
                 fs
                   .readFileSync(
                     path.join(
@@ -521,7 +541,7 @@ export class WindowHandler {
                   )
                   .toString(),
               );
-              this.mainWindow.webContents.send('network-error', {
+              this.mainWebContents?.send('network-error', {
                 error: this.loadFailError,
               });
               isSymphonyReachable(
@@ -537,12 +557,14 @@ export class WindowHandler {
           );
         }
       }
+      // Register dev tools on initial launch
+      this.registerGlobalShortcuts();
     });
 
-    this.mainWindow.webContents.on(
-      'crashed',
-      async (_event: Event, killed: boolean) => {
-        if (killed) {
+    this.mainWebContents.on(
+      'render-process-gone',
+      async (_event: Event, details: RenderProcessGoneDetails) => {
+        if (details.reason === 'killed') {
           logger.info(`window-handler: main window crashed (killed)!`);
           return;
         }
@@ -581,8 +603,12 @@ export class WindowHandler {
 
       if (this.willQuitApp) {
         logger.info(`window-handler: app is quitting, destroying all windows!`);
-        if (this.mainWindow && this.mainWindow.webContents.isDevToolsOpened()) {
-          this.mainWindow.webContents.closeDevTools();
+        if (
+          this.mainWindow &&
+          !this.mainWebContents?.isDestroyed() &&
+          this.mainWebContents?.isDevToolsOpened()
+        ) {
+          this.mainWebContents?.closeDevTools();
         }
         return this.destroyAllWindows();
       }
@@ -629,7 +655,7 @@ export class WindowHandler {
 
     // Certificate verification proxy
     if (!isDevEnv) {
-      this.mainWindow.webContents.session.setCertificateVerifyProc(
+      this.mainWebContents.session.setCertificateVerifyProc(
         handleCertificateProxyVerification,
       );
     }
@@ -646,25 +672,22 @@ export class WindowHandler {
     preventWindowNavigation(this.mainWindow, false);
 
     // Handle media/other permissions
-    handlePermissionRequests(this.mainWindow.webContents);
+    handlePermissionRequests(this.mainWebContents);
 
     // Start monitoring window actions
     monitorWindowActions(this.mainWindow);
 
     // Download manager
-    this.mainWindow.webContents.session.on(
-      'will-download',
-      handleDownloadManager,
-    );
+    this.mainWebContents.session.on('will-download', handleDownloadManager);
 
     // store window ref
     this.addWindow(this.windowOpts.winKey, this.mainWindow);
 
     // Handle pop-outs window
-    handleChildWindow(this.mainWindow.webContents);
+    handleChildWindow(this.mainWebContents);
 
     if (this.config.enableRendererLogs) {
-      this.mainWindow.webContents.on('console-message', onConsoleMessages);
+      this.mainWebContents.on('console-message', onConsoleMessages);
     }
 
     return this.mainWindow;
@@ -691,7 +714,7 @@ export class WindowHandler {
       });
     }
 
-    this.mainWindow.webContents.on('did-finish-load', () => {
+    this.mainWebContents?.on('did-finish-load', () => {
       if (!this.url || !this.mainWindow) {
         return;
       }
@@ -703,7 +726,7 @@ export class WindowHandler {
             ? true
             : false;
 
-        this.mainWindow.webContents.send('page-load-welcome', {
+        this.mainWebContents?.send('page-load-welcome', {
           locale: i18n.getLocale(),
           resource: i18n.loadedResources,
         });
@@ -716,7 +739,7 @@ export class WindowHandler {
               )
             : this.userConfig.url;
 
-        this.mainWindow.webContents.send('welcome', {
+        this.mainWebContents?.send('welcome', {
           url: userConfigUrl || this.startUrl,
           message: '',
           urlValid: !!userConfigUrl,
@@ -740,6 +763,20 @@ export class WindowHandler {
   }
 
   /**
+   * Gets the main browser webContents
+   */
+  public getMainWebContents(): WebContents | undefined {
+    return this.mainWebContents;
+  }
+
+  /**
+   * Gets the main browser view
+   */
+  public getMainView(): ICustomBrowserView | null {
+    return this.mainView;
+  }
+
+  /**
    * Gets all the window that we have created
    *
    * @return {Electron.BrowserWindow}
@@ -747,6 +784,33 @@ export class WindowHandler {
    */
   public getAllWindows(): object {
     return this.windows;
+  }
+
+  /**
+   * Gets the main window opts
+   *
+   * @return ICustomBrowserWindowConstructorOpts
+   */
+  public getMainWindowOpts(): ICustomBrowserWindowConstructorOpts {
+    return this.windowOpts;
+  }
+
+  /**
+   * Sets the title bar view
+   *
+   * @param mainView
+   */
+  public setMainView(mainView: ICustomBrowserView): void {
+    this.mainView = mainView;
+  }
+
+  /**
+   * Sets the title bar view
+   *
+   * @param titleBarView
+   */
+  public setTitleBarView(titleBarView: ICustomBrowserView): void {
+    this.titleBarView = titleBarView;
   }
 
   /**
@@ -846,6 +910,18 @@ export class WindowHandler {
       }
     }
     return this.aboutAppWindow === window;
+  }
+
+  /**
+   * Checks if the window and a key has a window
+   *
+   * @param webContents {Electron.webContents}
+   */
+  public hasView(webContents: Electron.webContents): boolean {
+    return (
+      webContents === this.mainView?.webContents ||
+      webContents === this.titleBarView?.webContents
+    );
   }
 
   /**
@@ -1792,7 +1868,7 @@ export class WindowHandler {
       if (!this.finishedLoading) {
         logger.info(`window-handler: Pod load failed on launch`);
         if (this.mainWindow && windowExists(this.mainWindow)) {
-          const webContentsUrl = this.mainWindow.webContents.getURL();
+          const webContentsUrl = this.mainWebContents?.getURL();
           logger.info(
             `window-handler: Current main window url is ${webContentsUrl}.`,
           );
@@ -1832,9 +1908,8 @@ export class WindowHandler {
    */
   private registerGlobalShortcuts(): void {
     logger.info('window-handler: register global shortcuts!');
-    globalShortcut.register(
-      isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I',
-      this.onRegisterDevtools,
+    globalShortcut.register(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I', () =>
+      this.onRegisterDevtools(),
     );
     globalShortcut.register('CmdOrCtrl+R', this.onReload);
 
@@ -1898,6 +1973,16 @@ export class WindowHandler {
     }
     const { devToolsEnabled } = config.getConfigFields(['devToolsEnabled']);
     if (devToolsEnabled) {
+      if (
+        this.mainWindow &&
+        windowExists(this.mainWindow) &&
+        focusedWindow === this.mainWindow
+      ) {
+        if (this.mainView && viewExists(this.mainView)) {
+          this.mainWebContents?.toggleDevTools();
+          return;
+        }
+      }
       focusedWindow.webContents.toggleDevTools();
       return;
     }
@@ -1936,7 +2021,7 @@ export class WindowHandler {
         this.url = this.globalConfig.url;
       }
       const parsedUrl = parse(this.url);
-      const csrfToken = await this.mainWindow.webContents.executeJavaScript(
+      const csrfToken = await this.mainWebContents?.executeJavaScript(
         `localStorage.getItem('x-km-csrf-token')`,
       );
       switch (clientSwitch) {

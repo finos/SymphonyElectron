@@ -1,10 +1,12 @@
 import {
   app,
+  BrowserView,
   BrowserWindow,
   dialog,
   nativeImage,
   screen,
   shell,
+  WebContents,
 } from 'electron';
 import electron = require('electron');
 import fetch from 'electron-fetch';
@@ -14,7 +16,13 @@ import * as path from 'path';
 import { format, parse } from 'url';
 import { apiName } from '../common/api-interface';
 
-import { isDevEnv, isLinux, isMac, isNodeEnv } from '../common/env';
+import {
+  isDevEnv,
+  isLinux,
+  isMac,
+  isNodeEnv,
+  isWindowsOS,
+} from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { getGuid } from '../common/utils';
@@ -30,9 +38,16 @@ import { downloadHandler, IDownloadItem } from './download-handler';
 import { memoryMonitor } from './memory-monitor';
 import { screenSnippet } from './screen-snippet-handler';
 import { updateAlwaysOnTop } from './window-actions';
-import { ICustomBrowserWindow, windowHandler } from './window-handler';
+import {
+  DEFAULT_HEIGHT,
+  DEFAULT_WIDTH,
+  ICustomBrowserView,
+  ICustomBrowserWindow,
+  windowHandler,
+} from './window-handler';
 
 import { notification } from '../renderer/notification';
+import { mainEvents } from './main-event-handler';
 interface IStyles {
   name: styleNames;
   content: string;
@@ -45,7 +60,10 @@ enum styleNames {
 }
 
 const checkValidWindow = true;
-const { ctWhitelist } = config.getConfigFields(['ctWhitelist']);
+const { ctWhitelist, mainWinPos } = config.getConfigFields([
+  'ctWhitelist',
+  'mainWinPos',
+]);
 
 // Network status check variables
 const networkStatusCheckInterval = 10 * 1000;
@@ -63,6 +81,17 @@ const DOWNLOAD_MANAGER_NAMESPACE = 'DownloadManager';
  */
 export const windowExists = (window: BrowserWindow): boolean =>
   !!window && typeof window.isDestroyed === 'function' && !window.isDestroyed();
+
+/**
+ * Checks if view is valid and exists
+ *
+ * @param view {BrowserView}
+ * @return boolean
+ */
+export const viewExists = (view: BrowserView): boolean =>
+  !!view &&
+  typeof view.webContents.isDestroyed === 'function' &&
+  !view.webContents.isDestroyed();
 
 /**
  * Prevents window from navigating
@@ -266,6 +295,30 @@ export const isValidWindow = (
   let result: boolean = false;
   if (browserWin && !browserWin.isDestroyed()) {
     result = windowHandler.hasWindow(browserWin);
+  }
+
+  if (!result) {
+    logger.warn(
+      `window-utils: invalid window try to perform action, ignoring action`,
+    );
+  }
+
+  return result;
+};
+
+/**
+ * Ensure events comes from a view that we have created.
+ *
+ * @return {Boolean} returns true if exists otherwise false
+ * @param webContents
+ */
+export const isValidView = (webContents: Electron.webContents): boolean => {
+  if (!checkValidWindow) {
+    return true;
+  }
+  let result: boolean = false;
+  if (webContents && !webContents.isDestroyed()) {
+    result = windowHandler.hasView(webContents);
   }
 
   if (!result) {
@@ -671,11 +724,15 @@ export const reloadWindow = (browserWindow: ICustomBrowserWindow) => {
   }
 
   const windowName = browserWindow.winName;
-  const mainWindow = windowHandler.getMainWindow();
+  const mainView = windowHandler.getMainView();
   // reload the main window
-  if (windowName === apiName.mainWindowName) {
+  if (
+    windowName === apiName.mainWindowName &&
+    mainView &&
+    viewExists(mainView)
+  ) {
     logger.info(`window-utils: reloading the main window`);
-    browserWindow.reload();
+    mainView.webContents.reload();
 
     windowHandler.closeAllWindows();
 
@@ -684,10 +741,10 @@ export const reloadWindow = (browserWindow: ICustomBrowserWindow) => {
     return;
   }
   // Send an event to SFE that restarts the pop-out window
-  if (mainWindow && windowExists(mainWindow)) {
+  if (mainView && viewExists(mainView)) {
     logger.info(`window-handler: reloading the window`, { windowName });
     const bounds = browserWindow.getBounds();
-    mainWindow.webContents.send('restart-floater', { windowName, bounds });
+    mainView.webContents.send('restart-floater', { windowName, bounds });
   }
 };
 
@@ -900,4 +957,121 @@ export const monitorNetworkInterception = (url: string) => {
       },
     );
   }
+};
+
+export const loadBrowserViews = async (
+  mainWindow: BrowserWindow,
+  url: string,
+  userAgent: string,
+): Promise<WebContents> => {
+  mainWindow.setMenuBarVisibility(false);
+
+  const titleBarView = new BrowserView({
+    webPreferences: {
+      sandbox: !isNodeEnv,
+      nodeIntegration: isNodeEnv,
+      preload: path.join(__dirname, '../renderer/_preload-component.js'),
+      devTools: isDevEnv,
+    },
+  }) as ICustomBrowserView;
+  const mainView = new BrowserView({
+    ...windowHandler.getMainWindowOpts(),
+    ...getBounds(mainWinPos, DEFAULT_WIDTH, DEFAULT_HEIGHT),
+  }) as ICustomBrowserView;
+
+  mainWindow.addBrowserView(titleBarView);
+  mainWindow.addBrowserView(mainView);
+
+  const titleBarWindowUrl = format({
+    pathname: require.resolve('../renderer/react-window.html'),
+    protocol: 'file',
+    query: {
+      componentName: 'title-bar',
+      locale: i18n.getLocale(),
+    },
+    slashes: true,
+  });
+  titleBarView.webContents.once('did-finish-load', () => {
+    if (!titleBarView || titleBarView.webContents.isDestroyed()) {
+      return;
+    }
+    titleBarView?.webContents.send('page-load', {
+      isWindowsOS,
+      locale: i18n.getLocale(),
+      resource: i18n.loadedResources,
+      isMainWindow: true,
+    });
+    mainEvents.subscribeMultipleEvents(
+      ['maximize', 'unmaximize', 'enter-full-screen', 'leave-full-screen'],
+      titleBarView.webContents,
+    );
+
+    mainWindow?.on('maximize', () => {
+      mainEvents.publish('maximize');
+    });
+    mainWindow?.on('unmaximize', () => {
+      mainEvents.publish('unmaximize');
+    });
+    mainWindow?.on('enter-full-screen', () => {
+      if (!titleBarView || !viewExists(titleBarView)) {
+        return;
+      }
+      const titleBarBounds = titleBarView.getBounds();
+      titleBarView.setBounds({ ...titleBarBounds, ...{ height: 0 } });
+
+      if (!mainView || !viewExists(mainView)) {
+        return;
+      }
+
+      const mainWindowBounds = mainWindow?.getBounds() || mainView.getBounds();
+      mainView.setBounds({ ...mainWindowBounds, ...{ y: 0 } });
+
+      mainEvents.publish('enter-full-screen');
+    });
+    mainWindow?.on('leave-full-screen', () => {
+      if (!titleBarView || !viewExists(titleBarView)) {
+        return;
+      }
+      const titleBarBounds = titleBarView.getBounds();
+      titleBarView.setBounds({ ...titleBarBounds, ...{ height: 32 } });
+
+      if (!mainView || !viewExists(mainView)) {
+        return;
+      }
+      const mainViewBounds = mainView.getBounds();
+      mainView.setBounds({ ...mainViewBounds, ...{ y: 32 } });
+      mainEvents.publish('leave-full-screen');
+    });
+    if (mainWindow?.isMaximized()) {
+      mainEvents.publish('maximize');
+    }
+    if (mainWindow?.isFullScreen()) {
+      mainEvents.publish('enter-full-screen');
+    }
+  });
+  await titleBarView.webContents.loadURL(titleBarWindowUrl);
+  titleBarView.setBounds({
+    ...mainWindow.getBounds(),
+    ...{ x: 0, y: 0, height: 32 },
+  });
+  titleBarView.setAutoResize({
+    vertical: false,
+    horizontal: true,
+    width: true,
+    height: false,
+  });
+
+  await mainView.webContents.loadURL(url, { userAgent });
+  mainView.setBounds({ ...mainWindow.getBounds(), ...{ y: 32 } });
+  mainView.setAutoResize({
+    horizontal: true,
+    vertical: false,
+    width: true,
+    height: false,
+  });
+
+  windowHandler.setMainView(mainView);
+  windowHandler.setTitleBarView(mainView);
+
+  return mainView.webContents;
 };

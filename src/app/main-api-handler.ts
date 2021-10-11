@@ -22,6 +22,7 @@ import { activate, handleKeyPress } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 import {
   downloadManagerAction,
+  isValidView,
   isValidWindow,
   sanitize,
   setDataUrl,
@@ -40,7 +41,12 @@ import {
 ipcMain.on(
   apiName.symphonyApi,
   async (event: Electron.IpcMainEvent, arg: IApiArgs) => {
-    if (!isValidWindow(BrowserWindow.fromWebContents(event.sender))) {
+    if (
+      !(
+        isValidWindow(BrowserWindow.fromWebContents(event.sender)) ||
+        isValidView(event.sender)
+      )
+    ) {
       logger.error(
         `main-api-handler: invalid window try to perform action, ignoring action`,
         arg.cmd,
@@ -301,6 +307,23 @@ ipcMain.on(
             { text: JSON.stringify(arg.clipboard, null, 4) },
             arg.clipboardType,
           );
+        }
+        break;
+      case apiCmds.closeMainWindow:
+        windowHandler.getMainWindow()?.close();
+        break;
+      case apiCmds.minimizeMainWindow:
+        windowHandler.getMainWindow()?.minimize();
+        break;
+      case apiCmds.maximizeMainWindow:
+        windowHandler.getMainWindow()?.maximize();
+        break;
+      case apiCmds.unmaximizeMainWindow:
+        const mainWindow = windowHandler.getMainWindow();
+        if (mainWindow && windowExists(mainWindow)) {
+          mainWindow.isFullScreen()
+            ? mainWindow.setFullScreen(false)
+            : mainWindow.unmaximize();
         }
         break;
       default:
