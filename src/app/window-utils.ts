@@ -767,8 +767,24 @@ export const zoomOut = () => {
         webContents.setZoomFactor(0.7);
       }
     }
+  } else {
+    const currentZoomLevel = focusedWindow.webContents.getZoomLevel();
+    focusedWindow.webContents.setZoomLevel(currentZoomLevel - 0.5);
   }
 };
+
+/**
+ * Reset zoom level.
+ * @returns void
+ */
+export const resetZoomLevel = () => {
+  const focusedWindow = BrowserWindow.getFocusedWindow();
+  if (!focusedWindow || !windowExists(focusedWindow)) {
+    return;
+  }
+  focusedWindow.webContents.setZoomLevel(0);
+};
+
 /**
  * Verifies if window exists and restores/focuses the window
  *

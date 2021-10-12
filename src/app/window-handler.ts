@@ -61,6 +61,7 @@ import {
   monitorNetworkInterception,
   preventWindowNavigation,
   reloadWindow,
+  resetZoomLevel,
   windowExists,
   zoomIn,
   zoomOut,
@@ -1846,16 +1847,15 @@ export class WindowHandler {
         this.switchClient(ClientSwitchType.CLIENT_2_0_DAILY),
       );
     }
-
+    globalShortcut.register('CmdOrCtrl+=', zoomIn);
+    globalShortcut.register('CmdOrCtrl+-', zoomOut);
     if (isMac) {
       globalShortcut.register('CmdOrCtrl+Plus', zoomIn);
-      globalShortcut.register('CmdOrCtrl+=', zoomIn);
-      if (this.isMana) {
-        globalShortcut.register('CmdOrCtrl+-', zoomOut);
-      }
-    } else if (this.isMana && (isWindowsOS || isLinux)) {
+    } else if (isWindowsOS || isLinux) {
       globalShortcut.register('Ctrl+=', zoomIn);
-      globalShortcut.register('Ctrl+-', zoomOut);
+      globalShortcut.register('Ctrl+numadd', zoomIn);
+      globalShortcut.register('Ctrl+numsub', zoomOut);
+      globalShortcut.register('Ctrl+num0', resetZoomLevel);
     }
   }
 
@@ -1867,15 +1867,14 @@ export class WindowHandler {
 
     globalShortcut.unregister(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I');
     globalShortcut.unregister('CmdOrCtrl+R');
+    globalShortcut.unregister('CmdOrCtrl+=');
+    globalShortcut.unregister('CmdOrCtrl+-');
     if (isMac) {
       globalShortcut.unregister('CmdOrCtrl+Plus');
-      globalShortcut.unregister('CmdOrCtrl+=');
-      if (this.isMana) {
-        globalShortcut.unregister('CmdOrCtrl+-');
-      }
-    } else if (this.isMana && (isWindowsOS || isLinux)) {
-      globalShortcut.unregister('Ctrl+=');
-      globalShortcut.unregister('Ctrl+-');
+    } else if (isWindowsOS || isLinux) {
+      globalShortcut.unregister('Ctrl+numadd');
+      globalShortcut.unregister('Ctrl+numsub');
+      globalShortcut.unregister('Ctrl+num0');
     }
     // Unregister shortcuts related to client switch
     if (this.url && this.url.startsWith('https://corporate.symphony.com')) {
