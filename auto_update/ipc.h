@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#define IPC_MESSAGE_MAX_LENGTH 512
+#define IPC_MESSAGE_MAX_LENGTH 4096
 
 // client
 

@@ -1,6 +1,8 @@
 #define _CRT_SECURE_NO_WARNINGS
 #define _CRT_NONSTDC_NO_WARNINGS
 
+//#define LOG_TO_CONSOLE_FOR_DEBUGGING
+
 #include <windows.h>
 #include <aclapi.h>
 #pragma comment(lib, "advapi32.lib")
@@ -89,7 +91,11 @@ void log_init( char const* filename ) {
     InitializeCriticalSection( &g_log.mutex );
 
     if( filename ) {
-        g_log.file = fopen( filename, "w" );
+        #ifndef LOG_TO_CONSOLE_FOR_DEBUGGING
+            g_log.file = fopen( filename, "w" );
+        #else
+            g_log.file = stdout;
+        #endif
 
         time_t rawtime = time( NULL );
         struct tm* ptm = gmtime( &rawtime );
@@ -100,7 +106,7 @@ void log_init( char const* filename ) {
 }
 
 
-int main( int argc, char** argv ) {
+int main( int argc, char* argv[] ) {
     // Find argument ending with .log, if any
     char const* log_filename = NULL;
     for( int i = 0; i < argc; ++i ) {
@@ -110,6 +116,10 @@ int main( int argc, char** argv ) {
             break;
         }
     }
+    if( !log_filename ) {
+        return EXIT_FAILURE;
+    }
+
     // Initialize logging
     log_init( log_filename );
 
@@ -132,13 +142,14 @@ int main( int argc, char** argv ) {
     LOG_INFO( "Connecting to IPC server" );
     ipc_client_t* client = ipc_client_connect( PIPE_NAME );
     if( client ) {
+        BOOL installation_in_progress = FALSE;
         LOG_INFO( "Connected" );
         char command[ 512 ];
         sprintf( command, "msi %s", installer_filename );
         LOG_INFO( "Sending command: \"%s\"", command );
         if( ipc_client_send( client, command ) ) {
             LOG_INFO( "Command sent" );
-            char response[ 256 ];
+            char response[ 256 ] = { 0 };
             int size = 0;
             int temp_size = 0;
             LOG_INFO( "Receiving response" );
@@ -155,8 +166,8 @@ int main( int argc, char** argv ) {
             response[ size ] = '\0';
             LOG_INFO( "Response received: \"%s\"", response );
             if( strcmp( response, "OK" ) == 0 ) {
-                LOG_INFO( "Installation successful" );
-                installation_successful = TRUE;
+                LOG_INFO( "Installation in progress" );
+                installation_in_progress = TRUE;
             } else {
                 LOG_ERROR( "Installation failed" );
             }
@@ -164,14 +175,32 @@ int main( int argc, char** argv ) {
             LOG_ERROR( "Failed to send command" );
         }
 
-        // retrieve logs
-        LOG_INFO( "Retrieving logs from service" );
-        bool logs_finished = false;
-        while( !logs_finished ) {
-            LOG_INFO( "Sending command: \"log\"" );
-            if( ipc_client_send( client, "log" ) ) {
+        // Service will shut down while installation is in progress, so we need to reconnect
+        if( installation_in_progress ) {
+            ipc_client_disconnect( client );
+            client = NULL;
+            LOG_INFO( "Attempting to reconnect" );
+            int time_elapsed_ms = 0;
+            while( !client ) {
+                Sleep( 5000 );
+                client = ipc_client_connect( PIPE_NAME );
+                if( !client ) {
+                    time_elapsed_ms += 5000;
+                    if( time_elapsed_ms > 10*60*1000 ) {
+                        LOG_ERROR( "Unable to reconnect to service after 10 minutes, things have gone very wrong" );
+                        break;
+                    }
+                }
+            }
+        }
+
+        if( client ) {
+            // retrieve status
+            LOG_INFO( "Retrieving installation status from service" );
+            LOG_INFO( "Sending command: \"status\"" );
+            if( ipc_client_send( client, "status" ) ) {
                 LOG_INFO( "Command sent" );
-                char response[ 256 ];
+                char response[ 256 ] = { 0 };
                 int size = 0;
                 int temp_size = 0;
                 LOG_INFO( "Receiving response" );
@@ -187,22 +216,68 @@ int main( int argc, char** argv ) {
                 }
                 response[ size ] = '\0';
                 if( *response ) {
-                    size_t len = strlen( response );
-                    if( len > 0 && response[ len - 1 ] == '\n' ) {
-                        response[ len - 1 ] = '\0';
+                    if( stricmp( response, "FINISHED" ) == 0 ) {
+                        LOG_INFO( "INSTALLATION SUCCESSFUL" );
+                        installation_successful = TRUE;
+                    } else if( stricmp( response, "FAILED" ) == 0 ) {
+                        LOG_ERROR( "FAILED TO LAUNCH INSTALLER" );
+                    } else if( stricmp( response, "INVALID" ) == 0 ) {
+                        LOG_ERROR( "NO RECENT INSTALLATION" );
                     }
-                    LOG_INFO( "SERVER LOG | %s", response );
                 } else {
-                    LOG_INFO( "All logs retrieved" );
-                    logs_finished = true;
+                    LOG_ERROR( "Failed to get a valid status response" );
+                    ipc_client_disconnect( client );
+                    client = NULL;
                 }
             } else {
-                LOG_ERROR( "Failed to send command" );
+                LOG_ERROR( "Failed to send command, disconnecting and aborting. Logs not collected." );
+                ipc_client_disconnect( client );
+                client = NULL;
+            }
+
+            // retrieve logs
+            if( client ) {
+                LOG_INFO( "Retrieving logs from service" );
+                bool logs_finished = false;
+                while( !logs_finished ) {
+                    LOG_INFO( "Sending command: \"log\"" );
+                    if( ipc_client_send( client, "log" ) ) {
+                        LOG_INFO( "Command sent" );
+                        char response[ 4096 ] = { 0 };
+                        int size = 0;
+                        int temp_size = 0;
+                        LOG_INFO( "Receiving response" );
+                        ipc_receive_status_t status = IPC_RECEIVE_STATUS_MORE_DATA;
+                        while( size < sizeof( response ) - 1 && status == IPC_RECEIVE_STATUS_MORE_DATA ) {
+                            status = ipc_client_receive( client, response + size, 
+                                sizeof( response ) - size - 1, &temp_size );
+                            if( status == IPC_RECEIVE_STATUS_ERROR ) {
+                                LOG_ERROR( "Receiving response failed" );
+                                break;
+                            }
+                            size += temp_size;
+                        }
+                        response[ size ] = '\0';
+                        if( *response ) {
+                            size_t len = strlen( response );
+                            if( len > 0 && response[ len - 1 ] == '\n' ) {
+                                response[ len - 1 ] = '\0';
+                            }
+                            LOG_INFO( "SERVER LOG | %s", response );
+                        } else {
+                            LOG_INFO( "All logs retrieved" );
+                            logs_finished = true;
+                        }
+                    } else {
+                        LOG_ERROR( "Failed to send command, disconnecting and aborting. Logs not collected." );
+                        ipc_client_disconnect( client );
+                        client = NULL;
+                    }
+                }
+                LOG_INFO( "All done, disconnecting from client" );
+                ipc_client_disconnect( client );
             }
         }
-
-        LOG_INFO( "All done, disconnecting from client" );
-        ipc_client_disconnect( client );
     }
 
     LOG_INFO( "Launching SDA after installation: \"%s\"", application_filename   );

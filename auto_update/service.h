@@ -6,11 +6,9 @@
 bool service_install( char const* service_name );
 bool service_uninstall( char const* service_name );
 
-typedef void (*service_main_func_t)( void );
+typedef void (*service_main_func_t)( bool* is_running );
 
 void service_run( char const* service_name, service_main_func_t main_func );
-
-bool service_is_running( void );
 
 void service_sleep( void );
 void service_cancel_sleep( void );
@@ -146,7 +144,7 @@ struct {
 // Thread proc for service. Just calls the user-provided main func
 DWORD WINAPI service_main_thread( LPVOID param ) { 
     SERVICE_LOG_INFO( "Starting service main thread" );
-    g_service.main_func();
+    g_service.main_func( (bool*) param );
     SERVICE_LOG_INFO( "Terminating service main thread" );
     return EXIT_SUCCESS;
 }
@@ -248,7 +246,7 @@ VOID WINAPI service_proc( DWORD argc, LPSTR *argv ) {
         NULL,                   // no security attribute 
         0,                      // default stack size 
         service_main_thread,    // thread proc
-        NULL,                   // thread parameter 
+        &g_service.is_running,  // thread parameter 
         0,                      // not suspended 
         NULL );                 // returns thread ID 
 
@@ -277,7 +275,7 @@ VOID WINAPI service_proc( DWORD argc, LPSTR *argv ) {
 
 
 // Run the service with the specified name, and invoke the main_func function 
-// The main_func provided should exit if service_is_running returns false
+// The main_func provided should exit if is_running becomes false
 void service_run( char const* service_name, service_main_func_t main_func ) {
     SetLastError( 0 );
     SERVICE_LOG_INFO( "Starting service" );
@@ -304,12 +302,6 @@ void service_run( char const* service_name, service_main_func_t main_func ) {
     // Cleanup
     CloseHandle( g_service.sleep_event );
     SERVICE_LOG_INFO( "Service stopped" );
-}
-
-
-// Returns true while service is running, false if it has been asked to stop
-bool service_is_running() {
-    return g_service.is_running;
 }
 
 
