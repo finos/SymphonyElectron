@@ -43,6 +43,15 @@ struct { BYTE hash[ 20 ]; } thumbprints[] = {
 };
 
 
+enum install_status_t {
+    INSTALL_STATUS_NONE,
+    INSTALL_STATUS_FINISHED,
+    INSTALL_STATUS_FAILED,
+};
+
+enum install_status_t g_status_for_last_install = INSTALL_STATUS_NONE;
+
+
 // Logging
 
 struct log_entry_t {
@@ -60,7 +69,6 @@ struct log_t {
     struct log_entry_t* entries;
     clock_t session_end;
 } g_log;
-
 
 void internal_log( char const* file, int line, char const* func, char const* level, char const* format, ... ) {
     EnterCriticalSection( &g_log.mutex );
@@ -142,15 +150,19 @@ void internal_log_last_error( char const* file, int line, char const* func, char
 #define LOG_LAST_ERROR( message ) internal_log_last_error( __FILE__, __LINE__, __func__, "error", message )
 
 
-void log_init( void ) {
+void log_init( bool usestdout ) {
     InitializeCriticalSection( &g_log.mutex );
 
-    char path[ MAX_PATH ];
-    ExpandEnvironmentStringsA( "%LOCALAPPDATA%\\SdaAutoUpdate", path, MAX_PATH );
-    CreateDirectory( path, NULL );
-    sprintf( g_log.filename, "%s\\saus_%d.log", path, (int) time( NULL ) );
+    if( usestdout ) {
+        g_log.file = stdout;
+    } else {
+        char path[ MAX_PATH ];
+        ExpandEnvironmentStringsA( "%LOCALAPPDATA%\\SdaAutoUpdate", path, MAX_PATH );
+        CreateDirectory( path, NULL );
+        sprintf( g_log.filename, "%s\\saus_%d.log", path, (int) time( NULL ) );
 
-    g_log.file = fopen( g_log.filename, "w" );
+        g_log.file = fopen( g_log.filename, "w" );
+    }
 
     time_t rawtime = time( NULL );
     struct tm* ptm = gmtime( &rawtime );
@@ -161,6 +173,17 @@ void log_init( void ) {
     g_log.capacity = 256;
     g_log.entries = (struct log_entry_t*) malloc( g_log.capacity * sizeof( struct log_entry_t ) );
     LOG_INFO( "Log file created" );
+}
+
+
+void retrieve_status( char* response, size_t capacity ) {
+    if( g_status_for_last_install == INSTALL_STATUS_FINISHED ) {
+        strcpy( response, "FINISHED" );
+    } else if( g_status_for_last_install == INSTALL_STATUS_FAILED ) {
+        strcpy( response, "FAILED" );
+    } else {
+        strcpy( response, "INVALID" );
+    }
 }
 
 
@@ -406,6 +429,31 @@ BOOL validate_installer( char const* filename ) {
 }
 
 
+void merge_msiexec_log( char const* logfile ) {
+    wchar_t wlogfile[ MAX_PATH ];
+    MultiByteToWideChar( CP_ACP, 0, logfile, -1, wlogfile, sizeof( wlogfile ) / sizeof( *wlogfile ) );
+    FILE* fp = _wfopen( wlogfile, L"r, ccs=UTF-16LE");
+    if( !fp ) {
+        LOG_ERROR( "Failed to read msiexec log file" );
+    }
+    fseek( fp, 2, SEEK_SET );
+    static wchar_t wline[ 4096 ] = { 0 };
+    static char line[ 4096 ] = { 0 };
+    while( fgetws( wline, sizeof( wline ) / sizeof( *wline ), fp ) != NULL ) {
+        WideCharToMultiByte( CP_ACP, 0, (wchar_t*) wline, -1, line, sizeof( line ), NULL, NULL );
+        size_t len = strlen( line );
+        if( len > 0 ) {
+            char* end = ( line + len ) - 1;
+            if( *end == '\n' ) *end = '\0';
+        }
+        LOG_INFO( "MSIEXEC: %s", line );
+        memset( wline, 0, sizeof( wline ) );
+        memset( line, 0, sizeof( line ) );
+    }
+    fclose( fp );
+}
+
+
 // Runs msiexec with the supplied filename
 bool run_installer( char const* filename ) {    
     // Reject installers which are not signed with a Symphony certificate
@@ -415,8 +463,12 @@ bool run_installer( char const* filename ) {
     }
     LOG_INFO( "Signature of installer successfully validated" );
 
+    char logfile[ MAX_PATH ];
+    ExpandEnvironmentStringsA( "%LOCALAPPDATA%\\SdaAutoUpdate\\msiexec.log", logfile, MAX_PATH );
+    DeleteFileA( logfile );
+
     char command[ 512 ];
-    sprintf( command, "/i %s /q", filename );
+    sprintf( command, "/i %s /q LAUNCH_ON_INSTALL=\"false\" /l*v \"%s\" ", filename, logfile );
     LOG_INFO( "MSI command: %s", command );
 
     SHELLEXECUTEINFO ShExecInfo = { 0 };
@@ -429,7 +481,16 @@ bool run_installer( char const* filename ) {
     ShExecInfo.lpDirectory = NULL;
     ShExecInfo.nShow = SW_SHOW;
     ShExecInfo.hInstApp = NULL; 
+
+    char statusfile[ MAX_PATH ];
+    ExpandEnvironmentStringsA( "%LOCALAPPDATA%\\SdaAutoUpdate\\status.sau", statusfile, MAX_PATH );
+    FILE* fp = fopen( statusfile, "w" );
+    fprintf( fp, "PENDING" );
+    fclose( fp );
     if( ShellExecuteEx( &ShExecInfo ) ) {
+        fp = fopen( statusfile, "w" );
+        fprintf( fp, "SUCCESS" );
+        fclose( fp );
         LOG_INFO( "ShellExecuteEx successful, waiting to finish" );
         WaitForSingleObject( ShExecInfo.hProcess, INFINITE );
         LOG_INFO( "ShellExecuteEx finished" );
@@ -437,8 +498,11 @@ bool run_installer( char const* filename ) {
         GetExitCodeProcess( ShExecInfo.hProcess, &exitCode );
         LOG_INFO( "ShellExecuteEx exit code: %d", exitCode );
         CloseHandle( ShExecInfo.hProcess );
+        merge_msiexec_log( logfile );
         return exitCode == 0 ? true : false;
     } else {
+        DeleteFileA( statusfile );
+        g_status_for_last_install = INSTALL_STATUS_FAILED;
         LOG_LAST_ERROR( "Failed to run installer" );
         return false;
     }
@@ -468,6 +532,11 @@ void ipc_handler( char const* request, void* user_data, char* response, size_t c
             LOG_INFO( "Response: ERROR" );
             strcpy( response, "ERROR" );
         }
+    } else if( strlen( request ) == 6 && stricmp( request, "status" ) == 0 ) {
+        // "status" - return result of last install
+        LOG_INFO( "STATUS command, reading status file" );
+        retrieve_status( response, capacity );
+        LOG_INFO( "Status: %s", response );
     } else if( strlen( request ) == 3 && stricmp( request, "log" ) == 0 ) {
         // "log" - send log line
         LOG_INFO( "LOG command, returning next log line" );
@@ -481,13 +550,26 @@ void ipc_handler( char const* request, void* user_data, char* response, size_t c
 
 // Service main function. Keeps an IPC server running - if it gets disconnected it starts it
 // up again. Install requests are handled by ipc_handler above
-void service_main( void ) {
+void service_main( bool* service_is_running ) {
     LOG_INFO( "Service main function running" );
-    while( service_is_running() ) {
+    
+    char statusfile[ MAX_PATH ];
+    ExpandEnvironmentStringsA( "%LOCALAPPDATA%\\SdaAutoUpdate\\status.sau", statusfile, MAX_PATH );
+    char status[ 32 ] = { 0 };
+    FILE* fp = fopen( statusfile, "r" );
+    if( fp ) {
+        fgets( status, sizeof( status ), fp );
+        fclose( fp );
+    }
+    if( stricmp( status, "PENDING" ) == 0 || stricmp( status, "SUCCESS" ) == 0 ) {
+        g_status_for_last_install = INSTALL_STATUS_FINISHED;
+    }
+
+    while( *service_is_running ) {
         bool is_connected = true;
         LOG_INFO( "Starting IPC server" );
         ipc_server_t* server = ipc_server_start( PIPE_NAME, ipc_handler, &is_connected );
-        while( is_connected && service_is_running() ) {
+        while( is_connected && *service_is_running ) {
             service_sleep();
         }
         LOG_INFO( "IPC server disconnected" );
@@ -498,7 +580,7 @@ void service_main( void ) {
 
 
 int main( int argc, char** argv ) {
-    log_init();
+    log_init( true );
 
     // Debug helpers for install/uninstall
     if( argc >= 2 && stricmp( argv[ 1 ], "install" ) == 0 ) {
@@ -518,6 +600,11 @@ int main( int argc, char** argv ) {
             printf("Service failed to uninstall\n"); 
             return EXIT_FAILURE;
         }
+    }
+    if( argc >= 2 && stricmp( argv[ 1 ], "test" ) == 0 ) {
+		// run the ipc server as a normal exe, not as an installed service, for faster turnaround and debugging when testing
+		bool running = true;
+		return service_main( &running );
     }
 
     // Run the service - called by the Windows Services system
