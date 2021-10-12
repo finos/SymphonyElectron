@@ -88,7 +88,6 @@ void internal_log_last_error( char const* file, int line, char const* func, char
 
 
 void log_init( char const* filename ) {
-    printf( "fn: %s\n", filename );
     InitializeCriticalSection( &g_log.mutex );
 
     if( filename ) {
@@ -108,10 +107,6 @@ void log_init( char const* filename ) {
 
 
 int main( int argc, char* argv[] ) {
-    printf( "argc: %d\n", argc );
-    for( int i = 0; i < argc; ++i ) {
-        printf( "argv[%d]: %s\n", i, argv[ i ] );
-    }    
     // Find argument ending with .log, if any
     char const* log_filename = NULL;
     for( int i = 0; i < argc; ++i ) {
@@ -121,10 +116,6 @@ int main( int argc, char* argv[] ) {
             break;
         }
     }
-    printf( "argc: %d\n", argc );
-    for( int i = 0; i < argc; ++i ) {
-        printf( "argv[%d]: %s\n", i, argv[ i ] );
-    }    
     if( !log_filename ) {
         return EXIT_FAILURE;
     }
