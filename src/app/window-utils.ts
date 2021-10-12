@@ -73,6 +73,13 @@ let isNetworkMonitorInitialized = false;
 const styles: IStyles[] = [];
 const DOWNLOAD_MANAGER_NAMESPACE = 'DownloadManager';
 
+const TITLE_BAR_EVENTS = [
+  'maximize',
+  'unmaximize',
+  'enter-full-screen',
+  'leave-full-screen',
+];
+
 /**
  * Checks if window is valid and exists
  *
@@ -553,22 +560,22 @@ export const handleDownloadManager = (
 /**
  * Inserts css in to the window
  *
- * @param window {BrowserWindow}
+ * @param mainWebContents {WebContents}
  */
-const readAndInsertCSS = async (window): Promise<IStyles[] | void> => {
-  if (window && windowExists(window)) {
-    return styles.map(({ content }) => window.webContents.insertCSS(content));
+const readAndInsertCSS = async (mainWebContents): Promise<IStyles[] | void> => {
+  if (mainWebContents && !mainWebContents.isDestroyed()) {
+    return styles.map(({ content }) => mainWebContents.insertCSS(content));
   }
 };
 
 /**
  * Inserts all the required css on to the specified windows
  *
- * @param mainWindow {BrowserWindow}
+ * @param mainView {WebContents}
  * @param isCustomTitleBar {boolean} - whether custom title bar enabled
  */
 export const injectStyles = async (
-  mainWindow: BrowserWindow,
+  mainView: WebContents,
   isCustomTitleBar: boolean,
 ): Promise<IStyles[] | void> => {
   if (isCustomTitleBar) {
@@ -629,7 +636,7 @@ export const injectStyles = async (
     });
   }
 
-  await readAndInsertCSS(mainWindow);
+  await readAndInsertCSS(mainView);
   return;
 };
 
@@ -1002,16 +1009,10 @@ export const loadBrowserViews = async (
       isMainWindow: true,
     });
     mainEvents.subscribeMultipleEvents(
-      ['maximize', 'unmaximize', 'enter-full-screen', 'leave-full-screen'],
+      TITLE_BAR_EVENTS,
       titleBarView.webContents,
     );
 
-    mainWindow?.on('maximize', () => {
-      mainEvents.publish('maximize');
-    });
-    mainWindow?.on('unmaximize', () => {
-      mainEvents.publish('unmaximize');
-    });
     mainWindow?.on('enter-full-screen', () => {
       if (!titleBarView || !viewExists(titleBarView)) {
         return;
@@ -1022,11 +1023,8 @@ export const loadBrowserViews = async (
       if (!mainView || !viewExists(mainView)) {
         return;
       }
-
       const mainWindowBounds = mainWindow?.getBounds() || mainView.getBounds();
       mainView.setBounds({ ...mainWindowBounds, ...{ y: 0 } });
-
-      mainEvents.publish('enter-full-screen');
     });
     mainWindow?.on('leave-full-screen', () => {
       if (!titleBarView || !viewExists(titleBarView)) {
@@ -1040,7 +1038,6 @@ export const loadBrowserViews = async (
       }
       const mainViewBounds = mainView.getBounds();
       mainView.setBounds({ ...mainViewBounds, ...{ y: 32 } });
-      mainEvents.publish('leave-full-screen');
     });
     if (mainWindow?.isMaximized()) {
       mainEvents.publish('maximize');

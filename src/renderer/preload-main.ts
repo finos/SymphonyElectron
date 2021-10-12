@@ -10,7 +10,6 @@ import MessageBanner from './components/message-banner';
 import NetworkError from './components/network-error';
 import SnackBar from './components/snack-bar';
 import Welcome from './components/welcome';
-import WindowsTitleBar from './components/windows-title-bar';
 import { SSFApi } from './ssf-api';
 
 interface ISSFWindow extends Window {
@@ -126,45 +125,32 @@ const monitorMemory = (time) => {
 };
 
 // When the window is completely loaded
-ipcRenderer.on(
-  'page-load',
-  (_event, { locale, resources, enableCustomTitleBar }) => {
-    i18n.setResource(locale, resources);
+ipcRenderer.on('page-load', (_event, { locale, resources }) => {
+  i18n.setResource(locale, resources);
 
-    if (enableCustomTitleBar) {
-      // injects custom title bar
-      const element = React.createElement(WindowsTitleBar);
-      const div = document.createElement('div');
-      document.body.appendChild(div);
-      ReactDOM.render(element, div);
-
-      document.body.classList.add('sda-title-bar');
-    }
-
-    webFrame.setSpellCheckProvider('en-US', {
-      spellCheck(words, callback) {
-        const misspelled = words.filter((word) => {
-          return ipcRenderer.sendSync(apiName.symphonyApi, {
-            cmd: apiCmds.isMisspelled,
-            word,
-          });
+  webFrame.setSpellCheckProvider('en-US', {
+    spellCheck(words, callback) {
+      const misspelled = words.filter((word) => {
+        return ipcRenderer.sendSync(apiName.symphonyApi, {
+          cmd: apiCmds.isMisspelled,
+          word,
         });
-        callback(misspelled);
-      },
-    });
+      });
+      callback(misspelled);
+    },
+  });
 
-    // injects snack bar
-    snackBar.initSnackBar();
+  // injects snack bar
+  snackBar.initSnackBar();
 
-    // injects download manager contents
-    const downloadManager = new DownloadManager();
-    downloadManager.initDownloadManager();
+  // injects download manager contents
+  const downloadManager = new DownloadManager();
+  downloadManager.initDownloadManager();
 
-    // initialize red banner
-    banner.initBanner();
-    banner.showBanner(false, 'error');
-  },
-);
+  // initialize red banner
+  banner.initBanner();
+  banner.showBanner(false, 'error');
+});
 
 ipcRenderer.on('page-load-welcome', (_event, data) => {
   const { locale, resource } = data;

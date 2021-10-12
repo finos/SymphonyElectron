@@ -43,6 +43,7 @@ import {
   IGlobalConfig,
 } from './config-handler';
 import crashHandler from './crash-handler';
+import { mainEvents } from './main-event-handler';
 import { SpellChecker } from './spell-check-handler';
 import { checkIfBuildExpired } from './ttl-handler';
 import { versionHandler } from './version-handler';
@@ -83,7 +84,9 @@ enum ClientSwitchType {
   CLIENT_2_0_DAILY = 'CLIENT_2_0_DAILY',
 }
 
-interface ICustomBrowserWindowConstructorOpts
+const MAIN_WEB_CONTENTS_EVENTS = ['enter-full-screen', 'leave-full-screen'];
+
+export interface ICustomBrowserWindowConstructorOpts
   extends Electron.BrowserWindowConstructorOptions {
   winKey: string;
 }
@@ -416,8 +419,8 @@ export class WindowHandler {
         userAgent,
       );
     } else {
-      this.mainWebContents = this.mainWindow.webContents;
       await this.mainWindow.loadURL(this.url, { userAgent });
+      this.mainWebContents = this.mainWindow.webContents;
     }
 
     // check for build expiry in case of test builds
@@ -464,7 +467,7 @@ export class WindowHandler {
       logger.info(`window-handler: Main Window ready to show: ${event}`);
     });
 
-    this.mainWindow.webContents.on('did-finish-load', async () => {
+    this.mainWebContents.on('did-finish-load', async () => {
       // reset to false when the client reloads
       this.isMana = false;
       logger.info(`window-handler: main window web contents finished loading!`);
@@ -489,19 +492,27 @@ export class WindowHandler {
       }
       logger.info('window-handler: did-finish-load, url: ' + this.url);
 
-      // Injects custom title bar and snack bar css into the webContents
-      await injectStyles(this.mainWindow, this.isCustomTitleBar);
+      if (this.mainWebContents && !this.mainWebContents.isDestroyed()) {
+        // Injects custom title bar and snack bar css into the webContents
+        await injectStyles(this.mainWebContents, this.isCustomTitleBar);
+        this.mainWebContents.send('page-load', {
+          isWindowsOS,
+          locale: i18n.getLocale(),
+          resources: i18n.loadedResources,
+          isMainWindow: true,
+        });
 
-      this.mainWebContents?.send('page-load', {
-        isWindowsOS,
-        locale: i18n.getLocale(),
-        resources: i18n.loadedResources,
-        enableCustomTitleBar: this.isCustomTitleBar,
-        isMainWindow: true,
-      });
-      this.appMenu = new AppMenu();
-      const { permissions } = config.getConfigFields(['permissions']);
-      this.mainWebContents?.send('is-screen-share-enabled', permissions.media);
+        this.appMenu = new AppMenu();
+
+        const { permissions } = config.getConfigFields(['permissions']);
+        this.mainWebContents.send('is-screen-share-enabled', permissions.media);
+
+        // Subscribe events for main view - snack bar
+        mainEvents.subscribeMultipleEvents(
+          MAIN_WEB_CONTENTS_EVENTS,
+          this.mainWebContents,
+        );
+      }
     });
 
     this.mainWebContents.on(
@@ -714,19 +725,18 @@ export class WindowHandler {
       });
     }
 
-    this.mainWebContents?.on('did-finish-load', () => {
+    this.mainWindow.webContents.on('did-finish-load', () => {
       if (!this.url || !this.mainWindow) {
         return;
       }
       logger.info(`finished loading welcome screen.`);
       if (this.url.indexOf('welcome')) {
-        const ssoValue =
+        const ssoValue = !!(
           this.userConfig.url &&
           this.userConfig.url.indexOf('/login/sso/initsso') > -1
-            ? true
-            : false;
+        );
 
-        this.mainWebContents?.send('page-load-welcome', {
+        this.mainWindow.webContents?.send('page-load-welcome', {
           locale: i18n.getLocale(),
           resource: i18n.loadedResources,
         });
@@ -739,7 +749,7 @@ export class WindowHandler {
               )
             : this.userConfig.url;
 
-        this.mainWebContents?.send('welcome', {
+        this.mainWindow.webContents?.send('welcome', {
           url: userConfigUrl || this.startUrl,
           message: '',
           urlValid: !!userConfigUrl,

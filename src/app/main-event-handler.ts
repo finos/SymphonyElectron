@@ -36,11 +36,26 @@ export class MainProcessEvents {
   }
 
   /**
+   * Unsubscribe multiple events for the webContents
+   * @param eventNames
+   * @param webContents
+   */
+  public unsubscribeMultipleEvents(
+    eventNames: string[],
+    webContents: WebContents,
+  ) {
+    eventNames.forEach((e) => this.unsubscribe(e, webContents));
+  }
+
+  /**
    * Subscribe event for the webContents
    * @param eventName
    * @param webContents
    */
   public subscribe(eventName: string, webContents: WebContents) {
+    if (!webContents || webContents.isDestroyed()) {
+      return;
+    }
     const registeredWebContents = this.registeredWebContents.get(eventName);
     if (registeredWebContents) {
       const isRegistered = registeredWebContents.has(webContents);
@@ -60,6 +75,9 @@ export class MainProcessEvents {
    * @param webContents
    */
   public unsubscribe(eventName: string, webContents: WebContents) {
+    if (!webContents || webContents.isDestroyed()) {
+      return;
+    }
     const registeredWebContents = this.registeredWebContents.get(eventName);
     if (registeredWebContents) {
       if (registeredWebContents.has(webContents)) {

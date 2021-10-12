@@ -12,6 +12,7 @@ import { logger } from '../common/logger';
 import { throttle } from '../common/utils';
 import { notification } from '../renderer/notification';
 import { CloudConfigDataTypes, config } from './config-handler';
+import { mainEvents } from './main-event-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 import { showPopupMenu, windowExists } from './window-utils';
 
@@ -97,10 +98,11 @@ const windowMaximized = async (): Promise<void> => {
   }
 };
 
-const throttledWindowChanges = throttle(async () => {
+const throttledWindowChanges = throttle(async (eventName) => {
   await saveWindowSettings();
   await windowMaximized();
   notification.moveNotificationToTop();
+  mainEvents.publish(eventName);
 }, 1000);
 
 const throttledWindowRestore = throttle(async () => {
@@ -303,14 +305,18 @@ export const monitorWindowActions = (window: BrowserWindow): void => {
   eventNames.forEach((event: string) => {
     if (window) {
       // @ts-ignore
-      window.on(event, throttledWindowChanges);
+      window.on(event, () => throttledWindowChanges(event));
     }
   });
-  window.on('enter-full-screen', throttledWindowChanges);
-  window.on('maximize', throttledWindowChanges);
+  window.on('enter-full-screen', () =>
+    throttledWindowChanges('enter-full-screen'),
+  );
+  window.on('maximize', () => throttledWindowChanges('maximize'));
 
-  window.on('leave-full-screen', throttledWindowChanges);
-  window.on('unmaximize', throttledWindowChanges);
+  window.on('leave-full-screen', () =>
+    throttledWindowChanges('leave-full-screen'),
+  );
+  window.on('unmaximize', () => throttledWindowChanges('unmaximize'));
 
   if ((window as ICustomBrowserWindow).winName === apiName.mainWindowName) {
     window.on('restore', throttledWindowRestore);

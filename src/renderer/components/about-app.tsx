@@ -168,7 +168,7 @@ export default class AboutApp extends React.Component<{}, IState> {
     if (data) {
       ipcRenderer.send(apiName.symphonyApi, {
         cmd: apiCmds.aboutAppClipBoardData,
-        clipboard: JSON.stringify(data, null, 4),
+        clipboard: data,
         clipboardType: 'clipboard',
       });
     }
