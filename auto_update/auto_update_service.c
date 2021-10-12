@@ -580,7 +580,11 @@ void service_main( bool* service_is_running ) {
 
 
 int main( int argc, char** argv ) {
-    log_init( true );
+    if( argc >= 2 && stricmp( argv[ 1 ], "test" ) == 0 ) {
+        log_init( true );
+    } else {
+        log_init( false );
+    }
 
     // Debug helpers for install/uninstall
     if( argc >= 2 && stricmp( argv[ 1 ], "install" ) == 0 ) {

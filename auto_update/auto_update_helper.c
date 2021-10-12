@@ -1,7 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #define _CRT_NONSTDC_NO_WARNINGS
 
-#define LOG_TO_CONSOLE_FOR_DEBUGGING
+//#define LOG_TO_CONSOLE_FOR_DEBUGGING
 
 #include <windows.h>
 #include <aclapi.h>
