@@ -71,7 +71,7 @@ describe('about app', () => {
     wrapper.find(copyButtonSelector).simulate('click');
     const expectedData = {
       cmd: apiCmds.aboutAppClipBoardData,
-      clipboard: JSON.stringify(aboutDataMock, null, 4),
+      clipboard: aboutDataMock,
       clipboardType: 'clipboard',
     };
     expect(spyIpc).toBeCalledWith('symphony-api', expectedData);

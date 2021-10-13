@@ -40,6 +40,14 @@ interface IIpcRenderer {
   removeListener(eventName: any, cb: any): void;
   once(eventName: any, cb: any): void;
 }
+interface IWebContents {
+  setWindowOpenHandler(details: any): any;
+  sendSync(event: any, cb: any): any;
+  on(eventName: any, cb: any): void;
+  send(event: any, ...cb: any[]): void;
+  removeListener(eventName: any, cb: any): void;
+  once(eventName: any, cb: any): void;
+}
 interface IPowerMonitor {
   getSystemIdleTime(): void;
 }
@@ -109,6 +117,42 @@ export const powerMonitor: IPowerMonitor = {
 };
 
 export const ipcRenderer: IIpcRenderer = {
+  sendSync: (event, args) => {
+    const listeners = ipcEmitter.listeners(event);
+    if (listeners.length > 0) {
+      const listener = listeners[0];
+      const eventArg = {};
+      listener(eventArg, args);
+      return eventArg;
+    }
+    return null;
+  },
+  send: (event, ...args) => {
+    const senderEvent = {
+      sender: {
+        send: (eventSend, ...arg) => {
+          ipcEmitter.emit(eventSend, ...arg);
+        },
+      },
+      preventDefault: jest.fn(),
+    };
+    ipcEmitter.emit(event, senderEvent, ...args);
+  },
+  on: (eventName, cb) => {
+    ipcEmitter.on(eventName, cb);
+  },
+  removeListener: (eventName, cb) => {
+    ipcEmitter.removeListener(eventName, cb);
+  },
+  once: (eventName, cb) => {
+    ipcEmitter.on(eventName, cb);
+  },
+};
+
+export const webContents: IWebContents = {
+  setWindowOpenHandler: (_details: {}) => {
+    return { action: 'allow' };
+  },
   sendSync: (event, args) => {
     const listeners = ipcEmitter.listeners(event);
     if (listeners.length > 0) {

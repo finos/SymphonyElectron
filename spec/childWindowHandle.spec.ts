@@ -1,8 +1,6 @@
 import { handleChildWindow } from '../src/app/child-window-handler';
-import { config } from '../src/app/config-handler';
-import { windowHandler } from '../src/app/window-handler';
-import { injectStyles } from '../src/app/window-utils';
-import { ipcRenderer } from './__mocks__/electron';
+import { webContents } from './__mocks__/electron';
+import anything = jasmine.anything;
 
 const getMainWindow = {
   isDestroyed: jest.fn(() => false),
@@ -69,52 +67,16 @@ jest.mock('../src/common/logger', () => {
 });
 
 describe('child window handle', () => {
-  const frameName = {};
-  const disposition = 'new-window';
-  const newWinOptions = {
-    webPreferences: jest.fn(),
-    webContents: { ...ipcRenderer, ...getMainWindow, webContents: ipcRenderer },
-  };
+  it('should set open window handler', () => {
+    const spy = jest.spyOn(webContents, 'setWindowOpenHandler');
 
-  it('should call `did-start-loading` correctly on WindowOS', () => {
-    const newWinUrl = 'about:blank';
-    const args = [newWinUrl, frameName, disposition, newWinOptions];
-    const spy = jest.spyOn(getMainWindow, 'setMenuBarVisibility');
-    handleChildWindow(ipcRenderer as any);
-    ipcRenderer.send('new-window', ...args);
-    ipcRenderer.send('did-start-loading');
-    expect(spy).toBeCalledWith(false);
+    handleChildWindow(webContents as any);
+    expect(spy).toBeCalledWith(expect.any(Function));
   });
 
-  it('should call `did-finish-load` correctly on WindowOS', () => {
-    config.getGlobalConfigFields = jest.fn(() => {
-      return {
-        url: 'https://foundation-dev.symphony.com',
-      };
-    });
-    const newWinUrl = 'about:blank';
-    const args = [newWinUrl, frameName, disposition, newWinOptions];
-    const spy = jest.spyOn(newWinOptions.webContents.webContents, 'send');
-    handleChildWindow(ipcRenderer as any);
-    ipcRenderer.send('new-window', ...args);
-    ipcRenderer.send('did-finish-load');
-    expect(spy).lastCalledWith('page-load', {
-      enableCustomTitleBar: false,
-      isMainWindow: false,
-      isWindowsOS: true,
-      locale: 'en-US',
-      origin: 'https://foundation-dev.symphony.com',
-      resources: {},
-    });
-    expect(injectStyles).toBeCalled();
-  });
-
-  it('should call `windowHandler.openUrlInDefaultBrowser` when url in invalid', () => {
-    const newWinUrl = 'invalid';
-    const args = [newWinUrl, frameName, disposition, newWinOptions];
-    const spy = jest.spyOn(windowHandler, 'openUrlInDefaultBrowser');
-    handleChildWindow(ipcRenderer as any);
-    ipcRenderer.send('new-window', ...args);
-    expect(spy).not.toBeCalledWith('invalid');
+  it('should trigger did-create-window', () => {
+    const spy = jest.spyOn(webContents, 'on');
+    handleChildWindow(webContents as any);
+    expect(spy).toBeCalledWith('did-create-window', anything());
   });
 });
