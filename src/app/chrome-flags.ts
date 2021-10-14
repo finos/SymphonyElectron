@@ -94,7 +94,7 @@ export const setChromeFlags = () => {
   });
 
   const { chromeFlags } = config.getConfigFields(['chromeFlags']) as any;
-  app.commandLine.appendArgument(chromeFlags);
+  app.commandLine.appendSwitch(chromeFlags);
   logger.info(`chrome-flags: Appended chrome command line with ${chromeFlags}`);
 };
 
