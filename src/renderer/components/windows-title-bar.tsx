@@ -8,7 +8,6 @@ interface IState {
   title: string;
   isMaximized: boolean;
   isFullScreen: boolean;
-  titleBarHeight: string;
 }
 const TITLE_BAR_NAMESPACE = 'TitleBar';
 
@@ -29,7 +28,6 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
       title: document.title || 'Symphony',
       isFullScreen: false,
       isMaximized: true,
-      titleBarHeight: '32px',
     };
     // Adds borders to the window
     this.addWindowBorders();
@@ -67,10 +65,6 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
         characterData: true,
       });
     }
-
-    setTimeout(() => {
-      this.updateTitleBar();
-    }, 10000);
   }
 
   /**
@@ -88,7 +82,6 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
   public render(): JSX.Element | null {
     const { title, isFullScreen } = this.state;
     const style = { display: isFullScreen ? 'none' : 'flex' };
-    this.updateTitleBar();
 
     return (
       <div
@@ -271,62 +264,6 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
 
     document.body.appendChild(borderBottom);
     document.body.classList.add('window-border');
-  }
-
-  /**
-   * Modifies the client's DOM content
-   */
-  private updateTitleBar(): void {
-    const { isFullScreen, titleBarHeight } = this.state;
-    // TODO: Remove all the below implementation once browserView is finished
-    const contentWrapper = document.getElementById('content-wrapper');
-    const appView = document.getElementsByClassName('jss1')[0] as HTMLElement;
-    const root = document.getElementById('root');
-    const railContainer = document.getElementsByClassName(
-      'ReactRail-container-2',
-    )[0] as HTMLElement;
-    const railList = document.getElementsByClassName(
-      'railList',
-    )[0] as HTMLElement;
-    if (railContainer) {
-      railContainer.style.height = isFullScreen
-        ? '100vh'
-        : `calc(100vh - ${titleBarHeight})`;
-    } else if (railList) {
-      railList.style.height = isFullScreen
-        ? '100vh'
-        : `calc(100vh - ${titleBarHeight})`;
-    }
-    if (!contentWrapper && !root) {
-      document.body.style.marginTop = isFullScreen ? '0px' : titleBarHeight;
-      return;
-    }
-
-    if (root) {
-      const rootChild = root.firstElementChild as HTMLElement;
-      if (rootChild && rootChild.style && rootChild.style.height === '100vh') {
-        rootChild.style.height = isFullScreen
-          ? '100vh'
-          : `calc(100vh - ${titleBarHeight})`;
-      }
-      root.style.height = isFullScreen
-        ? '100vh'
-        : `calc(100vh - ${titleBarHeight})`;
-      root.style.marginTop = isFullScreen ? '0px' : titleBarHeight;
-    } else if (contentWrapper) {
-      contentWrapper.style.marginTop = isFullScreen ? '0px' : titleBarHeight;
-    }
-
-    if (appView) {
-      appView.style.height = isFullScreen
-        ? '100vh'
-        : `calc(100vh - ${titleBarHeight})`;
-    }
-    if (isFullScreen) {
-      document.body.style.removeProperty('margin-top');
-    }
-
-    document.body.classList.add('sda-title-bar');
   }
 
   /**

@@ -405,7 +405,7 @@ export class WindowHandler {
     cleanAppCacheOnCrash(this.mainWindow);
     // loads the main window with url from config/cmd line
     logger.info(`Loading main window with url ${this.url}`);
-    const userAgent = this.getUserAgent(this.mainWindow);
+    const userAgent = this.getUserAgent(this.mainWindow.webContents);
 
     if (
       this.config.isCustomTitleBar === CloudConfigDataTypes.ENABLED &&
@@ -472,7 +472,7 @@ export class WindowHandler {
       this.isMana = false;
       logger.info(`window-handler: main window web contents finished loading!`);
       // early exit if the window has already been destroyed
-      if (!this.mainWindow || !windowExists(this.mainWindow)) {
+      if (!this.mainWebContents || this.mainWebContents.isDestroyed()) {
         logger.info(
           `window-handler: main window web contents destroyed already! exiting`,
         );
@@ -486,7 +486,7 @@ export class WindowHandler {
         );
         logger.info(`Reloading the app to check if it resolves the issue`);
         const url = this.userConfig.url || this.globalConfig.url;
-        const userAgent = this.getUserAgent(this.mainWindow);
+        const userAgent = this.getUserAgent(this.mainWebContents);
         await this.mainWebContents?.loadURL(url, { userAgent });
         return;
       }
@@ -1845,15 +1845,15 @@ export class WindowHandler {
   /**
    * Reloads symphony in case of network failures
    */
-  public reloadSymphony() {
-    if (this.mainWindow && windowExists(this.mainWindow)) {
+  public async reloadSymphony() {
+    if (this.mainWebContents && !this.mainWebContents.isDestroyed()) {
       // If the client is fully loaded, upon network interruption, load that
       if (this.isLoggedIn) {
         logger.info(
           `window-utils: user has logged in, getting back to Symphony app`,
         );
-        const userAgent = this.getUserAgent(this.mainWindow);
-        this.mainWindow.loadURL(
+        const userAgent = this.getUserAgent(this.mainWebContents);
+        await this.mainWebContents.loadURL(
           this.url || this.userConfig.url || this.globalConfig.url,
           { userAgent },
         );
@@ -1863,10 +1863,13 @@ export class WindowHandler {
       logger.info(
         `window-utils: user hasn't logged in yet, loading login page again`,
       );
-      const userAgent = this.getUserAgent(this.mainWindow);
-      this.mainWindow.loadURL(this.userConfig.url || this.globalConfig.url, {
-        userAgent,
-      });
+      const userAgent = this.getUserAgent(this.mainWebContents);
+      await this.mainWebContents.loadURL(
+        this.userConfig.url || this.globalConfig.url,
+        {
+          userAgent,
+        },
+      );
     }
   }
 
@@ -1877,7 +1880,7 @@ export class WindowHandler {
     setTimeout(async () => {
       if (!this.finishedLoading) {
         logger.info(`window-handler: Pod load failed on launch`);
-        if (this.mainWindow && windowExists(this.mainWindow)) {
+        if (this.mainWebContents && !this.mainWebContents.isDestroyed()) {
           const webContentsUrl = this.mainWebContents?.getURL();
           logger.info(
             `window-handler: Current main window url is ${webContentsUrl}.`,
@@ -1885,8 +1888,8 @@ export class WindowHandler {
           const reloadUrl =
             webContentsUrl || this.userConfig.url || this.globalConfig.url;
           logger.info(`window-handler: Trying to reload ${reloadUrl}.`);
-          const userAgent = this.getUserAgent(this.mainWindow);
-          await this.mainWindow.loadURL(reloadUrl, { userAgent });
+          const userAgent = this.getUserAgent(this.mainWebContents);
+          await this.mainWebContents.loadURL(reloadUrl, { userAgent });
           return;
         }
         logger.error(
@@ -2020,7 +2023,7 @@ export class WindowHandler {
   private async switchClient(clientSwitch: ClientSwitchType): Promise<void> {
     logger.info(`window handler: switch to client ${clientSwitch}`);
 
-    if (!this.mainWindow || !windowExists(this.mainWindow)) {
+    if (!this.mainWebContents || this.mainWebContents.isDestroyed()) {
       logger.info(
         `window-handler: switch client - main window web contents destroyed already! exiting`,
       );
@@ -2047,9 +2050,9 @@ export class WindowHandler {
         default:
           this.url = this.globalConfig.url + `?x-km-csrf-token=${csrfToken}`;
       }
-      this.execCmd(this.screenShareIndicatorFrameUtil, []);
-      const userAgent = this.getUserAgent(this.mainWindow);
-      await this.mainWindow.loadURL(this.url, { userAgent });
+      await this.execCmd(this.screenShareIndicatorFrameUtil, []);
+      const userAgent = this.getUserAgent(this.mainWebContents);
+      await this.mainWebContents.loadURL(this.url, { userAgent });
     } catch (e) {
       logger.error(
         `window-handler: failed to switch client because of error ${e}`,
@@ -2136,12 +2139,12 @@ export class WindowHandler {
    * getUserAgent retrieves current window user-agent and updates it
    * depending on global config setup
    * Electron user-agent is removed due to Microsoft Azure not supporting SSO if found - cf SDA-3201
-   * @param mainWindow
+   * @param webContents
    * @returns updated user-agents
    */
-  private getUserAgent(mainWindow: ICustomBrowserWindow): string {
+  private getUserAgent(webContents: WebContents): string {
     const doOverrideUserAgents = !!this.globalConfig.overrideUserAgent;
-    let userAgent = mainWindow.webContents.getUserAgent();
+    let userAgent = webContents.getUserAgent();
     if (doOverrideUserAgents) {
       const electronUserAgentRegex = /Electron/;
       userAgent = userAgent.replace(electronUserAgentRegex, 'ElectronSymphony');

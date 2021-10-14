@@ -696,12 +696,12 @@ export const isSymphonyReachable = (
     const podUrl = `${protocol}//${hostname}`;
     logger.info(`window-utils: checking to see if pod ${podUrl} is reachable!`);
     fetch(podUrl, { method: 'GET' })
-      .then((rsp) => {
+      .then(async (rsp) => {
         if (rsp.status === 200 && windowHandler.isOnline) {
           logger.info(
             `window-utils: pod ${podUrl} is reachable, loading main window!`,
           );
-          windowHandler.reloadSymphony();
+          await windowHandler.reloadSymphony();
           if (networkStatusCheckIntervalId) {
             clearInterval(networkStatusCheckIntervalId);
             networkStatusCheckIntervalId = null;
@@ -731,15 +731,15 @@ export const reloadWindow = (browserWindow: ICustomBrowserWindow) => {
   }
 
   const windowName = browserWindow.winName;
-  const mainView = windowHandler.getMainView();
+  const mainWebContents = windowHandler.getMainWebContents();
   // reload the main window
   if (
     windowName === apiName.mainWindowName &&
-    mainView &&
-    viewExists(mainView)
+    mainWebContents &&
+    !mainWebContents.isDestroyed()
   ) {
     logger.info(`window-utils: reloading the main window`);
-    mainView.webContents.reload();
+    mainWebContents.reload();
 
     windowHandler.closeAllWindows();
 
@@ -747,11 +747,12 @@ export const reloadWindow = (browserWindow: ICustomBrowserWindow) => {
 
     return;
   }
+
   // Send an event to SFE that restarts the pop-out window
-  if (mainView && viewExists(mainView)) {
+  if (mainWebContents && !mainWebContents.isDestroyed()) {
     logger.info(`window-handler: reloading the window`, { windowName });
     const bounds = browserWindow.getBounds();
-    mainView.webContents.send('restart-floater', { windowName, bounds });
+    mainWebContents.send('restart-floater', { windowName, bounds });
   }
 };
 
