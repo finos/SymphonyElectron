@@ -513,3 +513,19 @@ Expected values:
 or
 
     msiexec /i Symphony.msi
+	
+
+	
+-------------------------------------------------------------------
+### CHROME_FLAGS
+
+Expected values:
+
+* A single string containing all flags to be passed to chrome
+  (default is "" )
+
+#### Example
+
+    msiexec /i Symphony.msi CHROME_FLAGS="--debug --debug2 --debug3"
+
+
