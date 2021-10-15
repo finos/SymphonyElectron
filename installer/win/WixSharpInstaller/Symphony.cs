@@ -213,6 +213,7 @@ class Script
             new PublicProperty("POINTER_LOCK", "true"),
             new PublicProperty("USER_DATA_PATH", ""),
             new PublicProperty("OVERRIDE_USER_AGENT", "false"),
+            new PublicProperty("CHROME_FLAGS", ""),
             new Property("MSIINSTALLPERUSER", "1"),
             new Property("PROGRAMSFOLDER", System.Environment.ExpandEnvironmentVariables(@"%PROGRAMFILES%"))
         };
@@ -240,7 +241,7 @@ class Script
             new ElevatedManagedAction(CustomActions.UpdateConfig, Return.check, When.After, Step.InstallFiles, Condition.NOT_BeingRemoved )
             {
                 // The UpdateConfig action needs the built-in property INSTALLDIR as well as most of the custom properties
-                UsesProperties = "INSTALLDIR,POD_URL,CONTEXT_ORIGIN_URL,MINIMIZE_ON_CLOSE,ALWAYS_ON_TOP,AUTO_START,BRING_TO_FRONT,MEDIA,LOCATION,NOTIFICATIONS,MIDI_SYSEX,POINTER_LOCK,FULL_SCREEN,OPEN_EXTERNAL,CUSTOM_TITLE_BAR,DEV_TOOLS_ENABLED,AUTO_LAUNCH_PATH,USER_DATA_PATH,OVERRIDE_USER_AGENT"
+                UsesProperties = "INSTALLDIR,POD_URL,CONTEXT_ORIGIN_URL,MINIMIZE_ON_CLOSE,ALWAYS_ON_TOP,AUTO_START,BRING_TO_FRONT,MEDIA,LOCATION,NOTIFICATIONS,MIDI_SYSEX,POINTER_LOCK,FULL_SCREEN,OPEN_EXTERNAL,CUSTOM_TITLE_BAR,DEV_TOOLS_ENABLED,AUTO_LAUNCH_PATH,USER_DATA_PATH,OVERRIDE_USER_AGENT,CHROME_FLAGS"
             },
 
             // CleanRegistry
@@ -401,6 +402,7 @@ public class CustomActions
             data = ReplaceProperty(data, "isCustomTitleBar", session.Property("CUSTOM_TITLE_BAR"));
             data = ReplaceProperty(data, "autoLaunchPath", FixPathFormat(session.Property("AUTO_LAUNCH_PATH")));
             data = ReplaceProperty(data, "userDataPath", FixPathFormat(session.Property("USER_DATA_PATH")));
+            data = ReplaceProperty(data, "chromeFlags", session.Property("CHROME_FLAGS"));
             data = ReplaceBooleanProperty(data, "pointerLock", session.Property("POINTER_LOCK"));
             data = ReplaceBooleanProperty(data, "openExternal", session.Property("OPEN_EXTERNAL"));
             data = ReplaceBooleanProperty(data, "notifications", session.Property("NOTIFICATIONS"));
