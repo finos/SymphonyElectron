@@ -1021,11 +1021,22 @@ export const loadBrowserViews = async (
       const titleBarBounds = titleBarView.getBounds();
       titleBarView.setBounds({ ...titleBarBounds, ...{ height: 0 } });
 
-      if (!mainView || !viewExists(mainView)) {
+      if (
+        !mainView ||
+        !viewExists(mainView) ||
+        !mainWindow ||
+        !windowExists(mainWindow)
+      ) {
         return;
       }
-      const mainWindowBounds = mainWindow?.getBounds() || mainView.getBounds();
-      mainView.setBounds({ ...mainWindowBounds, ...{ y: 0 } });
+      const mainWindowBounds = mainWindow.getBounds();
+      const mainViewBounds = mainView.getBounds();
+      mainView.setBounds({
+        width: mainWindowBounds.width,
+        height: mainViewBounds.height,
+        x: 0,
+        y: 0,
+      });
     });
     mainWindow?.on('leave-full-screen', () => {
       if (!titleBarView || !viewExists(titleBarView)) {
@@ -1034,11 +1045,21 @@ export const loadBrowserViews = async (
       const titleBarBounds = titleBarView.getBounds();
       titleBarView.setBounds({ ...titleBarBounds, ...{ height: 32 } });
 
-      if (!mainView || !viewExists(mainView)) {
+      if (
+        !mainView ||
+        !viewExists(mainView) ||
+        !mainWindow ||
+        !windowExists(mainWindow)
+      ) {
         return;
       }
-      const mainViewBounds = mainView.getBounds();
-      mainView.setBounds({ ...mainViewBounds, ...{ y: 32 } });
+      const mainWindowBounds = mainWindow.getBounds();
+      mainView.setBounds({
+        width: mainWindowBounds.width,
+        height: mainWindowBounds.height,
+        x: mainWindowBounds.x,
+        y: 32,
+      });
     });
     if (mainWindow?.isMaximized()) {
       mainEvents.publish('maximize');
