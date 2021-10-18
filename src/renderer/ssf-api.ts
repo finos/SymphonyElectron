@@ -1,5 +1,10 @@
 import { ipcRenderer, webFrame } from 'electron';
-import { buildNumber, searchAPIVersion } from '../../package.json';
+import {
+  buildNumber,
+  name,
+  searchAPIVersion,
+  version,
+} from '../../package.json';
 import { IDownloadItem } from '../app/download-handler';
 import {
   apiCmds,
@@ -27,9 +32,6 @@ import { ScreenSnippetBcHandler } from './screen-snippet-bc-handler';
 
 const SUPPORTED_SETTINGS = ['flashing-notifications'];
 const MAIN_WINDOW_NAME = 'main';
-
-// TODO: fetch this from main
-// const os = remote.require('os');
 
 let isAltKey: boolean = false;
 let isMenuOpen: boolean = false;
@@ -245,10 +247,9 @@ export class SSFApi {
    * Method that returns various version info
    */
   public getVersionInfo(): Promise<IVersionInfo> {
-    // TODO: get these values from a single source
-    const appName = 'Symphony'; // remote.app.getName();
-    const appVer = '14.0.0'; // remote.app.getVersion();
-    const cpuArch = ''; // os.arch() || '';
+    const appName = name;
+    const appVer = version;
+    const cpuArch = process.arch || '';
 
     return Promise.resolve({
       containerIdentifier: appName,
