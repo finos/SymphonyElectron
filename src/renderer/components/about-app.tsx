@@ -1,5 +1,6 @@
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
+import { productName } from '../../../package.json';
 import { apiCmds, apiName } from '../../common/api-interface';
 import { i18n } from '../../common/i18n-preload';
 interface IState {
@@ -87,7 +88,7 @@ export default class AboutApp extends React.Component<{}, IState> {
       client,
     } = this.state;
 
-    const appName = 'Symphony';
+    const appName = productName || 'Symphony';
     const copyright = `\xA9 ${new Date().getFullYear()} ${appName}`;
     const podVersion = `${clientVersion} (${buildNumber})`;
     const sdaVersionBuild = `${sdaVersion} (${sdaBuildNumber})`;

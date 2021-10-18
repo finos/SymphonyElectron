@@ -1020,6 +1020,21 @@
             }
           },
         );
+      } else if (window.manaSSF) {
+        window.manaSSF.showScreenSharingIndicator(
+          {
+            stream,
+            displayId,
+          },
+          (event) => {
+            console.log('screen-sharing-indicator callback', event);
+            if (event.type === 'stopRequested') {
+              stream.getVideoTracks().forEach((t) => t.stop());
+              document.getElementById('video').srcObject = null;
+              window.manaSSF.closeScreenSharingIndicator(stream.id);
+            }
+          },
+        );
       } else {
         const success = (data) => {
           if (data.error) {
@@ -1116,6 +1131,8 @@
         const id = downloadedItem.id;
         if (window.ssf) {
           window.ssf.openDownloadedItem(id);
+        } else if (window.manaSSF) {
+          window.manaSSF.openDownloadedItem(id);
         } else {
           postMessage(apiCmds.openDownloadedItem, id);
         }
@@ -1130,6 +1147,8 @@
         const id = downloadedItem.id;
         if (window.ssf) {
           window.ssf.showDownloadedItem(id);
+        } else if (window.manaSSF) {
+          window.manaSSF.showDownloadedItem(id);
         } else {
           postMessage(apiCmds.showDownloadedItem, id);
         }
@@ -1141,6 +1160,8 @@
         downloadedItem = undefined;
         if (window.ssf) {
           window.ssf.clearDownloadedItems();
+        } else if (window.manaSSF) {
+          window.manaSSF.clearDownloadedItems();
         } else {
           postMessage(apiCmds.clearDownloadedItems);
         }
@@ -1149,6 +1170,8 @@
     document.getElementById('restart-app').addEventListener('click', () => {
       if (window.ssf) {
         window.ssf.restartApp();
+      } else if (window.manaSSF) {
+        window.manaSSF.restartApp();
       } else {
         postMessage(apiCmds.restartApp);
       }
