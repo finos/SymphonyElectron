@@ -331,6 +331,8 @@
     openConfigWin.addEventListener('click', function () {
       if (window.ssf) {
         ssf.showNotificationSettings();
+      } else if (window.manaSSF) {
+        window.manaSSF.showNotificationSettings();
       } else {
         postMessage(apiCmds.showNotificationSettings);
       }
@@ -431,6 +433,8 @@
       badgeCount++;
       if (window.ssf) {
         ssf.setBadgeCount(badgeCount);
+      } else if (window.manaSSF) {
+        window.manaSSF.setBadgeCount(badgeCount);
       } else {
         postMessage(apiCmds.setBadgeCount, badgeCount);
       }
@@ -441,6 +445,8 @@
       badgeCount = 0;
       if (window.ssf) {
         ssf.setBadgeCount(0);
+      } else if (window.manaSSF) {
+        window.manaSSF.setBadgeCount(0);
       } else {
         postMessage(apiCmds.setBadgeCount, 0);
       }
@@ -448,21 +454,23 @@
 
     const snippetButton = document.getElementById('snippet');
     snippetButton.addEventListener('click', () => {
-      if (window.ssf) {
-        const gotSnippet = (rsp) => {
-          if (rsp) {
-            if (rsp.type && rsp.type === 'ERROR') {
-              // called when some error occurs during capture
-              alert('error getting snippet' + rsp.message);
-            } else if (rsp.data && rsp.type === 'image/png;base64') {
-              const dataUrl = 'data:' + rsp.type + ',' + rsp.data;
-              const img = document.getElementById('snippet-img');
-              img.src = dataUrl;
-            }
+      const gotSnippet = (rsp) => {
+        if (rsp) {
+          if (rsp.type && rsp.type === 'ERROR') {
+            // called when some error occurs during capture
+            alert('error getting snippet' + rsp.message);
+          } else if (rsp.data && rsp.type === 'image/png;base64') {
+            const dataUrl = 'data:' + rsp.type + ',' + rsp.data;
+            const img = document.getElementById('snippet-img');
+            img.src = dataUrl;
           }
-        };
+        }
+      };
+      if (window.ssf) {
         const screenSnippet = new window.ssf.ScreenSnippet();
         screenSnippet.capture().then(gotSnippet).catch(gotSnippet);
+      } else if (window.manaSSF) {
+        window.manaSSF.openScreenSnippet(gotSnippet);
       } else {
         postMessage(apiCmds.openScreenSnippet);
       }
@@ -473,6 +481,8 @@
       if (window.ssf) {
         const screenSnippet = new window.ssf.ScreenSnippet();
         screenSnippet.cancelCapture();
+      } else if (window.manaSSF) {
+        window.manaSSF.closeScreenSnippet();
       } else {
         postMessage(apiCmds.closeScreenSnippet);
       }
@@ -504,6 +514,8 @@
     front.addEventListener('click', () => {
       if (window.ssf) {
         window.ssf.activate(win.name);
+      } else if (window.manaSSF) {
+        window.manaSSF.activate(win.name);
       } else {
         postMessage(apiCmds.activate, win.name);
       }
@@ -515,6 +527,8 @@
     frontWithoutFocus.addEventListener('click', () => {
       if (window.ssf) {
         window.ssf.bringToFront(win.name, 'notification');
+      } else if (window.manaSSF) {
+        window.manaSSF.bringToFront(win.name, 'notification');
       } else {
         postMessage(apiCmds.bringToFront, {
           windowName: win.name,
@@ -533,6 +547,15 @@
       let cpuArch = document.getElementById('cpu-arch');
       if (window.ssf) {
         ssf.getVersionInfo().then((versionInfo) => {
+          apiVersionInfo.innerText = versionInfo.apiVer;
+          containerIdentifier.innerText = versionInfo.containerIdentifier;
+          version.innerText = versionInfo.containerVer;
+          buildNumber.innerText = versionInfo.buildNumber;
+          searchApiVer.innerText = versionInfo.searchApiVer;
+          cpuArch.innerText = versionInfo.cpuArch;
+        });
+      } else if (window.manaSSF) {
+        window.manaSSF.getVersionInfo().then((versionInfo) => {
           apiVersionInfo.innerText = versionInfo.apiVer;
           containerIdentifier.innerText = versionInfo.containerIdentifier;
           version.innerText = versionInfo.containerVer;
@@ -767,6 +790,8 @@
      */
     if (window.ssf) {
       window.ssf.registerRestartFloater(onRestartFloater);
+    } else if (window.manaSSF) {
+      window.manaSSF.registerRestartFloater(onRestartFloater);
     } else {
       postMessage(apiCmds.registerRestartFloater);
     }
@@ -779,6 +804,9 @@
     activityDetection.addEventListener('click', () => {
       if (window.ssf) {
         window.ssf.registerActivityDetection(5000, activityCallback);
+        startActivityInterval();
+      } else if (window.manaSSF) {
+        window.manaSSF.registerActivityDetection(5000, activityCallback);
         startActivityInterval();
       } else {
         postMessage(apiCmds.registerActivityDetection, 5000);
@@ -850,6 +878,16 @@
             microphonePermission.innerText = mediaPermission.microphone;
             screenPermission.innerText = mediaPermission.screen;
           });
+        } else if (window.manaSSF) {
+          window.manaSSF.checkMediaPermission().then((mediaPermission) => {
+            console.log(
+              'check-media-permission, mediaPermission: ' +
+                JSON.stringify(mediaPermission),
+            );
+            cameraPermission.innerText = mediaPermission.camera;
+            microphonePermission.innerText = mediaPermission.microphone;
+            screenPermission.innerText = mediaPermission.screen;
+          });
         } else {
           postRequest(apiCmds.checkMediaPermission, null, {
             successCallback: (mediaPermission) => {
@@ -878,6 +916,32 @@
     getSources.addEventListener('click', () => {
       if (window.ssf) {
         ssf.getMediaSource(
+          { types: ['window', 'screen'] },
+          function (error, source) {
+            if (error) throw error;
+            navigator.webkitGetUserMedia(
+              {
+                audio: false,
+                video: {
+                  mandatory: {
+                    chromeMediaSource: 'desktop',
+                    chromeMediaSourceId: source.id,
+                    minWidth: 1280,
+                    maxWidth: 1280,
+                    minHeight: 720,
+                    maxHeight: 720,
+                  },
+                },
+              },
+              (stream) => {
+                handleStream(stream, source.display_id);
+              },
+              handleError,
+            );
+          },
+        );
+      } else if (window.manaSSF) {
+        window.manaSSF.getMediaSource(
           { types: ['window', 'screen'] },
           function (error, source) {
             if (error) throw error;

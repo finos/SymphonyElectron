@@ -1,6 +1,8 @@
+import { ipcRenderer } from 'electron';
 import { IAnalyticsData } from '../app/analytics-handler';
 import {
   apiCmds,
+  apiName,
   IBoundsChange,
   ILogMsg,
   INotificationData,
@@ -45,7 +47,7 @@ export class AppBridge {
     return event.source && event.source === window;
   }
 
-  public origin: string;
+  public origin: string = '';
 
   private readonly callbackHandlers = {
     onMessage: (event) => this.handleMessage(event),
@@ -78,15 +80,22 @@ export class AppBridge {
   constructor() {
     // starts with corporate pod and
     // will be updated with the global config url
-    // TODO: use ipc sync to get the origin
-    // const currentWindow = remote.getCurrentWindow();
-    // @ts-ignore
-    // this.origin = currentWindow.origin || '';
-    this.origin = '*'; // DEMO-APP: Comment this line back in only to test demo-app - DO NOT COMMIT
-    if (ssInstance && typeof ssInstance.setBroadcastMessage === 'function') {
-      ssInstance.setBroadcastMessage(this.broadcastMessage);
-    }
-    window.addEventListener('message', this.callbackHandlers.onMessage);
+    ipcRenderer
+      .invoke(apiName.symphonyApi, {
+        cmd: apiCmds.getCurrentOriginUrl,
+      })
+      .then((origin) => {
+        this.origin = origin;
+        // this.origin = '*'; // DEMO-APP: Comment this line back in only to test demo-app - DO NOT COMMIT
+        if (
+          ssInstance &&
+          typeof ssInstance.setBroadcastMessage === 'function'
+        ) {
+          ssInstance.setBroadcastMessage(this.broadcastMessage);
+        }
+        window.addEventListener('message', this.callbackHandlers.onMessage);
+      }) // tslint:disable-next-line:no-console
+      .catch((reason) => console.error(reason));
   }
 
   /**

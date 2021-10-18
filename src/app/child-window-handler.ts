@@ -201,7 +201,7 @@ export const handleChildWindow = (webContents: WebContents): void => {
       const mainWindow = windowHandler.getMainWindow();
       if (!mainWindow || mainWindow.isDestroyed()) {
         logger.info(
-          `child-window-handler: main window is not available / destroyed, not creating child window!`,
+          'child-window-handler: main window is not available / destroyed, not creating child window!',
         );
         return;
       }

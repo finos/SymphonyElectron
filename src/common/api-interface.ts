@@ -53,6 +53,10 @@ export enum apiCmds {
   minimizeMainWindow = 'minimize-main-window',
   maximizeMainWindow = 'maximize-main-window',
   unmaximizeMainWindow = 'unmaximize-main-window',
+  getCurrentOriginUrl = 'get-current-origin-url',
+  isAeroGlassEnabled = 'is-aero-glass-enabled',
+  showScreenSharePermissionDialog = 'show-screen-share-permission-dialog',
+  getMediaAccessStatus = 'get-media-access-status',
 }
 
 export enum apiName {
@@ -96,6 +100,8 @@ export interface IApiArgs {
   filename: string;
   clipboard: string;
   clipboardType: 'clipboard' | 'selection';
+  requestId: number;
+  mediaStatus: IMediaPermission;
 }
 
 export type Themes = 'light' | 'dark';
@@ -202,9 +208,14 @@ export interface IDownloadManager {
 }
 
 export interface IMediaPermission {
-  camera: string;
-  microphone: string;
-  screen: string;
+  camera: 'not-determined' | 'granted' | 'denied' | 'restricted' | 'unknown';
+  microphone:
+    | 'not-determined'
+    | 'granted'
+    | 'denied'
+    | 'restricted'
+    | 'unknown';
+  screen: 'not-determined' | 'granted' | 'denied' | 'restricted' | 'unknown';
 }
 
 export interface ILogMsg {

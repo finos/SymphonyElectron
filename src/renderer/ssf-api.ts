@@ -632,11 +632,13 @@ export class SSFApi {
    * Check media permission
    */
   public async checkMediaPermission(): Promise<IMediaPermission> {
-    // TODO: remove remote module
+    const mediaStatus = (await ipcRenderer.invoke(apiName.symphonyApi, {
+      cmd: apiCmds.getMediaAccessStatus,
+    })) as IMediaPermission;
     return Promise.resolve({
-      camera: 'remote.systemPreferences.getMediaAccessStatus("camera")',
-      microphone: 'remote.systemPreferences.getMediaAccessStatus("microphone")',
-      screen: 'remote.systemPreferences.getMediaAccessStatus("screen")',
+      camera: mediaStatus.camera,
+      microphone: mediaStatus.microphone,
+      screen: mediaStatus.screen,
     });
   }
 

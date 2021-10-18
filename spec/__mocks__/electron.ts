@@ -31,6 +31,7 @@ interface ILoginItemSettings {
 }
 interface IIpcMain {
   on(event: any, cb: any): void;
+  handle(event: any, cb: any): Promise<void>;
   send(event: any, cb: any): void;
 }
 interface IIpcRenderer {
@@ -99,6 +100,10 @@ export const app: IApp = {
 export const ipcMain: IIpcMain = {
   on: (event, cb) => {
     ipcEmitter.on(event, cb);
+  },
+  handle: (event, cb) => {
+    ipcEmitter.on(event, cb);
+    return Promise.resolve();
   },
   send: (event, args) => {
     const senderEvent = {

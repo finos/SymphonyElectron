@@ -92,8 +92,9 @@ export const getSource = async (
      * Setting captureWindow to false returns only screen sources
      * @type {boolean}
      */
-    // TODO: remove remote module
-    captureWindow = false; // remote.systemPreferences.isAeroGlassEnabled();
+    captureWindow = await ipcRenderer.invoke(apiName.symphonyApi, {
+      cmd: apiCmds.isAeroGlassEnabled,
+    });
   }
 
   if (captureWindow) {
@@ -105,24 +106,15 @@ export const getSource = async (
 
   // displays a dialog if media permissions are disable
   if (!isScreenShareEnabled) {
-    // TODO: remove remote module
-    /*const focusedWindow = remote.BrowserWindow.getFocusedWindow();
-    if (focusedWindow && !focusedWindow.isDestroyed()) {
-      remote.dialog.showMessageBox(focusedWindow, {
-        message: `${i18n.t(
-          'Your administrator has disabled sharing your screen. Please contact your admin for help',
-          'Permissions',
-        )()}`,
-        title: `${i18n.t('Permission Denied')()}!`,
-        type: 'error',
-      });
-      callback({
-        name: 'Permission Denied',
-        message: 'Permission Denied',
-        requestId,
-      });
-      return;
-    }*/
+    await ipcRenderer.invoke(apiName.symphonyApi, {
+      cmd: apiCmds.showScreenSharePermissionDialog,
+    });
+    callback({
+      name: 'Permission Denied',
+      message: 'Permission Denied',
+      requestId,
+    });
+    return;
   }
 
   id = getNextId();

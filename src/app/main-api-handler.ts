@@ -1,11 +1,17 @@
-import { BrowserWindow, clipboard, ipcMain } from 'electron';
+import {
+  BrowserWindow,
+  clipboard,
+  dialog,
+  ipcMain,
+  systemPreferences,
+} from 'electron';
 import {
   apiCmds,
   apiName,
   IApiArgs,
   INotificationData,
 } from '../common/api-interface';
-import { LocaleType } from '../common/i18n';
+import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { activityDetection } from './activity-detection';
 import { analytics } from './analytics-handler';
@@ -329,5 +335,61 @@ ipcMain.on(
       default:
         break;
     }
+  },
+);
+
+ipcMain.handle(
+  apiName.symphonyApi,
+  async (event: Electron.IpcMainInvokeEvent, arg: IApiArgs) => {
+    if (
+      !(
+        isValidWindow(BrowserWindow.fromWebContents(event.sender)) ||
+        isValidView(event.sender)
+      )
+    ) {
+      logger.error(
+        `main-api-handler: invalid window try to perform action, ignoring action`,
+        arg.cmd,
+      );
+      return;
+    }
+
+    if (!arg) {
+      return;
+    }
+
+    switch (arg.cmd) {
+      case apiCmds.getCurrentOriginUrl:
+        return windowHandler.getMainWindow()?.origin;
+      case apiCmds.isAeroGlassEnabled:
+        return systemPreferences.isAeroGlassEnabled();
+      case apiCmds.showScreenSharePermissionDialog: {
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+        if (focusedWindow && !focusedWindow.isDestroyed()) {
+          await dialog.showMessageBox(focusedWindow, {
+            message: `${i18n.t(
+              'Your administrator has disabled sharing your screen. Please contact your admin for help',
+              'Permissions',
+            )()}`,
+            title: `${i18n.t('Permission Denied')()}!`,
+            type: 'error',
+          });
+          return;
+        }
+        return;
+      }
+      case apiCmds.getMediaAccessStatus:
+        const camera = systemPreferences.getMediaAccessStatus('camera');
+        const microphone = systemPreferences.getMediaAccessStatus('microphone');
+        const screen = systemPreferences.getMediaAccessStatus('screen');
+        return {
+          camera,
+          microphone,
+          screen,
+        };
+      default:
+        break;
+    }
+    return;
   },
 );
