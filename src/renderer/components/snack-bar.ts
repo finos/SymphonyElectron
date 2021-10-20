@@ -1,5 +1,5 @@
-import { remote } from 'electron';
 import Timer = NodeJS.Timer;
+import { ipcRenderer } from 'electron';
 
 import { i18n } from '../../common/i18n-preload';
 
@@ -17,18 +17,8 @@ export default class SnackBar {
   private snackBar: HTMLElement | null = null;
 
   constructor() {
-    const browserWindow = remote.getCurrentWindow();
-    if (
-      browserWindow &&
-      typeof browserWindow.isDestroyed === 'function' &&
-      !browserWindow.isDestroyed()
-    ) {
-      browserWindow.on('enter-full-screen', this.eventHandlers.onShowSnackBar);
-      browserWindow.on(
-        'leave-full-screen',
-        this.eventHandlers.onRemoveSnackBar,
-      );
-    }
+    ipcRenderer.on('enter-full-screen', this.eventHandlers.onShowSnackBar);
+    ipcRenderer.on('leave-full-screen', this.eventHandlers.onRemoveSnackBar);
   }
 
   /**

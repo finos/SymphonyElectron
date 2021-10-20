@@ -12,6 +12,7 @@ import ScreenSharingFrame from './components/screen-sharing-frame';
 import ScreenSharingIndicator from './components/screen-sharing-indicator';
 import SnippingTool from './components/snipping-tool';
 import Welcome from './components/welcome';
+import WindowsTitleBar from './components/windows-title-bar';
 
 const enum components {
   aboutApp = 'about-app',
@@ -23,6 +24,7 @@ const enum components {
   notificationSettings = 'notification-settings',
   welcome = 'welcome',
   snippingTool = 'snipping-tool',
+  titleBar = 'title-bar',
 }
 
 const loadStyle = (style) => {
@@ -88,6 +90,10 @@ const load = () => {
       document.title = i18n.t('WelcomeText', 'Welcome')();
       loadStyle(components.welcome);
       component = Welcome;
+      break;
+    case components.titleBar:
+      loadStyle(components.titleBar);
+      component = WindowsTitleBar;
       break;
   }
   const element = React.createElement(component);

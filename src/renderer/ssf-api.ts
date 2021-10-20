@@ -1,7 +1,11 @@
-import { ipcRenderer, remote, webFrame } from 'electron';
-import { buildNumber, searchAPIVersion } from '../../package.json';
+import { ipcRenderer, webFrame } from 'electron';
+import {
+  buildNumber,
+  name,
+  searchAPIVersion,
+  version,
+} from '../../package.json';
 import { IDownloadItem } from '../app/download-handler';
-import { ICustomBrowserWindow } from '../app/window-handler';
 import {
   apiCmds,
   apiName,
@@ -23,12 +27,11 @@ import {
 import { i18n, LocaleType } from '../common/i18n-preload';
 import { throttle } from '../common/utils';
 import { getSource } from './desktop-capturer';
-import SSFNotificationHandler from './notification-ssf-hendler';
+import SSFNotificationHandler from './notification-ssf-handler';
 import { ScreenSnippetBcHandler } from './screen-snippet-bc-handler';
 
 const SUPPORTED_SETTINGS = ['flashing-notifications'];
-
-const os = remote.require('os');
+const MAIN_WINDOW_NAME = 'main';
 
 let isAltKey: boolean = false;
 let isMenuOpen: boolean = false;
@@ -161,7 +164,7 @@ const throttledSetZoomLevel = throttle((zoomLevel) => {
 
 let cryptoLib: ICryptoLib | null;
 try {
-  cryptoLib = remote.require('../app/crypto-handler.js').cryptoLibrary;
+  // cryptoLib = remote.require('../app/crypto-handler.js').cryptoLibrary;
 } catch (e) {
   cryptoLib = null;
   // tslint:disable-next-line
@@ -172,7 +175,7 @@ try {
 
 let swiftSearch: any;
 try {
-  swiftSearch = remote.require('swift-search').Search;
+  // swiftSearch = remote.require('swift-search').Search;
 } catch (e) {
   swiftSearch = null;
   // tslint:disable-next-line
@@ -183,7 +186,7 @@ try {
 
 let swiftSearchUtils: any;
 try {
-  swiftSearchUtils = remote.require('swift-search').SearchUtils;
+  // swiftSearchUtils = remote.require('swift-search').SearchUtils;
 } catch (e) {
   swiftSearchUtils = null;
   // tslint:disable-next-line
@@ -244,9 +247,9 @@ export class SSFApi {
    * Method that returns various version info
    */
   public getVersionInfo(): Promise<IVersionInfo> {
-    const appName = remote.app.getName();
-    const appVer = remote.app.getVersion();
-    const cpuArch = os.arch() || '';
+    const appName = name;
+    const appVer = version;
+    const cpuArch = process.arch || '';
 
     return Promise.resolve({
       containerIdentifier: appName,
@@ -481,11 +484,9 @@ export class SSFApi {
    * Opens a modal window to configure notification preference.
    */
   public showNotificationSettings(data: string): void {
-    const windowName = (remote.getCurrentWindow() as ICustomBrowserWindow)
-      .winName;
     local.ipcRenderer.send(apiName.symphonyApi, {
       cmd: apiCmds.showNotificationSettings,
-      windowName,
+      windowName: MAIN_WINDOW_NAME,
       theme: data,
     });
   }
@@ -631,10 +632,13 @@ export class SSFApi {
    * Check media permission
    */
   public async checkMediaPermission(): Promise<IMediaPermission> {
+    const mediaStatus = (await ipcRenderer.invoke(apiName.symphonyApi, {
+      cmd: apiCmds.getMediaAccessStatus,
+    })) as IMediaPermission;
     return Promise.resolve({
-      camera: remote.systemPreferences.getMediaAccessStatus('camera'),
-      microphone: remote.systemPreferences.getMediaAccessStatus('microphone'),
-      screen: remote.systemPreferences.getMediaAccessStatus('screen'),
+      camera: mediaStatus.camera,
+      microphone: mediaStatus.microphone,
+      screen: mediaStatus.screen,
     });
   }
 

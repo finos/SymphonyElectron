@@ -2,7 +2,6 @@ import {
   desktopCapturer,
   DesktopCapturerSource,
   ipcRenderer,
-  remote,
   SourcesOptions,
 } from 'electron';
 
@@ -12,7 +11,6 @@ import {
   NOTIFICATION_WINDOW_TITLE,
 } from '../common/api-interface';
 import { isWindowsOS } from '../common/env';
-import { i18n } from '../common/i18n-preload';
 
 const includes = [''].includes;
 
@@ -94,7 +92,9 @@ export const getSource = async (
      * Setting captureWindow to false returns only screen sources
      * @type {boolean}
      */
-    captureWindow = remote.systemPreferences.isAeroGlassEnabled();
+    captureWindow = await ipcRenderer.invoke(apiName.symphonyApi, {
+      cmd: apiCmds.isAeroGlassEnabled,
+    });
   }
 
   if (captureWindow) {
@@ -106,23 +106,15 @@ export const getSource = async (
 
   // displays a dialog if media permissions are disable
   if (!isScreenShareEnabled) {
-    const focusedWindow = remote.BrowserWindow.getFocusedWindow();
-    if (focusedWindow && !focusedWindow.isDestroyed()) {
-      remote.dialog.showMessageBox(focusedWindow, {
-        message: `${i18n.t(
-          'Your administrator has disabled sharing your screen. Please contact your admin for help',
-          'Permissions',
-        )()}`,
-        title: `${i18n.t('Permission Denied')()}!`,
-        type: 'error',
-      });
-      callback({
-        name: 'Permission Denied',
-        message: 'Permission Denied',
-        requestId,
-      });
-      return;
-    }
+    await ipcRenderer.invoke(apiName.symphonyApi, {
+      cmd: apiCmds.showScreenSharePermissionDialog,
+    });
+    callback({
+      name: 'Permission Denied',
+      message: 'Permission Denied',
+      requestId,
+    });
+    return;
   }
 
   id = getNextId();

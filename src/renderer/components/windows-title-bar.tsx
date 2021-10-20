@@ -1,4 +1,4 @@
-import { ipcRenderer, remote } from 'electron';
+import { ipcRenderer } from 'electron';
 import * as React from 'react';
 
 import { apiCmds, apiName } from '../../common/api-interface';
@@ -8,12 +8,10 @@ interface IState {
   title: string;
   isMaximized: boolean;
   isFullScreen: boolean;
-  titleBarHeight: string;
 }
 const TITLE_BAR_NAMESPACE = 'TitleBar';
 
 export default class WindowsTitleBar extends React.Component<{}, IState> {
-  private readonly window: Electron.BrowserWindow;
   private readonly eventHandlers = {
     onClose: () => this.close(),
     onMaximize: () => this.maximize(),
@@ -26,26 +24,24 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
 
   constructor(props) {
     super(props);
-    this.window = remote.getCurrentWindow();
     this.state = {
       title: document.title || 'Symphony',
-      isFullScreen: this.window.isFullScreen(),
-      isMaximized: this.window.isMaximized(),
-      titleBarHeight: '32px',
+      isFullScreen: false,
+      isMaximized: true,
     };
     // Adds borders to the window
     this.addWindowBorders();
 
     this.renderMaximizeButtons = this.renderMaximizeButtons.bind(this);
     // Event to capture and update icons
-    this.window.on('maximize', () => this.updateState({ isMaximized: true }));
-    this.window.on('unmaximize', () =>
+    ipcRenderer.on('maximize', () => this.updateState({ isMaximized: true }));
+    ipcRenderer.on('unmaximize', () =>
       this.updateState({ isMaximized: false }),
     );
-    this.window.on('enter-full-screen', () =>
+    ipcRenderer.on('enter-full-screen', () =>
       this.updateState({ isFullScreen: true }),
     );
-    this.window.on('leave-full-screen', () =>
+    ipcRenderer.on('leave-full-screen', () =>
       this.updateState({ isFullScreen: false }),
     );
   }
@@ -69,10 +65,6 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
         characterData: true,
       });
     }
-
-    setTimeout(() => {
-      this.updateTitleBar();
-    }, 10000);
   }
 
   /**
@@ -90,7 +82,6 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
   public render(): JSX.Element | null {
     const { title, isFullScreen } = this.state;
     const style = { display: isFullScreen ? 'none' : 'flex' };
-    this.updateTitleBar();
 
     return (
       <div
@@ -214,57 +205,46 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
    * Method that closes the browser window
    */
   public close(): void {
-    if (this.isValidWindow()) {
-      this.window.close();
-    }
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.closeMainWindow,
+    });
   }
 
   /**
    * Method that minimizes the browser window
    */
   public minimize(): void {
-    if (this.isValidWindow()) {
-      this.window.minimize();
-    }
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.minimizeMainWindow,
+    });
   }
 
   /**
    * Method that maximize the browser window
    */
   public maximize(): void {
-    if (this.isValidWindow()) {
-      this.window.maximize();
-      this.setState({ isMaximized: true });
-    }
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.maximizeMainWindow,
+    });
+    this.setState({ isMaximized: true });
   }
 
   /**
    * Method that unmaximize the browser window
    */
   public unmaximize(): void {
-    if (this.isValidWindow()) {
-      this.window.isFullScreen()
-        ? this.window.setFullScreen(false)
-        : this.window.unmaximize();
-    }
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.unmaximizeMainWindow,
+    });
   }
 
   /**
    * Method that popup the application menu
    */
   public showMenu(): void {
-    if (this.isValidWindow()) {
-      ipcRenderer.send(apiName.symphonyApi, {
-        cmd: apiCmds.popupMenu,
-      });
-    }
-  }
-
-  /**
-   * verifies if the this.window is valid and is not destroyed
-   */
-  public isValidWindow(): boolean {
-    return this.window && !this.window.isDestroyed();
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.popupMenu,
+    });
   }
 
   /**
@@ -284,61 +264,6 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
 
     document.body.appendChild(borderBottom);
     document.body.classList.add('window-border');
-  }
-
-  /**
-   * Modifies the client's DOM content
-   */
-  private updateTitleBar(): void {
-    const { isFullScreen, titleBarHeight } = this.state;
-    const contentWrapper = document.getElementById('content-wrapper');
-    const appView = document.getElementsByClassName('jss1')[0] as HTMLElement;
-    const root = document.getElementById('root');
-    const railContainer = document.getElementsByClassName(
-      'ReactRail-container-2',
-    )[0] as HTMLElement;
-    const railList = document.getElementsByClassName(
-      'railList',
-    )[0] as HTMLElement;
-    if (railContainer) {
-      railContainer.style.height = isFullScreen
-        ? '100vh'
-        : `calc(100vh - ${titleBarHeight})`;
-    } else if (railList) {
-      railList.style.height = isFullScreen
-        ? '100vh'
-        : `calc(100vh - ${titleBarHeight})`;
-    }
-    if (!contentWrapper && !root) {
-      document.body.style.marginTop = isFullScreen ? '0px' : titleBarHeight;
-      return;
-    }
-
-    if (root) {
-      const rootChild = root.firstElementChild as HTMLElement;
-      if (rootChild && rootChild.style && rootChild.style.height === '100vh') {
-        rootChild.style.height = isFullScreen
-          ? '100vh'
-          : `calc(100vh - ${titleBarHeight})`;
-      }
-      root.style.height = isFullScreen
-        ? '100vh'
-        : `calc(100vh - ${titleBarHeight})`;
-      root.style.marginTop = isFullScreen ? '0px' : titleBarHeight;
-    } else if (contentWrapper) {
-      contentWrapper.style.marginTop = isFullScreen ? '0px' : titleBarHeight;
-    }
-
-    if (appView) {
-      appView.style.height = isFullScreen
-        ? '100vh'
-        : `calc(100vh - ${titleBarHeight})`;
-    }
-    if (isFullScreen) {
-      document.body.style.removeProperty('margin-top');
-    }
-
-    document.body.classList.add('sda-title-bar');
   }
 
   /**

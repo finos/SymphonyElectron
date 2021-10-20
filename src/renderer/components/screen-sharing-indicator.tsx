@@ -1,6 +1,7 @@
 import classNames from 'classnames';
-import { ipcRenderer, remote } from 'electron';
+import { ipcRenderer } from 'electron';
 import * as React from 'react';
+import { productName } from '../../../package.json';
 
 import { apiCmds, apiName } from '../../common/api-interface';
 import { isMac } from '../../common/env';
@@ -40,6 +41,7 @@ export default class ScreenSharingIndicator extends React.Component<
   public render(): JSX.Element {
     const { id } = this.state;
     const namespace = 'ScreenSharingIndicator';
+    const appName = productName || 'Symphony';
 
     return (
       <div className={classNames('ScreenSharingIndicator', { mac: isMac })}>
@@ -48,9 +50,9 @@ export default class ScreenSharingIndicator extends React.Component<
             .t(
               `You are sharing your screen on {appName}`,
               namespace,
-            )({ appName: remote.app.getName() })
-            .replace(remote.app.getName(), '')}
-          <span className='text-label2'>&nbsp;{remote.app.getName()}</span>
+            )({ appName })
+            .replace(appName, '')}
+          <span className='text-label2'>&nbsp;{appName}</span>
         </span>
         <span className='buttons'>
           <button

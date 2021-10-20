@@ -1,7 +1,7 @@
 ## Prerequisites
 
 ### Windows
-- NodeJS version >= 12.x.y (corresponds to electron 9.x.y)
+- NodeJS version >= 14.x.y (corresponds to electron 14.x.y)
 - Microsoft Visual Studio 2017 Community or Paid (C++ and .NET/C# development tools)
 - Python >= 2.7.1
 - Dot Net 3.5 SP1 or later
@@ -13,7 +13,7 @@
 
 ### Mac
 - Xcode command line tools. Or better, Xcode latest version
-- NodeJS version >= 12.x.y (corresponds to electron 9.x.y)
+- NodeJS version >= 14.x.y (corresponds to electron 14.x.y)
 - [Sudre Packages](http://s.sudre.free.fr/Software/Packages/about.html)
 
 #### Notes
@@ -35,7 +35,7 @@ npm install
 npm run prebuild
 
 # Run against a POD
-cross-env ELECTRON_DEV=true electron . --url=https://corporate.symphony.com
+npm run dev -- --url=https://corporate.symphony.com
 
 # Run the demo app
 npm run demo

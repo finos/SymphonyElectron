@@ -1,11 +1,17 @@
-import { BrowserWindow, ipcMain } from 'electron';
+import {
+  BrowserWindow,
+  clipboard,
+  dialog,
+  ipcMain,
+  systemPreferences,
+} from 'electron';
 import {
   apiCmds,
   apiName,
   IApiArgs,
   INotificationData,
 } from '../common/api-interface';
-import { LocaleType } from '../common/i18n';
+import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { activityDetection } from './activity-detection';
 import { analytics } from './analytics-handler';
@@ -22,6 +28,7 @@ import { activate, handleKeyPress } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 import {
   downloadManagerAction,
+  isValidView,
   isValidWindow,
   sanitize,
   setDataUrl,
@@ -40,7 +47,12 @@ import {
 ipcMain.on(
   apiName.symphonyApi,
   async (event: Electron.IpcMainEvent, arg: IApiArgs) => {
-    if (!isValidWindow(BrowserWindow.fromWebContents(event.sender))) {
+    if (
+      !(
+        isValidWindow(BrowserWindow.fromWebContents(event.sender)) ||
+        isValidView(event.sender)
+      )
+    ) {
       logger.error(
         `main-api-handler: invalid window try to perform action, ignoring action`,
         arg.cmd,
@@ -295,8 +307,89 @@ ipcMain.on(
       case apiCmds.autoUpdate:
         autoUpdate.update(arg.filename);
         break;
+      case apiCmds.aboutAppClipBoardData:
+        if (arg.clipboard && arg.clipboardType) {
+          clipboard.write(
+            { text: JSON.stringify(arg.clipboard, null, 4) },
+            arg.clipboardType,
+          );
+        }
+        break;
+      case apiCmds.closeMainWindow:
+        windowHandler.getMainWindow()?.close();
+        break;
+      case apiCmds.minimizeMainWindow:
+        windowHandler.getMainWindow()?.minimize();
+        break;
+      case apiCmds.maximizeMainWindow:
+        windowHandler.getMainWindow()?.maximize();
+        break;
+      case apiCmds.unmaximizeMainWindow:
+        const mainWindow = windowHandler.getMainWindow();
+        if (mainWindow && windowExists(mainWindow)) {
+          mainWindow.isFullScreen()
+            ? mainWindow.setFullScreen(false)
+            : mainWindow.unmaximize();
+        }
+        break;
       default:
         break;
     }
+  },
+);
+
+ipcMain.handle(
+  apiName.symphonyApi,
+  async (event: Electron.IpcMainInvokeEvent, arg: IApiArgs) => {
+    if (
+      !(
+        isValidWindow(BrowserWindow.fromWebContents(event.sender)) ||
+        isValidView(event.sender)
+      )
+    ) {
+      logger.error(
+        `main-api-handler: invalid window try to perform action, ignoring action`,
+        arg.cmd,
+      );
+      return;
+    }
+
+    if (!arg) {
+      return;
+    }
+
+    switch (arg.cmd) {
+      case apiCmds.getCurrentOriginUrl:
+        return windowHandler.getMainWindow()?.origin;
+      case apiCmds.isAeroGlassEnabled:
+        return systemPreferences.isAeroGlassEnabled();
+      case apiCmds.showScreenSharePermissionDialog: {
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+        if (focusedWindow && !focusedWindow.isDestroyed()) {
+          await dialog.showMessageBox(focusedWindow, {
+            message: `${i18n.t(
+              'Your administrator has disabled sharing your screen. Please contact your admin for help',
+              'Permissions',
+            )()}`,
+            title: `${i18n.t('Permission Denied')()}!`,
+            type: 'error',
+          });
+          return;
+        }
+        return;
+      }
+      case apiCmds.getMediaAccessStatus:
+        const camera = systemPreferences.getMediaAccessStatus('camera');
+        const microphone = systemPreferences.getMediaAccessStatus('microphone');
+        const screen = systemPreferences.getMediaAccessStatus('screen');
+        return {
+          camera,
+          microphone,
+          screen,
+        };
+      default:
+        break;
+    }
+    return;
   },
 );

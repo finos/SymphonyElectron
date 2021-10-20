@@ -2,7 +2,7 @@ import { app, systemPreferences } from 'electron';
 import * as electronDownloader from 'electron-dl';
 import * as shellPath from 'shell-path';
 
-import { isDevEnv, isElectronQA, isLinux, isMac } from '../common/env';
+import { isDevEnv, isLinux, isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
 import { cleanUpAppCache, createAppCacheFile } from './app-cache-handler';
@@ -59,12 +59,6 @@ let isAppAlreadyOpen: boolean = false;
 electronDownloader();
 handlePerformanceSettings();
 setChromeFlags();
-
-// Need this to prevent blank pop-out from 8.x versions
-// Refer - SDA-1877 - https://github.com/electron/electron/issues/18397
-if (!isElectronQA) {
-  app.allowRendererProcessReuse = true;
-}
 
 // Electron sets the default protocol
 if (!isDevEnv) {
