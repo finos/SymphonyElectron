@@ -106,6 +106,7 @@ export interface ICustomBrowserView extends Electron.BrowserView {
 // Default window width & height
 export let DEFAULT_WIDTH: number = 900;
 export let DEFAULT_HEIGHT: number = 900;
+export const TITLE_BAR_HEIGHT: number = 32;
 
 // Timeout on restarting SDA in case it's stuck
 const LISTEN_TIMEOUT: number = 25 * 1000;

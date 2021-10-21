@@ -43,6 +43,7 @@ import {
   DEFAULT_WIDTH,
   ICustomBrowserView,
   ICustomBrowserWindow,
+  TITLE_BAR_HEIGHT,
   windowHandler,
 } from './window-handler';
 
@@ -982,9 +983,15 @@ export const loadBrowserViews = async (
       devTools: isDevEnv,
     },
   }) as ICustomBrowserView;
+  const mainWindowBounds = getBounds(mainWinPos, DEFAULT_WIDTH, DEFAULT_HEIGHT);
   const mainView = new BrowserView({
     ...windowHandler.getMainWindowOpts(),
-    ...getBounds(mainWinPos, DEFAULT_WIDTH, DEFAULT_HEIGHT),
+    ...{
+      width: mainWindowBounds.width,
+      height: mainWindowBounds.height,
+      x: 0,
+      y: TITLE_BAR_HEIGHT,
+    },
   }) as ICustomBrowserView;
 
   mainWindow.addBrowserView(titleBarView);
@@ -1043,7 +1050,10 @@ export const loadBrowserViews = async (
         return;
       }
       const titleBarBounds = titleBarView.getBounds();
-      titleBarView.setBounds({ ...titleBarBounds, ...{ height: 32 } });
+      titleBarView.setBounds({
+        ...titleBarBounds,
+        ...{ height: TITLE_BAR_HEIGHT },
+      });
 
       if (
         !mainView ||
@@ -1058,7 +1068,7 @@ export const loadBrowserViews = async (
         width: mainWindowBounds.width,
         height: mainWindowBounds.height,
         x: mainWindowBounds.x,
-        y: 32,
+        y: TITLE_BAR_HEIGHT,
       });
     });
     if (mainWindow?.isMaximized()) {
@@ -1071,7 +1081,7 @@ export const loadBrowserViews = async (
   await titleBarView.webContents.loadURL(titleBarWindowUrl);
   titleBarView.setBounds({
     ...mainWindow.getBounds(),
-    ...{ x: 0, y: 0, height: 32 },
+    ...{ x: 0, y: 0, height: TITLE_BAR_HEIGHT },
   });
   titleBarView.setAutoResize({
     vertical: false,
@@ -1081,7 +1091,7 @@ export const loadBrowserViews = async (
   });
 
   await mainView.webContents.loadURL(url, { userAgent });
-  mainView.setBounds({ ...mainWindow.getBounds(), ...{ y: 32 } });
+  mainView.setBounds({ ...mainWindow.getBounds(), ...{ y: TITLE_BAR_HEIGHT } });
   mainView.setAutoResize({
     horizontal: true,
     vertical: false,
