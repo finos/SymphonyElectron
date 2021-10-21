@@ -432,7 +432,7 @@ export class WindowHandler {
     this.mainWindow.origin = this.globalConfig.contextOriginUrl || this.url;
 
     // Event needed to hide native menu bar on Windows 10 as we use custom menu bar
-    this.mainView?.webContents.once('did-start-loading', () => {
+    this.mainWebContents.once('did-start-loading', () => {
       logger.info(
         `window-handler: main window web contents started loading for url ${this.mainView?.webContents.getURL()}!`,
       );
@@ -710,7 +710,7 @@ export class WindowHandler {
    * welcome screen for first time installs
    */
   public handleWelcomeScreen() {
-    if (!this.url || !this.mainWindow) {
+    if (!this.url || !this.mainWindow || !this.mainWebContents) {
       return;
     }
 
@@ -726,7 +726,7 @@ export class WindowHandler {
       });
     }
 
-    this.mainWindow.webContents.on('did-finish-load', () => {
+    this.mainWebContents.on('did-finish-load', () => {
       if (!this.url || !this.mainWindow) {
         return;
       }
@@ -737,7 +737,7 @@ export class WindowHandler {
           this.userConfig.url.indexOf('/login/sso/initsso') > -1
         );
 
-        this.mainWindow.webContents?.send('page-load-welcome', {
+        this.mainWebContents?.send('page-load-welcome', {
           locale: i18n.getLocale(),
           resource: i18n.loadedResources,
         });
@@ -750,7 +750,7 @@ export class WindowHandler {
               )
             : this.userConfig.url;
 
-        this.mainWindow.webContents?.send('welcome', {
+        this.mainWebContents?.send('welcome', {
           url: userConfigUrl || this.startUrl,
           message: '',
           urlValid: !!userConfigUrl,
