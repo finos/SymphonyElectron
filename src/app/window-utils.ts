@@ -771,7 +771,18 @@ export const zoomIn = () => {
     return;
   }
 
-  const { webContents } = focusedWindow;
+  let { webContents } = focusedWindow;
+
+  // If the focused window is mainWindow we should use mainWebContents
+  if (
+    (focusedWindow as ICustomBrowserWindow).winName === apiName.mainWindowName
+  ) {
+    const mainWebContents = windowHandler.mainWebContents;
+    if (mainWebContents && !mainWebContents.isDestroyed()) {
+      webContents = mainWebContents;
+    }
+  }
+
   if (windowHandler.isMana) {
     const zoomFactor = webContents.getZoomFactor();
     if (zoomFactor < 1.5) {
@@ -792,8 +803,8 @@ export const zoomIn = () => {
       }
     }
   } else {
-    const currentZoomLevel = focusedWindow.webContents.getZoomLevel();
-    focusedWindow.webContents.setZoomLevel(currentZoomLevel + 0.5);
+    const currentZoomLevel = webContents.getZoomLevel();
+    webContents.setZoomLevel(currentZoomLevel + 0.5);
   }
 };
 
@@ -811,7 +822,18 @@ export const zoomOut = () => {
     return;
   }
 
-  const { webContents } = focusedWindow;
+  let { webContents } = focusedWindow;
+
+  // If the focused window is mainWindow we should use mainWebContents
+  if (
+    (focusedWindow as ICustomBrowserWindow).winName === apiName.mainWindowName
+  ) {
+    const mainWebContents = windowHandler.mainWebContents;
+    if (mainWebContents && !mainWebContents.isDestroyed()) {
+      webContents = mainWebContents;
+    }
+  }
+
   if (windowHandler.isMana) {
     const zoomFactor = webContents.getZoomFactor();
     if (zoomFactor > 0.7) {
@@ -832,8 +854,8 @@ export const zoomOut = () => {
       }
     }
   } else {
-    const currentZoomLevel = focusedWindow.webContents.getZoomLevel();
-    focusedWindow.webContents.setZoomLevel(currentZoomLevel - 0.5);
+    const currentZoomLevel = webContents.getZoomLevel();
+    webContents.setZoomLevel(currentZoomLevel - 0.5);
   }
 };
 
@@ -846,7 +868,17 @@ export const resetZoomLevel = () => {
   if (!focusedWindow || !windowExists(focusedWindow)) {
     return;
   }
-  focusedWindow.webContents.setZoomLevel(0);
+  let { webContents } = focusedWindow;
+  // If the focused window is mainWindow we should use mainWebContents
+  if (
+    (focusedWindow as ICustomBrowserWindow).winName === apiName.mainWindowName
+  ) {
+    const mainWebContents = windowHandler.mainWebContents;
+    if (mainWebContents && !mainWebContents.isDestroyed()) {
+      webContents = mainWebContents;
+    }
+  }
+  webContents.setZoomLevel(0);
 };
 
 /**
@@ -894,7 +926,7 @@ export const updateFeaturesForCloudConfig = async (): Promise<void> => {
     'memoryThreshold',
   ]) as IConfig;
 
-  const mainWindow = windowHandler.getMainWindow();
+  const mainWebContents = windowHandler.getMainWebContents();
 
   // Update Always on top feature
   await updateAlwaysOnTop(
@@ -908,14 +940,14 @@ export const updateFeaturesForCloudConfig = async (): Promise<void> => {
     ? autoLaunchInstance.enableAutoLaunch()
     : autoLaunchInstance.disableAutoLaunch();
 
-  if (mainWindow && windowExists(mainWindow)) {
+  if (mainWebContents && !mainWebContents.isDestroyed()) {
     if (memoryRefresh) {
       logger.info(
         `window-utils: updating the memory threshold`,
         memoryThreshold,
       );
       memoryMonitor.setMemoryThreshold(parseInt(memoryThreshold, 10));
-      mainWindow.webContents.send('initialize-memory-refresh');
+      mainWebContents.send('initialize-memory-refresh');
     }
   }
 };
@@ -934,19 +966,19 @@ export const monitorNetworkInterception = (url: string) => {
     return;
   }
 
-  const mainWindow = windowHandler.getMainWindow();
+  const mainWebContents = windowHandler.getMainWebContents();
   const podUrl = `${protocol}//${hostname}/`;
   logger.info('window-utils: monitoring network interception for url', podUrl);
 
   // Filter applied w.r.t pod url
   const filter = { urls: [podUrl + '*'] };
 
-  if (mainWindow && windowExists(mainWindow)) {
+  if (mainWebContents && !mainWebContents.isDestroyed()) {
     isNetworkMonitorInitialized = true;
-    mainWindow.webContents.session.webRequest.onErrorOccurred(
+    mainWebContents.session.webRequest.onErrorOccurred(
       filter,
       async (details) => {
-        if (!mainWindow || !windowExists(mainWindow)) {
+        if (!mainWebContents || mainWebContents.isDestroyed()) {
           return;
         }
         if (
@@ -957,7 +989,7 @@ export const monitorNetworkInterception = (url: string) => {
             details.error === 'net::ERR_NAME_NOT_RESOLVED')
         ) {
           logger.error(`window-utils: URL failed to load`, details);
-          mainWindow.webContents.send('show-banner', {
+          mainWebContents.send('show-banner', {
             show: true,
             bannerType: 'error',
             url: podUrl,
