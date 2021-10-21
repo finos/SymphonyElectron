@@ -727,7 +727,7 @@ export class WindowHandler {
     }
 
     this.mainWebContents.on('did-finish-load', () => {
-      if (!this.url || !this.mainWindow) {
+      if (!this.url || !this.mainWindow || !this.mainWebContents) {
         return;
       }
       logger.info(`finished loading welcome screen.`);
@@ -737,7 +737,7 @@ export class WindowHandler {
           this.userConfig.url.indexOf('/login/sso/initsso') > -1
         );
 
-        this.mainWebContents?.send('page-load-welcome', {
+        this.mainWebContents.send('page-load-welcome', {
           locale: i18n.getLocale(),
           resource: i18n.loadedResources,
         });
@@ -750,7 +750,7 @@ export class WindowHandler {
               )
             : this.userConfig.url;
 
-        this.mainWebContents?.send('welcome', {
+        this.mainWebContents.send('welcome', {
           url: userConfigUrl || this.startUrl,
           message: '',
           urlValid: !!userConfigUrl,
