@@ -1,6 +1,7 @@
 import { ExecException, execFile } from 'child_process';
 import {
   app,
+  BrowserView,
   BrowserWindow,
   BrowserWindowConstructorOptions,
   crashReporter,
@@ -106,6 +107,8 @@ export interface ICustomBrowserView extends Electron.BrowserView {
 // Default window width & height
 export let DEFAULT_WIDTH: number = 900;
 export let DEFAULT_HEIGHT: number = 900;
+export const DEFAULT_WELCOME_SCREEN_WIDTH: number = 542;
+export const DEFAULT_WELCOME_SCREEN_HEIGHT: number = 333;
 export const TITLE_BAR_HEIGHT: number = 32;
 
 // Timeout on restarting SDA in case it's stuck
@@ -142,7 +145,6 @@ export class WindowHandler {
   public isWebPageLoading: boolean = true;
   public isLoggedIn: boolean = false;
   public screenShareIndicatorFrameUtil: string;
-  public shouldShowWelcomeScreen: boolean = false;
   private readonly defaultPodUrl: string = 'https://[POD].symphony.com';
   private readonly contextIsolation: boolean;
   private readonly backgroundThrottling: boolean;
@@ -155,6 +157,7 @@ export class WindowHandler {
   private loadFailError: string | undefined;
   private mainWindow: ICustomBrowserWindow | null = null;
   private aboutAppWindow: Electron.BrowserWindow | null = null;
+  private welcomeScreenWindow: Electron.BrowserWindow | null = null;
   private screenPickerWindow: Electron.BrowserWindow | null = null;
   private screenSharingIndicatorWindow: Electron.BrowserWindow | null = null;
   private screenSharingFrameWindow: Electron.BrowserWindow | null = null;
@@ -273,7 +276,7 @@ export class WindowHandler {
         JSON.stringify(this.config.mainWinPos),
     );
 
-    let { isFullScreen, isMaximized } = this.config.mainWinPos
+    const { isFullScreen, isMaximized } = this.config.mainWinPos
       ? this.config.mainWinPos
       : { isFullScreen: false, isMaximized: false };
 
@@ -282,35 +285,18 @@ export class WindowHandler {
     );
     logger.info(`window-handler: setting url ${this.url} from config file!`);
 
+    // Get url to load from cmd line or from global config file
+    const urlFromCmd = getCommandLineArgs(process.argv, '--url=', false);
+
+    // Displays welcome screen instead of starting the main application
     if (
       config.isFirstTimeLaunch() &&
-      this.globalConfig.url.indexOf('https://my.symphony.com') >= 0
+      this.globalConfig.url.indexOf('https://my.symphony.com') >= 0 &&
+      urlFromCmd === null
     ) {
-      this.shouldShowWelcomeScreen = true;
       this.url = this.defaultPodUrl;
-      isMaximized = false;
-      isFullScreen = false;
-      DEFAULT_HEIGHT = 333;
-      DEFAULT_WIDTH = 542;
-      this.windowOpts.resizable = false;
-      this.windowOpts.maximizable = false;
-      this.windowOpts.fullscreenable = false;
-
-      if (this.config.mainWinPos && this.config.mainWinPos.height) {
-        this.config.mainWinPos.height = DEFAULT_HEIGHT;
-      }
-
-      if (this.config.mainWinPos && this.config.mainWinPos.width) {
-        this.config.mainWinPos.width = DEFAULT_WIDTH;
-      }
-
-      if (this.config.mainWinPos && this.config.mainWinPos.x) {
-        this.config.mainWinPos.x = undefined;
-      }
-
-      if (this.config.mainWinPos && this.config.mainWinPos.y) {
-        this.config.mainWinPos.y = undefined;
-      }
+      this.showWelcomeScreen();
+      return;
     }
 
     logger.info('window-handler: windowSize: ' + JSON.stringify(windowSize));
@@ -341,8 +327,6 @@ export class WindowHandler {
     );
 
     this.mainWindow.winName = apiName.mainWindowName;
-    // Get url to load from cmd line or from global config file
-    const urlFromCmd = getCommandLineArgs(process.argv, '--url=', false);
 
     if (urlFromCmd) {
       const commandLineUrl = urlFromCmd.substr(6);
@@ -363,12 +347,6 @@ export class WindowHandler {
             `window-handler: setting ${commandLineUrl} from the command line as the main window url.`,
           );
           this.url = commandLineUrl;
-          this.shouldShowWelcomeScreen = false;
-          isMaximized = true;
-          isFullScreen = false;
-          this.mainWindow.resizable = true;
-          this.mainWindow.maximizable = true;
-          this.mainWindow.fullScreenable = true;
         } else {
           logger.info(
             `window-handler: url ${commandLineUrl} from command line is NOT WHITELISTED in the config file.`,
@@ -379,12 +357,6 @@ export class WindowHandler {
           `window-handler: setting ${commandLineUrl} from the command line as the main window url since pod whitelist is empty.`,
         );
         this.url = commandLineUrl;
-        this.shouldShowWelcomeScreen = false;
-        isMaximized = true;
-        isFullScreen = false;
-        this.mainWindow.resizable = true;
-        this.mainWindow.maximizable = true;
-        this.mainWindow.fullScreenable = true;
       }
     }
 
@@ -399,10 +371,6 @@ export class WindowHandler {
     }
 
     this.startUrl = this.url;
-    if (this.shouldShowWelcomeScreen) {
-      this.handleWelcomeScreen();
-    }
-
     cleanAppCacheOnCrash(this.mainWindow);
     // loads the main window with url from config/cmd line
     logger.info(`Loading main window with url ${this.url}`);
@@ -709,60 +677,108 @@ export class WindowHandler {
    * Handles the use case of showing
    * welcome screen for first time installs
    */
-  public handleWelcomeScreen() {
-    if (!this.url || !this.mainWindow || !this.mainWebContents) {
+  public showWelcomeScreen() {
+    if (!this.url) {
       return;
     }
+    const opts: ICustomBrowserWindowConstructorOpts = this.getWindowOpts(
+      {
+        width: DEFAULT_WELCOME_SCREEN_WIDTH,
+        height: DEFAULT_WELCOME_SCREEN_HEIGHT,
+        frame: !this.isCustomTitleBar,
+        alwaysOnTop: isMac,
+        resizable: false,
+        minimizable: false,
+        fullscreenable: false,
+      },
+      {
+        devTools: isDevEnv,
+      },
+    );
 
-    if (this.url.startsWith(this.defaultPodUrl)) {
-      this.url = format({
+    this.welcomeScreenWindow = createComponentWindow('welcome', opts);
+    (this.welcomeScreenWindow as ICustomBrowserWindow).winName =
+      apiName.welcomeScreenName;
+
+    if (
+      this.config.isCustomTitleBar === CloudConfigDataTypes.ENABLED &&
+      isWindowsOS
+    ) {
+      const titleBarView = new BrowserView({
+        webPreferences: {
+          sandbox: !isNodeEnv,
+          nodeIntegration: isNodeEnv,
+          preload: path.join(__dirname, '../renderer/_preload-component.js'),
+          devTools: isDevEnv,
+        },
+      }) as ICustomBrowserView;
+      const titleBarWindowUrl = format({
         pathname: require.resolve('../renderer/react-window.html'),
         protocol: 'file',
         query: {
-          componentName: 'welcome',
+          componentName: 'title-bar',
           locale: i18n.getLocale(),
         },
         slashes: true,
       });
+
+      titleBarView.webContents.once('did-finish-load', async () => {
+        if (!titleBarView || titleBarView.webContents.isDestroyed()) {
+          return;
+        }
+        titleBarView?.webContents.send('page-load', {
+          isWindowsOS,
+          locale: i18n.getLocale(),
+          resource: i18n.loadedResources,
+          isMainWindow: true,
+        });
+      });
+      titleBarView.webContents.loadURL(titleBarWindowUrl);
+      titleBarView.setBounds({
+        x: 0,
+        y: 0,
+        height: TITLE_BAR_HEIGHT,
+        width: DEFAULT_WELCOME_SCREEN_WIDTH,
+      });
+      this.welcomeScreenWindow.setBrowserView(titleBarView);
     }
 
-    this.mainWebContents.on('did-finish-load', () => {
-      if (!this.url || !this.mainWindow || !this.mainWebContents) {
+    this.welcomeScreenWindow.webContents.on('did-finish-load', () => {
+      if (!this.welcomeScreenWindow || this.welcomeScreenWindow.isDestroyed()) {
         return;
       }
       logger.info(`finished loading welcome screen.`);
-      if (this.url.indexOf('welcome')) {
-        const ssoValue = !!(
-          this.userConfig.url &&
-          this.userConfig.url.indexOf('/login/sso/initsso') > -1
-        );
+      const ssoValue = !!(
+        this.userConfig.url &&
+        this.userConfig.url.indexOf('/login/sso/initsso') > -1
+      );
 
-        this.mainWebContents.send('page-load-welcome', {
-          locale: i18n.getLocale(),
-          resource: i18n.loadedResources,
-        });
-        const userConfigUrl =
-          this.userConfig.url &&
-          this.userConfig.url.indexOf('/login/sso/initsso') > -1
-            ? this.userConfig.url.slice(
-                0,
-                this.userConfig.url.indexOf('/login/sso/initsso'),
-              )
-            : this.userConfig.url;
+      this.welcomeScreenWindow.webContents.send('page-load-welcome', {
+        locale: i18n.getLocale(),
+        resource: i18n.loadedResources,
+      });
 
-        this.mainWebContents.send('welcome', {
-          url: userConfigUrl || this.startUrl,
-          message: '',
-          urlValid: !!userConfigUrl,
-          sso: ssoValue,
-        });
-      }
+      const userConfigUrl =
+        this.userConfig.url &&
+        this.userConfig.url.indexOf('/login/sso/initsso') > -1
+          ? this.userConfig.url.slice(
+              0,
+              this.userConfig.url.indexOf('/login/sso/initsso'),
+            )
+          : this.userConfig.url;
+      this.welcomeScreenWindow.webContents.send('welcome', {
+        url: userConfigUrl || this.startUrl,
+        message: '',
+        urlValid: !!userConfigUrl,
+        sso: ssoValue,
+      });
+      this.addWindow(opts.winKey, this.welcomeScreenWindow);
+      this.mainWindow = this.welcomeScreenWindow as ICustomBrowserWindow;
     });
 
-    ipcMain.on('set-pod-url', async (_event, newPodUrl: string) => {
-      await config.updateUserConfig({ url: newPodUrl });
-      app.relaunch();
-      app.exit();
+    this.welcomeScreenWindow.once('closed', () => {
+      this.removeWindow(opts.winKey);
+      this.welcomeScreenWindow = null;
     });
   }
 

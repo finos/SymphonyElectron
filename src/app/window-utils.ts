@@ -254,14 +254,19 @@ export const showBadgeCount = (count: number): void => {
 
   // handle ms windows...
   const mainWindow = windowHandler.getMainWindow();
-  if (!mainWindow || !windowExists(mainWindow)) {
+  const mainWebContents = windowHandler.getMainWebContents();
+  if (!mainWebContents || mainWebContents.isDestroyed()) {
     return;
   }
 
   // get badge img from renderer process, will return
   // img dataUrl in setDataUrl func.
   if (count > 0) {
-    mainWindow.webContents.send('create-badge-data-url', { count });
+    mainWebContents.send('create-badge-data-url', { count });
+    return;
+  }
+
+  if (!mainWindow || !windowExists(mainWindow)) {
     return;
   }
 

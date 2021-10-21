@@ -1,5 +1,6 @@
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
+import { apiCmds, apiName } from '../../common/api-interface';
 import { i18n } from '../../common/i18n-preload';
 
 interface IState {
@@ -107,7 +108,10 @@ export default class Welcome extends React.Component<{}, IState> {
     if (url.endsWith('/')) {
       ssoPath = 'login/sso/initsso';
     }
-    ipcRenderer.send('set-pod-url', sso ? `${url}${ssoPath}` : url);
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.setPodUrl,
+      newPodUrl: sso ? `${url}${ssoPath}` : url,
+    });
   }
 
   /**
