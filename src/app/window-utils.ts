@@ -61,10 +61,7 @@ enum styleNames {
 }
 
 const checkValidWindow = true;
-const { ctWhitelist, mainWinPos } = config.getConfigFields([
-  'ctWhitelist',
-  'mainWinPos',
-]);
+const { ctWhitelist } = config.getConfigFields(['ctWhitelist']);
 
 // Network status check variables
 const networkStatusCheckInterval = 10 * 1000;
@@ -1015,12 +1012,12 @@ export const loadBrowserViews = async (
       devTools: isDevEnv,
     },
   }) as ICustomBrowserView;
-  const mainWindowBounds = getBounds(mainWinPos, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+  const mainWindowBounds = windowHandler.getMainWindow()?.getBounds();
   const mainView = new BrowserView({
     ...windowHandler.getMainWindowOpts(),
     ...{
-      width: mainWindowBounds.width,
-      height: mainWindowBounds.height,
+      width: mainWindowBounds?.width || DEFAULT_WIDTH,
+      height: mainWindowBounds?.height || DEFAULT_HEIGHT,
       x: 0,
       y: TITLE_BAR_HEIGHT,
     },
@@ -1123,7 +1120,12 @@ export const loadBrowserViews = async (
   });
 
   await mainView.webContents.loadURL(url, { userAgent });
-  mainView.setBounds({ ...mainWindow.getBounds(), ...{ y: TITLE_BAR_HEIGHT } });
+  mainView.setBounds({
+    width: mainWindowBounds?.width || DEFAULT_WIDTH,
+    height: mainWindowBounds?.height || DEFAULT_HEIGHT,
+    x: 0,
+    y: TITLE_BAR_HEIGHT,
+  });
   mainView.setAutoResize({
     horizontal: true,
     vertical: false,
