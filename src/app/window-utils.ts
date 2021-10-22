@@ -1056,52 +1056,45 @@ export const loadBrowserViews = async (
     );
 
     mainWindow?.on('enter-full-screen', () => {
-      if (!titleBarView || !viewExists(titleBarView)) {
-        return;
-      }
-      const titleBarBounds = titleBarView.getBounds();
-      titleBarView.setBounds({ ...titleBarBounds, ...{ height: 0 } });
-
       if (
-        !mainView ||
-        !viewExists(mainView) ||
+        !titleBarView ||
+        !viewExists(titleBarView) ||
         !mainWindow ||
         !windowExists(mainWindow)
       ) {
         return;
       }
-      const mainWindowBounds = mainWindow.getBounds();
-      const mainViewBounds = mainView.getBounds();
+      const [width, height] = mainWindow.getSize();
+      titleBarView.setBounds({ x: 0, y: 0, width, height: 0 });
+
+      if (!mainView || !viewExists(mainView)) {
+        return;
+      }
       mainView.setBounds({
-        width: mainWindowBounds.width,
-        height: mainViewBounds.height,
+        width,
+        height,
         x: 0,
         y: 0,
       });
     });
     mainWindow?.on('leave-full-screen', () => {
-      if (!titleBarView || !viewExists(titleBarView)) {
-        return;
-      }
-      const titleBarBounds = titleBarView.getBounds();
-      titleBarView.setBounds({
-        ...titleBarBounds,
-        ...{ height: TITLE_BAR_HEIGHT },
-      });
-
       if (
-        !mainView ||
-        !viewExists(mainView) ||
+        !titleBarView ||
+        !viewExists(titleBarView) ||
         !mainWindow ||
         !windowExists(mainWindow)
       ) {
         return;
       }
-      const mainWindowBounds = mainWindow.getBounds();
+      const [width, height] = mainWindow.getSize();
+      titleBarView.setBounds({ x: 0, y: 0, width, height: TITLE_BAR_HEIGHT });
+      if (!mainView || !viewExists(mainView)) {
+        return;
+      }
       mainView.setBounds({
-        width: mainWindowBounds.width,
-        height: mainWindowBounds.height,
-        x: mainWindowBounds.x,
+        width,
+        height,
+        x: 0,
         y: TITLE_BAR_HEIGHT,
       });
     });
