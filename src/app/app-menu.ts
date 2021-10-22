@@ -550,20 +550,15 @@ export class AppMenu {
   private buildHelpMenu(): Electron.MenuItemConstructorOptions {
     logger.info(`app-menu: building help menu`);
     let showLogsLabel: string = i18n.t('Show Logs in Explorer')();
-    if (isMac) {
-      showLogsLabel = i18n.t('Show Logs in Finder')();
-    }
-    if (isLinux) {
-      showLogsLabel = i18n.t('Show Logs in File Manager')();
-    }
-
     let showCrashesLabel: string = i18n.t('Show crash dump in Explorer')();
     if (isMac) {
+      showLogsLabel = i18n.t('Show Logs in Finder')();
       showCrashesLabel = i18n.t('Show crash dump in Finder')();
-    }
-    if (isLinux) {
+    } else if (isLinux) {
+      showLogsLabel = i18n.t('Show Logs in File Manager')();
       showCrashesLabel = i18n.t('Show crash dump in File Manager')();
     }
+
     const { devToolsEnabled: isDevToolsEnabledCC } = this
       .cloudConfig as IConfig;
 
