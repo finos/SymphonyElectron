@@ -108,19 +108,14 @@ export const collectLogs = (): void => {
  */
 export const packageLogs = (retrievedLogs: ILogs[]): void => {
   const FILE_EXTENSIONS = ['.log'];
-  const MAC_LOGS_PATH = '/Library/Logs/Symphony/';
-  const LINUX_LOGS_PATH = '/.config/Symphony/';
-  const WINDOWS_LOGS_PATH = '\\AppData\\Local\\Symphony\\Symphony\\logs';
-
-  const logsPath = isMac
-    ? MAC_LOGS_PATH
-    : isLinux
-    ? LINUX_LOGS_PATH
-    : WINDOWS_LOGS_PATH;
-  const source = app.getPath('home') + logsPath;
+  const logsPath = app.getPath('logs');
   const focusedWindow = BrowserWindow.getFocusedWindow();
 
-  if (!fs.existsSync(source) && focusedWindow && !focusedWindow.isDestroyed()) {
+  if (
+    !fs.existsSync(logsPath) &&
+    focusedWindow &&
+    !focusedWindow.isDestroyed()
+  ) {
     logger.error(`reports-handler: Can't find any logs to share!`);
     dialog.showMessageBox(focusedWindow, {
       message: i18n.t(`Can't find any logs to share!`)(),
@@ -134,7 +129,7 @@ export const packageLogs = (retrievedLogs: ILogs[]): void => {
   const destination = app.getPath('downloads') + destPath + timestamp + '.zip';
 
   generateArchiveForDirectory(
-    source,
+    logsPath,
     destination,
     FILE_EXTENSIONS,
     retrievedLogs,
