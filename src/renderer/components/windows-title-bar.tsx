@@ -27,7 +27,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
     this.state = {
       title: document.title || 'Symphony',
       isFullScreen: false,
-      isMaximized: true,
+      isMaximized: false,
     };
     // Adds borders to the window
     this.addWindowBorders();

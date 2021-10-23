@@ -1064,18 +1064,22 @@ export const loadBrowserViews = async (
       ) {
         return;
       }
-      const [width, height] = mainWindow.getSize();
-      titleBarView.setBounds({ x: 0, y: 0, width, height: 0 });
+      // Workaround: Need to delay getting the window bounds
+      // to get updated window bounds
+      setTimeout(() => {
+        const [width, height] = mainWindow.getSize();
+        titleBarView.setBounds({ x: 0, y: 0, width, height: 0 });
 
-      if (!mainView || !viewExists(mainView)) {
-        return;
-      }
-      mainView.setBounds({
-        width,
-        height,
-        x: 0,
-        y: 0,
-      });
+        if (!mainView || !viewExists(mainView)) {
+          return;
+        }
+        mainView.setBounds({
+          width,
+          height,
+          x: 0,
+          y: 0,
+        });
+      }, 500);
     });
     mainWindow?.on('leave-full-screen', () => {
       if (
@@ -1086,17 +1090,21 @@ export const loadBrowserViews = async (
       ) {
         return;
       }
-      const [width, height] = mainWindow.getSize();
-      titleBarView.setBounds({ x: 0, y: 0, width, height: TITLE_BAR_HEIGHT });
-      if (!mainView || !viewExists(mainView)) {
-        return;
-      }
-      mainView.setBounds({
-        width,
-        height,
-        x: 0,
-        y: TITLE_BAR_HEIGHT,
-      });
+      // Workaround: Need to delay getting the window bounds
+      // to get updated window bounds
+      setTimeout(() => {
+        const [width, height] = mainWindow.getSize();
+        titleBarView.setBounds({ x: 0, y: 0, width, height: TITLE_BAR_HEIGHT });
+        if (!mainView || !viewExists(mainView)) {
+          return;
+        }
+        mainView.setBounds({
+          width,
+          height,
+          x: 0,
+          y: TITLE_BAR_HEIGHT,
+        });
+      }, 500);
     });
     if (mainWindow?.isMaximized()) {
       mainEvents.publish('maximize');
