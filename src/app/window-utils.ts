@@ -1106,6 +1106,32 @@ export const loadBrowserViews = async (
         });
       }, 500);
     });
+
+    mainWindow?.on('maximize', () => {
+      if (!mainView || !viewExists(mainView)) {
+        return;
+      }
+      const [width, height] = mainWindow.getSize();
+      mainView.setBounds({
+        width,
+        height,
+        x: 0,
+        y: TITLE_BAR_HEIGHT,
+      });
+    });
+    mainWindow?.on('unmaximize', () => {
+      if (!mainView || !viewExists(mainView)) {
+        return;
+      }
+      const [width, height] = mainWindow.getSize();
+      mainView.setBounds({
+        width,
+        height,
+        x: 0,
+        y: TITLE_BAR_HEIGHT,
+      });
+    });
+
     if (mainWindow?.isMaximized()) {
       mainEvents.publish('maximize');
     }
