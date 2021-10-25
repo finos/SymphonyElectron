@@ -1,4 +1,5 @@
 import {
+  app,
   BrowserWindow,
   clipboard,
   dialog,
@@ -152,7 +153,8 @@ ipcMain.on(
         if (
           browserWin &&
           windowExists(browserWin) &&
-          browserWin.winName === apiName.mainWindowName
+          (browserWin.winName === apiName.mainWindowName ||
+            browserWin.winName === apiName.welcomeScreenName)
         ) {
           showPopupMenu({ window: browserWin });
         }
@@ -331,6 +333,11 @@ ipcMain.on(
             ? mainWindow.setFullScreen(false)
             : mainWindow.unmaximize();
         }
+        break;
+      case apiCmds.setPodUrl:
+        await config.updateUserConfig({ url: arg.newPodUrl });
+        app.relaunch();
+        app.exit();
         break;
       default:
         break;

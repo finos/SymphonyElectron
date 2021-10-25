@@ -43,6 +43,7 @@ import {
   DEFAULT_WIDTH,
   ICustomBrowserView,
   ICustomBrowserWindow,
+  TITLE_BAR_HEIGHT,
   windowHandler,
 } from './window-handler';
 
@@ -60,10 +61,7 @@ enum styleNames {
 }
 
 const checkValidWindow = true;
-const { ctWhitelist, mainWinPos } = config.getConfigFields([
-  'ctWhitelist',
-  'mainWinPos',
-]);
+const { ctWhitelist } = config.getConfigFields(['ctWhitelist']);
 
 // Network status check variables
 const networkStatusCheckInterval = 10 * 1000;
@@ -256,14 +254,19 @@ export const showBadgeCount = (count: number): void => {
 
   // handle ms windows...
   const mainWindow = windowHandler.getMainWindow();
-  if (!mainWindow || !windowExists(mainWindow)) {
+  const mainWebContents = windowHandler.getMainWebContents();
+  if (!mainWebContents || mainWebContents.isDestroyed()) {
     return;
   }
 
   // get badge img from renderer process, will return
   // img dataUrl in setDataUrl func.
   if (count > 0) {
-    mainWindow.webContents.send('create-badge-data-url', { count });
+    mainWebContents.send('create-badge-data-url', { count });
+    return;
+  }
+
+  if (!mainWindow || !windowExists(mainWindow)) {
     return;
   }
 
@@ -770,7 +773,18 @@ export const zoomIn = () => {
     return;
   }
 
-  const { webContents } = focusedWindow;
+  let { webContents } = focusedWindow;
+
+  // If the focused window is mainWindow we should use mainWebContents
+  if (
+    (focusedWindow as ICustomBrowserWindow).winName === apiName.mainWindowName
+  ) {
+    const mainWebContents = windowHandler.mainWebContents;
+    if (mainWebContents && !mainWebContents.isDestroyed()) {
+      webContents = mainWebContents;
+    }
+  }
+
   if (windowHandler.isMana) {
     const zoomFactor = webContents.getZoomFactor();
     if (zoomFactor < 1.5) {
@@ -791,8 +805,8 @@ export const zoomIn = () => {
       }
     }
   } else {
-    const currentZoomLevel = focusedWindow.webContents.getZoomLevel();
-    focusedWindow.webContents.setZoomLevel(currentZoomLevel + 0.5);
+    const currentZoomLevel = webContents.getZoomLevel();
+    webContents.setZoomLevel(currentZoomLevel + 0.5);
   }
 };
 
@@ -810,7 +824,18 @@ export const zoomOut = () => {
     return;
   }
 
-  const { webContents } = focusedWindow;
+  let { webContents } = focusedWindow;
+
+  // If the focused window is mainWindow we should use mainWebContents
+  if (
+    (focusedWindow as ICustomBrowserWindow).winName === apiName.mainWindowName
+  ) {
+    const mainWebContents = windowHandler.mainWebContents;
+    if (mainWebContents && !mainWebContents.isDestroyed()) {
+      webContents = mainWebContents;
+    }
+  }
+
   if (windowHandler.isMana) {
     const zoomFactor = webContents.getZoomFactor();
     if (zoomFactor > 0.7) {
@@ -831,8 +856,8 @@ export const zoomOut = () => {
       }
     }
   } else {
-    const currentZoomLevel = focusedWindow.webContents.getZoomLevel();
-    focusedWindow.webContents.setZoomLevel(currentZoomLevel - 0.5);
+    const currentZoomLevel = webContents.getZoomLevel();
+    webContents.setZoomLevel(currentZoomLevel - 0.5);
   }
 };
 
@@ -845,7 +870,17 @@ export const resetZoomLevel = () => {
   if (!focusedWindow || !windowExists(focusedWindow)) {
     return;
   }
-  focusedWindow.webContents.setZoomLevel(0);
+  let { webContents } = focusedWindow;
+  // If the focused window is mainWindow we should use mainWebContents
+  if (
+    (focusedWindow as ICustomBrowserWindow).winName === apiName.mainWindowName
+  ) {
+    const mainWebContents = windowHandler.mainWebContents;
+    if (mainWebContents && !mainWebContents.isDestroyed()) {
+      webContents = mainWebContents;
+    }
+  }
+  webContents.setZoomLevel(0);
 };
 
 /**
@@ -893,7 +928,7 @@ export const updateFeaturesForCloudConfig = async (): Promise<void> => {
     'memoryThreshold',
   ]) as IConfig;
 
-  const mainWindow = windowHandler.getMainWindow();
+  const mainWebContents = windowHandler.getMainWebContents();
 
   // Update Always on top feature
   await updateAlwaysOnTop(
@@ -907,14 +942,14 @@ export const updateFeaturesForCloudConfig = async (): Promise<void> => {
     ? autoLaunchInstance.enableAutoLaunch()
     : autoLaunchInstance.disableAutoLaunch();
 
-  if (mainWindow && windowExists(mainWindow)) {
+  if (mainWebContents && !mainWebContents.isDestroyed()) {
     if (memoryRefresh) {
       logger.info(
         `window-utils: updating the memory threshold`,
         memoryThreshold,
       );
       memoryMonitor.setMemoryThreshold(parseInt(memoryThreshold, 10));
-      mainWindow.webContents.send('initialize-memory-refresh');
+      mainWebContents.send('initialize-memory-refresh');
     }
   }
 };
@@ -933,19 +968,19 @@ export const monitorNetworkInterception = (url: string) => {
     return;
   }
 
-  const mainWindow = windowHandler.getMainWindow();
+  const mainWebContents = windowHandler.getMainWebContents();
   const podUrl = `${protocol}//${hostname}/`;
   logger.info('window-utils: monitoring network interception for url', podUrl);
 
   // Filter applied w.r.t pod url
   const filter = { urls: [podUrl + '*'] };
 
-  if (mainWindow && windowExists(mainWindow)) {
+  if (mainWebContents && !mainWebContents.isDestroyed()) {
     isNetworkMonitorInitialized = true;
-    mainWindow.webContents.session.webRequest.onErrorOccurred(
+    mainWebContents.session.webRequest.onErrorOccurred(
       filter,
       async (details) => {
-        if (!mainWindow || !windowExists(mainWindow)) {
+        if (!mainWebContents || mainWebContents.isDestroyed()) {
           return;
         }
         if (
@@ -956,7 +991,7 @@ export const monitorNetworkInterception = (url: string) => {
             details.error === 'net::ERR_NAME_NOT_RESOLVED')
         ) {
           logger.error(`window-utils: URL failed to load`, details);
-          mainWindow.webContents.send('show-banner', {
+          mainWebContents.send('show-banner', {
             show: true,
             bannerType: 'error',
             url: podUrl,
@@ -982,9 +1017,15 @@ export const loadBrowserViews = async (
       devTools: isDevEnv,
     },
   }) as ICustomBrowserView;
+  const mainWindowBounds = windowHandler.getMainWindow()?.getBounds();
   const mainView = new BrowserView({
     ...windowHandler.getMainWindowOpts(),
-    ...getBounds(mainWinPos, DEFAULT_WIDTH, DEFAULT_HEIGHT),
+    ...{
+      width: mainWindowBounds?.width || DEFAULT_WIDTH,
+      height: mainWindowBounds?.height || DEFAULT_HEIGHT,
+      x: 0,
+      y: TITLE_BAR_HEIGHT,
+    },
   }) as ICustomBrowserView;
 
   mainWindow.addBrowserView(titleBarView);
@@ -1015,52 +1056,82 @@ export const loadBrowserViews = async (
     );
 
     mainWindow?.on('enter-full-screen', () => {
-      if (!titleBarView || !viewExists(titleBarView)) {
-        return;
-      }
-      const titleBarBounds = titleBarView.getBounds();
-      titleBarView.setBounds({ ...titleBarBounds, ...{ height: 0 } });
-
       if (
-        !mainView ||
-        !viewExists(mainView) ||
+        !titleBarView ||
+        !viewExists(titleBarView) ||
         !mainWindow ||
         !windowExists(mainWindow)
       ) {
         return;
       }
-      const mainWindowBounds = mainWindow.getBounds();
-      const mainViewBounds = mainView.getBounds();
-      mainView.setBounds({
-        width: mainWindowBounds.width,
-        height: mainViewBounds.height,
-        x: 0,
-        y: 0,
-      });
+      // Workaround: Need to delay getting the window bounds
+      // to get updated window bounds
+      setTimeout(() => {
+        const [width, height] = mainWindow.getSize();
+        titleBarView.setBounds({ x: 0, y: 0, width, height: 0 });
+
+        if (!mainView || !viewExists(mainView)) {
+          return;
+        }
+        mainView.setBounds({
+          width,
+          height,
+          x: 0,
+          y: 0,
+        });
+      }, 500);
     });
     mainWindow?.on('leave-full-screen', () => {
-      if (!titleBarView || !viewExists(titleBarView)) {
-        return;
-      }
-      const titleBarBounds = titleBarView.getBounds();
-      titleBarView.setBounds({ ...titleBarBounds, ...{ height: 32 } });
-
       if (
-        !mainView ||
-        !viewExists(mainView) ||
+        !titleBarView ||
+        !viewExists(titleBarView) ||
         !mainWindow ||
         !windowExists(mainWindow)
       ) {
         return;
       }
-      const mainWindowBounds = mainWindow.getBounds();
+      // Workaround: Need to delay getting the window bounds
+      // to get updated window bounds
+      setTimeout(() => {
+        const [width, height] = mainWindow.getSize();
+        titleBarView.setBounds({ x: 0, y: 0, width, height: TITLE_BAR_HEIGHT });
+        if (!mainView || !viewExists(mainView)) {
+          return;
+        }
+        mainView.setBounds({
+          width,
+          height,
+          x: 0,
+          y: TITLE_BAR_HEIGHT,
+        });
+      }, 500);
+    });
+
+    mainWindow?.on('maximize', () => {
+      if (!mainView || !viewExists(mainView)) {
+        return;
+      }
+      const [width, height] = mainWindow.getSize();
       mainView.setBounds({
-        width: mainWindowBounds.width,
-        height: mainWindowBounds.height,
-        x: mainWindowBounds.x,
-        y: 32,
+        width,
+        height,
+        x: 0,
+        y: TITLE_BAR_HEIGHT,
       });
     });
+    mainWindow?.on('unmaximize', () => {
+      if (!mainView || !viewExists(mainView)) {
+        return;
+      }
+      const [width, height] = mainWindow.getSize();
+      mainView.setBounds({
+        width,
+        height,
+        x: 0,
+        y: TITLE_BAR_HEIGHT,
+      });
+    });
+
     if (mainWindow?.isMaximized()) {
       mainEvents.publish('maximize');
     }
@@ -1071,7 +1142,7 @@ export const loadBrowserViews = async (
   await titleBarView.webContents.loadURL(titleBarWindowUrl);
   titleBarView.setBounds({
     ...mainWindow.getBounds(),
-    ...{ x: 0, y: 0, height: 32 },
+    ...{ x: 0, y: 0, height: TITLE_BAR_HEIGHT },
   });
   titleBarView.setAutoResize({
     vertical: false,
@@ -1081,7 +1152,12 @@ export const loadBrowserViews = async (
   });
 
   await mainView.webContents.loadURL(url, { userAgent });
-  mainView.setBounds({ ...mainWindow.getBounds(), ...{ y: 32 } });
+  mainView.setBounds({
+    width: mainWindowBounds?.width || DEFAULT_WIDTH,
+    height: mainWindowBounds?.height || DEFAULT_HEIGHT,
+    x: 0,
+    y: TITLE_BAR_HEIGHT,
+  });
   mainView.setAutoResize({
     horizontal: true,
     vertical: false,

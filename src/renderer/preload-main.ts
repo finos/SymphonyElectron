@@ -9,7 +9,6 @@ import DownloadManager from './components/download-manager';
 import MessageBanner from './components/message-banner';
 import NetworkError from './components/network-error';
 import SnackBar from './components/snack-bar';
-import Welcome from './components/welcome';
 import { SSFApi } from './ssf-api';
 
 interface ISSFWindow extends Window {
@@ -150,20 +149,6 @@ ipcRenderer.on('page-load', (_event, { locale, resources }) => {
   // initialize red banner
   banner.initBanner();
   banner.showBanner(false, 'error');
-});
-
-ipcRenderer.on('page-load-welcome', (_event, data) => {
-  const { locale, resource } = data;
-  i18n.setResource(locale, resource);
-
-  document.title = 'Welcome';
-  const styles = document.createElement('link');
-  styles.rel = 'stylesheet';
-  styles.type = 'text/css';
-  styles.href = `./styles/welcome.css`;
-  document.getElementsByTagName('head')[0].appendChild(styles);
-  const element = React.createElement(Welcome);
-  ReactDOM.render(element, document.getElementById('Root'));
 });
 
 // When the window fails to load

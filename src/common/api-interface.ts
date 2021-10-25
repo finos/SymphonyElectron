@@ -57,12 +57,14 @@ export enum apiCmds {
   isAeroGlassEnabled = 'is-aero-glass-enabled',
   showScreenSharePermissionDialog = 'show-screen-share-permission-dialog',
   getMediaAccessStatus = 'get-media-access-status',
+  setPodUrl = 'set-pod-url',
 }
 
 export enum apiName {
   symphonyApi = 'symphony-api',
   mainWindowName = 'main',
   notificationWindowName = 'notification-window',
+  welcomeScreenName = 'welcome-screen',
 }
 
 export const NOTIFICATION_WINDOW_TITLE = 'Notification - Symphony';
@@ -102,6 +104,7 @@ export interface IApiArgs {
   clipboardType: 'clipboard' | 'selection';
   requestId: number;
   mediaStatus: IMediaPermission;
+  newPodUrl: string;
 }
 
 export type Themes = 'light' | 'dark';
