@@ -105,8 +105,8 @@ export interface ICustomBrowserView extends Electron.BrowserView {
 }
 
 // Default window width & height
-export let DEFAULT_WIDTH: number = 900;
-export let DEFAULT_HEIGHT: number = 900;
+export const DEFAULT_WIDTH: number = 900;
+export const DEFAULT_HEIGHT: number = 900;
 export const DEFAULT_WELCOME_SCREEN_WIDTH: number = 542;
 export const DEFAULT_WELCOME_SCREEN_HEIGHT: number = 333;
 export const TITLE_BAR_HEIGHT: number = 32;
@@ -307,11 +307,9 @@ export class WindowHandler {
       logger.info(
         'window-handler: windowSize: sizes: ' + JSON.stringify(sizes),
       );
-      DEFAULT_WIDTH = Number(sizes[0]);
-      DEFAULT_HEIGHT = Number(sizes[1]);
       if (this.config.mainWinPos) {
-        this.config.mainWinPos.width = DEFAULT_WIDTH;
-        this.config.mainWinPos.height = DEFAULT_HEIGHT;
+        this.config.mainWinPos.width = Number(sizes[0]);
+        this.config.mainWinPos.height = Number(sizes[1]);
       }
     }
 
