@@ -6,6 +6,7 @@ import {
   shell,
 } from 'electron';
 
+import { apiName } from '../common/api-interface';
 import { isLinux, isMac, isWindowsOS } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
@@ -597,7 +598,17 @@ export class AppMenu {
                   return;
                 }
                 if (devToolsEnabled) {
-                  focusedWindow.webContents.toggleDevTools();
+                  if (
+                    (focusedWindow as ICustomBrowserWindow).winName ===
+                    apiName.mainWindowName
+                  ) {
+                    const mainWebContents = windowHandler.getMainWebContents();
+                    if (mainWebContents && !mainWebContents.isDestroyed()) {
+                      mainWebContents.toggleDevTools();
+                    }
+                  } else {
+                    focusedWindow.webContents.toggleDevTools();
+                  }
                   return;
                 }
               },
