@@ -301,9 +301,10 @@ ipcMain.on(
         break;
       case apiCmds.setZoomLevel:
         if (typeof arg.zoomLevel === 'number') {
-          windowHandler
-            .getMainWindow()
-            ?.webContents.setZoomFactor(arg.zoomLevel as number);
+          const mainWebContents = windowHandler.getMainWebContents();
+          if (mainWebContents && !mainWebContents.isDestroyed()) {
+            mainWebContents.setZoomFactor(arg.zoomLevel as number);
+          }
         }
         break;
       case apiCmds.autoUpdate:
