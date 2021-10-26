@@ -101,13 +101,13 @@ namespace Symphony
             // backgroundPanel
             //
             this.backgroundPanel.BackColor = System.Drawing.Color.White;
-            this.backgroundPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.backgroundPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.backgroundPanel.Controls.Add(this.closeButton);
             this.backgroundPanel.Controls.Add(this.labelBody);
             this.backgroundPanel.Controls.Add(this.labelHeader);
             this.backgroundPanel.Location = new System.Drawing.Point(-3, -1);
             this.backgroundPanel.Name = "backgroundPanel";
-            this.backgroundPanel.Size = new System.Drawing.Size(502, 309);
+            this.backgroundPanel.Size = new System.Drawing.Size(494, 270);
             this.backgroundPanel.TabIndex = 10;
             //
             // labelBody
@@ -144,6 +144,7 @@ namespace Symphony
             //
             // CloseDialog
             //
+            this.BackColor = System.Drawing.Color.White;
             this.ControlBox = false;
             this.ClientSize = new System.Drawing.Size(494, 361);
             this.Controls.Add(this.backgroundPanel);
@@ -158,9 +159,26 @@ namespace Symphony
             this.backgroundPanel.PerformLayout();
             this.ResumeLayout(false);
 
+            ScaleForDPI(this.backgroundPanel);
+            foreach (System.Windows.Forms.Control control in this.backgroundPanel.Controls)
+            {
+                ScaleForDPI(control);
+            }
+            foreach (System.Windows.Forms.Control control in this.tableLayoutbackgroundPanel.Controls)
+            {
+                ScaleForDPI(control);
+            }
         }
 
         #endregion
+
+        void ScaleForDPI(System.Windows.Forms.Control control)
+        {
+            double factor = (System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width / System.Windows.SystemParameters.PrimaryScreenWidth);
+            control.Location = new System.Drawing.Point((int)(control.Location.X * factor), (int)(control.Location.Y * factor));
+            control.Size = new System.Drawing.Size((int)(control.Size.Width * factor), (int)(control.Size.Height * factor));
+        }
+
         private System.Windows.Forms.Panel bottomPanel;
         private System.Windows.Forms.TableLayoutPanel tableLayoutbackgroundPanel;
         private System.Windows.Forms.Button next;

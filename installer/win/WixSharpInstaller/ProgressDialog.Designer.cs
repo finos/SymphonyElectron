@@ -107,6 +107,7 @@ namespace Symphony
             this.banner.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.banner.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.banner.BackColor = System.Drawing.Color.White;
             this.banner.Location = new System.Drawing.Point(0, 0);
             this.banner.Name = "banner";
@@ -239,10 +240,32 @@ namespace Symphony
             this.tableLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
+            foreach (System.Windows.Forms.Control control in this.Controls)
+            {
+                if (control != this.bottomPanel && control != this.topPanel && control != this.progress)
+                {
+                    ScaleForDPI(control);
+                }
+            }
 
+            ScaleForDPIHeight(this.progress);
         }
 
         #endregion
+
+        void ScaleForDPI(System.Windows.Forms.Control control)
+        {
+            double factor = (System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width / System.Windows.SystemParameters.PrimaryScreenWidth);
+            control.Location = new System.Drawing.Point((int)(control.Location.X * factor), (int)(control.Location.Y * factor));
+            control.Size = new System.Drawing.Size((int)(control.Size.Width * factor), (int)(control.Size.Height * factor));
+        }
+
+        void ScaleForDPIHeight(System.Windows.Forms.Control control)
+        {
+            double factor = (System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width / System.Windows.SystemParameters.PrimaryScreenWidth);
+            control.Location = new System.Drawing.Point(control.Location.X, (int)(control.Location.Y * factor));
+            control.Size = new System.Drawing.Size(control.Size.Width, (int)(control.Size.Height * factor));
+        }
 
         private System.Windows.Forms.PictureBox banner;
         private System.Windows.Forms.Panel topPanel;
