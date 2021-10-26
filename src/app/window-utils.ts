@@ -779,7 +779,7 @@ export const zoomIn = () => {
   if (
     (focusedWindow as ICustomBrowserWindow).winName === apiName.mainWindowName
   ) {
-    const mainWebContents = windowHandler.mainWebContents;
+    const mainWebContents = windowHandler.getMainWebContents();
     if (mainWebContents && !mainWebContents.isDestroyed()) {
       webContents = mainWebContents;
     }
@@ -830,7 +830,7 @@ export const zoomOut = () => {
   if (
     (focusedWindow as ICustomBrowserWindow).winName === apiName.mainWindowName
   ) {
-    const mainWebContents = windowHandler.mainWebContents;
+    const mainWebContents = windowHandler.getMainWebContents();
     if (mainWebContents && !mainWebContents.isDestroyed()) {
       webContents = mainWebContents;
     }
@@ -875,7 +875,7 @@ export const resetZoomLevel = () => {
   if (
     (focusedWindow as ICustomBrowserWindow).winName === apiName.mainWindowName
   ) {
-    const mainWebContents = windowHandler.mainWebContents;
+    const mainWebContents = windowHandler.getMainWebContents();
     if (mainWebContents && !mainWebContents.isDestroyed()) {
       webContents = mainWebContents;
     }

@@ -6,6 +6,7 @@ import {
   shell,
 } from 'electron';
 
+import { apiName } from '../common/api-interface';
 import { isLinux, isMac, isWindowsOS } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
@@ -25,7 +26,13 @@ import {
   updateAlwaysOnTop,
 } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
-import { reloadWindow, windowExists, zoomIn, zoomOut } from './window-utils';
+import {
+  reloadWindow,
+  resetZoomLevel,
+  windowExists,
+  zoomIn,
+  zoomOut,
+} from './window-utils';
 
 export const menuSections = {
   about: 'about',
@@ -57,6 +64,7 @@ const macAccelerator = {
   ...{
     zoomIn: 'CommandOrControl+Plus',
     zoomOut: 'CommandOrControl+-',
+    resetZoom: 'CommandOrControl+0',
   },
 };
 
@@ -338,6 +346,11 @@ export class AppMenu {
       : isWindowsOS || isLinux
       ? windowsAccelerator.zoomOut
       : '';
+    const resetZoomAccelerator = isMac
+      ? macAccelerator.resetZoom
+      : isWindowsOS || isLinux
+      ? windowsAccelerator.resetZoom
+      : '';
     return {
       label: i18n.t('View')(),
       submenu: [
@@ -350,10 +363,12 @@ export class AppMenu {
           label: i18n.t('Reload')(),
         },
         this.buildSeparator(),
-        this.assignRoleOrLabel({
-          role: 'resetZoom',
-          label: i18n.t('Actual Size')(),
-        }),
+        this.zoomMenuBuilder(
+          resetZoomAccelerator,
+          'Actual Size',
+          resetZoomLevel,
+          'resetZoom',
+        ),
         this.zoomMenuBuilder(zoomInAccelerator, 'Zoom In', zoomIn, 'zoomIn'),
         this.zoomMenuBuilder(
           zoomOutAccelerator,
@@ -597,7 +612,17 @@ export class AppMenu {
                   return;
                 }
                 if (devToolsEnabled) {
-                  focusedWindow.webContents.toggleDevTools();
+                  if (
+                    (focusedWindow as ICustomBrowserWindow).winName ===
+                    apiName.mainWindowName
+                  ) {
+                    const mainWebContents = windowHandler.getMainWebContents();
+                    if (mainWebContents && !mainWebContents.isDestroyed()) {
+                      mainWebContents.toggleDevTools();
+                    }
+                  } else {
+                    focusedWindow.webContents.toggleDevTools();
+                  }
                   return;
                 }
               },
@@ -716,16 +741,12 @@ export class AppMenu {
     accelerator: string,
     label: string,
     action: () => void,
-    role: MenuItemConstructorOptions['role'],
+    _role: MenuItemConstructorOptions['role'],
   ): MenuItemConstructorOptions {
-    if (windowHandler.isMana) {
-      return {
-        accelerator,
-        label: i18n.t(label)(),
-        click: (_item, focusedWindow) => (focusedWindow ? action() : null),
-      };
-    } else {
-      return this.assignRoleOrLabel({ role, label: i18n.t(label)() });
-    }
+    return {
+      accelerator,
+      label: i18n.t(label)(),
+      click: (_item, focusedWindow) => (focusedWindow ? action() : null),
+    };
   }
 }
