@@ -6,7 +6,7 @@
 
 ### 14.0.0
 
--
+- [SDA-3354 Remove legacy installer built with advanced installer](https://perzoinc.atlassian.net/browse/SDA-3354)
 
 - 14.0.1 (Electron-version)
 - 93 (Chromium-version)
