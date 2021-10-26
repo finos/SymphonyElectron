@@ -1,6 +1,7 @@
 //css_dir ..\WixSharpToolset\;
 //css_ref System.Core.dll;
 //css_ref System.Windows.Forms.dll;
+//css_ref PresentationFramework.dll;
 //css_ref Wix_bin\SDK\Microsoft.Deployment.WindowsInstaller.dll;
 //css_ref WixSharp.UI.dll;
 //css_imp WelcomeDialog.cs;
@@ -269,6 +270,7 @@ class Script
         // Use our own Symphony branded bitmap for installation dialogs
         project.BannerImage = "Banner.jpg";
         project.BackgroundImage = "Tabloid.jpg";
+        project.ValidateBackgroundImage = false;
 
         // Define our own installation flow, using a mix of custom dialogs (defined in their own files) and built-in dialogs
         project.ManagedUI = new ManagedUI();
