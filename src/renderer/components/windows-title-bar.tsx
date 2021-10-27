@@ -8,6 +8,7 @@ interface IState {
   title: string;
   isMaximized: boolean;
   isFullScreen: boolean;
+  isDisabled: boolean;
 }
 const TITLE_BAR_NAMESPACE = 'TitleBar';
 
@@ -28,6 +29,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
       title: document.title || 'Symphony',
       isFullScreen: false,
       isMaximized: false,
+      isDisabled: false,
     };
     // Adds borders to the window
     this.addWindowBorders();
@@ -44,6 +46,10 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
     ipcRenderer.on('leave-full-screen', () =>
       this.updateState({ isFullScreen: false }),
     );
+
+    ipcRenderer.once('disable-action-button', () => {
+      this.updateState({ isDisabled: true });
+    });
   }
 
   /**
@@ -80,7 +86,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
    * Renders the component
    */
   public render(): JSX.Element | null {
-    const { title, isFullScreen } = this.state;
+    const { title, isFullScreen, isDisabled } = this.state;
     const style = { display: isFullScreen ? 'none' : 'flex' };
 
     return (
@@ -129,6 +135,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
             onClick={this.eventHandlers.onMinimize}
             onContextMenu={this.eventHandlers.onDisableContextMenu}
             onMouseDown={this.handleMouseDown}
+            disabled={isDisabled}
           >
             <svg x='0px' y='0px' viewBox='0 0 14 1'>
               <rect fill='rgba(255, 255, 255, 0.9)' width='14' height='0.6' />
@@ -163,7 +170,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
    * Renders maximize or minimize buttons based on fullscreen state
    */
   public renderMaximizeButtons(): JSX.Element {
-    const { isMaximized } = this.state;
+    const { isMaximized, isDisabled } = this.state;
 
     if (isMaximized) {
       return (
@@ -173,6 +180,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
           onClick={this.eventHandlers.onUnmaximize}
           onContextMenu={this.eventHandlers.onDisableContextMenu}
           onMouseDown={this.handleMouseDown}
+          disabled={isDisabled}
         >
           <svg x='0px' y='0px' viewBox='0 0 14 10.2'>
             <path
@@ -190,6 +198,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
         onClick={this.eventHandlers.onMaximize}
         onContextMenu={this.eventHandlers.onDisableContextMenu}
         onMouseDown={this.handleMouseDown}
+        disabled={isDisabled}
       >
         <svg x='0px' y='0px' viewBox='0 0 14 10.2'>
           <path
@@ -214,6 +223,9 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
    * Method that minimizes the browser window
    */
   public minimize(): void {
+    if (this.state.isDisabled) {
+      return;
+    }
     ipcRenderer.send(apiName.symphonyApi, {
       cmd: apiCmds.minimizeMainWindow,
     });
@@ -223,6 +235,9 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
    * Method that maximize the browser window
    */
   public maximize(): void {
+    if (this.state.isDisabled) {
+      return;
+    }
     ipcRenderer.send(apiName.symphonyApi, {
       cmd: apiCmds.maximizeMainWindow,
     });
@@ -233,6 +248,9 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
    * Method that unmaximize the browser window
    */
   public unmaximize(): void {
+    if (this.state.isDisabled) {
+      return;
+    }
     ipcRenderer.send(apiName.symphonyApi, {
       cmd: apiCmds.unmaximizeMainWindow,
     });
