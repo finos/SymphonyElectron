@@ -57,4 +57,6 @@ position:
   - openExternal: This allows users to control if the SDA can open an external app. If set to "false", SDA won't be able to open external apps. For example, opening a link from within the SDA in a browser tab.
   - autoLaunchPath: This allows administrators to set a custom launch path for an app that can bootstrap the SDA. Typically used by administrators who have their own bootstrapped to open other apps like the SDA.
         - Example can be C:\Program Files\My Bootstrapper\start.exe
+  - chromeFlags: This allows users to set Chromium flags.
+        - Example can be "--enable-logging --log-file=C:\\Users\\YOUR_USER\\Desktop\\chrome_debug.log"
 
