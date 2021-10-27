@@ -62,9 +62,15 @@ ipcMain.on(
     }
 
     if (!arg) {
+      logger.error(
+        'main-api-handler: no args received. Unable to handle API call.',
+      );
       return;
     }
-
+    logger.info(
+      `main-api-handler: API call received - ${arg.cmd} - Properties:`,
+      arg,
+    );
     switch (arg.cmd) {
       case apiCmds.isOnline:
         if (typeof arg.isOnline === 'boolean') {
@@ -282,7 +288,7 @@ ipcMain.on(
           if (appMenu && windowHandler.isMana) {
             appMenu.buildMenu();
           }
-          logger.info('window-handler: isMana: ' + windowHandler.isMana);
+          logger.info('main-api-handler: isMana: ' + windowHandler.isMana);
         }
         break;
       case apiCmds.showNotification:
