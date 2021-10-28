@@ -93,6 +93,7 @@ exports[`windows title bar should render correctly 1`] = `
   >
     <button
       className="title-bar-button"
+      disabled={false}
       onClick={[Function]}
       onContextMenu={[Function]}
       onMouseDown={[Function]}
@@ -116,6 +117,7 @@ exports[`windows title bar should render correctly 1`] = `
   >
     <button
       className="title-bar-button"
+      disabled={false}
       onClick={[Function]}
       onContextMenu={[Function]}
       onMouseDown={[Function]}

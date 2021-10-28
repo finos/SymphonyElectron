@@ -368,13 +368,20 @@ export const updateLocale = async (locale: LocaleType): Promise<void> => {
  * Displays a popup menu
  */
 export const showPopupMenu = (opts: Electron.PopupOptions): void => {
-  const mainWindow = windowHandler.getMainWindow();
-  if (mainWindow && windowExists(mainWindow) && isValidWindow(mainWindow)) {
+  const browserWindow =
+    windowHandler.getMainWindow() || windowHandler.getWelcomeScreenWindow();
+  if (
+    browserWindow &&
+    windowExists(browserWindow) &&
+    isValidWindow(browserWindow)
+  ) {
     const coordinates = windowHandler.isCustomTitleBar
       ? { x: 20, y: 15 }
       : { x: 10, y: -20 };
-    const { x, y } = mainWindow.isFullScreen() ? { x: 0, y: 0 } : coordinates;
-    const popupOpts = { window: mainWindow, x, y };
+    const { x, y } = browserWindow.isFullScreen()
+      ? { x: 0, y: 0 }
+      : coordinates;
+    const popupOpts = { window: browserWindow, x, y };
     const appMenu = windowHandler.appMenu;
     if (appMenu) {
       appMenu.popupMenu({ ...popupOpts, ...opts });
@@ -1004,8 +1011,6 @@ export const monitorNetworkInterception = (url: string) => {
 
 export const loadBrowserViews = async (
   mainWindow: BrowserWindow,
-  url: string,
-  userAgent: string,
 ): Promise<WebContents> => {
   mainWindow.setMenuBarVisibility(false);
 
@@ -1151,7 +1156,6 @@ export const loadBrowserViews = async (
     height: false,
   });
 
-  await mainView.webContents.loadURL(url, { userAgent });
   mainView.setBounds({
     width: mainWindowBounds?.width || DEFAULT_WIDTH,
     height: mainWindowBounds?.height || DEFAULT_HEIGHT,
