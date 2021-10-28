@@ -3,6 +3,8 @@ import { app, session } from 'electron';
 import { logger } from '../common/logger';
 import { CloudConfigDataTypes, config, IConfig } from './config-handler';
 
+const CHROME_FLAG_PREFIX = '--';
+
 // Set default flags
 logger.info(`chrome-flags: Setting mandatory chrome flags`, {
   flag: { 'ssl-version-fallback-min': 'tls1.2' },
@@ -63,39 +65,45 @@ export const setChromeFlags = () => {
       app.commandLine.appendSwitch(key, val);
     }
   }
-
-  const cmdArgs = process.argv;
+  let cmdArgs = process.argv;
+  const { chromeFlags } = config.getGlobalConfigFields(['chromeFlags']) as any;
+  if (chromeFlags?.length) {
+    logger.info(
+      `chrome-flags: found chrome flags in config file: ${chromeFlags}`,
+    );
+    const splittedChromeFlags = chromeFlagsSplitter(chromeFlags);
+    cmdArgs = cmdArgs.concat(splittedChromeFlags);
+  }
   cmdArgs.forEach((arg) => {
     // We need to check if the argument key matches the one
     // in the special args array and return if it does match
     const argSplit = arg.split('=');
     const argKey = argSplit[0];
     const argValue = argSplit[1] && arg.substring(arg.indexOf('=') + 1);
-    if (arg.startsWith('--') && specialArgs.includes(argKey)) {
+    if (arg.startsWith(CHROME_FLAG_PREFIX) && specialArgs.includes(argKey)) {
       return;
     }
 
     // All the chrome flags starts with --
     // So, any other arg (like 'electron' or '.')
     // need to be skipped
-    if (arg.startsWith('--')) {
+    if (arg.startsWith(CHROME_FLAG_PREFIX)) {
       // Since chrome takes values after an equals
       // We split the arg and set it either as
       // just a key, or as a key-value pair
       if (argKey && argValue) {
         app.commandLine.appendSwitch(argKey.substr(2), argValue);
+        logger.info(
+          `chrome-flags: Appended chrome command line switch ${argKey} with value ${argValue}`,
+        );
       } else {
         app.commandLine.appendSwitch(argKey);
+        logger.info(
+          `chrome-flags: Appended chrome command line switch ${argKey}`,
+        );
       }
-      logger.info(
-        `Appended chrome command line switch ${argKey} with value ${argValue}`,
-      );
     }
   });
-
-  const { chromeFlags } = config.getConfigFields(['chromeFlags']) as any;
-  app.commandLine.appendSwitch(chromeFlags);
-  logger.info(`chrome-flags: Appended chrome command line with ${chromeFlags}`);
 };
 
 /**
@@ -115,4 +123,22 @@ export const setSessionProperties = () => {
       customFlags.authServerWhitelist,
     );
   }
+};
+
+/**
+ * Splits a string of concatenated chrome flags into an array of chrome flags.
+ * @param flags Chrome flags provided as a string
+ * @returns An array of chrome flags
+ */
+const chromeFlagsSplitter = (flags: string) => {
+  logger.info('chrome-flags: Parsing flags', flags);
+  const splittedFlags = flags
+    .split(CHROME_FLAG_PREFIX)
+    .filter((chromeFlag: string) => chromeFlag.length)
+    .map(
+      (filteredFlag: string) =>
+        `${CHROME_FLAG_PREFIX}${filteredFlag.trimEnd()}`,
+    );
+  logger.info('chrome-flags: Parsed flags', splittedFlags);
+  return splittedFlags;
 };

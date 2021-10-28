@@ -26,6 +26,11 @@ jest.mock('../src/app/config-handler', () => {
           disableThrottling: 'DISABLED',
         };
       }),
+      getGlobalConfigFields: jest.fn(() => {
+        return {
+          disableThrottling: 'DISABLED',
+        };
+      }),
     },
   };
 });
