@@ -380,13 +380,10 @@ export class WindowHandler {
       this.mainWindow &&
       windowExists(this.mainWindow)
     ) {
-      this.mainWebContents = await loadBrowserViews(
-        this.mainWindow,
-        this.url,
-        userAgent,
-      );
+      this.mainWebContents = await loadBrowserViews(this.mainWindow);
+      this.mainWebContents.loadURL(this.url, { userAgent });
     } else {
-      await this.mainWindow.loadURL(this.url, { userAgent });
+      this.mainWindow.loadURL(this.url, { userAgent });
       this.mainWebContents = this.mainWindow.webContents;
     }
 
@@ -730,6 +727,8 @@ export class WindowHandler {
           resource: i18n.loadedResources,
           isMainWindow: true,
         });
+        // disables action buttons in title bar
+        titleBarView.webContents.send('disable-action-button');
       });
       titleBarView.webContents.loadURL(titleBarWindowUrl);
       titleBarView.setBounds({
@@ -770,6 +769,7 @@ export class WindowHandler {
         urlValid: !!userConfigUrl,
         sso: ssoValue,
       });
+      this.appMenu = new AppMenu();
       this.addWindow(opts.winKey, this.welcomeScreenWindow);
       this.mainWindow = this.welcomeScreenWindow as ICustomBrowserWindow;
     });
@@ -785,6 +785,13 @@ export class WindowHandler {
    */
   public getMainWindow(): ICustomBrowserWindow | null {
     return this.mainWindow;
+  }
+
+  /**
+   * Gets the welcome screen window
+   */
+  public getWelcomeScreenWindow(): BrowserWindow | null {
+    return this.welcomeScreenWindow;
   }
 
   /**
