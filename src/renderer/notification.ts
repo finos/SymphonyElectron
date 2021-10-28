@@ -14,7 +14,7 @@ import {
   NOTIFICATION_WINDOW_TITLE,
   NotificationActions,
 } from '../common/api-interface';
-import { isNodeEnv, isWindowsOS } from '../common/env';
+import { isNodeEnv } from '../common/env';
 import { logger } from '../common/logger';
 import NotificationHandler from './notification-handler';
 
@@ -606,7 +606,7 @@ class Notification extends NotificationHandler {
       height: CONTAINER_HEIGHT,
       alwaysOnTop: true,
       skipTaskbar: true,
-      resizable: isWindowsOS,
+      resizable: false,
       show: false,
       frame: false,
       transparent: true,
