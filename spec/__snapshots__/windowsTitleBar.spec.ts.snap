@@ -4,11 +4,6 @@ exports[`windows title bar should render correctly 1`] = `
 <div
   id="title-bar"
   onDoubleClick={[Function]}
-  style={
-    Object {
-      "display": "flex",
-    }
-  }
 >
   <div
     className="title-bar-button-container"
