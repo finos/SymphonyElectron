@@ -7,7 +7,6 @@ import { i18n } from '../../common/i18n-preload';
 interface IState {
   title: string;
   isMaximized: boolean;
-  isFullScreen: boolean;
   isDisabled: boolean;
 }
 const TITLE_BAR_NAMESPACE = 'TitleBar';
@@ -27,7 +26,6 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
     super(props);
     this.state = {
       title: document.title || 'Symphony',
-      isFullScreen: false,
       isMaximized: false,
       isDisabled: false,
     };
@@ -39,12 +37,6 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
     ipcRenderer.on('maximize', () => this.updateState({ isMaximized: true }));
     ipcRenderer.on('unmaximize', () =>
       this.updateState({ isMaximized: false }),
-    );
-    ipcRenderer.on('enter-full-screen', () =>
-      this.updateState({ isFullScreen: true }),
-    );
-    ipcRenderer.on('leave-full-screen', () =>
-      this.updateState({ isFullScreen: false }),
     );
 
     ipcRenderer.once('disable-action-button', () => {
@@ -86,8 +78,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
    * Renders the component
    */
   public render(): JSX.Element | null {
-    const { title, isFullScreen, isDisabled } = this.state;
-    const style = { display: isFullScreen ? 'none' : 'flex' };
+    const { title, isDisabled } = this.state;
 
     return (
       <div
@@ -97,7 +88,6 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
             ? this.eventHandlers.onUnmaximize
             : this.eventHandlers.onMaximize
         }
-        style={style}
       >
         <div className='title-bar-button-container'>
           <button
