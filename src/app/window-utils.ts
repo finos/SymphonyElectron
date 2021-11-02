@@ -1109,6 +1109,11 @@ export const loadBrowserViews = async (
           x: 0,
           y: TITLE_BAR_HEIGHT,
         });
+        // Workaround as electron does not resize devtools automatically
+        if (mainView.webContents.isDevToolsOpened()) {
+          mainView.webContents.toggleDevTools();
+          mainView.webContents.toggleDevTools();
+        }
       }, 500);
     });
 
@@ -1135,6 +1140,11 @@ export const loadBrowserViews = async (
         x: 0,
         y: TITLE_BAR_HEIGHT,
       });
+      // Workaround as electron does not resize devtools automatically
+      if (mainView.webContents.isDevToolsOpened()) {
+        mainView.webContents.toggleDevTools();
+        mainView.webContents.toggleDevTools();
+      }
     });
 
     if (mainWindow?.isMaximized()) {
