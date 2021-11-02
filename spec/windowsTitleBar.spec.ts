@@ -17,8 +17,6 @@ describe('windows title bar', () => {
   const apiName = 'symphony-api';
   const maximizeEventLabel = 'maximize';
   const unmaximizeEventLabel = 'unmaximize';
-  const enterFullScreenEventLabel = 'enter-full-screen';
-  const leaveFullScreenEventLabel = 'leave-full-screen';
 
   it('should render correctly', () => {
     const wrapper = shallow(React.createElement(WindowsTitleBar));
@@ -33,16 +31,6 @@ describe('windows title bar', () => {
     expect(spy).toBeCalled();
     expect(spy).nthCalledWith(1, maximizeEventLabel, expect.any(Function));
     expect(spy).nthCalledWith(2, unmaximizeEventLabel, expect.any(Function));
-    expect(spy).nthCalledWith(
-      3,
-      enterFullScreenEventLabel,
-      expect.any(Function),
-    );
-    expect(spy).nthCalledWith(
-      4,
-      leaveFullScreenEventLabel,
-      expect.any(Function),
-    );
   });
 
   it('should call `close` correctly', () => {
