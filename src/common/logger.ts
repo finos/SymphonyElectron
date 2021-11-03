@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron';
+import { app } from 'electron';
 import electronLog, { LogLevel, transports } from 'electron-log';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -251,17 +251,7 @@ class Logger {
       return;
     }
 
-    if (this.loggerWindow) {
-      const browserWindow = BrowserWindow.fromWebContents(this.loggerWindow);
-      if (
-        !(
-          !!browserWindow &&
-          typeof browserWindow.isDestroyed === 'function' &&
-          !browserWindow.isDestroyed()
-        )
-      ) {
-        return;
-      }
+    if (this.loggerWindow && !this.loggerWindow.isDestroyed()) {
       this.loggerWindow.send('log', {
         msgs: [logMsg],
         logLevel: this.desiredLogLevel,
