@@ -7,6 +7,7 @@ import {
   crashReporter,
   DesktopCapturerSource,
   dialog,
+  Event,
   globalShortcut,
   ipcMain,
   RenderProcessGoneDetails,
@@ -432,9 +433,18 @@ export class WindowHandler {
       });
     });
 
-    this.mainWindow.once('ready-to-show', (event: Electron.Event) => {
+    this.mainWindow.once('ready-to-show', (event: Event) => {
       logger.info(`window-handler: Main Window ready to show: ${event}`);
     });
+
+    this.mainWebContents.on(
+      'did-fail-load',
+      (_, errorCode: number, errorDescription: string) => {
+        logger.error(
+          `window-handler: Fail loading - Error code: ${errorCode}. Error desscription: ${errorDescription}`,
+        );
+      },
+    );
 
     this.mainWebContents.on('did-finish-load', async () => {
       // reset to false when the client reloads
