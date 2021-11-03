@@ -61,11 +61,11 @@ class MemoryMonitor {
    * Validates the predefined conditions and refreshes the client
    */
   private validateMemory(): void {
-    logger.info(`memory-monitor: validating memory refresh conditions`);
+    logger.info('memory-monitor: validating memory refresh conditions');
     const { memoryRefresh } = config.getConfigFields(['memoryRefresh']);
     if (memoryRefresh !== CloudConfigDataTypes.ENABLED) {
       logger.info(
-        `memory-monitor: memory reload is disabled in the config, not going to refresh!`,
+        'memory-monitor: memory reload is disabled in the config, not going to refresh!',
       );
       return;
     }
@@ -77,18 +77,17 @@ class MemoryMonitor {
       ? this.memoryInfo && this.memoryInfo.private
       : this.memoryInfo && this.memoryInfo.residentSet;
     logger.info(
-      `memory-monitor: Checking different conditions to see if we should auto reload the app`,
+      'memory-monitor: Checking different conditions to see if we should auto reload the app',
     );
 
-    logger.info(`memory-monitor: Is in meeting: `, this.isInMeeting);
-    logger.info(`memory-monitor: Is Network online: `, windowHandler.isOnline);
-    logger.info(`memory-monitor: Memory consumption: `, memoryConsumption);
-    logger.info(`memory-monitor: Idle Time: `, idleTime);
-    logger.info(`memory-monitor: Last Reload time: `, this.lastReloadTime);
-
+    logger.info('memory-monitor: Is in meeting: ', this.isInMeeting);
+    logger.info('memory-monitor: Is Network online: ', windowHandler.isOnline);
+    logger.info('memory-monitor: Memory consumption: ', memoryConsumption);
+    logger.info('memory-monitor: Idle Time: ', idleTime);
+    logger.info('memory-monitor: Last Reload time: ', this.lastReloadTime);
     if (this.isInMeeting) {
       logger.info(
-        `memory-monitor: NOT RELOADING -> User is currently in a meeting. Meeting status from client: `,
+        'memory-monitor: NOT RELOADING -> User is currently in a meeting. Meeting status from client: ',
         this.isInMeeting,
       );
       return;
@@ -96,7 +95,7 @@ class MemoryMonitor {
 
     if (!windowHandler.isOnline) {
       logger.info(
-        `memory-monitor: NOT RELOADING -> Not connected to network. Network status: `,
+        'memory-monitor: NOT RELOADING -> Not connected to network. Network status: ',
         windowHandler.isOnline,
       );
       return;
@@ -111,15 +110,14 @@ class MemoryMonitor {
 
     if (!(idleTime > this.maxIdleTime)) {
       logger.info(
-        `memory-monitor: NOT RELOADING -> User is not idle for: `,
+        'memory-monitor: NOT RELOADING -> User is not idle for: ',
         idleTime,
       );
-      return;
     }
 
     if (!this.canReload) {
       logger.info(
-        `memory-monitor: NOT RELOADING -> Already refreshed at: `,
+        'memory-monitor: NOT RELOADING -> Already refreshed at: ',
         this.lastReloadTime,
       );
       return;
@@ -128,22 +126,36 @@ class MemoryMonitor {
     const mainWindow = windowHandler.getMainWindow();
     if (!(mainWindow && windowExists(mainWindow))) {
       logger.info(
-        `memory-monitor: NOT RELOADING -> Main window doesn't exist!`,
+        "memory-monitor: NOT RELOADING -> Main window doesn't exist!",
       );
       return;
     }
 
     logger.info(
-      `memory-monitor: RELOADING -> auto reloading the app as all the conditions are satisfied`,
+      'memory-monitor: RELOADING -> auto reloading the app as all the conditions are satisfied',
     );
+    this.reloadMainWindow();
+  }
 
-    windowHandler.setIsAutoReload(true);
-    mainWindow.reload();
-    this.canReload = false;
-    this.lastReloadTime = new Date().getTime();
-    setTimeout(() => {
-      this.canReload = true;
-    }, this.memoryRefreshThreshold); // prevents multiple reloading of the client within 24hrs
+  /***
+   * Reloads main window
+   */
+  private reloadMainWindow(): void {
+    const mainWebContents = windowHandler.getMainWebContents();
+    if (mainWebContents && !mainWebContents.isDestroyed()) {
+      windowHandler.setIsAutoReload(true);
+      this.canReload = false;
+      this.lastReloadTime = new Date().getTime();
+      setTimeout(() => {
+        this.canReload = true;
+      }, this.memoryRefreshThreshold); // prevents multiple reloading of the client within 24hrs
+      logger.info('memory-monitor: auto-reload start');
+      mainWebContents.reloadIgnoringCache();
+    } else {
+      logger.error(
+        'memory-monitor: Unable to reload, no main window webContents found.',
+      );
+    }
   }
 }
 

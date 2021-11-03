@@ -404,7 +404,7 @@ const handleMediaPermissions = async (
   callback: (permission: boolean) => void,
   details: PermissionRequestHandlerHandlerDetails,
 ): Promise<void> => {
-  logger.info(`window-action: permission is ->`, { type: message, permission });
+  logger.info('window-action: permission is ->', permission);
   let systemAudioPermission;
   let systemVideoPermission;
   if (isMac) {

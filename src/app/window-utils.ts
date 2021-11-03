@@ -950,7 +950,7 @@ export const updateFeaturesForCloudConfig = async (): Promise<void> => {
     : autoLaunchInstance.disableAutoLaunch();
 
   if (mainWebContents && !mainWebContents.isDestroyed()) {
-    if (memoryRefresh) {
+    if (memoryRefresh && memoryRefresh === CloudConfigDataTypes.ENABLED) {
       logger.info(
         `window-utils: updating the memory threshold`,
         memoryThreshold,
