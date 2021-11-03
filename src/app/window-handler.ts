@@ -319,6 +319,11 @@ export class WindowHandler {
       ...getBounds(this.config.mainWinPos, DEFAULT_WIDTH, DEFAULT_HEIGHT),
     }) as ICustomBrowserWindow;
 
+    // Hide electron's default menu bar for Windows
+    if (isWindowsOS && this.mainWindow && windowExists(this.mainWindow)) {
+      this.mainWindow.setMenuBarVisibility(false);
+    }
+
     logger.info(
       'window-handler: this.mainWindow.getBounds: ' +
         JSON.stringify(this.mainWindow.getBounds()),
