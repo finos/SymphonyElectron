@@ -163,6 +163,12 @@ ipcMain.on(
             browserWin.winName === apiName.welcomeScreenName)
         ) {
           showPopupMenu({ window: browserWin });
+          // Give focus back to main webContents so that
+          // cut, copy & paste from edit menu works as expected
+          const mainWebContents = windowHandler.getMainWebContents();
+          if (mainWebContents && !mainWebContents.isDestroyed()) {
+            mainWebContents.focus();
+          }
         }
         break;
       }
