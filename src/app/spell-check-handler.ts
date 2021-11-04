@@ -1,4 +1,4 @@
-import { app, MenuItem } from 'electron';
+import { app, MenuItem, WebContents } from 'electron';
 import * as path from 'path';
 
 import {
@@ -47,9 +47,9 @@ export class SpellChecker {
   /**
    * Attaches context-menu event for every webContents
    *
-   * @param webContents {Electron.WebContents}
+   * @param webContents {WeContents}
    */
-  public attachToWebContents(webContents: Electron.WebContents): void {
+  public attachToWebContents(webContents: WebContents): void {
     const contextMenuBuilder = new ContextMenuBuilder(
       this.spellCheckHandler,
       webContents,

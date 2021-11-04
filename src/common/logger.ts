@@ -1,4 +1,4 @@
-import { app } from 'electron';
+import { app, WebContents } from 'electron';
 import electronLog, { LogLevel, transports } from 'electron-log';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -37,7 +37,7 @@ class Logger {
   private readonly desiredLogLevel?: LogLevel;
   private readonly logQueue: ILogMsg[];
   private readonly logPath: string;
-  private loggerWindow: Electron.WebContents | null;
+  private loggerWindow: WebContents | null;
 
   constructor() {
     this.loggerWindow = null;
@@ -158,7 +158,7 @@ class Logger {
    *
    * @param window {WebContents} - renderer window
    */
-  public setLoggerWindow(window: Electron.WebContents): void {
+  public setLoggerWindow(window: WebContents): void {
     this.loggerWindow = window;
 
     if (this.loggerWindow) {

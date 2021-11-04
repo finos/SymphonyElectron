@@ -1,4 +1,4 @@
-import { BrowserWindow, dialog, shell } from 'electron';
+import { BrowserWindow, dialog, shell, WebContents } from 'electron';
 import * as fs from 'fs';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
@@ -35,14 +35,14 @@ class DownloadHandler {
     });
   }
 
-  private window!: Electron.WebContents | null;
+  private window!: WebContents | null;
   private items: IDownloadItem[] = [];
 
   /**
    * Sets the window for the download handler
    * @param window Window object
    */
-  public setWindow(window: Electron.WebContents): void {
+  public setWindow(window: WebContents): void {
     this.window = window;
     logger.info(`download-handler: Initialized download handler`);
   }

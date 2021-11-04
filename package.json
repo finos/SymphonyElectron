@@ -19,7 +19,7 @@
     "compile:project": "gulp build",
     "compile:spec": "tsc -p tsconfig.spec.json",
     "compile:robot": "npm rebuild --build-from-source robotjs",
-    "dev": "npm run prebuild && cross-env ELECTRON_DEV=true electron .",
+    "dev": "gulp build && npm run browserify && cross-env ELECTRON_DEV=true electron .",
     "demo": "run-os",
     "demo:win32": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file:///src/demo/index.html",
     "demo:darwin": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/src/demo/index.html",
