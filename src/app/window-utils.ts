@@ -322,7 +322,7 @@ export const isValidWindow = (
  * @return {Boolean} returns true if exists otherwise false
  * @param webContents
  */
-export const isValidView = (webContents: Electron.webContents): boolean => {
+export const isValidView = (webContents: WebContents): boolean => {
   if (!checkValidWindow) {
     return true;
   }
@@ -526,12 +526,12 @@ export const downloadManagerAction = async (type, filePath): Promise<void> => {
  *
  * @param _event
  * @param item {Electron.DownloadItem}
- * @param webContents {Electron.WebContents}
+ * @param webContents {WeContents}
  */
 export const handleDownloadManager = (
   _event,
   item: Electron.DownloadItem,
-  webContents: Electron.WebContents,
+  webContents: WebContents,
 ) => {
   // Send file path when download is complete
   item.once('done', (_e, state) => {

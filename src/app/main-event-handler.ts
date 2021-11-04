@@ -3,7 +3,7 @@ import { WebContents } from 'electron';
 export class MainProcessEvents {
   private registeredWebContents: Map<string, Set<WebContents>> = new Map<
     string,
-    Set<Electron.WebContents>
+    Set<WebContents>
   >();
 
   /**

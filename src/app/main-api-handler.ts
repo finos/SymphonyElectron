@@ -67,10 +67,7 @@ ipcMain.on(
       );
       return;
     }
-    logger.info(
-      `main-api-handler: API call received - ${arg.cmd} - Properties:`,
-      arg,
-    );
+    logApiCallParams(arg);
     switch (arg.cmd) {
       case apiCmds.isOnline:
         if (typeof arg.isOnline === 'boolean') {
@@ -413,3 +410,25 @@ ipcMain.handle(
     return;
   },
 );
+
+/**
+ * Log API call parameters.
+ */
+const logApiCallParams = (arg: any) => {
+  const apiCmd = arg.cmd;
+  if (apiCmd === apiCmds.showNotification) {
+    const title = 'hidden';
+    const body = 'hidden';
+    const notificationDetails: INotificationData = {
+      ...arg.notificationOpts,
+      title,
+      body,
+    };
+    logger.info(
+      `main-api-handler: - ${apiCmd} - Properties:`,
+      notificationDetails,
+    );
+  } else {
+    logger.info(`main-api-handler: - ${apiCmd} - Properties:`, arg);
+  }
+};

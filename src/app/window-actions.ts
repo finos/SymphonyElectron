@@ -3,6 +3,7 @@ import {
   dialog,
   PermissionRequestHandlerHandlerDetails,
   systemPreferences,
+  WebContents,
 } from 'electron';
 
 import { apiName, IBoundsChange, KeyCodes } from '../common/api-interface';
@@ -447,11 +448,9 @@ const handleMediaPermissions = async (
 /**
  * Sets permission requests for the window
  *
- * @param webContents {Electron.webContents}
+ * @param webContents {WeContents}
  */
-export const handlePermissionRequests = (
-  webContents: Electron.webContents,
-): void => {
+export const handlePermissionRequests = (webContents: WebContents): void => {
   if (!webContents || !webContents.session) {
     return;
   }
