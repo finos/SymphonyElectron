@@ -12,6 +12,7 @@
   "main": "lib/src/app/init.js",
   "types": "lib/src/app/init.d.ts",
   "scripts": {
+    "postinstall": "npm run prebuild",
     "browserify": "run-s browserify-*",
     "browserify-preload": "browserify -o lib/src/renderer/_preload-main.js -x electron --insert-global-vars=__filename,__dirname lib/src/renderer/preload-main.js",
     "browserify-preload-component": "browserify -o lib/src/renderer/_preload-component.js -x electron --insert-global-vars=__filename,__dirname lib/src/renderer/preload-component.js",
@@ -19,7 +20,7 @@
     "compile:project": "gulp build",
     "compile:spec": "tsc -p tsconfig.spec.json",
     "compile:robot": "npm rebuild --build-from-source robotjs",
-    "dev": "npm run prebuild && cross-env ELECTRON_DEV=true electron .",
+    "dev": "gulp build && npm run browserify && cross-env ELECTRON_DEV=true electron .",
     "demo": "run-os",
     "demo:win32": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file:///src/demo/index.html",
     "demo:darwin": "npm run prebuild && cross-env ELECTRON_DEV=true electron . --url=file://$(pwd)/src/demo/index.html",
