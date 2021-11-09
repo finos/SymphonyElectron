@@ -1,4 +1,10 @@
-import { app, crashReporter, dialog, RenderProcessGoneDetails } from 'electron';
+import {
+  app,
+  CrashReport,
+  crashReporter,
+  dialog,
+  RenderProcessGoneDetails,
+} from 'electron';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
 import {
@@ -58,8 +64,13 @@ class CrashHandler {
    * @private
    */
   private static handleMainProcessCrash() {
-    const lastCrash = crashReporter.getLastCrashReport();
-    if (!lastCrash) {
+    const lastCrash: CrashReport = crashReporter.getLastCrashReport();
+    // getLastReport() returns a crash object with empty fields (no crash id, default date)
+    // when user clicks on Menu > Window > Quit Symphony.
+    // We need to check if it's the case.
+    const isInvalidCrashReport =
+      !lastCrash || (!lastCrash.date.getTime() && !lastCrash.id);
+    if (isInvalidCrashReport) {
       logger.info(`crash-handler: No crashes found for main process`);
       return;
     }
@@ -71,9 +82,9 @@ class CrashHandler {
     };
     analytics.track(eventData);
     logger.info(
-      `crash-handler: Main process crash event processed with data ${JSON.stringify(
-        eventData,
-      )}`,
+      `crash-handler: Main process crash event. Date: ${
+        lastCrash.date
+      } Event data: ${JSON.stringify(eventData)}`,
     );
   }
 
