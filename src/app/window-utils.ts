@@ -1085,6 +1085,7 @@ export const loadBrowserViews = async (
           y: 0,
         });
       }, 500);
+      mainEvents.publish('enter-full-screen');
     });
     mainWindow?.on('leave-full-screen', () => {
       if (
@@ -1115,6 +1116,7 @@ export const loadBrowserViews = async (
           mainView.webContents.toggleDevTools();
         }
       }, 500);
+      mainEvents.publish('leave-full-screen');
     });
 
     mainWindow?.on('maximize', () => {
