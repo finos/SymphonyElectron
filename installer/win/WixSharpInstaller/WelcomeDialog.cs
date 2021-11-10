@@ -1,5 +1,7 @@
 using WixSharp;
+using System;
 using System.Drawing;
+using System.Runtime.InteropServices;
 
 namespace Symphony
 {
@@ -20,19 +22,22 @@ namespace Symphony
             InitializeComponent();
         }
 
+        [DllImport("user32.dll")]
+        static extern bool SetForegroundWindow(IntPtr hWnd);
         void dialog_Load(object sender, System.EventArgs e)
         {
+            SetForegroundWindow(this.Handle);
             // Populate the dynamic UI elements that can't be set at compile time (background image and
             // the label containing user name)
             this.backgroundPanel.BackgroundImage = Runtime.Session.GetResourceBitmap("WixUI_Bmp_Dialog");
             this.radioButtonCurrentUser.Text = "Only for me (" + getUserName() + ")";
-            if( Runtime.Session["ALLUSERS"] != "" )
+            if (Runtime.Session["ALLUSERS"] != "")
             {
                 this.radioButtonAllUsers.Checked = true;
             }
             else
             {
-               this.radioButtonCurrentUser.Checked = true;
+                this.radioButtonCurrentUser.Checked = true;
             }
 
             // Detect if Symphony is running
@@ -60,11 +65,11 @@ namespace Symphony
             {
                 // Install for all users
                 Runtime.Session["MSIINSTALLPERUSER"] = ""; // per-machine
-                Runtime.Session["INSTALLDIR"] = Runtime.Session["PROGRAMSFOLDER"]  + @"\Symphony\" + Runtime.ProductName;
+                Runtime.Session["INSTALLDIR"] = Runtime.Session["PROGRAMSFOLDER"] + @"\Symphony\" + Runtime.ProductName;
             }
 
             // Set INSTALLDIR
-            if( Runtime.Session["APPDIR"] != "" )
+            if (Runtime.Session["APPDIR"] != "")
             {
                 // If APPDIR param was specified, just use that as is
                 Runtime.Session["INSTALLDIR"] = Runtime.Session["APPDIR"];
@@ -92,8 +97,8 @@ namespace Symphony
         void cancel_Click(object sender, System.EventArgs e)
         {
             // TODO: Localization
-            if( System.Windows.Forms.MessageBox.Show("Are you sure you want to cancel Symphony installation?",
-                "Symphony Setup", System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes )
+            if (System.Windows.Forms.MessageBox.Show("Are you sure you want to cancel Symphony installation?",
+                "Symphony Setup", System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
                 Shell.Cancel();
             }
