@@ -108,7 +108,6 @@ export interface IApiArgs {
   requestId: number;
   mediaStatus: IMediaPermission;
   newPodUrl: string;
-  broadcastMessage: () => void;
   swiftSearchData: any;
 }
 
