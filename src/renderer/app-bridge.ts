@@ -20,18 +20,6 @@ import {
 import { SSFApi } from './ssf-api';
 
 const ssf = new SSFApi();
-let ssInstance: any;
-
-try {
-  // TODO: remove remote module
-  /*const SSAPIBridge = remote.require('swift-search').SSAPIBridge;
-  ssInstance = new SSAPIBridge();*/
-} catch (e) {
-  ssInstance = null;
-  console.warn(
-    "Failed to initialize swift search. You'll need to include the search dependency. Contact the developers for more details",
-  );
-}
 
 export class AppBridge {
   /**
@@ -87,15 +75,16 @@ export class AppBridge {
       .then((origin) => {
         this.origin = origin;
         // this.origin = '*'; // DEMO-APP: Comment this line back in only to test demo-app - DO NOT COMMIT
-        if (
-          ssInstance &&
-          typeof ssInstance.setBroadcastMessage === 'function'
-        ) {
-          ssInstance.setBroadcastMessage(this.broadcastMessage);
-        }
+        ipcRenderer.send(apiName.symphonyApi, {
+          cmd: apiCmds.setBroadcastMessage,
+        });
         window.addEventListener('message', this.callbackHandlers.onMessage);
       }) // tslint:disable-next-line:no-console
       .catch((reason) => console.error(reason));
+
+    ipcRenderer.on(apiCmds.onSwiftSearchMessage, (_event, [method, data]) => {
+      this.broadcastMessage(method, data);
+    });
   }
 
   /**
@@ -236,9 +225,10 @@ export class AppBridge {
         ssf.setCloudConfig(data as object);
         break;
       case apiCmds.swiftSearch:
-        if (ssInstance) {
-          ssInstance.handleMessageEvents(data);
-        }
+        ipcRenderer.send(apiName.symphonyApi, {
+          cmd: apiCmds.handleSwiftSearchMessageEvents,
+          swiftSearchData: data,
+        });
         break;
       case apiCmds.getCPUUsage:
         const cpuUsage = await ssf.getCPUUsage();

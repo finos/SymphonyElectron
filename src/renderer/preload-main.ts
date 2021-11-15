@@ -128,14 +128,18 @@ ipcRenderer.on('page-load', (_event, { locale, resources }) => {
   i18n.setResource(locale, resources);
 
   webFrame.setSpellCheckProvider('en-US', {
-    spellCheck(words, callback) {
-      const misspelled = words.filter((word) => {
-        return ipcRenderer.sendSync(apiName.symphonyApi, {
-          cmd: apiCmds.isMisspelled,
-          word,
-        });
-      });
-      callback(misspelled);
+    async spellCheck(words, callback) {
+      const misspelled = await Promise.all(
+        words.map(async (word) => {
+          return (await ipcRenderer.invoke(apiName.symphonyApi, {
+            cmd: apiCmds.isMisspelled,
+            word,
+          }))
+            ? word
+            : '';
+        }),
+      );
+      callback(misspelled.filter((word) => word));
     },
   });
 

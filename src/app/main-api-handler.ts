@@ -20,6 +20,7 @@ import appStateHandler from './app-state-handler';
 import { autoUpdate } from './auto-update-handler';
 import { CloudConfigDataTypes, config, ICloudConfig } from './config-handler';
 import { downloadHandler } from './download-handler';
+import { mainEvents } from './main-event-handler';
 import { memoryMonitor } from './memory-monitor';
 import notificationHelper from './notifications/notification-helper';
 import { protocolHandler } from './protocol-handler';
@@ -39,6 +40,21 @@ import {
   updateLocale,
   windowExists,
 } from './window-utils';
+
+// Swift search API
+let swiftSearchInstance;
+try {
+  // tslint:disable-next-line:no-var-requires
+  const { SSAPIBridge } = require('swift-search');
+  swiftSearchInstance = new SSAPIBridge();
+} catch (e) {
+  console.warn(
+    "Failed to initialize swift search. You'll need to include the search dependency. Contact the developers for more details",
+  );
+}
+const broadcastMessage = (method, data) => {
+  mainEvents.publish(apiCmds.onSwiftSearchMessage, [method, data]);
+};
 
 /**
  * Handle API related ipc messages from renderers. Only messages from windows
@@ -223,13 +239,6 @@ ipcMain.on(
       case apiCmds.restartApp:
         appStateHandler.restart();
         break;
-      case apiCmds.isMisspelled:
-        if (typeof arg.word === 'string') {
-          event.returnValue = windowHandler.spellchecker
-            ? windowHandler.spellchecker.isMisspelled(arg.word)
-            : false;
-        }
-        break;
       case apiCmds.setIsInMeeting:
         if (typeof arg.isInMeeting === 'boolean') {
           memoryMonitor.setMeetingStatus(arg.isInMeeting);
@@ -352,6 +361,17 @@ ipcMain.on(
         app.relaunch();
         app.exit();
         break;
+      case apiCmds.setBroadcastMessage:
+        if (swiftSearchInstance) {
+          mainEvents.subscribe(apiCmds.onSwiftSearchMessage, event.sender);
+          swiftSearchInstance.setBroadcastMessage(broadcastMessage as any);
+        }
+        break;
+      case apiCmds.handleSwiftSearchMessageEvents:
+        if (swiftSearchInstance) {
+          swiftSearchInstance.handleMessageEvents(arg.swiftSearchData);
+        }
+        break;
       default:
         break;
     }
@@ -408,6 +428,13 @@ ipcMain.handle(
           screen,
         };
       default:
+        break;
+      case apiCmds.isMisspelled:
+        if (typeof arg.word === 'string') {
+          return windowHandler.spellchecker
+            ? windowHandler.spellchecker.isMisspelled(arg.word)
+            : false;
+        }
         break;
     }
     return;
