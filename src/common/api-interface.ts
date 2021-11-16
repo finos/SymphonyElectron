@@ -58,6 +58,9 @@ export enum apiCmds {
   showScreenSharePermissionDialog = 'show-screen-share-permission-dialog',
   getMediaAccessStatus = 'get-media-access-status',
   setPodUrl = 'set-pod-url',
+  setBroadcastMessage = 'set-broadcast-message',
+  handleSwiftSearchMessageEvents = 'handle-shift-search-message-events',
+  onSwiftSearchMessage = 'on-shift-search-message',
 }
 
 export enum apiName {
@@ -105,6 +108,7 @@ export interface IApiArgs {
   requestId: number;
   mediaStatus: IMediaPermission;
   newPodUrl: string;
+  swiftSearchData: any;
 }
 
 export type Themes = 'light' | 'dark';
