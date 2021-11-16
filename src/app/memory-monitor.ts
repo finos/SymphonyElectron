@@ -113,6 +113,7 @@ class MemoryMonitor {
         'memory-monitor: NOT RELOADING -> User is not idle for: ',
         idleTime,
       );
+      return;
     }
 
     if (!this.canReload) {
