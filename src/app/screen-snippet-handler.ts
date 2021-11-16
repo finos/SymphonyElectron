@@ -1,4 +1,10 @@
-import { app, BrowserWindow, ipcMain, nativeImage } from 'electron';
+import {
+  app,
+  BrowserWindow,
+  ipcMain,
+  nativeImage,
+  WebContents,
+} from 'electron';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -69,9 +75,9 @@ class ScreenSnippet {
    * Captures a user selected portion of the monitor and returns jpeg image
    * encoded in base64 format.
    *
-   * @param webContents {Electron.webContents}
+   * @param webContents {WeContents}
    */
-  public async capture(webContents: Electron.webContents) {
+  public async capture(webContents: WebContents) {
     const mainWindow = windowHandler.getMainWindow();
     if (mainWindow && windowExists(mainWindow) && isWindowsOS) {
       this.shouldUpdateAlwaysOnTop = mainWindow.isAlwaysOnTop();
@@ -308,7 +314,7 @@ class ScreenSnippet {
    * Uploads a screen snippet
    * @param webContents A browser window's web contents object
    */
-  private uploadSnippet(webContents: Electron.webContents) {
+  private uploadSnippet(webContents: WebContents) {
     ipcMain.once(
       'upload-snippet',
       async (

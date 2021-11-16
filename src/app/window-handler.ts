@@ -962,9 +962,9 @@ export class WindowHandler {
   /**
    * Checks if the window and a key has a window
    *
-   * @param webContents {Electron.webContents}
+   * @param webContents {WeContents}
    */
-  public hasView(webContents: Electron.webContents): boolean {
+  public hasView(webContents: WebContents): boolean {
     return (
       webContents === this.mainView?.webContents ||
       webContents === this.titleBarView?.webContents
@@ -1370,7 +1370,7 @@ export class WindowHandler {
    * @param id
    */
   public createScreenPickerWindow(
-    window: Electron.WebContents,
+    window: WebContents,
     sources: DesktopCapturerSource[],
     id: number,
   ): void {
@@ -1612,13 +1612,13 @@ export class WindowHandler {
    * Creates a screen sharing indicator whenever uses start
    * sharing the screen
    *
-   * @param screenSharingWebContents {Electron.webContents}
+   * @param screenSharingWebContents {WeContents}
    * @param displayId {string} - current display id
    * @param id {number} - postMessage request id
    * @param streamId {string} - MediaStream id
    */
   public createScreenSharingIndicatorWindow(
-    screenSharingWebContents: Electron.webContents,
+    screenSharingWebContents: WebContents,
     displayId: string,
     id: number,
     streamId: string,

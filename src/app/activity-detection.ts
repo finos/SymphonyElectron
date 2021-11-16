@@ -1,4 +1,4 @@
-import { app, powerMonitor } from 'electron';
+import { app, powerMonitor, WebContents } from 'electron';
 import Timer = NodeJS.Timer;
 
 import { logger } from '../common/logger';
@@ -6,7 +6,7 @@ import { windowHandler } from './window-handler';
 
 class ActivityDetection {
   private idleThreshold: number;
-  private window: Electron.WebContents | null;
+  private window: WebContents | null;
   private timer: Timer | undefined;
   private queryInterval: NodeJS.Timer | undefined;
 
@@ -22,7 +22,7 @@ class ActivityDetection {
    * @param idleThreshold {number}
    */
   public setWindowAndThreshold(
-    window: Electron.WebContents,
+    window: WebContents,
     idleThreshold: number,
   ): void {
     this.window = window;
