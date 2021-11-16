@@ -1,6 +1,11 @@
+import { WebContents } from 'electron';
+
 export interface IAnalyticsData {
   element: AnalyticsElements;
-  action_type?: MenuActionTypes | ScreenSnippetActionTypes | ToastNotificationActionTypes;
+  action_type?:
+    | MenuActionTypes
+    | ScreenSnippetActionTypes
+    | ToastNotificationActionTypes;
   action_result?: AnalyticsActions;
   extra_data?: object;
 }
@@ -56,15 +61,15 @@ const MAX_EVENT_QUEUE_LENGTH = 50;
 const analyticsCallback = 'analytics-callback';
 
 class Analytics {
-  private preloadWindow: Electron.webContents | undefined;
+  private preloadWindow: WebContents | undefined;
   private analyticsEventQueue: IAnalyticsData[] = [];
 
   /**
    * Stores the reference to the preload window
    *
-   * @param webContents {Electron.webContents}
+   * @param webContents {WeContents}
    */
-  public registerPreloadWindow(webContents: Electron.webContents): void {
+  public registerPreloadWindow(webContents: WebContents): void {
     this.preloadWindow = webContents;
 
     if (!(this.preloadWindow && !this.preloadWindow.isDestroyed())) {

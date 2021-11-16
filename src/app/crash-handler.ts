@@ -110,6 +110,7 @@ class CrashHandler {
               `crash-handler: Renderer process crash event processed with data ${JSON.stringify(
                 eventData,
               )}`,
+              details,
             );
             break;
           default:

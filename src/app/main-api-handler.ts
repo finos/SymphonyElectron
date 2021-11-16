@@ -83,10 +83,7 @@ ipcMain.on(
       );
       return;
     }
-    logger.info(
-      `main-api-handler: API call received - ${arg.cmd} - Properties:`,
-      arg,
-    );
+    logApiCallParams(arg);
     switch (arg.cmd) {
       case apiCmds.isOnline:
         if (typeof arg.isOnline === 'boolean') {
@@ -440,3 +437,82 @@ ipcMain.handle(
     return;
   },
 );
+
+/**
+ * Log API call parameters.
+ */
+const logApiCallParams = (arg: any) => {
+  const apiCmd = arg.cmd;
+  switch (apiCmd) {
+    case apiCmds.showNotification:
+      const title = 'hidden';
+      const body = 'hidden';
+      const notificationDetails: INotificationData = {
+        ...arg.notificationOpts,
+        title,
+        body,
+      };
+      logger.info(
+        `main-api-handler: - ${apiCmd} - Properties: ${JSON.stringify(
+          notificationDetails,
+          null,
+          2,
+        )}`,
+      );
+      break;
+    case apiCmds.badgeDataUrl:
+      const dataUrl = 'hidden';
+      const badgeDataUrlDetails = {
+        ...arg,
+        dataUrl,
+      };
+      logger.info(
+        `main-api-handler: - ${apiCmd} - Properties: ${JSON.stringify(
+          badgeDataUrlDetails,
+          null,
+          2,
+        )}`,
+      );
+      break;
+    case apiCmds.openScreenPickerWindow:
+      const sources = arg.sources.map((source: any) => {
+        return {
+          name: source.name,
+          id: source.id,
+          thumbnail: 'hidden',
+          display_id: source.display_id,
+          appIcon: source.appIcon,
+        };
+      });
+      const openScreenPickerDetails = {
+        ...arg,
+        sources,
+      };
+      logger.info(
+        `main-api-handler: - ${apiCmd} - Properties: ${JSON.stringify(
+          openScreenPickerDetails,
+          null,
+          2,
+        )}`,
+      );
+      break;
+    case apiCmds.isMisspelled:
+      logger.verbose(
+        `main-api-handler: - ${apiCmd} - Properties: ${JSON.stringify(
+          arg,
+          null,
+          2,
+        )}`,
+      );
+      break;
+    default:
+      logger.info(
+        `main-api-handler: - ${apiCmd} - Properties: ${JSON.stringify(
+          arg,
+          null,
+          2,
+        )}`,
+      );
+      break;
+  }
+};

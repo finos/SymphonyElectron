@@ -1,3 +1,4 @@
+import { WebContents } from 'electron';
 import { apiName } from '../common/api-interface';
 import { isMac } from '../common/env';
 import { logger } from '../common/logger';
@@ -12,7 +13,7 @@ class ProtocolHandler {
   private static isValidProtocolUri = (uri: string): boolean =>
     !!(uri && uri.startsWith(protocol.SymphonyProtocol));
 
-  private preloadWebContents: Electron.WebContents | null = null;
+  private preloadWebContents: WebContents | null = null;
   private protocolUri: string | null = null;
 
   constructor() {
@@ -22,9 +23,9 @@ class ProtocolHandler {
   /**
    * Stores the web contents of the preload
    *
-   * @param webContents {Electron.WebContents}
+   * @param webContents {WeContents}
    */
-  public setPreloadWebContents(webContents: Electron.WebContents): void {
+  public setPreloadWebContents(webContents: WebContents): void {
     this.preloadWebContents = webContents;
     logger.info(
       `protocol handler: SFE is active and we have a valid protocol window with web contents!`,

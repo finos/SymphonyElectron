@@ -1,5 +1,5 @@
 import * as archiver from 'archiver';
-import { app, BrowserWindow, dialog, shell } from 'electron';
+import { app, BrowserWindow, dialog, shell, WebContents } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -83,12 +83,12 @@ const generateArchiveForDirectory = (
   });
 };
 
-let logWebContents: Electron.WebContents;
+let logWebContents: WebContents;
 const logTypes: string[] = [];
 const receivedLogs: ILogs[] = [];
 
 export const registerLogRetriever = (
-  sender: Electron.WebContents,
+  sender: WebContents,
   logName: string,
 ): void => {
   logWebContents = sender;
