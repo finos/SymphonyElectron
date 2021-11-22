@@ -364,9 +364,20 @@ export class WindowHandler {
       }
     }
 
-    if (isMaximized) {
+    // start the application maximized - for automation tests
+    const isMaximizedFlag = getCommandLineArgs(
+      process.argv,
+      '--maximized',
+      true,
+    );
+
+    if (isMaximized || isMaximizedFlag) {
       this.mainWindow.maximize();
-      logger.info(`window-handler: window is maximized!`);
+      logger.info(
+        `window-handler: window is maximized!`,
+        isMaximized,
+        isMaximizedFlag,
+      );
     }
 
     if (isFullScreen) {
