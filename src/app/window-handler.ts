@@ -728,6 +728,7 @@ export class WindowHandler {
         query: {
           componentName: 'title-bar',
           locale: i18n.getLocale(),
+          title: i18n.t('WelcomeText', 'Welcome')(),
         },
         slashes: true,
       });

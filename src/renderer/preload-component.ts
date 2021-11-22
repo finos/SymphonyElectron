@@ -41,6 +41,7 @@ const loadStyle = (style) => {
 const load = () => {
   const query = new URL(window.location.href).searchParams;
   const componentName = query.get('componentName');
+  const title = query.get('title');
 
   let component;
   switch (componentName) {
@@ -92,6 +93,9 @@ const load = () => {
       component = Welcome;
       break;
     case components.titleBar:
+      if (title) {
+        document.title = title;
+      }
       loadStyle(components.titleBar);
       component = WindowsTitleBar;
       break;
