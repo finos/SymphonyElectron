@@ -125,8 +125,6 @@ export const handleChildWindow = (webContents: WebContents): void => {
         action: 'deny',
       };
     }
-
-    const newWinOptions = windowHandler.getMainWindowOpts();
     const newWinUrlData = whitelistHandler.parseDomain(details.url);
     const mainWinUrlData = whitelistHandler.parseDomain(windowHandler.url);
 
@@ -162,7 +160,7 @@ export const handleChildWindow = (webContents: WebContents): void => {
       return {
         action: 'allow',
         // override child window options
-        overrideBrowserWindowOptions: { ...newWinOptions, ...{ frame: true } },
+        overrideBrowserWindowOptions: { frame: true },
       };
     } else {
       if (details.url && details.url.length > 2083) {
