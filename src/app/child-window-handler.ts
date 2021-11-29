@@ -14,7 +14,7 @@ import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
 import { getGuid } from '../common/utils';
 import { whitelistHandler } from '../common/whitelist-handler';
-import { config } from './config-handler';
+import { CloudConfigDataTypes, config } from './config-handler';
 import crashHandler from './crash-handler';
 import { mainEvents } from './main-event-handler';
 import {
@@ -157,10 +157,19 @@ export const handleChildWindow = (webContents: WebContents): void => {
           action: 'deny',
         };
       }
+      const configSettings = config.getConfigFields(['alwaysOnTop']);
       return {
         action: 'allow',
         // override child window options
-        overrideBrowserWindowOptions: { frame: true },
+        overrideBrowserWindowOptions: {
+          frame: true,
+          alwaysOnTop:
+            configSettings.alwaysOnTop === CloudConfigDataTypes.ENABLED ||
+            false,
+          minHeight: 300,
+          minWidth: 300,
+          title: 'Symphony',
+        },
       };
     } else {
       if (details.url && details.url.length > 2083) {
