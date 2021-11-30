@@ -30,7 +30,7 @@ const PERMISSIONS_NAMESPACE = 'Permissions';
 
 const saveWindowSettings = async (): Promise<void> => {
   const browserWindow = BrowserWindow.getFocusedWindow() as ICustomBrowserWindow;
-  const mainWindow = windowHandler.getMainWindow();
+  const mainWebContents = windowHandler.getMainWebContents();
 
   if (browserWindow && windowExists(browserWindow)) {
     let [x, y] = browserWindow.getPosition();
@@ -39,8 +39,8 @@ const saveWindowSettings = async (): Promise<void> => {
       // Only send bound changes over to client for pop-out windows
       if (
         browserWindow.winName !== apiName.mainWindowName &&
-        mainWindow &&
-        windowExists(mainWindow)
+        mainWebContents &&
+        !mainWebContents.isDestroyed()
       ) {
         const boundsChange: IBoundsChange = {
           x,
@@ -49,7 +49,7 @@ const saveWindowSettings = async (): Promise<void> => {
           height,
           windowName: browserWindow.winName,
         };
-        mainWindow.webContents.send('boundsChange', boundsChange);
+        mainWebContents.send('boundsChange', boundsChange);
       }
 
       // Update the config file
