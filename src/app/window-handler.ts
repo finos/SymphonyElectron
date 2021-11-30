@@ -311,6 +311,11 @@ export class WindowHandler {
       if (this.config.mainWinPos) {
         this.config.mainWinPos.width = Number(sizes[0]);
         this.config.mainWinPos.height = Number(sizes[1]);
+      } else {
+        this.config.mainWinPos = {
+          width: Number(sizes[0]),
+          height: Number(sizes[1]),
+        };
       }
     }
 
