@@ -300,6 +300,12 @@ export class WindowHandler {
       return;
     }
 
+    // set window opts with additional config
+    this.mainWindow = new BrowserWindow({
+      ...this.windowOpts,
+      ...getBounds(this.config.mainWinPos, DEFAULT_WIDTH, DEFAULT_HEIGHT),
+    }) as ICustomBrowserWindow;
+
     logger.info('window-handler: windowSize: ' + JSON.stringify(windowSize));
     if (windowSize) {
       const args = windowSize.split('=');
@@ -308,22 +314,10 @@ export class WindowHandler {
       logger.info(
         'window-handler: windowSize: sizes: ' + JSON.stringify(sizes),
       );
-      if (this.config.mainWinPos) {
-        this.config.mainWinPos.width = Number(sizes[0]);
-        this.config.mainWinPos.height = Number(sizes[1]);
-      } else {
-        this.config.mainWinPos = {
-          width: Number(sizes[0]),
-          height: Number(sizes[1]),
-        };
+      if (this.mainWindow && windowExists(this.mainWindow)) {
+        this.mainWindow.setSize(Number(sizes[0]), Number(sizes[1]));
       }
     }
-
-    // set window opts with additional config
-    this.mainWindow = new BrowserWindow({
-      ...this.windowOpts,
-      ...getBounds(this.config.mainWinPos, DEFAULT_WIDTH, DEFAULT_HEIGHT),
-    }) as ICustomBrowserWindow;
 
     // Hide electron's default menu bar for Windows
     if (isWindowsOS && this.mainWindow && windowExists(this.mainWindow)) {
