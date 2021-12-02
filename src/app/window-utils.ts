@@ -1074,6 +1074,7 @@ export const loadBrowserViews = async (
       setTimeout(() => {
         const [width, height] = mainWindow.getSize();
         titleBarView.setBounds({ x: 0, y: 0, width, height: 0 });
+        mainWindow.removeBrowserView(titleBarView);
 
         if (!mainView || !viewExists(mainView)) {
           return;
@@ -1100,6 +1101,7 @@ export const loadBrowserViews = async (
       // to get updated window bounds
       setTimeout(() => {
         const [width, height] = mainWindow.getSize();
+        mainWindow.addBrowserView(titleBarView);
         titleBarView.setBounds({ x: 0, y: 0, width, height: TITLE_BAR_HEIGHT });
         if (!mainView || !viewExists(mainView)) {
           return;
