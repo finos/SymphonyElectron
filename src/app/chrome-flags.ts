@@ -10,6 +10,8 @@ logger.info(`chrome-flags: Setting mandatory chrome flags`, {
   flag: { 'ssl-version-fallback-min': 'tls1.2' },
 });
 app.commandLine.appendSwitch('ssl-version-fallback-min', 'tls1.2');
+app.commandLine.appendSwitch('disable-threaded-scrolling');
+app.commandLine.appendSwitch('disable-smooth-scrolling');
 
 // Special args that need to be excluded as part of the chrome command line switch
 const specialArgs = [
