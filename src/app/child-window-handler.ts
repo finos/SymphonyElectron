@@ -7,6 +7,7 @@ import {
   WebContents,
 } from 'electron';
 
+import * as path from 'path';
 import { parse as parseQuerystring } from 'querystring';
 import { format, parse, Url } from 'url';
 import { isWindowsOS } from '../common/env';
@@ -158,18 +159,23 @@ export const handleChildWindow = (webContents: WebContents): void => {
         };
       }
       const configSettings = config.getConfigFields(['alwaysOnTop']);
+      const opts: BrowserWindowConstructorOptions = {
+        frame: true,
+        alwaysOnTop:
+          configSettings.alwaysOnTop === CloudConfigDataTypes.ENABLED || false,
+        minHeight: 300,
+        minWidth: 300,
+        title: 'Symphony',
+      };
+      if (!windowHandler.isMana) {
+        opts.webPreferences = {
+          preload: path.join(__dirname, '../renderer/_preload-main.js'),
+        };
+      }
       return {
         action: 'allow',
         // override child window options
-        overrideBrowserWindowOptions: {
-          frame: true,
-          alwaysOnTop:
-            configSettings.alwaysOnTop === CloudConfigDataTypes.ENABLED ||
-            false,
-          minHeight: 300,
-          minWidth: 300,
-          title: 'Symphony',
-        },
+        overrideBrowserWindowOptions: opts,
       };
     } else {
       if (details.url && details.url.length > 2083) {
