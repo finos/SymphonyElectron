@@ -63,18 +63,7 @@ class CrashHandler {
       logger.info(`crash-handler: No crashes found for main process`);
       return;
     }
-    const eventData: ICrashData = {
-      element: AnalyticsElements.SDA_CRASH,
-      process: SDACrashProcess.MAIN,
-      windowName: 'main',
-      crashCause: lastCrash.id,
-    };
-    analytics.track(eventData);
-    logger.info(
-      `crash-handler: Main process crash event processed with data ${JSON.stringify(
-        eventData,
-      )}`,
-    );
+    logger.info('crash-handler: Main process crashes found');
   }
 
   constructor() {
