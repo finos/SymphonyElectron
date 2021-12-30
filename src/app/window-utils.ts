@@ -402,9 +402,13 @@ export const sanitize = (windowName: string): void => {
     // reset the badge count whenever an user refreshes the electron client
     showBadgeCount(0);
 
-    // Terminates the screen snippet process on reload
+    // Terminates the screen snippet process and screen share indicator frame on reload
     if (!isMac || !isLinux) {
+      logger.info(
+        'window-utils: Terminating screen snippet and screen share indicator frame utils',
+      );
       screenSnippet.killChildProcess();
+      windowHandler.execCmd(windowHandler.screenShareIndicatorFrameUtil, []);
     }
     // Closes all the child windows
     windowHandler.closeAllWindows();
