@@ -1185,23 +1185,27 @@ export const loadBrowserViews = async (
 
   // Workaround to fix the auto resize of the main view container height
   mainWindow.on('resize', () => {
-    if (
-      !mainView ||
-      mainView.webContents.isDestroyed() ||
-      !mainWindow ||
-      !windowExists(mainWindow)
-    ) {
-      return;
-    }
-    const bounds = mainView.getBounds();
-    const [, height] = mainWindow.getSize();
-    mainView.setBounds({
-      ...bounds,
-      ...{
-        y: mainWindow.isFullScreen() ? 0 : TITLE_BAR_HEIGHT,
-        height: mainWindow.isFullScreen() ? height : height - TITLE_BAR_HEIGHT,
-      },
-    });
+    setTimeout(() => {
+      if (
+        !mainView ||
+        mainView.webContents.isDestroyed() ||
+        !mainWindow ||
+        !windowExists(mainWindow)
+      ) {
+        return;
+      }
+      const bounds = mainView.getBounds();
+      const [, height] = mainWindow.getSize();
+      mainView.setBounds({
+        ...bounds,
+        ...{
+          y: mainWindow.isFullScreen() ? 0 : TITLE_BAR_HEIGHT,
+          height: mainWindow.isFullScreen()
+            ? height
+            : height - TITLE_BAR_HEIGHT,
+        },
+      });
+    }, 500);
   });
 
   windowHandler.setMainView(mainView);
