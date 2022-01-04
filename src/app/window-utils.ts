@@ -402,9 +402,13 @@ export const sanitize = (windowName: string): void => {
     // reset the badge count whenever an user refreshes the electron client
     showBadgeCount(0);
 
-    // Terminates the screen snippet process on reload
+    // Terminates the screen snippet process and screen share indicator frame on reload
     if (!isMac || !isLinux) {
+      logger.info(
+        'window-utils: Terminating screen snippet and screen share indicator frame utils',
+      );
       screenSnippet.killChildProcess();
+      windowHandler.execCmd(windowHandler.screenShareIndicatorFrameUtil, []);
     }
     // Closes all the child windows
     windowHandler.closeAllWindows();
@@ -1185,23 +1189,27 @@ export const loadBrowserViews = async (
 
   // Workaround to fix the auto resize of the main view container height
   mainWindow.on('resize', () => {
-    if (
-      !mainView ||
-      mainView.webContents.isDestroyed() ||
-      !mainWindow ||
-      !windowExists(mainWindow)
-    ) {
-      return;
-    }
-    const bounds = mainView.getBounds();
-    const [, height] = mainWindow.getSize();
-    mainView.setBounds({
-      ...bounds,
-      ...{
-        y: mainWindow.isFullScreen() ? 0 : TITLE_BAR_HEIGHT,
-        height: mainWindow.isFullScreen() ? height : height - TITLE_BAR_HEIGHT,
-      },
-    });
+    setTimeout(() => {
+      if (
+        !mainView ||
+        mainView.webContents.isDestroyed() ||
+        !mainWindow ||
+        !windowExists(mainWindow)
+      ) {
+        return;
+      }
+      const bounds = mainView.getBounds();
+      const [, height] = mainWindow.getSize();
+      mainView.setBounds({
+        ...bounds,
+        ...{
+          y: mainWindow.isFullScreen() ? 0 : TITLE_BAR_HEIGHT,
+          height: mainWindow.isFullScreen()
+            ? height
+            : height - TITLE_BAR_HEIGHT,
+        },
+      });
+    }, 500);
   });
 
   windowHandler.setMainView(mainView);

@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { ILogs } from '../common/api-interface';
-import { isLinux, isMac } from '../common/env';
+import { isLinux, isMac, isWindowsOS } from '../common/env';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
 
@@ -179,10 +179,8 @@ export const exportLogs = (): void => {
  */
 export const exportCrashDumps = (): void => {
   const FILE_EXTENSIONS = isMac ? ['.dmp'] : ['.dmp', '.txt'];
-  const crashesDirectory = app.getPath('crashDumps');
-  const source = isMac ? crashesDirectory + '/completed' : crashesDirectory;
+  const source = getCrashesDirectory();
   const focusedWindow = BrowserWindow.getFocusedWindow();
-
   if (
     !fs.existsSync(source) ||
     (fs.readdirSync(source).length === 0 &&
@@ -218,4 +216,15 @@ export const exportCrashDumps = (): void => {
         });
       }
     });
+};
+
+const getCrashesDirectory = (): string => {
+  const crashesDirectory = app.getPath('crashDumps');
+  let source = crashesDirectory;
+  if (isMac) {
+    source += '/completed';
+  } else if (isWindowsOS) {
+    source += '\\reports';
+  }
+  return source;
 };
