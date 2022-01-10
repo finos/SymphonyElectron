@@ -1283,12 +1283,13 @@ export class WindowHandler {
           windowBounds.width !== toolWidth
         ) {
           logger.info(
-            'window-handler: Could not create window with correct size, resizing with setBounds',
+            'window-handler: Could not create window with correct size, resizing with setBounds and centering with center',
           );
           this.snippingToolWindow.setBounds({
             height: toolHeight,
             width: toolWidth,
           });
+          this.snippingToolWindow.center();
           logger.info(
             'window-handler: window bounds after resizing: ' +
               JSON.stringify(this.snippingToolWindow.getBounds()),
