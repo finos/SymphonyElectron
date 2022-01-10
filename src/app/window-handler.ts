@@ -1318,6 +1318,7 @@ export class WindowHandler {
   public closeSnippingToolWindow() {
     if (this.snippingToolWindow && windowExists(this.snippingToolWindow)) {
       this.snippingToolWindow.close();
+      this.snippingToolWindow = null;
     }
   }
 
