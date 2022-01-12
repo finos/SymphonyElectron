@@ -124,6 +124,7 @@ if (!allowMultiInstance) {
         `main: We've got a second instance of the app, will check if it's allowed and exit if not`,
       );
       const mainWindow = windowHandler.getMainWindow();
+      const mainWebContents = windowHandler.getMainWebContents();
       if (mainWindow && !mainWindow.isDestroyed()) {
         if (isMac) {
           logger.info(`main: We are on mac, so, showing the existing window`);
@@ -136,6 +137,9 @@ if (!allowMultiInstance) {
         mainWindow.focus();
         isAppAlreadyOpen = true;
         protocolHandler.processArgv(argv, isAppAlreadyOpen);
+        if (mainWebContents && !mainWebContents.isDestroyed()) {
+          mainWebContents.focus();
+        }
       }
     });
     startApplication();
