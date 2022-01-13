@@ -447,10 +447,12 @@ const logApiCallParams = (arg: any) => {
     case apiCmds.showNotification:
       const title = 'hidden';
       const body = 'hidden';
+      const data = 'hidden';
       const notificationDetails: INotificationData = {
         ...arg.notificationOpts,
         title,
         body,
+        data,
       };
       logger.info(
         `main-api-handler: - ${apiCmd} - Properties: ${JSON.stringify(
