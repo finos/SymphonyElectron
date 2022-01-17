@@ -88,6 +88,8 @@ if (ssfWindow.ssf) {
     setZoomLevel: ssfWindow.ssf.setZoomLevel,
     getZoomLevel: ssfWindow.ssf.getZoomLevel,
     supportedSettings: ssfWindow.ssf.supportedSettings,
+    getCitrixMediaRedirectionStatus:
+      ssfWindow.ssf.getCitrixMediaRedirectionStatus,
   });
 }
 

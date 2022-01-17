@@ -730,6 +730,18 @@ export class SSFApi {
   public supportedSettings(): string[] {
     return SUPPORTED_SETTINGS || [];
   }
+
+  /**
+   * Retrieves the current status of Citrix' media redirection feature
+   * @returns status
+   */
+  public getCitrixMediaRedirectionStatus(): Promise<
+    'inactive' | 'supported' | 'unsupported'
+  > {
+    return ipcRenderer.invoke(apiName.symphonyApi, {
+      cmd: apiCmds.getCitrixMediaRedirectionStatus,
+    });
+  }
 }
 
 /**

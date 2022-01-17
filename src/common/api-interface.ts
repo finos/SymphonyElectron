@@ -61,6 +61,7 @@ export enum apiCmds {
   setBroadcastMessage = 'set-broadcast-message',
   handleSwiftSearchMessageEvents = 'handle-shift-search-message-events',
   onSwiftSearchMessage = 'on-shift-search-message',
+  getCitrixMediaRedirectionStatus = 'get-citrix-media-redirection-status',
 }
 
 export enum apiName {
