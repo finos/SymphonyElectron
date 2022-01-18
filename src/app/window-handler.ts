@@ -1169,9 +1169,9 @@ export class WindowHandler {
 
     const display = screen.getDisplayMatching(this.mainWindow.getBounds());
     const workAreaSize = display.workAreaSize;
-    const maxToolHeight = Math.floor(
-      calculatePercentage(workAreaSize.height, 90),
-    );
+    // Snipping tool height shouldn't be greater than min of screen width and height (screen orientation can be portrait or landscape)
+    const minSize = Math.min(workAreaSize.width, workAreaSize.height);
+    const maxToolHeight = Math.floor(calculatePercentage(minSize, 90));
     const maxToolWidth = Math.floor(
       calculatePercentage(workAreaSize.width, 90),
     );
@@ -1301,7 +1301,6 @@ export class WindowHandler {
         );
       }
     });
-
     this.snippingToolWindow.once('closed', () => {
       logger.info(
         'window-handler, createSnippingToolWindow: Closing snipping window, attempting to delete temp snip image',
