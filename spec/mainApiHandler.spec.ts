@@ -46,6 +46,7 @@ jest.mock('../src/app/window-handler', () => {
       isOnline: false,
       updateVersionInfo: jest.fn(),
       isMana: false,
+      getMainWebContents: jest.fn(),
       appMenu: {
         buildMenu: jest.fn(),
       },

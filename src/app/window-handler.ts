@@ -260,6 +260,15 @@ export class WindowHandler {
       app.getLocale()) as LocaleType;
     i18n.setLocale(locale);
 
+    logger.info(`window handler: env details`, {
+      contextIsolation: this.contextIsolation,
+      isNodeEnv,
+      isDevEnv,
+      isMac,
+      isWindowsOS,
+      isLinux,
+    });
+
     this.listenForLoad();
   }
 
