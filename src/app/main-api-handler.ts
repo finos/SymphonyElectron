@@ -83,6 +83,7 @@ ipcMain.on(
       );
       return;
     }
+    const mainWebContents = windowHandler.getMainWebContents();
     logApiCallParams(arg);
     switch (arg.cmd) {
       case apiCmds.isOnline:
@@ -178,7 +179,6 @@ ipcMain.on(
           showPopupMenu({ window: browserWin });
           // Give focus back to main webContents so that
           // cut, copy & paste from edit menu works as expected
-          const mainWebContents = windowHandler.getMainWebContents();
           if (mainWebContents && !mainWebContents.isDestroyed()) {
             mainWebContents.focus();
           }
@@ -337,13 +337,25 @@ ipcMain.on(
         }
         break;
       case apiCmds.closeMainWindow:
+        // Give focus back to main webContents
+        if (mainWebContents && !mainWebContents.isDestroyed()) {
+          mainWebContents.focus();
+        }
         windowHandler.getMainWindow()?.close();
         break;
       case apiCmds.minimizeMainWindow:
+        // Give focus back to main webContents
+        if (mainWebContents && !mainWebContents.isDestroyed()) {
+          mainWebContents.focus();
+        }
         windowHandler.getMainWindow()?.minimize();
         break;
       case apiCmds.maximizeMainWindow:
         windowHandler.getMainWindow()?.maximize();
+        // Give focus back to main webContents
+        if (mainWebContents && !mainWebContents.isDestroyed()) {
+          mainWebContents.focus();
+        }
         break;
       case apiCmds.unmaximizeMainWindow:
         const mainWindow = windowHandler.getMainWindow();
@@ -351,6 +363,10 @@ ipcMain.on(
           mainWindow.isFullScreen()
             ? mainWindow.setFullScreen(false)
             : mainWindow.unmaximize();
+        }
+        // Give focus back to main webContents
+        if (mainWebContents && !mainWebContents.isDestroyed()) {
+          mainWebContents.focus();
         }
         break;
       case apiCmds.setPodUrl:
