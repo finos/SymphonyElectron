@@ -175,6 +175,10 @@ class Notification extends NotificationHandler {
     if (this.inactiveWindows.length > 0) {
       const inactiveWin = this.inactiveWindows[0];
       if (windowExists(inactiveWin)) {
+        inactiveWin.setBounds({
+          width: CONTAINER_WIDTH,
+          height: CONTAINER_HEIGHT,
+        });
         this.inactiveWindows.splice(0, 1);
         this.renderNotification(inactiveWin, data);
         return;
