@@ -730,6 +730,16 @@ export class SSFApi {
   public supportedSettings(): string[] {
     return SUPPORTED_SETTINGS || [];
   }
+
+  /**
+   * Get native window handle of the window where the renderer is displayed
+   * @returns the platform-specific handle of the window.
+   */
+  public getNativeWindowHandle(): Promise<Buffer> {
+    return ipcRenderer.invoke(apiName.symphonyApi, {
+      cmd: apiCmds.getNativeWindowHandle,
+    });
+  }
 }
 
 /**

@@ -469,5 +469,19 @@ describe('main api handler', () => {
       ipcMain.send(apiName.symphonyApi, value);
       expect(spy).toBeCalled();
     });
+
+    it('should call `getNativeWindowHandle` correctly', () => {
+      const fromWebContentsMocked = {
+        getNativeWindowHandle: jest.fn(),
+      };
+      jest.spyOn(BrowserWindow, 'fromWebContents').mockImplementation(() => {
+        return fromWebContentsMocked;
+      });
+      const value = {
+        cmd: apiCmds.getNativeWindowHandle,
+      };
+      ipcMain.send(apiName.symphonyApi, value);
+      expect(fromWebContentsMocked.getNativeWindowHandle).toBeCalledTimes(1);
+    });
   });
 });

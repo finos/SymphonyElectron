@@ -1,87 +1,134 @@
 <html>
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Test pop-out window</title>
-    <link rel="stylesheet" href="download-manager.css">
-</head>
-Test Window has been opened
-<p>
-    <label for='tag'>tag:</label>
-    <input type='text' id='tag' value=''/>
-</p>
+    <link rel="stylesheet" href="download-manager.css" />
+  </head>
+  Test Window has been opened
+  <p>
+    <label for="tag">tag:</label>
+    <input type="text" id="tag" value="" />
+  </p>
 
-<button id="open-win">Open a new child window</button>
-<br>
-<br>
+  <button id="open-win">Open a new child window</button>
+  <br />
+  <br />
 
-<button id="open-in-browser">Open Symphony in browser</button>
-<br>
-<br>
+  <button id="open-in-browser">Open Symphony in browser</button>
+  <br />
+  <br />
 
-<a href="https://symphony.com" target="_blank">Open Symphony</a>
-<hr>
-<textarea id="text-val" rows="4">Writes some thing to the file</textarea>
-<br/>
-<input type="button" id="download-file1" value="Download"/>
-<input type="button" id="download-file2" value="Download"/>
-<div id="footer" class="hidden">
+  <a href="https://symphony.com" target="_blank">Open Symphony</a>
+  <hr />
+  <textarea id="text-val" rows="4">Writes some thing to the file</textarea>
+  <br />
+  <input type="button" id="download-file1" value="Download" />
+  <input type="button" id="download-file2" value="Download" />
+  <div id="footer" class="hidden">
     <div id="download-manager-footer" class="download-bar"></div>
-</div>
-<p>Badge Count:<p>
-    <button id='inc-badge'>increment badge count</button>
-    <br>
+  </div>
+  <p>Badge Count:</p>
+  <p>
+    <button id="inc-badge">increment badge count</button>
+    <br />
 
     <script>
-        var badgeCount = 0;
+      var badgeCount = 0;
 
-        var incBadgeEl = document.getElementById('inc-badge');
-        incBadgeEl.addEventListener('click', function() {
-            badgeCount++;
-            if (window.ssf) {
-                ssf.setBadgeCount(badgeCount);
-            } else {
-                postMessage({ method: 'set-badge-count', data: badgeCount }, window.origin);
-            }
-        });
+      var incBadgeEl = document.getElementById('inc-badge');
+      incBadgeEl.addEventListener('click', function () {
+        badgeCount++;
+        if (window.ssf) {
+          ssf.setBadgeCount(badgeCount);
+        } else {
+          postMessage(
+            { method: 'set-badge-count', data: badgeCount },
+            window.origin,
+          );
+        }
+      });
 
-        var openWinButton = document.getElementById('open-win');
-        openWinButton.addEventListener('click', function() {
-            win = window.open('childWin.html?x=200&y=200', 'childWin', 'height=500,width=500');
-        });
+      var openWinButton = document.getElementById('open-win');
+      openWinButton.addEventListener('click', function () {
+        win = window.open(
+          'childWin.html?x=200&y=200',
+          'childWin',
+          'height=500,width=500',
+        );
+      });
 
-        var openInBrowser = document.getElementById('open-in-browser');
-        openInBrowser.addEventListener('click', function () {
-            window.open('https://symphony.com');
-        });
+      var openInBrowser = document.getElementById('open-in-browser');
+      openInBrowser.addEventListener('click', function () {
+        window.open('https://symphony.com');
+      });
 
-        /**
-         * Download Manager api handler
-         */
-        const download = (filename, text) => {
-            const element = document.createElement('a');
-            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-            element.setAttribute('download', filename);
+      /**
+       * Download Manager api handler
+       */
+      const download = (filename, text) => {
+        const element = document.createElement('a');
+        element.setAttribute(
+          'href',
+          'data:text/plain;charset=utf-8,' + encodeURIComponent(text),
+        );
+        element.setAttribute('download', filename);
 
-            element.style.display = 'none';
-            document.body.appendChild(element);
+        element.style.display = 'none';
+        document.body.appendChild(element);
 
-            element.click();
+        element.click();
 
-            document.body.removeChild(element);
-        };
+        document.body.removeChild(element);
+      };
 
-        // Start file download.
-        document.getElementById('download-file1').addEventListener('click', () => {
-            const filename = "hello.txt";
-            const text = document.getElementById("text-val").value;
-            download(filename, text);
-        }, false);
+      // Start file download.
+      document.getElementById('download-file1').addEventListener(
+        'click',
+        () => {
+          const filename = 'hello.txt';
+          const text = document.getElementById('text-val').value;
+          download(filename, text);
+        },
+        false,
+      );
 
-        document.getElementById('download-file2').addEventListener('click', () => {
-            const filename = "bye.txt";
-            const text = document.getElementById("text-val").value;
-            download(filename, text);
-        }, false);
-
+      document.getElementById('download-file2').addEventListener(
+        'click',
+        () => {
+          const filename = 'bye.txt';
+          const text = document.getElementById('text-val').value;
+          download(filename, text);
+        },
+        false,
+      );
     </script>
+  </p>
+
+  <hr />
+  <p>Native Window Handle:</p>
+  <button id="get-window-handle">Get window handle</button>
+  <input type="text" id="text-window-handle" />
+  <script>
+    document
+      .getElementById('get-window-handle')
+      .addEventListener('click', () => {
+        const resultCallback = (handle) => {
+          const handleStr = [...handle]
+            .map((b) => b.toString(16).padStart(2, '0'))
+            .join('');
+          document.getElementById('text-window-handle').value = handleStr;
+        };
+        if (window.ssf) {
+          window.ssf.getNativeWindowHandle().then(resultCallback);
+        } else if (window.manaSSF) {
+          window.manaSSF.getNativeWindowHandle().then(resultCallback);
+        } else {
+          postRequest(apiCmds.getNativeWindowHandle, null, {
+            successCallback: resultCallback,
+          });
+        }
+      });
+  </script>
+  <hr />
+  <br />
 </html>
