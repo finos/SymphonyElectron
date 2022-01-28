@@ -3,6 +3,14 @@ import { getCitrixMediaRedirectionStatus, RedirectionStatus } from '../src/app/c
 
 jest.mock('registry-js');
 
+jest.mock('../src/common/env', () => {
+  return {
+    isWindowsOS: true,
+    isLinux: false,
+    isMac: false,
+  };
+});
+
 describe('citrix handler', () => {
   const mockEnumerateValues = (enumerateValues as unknown) as jest.MockInstance<
     typeof enumerateValues
@@ -46,5 +54,19 @@ describe('citrix handler', () => {
     ]);
     const status = getCitrixMediaRedirectionStatus();
     expect(status).toBe(RedirectionStatus.UNSUPPORTED);
+  });
+
+  it('non-windows os', () => {
+    jest.mock('../src/common/env', () => {
+      return {
+        isWindowsOS: false,
+        isLinux: true,
+        isMac: false,
+      };
+    });
+    const { getCitrixMediaRedirectionStatus, RedirectionStatus } = require('../src/app/citrix-handler');
+    const status = getCitrixMediaRedirectionStatus();
+    expect(status).toBe(RedirectionStatus.INACTIVE);
+    expect(mockEnumerateValues).not.toHaveBeenCalled();
   });
 });
