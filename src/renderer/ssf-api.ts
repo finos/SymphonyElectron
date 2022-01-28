@@ -5,6 +5,7 @@ import {
   searchAPIVersion,
   version,
 } from '../../package.json';
+import { RedirectionStatus } from '../app/citrix-handler';
 import { IDownloadItem } from '../app/download-handler';
 import {
   apiCmds,
@@ -735,9 +736,7 @@ export class SSFApi {
    * Retrieves the current status of Citrix' media redirection feature
    * @returns status
    */
-  public getCitrixMediaRedirectionStatus(): Promise<
-    'inactive' | 'supported' | 'unsupported'
-  > {
+  public getCitrixMediaRedirectionStatus(): Promise<RedirectionStatus> {
     return ipcRenderer.invoke(apiName.symphonyApi, {
       cmd: apiCmds.getCitrixMediaRedirectionStatus,
     });

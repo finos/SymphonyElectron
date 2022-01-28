@@ -1,5 +1,5 @@
 import { enumerateValues } from 'registry-js';
-import { getCitrixMediaRedirectionStatus } from '../src/app/citrix-handler';
+import { getCitrixMediaRedirectionStatus, RedirectionStatus } from '../src/app/citrix-handler';
 
 jest.mock('registry-js');
 
@@ -21,7 +21,7 @@ describe('citrix handler', () => {
       },
     ]);
     const status = getCitrixMediaRedirectionStatus();
-    expect(status).toBe('inactive');
+    expect(status).toBe(RedirectionStatus.INACTIVE);
   });
 
   it('status supported', () => {
@@ -33,7 +33,7 @@ describe('citrix handler', () => {
       },
     ]);
     const status = getCitrixMediaRedirectionStatus();
-    expect(status).toBe('supported');
+    expect(status).toBe(RedirectionStatus.SUPPORTED);
   });
 
   it('status unsupported', () => {
@@ -45,6 +45,6 @@ describe('citrix handler', () => {
       },
     ]);
     const status = getCitrixMediaRedirectionStatus();
-    expect(status).toBe('unsupported');
+    expect(status).toBe(RedirectionStatus.UNSUPPORTED);
   });
 });
