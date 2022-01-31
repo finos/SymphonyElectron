@@ -1,4 +1,5 @@
 import { activityDetection } from '../src/app/activity-detection';
+import { getCitrixMediaRedirectionStatus } from '../src/app/citrix-handler';
 import { downloadHandler } from '../src/app/download-handler';
 import '../src/app/main-api-handler';
 import { protocolHandler } from '../src/app/protocol-handler';
@@ -125,6 +126,12 @@ jest.mock('../src/app/notifications/notification-helper', () => {
       showNotification: jest.fn(),
       closeNotification: jest.fn(),
     },
+  };
+});
+
+jest.mock('../src/app/citrix-handler', () => {
+  return {
+    getCitrixMediaRedirectionStatus: jest.fn(),
   };
 });
 
@@ -482,6 +489,14 @@ describe('main api handler', () => {
       };
       ipcMain.send(apiName.symphonyApi, value);
       expect(fromWebContentsMocked.getNativeWindowHandle).toBeCalledTimes(1);
+    });
+
+    it('should call `getCitrixMediaRedirectionStatus` correctly', () => {
+      const value = {
+        cmd: apiCmds.getCitrixMediaRedirectionStatus,
+      };
+      ipcMain.send(apiName.symphonyApi, value);
+      expect(getCitrixMediaRedirectionStatus).toBeCalled();
     });
   });
 });
