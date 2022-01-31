@@ -733,6 +733,16 @@ export class SSFApi {
   }
 
   /**
+   * Get native window handle of the window where the renderer is displayed
+   * @returns the platform-specific handle of the window.
+   */
+  public getNativeWindowHandle(): Promise<Buffer> {
+    return ipcRenderer.invoke(apiName.symphonyApi, {
+      cmd: apiCmds.getNativeWindowHandle,
+    });
+  }
+
+  /**
    * Retrieves the current status of Citrix' media redirection feature
    * @returns status
    */

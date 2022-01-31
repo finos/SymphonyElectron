@@ -278,6 +278,13 @@
     <button id="run-update">Update</button>
 
     <hr />
+    <p>Native Window Handle:</p>
+    <button id="get-window-handle">Get window handle</button>
+    <input type="text" id="text-window-handle" />
+    <hr />
+    <br />
+
+    <hr />
     <p>Citrix Media Redirection Status:</p>
     <button id="get-citrix-media-redir">Get status</button>
     <input type="text" id="text-citrix-media-redir" />
@@ -328,6 +335,7 @@
       checkMediaPermission: 'check-media-permission',
       restartApp: 'restart-app',
       autoUpdate: 'auto-update',
+      getNativeWindowHandle: 'get-native-window-handle',
       getCitrixMediaRedirectionStatus: 'get-citrix-media-redirection-status',
     };
     let requestId = 0;
@@ -1182,6 +1190,26 @@
         postMessage(apiCmds.restartApp);
       }
     });
+
+    document
+      .getElementById('get-window-handle')
+      .addEventListener('click', () => {
+        const resultCallback = (handle) => {
+          const handleStr = [...handle]
+            .map((b) => b.toString(16).padStart(2, '0'))
+            .join('');
+          document.getElementById('text-window-handle').value = handleStr;
+        };
+        if (window.ssf) {
+          window.ssf.getNativeWindowHandle().then(resultCallback);
+        } else if (window.manaSSF) {
+          window.manaSSF.getNativeWindowHandle().then(resultCallback);
+        } else {
+          postRequest(apiCmds.getNativeWindowHandle, null, {
+            successCallback: resultCallback,
+          });
+        }
+      });
 
     document
       .getElementById('get-citrix-media-redir')
