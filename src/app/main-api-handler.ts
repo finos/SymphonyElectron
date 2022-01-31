@@ -449,6 +449,14 @@ ipcMain.handle(
             : false;
         }
         break;
+      case apiCmds.getNativeWindowHandle:
+        const browserWin = BrowserWindow.fromWebContents(
+          event.sender,
+        ) as ICustomBrowserWindow;
+        if (browserWin && windowExists(browserWin)) {
+          return browserWin.getNativeWindowHandle();
+        }
+        break;
     }
     return;
   },
