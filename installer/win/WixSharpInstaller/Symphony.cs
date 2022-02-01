@@ -26,7 +26,7 @@ class Script
     {
         // The name "Symphony" is used in a lot of places, for paths, shortut names and installer filename, so define it once
         var productName = "Symphony";
-        
+
         var userDataPathArgument = "--userDataPath=\"[USER_DATA_PATH]\"";
 
         File updateService = new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\auto-update\auto_update_service.exe");
@@ -51,8 +51,8 @@ class Script
             StartOn = SvcEvent.Install,
             StopOn = SvcEvent.InstallUninstall_Wait,
             RemoveOn = SvcEvent.Uninstall_Wait,
-        };  
-        
+        };
+
         // Create a wixsharp project instance and assign the project name to it, and a hierarchy of all files to include
         // Files are taken from multiple locations, and not all files in each location should be included, which is why
         // the file list is rather long and explicit. At some point we might make the `dist` folder match exactly the
@@ -61,12 +61,14 @@ class Script
             new Dir(@"%ProgramFiles%\" + productName,
                 new File(new Id("symphony_exe"), @"..\..\..\dist\win-unpacked\Symphony.exe",
                     // Create two shortcuts to the main Symphony.exe file, one on the desktop and one in the program menu
-                    new FileShortcut(productName, @"%Desktop%") { 
+                    new FileShortcut(productName, @"%Desktop%")
+                    {
                         IconFile = @"..\..\..\images\icon.ico",
                         Arguments = userDataPathArgument
                     },
-                    new FileShortcut(productName, @"%ProgramMenu%") { 
-                        IconFile = @"..\..\..\images\icon.ico", 
+                    new FileShortcut(productName, @"%ProgramMenu%")
+                    {
+                        IconFile = @"..\..\..\images\icon.ico",
                         Arguments = userDataPathArgument
                     }
                 ),
@@ -174,7 +176,7 @@ class Script
         // More details can be found in this stackoverflow post:
         //      https://stackoverflow.com/a/26344742
         project.GUID = new System.Guid("{4042AD1C-90E1-4032-B6B9-2BF6A4214096}");
-        project.ProductId =  System.Guid.NewGuid();
+        project.ProductId = System.Guid.NewGuid();
         project.UpgradeCode = new System.Guid("{36402281-8141-4797-8A90-07CFA75EFA55}");
 
         // Allow any versions to be upgraded/downgraded freely
@@ -289,7 +291,7 @@ class Script
         project.ControlPanelInfo.NoModify = true;
         project.ControlPanelInfo.ProductIcon = @"..\..\..\images\icon.ico";
         project.ControlPanelInfo.Manufacturer = "Symphony";
-        
+
         project.Platform = Platform.x64;
 
         // Generate an MSI from all settings done above
@@ -304,7 +306,7 @@ class Script
             if (e.IsInstalling || e.IsUpgrading)
             {
                 // "ALLUSERS" will be set to "2" if installing through UI, so the "MSIINSTALLPERUSER" property can be used so the user can choose install scope
-                if (e.Session["ALLUSERS"] != "2" )
+                if (e.Session["ALLUSERS"] != "2")
                 {
                     // If "ALLUSERS" is "1" or "", this is a quiet command line installation, and we need to set the right paths here, since the UI haven't.
 
@@ -321,17 +323,18 @@ class Script
                     else
                     {
                         // Install for all users
-                        e.Session["INSTALLDIR"] = e.Session["PROGRAMSFOLDER"]  + @"\Symphony\" + e.ProductName;
+                        e.Session["INSTALLDIR"] = e.Session["PROGRAMSFOLDER"] + @"\Symphony\" + e.ProductName;
                     }
                 }
 
                 // Try to close all running symphony instances before installing. Since we have started using the EndSession message to tell the app to exit,
                 // we don't really need to force terminate anymore. But the older versions of SDA does not listen for the EndSession event, so we still need
                 // this code to ensure older versions gets shut down properly.
-                System.Diagnostics.Process.GetProcessesByName("Symphony").ForEach(p => {
-                    if( System.IO.Path.GetFileName(p.MainModule.FileName) =="Symphony.exe")
+                System.Diagnostics.Process.GetProcessesByName("Symphony").ForEach(p =>
+                {
+                    if (System.IO.Path.GetFileName(p.MainModule.FileName) == "Symphony.exe")
                     {
-                        if( !p.HasExited )
+                        if (!p.HasExited)
                         {
                             p.Kill();
                             p.WaitForExit();
@@ -345,13 +348,14 @@ class Script
             // We always seem to get this specific exception triggered, but the application still close down correctly.
             // The exception description is "Only part of a ReadProcessMemory or WriteProcessMemory request was completed".
             // We ignore that specific exception, so as not to put false error outputs into the log.
-            if (ex.NativeErrorCode != 299) {
-                e.Session.Log("Error trying to close all Symphony instances: " + ex.ToString() );
+            if (ex.NativeErrorCode != 299)
+            {
+                e.Session.Log("Error trying to close all Symphony instances: " + ex.ToString());
             }
         }
         catch (System.Exception ex)
         {
-            e.Session.Log("Error trying to close all Symphony instances: " + ex.ToString() );
+            e.Session.Log("Error trying to close all Symphony instances: " + ex.ToString());
         }
     }
 }
@@ -377,7 +381,7 @@ public class CustomActions
         }
         catch (System.Exception e)
         {
-            session.Log("Error executing InstallVariant: " + e.ToString() );
+            session.Log("Error executing InstallVariant: " + e.ToString());
             return ActionResult.Failure;
         }
         return ActionResult.Success;
@@ -420,7 +424,7 @@ public class CustomActions
         }
         catch (System.Exception e)
         {
-            session.Log("Error executing UpdateConfig: " + e.ToString() );
+            session.Log("Error executing UpdateConfig: " + e.ToString());
             return ActionResult.Failure;
         }
         return ActionResult.Success;
@@ -432,7 +436,7 @@ public class CustomActions
     // `value` is the value to insert for the setting, and needs to be grabbed from the propery
     // collection before calling the function. The function returns the full config file content with
     // the requested replacement performed.
-    static string ReplaceProperty( string data, string name, string value )
+    static string ReplaceProperty(string data, string name, string value)
     {
         // Using regular expressions to replace the existing value in the config file with the
         // one from the property. This is the same as the regex we used to have in the old
@@ -447,7 +451,7 @@ public class CustomActions
     // `value` is the value to insert for the setting, and needs to be grabbed from the propery
     // collection before calling the function. The function returns the full config file content with
     // the requested replacement performed.
-    static string ReplaceBooleanProperty( string data, string name, string value )
+    static string ReplaceBooleanProperty(string data, string name, string value)
     {
         // Using regular expressions to replace the existing value in the config file with the
         // one from the property. This is the same as the regex we used to have in the old
@@ -460,12 +464,12 @@ public class CustomActions
     // and will throw an error for invalid escape codes. To make a path valid for parsing, we need
     // to replace each backslash with doubli backslash. After SDA have parsed the JSON, it will make
     // the double backslash become single backslash again.
-    static string FixPathFormat( string path )
+    static string FixPathFormat(string path)
     {
         return path.Replace(@"\", @"\\");
     }
-    
-    
+
+
     // CleanRegistry custom action
     [CustomAction]
     public static ActionResult CleanRegistry(Session session)
@@ -474,7 +478,7 @@ public class CustomActions
         {
             // Remove registry keys added for auto-launch
 
-            using( var key = Registry.Users.OpenSubKey(@"\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\Run", true) )
+            using (var key = Registry.Users.OpenSubKey(@"\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\Run", true))
             {
                 if (key != null)
                 {
@@ -485,14 +489,14 @@ public class CustomActions
 
             // Remove registry keys added by protocol handlers
 
-            using( var key = Registry.LocalMachine.OpenSubKey(@"Software\Classes", true) )
+            using (var key = Registry.LocalMachine.OpenSubKey(@"Software\Classes", true))
             {
                 if (key != null)
                 {
                     key.DeleteSubKeyTree("symphony", false);
                 }
             }
-            using( var key = Registry.ClassesRoot.OpenSubKey(@"\", true) )
+            using (var key = Registry.ClassesRoot.OpenSubKey(@"\", true))
             {
                 if (key != null)
                 {
@@ -502,7 +506,7 @@ public class CustomActions
         }
         catch (System.Exception e)
         {
-            session.Log("Error executing CleanRegistry: " + e.ToString() );
+            session.Log("Error executing CleanRegistry: " + e.ToString());
             return ActionResult.Success;
         }
         return ActionResult.Success;
@@ -516,7 +520,7 @@ public class CustomActions
         {
             // Remove registry keys added for auto-launch
 
-            using( var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true) )
+            using (var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true))
             {
                 if (key != null)
                 {
@@ -528,7 +532,7 @@ public class CustomActions
 
             // Remove registry keys added by protocol handlers
 
-            using( var key = Registry.CurrentUser.OpenSubKey(@"Software\Classes", true) )
+            using (var key = Registry.CurrentUser.OpenSubKey(@"Software\Classes", true))
             {
                 if (key != null)
                 {
@@ -538,7 +542,7 @@ public class CustomActions
         }
         catch (System.Exception e)
         {
-            session.Log("Error executing CleanRegistryCurrentUser: " + e.ToString() );
+            session.Log("Error executing CleanRegistryCurrentUser: " + e.ToString());
             return ActionResult.Success;
         }
         return ActionResult.Success;
@@ -550,11 +554,12 @@ public class CustomActions
     {
         try
         {
-            if (session.Property("LAUNCH_ON_INSTALL")=="true") 
+            if (session.Property("LAUNCH_ON_INSTALL") == "true")
             {
                 System.Diagnostics.Process process = new System.Diagnostics.Process();
-                process.StartInfo.FileName =  System.IO.Path.Combine(session.Property("INSTALLDIR"), "Symphony.exe");
-                if( session.Property("USER_DATA_PATH") != "" ) {
+                process.StartInfo.FileName = System.IO.Path.Combine(session.Property("INSTALLDIR"), "Symphony.exe");
+                if (session.Property("USER_DATA_PATH") != "")
+                {
                     process.StartInfo.Arguments = "--userDataPath=\"" + session.Property("USER_DATA_PATH") + "\"";
                 }
                 process.Start();
@@ -562,7 +567,7 @@ public class CustomActions
         }
         catch (System.Exception e)
         {
-            session.Log("Error executing StartAfterInstall: " + e.ToString() );
+            session.Log("Error executing StartAfterInstall: " + e.ToString());
             return ActionResult.Failure;
         }
         return ActionResult.Success;

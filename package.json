@@ -179,7 +179,8 @@
     "auto-update": "file:auto_update",
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#9.2.2",
     "screen-share-indicator-frame": "git+https://github.com/symphonyoss/ScreenShareIndicatorFrame.git#v1.4.10",
-    "swift-search": "2.0.3"
+    "swift-search": "2.0.3",
+    "winreg": "^1.2.4"
   },
   "ava": {
     "failFast": true,
