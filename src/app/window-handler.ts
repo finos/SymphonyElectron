@@ -46,6 +46,7 @@ import {
 } from './config-handler';
 import crashHandler from './crash-handler';
 import { mainEvents } from './main-event-handler';
+import { exportLogs } from './reports-handler';
 import { SpellChecker } from './spell-check-handler';
 import { checkIfBuildExpired } from './ttl-handler';
 import { versionHandler } from './version-handler';
@@ -2004,6 +2005,9 @@ export class WindowHandler {
       globalShortcut.register('Ctrl+numsub', zoomOut);
       globalShortcut.register('Ctrl+num0', resetZoomLevel);
     }
+
+    // Register export log shortcut
+    globalShortcut.register('Ctrl+Shift+D', () => this.onExportLogs());
   }
 
   /**
@@ -2029,6 +2033,9 @@ export class WindowHandler {
       globalShortcut.unregister(isMac ? 'Cmd+Alt+2' : 'Ctrl+Shift+2');
       globalShortcut.unregister(isMac ? 'Cmd+Alt+3' : 'Ctrl+Shift+3');
     }
+
+    // Unregister export log shortcut
+    globalShortcut.unregister('Ctrl+Shift+D');
   }
 
   /**
@@ -2070,6 +2077,14 @@ export class WindowHandler {
       return;
     }
     reloadWindow(focusedWindow as ICustomBrowserWindow);
+  }
+
+  /**
+   * Exports all logs
+   */
+  private onExportLogs(): void {
+    logger.info('window-handler: Exporting logs');
+    exportLogs();
   }
 
   /**
