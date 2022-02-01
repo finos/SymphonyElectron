@@ -18,7 +18,6 @@ import { activityDetection } from './activity-detection';
 import { analytics } from './analytics-handler';
 import appStateHandler from './app-state-handler';
 import { autoUpdate } from './auto-update-handler';
-import { getCitrixMediaRedirectionStatus } from './citrix-handler';
 import { CloudConfigDataTypes, config, ICloudConfig } from './config-handler';
 import { downloadHandler } from './download-handler';
 import { mainEvents } from './main-event-handler';
@@ -458,8 +457,6 @@ ipcMain.handle(
           return browserWin.getNativeWindowHandle();
         }
         break;
-      case apiCmds.getCitrixMediaRedirectionStatus:
-        return getCitrixMediaRedirectionStatus();
     }
     return;
   },
