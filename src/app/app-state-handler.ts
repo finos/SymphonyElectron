@@ -32,7 +32,7 @@ class AppStateHandler {
       this.id = powerSaveBlocker.start('prevent-display-sleep');
       logger.info('App-state: Prevent display to sleep, id: ' + this.id);
     } else {
-      if (this.id) {
+      if (this.id !== undefined) {
         logger.info('App-state: Allow display to sleep, id: ' + this.id);
         powerSaveBlocker.stop(this.id);
         this.id = undefined;
