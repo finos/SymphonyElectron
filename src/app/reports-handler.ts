@@ -15,6 +15,7 @@ import { logger } from '../common/logger';
  * @param source {String} source path
  * @param destination {String} destination path
  * @param fileExtensions {Array} array of file ext
+ * @param retrievedLogs {Array} array of client logs
  * @return {Promise<void>}
  */
 const generateArchiveForDirectory = (

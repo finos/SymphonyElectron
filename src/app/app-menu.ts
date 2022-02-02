@@ -594,6 +594,7 @@ export class AppMenu {
           submenu: [
             {
               click: async () => exportLogs(),
+              accelerator: 'Ctrl+Shift+D',
               label: showLogsLabel,
             },
             {
