@@ -39,7 +39,6 @@ export const getCitrixMediaRedirectionStatus = async (): Promise<RedirectionStat
 
   return new Promise((resolve, _reject) => {
     regKey.get(CITRIX_REGISTRY_KEY_NAME, (err, redirectionSupportItem) => {
-      logger.info('citrix: ', redirectionSupportItem);
       if (err) {
         logger.info('citrix-handler: error occurred. Details: ', err);
         resolve(RedirectionStatus.INACTIVE);
