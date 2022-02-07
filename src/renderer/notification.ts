@@ -6,6 +6,10 @@ import {
   ToastNotificationActionTypes,
 } from '../app/analytics-handler';
 import { config } from '../app/config-handler';
+import {
+  IS_NODE_INTEGRATION_ENABLED,
+  IS_SAND_BOXED,
+} from '../app/window-handler';
 import { createComponentWindow, windowExists } from '../app/window-utils';
 import { AnimationQueue } from '../common/animation-queue';
 import {
@@ -14,7 +18,6 @@ import {
   NOTIFICATION_WINDOW_TITLE,
   NotificationActions,
 } from '../common/api-interface';
-import { isNodeEnv } from '../common/env';
 import { logger } from '../common/logger';
 import NotificationHandler from './notification-handler';
 
@@ -618,8 +621,8 @@ class Notification extends NotificationHandler {
       acceptFirstMouse: true,
       title: NOTIFICATION_WINDOW_TITLE,
       webPreferences: {
-        sandbox: !isNodeEnv,
-        nodeIntegration: isNodeEnv,
+        sandbox: IS_SAND_BOXED,
+        nodeIntegration: IS_NODE_INTEGRATION_ENABLED,
         devTools: true,
       },
     };
