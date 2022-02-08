@@ -20,13 +20,7 @@ import * as path from 'path';
 import { format, parse } from 'url';
 
 import { apiName, Themes, WindowTypes } from '../common/api-interface';
-import {
-  isDevEnv,
-  isLinux,
-  isMac,
-  isNodeEnv,
-  isWindowsOS,
-} from '../common/env';
+import { isDevEnv, isLinux, isMac, isWindowsOS } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import {
@@ -112,6 +106,8 @@ export const DEFAULT_HEIGHT: number = 900;
 export const DEFAULT_WELCOME_SCREEN_WIDTH: number = 542;
 export const DEFAULT_WELCOME_SCREEN_HEIGHT: number = 333;
 export const TITLE_BAR_HEIGHT: number = 32;
+export const IS_SAND_BOXED: boolean = true;
+export const IS_NODE_INTEGRATION_ENABLED: boolean = false;
 
 // Timeout on restarting SDA in case it's stuck
 const LISTEN_TIMEOUT: number = 25 * 1000;
@@ -263,7 +259,6 @@ export class WindowHandler {
 
     logger.info(`window handler: env details`, {
       contextIsolation: this.contextIsolation,
-      isNodeEnv,
       isDevEnv,
       isMac,
       isWindowsOS,
@@ -736,8 +731,8 @@ export class WindowHandler {
     ) {
       const titleBarView = new BrowserView({
         webPreferences: {
-          sandbox: !isNodeEnv,
-          nodeIntegration: isNodeEnv,
+          sandbox: IS_SAND_BOXED,
+          nodeIntegration: IS_NODE_INTEGRATION_ENABLED,
           preload: path.join(__dirname, '../renderer/_preload-component.js'),
           devTools: isDevEnv,
         },
@@ -2189,9 +2184,9 @@ export class WindowHandler {
   ): ICustomBrowserWindowConstructorOpts {
     const defaultPreferencesOpts = {
       ...{
-        sandbox: !isNodeEnv,
-        nodeIntegration: isNodeEnv,
-        contextIsolation: isNodeEnv ? false : this.contextIsolation,
+        sandbox: IS_SAND_BOXED,
+        nodeIntegration: IS_NODE_INTEGRATION_ENABLED,
+        contextIsolation: this.contextIsolation,
         backgroundThrottling: this.backgroundThrottling,
         enableRemoteModule: true,
       },

@@ -16,13 +16,7 @@ import * as path from 'path';
 import { format, parse } from 'url';
 import { apiName } from '../common/api-interface';
 
-import {
-  isDevEnv,
-  isLinux,
-  isMac,
-  isNodeEnv,
-  isWindowsOS,
-} from '../common/env';
+import { isDevEnv, isLinux, isMac, isWindowsOS } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { getGuid } from '../common/utils';
@@ -43,6 +37,8 @@ import {
   DEFAULT_WIDTH,
   ICustomBrowserView,
   ICustomBrowserWindow,
+  IS_NODE_INTEGRATION_ENABLED,
+  IS_SAND_BOXED,
   TITLE_BAR_HEIGHT,
   windowHandler,
 } from './window-handler';
@@ -187,8 +183,8 @@ export const createComponentWindow = (
     width: 300,
     ...opts,
     webPreferences: {
-      sandbox: !isNodeEnv,
-      nodeIntegration: isNodeEnv,
+      sandbox: IS_SAND_BOXED,
+      nodeIntegration: IS_NODE_INTEGRATION_ENABLED,
       preload: path.join(__dirname, '../renderer/_preload-component.js'),
       devTools: isDevEnv,
     },
@@ -1046,8 +1042,8 @@ export const loadBrowserViews = async (
 
   const titleBarView = new BrowserView({
     webPreferences: {
-      sandbox: !isNodeEnv,
-      nodeIntegration: isNodeEnv,
+      sandbox: IS_SAND_BOXED,
+      nodeIntegration: IS_NODE_INTEGRATION_ENABLED,
       preload: path.join(__dirname, '../renderer/_preload-component.js'),
       devTools: isDevEnv,
     },
