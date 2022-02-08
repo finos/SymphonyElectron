@@ -124,17 +124,17 @@ IF %errorlevel% neq 0 (
 	exit /b -1
 )
 
-call %SIGNING_FILE_PATH% ..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\auto-update\auto_update_service.exe
-IF %errorlevel% neq 0 (
-	echo "Signing failed"
-	exit /b -1
-)
+@REM call %SIGNING_FILE_PATH% ..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\auto-update\auto_update_service.exe
+@REM IF %errorlevel% neq 0 (
+@REM 	echo "Signing failed"
+@REM 	exit /b -1
+@REM )
 
-call %SIGNING_FILE_PATH% ..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\auto-update\auto_update_helper.exe
-IF %errorlevel% neq 0 (
-	echo "Signing failed"
-	exit /b -1
-)
+@REM call %SIGNING_FILE_PATH% ..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\auto-update\auto_update_helper.exe
+@REM IF %errorlevel% neq 0 (
+@REM 	echo "Signing failed"
+@REM 	exit /b -1
+@REM )
 
 call %SIGNING_FILE_PATH% ..\..\dist\win-unpacked\Symphony.exe
 IF %errorlevel% neq 0 (

@@ -47,7 +47,7 @@ export enum apiCmds {
   showNotification = 'show-notification',
   closeAllWrapperWindows = 'close-all-windows',
   setZoomLevel = 'set-zoom-level',
-  autoUpdate = 'auto-update',
+  // autoUpdate = 'auto-update',
   aboutAppClipBoardData = 'about-app-clip-board-data',
   closeMainWindow = 'close-main-window',
   minimizeMainWindow = 'minimize-main-window',
