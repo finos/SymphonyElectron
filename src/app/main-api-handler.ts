@@ -533,6 +533,20 @@ const logApiCallParams = (arg: any) => {
         )}`,
       );
       break;
+    case apiCmds.sendLogs:
+      const logFiles = 'hidden';
+      const logDetails = {
+        ...arg.logs,
+        logFiles,
+      };
+      logger.info(
+        `main-api-handler: - ${apiCmd} - Properties: ${JSON.stringify(
+          logDetails,
+          null,
+          2,
+        )}`,
+      );
+      break;
     default:
       logger.info(
         `main-api-handler: - ${apiCmd} - Properties: ${JSON.stringify(
