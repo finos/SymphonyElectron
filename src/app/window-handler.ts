@@ -573,7 +573,13 @@ export class WindowHandler {
           logger.info(`window-handler: main window crashed (killed)!`);
           return;
         }
-        logger.info(`window-handler: main window crashed!`);
+        logger.info(
+          `window-handler: main window crashed! Details:  ${JSON.stringify(
+            details,
+            null,
+            2,
+          )}`,
+        );
         const { response } = await dialog.showMessageBox({
           type: 'error',
           title: i18n.t('Renderer Process Crashed')(),
