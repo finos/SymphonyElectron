@@ -255,39 +255,7 @@ ipcMain.on(
         analytics.registerPreloadWindow(event.sender);
         break;
       case apiCmds.setCloudConfig:
-        const {
-          podLevelEntitlements,
-          acpFeatureLevelEntitlements,
-          pmpEntitlements,
-          ...rest
-        } = arg.cloudConfig as ICloudConfig;
-        if (
-          podLevelEntitlements &&
-          podLevelEntitlements.autoLaunchPath &&
-          podLevelEntitlements.autoLaunchPath.match(/\\\\/g)
-        ) {
-          podLevelEntitlements.autoLaunchPath = podLevelEntitlements.autoLaunchPath.replace(
-            /\\+/g,
-            '\\',
-          );
-        }
-        if (
-          podLevelEntitlements &&
-          podLevelEntitlements.userDataPath &&
-          podLevelEntitlements.userDataPath.match(/\\\\/g)
-        ) {
-          podLevelEntitlements.userDataPath = podLevelEntitlements.userDataPath.replace(
-            /\\+/g,
-            '\\',
-          );
-        }
-        logger.info('main-api-handler: ignored other values from SFE', rest);
-        await config.updateCloudConfig({
-          podLevelEntitlements,
-          acpFeatureLevelEntitlements,
-          pmpEntitlements,
-        });
-        await updateFeaturesForCloudConfig();
+        await updateFeaturesForCloudConfig(arg.cloudConfig as ICloudConfig);
         if (windowHandler.appMenu) {
           windowHandler.appMenu.buildMenu();
         }

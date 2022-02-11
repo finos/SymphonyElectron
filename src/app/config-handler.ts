@@ -6,7 +6,7 @@ import * as util from 'util';
 import { buildNumber } from '../../package.json';
 import { isDevEnv, isElectronQA, isLinux, isMac } from '../common/env';
 import { logger } from '../common/logger';
-import { filterOutSelectedValues, pick } from '../common/utils';
+import { arrayEquals, filterOutSelectedValues, pick } from '../common/utils';
 
 const writeFile = util.promisify(fs.writeFile);
 
@@ -15,6 +15,17 @@ export enum CloudConfigDataTypes {
   ENABLED = 'ENABLED',
   DISABLED = 'DISABLED',
 }
+
+export const ConfigFieldsToRestart = new Set([
+  'permissions',
+  'disableThrottling',
+  'isCustomTitleBar',
+  'ctWhitelist',
+  'podWhitelist',
+  'autoLaunchPath',
+  'customFlags',
+]);
+
 export interface IConfig {
   url: string;
   minimizeOnClose: CloudConfigDataTypes;
@@ -66,11 +77,13 @@ export interface IPodLevelEntitlements {
   disableThrottling: CloudConfigDataTypes;
   launchOnStartup: CloudConfigDataTypes;
   memoryThreshold: string;
-  ctWhitelist: string;
-  podWhitelist: string;
-  authNegotiateDelegateWhitelist: string;
+  ctWhitelist: string[];
+  podWhitelist: string[];
   whitelistUrl: string;
-  authServerWhitelist: string;
+  customFlags: {
+    authNegotiateDelegateWhitelist: string;
+    authServerWhitelist: string;
+  };
   autoLaunchPath: string;
   userDataPath: string;
 }
@@ -423,6 +436,70 @@ class Config {
       userDataPath: latestGlobalConfig.userDataPath,
       customFlags: latestGlobalConfig.customFlags,
     });
+  }
+
+  /**
+   * Compares the SFE cloud config & SDA Cloud config and returns the unmatched key property
+   * @param sdaCloudConfig Partial<ICloudConfig>
+   * @param sfeCloudConfig Partial<ICloudConfig>
+   */
+  public compareCloudConfig(
+    sdaCloudConfig: Partial<ICloudConfig>,
+    sfeCloudConfig: Partial<ICloudConfig>,
+  ): string[] {
+    const updatedField: string[] = [];
+    if (sdaCloudConfig && sfeCloudConfig) {
+      for (const sdaKey in sdaCloudConfig) {
+        if (sdaCloudConfig.hasOwnProperty(sdaKey)) {
+          for (const sfeKey in sfeCloudConfig) {
+            if (sdaKey !== sfeKey) {
+              continue;
+            }
+            if (
+              Array.isArray(sdaCloudConfig[sdaKey]) &&
+              Array.isArray(sfeCloudConfig[sdaKey])
+            ) {
+              if (
+                !arrayEquals(sdaCloudConfig[sdaKey], sfeCloudConfig[sfeKey])
+              ) {
+                updatedField.push(sdaKey);
+              }
+              continue;
+            }
+
+            if (
+              typeof sdaCloudConfig[sdaKey] === 'object' &&
+              typeof sfeCloudConfig[sfeKey] === 'object'
+            ) {
+              for (const sdaObjectKey in sdaCloudConfig[sdaKey]) {
+                if (sdaCloudConfig[sdaKey].hasOwnProperty(sdaObjectKey)) {
+                  for (const sfeObjectKey in sfeCloudConfig[sfeKey]) {
+                    if (
+                      sdaObjectKey === sfeObjectKey &&
+                      sdaCloudConfig[sdaKey][sdaObjectKey] !==
+                        sfeCloudConfig[sfeKey][sfeObjectKey]
+                    ) {
+                      updatedField.push(sdaKey);
+                    }
+                  }
+                }
+              }
+              continue;
+            }
+
+            if (sdaKey === sfeKey) {
+              if (sdaCloudConfig[sdaKey] !== sfeCloudConfig[sfeKey]) {
+                updatedField.push(sdaKey);
+              }
+            }
+          }
+        }
+      }
+    }
+    logger.info(`config-handler: cloud config updated fields`, [
+      ...new Set(updatedField),
+    ]);
+    return [...new Set(updatedField)];
   }
 
   /**
