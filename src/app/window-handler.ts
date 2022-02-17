@@ -1250,7 +1250,7 @@ export class WindowHandler {
       opts.alwaysOnTop = true;
     }
 
-    if (isWindowsOS && this.mainWindow) {
+    if (this.mainWindow) {
       opts.parent = this.mainWindow;
     }
 
