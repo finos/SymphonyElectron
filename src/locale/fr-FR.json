@@ -216,5 +216,8 @@
   "Your administrator has disabled": "Votre administrateur a désactivé",
   "Zoom": "Zoom",
   "Zoom In": "Zoom Avant",
-  "Zoom Out": "Zoom Arrière"
+  "Zoom Out": "Zoom Arrière",
+  "Allow once (risky)": "Autoriser une fois (risqué)",
+  "Deny": "Refuser",
+  "Invalid security certificate": "possède un certificat de sécurité non valide."
 }

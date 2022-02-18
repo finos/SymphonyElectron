@@ -216,5 +216,6 @@
   "Your administrator has disabled": "管理者によて無効にされています",
   "Zoom": "ズーム",
   "Zoom In": "ズームイン",
-  "Zoom Out": "ズームアウト"
+  "Zoom Out": "ズームアウト",
+  "Invalid security certificate": "のセキュリティ証明書は無効です。"
 }
