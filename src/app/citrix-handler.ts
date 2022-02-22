@@ -23,7 +23,7 @@ export enum RegistryValueType {
 }
 
 const CITRIX_REGISTRY_KEY = '\\Software\\Citrix\\HDXMediaStream';
-const CITRIX_REGISTRY_KEY_NAME = 'MSTeamsRedirectionSupport';
+const CITRIX_REGISTRY_KEY_NAME = 'MSTeamsRedirSupport';
 
 export const getCitrixMediaRedirectionStatus = async (): Promise<RedirectionStatus> => {
   if (!isWindowsOS) {
