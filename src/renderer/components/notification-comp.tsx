@@ -552,7 +552,6 @@ export default class NotificationComp extends React.Component<
         <button
           className={`action-button ${theming}`}
           style={{ display: hasReply ? 'block' : 'none' }}
-          title={i18n.t('Reply')()}
           onClick={this.eventHandlers.onOpenReply(id)}
         >
           {i18n.t('Reply')()}
