@@ -270,8 +270,16 @@ export const handleChildWindow = (webContents: WebContents): void => {
         ]);
         browserWin.setFullScreenable(true);
         browserWin.origin = contextOriginUrl || windowHandler.url;
-        if (isWindowsOS && browserWin && !browserWin.isDestroyed()) {
-          browserWin.setMenuBarVisibility(false);
+        if (browserWin && !browserWin.isDestroyed()) {
+          browserWin.setBounds({
+            x: newWinOptions.x,
+            y: newWinOptions.y,
+            width: newWinOptions.width,
+            height: newWinOptions.height,
+          });
+          if (isWindowsOS) {
+            browserWin.setMenuBarVisibility(false);
+          }
         }
       });
 
