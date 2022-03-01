@@ -132,4 +132,149 @@ describe('config', () => {
       return expect(configInstance.readUserConfig()).rejects.toBeTruthy();
     });
   });
+
+  describe('compareCloudConfig', () => {
+    it('should return no updated fields for same objects', () => {
+      const sdaCloudConfig: object = { configVersion: '4.0.0' };
+      const sfeCloudConfig: object = { configVersion: '4.0.0' };
+      const updatedFields = configInstance.compareCloudConfig(
+        sdaCloudConfig,
+        sfeCloudConfig,
+      );
+
+      expect(updatedFields.length).toBe(0);
+    });
+
+    it('should return no updated fields for empty object', () => {
+      const sdaCloudConfig: object = { configVersion: '4.0.0' };
+      const sfeCloudConfig: object = {};
+      const updatedFields = configInstance.compareCloudConfig(
+        sdaCloudConfig,
+        sfeCloudConfig,
+      );
+
+      expect(updatedFields.length).toBe(0);
+    });
+
+    it('should return correct number of updated fields', () => {
+      const sdaCloudConfig: object = {
+        memoryThreshold: false,
+        isCustomTitleBar: true,
+      };
+      const sfeCloudConfig: object = {
+        memoryThreshold: true,
+        isCustomTitleBar: true,
+      };
+      const updatedFields = configInstance.compareCloudConfig(
+        sdaCloudConfig,
+        sfeCloudConfig,
+      );
+
+      expect(updatedFields.length).toBe(1);
+      expect(updatedFields[0]).toBe('memoryThreshold');
+    });
+
+    it('should compare nested object and return correct fields', () => {
+      const sdaCloudConfig: object = {
+        memoryThreshold: false,
+        customFlags: {
+          authNegotiateDelegateWhitelist: '*.symphony.com',
+          authServerWhitelist: '',
+        },
+      };
+      const sfeCloudConfig: object = {
+        memoryThreshold: false,
+        customFlags: {
+          authNegotiateDelegateWhitelist: '*.symphony.com',
+          authServerWhitelist: '',
+        },
+      };
+      const updatedFields = configInstance.compareCloudConfig(
+        sdaCloudConfig,
+        sfeCloudConfig,
+      );
+
+      expect(updatedFields.length).toBe(0);
+    });
+
+    it('should return correct number of updated fields for nested object comparison', () => {
+      const sdaCloudConfig: object = {
+        memoryThreshold: false,
+        customFlags: {
+          authNegotiateDelegateWhitelist: '',
+          authServerWhitelist: '',
+        },
+      };
+      const sfeCloudConfig: object = {
+        memoryThreshold: false,
+        customFlags: {
+          authNegotiateDelegateWhitelist: '*.symphony.com',
+          authServerWhitelist: '',
+        },
+      };
+      const updatedFields = configInstance.compareCloudConfig(
+        sdaCloudConfig,
+        sfeCloudConfig,
+      );
+
+      expect(updatedFields.length).toBe(1);
+      expect(updatedFields[0]).toBe('customFlags');
+    });
+
+    it('should compare array and return correct fields', () => {
+      const sdaCloudConfig: object = {
+        memoryThreshold: false,
+        customFlags: {
+          authNegotiateDelegateWhitelist: '',
+          authServerWhitelist: '',
+        },
+        ctWhitelist: [],
+        podWhitelist: [],
+      };
+      const sfeCloudConfig: object = {
+        memoryThreshold: false,
+        customFlags: {
+          authNegotiateDelegateWhitelist: '',
+          authServerWhitelist: '',
+        },
+        ctWhitelist: [],
+        podWhitelist: [],
+      };
+      const updatedFields = configInstance.compareCloudConfig(
+        sdaCloudConfig,
+        sfeCloudConfig,
+      );
+
+      expect(updatedFields.length).toBe(0);
+    });
+
+    it('should return correct number of updated fields for array comparison', () => {
+      const sdaCloudConfig: object = {
+        memoryThreshold: false,
+        customFlags: {
+          authNegotiateDelegateWhitelist: '',
+          authServerWhitelist: '',
+        },
+        ctWhitelist: ['amulli'],
+        podWhitelist: [],
+      };
+      const sfeCloudConfig: object = {
+        memoryThreshold: false,
+        customFlags: {
+          authNegotiateDelegateWhitelist: '',
+          authServerWhitelist: '',
+        },
+        ctWhitelist: [],
+        podWhitelist: ['butti'],
+      };
+      const updatedFields = configInstance.compareCloudConfig(
+        sdaCloudConfig,
+        sfeCloudConfig,
+      );
+
+      expect(updatedFields.length).toBe(2);
+      expect(updatedFields[0]).toBe('ctWhitelist');
+      expect(updatedFields[1]).toBe('podWhitelist');
+    });
+  });
 });

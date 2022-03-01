@@ -10,6 +10,7 @@ import { IDownloadItem } from '../app/download-handler';
 import {
   apiCmds,
   apiName,
+  ConfigUpdateType,
   IBadgeCount,
   IBoundsChange,
   ICPUUsage,
@@ -65,6 +66,9 @@ export interface ILocalObject {
   collectLogsCallback?: Array<() => void>;
   analyticsEventHandler?: (arg: any) => void;
   restartFloater?: (arg: IRestartFloaterData) => void;
+  showClientBannerCallback?: Array<
+    (reason: string, action: ConfigUpdateType) => void
+  >;
 }
 
 const local: ILocalObject = {
@@ -751,6 +755,21 @@ export class SSFApi {
       cmd: apiCmds.getCitrixMediaRedirectionStatus,
     });
   }
+
+  /**
+   * Allows JS to register a function to display a client banner
+   * @param callback
+   */
+  public registerClientBanner(
+    callback: (reason: string, action: ConfigUpdateType) => void,
+  ): void {
+    if (!local.showClientBannerCallback) {
+      local.showClientBannerCallback = new Array<() => void>();
+    }
+    if (typeof callback === 'function') {
+      local.showClientBannerCallback.push(callback);
+    }
+  }
 }
 
 /**
@@ -978,6 +997,18 @@ local.ipcRenderer.on('notification-actions', (_event, args) => {
   data.notificationData = args.notificationData;
   if (args && callback) {
     callback(args.event, data);
+  }
+});
+
+/**
+ * An event triggered by the main process on updating the cloud config
+ * @param {string[]}
+ */
+local.ipcRenderer.on('display-client-banner', (_event, args) => {
+  if (local.showClientBannerCallback) {
+    for (const callback of local.showClientBannerCallback) {
+      callback(args.reason, args.action);
+    }
   }
 });
 

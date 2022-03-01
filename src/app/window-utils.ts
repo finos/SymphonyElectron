@@ -25,6 +25,8 @@ import { autoLaunchInstance } from './auto-launch-controller';
 import {
   CloudConfigDataTypes,
   config,
+  ConfigFieldsToRestart,
+  ICloudConfig,
   IConfig,
   ICustomRectangle,
 } from './config-handler';
@@ -948,7 +950,64 @@ export const getWindowByName = (
   });
 };
 
-export const updateFeaturesForCloudConfig = async (): Promise<void> => {
+export const updateFeaturesForCloudConfig = async (
+  cloudConfig: ICloudConfig,
+): Promise<void> => {
+  const {
+    podLevelEntitlements,
+    acpFeatureLevelEntitlements,
+    pmpEntitlements,
+    ...rest
+  } = cloudConfig as ICloudConfig;
+  if (
+    podLevelEntitlements &&
+    podLevelEntitlements.autoLaunchPath &&
+    podLevelEntitlements.autoLaunchPath.match(/\\\\/g)
+  ) {
+    podLevelEntitlements.autoLaunchPath = podLevelEntitlements.autoLaunchPath.replace(
+      /\\+/g,
+      '\\',
+    );
+  }
+  if (
+    podLevelEntitlements &&
+    podLevelEntitlements.userDataPath &&
+    podLevelEntitlements.userDataPath.match(/\\\\/g)
+  ) {
+    podLevelEntitlements.userDataPath = podLevelEntitlements.userDataPath.replace(
+      /\\+/g,
+      '\\',
+    );
+  }
+
+  logger.info(
+    'window-utils: filtered SDA cloudConfig',
+    config.getMergedConfig(config.cloudConfig as ICloudConfig) as IConfig,
+  );
+  logger.info(
+    'window-utils: filtered SFE cloud config',
+    config.getMergedConfig({
+      podLevelEntitlements,
+      acpFeatureLevelEntitlements,
+      pmpEntitlements,
+    }) as IConfig,
+  );
+  const updatedCloudConfigFields = config.compareCloudConfig(
+    config.getMergedConfig(config.cloudConfig as ICloudConfig) as IConfig,
+    config.getMergedConfig({
+      podLevelEntitlements,
+      acpFeatureLevelEntitlements,
+      pmpEntitlements,
+    }) as IConfig,
+  );
+
+  logger.info('window-utils: ignored other values from SFE', rest);
+  await config.updateCloudConfig({
+    podLevelEntitlements,
+    acpFeatureLevelEntitlements,
+    pmpEntitlements,
+  });
+
   const {
     alwaysOnTop: isAlwaysOnTop,
     launchOnStartup,
@@ -983,6 +1042,28 @@ export const updateFeaturesForCloudConfig = async (): Promise<void> => {
       );
       memoryMonitor.setMemoryThreshold(parseInt(memoryThreshold, 10));
       mainWebContents.send('initialize-memory-refresh');
+    }
+  }
+
+  logger.info(
+    `window-utils: Updated cloud config fields`,
+    updatedCloudConfigFields,
+  );
+  if (updatedCloudConfigFields && updatedCloudConfigFields.length) {
+    if (mainWebContents && !mainWebContents.isDestroyed()) {
+      const shouldRestart = updatedCloudConfigFields.some((field) =>
+        ConfigFieldsToRestart.has(field),
+      );
+      logger.info(
+        `window-utils: should restart for updated cloud config field?`,
+        shouldRestart,
+      );
+      if (shouldRestart) {
+        mainWebContents.send('display-client-banner', {
+          reason: 'cloudConfig',
+          action: 'restart',
+        });
+      }
     }
   }
 };
