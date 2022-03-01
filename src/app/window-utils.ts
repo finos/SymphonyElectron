@@ -979,13 +979,26 @@ export const updateFeaturesForCloudConfig = async (
       '\\',
     );
   }
-  const updatedCloudConfigFields = config.compareCloudConfig(
-    config.cloudConfig,
-    {
+
+  logger.info(
+    'window-utils: filtered SDA cloudConfig',
+    config.getMergedConfig(config.cloudConfig as ICloudConfig) as IConfig,
+  );
+  logger.info(
+    'window-utils: filtered SFE cloud config',
+    config.getMergedConfig({
       podLevelEntitlements,
       acpFeatureLevelEntitlements,
       pmpEntitlements,
-    },
+    }) as IConfig,
+  );
+  const updatedCloudConfigFields = config.compareCloudConfig(
+    config.getMergedConfig(config.cloudConfig as ICloudConfig) as IConfig,
+    config.getMergedConfig({
+      podLevelEntitlements,
+      acpFeatureLevelEntitlements,
+      pmpEntitlements,
+    }) as IConfig,
   );
 
   logger.info('window-utils: ignored other values from SFE', rest);
@@ -1032,10 +1045,18 @@ export const updateFeaturesForCloudConfig = async (
     }
   }
 
+  logger.info(
+    `window-utils: Updated cloud config fields`,
+    updatedCloudConfigFields,
+  );
   if (updatedCloudConfigFields && updatedCloudConfigFields.length) {
     if (mainWebContents && !mainWebContents.isDestroyed()) {
       const shouldRestart = updatedCloudConfigFields.some((field) =>
         ConfigFieldsToRestart.has(field),
+      );
+      logger.info(
+        `window-utils: should restart for updated cloud config field?`,
+        shouldRestart,
       );
       if (shouldRestart) {
         mainWebContents.send('display-client-banner', {

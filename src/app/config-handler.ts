@@ -444,8 +444,8 @@ class Config {
    * @param sfeCloudConfig Partial<ICloudConfig>
    */
   public compareCloudConfig(
-    sdaCloudConfig: Partial<ICloudConfig>,
-    sfeCloudConfig: Partial<ICloudConfig>,
+    sdaCloudConfig: IConfig,
+    sfeCloudConfig: IConfig,
   ): string[] {
     const updatedField: string[] = [];
     if (sdaCloudConfig && sfeCloudConfig) {
@@ -500,6 +500,18 @@ class Config {
       ...new Set(updatedField),
     ]);
     return [...new Set(updatedField)];
+  }
+
+  /**
+   * Merges the different cloud config into config
+   * @param cloudConfig
+   */
+  public getMergedConfig(cloudConfig: ICloudConfig): object {
+    return {
+      ...cloudConfig.acpFeatureLevelEntitlements,
+      ...cloudConfig.podLevelEntitlements,
+      ...cloudConfig.pmpEntitlements,
+    };
   }
 
   /**

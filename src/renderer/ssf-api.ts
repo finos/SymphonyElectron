@@ -66,7 +66,9 @@ export interface ILocalObject {
   collectLogsCallback?: Array<() => void>;
   analyticsEventHandler?: (arg: any) => void;
   restartFloater?: (arg: IRestartFloaterData) => void;
-  showClientBannerCallback?: (reason: string, action: ConfigUpdateType) => void;
+  showClientBannerCallback?: Array<
+    (reason: string, action: ConfigUpdateType) => void
+  >;
 }
 
 const local: ILocalObject = {
@@ -761,8 +763,11 @@ export class SSFApi {
   public registerClientBanner(
     callback: (reason: string, action: ConfigUpdateType) => void,
   ): void {
+    if (!local.showClientBannerCallback) {
+      local.showClientBannerCallback = new Array<() => void>();
+    }
     if (typeof callback === 'function') {
-      local.showClientBannerCallback = callback;
+      local.showClientBannerCallback.push(callback);
     }
   }
 }
@@ -1000,8 +1005,10 @@ local.ipcRenderer.on('notification-actions', (_event, args) => {
  * @param {string[]}
  */
 local.ipcRenderer.on('display-client-banner', (_event, args) => {
-  if (typeof local.showClientBannerCallback === 'function') {
-    local.showClientBannerCallback(args.reason, args.action);
+  if (local.showClientBannerCallback) {
+    for (const callback of local.showClientBannerCallback) {
+      callback(args.reason, args.action);
+    }
   }
 });
 
