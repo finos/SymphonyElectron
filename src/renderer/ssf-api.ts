@@ -445,12 +445,12 @@ export class SSFApi {
   /**
    * Auto update
    */
-  // public autoUpdate(filename: string): void {
-  //   local.ipcRenderer.send(apiName.symphonyApi, {
-  //     cmd: apiCmds.autoUpdate,
-  //     filename,
-  //   });
-  // }
+  public autoUpdate(filename: string): void {
+    local.ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.autoUpdate,
+      filename,
+    });
+  }
 
   /**
    * Sets the count on the tray icon to the given number.
