@@ -271,11 +271,11 @@
     </table>
     <input type="button" id="restart-app" value="Restart App" />
 
-    <!-- <hr />
+    <hr />
     <h1>Auto-update Test</h1>
     Full path to MSI <input type="text" id="update-file" />
     <br />
-    <button id="run-update">Update</button> -->
+    <button id="run-update">Update</button>
 
     <hr />
     <p>Native Window Handle:</p>
@@ -334,7 +334,7 @@
       getCPUUsage: 'get-cpu-usage',
       checkMediaPermission: 'check-media-permission',
       restartApp: 'restart-app',
-      // autoUpdate: 'auto-update',
+      autoUpdate: 'auto-update',
       getNativeWindowHandle: 'get-native-window-handle',
       getCitrixMediaRedirectionStatus: 'get-citrix-media-redirection-status',
     };
@@ -502,16 +502,16 @@
       }
     });
 
-    // const runUpdateButton = document.getElementById('run-update');
-    // runUpdateButton.addEventListener('click', () => {
-    //   const filename = document.getElementById('update-file').value;
-    //   if (window.ssf) {
-    //     const autoUpdate = new window.ssf.AutoUpdate();
-    //     autoUpdate.update(filename);
-    //   } else {
-    //     postMessage(apiCmds.autoUpdate, { filename: filename });
-    //   }
-    // });
+    const runUpdateButton = document.getElementById('run-update');
+    runUpdateButton.addEventListener('click', () => {
+      const filename = document.getElementById('update-file').value;
+      if (window.ssf) {
+        const autoUpdate = new window.ssf.AutoUpdate();
+        autoUpdate.update(filename);
+      } else {
+        postMessage(apiCmds.autoUpdate, { filename: filename });
+      }
+    });
 
     let win;
 
