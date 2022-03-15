@@ -20,6 +20,7 @@ import appStateHandler from './app-state-handler';
 import { getCitrixMediaRedirectionStatus } from './citrix-handler';
 import { CloudConfigDataTypes, config, ICloudConfig } from './config-handler';
 import { downloadHandler } from './download-handler';
+import { getContentWindowHandle } from './hwnd-handler';
 import { mainEvents } from './main-event-handler';
 import { memoryMonitor } from './memory-monitor';
 import notificationHelper from './notifications/notification-helper';
@@ -454,7 +455,8 @@ ipcMain.handle(
           event.sender,
         ) as ICustomBrowserWindow;
         if (browserWin && windowExists(browserWin)) {
-          return browserWin.getNativeWindowHandle();
+          const windowHandle = browserWin.getNativeWindowHandle();
+          return getContentWindowHandle(windowHandle);
         }
         break;
       case apiCmds.getCitrixMediaRedirectionStatus:
