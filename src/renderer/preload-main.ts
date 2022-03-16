@@ -91,6 +91,7 @@ if (ssfWindow.ssf) {
     getNativeWindowHandle: ssfWindow.ssf.getNativeWindowHandle,
     getCitrixMediaRedirectionStatus:
       ssfWindow.ssf.getCitrixMediaRedirectionStatus,
+    registerClientBanner: ssfWindow.ssf.registerClientBanner,
   });
 }
 

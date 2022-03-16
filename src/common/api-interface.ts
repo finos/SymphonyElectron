@@ -263,3 +263,5 @@ export type NotificationActionCallback = (
   event: NotificationActions,
   data: INotificationData,
 ) => void;
+
+export type ConfigUpdateType = 'restart' | 'reload';

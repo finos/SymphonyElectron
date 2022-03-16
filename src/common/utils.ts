@@ -261,3 +261,17 @@ export const formatString = (str: string, data?: object): string => {
 export const calculatePercentage = (value: number, percentage: number) => {
   return value * percentage * 0.01;
 };
+
+/**
+ * Compares two arrays and returns true if they are equal
+ * @param a string[]
+ * @param b string[]
+ */
+export const arrayEquals = (a: string[], b: string[]) => {
+  return (
+    Array.isArray(a) &&
+    Array.isArray(b) &&
+    a.length === b.length &&
+    a.every((val, index) => val === b[index])
+  );
+};

@@ -21,6 +21,7 @@ import { autoUpdate } from './auto-update-handler';
 import { getCitrixMediaRedirectionStatus } from './citrix-handler';
 import { CloudConfigDataTypes, config, ICloudConfig } from './config-handler';
 import { downloadHandler } from './download-handler';
+import { getContentWindowHandle } from './hwnd-handler';
 import { mainEvents } from './main-event-handler';
 import { memoryMonitor } from './memory-monitor';
 import notificationHelper from './notifications/notification-helper';
@@ -31,6 +32,7 @@ import { activate, handleKeyPress } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 import {
   downloadManagerAction,
+  getWindowByName,
   isValidView,
   isValidWindow,
   sanitize,
@@ -256,39 +258,7 @@ ipcMain.on(
         analytics.registerPreloadWindow(event.sender);
         break;
       case apiCmds.setCloudConfig:
-        const {
-          podLevelEntitlements,
-          acpFeatureLevelEntitlements,
-          pmpEntitlements,
-          ...rest
-        } = arg.cloudConfig as ICloudConfig;
-        if (
-          podLevelEntitlements &&
-          podLevelEntitlements.autoLaunchPath &&
-          podLevelEntitlements.autoLaunchPath.match(/\\\\/g)
-        ) {
-          podLevelEntitlements.autoLaunchPath = podLevelEntitlements.autoLaunchPath.replace(
-            /\\+/g,
-            '\\',
-          );
-        }
-        if (
-          podLevelEntitlements &&
-          podLevelEntitlements.userDataPath &&
-          podLevelEntitlements.userDataPath.match(/\\\\/g)
-        ) {
-          podLevelEntitlements.userDataPath = podLevelEntitlements.userDataPath.replace(
-            /\\+/g,
-            '\\',
-          );
-        }
-        logger.info('main-api-handler: ignored other values from SFE', rest);
-        await config.updateCloudConfig({
-          podLevelEntitlements,
-          acpFeatureLevelEntitlements,
-          pmpEntitlements,
-        });
-        await updateFeaturesForCloudConfig();
+        await updateFeaturesForCloudConfig(arg.cloudConfig as ICloudConfig);
         if (windowHandler.appMenu) {
           windowHandler.appMenu.buildMenu();
         }
@@ -451,11 +421,10 @@ ipcMain.handle(
         }
         break;
       case apiCmds.getNativeWindowHandle:
-        const browserWin = BrowserWindow.fromWebContents(
-          event.sender,
-        ) as ICustomBrowserWindow;
+        const browserWin = getWindowByName(arg.windowName);
         if (browserWin && windowExists(browserWin)) {
-          return browserWin.getNativeWindowHandle();
+          const windowHandle = browserWin.getNativeWindowHandle();
+          return getContentWindowHandle(windowHandle);
         }
         break;
       case apiCmds.getCitrixMediaRedirectionStatus:

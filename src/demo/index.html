@@ -279,7 +279,10 @@
 
     <hr />
     <p>Native Window Handle:</p>
-    <button id="get-window-handle">Get window handle</button>
+    <button id="get-window-handle">
+      Get window handle (optionally enter a window name)
+    </button>
+    <input type="text" id="text-window-handle-name" />
     <input type="text" id="text-window-handle" />
     <hr />
     <br />
@@ -1200,12 +1203,15 @@
             .join('');
           document.getElementById('text-window-handle').value = handleStr;
         };
+        const windowName = document.getElementById('text-window-handle-name')
+          .value;
         if (window.ssf) {
-          window.ssf.getNativeWindowHandle().then(resultCallback);
+          window.ssf.getNativeWindowHandle(windowName).then(resultCallback);
         } else if (window.manaSSF) {
-          window.manaSSF.getNativeWindowHandle().then(resultCallback);
+          window.manaSSF.getNativeWindowHandle(windowName).then(resultCallback);
         } else {
           postRequest(apiCmds.getNativeWindowHandle, null, {
+            windowName,
             successCallback: resultCallback,
           });
         }
