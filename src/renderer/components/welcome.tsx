@@ -7,7 +7,6 @@ interface IState {
   url: string;
   message: string;
   urlValid: boolean;
-  sso: boolean;
 }
 
 const WELCOME_NAMESPACE = 'Welcome';
@@ -23,7 +22,6 @@ export default class Welcome extends React.Component<{}, IState> {
       url: 'https://[POD].symphony.com',
       message: '',
       urlValid: false,
-      sso: false,
     };
     this.updateState = this.updateState.bind(this);
   }
@@ -32,7 +30,7 @@ export default class Welcome extends React.Component<{}, IState> {
    * Render the component
    */
   public render(): JSX.Element {
-    const { url, message, urlValid, sso } = this.state;
+    const { url, message, urlValid } = this.state;
     return (
       <div className='Welcome' lang={i18n.getLocale()}>
         <div className='Welcome-image-container'>
@@ -53,19 +51,6 @@ export default class Welcome extends React.Component<{}, IState> {
                 value={url}
                 onChange={this.updatePodUrl.bind(this)}
               ></input>
-            </div>
-            <div
-              className='Welcome-main-container-sso-box'
-              title={i18n.t('Enable Single Sign On', WELCOME_NAMESPACE)()}
-            >
-              <label>
-                <input
-                  type='checkbox'
-                  checked={sso}
-                  onChange={this.updateSsoCheckbox.bind(this)}
-                />
-                {i18n.t('SSO', WELCOME_NAMESPACE)()}
-              </label>
             </div>
           </div>
           <label className='Welcome-message-label'>{message}</label>
@@ -103,14 +88,10 @@ export default class Welcome extends React.Component<{}, IState> {
    * Set pod url and pass it to the main process
    */
   public setPodUrl(): void {
-    const { url, sso } = this.state;
-    let ssoPath = '/login/sso/initsso';
-    if (url.endsWith('/')) {
-      ssoPath = 'login/sso/initsso';
-    }
+    const { url } = this.state;
     ipcRenderer.send(apiName.symphonyApi, {
       cmd: apiCmds.setPodUrl,
-      newPodUrl: sso ? `${url}${ssoPath}` : url,
+      newPodUrl: url,
     });
   }
 
@@ -129,7 +110,6 @@ export default class Welcome extends React.Component<{}, IState> {
         url,
         message: i18n.t('Please enter a valid url', WELCOME_NAMESPACE)(),
         urlValid: false,
-        sso: this.state.sso,
       });
       return;
     }
@@ -137,22 +117,6 @@ export default class Welcome extends React.Component<{}, IState> {
       url,
       message: '',
       urlValid: true,
-      sso: this.state.sso,
-    });
-  }
-
-  /**
-   * Update the SSO checkbox
-   * @param _event Event occurred upon action
-   * on the checkbox
-   */
-  public updateSsoCheckbox(_event): void {
-    const ssoCheckBox = _event.target.checked;
-    this.updateState(_event, {
-      url: this.state.url,
-      message: this.state.message,
-      urlValid: this.state.urlValid,
-      sso: ssoCheckBox,
     });
   }
 
