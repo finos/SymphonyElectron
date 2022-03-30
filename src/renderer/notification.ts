@@ -624,6 +624,7 @@ class Notification extends NotificationHandler {
         sandbox: IS_SAND_BOXED,
         nodeIntegration: IS_NODE_INTEGRATION_ENABLED,
         devTools: true,
+        disableBlinkFeatures: 'Auxclick',
       },
     };
   }
