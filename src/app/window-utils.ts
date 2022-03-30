@@ -35,6 +35,7 @@ import { memoryMonitor } from './memory-monitor';
 import { screenSnippet } from './screen-snippet-handler';
 import { updateAlwaysOnTop } from './window-actions';
 import {
+  AUX_CLICK,
   DEFAULT_HEIGHT,
   DEFAULT_WIDTH,
   ICustomBrowserView,
@@ -189,6 +190,7 @@ export const createComponentWindow = (
       nodeIntegration: IS_NODE_INTEGRATION_ENABLED,
       preload: path.join(__dirname, '../renderer/_preload-component.js'),
       devTools: isDevEnv,
+      disableBlinkFeatures: AUX_CLICK,
     },
   };
 
@@ -1127,6 +1129,7 @@ export const loadBrowserViews = async (
       nodeIntegration: IS_NODE_INTEGRATION_ENABLED,
       preload: path.join(__dirname, '../renderer/_preload-component.js'),
       devTools: isDevEnv,
+      disableBlinkFeatures: AUX_CLICK,
     },
   }) as ICustomBrowserView;
   const mainWindowBounds = windowHandler.getMainWindow()?.getBounds();
