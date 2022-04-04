@@ -1,3 +1,5 @@
+import { Size } from 'electron';
+
 export enum apiCmds {
   isOnline = 'is-online',
   getVersionInfo = 'get-version-info',
@@ -63,6 +65,7 @@ export enum apiCmds {
   onSwiftSearchMessage = 'on-shift-search-message',
   getNativeWindowHandle = 'get-native-window-handle',
   getCitrixMediaRedirectionStatus = 'get-citrix-media-redirection-status',
+  getSources = 'getSources',
 }
 
 export enum apiName {
@@ -111,6 +114,8 @@ export interface IApiArgs {
   mediaStatus: IMediaPermission;
   newPodUrl: string;
   swiftSearchData: any;
+  types: string[];
+  thumbnailSize: Size;
 }
 
 export type Themes = 'light' | 'dark';
