@@ -737,18 +737,12 @@ export class SSFApi {
   }
 
   /**
-   * Get native window handle of the window, by default where the renderer is displayed,
-   * or optionally another window identified by its name.
-   * @param windowName optional window name, defaults to current renderer window
+   * Get native window handle of the window where the renderer is displayed
    * @returns the platform-specific handle of the window.
    */
-  public getNativeWindowHandle(windowName?: string): Promise<Buffer> {
-    if (!windowName) {
-      windowName = window.name || 'main';
-    }
+  public getNativeWindowHandle(): Promise<Buffer> {
     return ipcRenderer.invoke(apiName.symphonyApi, {
       cmd: apiCmds.getNativeWindowHandle,
-      windowName,
     });
   }
 
