@@ -54,7 +54,7 @@ class Script
         //     StopOn = SvcEvent.InstallUninstall_Wait,
         //     RemoveOn = SvcEvent.Uninstall_Wait,
         // };  
-        
+
         // Create a wixsharp project instance and assign the project name to it, and a hierarchy of all files to include
         // Files are taken from multiple locations, and not all files in each location should be included, which is why
         // the file list is rather long and explicit. At some point we might make the `dist` folder match exactly the
@@ -127,9 +127,6 @@ class Script
                             ),
                             new Dir(@"keyboard-layout\build\Release",
                                 new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\keyboard-layout\build\Release\keyboard-layout-manager.node")
-                            ),
-                            new Dir(@"ref-napi\build\Release",
-                                new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ref-napi\build\Release\binding.node")
                             ),
                             new Dir(@"spawn-rx",
                                 new Files(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\*.*")

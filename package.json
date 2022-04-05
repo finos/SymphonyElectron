@@ -169,15 +169,14 @@
     "lazy-brush": "^1.0.1",
     "react": "16.13.0",
     "react-dom": "16.13.0",
-    "ref-napi": "3.0.3",
     "rimraf": "^3.0.2",
     "save-svg-as-png": "^1.4.17",
     "shell-path": "2.1.0"
   },
   "optionalDependencies": {
     "auto-update": "file:auto_update",
-    "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#9.2.2",
     "screen-share-indicator-frame": "git+https://github.com/symphonyoss/ScreenShareIndicatorFrame.git#v1.4.10",
+    "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#9.2.2",
     "swift-search": "2.0.3",
     "winreg": "^1.2.4"
   },
