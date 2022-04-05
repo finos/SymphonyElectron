@@ -1664,7 +1664,7 @@ export class WindowHandler {
           modal: true,
           frame: false,
           focusable: true,
-          transparent: false,
+          transparent: true,
           autoHideMenuBar: true,
           resizable: false,
           alwaysOnTop: true,
