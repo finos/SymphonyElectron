@@ -1,9 +1,4 @@
-import {
-  desktopCapturer,
-  DesktopCapturerSource,
-  ipcRenderer,
-  SourcesOptions,
-} from 'electron';
+import { DesktopCapturerSource, ipcRenderer, SourcesOptions } from 'electron';
 
 import {
   apiCmds,
@@ -118,10 +113,14 @@ export const getSource = async (
   }
 
   id = getNextId();
-  const sources: DesktopCapturerSource[] = await desktopCapturer.getSources({
-    types: sourcesOpts,
-    thumbnailSize: updatedOptions.thumbnailSize,
-  });
+  const sources: DesktopCapturerSource[] = await ipcRenderer.invoke(
+    apiName.symphonyApi,
+    {
+      cmd: apiCmds.getSources,
+      types: sourcesOpts,
+      thumbnailSize: updatedOptions.thumbnailSize,
+    },
+  );
   // Auto select screen source based on args for testing only
   if (screenShareArgv) {
     const title = screenShareArgv.substr(screenShareArgv.indexOf('=') + 1);

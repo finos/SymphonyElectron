@@ -2,6 +2,7 @@ import {
   app,
   BrowserWindow,
   clipboard,
+  desktopCapturer,
   dialog,
   ipcMain,
   systemPreferences,
@@ -440,8 +441,12 @@ ipcMain.handle(
           microphone,
           screen,
         };
-      default:
-        break;
+      case apiCmds.getSources:
+        const { types, thumbnailSize } = arg;
+        return desktopCapturer.getSources({
+          types,
+          thumbnailSize,
+        });
       case apiCmds.isMisspelled:
         if (typeof arg.word === 'string') {
           return windowHandler.spellchecker
@@ -459,6 +464,8 @@ ipcMain.handle(
         break;
       case apiCmds.getCitrixMediaRedirectionStatus:
         return getCitrixMediaRedirectionStatus();
+      default:
+        break;
     }
     return;
   },

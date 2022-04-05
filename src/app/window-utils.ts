@@ -4,6 +4,7 @@ import {
   BrowserWindow,
   dialog,
   nativeImage,
+  Rectangle,
   screen,
   shell,
   WebContents,
@@ -1099,9 +1100,7 @@ export const loadBrowserViews = async (
       // to get updated window bounds
       setTimeout(() => {
         const [width, height] = mainWindow.getSize();
-        titleBarView.setBounds({ x: 0, y: 0, width, height: 0 });
         mainWindow.removeBrowserView(titleBarView);
-
         if (!mainView || !viewExists(mainView)) {
           return;
         }
@@ -1123,27 +1122,31 @@ export const loadBrowserViews = async (
       ) {
         return;
       }
-      // Workaround: Need to delay getting the window bounds
-      // to get updated window bounds
-      setTimeout(() => {
-        const [width, height] = mainWindow.getSize();
-        mainWindow.addBrowserView(titleBarView);
-        titleBarView.setBounds({ x: 0, y: 0, width, height: TITLE_BAR_HEIGHT });
-        if (!mainView || !viewExists(mainView)) {
-          return;
-        }
-        mainView.setBounds({
-          width,
-          height,
-          x: 0,
-          y: TITLE_BAR_HEIGHT,
-        });
-        // Workaround as electron does not resize devtools automatically
-        if (mainView.webContents.isDevToolsOpened()) {
-          mainView.webContents.toggleDevTools();
-          mainView.webContents.toggleDevTools();
-        }
-      }, 500);
+      mainWindow.addBrowserView(titleBarView);
+      const winBounds: Rectangle = mainWindow.getBounds();
+      const currentScreenBounds: Rectangle = screen.getDisplayMatching({
+        ...winBounds,
+      }).workArea;
+      titleBarView.setBounds({
+        width: currentScreenBounds.width,
+        height: TITLE_BAR_HEIGHT,
+        x: 0,
+        y: 0,
+      });
+      if (!mainView || !viewExists(mainView)) {
+        return;
+      }
+      mainView.setBounds({
+        width: currentScreenBounds.width,
+        height: currentScreenBounds.height - TITLE_BAR_HEIGHT,
+        x: 0,
+        y: TITLE_BAR_HEIGHT,
+      });
+      // Workaround as electron does not resize devtools automatically
+      if (mainView.webContents.isDevToolsOpened()) {
+        mainView.webContents.toggleDevTools();
+        mainView.webContents.toggleDevTools();
+      }
       mainEvents.publish('leave-full-screen');
     });
 
@@ -1151,12 +1154,21 @@ export const loadBrowserViews = async (
       if (!mainView || !viewExists(mainView)) {
         return;
       }
-      const [width, height] = mainWindow.getSize();
+      const winBounds: Rectangle = mainWindow.getBounds();
+      const currentScreenBounds: Rectangle = screen.getDisplayMatching({
+        ...winBounds,
+      }).workArea;
       mainView.setBounds({
-        width,
-        height,
+        width: currentScreenBounds.width,
+        height: currentScreenBounds.height - TITLE_BAR_HEIGHT,
         x: 0,
         y: TITLE_BAR_HEIGHT,
+      });
+      titleBarView.setBounds({
+        width: currentScreenBounds.width,
+        height: TITLE_BAR_HEIGHT,
+        x: 0,
+        y: 0,
       });
     });
     mainWindow?.on('unmaximize', () => {
@@ -1166,9 +1178,15 @@ export const loadBrowserViews = async (
       const [width, height] = mainWindow.getSize();
       mainView.setBounds({
         width,
-        height,
+        height: height - TITLE_BAR_HEIGHT,
         x: 0,
         y: TITLE_BAR_HEIGHT,
+      });
+      titleBarView.setBounds({
+        width,
+        height: TITLE_BAR_HEIGHT,
+        x: 0,
+        y: 0,
       });
       // Workaround as electron does not resize devtools automatically
       if (mainView.webContents.isDevToolsOpened()) {
@@ -1198,7 +1216,7 @@ export const loadBrowserViews = async (
 
   mainView.setBounds({
     width: mainWindowBounds?.width || DEFAULT_WIDTH,
-    height: mainWindowBounds?.height || DEFAULT_HEIGHT,
+    height: (mainWindowBounds?.height || DEFAULT_HEIGHT) - TITLE_BAR_HEIGHT,
     x: 0,
     y: TITLE_BAR_HEIGHT,
   });
@@ -1211,27 +1229,23 @@ export const loadBrowserViews = async (
 
   // Workaround to fix the auto resize of the main view container height
   mainWindow.on('resize', () => {
-    setTimeout(() => {
-      if (
-        !mainView ||
-        mainView.webContents.isDestroyed() ||
-        !mainWindow ||
-        !windowExists(mainWindow)
-      ) {
-        return;
-      }
-      const bounds = mainView.getBounds();
-      const [, height] = mainWindow.getSize();
-      mainView.setBounds({
-        ...bounds,
-        ...{
-          y: mainWindow.isFullScreen() ? 0 : TITLE_BAR_HEIGHT,
-          height: mainWindow.isFullScreen()
-            ? height
-            : height - TITLE_BAR_HEIGHT,
-        },
-      });
-    }, 500);
+    if (
+      !mainView ||
+      mainView.webContents.isDestroyed() ||
+      !mainWindow ||
+      !windowExists(mainWindow)
+    ) {
+      return;
+    }
+    const bounds = mainView.getBounds();
+    const [, height] = mainWindow.getSize();
+    mainView.setBounds({
+      ...bounds,
+      ...{
+        y: mainWindow.isFullScreen() ? 0 : TITLE_BAR_HEIGHT,
+        height: mainWindow.isFullScreen() ? height : height - TITLE_BAR_HEIGHT,
+      },
+    });
   });
 
   windowHandler.setMainView(mainView);
