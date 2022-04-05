@@ -1665,7 +1665,7 @@ export class WindowHandler {
           modal: true,
           frame: false,
           focusable: true,
-          transparent: true,
+          transparent: false,
           autoHideMenuBar: true,
           resizable: false,
           alwaysOnTop: true,
@@ -1787,7 +1787,7 @@ export class WindowHandler {
         width: frameWidth,
         height: frameHeight,
         frame: false,
-        transparent: true,
+        transparent: false,
         alwaysOnTop: true,
       },
       {
