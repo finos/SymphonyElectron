@@ -9,7 +9,6 @@ describe('welcome', () => {
     url: 'https://my.symphony.com',
     message: '',
     urlValid: true,
-    sso: false,
   };
   const onLabelEvent = 'on';
   const removeListenerLabelEvent = 'removeListener';
@@ -50,7 +49,6 @@ describe('welcome', () => {
       url: 'https://corporate.symphony.com',
       message: '',
       urlValid: true,
-      sso: false,
     };
 
     const spy = jest.spyOn(Welcome.prototype, 'setState');
@@ -76,7 +74,6 @@ describe('welcome', () => {
       url: 'abcdef',
       message: 'Please enter a valid url',
       urlValid: false,
-      sso: false,
     };
 
     const spy = jest.spyOn(Welcome.prototype, 'setState');
@@ -90,30 +87,6 @@ describe('welcome', () => {
 
     input.simulate('focus');
     input.simulate('change', { target: { value: 'abcdef' } });
-
-    expect(updatePodUrlSpy).toBeCalled();
-    expect(spy).toBeCalledWith(podUrlMock);
-  });
-
-  it('should click sso checkbox', () => {
-    const podUrlMock = {
-      url: 'https://my.symphony.com',
-      message: '',
-      urlValid: true,
-      sso: true,
-    };
-
-    const spy = jest.spyOn(Welcome.prototype, 'setState');
-    const updatePodUrlSpy = jest.spyOn(Welcome.prototype, 'updateSsoCheckbox');
-
-    const wrapper = shallow(React.createElement(Welcome));
-    ipcRenderer.send('welcome', welcomeMock);
-
-    const welcomePodUrlBox = `input[type="checkbox"]`;
-    const input = wrapper.find(welcomePodUrlBox);
-
-    input.simulate('focus');
-    input.simulate('change', { target: { checked: true } });
 
     expect(updatePodUrlSpy).toBeCalled();
     expect(spy).toBeCalledWith(podUrlMock);
