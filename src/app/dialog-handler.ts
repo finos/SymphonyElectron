@@ -2,6 +2,7 @@ import { app, BrowserWindow, dialog } from 'electron';
 
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
+import { whitelistHandler } from '../common/whitelist-handler';
 import { CloudConfigDataTypes, config } from './config-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 import { windowExists } from './window-utils';
@@ -50,47 +51,47 @@ app.on('login', (event, webContents, request, authInfo, callback) => {
   );
 });
 
-let ignoreAllCertErrors = false;
-
 /**
  * If certificate error occurs allow user to deny or allow particular certificate
- * error.  If user selects 'Ignore All', then all subsequent certificate errors
- * will ignored during this session.
+ * error.
  *
  * Note: the dialog is synchronous so further processing is blocked until
  * user provides a response.
  */
+const siteNameAcceptedStatus = new Map<string, boolean>();
 app.on(
   'certificate-error',
   async (event, webContents, url, error, _certificate, callback) => {
     // TODO: Add logic verify custom certificate
+    event.preventDefault();
+    const { tld, domain, subdomain } = whitelistHandler.parseDomain(url);
+    let siteName = `${domain}${tld}`;
+    if (subdomain.length) {
+      siteName = `${subdomain}.${siteName}`;
+    }
+    logger.warn(`Certificate error: ${error} for url: ${siteName}`);
 
-    if (ignoreAllCertErrors) {
-      event.preventDefault();
-      callback(true);
+    const isSiteNameAccepted = siteNameAcceptedStatus.get(siteName);
+    if (isSiteNameAccepted !== undefined) {
+      callback(isSiteNameAccepted);
       return;
     }
-
-    logger.warn(`Certificate error: ${error} for url: ${url}`);
-
-    event.preventDefault();
 
     const browserWin = BrowserWindow.fromWebContents(webContents);
     if (browserWin && windowExists(browserWin)) {
       const { response } = await dialog.showMessageBox(browserWin, {
         type: 'warning',
-        buttons: [i18n.t('Allow')(), i18n.t('Deny')(), i18n.t('Ignore All')()],
+        buttons: [i18n.t('Allow once (risky)')(), i18n.t('Deny')()],
         defaultId: 1,
         cancelId: 1,
         noLink: true,
         title: i18n.t('Certificate Error')(),
-        message: `${i18n.t('Certificate Error')()}: ${error}\nURL: ${url}`,
+        message: `${siteName} ${i18n.t(
+          'Invalid security certificate',
+        )()}\n ${error}`,
       });
-      if (response === 2) {
-        ignoreAllCertErrors = true;
-      }
-
-      callback(response !== 1);
+      siteNameAcceptedStatus.set(siteName, !response);
+      callback(!response);
     }
   },
 );
