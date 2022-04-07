@@ -19,7 +19,7 @@ const BASIC_AUTH_NAMESPACE = 'BasicAuth';
 export default class BasicAuth extends React.Component<{}, IState> {
   private readonly eventHandlers = {
     onChange: (event) => this.change(event),
-    onSubmit: () => this.submit(),
+    onSubmit: (event) => this.submit(event),
     onClose: () => this.close(),
   };
 
@@ -140,7 +140,8 @@ export default class BasicAuth extends React.Component<{}, IState> {
   /**
    * Submits the form with provided username and password info
    */
-  private submit(): void {
+  private submit(event): void {
+    event.preventDefault();
     const { username, password } = this.state;
     if (username && password) {
       ipcRenderer.send('basic-auth-login', { username, password });

@@ -1493,13 +1493,20 @@ export class WindowHandler {
       {
         width: 360,
         height: isMac ? 270 : 295,
+        alwaysOnTop: true,
+        skipTaskbar: true,
+        resizable: false,
         show: false,
         modal: true,
-        autoHideMenuBar: true,
-        resizable: false,
+        frame: false,
+        transparent: true,
+        fullscreenable: false,
+        acceptFirstMouse: true,
       },
       {
-        devTools: isDevEnv,
+        sandbox: IS_SAND_BOXED,
+        nodeIntegration: IS_NODE_INTEGRATION_ENABLED,
+        devTools: true,
       },
     );
     opts.parent = window;

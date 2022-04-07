@@ -33,12 +33,13 @@ describe('basic auth', () => {
   });
 
   it('should call submit login', () => {
+    const fakeEvent = { preventDefault: () => {} };
     const { ipcRenderer } = require('./__mocks__/electron');
     const spy: jest.SpyInstance = jest.spyOn(ipcRenderer, 'send');
     const wrapper: ShallowWrapper = shallow(React.createElement(BasicAuth));
     wrapper.find('#username').simulate('change', usernameTargetMock);
     wrapper.find('#password').simulate('change', passwordTargetMock);
-    wrapper.find('#basicAuth').simulate('submit');
+    wrapper.find('#basicAuth').simulate('submit', fakeEvent);
     expect(spy).lastCalledWith('basic-auth-login', {
       ...usernameMock,
       ...passwordMock,
