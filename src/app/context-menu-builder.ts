@@ -77,8 +77,6 @@ export class ContextMenuBuilder {
   /**
    * Creates an instance of ContextMenuBuilder
    *
-   * @param  {spellCheckHandler} spellCheckHandler  The spell checker to generate
-   *                                                recommendations for.
    * @param  {BrowserWindow|webContents} webContents  The hosting window/WebView
    * @param  {function} processMenu If passed, this method will be passed the menu to change
    *                                it prior to display. Signature: (menu, info) => menu
