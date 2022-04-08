@@ -1,44 +1,15 @@
 import { app, MenuItem, WebContents } from 'electron';
-import * as path from 'path';
 
-import {
-  ContextMenuBuilder,
-  DictionarySync,
-  SpellCheckHandler,
-} from 'electron-spellchecker';
-import { isDevEnv, isMac } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
+import { ContextMenuBuilder } from './context-menu-builder';
 import { ICustomBrowserWindow } from './window-handler';
 import { reloadWindow } from './window-utils';
 
 export class SpellChecker {
   public locale: LocaleType = 'en-US';
-  private readonly spellCheckHandler: SpellCheckHandler;
-  private readonly dictionaryPath: string | undefined;
-  private readonly dictionarySync: DictionarySync;
 
   constructor() {
-    const dictionariesDirName = 'dictionaries';
-    if (isDevEnv) {
-      this.dictionaryPath = path.join(app.getAppPath(), dictionariesDirName);
-    } else {
-      const execPath = path.dirname(app.getPath('exe'));
-      this.dictionaryPath = path.join(
-        execPath,
-        isMac ? '..' : '',
-        dictionariesDirName,
-      );
-    }
-    this.dictionarySync = new DictionarySync(this.dictionaryPath);
-    this.spellCheckHandler = new SpellCheckHandler(this.dictionarySync);
-    this.spellCheckHandler.automaticallyIdentifyLanguages = false;
-    // language is switched w.r.t to the current system language.
-    if (!isMac) {
-      const sysLocale = app.getLocale() || 'en-US';
-      this.spellCheckHandler.switchLanguage(sysLocale);
-    }
-
     app.on('web-contents-created', (_event, webContents): void => {
       this.attachToWebContents(webContents);
     });
@@ -47,13 +18,11 @@ export class SpellChecker {
   /**
    * Attaches context-menu event for every webContents
    *
-   * @param webContents {WeContents}
+   * @param webContents {WebContents}
    */
   public attachToWebContents(webContents: WebContents): void {
     const contextMenuBuilder = new ContextMenuBuilder(
-      this.spellCheckHandler,
       webContents,
-      false,
       this.processMenu,
     );
     contextMenuBuilder.setAlternateStringFormatter(this.getStringTable());
@@ -73,17 +42,6 @@ export class SpellChecker {
     webContents.once('destroyed', () => {
       webContents.removeListener('context-menu', contextMenuListener);
     });
-  }
-
-  /**
-   * Predicts if the given text is misspelled
-   * @param text
-   */
-  public isMisspelled(text: string): boolean {
-    if (!this.spellCheckHandler) {
-      return false;
-    }
-    return this.spellCheckHandler.isMisspelled(text);
   }
 
   /**

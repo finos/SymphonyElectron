@@ -415,13 +415,6 @@ ipcMain.handle(
           types,
           thumbnailSize,
         });
-      case apiCmds.isMisspelled:
-        if (typeof arg.word === 'string') {
-          return windowHandler.spellchecker
-            ? windowHandler.spellchecker.isMisspelled(arg.word)
-            : false;
-        }
-        break;
       case apiCmds.getNativeWindowHandle:
         const browserWin = BrowserWindow.fromWebContents(
           event.sender,
@@ -494,15 +487,6 @@ const logApiCallParams = (arg: any) => {
       logger.info(
         `main-api-handler: - ${apiCmd} - Properties: ${JSON.stringify(
           openScreenPickerDetails,
-          null,
-          2,
-        )}`,
-      );
-      break;
-    case apiCmds.isMisspelled:
-      logger.verbose(
-        `main-api-handler: - ${apiCmd} - Properties: ${JSON.stringify(
-          arg,
           null,
           2,
         )}`,
