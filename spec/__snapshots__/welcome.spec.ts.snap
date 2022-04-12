@@ -34,19 +34,6 @@ exports[`welcome should render correctly 1`] = `
           value="https://[POD].symphony.com"
         />
       </div>
-      <div
-        className="Welcome-main-container-sso-box"
-        title="Enable Single Sign On"
-      >
-        <label>
-          <input
-            checked={false}
-            onChange={[Function]}
-            type="checkbox"
-          />
-          SSO
-        </label>
-      </div>
     </div>
     <label
       className="Welcome-message-label"
