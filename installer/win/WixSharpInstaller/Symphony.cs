@@ -113,26 +113,14 @@ class Script
                     new DirFiles(@"..\..\..\dist\win-unpacked\resources\*.*"),
                     new Dir(@"app.asar.unpacked",
                         new Dir(@"node_modules",
-                            new Dir(@"@felixrieseberg\spellchecker\build\Release",
-                                new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\@felixrieseberg\spellchecker\build\Release\spellchecker.node")
-                            ),
-                            new Dir(@"cld\build\Release",
-                                new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\cld\build\Release\cld.node")
-                            ),
                             new Dir(@"diskusage\build\Release",
                                 new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\diskusage\build\Release\diskusage.node")
                             ),
                             new Dir(@"ffi-napi\build\Release",
                                 new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ffi-napi\build\Release\ffi_bindings.node")
                             ),
-                            new Dir(@"keyboard-layout\build\Release",
-                                new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\keyboard-layout\build\Release\keyboard-layout-manager.node")
-                            ),
                             new Dir(@"ref-napi\build\Release",
                                 new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ref-napi\build\Release\binding.node")
-                            ),
-                            new Dir(@"spawn-rx",
-                                new Files(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\*.*")
                             ),
                             new Dir(@"swift-search\node_modules",
                                 new Dir(@"ffi-napi\build\Release",
