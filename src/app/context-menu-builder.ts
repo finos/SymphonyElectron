@@ -1,4 +1,5 @@
 import { BrowserWindow, clipboard, Menu, MenuItem, shell } from 'electron';
+import { isDevEnv } from '../common/env';
 import { logger } from '../common/logger';
 
 interface IContextMenuStringTable {
@@ -445,6 +446,9 @@ export class ContextMenuBuilder {
    */
   public addInspectElement(menu, menuInfo, needsSeparator = true) {
     const target = this.getWebContents();
+    if (!isDevEnv) {
+      return menu;
+    }
     if (needsSeparator) {
       this.addSeparator(menu);
     }
