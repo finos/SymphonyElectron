@@ -1407,7 +1407,7 @@ export class WindowHandler {
         alwaysOnTop: true,
         autoHideMenuBar: true,
         frame: false,
-        modal: true,
+        modal: false,
         height: isMac ? 519 : 523,
         width: 580,
         show: false,
@@ -1417,10 +1417,6 @@ export class WindowHandler {
         devTools: isDevEnv,
       },
     );
-    const focusedWindow = BrowserWindow.getFocusedWindow();
-    if (focusedWindow && windowExists(focusedWindow) && isWindowsOS) {
-      opts.parent = focusedWindow;
-    }
 
     this.screenPickerWindow = createComponentWindow('screen-picker', opts);
     this.moveWindow(this.screenPickerWindow);
@@ -1462,7 +1458,8 @@ export class WindowHandler {
 
       window.send('start-share' + id, source);
       if (this.screenPickerWindow && windowExists(this.screenPickerWindow)) {
-        this.screenPickerWindow.close();
+        // SDA-3635 hack
+        setTimeout(() => this.screenPickerWindow?.close(), 500);
       }
     });
     this.screenPickerWindow.once('closed', () => {
@@ -1671,7 +1668,7 @@ export class WindowHandler {
           width: 592,
           height: 48,
           show: false,
-          modal: true,
+          modal: false,
           frame: false,
           focusable: true,
           transparent: true,
