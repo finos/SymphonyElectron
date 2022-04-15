@@ -215,6 +215,7 @@ export class WindowHandler {
           minHeight: 300,
           minWidth: 300,
           title: 'Symphony',
+          show: false,
         },
         {
           preload: path.join(__dirname, '../renderer/_preload-main.js'),
@@ -375,15 +376,6 @@ export class WindowHandler {
       true,
     );
 
-    if (isMaximized || isMaximizedFlag) {
-      this.mainWindow.maximize();
-      logger.info(
-        `window-handler: window is maximized!`,
-        isMaximized,
-        isMaximizedFlag,
-      );
-    }
-
     if (isFullScreen) {
       logger.info(`window-handler: window is in full screen!`);
       this.mainWindow.setFullScreen(true);
@@ -407,6 +399,16 @@ export class WindowHandler {
       this.mainWindow.loadURL(this.url, { userAgent });
       this.mainWebContents = this.mainWindow.webContents;
     }
+    if (isMaximized || isMaximizedFlag) {
+      this.mainWindow.maximize();
+      logger.info(
+        `window-handler: window is maximized!`,
+        isMaximized,
+        isMaximizedFlag,
+      );
+      mainEvents.publish('maximize');
+    }
+    this.mainWindow.show();
 
     // check for build expiry in case of test builds
     this.checkExpiry(this.mainWindow);
