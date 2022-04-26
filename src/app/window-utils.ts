@@ -155,7 +155,14 @@ export const preventWindowNavigation = (
     }
   };
 
-  browserWindow.webContents.on('will-navigate', listener);
+  if (isPopOutWindow) {
+    browserWindow.webContents.on('will-navigate', listener);
+  } else {
+    const mainWebContents = windowHandler.getMainWebContents();
+    if (mainWebContents && !mainWebContents.isDestroyed()) {
+      mainWebContents.on('will-navigate', listener);
+    }
+  }
 
   browserWindow.once('close', () => {
     browserWindow.webContents.removeListener('will-navigate', listener);
