@@ -99,11 +99,16 @@ const windowMaximized = async (): Promise<void> => {
   }
 };
 
-const throttledWindowChanges = throttle(async (eventName) => {
+const throttledWindowChanges = throttle(async (eventName, window) => {
   await saveWindowSettings();
   await windowMaximized();
   notification.moveNotificationToTop();
-  mainEvents.publish(eventName);
+  if (
+    window &&
+    (window as ICustomBrowserWindow).winName === apiName.mainWindowName
+  ) {
+    mainEvents.publish(eventName);
+  }
 }, 1000);
 
 const throttledWindowRestore = throttle(async () => {
@@ -304,18 +309,18 @@ export const monitorWindowActions = (window: BrowserWindow): void => {
   eventNames.forEach((event: string) => {
     if (window) {
       // @ts-ignore
-      window.on(event, () => throttledWindowChanges(event));
+      window.on(event, () => throttledWindowChanges(event, window));
     }
   });
   window.on('enter-full-screen', () =>
-    throttledWindowChanges('enter-full-screen'),
+    throttledWindowChanges('enter-full-screen', window),
   );
-  window.on('maximize', () => throttledWindowChanges('maximize'));
+  window.on('maximize', () => throttledWindowChanges('maximize', window));
 
   window.on('leave-full-screen', () =>
-    throttledWindowChanges('leave-full-screen'),
+    throttledWindowChanges('leave-full-screen', window),
   );
-  window.on('unmaximize', () => throttledWindowChanges('unmaximize'));
+  window.on('unmaximize', () => throttledWindowChanges('unmaximize', window));
 
   if ((window as ICustomBrowserWindow).winName === apiName.mainWindowName) {
     window.on('restore', throttledWindowRestore);
