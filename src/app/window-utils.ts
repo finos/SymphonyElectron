@@ -682,8 +682,8 @@ export const handleCertificateProxyVerification = (
   ) {
     return callback(0);
   }
-
-  return callback(-2);
+  // We let chromium handle the verification result. In case chromium detects a certificate error, then 'certificate-error' event will be triggered.
+  return callback(-3);
 };
 
 /**
