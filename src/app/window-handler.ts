@@ -667,11 +667,9 @@ export class WindowHandler {
     });
 
     // Certificate verification proxy
-    if (!isDevEnv) {
-      this.mainWebContents.session.setCertificateVerifyProc(
-        handleCertificateProxyVerification,
-      );
-    }
+    this.mainWebContents.session.setCertificateVerifyProc(
+      handleCertificateProxyVerification,
+    );
 
     app.on('browser-window-focus', () => {
       this.registerGlobalShortcuts();
