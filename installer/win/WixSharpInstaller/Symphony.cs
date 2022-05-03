@@ -119,6 +119,9 @@ class Script
                             new Dir(@"ffi-napi\build\Release",
                                 new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ffi-napi\build\Release\ffi_bindings.node")
                             ),
+                            new Dir(@"ffi-napi\node_modules\ref-napi\prebuilds\win32-x64",
+                                new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ffi-napi\node_modules\ref-napi\prebuilds\win32-x64\electron.napi.node")
+                            ),
                             new Dir(@"ref-napi\build\Release",
                                 new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ref-napi\build\Release\binding.node")
                             ),
