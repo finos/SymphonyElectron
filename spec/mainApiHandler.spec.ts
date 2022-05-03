@@ -58,6 +58,7 @@ jest.mock('../src/app/window-handler', () => {
 jest.mock('../src/app/window-utils', () => {
   return {
     downloadManagerAction: jest.fn(),
+    getWindowByName: jest.fn(),
     isValidWindow: jest.fn(() => true),
     sanitize: jest.fn(),
     setDataUrl: jest.fn(),
@@ -471,17 +472,35 @@ describe('main api handler', () => {
     });
 
     it('should call `getNativeWindowHandle` correctly', () => {
-      const fromWebContentsMocked = {
-        getNativeWindowHandle: jest.fn(),
+      const windows = {
+        main: {
+          getNativeWindowHandle: jest.fn(),
+        },
+        popout1: {
+          getNativeWindowHandle: jest.fn(),
+        },
+        popout2: {
+          getNativeWindowHandle: jest.fn(),
+        },
       };
-      jest.spyOn(BrowserWindow, 'fromWebContents').mockImplementation(() => {
-        return fromWebContentsMocked;
-      });
-      const value = {
+      jest
+        .spyOn(utils, 'getWindowByName')
+        .mockImplementation((windowName: string) => {
+          return windows[windowName];
+        });
+
+      ipcMain.send(apiName.symphonyApi, {
         cmd: apiCmds.getNativeWindowHandle,
-      };
-      ipcMain.send(apiName.symphonyApi, value);
-      expect(fromWebContentsMocked.getNativeWindowHandle).toBeCalledTimes(1);
+        windowName: 'main',
+      });
+      expect(windows['main'].getNativeWindowHandle).toBeCalledTimes(1);
+
+      ipcMain.send(apiName.symphonyApi, {
+        cmd: apiCmds.getNativeWindowHandle,
+        windowName: 'popout1',
+      });
+      expect(windows['popout1'].getNativeWindowHandle).toBeCalledTimes(1);
+      expect(windows['popout2'].getNativeWindowHandle).toBeCalledTimes(0);
     });
   });
 });
