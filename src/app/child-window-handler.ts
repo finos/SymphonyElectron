@@ -165,6 +165,7 @@ export const handleChildWindow = (webContents: WebContents): void => {
           configSettings.alwaysOnTop === CloudConfigDataTypes.ENABLED || false,
         minHeight: 300,
         minWidth: 300,
+        fullscreen: false,
         title: 'Symphony',
       };
       if (!windowHandler.isMana) {
