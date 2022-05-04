@@ -128,6 +128,9 @@ class Script
                             new Dir(@"keyboard-layout\build\Release",
                                 new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\keyboard-layout\build\Release\keyboard-layout-manager.node")
                             ),
+                            new Dir(@"ffi-napi\node_modules\ref-napi\prebuilds\win32-x64",
+                                new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ffi-napi\node_modules\ref-napi\prebuilds\win32-x64\electron.napi.node")
+                            ),
                             new Dir(@"ref-napi\build\Release",
                                 new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ref-napi\build\Release\binding.node")
                             ),
