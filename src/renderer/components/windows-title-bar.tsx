@@ -38,6 +38,9 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
     ipcRenderer.on('unmaximize', () =>
       this.updateState({ isMaximized: false }),
     );
+    ipcRenderer.on('move', (_event, isMaximized) => {
+      this.updateState({ isMaximized });
+    });
 
     ipcRenderer.once('disable-action-button', () => {
       this.updateState({ isDisabled: true });
