@@ -81,20 +81,6 @@ describe('config', () => {
 
       expect(configField.url).toBe('something');
     });
-
-    it('should fail when config path is invalid', () => {
-      const userConfig: object = { url: 'test' };
-      let isInvalidPath: boolean = false;
-      writeConfigFile(userConfig);
-
-      configInstance.globalConfigPath = '//';
-      try {
-        configInstance.readGlobalConfig();
-      } catch (e) {
-        isInvalidPath = true;
-      }
-      expect(isInvalidPath).toBeTruthy();
-    });
   });
 
   describe('updateConfig', () => {
@@ -124,12 +110,6 @@ describe('config', () => {
         configVersion: '4.0.0',
         test: 'test',
       });
-    });
-
-    it('should fail when invalid path is used', () => {
-      configInstance.userConfigPath = '//';
-
-      return expect(configInstance.readUserConfig()).rejects.toBeTruthy();
     });
   });
 

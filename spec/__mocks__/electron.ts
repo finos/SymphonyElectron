@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 import * as path from 'path';
 import { isWindowsOS } from '../../src/common/env';
+
 const ipcEmitter = new EventEmitter();
 
 const mockIdleTime: number = 15;
@@ -15,6 +16,7 @@ interface IApp {
   getPath(type: string): string;
   getName(): string;
   isReady(): boolean;
+  whenReady(): Promise<boolean>;
   getVersion(): string;
   on(eventName: any, cb: any): void;
   once(eventName: any, cb: any): void;
@@ -75,6 +77,7 @@ export const app: IApp = {
   },
   getName: () => appName,
   isReady: () => isReady,
+  whenReady: () => Promise.resolve(isReady),
   getVersion: () => version,
   on: (event, cb) => {
     ipcEmitter.on(event, cb);
