@@ -117,9 +117,9 @@ export const preventWindowNavigation = (
   );
 
   const listener = async (e: Electron.Event, winUrl: string) => {
-    if (!winUrl.startsWith('http' || 'https')) {
+    if (!winUrl.startsWith('https')) {
       logger.error(
-        `window-utils: ${winUrl} doesn't start with http or https, so, not navigating!`,
+        `window-utils: ${winUrl} doesn't start with https, so, not navigating!`,
       );
       e.preventDefault();
       return;
