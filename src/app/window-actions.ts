@@ -92,8 +92,8 @@ const throttledWindowChanges = throttle(async (eventName, window) => {
     window &&
     (window as ICustomBrowserWindow).winName === apiName.mainWindowName
   ) {
-    const isFullScreen = window.isFullScreen();
-    mainEvents.publish(eventName, isFullScreen);
+    const isMaximized = window.isMaximized();
+    mainEvents.publish(eventName, isMaximized);
   }
 }, 300);
 
