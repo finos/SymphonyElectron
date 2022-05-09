@@ -31,7 +31,6 @@ install:
 script:
   - node --version
   - npm --version
-  - npm run rebuild
   - npm run test
 
 cache:
