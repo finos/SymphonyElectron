@@ -561,7 +561,7 @@ class Config {
     let parsedData;
     if (!data) {
       logger.error(`config-handler: unable to read config file`);
-      throw new Error('unable to read config file');
+      return parsedData;
     }
     try {
       parsedData = JSON.parse(data);
@@ -596,9 +596,10 @@ class Config {
         ...rest,
       } as IConfig);
     }
-    this.userConfig = this.parseConfigData(
-      fs.readFileSync(this.userConfigPath, 'utf8'),
-    );
+    if (fs.existsSync(this.userConfigPath)) {
+      const userConfig = fs.readFileSync(this.userConfigPath, 'utf8');
+      this.userConfig = this.parseConfigData(userConfig);
+    }
     logger.info(`config-handler: User configuration: `, this.userConfig);
   }
 
@@ -638,9 +639,11 @@ class Config {
         configVersion: app.getVersion().toString(),
       });
     }
-    const cloudConfig = fs.readFileSync(this.cloudConfigPath, 'utf8');
-    if (cloudConfig) {
-      this.cloudConfig = this.parseConfigData(cloudConfig);
+    if (fs.existsSync(this.cloudConfigPath)) {
+      const cloudConfig = fs.readFileSync(this.cloudConfigPath, 'utf8');
+      if (cloudConfig) {
+        this.cloudConfig = this.parseConfigData(cloudConfig);
+      }
     }
     // recalculate cloud config when we the application starts
     this.filterCloudConfig();
