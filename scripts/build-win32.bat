@@ -5,7 +5,7 @@ call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\Tools\VsDevCmd
 echo %PATH%
 
 set DISABLE_REBUILD=true
-set NODE_REQUIRED_VERSION=16.15.0
+set NODE_REQUIRED_VERSION=16.13.2
 set SNYK_ORG=sda
 set SNYK_PROJECT_NAME="Symphony Desktop Application"
 
