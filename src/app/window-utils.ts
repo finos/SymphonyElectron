@@ -74,6 +74,7 @@ const DOWNLOAD_MANAGER_NAMESPACE = 'DownloadManager';
 const TITLE_BAR_EVENTS = [
   'maximize',
   'unmaximize',
+  'move',
   'enter-full-screen',
   'leave-full-screen',
 ];
