@@ -144,7 +144,7 @@
     "prettier": "2.2.1",
     "pretty-quick": "^3.1.0",
     "robotjs": "0.6.0",
-    "run-script-os": "1.0.7",
+    "run-script-os": "1.1.6",
     "spectron": "^15.0.0",
     "ts-jest": "25.3.0",
     "tslint": "5.11.0",
@@ -171,7 +171,7 @@
   },
   "optionalDependencies": {
     "auto-update": "file:auto_update",
-    "screen-share-indicator-frame": "git+https://github.com/symphonyoss/ScreenShareIndicatorFrame.git#v1.4.10",
+    "screen-share-indicator-frame": "git+https://github.com/symphonyoss/ScreenShareIndicatorFrame.git#v1.4.13",
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#9.2.2",
     "winreg": "^1.2.4"
   },
