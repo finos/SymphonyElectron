@@ -1470,20 +1470,18 @@ export class WindowHandler {
         // SDA-3646 hack for macOS: whenever we try to close the penultimate window (here screensharing screen picker), Electron activates the last Electron window
         // This behaviour was observed while trying to upgrade from Electron 14 to Electron 17
         // Here the hack to solve that issue is to create a new invisible BrowserWindow.
-        if (isMac) {
-          this.screenPickerPlaceholderWindow = new BrowserWindow({
-            width: 0,
-            height: 0,
-            transparent: true,
-            frame: false,
-            x: 0,
-            y: 0,
-            resizable: false,
-            movable: false,
-            fullscreenable: false,
-          });
-          this.screenPickerPlaceholderWindow.show();
-        }
+        this.screenPickerPlaceholderWindow = new BrowserWindow({
+          width: 0,
+          height: 0,
+          transparent: true,
+          frame: false,
+          x: 0,
+          y: 0,
+          resizable: false,
+          movable: false,
+          fullscreenable: false,
+        });
+        this.screenPickerPlaceholderWindow.show();
       }
 
       window.send('start-share' + id, source);
