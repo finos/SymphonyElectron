@@ -1445,10 +1445,17 @@ export class WindowHandler {
 
         this.execCmd(this.screenShareIndicatorFrameUtil, []);
         const timeoutValue = 300;
-        setTimeout(
-          () => this.drawScreenShareIndicatorFrame(source),
-          timeoutValue,
-        );
+        setTimeout(() => {
+          this.drawScreenShareIndicatorFrame(source);
+          if (isMac) {
+            const windows = BrowserWindow.getAllWindows();
+            windows.map((window: BrowserWindow) => {
+              if (window.getMediaSourceId() === source.id) {
+                window.show();
+              }
+            });
+          }
+        }, timeoutValue);
       }
     };
 
@@ -1470,6 +1477,7 @@ export class WindowHandler {
         // This behaviour was observed while trying to upgrade from Electron 14 to Electron 17
         // Here the hack to solve that issue is to create a new invisible BrowserWindow.
         this.screenPickerPlaceholderWindow = new BrowserWindow({
+          title: 'Screen sharing - Symphony',
           width: 0,
           height: 0,
           transparent: true,
