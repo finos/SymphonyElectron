@@ -1829,6 +1829,7 @@ export class WindowHandler {
         height: frameHeight,
         frame: false,
         transparent: false,
+        skipTaskbar: true,
         alwaysOnTop: true,
       },
       {
