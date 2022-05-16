@@ -1700,6 +1700,7 @@ export class WindowHandler {
           frame: false,
           focusable: true,
           transparent: true,
+          skipTaskbar: true,
           autoHideMenuBar: true,
           resizable: false,
           alwaysOnTop: true,
@@ -1822,6 +1823,7 @@ export class WindowHandler {
         height: frameHeight,
         frame: false,
         transparent: false,
+        skipTaskbar: true,
         alwaysOnTop: true,
       },
       {
