@@ -165,10 +165,14 @@ ipcRenderer.on('page-load-failed', (_event, { locale, resources }) => {
 
 // Injects network error content into the DOM
 ipcRenderer.on('network-error', (_event, { error }) => {
-  const networkErrorContainer = document.createElement('div');
-  networkErrorContainer.id = 'main-frame';
-  networkErrorContainer.classList.add('content-wrapper');
-  document.body.append(networkErrorContainer);
+  let networkErrorContainer = document.getElementById('main-frame');
+  // prevents duplicate rendering of the NetworkError
+  if (!networkErrorContainer) {
+    networkErrorContainer = document.createElement('div');
+    networkErrorContainer.id = 'main-frame';
+    networkErrorContainer.classList.add('content-wrapper');
+    document.body.append(networkErrorContainer);
+  }
   const networkError = React.createElement(NetworkError, { error });
   ReactDOM.render(networkError, networkErrorContainer);
 });
