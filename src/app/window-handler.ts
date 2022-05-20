@@ -1501,6 +1501,15 @@ export class WindowHandler {
       ipcMain.removeListener('screen-source-select', screenSourceSelect);
       this.removeWindow(opts.winKey);
       this.screenPickerWindow = null;
+      if (isWindowsOS) {
+        if (
+          this.screenPickerPlaceholderWindow &&
+          windowExists(this.screenPickerPlaceholderWindow)
+        ) {
+          this.screenPickerPlaceholderWindow.close();
+          this.screenPickerPlaceholderWindow = null;
+        }
+      }
     });
   }
 
