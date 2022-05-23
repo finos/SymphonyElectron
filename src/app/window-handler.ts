@@ -1493,7 +1493,7 @@ export class WindowHandler {
 
       window.send('start-share' + id, source);
       if (this.screenPickerWindow && windowExists(this.screenPickerWindow)) {
-        // SDA-3646 hack
+        // SDA-3635 hack
         setTimeout(() => this.screenPickerWindow?.close(), 500);
       }
     });
