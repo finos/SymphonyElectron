@@ -78,7 +78,7 @@ const verifyProtocolForNewUrl = (url: string): boolean => {
 const getParsedUrl = (url: string): Url => {
   const parsedUrl = parse(url);
 
-  if (!parsedUrl.protocol || parsedUrl.protocol !== 'https:') {
+  if (!parsedUrl.protocol || parsedUrl.protocol !== 'https') {
     logger.info(
       `child-window-handler: The url ${url} doesn't have a valid protocol. Adding https as protocol.`,
     );
@@ -254,6 +254,7 @@ export const handleChildWindow = (webContents: WebContents): void => {
       newWinOptions.height = Math.max(height, DEFAULT_POP_OUT_HEIGHT);
       newWinOptions.minWidth = MIN_WIDTH;
       newWinOptions.minHeight = MIN_HEIGHT;
+      newWinOptions.alwaysOnTop = mainWindow.isAlwaysOnTop();
       newWinOptions.frame = true;
       newWinOptions.winKey = newWinKey;
       newWinOptions.fullscreen = false;
@@ -309,7 +310,6 @@ export const handleChildWindow = (webContents: WebContents): void => {
         await injectStyles(browserWin.webContents, false);
         browserWin.winName = details.frameName;
         browserWin.setAlwaysOnTop(mainWindow.isAlwaysOnTop());
-        browserWin.show();
         logger.info(
           `child-window-handler: setting always on top for child window? ${mainWindow.isAlwaysOnTop()}!`,
         );
