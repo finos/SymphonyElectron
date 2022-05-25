@@ -100,8 +100,10 @@ const throttledWindowChanges = throttle(async (eventName, window) => {
 const throttledWindowRestore = throttle(async () => {
   notification.moveNotificationToTop();
   const mainWebContents = windowHandler.getMainWebContents();
-  if (mainWebContents && !mainWebContents.isDestroyed()) {
-    mainWebContents.focus();
+  if (isWindowsOS) {
+    if (mainWebContents && !mainWebContents.isDestroyed()) {
+      mainWebContents.focus();
+    }
   }
 }, 1000);
 
