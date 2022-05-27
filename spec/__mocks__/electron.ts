@@ -10,6 +10,15 @@ const executableName: string = '/Symphony.exe';
 const isReady: boolean = true;
 const version: string = '4.0.0';
 
+process.on('unhandledRejection', (reason, promise) => {
+  console.warn(
+    'Unhandled promise rejection:',
+    promise,
+    'reason:',
+    reason ? (reason as any).stack : 'unknown' || reason,
+  );
+});
+
 interface IApp {
   commandLine: any;
   getAppPath(): string;
