@@ -85,8 +85,23 @@ const saveWindowSettings = async (): Promise<void> => {
   }
 };
 
+const windowMaximized = async (): Promise<void> => {
+  const browserWindow = BrowserWindow.getFocusedWindow() as ICustomBrowserWindow;
+  if (browserWindow && windowExists(browserWindow)) {
+    const isMaximized = browserWindow.isMaximized();
+    const isFullScreen = browserWindow.isFullScreen();
+    if (browserWindow.winName === apiName.mainWindowName) {
+      const { mainWinPos } = config.getUserConfigFields(['mainWinPos']);
+      await config.updateUserConfig({
+        mainWinPos: { ...mainWinPos, ...{ isMaximized, isFullScreen } },
+      });
+    }
+  }
+};
+
 const throttledWindowChanges = throttle(async (eventName, window) => {
   await saveWindowSettings();
+  await windowMaximized();
   notification.moveNotificationToTop();
   if (
     window &&
