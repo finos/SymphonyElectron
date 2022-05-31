@@ -1,6 +1,5 @@
 import { app, systemPreferences } from 'electron';
 import * as electronDownloader from 'electron-dl';
-import * as shellPath from 'shell-path';
 
 import { isDevEnv, isLinux, isMac } from '../common/env';
 import { logger } from '../common/logger';
@@ -34,6 +33,7 @@ let isAppAlreadyOpen: boolean = false;
 // Setting the env path child_process issue https://github.com/electron/electron/issues/7688
 (async () => {
   try {
+    const shellPath = await import('shell-path');
     const paths = await shellPath();
     if (paths) {
       return (process.env.PATH = paths);
