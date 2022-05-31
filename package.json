@@ -172,7 +172,7 @@
     "ref-napi": "1.4.3",
     "rimraf": "^3.0.2",
     "save-svg-as-png": "^1.4.17",
-    "shell-path": "2.1.0"
+    "shell-path": "^3.0.0"
   },
   "optionalDependencies": {
     "auto-update": "file:auto_update",
