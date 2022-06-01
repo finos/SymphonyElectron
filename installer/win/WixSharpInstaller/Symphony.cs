@@ -121,7 +121,7 @@ class Script
                             ),
                             new Dir(@"ref-napi\build\Release",
                                 new Files(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ref-napi\prebuilds\*.*")
-                            )
+                            ),
                             new Dir(@"swift-search\node_modules",
                                 new Dir(@"ffi-napi\build\Release",
                                     new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\swift-search\node_modules\ffi-napi\build\Release\ffi_bindings.node")
