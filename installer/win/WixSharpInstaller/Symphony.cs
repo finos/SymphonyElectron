@@ -121,9 +121,6 @@ class Script
                             )
                         )
                     )
-                ),
-                new Dir(@"swiftshader",
-                    new Files(@"..\..\..\dist\win-unpacked\swiftshader\*.*")
                 )
             ),
 
