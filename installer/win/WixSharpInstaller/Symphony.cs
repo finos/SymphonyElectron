@@ -123,7 +123,7 @@ class Script
                                 new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ffi-napi\node_modules\ref-napi\prebuilds\win32-x64\electron.napi.node")
                             ),
                             new Dir(@"ref-napi\build\Release",
-                                new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ref-napi\prebuilds\*.*")
+                                new Files(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ref-napi\prebuilds\*.*")
                             )
                         )
                     )
