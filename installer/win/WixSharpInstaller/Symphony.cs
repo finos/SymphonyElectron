@@ -174,7 +174,7 @@ class Script
         // So we just extract that version string, create a Version object from it, and pass it to out project definition.
         var version = System.Environment.GetEnvironmentVariable("SYMVER");
         var versionReplacement = version.Replace("-", ".");
-        project.Version = new System.Version(version);
+        project.Version = new System.Version(versionReplacement);
 
         // To get the correct behaviour with upgrading the product, the product GUID needs to be different for every build,
         // but the UpgradeCode needs to stay the same. If we wanted to make a new major version and allow it to be installed
