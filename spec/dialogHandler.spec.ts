@@ -5,6 +5,26 @@ import {
 import { windowHandler } from '../src/app/window-handler';
 import { BrowserWindow, dialog, ipcRenderer } from './__mocks__/electron';
 
+jest.mock('fs', () => ({
+  writeFileSync: jest.fn(),
+  existsSync: jest.fn(() => true),
+  unlinkSync: jest.fn(),
+  readFileSync: jest.fn(() => '{ "configVersion": "4.0.0" }'),
+  readdirSync: jest.fn(() => [
+    'Cache',
+    'GPUCache',
+    'Symphony.config',
+    'cloudConfig.config',
+  ]),
+  readFile: jest.fn(),
+  writeFile: jest.fn(),
+  lstatSync: jest.fn(() => {
+    return {
+      isDirectory: jest.fn(() => true),
+    };
+  }),
+}));
+
 jest.mock('../src/app/window-handler', () => {
   return {
     windowHandler: {

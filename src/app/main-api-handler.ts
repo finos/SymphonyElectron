@@ -48,7 +48,7 @@ import {
 let swiftSearchInstance;
 try {
   // tslint:disable-next-line:no-var-requires
-  const { SSAPIBridge } = require('swift-search');
+  const { SSAPIBridge } = {} as any; // require('swift-search');
   swiftSearchInstance = new SSAPIBridge();
 } catch (e) {
   console.warn(

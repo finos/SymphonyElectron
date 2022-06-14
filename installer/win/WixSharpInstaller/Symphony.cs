@@ -113,31 +113,14 @@ class Script
                     new DirFiles(@"..\..\..\dist\win-unpacked\resources\*.*"),
                     new Dir(@"app.asar.unpacked",
                         new Dir(@"node_modules",
-                            new Dir(@"diskusage\build\Release",
-                                new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\diskusage\build\Release\diskusage.node")
-                            ),
                             new Dir(@"ffi-napi\build\Release",
                                 new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ffi-napi\build\Release\ffi_bindings.node")
                             ),
-                            new Dir(@"ffi-napi\node_modules\ref-napi\prebuilds\win32-x64",
-                                new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ffi-napi\node_modules\ref-napi\prebuilds\win32-x64\electron.napi.node")
-                            ),
                             new Dir(@"ref-napi\build\Release",
-                                new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ref-napi\build\Release\binding.node")
-                            ),
-                            new Dir(@"swift-search\node_modules",
-                                new Dir(@"ffi-napi\build\Release",
-                                    new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\swift-search\node_modules\ffi-napi\build\Release\ffi_bindings.node")
-                                ),
-                                new Dir(@"ref-napi\build\Release",
-                                    new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\swift-search\node_modules\ref-napi\build\Release\binding.node")
-                                )
+                                new Files(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ref-napi\prebuilds\*.*")
                             )
                         )
                     )
-                ),
-                new Dir(@"swiftshader",
-                    new Files(@"..\..\..\dist\win-unpacked\swiftshader\*.*")
                 )
             ),
 
