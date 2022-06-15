@@ -38,6 +38,10 @@ jest.mock('../src/app/auto-launch-controller', () => {
   };
 });
 
+jest.mock('../src/app/auto-update-handler', () => {
+  return {};
+});
+
 jest.mock('../src/app/config-handler', () => {
   return {
     CloudConfigDataTypes: {

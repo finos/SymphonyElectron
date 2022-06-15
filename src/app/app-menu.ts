@@ -17,6 +17,7 @@ import {
   MenuActionTypes,
 } from './analytics-handler';
 import { autoLaunchInstance as autoLaunch } from './auto-launch-controller';
+import { autoUpdate } from './auto-update-handler';
 import { CloudConfigDataTypes, config, IConfig } from './config-handler';
 import { gpuRestartDialog, titleBarChangeDialog } from './dialog-handler';
 import { exportCrashDumps, exportLogs } from './reports-handler';
@@ -361,6 +362,12 @@ export class AppMenu {
               ? reloadWindow(focusedWindow as ICustomBrowserWindow)
               : null,
           label: i18n.t('Reload')(),
+        },
+        {
+          click: (_item) => {
+            autoUpdate.checkAutoUpdate();
+          },
+          label: i18n.t('Check for update')(),
         },
         this.buildSeparator(),
         this.zoomMenuBuilder(
