@@ -144,7 +144,7 @@
     "prettier": "2.2.1",
     "pretty-quick": "^3.1.0",
     "robotjs": "0.6.0",
-    "run-script-os": "1.1.6",
+    "run-script-os": "^1.1.6",
     "spectron": "^15.0.0",
     "ts-jest": "25.3.0",
     "tslint": "5.11.0",

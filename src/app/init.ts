@@ -19,7 +19,6 @@ const userDataPath =
 // If we are running in production, sandbox the entire app
 // and set the app user model id for windows native notifications
 app.enableSandbox();
-app.setAppUserModelId('symphony_exe');
 
 // need to set this explicitly if using Squirrel
 // https://www.electron.build/configuration/configuration#Configuration-squirrelWindows
