@@ -57,6 +57,7 @@ export interface IConfig {
 export interface IGlobalConfig {
   contextOriginUrl: string;
   url: string;
+  autoUpdateUrl: string;
   contextIsolation: boolean;
   overrideUserAgent?: boolean;
 }

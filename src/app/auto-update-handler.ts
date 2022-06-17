@@ -2,20 +2,18 @@ import electronLog from 'electron-log';
 import { MacUpdater, NsisUpdater } from 'electron-updater';
 import { isMac, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
+import { config } from './config-handler';
 import { windowHandler } from './window-handler';
 
 class AutoUpdate {
   public autoUpdater: MacUpdater | NsisUpdater | undefined = undefined;
 
   constructor() {
+    const { autoUpdateUrl } = config.getGlobalConfigFields(['autoUpdateUrl']);
     if (isMac) {
-      this.autoUpdater = new MacUpdater(
-        'https://27e5-165-225-121-53.in.ngrok.io/Test/',
-      );
+      this.autoUpdater = new MacUpdater(autoUpdateUrl);
     } else if (isWindowsOS) {
-      this.autoUpdater = new NsisUpdater(
-        'https://27e5-165-225-121-53.in.ngrok.io/Test/',
-      );
+      this.autoUpdater = new NsisUpdater(autoUpdateUrl);
     }
 
     if (this.autoUpdater) {
