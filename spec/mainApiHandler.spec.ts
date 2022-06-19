@@ -7,6 +7,7 @@ import * as windowActions from '../src/app/window-actions';
 import { windowHandler } from '../src/app/window-handler';
 import * as utils from '../src/app/window-utils';
 import { apiCmds, apiName } from '../src/common/api-interface';
+import * as c9PipeHandler from '../src/app/c9-pipe-handler';
 import { logger } from '../src/common/logger';
 import { BrowserWindow, ipcMain } from './__mocks__/electron';
 
@@ -501,6 +502,17 @@ describe('main api handler', () => {
       });
       expect(windows['popout1'].getNativeWindowHandle).toBeCalledTimes(1);
       expect(windows['popout2'].getNativeWindowHandle).toBeCalledTimes(0);
+    });
+
+    it('should call `connectC9Pipe` correctly', () => {
+      const spy = jest.spyOn(c9PipeHandler, 'connectC9Pipe');
+      const value = {
+        cmd: apiCmds.connectCloud9Pipe,
+        pipe: 'pipe-name',
+      };
+      const expectedValue = [{ send: expect.any(Function) }, 'pipe-name'];
+      ipcMain.send(apiName.symphonyApi, value);
+      expect(spy).toBeCalledWith(...expectedValue);
     });
   });
 });

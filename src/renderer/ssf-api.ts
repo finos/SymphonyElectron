@@ -5,6 +5,7 @@ import {
   searchAPIVersion,
   version,
 } from '../../package.json';
+import { IShellStatus } from '../app/c9-shell-handler';
 import { RedirectionStatus } from '../app/citrix-handler';
 import { IDownloadItem } from '../app/download-handler';
 import {
@@ -12,6 +13,7 @@ import {
   apiName,
   IBadgeCount,
   IBoundsChange,
+  ICloud9Pipe,
   ICPUUsage,
   ILogMsg,
   IMediaPermission,
@@ -65,6 +67,8 @@ export interface ILocalObject {
   collectLogsCallback?: Array<() => void>;
   analyticsEventHandler?: (arg: any) => void;
   restartFloater?: (arg: IRestartFloaterData) => void;
+  c9PipeEventCallback?: (event: string, arg?: any) => void;
+  c9MessageCallback?: (status: IShellStatus) => void;
 }
 
 const local: ILocalObject = {
@@ -757,6 +761,80 @@ export class SSFApi {
       cmd: apiCmds.getCitrixMediaRedirectionStatus,
     });
   }
+
+  /**
+   * Connects to a Cloud9 pipe
+   *
+   * @param pipe pipe name
+   * @param onData callback that is invoked when data is received over the connection
+   * @param onClose callback that is invoked when the connection is closed by the remote side
+   * @returns Cloud9 pipe instance promise
+   */
+  public connectCloud9Pipe(
+    pipe: string,
+    onData: (data: Uint8Array) => void,
+    onClose: () => void,
+  ): Promise<ICloud9Pipe> {
+    if (
+      typeof pipe === 'string' &&
+      typeof onData === 'function' &&
+      typeof onClose === 'function'
+    ) {
+      if (local.c9PipeEventCallback) {
+        return Promise.reject("Can't connect to pipe, already connected");
+      }
+
+      return new Promise<ICloud9Pipe>((resolve, reject) => {
+        local.c9PipeEventCallback = (event: string, arg?: any) => {
+          switch (event) {
+            case 'connected':
+              const ret = {
+                write: (data: Uint8Array) => {
+                  ipcRenderer.send(apiName.symphonyApi, {
+                    cmd: apiCmds.writeCloud9Pipe,
+                    data,
+                  });
+                },
+                close: () => {
+                  ipcRenderer.send(apiName.symphonyApi, {
+                    cmd: apiCmds.closeCloud9Pipe,
+                  });
+                },
+              };
+              resolve(ret);
+              break;
+            case 'connection-failed':
+              local.c9PipeEventCallback = undefined;
+              reject(arg);
+              break;
+            case 'data':
+              onData(arg);
+              break;
+            case 'close':
+              local.c9PipeEventCallback = undefined;
+              onClose();
+              break;
+          }
+        };
+        ipcRenderer.send(apiName.symphonyApi, {
+          cmd: apiCmds.connectCloud9Pipe,
+          pipe,
+        });
+      });
+    } else {
+      return Promise.reject('Invalid arguments');
+    }
+  }
+
+  /**
+   * Launches the Cloud9 client.
+   */
+  public launchCloud9(callback: (status: IShellStatus) => void): void {
+    local.c9MessageCallback = callback;
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.launchCloud9,
+    });
+  }
 }
 
 /**
@@ -985,6 +1063,20 @@ local.ipcRenderer.on('notification-actions', (_event, args) => {
   if (args && callback) {
     callback(args.event, data);
   }
+});
+
+/**
+ * An event triggered by the main process when a cloud9 pipe event occurs
+ */
+local.ipcRenderer.on('c9-pipe-event', (_event, args) => {
+  local.c9PipeEventCallback?.call(null, args.event, args?.arg);
+});
+
+/**
+ * An event triggered by the main process when the status of the cloud9 client changes
+ */
+local.ipcRenderer.on('c9-status-event', (_event, args) => {
+  local.c9MessageCallback?.call(null, args?.status);
 });
 
 // Invoked whenever the app is reloaded/navigated

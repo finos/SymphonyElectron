@@ -1,7 +1,7 @@
 {
   "name": "symphony",
   "productName": "Symphony",
-  "version": "17.0.0-1",
+  "version": "17.0.99",
   "clientVersion": "2.0.1",
   "buildNumber": "0",
   "searchAPIVersion": "1.55.3",
@@ -175,6 +175,7 @@
     "shell-path": "^3.0.0"
   },
   "optionalDependencies": {
+    "@symphony/symphony-c9-shell": "^3.14.99-28",
     "auto-update": "file:auto_update",
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#9.2.2",
     "screen-share-indicator-frame": "git+https://github.com/symphonyoss/ScreenShareIndicatorFrame.git#v1.4.10",

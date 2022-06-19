@@ -66,6 +66,10 @@ export enum apiCmds {
   getNativeWindowHandle = 'get-native-window-handle',
   getCitrixMediaRedirectionStatus = 'get-citrix-media-redirection-status',
   getSources = 'getSources',
+  launchCloud9 = 'launch-cloud9',
+  connectCloud9Pipe = 'connect-cloud9-pipe',
+  writeCloud9Pipe = 'write-cloud9-pipe',
+  closeCloud9Pipe = 'close-cloud9-pipe',
 }
 
 export enum apiName {
@@ -116,6 +120,8 @@ export interface IApiArgs {
   swiftSearchData: any;
   types: string[];
   thumbnailSize: Size;
+  pipe: string;
+  data: Uint8Array;
 }
 
 export type Themes = 'light' | 'dark';
@@ -268,3 +274,8 @@ export type NotificationActionCallback = (
   event: NotificationActions,
   data: INotificationData,
 ) => void;
+
+export interface ICloud9Pipe {
+  write(data: Uint8Array): void;
+  close(): void;
+}

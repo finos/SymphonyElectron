@@ -41,7 +41,7 @@ namespace Symphony
             }
 
             // Detect if Symphony is running
-            bool isRunning = System.Diagnostics.Process.GetProcessesByName("Symphony").Length > 1;
+            bool isRunning = (System.Diagnostics.Process.GetProcessesByName("Symphony").Length > 1 || System.Diagnostics.Process.GetProcessesByName("C9Shell").Length >= 1);
             if (!isRunning)
             {
                 // If it is not running, change the label of the "Next" button to "Install" as the CloseDialog will be skipped
@@ -81,7 +81,7 @@ namespace Symphony
             }
 
             // Detect if Symphony is running
-            bool isRunning = System.Diagnostics.Process.GetProcessesByName("Symphony").Length > 1;
+            bool isRunning = (System.Diagnostics.Process.GetProcessesByName("Symphony").Length > 1 || System.Diagnostics.Process.GetProcessesByName("C9Shell").Length >= 1);
             if (isRunning)
             {
                 // If it is running, continue to the "Close Symphony" screen
