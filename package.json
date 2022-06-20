@@ -43,6 +43,9 @@
     "appId": "com.symphony.electron_desktop",
     "asar": true,
     "asarUnpack": "**/*.node",
+    "nsis": {
+      "perMachine": true
+    },
     "files": [
       "!coverage/*",
       "!installer/*",

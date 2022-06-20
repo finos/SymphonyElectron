@@ -10,6 +10,9 @@ class AutoUpdate {
 
   constructor() {
     const { autoUpdateUrl } = config.getGlobalConfigFields(['autoUpdateUrl']);
+    if (autoUpdateUrl === '') {
+      return;
+    }
     if (isMac) {
       this.autoUpdater = new MacUpdater(autoUpdateUrl);
     } else if (isWindowsOS) {
