@@ -44,7 +44,8 @@
     "asar": true,
     "asarUnpack": "**/*.node",
     "nsis": {
-      "perMachine": true
+      "perMachine": true,
+      "include": "build/installer.nsh"
     },
     "files": [
       "!coverage/*",
