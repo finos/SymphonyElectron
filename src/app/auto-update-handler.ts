@@ -53,7 +53,7 @@ export class AutoUpdate {
   /**
    * Installs the latest update quits and relaunches application
    */
-  public async updateAndRestart(): Promise<void> {
+  public updateAndRestart = async (): Promise<void> => {
     if (!this.isUpdateAvailable) {
       return;
     }
@@ -66,20 +66,20 @@ export class AutoUpdate {
         this.autoUpdater.quitAndInstall();
       }
     });
-  }
+  };
 
   /**
    * Checks for the latest updates
    * @return void
    */
-  public async checkUpdates(): Promise<void> {
+  public checkUpdates = async (): Promise<void> => {
     logger.info('auto-update-handler: Checking for updates');
     if (this.autoUpdater) {
       const updateCheckResult = await this.autoUpdater.checkForUpdatesAndNotify();
       logger.info('auto-update-handler: ', updateCheckResult);
     }
     logger.info('auto-update-handler: After checking auto update');
-  }
+  };
 
   /**
    * Constructs the SDA auto update end point url
@@ -87,7 +87,7 @@ export class AutoUpdate {
    * @return string
    * @example https://corporate.symphony.com/macos/general
    */
-  public getUpdateUrl(): string {
+  public getUpdateUrl = (): string => {
     const { url: userConfigURL } = config.getUserConfigFields(['url']);
     const { url: globalConfigURL } = config.getGlobalConfigFields(['url']);
     const { autoUpdateUrl, autoUpdateChannel } = config.getConfigFields([
@@ -113,7 +113,7 @@ export class AutoUpdate {
     );
 
     return `https://${subdomain}.${domain}.${tld}/${os}/${autoUpdateChannel}`;
-  }
+  };
 }
 
 const autoUpdate = new AutoUpdate();

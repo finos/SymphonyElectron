@@ -299,9 +299,6 @@ ipcMain.on(
           }
         }
         break;
-      // case apiCmds.autoUpdate:
-      //   autoUpdate.update(arg.filename);
-      //   break;
       case apiCmds.aboutAppClipBoardData:
         if (arg.clipboard && arg.clipboardType) {
           clipboard.write(
@@ -371,8 +368,9 @@ ipcMain.on(
       case apiCmds.launchCloud9:
         loadC9Shell(event.sender);
         break;
-      case apiCmds.updateAndRestartSDA:
+      case apiCmds.updateAndRestart:
         autoUpdate.updateAndRestart();
+        break;
       default:
         break;
     }

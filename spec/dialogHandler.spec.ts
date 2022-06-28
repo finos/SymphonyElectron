@@ -5,6 +5,12 @@ import {
 import { windowHandler } from '../src/app/window-handler';
 import { BrowserWindow, dialog, ipcRenderer } from './__mocks__/electron';
 
+jest.mock('../src/app/auto-update-handler', () => {
+  return {
+    updateAndRestart: jest.fn(),
+  };
+});
+
 jest.mock('fs', () => ({
   writeFileSync: jest.fn(),
   existsSync: jest.fn(() => true),

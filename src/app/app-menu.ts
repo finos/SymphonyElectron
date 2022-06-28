@@ -17,7 +17,6 @@ import {
   MenuActionTypes,
 } from './analytics-handler';
 import { autoLaunchInstance as autoLaunch } from './auto-launch-controller';
-import { autoUpdate } from './auto-update-handler';
 import { CloudConfigDataTypes, config, IConfig } from './config-handler';
 import { gpuRestartDialog, titleBarChangeDialog } from './dialog-handler';
 import { exportCrashDumps, exportLogs } from './reports-handler';
@@ -34,6 +33,8 @@ import {
   zoomIn,
   zoomOut,
 } from './window-utils';
+
+import { autoUpdate } from './auto-update-handler';
 
 export const menuSections = {
   about: 'about',
