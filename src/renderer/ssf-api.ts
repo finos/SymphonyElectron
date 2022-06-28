@@ -854,6 +854,15 @@ export class SSFApi {
       cmd: apiCmds.launchCloud9,
     });
   }
+
+  /**
+   * Allows JS to install new update and restart SDA
+   */
+  public updateAndRestart(): void {
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.updateAndRestart,
+    });
+  }
 }
 
 /**

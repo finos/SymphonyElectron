@@ -281,6 +281,12 @@ export class AppMenu {
             windowHandler.createAboutAppWindow(windowName);
           },
         },
+        {
+          click: (_item) => {
+            autoUpdate.checkUpdates();
+          },
+          label: i18n.t('Check for updates')(),
+        },
         this.buildSeparator(),
         { label: i18n.t('Services')(), role: 'services' },
         this.buildSeparator(),
@@ -362,12 +368,6 @@ export class AppMenu {
               ? reloadWindow(focusedWindow as ICustomBrowserWindow)
               : null,
           label: i18n.t('Reload')(),
-        },
-        {
-          click: (_item) => {
-            autoUpdate.checkAutoUpdate();
-          },
-          label: i18n.t('Check for update')(),
         },
         this.buildSeparator(),
         this.zoomMenuBuilder(

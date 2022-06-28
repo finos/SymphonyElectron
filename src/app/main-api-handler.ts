@@ -18,6 +18,7 @@ import { logger } from '../common/logger';
 import { activityDetection } from './activity-detection';
 import { analytics } from './analytics-handler';
 import appStateHandler from './app-state-handler';
+import { autoUpdate } from './auto-update-handler';
 import { closeC9Pipe, connectC9Pipe, writeC9Pipe } from './c9-pipe-handler';
 import { loadC9Shell } from './c9-shell-handler';
 import { getCitrixMediaRedirectionStatus } from './citrix-handler';
@@ -370,6 +371,8 @@ ipcMain.on(
       case apiCmds.launchCloud9:
         loadC9Shell(event.sender);
         break;
+      case apiCmds.updateAndRestartSDA:
+        autoUpdate.updateAndRestart();
       default:
         break;
     }

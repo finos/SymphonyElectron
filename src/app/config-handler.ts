@@ -28,6 +28,11 @@ export const ConfigFieldsToRestart = new Set([
 
 export interface IConfig {
   url: string;
+  autoUpdateChannel: string;
+  autoUpdateUrl: string;
+  isAutoUpdateEnabled: boolean;
+  autoUpdateCheckInterval: string;
+  lastAutoUpdateCheckDate: string;
   minimizeOnClose: CloudConfigDataTypes;
   launchOnStartup: CloudConfigDataTypes;
   alwaysOnTop: CloudConfigDataTypes;
@@ -57,7 +62,6 @@ export interface IConfig {
 export interface IGlobalConfig {
   contextOriginUrl: string;
   url: string;
-  autoUpdateUrl: string;
   contextIsolation: boolean;
   overrideUserAgent?: boolean;
 }
@@ -77,6 +81,8 @@ export interface IPodLevelEntitlements {
   bringToFront: CloudConfigDataTypes;
   disableThrottling: CloudConfigDataTypes;
   launchOnStartup: CloudConfigDataTypes;
+  isAutoUpdateEnabled: boolean;
+  autoUpdateCheckInterval: string;
   memoryThreshold: string;
   ctWhitelist: string[];
   podWhitelist: string[];
