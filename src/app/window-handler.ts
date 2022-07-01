@@ -109,7 +109,7 @@ export const DEFAULT_WELCOME_SCREEN_HEIGHT: number = 333;
 export const TITLE_BAR_HEIGHT: number = 32;
 export const IS_SAND_BOXED: boolean = true;
 export const IS_NODE_INTEGRATION_ENABLED: boolean = false;
-
+export const AUX_CLICK = 'Auxclick';
 // Timeout on restarting SDA in case it's stuck
 const LISTEN_TIMEOUT: number = 25 * 1000;
 
@@ -745,6 +745,7 @@ export class WindowHandler {
           nodeIntegration: IS_NODE_INTEGRATION_ENABLED,
           preload: path.join(__dirname, '../renderer/_preload-component.js'),
           devTools: isDevEnv,
+          disableBlinkFeatures: AUX_CLICK,
         },
       }) as ICustomBrowserView;
       const titleBarWindowUrl = format({
@@ -1841,7 +1842,7 @@ export class WindowHandler {
         width: frameWidth,
         height: frameHeight,
         frame: false,
-        transparent: false,
+        transparent: true,
         skipTaskbar: true,
         alwaysOnTop: true,
       },
@@ -2251,6 +2252,7 @@ export class WindowHandler {
         contextIsolation: this.contextIsolation,
         backgroundThrottling: this.backgroundThrottling,
         enableRemoteModule: true,
+        disableBlinkFeatures: AUX_CLICK,
       },
       ...webPreferences,
     };

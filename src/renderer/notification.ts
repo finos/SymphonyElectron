@@ -7,6 +7,7 @@ import {
 } from '../app/analytics-handler';
 import { config } from '../app/config-handler';
 import {
+  AUX_CLICK,
   IS_NODE_INTEGRATION_ENABLED,
   IS_SAND_BOXED,
 } from '../app/window-handler';
@@ -624,6 +625,7 @@ class Notification extends NotificationHandler {
         sandbox: IS_SAND_BOXED,
         nodeIntegration: IS_NODE_INTEGRATION_ENABLED,
         devTools: true,
+        disableBlinkFeatures: AUX_CLICK,
       },
     };
   }

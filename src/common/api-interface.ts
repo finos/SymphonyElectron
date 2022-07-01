@@ -32,7 +32,6 @@ export enum apiCmds {
   getMediaSource = 'get-media-source',
   notification = 'notification',
   closeNotification = 'close-notification',
-  isMisspelled = 'is-misspelled',
   memoryInfo = 'memory-info',
   swiftSearch = 'swift-search',
   getConfigUrl = 'get-config-url',
@@ -274,6 +273,8 @@ export type NotificationActionCallback = (
   event: NotificationActions,
   data: INotificationData,
 ) => void;
+
+export type ConfigUpdateType = 'restart' | 'reload';
 
 export interface ICloud9Pipe {
   write(data: Uint8Array): void;

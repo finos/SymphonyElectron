@@ -8,6 +8,7 @@ Using [Packages](http://s.sudre.free.fr/Software/Packages/about.html), we can bu
 
 - [Xcode build tools](http://railsapps.github.io/xcode-command-line-tools.html)
 - [Packages](http://s.sudre.free.fr/Software/Packages/about.html)
+- Python 3. Needs to accessible as `python` in the command line.
 
 ## Build Process
 

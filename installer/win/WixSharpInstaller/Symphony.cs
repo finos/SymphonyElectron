@@ -53,7 +53,7 @@ class Script
         //     StartOn = SvcEvent.Install,
         //     StopOn = SvcEvent.InstallUninstall_Wait,
         //     RemoveOn = SvcEvent.Uninstall_Wait,
-        // };  
+        // };
 
         // Create a wixsharp project instance and assign the project name to it, and a hierarchy of all files to include
         // Files are taken from multiple locations, and not all files in each location should be included, which is why
@@ -61,7 +61,7 @@ class Script
         // desired contents of installation, and then we can simplify this bit.
         var project = new ManagedProject(productName,
             new Dir(@"%ProgramFiles%\" + productName,
-                new File(new Id("symphony_exe"), @"..\..\..\dist\win-unpacked\Symphony.exe",
+                new File(new Id("com.symphony.electron-desktop"), @"..\..\..\dist\win-unpacked\Symphony.exe",
                     // Create two shortcuts to the main Symphony.exe file, one on the desktop and one in the program menu
                     new FileShortcut(productName, @"%Desktop%")
                     {
@@ -113,47 +113,12 @@ class Script
                     new DirFiles(@"..\..\..\dist\win-unpacked\resources\*.*"),
                     new Dir(@"app.asar.unpacked",
                         new Dir(@"node_modules",
-                            new Dir(@"@felixrieseberg\spellchecker\build\Release",
-                                new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\@felixrieseberg\spellchecker\build\Release\spellchecker.node")
-                            ),
-                            new Dir(@"cld\build\Release",
-                                new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\cld\build\Release\cld.node")
-                            ),
-                            new Dir(@"diskusage\build\Release",
-                                new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\diskusage\build\Release\diskusage.node")
-                            ),
-                            new Dir(@"ffi-napi\build\Release",
-                                new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ffi-napi\build\Release\ffi_bindings.node")
-                            ),
-                            new Dir(@"keyboard-layout\build\Release",
-                                new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\keyboard-layout\build\Release\keyboard-layout-manager.node")
-                            ),
-                            new Dir(@"ffi-napi\node_modules\ref-napi\prebuilds\win32-x64",
-                                new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ffi-napi\node_modules\ref-napi\prebuilds\win32-x64\electron.napi.node")
-                            ),
-                            new Dir(@"ref-napi\build\Release",
-                                new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\ref-napi\build\Release\binding.node")
-                            ),
-                            new Dir(@"spawn-rx",
-                                new Files(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\*.*")
-                            ),
-                            new Dir(@"swift-search\node_modules",
-                                new Dir(@"ffi-napi\build\Release",
-                                    new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\swift-search\node_modules\ffi-napi\build\Release\ffi_bindings.node")
-                                ),
-                                new Dir(@"ref-napi\build\Release",
-                                    new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\swift-search\node_modules\ref-napi\build\Release\binding.node")
-                                )
-                            )
+                            new Files(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\*.*")
                         )
                     )
                 ),
-                new Dir(@"swiftshader",
-                    new Files(@"..\..\..\dist\win-unpacked\swiftshader\*.*")
-                ),
                 new Dir(@"cloud9",
                     new Files(@"..\..\..\dist\win-unpacked\cloud9\*.*")
-                )
             ),
 
             // Add a launch condition to require Windows Server 2008 or later
@@ -161,7 +126,7 @@ class Script
             //    https://docs.microsoft.com/en-us/windows/win32/msi/operating-system-property-values
             new LaunchCondition("VersionNT>=600 AND WindowsBuild>=6001", "OS not supported"),
 
-            // Add registry entry used by protocol handler to launch symphony when opening symphony:// URIs         
+            // Add registry entry used by protocol handler to launch symphony when opening symphony:// URIs
             new RegValue(WixSharp.RegistryHive.ClassesRoot, productName, "", "URL:symphony"),
             new RegValue(WixSharp.RegistryHive.ClassesRoot, productName, "URL Protocol", ""),
             new RegValue(WixSharp.RegistryHive.ClassesRoot, productName + @"\shell\open\command", "", "\"[INSTALLDIR]Symphony.exe\" " + userDataPathArgument + " \"%1\""),
@@ -177,8 +142,7 @@ class Script
         // The build script which calls the wix# builder, will be run from a command environment which has %SYMVER% set.
         // So we just extract that version string, create a Version object from it, and pass it to out project definition.
         var version = System.Environment.GetEnvironmentVariable("SYMVER");
-        var versionReplacement = version.Replace("-", ".");
-        project.Version = new System.Version(versionReplacement);
+        project.Version = new System.Version(version);
 
         // To get the correct behaviour with upgrading the product, the product GUID needs to be different for every build,
         // but the UpgradeCode needs to stay the same. If we wanted to make a new major version and allow it to be installed

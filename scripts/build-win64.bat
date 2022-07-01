@@ -5,7 +5,7 @@ call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tool
 echo %PATH%
 
 set DISABLE_REBUILD=true
-set NODE_REQUIRED_VERSION=12.13.1
+set NODE_REQUIRED_VERSION=16.13.2
 set SNYK_ORG=sda
 set SNYK_PROJECT_NAME="Symphony Desktop Application"
 
@@ -108,12 +108,6 @@ cd %installerDir%
 if NOT EXIST %SIGNING_FILE_PATH% (
     echo Signing failed, 'signing.bat' not found.
     exit /b -1
-)
-
-call %SIGNING_FILE_PATH% ..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\spawn-rx\vendor\jobber\Jobber.exe
-IF %errorlevel% neq 0 (
-	echo "Signing failed"
-	exit /b -1
 )
 
 call %SIGNING_FILE_PATH% ..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\screen-share-indicator-frame\ScreenShareIndicatorFrame.exe

@@ -26,6 +26,8 @@ import { autoLaunchInstance } from './auto-launch-controller';
 import {
   CloudConfigDataTypes,
   config,
+  ConfigFieldsToRestart,
+  ICloudConfig,
   IConfig,
   ICustomRectangle,
 } from './config-handler';
@@ -34,6 +36,7 @@ import { memoryMonitor } from './memory-monitor';
 import { screenSnippet } from './screen-snippet-handler';
 import { updateAlwaysOnTop } from './window-actions';
 import {
+  AUX_CLICK,
   DEFAULT_HEIGHT,
   DEFAULT_WIDTH,
   ICustomBrowserView,
@@ -115,9 +118,9 @@ export const preventWindowNavigation = (
   );
 
   const listener = async (e: Electron.Event, winUrl: string) => {
-    if (!winUrl.startsWith('http' || 'https')) {
+    if (!winUrl.startsWith('https')) {
       logger.error(
-        `window-utils: ${winUrl} doesn't start with http or https, so, not navigating!`,
+        `window-utils: ${winUrl} doesn't start with https, so, not navigating!`,
       );
       e.preventDefault();
       return;
@@ -196,6 +199,7 @@ export const createComponentWindow = (
       nodeIntegration: IS_NODE_INTEGRATION_ENABLED,
       preload: path.join(__dirname, '../renderer/_preload-component.js'),
       devTools: isDevEnv,
+      disableBlinkFeatures: AUX_CLICK,
     },
   };
 
@@ -957,7 +961,64 @@ export const getWindowByName = (
   });
 };
 
-export const updateFeaturesForCloudConfig = async (): Promise<void> => {
+export const updateFeaturesForCloudConfig = async (
+  cloudConfig: ICloudConfig,
+): Promise<void> => {
+  const {
+    podLevelEntitlements,
+    acpFeatureLevelEntitlements,
+    pmpEntitlements,
+    ...rest
+  } = cloudConfig as ICloudConfig;
+  if (
+    podLevelEntitlements &&
+    podLevelEntitlements.autoLaunchPath &&
+    podLevelEntitlements.autoLaunchPath.match(/\\\\/g)
+  ) {
+    podLevelEntitlements.autoLaunchPath = podLevelEntitlements.autoLaunchPath.replace(
+      /\\+/g,
+      '\\',
+    );
+  }
+  if (
+    podLevelEntitlements &&
+    podLevelEntitlements.userDataPath &&
+    podLevelEntitlements.userDataPath.match(/\\\\/g)
+  ) {
+    podLevelEntitlements.userDataPath = podLevelEntitlements.userDataPath.replace(
+      /\\+/g,
+      '\\',
+    );
+  }
+
+  logger.info(
+    'window-utils: filtered SDA cloudConfig',
+    config.getMergedConfig(config.cloudConfig as ICloudConfig) as IConfig,
+  );
+  logger.info(
+    'window-utils: filtered SFE cloud config',
+    config.getMergedConfig({
+      podLevelEntitlements,
+      acpFeatureLevelEntitlements,
+      pmpEntitlements,
+    }) as IConfig,
+  );
+  const updatedCloudConfigFields = config.compareCloudConfig(
+    config.getMergedConfig(config.cloudConfig as ICloudConfig) as IConfig,
+    config.getMergedConfig({
+      podLevelEntitlements,
+      acpFeatureLevelEntitlements,
+      pmpEntitlements,
+    }) as IConfig,
+  );
+
+  logger.info('window-utils: ignored other values from SFE', rest);
+  await config.updateCloudConfig({
+    podLevelEntitlements,
+    acpFeatureLevelEntitlements,
+    pmpEntitlements,
+  });
+
   const {
     alwaysOnTop: isAlwaysOnTop,
     launchOnStartup,
@@ -992,6 +1053,28 @@ export const updateFeaturesForCloudConfig = async (): Promise<void> => {
       );
       memoryMonitor.setMemoryThreshold(parseInt(memoryThreshold, 10));
       mainWebContents.send('initialize-memory-refresh');
+    }
+  }
+
+  logger.info(
+    `window-utils: Updated cloud config fields`,
+    updatedCloudConfigFields,
+  );
+  if (updatedCloudConfigFields && updatedCloudConfigFields.length) {
+    if (mainWebContents && !mainWebContents.isDestroyed()) {
+      const shouldRestart = updatedCloudConfigFields.some((field) =>
+        ConfigFieldsToRestart.has(field),
+      );
+      logger.info(
+        `window-utils: should restart for updated cloud config field?`,
+        shouldRestart,
+      );
+      if (shouldRestart) {
+        mainWebContents.send('display-client-banner', {
+          reason: 'cloudConfig',
+          action: 'restart',
+        });
+      }
     }
   }
 };
@@ -1055,6 +1138,7 @@ export const loadBrowserViews = async (
       nodeIntegration: IS_NODE_INTEGRATION_ENABLED,
       preload: path.join(__dirname, '../renderer/_preload-component.js'),
       devTools: isDevEnv,
+      disableBlinkFeatures: AUX_CLICK,
     },
   }) as ICustomBrowserView;
   const mainWindowBounds = windowHandler.getMainWindow()?.getBounds();

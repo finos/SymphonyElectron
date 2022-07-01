@@ -16,6 +16,12 @@ const getMainWindow = {
   setFullScreenable: jest.fn(),
 };
 
+jest.mock('fs', () => ({
+  writeFile: jest.fn(),
+  existsSync: jest.fn(() => true),
+  readFileSync: jest.fn(() => '{"configVersion": "4.0.0"}'),
+}));
+
 jest.mock('electron-log');
 
 jest.mock('../src/common/env', () => {

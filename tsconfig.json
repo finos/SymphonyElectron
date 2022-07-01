@@ -20,6 +20,7 @@
     "strictNullChecks": true,
     "noUnusedLocals": true,
     "noImplicitThis": true,
+    "skipLibCheck": true,
     "noUnusedParameters": true,
     "typeRoots": ["node_modules/@types"]
   },

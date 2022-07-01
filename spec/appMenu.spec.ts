@@ -100,6 +100,7 @@ jest.mock('../src/app/window-utils', () => {
     windowExists: jest.fn(() => true),
     zoomIn: jest.fn(),
     zoomOut: jest.fn(),
+    reloadWindow: jest.fn(),
   };
 });
 

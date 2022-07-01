@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 import * as path from 'path';
 import { isWindowsOS } from '../../src/common/env';
+
 const ipcEmitter = new EventEmitter();
 
 const mockIdleTime: number = 15;
@@ -9,12 +10,22 @@ const executableName: string = '/Symphony.exe';
 const isReady: boolean = true;
 const version: string = '4.0.0';
 
+process.on('unhandledRejection', (reason, promise) => {
+  console.warn(
+    'Unhandled promise rejection:',
+    promise,
+    'reason:',
+    reason ? (reason as any).stack : 'unknown' || reason,
+  );
+});
+
 interface IApp {
   commandLine: any;
   getAppPath(): string;
   getPath(type: string): string;
   getName(): string;
   isReady(): boolean;
+  whenReady(): Promise<boolean>;
   getVersion(): string;
   on(eventName: any, cb: any): void;
   once(eventName: any, cb: any): void;
@@ -75,6 +86,7 @@ export const app: IApp = {
   },
   getName: () => appName,
   isReady: () => isReady,
+  whenReady: () => Promise.resolve(isReady),
   getVersion: () => version,
   on: (event, cb) => {
     ipcEmitter.on(event, cb);

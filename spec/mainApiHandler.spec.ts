@@ -61,6 +61,7 @@ jest.mock('../src/app/window-utils', () => {
     downloadManagerAction: jest.fn(),
     getWindowByName: jest.fn(),
     isValidWindow: jest.fn(() => true),
+    isValidView: jest.fn(),
     sanitize: jest.fn(),
     setDataUrl: jest.fn(),
     showBadgeCount: jest.fn(),

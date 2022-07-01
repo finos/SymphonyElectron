@@ -67,75 +67,54 @@ describe('hwnd handler', () => {
     expect(hwnd).toBe(parent);
   });
 
-  it('no child window found', () => {
+  it('no rect found for parent window', () => {
     const parent = Buffer.from('validhwnd', 'utf8');
     const hwnd = getContentWindowHandle(parent);
-
-    expect(mockGetWindowRect).toBeCalledTimes(0);
-    expect(mockFindWindowExA).toBeCalledTimes(1);
     expect(hwnd).toBe(parent);
   });
 
-  it('no rect found for child window', () => {
-    mockFindWindowExA.mockImplementationOnce(() => {
-      return 4711;
+  it('no child window found', () => {
+    mockGetWindowRect.mockImplementationOnce((_hwnd, rect) => {
+      writeRect(rect, 10, 10, 100, 100);
+      return 1;
     });
 
     const parent = Buffer.from('validhwnd', 'utf8');
     const hwnd = getContentWindowHandle(parent);
 
     expect(mockGetWindowRect).toBeCalledTimes(1);
-    expect(mockFindWindowExA).toBeCalledTimes(2);
-    expect(hwnd).toBe(parent);
-  });
-
-  it('no rect found for second child window', () => {
-    mockGetWindowRect.mockImplementationOnce((_hwnd, rect) => {
-      writeRect(rect, 10, 10, 100, 10);
-      return 1;
-    });
-    mockFindWindowExA.mockImplementationOnce(() => {
-      return 4711;
-    });
-    mockFindWindowExA.mockImplementationOnce(() => {
-      return 42;
-    });
-
-    const parent = Buffer.from('validhwnd', 'utf8');
-    const hwnd = getContentWindowHandle(parent);
-
-    expect(mockGetWindowRect).toBeCalledTimes(2);
-    expect(mockFindWindowExA).toBeCalledTimes(3);
+    expect(mockFindWindowExA).toBeCalledTimes(1);
     expect(hwnd).toBe(parent);
   });
 
   it('matching child window found', () => {
     mockGetWindowRect.mockImplementationOnce((_hwnd, rect) => {
-      writeRect(rect, 10, 20, 100, 100);
+      writeRect(rect, 10, 10, 100, 100);
       return 1;
     });
     mockGetWindowRect.mockImplementationOnce((_hwnd, rect) => {
-      writeRect(rect, 10, 10, 100, 10);
+      writeRect(rect, 10, 20, 100, 100);
       return 1;
     });
     mockFindWindowExA.mockImplementationOnce(() => {
       return 4711;
-    });
-    mockFindWindowExA.mockImplementationOnce(() => {
-      return 42;
     });
 
     const parent = Buffer.from('validhwnd', 'utf8');
     const hwnd = getContentWindowHandle(parent);
 
     expect(mockGetWindowRect).toBeCalledTimes(2);
-    expect(mockFindWindowExA).toBeCalledTimes(3);
+    expect(mockFindWindowExA).toBeCalledTimes(1);
     expect(hwnd.readInt32LE(0)).toBe(4711);
   });
 
   it('matching child window found second', () => {
     mockGetWindowRect.mockImplementationOnce((_hwnd, rect) => {
-      writeRect(rect, 10, 10, 100, 10);
+      writeRect(rect, 10, 10, 100, 100);
+      return 1;
+    });
+    mockGetWindowRect.mockImplementationOnce((_hwnd, rect) => {
+      writeRect(rect, 100, 10, 100, 100);
       return 1;
     });
     mockGetWindowRect.mockImplementationOnce((_hwnd, rect) => {
@@ -152,12 +131,16 @@ describe('hwnd handler', () => {
     const parent = Buffer.from('validhwnd', 'utf8');
     const hwnd = getContentWindowHandle(parent);
 
-    expect(mockGetWindowRect).toBeCalledTimes(2);
-    expect(mockFindWindowExA).toBeCalledTimes(3);
+    expect(mockGetWindowRect).toBeCalledTimes(3);
+    expect(mockFindWindowExA).toBeCalledTimes(2);
     expect(hwnd.readInt32LE(0)).toBe(42);
   });
 
   it('no matching child window found', () => {
+    mockGetWindowRect.mockImplementationOnce((_hwnd, rect) => {
+      writeRect(rect, 10, 10, 100, 100);
+      return 1;
+    });
     mockGetWindowRect.mockImplementationOnce((_hwnd, rect) => {
       writeRect(rect, 10, 10, 100, 100);
       return 1;
@@ -169,7 +152,7 @@ describe('hwnd handler', () => {
     const parent = Buffer.from('validhwnd', 'utf8');
     const hwnd = getContentWindowHandle(parent);
 
-    expect(mockGetWindowRect).toBeCalledTimes(1);
+    expect(mockGetWindowRect).toBeCalledTimes(2);
     expect(mockFindWindowExA).toBeCalledTimes(2);
     expect(hwnd).toBe(parent);
   });
