@@ -3,6 +3,7 @@ import { MacUpdater, NsisUpdater } from 'electron-updater';
 
 import { isMac, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
+import { isUrl } from '../common/utils';
 import { whitelistHandler } from '../common/whitelist-handler';
 import { config } from './config-handler';
 import { windowHandler } from './window-handler';
@@ -91,7 +92,7 @@ export class AutoUpdate {
       'autoUpdateUrl',
     ]);
 
-    if (autoUpdateUrl) {
+    if (autoUpdateUrl && isUrl(autoUpdateUrl)) {
       logger.info(
         `auto-update-handler: autoUpdateUrl exists so, using it`,
         autoUpdateUrl,

@@ -304,3 +304,11 @@ export const getDifferenceInDays = (startDate: Date, endDate: Date): number => {
     Math.abs(Number(endDate.getTime()) - Number(startDate.getTime())) / msInDay,
   );
 };
+
+export const isUrl = (str: string): boolean => {
+  try {
+    return Boolean(new URL(str).protocol === 'https:');
+  } catch (_e) {
+    return false;
+  }
+};
