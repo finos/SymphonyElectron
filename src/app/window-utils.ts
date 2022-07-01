@@ -1098,6 +1098,18 @@ export const updateFeaturesForCloudConfig = async (
         const { lastAutoUpdateCheckDate } = config.getUserConfigFields([
           'lastAutoUpdateCheckDate',
         ]);
+        if (!lastAutoUpdateCheckDate || lastAutoUpdateCheckDate === '') {
+          logger.info(
+            `window-utils: lastAutoUpdateCheckDate is not set in user config file so checking for updates`,
+            lastAutoUpdateCheckDate,
+            autoUpdateCheckInterval,
+          );
+          await config.updateUserConfig({
+            lastAutoUpdateCheckDate: new Date().toISOString(),
+          });
+          autoUpdate.checkUpdates();
+          return;
+        }
         logger.info(
           `window-utils: is last check date > auto update check interval?`,
           lastAutoUpdateCheckDate,

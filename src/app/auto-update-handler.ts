@@ -7,10 +7,6 @@ import { whitelistHandler } from '../common/whitelist-handler';
 import { config } from './config-handler';
 import { windowHandler } from './window-handler';
 
-// OS types
-const MACOS = 'mac';
-const WINDOWS = 'windows';
-
 export class AutoUpdate {
   public isUpdateAvailable: boolean = false;
   public autoUpdater: MacUpdater | NsisUpdater | undefined = undefined;
@@ -104,15 +100,12 @@ export class AutoUpdate {
     }
 
     const url = userConfigURL ? userConfigURL : globalConfigURL;
-    const os = isMac ? MACOS : WINDOWS;
 
     const { subdomain, domain, tld } = whitelistHandler.parseDomain(url);
-    logger.info(
-      `auto-update-handler: using generic pod url`,
-      `https://${subdomain}.${domain}.${tld}/${os}/${autoUpdateChannel}`,
-    );
+    const updateUrl = `https://${subdomain}.${domain}.${tld}/${autoUpdateChannel}`;
+    logger.info(`auto-update-handler: using generic pod url`, updateUrl);
 
-    return `https://${subdomain}.${domain}.${tld}/${os}/${autoUpdateChannel}`;
+    return updateUrl;
   };
 }
 

@@ -41,6 +41,7 @@
   },
   "build": {
     "appId": "com.symphony.electron_desktop",
+    "artifactName": "${productName}-${version}-${os}.${ext}",
     "asar": true,
     "asarUnpack": "**/*.node",
     "nsis": {
