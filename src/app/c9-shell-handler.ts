@@ -130,7 +130,7 @@ class C9ShellHandler {
       });
     });
     c9Shell.stdout.on('data', (data) => {
-      logger.info(`c9: ${data.toString().trim()}`);
+      logger.info(`c9-shell: ${data.toString().trim()}`);
     });
     c9Shell.stderr.on('data', (data) => {
       logger.error(`c9 (stderr): ${data.toString().trim()}`);
