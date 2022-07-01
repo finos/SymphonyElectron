@@ -13,6 +13,7 @@ class C9PipeHandler {
   public connect(sender: WebContents, pipe: string) {
     let connectionSuccess = false;
     if (!pipe.startsWith('symphony-c9-')) {
+      logger.info('c9-pipe: Invalid pipe name specified: ' + pipe);
       sender.send('c9-pipe-event', {
         event: 'connection-failed',
         arg: 'invalid pipe',
