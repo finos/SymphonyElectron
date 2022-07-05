@@ -119,6 +119,7 @@ class Script
                 ),
                 new Dir(@"cloud9",
                     new Files(@"..\..\..\dist\win-unpacked\cloud9\*.*")
+                )
             ),
 
             // Add a launch condition to require Windows Server 2008 or later
