@@ -91,6 +91,10 @@ set installerDir="%CD%\installer\win"
 set distDir="%CD%\dist"
 set rootDir="%CD%"
 
+echo "Move optional symphony-c9-shell files into place: " "%distDir%\win-unpacked\cloud9"
+mkdir "%distDir%\win-unpacked\cloud9"
+move /y "%rootDir%\node_modules\@symphony\symphony-c9-shell\shell" "%distDir%\win-unpacked\cloud9"
+
 if NOT EXIST "%PFX_DIR%\%PFX_FILE%" (
   echo "can not find .pfx file" "%pfxDir%\%pfxFile%"
   exit /b -1

@@ -18,6 +18,8 @@ import { logger } from '../common/logger';
 import { activityDetection } from './activity-detection';
 import { analytics } from './analytics-handler';
 import appStateHandler from './app-state-handler';
+import { closeC9Pipe, connectC9Pipe, writeC9Pipe } from './c9-pipe-handler';
+import { loadC9Shell } from './c9-shell-handler';
 import { getCitrixMediaRedirectionStatus } from './citrix-handler';
 import { CloudConfigDataTypes, config, ICloudConfig } from './config-handler';
 import { downloadHandler } from './download-handler';
@@ -387,6 +389,18 @@ ipcMain.on(
         if (swiftSearchInstance) {
           swiftSearchInstance.handleMessageEvents(arg.swiftSearchData);
         }
+        break;
+      case apiCmds.connectCloud9Pipe:
+        connectC9Pipe(event.sender, arg.pipe);
+        break;
+      case apiCmds.writeCloud9Pipe:
+        writeC9Pipe(arg.data);
+        break;
+      case apiCmds.closeCloud9Pipe:
+        closeC9Pipe();
+        break;
+      case apiCmds.launchCloud9:
+        loadC9Shell(event.sender);
         break;
       default:
         break;
