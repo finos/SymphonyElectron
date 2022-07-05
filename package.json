@@ -170,6 +170,7 @@
     "shell-path": "^3.0.0"
   },
   "optionalDependencies": {
+    "@symphony/symphony-c9-shell": "3.14.99-37",
     "auto-update": "file:auto_update",
     "screen-share-indicator-frame": "git+https://github.com/symphonyoss/ScreenShareIndicatorFrame.git#v1.4.13",
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#9.2.2",

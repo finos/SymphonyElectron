@@ -53,8 +53,8 @@ class Script
         //     StartOn = SvcEvent.Install,
         //     StopOn = SvcEvent.InstallUninstall_Wait,
         //     RemoveOn = SvcEvent.Uninstall_Wait,
-        // };  
-        
+        // };
+
         // Create a wixsharp project instance and assign the project name to it, and a hierarchy of all files to include
         // Files are taken from multiple locations, and not all files in each location should be included, which is why
         // the file list is rather long and explicit. At some point we might make the `dist` folder match exactly the
@@ -116,7 +116,9 @@ class Script
                             new Files(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\*.*")
                         )
                     )
-                )
+                ),
+                new Dir(@"cloud9",
+                    new Files(@"..\..\..\dist\win-unpacked\cloud9\*.*")
             ),
 
             // Add a launch condition to require Windows Server 2008 or later
@@ -124,7 +126,7 @@ class Script
             //    https://docs.microsoft.com/en-us/windows/win32/msi/operating-system-property-values
             new LaunchCondition("VersionNT>=600 AND WindowsBuild>=6001", "OS not supported"),
 
-            // Add registry entry used by protocol handler to launch symphony when opening symphony:// URIs         
+            // Add registry entry used by protocol handler to launch symphony when opening symphony:// URIs
             new RegValue(WixSharp.RegistryHive.ClassesRoot, productName, "", "URL:symphony"),
             new RegValue(WixSharp.RegistryHive.ClassesRoot, productName, "URL Protocol", ""),
             new RegValue(WixSharp.RegistryHive.ClassesRoot, productName + @"\shell\open\command", "", "\"[INSTALLDIR]Symphony.exe\" " + userDataPathArgument + " \"%1\""),
@@ -133,7 +135,8 @@ class Script
             // will not work for us, as we have a "minimize on close" option, which stops the app from terminating on WM_CLOSE. So we
             // instruct the installer to not send a Close message, but instead send the EndSession message, and we have a custom event
             // handler in the SDA code which listens for this message, and ensures app termination when it is received.
-            new CloseApplication("Symphony.exe", false) { EndSessionMessage = true }
+            new CloseApplication("Symphony.exe", false) { EndSessionMessage = true },
+            new CloseApplication("C9Shell.exe", false) { EndSessionMessage = true }
             );
 
         // The build script which calls the wix# builder, will be run from a command environment which has %SYMVER% set.
@@ -304,6 +307,19 @@ class Script
                 System.Diagnostics.Process.GetProcessesByName("Symphony").ForEach(p =>
                 {
                     if (System.IO.Path.GetFileName(p.MainModule.FileName) == "Symphony.exe")
+                    {
+                        if (!p.HasExited)
+                        {
+                            p.Kill();
+                            p.WaitForExit();
+                        }
+                    }
+                });
+
+                // The embedded C9 Shell should terminate when the parent window is closed, but it doesn't always work. So we'll just force it to exit
+                System.Diagnostics.Process.GetProcessesByName("C9Shell").ForEach(p =>
+                {
+                    if (System.IO.Path.GetFileName(p.MainModule.FileName) == "C9Shell.exe")
                     {
                         if (!p.HasExited)
                         {
