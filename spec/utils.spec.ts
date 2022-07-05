@@ -179,7 +179,7 @@ describe('utils', () => {
       expect(isUrl('https://corporate.symphony.com')).toBe(true);
     });
 
-    it('should return true for URL string', () => {
+    it('should return false for http URLs string', () => {
       expect(isUrl('http://corporate.symphony.com')).toBe(false);
     });
 
