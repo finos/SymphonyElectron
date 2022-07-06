@@ -21,6 +21,8 @@ export class AutoUpdate {
 
     if (this.autoUpdater) {
       this.autoUpdater.logger = electronLog;
+      this.autoUpdater.autoDownload = false;
+      this.autoUpdater.autoInstallOnAppQuit = true;
 
       this.autoUpdater.on('update-not-available', () => {
         const mainWebContents = windowHandler.mainWebContents;
@@ -33,14 +35,39 @@ export class AutoUpdate {
         }
       });
 
-      this.autoUpdater.on('update-downloaded', () => {
-        this.isUpdateAvailable = true;
+      this.autoUpdater.on('update-available', (info) => {
         const mainWebContents = windowHandler.mainWebContents;
         // Display client banner
         if (mainWebContents && !mainWebContents.isDestroyed()) {
           mainWebContents.send('display-client-banner', {
             reason: 'autoUpdate',
             action: 'update-available',
+            data: info,
+          });
+        }
+      });
+
+      this.autoUpdater.on('download-progress', (info) => {
+        const mainWebContents = windowHandler.mainWebContents;
+        // Display client banner
+        if (mainWebContents && !mainWebContents.isDestroyed()) {
+          mainWebContents.send('display-client-banner', {
+            reason: 'autoUpdate',
+            action: 'download-progress',
+            data: info,
+          });
+        }
+      });
+
+      this.autoUpdater.on('update-downloaded', (info) => {
+        this.isUpdateAvailable = true;
+        const mainWebContents = windowHandler.mainWebContents;
+        // Display client banner
+        if (mainWebContents && !mainWebContents.isDestroyed()) {
+          mainWebContents.send('display-client-banner', {
+            reason: 'autoUpdate',
+            action: 'update-downloaded',
+            data: info,
           });
         }
       });
@@ -72,10 +99,21 @@ export class AutoUpdate {
   public checkUpdates = async (): Promise<void> => {
     logger.info('auto-update-handler: Checking for updates');
     if (this.autoUpdater) {
-      const updateCheckResult = await this.autoUpdater.checkForUpdatesAndNotify();
+      const updateCheckResult = await this.autoUpdater.checkForUpdates();
       logger.info('auto-update-handler: ', updateCheckResult);
     }
     logger.info('auto-update-handler: After checking auto update');
+  };
+
+  /**
+   * Downloads the latest update
+   * @return void
+   */
+  public downloadUpdate = async (): Promise<void> => {
+    logger.info('auto-update-handler: download update');
+    if (this.autoUpdater) {
+      await this.autoUpdater.downloadUpdate();
+    }
   };
 
   /**

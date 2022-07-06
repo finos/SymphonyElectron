@@ -371,6 +371,9 @@ ipcMain.on(
       case apiCmds.updateAndRestart:
         autoUpdate.updateAndRestart();
         break;
+      case apiCmds.downloadUpdate:
+        autoUpdate.downloadUpdate();
+        break;
       default:
         break;
     }

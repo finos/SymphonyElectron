@@ -68,7 +68,8 @@ export enum apiCmds {
   connectCloud9Pipe = 'connect-cloud9-pipe',
   writeCloud9Pipe = 'write-cloud9-pipe',
   closeCloud9Pipe = 'close-cloud9-pipe',
-  updateAndRestart = 'updateAndRestart',
+  updateAndRestart = 'update-and-restart',
+  downloadUpdate = 'download-update',
 }
 
 export enum apiName {
