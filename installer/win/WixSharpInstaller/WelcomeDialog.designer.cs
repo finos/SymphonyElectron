@@ -196,10 +196,6 @@ namespace Symphony
             this.panelInstallType.PerformLayout();
             this.ResumeLayout(false);
 
-            // Fix for SDA-3414 - we might want to remove these UI elements completely at some point, but hiding for now
-            this.labelInstallType.Hide();
-            this.panelInstallType.Hide();
-
             ScaleForDPI( this.backgroundPanel );
             foreach (System.Windows.Forms.Control control in this.backgroundPanel.Controls)
             {
