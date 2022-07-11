@@ -486,6 +486,7 @@ public class CustomActions
                 {
                     key.DeleteValue("Symphony", false);
                     key.DeleteValue("com.symphony.electron-desktop", false);
+                    key.DeleteValue("com.symphony.electron_desktop", false);
                     key.DeleteValue("electron.app.Symphony", false);
                 }
             }

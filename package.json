@@ -41,11 +41,13 @@
   },
   "build": {
     "appId": "com.symphony.electron_desktop",
+    "uninstallDisplayName": "${productName}",
     "artifactName": "${productName}-${version}-${os}.${ext}",
     "asar": true,
     "asarUnpack": "**/*.node",
     "nsis": {
       "perMachine": true,
+      "allowToChangeInstallationDirectory": true,
       "include": "build/installer.nsh"
     },
     "files": [
