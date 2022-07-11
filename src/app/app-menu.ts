@@ -165,7 +165,6 @@ export class AppMenu {
   public buildMenu(): void {
     // updates the global variables
     this.updateGlobals();
-
     this.menuList = menuItemsArray.reduce(
       (map: Electron.MenuItemConstructorOptions, key: string) => {
         map[key] = this.buildMenuKey(key);
@@ -180,8 +179,6 @@ export class AppMenu {
 
     this.menu = Menu.buildFromTemplate(template);
     logger.info(`app-menu: built menu from the provided template`);
-    Menu.setApplicationMenu(this.menu);
-    logger.info(`app-menu: set application menu`);
 
     // Remove the default menu for window
     // as we use custom popup menu
@@ -190,6 +187,9 @@ export class AppMenu {
       if (mainWindow && windowExists(mainWindow)) {
         mainWindow.setMenuBarVisibility(false);
       }
+    } else {
+      logger.info(`app-menu: set application menu`);
+      Menu.setApplicationMenu(this.menu);
     }
   }
 
