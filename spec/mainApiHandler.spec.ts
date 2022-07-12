@@ -21,6 +21,12 @@ jest.mock('../src/app/protocol-handler', () => {
   };
 });
 
+jest.mock('../src/app/auto-update-handler', () => {
+  return {
+    updateAndRestart: jest.fn(),
+  };
+});
+
 jest.mock('../src/app/screen-snippet-handler', () => {
   return {
     screenSnippet: {
@@ -97,6 +103,16 @@ jest.mock('../src/app/config-handler', () => {
       getFilteredCloudConfigFields: jest.fn(() => {
         return {
           devToolsEnabled: true,
+        };
+      }),
+      getUserConfigFields: jest.fn(() => {
+        return {
+          url: 'https://symphony.com',
+        };
+      }),
+      getGlobalConfigFields: jest.fn(() => {
+        return {
+          url: 'https://symphony.com',
         };
       }),
     },
@@ -495,14 +511,14 @@ describe('main api handler', () => {
         cmd: apiCmds.getNativeWindowHandle,
         windowName: 'main',
       });
-      expect(windows['main'].getNativeWindowHandle).toBeCalledTimes(1);
+      expect(windows.main.getNativeWindowHandle).toBeCalledTimes(1);
 
       ipcMain.send(apiName.symphonyApi, {
         cmd: apiCmds.getNativeWindowHandle,
         windowName: 'popout1',
       });
-      expect(windows['popout1'].getNativeWindowHandle).toBeCalledTimes(1);
-      expect(windows['popout2'].getNativeWindowHandle).toBeCalledTimes(0);
+      expect(windows.popout1.getNativeWindowHandle).toBeCalledTimes(1);
+      expect(windows.popout2.getNativeWindowHandle).toBeCalledTimes(0);
     });
 
     it('should call `connectC9Pipe` correctly', () => {

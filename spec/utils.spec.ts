@@ -1,10 +1,11 @@
 import {
+  calculatePercentage,
   compareVersions,
   formatString,
   getCommandLineArgs,
   getGuid,
+  isUrl,
   throttle,
-  calculatePercentage,
 } from '../src/common/utils';
 
 describe('utils', () => {
@@ -170,6 +171,24 @@ describe('utils', () => {
 
     it('should calculate the percentage correctly for 50', () => {
       expect(calculatePercentage(500, 50)).toBe(250);
+    });
+  });
+
+  describe('isURL', () => {
+    it('should return true for URL string', () => {
+      expect(isUrl('https://corporate.symphony.com')).toBe(true);
+    });
+
+    it('should return false for http URLs string', () => {
+      expect(isUrl('http://corporate.symphony.com')).toBe(false);
+    });
+
+    it('should return false for URL string without https', () => {
+      expect(isUrl('corporate.symphony.com')).toBe(false);
+    });
+
+    it('should return false for not a URL string', () => {
+      expect(isUrl('/general')).toBe(false);
     });
   });
 });

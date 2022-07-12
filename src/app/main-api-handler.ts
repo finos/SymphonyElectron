@@ -18,6 +18,7 @@ import { logger } from '../common/logger';
 import { activityDetection } from './activity-detection';
 import { analytics } from './analytics-handler';
 import appStateHandler from './app-state-handler';
+import { autoUpdate } from './auto-update-handler';
 import { closeC9Pipe, connectC9Pipe, writeC9Pipe } from './c9-pipe-handler';
 import { loadC9Shell } from './c9-shell-handler';
 import { getCitrixMediaRedirectionStatus } from './citrix-handler';
@@ -298,9 +299,6 @@ ipcMain.on(
           }
         }
         break;
-      // case apiCmds.autoUpdate:
-      //   autoUpdate.update(arg.filename);
-      //   break;
       case apiCmds.aboutAppClipBoardData:
         if (arg.clipboard && arg.clipboardType) {
           clipboard.write(
@@ -369,6 +367,12 @@ ipcMain.on(
         break;
       case apiCmds.launchCloud9:
         loadC9Shell(event.sender);
+        break;
+      case apiCmds.updateAndRestart:
+        autoUpdate.updateAndRestart();
+        break;
+      case apiCmds.downloadUpdate:
+        autoUpdate.downloadUpdate();
         break;
       default:
         break;

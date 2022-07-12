@@ -1,67 +1,151 @@
-import { app } from 'electron';
-import * as fs from 'fs';
-import * as os from 'os';
-import * as path from 'path';
+import electronLog from 'electron-log';
+import { MacUpdater, NsisUpdater } from 'electron-updater';
 
-import { spawn } from 'child_process';
-import { isDevEnv, isElectronQA, isWindowsOS } from '../common/env';
+import { isMac, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
+import { isUrl } from '../common/utils';
+import { whitelistHandler } from '../common/whitelist-handler';
+import { config } from './config-handler';
+import { windowHandler } from './window-handler';
 
-class AutoUpdate {
-  private readonly tempDir: string;
-  private filename: string;
-  private logFilePath: string;
-  private updateUtil: string;
-  private updateUtilArgs: ReadonlyArray<string>;
+export class AutoUpdate {
+  public isUpdateAvailable: boolean = false;
+  public autoUpdater: MacUpdater | NsisUpdater | undefined = undefined;
 
   constructor() {
-    if (isElectronQA) {
-      this.tempDir = os.tmpdir();
-    } else {
-      this.tempDir = path.join(app.getPath('userData'), 'temp');
-      if (!fs.existsSync(this.tempDir)) {
-        fs.mkdirSync(this.tempDir);
-      }
+    if (isMac) {
+      this.autoUpdater = new MacUpdater(this.getUpdateUrl());
+    } else if (isWindowsOS) {
+      this.autoUpdater = new NsisUpdater(this.getUpdateUrl());
     }
 
-    this.filename = '';
-    this.logFilePath = path.join(this.tempDir, 'auto_update.log');
+    if (this.autoUpdater) {
+      this.autoUpdater.logger = electronLog;
+      this.autoUpdater.autoDownload = false;
+      this.autoUpdater.autoInstallOnAppQuit = true;
 
-    this.updateUtil = isDevEnv
-      ? path.join(
-          __dirname,
-          '../../../node_modules/auto-update/auto_update_helper.exe',
-        )
-      : path.join(path.dirname(app.getPath('exe')), 'auto_update_helper.exe');
+      this.autoUpdater.on('update-not-available', () => {
+        const mainWebContents = windowHandler.mainWebContents;
+        // Display client banner
+        if (mainWebContents && !mainWebContents.isDestroyed()) {
+          mainWebContents.send('display-client-banner', {
+            reason: 'autoUpdate',
+            action: 'update-not-available',
+          });
+        }
+      });
 
-    this.updateUtilArgs = [];
+      this.autoUpdater.on('update-available', (info) => {
+        const mainWebContents = windowHandler.mainWebContents;
+        // Display client banner
+        if (mainWebContents && !mainWebContents.isDestroyed()) {
+          mainWebContents.send('display-client-banner', {
+            reason: 'autoUpdate',
+            action: 'update-available',
+            data: info,
+          });
+        }
+      });
+
+      this.autoUpdater.on('download-progress', (info) => {
+        const mainWebContents = windowHandler.mainWebContents;
+        // Display client banner
+        if (mainWebContents && !mainWebContents.isDestroyed()) {
+          mainWebContents.send('display-client-banner', {
+            reason: 'autoUpdate',
+            action: 'download-progress',
+            data: info,
+          });
+        }
+      });
+
+      this.autoUpdater.on('update-downloaded', (info) => {
+        this.isUpdateAvailable = true;
+        const mainWebContents = windowHandler.mainWebContents;
+        // Display client banner
+        if (mainWebContents && !mainWebContents.isDestroyed()) {
+          mainWebContents.send('display-client-banner', {
+            reason: 'autoUpdate',
+            action: 'update-downloaded',
+            data: info,
+          });
+        }
+      });
+    }
   }
 
   /**
-   * Launch the auto update helper
+   * Installs the latest update quits and relaunches application
    */
-  public async update(filename: string) {
-    logger.info(`auto-update-handler: Starting auto update!`);
-    this.filename = filename;
-    if (isWindowsOS) {
-      this.updateUtilArgs = [
-        this.filename,
-        app.getPath('exe'),
-        this.logFilePath,
-      ];
-      logger.info(
-        `auto-update-handler: Running update helper${this.updateUtil} with args ${this.updateUtilArgs}!`,
-      );
-
-      try {
-        spawn(this.updateUtil, this.updateUtilArgs);
-      } catch (error) {
-        logger.error(
-          `auto-update-handler: auto update failed. Error: ${error}!`,
-        );
-      }
+  public updateAndRestart = async (): Promise<void> => {
+    if (!this.isUpdateAvailable) {
+      return;
     }
-  }
+    // Handle update and restart for macOS
+    if (isMac) {
+      windowHandler.setIsAutoUpdating(true);
+    }
+    setImmediate(() => {
+      if (this.autoUpdater) {
+        this.autoUpdater.quitAndInstall();
+      }
+    });
+  };
+
+  /**
+   * Checks for the latest updates
+   * @return void
+   */
+  public checkUpdates = async (): Promise<void> => {
+    logger.info('auto-update-handler: Checking for updates');
+    if (this.autoUpdater) {
+      const updateCheckResult = await this.autoUpdater.checkForUpdates();
+      logger.info('auto-update-handler: ', updateCheckResult);
+    }
+    logger.info('auto-update-handler: After checking auto update');
+  };
+
+  /**
+   * Downloads the latest update
+   * @return void
+   */
+  public downloadUpdate = async (): Promise<void> => {
+    logger.info('auto-update-handler: download update');
+    if (this.autoUpdater) {
+      await this.autoUpdater.downloadUpdate();
+    }
+  };
+
+  /**
+   * Constructs the SDA auto update end point url
+   *
+   * @return string
+   * @example https://corporate.symphony.com/macos/general
+   */
+  public getUpdateUrl = (): string => {
+    const { url: userConfigURL } = config.getUserConfigFields(['url']);
+    const { url: globalConfigURL } = config.getGlobalConfigFields(['url']);
+    const { autoUpdateUrl, autoUpdateChannel } = config.getConfigFields([
+      'autoUpdateChannel',
+      'autoUpdateUrl',
+    ]);
+
+    if (autoUpdateUrl && isUrl(autoUpdateUrl)) {
+      logger.info(
+        `auto-update-handler: autoUpdateUrl exists so, using it`,
+        autoUpdateUrl,
+      );
+      return autoUpdateUrl;
+    }
+
+    const url = userConfigURL ? userConfigURL : globalConfigURL;
+
+    const { subdomain, domain, tld } = whitelistHandler.parseDomain(url);
+    const updateUrl = `https://${subdomain}.${domain}.${tld}/${autoUpdateChannel}`;
+    logger.info(`auto-update-handler: using generic pod url`, updateUrl);
+
+    return updateUrl;
+  };
 }
 
 const autoUpdate = new AutoUpdate();

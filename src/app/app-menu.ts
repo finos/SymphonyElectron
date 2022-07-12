@@ -34,6 +34,8 @@ import {
   zoomOut,
 } from './window-utils';
 
+import { autoUpdate } from './auto-update-handler';
+
 export const menuSections = {
   about: 'about',
   edit: 'edit',
@@ -279,6 +281,12 @@ export class AppMenu {
               : '';
             windowHandler.createAboutAppWindow(windowName);
           },
+        },
+        {
+          click: (_item) => {
+            autoUpdate.checkUpdates();
+          },
+          label: i18n.t('Check for updates')(),
         },
         this.buildSeparator(),
         { label: i18n.t('Services')(), role: 'services' },

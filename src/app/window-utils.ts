@@ -20,7 +20,7 @@ import { apiName } from '../common/api-interface';
 import { isDevEnv, isLinux, isMac, isWindowsOS } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
-import { getGuid } from '../common/utils';
+import { getDifferenceInDays, getGuid, getRandomTime } from '../common/utils';
 import { whitelistHandler } from '../common/whitelist-handler';
 import { autoLaunchInstance } from './auto-launch-controller';
 import {
@@ -48,7 +48,9 @@ import {
 } from './window-handler';
 
 import { notification } from '../renderer/notification';
+import { autoUpdate } from './auto-update-handler';
 import { mainEvents } from './main-event-handler';
+
 interface IStyles {
   name: styleNames;
   content: string;
@@ -66,6 +68,11 @@ const { ctWhitelist } = config.getConfigFields(['ctWhitelist']);
 // Network status check variables
 const networkStatusCheckInterval = 10 * 1000;
 let networkStatusCheckIntervalId;
+
+const MAX_AUTO_UPDATE_CHECK_INTERVAL = 4 * 60 * 60 * 1000; // 4hrs
+const MIN_AUTO_UPDATE_CHECK_INTERVAL = 2 * 60 * 60 * 1000; // 2hrs
+let autoUpdateIntervalId;
+
 let isNetworkMonitorInitialized = false;
 
 const styles: IStyles[] = [];
@@ -1024,11 +1031,15 @@ export const updateFeaturesForCloudConfig = async (
     launchOnStartup,
     memoryRefresh,
     memoryThreshold,
+    isAutoUpdateEnabled,
+    autoUpdateCheckInterval,
   } = config.getConfigFields([
     'launchOnStartup',
     'alwaysOnTop',
     'memoryRefresh',
     'memoryThreshold',
+    'isAutoUpdateEnabled',
+    'autoUpdateCheckInterval',
   ]) as IConfig;
 
   const mainWebContents = windowHandler.getMainWebContents();
@@ -1075,6 +1086,47 @@ export const updateFeaturesForCloudConfig = async (
           action: 'restart',
         });
       }
+    }
+  }
+
+  // SDA auto updater
+  logger.info(`window-utils: initiate auto update?`, isAutoUpdateEnabled);
+  if (isAutoUpdateEnabled) {
+    if (!autoUpdateIntervalId) {
+      // randomised to avoid having all users getting SDA update at the same time
+      autoUpdateIntervalId = setInterval(async () => {
+        const { lastAutoUpdateCheckDate } = config.getUserConfigFields([
+          'lastAutoUpdateCheckDate',
+        ]);
+        if (!lastAutoUpdateCheckDate || lastAutoUpdateCheckDate === '') {
+          logger.info(
+            `window-utils: lastAutoUpdateCheckDate is not set in user config file so checking for updates`,
+            lastAutoUpdateCheckDate,
+            autoUpdateCheckInterval,
+          );
+          await config.updateUserConfig({
+            lastAutoUpdateCheckDate: new Date().toISOString(),
+          });
+          autoUpdate.checkUpdates();
+          return;
+        }
+        logger.info(
+          `window-utils: is last check date > auto update check interval?`,
+          lastAutoUpdateCheckDate,
+          autoUpdateCheckInterval,
+        );
+        // Compare the current date and user config last auto update checked date
+        // and if it is greater that autoUpdateCheckInterval we check for new updates
+        if (
+          getDifferenceInDays(new Date(), new Date(lastAutoUpdateCheckDate)) >
+          Number(autoUpdateCheckInterval)
+        ) {
+          await config.updateUserConfig({
+            lastAutoUpdateCheckDate: new Date().toISOString(),
+          });
+          autoUpdate.checkUpdates();
+        }
+      }, getRandomTime(MIN_AUTO_UPDATE_CHECK_INTERVAL, MAX_AUTO_UPDATE_CHECK_INTERVAL));
     }
   }
 };

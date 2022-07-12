@@ -275,3 +275,40 @@ export const arrayEquals = (a: string[], b: string[]) => {
     a.every((val, index) => val === b[index])
   );
 };
+
+/**
+ * Returns a random number that is between (min - max)
+ * if min is 4hrs and max is 12hrs then the
+ * returned value will be a random b/w 4 - 12 hrs
+ *
+ * @param min {number} - millisecond
+ * @param max {number} - millisecond
+ */
+export const getRandomTime = (min: number, max: number): number => {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
+/**
+ * Gets the difference between 2 Dates in Days
+ *
+ * @param startDate
+ * @param endDate
+ *
+ * @return number
+ */
+export const getDifferenceInDays = (startDate: Date, endDate: Date): number => {
+  const msInDay = 24 * 60 * 60 * 1000;
+  return Math.round(
+    Math.abs(Number(endDate.getTime()) - Number(startDate.getTime())) / msInDay,
+  );
+};
+
+export const isUrl = (str: string): boolean => {
+  try {
+    return Boolean(new URL(str).protocol === 'https:');
+  } catch (_e) {
+    return false;
+  }
+};

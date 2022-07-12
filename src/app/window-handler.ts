@@ -143,6 +143,7 @@ export class WindowHandler {
   public isCustomTitleBar: boolean;
   public isWebPageLoading: boolean = true;
   public isLoggedIn: boolean = false;
+  public isAutoUpdating: boolean = false;
   public screenShareIndicatorFrameUtil: string;
   private readonly defaultPodUrl: string = 'https://[POD].symphony.com';
   private readonly contextIsolation: boolean;
@@ -631,13 +632,16 @@ export class WindowHandler {
       }
 
       const { minimizeOnClose } = config.getConfigFields(['minimizeOnClose']);
-      if (minimizeOnClose === CloudConfigDataTypes.ENABLED) {
+      if (
+        minimizeOnClose === CloudConfigDataTypes.ENABLED &&
+        !this.isAutoUpdating
+      ) {
         event.preventDefault();
         this.mainWindow.minimize();
         return;
       }
 
-      if (isMac) {
+      if (isMac && !this.isAutoUpdating) {
         event.preventDefault();
         this.mainWindow.hide();
         return;
@@ -885,6 +889,15 @@ export class WindowHandler {
    */
   public setTitleBarView(titleBarView: ICustomBrowserView): void {
     this.titleBarView = titleBarView;
+  }
+
+  /**
+   * Sets whether the application is Auto Updating
+   *
+   * @param isAutoUpdating
+   */
+  public setIsAutoUpdating(isAutoUpdating: boolean): void {
+    this.isAutoUpdating = isAutoUpdating;
   }
 
   /**

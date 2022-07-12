@@ -48,7 +48,6 @@ export enum apiCmds {
   showNotification = 'show-notification',
   closeAllWrapperWindows = 'close-all-windows',
   setZoomLevel = 'set-zoom-level',
-  // autoUpdate = 'auto-update',
   aboutAppClipBoardData = 'about-app-clip-board-data',
   closeMainWindow = 'close-main-window',
   minimizeMainWindow = 'minimize-main-window',
@@ -69,6 +68,8 @@ export enum apiCmds {
   connectCloud9Pipe = 'connect-cloud9-pipe',
   writeCloud9Pipe = 'write-cloud9-pipe',
   closeCloud9Pipe = 'close-cloud9-pipe',
+  updateAndRestart = 'update-and-restart',
+  downloadUpdate = 'download-update',
 }
 
 export enum apiName {

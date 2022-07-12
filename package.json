@@ -36,13 +36,20 @@
     "copy": "run-os",
     "copy:darwin": "ncp config 'node_modules/electron/dist/Electron.app/Contents/config'",
     "copy:win32": "ncp config node_modules\\electron\\dist\\config",
-    "unpacked-mac": "npm run prebuild && npm run test && ./node_modules/.bin/electron-builder build --mac --dir",
-    "unpacked-win": "npm run prebuild && npm run test && node_modules\\.bin\\electron-builder build --win --x64 --dir"
+    "unpacked-mac": "npm run prebuild && npm run test && ./node_modules/.bin/electron-builder build --mac",
+    "unpacked-win": "npm run prebuild && npm run test && node_modules\\.bin\\electron-builder build --win --x64"
   },
   "build": {
-    "appId": "com.symphony.electron-desktop",
+    "appId": "com.symphony.electron_desktop",
+    "uninstallDisplayName": "${productName}",
+    "artifactName": "${productName}-${version}-${os}.${ext}",
     "asar": true,
     "asarUnpack": "**/*.node",
+    "nsis": {
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true,
+      "include": "build/installer.nsh"
+    },
     "files": [
       "!coverage/*",
       "!installer/*",
@@ -77,12 +84,19 @@
         "library/libsymphonysearch.dylib",
         "library/cryptoLib.dylib",
         "library/dictionary"
+      ],
+      "target": [
+        "dir",
+        "dmg",
+        "zip"
       ]
     },
     "win": {
       "icon": "images/icon.ico",
       "target": [
-        "squirrel"
+        "dir",
+        "nsis",
+        "zip"
       ]
     },
     "linux": {
@@ -159,6 +173,7 @@
     "electron-dl": "3.0.0",
     "electron-fetch": "1.4.0",
     "electron-log": "4.0.7",
+    "electron-updater": "^5.0.1",
     "ffi-napi": "^4.0.3",
     "filesize": "6.1.0",
     "lazy-brush": "^1.0.1",
@@ -171,7 +186,6 @@
   },
   "optionalDependencies": {
     "@symphony/symphony-c9-shell": "3.14.99-37",
-    "auto-update": "file:auto_update",
     "screen-share-indicator-frame": "git+https://github.com/symphonyoss/ScreenShareIndicatorFrame.git#v1.4.13",
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#9.2.2",
     "winreg": "^1.2.4"

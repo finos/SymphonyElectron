@@ -69,7 +69,7 @@ export interface ILocalObject {
   analyticsEventHandler?: (arg: any) => void;
   restartFloater?: (arg: IRestartFloaterData) => void;
   showClientBannerCallback?: Array<
-    (reason: string, action: ConfigUpdateType) => void
+    (reason: string, action: ConfigUpdateType, data?: object) => void
   >;
   c9PipeEventCallback?: (event: string, arg?: any) => void;
   c9MessageCallback?: (status: IShellStatus) => void;
@@ -854,6 +854,24 @@ export class SSFApi {
       cmd: apiCmds.launchCloud9,
     });
   }
+
+  /**
+   * Allows JS to install new update and restart SDA
+   */
+  public updateAndRestart(): void {
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.updateAndRestart,
+    });
+  }
+
+  /**
+   * Allows JS to download the latest SDA updates
+   */
+  public downloadUpdate(): void {
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.downloadUpdate,
+    });
+  }
 }
 
 /**
@@ -1091,6 +1109,10 @@ local.ipcRenderer.on('notification-actions', (_event, args) => {
 local.ipcRenderer.on('display-client-banner', (_event, args) => {
   if (local.showClientBannerCallback) {
     for (const callback of local.showClientBannerCallback) {
+      if (args.data) {
+        callback(args.reason, args.action, args.data);
+        return;
+      }
       callback(args.reason, args.action);
     }
   }
