@@ -45,7 +45,7 @@
     "asar": true,
     "asarUnpack": "**/*.node",
     "nsis": {
-      "perMachine": true,
+      "perMachine": false,
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "include": "build/installer.nsh",
