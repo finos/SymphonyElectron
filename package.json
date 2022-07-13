@@ -95,7 +95,7 @@
       "icon": "images/icon.ico",
       "target": [
         "dir",
-        "zip"
+        "nsis"
       ],
       "extraFiles": [
         {
