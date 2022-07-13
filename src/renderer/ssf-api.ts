@@ -872,6 +872,15 @@ export class SSFApi {
       cmd: apiCmds.downloadUpdate,
     });
   }
+
+  /**
+   * Allows JS to check for updates
+   */
+  public checkForUpdates(): void {
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.checkForUpdates,
+    });
+  }
 }
 
 /**

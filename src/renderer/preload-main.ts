@@ -96,6 +96,7 @@ if (ssfWindow.ssf) {
     connectCloud9Pipe: ssfWindow.ssf.connectCloud9Pipe,
     updateAndRestartSDA: ssfWindow.ssf.updateAndRestart,
     downloadUpdate: ssfWindow.ssf.downloadUpdate,
+    checkForUpdates: ssfWindow.ssf.checkForUpdates,
   });
 }
 
