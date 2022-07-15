@@ -46,8 +46,8 @@
     "asarUnpack": "**/*.node",
     "nsis": {
       "perMachine": false,
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
+      "oneClick": true,
+      "allowToChangeInstallationDirectory": false,
       "include": "build/installer.nsh",
       "uninstallDisplayName": "${productName}"
     },

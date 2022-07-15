@@ -1,5 +1,8 @@
 !include LogicLib.nsh
 
+Var PerUser
+Var AllUser
+
 Function uninstallSymphony
     StrCpy $0 0
     SetRegView 64
@@ -16,9 +19,45 @@ Function uninstallSymphony
     done:
 FunctionEnd
 
-!macro preInit
+!macro bothM
+	MessageBox MB_OK "Auto update not supported as there is two version installed"
+!macroend
+
+!macro perUserM
+	SetRegView 64
+    WriteRegExpandStr HKLM "${INSTALL_REGISTRY_KEY}" InstallLocation "$LOCALAPPDATA\Programs\Symphony\Symphony"
+    WriteRegExpandStr HKCU "${INSTALL_REGISTRY_KEY}" InstallLocation "$LOCALAPPDATA\Programs\Symphony\Symphony"
+!macroend
+
+!macro allUserM
     Call uninstallSymphony
-    SetRegView 64
+	SetRegView 64
     WriteRegExpandStr HKLM "${INSTALL_REGISTRY_KEY}" InstallLocation "$PROGRAMFILES64\Symphony\Symphony"
     WriteRegExpandStr HKCU "${INSTALL_REGISTRY_KEY}" InstallLocation "$PROGRAMFILES64\Symphony\Symphony"
+!macroend
+
+!macro abortM
+	MessageBox MB_OK "Somthing went wrong!! Could not find existing SDA"
+	Abort
+!macroend
+
+Section
+	IfFileExists $PROGRAMFILES64\Symphony\Symphony\Symphony.exe 0 +2
+	StrCpy $AllUser "exists"
+
+	IfFileExists $LOCALAPPDATA\Programs\Symphony\Symphony\Symphony.exe 0 +2
+	StrCpy $PerUser "exists"
+SectionEnd
+
+!macro preInit
+    ${If} $PerUser == "exists"
+        ${AndIf} $AllUser == "exists"
+            !insertmacro bothM
+    ${ElseIf} $PerUser == "exists"
+        !insertmacro perUserM
+    ${ElseIf} $AllUser == "exists"
+        !insertmacro allUserM
+    ${Else}
+        !insertmacro abortM
+    ${EndIf}
 !macroend
