@@ -37,19 +37,19 @@ FunctionEnd
 !macroend
 
 !macro abortM
-	MessageBox MB_OK "Somthing went wrong!! Could not find existing SDA"
-	Abort
+	MessageBox MB_OK "Something went wrong!! Could not find existing SDA"
 !macroend
 
-Section
+!macro validateInstallation
 	IfFileExists $PROGRAMFILES64\Symphony\Symphony\Symphony.exe 0 +2
 	StrCpy $AllUser "exists"
 
 	IfFileExists $LOCALAPPDATA\Programs\Symphony\Symphony\Symphony.exe 0 +2
 	StrCpy $PerUser "exists"
-SectionEnd
+!macroend
 
 !macro preInit
+    !insertmacro validateInstallation
     ${If} $PerUser == "exists"
         ${AndIf} $AllUser == "exists"
             !insertmacro bothM
