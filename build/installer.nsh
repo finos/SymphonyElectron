@@ -37,7 +37,7 @@ FunctionEnd
 !macroend
 
 !macro abortM
-	MessageBox MB_OK "Something went wrong!! Could not find existing SDA"
+	; MessageBox MB_OK "Something went wrong!! Could not find existing SDA"
 !macroend
 
 !macro validateInstallation
