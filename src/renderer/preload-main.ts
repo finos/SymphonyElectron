@@ -94,7 +94,7 @@ if (ssfWindow.ssf) {
     registerClientBanner: ssfWindow.ssf.registerClientBanner,
     launchCloud9: ssfWindow.ssf.launchCloud9,
     connectCloud9Pipe: ssfWindow.ssf.connectCloud9Pipe,
-    updateAndRestartSDA: ssfWindow.ssf.updateAndRestart,
+    updateAndRestart: ssfWindow.ssf.updateAndRestart,
     downloadUpdate: ssfWindow.ssf.downloadUpdate,
     checkForUpdates: ssfWindow.ssf.checkForUpdates,
   });
