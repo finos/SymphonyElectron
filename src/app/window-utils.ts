@@ -22,7 +22,6 @@ import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { getDifferenceInDays, getGuid, getRandomTime } from '../common/utils';
 import { whitelistHandler } from '../common/whitelist-handler';
-import { autoLaunchInstance } from './auto-launch-controller';
 import {
   CloudConfigDataTypes,
   config,
@@ -48,6 +47,7 @@ import {
 } from './window-handler';
 
 import { notification } from '../renderer/notification';
+import { autoLaunchInstance } from './auto-launch-controller';
 import { autoUpdate } from './auto-update-handler';
 import { mainEvents } from './main-event-handler';
 

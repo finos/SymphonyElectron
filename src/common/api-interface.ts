@@ -70,6 +70,7 @@ export enum apiCmds {
   closeCloud9Pipe = 'close-cloud9-pipe',
   updateAndRestart = 'update-and-restart',
   downloadUpdate = 'download-update',
+  checkForUpdates = 'check-for-updates',
 }
 
 export enum apiName {

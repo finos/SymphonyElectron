@@ -16,7 +16,6 @@ import {
   AnalyticsElements,
   MenuActionTypes,
 } from './analytics-handler';
-import { autoLaunchInstance as autoLaunch } from './auto-launch-controller';
 import { CloudConfigDataTypes, config, IConfig } from './config-handler';
 import { gpuRestartDialog, titleBarChangeDialog } from './dialog-handler';
 import { exportCrashDumps, exportLogs } from './reports-handler';
@@ -34,6 +33,7 @@ import {
   zoomOut,
 } from './window-utils';
 
+import { autoLaunchInstance as autoLaunch } from './auto-launch-controller';
 import { autoUpdate } from './auto-update-handler';
 
 export const menuSections = {
@@ -78,6 +78,7 @@ let {
   memoryRefresh,
   isCustomTitleBar,
   devToolsEnabled,
+  isAutoUpdateEnabled,
 } = config.getConfigFields([
   'minimizeOnClose',
   'launchOnStartup',
@@ -86,6 +87,7 @@ let {
   'memoryRefresh',
   'isCustomTitleBar',
   'devToolsEnabled',
+  'isAutoUpdateEnabled',
 ]) as IConfig;
 let initialAnalyticsSent = false;
 
@@ -222,6 +224,7 @@ export class AppMenu {
     memoryRefresh = configData.memoryRefresh;
     isCustomTitleBar = configData.isCustomTitleBar;
     devToolsEnabled = configData.devToolsEnabled;
+    isAutoUpdateEnabled = configData.isAutoUpdateEnabled;
 
     // fetch updated cloud config
     this.cloudConfig = config.getFilteredCloudConfigFields(
@@ -286,6 +289,7 @@ export class AppMenu {
           click: (_item) => {
             autoUpdate.checkUpdates();
           },
+          visible: isMac && isAutoUpdateEnabled,
           label: i18n.t('Check for updates')(),
         },
         this.buildSeparator(),
@@ -665,6 +669,13 @@ export class AppMenu {
               },
             },
           ],
+        },
+        {
+          click: (_item) => {
+            autoUpdate.checkUpdates();
+          },
+          visible: isWindowsOS && isAutoUpdateEnabled,
+          label: i18n.t('Check for updates')(),
         },
         {
           label: i18n.t('About Symphony')(),

@@ -46,8 +46,9 @@
     "asarUnpack": "**/*.node",
     "nsis": {
       "perMachine": false,
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
+      "oneClick": true,
+      "allowToChangeInstallationDirectory": false,
+      "allowElevation": false,
       "include": "build/installer.nsh",
       "uninstallDisplayName": "${productName}"
     },
@@ -105,13 +106,6 @@
         {
           "from": "node_modules/screen-snippet/ScreenSnippet.exe",
           "to": "ScreenSnippet.exe"
-        },
-        {
-          "from": "node_modules/@symphony/symphony-c9-shell/shell",
-          "to": "cloud9",
-          "filter": [
-            "**/*"
-          ]
         }
       ]
     },

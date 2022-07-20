@@ -5,7 +5,6 @@ import { isDevEnv, isLinux, isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
 import { cleanUpAppCache, createAppCacheFile } from './app-cache-handler';
-import { autoLaunchInstance } from './auto-launch-controller';
 import { setChromeFlags, setSessionProperties } from './chrome-flags';
 import { config } from './config-handler';
 import './dialog-handler';
@@ -13,6 +12,8 @@ import './main-api-handler';
 import { handlePerformanceSettings } from './perf-handler';
 import { protocolHandler } from './protocol-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
+
+import { autoLaunchInstance } from './auto-launch-controller';
 
 // Set automatic period substitution to false because of a bug in draft js on the client app
 // See https://perzoinc.atlassian.net/browse/SDA-2215 for more details
