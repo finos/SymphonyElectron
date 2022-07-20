@@ -128,7 +128,7 @@ IF %errorlevel% neq 0 (
 	exit /b -1
 )
 
-call %SIGNING_FILE_PATH% ..\..\dist\win-unpacked\Symphony-%SYMVER%-win.exe
+call %SIGNING_FILE_PATH% ..\..\dist\Symphony-%SYMVER%-win.exe
 IF %errorlevel% neq 0 (
 	echo "Signing failed"
 	exit /b -1
