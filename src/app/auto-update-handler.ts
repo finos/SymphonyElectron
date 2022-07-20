@@ -10,6 +10,7 @@ import { windowHandler } from './window-handler';
 
 export class AutoUpdate {
   public isUpdateAvailable: boolean = false;
+  public didPublishDownloadProgress: boolean = false;
   public autoUpdater: MacUpdater | NsisUpdater | undefined = undefined;
 
   constructor() {
@@ -50,12 +51,17 @@ export class AutoUpdate {
       this.autoUpdater.on('download-progress', (info) => {
         const mainWebContents = windowHandler.mainWebContents;
         // Display client banner
-        if (mainWebContents && !mainWebContents.isDestroyed()) {
+        if (
+          mainWebContents &&
+          !mainWebContents.isDestroyed() &&
+          !this.didPublishDownloadProgress
+        ) {
           mainWebContents.send('display-client-banner', {
             reason: 'autoUpdate',
             action: 'download-progress',
             data: info,
           });
+          this.didPublishDownloadProgress = true;
         }
       });
 
@@ -112,6 +118,7 @@ export class AutoUpdate {
   public downloadUpdate = async (): Promise<void> => {
     logger.info('auto-update-handler: download update');
     if (this.autoUpdater) {
+      this.didPublishDownloadProgress = false;
       await this.autoUpdater.downloadUpdate();
     }
   };

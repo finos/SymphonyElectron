@@ -24,13 +24,21 @@ FunctionEnd
 !macroend
 
 !macro perUserM
+    Call uninstallSymphony
+    Sleep 10000
 	SetRegView 64
     WriteRegExpandStr HKLM "${INSTALL_REGISTRY_KEY}" InstallLocation "$LOCALAPPDATA\Programs\Symphony\Symphony"
     WriteRegExpandStr HKCU "${INSTALL_REGISTRY_KEY}" InstallLocation "$LOCALAPPDATA\Programs\Symphony\Symphony"
 !macroend
 
 !macro allUserM
+    ${IfNot} ${UAC_IsAdmin}
+        ShowWindow $HWNDPARENT ${SW_HIDE}
+        !insertmacro UAC_RunElevated
+        Quit
+    ${endif}
     Call uninstallSymphony
+    Sleep 10000
 	SetRegView 64
     WriteRegExpandStr HKLM "${INSTALL_REGISTRY_KEY}" InstallLocation "$PROGRAMFILES64\Symphony\Symphony"
     WriteRegExpandStr HKCU "${INSTALL_REGISTRY_KEY}" InstallLocation "$PROGRAMFILES64\Symphony\Symphony"
@@ -59,5 +67,16 @@ FunctionEnd
         !insertmacro allUserM
     ${Else}
         !insertmacro abortM
+    ${EndIf}
+!macroend
+
+!macro customUnInit
+    !insertmacro validateInstallation
+    ${If} $AllUser == "exists"
+        ${IfNot} ${UAC_IsAdmin}
+            ShowWindow $HWNDPARENT ${SW_HIDE}
+            !insertmacro UAC_RunElevated
+            Quit
+        ${endif}
     ${EndIf}
 !macroend

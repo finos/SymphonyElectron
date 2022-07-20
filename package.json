@@ -48,6 +48,7 @@
       "perMachine": false,
       "oneClick": true,
       "allowToChangeInstallationDirectory": false,
+      "allowElevation": false,
       "include": "build/installer.nsh",
       "uninstallDisplayName": "${productName}"
     },
