@@ -161,6 +161,7 @@
     "husky": "^4.3.8",
     "jest": "25.2.4",
     "jest-html-reporter": "3.0.0",
+    "js-yaml": "^4.1.0",
     "less": "3.8.1",
     "ncp": "2.0.0",
     "node-abi": "^3.8.0",

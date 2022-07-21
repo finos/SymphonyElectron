@@ -32,6 +32,7 @@ if %ERRORLEVEL% NEQ 0 (
   echo "Snyk does not exist! Installing and setting it up"
   call npm i snyk -g
 )
+
 echo "Setting snyk org to %SNYK_ORG% and api token to %SNYK_API_TOKEN%"
 call snyk config set org=%SNYK_ORG%
 call snyk config set api=%SNYK_API_TOKEN%
@@ -45,6 +46,25 @@ echo D | xcopy /y "C:\jenkins\workspace\tronlibraries\library" "library"
 
 echo "Installing dependencies..."
 call npm install
+
+:: Signing screen snippet and screen share indicator
+
+if NOT EXIST %SIGNING_FILE_PATH% (
+    echo Signing failed, 'signing.bat' not found.
+    exit /b -1
+)
+
+call %SIGNING_FILE_PATH% node_modules\screen-share-indicator-frame\ScreenShareIndicatorFrame.exe
+IF %errorlevel% neq 0 (
+	echo "Signing failed"
+	exit /b -1
+)
+
+call %SIGNING_FILE_PATH% node_modules\screen-snippet\ScreenSnippet.exe
+IF %errorlevel% neq 0 (
+	echo "Signing failed"
+	exit /b -1
+)
 
 # Run Snyk Security Tests
 echo "Running snyk security tests"
@@ -105,23 +125,6 @@ copy /y "%PFX_DIR%\%PFX_FILE%" "%installerDir%\%PFX_FILE%"
 cd %installerDir%
 
 
-if NOT EXIST %SIGNING_FILE_PATH% (
-    echo Signing failed, 'signing.bat' not found.
-    exit /b -1
-)
-
-call %SIGNING_FILE_PATH% ..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\screen-share-indicator-frame\ScreenShareIndicatorFrame.exe
-IF %errorlevel% neq 0 (
-	echo "Signing failed"
-	exit /b -1
-)
-
-call %SIGNING_FILE_PATH% ..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\screen-snippet\ScreenSnippet.exe
-IF %errorlevel% neq 0 (
-	echo "Signing failed"
-	exit /b -1
-)
-
 call %SIGNING_FILE_PATH% ..\..\dist\win-unpacked\Symphony.exe
 IF %errorlevel% neq 0 (
 	echo "Signing failed"
@@ -151,6 +154,8 @@ IF %errorlevel% neq 0 (
 	echo "Signing failed"
 	exit /b -1
 )
+
+node ..\..\scripts\update_checksum.js "..\..\dist\Symphony-%SYMVER%-win.exe" "..\..\dist\latest.yml"
 
 echo "Building new installer with Wix Sharp"
 call "BuildWixSharpInstaller.bat"
