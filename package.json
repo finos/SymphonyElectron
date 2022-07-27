@@ -98,6 +98,9 @@
         "dir",
         "nsis"
       ],
+      "files": [
+        "!node_modules/@symphony/symphony-c9-shell${/*}"
+      ],
       "extraFiles": [
         {
           "from": "node_modules/screen-share-indicator-frame/ScreenShareIndicatorFrame.exe",
@@ -106,6 +109,13 @@
         {
           "from": "node_modules/screen-snippet/ScreenSnippet.exe",
           "to": "ScreenSnippet.exe"
+        },
+        {
+          "from": "node_modules/@symphony/symphony-c9-shell/shell",
+          "to": "cloud9",
+          "filter": [
+            "**/*"
+          ]
         }
       ]
     },
