@@ -8,6 +8,8 @@ import { whitelistHandler } from '../common/whitelist-handler';
 import { config } from './config-handler';
 import { windowHandler } from './window-handler';
 
+const DEFAULT_AUTO_UPDATE_CHANNEL = 'client-bff/static/sda-update';
+
 export class AutoUpdate {
   public isUpdateAvailable: boolean = false;
   public didPublishDownloadProgress: boolean = false;
@@ -148,7 +150,9 @@ export class AutoUpdate {
     const url = userConfigURL ? userConfigURL : globalConfigURL;
 
     const { subdomain, domain, tld } = whitelistHandler.parseDomain(url);
-    const updateUrl = `https://${subdomain}.${domain}.${tld}/${autoUpdateChannel}`;
+    const updateUrl = `https://${subdomain}.${domain}.${tld}/${
+      !autoUpdateChannel ? DEFAULT_AUTO_UPDATE_CHANNEL : autoUpdateChannel
+    }`;
     logger.info(`auto-update-handler: using generic pod url`, updateUrl);
 
     return updateUrl;
