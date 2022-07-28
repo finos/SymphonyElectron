@@ -1,3 +1,4 @@
+import { GenericServerOptions } from 'builder-util-runtime';
 import electronLog from 'electron-log';
 import { MacUpdater, NsisUpdater } from 'electron-updater';
 
@@ -16,10 +17,16 @@ export class AutoUpdate {
   public autoUpdater: MacUpdater | NsisUpdater | undefined = undefined;
 
   constructor() {
+    const { autoUpdateChannel } = config.getConfigFields(['autoUpdateChannel']);
+    const opts: GenericServerOptions = {
+      provider: 'generic',
+      url: this.getUpdateUrl(),
+      channel: autoUpdateChannel || null,
+    };
     if (isMac) {
-      this.autoUpdater = new MacUpdater(this.getUpdateUrl());
+      this.autoUpdater = new MacUpdater(opts);
     } else if (isWindowsOS) {
-      this.autoUpdater = new NsisUpdater(this.getUpdateUrl());
+      this.autoUpdater = new NsisUpdater(opts);
     }
 
     if (this.autoUpdater) {
@@ -134,10 +141,7 @@ export class AutoUpdate {
   public getUpdateUrl = (): string => {
     const { url: userConfigURL } = config.getUserConfigFields(['url']);
     const { url: globalConfigURL } = config.getGlobalConfigFields(['url']);
-    const { autoUpdateUrl, autoUpdateChannel } = config.getConfigFields([
-      'autoUpdateChannel',
-      'autoUpdateUrl',
-    ]);
+    const { autoUpdateUrl } = config.getConfigFields(['autoUpdateUrl']);
 
     if (autoUpdateUrl && isUrl(autoUpdateUrl)) {
       logger.info(
@@ -150,9 +154,7 @@ export class AutoUpdate {
     const url = userConfigURL ? userConfigURL : globalConfigURL;
 
     const { subdomain, domain, tld } = whitelistHandler.parseDomain(url);
-    const updateUrl = `https://${subdomain}.${domain}.${tld}/${
-      !autoUpdateChannel ? DEFAULT_AUTO_UPDATE_CHANNEL : autoUpdateChannel
-    }`;
+    const updateUrl = `https://${subdomain}.${domain}.${tld}/${DEFAULT_AUTO_UPDATE_CHANNEL}`;
     logger.info(`auto-update-handler: using generic pod url`, updateUrl);
 
     return updateUrl;
