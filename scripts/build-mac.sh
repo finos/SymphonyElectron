@@ -150,6 +150,9 @@ if ! [ -x "$(command -v markdown-pdf)" ]; then
   npm install -g markdown-pdf
 fi
 
+echo "Updating auto-update yml file"
+node scripts/macos_update_yml.js  "dist/latest-mac.yml"
+
 echo "Generating PDF for installation instructions"
 markdown-pdf installer/mac/install_instructions_mac.md
 
