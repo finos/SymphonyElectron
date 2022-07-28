@@ -155,7 +155,7 @@ IF %errorlevel% neq 0 (
 	exit /b -1
 )
 
-node ..\..\scripts\update_checksum.js "..\..\dist\Symphony-%SYMVER%-win.exe" "..\..\dist\latest.yml"
+node ..\..\scripts\windws_update_checksum.js "..\..\dist\Symphony-%SYMVER%-win.exe" "..\..\dist\latest.yml"
 
 echo "Building new installer with Wix Sharp"
 call "BuildWixSharpInstaller.bat"
