@@ -154,6 +154,7 @@
     "@types/rimraf": "^3.0.0",
     "ava": "2.4.0",
     "browserify": "16.5.1",
+    "builder-util-runtime": "^9.0.3",
     "cross-env": "5.2.0",
     "del": "3.0.0",
     "electron": "^19.0.10",
