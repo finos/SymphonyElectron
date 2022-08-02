@@ -154,7 +154,7 @@ export class AutoUpdate {
     const url = userConfigURL ? userConfigURL : globalConfigURL;
 
     const { subdomain, domain, tld } = whitelistHandler.parseDomain(url);
-    const updateUrl = `https://${subdomain}.${domain}.${tld}/${DEFAULT_AUTO_UPDATE_CHANNEL}`;
+    const updateUrl = `https://${subdomain}.${domain}${tld}/${DEFAULT_AUTO_UPDATE_CHANNEL}`;
     logger.info(`auto-update-handler: using generic pod url`, updateUrl);
 
     return updateUrl;
