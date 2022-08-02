@@ -818,6 +818,7 @@ export class WindowHandler {
       this.appMenu = new AppMenu();
       this.addWindow(opts.winKey, this.welcomeScreenWindow);
       this.mainWindow = this.welcomeScreenWindow as ICustomBrowserWindow;
+      this.mainWebContents = this.mainWindow.webContents;
     });
 
     this.welcomeScreenWindow.once('closed', () => {
