@@ -205,7 +205,6 @@ class Config {
     this.cloudConfig = {};
     this.filteredCloudConfig = {};
 
-    this.readUserConfig();
     this.readGlobalConfig();
     this.readInstallVariant();
     this.readCloudConfig();
@@ -522,6 +521,40 @@ class Config {
   }
 
   /**
+   * Creates the user config file with default values if not exists
+   */
+  public async initializeUserConfig(): Promise<void> {
+    if (!fs.existsSync(this.userConfigPath)) {
+      // Need to wait until app ready event to access user data
+      await app.whenReady();
+      await this.readGlobalConfig();
+      logger.info(
+        `config-handler: user config doesn't exist! will create new one and update config`,
+      );
+      const { url, ...rest } = this.globalConfig as IConfig;
+      await this.updateUserConfig({
+        configVersion: app.getVersion().toString(),
+        buildNumber,
+        ...rest,
+      } as IConfig);
+    }
+  }
+
+  /**
+   * Reads a stores the user config file
+   *
+   * If user config doesn't exits?
+   * this creates a new one with { configVersion: current_app_version, buildNumber: current_app_build_number }
+   */
+  public async readUserConfig() {
+    if (fs.existsSync(this.userConfigPath)) {
+      const userConfig = fs.readFileSync(this.userConfigPath, 'utf8');
+      this.userConfig = this.parseConfigData(userConfig);
+    }
+    logger.info(`config-handler: User configuration: `, this.userConfig);
+  }
+
+  /**
    * filters out the cloud config
    */
   private filterCloudConfig(): void {
@@ -580,34 +613,6 @@ class Config {
       throw new Error(e);
     }
     return parsedData;
-  }
-
-  /**
-   * Reads a stores the user config file
-   *
-   * If user config doesn't exits?
-   * this creates a new one with { configVersion: current_app_version, buildNumber: current_app_build_number }
-   */
-  private async readUserConfig() {
-    if (!fs.existsSync(this.userConfigPath)) {
-      // Need to wait until app ready event to access user data
-      await app.whenReady();
-      await this.readGlobalConfig();
-      logger.info(
-        `config-handler: user config doesn't exist! will create new one and update config`,
-      );
-      const { url, ...rest } = this.globalConfig as IConfig;
-      await this.updateUserConfig({
-        configVersion: app.getVersion().toString(),
-        buildNumber,
-        ...rest,
-      } as IConfig);
-    }
-    if (fs.existsSync(this.userConfigPath)) {
-      const userConfig = fs.readFileSync(this.userConfigPath, 'utf8');
-      this.userConfig = this.parseConfigData(userConfig);
-    }
-    logger.info(`config-handler: User configuration: `, this.userConfig);
   }
 
   /**
