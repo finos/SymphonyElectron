@@ -78,7 +78,6 @@ let {
   memoryRefresh,
   isCustomTitleBar,
   devToolsEnabled,
-  isAutoUpdateEnabled,
 } = config.getConfigFields([
   'minimizeOnClose',
   'launchOnStartup',
@@ -87,7 +86,6 @@ let {
   'memoryRefresh',
   'isCustomTitleBar',
   'devToolsEnabled',
-  'isAutoUpdateEnabled',
 ]) as IConfig;
 let initialAnalyticsSent = false;
 
@@ -272,6 +270,9 @@ export class AppMenu {
    */
   private buildAboutMenu(): Electron.MenuItemConstructorOptions {
     logger.info(`app-menu: building about menu`);
+    const { isAutoUpdateEnabled } = config.getConfigFields([
+      'isAutoUpdateEnabled',
+    ]);
     return {
       id: menuSections.about,
       label: app.getName(),
@@ -289,7 +290,7 @@ export class AppMenu {
           click: (_item) => {
             autoUpdate.checkUpdates();
           },
-          visible: isMac && isAutoUpdateEnabled,
+          visible: isMac && !!isAutoUpdateEnabled && !!windowHandler.isMana,
           label: i18n.t('Check for updates')(),
         },
         this.buildSeparator(),
@@ -578,6 +579,10 @@ export class AppMenu {
     logger.info(`app-menu: building help menu`);
     let showLogsLabel: string = i18n.t('Show Logs in Explorer')();
     let showCrashesLabel: string = i18n.t('Show crash dump in Explorer')();
+    const { isAutoUpdateEnabled } = config.getConfigFields([
+      'isAutoUpdateEnabled',
+    ]);
+
     if (isMac) {
       showLogsLabel = i18n.t('Show Logs in Finder')();
       showCrashesLabel = i18n.t('Show crash dump in Finder')();
@@ -674,7 +679,8 @@ export class AppMenu {
           click: (_item) => {
             autoUpdate.checkUpdates();
           },
-          visible: isWindowsOS && isAutoUpdateEnabled,
+          visible:
+            isWindowsOS && !!isAutoUpdateEnabled && !!windowHandler.isMana,
           label: i18n.t('Check for updates')(),
         },
         {
