@@ -70,6 +70,17 @@ const macAccelerator = {
   },
 };
 
+const menuItemConfigFields = [
+  'minimizeOnClose',
+  'launchOnStartup',
+  'alwaysOnTop',
+  'bringToFront',
+  'memoryRefresh',
+  'isCustomTitleBar',
+  'devToolsEnabled',
+  'isAutoUpdateEnabled',
+];
+
 let {
   minimizeOnClose,
   launchOnStartup,
@@ -79,16 +90,7 @@ let {
   isCustomTitleBar,
   devToolsEnabled,
   isAutoUpdateEnabled,
-} = config.getConfigFields([
-  'minimizeOnClose',
-  'launchOnStartup',
-  'alwaysOnTop',
-  'bringToFront',
-  'memoryRefresh',
-  'isCustomTitleBar',
-  'devToolsEnabled',
-  'isAutoUpdateEnabled',
-]) as IConfig;
+} = config.getConfigFields(menuItemConfigFields) as IConfig;
 let initialAnalyticsSent = false;
 
 const menuItemsArray = Object.keys(menuSections)
@@ -108,15 +110,7 @@ export class AppMenu {
   constructor() {
     this.menuList = [];
     this.locale = i18n.getLocale();
-    this.menuItemConfigFields = [
-      'minimizeOnClose',
-      'launchOnStartup',
-      'alwaysOnTop',
-      'bringToFront',
-      'memoryRefresh',
-      'isCustomTitleBar',
-      'devToolsEnabled',
-    ];
+    this.menuItemConfigFields = menuItemConfigFields;
     this.cloudConfig = config.getFilteredCloudConfigFields(
       this.menuItemConfigFields,
     );
@@ -225,7 +219,6 @@ export class AppMenu {
     isCustomTitleBar = configData.isCustomTitleBar;
     devToolsEnabled = configData.devToolsEnabled;
     isAutoUpdateEnabled = configData.isAutoUpdateEnabled;
-
     // fetch updated cloud config
     this.cloudConfig = config.getFilteredCloudConfigFields(
       this.menuItemConfigFields,
@@ -289,7 +282,7 @@ export class AppMenu {
           click: (_item) => {
             autoUpdate.checkUpdates();
           },
-          visible: isMac && isAutoUpdateEnabled,
+          visible: isMac && !!isAutoUpdateEnabled && !!windowHandler.isMana,
           label: i18n.t('Check for updates')(),
         },
         this.buildSeparator(),
@@ -578,6 +571,7 @@ export class AppMenu {
     logger.info(`app-menu: building help menu`);
     let showLogsLabel: string = i18n.t('Show Logs in Explorer')();
     let showCrashesLabel: string = i18n.t('Show crash dump in Explorer')();
+
     if (isMac) {
       showLogsLabel = i18n.t('Show Logs in Finder')();
       showCrashesLabel = i18n.t('Show crash dump in Finder')();
@@ -674,7 +668,8 @@ export class AppMenu {
           click: (_item) => {
             autoUpdate.checkUpdates();
           },
-          visible: isWindowsOS && isAutoUpdateEnabled,
+          visible:
+            isWindowsOS && !!isAutoUpdateEnabled && !!windowHandler.isMana,
           label: i18n.t('Check for updates')(),
         },
         {
