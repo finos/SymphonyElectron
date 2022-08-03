@@ -208,8 +208,6 @@ class Config {
     this.readGlobalConfig();
     this.readInstallVariant();
     this.readCloudConfig();
-
-    this.checkFirstTimeLaunch();
   }
 
   /**
@@ -555,6 +553,48 @@ class Config {
   }
 
   /**
+   * Verifies if the application is launched for the first time
+   */
+  public async checkFirstTimeLaunch() {
+    logger.info('config-handler: checking first time launch');
+    const installVariant =
+      (this.userConfig && (this.userConfig as IConfig).installVariant) || null;
+
+    if (!installVariant) {
+      logger.info(
+        `config-handler: there's no install variant found, this is a first time launch`,
+      );
+      this.isFirstTime = true;
+      this.bootCount = 0;
+      return;
+    }
+
+    if (
+      installVariant &&
+      typeof installVariant === 'string' &&
+      installVariant !== this.installVariant
+    ) {
+      logger.info(
+        `config-handler: install variant found is of a different instance, this is a first time launch`,
+      );
+      this.isFirstTime = true;
+      this.bootCount = 0;
+      return;
+    }
+    logger.info(
+      `config-handler: install variant is the same as the existing one, not a first time launch`,
+    );
+    this.isFirstTime = false;
+    this.bootCount = (this.getConfigFields(['bootCount']) as IConfig).bootCount;
+    if (this.bootCount !== undefined) {
+      this.bootCount++;
+      await this.updateUserConfig({ bootCount: this.bootCount });
+    } else {
+      await this.updateUserConfig({ bootCount: 0 });
+    }
+  }
+
+  /**
    * filters out the cloud config
    */
   private filterCloudConfig(): void {
@@ -660,48 +700,6 @@ class Config {
     // recalculate cloud config when we the application starts
     this.filterCloudConfig();
     logger.info(`config-handler: Cloud configuration: `, this.userConfig);
-  }
-
-  /**
-   * Verifies if the application is launched for the first time
-   */
-  private async checkFirstTimeLaunch() {
-    logger.info('config-handler: checking first time launch');
-    const installVariant =
-      (this.userConfig && (this.userConfig as IConfig).installVariant) || null;
-
-    if (!installVariant) {
-      logger.info(
-        `config-handler: there's no install variant found, this is a first time launch`,
-      );
-      this.isFirstTime = true;
-      this.bootCount = 0;
-      return;
-    }
-
-    if (
-      installVariant &&
-      typeof installVariant === 'string' &&
-      installVariant !== this.installVariant
-    ) {
-      logger.info(
-        `config-handler: install variant found is of a different instance, this is a first time launch`,
-      );
-      this.isFirstTime = true;
-      this.bootCount = 0;
-      return;
-    }
-    logger.info(
-      `config-handler: install variant is the same as the existing one, not a first time launch`,
-    );
-    this.isFirstTime = false;
-    this.bootCount = (this.getConfigFields(['bootCount']) as IConfig).bootCount;
-    if (this.bootCount !== undefined) {
-      this.bootCount++;
-      await this.updateUserConfig({ bootCount: this.bootCount });
-    } else {
-      await this.updateUserConfig({ bootCount: 0 });
-    }
   }
 }
 

@@ -81,6 +81,7 @@ const startApplication = async () => {
   // Validate user config before starting the application
   await config.initializeUserConfig();
   await config.readUserConfig();
+  await config.checkFirstTimeLaunch();
 
   if (config.isFirstTimeLaunch()) {
     logger.info(
