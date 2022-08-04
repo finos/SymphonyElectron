@@ -35,7 +35,7 @@ class Script
         // desired contents of installation, and then we can simplify this bit.
         var project = new ManagedProject(productName,
             new Dir(@"%ProgramFiles%\" + productName,
-                new File(new Id("com.symphony.electron_desktop"), @"..\..\..\dist\win-unpacked\Symphony.exe",
+                new File(new Id("symphony_exe"), @"..\..\..\dist\win-unpacked\Symphony.exe",
                     // Create two shortcuts to the main Symphony.exe file, one on the desktop and one in the program menu
                     new FileShortcut(productName, @"%Desktop%")
                     {
@@ -487,7 +487,6 @@ public class CustomActions
                 {
                     key.DeleteValue("Symphony", false);
                     key.DeleteValue("com.symphony.electron-desktop", false);
-                    key.DeleteValue("com.symphony.electron_desktop", false);
                     key.DeleteValue("electron.app.Symphony", false);
                 }
             }

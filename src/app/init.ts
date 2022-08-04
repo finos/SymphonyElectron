@@ -22,7 +22,7 @@ app.enableSandbox();
 
 // need to set this explicitly if using Squirrel
 // https://www.electron.build/configuration/configuration#Configuration-squirrelWindows
-app.setAppUserModelId('com.symphony.electron_desktop');
+app.setAppUserModelId('com.symphony.electron-desktop');
 
 // Set user data path before app ready event
 if (isDevEnv) {

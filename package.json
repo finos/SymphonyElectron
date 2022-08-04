@@ -40,7 +40,7 @@
     "unpacked-win": "npm run prebuild && npm run test && node_modules\\.bin\\electron-builder build --win --x64"
   },
   "build": {
-    "appId": "com.symphony.electron_desktop",
+    "appId": "com.symphony.electron-desktop",
     "artifactName": "${productName}-${version}-${os}.${ext}",
     "asar": true,
     "asarUnpack": "**/*.node",
