@@ -150,10 +150,10 @@ export class WindowHandler {
   private readonly backgroundThrottling: boolean;
   private readonly windowOpts: ICustomBrowserWindowConstructorOpts;
   private readonly globalConfig: IGlobalConfig;
-  private readonly userConfig: IConfig;
   private readonly config: IConfig;
   // Window reference
   private readonly windows: object;
+  private userConfig: IConfig;
   private loadFailError: string | undefined;
   private mainWindow: ICustomBrowserWindow | null = null;
   private aboutAppWindow: Electron.BrowserWindow | null = null;
@@ -276,6 +276,7 @@ export class WindowHandler {
    * Starting point of the app
    */
   public async createApplication() {
+    this.userConfig = config.getUserConfigFields(['url']);
     this.spellchecker = new SpellChecker();
     logger.info(
       `window-handler: initialized spellchecker module with locale ${this.spellchecker.locale}`,
@@ -818,7 +819,6 @@ export class WindowHandler {
       this.appMenu = new AppMenu();
       this.addWindow(opts.winKey, this.welcomeScreenWindow);
       this.mainWindow = this.welcomeScreenWindow as ICustomBrowserWindow;
-      this.mainWebContents = this.mainWindow.webContents;
     });
 
     this.welcomeScreenWindow.once('closed', () => {
