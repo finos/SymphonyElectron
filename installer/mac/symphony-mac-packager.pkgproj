@@ -488,7 +488,7 @@
 			<key>PACKAGE_SETTINGS</key>
 			<dict>
 				<key>AUTHENTICATION</key>
-				<integer>1</integer>
+				<integer>0</integer>
 				<key>CONCLUSION_ACTION</key>
 				<integer>0</integer>
 				<key>FOLLOW_SYMBOLIC_LINKS</key>
@@ -866,6 +866,15 @@
 		</dict>
 		<key>PROJECT_SETTINGS</key>
 		<dict>
+			<key>ADVANCED_OPTIONS</key>
+			<dict>
+				<key>installer-script.domains:enable_anywhere</key>
+				<integer>1</integer>
+				<key>installer-script.domains:enable_currentUserHome</key>
+				<integer>1</integer>
+				<key>installer-script.domains:enable_localSystem</key>
+				<integer>1</integer>
+			</dict>
 			<key>BUILD_FORMAT</key>
 			<integer>0</integer>
 			<key>BUILD_PATH</key>
