@@ -102,6 +102,9 @@ export class AutoUpdate {
     }
     setImmediate(() => {
       if (this.autoUpdater) {
+        if (isMac) {
+          config.backupGlobalConfig();
+        }
         this.autoUpdater.quitAndInstall();
       }
     });
