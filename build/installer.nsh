@@ -19,11 +19,32 @@ Function uninstallSymphony
     done:
 FunctionEnd
 
+!macro copySystemGlobalConfig
+    IfFileExists $PROGRAMFILES64\Symphony\Symphony\config\Symphony.config 0 +2
+    CopyFiles /SILENT $PROGRAMFILES64\Symphony\Symphony\config\Symphony.config $WINDIR\Temp\temp-sys-Symphony.config
+!macroend
+
+!macro copyLocalGlobalConfig
+    IfFileExists $LOCALAPPDATA\Symphony\Symphony\config\Symphony.config 0 +2
+    CopyFiles /SILENT $LOCALAPPDATA\Symphony\Symphony\config\Symphony.config $WINDIR\Temp\temp-local-Symphony.config
+!macroend
+
+!macro replaceSystemGlobalConfig
+    IfFileExists $WINDIR\Temp\temp-sys-Symphony.config 0 +2
+    CopyFiles /SILENT $WINDIR\Temp\temp-sys-Symphony.config $PROGRAMFILES64\Symphony\Symphony\config\Symphony.config
+!macroend
+
+!macro replaceLocalGlobalConfig
+    IfFileExists $WINDIR\Temp\temp-local-Symphony.config 0 +2
+    CopyFiles /SILENT $WINDIR\Temp\temp-local-Symphony.config $PROGRAMFILES64\Symphony\Symphony\config\Symphony.config
+!macroend
+
 !macro bothM
 	MessageBox MB_OK "Auto update not supported as there is two version installed"
 !macroend
 
 !macro perUserM
+    !insertmacro copyLocalGlobalConfig
     Call uninstallSymphony
     Sleep 10000
 	SetRegView 64
@@ -37,6 +58,7 @@ FunctionEnd
         !insertmacro UAC_RunElevated
         Quit
     ${endif}
+    !insertmacro copySystemGlobalConfig
     Call uninstallSymphony
     Sleep 10000
 	SetRegView 64
@@ -65,6 +87,16 @@ FunctionEnd
         !insertmacro perUserM
     ${ElseIf} $AllUser == "exists"
         !insertmacro allUserM
+    ${Else}
+        !insertmacro abortM
+    ${EndIf}
+!macroend
+
+!macro customInstall
+    ${If} $PerUser == "exists"
+        !insertmacro replaceLocalGlobalConfig
+    ${ElseIf} $AllUser == "exists"
+        !insertmacro replaceSystemGlobalConfig
     ${Else}
         !insertmacro abortM
     ${EndIf}
