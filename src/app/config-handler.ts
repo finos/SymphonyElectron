@@ -610,9 +610,16 @@ class Config {
    * Overwrites the global config file with the backed up config file
    */
   public copyGlobalConfig() {
-    if (fs.existsSync(this.tempGlobalConfigFilePath)) {
-      fs.copyFileSync(this.tempGlobalConfigFilePath, this.globalConfigPath);
-      fs.unlinkSync(this.tempGlobalConfigFilePath);
+    try {
+      if (fs.existsSync(this.tempGlobalConfigFilePath)) {
+        fs.copyFileSync(this.tempGlobalConfigFilePath, this.globalConfigPath);
+        fs.unlinkSync(this.tempGlobalConfigFilePath);
+      }
+    } catch (e) {
+      logger.error(
+        `config-handler: unable to backup global config file error: `,
+        e,
+      );
     }
   }
 
