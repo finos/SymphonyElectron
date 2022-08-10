@@ -13,6 +13,7 @@ import {
   IApiArgs,
   INotificationData,
 } from '../common/api-interface';
+import { isMac } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { activityDetection } from './activity-detection';
@@ -343,6 +344,9 @@ ipcMain.on(
         break;
       case apiCmds.setPodUrl:
         await config.updateUserConfig({ url: arg.newPodUrl });
+        if (isMac) {
+          config.copyGlobalConfig();
+        }
         app.relaunch();
         app.exit();
         break;

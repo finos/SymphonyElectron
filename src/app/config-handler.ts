@@ -144,6 +144,7 @@ class Config {
   private bootCount: number | undefined;
   private readonly configFileName: string;
   private readonly installVariantFilename: string;
+  private readonly tempGlobalConfigFilePath: string;
   private readonly installVariantPath: string;
   private readonly userConfigPath: string;
   private readonly appPath: string;
@@ -152,6 +153,10 @@ class Config {
 
   constructor() {
     this.configFileName = 'Symphony.config';
+    this.tempGlobalConfigFilePath = path.join(
+      app.getPath('userData'),
+      'temp-local.Symphony.config',
+    );
     this.installVariantFilename = 'InstallVariant.info';
     this.userConfigPath = path.join(
       app.getPath('userData'),
@@ -591,6 +596,23 @@ class Config {
       await this.updateUserConfig({ bootCount: this.bootCount });
     } else {
       await this.updateUserConfig({ bootCount: 0 });
+    }
+  }
+
+  /**
+   * Creates a backup of the global config file
+   */
+  public backupGlobalConfig() {
+    fs.copyFileSync(this.globalConfigPath, this.tempGlobalConfigFilePath);
+  }
+
+  /**
+   * Overwrites the global config file with the backed up config file
+   */
+  public copyGlobalConfig() {
+    if (fs.existsSync(this.tempGlobalConfigFilePath)) {
+      fs.copyFileSync(this.tempGlobalConfigFilePath, this.globalConfigPath);
+      fs.unlinkSync(this.tempGlobalConfigFilePath);
     }
   }
 
