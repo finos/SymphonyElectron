@@ -129,31 +129,31 @@ export class WindowHandler {
     }
     return format(parsedUrl);
   }
-  public mainView: ICustomBrowserView | null;
-  public titleBarView: ICustomBrowserView | null;
+  public mainView: ICustomBrowserView | null = null;
+  public titleBarView: ICustomBrowserView | null = null;
   public mainWebContents: WebContents | undefined;
-  public appMenu: AppMenu | null;
-  public isAutoReload: boolean;
-  public isOnline: boolean;
+  public appMenu: AppMenu | null = null;
+  public isAutoReload: boolean = false;
+  public isOnline: boolean = true;
   public url: string | undefined;
   public startUrl!: string;
   public isMana: boolean = false;
   public willQuitApp: boolean = false;
   public spellchecker: SpellChecker | undefined;
-  public isCustomTitleBar: boolean;
+  public isCustomTitleBar: boolean = isWindowsOS;
   public isWebPageLoading: boolean = true;
   public isLoggedIn: boolean = false;
   public isAutoUpdating: boolean = false;
   public screenShareIndicatorFrameUtil: string;
-  private readonly defaultPodUrl: string = 'https://[POD].symphony.com';
-  private readonly contextIsolation: boolean;
-  private readonly backgroundThrottling: boolean;
-  private readonly windowOpts: ICustomBrowserWindowConstructorOpts;
-  private readonly globalConfig: IGlobalConfig;
-  private readonly config: IConfig;
+  private defaultPodUrl: string = 'https://[POD].symphony.com';
+  private contextIsolation: boolean = true;
+  private backgroundThrottling: boolean = false;
+  private windowOpts: ICustomBrowserWindowConstructorOpts = {} as ICustomBrowserWindowConstructorOpts;
+  private globalConfig: IGlobalConfig = {} as IGlobalConfig;
+  private config: IConfig = {} as IConfig;
   // Window reference
-  private readonly windows: object;
-  private userConfig: IConfig;
+  private windows: object = {};
+  private userConfig: IConfig = {} as IConfig;
   private loadFailError: string | undefined;
   private mainWindow: ICustomBrowserWindow | null = null;
   private aboutAppWindow: Electron.BrowserWindow | null = null;
@@ -165,9 +165,40 @@ export class WindowHandler {
   private basicAuthWindow: Electron.BrowserWindow | null = null;
   private notificationSettingsWindow: Electron.BrowserWindow | null = null;
   private snippingToolWindow: Electron.BrowserWindow | null = null;
-  private finishedLoading: boolean;
+  private finishedLoading: boolean = false;
+  private readonly opts: Electron.BrowserViewConstructorOptions | undefined;
 
   constructor(opts?: Electron.BrowserViewConstructorOptions) {
+    this.opts = opts;
+    this.screenShareIndicatorFrameUtil = '';
+    if (isWindowsOS) {
+      this.screenShareIndicatorFrameUtil = isDevEnv
+        ? path.join(
+            __dirname,
+            '../../../node_modules/screen-share-indicator-frame/ScreenShareIndicatorFrame.exe',
+          )
+        : path.join(
+            path.dirname(app.getPath('exe')),
+            'ScreenShareIndicatorFrame.exe',
+          );
+    } else if (isMac) {
+      this.screenShareIndicatorFrameUtil = isDevEnv
+        ? path.join(
+            __dirname,
+            '../../../node_modules/screen-share-indicator-frame/SymphonyScreenShareIndicator',
+          )
+        : path.join(
+            path.dirname(app.getPath('exe')),
+            '../node_modules/screen-share-indicator-frame/SymphonyScreenShareIndicator',
+          );
+    }
+    this.listenForLoad();
+  }
+
+  /**
+   * Starting point of the app
+   */
+  public async createApplication() {
     // Use these variables only on initial setup
     this.config = config.getConfigFields([
       'isCustomTitleBar',
@@ -184,7 +215,6 @@ export class WindowHandler {
       `window-handler: main windows initialized with following config data`,
       this.config,
     );
-
     this.globalConfig = config.getGlobalConfigFields([
       'url',
       'contextIsolation',
@@ -192,14 +222,10 @@ export class WindowHandler {
       'overrideUserAgent',
     ]);
     this.userConfig = config.getUserConfigFields(['url']);
-
     const { customFlags } = this.config;
     const { disableThrottling } = config.getCloudConfigFields([
       'disableThrottling',
     ]) as any;
-
-    this.windows = {};
-    this.contextIsolation = true;
     if (this.globalConfig.contextIsolation !== undefined) {
       this.contextIsolation = this.globalConfig.contextIsolation;
     }
@@ -224,39 +250,8 @@ export class WindowHandler {
           preload: path.join(__dirname, '../renderer/_preload-main.js'),
         },
       ),
-      ...opts,
+      ...this.opts,
     };
-    this.isAutoReload = false;
-    this.isOnline = true;
-
-    this.finishedLoading = false;
-
-    this.screenShareIndicatorFrameUtil = '';
-    if (isWindowsOS) {
-      this.screenShareIndicatorFrameUtil = isDevEnv
-        ? path.join(
-            __dirname,
-            '../../../node_modules/screen-share-indicator-frame/ScreenShareIndicatorFrame.exe',
-          )
-        : path.join(
-            path.dirname(app.getPath('exe')),
-            'ScreenShareIndicatorFrame.exe',
-          );
-    } else if (isMac) {
-      this.screenShareIndicatorFrameUtil = isDevEnv
-        ? path.join(
-            __dirname,
-            '../../../node_modules/screen-share-indicator-frame/SymphonyScreenShareIndicator',
-          )
-        : path.join(
-            path.dirname(app.getPath('exe')),
-            '../node_modules/screen-share-indicator-frame/SymphonyScreenShareIndicator',
-          );
-    }
-
-    this.appMenu = null;
-    this.mainView = null;
-    this.titleBarView = null;
     const locale: LocaleType = (this.config.locale ||
       app.getLocale()) as LocaleType;
     i18n.setLocale(locale);
@@ -268,15 +263,6 @@ export class WindowHandler {
       isWindowsOS,
       isLinux,
     });
-
-    this.listenForLoad();
-  }
-
-  /**
-   * Starting point of the app
-   */
-  public async createApplication() {
-    this.userConfig = config.getUserConfigFields(['url']);
     this.spellchecker = new SpellChecker();
     logger.info(
       `window-handler: initialized spellchecker module with locale ${this.spellchecker.locale}`,
