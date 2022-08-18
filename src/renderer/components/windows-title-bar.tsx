@@ -81,7 +81,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
    * Renders the component
    */
   public render(): JSX.Element | null {
-    const { title, isDisabled } = this.state;
+    const { title } = this.state;
 
     return (
       <div
@@ -128,7 +128,6 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
             onClick={this.eventHandlers.onMinimize}
             onContextMenu={this.eventHandlers.onDisableContextMenu}
             onMouseDown={this.handleMouseDown}
-            disabled={isDisabled}
           >
             <svg x='0px' y='0px' viewBox='0 0 14 1'>
               <rect fill='rgba(255, 255, 255, 0.9)' width='14' height='0.6' />
@@ -216,9 +215,6 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
    * Method that minimizes the browser window
    */
   public minimize(): void {
-    if (this.state.isDisabled) {
-      return;
-    }
     ipcRenderer.send(apiName.symphonyApi, {
       cmd: apiCmds.minimizeMainWindow,
     });

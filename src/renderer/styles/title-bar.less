@@ -1,7 +1,8 @@
-@import "theme";
+@import 'theme';
 
 @color_1: rgba(255, 255, 255, 1);
 @color_2: white;
+@color_3: rgba(100, 100, 100, 1);
 @background_color_1: rgba(51, 51, 51, 1);
 
 #title-bar {
@@ -97,6 +98,10 @@
 
   &:focus {
     outline: none;
+  }
+
+  &:disabled {
+    background-color: @color_3;
   }
 }
 
