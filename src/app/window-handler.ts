@@ -728,7 +728,7 @@ export class WindowHandler {
         frame: !this.isCustomTitleBar,
         alwaysOnTop: isMac,
         resizable: false,
-        minimizable: false,
+        minimizable: true,
         fullscreenable: false,
       },
       {
