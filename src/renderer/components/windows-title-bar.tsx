@@ -81,7 +81,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
    * Renders the component
    */
   public render(): JSX.Element | null {
-    const { title, isDisabled } = this.state;
+    const { title } = this.state;
 
     return (
       <div
@@ -128,7 +128,6 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
             onClick={this.eventHandlers.onMinimize}
             onContextMenu={this.eventHandlers.onDisableContextMenu}
             onMouseDown={this.handleMouseDown}
-            disabled={isDisabled}
           >
             <svg x='0px' y='0px' viewBox='0 0 14 1'>
               <rect fill='rgba(255, 255, 255, 0.9)' width='14' height='0.6' />
@@ -173,11 +172,14 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
           onClick={this.eventHandlers.onUnmaximize}
           onContextMenu={this.eventHandlers.onDisableContextMenu}
           onMouseDown={this.handleMouseDown}
-          disabled={isDisabled}
         >
           <svg x='0px' y='0px' viewBox='0 0 14 10.2'>
             <path
-              fill='rgba(255, 255, 255, 0.9)'
+              fill={
+                isDisabled
+                  ? 'rgba(149, 149, 149, 0.9)'
+                  : 'rgba(255, 255, 255, 0.9)'
+              }
               d='M2.1,0v2H0v8.1h8.2v-2h2V0H2.1z M7.2,9.2H1.1V3h6.1V9.2z M9.2,7.1h-1V2H3.1V1h6.1V7.1z'
             />
           </svg>
@@ -191,11 +193,14 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
         onClick={this.eventHandlers.onMaximize}
         onContextMenu={this.eventHandlers.onDisableContextMenu}
         onMouseDown={this.handleMouseDown}
-        disabled={isDisabled}
       >
         <svg x='0px' y='0px' viewBox='0 0 14 10.2'>
           <path
-            fill='rgba(255, 255, 255, 0.9)'
+            fill={
+              isDisabled
+                ? 'rgba(149, 149, 149, 0.9)'
+                : 'rgba(255, 255, 255, 0.9)'
+            }
             d='M0,0v10.1h10.2V0H0z M9.2,9.2H1.1V1h8.1V9.2z'
           />
         </svg>
@@ -216,9 +221,6 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
    * Method that minimizes the browser window
    */
   public minimize(): void {
-    if (this.state.isDisabled) {
-      return;
-    }
     ipcRenderer.send(apiName.symphonyApi, {
       cmd: apiCmds.minimizeMainWindow,
     });
