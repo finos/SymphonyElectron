@@ -1266,25 +1266,33 @@ export const loadBrowserViews = async (
       ) {
         return;
       }
-      mainWindow.addBrowserView(titleBarView);
-      const winBounds: Rectangle = mainWindow.getBounds();
-      const currentScreenBounds: Rectangle = screen.getDisplayMatching({
-        ...winBounds,
-      }).workArea;
-      titleBarView.setBounds({
-        width: currentScreenBounds.width,
-        height: TITLE_BAR_HEIGHT,
-        x: 0,
-        y: 0,
-      });
-      if (!mainView || !viewExists(mainView)) {
-        return;
+      let width: number;
+      let height: number;
+      if (mainWindow.isMaximized()) {
+        const winBounds: Rectangle = mainWindow.getBounds();
+        const currentScreenBounds: Rectangle = screen.getDisplayMatching({
+          ...winBounds,
+        }).workArea;
+        width = currentScreenBounds.width;
+        height = currentScreenBounds.height;
+      } else {
+        [width, height] = mainWindow.getSize();
       }
+      mainWindow.addBrowserView(titleBarView);
+      const titleBarViewBounds = titleBarView.getBounds();
+      titleBarView.setBounds({
+        ...titleBarViewBounds,
+        ...{
+          width,
+        },
+      });
+      const mainViewBounds = mainView.getBounds();
       mainView.setBounds({
-        width: currentScreenBounds.width,
-        height: currentScreenBounds.height - TITLE_BAR_HEIGHT,
-        x: 0,
-        y: TITLE_BAR_HEIGHT,
+        ...mainViewBounds,
+        ...{
+          y: TITLE_BAR_HEIGHT,
+          height: height - TITLE_BAR_HEIGHT,
+        },
       });
       // Workaround as electron does not resize devtools automatically
       if (mainView.webContents.isDevToolsOpened()) {
