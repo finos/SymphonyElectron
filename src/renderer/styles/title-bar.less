@@ -1,4 +1,4 @@
-@import "theme";
+@import 'theme';
 
 @color_1: rgba(255, 255, 255, 1);
 @color_2: white;
@@ -72,7 +72,7 @@
   box-sizing: border-box !important;
   cursor: default;
 
-  &:hover {
+  &:hover:enabled {
     background-color: @background_color_1;
   }
 }
@@ -91,7 +91,11 @@
   cursor: default;
   align-content: center;
 
-  &:hover {
+  &[disabled] {
+    cursor: not-allowed;
+  }
+
+  &:hover:enabled {
     background-color: @background_color_1;
   }
 
