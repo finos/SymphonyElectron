@@ -281,6 +281,9 @@ export const handleChildWindow = (webContents: WebContents): void => {
           if (isWindowsOS) {
             browserWin.setMenuBarVisibility(false);
           }
+          if (mainWindow.isAlwaysOnTop()) {
+            browserWin.setAlwaysOnTop(true);
+          }
         }
       });
 
