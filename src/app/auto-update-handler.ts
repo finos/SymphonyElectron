@@ -9,7 +9,7 @@ import { whitelistHandler } from '../common/whitelist-handler';
 import { config } from './config-handler';
 import { windowHandler } from './window-handler';
 
-const DEFAULT_AUTO_UPDATE_CHANNEL = 'client-bff/static/sda-update';
+const DEFAULT_AUTO_UPDATE_CHANNEL = 'sda-update';
 
 export class AutoUpdate {
   public isUpdateAvailable: boolean = false;
@@ -17,12 +17,7 @@ export class AutoUpdate {
   public autoUpdater: MacUpdater | NsisUpdater | undefined = undefined;
 
   constructor() {
-    const { autoUpdateChannel } = config.getConfigFields(['autoUpdateChannel']);
-    const opts: GenericServerOptions = {
-      provider: 'generic',
-      url: this.getUpdateUrl(),
-      channel: autoUpdateChannel || null,
-    };
+    const opts = this.getGenericServerOptions();
     if (isMac) {
       this.autoUpdater = new MacUpdater(opts);
     } else if (isWindowsOS) {
@@ -117,6 +112,8 @@ export class AutoUpdate {
   public checkUpdates = async (): Promise<void> => {
     logger.info('auto-update-handler: Checking for updates');
     if (this.autoUpdater) {
+      const opts: GenericServerOptions = this.getGenericServerOptions();
+      this.autoUpdater.setFeedURL(opts);
       const updateCheckResult = await this.autoUpdater.checkForUpdates();
       logger.info('auto-update-handler: ', updateCheckResult);
     }
@@ -161,6 +158,16 @@ export class AutoUpdate {
     logger.info(`auto-update-handler: using generic pod url`, updateUrl);
 
     return updateUrl;
+  };
+
+  private getGenericServerOptions = (): GenericServerOptions => {
+    const { autoUpdateChannel } = config.getConfigFields(['autoUpdateChannel']);
+    const opts: GenericServerOptions = {
+      provider: 'generic',
+      url: this.getUpdateUrl(),
+      channel: autoUpdateChannel || null,
+    };
+    return opts;
   };
 }
 
