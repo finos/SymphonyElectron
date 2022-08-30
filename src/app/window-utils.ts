@@ -1378,7 +1378,7 @@ export const loadBrowserViews = async (
   });
 
   windowHandler.setMainView(mainView);
-  windowHandler.setTitleBarView(mainView);
+  windowHandler.setTitleBarView(titleBarView);
 
   return mainView.webContents;
 };

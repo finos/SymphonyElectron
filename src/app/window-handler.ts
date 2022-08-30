@@ -1989,6 +1989,44 @@ export class WindowHandler {
   }
 
   /**
+   * Force app resizing while unmaximizing
+   * @returns void
+   */
+  public forceUnmaximize() {
+    if (this.titleBarView) {
+      {
+        if (
+          !this.mainView ||
+          !viewExists(this.mainView) ||
+          !this.mainWindow ||
+          !windowExists(this.mainWindow)
+        ) {
+          return;
+        }
+        const [width, height] = this.mainWindow?.getSize();
+        this.mainView.setBounds({
+          width,
+          height: height - TITLE_BAR_HEIGHT,
+          x: 0,
+          y: TITLE_BAR_HEIGHT,
+        });
+        this.titleBarView.setBounds({
+          width,
+          height: TITLE_BAR_HEIGHT,
+          x: 0,
+          y: 0,
+        });
+        mainEvents.publish('unmaximize');
+        // Workaround as electron does not resize devtools automatically
+        if (this.mainView.webContents.isDevToolsOpened()) {
+          this.mainView.webContents.toggleDevTools();
+          this.mainView.webContents.toggleDevTools();
+        }
+      }
+    }
+  }
+
+  /**
    * Listens for app load timeouts and reloads if required
    */
   private listenForLoad() {

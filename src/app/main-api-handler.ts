@@ -333,9 +333,14 @@ ipcMain.on(
       case apiCmds.unmaximizeMainWindow:
         const mainWindow = windowHandler.getMainWindow();
         if (mainWindow && windowExists(mainWindow)) {
-          mainWindow.isFullScreen()
-            ? mainWindow.setFullScreen(false)
-            : mainWindow.unmaximize();
+          if (mainWindow.isFullScreen()) {
+            mainWindow.setFullScreen(false);
+          } else {
+            mainWindow.unmaximize();
+            setTimeout(() => {
+              windowHandler.forceUnmaximize();
+            }, 100);
+          }
         }
         // Give focus back to main webContents
         if (mainWebContents && !mainWebContents.isDestroyed()) {
