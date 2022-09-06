@@ -9,7 +9,7 @@ import { whitelistHandler } from '../common/whitelist-handler';
 import { config } from './config-handler';
 import { windowHandler } from './window-handler';
 
-const DEFAULT_AUTO_UPDATE_CHANNEL = 'sda-update';
+const DEFAULT_AUTO_UPDATE_CHANNEL = 'client-bff/sda-update';
 
 export enum AutoUpdateTrigger {
   MANUAL = 'MANUAL',
