@@ -8,7 +8,6 @@ import {
   DesktopCapturerSource,
   dialog,
   Event,
-  globalShortcut,
   ipcMain,
   RenderProcessGoneDetails,
   screen,
@@ -39,6 +38,7 @@ import {
   IGlobalConfig,
 } from './config-handler';
 import crashHandler from './crash-handler';
+import LocalMenuShortcuts from './local-menu-shortcuts';
 import { mainEvents } from './main-event-handler';
 import { exportLogs } from './reports-handler';
 import { SpellChecker } from './spell-check-handler';
@@ -62,11 +62,8 @@ import {
   monitorNetworkInterception,
   preventWindowNavigation,
   reloadWindow,
-  resetZoomLevel,
   viewExists,
   windowExists,
-  zoomIn,
-  zoomOut,
 } from './window-utils';
 
 const windowSize: string | null = getCommandLineArgs(
@@ -75,7 +72,7 @@ const windowSize: string | null = getCommandLineArgs(
   false,
 );
 
-enum ClientSwitchType {
+export enum ClientSwitchType {
   CLIENT_1_5 = 'CLIENT_1_5',
   CLIENT_2_0 = 'CLIENT_2_0',
   CLIENT_2_0_DAILY = 'CLIENT_2_0_DAILY',
@@ -312,6 +309,8 @@ export class WindowHandler {
       ...this.windowOpts,
       ...getBounds(this.config.mainWinPos, DEFAULT_WIDTH, DEFAULT_HEIGHT),
     }) as ICustomBrowserWindow;
+    const localMenuShortcuts = new LocalMenuShortcuts();
+    localMenuShortcuts.buildShortcutMenu();
 
     logger.info('window-handler: windowSize: ' + JSON.stringify(windowSize));
     if (windowSize) {
@@ -565,8 +564,6 @@ export class WindowHandler {
           );
         }
       }
-      // Register dev tools on initial launch
-      this.registerGlobalShortcuts();
     });
 
     this.mainWebContents.on(
@@ -671,14 +668,6 @@ export class WindowHandler {
     this.mainWebContents.session.setCertificateVerifyProc(
       handleCertificateProxyVerification,
     );
-
-    app.on('browser-window-focus', () => {
-      this.registerGlobalShortcuts();
-    });
-
-    app.on('browser-window-blur', () => {
-      this.unregisterGlobalShortcuts();
-    });
 
     // Validate window navigation
     preventWindowNavigation(this.mainWindow, false);
@@ -1985,6 +1974,99 @@ export class WindowHandler {
   }
 
   /**
+   * Verifies and toggle devtool based on global config settings
+   * else displays a dialog
+   */
+  public onRegisterDevtools(): void {
+    const focusedWindow = BrowserWindow.getFocusedWindow();
+    if (!focusedWindow || !windowExists(focusedWindow)) {
+      return;
+    }
+    const { devToolsEnabled } = config.getConfigFields(['devToolsEnabled']);
+    if (devToolsEnabled) {
+      if (
+        this.mainWindow &&
+        windowExists(this.mainWindow) &&
+        focusedWindow === this.mainWindow
+      ) {
+        if (this.mainView && viewExists(this.mainView)) {
+          this.mainWebContents?.toggleDevTools();
+          return;
+        }
+      }
+      focusedWindow.webContents.toggleDevTools();
+      return;
+    }
+    focusedWindow.webContents.closeDevTools();
+    logger.info(
+      `window-handler: dev tools disabled by admin, not opening it for the user!`,
+    );
+  }
+
+  /**
+   * Switch between clients 1.5, 2.0 and 2.0 daily
+   * @param clientSwitch client switch you want to switch to.
+   */
+  public async switchClient(clientSwitch: ClientSwitchType): Promise<void> {
+    logger.info(`window handler: switch to client ${clientSwitch}`);
+
+    if (!this.mainWebContents || this.mainWebContents.isDestroyed()) {
+      logger.info(
+        `window-handler: switch client - main window web contents destroyed already! exiting`,
+      );
+      return;
+    }
+    try {
+      if (!this.url) {
+        this.url = this.globalConfig.url;
+      }
+      const parsedUrl = parse(this.url);
+      const csrfToken = await this.mainWebContents?.executeJavaScript(
+        `localStorage.getItem('x-km-csrf-token')`,
+      );
+      switch (clientSwitch) {
+        case ClientSwitchType.CLIENT_1_5:
+          this.url = this.startUrl + `?x-km-csrf-token=${csrfToken}`;
+          break;
+        case ClientSwitchType.CLIENT_2_0:
+          this.url = `https://${parsedUrl.hostname}/client-bff/index.html?x-km-csrf-token=${csrfToken}`;
+          break;
+        case ClientSwitchType.CLIENT_2_0_DAILY:
+          this.url = `https://${parsedUrl.hostname}/bff-daily/daily/index.html?x-km-csrf-token=${csrfToken}`;
+          break;
+        default:
+          this.url = this.globalConfig.url + `?x-km-csrf-token=${csrfToken}`;
+      }
+      await this.execCmd(this.screenShareIndicatorFrameUtil, []);
+      const userAgent = this.getUserAgent(this.mainWebContents);
+      await this.mainWebContents.loadURL(this.url, { userAgent });
+    } catch (e) {
+      logger.error(
+        `window-handler: failed to switch client because of error ${e}`,
+      );
+    }
+  }
+
+  /**
+   * Reloads the window based on the window type
+   */
+  public onReload(): void {
+    const focusedWindow = BrowserWindow.getFocusedWindow();
+    if (!focusedWindow || !windowExists(focusedWindow)) {
+      return;
+    }
+    reloadWindow(focusedWindow as ICustomBrowserWindow);
+  }
+
+  /**
+   * Exports all logs
+   */
+  public onExportLogs(): void {
+    logger.info('window-handler: Exporting logs');
+    exportLogs();
+  }
+
+  /**
    * Listens for app load timeouts and reloads if required
    */
   private listenForLoad() {
@@ -2025,164 +2107,6 @@ export class WindowHandler {
       version: versionHandler.versionInfo.buildNumber,
       copyright,
     });
-  }
-
-  /**
-   * Registers keyboard shortcuts or devtools
-   */
-  private registerGlobalShortcuts(): void {
-    logger.info('window-handler: register global shortcuts!');
-    globalShortcut.register(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I', () =>
-      this.onRegisterDevtools(),
-    );
-    globalShortcut.register('CmdOrCtrl+R', this.onReload);
-
-    // Hack to switch between Client 1.5, Mana-stable and Mana-daily
-    if (this.url && this.url.startsWith('https://corporate.symphony.com')) {
-      globalShortcut.register(isMac ? 'Cmd+Alt+1' : 'Ctrl+Shift+1', () =>
-        this.switchClient(ClientSwitchType.CLIENT_1_5),
-      );
-      globalShortcut.register(isMac ? 'Cmd+Alt+2' : 'Ctrl+Shift+2', () =>
-        this.switchClient(ClientSwitchType.CLIENT_2_0),
-      );
-      globalShortcut.register(isMac ? 'Cmd+Alt+3' : 'Ctrl+Shift+3', () =>
-        this.switchClient(ClientSwitchType.CLIENT_2_0_DAILY),
-      );
-    }
-    globalShortcut.register('CmdOrCtrl+=', zoomIn);
-    globalShortcut.register('CmdOrCtrl+-', zoomOut);
-    if (isMac) {
-      globalShortcut.register('CmdOrCtrl+Plus', zoomIn);
-    } else if (isWindowsOS || isLinux) {
-      globalShortcut.register('Ctrl+=', zoomIn);
-      globalShortcut.register('Ctrl+numadd', zoomIn);
-      globalShortcut.register('Ctrl+numsub', zoomOut);
-      globalShortcut.register('Ctrl+num0', resetZoomLevel);
-    }
-
-    // Register export log shortcut
-    globalShortcut.register('Ctrl+Shift+D', () => this.onExportLogs());
-  }
-
-  /**
-   * Registers keyboard shortcuts or devtools
-   */
-  private unregisterGlobalShortcuts(): void {
-    logger.info('window-handler: unregister global shortcuts!');
-
-    globalShortcut.unregister(isMac ? 'Cmd+Alt+I' : 'Ctrl+Shift+I');
-    globalShortcut.unregister('CmdOrCtrl+R');
-    globalShortcut.unregister('CmdOrCtrl+=');
-    globalShortcut.unregister('CmdOrCtrl+-');
-    if (isMac) {
-      globalShortcut.unregister('CmdOrCtrl+Plus');
-    } else if (isWindowsOS || isLinux) {
-      globalShortcut.unregister('Ctrl+numadd');
-      globalShortcut.unregister('Ctrl+numsub');
-      globalShortcut.unregister('Ctrl+num0');
-    }
-    // Unregister shortcuts related to client switch
-    if (this.url && this.url.startsWith('https://corporate.symphony.com')) {
-      globalShortcut.unregister(isMac ? 'Cmd+Alt+1' : 'Ctrl+Shift+1');
-      globalShortcut.unregister(isMac ? 'Cmd+Alt+2' : 'Ctrl+Shift+2');
-      globalShortcut.unregister(isMac ? 'Cmd+Alt+3' : 'Ctrl+Shift+3');
-    }
-
-    // Unregister export log shortcut
-    globalShortcut.unregister('Ctrl+Shift+D');
-  }
-
-  /**
-   * Verifies and toggle devtool based on global config settings
-   * else displays a dialog
-   */
-  private onRegisterDevtools(): void {
-    const focusedWindow = BrowserWindow.getFocusedWindow();
-    if (!focusedWindow || !windowExists(focusedWindow)) {
-      return;
-    }
-    const { devToolsEnabled } = config.getConfigFields(['devToolsEnabled']);
-    if (devToolsEnabled) {
-      if (
-        this.mainWindow &&
-        windowExists(this.mainWindow) &&
-        focusedWindow === this.mainWindow
-      ) {
-        if (this.mainView && viewExists(this.mainView)) {
-          this.mainWebContents?.toggleDevTools();
-          return;
-        }
-      }
-      focusedWindow.webContents.toggleDevTools();
-      return;
-    }
-    focusedWindow.webContents.closeDevTools();
-    logger.info(
-      `window-handler: dev tools disabled by admin, not opening it for the user!`,
-    );
-  }
-
-  /**
-   * Reloads the window based on the window type
-   */
-  private onReload(): void {
-    const focusedWindow = BrowserWindow.getFocusedWindow();
-    if (!focusedWindow || !windowExists(focusedWindow)) {
-      return;
-    }
-    reloadWindow(focusedWindow as ICustomBrowserWindow);
-  }
-
-  /**
-   * Exports all logs
-   */
-  private onExportLogs(): void {
-    logger.info('window-handler: Exporting logs');
-    exportLogs();
-  }
-
-  /**
-   * Switch between clients 1.5, 2.0 and 2.0 daily
-   * @param clientSwitch client switch you want to switch to.
-   */
-  private async switchClient(clientSwitch: ClientSwitchType): Promise<void> {
-    logger.info(`window handler: switch to client ${clientSwitch}`);
-
-    if (!this.mainWebContents || this.mainWebContents.isDestroyed()) {
-      logger.info(
-        `window-handler: switch client - main window web contents destroyed already! exiting`,
-      );
-      return;
-    }
-    try {
-      if (!this.url) {
-        this.url = this.globalConfig.url;
-      }
-      const parsedUrl = parse(this.url);
-      const csrfToken = await this.mainWebContents?.executeJavaScript(
-        `localStorage.getItem('x-km-csrf-token')`,
-      );
-      switch (clientSwitch) {
-        case ClientSwitchType.CLIENT_1_5:
-          this.url = this.startUrl + `?x-km-csrf-token=${csrfToken}`;
-          break;
-        case ClientSwitchType.CLIENT_2_0:
-          this.url = `https://${parsedUrl.hostname}/client-bff/index.html?x-km-csrf-token=${csrfToken}`;
-          break;
-        case ClientSwitchType.CLIENT_2_0_DAILY:
-          this.url = `https://${parsedUrl.hostname}/bff-daily/daily/index.html?x-km-csrf-token=${csrfToken}`;
-          break;
-        default:
-          this.url = this.globalConfig.url + `?x-km-csrf-token=${csrfToken}`;
-      }
-      await this.execCmd(this.screenShareIndicatorFrameUtil, []);
-      const userAgent = this.getUserAgent(this.mainWebContents);
-      await this.mainWebContents.loadURL(this.url, { userAgent });
-    } catch (e) {
-      logger.error(
-        `window-handler: failed to switch client because of error ${e}`,
-      );
-    }
   }
 
   /**
