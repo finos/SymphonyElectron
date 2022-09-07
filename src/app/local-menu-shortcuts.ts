@@ -44,16 +44,22 @@ export default class LocalMenuShortcuts {
       windowHandler.url.startsWith('https://corporate.symphony.com')
     ) {
       this.menu.append(
-        new MenuItem({
-          accelerator: isMac ? 'Cmd+Alt+1' : 'Ctrl+Shift+1',
-          click: () => windowHandler.switchClient(ClientSwitchType.CLIENT_1_5),
-        }),
+        new MenuItem(
+          this.getMenuItemOptions({
+            accelerator: isMac ? 'Cmd+Alt+1' : 'Ctrl+Shift+1',
+            click: () =>
+              windowHandler.switchClient(ClientSwitchType.CLIENT_1_5),
+          }),
+        ),
       );
       this.menu.append(
-        new MenuItem({
-          accelerator: isMac ? 'Cmd+Alt+2' : 'Ctrl+Shift+2',
-          click: () => windowHandler.switchClient(ClientSwitchType.CLIENT_2_0),
-        }),
+        new MenuItem(
+          this.getMenuItemOptions({
+            accelerator: isMac ? 'Cmd+Alt+2' : 'Ctrl+Shift+2',
+            click: () =>
+              windowHandler.switchClient(ClientSwitchType.CLIENT_2_0),
+          }),
+        ),
       );
       this.menu.append(
         new MenuItem(
@@ -93,22 +99,6 @@ export default class LocalMenuShortcuts {
         ),
       );
     } else {
-      this.menu.append(
-        new MenuItem(
-          this.getMenuItemOptions({
-            accelerator: 'Ctrl+=',
-            click: () => zoomIn(),
-          }),
-        ),
-      );
-      this.menu.append(
-        new MenuItem(
-          this.getMenuItemOptions({
-            accelerator: 'Ctrl+=',
-            click: () => zoomIn(),
-          }),
-        ),
-      );
       this.menu.append(
         new MenuItem(
           this.getMenuItemOptions({
