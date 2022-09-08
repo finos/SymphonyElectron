@@ -26,6 +26,7 @@ import {
   calculatePercentage,
   getCommandLineArgs,
   getGuid,
+  throttle,
 } from '../common/utils';
 import { notification } from '../renderer/notification';
 import { cleanAppCacheOnCrash } from './app-cache-handler';
@@ -80,6 +81,7 @@ export enum ClientSwitchType {
 }
 
 const MAIN_WEB_CONTENTS_EVENTS = ['enter-full-screen', 'leave-full-screen'];
+const EXPORT_LOGS_THROTTLE = 1000; // 1sec
 
 export interface ICustomBrowserWindowConstructorOpts
   extends Electron.BrowserWindowConstructorOptions {
@@ -388,6 +390,17 @@ export class WindowHandler {
       this.mainWindow.loadURL(this.url, { userAgent });
       this.mainWebContents = this.mainWindow.webContents;
     }
+
+    // SDA-3844 - workaround as local shortcuts not working
+    const throttledExportLogs = throttle(() => {
+      exportLogs();
+    }, EXPORT_LOGS_THROTTLE);
+    this.mainWebContents.on('before-input-event', (event, input) => {
+      if (input.control && input.shift && input.key.toLowerCase() === 'd') {
+        event.preventDefault();
+        throttledExportLogs();
+      }
+    });
     if (isMaximized || isMaximizedFlag) {
       this.mainWindow.maximize();
       logger.info(
