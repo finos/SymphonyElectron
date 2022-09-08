@@ -29,15 +29,6 @@ export default class LocalMenuShortcuts {
         }),
       ),
     );
-    // Export logs
-    this.menu.append(
-      new MenuItem(
-        this.getMenuItemOptions({
-          accelerator: 'Ctrl+Shift+D',
-          click: () => windowHandler.onExportLogs(),
-        }),
-      ),
-    );
 
     this.menu.append(
       new MenuItem(
