@@ -25,7 +25,11 @@ import {
   unregisterConsoleMessages,
   updateAlwaysOnTop,
 } from './window-actions';
-import { ICustomBrowserWindow, windowHandler } from './window-handler';
+import {
+  ClientSwitchType,
+  ICustomBrowserWindow,
+  windowHandler,
+} from './window-handler';
 import {
   reloadWindow,
   resetZoomLevel,
@@ -86,6 +90,7 @@ let {
   'devToolsEnabled',
 ]) as IConfig;
 let initialAnalyticsSent = false;
+const CORP_URL = 'https://corporate.symphony.com';
 
 const menuItemsArray = Object.keys(menuSections)
   .map((key) => menuSections[key])
@@ -576,6 +581,10 @@ export class AppMenu {
 
     const { devToolsEnabled: isDevToolsEnabledCC } = this
       .cloudConfig as IConfig;
+    const isCorp =
+      (windowHandler.url &&
+        windowHandler.url.startsWith('https://corporate.symphony.com')) ||
+      false;
 
     return {
       label: i18n.t('Help')(),
@@ -667,6 +676,30 @@ export class AppMenu {
               : '';
             windowHandler.createAboutAppWindow(windowName);
           },
+        },
+        {
+          click: (_item) =>
+            windowHandler.switchClient(ClientSwitchType.CLIENT_1_5),
+          visible: isCorp,
+          type: 'checkbox',
+          checked: windowHandler.url?.startsWith(CORP_URL + '/client/'),
+          label: i18n.t('Switch to client 1.5')(),
+        },
+        {
+          click: (_item) =>
+            windowHandler.switchClient(ClientSwitchType.CLIENT_2_0),
+          visible: isCorp,
+          type: 'checkbox',
+          checked: windowHandler.url?.startsWith(CORP_URL + '/client-bff'),
+          label: i18n.t('Switch to client 2.0')(),
+        },
+        {
+          click: (_item) =>
+            windowHandler.switchClient(ClientSwitchType.CLIENT_2_0_DAILY),
+          visible: isCorp,
+          type: 'checkbox',
+          checked: windowHandler.url?.startsWith(CORP_URL + '/bff-daily/daily'),
+          label: i18n.t('Switch to client 2.0 daily')(),
         },
       ],
     };
