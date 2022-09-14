@@ -1,7 +1,7 @@
 {
   "name": "symphony",
   "productName": "Symphony",
-  "version": "19.0.0",
+  "version": "20.0.0",
   "clientVersion": "2.0.1",
   "buildNumber": "0",
   "searchAPIVersion": "1.55.3",
@@ -176,7 +176,7 @@
     "builder-util-runtime": "^9.0.3",
     "cross-env": "5.2.0",
     "del": "3.0.0",
-    "electron": "^19.0.10",
+    "electron": "^20.1.4",
     "electron-builder": "23.0.9",
     "electron-builder-squirrel-windows": "20.38.3",
     "electron-icon-maker": "0.0.4",
