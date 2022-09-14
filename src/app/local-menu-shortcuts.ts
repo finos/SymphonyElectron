@@ -41,6 +41,38 @@ export default class LocalMenuShortcuts {
     this.menu.append(
       new MenuItem(
         this.getMenuItemOptions({
+          accelerator: 'CmdOrCtrl+0',
+          click: () => resetZoomLevel(),
+        }),
+      ),
+    );
+    this.menu.append(
+      new MenuItem(
+        this.getMenuItemOptions({
+          accelerator: 'CmdOrCtrl+M',
+          role: 'minimize',
+        }),
+      ),
+    );
+    this.menu.append(
+      new MenuItem(
+        this.getMenuItemOptions({
+          accelerator: 'CmdOrCtrl+W',
+          role: 'close',
+        }),
+      ),
+    );
+    this.menu.append(
+      new MenuItem(
+        this.getMenuItemOptions({
+          accelerator: 'F11',
+          role: 'togglefullscreen',
+        }),
+      ),
+    );
+    this.menu.append(
+      new MenuItem(
+        this.getMenuItemOptions({
           accelerator: 'CmdOrCtrl+-',
           click: () => zoomOut(),
         }),
