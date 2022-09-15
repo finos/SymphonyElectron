@@ -33,10 +33,14 @@ namespace Symphony
         {
             banner.Image = Runtime.Session.GetResourceBitmap("WixUI_Bmp_Banner");
 
-            if ((!WindowsIdentity.GetCurrent().IsAdmin() && Uac.IsEnabled()) && Runtime.Session["ALLUSERS"] != "")
+            if (!WindowsIdentity.GetCurrent().IsAdmin() && Uac.IsEnabled())
             {
                 this.waitPrompt.Text = Runtime.Session.Property("UAC_WARNING");
                 this.waitPrompt.Visible = true;
+            }
+            if (Runtime.Session["MSIINSTALLPERUSER"] = "1")
+            {
+                this.waitPrompt.Visible = false;
             }
 
             ResetLayout();
