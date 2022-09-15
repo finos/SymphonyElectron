@@ -33,7 +33,7 @@ namespace Symphony
         {
             banner.Image = Runtime.Session.GetResourceBitmap("WixUI_Bmp_Banner");
 
-            if (!WindowsIdentity.GetCurrent().IsAdmin() && Uac.IsEnabled())
+            if ((!WindowsIdentity.GetCurrent().IsAdmin() && Uac.IsEnabled()) && Runtime.Session["ALLUSERS"] != "")
             {
                 this.waitPrompt.Text = Runtime.Session.Property("UAC_WARNING");
                 this.waitPrompt.Visible = true;
