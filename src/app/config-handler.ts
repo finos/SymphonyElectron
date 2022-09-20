@@ -57,6 +57,7 @@ export interface IConfig {
   locale?: string;
   installVariant?: string;
   bootCount?: number;
+  startedAfterAutoUpdate?: boolean;
 }
 
 export interface IGlobalConfig {
@@ -571,6 +572,18 @@ class Config {
       );
       this.isFirstTime = true;
       this.bootCount = 0;
+      return;
+    }
+
+    if (
+      this.userConfig &&
+      (this.userConfig as IConfig).startedAfterAutoUpdate
+    ) {
+      await this.updateUserConfig({
+        installVariant: this.installVariant,
+        startedAfterAutoUpdate: false,
+      });
+      this.isFirstTime = false;
       return;
     }
 

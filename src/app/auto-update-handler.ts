@@ -95,8 +95,9 @@ export class AutoUpdate {
     if (isMac) {
       windowHandler.setIsAutoUpdating(true);
     }
-    setImmediate(() => {
+    setImmediate(async () => {
       if (this.autoUpdater) {
+        await config.updateUserConfig({ startedAfterAutoUpdate: true });
         if (isMac) {
           config.backupGlobalConfig();
         }
