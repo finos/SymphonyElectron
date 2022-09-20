@@ -248,6 +248,10 @@ ipcMain.on(
         if (typeof arg.isInMeeting === 'boolean') {
           memoryMonitor.setMeetingStatus(arg.isInMeeting);
           appStateHandler.preventDisplaySleep(arg.isInMeeting);
+          if (!arg.isInMeeting) {
+            windowHandler.closeScreenPickerWindow();
+            windowHandler.closeScreenSharingIndicator();
+          }
         }
         break;
       case apiCmds.memoryInfo:
