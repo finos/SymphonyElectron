@@ -154,7 +154,7 @@ export const preventWindowNavigation = (
         }
       }
 
-      windowHandler.execCmd(windowHandler.screenShareIndicatorFrameUtil, []);
+      windowHandler.closeScreenSharingIndicator();
     }
 
     if (
@@ -773,7 +773,7 @@ export const reloadWindow = (browserWindow: ICustomBrowserWindow) => {
 
     windowHandler.closeAllWindows();
 
-    windowHandler.execCmd(windowHandler.screenShareIndicatorFrameUtil, []);
+    windowHandler.closeScreenSharingIndicator();
 
     return;
   }
