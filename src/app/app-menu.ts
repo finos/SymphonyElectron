@@ -97,6 +97,20 @@ let {
 } = config.getConfigFields(menuItemConfigFields) as IConfig;
 let initialAnalyticsSent = false;
 const CORP_URL = 'https://corporate.symphony.com';
+const SDA_CHANNELS_MENU_ID = 'sda-channels';
+const C2_CHANNELS_MENU_ID = 'c2-channels';
+
+enum Target {
+  C2 = 'C2',
+  SDA = 'SDA',
+}
+
+enum Channels {
+  Daily = 'daily',
+  Beta = 'beta',
+  Stable = 'stable',
+  Latest = 'latest',
+}
 
 const menuItemsArray = Object.keys(menuSections)
   .map((key) => menuSections[key])
@@ -682,6 +696,76 @@ export class AppMenu {
           label: i18n.t('Check for updates')(),
         },
         {
+          label: i18n.t('Client 2.0 channel')(),
+          visible: isCorp,
+          id: C2_CHANNELS_MENU_ID,
+          submenu: [
+            {
+              click: (_item) =>
+                windowHandler.switchClient(ClientSwitchType.CLIENT_2_0),
+              visible: isCorp,
+              type: 'checkbox',
+              checked: windowHandler.url?.startsWith(CORP_URL + '/client-bff'),
+              id: `${Target.C2}-${Channels.Stable}`,
+              label: i18n.t('Stable')(),
+            },
+            {
+              click: (_item) =>
+                windowHandler.switchClient(ClientSwitchType.CLIENT_2_0_DAILY),
+              visible: isCorp,
+              type: 'checkbox',
+              checked: windowHandler.url?.startsWith(
+                CORP_URL + '/bff-daily/daily',
+              ),
+              id: `${Target.C2}-${Channels.Daily}`,
+              label: i18n.t('Daily')(),
+            },
+          ],
+        },
+        {
+          label: i18n.t('SDA update channel')(),
+          id: SDA_CHANNELS_MENU_ID,
+          visible: isCorp,
+          submenu: [
+            {
+              id: `${Target.SDA}-${Channels.Stable}`,
+              click: (_item) =>
+                this.setUpdateChannelForMenuEntry(Target.SDA, Channels.Stable),
+              visible: isCorp,
+              type: 'checkbox',
+              checked: this.getUpdateChannel() === Channels.Stable,
+              label: i18n.t('Stable')(),
+            },
+            {
+              id: `${Target.SDA}-${Channels.Latest}`,
+              click: (_item) =>
+                this.setUpdateChannelForMenuEntry(Target.SDA, Channels.Latest),
+              visible: isCorp,
+              type: 'checkbox',
+              checked: this.getUpdateChannel() === Channels.Daily,
+              label: i18n.t('Latest')(),
+            },
+            {
+              id: `${Target.SDA}-${Channels.Beta}`,
+              click: (_item) =>
+                this.setUpdateChannelForMenuEntry(Target.SDA, Channels.Beta),
+              visible: isCorp,
+              type: 'checkbox',
+              checked: this.getUpdateChannel() === Channels.Beta,
+              label: i18n.t('Beta')(),
+            },
+            {
+              id: `${Target.SDA}-${Channels.Daily}`,
+              click: (_item) =>
+                this.setUpdateChannelForMenuEntry(Target.SDA, Channels.Daily),
+              visible: isCorp,
+              type: 'checkbox',
+              checked: this.getUpdateChannel() === Channels.Daily,
+              label: i18n.t('Daily')(),
+            },
+          ],
+        },
+        {
           label: i18n.t('About Symphony')(),
           visible: isWindowsOS || isLinux,
           click(_menuItem, focusedWindow) {
@@ -690,22 +774,6 @@ export class AppMenu {
               : '';
             windowHandler.createAboutAppWindow(windowName);
           },
-        },
-        {
-          click: (_item) =>
-            windowHandler.switchClient(ClientSwitchType.CLIENT_2_0),
-          visible: isCorp,
-          type: 'checkbox',
-          checked: windowHandler.url?.startsWith(CORP_URL + '/client-bff'),
-          label: i18n.t('Switch to client 2.0')(),
-        },
-        {
-          click: (_item) =>
-            windowHandler.switchClient(ClientSwitchType.CLIENT_2_0_DAILY),
-          visible: isCorp,
-          type: 'checkbox',
-          checked: windowHandler.url?.startsWith(CORP_URL + '/bff-daily/daily'),
-          label: i18n.t('Switch to client 2.0 daily')(),
         },
       ],
     };
@@ -788,5 +856,32 @@ export class AppMenu {
       label: i18n.t(label)(),
       click: (_item, focusedWindow) => (focusedWindow ? action() : null),
     };
+  }
+
+  /**
+   * Returns auto-updage channel
+   * @return {string} Auto-update channel
+   */
+  private getUpdateChannel() {
+    const { autoUpdateChannel } = config.getConfigFields(['autoUpdateChannel']);
+    return autoUpdateChannel;
+  }
+
+  /**
+   * Updates auto-updage channel
+   * @param autoUpdateChannel {string}
+   */
+  private async setUpdateChannelForMenuEntry(
+    target: Target,
+    autoUpdateChannel: Channels,
+  ) {
+    const menuId =
+      target === Target.SDA ? SDA_CHANNELS_MENU_ID : C2_CHANNELS_MENU_ID;
+    await config.updateUserConfig({ autoUpdateChannel });
+    this.menu?.getMenuItemById(menuId)?.submenu?.items.map((item) => {
+      if (item.id !== `${target}-${autoUpdateChannel}`) {
+        item.checked = false;
+      }
+    });
   }
 }

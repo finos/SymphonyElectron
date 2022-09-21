@@ -398,7 +398,7 @@ export class WindowHandler {
       windowHandler.switchClient(ClientSwitchType.CLIENT_2_0);
     }, SHORTCUT_KEY_THROTTLE);
     const switchToDaily = throttle(() => {
-      windowHandler.switchClient(ClientSwitchType.CLIENT_2_0);
+      windowHandler.switchClient(ClientSwitchType.CLIENT_2_0_DAILY);
     }, SHORTCUT_KEY_THROTTLE);
     this.mainWebContents.on('before-input-event', (event, input) => {
       if (input.control && input.shift && input.key.toLowerCase() === 'd') {
