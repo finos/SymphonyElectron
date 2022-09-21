@@ -28,6 +28,7 @@ export class AutoUpdate {
       this.autoUpdater.logger = electronLog;
       this.autoUpdater.autoDownload = false;
       this.autoUpdater.autoInstallOnAppQuit = true;
+      this.autoUpdater.allowDowngrade = true;
 
       this.autoUpdater.on('update-not-available', () => {
         const mainWebContents = windowHandler.mainWebContents;
