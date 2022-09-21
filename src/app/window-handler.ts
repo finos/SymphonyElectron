@@ -1538,6 +1538,10 @@ export class WindowHandler {
     clearSettings,
     callback,
   ): void {
+    if (this.basicAuthWindow && windowExists(this.basicAuthWindow)) {
+      this.basicAuthWindow.close();
+    }
+
     const opts = this.getWindowOpts(
       {
         width: 360,
@@ -1571,13 +1575,13 @@ export class WindowHandler {
         isValidCredentials: isMultipleTries,
       });
     });
+
     const closeBasicAuth = (_event, shouldClearSettings = true) => {
       if (shouldClearSettings) {
         clearSettings();
       }
       if (this.basicAuthWindow && windowExists(this.basicAuthWindow)) {
         this.basicAuthWindow.close();
-        this.basicAuthWindow = null;
       }
     };
 
@@ -1588,6 +1592,7 @@ export class WindowHandler {
     };
 
     this.basicAuthWindow.once('close', () => {
+      this.basicAuthWindow = null;
       ipcMain.removeListener('basic-auth-closed', closeBasicAuth);
       ipcMain.removeListener('basic-auth-login', login);
     });
