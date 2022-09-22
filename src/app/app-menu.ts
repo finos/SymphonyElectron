@@ -693,14 +693,6 @@ export class AppMenu {
         },
         {
           click: (_item) =>
-            windowHandler.switchClient(ClientSwitchType.CLIENT_1_5),
-          visible: isCorp,
-          type: 'checkbox',
-          checked: windowHandler.url?.startsWith(CORP_URL + '/client/'),
-          label: i18n.t('Switch to client 1.5')(),
-        },
-        {
-          click: (_item) =>
             windowHandler.switchClient(ClientSwitchType.CLIENT_2_0),
           visible: isCorp,
           type: 'checkbox',
