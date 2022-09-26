@@ -3,12 +3,6 @@
   "compilerOptions": {
     "outDir": "lib"
   },
-  "include": [
-    "spectron/**/*"
-  ],
-  "exclude": [
-    "node_modules/**",
-    "src",
-    "spec"
-  ]
+  "include": [],
+  "exclude": ["node_modules/**", "src", "spec"]
 }
