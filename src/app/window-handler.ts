@@ -75,13 +75,12 @@ const windowSize: string | null = getCommandLineArgs(
 );
 
 export enum ClientSwitchType {
-  CLIENT_1_5 = 'CLIENT_1_5',
   CLIENT_2_0 = 'CLIENT_2_0',
   CLIENT_2_0_DAILY = 'CLIENT_2_0_DAILY',
 }
 
 const MAIN_WEB_CONTENTS_EVENTS = ['enter-full-screen', 'leave-full-screen'];
-const EXPORT_LOGS_THROTTLE = 1000; // 1sec
+const SHORTCUT_KEY_THROTTLE = 1000; // 1sec
 
 export interface ICustomBrowserWindowConstructorOpts
   extends Electron.BrowserWindowConstructorOptions {
@@ -394,11 +393,30 @@ export class WindowHandler {
     // SDA-3844 - workaround as local shortcuts not working
     const throttledExportLogs = throttle(() => {
       exportLogs();
-    }, EXPORT_LOGS_THROTTLE);
+    }, SHORTCUT_KEY_THROTTLE);
+    const switchToClient2 = throttle(() => {
+      windowHandler.switchClient(ClientSwitchType.CLIENT_2_0);
+    }, SHORTCUT_KEY_THROTTLE);
+    const switchToDaily = throttle(() => {
+      windowHandler.switchClient(ClientSwitchType.CLIENT_2_0);
+    }, SHORTCUT_KEY_THROTTLE);
     this.mainWebContents.on('before-input-event', (event, input) => {
       if (input.control && input.shift && input.key.toLowerCase() === 'd') {
         event.preventDefault();
         throttledExportLogs();
+      }
+      const isCtrlOrMeta = isMac ? input.meta : input.control;
+      if (this.url && this.url.startsWith('https://corporate.symphony.com')) {
+        if (isCtrlOrMeta) {
+          switch (input.key) {
+            case '1':
+              switchToClient2();
+              break;
+            case '2':
+              switchToDaily();
+              break;
+          }
+        }
       }
     });
     if (isMaximized || isMaximizedFlag) {
@@ -2095,9 +2113,6 @@ export class WindowHandler {
         `localStorage.getItem('x-km-csrf-token')`,
       );
       switch (clientSwitch) {
-        case ClientSwitchType.CLIENT_1_5:
-          this.url = this.startUrl + `?x-km-csrf-token=${csrfToken}`;
-          break;
         case ClientSwitchType.CLIENT_2_0:
           this.url = `https://${parsedUrl.hostname}/client-bff/index.html?x-km-csrf-token=${csrfToken}`;
           break;
