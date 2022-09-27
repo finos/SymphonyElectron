@@ -56,13 +56,6 @@ npm run test:unit
 
 # Specific Unit tests
 npm run test:unit -- --match=spell*
-
-# Spectron tests only
-npm run compile:spec
-npm run test:spectron
-
-# Specific Spectron tests
-npm run test:spectron -- --match=spell*
 ```
 
 ### Code Coverage
