@@ -2,12 +2,14 @@
   "About Symphony": "About Symphony",
   "AboutSymphony": {
     "About Symphony": "About Symphony",
-    "Copy": "Copy",
-    "Copy all the version information in this page": "Copy all the version information in this page",
     "Others": "Others",
     "Swift Search": "Swift Search",
     "Swift Search API": "Swift Search API",
-    "Symphony Logo": "Symphony Logo"
+    "Symphony Logo": "Symphony Logo",
+    "Copy config to clipboard": "Copy config to clipboard",
+    "Close": "Close",
+    "Copyright": "Copyright",
+    "Desktop Application": "Desktop Application"
   },
   "Actual Size": "Actual Size",
   "Always on Top": "Always on Top",

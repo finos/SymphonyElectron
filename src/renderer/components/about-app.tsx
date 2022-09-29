@@ -40,6 +40,7 @@ const ABOUT_SYMPHONY_NAMESPACE = 'AboutSymphony';
 export default class AboutApp extends React.Component<{}, IState> {
   private readonly eventHandlers = {
     onCopy: () => this.copy(),
+    onClose: () => this.close(),
   };
 
   constructor(props) {
@@ -89,10 +90,32 @@ export default class AboutApp extends React.Component<{}, IState> {
     } = this.state;
 
     const appName = productName || 'Symphony';
-    const copyright = `\xA9 ${new Date().getFullYear()} ${appName}`;
+    const copyright = `${i18n.t(
+      'Copyright',
+      ABOUT_SYMPHONY_NAMESPACE,
+    )()} \xA9 ${new Date().getFullYear()} ${appName}`;
     const podVersion = `${clientVersion} (${buildNumber})`;
     const sdaVersionBuild = `${sdaVersion} (${sdaBuildNumber})`;
     let sfeClientTypeName = 'SFE';
+    const symphonySectionItems = [
+      {
+        key: 'POD:',
+        value: `${hostname || 'N/A'}`,
+      },
+      {
+        key: 'SBE:',
+        value: podVersion,
+      },
+      {
+        key: 'SDA:',
+        value: sdaVersionBuild,
+      },
+      {
+        key: `${sfeClientTypeName}:`,
+        value: `${sfeVersion} ${client}`,
+      },
+    ];
+
     if (sfeClientType !== '1.5') {
       sfeClientTypeName = 'SFE-Lite';
     }
@@ -100,47 +123,60 @@ export default class AboutApp extends React.Component<{}, IState> {
     return (
       <div className='AboutApp' lang={i18n.getLocale()}>
         <div className='AboutApp-header-container'>
-          <div className='AboutApp-image-container'>
-            <img
-              className='AboutApp-logo'
-              src='../renderer/assets/symphony-logo.png'
-              alt={i18n.t('Symphony Logo', ABOUT_SYMPHONY_NAMESPACE)()}
-            />
-          </div>
-          <div className='AboutApp-header-content'>
-            <h1 className='AboutApp-name'>{appName}</h1>
-            <p className='AboutApp-copyrightText'>{copyright}</p>
-          </div>
+          <img
+            className='AboutApp-logo'
+            src='../renderer/assets/new-symphony-logo.svg'
+            alt={i18n.t('Symphony Logo', ABOUT_SYMPHONY_NAMESPACE)()}
+          />
         </div>
         <div className='AboutApp-main-container'>
+          <div className='AboutApp-main-title'>
+            <span>
+              {i18n.t('Desktop Application', ABOUT_SYMPHONY_NAMESPACE)()}
+            </span>
+          </div>
           <section>
             <ul className='AboutApp-symphony-section'>
-              <li>
-                <b>POD:</b> {hostname || 'N/A'}
-              </li>
-              <li>
-                <b>SBE:</b> {podVersion}
-              </li>
-              <li>
-                <b>SDA:</b> {sdaVersionBuild}
-              </li>
-              <li>
-                <b>{sfeClientTypeName}:</b> {sfeVersion} {client}
-              </li>
+              {symphonySectionItems.map((item, key) => (
+                <li key={key}>
+                  <strong>{item.key}</strong>
+                  <span>{item.value}</span>
+                </li>
+              ))}
             </ul>
           </section>
+          <div className='AboutApp-copy-container'>
+            <button
+              className='AboutApp-copy-button'
+              onClick={this.eventHandlers.onCopy}
+              title={i18n.t(
+                'Copy config to clipboard',
+                ABOUT_SYMPHONY_NAMESPACE,
+              )()}
+              data-testid={'COPY_BUTTON'}
+            >
+              <img
+                src='../renderer/assets/copy-icon.svg'
+                alt={i18n.t('Symphony Logo', ABOUT_SYMPHONY_NAMESPACE)()}
+              ></img>
+              <span>
+                {i18n.t('Copy config to clipboard', ABOUT_SYMPHONY_NAMESPACE)()}
+              </span>
+            </button>
+          </div>
+          <div className='AboutApp-close-container'>
+            <button
+              className='AboutApp-close-button'
+              onClick={this.eventHandlers.onClose}
+              title={i18n.t('Close', ABOUT_SYMPHONY_NAMESPACE)()}
+              data-testid={'CLOSE_BUTTON'}
+            >
+              {i18n.t('Close', ABOUT_SYMPHONY_NAMESPACE)()}
+            </button>
+          </div>
         </div>
-        <div>
-          <button
-            className='AboutApp-copy-button'
-            onClick={this.eventHandlers.onCopy}
-            title={i18n.t(
-              'Copy all the version information in this page',
-              ABOUT_SYMPHONY_NAMESPACE,
-            )()}
-          >
-            {i18n.t('Copy', ABOUT_SYMPHONY_NAMESPACE)()}
-          </button>
+        <div className='AboutApp-version-container'>
+          <p className='AboutApp-copyright-text'>{copyright}</p>
         </div>
       </div>
     );
@@ -173,6 +209,13 @@ export default class AboutApp extends React.Component<{}, IState> {
         clipboardType: 'clipboard',
       });
     }
+  }
+
+  /**
+   * Close modal
+   */
+  public close(): void {
+    ipcRenderer.send('close-about-app');
   }
 
   /**

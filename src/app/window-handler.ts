@@ -1099,9 +1099,10 @@ export class WindowHandler {
 
     const opts: BrowserWindowConstructorOptions = this.getWindowOpts(
       {
-        width: 440,
-        height: 315,
+        width: 404,
+        height: 480,
         modal: true,
+        frame: false,
         alwaysOnTop: isMac,
         resizable: false,
         fullscreenable: false,
@@ -1111,6 +1112,16 @@ export class WindowHandler {
       },
     );
 
+    const closeAboutApp = () => {
+      if (
+        this.aboutAppWindow &&
+        windowExists(this.aboutAppWindow as BrowserWindow)
+      ) {
+        this.aboutAppWindow.close();
+        this.aboutAppWindow = null;
+      }
+    };
+
     if (
       this.mainWindow &&
       windowExists(this.mainWindow) &&
@@ -1119,13 +1130,19 @@ export class WindowHandler {
       opts.alwaysOnTop = true;
     }
 
-    if (isWindowsOS && selectedParentWindow) {
+    if (selectedParentWindow) {
       opts.parent = selectedParentWindow;
     }
 
     this.aboutAppWindow = createComponentWindow('about-app', opts);
     this.moveWindow(this.aboutAppWindow);
     this.aboutAppWindow.setVisibleOnAllWorkspaces(true);
+
+    this.aboutAppWindow.once('close', () => {
+      ipcMain.removeListener('close-about-app', closeAboutApp);
+    });
+
+    ipcMain.once('close-about-app', closeAboutApp);
 
     this.aboutAppWindow.webContents.once('did-finish-load', async () => {
       let client = '';

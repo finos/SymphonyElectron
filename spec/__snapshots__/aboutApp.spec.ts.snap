@@ -8,78 +8,107 @@ exports[`about app should render correctly 1`] = `
   <div
     className="AboutApp-header-container"
   >
-    <div
-      className="AboutApp-image-container"
-    >
-      <img
-        alt="Symphony Logo"
-        className="AboutApp-logo"
-        src="../renderer/assets/symphony-logo.png"
-      />
-    </div>
-    <div
-      className="AboutApp-header-content"
-    >
-      <h1
-        className="AboutApp-name"
-      >
-        Symphony
-      </h1>
-      <p
-        className="AboutApp-copyrightText"
-      >
-        © 2022 Symphony
-      </p>
-    </div>
+    <img
+      alt="Symphony Logo"
+      className="AboutApp-logo"
+      src="../renderer/assets/new-symphony-logo.svg"
+    />
   </div>
   <div
     className="AboutApp-main-container"
   >
+    <div
+      className="AboutApp-main-title"
+    >
+      <span>
+        Desktop Application
+      </span>
+    </div>
     <section>
       <ul
         className="AboutApp-symphony-section"
       >
-        <li>
-          <b>
+        <li
+          key="0"
+        >
+          <strong>
             POD:
-          </b>
-           
-          N/A
+          </strong>
+          <span>
+            N/A
+          </span>
         </li>
-        <li>
-          <b>
+        <li
+          key="1"
+        >
+          <strong>
             SBE:
-          </b>
-           
-          N/A (N/A)
+          </strong>
+          <span>
+            N/A (N/A)
+          </span>
         </li>
-        <li>
-          <b>
+        <li
+          key="2"
+        >
+          <strong>
             SDA:
-          </b>
-           
-          N/A (N/A)
+          </strong>
+          <span>
+            N/A (N/A)
+          </span>
         </li>
-        <li>
-          <b>
-            SFE-Lite
-            :
-          </b>
-           
-          N/A
-           
+        <li
+          key="3"
+        >
+          <strong>
+            SFE:
+          </strong>
+          <span>
+            N/A undefined
+          </span>
         </li>
       </ul>
     </section>
-  </div>
-  <div>
-    <button
-      className="AboutApp-copy-button"
-      onClick={[Function]}
-      title="Copy all the version information in this page"
+    <div
+      className="AboutApp-copy-container"
     >
-      Copy
-    </button>
+      <button
+        className="AboutApp-copy-button"
+        data-testid="COPY_BUTTON"
+        onClick={[Function]}
+        title="Copy config to clipboard"
+      >
+        <img
+          alt="Symphony Logo"
+          src="../renderer/assets/copy-icon.svg"
+        />
+        <span>
+          Copy config to clipboard
+        </span>
+      </button>
+    </div>
+    <div
+      className="AboutApp-close-container"
+    >
+      <button
+        className="AboutApp-close-button"
+        data-testid="CLOSE_BUTTON"
+        onClick={[Function]}
+        title="Close"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+  <div
+    className="AboutApp-version-container"
+  >
+    <p
+      className="AboutApp-copyright-text"
+    >
+      Copyright © 2022 Symphony
+    </p>
   </div>
 </div>
 `;

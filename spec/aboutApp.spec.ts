@@ -67,7 +67,7 @@ describe('about app', () => {
     const spyIpc = jest.spyOn(ipcRenderer, ipcSendEvent);
     const wrapper = shallow(React.createElement(AboutApp));
     ipcRenderer.send('about-app-data', aboutDataMock);
-    const copyButtonSelector = `button.AboutApp-copy-button[title="Copy all the version information in this page"]`;
+    const copyButtonSelector = `[data-testid="COPY_BUTTON"]`;
     wrapper.find(copyButtonSelector).simulate('click');
     const expectedData = {
       cmd: apiCmds.aboutAppClipBoardData,
