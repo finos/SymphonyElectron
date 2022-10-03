@@ -116,7 +116,8 @@ class Script
         // The build script which calls the wix# builder, will be run from a command environment which has %SYMVER% set.
         // So we just extract that version string, create a Version object from it, and pass it to out project definition.
         var version = System.Environment.GetEnvironmentVariable("SYMVER");
-        project.Version = new System.Version(version);
+        var updatedVersion = version.Replace("-", ".");
+        project.Version = new System.Version(updatedVersion);
 
         // To get the correct behaviour with upgrading the product, the product GUID needs to be different for every build,
         // but the UpgradeCode needs to stay the same. If we wanted to make a new major version and allow it to be installed
