@@ -707,6 +707,20 @@ class Config {
         `Global config file missing! App will not run as expected!`,
       );
     }
+    if (fs.existsSync(this.tempGlobalConfigFilePath)) {
+      this.globalConfig = this.parseConfigData(
+        fs.readFileSync(this.tempGlobalConfigFilePath, 'utf8'),
+      );
+      logger.info(
+        `config-handler: temp global config exists using this file: `,
+        this.tempGlobalConfigFilePath,
+        this.globalConfig,
+      );
+      if (isMac) {
+        this.copyGlobalConfig();
+      }
+      return;
+    }
     this.globalConfig = this.parseConfigData(
       fs.readFileSync(this.globalConfigPath, 'utf8'),
     );
