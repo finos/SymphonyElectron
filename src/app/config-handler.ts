@@ -402,6 +402,7 @@ class Config {
       filteredFields.buildNumber = buildNumber;
       filteredFields.installVariant = this.installVariant;
       filteredFields.bootCount = 0;
+      filteredFields.startedAfterAutoUpdate = false;
       logger.info(
         `config-handler: setting first time launch for build`,
         buildNumber,
@@ -413,6 +414,7 @@ class Config {
       buildNumber,
       installVariant: this.installVariant,
       bootCount: this.bootCount,
+      startedAfterAutoUpdate: false,
     });
   }
 
@@ -579,10 +581,9 @@ class Config {
       this.userConfig &&
       (this.userConfig as IConfig).startedAfterAutoUpdate
     ) {
-      await this.updateUserConfig({
-        installVariant: this.installVariant,
-        startedAfterAutoUpdate: false,
-      });
+      // Update config as usual
+      await this.setUpFirstTimeLaunch();
+      // Skip welcome screen
       this.isFirstTime = false;
       return;
     }
@@ -705,6 +706,20 @@ class Config {
       throw new Error(
         `Global config file missing! App will not run as expected!`,
       );
+    }
+    if (fs.existsSync(this.tempGlobalConfigFilePath)) {
+      this.globalConfig = this.parseConfigData(
+        fs.readFileSync(this.tempGlobalConfigFilePath, 'utf8'),
+      );
+      logger.info(
+        `config-handler: temp global config exists using this file: `,
+        this.tempGlobalConfigFilePath,
+        this.globalConfig,
+      );
+      if (isMac) {
+        this.copyGlobalConfig();
+      }
+      return;
     }
     this.globalConfig = this.parseConfigData(
       fs.readFileSync(this.globalConfigPath, 'utf8'),
