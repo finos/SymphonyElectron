@@ -30,8 +30,14 @@ body {
   background: @graphite-80;
   align-items: flex-start;
   flex: 1;
-  height: 480px;
+  height: 100%;
   box-sizing: border-box;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 8px;
 
   &-main-title {
     text-align: left;
@@ -53,6 +59,7 @@ body {
 
   &-symphony-section > li {
     padding-bottom: 8px;
+    display: flex;
   }
 
   &-symphony-section > li:last-child {
@@ -60,6 +67,9 @@ body {
   }
 
   &-symphony-section > li > span {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     padding-left: 8px;
   }
 
@@ -100,6 +110,7 @@ body {
     flex-direction: column;
     margin-bottom: 32px;
     grid-area: main;
+    max-width: 100%;
   }
 
   &-copy-container {
