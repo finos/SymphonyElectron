@@ -5,7 +5,11 @@
     "Others": "Autres",
     "Swift Search": "Recherche Rapide",
     "Swift Search API": "API Recherche Rapide",
-    "Symphony Logo": "Logo de Symphony"
+    "Symphony Logo": "Logo Symphony",
+    "Copy config to clipboard": "Copier la configuration",
+    "Close": "Fermer",
+    "Copyright": "Copyright",
+    "Desktop Application": "Application de bureau"
   },
   "Actual Size": "Taille actuelle",
   "Always on Top": "Garder Symphony au premier plan",
@@ -21,8 +25,8 @@
     "Invalid user name/password": "Nom d'utilisateur/mot de passe invalide",
     "Log In": "S'identifier",
     "Password:": "Mot de passe:",
-    "Please provide your login credentials for:": "Fournissez vos identifiants de connexion pour:",
-    "User name:": "Nom d'utilisateur:"
+    "Please provide your login credentials for:": "Fournissez vos identifiants de connexion pour :",
+    "User name:": "Nom d'utilisateur :"
   },
   "Bring All to Front": "Amener les fenêtres au premier plan",
   "Bring to Front on Notifications": "Afficher les notifications au premier plan",
@@ -52,7 +56,7 @@
   "Cut": "Couper",
   "Delete": "Effacer",
   "Dev Tools disabled": "Outils de développement désactivés",
-  "Dev Tools has been disabled! Please contact your system administrator to enable it!": "Dev Tools a été désactivé ! Veuillez contacter votre administrateur système pour l’activer !",
+  "Dev Tools has been disabled! Please contact your system administrator to enable it!": "Les outils de développement ont été désactivés ! Veuillez contacter votre administrateur système pour l’activer !",
   "Disable Hamburger menu": "Désactiver le menu Hamburger",
   "Disable GPU": "Désactiver le GPU",
   "Enable Renderer Logs": "Activer les journaux de la Console",
@@ -71,7 +75,7 @@
   "Error loading URL": "Erreur de chargement de l'URL",
   "Error loading window": "Erreur de chargement de la fenêtre",
   "Error setting AutoLaunch configuration": "Erreur de configuration dans le Lancement Automatique",
-  "Failed!": "Échoué!",
+  "Failed!": "Échoué !",
   "Flash Notification in Taskbar": "Notification Flash dans la barre des tâches",
   "Help": "Aide",
   "Help Url": "https://support.symphony.com",
@@ -84,7 +88,7 @@
   "Minimize": "Minimiser",
   "Minimize on Close": "Minimiser lors de la fermeture",
   "Native": "Originaire",
-  "Network connectivity has been lost. Check your internet connection.": "La connectivité a été perdue. Vérifiez votre connection à l'internet.",
+  "Network connectivity has been lost. Check your internet connection.": "La connectivité a été perdue. Vérifiez votre connexion à l'internet.",
   "NetworkError": {
     "Looks like you are not connected to the Internet. We'll try to reconnect automatically.": "On dirait que vous n'êtes pas connecté à Internet. Nous allons essayer de vous reconnecter automatiquement.",
     "Problem connecting to Symphony": "Problème de connexion à Symphony",
@@ -93,7 +97,7 @@
   "No crashes available to share": "Pas de crash à partager",
   "No logs are available to share": "Pas de journal à partager",
   "Not Allowed": "Interdit",
-  "Note: When Hamburger menu is disabled, you can trigger the main menu by pressing the Alt key.": "Remarque: lorsque le menu Hamburger est désactivé, vous pouvez activer le menu principal en appuyant sur la touche \"Alt\" key.",
+  "Note: When Hamburger menu is disabled, you can trigger the main menu by pressing the Alt key.": "Remarque: lorsque le menu Hamburger est désactivé, vous pouvez activer le menu principal en appuyant sur la touche \"Alt\".",
   "NotificationSettings": {
     "Bottom Left": "Gauche inférieure",
     "Bottom Right": "Droite inférieure",
@@ -108,10 +112,10 @@
     "Top Left": "Gauche supérieure",
     "Top Right": "Droite supérieure",
     "Show on display": "Afficher sur écran",
-    "Set Notification Position": "Définir la position de notification"
+    "Set Notification Position": "Définir la position de la notification"
   },
-  "Oops! Looks like we have had a crash.": "Oops! On dirait que nous avons eu un crash.",
-  "Oops! Looks like we have had a crash. Please reload or close this window.": "Oops! On dirait que nous avons eu un crash. Veuillez recharger ou fermer cette fenêtre.",
+  "Oops! Looks like we have had a crash.": "Oups ! On dirait que nous avons eu un crash.",
+  "Oops! Looks like we have had a crash. Please reload or close this window.": "Oups ! On dirait que nous avons eu un crash. Veuillez recharger ou fermer cette fenêtre.",
   "Oops! Something went wrong. Would you like to restart the app?": "Oups ! Quelque chose s'est mal passé. Voulez-vous redémarrer l'application ?",
   "Paste": "Coller",
   "Paste and Match Style": "Coller et appliquer le style",
@@ -124,7 +128,7 @@
     "Your administrator has disabled Pointer Lock. Please contact your admin for help": "Votre administrateur a désactivé Pointer Lock. Veuillez contacter votre administrateur pour obtenir de l'aide.",
     "Your administrator has disabled sharing your camera, microphone, and speakers. Please contact your admin for help": "Votre administrateur a désactivé le partage de votre caméra, votre microphone et vos haut-parleurs. Veuillez contacter votre administrateur pour obtenir de l'aide.",
     "Your administrator has disabled sharing your location. Please contact your admin for help": "Votre administrateur a désactivé le partage de votre position. Veuillez contacter votre administrateur pour obtenir de l'aide.",
-    "Your administrator has disabled sharing your screen. Please contact your admin for help": "Votre administrateur a désactivé partager votre écran. Veuillez contacter votre administrateur pour obtenir de l'aide."
+    "Your administrator has disabled sharing your screen. Please contact your admin for help": "Votre administrateur a désactivé le partage d'écran. Veuillez contacter votre administrateur pour obtenir de l'aide."
   },
   "Please contact your admin for help": "Veuillez contacter votre administrateur pour obtenir de l'aide.",
   "please contact your administrator for more details": "veuillez contacter votre administrateur pour plus de détails",
@@ -205,7 +209,7 @@
   "View": "Visualiser",
   "Welcome": {
     "Continue": "Continuer",
-    "Enable Single Sign On": "Activer la SSO",
+    "Enable Single Sign On": "Activer le SSO",
     "Please enter a valid url": "Veuillez saisir une URL valide",
     "Pod URL": "URL du pod",
     "SSO": "SSO",
@@ -213,11 +217,11 @@
     "WelcomeText": "Bienvenue"
   },
   "Window": "Fenêtre",
-  "Would you like to restart and apply these new settings now?": "Voulez-vous redémarrer et appliquer ce nouveau paramètre maintenant?",
+  "Would you like to restart and apply these new settings now?": "Voulez-vous redémarrer et appliquer ces nouveaux paramètres maintenant?",
   "Your administrator has disabled": "Votre administrateur a désactivé",
   "Zoom": "Zoom",
-  "Zoom In": "Zoom Avant",
-  "Zoom Out": "Zoom Arrière",
+  "Zoom In": "Zoom avant",
+  "Zoom Out": "Zoom arrière",
   "Allow once (risky)": "Autoriser une fois (risqué)",
   "Deny": "Refuser",
   "Invalid security certificate": "possède un certificat de sécurité non valide."
