@@ -234,7 +234,7 @@ export class WindowHandler {
     // Get url to load from cmd line or from global config file
     const urlFromCmd = getCommandLineArgs(process.argv, '--url=', false);
     this.isPodConfigured = !(
-      this.userConfig.url.indexOf('https://my.symphony.com') >= 0 &&
+      this.globalConfig.url.indexOf('https://my.symphony.com') >= 0 &&
       urlFromCmd === null
     );
     this.shouldShowWelcomeScreen =
