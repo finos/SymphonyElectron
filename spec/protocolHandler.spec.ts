@@ -42,6 +42,14 @@ jest.mock('../src/common/logger', () => {
   };
 });
 
+jest.mock('../src/app/config-handler', () => {
+  return {
+    config: {
+      getUserConfigFields: jest.fn(() => ''),
+    },
+  };
+});
+
 describe('protocol handler', () => {
   let protocolHandlerInstance;
 

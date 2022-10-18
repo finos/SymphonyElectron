@@ -3,6 +3,7 @@ import { apiName } from '../common/api-interface';
 import { isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
+import { config } from './config-handler';
 import { activate } from './window-actions';
 import { windowHandler } from './window-handler';
 
@@ -46,7 +47,10 @@ class ProtocolHandler {
    * @param url {String}
    * @param isAppRunning {Boolean} - whether the application is running
    */
-  public sendProtocol(url: string, isAppRunning: boolean = true): void {
+  public async sendProtocol(
+    url: string,
+    isAppRunning: boolean = true,
+  ): Promise<void> {
     if (url && url.length > 2083) {
       logger.info(
         `protocol-handler: protocol handler url length is greater than 2083, not performing any action!`,
@@ -57,11 +61,8 @@ class ProtocolHandler {
       `protocol handler: processing protocol request for the url ${url}!`,
     );
     // Handle protocol for Seamless login
-    if (
-      this.protocolUri?.includes('skey') &&
-      this.protocolUri?.includes('anticsrf')
-    ) {
-      this.handleSeamlessLogin();
+    if (url?.includes('skey') && url?.includes('anticsrf')) {
+      await this.handleSeamlessLogin();
       return;
     }
 
@@ -110,30 +111,32 @@ class ProtocolHandler {
   /**
    * Sets session cookies and navigates to the pod url
    */
-  public handleSeamlessLogin(): void {
+  public async handleSeamlessLogin(): Promise<void> {
+    const { url } = config.getUserConfigFields(['url']);
     if (this.protocolUri) {
       const urlParams = new URLSearchParams(new URL(this.protocolUri).search);
-      const url = windowHandler.url || '';
-      const cookie = {
-        url,
-        skey: urlParams.get('skey'),
-        'anti-csrf-cookie': urlParams.get('anticsrf'),
-      };
-      session.defaultSession.cookies.set(cookie).then(
-        () => {
-          const mainWebContents = windowHandler.getMainWebContents();
-          if (!mainWebContents?.isDestroyed() && windowHandler.url) {
-            logger.info(
-              'protocol-handler: redirecting main webContents',
-              windowHandler.url,
-            );
-            mainWebContents?.loadURL(windowHandler.url);
-          }
-        },
-        (error) => {
-          logger.error('protocol-handler: unable to set cookies', error);
-        },
-      );
+      const skeyValue = urlParams.get('skey');
+      const anticsrfValue = urlParams.get('anticsrf');
+      if (skeyValue) {
+        await session.defaultSession.cookies.set({
+          url,
+          name: 'skey',
+          value: skeyValue,
+        });
+      }
+      if (anticsrfValue) {
+        await session.defaultSession.cookies.set({
+          url,
+          name: 'anti-csrf-cookie',
+          value: anticsrfValue,
+        });
+      }
+      logger.info('protocol-handler: cookies has been set');
+      const mainWebContents = windowHandler.getMainWebContents();
+      if (mainWebContents && !mainWebContents?.isDestroyed() && url) {
+        logger.info('protocol-handler: redirecting main webContents', url);
+        mainWebContents?.loadURL(url);
+      }
     }
   }
 }
