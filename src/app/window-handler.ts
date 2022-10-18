@@ -162,6 +162,7 @@ export class WindowHandler {
   private readonly opts: Electron.BrowserViewConstructorOptions | undefined;
   private isPodConfigured: boolean = false;
   private shouldShowWelcomeScreen: boolean = true;
+  private didShowWelcomeScreen: boolean = false;
 
   constructor(opts?: Electron.BrowserViewConstructorOptions) {
     this.opts = opts;
@@ -234,6 +235,7 @@ export class WindowHandler {
     // Get url to load from cmd line or from global config file
     const urlFromCmd = getCommandLineArgs(process.argv, '--url=', false);
     this.isPodConfigured = !config.isFirstTimeLaunch();
+    this.didShowWelcomeScreen = false;
     this.shouldShowWelcomeScreen =
       config.isFirstTimeLaunch() || this.config.enableSeamlessLogin;
 
@@ -517,7 +519,7 @@ export class WindowHandler {
 
       if (this.mainWebContents && !this.mainWebContents.isDestroyed()) {
         // Load welcome screen
-        if (this.shouldShowWelcomeScreen) {
+        if (this.shouldShowWelcomeScreen && !this.didShowWelcomeScreen) {
           const userConfigUrl =
             this.userConfig.url &&
             this.userConfig.url.indexOf('/login/sso/initsso') > -1
@@ -537,6 +539,7 @@ export class WindowHandler {
             isPodConfigured: this.isPodConfigured,
             isSeamlessLoginEnabled: this.config.enableSeamlessLogin,
           });
+          this.didShowWelcomeScreen = true;
         }
 
         // Injects custom title bar and snack bar css into the webContents
