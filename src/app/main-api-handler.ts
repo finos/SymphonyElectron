@@ -363,8 +363,18 @@ ipcMain.on(
             arg.newPodUrl,
           );
           const loginUrl = `https://${subdomain}.${domain}${tld}/${SEAMLESS_LOGIN_CALLBACK_PATH}`;
+          logger.info(
+            'main-api-handler:',
+            'seamless login is enabled - logging in',
+            loginUrl,
+          );
           await shell.openExternal(loginUrl);
         } else {
+          logger.info(
+            'main-api-handler:',
+            'seamless login is not enabled - loading main window with',
+            arg.newPodUrl,
+          );
           const mainWebContents = windowHandler.getMainWebContents();
           if (mainWebContents && !mainWebContents.isDestroyed()) {
             mainWebContents.loadURL(arg.newPodUrl);

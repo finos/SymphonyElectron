@@ -142,7 +142,7 @@ export default class Welcome extends React.Component<{}, IState> {
     const { url, isPodConfigured, isSeamlessLoginEnabled } = this.state;
     ipcRenderer.send(apiName.symphonyApi, {
       cmd: apiCmds.seamlessLogin,
-      url,
+      newPodUrl: url,
       isPodConfigured,
       isSeamlessLoginEnabled,
     });

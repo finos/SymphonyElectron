@@ -233,13 +233,9 @@ export class WindowHandler {
       this.config.isCustomTitleBar === CloudConfigDataTypes.ENABLED;
     // Get url to load from cmd line or from global config file
     const urlFromCmd = getCommandLineArgs(process.argv, '--url=', false);
-    this.isPodConfigured = !(
-      this.globalConfig.url.indexOf('https://my.symphony.com') >= 0 &&
-      urlFromCmd === null
-    );
+    this.isPodConfigured = !config.isFirstTimeLaunch();
     this.shouldShowWelcomeScreen =
-      (config.isFirstTimeLaunch() && this.isPodConfigured) ||
-      this.config.enableSeamlessLogin;
+      config.isFirstTimeLaunch() || this.config.enableSeamlessLogin;
 
     this.windowOpts = {
       ...this.getWindowOpts(
