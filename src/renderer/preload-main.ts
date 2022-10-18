@@ -9,6 +9,7 @@ import DownloadManager from './components/download-manager';
 import MessageBanner from './components/message-banner';
 import NetworkError from './components/network-error';
 import SnackBar from './components/snack-bar';
+import Welcome from './components/welcome';
 import { SSFApi } from './ssf-api';
 
 interface ISSFWindow extends Window {
@@ -182,4 +183,17 @@ ipcRenderer.on('exit-html-fullscreen', async () => {
   if (document && document.fullscreenElement) {
     await document.exitFullscreen();
   }
+});
+
+ipcRenderer.on('page-load-welcome', (_event, { locale, resources }) => {
+  i18n.setResource(locale, resources);
+  document.title = i18n.t('WelcomeText', 'Welcome')();
+  const styles = document.createElement('link');
+  styles.rel = 'stylesheet';
+  styles.type = 'text/css';
+  styles.href = `./styles/welcome.css`;
+  document.getElementsByTagName('head')[0].appendChild(styles);
+  const component = Welcome;
+  const element = React.createElement(component);
+  ReactDOM.render(element, document.getElementById('Root'));
 });

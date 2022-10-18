@@ -57,7 +57,6 @@ export enum apiCmds {
   isAeroGlassEnabled = 'is-aero-glass-enabled',
   showScreenSharePermissionDialog = 'show-screen-share-permission-dialog',
   getMediaAccessStatus = 'get-media-access-status',
-  setPodUrl = 'set-pod-url',
   setBroadcastMessage = 'set-broadcast-message',
   handleSwiftSearchMessageEvents = 'handle-shift-search-message-events',
   onSwiftSearchMessage = 'on-shift-search-message',
@@ -71,6 +70,7 @@ export enum apiCmds {
   updateAndRestart = 'update-and-restart',
   downloadUpdate = 'download-update',
   checkForUpdates = 'check-for-updates',
+  seamlessLogin = 'seamless-login',
 }
 
 export enum apiName {
@@ -118,6 +118,9 @@ export interface IApiArgs {
   requestId: number;
   mediaStatus: IMediaPermission;
   newPodUrl: string;
+  startUrl: string;
+  isPodConfigured: boolean;
+  isSeamlessLoginEnabled: boolean;
   swiftSearchData: any;
   types: string[];
   thumbnailSize: Size;

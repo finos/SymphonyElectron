@@ -1,9 +1,10 @@
-import { WebContents } from 'electron';
+import { session, WebContents } from 'electron';
 import { apiName } from '../common/api-interface';
 import { isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
 import { activate } from './window-actions';
+import { windowHandler } from './window-handler';
 
 enum protocol {
   SymphonyProtocol = 'symphony://',
@@ -62,6 +63,14 @@ class ProtocolHandler {
       this.protocolUri = url;
       return;
     }
+    // Handle protocol for Seamless login
+    if (
+      this.protocolUri?.includes('skey') &&
+      this.protocolUri?.includes('anticsrf')
+    ) {
+      this.handleSeamlessLogin();
+      return;
+    }
     // This is needed for mac OS as it brings pop-outs to foreground
     // (if it has been previously focused) instead of main window
     if (isMac) {
@@ -93,6 +102,37 @@ class ProtocolHandler {
         `protocol handler: we have a protocol request for the url ${protocolUriFromArgv}!`,
       );
       this.sendProtocol(protocolUriFromArgv, isAppAlreadyOpen);
+    }
+  }
+
+  /**
+   * Sets session cookies and navigates to the pod url
+   */
+  public handleSeamlessLogin(): void {
+    if (this.protocolUri) {
+      console.warn('sadasdasdasd');
+      const urlParams = new URLSearchParams(new URL(this.protocolUri).search);
+      const url = windowHandler.url || '';
+      const cookie = {
+        url,
+        skey: urlParams.get('skey'),
+        'anti-csrf-cookie': urlParams.get('anticsrf'),
+      };
+      session.defaultSession.cookies.set(cookie).then(
+        () => {
+          const mainWebContents = windowHandler.getMainWebContents();
+          if (!mainWebContents?.isDestroyed() && windowHandler.url) {
+            logger.info(
+              'protocol-handler: redirecting main webContents',
+              windowHandler.url,
+            );
+            mainWebContents?.loadURL(windowHandler.url);
+          }
+        },
+        (error) => {
+          logger.error('protocol-handler: unable to set cookies', error);
+        },
+      );
     }
   }
 }

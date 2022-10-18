@@ -12,6 +12,14 @@ jest.mock('../src/common/utils', () => {
   };
 });
 
+jest.mock('../src/app/window-handler', () => {
+  return {
+    windowHandler: {
+      url: '',
+    },
+  };
+});
+
 jest.mock('../src/common/env', () => {
   return {
     isWindowsOS: false,

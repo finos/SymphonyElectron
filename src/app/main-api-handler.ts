@@ -1,10 +1,10 @@
 import {
-  app,
   BrowserWindow,
   clipboard,
   desktopCapturer,
   dialog,
   ipcMain,
+  shell,
   systemPreferences,
 } from 'electron';
 import {
@@ -15,6 +15,7 @@ import {
 } from '../common/api-interface';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
+import { whitelistHandler } from '../common/whitelist-handler';
 import { activityDetection } from './activity-detection';
 import { analytics } from './analytics-handler';
 import appStateHandler from './app-state-handler';
@@ -62,6 +63,9 @@ try {
 const broadcastMessage = (method, data) => {
   mainEvents.publish(apiCmds.onSwiftSearchMessage, [method, data]);
 };
+
+const SEAMLESS_LOGIN_CALLBACK_PATH =
+  'client-bff/device-login/index.html?callbackScheme=symphony';
 
 /**
  * Handle API related ipc messages from renderers. Only messages from windows
@@ -350,10 +354,22 @@ ipcMain.on(
           mainWebContents.focus();
         }
         break;
-      case apiCmds.setPodUrl:
-        await config.updateUserConfig({ url: arg.newPodUrl });
-        app.relaunch();
-        app.exit();
+      case apiCmds.seamlessLogin:
+        if (!arg.isPodConfigured) {
+          await config.updateUserConfig({ url: arg.newPodUrl });
+        }
+        if (arg.isSeamlessLoginEnabled) {
+          const { subdomain, domain, tld } = whitelistHandler.parseDomain(
+            arg.newPodUrl,
+          );
+          const loginUrl = `https://${subdomain}.${domain}${tld}/${SEAMLESS_LOGIN_CALLBACK_PATH}`;
+          await shell.openExternal(loginUrl);
+        } else {
+          const mainWebContents = windowHandler.getMainWebContents();
+          if (mainWebContents && !mainWebContents.isDestroyed()) {
+            mainWebContents.loadURL(arg.newPodUrl);
+          }
+        }
         break;
       case apiCmds.setBroadcastMessage:
         if (swiftSearchInstance) {
