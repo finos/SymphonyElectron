@@ -56,13 +56,6 @@ class ProtocolHandler {
     logger.info(
       `protocol handler: processing protocol request for the url ${url}!`,
     );
-    if (!this.preloadWebContents || !isAppRunning) {
-      logger.info(
-        `protocol handler: app was started from the protocol request. Caching the URL ${url}!`,
-      );
-      this.protocolUri = url;
-      return;
-    }
     // Handle protocol for Seamless login
     if (
       this.protocolUri?.includes('skey') &&
@@ -71,6 +64,15 @@ class ProtocolHandler {
       this.handleSeamlessLogin();
       return;
     }
+
+    if (!this.preloadWebContents || !isAppRunning) {
+      logger.info(
+        `protocol handler: app was started from the protocol request. Caching the URL ${url}!`,
+      );
+      this.protocolUri = url;
+      return;
+    }
+
     // This is needed for mac OS as it brings pop-outs to foreground
     // (if it has been previously focused) instead of main window
     if (isMac) {
@@ -110,7 +112,6 @@ class ProtocolHandler {
    */
   public handleSeamlessLogin(): void {
     if (this.protocolUri) {
-      console.warn('sadasdasdasd');
       const urlParams = new URLSearchParams(new URL(this.protocolUri).search);
       const url = windowHandler.url || '';
       const cookie = {
