@@ -742,7 +742,7 @@ export class AppMenu {
                 this.setUpdateChannelForMenuEntry(Target.SDA, Channels.Latest),
               visible: isCorp,
               type: 'checkbox',
-              checked: this.getUpdateChannel() === Channels.Daily,
+              checked: this.getUpdateChannel() === Channels.Latest,
               label: i18n.t('Latest')(),
             },
             {
