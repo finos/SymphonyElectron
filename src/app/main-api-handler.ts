@@ -64,8 +64,8 @@ const broadcastMessage = (method, data) => {
   mainEvents.publish(apiCmds.onSwiftSearchMessage, [method, data]);
 };
 
-const SEAMLESS_LOGIN_CALLBACK_PATH =
-  'client-bff/device-login/index.html?callbackScheme=symphony';
+const getSeamLessLoginUrl = (pod: string) =>
+  `https://${pod}/login/sso/initsso?RelayState=https://${pod}/client-bff/device-login/index.html?callbackScheme=symphony&action=login`;
 
 /**
  * Handle API related ipc messages from renderers. Only messages from windows
@@ -362,7 +362,7 @@ ipcMain.on(
           const { subdomain, domain, tld } = whitelistHandler.parseDomain(
             arg.newPodUrl,
           );
-          const loginUrl = `https://${subdomain}.${domain}${tld}/${SEAMLESS_LOGIN_CALLBACK_PATH}`;
+          const loginUrl = getSeamLessLoginUrl(`${subdomain}.${domain}${tld}`);
           logger.info(
             'main-api-handler:',
             'seamless login is enabled - logging in',
