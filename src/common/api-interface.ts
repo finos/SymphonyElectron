@@ -285,3 +285,13 @@ export interface ICloud9Pipe {
   write(data: Uint8Array): void;
   close(): void;
 }
+
+export type AuthType = 'password' | 'sso';
+
+export interface IAuthResponse {
+  status: string;
+  podVersion: string;
+  authenticationType: AuthType;
+  ssoDisabledForMobile: boolean;
+  keymanagerUrl: string;
+}
