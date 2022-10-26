@@ -1,20 +1,23 @@
 import {
-  app,
   BrowserWindow,
   clipboard,
   desktopCapturer,
   dialog,
   ipcMain,
+  shell,
   systemPreferences,
 } from 'electron';
+import fetch from 'electron-fetch';
 import {
   apiCmds,
   apiName,
   IApiArgs,
+  IAuthResponse,
   INotificationData,
 } from '../common/api-interface';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
+import { whitelistHandler } from '../common/whitelist-handler';
 import { activityDetection } from './activity-detection';
 import { analytics } from './analytics-handler';
 import appStateHandler from './app-state-handler';
@@ -63,6 +66,9 @@ const broadcastMessage = (method, data) => {
   mainEvents.publish(apiCmds.onSwiftSearchMessage, [method, data]);
 };
 
+const getSeamLessLoginUrl = (pod: string) =>
+  `https://${pod}/login/sso/initsso?RelayState=https://${pod}/client-bff/device-login/index.html?callbackScheme=symphony&action=login`;
+const AUTH_STATUS_PATH = '/login/checkauth?type=user';
 /**
  * Handle API related ipc messages from renderers. Only messages from windows
  * we have created are allowed.
@@ -350,10 +356,43 @@ ipcMain.on(
           mainWebContents.focus();
         }
         break;
-      case apiCmds.setPodUrl:
-        await config.updateUserConfig({ url: arg.newPodUrl });
-        app.relaunch();
-        app.exit();
+      case apiCmds.seamlessLogin:
+        if (!arg.isPodConfigured) {
+          await config.updateUserConfig({ url: arg.newPodUrl });
+        }
+        const { subdomain, domain, tld } = whitelistHandler.parseDomain(
+          arg.newPodUrl,
+        );
+        const loginUrl = getSeamLessLoginUrl(`${subdomain}.${domain}${tld}`);
+        logger.info(
+          'main-api-handler:',
+          'check if sso is enabled for the pod',
+          loginUrl,
+        );
+        const response = await fetch(`${loginUrl}${AUTH_STATUS_PATH}`);
+        const authResponse = (await response.json()) as IAuthResponse;
+        logger.info('main-api-handler:', 'check auth response', authResponse);
+        if (
+          arg.isSeamlessLoginEnabled &&
+          authResponse.authenticationType === 'sso'
+        ) {
+          logger.info(
+            'main-api-handler:',
+            'seamless login is enabled - logging in',
+            loginUrl,
+          );
+          await shell.openExternal(loginUrl);
+        } else {
+          logger.info(
+            'main-api-handler:',
+            'seamless login is not enabled - loading main window with',
+            arg.newPodUrl,
+          );
+          const mainWebContents = windowHandler.getMainWebContents();
+          if (mainWebContents && !mainWebContents.isDestroyed()) {
+            mainWebContents.loadURL(arg.newPodUrl);
+          }
+        }
         break;
       case apiCmds.setBroadcastMessage:
         if (swiftSearchInstance) {

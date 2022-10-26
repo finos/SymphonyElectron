@@ -9,6 +9,8 @@ describe('welcome', () => {
     url: 'https://my.symphony.com',
     message: '',
     urlValid: true,
+    isPodConfigured: false,
+    isSeamlessLoginEnabled: true,
   };
   const onLabelEvent = 'on';
   const removeListenerLabelEvent = 'removeListener';
@@ -94,7 +96,7 @@ describe('welcome', () => {
 
   it('should set pod url', () => {
     const spy = jest.spyOn(Welcome.prototype, 'setState');
-    const setPodUrlSpy = jest.spyOn(Welcome.prototype, 'setPodUrl');
+    const setPodUrlSpy = jest.spyOn(Welcome.prototype, 'login');
 
     const wrapper = shallow(React.createElement(Welcome));
     ipcRenderer.send('welcome', welcomeMock);
@@ -103,5 +105,19 @@ describe('welcome', () => {
 
     expect(setPodUrlSpy).toBeCalled();
     expect(spy).toBeCalledWith(welcomeMock);
+  });
+
+  it('should not show pod url input field', () => {
+    const welcomeMock = {
+      url: 'https://my.symphony.com',
+      message: '',
+      urlValid: true,
+      isPodConfigured: true,
+      isSeamlessLoginEnabled: true,
+    };
+    const wrapper = shallow(React.createElement(Welcome));
+    ipcRenderer.send('welcome', welcomeMock);
+    const podUrlBox = `input.Welcome-main-container-podurl-box`;
+    expect(wrapper.find(podUrlBox).getElements()).toEqual([]);
   });
 });
