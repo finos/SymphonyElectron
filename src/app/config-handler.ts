@@ -721,9 +721,12 @@ class Config {
       }
       return;
     }
-    this.globalConfig = this.parseConfigData(
+    const parsedConfigData = this.parseConfigData(
       fs.readFileSync(this.globalConfigPath, 'utf8'),
     );
+    if (parsedConfigData && Object.keys(parsedConfigData).length > 0) {
+      this.globalConfig = parsedConfigData;
+    }
     logger.info(`config-handler: Global configuration: `, this.globalConfig);
   }
 
