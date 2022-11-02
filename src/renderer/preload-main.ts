@@ -91,6 +91,7 @@ if (ssfWindow.ssf) {
       ssfWindow.ssf.getCitrixMediaRedirectionStatus,
     registerClientBanner: ssfWindow.ssf.registerClientBanner,
     launchCloud9: ssfWindow.ssf.launchCloud9,
+    terminateCloud9: ssfWindow.ssf.terminateCloud9,
     connectCloud9Pipe: ssfWindow.ssf.connectCloud9Pipe,
     updateAndRestart: ssfWindow.ssf.updateAndRestart,
     downloadUpdate: ssfWindow.ssf.downloadUpdate,

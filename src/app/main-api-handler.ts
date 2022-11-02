@@ -19,7 +19,7 @@ import { activityDetection } from './activity-detection';
 import { analytics } from './analytics-handler';
 import appStateHandler from './app-state-handler';
 import { closeC9Pipe, connectC9Pipe, writeC9Pipe } from './c9-pipe-handler';
-import { loadC9Shell } from './c9-shell-handler';
+import { loadC9Shell, terminateC9Shell } from './c9-shell-handler';
 import { getCitrixMediaRedirectionStatus } from './citrix-handler';
 import { CloudConfigDataTypes, config, ICloudConfig } from './config-handler';
 import { downloadHandler } from './download-handler';
@@ -377,6 +377,9 @@ ipcMain.on(
         break;
       case apiCmds.launchCloud9:
         loadC9Shell(event.sender);
+        break;
+      case apiCmds.terminateCloud9:
+        terminateC9Shell(event.sender);
         break;
       case apiCmds.updateAndRestart:
         autoUpdate.updateAndRestart();

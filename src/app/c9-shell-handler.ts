@@ -39,12 +39,19 @@ class C9ShellHandler {
    */
   public setStatusCallback(callback: StatusCallback) {
     this._statusCallback = callback;
-    if (!this._statusCallback) {
-      return;
-    }
     if (this._curStatus) {
       this._statusCallback(this._curStatus);
     }
+  }
+
+  /**
+   * Terminates the c9shell process if it was started by this handler.
+   */
+  public terminateShell() {
+    if (!this._c9shell) {
+      return;
+    }
+    this._c9shell.kill();
   }
 
   /**
@@ -107,12 +114,7 @@ class C9ShellHandler {
 
     const c9Shell = spawn(
       c9ShellPath,
-      [
-        '--allowmultiproc',
-        '--symphonyHost',
-        uniquePipeName,
-        ...customC9ShellArgList,
-      ],
+      ['--symphonyHost', uniquePipeName, ...customC9ShellArgList],
       {
         stdio: 'pipe',
       },
@@ -158,4 +160,14 @@ export const loadC9Shell = (sender: WebContents) => {
     sender.send('c9-status-event', { status });
   });
   c9ShellHandler.startShell();
+};
+
+/**
+ * Terminates the C9 shell process asynchronously, if it is running.
+ */
+export const terminateC9Shell = (_sender: WebContents) => {
+  if (!c9ShellHandler) {
+    return;
+  }
+  c9ShellHandler.terminateShell();
 };
