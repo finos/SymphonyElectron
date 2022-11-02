@@ -66,6 +66,7 @@ export enum apiCmds {
   getCitrixMediaRedirectionStatus = 'get-citrix-media-redirection-status',
   getSources = 'getSources',
   launchCloud9 = 'launch-cloud9',
+  terminateCloud9 = 'terminate-cloud9',
   connectCloud9Pipe = 'connect-cloud9-pipe',
   writeCloud9Pipe = 'write-cloud9-pipe',
   closeCloud9Pipe = 'close-cloud9-pipe',
