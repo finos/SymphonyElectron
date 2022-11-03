@@ -259,7 +259,7 @@ export const handleKeyPress = (key: number): void => {
       break;
     }
     case KeyCodes.Alt:
-      if (isMac || isLinux || windowHandler.isCustomTitleBar) {
+      if (isMac || isLinux) {
         return;
       }
       const browserWin = BrowserWindow.getFocusedWindow() as ICustomBrowserWindow;
