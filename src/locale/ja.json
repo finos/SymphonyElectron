@@ -87,7 +87,7 @@
   "Loading Error": "読み込みエラー",
   "Minimize": "最小化",
   "Minimize on Close": "閉じるで最小化",
-  "Native": "Native",
+  "Native": "ネイティブ",
   "Network connectivity has been lost. Check your internet connection.": "ネットワーク接続が失われました。インターネット接続を確認してください。",
   "NetworkError": {
     "Looks like you are not connected to the Internet. We'll try to reconnect automatically.": "インターネットに接続していないようです。 自動的に再接続します。",
@@ -114,9 +114,9 @@
     "Show on display": "ディスプレイに表示",
     "Set Notification Position": "通知位置を設定する"
   },
-  "Oops! Looks like we have had a crash.": "おっと！クラッシュしたようです。",
-  "Oops! Looks like we have had a crash. Please reload or close this window.": "おっと！クラッシュしたようです。このウィンドウを再度読み込むか閉じてください｡",
-  "Oops! Something went wrong. Would you like to restart the app?": "おっと!何か問題が起こった。アプリを再開しますか?",
+  "Oops! Looks like we have had a crash.": "問題が発生したためクラッシュしました。",
+  "Oops! Looks like we have had a crash. Please reload or close this window.": "問題が発生したためクラッシュしました。このウィンドウを再度読み込むか閉じてください。",
+  "Oops! Something went wrong. Would you like to restart the app?": "問題が発生しました。アプリを再起動しますか？",
   "Paste": "貼り付け",
   "Paste and Match Style": "貼り付けでスタイルを合わせる",
   "Permission Denied": "アクセス許可が拒否されています",
@@ -214,9 +214,16 @@
   "Welcome": {
     "Continue": "持続する",
     "Enable Single Sign On": "シングルサインオンを有効にする",
+    "Find your pod URL in your invitation email.": "Find your pod URL in your invitation email.",
+    "Welcome to the largest global community in financial services with over": "Welcome to the largest global community in financial services with over",
+    " half a million users": " half a million users",
+    " 1,000 institutions.": " 1,000 institutions.",
+    "Log in with your pod URL": "Log in with your pod URL",
+    "You’ll momentarily be redirected to your web browser.": "You’ll momentarily be redirected to your web browser.",
+    "log in": "log in",
     "Please enter a valid url": "有効なURLを入力してください",
     "Pod URL": "ポッドURL",
-    "SSO": "SSO",
+    "SSO": "SSO(シングルサインオン)",
     "Symphony Logo": "Symphony",
     "WelcomeText": "ようこそ"
   },
@@ -226,7 +233,7 @@
   "Zoom": "ズーム",
   "Zoom In": "ズームイン",
   "Zoom Out": "ズームアウト",
-  "Allow once (risky)": "Allow once (risky)",
-  "Deny": "Deny",
+  "Allow once (risky)": "今回は許可(推奨されません)",
+  "Deny": "拒否",
   "Invalid security certificate": "のセキュリティ証明書は無効です。"
 }
