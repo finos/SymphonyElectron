@@ -129,6 +129,19 @@ describe('Toast notification component', () => {
     expect(toastNotificationReplyButton.exists()).toBeTruthy();
   });
 
+  it('should display ignore button when requested', () => {
+    const hasIgnore = true;
+    const ignoreButtonSelector = `.action-button`;
+    let toastNotificationIgnoreButton = wrapper.find(ignoreButtonSelector);
+    expect(toastNotificationIgnoreButton.exists()).toBeFalsy();
+    ipcRenderer.send(IPC_RENDERER_NOTIFICATION_DATA_CHANNEL, {
+      ...defaultProps,
+      hasIgnore,
+    });
+    toastNotificationIgnoreButton = wrapper.find(ignoreButtonSelector);
+    expect(toastNotificationIgnoreButton.exists()).toBeTruthy();
+  });
+
   it('should trigger mouse hovering function while hovering a notification', async () => {
     const spy = jest.spyOn(ipcRenderer, 'send');
     const notificationContainer = wrapper.find(

@@ -108,6 +108,9 @@ class Notification extends NotificationHandler {
     ipcMain.on('notification-on-reply', (_event, windowId, replyText) => {
       this.onNotificationReply(windowId, replyText);
     });
+    ipcMain.on('notification-on-ignore', (_event, windowId) =>
+      this.onNotificationIgnore(windowId),
+    );
     ipcMain.on('show-reply', this.funcHandlers.onShowReply);
     // Update latest notification settings from config
     app.on('ready', () => this.updateNotificationSettings());
@@ -272,6 +275,7 @@ class Notification extends NotificationHandler {
       flash,
       isExternal,
       theme,
+      hasIgnore,
       hasReply,
       hasMention,
     } = data;
@@ -286,6 +290,7 @@ class Notification extends NotificationHandler {
       flash,
       isExternal,
       theme,
+      hasIgnore,
       hasReply,
       hasMention,
     });
@@ -393,6 +398,26 @@ class Notification extends NotificationHandler {
         callback(NotificationActions.notificationReply, data, replyText);
       }
       this.notificationClosed(clientId);
+      this.hideNotification(clientId);
+    }
+  }
+
+  /**
+   * Handles notification ignore action
+   * @param clientId {number}
+   */
+  public onNotificationIgnore(clientId: number): void {
+    const browserWindow = this.getNotificationWindow(clientId);
+    if (
+      browserWindow &&
+      windowExists(browserWindow) &&
+      browserWindow.notificationData
+    ) {
+      const data = browserWindow.notificationData;
+      const callback = this.notificationCallbacks[clientId];
+      if (typeof callback === 'function') {
+        callback(NotificationActions.notificationIgnore, data);
+      }
       this.hideNotification(clientId);
     }
   }
