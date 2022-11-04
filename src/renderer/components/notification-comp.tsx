@@ -47,6 +47,7 @@ interface INotificationState {
   flash: boolean;
   isExternal: boolean;
   theme: Theme;
+  hasIgnore: boolean;
   hasReply: boolean;
   hasMention: boolean;
   isInputHidden: boolean;
@@ -74,6 +75,7 @@ export default class NotificationComp extends React.Component<
       this.close(_event, winKey),
     onClick: (data) => (_event: mouseEventButton) => this.click(data),
     onContextMenu: (event) => this.contextMenu(event),
+    onIgnore: (winKey) => (_event: mouseEventButton) => this.onIgnore(winKey),
     onMouseEnter: (winKey) => (_event: mouseEventButton) =>
       this.onMouseEnter(winKey),
     onMouseLeave: (winKey) => (_event: mouseEventButton) =>
@@ -100,6 +102,7 @@ export default class NotificationComp extends React.Component<
       isExternal: false,
       theme: '',
       isInputHidden: true,
+      hasIgnore: false,
       hasReply: false,
       hasMention: false,
       containerHeight: CONTAINER_HEIGHT,
@@ -193,6 +196,7 @@ export default class NotificationComp extends React.Component<
                 {this.renderExtBadge(isExternal)}
               </div>
               {this.renderReplyButton(id, themeClassName)}
+              {this.renderIgnoreButton(id, themeClassName)}
             </div>
             <span className={`message-preview ${themeClassName}`}>{body}</span>
           </div>
@@ -358,6 +362,15 @@ export default class NotificationComp extends React.Component<
       this.onInputChange();
       this.input.current.focus();
     }
+  }
+
+  /**
+   * Handles ignore action
+   * @param id
+   * @private
+   */
+  private onIgnore(id: number): void {
+    ipcRenderer.send('notification-on-ignore', id);
   }
 
   /**
@@ -555,6 +568,29 @@ export default class NotificationComp extends React.Component<
           onClick={this.eventHandlers.onOpenReply(id)}
         >
           {i18n.t('Reply')()}
+        </button>
+      );
+    }
+    return;
+  }
+
+  /**
+   * Renders ignore button
+   * @param id
+   * @param theming
+   */
+  private renderIgnoreButton(
+    id: number,
+    theming: string,
+  ): JSX.Element | undefined {
+    if (this.state.hasIgnore) {
+      return (
+        <button
+          className={`action-button ${theming}`}
+          style={{ display: 'block' }}
+          onClick={this.eventHandlers.onIgnore(id)}
+        >
+          {i18n.t('Ignore')()}
         </button>
       );
     }
