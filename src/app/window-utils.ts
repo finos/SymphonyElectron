@@ -48,7 +48,7 @@ import {
 
 import { notification } from '../renderer/notification';
 import { autoLaunchInstance } from './auto-launch-controller';
-import { autoUpdate } from './auto-update-handler';
+import { autoUpdate, AutoUpdateTrigger } from './auto-update-handler';
 import { mainEvents } from './main-event-handler';
 
 interface IStyles {
@@ -1107,7 +1107,7 @@ export const updateFeaturesForCloudConfig = async (
           await config.updateUserConfig({
             lastAutoUpdateCheckDate: new Date().toISOString(),
           });
-          autoUpdate.checkUpdates();
+          autoUpdate.checkUpdates(AutoUpdateTrigger.AUTOMATED);
           return;
         }
         logger.info(
@@ -1124,7 +1124,7 @@ export const updateFeaturesForCloudConfig = async (
           await config.updateUserConfig({
             lastAutoUpdateCheckDate: new Date().toISOString(),
           });
-          autoUpdate.checkUpdates();
+          autoUpdate.checkUpdates(AutoUpdateTrigger.AUTOMATED);
         }
       }, getRandomTime(MIN_AUTO_UPDATE_CHECK_INTERVAL, MAX_AUTO_UPDATE_CHECK_INTERVAL));
     }

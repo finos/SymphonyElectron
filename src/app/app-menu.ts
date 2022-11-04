@@ -38,7 +38,7 @@ import {
 } from './window-utils';
 
 import { autoLaunchInstance as autoLaunch } from './auto-launch-controller';
-import { autoUpdate } from './auto-update-handler';
+import { autoUpdate, AutoUpdateTrigger } from './auto-update-handler';
 
 export const menuSections = {
   about: 'about',
@@ -299,7 +299,7 @@ export class AppMenu {
         },
         {
           click: (_item) => {
-            autoUpdate.checkUpdates();
+            autoUpdate.checkUpdates(AutoUpdateTrigger.MANUAL);
           },
           visible: isMac && !!isAutoUpdateEnabled && !!windowHandler.isMana,
           label: i18n.t('Check for updates')(),
@@ -689,7 +689,7 @@ export class AppMenu {
         },
         {
           click: (_item) => {
-            autoUpdate.checkUpdates();
+            autoUpdate.checkUpdates(AutoUpdateTrigger.MANUAL);
           },
           visible:
             isWindowsOS && !!isAutoUpdateEnabled && !!windowHandler.isMana,
