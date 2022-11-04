@@ -49,7 +49,7 @@ import {
   windowExists,
 } from './window-utils';
 
-import { autoUpdate } from './auto-update-handler';
+import { autoUpdate, AutoUpdateTrigger } from './auto-update-handler';
 
 // Swift search API
 let swiftSearchInstance;
@@ -424,7 +424,12 @@ ipcMain.on(
         autoUpdate.downloadUpdate();
         break;
       case apiCmds.checkForUpdates:
-        autoUpdate.checkUpdates();
+        const autoUpdateTrigger = arg.autoUpdateTrigger;
+        if (autoUpdateTrigger && autoUpdateTrigger in AutoUpdateTrigger) {
+          autoUpdate.checkUpdates(arg.autoUpdateTrigger);
+        } else {
+          autoUpdate.checkUpdates();
+        }
         break;
       default:
         break;
