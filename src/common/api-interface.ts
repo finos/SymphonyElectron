@@ -187,6 +187,7 @@ export interface INotificationData {
   theme: Theme;
   isElectronNotification?: boolean;
   callback?: () => void;
+  hasIgnore?: boolean;
   hasReply?: boolean;
   hasMention?: boolean;
 }
@@ -195,6 +196,7 @@ export enum NotificationActions {
   notificationClicked = 'notification-clicked',
   notificationClosed = 'notification-closed',
   notificationReply = 'notification-reply',
+  notificationIgnore = 'notification-ignore',
 }
 
 /**
