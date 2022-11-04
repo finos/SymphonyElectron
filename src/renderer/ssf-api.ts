@@ -5,6 +5,7 @@ import {
   searchAPIVersion,
   version,
 } from '../../package.json';
+import { AutoUpdateTrigger } from '../app/auto-update-handler';
 import { IShellStatus } from '../app/c9-shell-handler';
 import { RedirectionStatus } from '../app/citrix-handler';
 import { IDownloadItem } from '../app/download-handler';
@@ -818,9 +819,10 @@ export class SSFApi {
   /**
    * Allows JS to check for updates
    */
-  public checkForUpdates(): void {
+  public checkForUpdates(autoUpdateTrigger?: AutoUpdateTrigger): void {
     ipcRenderer.send(apiName.symphonyApi, {
       cmd: apiCmds.checkForUpdates,
+      autoUpdateTrigger,
     });
   }
 }
