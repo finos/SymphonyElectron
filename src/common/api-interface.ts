@@ -1,4 +1,5 @@
 import { Size } from 'electron';
+import { AutoUpdateTrigger } from '../app/auto-update-handler';
 
 export enum apiCmds {
   isOnline = 'is-online',
@@ -123,6 +124,7 @@ export interface IApiArgs {
   thumbnailSize: Size;
   pipe: string;
   data: Uint8Array;
+  autoUpdateTrigger: AutoUpdateTrigger;
 }
 
 export type Themes = 'light' | 'dark';
