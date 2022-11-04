@@ -99,8 +99,8 @@
   "Not Allowed": "Interdit",
   "Note: When Hamburger menu is disabled, you can trigger the main menu by pressing the Alt key.": "Remarque: lorsque le menu Hamburger est désactivé, vous pouvez activer le menu principal en appuyant sur la touche \"Alt\".",
   "NotificationSettings": {
-    "Bottom Left": "Gauche inférieure",
-    "Bottom Right": "Droite inférieure",
+    "Bottom Left": "Inférieure gauche",
+    "Bottom Right": "Inférieure droite",
     "CANCEL": "ANNULER",
     "Monitor": "Moniteur",
     "Notification Settings": "Paramètres des notifications",
