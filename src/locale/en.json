@@ -160,7 +160,11 @@
     "You are sharing your screen on {appName}": "You are sharing your screen on {appName}"
   },
   "ScreenSnippet": {
-    "Done": "Done",
+    "Add to chat": "Add to chat",
+    "Open menu": "Open menu",
+    "Copy to clipboard": "Copy to clipboard",
+    "Save as": "Save as",
+    "Close": "Close",
     "Erase": "Erase",
     "Highlight": "Highlight",
     "Pen": "Pen",

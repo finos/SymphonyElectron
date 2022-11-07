@@ -124,18 +124,42 @@ body.using-mouse :focus {
     padding-top: 16px;
     padding-bottom: 24px;
 
-    .done-button {
+    .add-to-chat-button {
       border: none;
       border-radius: 16px;
       font-size: 0.75rem;
       font-weight: 600;
-      background-color: #008eff;
-      color: white;
+      background-color: @electricity-ui-50;
+      color: @vanilla-white;
       cursor: pointer;
       text-transform: uppercase;
-      margin-right: 32px;
+      border-radius: 16px 0px 0px 16px;
       height: 32px;
-      width: 80px;
+      width: 102px;
+    }
+
+    .add-to-chat-button:hover {
+      background-color: @electricity-ui-60;
+    }
+
+    .close-button {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      font-style: normal;
+      font-weight: 600;
+      font-size: 0.875rem;
+      padding: 8px 16px;
+      width: 67px;
+      height: 32px;
+      border-radius: 16px;
+      font-family: @font-family;
+      color: @graphite-50;
+      text-transform: uppercase;
+      margin-right: 16px;
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
     }
   }
 }
@@ -171,4 +195,74 @@ body.using-mouse :focus {
   flex: none;
   width: 8px;
   height: 8px;
+}
+
+.menu-button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 8px 8px 6px;
+  width: 30px;
+  height: 32px;
+  background: @electricity-ui-50;
+  border-radius: 0px 16px 16px 0px;
+  margin-left: 1px;
+  border: none;
+  cursor: pointer;
+}
+
+.menu-button:focus {
+  background: @electricity-ui-60;
+}
+
+.menu-button-focus {
+  background: @electricity-ui-60;
+}
+
+.chevron-down {
+  color: @text-color-primary;
+}
+
+.menu {
+  box-sizing: border-box;
+  top: -85px;
+  left: -113px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 14px 16px;
+  position: absolute;
+  width: 143px;
+  min-height: 80px;
+  background: @vanilla-white;
+  box-shadow: 0px 2px 4px rgba(5, 6, 6, 0.08), 0px 12px 28px rgba(5, 6, 6, 0.16);
+  border-radius: 8px;
+  margin: 0px;
+  cursor: pointer;
+}
+
+.menu-button-wrapper {
+  position: relative;
+  margin-right: 32px;
+}
+
+.general-font {
+  font-weight: 400;
+  font-size: 0.875rem;
+  line-height: 20px;
+  color: @graphite-80;
+  font-family: @font-family;
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  list-style-type: none;
+  width: 100%;
+}
+
+.general-font:lang(ja-JP) {
+  font-family: @font-family-ja;
 }

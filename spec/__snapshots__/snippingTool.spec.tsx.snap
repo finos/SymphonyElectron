@@ -86,12 +86,38 @@ exports[`Snipping Tool should render correctly 1`] = `
   </main>
   <footer>
     <button
-      className="done-button"
+      className="close-button"
+      data-testid="close-button"
+      onClick={[Function]}
+    >
+      Close
+    </button>
+    <button
+      className="add-to-chat-button"
       data-testid="done-button"
       onClick={[Function]}
     >
-      Done
+      Add to chat
     </button>
+    <MenuButton
+      id="snipping-tool"
+      listItems={
+        Array [
+          Object {
+            "dataTestId": "COPY_TO_CLIPBOARD",
+            "event": "copy-to-clipboard",
+            "name": "Copy to clipboard",
+            "onClick": [Function],
+          },
+          Object {
+            "dataTestId": "SAVE_AS",
+            "event": "save-as",
+            "name": "Save as",
+            "onClick": [Function],
+          },
+        ]
+      }
+    />
   </footer>
 </div>
 `;
