@@ -26,7 +26,7 @@ FunctionEnd
 
 !macro copyLocalGlobalConfig
     IfFileExists $LOCALAPPDATA\Programs\Symphony\Symphony\config\Symphony.config 0 +2
-    CopyFiles /SILENT $LOCALAPPDATA\Programs\Symphony\Symphony\config\Symphony.config $WINDIR\Temp\temp-local-Symphony.config
+    CopyFiles /SILENT $LOCALAPPDATA\Programs\Symphony\Symphony\config\Symphony.config $LOCALAPPDATA\Temp\temp-local-Symphony.config
 !macroend
 
 !macro replaceSystemGlobalConfig
@@ -35,8 +35,8 @@ FunctionEnd
 !macroend
 
 !macro replaceLocalGlobalConfig
-    IfFileExists $WINDIR\Temp\temp-local-Symphony.config 0 +2
-    CopyFiles /SILENT $WINDIR\Temp\temp-local-Symphony.config $LOCALAPPDATA\Programs\Symphony\Symphony\config\Symphony.config
+    IfFileExists $LOCALAPPDATA\Temp\temp-local-Symphony.config 0 +2
+    CopyFiles /SILENT $LOCALAPPDATA\Temp\temp-local-Symphony.config $LOCALAPPDATA\Programs\Symphony\Symphony\config\Symphony.config
 !macroend
 
 !macro bothM
