@@ -30,9 +30,12 @@ export enum ScreenSnippetActionTypes {
   SCREENSHOT_TAKEN = 'screenshot_taken',
   ANNOTATE_ADDED_PEN = 'annotate_added_pen',
   ANNOTATE_ADDED_HIGHLIGHT = 'annotate_added_highlight',
-  ANNOTATE_DONE = 'annotate_done',
+  ANNOTATE_ADD = 'annotate_done',
   ANNOTATE_CLEARED = 'annotate_cleared',
   ANNOTATE_ERASED = 'annotate_erased',
+  ANNOTATE_COPY = 'annotate_copy',
+  ANNOTATE_SAVE_AS = 'annotate_save_as',
+  ANNOTATE_CLOSE = 'annotate_close',
 }
 
 export enum ToastNotificationActionTypes {
