@@ -1,5 +1,14 @@
+jest.mock('save-svg-as-png', function () {
+  return {
+    svgAsPngUri: async function (svg) {
+      return Promise.resolve(svg);
+    },
+  };
+});
+
 import { mount, shallow } from 'enzyme';
 import * as React from 'react';
+import { ScreenShotAnnotation } from '../src/common/ipcEvent';
 import SnippingTool from '../src/renderer/components/snipping-tool';
 import { ipcRenderer } from './__mocks__/electron';
 
@@ -111,5 +120,62 @@ describe('Snipping Tool', () => {
       mergedImageData: 'MERGE_FAIL',
       screenSnippetPath: '',
     });
+  });
+
+  it('should send upload-snippet event with correct data when clicked on copy to clipboard', async () => {
+    const wrapper = mount(<SnippingTool />);
+    const spy = jest.spyOn(ipcRenderer, 'send');
+    jest.spyOn(document, 'getElementById').mockImplementation((selector) => {
+      switch (selector) {
+        case 'annotate-area':
+          return '123';
+        default:
+          return '';
+      }
+    });
+
+    wrapper.find('[data-testid="snipping-tool_MENU_BUTTON"]').simulate('click');
+    wrapper.update();
+    await waitForPromisesToResolve();
+    wrapper
+      .find('[data-testid="snipping-tool_COPY_TO_CLIPBOARD"]')
+      .simulate('click');
+
+    wrapper.update();
+    await waitForPromisesToResolve();
+    expect(spy).toBeCalledWith(ScreenShotAnnotation.COPY_TO_CLIPBOARD, {
+      clipboard: '123',
+    });
+  });
+
+  it('should send upload-snippet event with correct data when clicked on save as', async () => {
+    const wrapper = mount(<SnippingTool />);
+    const spy = jest.spyOn(ipcRenderer, 'send');
+    jest.spyOn(document, 'getElementById').mockImplementation((selector) => {
+      switch (selector) {
+        case 'annotate-area':
+          return '123';
+        default:
+          return '';
+      }
+    });
+    wrapper.find('[data-testid="snipping-tool_MENU_BUTTON"]').simulate('click');
+    wrapper.update();
+    await waitForPromisesToResolve();
+    wrapper.find('[data-testid="snipping-tool_SAVE_AS"]').simulate('click');
+    wrapper.update();
+    await waitForPromisesToResolve();
+    expect(spy).toBeCalledWith(ScreenShotAnnotation.SAVE_AS, {
+      clipboard: '123',
+    });
+  });
+
+  it('should send upload-snippet event with correct data when clicked on close', async () => {
+    const wrapper = mount(<SnippingTool />);
+    const spy = jest.spyOn(ipcRenderer, 'send');
+    wrapper.find('[data-testid="close-button"]').simulate('click');
+    wrapper.update();
+    await waitForPromisesToResolve();
+    expect(spy).toBeCalledWith(ScreenShotAnnotation.CLOSE);
   });
 });

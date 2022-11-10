@@ -2,12 +2,14 @@ import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { svgAsPngUri } from 'save-svg-as-png';
 import { i18n } from '../../common/i18n-preload';
+import { ScreenShotAnnotation } from '../../common/ipcEvent';
 import {
   AnalyticsElements,
   ScreenSnippetActionTypes,
 } from './../../app/analytics-handler';
 import AnnotateArea from './annotate-area';
 import ColorPickerPill, { IColor } from './color-picker-pill';
+import MenuButton from './menu-button';
 
 const { useState, useRef, useEffect, useLayoutEffect } = React;
 
@@ -91,6 +93,42 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({
   const [shouldRenderPenColorPicker, setShouldRenderPenColorPicker] = useState(
     false,
   );
+
+  const mergeImage = async () => {
+    const svg = document.getElementById('annotate-area');
+    const mergedImageData = svg ? await svgAsPngUri(svg, {}) : 'MERGE_FAIL';
+
+    return mergedImageData;
+  };
+
+  const onCopyToClipboard = async (eventName) => {
+    const img = await mergeImage();
+    ipcRenderer.send(eventName, {
+      clipboard: img,
+    });
+  };
+
+  const onSaveAs = async (eventName) => {
+    const img = await mergeImage();
+    ipcRenderer.send(eventName, {
+      clipboard: img,
+    });
+  };
+
+  const menuItem = [
+    {
+      name: i18n.t('Copy to clipboard', SNIPPING_TOOL_NAMESPACE)(),
+      event: ScreenShotAnnotation.COPY_TO_CLIPBOARD,
+      onClick: onCopyToClipboard,
+      dataTestId: 'COPY_TO_CLIPBOARD',
+    },
+    {
+      name: i18n.t('Save as', SNIPPING_TOOL_NAMESPACE)(),
+      event: ScreenShotAnnotation.SAVE_AS,
+      onClick: onSaveAs,
+      dataTestId: 'SAVE_AS',
+    },
+  ];
 
   const getSnipImageData = (
     {},
@@ -225,7 +263,7 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({
     return undefined;
   };
 
-  const done = async () => {
+  const addToChat = async () => {
     const svg = document.getElementById('annotate-area');
     const mergedImageData = svg
       ? await svgAsPngUri(document.getElementById('annotate-area'), {})
@@ -235,6 +273,10 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({
       ScreenSnippetActionTypes.ANNOTATE_DONE,
     );
     ipcRenderer.send('upload-snippet', { screenSnippetPath, mergedImageData });
+  };
+
+  const onClose = async () => {
+    ipcRenderer.send(ScreenShotAnnotation.CLOSE);
   };
 
   // Removes focus styling from buttons when mouse is clicked
@@ -350,12 +392,20 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({
       </main>
       <footer>
         <button
-          data-testid='done-button'
-          className='done-button'
-          onClick={done}
+          data-testid='close-button'
+          className='close-button'
+          onClick={onClose}
         >
-          {i18n.t('Done', SNIPPING_TOOL_NAMESPACE)()}
+          {i18n.t('Close', SNIPPING_TOOL_NAMESPACE)()}
         </button>
+        <button
+          data-testid='done-button'
+          className='add-to-chat-button'
+          onClick={addToChat}
+        >
+          {i18n.t('Add to chat', SNIPPING_TOOL_NAMESPACE)()}
+        </button>
+        <MenuButton id='snipping-tool' listItems={menuItem}></MenuButton>
       </footer>
     </div>
   );

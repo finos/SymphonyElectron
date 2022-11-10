@@ -1,6 +1,8 @@
 import {
   app,
   BrowserWindow,
+  clipboard,
+  dialog,
   ipcMain,
   nativeImage,
   WebContents,
@@ -20,6 +22,7 @@ import {
   isWindowsOS,
 } from '../common/env';
 import { i18n } from '../common/i18n';
+import { ScreenShotAnnotation } from '../common/ipcEvent';
 import { logger } from '../common/logger';
 import {
   analytics,
@@ -27,10 +30,17 @@ import {
   ScreenSnippetActionTypes,
 } from './analytics-handler';
 import { updateAlwaysOnTop } from './window-actions';
-import { windowHandler } from './window-handler';
+import { ICustomBrowserWindow, windowHandler } from './window-handler';
 import { windowExists } from './window-utils';
 
 const readFile = util.promisify(fs.readFile);
+
+export interface IListItem {
+  name: string;
+  event: string;
+  dataTestId: string;
+  onClick: (eventName: string) => Promise<void>;
+}
 
 class ScreenSnippet {
   private readonly tempDir: string;
@@ -161,8 +171,18 @@ class ScreenSnippet {
         }
 
         windowHandler.closeSnippingToolWindow();
-        windowHandler.createSnippingToolWindow(this.outputFilePath, dimensions);
+        const windowName = this.focusedWindow
+          ? (this.focusedWindow as ICustomBrowserWindow).winName
+          : '';
+        windowHandler.createSnippingToolWindow(
+          this.outputFilePath,
+          dimensions,
+          windowName,
+        );
         this.uploadSnippet(webContents);
+        this.closeSnippet();
+        this.copyToClipboard();
+        this.saveAs();
         return;
       }
       const {
@@ -194,7 +214,6 @@ class ScreenSnippet {
     this.focusedWindow = BrowserWindow.getFocusedWindow();
 
     try {
-      await this.execCmd(this.captureUtil, []);
       await this.verifyAndUpdateAlwaysOnTop();
     } catch (error) {
       await this.verifyAndUpdateAlwaysOnTop();
@@ -339,6 +358,124 @@ class ScreenSnippet {
           logger.error(
             `screen-snippet-handler: upload of screen capture failed with error: ${error}!`,
           );
+        }
+      },
+    );
+  }
+
+  /**
+   * Close the current snippet
+   */
+  private closeSnippet() {
+    ipcMain.once(ScreenShotAnnotation.CLOSE, async (_event) => {
+      try {
+        windowHandler.closeSnippingToolWindow();
+        await this.verifyAndUpdateAlwaysOnTop();
+      } catch (error) {
+        await this.verifyAndUpdateAlwaysOnTop();
+        logger.error(
+          `screen-snippet-handler: close window failed with error: ${error}!`,
+        );
+      }
+    });
+  }
+
+  /**
+   * Cancels a screen capture and closes the snippet window
+   */
+  private copyToClipboard() {
+    ipcMain.on(
+      ScreenShotAnnotation.COPY_TO_CLIPBOARD,
+      async (
+        _event,
+        copyToClipboardData: {
+          action: string;
+          clipboard: string;
+        },
+      ) => {
+        logger.info(`screen-snippet-handler: Copied!`);
+        this.focusedWindow = BrowserWindow.getFocusedWindow();
+
+        try {
+          const [, data] = copyToClipboardData.clipboard.split(',');
+
+          const buffer = Buffer.from(data, 'base64');
+          const img = nativeImage.createFromBuffer(buffer);
+
+          clipboard.writeImage(img);
+
+          await this.verifyAndUpdateAlwaysOnTop();
+        } catch (error) {
+          await this.verifyAndUpdateAlwaysOnTop();
+          logger.error(
+            `screen-snippet-handler: cannot copy, failed with error: ${error}!`,
+          );
+        }
+      },
+    );
+  }
+
+  /**
+   * Trigger save modal to save the snippet
+   */
+  private saveAs() {
+    ipcMain.on(
+      ScreenShotAnnotation.SAVE_AS,
+      async (
+        _event,
+        saveAsData: {
+          clipboard: string;
+        },
+      ) => {
+        const filePath = path.join(
+          this.tempDir,
+          'symphonyImage-' + Date.now() + '.png',
+        );
+        const [, data] = saveAsData.clipboard.split(',');
+        const buffer = Buffer.from(data, 'base64');
+        const img = nativeImage.createFromBuffer(buffer);
+
+        const dialogResult = await dialog
+          .showSaveDialog(BrowserWindow.getFocusedWindow() as BrowserWindow, {
+            title: 'Select place to store your file',
+            defaultPath: filePath,
+            // defaultPath: path.join(__dirname, '../assets/'),
+            buttonLabel: 'Save',
+            // Restricting the user to only Text Files.
+            filters: [
+              {
+                name: 'Image file',
+                extensions: ['png'],
+              },
+            ],
+            properties: [],
+          })
+          .then((file) => {
+            // Stating whether dialog operation was cancelled or not.
+            if (!file.canceled && file.filePath) {
+              // Creating and Writing to the sample.txt file
+              fs.writeFile(file.filePath.toString(), img.toPNG(), (err) => {
+                if (err) {
+                  throw logger.error(
+                    `screen-snippet-handler: cannot save file, failed with error: ${err}!`,
+                  );
+                }
+
+                logger.info(`screen-snippet-handler: modal save opened!`);
+              });
+            }
+
+            return file;
+          })
+          .catch((err) => {
+            logger.error(
+              `screen-snippet-handler: cannot save file, failed with error: ${err}!`,
+            );
+
+            return undefined;
+          });
+        if (dialogResult?.filePath) {
+          windowHandler.closeSnippingToolWindow();
         }
       },
     );

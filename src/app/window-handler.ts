@@ -20,6 +20,7 @@ import { format, parse } from 'url';
 import { apiName, Themes, WindowTypes } from '../common/api-interface';
 import { isDevEnv, isLinux, isMac, isWindowsOS } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
+import { ScreenShotAnnotation } from '../common/ipcEvent';
 import { logger } from '../common/logger';
 import {
   calculatePercentage,
@@ -1101,6 +1102,7 @@ export class WindowHandler {
       height: number;
       width: number;
     },
+    windowName: string,
   ): void {
     // Prevents creating multiple instances
     if (didVerifyAndRestoreWindow(this.snippingToolWindow)) {
@@ -1184,11 +1186,13 @@ export class WindowHandler {
       toolWidth = scaledImageDimensions.width;
     }
 
+    const selectedParentWindow = getWindowByName(windowName);
     const opts: ICustomBrowserWindowConstructorOpts = this.getWindowOpts(
       {
         width: toolWidth,
         height: toolHeight,
-        modal: false,
+        parent: selectedParentWindow,
+        modal: true,
         alwaysOnTop: false,
         resizable: false,
         fullscreenable: false,
@@ -1270,6 +1274,9 @@ export class WindowHandler {
       logger.info(
         'window-handler, createSnippingToolWindow: Closing snipping window, attempting to delete temp snip image',
       );
+      ipcMain.removeAllListeners(ScreenShotAnnotation.COPY_TO_CLIPBOARD);
+      ipcMain.removeAllListeners(ScreenShotAnnotation.SAVE_AS);
+      this.snippingToolWindow?.close();
       this.deleteFile(snipImage);
       this.removeWindow(opts.winKey);
       this.screenPickerWindow = null;
