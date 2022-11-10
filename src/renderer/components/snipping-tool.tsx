@@ -103,6 +103,10 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({
 
   const onCopyToClipboard = async (eventName) => {
     const img = await mergeImage();
+    sendAnalyticsToMain(
+      AnalyticsElements.SCREEN_CAPTURE_ANNOTATE,
+      ScreenSnippetActionTypes.ANNOTATE_COPY,
+    );
     ipcRenderer.send(eventName, {
       clipboard: img,
     });
@@ -110,6 +114,10 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({
 
   const onSaveAs = async (eventName) => {
     const img = await mergeImage();
+    sendAnalyticsToMain(
+      AnalyticsElements.SCREEN_CAPTURE_ANNOTATE,
+      ScreenSnippetActionTypes.ANNOTATE_SAVE_AS,
+    );
     ipcRenderer.send(eventName, {
       clipboard: img,
     });
@@ -270,12 +278,16 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({
       : 'MERGE_FAIL';
     sendAnalyticsToMain(
       AnalyticsElements.SCREEN_CAPTURE_ANNOTATE,
-      ScreenSnippetActionTypes.ANNOTATE_DONE,
+      ScreenSnippetActionTypes.ANNOTATE_ADD,
     );
     ipcRenderer.send('upload-snippet', { screenSnippetPath, mergedImageData });
   };
 
   const onClose = async () => {
+    sendAnalyticsToMain(
+      AnalyticsElements.SCREEN_CAPTURE_ANNOTATE,
+      ScreenSnippetActionTypes.ANNOTATE_CLOSE,
+    );
     ipcRenderer.send(ScreenShotAnnotation.CLOSE);
   };
 
