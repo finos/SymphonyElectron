@@ -110,7 +110,6 @@ class Script
             // instruct the installer to not send a Close message, but instead send the EndSession message, and we have a custom event
             // handler in the SDA code which listens for this message, and ensures app termination when it is received.
             new CloseApplication("Symphony.exe", false) { EndSessionMessage = true },
-            new CloseApplication("C9Shell.exe", false) { EndSessionMessage = true }
             );
 
         // The build script which calls the wix# builder, will be run from a command environment which has %SYMVER% set.
@@ -281,19 +280,6 @@ class Script
                 System.Diagnostics.Process.GetProcessesByName("Symphony").ForEach(p =>
                 {
                     if (System.IO.Path.GetFileName(p.MainModule.FileName) == "Symphony.exe")
-                    {
-                        if (!p.HasExited)
-                        {
-                            p.Kill();
-                            p.WaitForExit();
-                        }
-                    }
-                });
-
-                // The embedded C9 Shell should terminate when the parent window is closed, but it doesn't always work. So we'll just force it to exit
-                System.Diagnostics.Process.GetProcessesByName("C9Shell").ForEach(p =>
-                {
-                    if (System.IO.Path.GetFileName(p.MainModule.FileName) == "C9Shell.exe")
                     {
                         if (!p.HasExited)
                         {
