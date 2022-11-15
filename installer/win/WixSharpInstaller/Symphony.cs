@@ -109,7 +109,7 @@ class Script
             // will not work for us, as we have a "minimize on close" option, which stops the app from terminating on WM_CLOSE. So we
             // instruct the installer to not send a Close message, but instead send the EndSession message, and we have a custom event
             // handler in the SDA code which listens for this message, and ensures app termination when it is received.
-            new CloseApplication("Symphony.exe", false) { EndSessionMessage = true },
+            new CloseApplication("Symphony.exe", false) { EndSessionMessage = true }
             );
 
         // The build script which calls the wix# builder, will be run from a command environment which has %SYMVER% set.
