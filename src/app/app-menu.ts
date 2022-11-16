@@ -110,6 +110,7 @@ enum Channels {
   Beta = 'beta',
   Stable = 'stable',
   Latest = 'latest',
+  IV = 'iv',
 }
 
 const menuItemsArray = Object.keys(menuSections)
@@ -744,6 +745,15 @@ export class AppMenu {
               type: 'checkbox',
               checked: this.getUpdateChannel() === Channels.Latest,
               label: i18n.t('Latest')(),
+            },
+            {
+              id: `${Target.SDA}-${Channels.IV}`,
+              click: (_item) =>
+                this.setUpdateChannelForMenuEntry(Target.SDA, Channels.IV),
+              visible: isCorp,
+              type: 'checkbox',
+              checked: this.getUpdateChannel() === Channels.IV,
+              label: i18n.t('C9 - IV')(),
             },
             {
               id: `${Target.SDA}-${Channels.Beta}`,
