@@ -753,7 +753,7 @@ export class AppMenu {
               visible: isCorp,
               type: 'checkbox',
               checked: this.getUpdateChannel() === Channels.IV,
-              label: i18n.t('C9 - IV')(),
+              label: i18n.t('IV Dogfooding')(),
             },
             {
               id: `${Target.SDA}-${Channels.Beta}`,

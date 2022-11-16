@@ -232,5 +232,6 @@
   "Zoom Out": "Zoom Out",
   "Allow once (risky)": "Allow once (risky)",
   "Deny": "Deny",
-  "Invalid security certificate": "has an invalid security certificate."
+  "Invalid security certificate": "has an invalid security certificate.",
+  "IV Dogfooding": "IV Dogfooding"
 }
