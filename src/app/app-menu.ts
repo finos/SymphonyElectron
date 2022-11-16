@@ -750,7 +750,7 @@ export class AppMenu {
               id: `${Target.SDA}-${Channels.IV}`,
               click: (_item) =>
                 this.setUpdateChannelForMenuEntry(Target.SDA, Channels.IV),
-              visible: isCorp,
+              visible: isCorp && isWindowsOS,
               type: 'checkbox',
               checked: this.getUpdateChannel() === Channels.IV,
               label: i18n.t('IV Dogfooding')(),
