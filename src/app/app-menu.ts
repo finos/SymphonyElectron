@@ -71,6 +71,7 @@ const macAccelerator = {
     zoomIn: 'CommandOrControl+Plus',
     zoomOut: 'CommandOrControl+-',
     resetZoom: 'CommandOrControl+0',
+    pasteAndMatchStyle: 'Cmd+Shift+V',
   },
 };
 
@@ -333,7 +334,7 @@ export class AppMenu {
         this.assignRoleOrLabel({ role: 'paste', label: i18n.t('Paste')() }),
         this.assignRoleOrLabel({
           role: 'pasteAndMatchStyle',
-          label: i18n.t('Paste and Match Style')(),
+          label: i18n.t('Paste as plain text')(),
         }),
         this.assignRoleOrLabel({ role: 'delete', label: i18n.t('Delete')() }),
         this.assignRoleOrLabel({
