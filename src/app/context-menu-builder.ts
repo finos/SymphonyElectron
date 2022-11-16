@@ -14,6 +14,7 @@ interface IContextMenuStringTable {
   cut: () => string;
   copy: () => string;
   paste: () => string;
+  pasteAsPlainText: () => string;
   inspectElement: () => string;
 }
 
@@ -29,6 +30,7 @@ const contextMenuStringTable: IContextMenuStringTable = {
   cut: () => `Cut`,
   copy: () => `Copy`,
   paste: () => `Paste`,
+  pasteAsPlainText: () => `Paste as plain text`,
   inspectElement: () => `Inspect Element`,
 };
 
@@ -175,6 +177,7 @@ export class ContextMenuBuilder {
     this.addCut(menu, menuInfo);
     this.addCopy(menu, menuInfo);
     this.addPaste(menu, menuInfo);
+    this.addPasteAsPlainText(menu, menuInfo);
     this.addInspectElement(menu, menuInfo);
     this.processMenu(menu, menuInfo);
 
@@ -189,7 +192,6 @@ export class ContextMenuBuilder {
   public buildMenuForLink(menuInfo) {
     const menu = new Menu();
     const isEmailAddress = menuInfo.linkURL.startsWith('mailto:');
-
     const copyLink = new MenuItem({
       label: isEmailAddress
         ? this.stringTable.copyMail()
@@ -430,6 +432,21 @@ export class ContextMenuBuilder {
       }),
     );
 
+    return menu;
+  }
+
+  /**
+   * Adds the Paste menu item.
+   */
+  public addPasteAsPlainText(menu, menuInfo) {
+    menu.append(
+      new MenuItem({
+        label: this.stringTable.pasteAsPlainText(),
+        accelerator: 'CommandOrControl+Shift+V',
+        enabled: menuInfo.editFlags.canPaste,
+        role: 'pasteAndMatchStyle',
+      }),
+    );
     return menu;
   }
 
