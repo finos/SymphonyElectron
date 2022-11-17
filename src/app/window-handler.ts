@@ -1270,7 +1270,7 @@ export class WindowHandler {
         );
       }
     });
-    this.snippingToolWindow.once('closed', () => {
+    this.snippingToolWindow.once('close', () => {
       logger.info(
         'window-handler, createSnippingToolWindow: Closing snipping window, attempting to delete temp snip image',
       );
