@@ -50,8 +50,6 @@ if (ssfWindow.ssf) {
   // For Mana to communicate with SDA
   contextBridge.exposeInMainWorld('manaSSF', {
     setIsMana: ssfWindow.ssf.setIsMana,
-    CryptoLib: ssfWindow.ssf.CryptoLib,
-    Search: ssfWindow.ssf.Search,
     Notification: ssfWindow.ssf.Notification,
     getMediaSource: ssfWindow.ssf.getMediaSource,
     activate: ssfWindow.ssf.activate,
