@@ -19,6 +19,7 @@ import {
   NOTIFICATION_WINDOW_TITLE,
   NotificationActions,
 } from '../common/api-interface';
+import { isMac } from '../common/env';
 import { logger } from '../common/logger';
 import NotificationHandler from './notification-handler';
 
@@ -609,7 +610,7 @@ class Notification extends NotificationHandler {
    * notification window opts
    */
   private getNotificationOpts(): Electron.BrowserWindowConstructorOptions {
-    return {
+    const toastNotificationOpts: Electron.BrowserWindowConstructorOptions = {
       width: CONTAINER_WIDTH,
       height: CONTAINER_HEIGHT,
       alwaysOnTop: true,
@@ -628,6 +629,10 @@ class Notification extends NotificationHandler {
         disableBlinkFeatures: AUX_CLICK,
       },
     };
+    if (isMac) {
+      toastNotificationOpts.type = 'panel';
+    }
+    return toastNotificationOpts;
   }
 }
 

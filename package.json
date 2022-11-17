@@ -1,7 +1,7 @@
 {
   "name": "symphony",
   "productName": "Symphony",
-  "version": "20.0.0",
+  "version": "21.0.0",
   "clientVersion": "2.0.1",
   "buildNumber": "0",
   "searchAPIVersion": "1.55.3",
@@ -171,7 +171,7 @@
     "builder-util-runtime": "^9.0.3",
     "cross-env": "5.2.0",
     "del": "3.0.0",
-    "electron": "^20.1.4",
+    "electron": "^21.3.0",
     "electron-builder": "23.0.9",
     "electron-builder-squirrel-windows": "20.38.3",
     "electron-icon-maker": "0.0.4",
@@ -213,10 +213,10 @@
     "lazy-brush": "^1.0.1",
     "react": "16.13.0",
     "react-dom": "16.13.0",
-    "ref-napi": "^3.0.3",
     "rimraf": "^3.0.2",
     "save-svg-as-png": "^1.4.17",
-    "shell-path": "^3.0.0"
+    "shell-path": "^3.0.0",
+    "win32-api": "^20.1.0"
   },
   "optionalDependencies": {
     "@symphony/symphony-c9-shell": "3.14.99-37",

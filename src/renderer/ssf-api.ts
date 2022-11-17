@@ -40,22 +40,6 @@ const MAIN_WINDOW_NAME = 'main';
 let isAltKey: boolean = false;
 let isMenuOpen: boolean = false;
 
-interface ICryptoLib {
-  AESGCMEncrypt: (
-    name: string,
-    base64IV: string,
-    base64AAD: string,
-    base64Key: string,
-    base64In: string,
-  ) => string | null;
-  AESGCMDecrypt: (
-    base64IV: string,
-    base64AAD: string,
-    base64Key: string,
-    base64In: string,
-  ) => string | null;
-}
-
 export interface ILocalObject {
   ipcRenderer;
   logger?: (msg: ILogMsg, logLevel: LogLevel, showInConsole: boolean) => void;
@@ -171,51 +155,9 @@ const throttledSetZoomLevel = throttle((zoomLevel) => {
   });
 }, DEFAULT_THROTTLE);
 
-let cryptoLib: ICryptoLib | null;
-try {
-  // cryptoLib = remote.require('../app/crypto-handler.js').cryptoLibrary;
-} catch (e) {
-  cryptoLib = null;
-  // tslint:disable-next-line
-  console.warn(
-    "Failed to initialize Crypto Lib. You'll need to include the Crypto library. Contact the developers for more details",
-  );
-}
-
-let swiftSearch: any;
-try {
-  // swiftSearch = remote.require('swift-search').Search;
-} catch (e) {
-  swiftSearch = null;
-  // tslint:disable-next-line
-  console.warn(
-    "Failed to initialize swift search. You'll need to include the search dependency. Contact the developers for more details",
-  );
-}
-
-let swiftSearchUtils: any;
-try {
-  // swiftSearchUtils = remote.require('swift-search').SearchUtils;
-} catch (e) {
-  swiftSearchUtils = null;
-  // tslint:disable-next-line
-  console.warn(
-    "Failed to initialize swift search utils. You'll need to include the search dependency. Contact the developers for more details",
-  );
-}
-
 let nextIndicatorId = 0;
 
 export class SSFApi {
-  /**
-   * Native encryption and decryption.
-   */
-  public CryptoLib: ICryptoLib | null = cryptoLib; // tslint:disable-line
-
-  public Search: any = swiftSearch; // tslint:disable-line
-
-  public SearchUtils: any = swiftSearchUtils; // tslint:disable-line
-
   public Notification = SSFNotificationHandler; // tslint:disable-line
 
   /**
