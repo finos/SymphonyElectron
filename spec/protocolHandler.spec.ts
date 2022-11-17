@@ -12,14 +12,6 @@ jest.mock('../src/common/utils', () => {
   };
 });
 
-jest.mock('../src/app/window-handler', () => {
-  return {
-    windowHandler: {
-      url: '',
-    },
-  };
-});
-
 jest.mock('../src/common/env', () => {
   return {
     isWindowsOS: false,
@@ -38,14 +30,6 @@ jest.mock('../src/common/logger', () => {
       verbose: jest.fn(),
       debug: jest.fn(),
       silly: jest.fn(),
-    },
-  };
-});
-
-jest.mock('../src/app/config-handler', () => {
-  return {
-    config: {
-      getUserConfigFields: jest.fn(() => ''),
     },
   };
 });

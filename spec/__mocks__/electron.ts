@@ -264,7 +264,6 @@ export const BrowserWindow = {
 export const session = {
   defaultSession: {
     clearCache: jest.fn(),
-    cookies: jest.fn(),
   },
 };
 

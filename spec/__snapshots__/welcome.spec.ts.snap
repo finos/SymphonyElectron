@@ -4,93 +4,47 @@ exports[`welcome should render correctly 1`] = `
 <div
   className="Welcome"
   lang="en-US"
-  style={
-    Object {
-      "height": "494px",
-    }
-  }
 >
   <div
-    className="Welcome-content"
+    className="Welcome-image-container"
   >
-    <div
-      className="Welcome-image-container"
+    <img
+      alt="Symphony Logo"
+      src="../renderer/assets/symphony-logo-plain.png"
+    />
+  </div>
+  <div
+    className="Welcome-main-container"
+  >
+    <h3
+      className="Welcome-name"
     >
-      <img
-        alt="Symphony Logo"
-        src="../renderer/assets/welcome-symphony-logo.svg"
-      />
-    </div>
+      Pod URL
+    </h3>
     <div
-      className="Welcome-about-symphony-text"
-      style={
-        Object {
-          "marginTop": "8px",
-        }
-      }
+      className="Welcome-main-container-input-div"
     >
-      <span>
-        Welcome to the largest global community in financial services with over
-      </span>
-      <span
-        className="Welcome-text-bold"
-      >
-         half a million users
-      </span>
-      <span>
-         and more than
-      </span>
-      <span
-        className="Welcome-text-bold"
-      >
-         1,000 institutions.
-      </span>
-    </div>
-    <div>
       <div
-        className="Welcome-login-text"
+        className="Welcome-main-container-input-selection"
       >
-        <span>
-          Log in with your pod URL
-        </span>
-      </div>
-      <div
-        className="Welcome-input-container"
-      >
-        <span>
-          Pod URL
-        </span>
-        <div>
-          <input
-            className="Welcome-main-container-podurl-box"
-            data-testid="Welcome-main-container-podurl-box"
-            onChange={[Function]}
-            type="url"
-            value="https://[POD].symphony.com"
-          />
-          <label
-            className="Welcome-input-message"
-          >
-            Find your pod URL in your invitation email.
-          </label>
-        </div>
+        <input
+          className="Welcome-main-container-podurl-box"
+          onChange={[Function]}
+          type="url"
+          value="https://[POD].symphony.com"
+        />
       </div>
     </div>
+    <label
+      className="Welcome-message-label"
+    />
     <button
-      className="Welcome-continue-button"
+      className="Welcome-continue-button-disabled"
       disabled={true}
       onClick={[Function]}
-      style={Object {}}
     >
-      log in
+      Continue
     </button>
-    <div
-      className="Welcome-redirect-info-text-container"
-    >
-      <span>
-        You’ll momentarily be redirected to your web browser.
-      </span>
-    </div>
   </div>
 </div>
 `;
