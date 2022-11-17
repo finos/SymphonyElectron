@@ -9,17 +9,10 @@
 }
 
 body {
-  background-color: @graphite-90;
+  background-color: white;
   margin: 0;
   height: 100%;
   width: 100%;
-}
-
-.components-window-root {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
 }
 
 .Welcome:lang(ja-JP) {
@@ -41,64 +34,18 @@ body {
 }
 
 .Welcome {
-  width: 360px;
-  height: 494px;
   display: flex;
   flex-direction: column;
+  padding: 10px;
   font-family: @font-family;
-  background-color: @graphite-80;
-  box-shadow: 0 24px 48px rgba(9, 10, 11, 0.64),
-    0 4px 8px rgba(15, 27, 36, 0.16);
-  border-radius: 8px;
-
-  &-content {
-    width: 300px;
-    padding: 48px 32px 24px;
-  }
-
-  &-text-container {
-    font-size: 12px;
-    font-weight: 700;
-    line-height: 20px;
-    color: @graphite-05;
-  }
 
   &-image-container {
     text-align: center;
+    margin: 50px 0 10px;
   }
 
-  &-about-symphony-text {
-    span {
-      color: @white;
-      font-size: 14px;
-      line-height: 20px;
-    }
-  }
-
-  &-login-text {
-    margin-top: 32px;
-
-    span {
-      color: @white;
-      font-size: 18px;
-      line-height: 20px;
-      font-weight: 600;
-    }
-  }
-
-  &-text-bold {
-    font-weight: 700;
-  }
-
-  &-input-container {
-    margin-top: 24px;
-
-    span {
-      font-weight: 400;
-      font-size: 14px;
-      line-height: 20px;
-      color: @graphite-20;
-    }
+  &-image-container img {
+    width: 200px;
   }
 
   &-header-content {
@@ -118,26 +65,17 @@ body {
     width: 100%;
   }
 
+  &-main-container-input-selection {
+    width: 100%;
+  }
+
   &-main-container-podurl-box {
     float: left;
     width: 100%;
-    max-width: -webkit-fill-available;
-    height: 26px;
-    background-color: @graphite-90;
-    border: 2px solid @graphite-40;
-    padding: 6px 12px;
     border-radius: 4px;
-    color: white;
-    font-size: 14px;
-    margin-top: 4px;
-  }
-
-  &-input-message {
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 16px;
-    margin-top: 4px;
-    color: @graphite-20;
+    border: 1px solid #000;
+    padding: 5px;
+    max-width: -webkit-fill-available;
   }
 
   &-main-container-sso-box {
@@ -202,8 +140,6 @@ body {
   }
 
   &-continue-button {
-    width: 300px;
-    height: 40px;
     box-shadow: none;
     border: none;
     border-radius: 20px;
@@ -213,31 +149,40 @@ body {
     display: inline-block;
     text-decoration: none;
     line-height: 12px;
-    background-color: @electricity-ui-50;
+    background-color: #3da2fd;
     color: #ffffff;
     cursor: pointer;
     text-transform: uppercase;
-    margin: 24px 0 4px 0;
+    float: right;
+    margin: 24px 0px 4px 0;
 
     &:focus {
       box-shadow: 0 0 10px rgba(61, 162, 253, 1);
       outline: none;
     }
-
-    &:disabled {
-      background-color: @graphite-20;
-    }
   }
 
-  &-redirect-info-text-container {
-    margin-top: 32px;
+  &-continue-button-disabled {
+    box-shadow: none;
+    border: none;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    text-align: center;
+    padding: 10px 32px;
+    display: inline-block;
+    text-decoration: none;
+    line-height: 12px;
+    color: #ffffff;
+    text-transform: uppercase;
+    float: right;
+    margin: 24px 0px 4px 0;
+    cursor: not-allowed;
+    background-color: #cccccc;
+    pointer-events: none;
 
-    span {
-      font-weight: 400;
-      font-size: 12px;
-      line-height: 16px;
-      text-align: center;
-      color: @graphite-30;
+    &:focus {
+      box-shadow: 0 0 10px rgba(61, 162, 253, 1);
+      outline: none;
     }
   }
 }

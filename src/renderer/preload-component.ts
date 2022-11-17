@@ -11,6 +11,7 @@ import ScreenPicker from './components/screen-picker';
 import ScreenSharingFrame from './components/screen-sharing-frame';
 import ScreenSharingIndicator from './components/screen-sharing-indicator';
 import SnippingTool from './components/snipping-tool';
+import Welcome from './components/welcome';
 import WindowsTitleBar from './components/windows-title-bar';
 
 const enum components {
@@ -85,6 +86,11 @@ const load = () => {
       )();
       loadStyle(components.notificationSettings);
       component = NotificationSettings;
+      break;
+    case components.welcome:
+      document.title = i18n.t('WelcomeText', 'Welcome')();
+      loadStyle(components.welcome);
+      component = Welcome;
       break;
     case components.titleBar:
       if (title) {
