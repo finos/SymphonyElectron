@@ -192,6 +192,7 @@ export class ContextMenuBuilder {
   public buildMenuForLink(menuInfo) {
     const menu = new Menu();
     const isEmailAddress = menuInfo.linkURL.startsWith('mailto:');
+    this.addCopy(menu, menuInfo);
     const copyLink = new MenuItem({
       label: isEmailAddress
         ? this.stringTable.copyMail()
