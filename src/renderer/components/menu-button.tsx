@@ -88,15 +88,13 @@ const MenuButton: React.FunctionComponent<IMenuButtonProps> = ({
     });
   };
 
-  const focusCls = isDisplay ? 'menu-button-focus' : '';
-
   //#endregion
 
   return (
     <>
       <div className='menu-button-wrapper'>
         <button
-          className={`menu-button ${focusCls}`}
+          className={`menu-button`}
           onClick={onClickMenuButton}
           data-testid={testId.menu}
           ref={menuButtonRef}

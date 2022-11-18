@@ -6,7 +6,7 @@ exports[`Menu Button should show all elements 1`] = `
     className="menu-button-wrapper"
   >
     <button
-      className="menu-button "
+      className="menu-button"
       data-testid="undefined_MENU_BUTTON"
       onClick={[Function]}
     >
