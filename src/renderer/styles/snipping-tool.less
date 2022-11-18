@@ -139,6 +139,10 @@ body.using-mouse :focus {
     }
 
     .add-to-chat-button:hover {
+      background-color: @electricity-ui-40;
+    }
+
+    .add-to-chat-button:focus {
       background-color: @electricity-ui-60;
     }
 
@@ -212,11 +216,11 @@ body.using-mouse :focus {
   cursor: pointer;
 }
 
-.menu-button:focus {
-  background: @electricity-ui-60;
+.menu-button:hover {
+  background: @electricity-ui-40;
 }
 
-.menu-button-focus {
+.menu-button:focus {
   background: @electricity-ui-60;
 }
 
@@ -231,9 +235,9 @@ body.using-mouse :focus {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: space-between;
-  padding: 14px 16px;
+  justify-content: center;
   position: absolute;
+  padding-left: 0px;
   width: 143px;
   min-height: 80px;
   background: @vanilla-white;
@@ -261,6 +265,20 @@ body.using-mouse :focus {
   align-items: center;
   list-style-type: none;
   width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+}
+
+.list-item:hover {
+  color: @vanilla-white;
+  background-color: @graphite-60;
+  border-radius: 8px;
+}
+
+.list-item:focus {
+  color: @vanilla-white;
+  background-color: @graphite-60;
+  border-radius: 8px;
 }
 
 .general-font:lang(ja-JP) {
