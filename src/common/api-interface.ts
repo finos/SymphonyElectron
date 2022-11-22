@@ -126,6 +126,7 @@ export interface IApiArgs {
   pipe: string;
   data: Uint8Array;
   autoUpdateTrigger: AutoUpdateTrigger;
+  hideOnCapture: boolean;
 }
 
 export type Themes = 'light' | 'dark';
@@ -142,7 +143,7 @@ export interface IBadgeCount {
 /**
  * Screen snippet
  */
-export type ScreenSnippetDataType = 'ERROR' | 'image/png;base64';
+export type ScreenSnippetDataType = 'ERROR' | 'image/png;base64' | 'HIDE_SDA';
 export interface IScreenSnippet {
   data?: string;
   message?: string;

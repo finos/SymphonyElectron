@@ -38,7 +38,7 @@ export class AppBridge {
   public origin: string = '';
 
   private readonly callbackHandlers = {
-    onMessage: (event) => this.handleMessage(event),
+    onMessage: (event: MessageEvent) => this.handleMessage(event),
     onActivityCallback: (idleTime: number) => this.activityCallback(idleTime),
     onScreenSnippetCallback: (arg: IScreenSnippet) =>
       this.screenSnippetCallback(arg),
@@ -95,7 +95,7 @@ export class AppBridge {
    *
    * @param event
    */
-  private async handleMessage(event): Promise<void> {
+  private async handleMessage(event: MessageEvent): Promise<void> {
     if (!AppBridge.isValidEvent(event)) {
       return;
     }
