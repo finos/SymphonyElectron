@@ -87,8 +87,12 @@ class ScreenSnippet {
    *
    * @param webContents {WeContents}
    */
-  public async capture(webContents: WebContents) {
+  public async capture(webContents: WebContents, hideOnCapture?: boolean) {
     const mainWindow = windowHandler.getMainWindow();
+    if (hideOnCapture) {
+      mainWindow?.minimize();
+    }
+
     if (mainWindow && windowExists(mainWindow) && isWindowsOS) {
       this.shouldUpdateAlwaysOnTop = mainWindow.isAlwaysOnTop();
       if (this.shouldUpdateAlwaysOnTop) {
@@ -178,8 +182,9 @@ class ScreenSnippet {
           this.outputFilePath,
           dimensions,
           windowName,
+          hideOnCapture,
         );
-        this.uploadSnippet(webContents);
+        this.uploadSnippet(webContents, mainWindow);
         this.closeSnippet();
         this.copyToClipboard();
         this.saveAs();
@@ -333,7 +338,10 @@ class ScreenSnippet {
    * Uploads a screen snippet
    * @param webContents A browser window's web contents object
    */
-  private uploadSnippet(webContents: WebContents) {
+  private uploadSnippet(
+    webContents: WebContents,
+    mainWindow: ICustomBrowserWindow | null,
+  ) {
     ipcMain.once(
       'upload-snippet',
       async (
@@ -352,6 +360,7 @@ class ScreenSnippet {
             'screen-snippet-handler: Snippet uploaded correctly, sending payload to SFE',
           );
           webContents.send('screen-snippet-data', payload);
+          mainWindow?.restore();
           await this.verifyAndUpdateAlwaysOnTop();
         } catch (error) {
           await this.verifyAndUpdateAlwaysOnTop();

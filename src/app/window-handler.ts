@@ -166,6 +166,7 @@ export class WindowHandler {
   private snippingToolWindow: Electron.BrowserWindow | null = null;
   private finishedLoading: boolean = false;
   private readonly opts: Electron.BrowserViewConstructorOptions | undefined;
+  private hideOnCapture: boolean = false;
 
   constructor(opts?: Electron.BrowserViewConstructorOptions) {
     this.opts = opts;
@@ -1193,12 +1194,15 @@ export class WindowHandler {
       width: number;
     },
     windowName: string,
+    hideOnCapture?: boolean,
   ): void {
     // Prevents creating multiple instances
     if (didVerifyAndRestoreWindow(this.snippingToolWindow)) {
       logger.error('window-handler: Could not open snipping tool window');
       return;
     }
+
+    this.hideOnCapture = !!hideOnCapture;
 
     logger.info(
       'window-handler, createSnippingToolWindow: Receiving snippet props: ' +
@@ -1283,7 +1287,7 @@ export class WindowHandler {
         height: toolHeight,
         parent: selectedParentWindow,
         modal: true,
-        alwaysOnTop: false,
+        alwaysOnTop: hideOnCapture,
         resizable: false,
         fullscreenable: false,
       },
@@ -1364,6 +1368,9 @@ export class WindowHandler {
       logger.info(
         'window-handler, createSnippingToolWindow: Closing snipping window, attempting to delete temp snip image',
       );
+      if (this.hideOnCapture) {
+        this.mainWindow?.restore();
+      }
       ipcMain.removeAllListeners(ScreenShotAnnotation.COPY_TO_CLIPBOARD);
       ipcMain.removeAllListeners(ScreenShotAnnotation.SAVE_AS);
       this.snippingToolWindow?.close();

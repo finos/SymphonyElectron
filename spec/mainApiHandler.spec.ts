@@ -403,7 +403,18 @@ describe('main api handler', () => {
       };
       const expectedValue = { send: expect.any(Function) };
       ipcMain.send(apiName.symphonyApi, value);
-      expect(spy).toBeCalledWith(expectedValue);
+      expect(spy).toBeCalledWith(expectedValue, undefined);
+    });
+
+    it('should call `openScreenSnippet` with hideOnCapture correctly', () => {
+      const spy = jest.spyOn(screenSnippet, 'capture');
+      const value = {
+        cmd: apiCmds.openScreenSnippet,
+        hideOnCapture: true,
+      };
+      const expectedValue = { send: expect.any(Function) };
+      ipcMain.send(apiName.symphonyApi, value);
+      expect(spy).toBeCalledWith(expectedValue, true);
     });
 
     it('should call `closeWindow` correctly', () => {

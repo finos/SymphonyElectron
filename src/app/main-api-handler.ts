@@ -203,7 +203,7 @@ ipcMain.on(
         }
         break;
       case apiCmds.openScreenSnippet:
-        screenSnippet.capture(event.sender);
+        screenSnippet.capture(event.sender, arg.hideOnCapture);
         break;
       case apiCmds.closeScreenSnippet:
         screenSnippet.cancelCapture();

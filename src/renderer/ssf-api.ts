@@ -364,19 +364,32 @@ export class SSFApi {
   public ScreenSnippet = ScreenSnippetBcHandler;
 
   /**
-   * Allow user to capture portion of screen
+   * Allow user to capture portion of screen.
+   * There is a method overload of this with additional param allows user to hide SDA,
+   * if none is provided then the old logic will be triggered.
    *
-   * @param screenSnippetCallback {function}
+   * @param openScreenSnippet {function}
    */
   public openScreenSnippet(
     screenSnippetCallback: (arg: IScreenSnippet) => void,
+  ): void;
+  public openScreenSnippet(
+    screenSnippetCallback: (arg: IScreenSnippet) => void,
+    hideOnCapture?: boolean,
   ): void {
     if (typeof screenSnippetCallback === 'function') {
       local.screenSnippetCallback = screenSnippetCallback;
 
-      local.ipcRenderer.send(apiName.symphonyApi, {
-        cmd: apiCmds.openScreenSnippet,
-      });
+      if (hideOnCapture) {
+        local.ipcRenderer.send(apiName.symphonyApi, {
+          cmd: apiCmds.openScreenSnippet,
+          hideOnCapture,
+        });
+      } else {
+        local.ipcRenderer.send(apiName.symphonyApi, {
+          cmd: apiCmds.openScreenSnippet,
+        });
+      }
     }
   }
 
