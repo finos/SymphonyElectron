@@ -4,13 +4,13 @@ const crypto = require('crypto');
 
 const yaml = require('js-yaml');
 
-const INSTALLERS = 'installers/';
+const INSTALLERS_URL = 'https://static.symphony.com/sda/';
 
 function updateYamlFile(yamlFilePath, installerHash) {
   let doc = yaml.load(fs.readFileSync(yamlFilePath, 'utf-8'));
-  doc.files[0].url = INSTALLERS + doc.files[0].url;
+  doc.files[0].url = INSTALLERS_URL + doc.files[0].url;
   doc.files[0].sha512 = installerHash;
-  doc.path = INSTALLERS + doc.path;
+  doc.path = INSTALLERS_URL + doc.path;
   delete doc.sha512;
   doc.sha512 = installerHash;
   fs.writeFileSync(yamlFilePath, yaml.dump(doc, { lineWidth: -1 }));
