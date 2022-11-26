@@ -232,5 +232,6 @@
   "Zoom Out": "ズームアウト",
   "Allow once (risky)": "今回は許可(推奨されません)",
   "Deny": "拒否",
-  "Invalid security certificate": "のセキュリティ証明書は無効です。"
+  "Invalid security certificate": "のセキュリティ証明書は無効です。",
+  "IV Dogfooding": "IV Dogfooding"
 }
