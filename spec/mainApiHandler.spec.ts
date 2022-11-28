@@ -398,23 +398,33 @@ describe('main api handler', () => {
 
     it('should call `openScreenSnippet` correctly', () => {
       const spy = jest.spyOn(screenSnippet, 'capture');
+      jest.spyOn(BrowserWindow, 'getFocusedWindow').mockImplementation(() => {
+        return {
+          winName: 'main',
+        };
+      });
       const value = {
         cmd: apiCmds.openScreenSnippet,
       };
       const expectedValue = { send: expect.any(Function) };
       ipcMain.send(apiName.symphonyApi, value);
-      expect(spy).toBeCalledWith(expectedValue, undefined);
+      expect(spy).toBeCalledWith(expectedValue, 'main', undefined);
     });
 
     it('should call `openScreenSnippet` with hideOnCapture correctly', () => {
       const spy = jest.spyOn(screenSnippet, 'capture');
+      jest.spyOn(BrowserWindow, 'getFocusedWindow').mockImplementation(() => {
+        return {
+          winName: 'main',
+        };
+      });
       const value = {
         cmd: apiCmds.openScreenSnippet,
         hideOnCapture: true,
       };
       const expectedValue = { send: expect.any(Function) };
       ipcMain.send(apiName.symphonyApi, value);
-      expect(spy).toBeCalledWith(expectedValue, true);
+      expect(spy).toBeCalledWith(expectedValue, 'main', true);
     });
 
     it('should call `closeWindow` correctly', () => {
