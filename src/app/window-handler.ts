@@ -167,6 +167,7 @@ export class WindowHandler {
   private finishedLoading: boolean = false;
   private readonly opts: Electron.BrowserViewConstructorOptions | undefined;
   private hideOnCapture: boolean = false;
+  private currentWindow?: string = undefined;
 
   constructor(opts?: Electron.BrowserViewConstructorOptions) {
     this.opts = opts;
@@ -1193,7 +1194,7 @@ export class WindowHandler {
       height: number;
       width: number;
     },
-    windowName: string,
+    currentWindow?: string,
     hideOnCapture?: boolean,
   ): void {
     // Prevents creating multiple instances
@@ -1280,12 +1281,12 @@ export class WindowHandler {
       toolWidth = scaledImageDimensions.width;
     }
 
-    const selectedParentWindow = getWindowByName(windowName);
+    this.currentWindow = currentWindow || '';
     const opts: ICustomBrowserWindowConstructorOpts = this.getWindowOpts(
       {
         width: toolWidth,
         height: toolHeight,
-        parent: selectedParentWindow,
+        parent: getWindowByName(this.currentWindow),
         modal: true,
         alwaysOnTop: hideOnCapture,
         resizable: false,
@@ -1302,10 +1303,6 @@ export class WindowHandler {
       this.mainWindow.isAlwaysOnTop()
     ) {
       opts.alwaysOnTop = true;
-    }
-
-    if (this.mainWindow) {
-      opts.parent = this.mainWindow;
     }
 
     this.snippingToolWindow = createComponentWindow('snipping-tool', opts);
@@ -1368,15 +1365,20 @@ export class WindowHandler {
       logger.info(
         'window-handler, createSnippingToolWindow: Closing snipping window, attempting to delete temp snip image',
       );
-      if (this.hideOnCapture) {
-        this.mainWindow?.restore();
-      }
       ipcMain.removeAllListeners(ScreenShotAnnotation.COPY_TO_CLIPBOARD);
       ipcMain.removeAllListeners(ScreenShotAnnotation.SAVE_AS);
       this.snippingToolWindow?.close();
       this.deleteFile(snipImage);
       this.removeWindow(opts.winKey);
       this.screenPickerWindow = null;
+      if (this.hideOnCapture) {
+        const curWindow = getWindowByName(currentWindow || '');
+        const mainWindow = windowHandler.getMainWindow();
+        mainWindow?.focus();
+        if (currentWindow !== 'main') {
+          curWindow?.focus();
+        }
+      }
     });
   }
 

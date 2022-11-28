@@ -30,8 +30,8 @@ import {
   ScreenSnippetActionTypes,
 } from './analytics-handler';
 import { updateAlwaysOnTop } from './window-actions';
-import { ICustomBrowserWindow, windowHandler } from './window-handler';
-import { windowExists } from './window-utils';
+import { windowHandler } from './window-handler';
+import { getWindowByName, windowExists } from './window-utils';
 
 const readFile = util.promisify(fs.readFile);
 
@@ -87,10 +87,19 @@ class ScreenSnippet {
    *
    * @param webContents {WeContents}
    */
-  public async capture(webContents: WebContents, hideOnCapture?: boolean) {
+  public async capture(
+    webContents: WebContents,
+    currentWindow?: string,
+    hideOnCapture?: boolean,
+  ) {
     const mainWindow = windowHandler.getMainWindow();
     if (hideOnCapture) {
+      const curWindow = getWindowByName(currentWindow || '');
+      const mainWindow = windowHandler.getMainWindow();
       mainWindow?.minimize();
+      if (currentWindow !== 'main') {
+        curWindow?.minimize();
+      }
     }
 
     if (mainWindow && windowExists(mainWindow) && isWindowsOS) {
@@ -175,16 +184,13 @@ class ScreenSnippet {
         }
 
         windowHandler.closeSnippingToolWindow();
-        const windowName = this.focusedWindow
-          ? (this.focusedWindow as ICustomBrowserWindow).winName
-          : '';
         windowHandler.createSnippingToolWindow(
           this.outputFilePath,
           dimensions,
-          windowName,
+          currentWindow,
           hideOnCapture,
         );
-        this.uploadSnippet(webContents, mainWindow);
+        this.uploadSnippet(webContents, currentWindow, hideOnCapture);
         this.closeSnippet();
         this.copyToClipboard();
         this.saveAs();
@@ -340,7 +346,8 @@ class ScreenSnippet {
    */
   private uploadSnippet(
     webContents: WebContents,
-    mainWindow: ICustomBrowserWindow | null,
+    currentWindow?: string,
+    hideOnCapture?: boolean,
   ) {
     ipcMain.once(
       'upload-snippet',
@@ -360,7 +367,14 @@ class ScreenSnippet {
             'screen-snippet-handler: Snippet uploaded correctly, sending payload to SFE',
           );
           webContents.send('screen-snippet-data', payload);
-          mainWindow?.restore();
+          if (hideOnCapture) {
+            const curWindow = getWindowByName(currentWindow || '');
+            const mainWindow = windowHandler.getMainWindow();
+            mainWindow?.focus();
+            if (currentWindow !== 'main') {
+              curWindow?.focus();
+            }
+          }
           await this.verifyAndUpdateAlwaysOnTop();
         } catch (error) {
           await this.verifyAndUpdateAlwaysOnTop();
@@ -437,7 +451,7 @@ class ScreenSnippet {
         },
       ) => {
         const filePath = path.join(
-          this.tempDir,
+          app.getPath('downloads'),
           'symphonyImage-' + Date.now() + '.png',
         );
         const [, data] = saveAsData.clipboard.split(',');
