@@ -179,7 +179,7 @@
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.10.0",
     "enzyme-to-json": "^3.3.5",
-    "gulp": "4.0.0",
+    "gulp": "4.0.2",
     "gulp-less": "4.0.1",
     "gulp-sourcemaps": "2.6.4",
     "gulp-typescript": "5.0.1",
