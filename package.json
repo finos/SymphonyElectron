@@ -181,7 +181,7 @@
     "enzyme-to-json": "^3.3.5",
     "gulp": "4.0.2",
     "gulp-less": "4.0.1",
-    "gulp-sourcemaps": "2.6.4",
+    "gulp-sourcemaps": "2.6.5",
     "gulp-typescript": "5.0.1",
     "husky": "^4.3.8",
     "jest": "25.2.4",
