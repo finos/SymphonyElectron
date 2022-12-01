@@ -172,7 +172,7 @@
     "cross-env": "5.2.1",
     "del": "3.0.0",
     "electron": "^22.0.0",
-    "electron-builder": "23.5.0",
+    "electron-builder": "23.6.0",
     "electron-builder-squirrel-windows": "20.38.3",
     "electron-icon-maker": "0.0.5",
     "electron-osx-sign": "^0.4.16",
