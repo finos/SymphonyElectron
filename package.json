@@ -197,7 +197,7 @@
     "ts-jest": "25.3.0",
     "tslint": "5.11.0",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "3.9.7"
+    "typescript": "3.9.10"
   },
   "dependencies": {
     "@types/lazy-brush": "^1.0.0",
