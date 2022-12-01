@@ -205,7 +205,7 @@
     "async.map": "0.5.2",
     "classnames": "2.2.6",
     "electron-dl": "3.0.0",
-    "electron-fetch": "1.4.0",
+    "electron-fetch": "1.9.1",
     "electron-log": "4.0.7",
     "electron-updater": "^5.0.1",
     "ffi-napi": "^4.0.3",
