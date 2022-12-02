@@ -12,6 +12,7 @@ exports[`Menu Button should show all elements 1`] = `
     >
       <img
         alt="Open menu"
+        draggable={false}
         src="../renderer/assets/single-chevron-down.svg"
         title="Open menu"
       />
