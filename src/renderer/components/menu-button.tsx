@@ -103,6 +103,7 @@ const MenuButton: React.FunctionComponent<IMenuButtonProps> = ({
             src={`../renderer/assets/single-chevron-down.svg`}
             title={i18n.t('Open menu')()}
             alt={i18n.t('Open menu')()}
+            draggable={false}
           />
         </button>
         {isDisplay && (
