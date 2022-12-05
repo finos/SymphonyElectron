@@ -551,6 +551,19 @@ const logApiCallParams = (arg: any) => {
         )}`,
       );
       break;
+    case apiCmds.writeCloud9Pipe:
+      const compressedData = {
+        ...arg,
+        data: Buffer.from(arg.data).toString('base64'),
+      };
+      logger.info(
+        `main-api-handler: - ${apiCmd} - Properties: ${JSON.stringify(
+          compressedData,
+          null,
+          2,
+        )}`,
+      );
+      break;
     default:
       logger.info(
         `main-api-handler: - ${apiCmd} - Properties: ${JSON.stringify(
