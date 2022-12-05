@@ -164,7 +164,7 @@
     "@types/fs-extra": "^8.1.1",
     "@types/jest": "23.3.12",
     "@types/node": "^12.12.43",
-    "@types/react": "16.8.3",
+    "@types/react": "16.14.34",
     "@types/react-dom": "16.9.17",
     "@types/rimraf": "^3.0.0",
     "browserify": "16.5.2",
