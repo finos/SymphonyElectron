@@ -219,7 +219,7 @@
     "win32-api": "^20.1.0"
   },
   "optionalDependencies": {
-    "@symphony/symphony-c9-shell": "3.14.99-37",
+    "@symphony/symphony-c9-shell": "3.19.0-0.98.3.124",
     "screen-share-indicator-frame": "git+https://github.com/symphonyoss/ScreenShareIndicatorFrame.git#v1.4.13",
     "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#9.2.2",
     "winreg": "^1.2.4"
