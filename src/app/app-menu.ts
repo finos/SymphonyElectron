@@ -894,5 +894,6 @@ export class AppMenu {
         item.checked = false;
       }
     });
+    autoUpdate.checkUpdates(AutoUpdateTrigger.MANUAL);
   }
 }
