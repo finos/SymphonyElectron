@@ -161,7 +161,7 @@
   "devDependencies": {
     "@types/cheerio": "^0.22.22",
     "@types/enzyme": "^3.10.7",
-    "@types/fs-extra": "^8.1.1",
+    "@types/fs-extra": "^9.0.0",
     "@types/jest": "23.3.12",
     "@types/node": "^12.12.43",
     "@types/react": "16.14.34",
