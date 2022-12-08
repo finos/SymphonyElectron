@@ -42,7 +42,7 @@ class ActivityDetection {
   private startActivityMonitor(): void {
     if (app.isReady()) {
       logger.info(`activity-detection: Starting activity monitor`);
-      this.queryInterval = setInterval(() => {
+      this.queryInterval = global.setInterval(() => {
         const idleTime = powerMonitor.getSystemIdleTime();
         this.activity(idleTime);
       }, this.idleThreshold);
@@ -78,7 +78,7 @@ class ActivityDetection {
       );
       // starts monitoring for user activity every 1 sec
       // when user goes inactive
-      this.timer = setInterval(() => {
+      this.timer = global.setInterval(() => {
         if (app.isReady()) {
           const activeTime = powerMonitor.getSystemIdleTime();
           this.activity(activeTime);

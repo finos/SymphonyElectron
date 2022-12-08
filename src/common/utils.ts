@@ -1,6 +1,7 @@
 // regex match the semver (semantic version) this checks for the pattern X.Y.Z
 // ex-valid  v1.2.0, 1.2.0, 2.3.4-r51
-const semver = /^v?(?:\d+)(\.(?:[x*]|\d+)(\.(?:[x*]|\d+)(?:-[\da-z-]+(?:\.[\da-z-]+)*)?(?:\+[\da-z-]+(?:\.[\da-z-]+)*)?)?)?$/i;
+const semver =
+  /^v?(?:\d+)(\.(?:[x*]|\d+)(\.(?:[x*]|\d+)(?:-[\da-z-]+(?:\.[\da-z-]+)*)?(?:\+[\da-z-]+(?:\.[\da-z-]+)*)?)?)?$/i;
 const patch = /-([0-9A-Za-z-.]+)/;
 
 /**
@@ -205,7 +206,7 @@ export const throttle = (
     );
   }
 
-  let timer: NodeJS.Timer;
+  let timer: NodeJS.Timeout;
   let lastRan = 0;
 
   return (...args) => {
@@ -214,7 +215,7 @@ export const throttle = (
       lastRan = Date.now();
     } else {
       clearTimeout(timer);
-      timer = setTimeout(() => {
+      timer = global.setTimeout(() => {
         if (Date.now() - lastRan >= wait) {
           func.apply(null, args);
           lastRan = Date.now();
