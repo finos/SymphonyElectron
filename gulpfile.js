@@ -5,7 +5,10 @@ const sourcemaps = require('gulp-sourcemaps');
 const tsc = require('gulp-typescript');
 const del = require('del');
 const path = require('path');
-
+const replace = require('gulp-replace');
+const template = require('gulp-template');
+const tap = require('gulp-tap');
+const rename = require('gulp-rename');
 const tsProject = tsc.createProject('./tsconfig.json');
 
 gulp.task('clean', function () {
@@ -33,6 +36,54 @@ gulp.task('less', function () {
     .pipe(less())
     .pipe(sourcemaps.write())
     .pipe(gulp.dest(path.join(__dirname, 'lib/src')));
+});
+
+const extractFileNameFromPath = (filePath) => {
+  const filepathParts = filePath.split('/');
+  const filenameWithExt = filepathParts[filepathParts.length - 1];
+  const filename = filenameWithExt.split('.');
+  return filename[0];
+};
+
+gulp.task('templates', () => {
+  return (
+    gulp
+      .src('./lib/src/renderer/components/*.js', { base: './lib' })
+      // tap into the stream to get the current file and compile
+      // the template according to that
+      .pipe(
+        tap(function (file) {
+          const filename = extractFileNameFromPath(file.path);
+          return (
+            gulp
+              .src('./src/renderer/react-window.html')
+              // compile the template using the current
+              // file.path as the src attr in the template file
+              .pipe(
+                template({
+                  sourcefile: file.path,
+                }),
+              )
+              .pipe(
+                replace(
+                  /(<link rel="stylesheet" href="*"[^>]*>)/g,
+                  function (_s, _match) {
+                    const cssFilePath = `lib/src/renderer/styles/${filename}.css`;
+                    const doesFileExist = fs.existsSync(cssFilePath);
+                    if (doesFileExist) {
+                      const style = fs.readFileSync(cssFilePath, 'utf8');
+                      return '<style>\n' + style + '\n</style>';
+                    }
+                    return '';
+                  },
+                ),
+              )
+              .pipe(rename(`${filename}.html`))
+              .pipe(gulp.dest('./lib/src/renderer'))
+          );
+        }),
+      )
+  );
 });
 
 /**
@@ -91,4 +142,7 @@ gulp.task('setExpiry', function (done) {
   });
 });
 
-gulp.task('build', gulp.series('clean', 'compile', 'less', 'copy'));
+gulp.task(
+  'build',
+  gulp.series('clean', 'compile', 'less', 'templates', 'copy'),
+);

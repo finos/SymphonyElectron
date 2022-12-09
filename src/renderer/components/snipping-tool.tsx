@@ -3,6 +3,9 @@ import * as React from 'react';
 import { svgAsPngUri } from 'save-svg-as-png';
 import { i18n } from '../../common/i18n-preload';
 import { ScreenShotAnnotation } from '../../common/ipcEvent';
+import * as PenIcon from '../../renderer/assets/snip-draw.svg';
+import * as EraseIcon from '../../renderer/assets/snip-erase.svg';
+import * as HighlightIcon from '../../renderer/assets/snip-highlight.svg';
 import {
   AnalyticsElements,
   ScreenSnippetActionTypes,
@@ -10,7 +13,6 @@ import {
 import AnnotateArea from './annotate-area';
 import ColorPickerPill, { IColor } from './color-picker-pill';
 import MenuButton from './menu-button';
-
 const { useState, useRef, useEffect, useLayoutEffect } = React;
 
 export enum Tool {
@@ -90,9 +92,8 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({
     shouldRenderHighlightColorPicker,
     setShouldRenderHighlightColorPicker,
   ] = useState(false);
-  const [shouldRenderPenColorPicker, setShouldRenderPenColorPicker] = useState(
-    false,
-  );
+  const [shouldRenderPenColorPicker, setShouldRenderPenColorPicker] =
+    useState(false);
 
   const mergeImage = async () => {
     const svg = document.getElementById('annotate-area');
@@ -320,7 +321,7 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({
             onClick={usePen}
             title={i18n.t('Pen', SNIPPING_TOOL_NAMESPACE)()}
           >
-            <img src='../renderer/assets/snip-draw.svg' />
+            <img src={PenIcon} />
           </button>
           <button
             data-testid='highlight-button'
@@ -329,7 +330,7 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({
             onClick={useHighlight}
             title={i18n.t('Highlight', SNIPPING_TOOL_NAMESPACE)()}
           >
-            <img src='../renderer/assets/snip-highlight.svg' />
+            <img src={HighlightIcon} />
           </button>
           <button
             data-testid='erase-button'
@@ -338,7 +339,7 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({
             onClick={useEraser}
             title={i18n.t('Erase', SNIPPING_TOOL_NAMESPACE)()}
           >
-            <img src='../renderer/assets/snip-erase.svg' />
+            <img src={EraseIcon} />
           </button>
         </div>
         <div className='clear-actions'>
