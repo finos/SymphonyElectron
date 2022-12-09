@@ -21,7 +21,7 @@ exports[`Snipping Tool should render correctly 1`] = `
         title="Pen"
       >
         <img
-          src="../renderer/assets/snip-draw.svg"
+          src={Object {}}
         />
       </button>
       <button
@@ -31,7 +31,7 @@ exports[`Snipping Tool should render correctly 1`] = `
         title="Highlight"
       >
         <img
-          src="../renderer/assets/snip-highlight.svg"
+          src={Object {}}
         />
       </button>
       <button
@@ -41,7 +41,7 @@ exports[`Snipping Tool should render correctly 1`] = `
         title="Erase"
       >
         <img
-          src="../renderer/assets/snip-erase.svg"
+          src={Object {}}
         />
       </button>
     </div>

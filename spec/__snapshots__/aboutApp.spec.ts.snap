@@ -11,7 +11,7 @@ exports[`about app should render correctly 1`] = `
     <img
       alt="Symphony Logo"
       className="AboutApp-logo"
-      src="../renderer/assets/new-symphony-logo.svg"
+      src={Object {}}
     />
   </div>
   <div
@@ -81,7 +81,7 @@ exports[`about app should render correctly 1`] = `
       >
         <img
           alt="Symphony Logo"
-          src="../renderer/assets/copy-icon.svg"
+          src={Object {}}
         />
         <span>
           Copy config to clipboard
