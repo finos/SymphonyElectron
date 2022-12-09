@@ -147,7 +147,8 @@ export class WindowHandler {
   private defaultPodUrl: string = 'https://[POD].symphony.com';
   private contextIsolation: boolean = true;
   private backgroundThrottling: boolean = false;
-  private windowOpts: ICustomBrowserWindowConstructorOpts = {} as ICustomBrowserWindowConstructorOpts;
+  private windowOpts: ICustomBrowserWindowConstructorOpts =
+    {} as ICustomBrowserWindowConstructorOpts;
   private globalConfig: IGlobalConfig = {} as IGlobalConfig;
   private config: IConfig = {} as IConfig;
   // Window reference
@@ -762,11 +763,12 @@ export class WindowHandler {
           disableBlinkFeatures: AUX_CLICK,
         },
       }) as ICustomBrowserView;
+      const componentName = 'title-bar';
       const titleBarWindowUrl = format({
-        pathname: require.resolve('../renderer/react-window.html'),
+        pathname: require.resolve(`../renderer/${componentName}.html`),
         protocol: 'file',
         query: {
-          componentName: 'title-bar',
+          componentName,
           locale: i18n.getLocale(),
           title: i18n.t('WelcomeText', 'Welcome')(),
         },

@@ -76,7 +76,7 @@
       "outFiles": ["${workspaceFolder}/lib/**/*.js"]
     },
     {
-      "name": "st2",
+      "name": "st3",
       "type": "node",
       "request": "launch",
       "cwd": "${workspaceFolder}",
@@ -84,7 +84,7 @@
       "windows": {
         "runtimeExecutable": "${workspaceFolder}/node_modules/electron/dist/Electron.exe"
       },
-      "args": [".", "--url=https://st2.symphony.com"],
+      "args": [".", "--url=https://st3.symphony.com"],
       "env": {
         "ELECTRON_DEBUGGING": "true",
         "ELECTRON_DEV": "true"
@@ -94,7 +94,7 @@
       "outFiles": ["${workspaceFolder}/lib/**/*.js"]
     },
     {
-      "name": "st2 (Build & Run)",
+      "name": "st3 (Build & Run)",
       "type": "node",
       "request": "launch",
       "cwd": "${workspaceFolder}",
@@ -103,7 +103,7 @@
         "runtimeExecutable": "${workspaceFolder}/node_modules/electron/dist/Electron.exe"
       },
       "preLaunchTask": "build",
-      "args": [".", "--url=https://st2.symphony.com"],
+      "args": [".", "--url=https://st3.symphony.com"],
       "env": {
         "ELECTRON_DEBUGGING": "true",
         "ELECTRON_DEV": "true"
