@@ -135,7 +135,8 @@ body.using-mouse :focus {
       text-transform: uppercase;
       border-radius: 16px 0px 0px 16px;
       height: 32px;
-      width: 102px;
+      min-width: 102px;
+      width: fit-content;
     }
 
     .add-to-chat-button:hover {
@@ -154,7 +155,6 @@ body.using-mouse :focus {
       font-weight: 600;
       font-size: 0.875rem;
       padding: 8px 16px;
-      width: 67px;
       height: 32px;
       border-radius: 16px;
       font-family: @font-family;
@@ -238,13 +238,20 @@ body.using-mouse :focus {
   justify-content: center;
   position: absolute;
   padding-left: 0px;
-  width: 143px;
   min-height: 80px;
   background: @vanilla-white;
   box-shadow: 0px 2px 4px rgba(5, 6, 6, 0.08), 0px 12px 28px rgba(5, 6, 6, 0.16);
   border-radius: 8px;
   margin: 0px;
   cursor: pointer;
+}
+
+.menu:lang(fr-FR) {
+  left: -179px;
+}
+
+.menu:lang(ja-JP) {
+  left: -149px;
 }
 
 .menu-button-wrapper {
@@ -272,7 +279,14 @@ body.using-mouse :focus {
 .list-item:hover {
   color: @vanilla-white;
   background-color: @graphite-60;
-  border-radius: 8px;
+}
+
+.list-item:hover:first-of-type {
+  border-radius: 8px 8px 0 0;
+}
+
+.list-item:hover:last-of-type {
+  border-radius: 0 0 8px 8px;
 }
 
 .list-item:focus {
