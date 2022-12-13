@@ -1228,7 +1228,7 @@ export class WindowHandler {
 
     const OS_PADDING = 25;
     const MIN_TOOL_HEIGHT = 312;
-    const MIN_TOOL_WIDTH = 320;
+    const MIN_TOOL_WIDTH = 420;
     const BUTTON_BAR_TOP_HEIGHT = 48;
     const BUTTON_BAR_BOTTOM_HEIGHT = 72;
     const BUTTON_BARS_HEIGHT = BUTTON_BAR_TOP_HEIGHT + BUTTON_BAR_BOTTOM_HEIGHT;
