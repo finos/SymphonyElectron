@@ -96,7 +96,7 @@ export default class AboutApp extends React.Component<{}, IState> {
     )()} \xA9 ${new Date().getFullYear()} ${appName}`;
     const podVersion = `${clientVersion} (${buildNumber})`;
     const sdaVersionBuild = `${sdaVersion} (${sdaBuildNumber})`;
-    let sfeClientTypeName = 'SFE';
+    let sfeClientTypeName = 'SFE-Lite';
     const symphonySectionItems = [
       {
         key: 'POD:',
