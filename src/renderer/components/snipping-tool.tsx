@@ -321,7 +321,7 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({
             onClick={usePen}
             title={i18n.t('Pen', SNIPPING_TOOL_NAMESPACE)()}
           >
-            <img src={PenIcon} />
+            <img src={PenIcon} draggable={false} />
           </button>
           <button
             data-testid='highlight-button'
@@ -330,7 +330,7 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({
             onClick={useHighlight}
             title={i18n.t('Highlight', SNIPPING_TOOL_NAMESPACE)()}
           >
-            <img src={HighlightIcon} />
+            <img src={HighlightIcon} draggable={false} />
           </button>
           <button
             data-testid='erase-button'
@@ -339,7 +339,7 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({
             onClick={useEraser}
             title={i18n.t('Erase', SNIPPING_TOOL_NAMESPACE)()}
           >
-            <img src={EraseIcon} />
+            <img src={EraseIcon} draggable={false} />
           </button>
         </div>
         <div className='clear-actions'>
