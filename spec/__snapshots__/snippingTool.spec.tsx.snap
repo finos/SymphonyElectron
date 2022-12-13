@@ -21,6 +21,7 @@ exports[`Snipping Tool should render correctly 1`] = `
         title="Pen"
       >
         <img
+          draggable={false}
           src={Object {}}
         />
       </button>
@@ -31,6 +32,7 @@ exports[`Snipping Tool should render correctly 1`] = `
         title="Highlight"
       >
         <img
+          draggable={false}
           src={Object {}}
         />
       </button>
@@ -41,6 +43,7 @@ exports[`Snipping Tool should render correctly 1`] = `
         title="Erase"
       >
         <img
+          draggable={false}
           src={Object {}}
         />
       </button>
