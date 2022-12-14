@@ -763,7 +763,7 @@ export class WindowHandler {
           disableBlinkFeatures: AUX_CLICK,
         },
       }) as ICustomBrowserView;
-      const componentName = 'title-bar';
+      const componentName = 'windows-title-bar';
       const titleBarWindowUrl = format({
         pathname: require.resolve(`../renderer/${componentName}.html`),
         protocol: 'file',
