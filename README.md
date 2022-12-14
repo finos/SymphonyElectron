@@ -1,4 +1,4 @@
-[![FINOS - Incubating](https://cdn.jsdelivr.net/gh/finos/contrib-toolbox@master/images/badge-incubating.svg)](https://finosfoundation.atlassian.net/wiki/display/FINOS/Incubating)
+[![FINOS - Active](https://cdn.jsdelivr.net/gh/finos/contrib-toolbox@master/images/badge-active.svg)](https://finosfoundation.atlassian.net/wiki/display/FINOS/Active)
 [![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/6746/badge)](https://bestpractices.coreinfrastructure.org/projects/6746)
 [![Continuous Integration](https://github.com/symphonyoss/SymphonyElectron/actions/workflows/ci.yml/badge.svg)](https://github.com/symphonyoss/SymphonyElectron/actions/workflows/ci.yml)
 [![Known Vulnerabilities](https://snyk.io/test/github/symphonyoss/SymphonyElectron/badge.svg?targetFile=package.json)](https://snyk.io/test/github/symphonyoss/SymphonyElectron?targetFile=package.json)
