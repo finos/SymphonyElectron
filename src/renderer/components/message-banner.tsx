@@ -100,7 +100,7 @@ export default class MessageBanner {
     if (onlineStateIntervalId) {
       return;
     }
-
+    // nosemgrep
     onlineStateIntervalId = setInterval(async () => {
       try {
         const response = await window.fetch(this.url || window.location.href, {

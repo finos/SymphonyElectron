@@ -274,6 +274,7 @@ class Logger {
     const files = fs.readdirSync(this.logPath);
     const deleteTimeStamp = new Date().getTime() - 5 * 24 * 60 * 60 * 1000;
     files.forEach((file) => {
+      // nosemgrep
       const filePath = path.join(this.logPath, file);
       if (fs.existsSync(filePath)) {
         const stat = fs.statSync(filePath);

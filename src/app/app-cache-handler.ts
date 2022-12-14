@@ -26,6 +26,7 @@ const cleanOldCache = (): void => {
   const files = fs.readdirSync(userDataPath);
 
   files.forEach((file) => {
+    // nosemgrep
     const filePath = path.join(userDataPath, file);
     if (!fileRemovalList.includes(file)) {
       return;

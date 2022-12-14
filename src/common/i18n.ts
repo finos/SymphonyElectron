@@ -105,12 +105,9 @@ class Translation {
    * @param locale
    */
   private loadResource(locale: LocaleType): JSON | null {
-    const resourcePath = path.resolve(
-      __dirname,
-      '..',
-      'locale',
-      `${locale}.json`,
-    );
+    const filename = `${locale}.json`;
+    // nosemgrep
+    const resourcePath = path.resolve(__dirname, '..', 'locale', filename);
 
     if (!fs.existsSync(resourcePath)) {
       return null;
