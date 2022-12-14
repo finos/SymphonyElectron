@@ -24,7 +24,7 @@ const enum components {
   notificationSettings = 'notification-settings',
   welcome = 'welcome',
   snippingTool = 'snipping-tool',
-  titleBar = 'title-bar',
+  titleBar = 'windows-title-bar',
 }
 
 /**
