@@ -1207,7 +1207,7 @@ export const loadBrowserViews = async (
     pathname: require.resolve('../renderer/windows-title-bar.html'),
     protocol: 'file',
     query: {
-      componentName: 'title-bar',
+      componentName: 'windows-title-bar',
       locale: i18n.getLocale(),
     },
     slashes: true,
