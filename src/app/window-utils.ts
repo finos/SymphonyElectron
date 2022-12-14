@@ -1204,7 +1204,7 @@ export const loadBrowserViews = async (
   mainWindow.addBrowserView(mainView);
 
   const titleBarWindowUrl = format({
-    pathname: require.resolve('../renderer/title-bar.html'),
+    pathname: require.resolve('../renderer/windows-title-bar.html'),
     protocol: 'file',
     query: {
       componentName: 'title-bar',

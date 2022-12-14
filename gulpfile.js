@@ -39,9 +39,8 @@ gulp.task('less', function () {
 });
 
 const extractFileNameFromPath = (filePath) => {
-  const filepathParts = filePath.split('/');
-  const filenameWithExt = filepathParts[filepathParts.length - 1];
-  const filename = filenameWithExt.split('.');
+  const basename = path.basename(filePath);
+  const filename = basename.split('.');
   return filename[0];
 };
 
@@ -53,34 +52,30 @@ gulp.task('templates', () => {
       // the template according to that
       .pipe(
         tap(function (file) {
-          const filename = extractFileNameFromPath(file.path);
-          return (
-            gulp
-              .src('./src/renderer/react-window.html')
-              // compile the template using the current
-              // file.path as the src attr in the template file
-              .pipe(
-                template({
-                  sourcefile: file.path,
-                }),
-              )
-              .pipe(
-                replace(
-                  /(<link rel="stylesheet" href="*"[^>]*>)/g,
-                  function (_s, _match) {
-                    const cssFilePath = `lib/src/renderer/styles/${filename}.css`;
-                    const doesFileExist = fs.existsSync(cssFilePath);
-                    if (doesFileExist) {
-                      const style = fs.readFileSync(cssFilePath, 'utf8');
-                      return '<style>\n' + style + '\n</style>';
-                    }
-                    return '';
-                  },
-                ),
-              )
-              .pipe(rename(`${filename}.html`))
-              .pipe(gulp.dest('./lib/src/renderer'))
-          );
+          const jsFilename = extractFileNameFromPath(file.path);
+          return gulp
+            .src('./src/renderer/react-window.html')
+            .pipe(
+              template({
+                sourcefile: file.path,
+              }),
+            )
+            .pipe(
+              replace(
+                /(<link rel="stylesheet" href="*"[^>]*>)/g,
+                function (_s, _match) {
+                  const cssFilePath = `lib/src/renderer/styles/${jsFilename}.css`;
+                  const doesFileExist = fs.existsSync(cssFilePath);
+                  if (doesFileExist) {
+                    const style = fs.readFileSync(cssFilePath, 'utf8');
+                    return '<style>\n' + style + '\n</style>';
+                  }
+                  return '';
+                },
+              ),
+            )
+            .pipe(rename(`${jsFilename}.html`))
+            .pipe(gulp.dest('./lib/src/renderer'));
         }),
       )
   );
