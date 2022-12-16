@@ -1106,13 +1106,13 @@ export class WindowHandler {
     const opts: BrowserWindowConstructorOptions = this.getWindowOpts(
       {
         width: 404,
-        height: isWindowsOS ? 480 : 497,
+        height: 497,
         modal: true,
-        frame: false,
+        frame: isWindowsOS,
         alwaysOnTop: isMac,
         resizable: false,
         fullscreenable: false,
-        transparent: true,
+        backgroundColor: '#27292c',
       },
       {
         devTools: isDevEnv,
