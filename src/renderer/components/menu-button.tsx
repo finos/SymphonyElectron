@@ -16,7 +16,7 @@ const MenuButton: React.FunctionComponent<IMenuButtonProps> = ({
 }) => {
   //#region State
   const [isDisplay, setDisplay] = useState(false);
-  const listRef = useRef<HTMLUListElement>(document.createElement('ul'));
+  const listRef = useRef<HTMLDivElement>(document.createElement('div'));
   const menuButtonRef = useRef<HTMLButtonElement>(
     document.createElement('button'),
   );
@@ -75,15 +75,14 @@ const MenuButton: React.FunctionComponent<IMenuButtonProps> = ({
       };
 
       return (
-        <li
-          data-testid={`${id}_${listItem.dataTestId}`}
-          className='list-item general-font'
+        <button
+          className='general-font list-item'
           lang={i18n.getLocale()}
           onClick={sendClick}
           key={listItem.event}
         >
           {listItem.name}
-        </li>
+        </button>
       );
     });
   };
@@ -107,9 +106,9 @@ const MenuButton: React.FunctionComponent<IMenuButtonProps> = ({
           />
         </button>
         {isDisplay && (
-          <ul className='menu' ref={listRef}>
+          <div className='menu' ref={listRef}>
             {renderListItems()}
-          </ul>
+          </div>
         )}
       </div>
     </>
