@@ -77,6 +77,7 @@ const MenuButton: React.FunctionComponent<IMenuButtonProps> = ({
       return (
         <button
           className='general-font list-item'
+          data-testid={`${id}_${listItem.dataTestId}`}
           lang={i18n.getLocale()}
           onClick={sendClick}
           key={listItem.event}
