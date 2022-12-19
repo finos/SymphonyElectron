@@ -273,7 +273,11 @@ body.using-mouse :focus {
   list-style-type: none;
   width: 100%;
   box-sizing: border-box;
+  border: none;
   padding: 12px 14px;
+  background-color: transparent;
+  width: 100%;
+  text-align: left;
 }
 
 .list-item:hover {
@@ -281,11 +285,13 @@ body.using-mouse :focus {
   background-color: @graphite-60;
 }
 
-.list-item:hover:first-of-type {
+.list-item:hover:first-of-type,
+.list-item:focus:first-of-type {
   border-radius: 8px 8px 0 0;
 }
 
-.list-item:hover:last-of-type {
+.list-item:hover:last-of-type,
+.list-item:focus:last-of-type {
   border-radius: 0 0 8px 8px;
 }
 
