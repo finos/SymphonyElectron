@@ -29,9 +29,11 @@ import {
   AnalyticsElements,
   ScreenSnippetActionTypes,
 } from './analytics-handler';
+import { winStore } from './stores';
+import { IWindowState } from './stores/window-store';
 import { updateAlwaysOnTop } from './window-actions';
-import { windowHandler } from './window-handler';
-import { getWindowByName, windowExists } from './window-utils';
+import { ICustomBrowserWindow, windowHandler } from './window-handler';
+import { windowExists } from './window-utils';
 
 const readFile = util.promisify(fs.readFile);
 
@@ -87,20 +89,15 @@ class ScreenSnippet {
    *
    * @param webContents {WeContents}
    */
-  public async capture(
-    webContents: WebContents,
-    currentWindow?: string,
-    hideOnCapture?: boolean,
-  ) {
+  public async capture(webContents: WebContents, hideOnCapture?: boolean) {
+    const currentWindowObj = BrowserWindow.getFocusedWindow();
+    const currentWindowName = (currentWindowObj as ICustomBrowserWindow)
+      ?.winName;
     const mainWindow = windowHandler.getMainWindow();
-    if (hideOnCapture) {
-      const curWindow = getWindowByName(currentWindow || '');
-      const mainWindow = windowHandler.getMainWindow();
-      mainWindow?.minimize();
-      if (currentWindow !== 'main') {
-        curWindow?.minimize();
-      }
-    }
+
+    this.storeWindowsState(mainWindow, currentWindowObj);
+
+    winStore.hideWindowsOnCapturing(hideOnCapture);
 
     if (mainWindow && windowExists(mainWindow) && isWindowsOS) {
       this.shouldUpdateAlwaysOnTop = mainWindow.isAlwaysOnTop();
@@ -180,6 +177,7 @@ class ScreenSnippet {
 
         if (dimensions.width === 0 && dimensions.height === 0) {
           logger.info('screen-snippet-handler: no screen capture picture');
+          winStore.restoreWindowsOnCapturing(hideOnCapture);
           return;
         }
 
@@ -187,20 +185,17 @@ class ScreenSnippet {
         windowHandler.createSnippingToolWindow(
           this.outputFilePath,
           dimensions,
-          currentWindow,
+          currentWindowName,
           hideOnCapture,
         );
-        this.uploadSnippet(webContents, currentWindow, hideOnCapture);
+        this.uploadSnippet(webContents, hideOnCapture);
         this.closeSnippet();
         this.copyToClipboard();
         this.saveAs();
         return;
       }
-      const {
-        message,
-        data,
-        type,
-      }: IScreenSnippet = await this.convertFileToData();
+      const { message, data, type }: IScreenSnippet =
+        await this.convertFileToData();
       logger.info(
         `screen-snippet-handler: Snippet captured! Sending data straight to SFE without opening annotate tool`,
       );
@@ -328,9 +323,7 @@ class ScreenSnippet {
    * Gets the dimensions of an image
    * @param filePath path to file to get image dimensions of
    */
-  private getImageDimensions(
-    filePath: string,
-  ): {
+  private getImageDimensions(filePath: string): {
     height: number;
     width: number;
   } {
@@ -344,11 +337,7 @@ class ScreenSnippet {
    * Uploads a screen snippet
    * @param webContents A browser window's web contents object
    */
-  private uploadSnippet(
-    webContents: WebContents,
-    currentWindow?: string,
-    hideOnCapture?: boolean,
-  ) {
+  private uploadSnippet(webContents: WebContents, hideOnCapture?: boolean) {
     ipcMain.once(
       'upload-snippet',
       async (
@@ -367,14 +356,7 @@ class ScreenSnippet {
             'screen-snippet-handler: Snippet uploaded correctly, sending payload to SFE',
           );
           webContents.send('screen-snippet-data', payload);
-          if (hideOnCapture) {
-            const curWindow = getWindowByName(currentWindow || '');
-            const mainWindow = windowHandler.getMainWindow();
-            mainWindow?.focus();
-            if (currentWindow !== 'main') {
-              curWindow?.focus();
-            }
-          }
+          winStore.focusWindowsSnippingFinished(hideOnCapture);
           await this.verifyAndUpdateAlwaysOnTop();
         } catch (error) {
           await this.verifyAndUpdateAlwaysOnTop();
@@ -503,6 +485,58 @@ class ScreenSnippet {
       },
     );
   }
+
+  /**
+   * Store current windows state before hiding it
+   */
+  private storeWindowsState = (
+    mainWindow: ICustomBrowserWindow | null,
+    currentWindowObj: BrowserWindow | null,
+  ) => {
+    const windowObj = winStore.getWindowStore();
+    const currentWindowName = (currentWindowObj as ICustomBrowserWindow)
+      ?.winName;
+
+    if (windowObj.windows.length < 1) {
+      const allWindows = BrowserWindow.getAllWindows();
+      let windowsArr: IWindowState[] = [];
+      const mainArr: IWindowState[] = [
+        {
+          id: 'main',
+          focused: mainWindow?.isFocused(),
+          minimized: mainWindow?.isMinimized(),
+        },
+      ];
+
+      allWindows.forEach((window) => {
+        if (
+          (window as ICustomBrowserWindow).winName !== currentWindowName &&
+          (window as ICustomBrowserWindow).winName !== 'main'
+        ) {
+          windowsArr.push({
+            id: (window as ICustomBrowserWindow).winName,
+            focused: window.isFocused(),
+            minimized: window?.isMinimized(),
+          });
+        }
+      });
+
+      if (currentWindowName !== 'main') {
+        windowsArr.push({
+          id: currentWindowName,
+          focused: currentWindowObj?.isFocused(),
+          minimized: currentWindowObj?.isMinimized(),
+        });
+        windowsArr = mainArr.concat(windowsArr);
+      } else {
+        windowsArr = windowsArr.concat(mainArr);
+      }
+
+      winStore.setWindowStore({
+        windows: windowsArr,
+      });
+    }
+  };
 }
 
 const screenSnippet = new ScreenSnippet();

@@ -45,6 +45,7 @@ import LocalMenuShortcuts from './local-menu-shortcuts';
 import { mainEvents } from './main-event-handler';
 import { exportLogs } from './reports-handler';
 import { SpellChecker } from './spell-check-handler';
+import { winStore } from './stores';
 import { checkIfBuildExpired } from './ttl-handler';
 import { versionHandler } from './version-handler';
 import {
@@ -147,7 +148,8 @@ export class WindowHandler {
   private defaultPodUrl: string = 'https://[POD].symphony.com';
   private contextIsolation: boolean = true;
   private backgroundThrottling: boolean = false;
-  private windowOpts: ICustomBrowserWindowConstructorOpts = {} as ICustomBrowserWindowConstructorOpts;
+  private windowOpts: ICustomBrowserWindowConstructorOpts =
+    {} as ICustomBrowserWindowConstructorOpts;
   private globalConfig: IGlobalConfig = {} as IGlobalConfig;
   private config: IConfig = {} as IConfig;
   // Window reference
@@ -1288,7 +1290,7 @@ export class WindowHandler {
         height: toolHeight,
         parent: getWindowByName(this.currentWindow),
         modal: true,
-        alwaysOnTop: hideOnCapture,
+        alwaysOnTop: this.hideOnCapture,
         resizable: false,
         fullscreenable: false,
       },
@@ -1359,6 +1361,7 @@ export class WindowHandler {
           'snipping-tool-data',
           snippingToolInfo,
         );
+        winStore.restoreWindowsOnCapturing(this.hideOnCapture);
       }
     });
     this.snippingToolWindow.once('close', () => {
@@ -1371,14 +1374,7 @@ export class WindowHandler {
       this.deleteFile(snipImage);
       this.removeWindow(opts.winKey);
       this.screenPickerWindow = null;
-      if (this.hideOnCapture) {
-        const curWindow = getWindowByName(currentWindow || '');
-        const mainWindow = windowHandler.getMainWindow();
-        mainWindow?.focus();
-        if (currentWindow !== 'main') {
-          curWindow?.focus();
-        }
-      }
+      winStore.focusWindowsSnippingFinished(this.hideOnCapture);
     });
   }
 
