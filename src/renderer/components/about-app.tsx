@@ -35,6 +35,7 @@ interface IState {
 }
 
 const ABOUT_SYMPHONY_NAMESPACE = 'AboutSymphony';
+const SFE_CLIENT_TYPE_NAME = 'SFE-Lite';
 
 /**
  * Window that display app version and copyright info
@@ -85,7 +86,6 @@ export default class AboutApp extends React.Component<{}, IState> {
       buildNumber,
       hostname,
       sfeVersion,
-      sfeClientType,
       sdaVersion,
       sdaBuildNumber,
       client,
@@ -98,7 +98,6 @@ export default class AboutApp extends React.Component<{}, IState> {
     )()} \xA9 ${new Date().getFullYear()} ${appName}`;
     const podVersion = `${clientVersion} (${buildNumber})`;
     const sdaVersionBuild = `${sdaVersion} (${sdaBuildNumber})`;
-    let sfeClientTypeName = 'SFE-Lite';
     const symphonySectionItems = [
       {
         key: 'POD:',
@@ -113,14 +112,10 @@ export default class AboutApp extends React.Component<{}, IState> {
         value: sdaVersionBuild,
       },
       {
-        key: `${sfeClientTypeName}:`,
+        key: `${SFE_CLIENT_TYPE_NAME}:`,
         value: `${sfeVersion} ${client}`,
       },
     ];
-
-    if (sfeClientType !== '1.5') {
-      sfeClientTypeName = 'SFE-Lite';
-    }
 
     return (
       <div className='AboutApp' lang={i18n.getLocale()}>
