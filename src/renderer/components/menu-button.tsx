@@ -16,6 +16,8 @@ const MenuButton: React.FunctionComponent<IMenuButtonProps> = ({
 }) => {
   //#region State
   const [isDisplay, setDisplay] = useState(false);
+  const [currentFocusedItem, setCurrentFocusedItem] =
+    useState<HTMLButtonElement>();
   const listRef = useRef<HTMLDivElement>(document.createElement('div'));
   const menuButtonRef = useRef<HTMLButtonElement>(
     document.createElement('button'),
@@ -25,12 +27,62 @@ const MenuButton: React.FunctionComponent<IMenuButtonProps> = ({
   //#region Variables
   const testId = {
     menu: `${id}_MENU_BUTTON`,
+    list: `${id}_LIST`,
   };
   //#endregion
 
   //#region Handlers
   const onClickMenuButton = () => {
     setDisplay(!isDisplay);
+  };
+
+  const onMenuKeyUp = (event: React.KeyboardEvent) => {
+    let item: HTMLButtonElement | null = null;
+
+    if (event.key === 'ArrowDown') {
+      item = listRef.current.children[0] as HTMLButtonElement;
+    }
+
+    if (event.key === 'ArrowUp') {
+      item = listRef.current.children[
+        listRef.current.children.length - 1
+      ] as HTMLButtonElement;
+    }
+
+    if (item) {
+      item.focus();
+      item.setAttribute('data-isfocused', 'true'); // UT Purpose
+      setCurrentFocusedItem(item);
+    }
+  };
+
+  const onListKeyUp = (event: React.KeyboardEvent) => {
+    let item: HTMLButtonElement | null = null;
+    if (!listRef.current) {
+      return;
+    }
+
+    currentFocusedItem?.setAttribute('data-isfocused', 'false'); // UT Purpose
+
+    if (event.key === 'ArrowUp') {
+      item =
+        (currentFocusedItem?.previousElementSibling as HTMLButtonElement) ||
+        (listRef.current.children[
+          listRef.current.children.length - 1
+        ] as HTMLButtonElement);
+    }
+
+    if (event.key === 'ArrowDown') {
+      item =
+        (currentFocusedItem?.nextElementSibling as HTMLButtonElement) ||
+        (listRef.current.children[0] as HTMLButtonElement);
+    }
+
+    if (item) {
+      item.focus();
+      item.setAttribute('data-isfocused', 'true'); // UT Purpose
+      setCurrentFocusedItem(item);
+    }
   };
   //#endregion
 
@@ -94,6 +146,7 @@ const MenuButton: React.FunctionComponent<IMenuButtonProps> = ({
     <>
       <div className='menu-button-wrapper'>
         <button
+          onKeyUp={onMenuKeyUp}
           className={`menu-button`}
           onClick={onClickMenuButton}
           data-testid={testId.menu}
@@ -107,7 +160,12 @@ const MenuButton: React.FunctionComponent<IMenuButtonProps> = ({
           />
         </button>
         {isDisplay && (
-          <div className='menu' ref={listRef}>
+          <div
+            className='menu'
+            data-testid={testId.list}
+            ref={listRef}
+            onKeyUp={onListKeyUp}
+          >
             {renderListItems()}
           </div>
         )}
