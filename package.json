@@ -202,7 +202,7 @@
     "ts-jest": "25.3.0",
     "tslint": "5.11.0",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "3.9.10"
+    "typescript": "^3.9.10"
   },
   "dependencies": {
     "@types/lazy-brush": "^1.0.0",
@@ -213,7 +213,6 @@
     "electron-fetch": "1.9.1",
     "electron-log": "4.4.8",
     "electron-updater": "^5.0.1",
-    "ffi-napi": "^4.0.3",
     "filesize": "6.4.0",
     "lazy-brush": "^1.0.1",
     "react": "16.14.0",
