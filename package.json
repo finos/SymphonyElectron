@@ -224,8 +224,8 @@
   },
   "optionalDependencies": {
     "@symphony/symphony-c9-shell": "3.19.0-0.98.4.129",
-    "screen-share-indicator-frame": "git+https://github.com/symphonyoss/ScreenShareIndicatorFrame.git#v1.4.13",
-    "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#9.2.2",
+    "screen-share-indicator-frame": "git+https://github.com/finos/ScreenShareIndicatorFrame.git#v1.4.13",
+    "screen-snippet": "git+https://github.com/finos/ScreenSnippet2.git#9.2.2",
     "winreg": "^1.2.4"
   },
   "ava": {
