@@ -88,4 +88,85 @@ describe('Menu Button', () => {
     await waitForPromisesToResolve();
     expect(wrapper.find('.menu').exists()).toBeFalsy();
   });
+
+  it('should focus menu list on up', async () => {
+    const wrapper = mount(
+      <MenuButton id='snipping-tool' listItems={menuItem} />,
+    );
+
+    wrapper.find('[data-testid="snipping-tool_MENU_BUTTON"]').simulate('click');
+    wrapper.update();
+    wrapper
+      .find('[data-testid="snipping-tool_MENU_BUTTON"]')
+      .simulate('keyup', { key: 'ArrowUp' });
+    wrapper.update();
+    expect(
+      (wrapper.find('[data-testid="snipping-tool_SAVE_AS"]').instance() as any)
+        .dataset.isfocused,
+    ).toBe('true');
+  });
+
+  it('should focus menu list on down', async () => {
+    const wrapper = mount(
+      <MenuButton id='snipping-tool' listItems={menuItem} />,
+    );
+
+    wrapper.find('[data-testid="snipping-tool_MENU_BUTTON"]').simulate('click');
+    wrapper.update();
+    wrapper
+      .find('[data-testid="snipping-tool_MENU_BUTTON"]')
+      .simulate('keyup', { key: 'ArrowDown' });
+    wrapper.update();
+    expect(
+      (
+        wrapper
+          .find('[data-testid="snipping-tool_COPY_TO_CLIPBOARD"]')
+          .instance() as any
+      ).dataset.isfocused,
+    ).toBe('true');
+  });
+
+  it('should go down on press down', async () => {
+    const wrapper = mount(
+      <MenuButton id='snipping-tool' listItems={menuItem} />,
+    );
+
+    wrapper.find('[data-testid="snipping-tool_MENU_BUTTON"]').simulate('click');
+    wrapper.update();
+    wrapper
+      .find('[data-testid="snipping-tool_MENU_BUTTON"]')
+      .simulate('keyup', { key: 'ArrowDown' });
+    wrapper.update();
+    wrapper
+      .find('[data-testid="snipping-tool_LIST"]')
+      .simulate('keyup', { key: 'ArrowDown' });
+    wrapper.update();
+    expect(
+      (wrapper.find('[data-testid="snipping-tool_SAVE_AS"]').instance() as any)
+        .dataset.isfocused,
+    ).toBe('true');
+  });
+
+  it('should go up on press up', async () => {
+    const wrapper = mount(
+      <MenuButton id='snipping-tool' listItems={menuItem} />,
+    );
+
+    wrapper.find('[data-testid="snipping-tool_MENU_BUTTON"]').simulate('click');
+    wrapper.update();
+    wrapper
+      .find('[data-testid="snipping-tool_MENU_BUTTON"]')
+      .simulate('keyup', { key: 'ArrowUp' });
+    wrapper
+      .find('[data-testid="snipping-tool_LIST"]')
+      .simulate('keyup', { key: 'ArrowUp' });
+    wrapper.update();
+    expect(
+      (
+        wrapper
+          .find('[data-testid="snipping-tool_COPY_TO_CLIPBOARD"]')
+          .instance() as any
+      ).dataset.isfocused,
+    ).toBe('true');
+  });
 });
