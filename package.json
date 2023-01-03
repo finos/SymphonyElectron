@@ -171,7 +171,7 @@
     "builder-util-runtime": "^9.0.3",
     "cross-env": "5.2.1",
     "del": "3.0.0",
-    "electron": "^22.0.0",
+    "electron": "22.0.0",
     "electron-builder": "23.6.0",
     "electron-builder-squirrel-windows": "20.44.0",
     "electron-icon-maker": "0.0.5",
@@ -202,7 +202,7 @@
     "ts-jest": "25.3.0",
     "tslint": "5.11.0",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "3.9.10"
+    "typescript": "^3.9.10"
   },
   "dependencies": {
     "@types/lazy-brush": "^1.0.0",
@@ -213,7 +213,6 @@
     "electron-fetch": "1.9.1",
     "electron-log": "4.4.8",
     "electron-updater": "^5.0.1",
-    "ffi-napi": "^4.0.3",
     "filesize": "6.4.0",
     "lazy-brush": "^1.0.1",
     "react": "16.14.0",
@@ -225,8 +224,8 @@
   },
   "optionalDependencies": {
     "@symphony/symphony-c9-shell": "3.19.0-0.98.6.131",
-    "screen-share-indicator-frame": "git+https://github.com/symphonyoss/ScreenShareIndicatorFrame.git#v1.4.13",
-    "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#9.2.2",
+    "screen-share-indicator-frame": "git+https://github.com/finos/ScreenShareIndicatorFrame.git#v1.4.13",
+    "screen-snippet": "git+https://github.com/finos/ScreenSnippet2.git#9.2.2",
     "winreg": "^1.2.4"
   },
   "ava": {
