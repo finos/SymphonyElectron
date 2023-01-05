@@ -55,6 +55,10 @@ if NOT EXIST %SIGNING_FILE_PATH% (
 )
 
 call %SIGNING_FILE_PATH% node_modules\screen-share-indicator-frame\ScreenShareIndicatorFrame.exe
+
+call %SIGNING_FILE_PATH% node_modules\symphony-native-window-handle-helper\SymphonyNativeWindowHandleHelper.exe
+
+
 IF %errorlevel% neq 0 (
 	echo "Signing failed"
 	exit /b -1
