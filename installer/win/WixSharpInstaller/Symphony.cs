@@ -66,6 +66,7 @@ class Script
                 new File(@"..\..\..\dist\win-unpacked\vulkan-1.dll"),
                 new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\screen-share-indicator-frame\ScreenShareIndicatorFrame.exe"),
                 new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\screen-snippet\ScreenSnippet.exe"),
+                new File(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\symphony-native-window-handle-helper\SymphonyNativeWindowHandleHelper.exe"),
                 new Dir(@"config",
                     new Files(@"..\..\..\dist\win-unpacked\config\*.*")
                 ),
