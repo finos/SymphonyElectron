@@ -65,11 +65,17 @@ const MenuButton: React.FunctionComponent<IMenuButtonProps> = ({
     currentFocusedItem?.setAttribute('data-isfocused', 'false'); // UT Purpose
 
     if (event.key === 'ArrowUp') {
-      item = currentFocusedItem?.previousElementSibling as HTMLButtonElement;
+      item =
+        (currentFocusedItem?.previousElementSibling as HTMLButtonElement) ||
+        (listRef.current.children[
+          listRef.current.children.length - 1
+        ] as HTMLButtonElement);
     }
 
     if (event.key === 'ArrowDown') {
-      item = currentFocusedItem?.nextElementSibling as HTMLButtonElement;
+      item =
+        (currentFocusedItem?.nextElementSibling as HTMLButtonElement) ||
+        (listRef.current.children[0] as HTMLButtonElement);
     }
 
     if (item) {
