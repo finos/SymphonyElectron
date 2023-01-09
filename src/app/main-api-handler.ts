@@ -91,7 +91,6 @@ ipcMain.on(
       return;
     }
     const mainWebContents = windowHandler.getMainWebContents();
-    const currentWindow = BrowserWindow.getFocusedWindow();
     logApiCallParams(arg);
     switch (arg.cmd) {
       case apiCmds.isOnline:
@@ -204,11 +203,7 @@ ipcMain.on(
         }
         break;
       case apiCmds.openScreenSnippet:
-        screenSnippet.capture(
-          event.sender,
-          (currentWindow as ICustomBrowserWindow)?.winName,
-          arg.hideOnCapture,
-        );
+        screenSnippet.capture(event.sender, arg.hideOnCapture);
         break;
       case apiCmds.closeScreenSnippet:
         screenSnippet.cancelCapture();
