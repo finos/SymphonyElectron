@@ -408,7 +408,7 @@ describe('main api handler', () => {
       };
       const expectedValue = { send: expect.any(Function) };
       ipcMain.send(apiName.symphonyApi, value);
-      expect(spy).toBeCalledWith(expectedValue, 'main', undefined);
+      expect(spy).toBeCalledWith(expectedValue, undefined);
     });
 
     it('should call `openScreenSnippet` with hideOnCapture correctly', () => {
@@ -424,7 +424,7 @@ describe('main api handler', () => {
       };
       const expectedValue = { send: expect.any(Function) };
       ipcMain.send(apiName.symphonyApi, value);
-      expect(spy).toBeCalledWith(expectedValue, 'main', true);
+      expect(spy).toBeCalledWith(expectedValue, true);
     });
 
     it('should call `closeWindow` correctly', () => {
