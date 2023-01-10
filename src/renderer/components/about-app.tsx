@@ -44,9 +44,11 @@ export default class AboutApp extends React.Component<{}, IState> {
     onCopy: () => this.copy(),
     onClose: () => this.close(),
   };
+  private copyButtonRef: React.RefObject<HTMLButtonElement>;
 
   constructor(props) {
     super(props);
+    this.copyButtonRef = React.createRef();
     this.state = {
       userConfig: {},
       globalConfig: {},
@@ -156,6 +158,7 @@ export default class AboutApp extends React.Component<{}, IState> {
                 ABOUT_SYMPHONY_NAMESPACE,
               )()}
               data-testid={'COPY_BUTTON'}
+              ref={this.copyButtonRef}
             >
               <img
                 src={CopyIcon}
@@ -188,6 +191,9 @@ export default class AboutApp extends React.Component<{}, IState> {
    * Callback to handle event when a component is mounted
    */
   public componentDidMount(): void {
+    setTimeout(() => {
+      this.copyButtonRef.current?.blur();
+    }, 0);
     ipcRenderer.on('about-app-data', this.updateState);
   }
 
