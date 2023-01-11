@@ -1,4 +1,5 @@
 import { BrowserWindow } from 'electron';
+import { isMac } from '../../common/env';
 import { getWindowByName } from '../window-utils';
 
 export interface IWindowObject {
@@ -41,12 +42,7 @@ export class WindowStore {
       currentWindows.forEach((currentWindow) => {
         const isFullScreen = currentWindow.isFullScreen();
         if (isFullScreen) {
-          currentWindow.once('leave-full-screen', () => {
-            setTimeout(() => {
-              currentWindow.hide();
-            }, 0);
-          });
-          currentWindow.setFullScreen(false);
+          this.hideFullscreenWindow(currentWindow);
         } else {
           currentWindow?.hide();
         }
@@ -103,5 +99,18 @@ export class WindowStore {
 
       this.destroyWindowStore();
     }
+  };
+
+  private hideFullscreenWindow = (window: BrowserWindow) => {
+    window.once('leave-full-screen', () => {
+      if (isMac) {
+        window.hide();
+      } else {
+        setTimeout(() => {
+          window.hide();
+        }, 0);
+      }
+    });
+    window.setFullScreen(false);
   };
 }
