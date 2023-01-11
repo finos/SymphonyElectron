@@ -182,15 +182,10 @@ class VersionHandler {
 
       /* Get SFE version */
       let urlSfeVersion: string;
-      if (mainUrl?.includes('bff')) {
-        urlSfeVersion = mainUrl?.includes('/daily/')
-          ? `${protocol}//${hostname}/bff-daily/daily/version.json`
-          : `${protocol}//${hostname}/client-bff/version.json`;
-        this.versionInfo.sfeClientType = '2.0';
-      } else {
-        urlSfeVersion = `${protocol}//${hostname}/client/version.json`;
-        this.versionInfo.sfeClientType = '1.5';
-      }
+      urlSfeVersion = mainUrl?.includes('/daily/')
+        ? `${protocol}//${hostname}/bff-daily/daily/version.json`
+        : `${protocol}//${hostname}/client-bff/version.json`;
+      this.versionInfo.sfeClientType = '2.0';
       logger.info(
         `version-handler: Trying to get SFE version info for the URL: ${urlSfeVersion}`,
       );
