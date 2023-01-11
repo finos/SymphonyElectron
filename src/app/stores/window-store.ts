@@ -9,6 +9,7 @@ export interface IWindowState {
   id: string;
   minimized?: boolean;
   focused?: boolean;
+  isFullScreen?: boolean;
 }
 
 export class WindowStore {
@@ -38,7 +39,17 @@ export class WindowStore {
       const currentWindows = BrowserWindow.getAllWindows();
 
       currentWindows.forEach((currentWindow) => {
-        currentWindow?.hide();
+        const isFullScreen = currentWindow.isFullScreen();
+        if (isFullScreen) {
+          currentWindow.once('leave-full-screen', () => {
+            setTimeout(() => {
+              currentWindow.hide();
+            }, 0);
+          });
+          currentWindow.setFullScreen(false);
+        } else {
+          currentWindow?.hide();
+        }
       });
     }
   };
@@ -49,14 +60,22 @@ export class WindowStore {
       const currentWindow = currentWindows.windows.find(
         (currentWindow) => currentWindow.focused,
       );
-
       if (currentWindow) {
-        if (!currentWindow.minimized) {
-          getWindowByName(currentWindow.id || '')?.show();
-        }
+        const window = getWindowByName(currentWindow.id || '');
+        if (window) {
+          if (!currentWindow.minimized) {
+            window.show();
+          }
 
-        if (currentWindow.focused) {
-          getWindowByName(currentWindow.id || '')?.focus();
+          if (currentWindow.isFullScreen) {
+            setTimeout(() => {
+              window.setFullScreen(true);
+            }, 0);
+          }
+
+          if (currentWindow.focused) {
+            window.focus();
+          }
         }
       }
     }
@@ -66,12 +85,19 @@ export class WindowStore {
     if (hideOnCapture) {
       const currentWindows = this.getWindowStore();
       currentWindows.windows.forEach((currentWindow) => {
-        if (!currentWindow.minimized) {
-          getWindowByName(currentWindow.id || '')?.show();
-        }
+        const window = getWindowByName(currentWindow.id || '');
+        if (window) {
+          if (!currentWindow.minimized) {
+            window.show();
+          }
 
-        if (currentWindow.focused) {
-          getWindowByName(currentWindow.id || '')?.focus();
+          if (currentWindow.isFullScreen) {
+            window.setFullScreen(true);
+          }
+
+          if (currentWindow.focused) {
+            window.focus();
+          }
         }
       });
 
