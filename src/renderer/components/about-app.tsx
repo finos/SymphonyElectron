@@ -44,9 +44,11 @@ export default class AboutApp extends React.Component<{}, IState> {
     onCopy: () => this.copy(),
     onClose: () => this.close(),
   };
+  private closeButtonRef: React.RefObject<HTMLButtonElement>;
 
   constructor(props) {
     super(props);
+    this.closeButtonRef = React.createRef();
     this.state = {
       userConfig: {},
       globalConfig: {},
@@ -54,24 +56,24 @@ export default class AboutApp extends React.Component<{}, IState> {
       finalConfig: {},
       appName: 'Symphony',
       versionLocalised: 'Version',
-      clientVersion: 'N/A',
-      buildNumber: 'N/A',
-      hostname: 'N/A',
-      sfeVersion: 'N/A',
-      sfeClientType: 'N/A',
-      sdaVersion: 'N/A',
-      sdaBuildNumber: 'N/A',
-      electronVersion: 'N/A',
-      chromeVersion: 'N/A',
-      v8Version: 'N/A',
-      nodeVersion: 'N/A',
-      openSslVersion: 'N/A',
-      zlibVersion: 'N/A',
-      uvVersion: 'N/A',
-      aresVersion: 'N/A',
-      httpParserVersion: 'N/A',
-      swiftSearchVersion: 'N/A',
-      swiftSearchSupportedVersion: 'N/A',
+      clientVersion: '',
+      buildNumber: '',
+      hostname: '',
+      sfeVersion: '',
+      sfeClientType: '',
+      sdaVersion: '',
+      sdaBuildNumber: '',
+      electronVersion: '',
+      chromeVersion: '',
+      v8Version: '',
+      nodeVersion: '',
+      openSslVersion: '',
+      zlibVersion: '',
+      uvVersion: '',
+      aresVersion: '',
+      httpParserVersion: '',
+      swiftSearchVersion: '',
+      swiftSearchSupportedVersion: '',
     };
     this.updateState = this.updateState.bind(this);
   }
@@ -102,7 +104,7 @@ export default class AboutApp extends React.Component<{}, IState> {
     const symphonySectionItems = [
       {
         key: 'POD:',
-        value: `${hostname || 'N/A'}`,
+        value: `${hostname || ''}`,
       },
       {
         key: 'SBE:',
@@ -137,16 +139,7 @@ export default class AboutApp extends React.Component<{}, IState> {
               {i18n.t('Desktop Application', ABOUT_SYMPHONY_NAMESPACE)()}
             </span>
           </div>
-          <section>
-            <ul className='AboutApp-symphony-section'>
-              {symphonySectionItems.map((item, key) => (
-                <li key={key}>
-                  <strong>{item.key}</strong>
-                  <span>{item.value}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
+          {sdaVersion ? this.renderVersions(symphonySectionItems) : null}
           <div className='AboutApp-copy-container'>
             <button
               className='AboutApp-copy-button'
@@ -172,6 +165,7 @@ export default class AboutApp extends React.Component<{}, IState> {
               onClick={this.eventHandlers.onClose}
               title={i18n.t('Close', ABOUT_SYMPHONY_NAMESPACE)()}
               data-testid={'CLOSE_BUTTON'}
+              ref={this.closeButtonRef}
             >
               {i18n.t('Close', ABOUT_SYMPHONY_NAMESPACE)()}
             </button>
@@ -188,6 +182,9 @@ export default class AboutApp extends React.Component<{}, IState> {
    * Callback to handle event when a component is mounted
    */
   public componentDidMount(): void {
+    setTimeout(() => {
+      this.closeButtonRef.current?.focus();
+    }, 0);
     ipcRenderer.on('about-app-data', this.updateState);
   }
 
@@ -228,5 +225,24 @@ export default class AboutApp extends React.Component<{}, IState> {
    */
   private updateState(_event, data): void {
     this.setState(data as IState);
+  }
+
+  /**
+   * Renders component versions
+   * @param symphonySectionItems
+   */
+  private renderVersions(symphonySectionItems): JSX.Element {
+    return (
+      <section>
+        <ul className='AboutApp-symphony-section'>
+          {symphonySectionItems.map((item, key) => (
+            <li key={key}>
+              <strong>{item.key}</strong>
+              <span>{item.value}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    );
   }
 }
