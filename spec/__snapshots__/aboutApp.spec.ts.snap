@@ -62,7 +62,7 @@ exports[`about app should render correctly 1`] = `
           key="3"
         >
           <strong>
-            SFE:
+            SFE-Lite:
           </strong>
           <span>
             N/A undefined
