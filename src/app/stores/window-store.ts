@@ -1,4 +1,5 @@
 import { BrowserWindow } from 'electron';
+import { isMac } from '../../common/env';
 import { getWindowByName } from '../window-utils';
 
 export interface IWindowObject {
@@ -9,6 +10,7 @@ export interface IWindowState {
   id: string;
   minimized?: boolean;
   focused?: boolean;
+  isFullScreen?: boolean;
 }
 
 export class WindowStore {
@@ -38,7 +40,12 @@ export class WindowStore {
       const currentWindows = BrowserWindow.getAllWindows();
 
       currentWindows.forEach((currentWindow) => {
-        currentWindow?.hide();
+        const isFullScreen = currentWindow.isFullScreen();
+        if (isFullScreen) {
+          this.hideFullscreenWindow(currentWindow);
+        } else {
+          currentWindow?.hide();
+        }
       });
     }
   };
@@ -49,14 +56,22 @@ export class WindowStore {
       const currentWindow = currentWindows.windows.find(
         (currentWindow) => currentWindow.focused,
       );
-
       if (currentWindow) {
-        if (!currentWindow.minimized) {
-          getWindowByName(currentWindow.id || '')?.show();
-        }
+        const window = getWindowByName(currentWindow.id || '');
+        if (window) {
+          if (!currentWindow.minimized) {
+            window.show();
+          }
 
-        if (currentWindow.focused) {
-          getWindowByName(currentWindow.id || '')?.focus();
+          if (currentWindow.isFullScreen) {
+            setTimeout(() => {
+              window.setFullScreen(true);
+            }, 0);
+          }
+
+          if (currentWindow.focused) {
+            window.focus();
+          }
         }
       }
     }
@@ -66,16 +81,36 @@ export class WindowStore {
     if (hideOnCapture) {
       const currentWindows = this.getWindowStore();
       currentWindows.windows.forEach((currentWindow) => {
-        if (!currentWindow.minimized) {
-          getWindowByName(currentWindow.id || '')?.show();
-        }
+        const window = getWindowByName(currentWindow.id || '');
+        if (window) {
+          if (!currentWindow.minimized) {
+            window.show();
+          }
 
-        if (currentWindow.focused) {
-          getWindowByName(currentWindow.id || '')?.focus();
+          if (currentWindow.isFullScreen) {
+            window.setFullScreen(true);
+          }
+
+          if (currentWindow.focused) {
+            window.focus();
+          }
         }
       });
 
       this.destroyWindowStore();
     }
+  };
+
+  private hideFullscreenWindow = (window: BrowserWindow) => {
+    window.once('leave-full-screen', () => {
+      if (isMac) {
+        window.hide();
+      } else {
+        setTimeout(() => {
+          window.hide();
+        }, 0);
+      }
+    });
+    window.setFullScreen(false);
   };
 }
