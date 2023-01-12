@@ -24,16 +24,8 @@ const enum components {
   notificationSettings = 'notification-settings',
   welcome = 'welcome',
   snippingTool = 'snipping-tool',
-  titleBar = 'title-bar',
+  titleBar = 'windows-title-bar',
 }
-
-const loadStyle = (style) => {
-  const styles = document.createElement('link');
-  styles.rel = 'stylesheet';
-  styles.type = 'text/css';
-  styles.href = `./styles/${style}.css`;
-  document.getElementsByTagName('head')[0].appendChild(styles);
-};
 
 /**
  * Loads the appropriate component
@@ -46,36 +38,29 @@ const load = () => {
   let component;
   switch (componentName) {
     case components.aboutApp:
-      loadStyle(components.aboutApp);
       component = AboutBox;
       document.title = i18n.t('About Symphony', 'AboutSymphony')();
       break;
     case components.screenPicker:
-      loadStyle(components.screenPicker);
       document.title = i18n.t('Screen Picker - Symphony')();
       component = ScreenPicker;
       break;
     case components.screenSharingIndicator:
-      loadStyle(components.screenSharingIndicator);
       document.title = i18n.t('Screen Sharing Indicator - Symphony')();
       component = ScreenSharingIndicator;
       break;
     case components.screenSharingFrame:
-      loadStyle(components.screenSharingFrame);
       component = ScreenSharingFrame;
       break;
     case components.snippingTool:
-      loadStyle(components.snippingTool);
       document.title = i18n.t('Symphony')();
       component = SnippingTool;
       break;
     case components.basicAuth:
-      loadStyle(components.basicAuth);
       document.title = i18n.t('Basic Authentication - Symphony')();
       component = BasicAuth;
       break;
     case components.notification:
-      loadStyle(components.notification);
       document.title = i18n.t('Notification - Symphony')();
       component = NotificationComp;
       break;
@@ -84,19 +69,16 @@ const load = () => {
         'Notification Settings - Symphony',
         'NotificationSettings',
       )();
-      loadStyle(components.notificationSettings);
       component = NotificationSettings;
       break;
     case components.welcome:
       document.title = i18n.t('WelcomeText', 'Welcome')();
-      loadStyle(components.welcome);
       component = Welcome;
       break;
     case components.titleBar:
       if (title) {
         document.title = title;
       }
-      loadStyle(components.titleBar);
       component = WindowsTitleBar;
       break;
   }

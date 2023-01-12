@@ -233,7 +233,7 @@ export const createComponentWindow = (
   browserWindow.setMenu(null as any);
 
   const targetUrl = format({
-    pathname: require.resolve('../renderer/react-window.html'),
+    pathname: require.resolve(`../renderer/${componentName}.html`),
     protocol: 'file',
     query: {
       componentName,
@@ -982,20 +982,16 @@ export const updateFeaturesForCloudConfig = async (
     podLevelEntitlements.autoLaunchPath &&
     podLevelEntitlements.autoLaunchPath.match(/\\\\/g)
   ) {
-    podLevelEntitlements.autoLaunchPath = podLevelEntitlements.autoLaunchPath.replace(
-      /\\+/g,
-      '\\',
-    );
+    podLevelEntitlements.autoLaunchPath =
+      podLevelEntitlements.autoLaunchPath.replace(/\\+/g, '\\');
   }
   if (
     podLevelEntitlements &&
     podLevelEntitlements.userDataPath &&
     podLevelEntitlements.userDataPath.match(/\\\\/g)
   ) {
-    podLevelEntitlements.userDataPath = podLevelEntitlements.userDataPath.replace(
-      /\\+/g,
-      '\\',
-    );
+    podLevelEntitlements.userDataPath =
+      podLevelEntitlements.userDataPath.replace(/\\+/g, '\\');
   }
 
   logger.info(
@@ -1208,10 +1204,10 @@ export const loadBrowserViews = async (
   mainWindow.addBrowserView(mainView);
 
   const titleBarWindowUrl = format({
-    pathname: require.resolve('../renderer/react-window.html'),
+    pathname: require.resolve('../renderer/windows-title-bar.html'),
     protocol: 'file',
     query: {
-      componentName: 'title-bar',
+      componentName: 'windows-title-bar',
       locale: i18n.getLocale(),
     },
     slashes: true,

@@ -3,6 +3,8 @@ import * as React from 'react';
 import { productName } from '../../../package.json';
 import { apiCmds, apiName } from '../../common/api-interface';
 import { i18n } from '../../common/i18n-preload';
+import * as CopyIcon from '../../renderer/assets/copy-icon.svg';
+import * as SymphonyLogo from '../../renderer/assets/new-symphony-logo.svg';
 interface IState {
   userConfig: object;
   globalConfig: object;
@@ -125,7 +127,7 @@ export default class AboutApp extends React.Component<{}, IState> {
         <div className='AboutApp-header-container'>
           <img
             className='AboutApp-logo'
-            src='../renderer/assets/new-symphony-logo.svg'
+            src={SymphonyLogo}
             alt={i18n.t('Symphony Logo', ABOUT_SYMPHONY_NAMESPACE)()}
           />
         </div>
@@ -156,7 +158,7 @@ export default class AboutApp extends React.Component<{}, IState> {
               data-testid={'COPY_BUTTON'}
             >
               <img
-                src='../renderer/assets/copy-icon.svg'
+                src={CopyIcon}
                 alt={i18n.t('Symphony Logo', ABOUT_SYMPHONY_NAMESPACE)()}
               ></img>
               <span>

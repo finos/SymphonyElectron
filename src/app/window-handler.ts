@@ -764,11 +764,12 @@ export class WindowHandler {
           disableBlinkFeatures: AUX_CLICK,
         },
       }) as ICustomBrowserView;
+      const componentName = 'windows-title-bar';
       const titleBarWindowUrl = format({
-        pathname: require.resolve('../renderer/react-window.html'),
+        pathname: require.resolve(`../renderer/${componentName}.html`),
         protocol: 'file',
         query: {
-          componentName: 'title-bar',
+          componentName,
           locale: i18n.getLocale(),
           title: i18n.t('WelcomeText', 'Welcome')(),
         },
