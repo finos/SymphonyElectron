@@ -70,6 +70,7 @@ export class SpellChecker {
       copy: () => i18n.t('Copy')(),
       paste: () => i18n.t('Paste')(),
       inspectElement: () => i18n.t('Inspect Element', namespace)(),
+      pasteAsPlainText: () => i18n.t('Paste as plain text')(),
     };
   }
 
