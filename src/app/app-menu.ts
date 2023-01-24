@@ -17,7 +17,7 @@ import {
   MenuActionTypes,
 } from './analytics-handler';
 import { CloudConfigDataTypes, config, IConfig } from './config-handler';
-import { gpuRestartDialog, titleBarChangeDialog } from './dialog-handler';
+import { restartDialog, titleBarChangeDialog } from './dialog-handler';
 import { exportCrashDumps, exportLogs } from './reports-handler';
 import {
   registerConsoleMessages,
@@ -84,6 +84,7 @@ const menuItemConfigFields = [
   'isCustomTitleBar',
   'devToolsEnabled',
   'isAutoUpdateEnabled',
+  'enableSeamlessLogin',
 ];
 
 let {
@@ -95,6 +96,7 @@ let {
   isCustomTitleBar,
   devToolsEnabled,
   isAutoUpdateEnabled,
+  enableSeamlessLogin,
 } = config.getConfigFields(menuItemConfigFields) as IConfig;
 let initialAnalyticsSent = false;
 const CORP_URL = 'https://corporate.symphony.com';
@@ -240,6 +242,7 @@ export class AppMenu {
     isCustomTitleBar = configData.isCustomTitleBar;
     devToolsEnabled = configData.devToolsEnabled;
     isAutoUpdateEnabled = configData.isAutoUpdateEnabled;
+    enableSeamlessLogin = configData.enableSeamlessLogin;
     // fetch updated cloud config
     this.cloudConfig = config.getFilteredCloudConfigFields(
       this.menuItemConfigFields,
@@ -299,6 +302,7 @@ export class AppMenu {
             windowHandler.createAboutAppWindow(windowName);
           },
         },
+        this.buildSeparator(),
         {
           click: (_item) => {
             autoUpdate.checkUpdates(AutoUpdateTrigger.MANUAL);
@@ -513,6 +517,13 @@ export class AppMenu {
         enabled:
           !bringToFrontCC || bringToFrontCC === CloudConfigDataTypes.NOT_SET,
       },
+      {
+        label: i18n.t('Third-party browser login')(),
+        checked: enableSeamlessLogin,
+        click: () => {
+          restartDialog({ enableSeamlessLogin: !enableSeamlessLogin });
+        },
+      },
       this.buildSeparator(),
       {
         label:
@@ -664,7 +675,7 @@ export class AppMenu {
                 ? i18n.t('Enable GPU')()
                 : i18n.t('Disable GPU')(),
               click: () => {
-                gpuRestartDialog(!this.disableGpu);
+                restartDialog({ disableGpu: !this.disableGpu });
               },
             },
             {

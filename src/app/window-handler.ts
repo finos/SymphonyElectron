@@ -1,6 +1,7 @@
 import { ExecException, execFile } from 'child_process';
 import {
   app,
+  BrowserView,
   BrowserWindow,
   BrowserWindowConstructorOptions,
   crashReporter,
@@ -80,6 +81,9 @@ export enum ClientSwitchType {
   CLIENT_2_0_DAILY = 'CLIENT_2_0_DAILY',
 }
 
+export const DEFAULT_WELCOME_SCREEN_WIDTH: number = 542;
+export const DEFAULT_WELCOME_SCREEN_HEIGHT: number = 333;
+
 const MAIN_WEB_CONTENTS_EVENTS = ['enter-full-screen', 'leave-full-screen'];
 const SHORTCUT_KEY_THROTTLE = 1000; // 1sec
 
@@ -128,6 +132,7 @@ export class WindowHandler {
   }
   public mainView: ICustomBrowserView | null = null;
   public titleBarView: ICustomBrowserView | null = null;
+  public welcomeScreenWindow: BrowserWindow | null = null;
   public mainWebContents: WebContents | undefined;
   public appMenu: AppMenu | null = null;
   public isAutoReload: boolean = false;
@@ -377,7 +382,7 @@ export class WindowHandler {
     // Displays welcome screen instead of starting the main application
     if (this.shouldShowWelcomeScreen) {
       this.url = format({
-        pathname: require.resolve('../renderer/react-window.html'),
+        pathname: require.resolve('../renderer/welcome.html'),
         protocol: 'file',
         query: {
           componentName: 'welcome',

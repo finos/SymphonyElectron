@@ -241,3 +241,86 @@ body {
     }
   }
 }
+
+@keyframes fade-in-logo {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes fade-in-spinner {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes progress-circular-rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes progress-circular-dash {
+  0% {
+    stroke-dasharray: 1px, 200px;
+    stroke-dashoffset: 0px;
+  }
+
+  50% {
+    stroke-dasharray: 100px, 200px;
+    stroke-dashoffset: -15px;
+  }
+
+  100% {
+    stroke-dasharray: 100px, 200px;
+    stroke-dashoffset: -125px;
+  }
+}
+.splash-screen--container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #141618;
+  position: absolute;
+  top: 0;
+  left: 0;
+  inset: 0;
+  transition: opacity 1s ease-out, height 0s linear 1s;
+  z-index: 9;
+}
+.splash-screen--close {
+  opacity: 0;
+  height: 0;
+}
+.splash-screen--logo-wrapper {
+  width: 33%;
+  max-width: 261px;
+  animation: fade-in-logo 1s ease-in;
+}
+.splash-screen--spinner-container {
+  opacity: 0;
+  animation: fade-in-spinner 1s ease-in 0s forwards;
+  margin-top: 2rem;
+  text-align: center;
+}
+.splash-screen--spinner {
+  display: inline-block;
+  line-height: 1;
+  color: #0277d6;
+  width: 40px;
+  height: 40px;
+  animation: progress-circular-rotate 1.4s linear infinite;
+}
+.splash-screen--spinner-circle {
+  animation: progress-circular-dash 1.4s ease-in-out infinite;
+  stroke-dasharray: 80px, 200px;
+  stroke-dashoffset: 0px;
+  stroke: currentColor;
+}

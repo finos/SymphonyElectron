@@ -49,6 +49,7 @@ import {
   windowExists,
 } from './window-utils';
 
+import { getCommandLineArgs } from '../common/utils';
 import { autoUpdate, AutoUpdateTrigger } from './auto-update-handler';
 
 // Swift search API
@@ -67,7 +68,7 @@ const broadcastMessage = (method, data) => {
 };
 
 const getSeamLessLoginUrl = (pod: string) =>
-  `https://${pod}/login/sso/initsso?RelayState=https://${pod}/client-bff/device-login/index.html?callbackScheme=symphony&action=login`;
+  `${pod}/login/sso/initsso?RelayState=${pod}/client-bff/device-login/index.html?callbackScheme=symphony&action=login`;
 const AUTH_STATUS_PATH = '/login/checkauth?type=user';
 /**
  * Handle API related ipc messages from renderers. Only messages from windows
@@ -360,16 +361,23 @@ ipcMain.on(
         if (!arg.isPodConfigured) {
           await config.updateUserConfig({ url: arg.newPodUrl });
         }
-        const { subdomain, domain, tld } = whitelistHandler.parseDomain(
-          arg.newPodUrl,
-        );
-        const loginUrl = getSeamLessLoginUrl(`${subdomain}.${domain}${tld}`);
+        const urlFromCmd = getCommandLineArgs(process.argv, '--url=', false);
+        const { url: userConfigURL } = config.getUserConfigFields(['url']);
+        const { url: globalConfigURL } = config.getGlobalConfigFields(['url']);
+        const podUrl = urlFromCmd
+          ? urlFromCmd.substr(6)
+          : userConfigURL
+          ? userConfigURL
+          : globalConfigURL;
+        const { subdomain, domain, tld } = whitelistHandler.parseDomain(podUrl);
+        const formattedPodUrl = `https://${subdomain}.${domain}${tld}`;
+        const loginUrl = getSeamLessLoginUrl(formattedPodUrl);
         logger.info(
           'main-api-handler:',
           'check if sso is enabled for the pod',
-          loginUrl,
+          formattedPodUrl,
         );
-        const response = await fetch(`${loginUrl}${AUTH_STATUS_PATH}`);
+        const response = await fetch(`${formattedPodUrl}${AUTH_STATUS_PATH}`);
         const authResponse = (await response.json()) as IAuthResponse;
         logger.info('main-api-handler:', 'check auth response', authResponse);
         if (
@@ -386,11 +394,11 @@ ipcMain.on(
           logger.info(
             'main-api-handler:',
             'seamless login is not enabled - loading main window with',
-            arg.newPodUrl,
+            formattedPodUrl,
           );
           const mainWebContents = windowHandler.getMainWebContents();
           if (mainWebContents && !mainWebContents.isDestroyed()) {
-            mainWebContents.loadURL(arg.newPodUrl);
+            mainWebContents.loadURL(formattedPodUrl);
           }
         }
         break;
