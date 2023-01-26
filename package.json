@@ -1,7 +1,7 @@
 {
   "name": "symphony",
   "productName": "Symphony",
-  "version": "23.2.0",
+  "version": "23.4.0-1",
   "clientVersion": "2.0.1",
   "buildNumber": "0",
   "searchAPIVersion": "1.55.3",
@@ -37,6 +37,7 @@
   },
   "build": {
     "appId": "com.symphony.electron-desktop",
+    "compression": "maximum",
     "artifactName": "${productName}-${version}-${os}.${ext}",
     "asar": true,
     "asarUnpack": "**/*.node",
@@ -52,6 +53,8 @@
       "!.git${/*}",
       "!coverage/*",
       "!installer/*",
+      "!dist/*",
+      "!src/*",
       "!tests/*",
       "!node_modules/@nornagon/cld/deps/cld${/*}",
       "!node_modules/@nornagon/cld/build/deps${/*}",
@@ -62,13 +65,7 @@
       "config/Symphony.config",
       "config/titleBarStyles.css",
       "config/InstallVariant.info",
-      "dictionaries/**",
-      "library/libsymphonysearch.dylib",
-      "library/indexvalidator.exec",
-      "library/cryptoLib.dylib",
-      "library/dictionary",
-      "library/lz4.exec",
-      "node_modules/screen-share-indicator-frame/SymphonyScreenShareIndicator"
+      "dictionaries/**"
     ],
     "mac": {
       "category": "public.app-category.business",
@@ -213,7 +210,6 @@
     "electron-fetch": "1.9.1",
     "electron-log": "4.4.8",
     "electron-updater": "^5.0.1",
-    "ffi-napi": "^4.0.3",
     "filesize": "6.4.0",
     "lazy-brush": "^1.0.1",
     "react": "16.14.0",
