@@ -96,10 +96,10 @@ class ScreenSnippet {
       ?.winName;
     const mainWindow = windowHandler.getMainWindow();
 
-    this.storeWindowsState(mainWindow, currentWindowObj);
-
-    winStore.hideWindowsOnCapturing(hideOnCapture);
-
+    if (hideOnCapture) {
+      this.storeWindowsState(mainWindow, currentWindowObj);
+      winStore.hideWindowsOnCapturing(hideOnCapture);
+    }
     if (mainWindow && windowExists(mainWindow) && isWindowsOS) {
       this.shouldUpdateAlwaysOnTop = mainWindow.isAlwaysOnTop();
       if (this.shouldUpdateAlwaysOnTop) {
