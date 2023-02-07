@@ -67,7 +67,7 @@ const broadcastMessage = (method, data) => {
   mainEvents.publish(apiCmds.onSwiftSearchMessage, [method, data]);
 };
 
-const getSeamLessLoginUrl = (pod: string) =>
+const getSeamlessLoginUrl = (pod: string) =>
   `${pod}/login/sso/initsso?RelayState=${pod}/client-bff/device-login/index.html?callbackScheme=symphony&action=login`;
 const AUTH_STATUS_PATH = '/login/checkauth?type=user';
 /**
@@ -371,7 +371,7 @@ ipcMain.on(
           : globalConfigURL;
         const { subdomain, domain, tld } = whitelistHandler.parseDomain(podUrl);
         const formattedPodUrl = `https://${subdomain}.${domain}${tld}`;
-        const loginUrl = getSeamLessLoginUrl(formattedPodUrl);
+        const loginUrl = getSeamlessLoginUrl(formattedPodUrl);
         logger.info(
           'main-api-handler:',
           'check if sso is enabled for the pod',
