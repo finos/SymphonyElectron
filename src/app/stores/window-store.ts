@@ -1,4 +1,6 @@
 import { BrowserWindow } from 'electron';
+import { isMac, isWindowsOS } from '../../common/env';
+import { ICustomBrowserWindow, windowHandler } from '../window-handler';
 import { getWindowByName } from '../window-utils';
 
 export interface IWindowObject {
@@ -9,9 +11,11 @@ export interface IWindowState {
   id: string;
   minimized?: boolean;
   focused?: boolean;
+  isFullScreen?: boolean;
 }
 
 export class WindowStore {
+  public windowsRestored: boolean = true;
   private windowVariable: IWindowObject = {
     windows: [],
   };
@@ -35,47 +39,112 @@ export class WindowStore {
 
   public hideWindowsOnCapturing = (hideOnCapture?: boolean) => {
     if (hideOnCapture) {
+      this.windowsRestored = false;
       const currentWindows = BrowserWindow.getAllWindows();
 
       currentWindows.forEach((currentWindow) => {
-        currentWindow?.hide();
+        const isFullScreen = currentWindow.isFullScreen();
+        if (isFullScreen) {
+          this.hideFullscreenWindow(currentWindow);
+        } else {
+          currentWindow?.hide();
+        }
       });
     }
   };
 
-  public focusWindowsSnippingFinished = (hideOnCapture?: boolean) => {
+  public restoreWindows = (hideOnCapture?: boolean) => {
     if (hideOnCapture) {
-      const currentWindows = this.getWindowStore();
-      const currentWindow = currentWindows.windows.find(
+      const storedWindows = this.getWindowStore();
+      let currentWindow = storedWindows.windows.find(
         (currentWindow) => currentWindow.focused,
       );
-
-      if (currentWindow) {
-        if (!currentWindow.minimized) {
-          getWindowByName(currentWindow.id || '')?.show();
-        }
-
-        if (currentWindow.focused) {
-          getWindowByName(currentWindow.id || '')?.focus();
-        }
+      if (!currentWindow) {
+        // In case there is no window focused, we automatically focus on the main one.
+        currentWindow = storedWindows.windows.find(
+          (currentWindow) => currentWindow.id === 'main',
+        );
+        currentWindow!.focused = true;
       }
-    }
-  };
 
-  public restoreWindowsOnCapturing = (hideOnCapture?: boolean) => {
-    if (hideOnCapture) {
-      const currentWindows = this.getWindowStore();
-      currentWindows.windows.forEach((currentWindow) => {
-        if (!currentWindow.minimized) {
-          getWindowByName(currentWindow.id || '')?.show();
-        }
+      let focusedWindowToRestore: ICustomBrowserWindow | undefined;
 
-        if (currentWindow.focused) {
-          getWindowByName(currentWindow.id || '')?.focus();
+      const fullscreenedWindows: IWindowState[] = [];
+      // Restoring all windows except focused one
+      storedWindows.windows.forEach((currentWindow) => {
+        if (currentWindow) {
+          const window: ICustomBrowserWindow | undefined = getWindowByName(
+            currentWindow.id || '',
+          ) as ICustomBrowserWindow;
+          if (window) {
+            if (currentWindow.isFullScreen) {
+              fullscreenedWindows.push(currentWindow);
+              // Window should be shown before putting it in fullscreen on Windows
+              if (isWindowsOS) {
+                window.show();
+              }
+            } else if (!currentWindow.minimized && !currentWindow.focused) {
+              window.showInactive();
+            }
+            if (currentWindow.focused) {
+              focusedWindowToRestore = window;
+            }
+          }
         }
       });
 
+      // First item in array should be the focused window
+      fullscreenedWindows.sort((x: IWindowState, y: IWindowState) =>
+        x.focused === y.focused ? 0 : x.focused ? -1 : 1,
+      );
+      this.putWindowInFullScreenAndFocus(
+        fullscreenedWindows,
+        focusedWindowToRestore,
+      );
+
+      // Store reset
       this.destroyWindowStore();
     }
   };
+
+  private hideFullscreenWindow = (window: BrowserWindow) => {
+    window.once('leave-full-screen', () => {
+      if (isMac) {
+        window.hide();
+      } else {
+        setTimeout(() => {
+          window.hide();
+        }, 0);
+      }
+    });
+    window.setFullScreen(false);
+  };
+
+  /**
+   * Restores windows that are in fullscreen and focus on the right window
+   * On macOS, windows in fullscreen need to be restore one by one
+   * @param windowsNames
+   */
+  private putWindowInFullScreenAndFocus(
+    windows: IWindowState[],
+    windowToFocus?: BrowserWindow,
+  ) {
+    if (windows.length) {
+      const windowDetails = windows[windows.length - 1];
+      const window: ICustomBrowserWindow | undefined = getWindowByName(
+        windowDetails.id || '',
+      ) as ICustomBrowserWindow;
+      window.once('enter-full-screen', () => {
+        windows.pop();
+        this.putWindowInFullScreenAndFocus(windows, windowToFocus);
+      });
+      window.setFullScreen(true);
+    } else {
+      if (windowToFocus) {
+        windowToFocus?.show();
+        windowHandler.moveSnippingToolWindow(windowToFocus);
+      }
+      this.windowsRestored = true;
+    }
+  }
 }

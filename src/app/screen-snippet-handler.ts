@@ -4,6 +4,7 @@ import {
   clipboard,
   dialog,
   ipcMain,
+  NativeImage,
   nativeImage,
   WebContents,
 } from 'electron';
@@ -161,6 +162,7 @@ class ScreenSnippet {
       await this.execCmd(this.captureUtil, this.captureUtilArgs);
 
       if (windowHandler.isMana) {
+        winStore.restoreWindows(hideOnCapture);
         logger.info(
           'screen-snippet-handler: Attempting to extract image dimensions from: ' +
             this.outputFilePath,
@@ -177,7 +179,6 @@ class ScreenSnippet {
 
         if (dimensions.width === 0 && dimensions.height === 0) {
           logger.info('screen-snippet-handler: no screen capture picture');
-          winStore.restoreWindowsOnCapturing(hideOnCapture);
           return;
         }
 
@@ -356,7 +357,7 @@ class ScreenSnippet {
             'screen-snippet-handler: Snippet uploaded correctly, sending payload to SFE',
           );
           webContents.send('screen-snippet-data', payload);
-          winStore.focusWindowsSnippingFinished(hideOnCapture);
+          winStore.restoreWindows(hideOnCapture);
           await this.verifyAndUpdateAlwaysOnTop();
         } catch (error) {
           await this.verifyAndUpdateAlwaysOnTop();
@@ -432,6 +433,9 @@ class ScreenSnippet {
           clipboard: string;
         },
       ) => {
+        if (isMac) {
+          windowHandler.closeSnippingToolWindow();
+        }
         const filePath = path.join(
           app.getPath('downloads'),
           'symphonyImage-' + Date.now() + '.png',
@@ -439,46 +443,11 @@ class ScreenSnippet {
         const [, data] = saveAsData.clipboard.split(',');
         const buffer = Buffer.from(data, 'base64');
         const img = nativeImage.createFromBuffer(buffer);
-
-        const dialogResult = await dialog
-          .showSaveDialog(BrowserWindow.getFocusedWindow() as BrowserWindow, {
-            title: 'Select place to store your file',
-            defaultPath: filePath,
-            // defaultPath: path.join(__dirname, '../assets/'),
-            buttonLabel: 'Save',
-            // Restricting the user to only Text Files.
-            filters: [
-              {
-                name: 'Image file',
-                extensions: ['png'],
-              },
-            ],
-            properties: [],
-          })
-          .then((file) => {
-            // Stating whether dialog operation was cancelled or not.
-            if (!file.canceled && file.filePath) {
-              // Creating and Writing to the sample.txt file
-              fs.writeFile(file.filePath.toString(), img.toPNG(), (err) => {
-                if (err) {
-                  throw logger.error(
-                    `screen-snippet-handler: cannot save file, failed with error: ${err}!`,
-                  );
-                }
-
-                logger.info(`screen-snippet-handler: modal save opened!`);
-              });
-            }
-
-            return file;
-          })
-          .catch((err) => {
-            logger.error(
-              `screen-snippet-handler: cannot save file, failed with error: ${err}!`,
-            );
-
-            return undefined;
-          });
+        const dialogResult = await this.saveFile(
+          filePath,
+          img,
+          BrowserWindow.getFocusedWindow(),
+        );
         if (dialogResult?.filePath) {
           windowHandler.closeSnippingToolWindow();
         }
@@ -496,7 +465,6 @@ class ScreenSnippet {
     const windowObj = winStore.getWindowStore();
     const currentWindowName = (currentWindowObj as ICustomBrowserWindow)
       ?.winName;
-
     if (windowObj.windows.length < 1) {
       const allWindows = BrowserWindow.getAllWindows();
       let windowsArr: IWindowState[] = [];
@@ -531,11 +499,66 @@ class ScreenSnippet {
       } else {
         windowsArr = windowsArr.concat(mainArr);
       }
-
       winStore.setWindowStore({
         windows: windowsArr,
       });
     }
+  };
+
+  /**
+   * Save image in a given location
+   * @param filePath where the image should be stored
+   * @param img the image
+   * @param parent parent window to attach save dialog
+   */
+  private saveFile = (
+    filePath: string,
+    img: NativeImage,
+    parentWindow: BrowserWindow | null,
+  ) => {
+    const saveOptions = {
+      title: 'Select place to store your file',
+      defaultPath: filePath,
+      // defaultPath: path.join(__dirname, '../assets/'),
+      buttonLabel: 'Save',
+      // Restricting the user to only Text Files.
+      filters: [
+        {
+          name: 'Image file',
+          extensions: ['png'],
+        },
+      ],
+      properties: [],
+    };
+    const saveDialog =
+      !isMac && parentWindow
+        ? dialog.showSaveDialog(parentWindow, saveOptions)
+        : dialog.showSaveDialog(saveOptions);
+    return saveDialog
+      .then((file) => {
+        // Stating whether dialog operation was cancelled or not.
+        if (!file.canceled && file.filePath) {
+          // Creating and Writing to the sample.txt file
+          fs.writeFile(file.filePath.toString(), img.toPNG(), (err) => {
+            if (err) {
+              throw logger.error(
+                `screen-snippet-handler: cannot save file, failed with error: ${err}!`,
+              );
+            }
+
+            logger.info(`screen-snippet-handler: modal save opened!`);
+          });
+        }
+
+        return file;
+      })
+      .catch((err) => {
+        logger.error(
+          `screen-snippet-handler: cannot save file, failed with error: ${err}!`,
+        );
+
+        return undefined;
+      });
   };
 }
 

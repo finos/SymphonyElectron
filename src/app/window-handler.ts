@@ -1057,11 +1057,18 @@ export class WindowHandler {
   }
 
   /**
-   * Move window to the same screen as main window
+   * Move window to the same screen as main window or provided parent window
    */
-  public moveWindow(windowToMove: BrowserWindow, fixedYPosition?: number) {
+  public moveWindow(
+    windowToMove: BrowserWindow,
+    fixedYPosition?: number,
+    parentWindow?: BrowserWindow,
+  ) {
     if (this.mainWindow && windowExists(this.mainWindow)) {
-      const display = screen.getDisplayMatching(this.mainWindow.getBounds());
+      let display = screen.getDisplayMatching(this.mainWindow.getBounds());
+      if (parentWindow && windowExists(parentWindow)) {
+        display = screen.getDisplayMatching(parentWindow.getBounds());
+      }
 
       logger.info(
         'window-handler: moveWindow, display: ' +
@@ -1238,7 +1245,7 @@ export class WindowHandler {
     this.hideOnCapture = !!hideOnCapture;
 
     logger.info(
-      'window-handler, createSnippingToolWindow: Receiving snippet props: ' +
+      'window-handler: createSnippingToolWindow: Receiving snippet props: ' +
         JSON.stringify({
           snipImage,
           snipDimensions,
@@ -1247,7 +1254,7 @@ export class WindowHandler {
 
     const allDisplays = screen.getAllDisplays();
     logger.info(
-      'window-handler, createSnippingToolWindow: User has these displays: ' +
+      'window-handler: createSnippingToolWindow: User has these displays: ' +
         JSON.stringify(allDisplays),
     );
 
@@ -1263,7 +1270,10 @@ export class WindowHandler {
     const BUTTON_BAR_BOTTOM_HEIGHT = 72;
     const BUTTON_BARS_HEIGHT = BUTTON_BAR_TOP_HEIGHT + BUTTON_BAR_BOTTOM_HEIGHT;
 
-    const display = screen.getDisplayMatching(this.mainWindow.getBounds());
+    const focusedWindow = BrowserWindow.getFocusedWindow();
+    const display = screen.getDisplayMatching(
+      focusedWindow ? focusedWindow.getBounds() : this.mainWindow.getBounds(),
+    );
     const workAreaSize = display.workAreaSize;
     // Snipping tool height shouldn't be greater than min of screen width and height (screen orientation can be portrait or landscape)
     const minSize = Math.min(workAreaSize.width, workAreaSize.height);
@@ -1277,7 +1287,7 @@ export class WindowHandler {
       width: Math.floor(snipDimensions.width / scaleFactor),
     };
     logger.info(
-      'window-handler, createSnippingToolWindow: Image will open with scaled dimensions: ' +
+      'window-handler: createSnippingToolWindow: Image will open with scaled dimensions: ' +
         JSON.stringify(scaledImageDimensions),
     );
 
@@ -1314,12 +1324,12 @@ export class WindowHandler {
     }
 
     this.currentWindow = currentWindow || '';
+    const parentWindow = getWindowByName(this.currentWindow);
     const opts: ICustomBrowserWindowConstructorOpts = this.getWindowOpts(
       {
         width: toolWidth,
         height: toolHeight,
-        parent: getWindowByName(this.currentWindow),
-        modal: true,
+        modal: isWindowsOS,
         alwaysOnTop: this.hideOnCapture,
         resizable: false,
         fullscreenable: false,
@@ -1337,8 +1347,16 @@ export class WindowHandler {
       opts.alwaysOnTop = true;
     }
 
+    const areWindowsRestoredPostHide =
+      (winStore.windowsRestored && this.hideOnCapture) || !this.hideOnCapture;
+
+    if (isWindowsOS || (isMac && areWindowsRestoredPostHide)) {
+      opts.parent = parentWindow;
+      opts.modal = true;
+    }
+
     this.snippingToolWindow = createComponentWindow('snipping-tool', opts);
-    this.moveWindow(this.snippingToolWindow);
+    this.moveWindow(this.snippingToolWindow, undefined, parentWindow);
     this.snippingToolWindow.setVisibleOnAllWorkspaces(true);
 
     this.snippingToolWindow.webContents.once('did-finish-load', async () => {
@@ -1391,12 +1409,11 @@ export class WindowHandler {
           'snipping-tool-data',
           snippingToolInfo,
         );
-        winStore.restoreWindowsOnCapturing(this.hideOnCapture);
       }
     });
     this.snippingToolWindow.once('close', () => {
       logger.info(
-        'window-handler, createSnippingToolWindow: Closing snipping window, attempting to delete temp snip image',
+        'window-handler: createSnippingToolWindow: Closing snipping window, attempting to delete temp snip image',
       );
       ipcMain.removeAllListeners(ScreenShotAnnotation.COPY_TO_CLIPBOARD);
       ipcMain.removeAllListeners(ScreenShotAnnotation.SAVE_AS);
@@ -1404,7 +1421,6 @@ export class WindowHandler {
       this.deleteFile(snipImage);
       this.removeWindow(opts.winKey);
       this.screenPickerWindow = null;
-      winStore.focusWindowsSnippingFinished(this.hideOnCapture);
     });
   }
 
@@ -2213,6 +2229,18 @@ export class WindowHandler {
   public onExportLogs(): void {
     logger.info('window-handler: Exporting logs');
     exportLogs();
+  }
+
+  /**
+   * Moves snipping tool to the right place after restoring all hidden windows
+   * @param focusedWindow Focused window where snipping tool window should be moved
+   */
+  public moveSnippingToolWindow(focusedWindow: BrowserWindow): void {
+    if (this.snippingToolWindow && !this.snippingToolWindow.isDestroyed()) {
+      this.snippingToolWindow.setAlwaysOnTop(true);
+      this.snippingToolWindow.setParentWindow(focusedWindow);
+      this.moveWindow(this.snippingToolWindow, undefined, focusedWindow);
+    }
   }
 
   /**
