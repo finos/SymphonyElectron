@@ -24,52 +24,6 @@ exports[`about app should render correctly 1`] = `
         Desktop Application
       </span>
     </div>
-    <section>
-      <ul
-        className="AboutApp-symphony-section"
-      >
-        <li
-          key="0"
-        >
-          <strong>
-            POD:
-          </strong>
-          <span>
-            N/A
-          </span>
-        </li>
-        <li
-          key="1"
-        >
-          <strong>
-            SBE:
-          </strong>
-          <span>
-            N/A (N/A)
-          </span>
-        </li>
-        <li
-          key="2"
-        >
-          <strong>
-            SDA:
-          </strong>
-          <span>
-            N/A (N/A)
-          </span>
-        </li>
-        <li
-          key="3"
-        >
-          <strong>
-            SFE-Lite:
-          </strong>
-          <span>
-            N/A undefined
-          </span>
-        </li>
-      </ul>
-    </section>
     <div
       className="AboutApp-copy-container"
     >
