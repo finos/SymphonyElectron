@@ -384,8 +384,7 @@ export const updateLocale = async (locale: LocaleType): Promise<void> => {
  * Displays a popup menu
  */
 export const showPopupMenu = (opts: Electron.PopupOptions): void => {
-  const browserWindow =
-    windowHandler.getMainWindow() || windowHandler.getWelcomeScreenWindow();
+  const browserWindow = windowHandler.getMainWindow();
   if (
     browserWindow &&
     windowExists(browserWindow) &&

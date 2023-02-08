@@ -200,10 +200,10 @@ export const titleBarChangeDialog = async (
 };
 
 /**
- * Displays a dialog to restart app upon changing gpu settings
- * @param disableGpu
+ * Displays a dialog to restart app upon changing config settings
+ * @param config
  */
-export const gpuRestartDialog = async (disableGpu: boolean) => {
+export const restartDialog = async (configFields: any) => {
   const focusedWindow = BrowserWindow.getFocusedWindow();
   if (!focusedWindow || !windowExists(focusedWindow)) {
     return;
@@ -218,7 +218,7 @@ export const gpuRestartDialog = async (disableGpu: boolean) => {
     cancelId: 1,
   };
   const { response } = await dialog.showMessageBox(focusedWindow, options);
-  await config.updateUserConfig({ disableGpu });
+  await config.updateUserConfig(configFields);
   if (response === 0) {
     app.relaunch();
     app.exit();

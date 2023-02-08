@@ -58,7 +58,6 @@ export enum apiCmds {
   isAeroGlassEnabled = 'is-aero-glass-enabled',
   showScreenSharePermissionDialog = 'show-screen-share-permission-dialog',
   getMediaAccessStatus = 'get-media-access-status',
-  setPodUrl = 'set-pod-url',
   setBroadcastMessage = 'set-broadcast-message',
   handleSwiftSearchMessageEvents = 'handle-shift-search-message-events',
   onSwiftSearchMessage = 'on-shift-search-message',
@@ -73,6 +72,7 @@ export enum apiCmds {
   updateAndRestart = 'update-and-restart',
   downloadUpdate = 'download-update',
   checkForUpdates = 'check-for-updates',
+  seamlessLogin = 'seamless-login',
 }
 
 export enum apiName {
@@ -120,6 +120,9 @@ export interface IApiArgs {
   requestId: number;
   mediaStatus: IMediaPermission;
   newPodUrl: string;
+  startUrl: string;
+  isPodConfigured: boolean;
+  isSeamlessLoginEnabled: boolean;
   swiftSearchData: any;
   types: string[];
   thumbnailSize: Size;
@@ -287,4 +290,14 @@ export type ConfigUpdateType = 'restart' | 'reload';
 export interface ICloud9Pipe {
   write(data: Uint8Array): void;
   close(): void;
+}
+
+export type AuthType = 'password' | 'sso';
+
+export interface IAuthResponse {
+  status: string;
+  podVersion: string;
+  authenticationType: AuthType;
+  ssoDisabledForMobile: boolean;
+  keymanagerUrl: string;
 }

@@ -81,6 +81,9 @@ export enum ClientSwitchType {
   CLIENT_2_0_DAILY = 'CLIENT_2_0_DAILY',
 }
 
+export const DEFAULT_WELCOME_SCREEN_WIDTH: number = 542;
+export const DEFAULT_WELCOME_SCREEN_HEIGHT: number = 333;
+
 const MAIN_WEB_CONTENTS_EVENTS = ['enter-full-screen', 'leave-full-screen'];
 const SHORTCUT_KEY_THROTTLE = 1000; // 1sec
 
@@ -104,8 +107,6 @@ export interface ICustomBrowserView extends Electron.BrowserView {
 // Default window width & height
 export const DEFAULT_WIDTH: number = 900;
 export const DEFAULT_HEIGHT: number = 900;
-export const DEFAULT_WELCOME_SCREEN_WIDTH: number = 542;
-export const DEFAULT_WELCOME_SCREEN_HEIGHT: number = 333;
 export const TITLE_BAR_HEIGHT: number = 32;
 export const IS_SAND_BOXED: boolean = true;
 export const IS_NODE_INTEGRATION_ENABLED: boolean = false;
@@ -131,6 +132,7 @@ export class WindowHandler {
   }
   public mainView: ICustomBrowserView | null = null;
   public titleBarView: ICustomBrowserView | null = null;
+  public welcomeScreenWindow: BrowserWindow | null = null;
   public mainWebContents: WebContents | undefined;
   public appMenu: AppMenu | null = null;
   public isAutoReload: boolean = false;
@@ -145,7 +147,6 @@ export class WindowHandler {
   public isLoggedIn: boolean = false;
   public isAutoUpdating: boolean = false;
   public screenShareIndicatorFrameUtil: string;
-  private defaultPodUrl: string = 'https://[POD].symphony.com';
   private contextIsolation: boolean = true;
   private backgroundThrottling: boolean = false;
   private windowOpts: ICustomBrowserWindowConstructorOpts =
@@ -158,7 +159,6 @@ export class WindowHandler {
   private loadFailError: string | undefined;
   private mainWindow: ICustomBrowserWindow | null = null;
   private aboutAppWindow: Electron.BrowserWindow | null = null;
-  private welcomeScreenWindow: Electron.BrowserWindow | null = null;
   private screenPickerWindow: Electron.BrowserWindow | null = null;
   private screenPickerPlaceholderWindow: Electron.BrowserWindow | null = null;
   private screenSharingIndicatorWindow: Electron.BrowserWindow | null = null;
@@ -170,6 +170,9 @@ export class WindowHandler {
   private readonly opts: Electron.BrowserViewConstructorOptions | undefined;
   private hideOnCapture: boolean = false;
   private currentWindow?: string = undefined;
+  private isPodConfigured: boolean = false;
+  private shouldShowWelcomeScreen: boolean = true;
+  private didShowWelcomeScreen: boolean = false;
 
   constructor(opts?: Electron.BrowserViewConstructorOptions) {
     this.opts = opts;
@@ -213,6 +216,7 @@ export class WindowHandler {
       'customFlags',
       'clientSwitch',
       'enableRendererLogs',
+      'enableSeamlessLogin',
     ]);
     logger.info(
       `window-handler: main windows initialized with following config data`,
@@ -238,6 +242,13 @@ export class WindowHandler {
     this.isCustomTitleBar =
       isWindowsOS &&
       this.config.isCustomTitleBar === CloudConfigDataTypes.ENABLED;
+    // Get url to load from cmd line or from global config file
+    const urlFromCmd = getCommandLineArgs(process.argv, '--url=', false);
+    this.isPodConfigured = !config.isFirstTimeLaunch();
+    this.didShowWelcomeScreen = false;
+    this.shouldShowWelcomeScreen =
+      config.isFirstTimeLaunch() || this.config.enableSeamlessLogin;
+
     this.windowOpts = {
       ...this.getWindowOpts(
         {
@@ -284,20 +295,6 @@ export class WindowHandler {
       this.userConfig.url ? this.userConfig.url : this.globalConfig.url,
     );
     logger.info(`window-handler: setting url ${this.url} from config file!`);
-
-    // Get url to load from cmd line or from global config file
-    const urlFromCmd = getCommandLineArgs(process.argv, '--url=', false);
-
-    // Displays welcome screen instead of starting the main application
-    if (
-      config.isFirstTimeLaunch() &&
-      this.globalConfig.url.indexOf('https://my.symphony.com') >= 0 &&
-      urlFromCmd === null
-    ) {
-      this.url = this.defaultPodUrl;
-      this.showWelcomeScreen();
-      return;
-    }
 
     // set window opts with additional config
     this.mainWindow = new BrowserWindow({
@@ -381,6 +378,20 @@ export class WindowHandler {
     // loads the main window with url from config/cmd line
     logger.info(`Loading main window with url ${this.url}`);
     const userAgent = this.getUserAgent(this.mainWindow.webContents);
+
+    // Displays welcome screen instead of starting the main application
+    if (this.shouldShowWelcomeScreen) {
+      this.url = format({
+        pathname: require.resolve('../renderer/welcome.html'),
+        protocol: 'file',
+        query: {
+          componentName: 'welcome',
+          locale: i18n.getLocale(),
+          title: i18n.t('WelcomeText', 'Welcome')(),
+        },
+        slashes: true,
+      });
+    }
 
     if (
       this.config.isCustomTitleBar === CloudConfigDataTypes.ENABLED &&
@@ -513,9 +524,34 @@ export class WindowHandler {
         await this.mainWebContents?.loadURL(url, { userAgent });
         return;
       }
+
       logger.info('window-handler: did-finish-load, url: ' + this.url);
 
       if (this.mainWebContents && !this.mainWebContents.isDestroyed()) {
+        // Load welcome screen
+        if (this.shouldShowWelcomeScreen && !this.didShowWelcomeScreen) {
+          const userConfigUrl =
+            this.userConfig.url &&
+            this.userConfig.url.indexOf('/login/sso/initsso') > -1
+              ? this.userConfig.url.slice(
+                  0,
+                  this.userConfig.url.indexOf('/login/sso/initsso'),
+                )
+              : this.userConfig.url;
+          this.mainWebContents.send('page-load-welcome', {
+            locale: i18n.getLocale(),
+            resources: i18n.loadedResources,
+          });
+          this.mainWebContents.send('welcome', {
+            url: userConfigUrl,
+            message: '',
+            urlValid: !!userConfigUrl,
+            isPodConfigured: this.isPodConfigured,
+            isSeamlessLoginEnabled: this.config.enableSeamlessLogin,
+          });
+          this.didShowWelcomeScreen = true;
+        }
+
         // Injects custom title bar and snack bar css into the webContents
         await injectStyles(this.mainWebContents, this.isCustomTitleBar);
         this.mainWebContents.send('page-load', {
@@ -844,13 +880,6 @@ export class WindowHandler {
    */
   public getMainWindow(): ICustomBrowserWindow | null {
     return this.mainWindow;
-  }
-
-  /**
-   * Gets the welcome screen window
-   */
-  public getWelcomeScreenWindow(): BrowserWindow | null {
-    return this.welcomeScreenWindow;
   }
 
   /**

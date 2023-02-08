@@ -1,20 +1,23 @@
 import {
-  app,
   BrowserWindow,
   clipboard,
   desktopCapturer,
   dialog,
   ipcMain,
+  shell,
   systemPreferences,
 } from 'electron';
+import fetch from 'electron-fetch';
 import {
   apiCmds,
   apiName,
   IApiArgs,
+  IAuthResponse,
   INotificationData,
 } from '../common/api-interface';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
+import { whitelistHandler } from '../common/whitelist-handler';
 import { activityDetection } from './activity-detection';
 import { analytics } from './analytics-handler';
 import appStateHandler from './app-state-handler';
@@ -46,6 +49,7 @@ import {
   windowExists,
 } from './window-utils';
 
+import { getCommandLineArgs } from '../common/utils';
 import { autoUpdate, AutoUpdateTrigger } from './auto-update-handler';
 
 // Swift search API
@@ -63,6 +67,9 @@ const broadcastMessage = (method, data) => {
   mainEvents.publish(apiCmds.onSwiftSearchMessage, [method, data]);
 };
 
+const getSeamlessLoginUrl = (pod: string) =>
+  `${pod}/login/sso/initsso?RelayState=${pod}/client-bff/device-login/index.html?callbackScheme=symphony&action=login`;
+const AUTH_STATUS_PATH = '/login/checkauth?type=user';
 /**
  * Handle API related ipc messages from renderers. Only messages from windows
  * we have created are allowed.
@@ -350,10 +357,50 @@ ipcMain.on(
           mainWebContents.focus();
         }
         break;
-      case apiCmds.setPodUrl:
-        await config.updateUserConfig({ url: arg.newPodUrl });
-        app.relaunch();
-        app.exit();
+      case apiCmds.seamlessLogin:
+        if (!arg.isPodConfigured) {
+          await config.updateUserConfig({ url: arg.newPodUrl });
+        }
+        const urlFromCmd = getCommandLineArgs(process.argv, '--url=', false);
+        const { url: userConfigURL } = config.getUserConfigFields(['url']);
+        const { url: globalConfigURL } = config.getGlobalConfigFields(['url']);
+        const podUrl = urlFromCmd
+          ? urlFromCmd.substr(6)
+          : userConfigURL
+          ? userConfigURL
+          : globalConfigURL;
+        const { subdomain, domain, tld } = whitelistHandler.parseDomain(podUrl);
+        const formattedPodUrl = `https://${subdomain}.${domain}${tld}`;
+        const loginUrl = getSeamlessLoginUrl(formattedPodUrl);
+        logger.info(
+          'main-api-handler:',
+          'check if sso is enabled for the pod',
+          formattedPodUrl,
+        );
+        const response = await fetch(`${formattedPodUrl}${AUTH_STATUS_PATH}`);
+        const authResponse = (await response.json()) as IAuthResponse;
+        logger.info('main-api-handler:', 'check auth response', authResponse);
+        if (
+          arg.isSeamlessLoginEnabled &&
+          authResponse.authenticationType === 'sso'
+        ) {
+          logger.info(
+            'main-api-handler:',
+            'seamless login is enabled - logging in',
+            loginUrl,
+          );
+          await shell.openExternal(loginUrl);
+        } else {
+          logger.info(
+            'main-api-handler:',
+            'seamless login is not enabled - loading main window with',
+            formattedPodUrl,
+          );
+          const mainWebContents = windowHandler.getMainWebContents();
+          if (mainWebContents && !mainWebContents.isDestroyed()) {
+            mainWebContents.loadURL(formattedPodUrl);
+          }
+        }
         break;
       case apiCmds.setBroadcastMessage:
         if (swiftSearchInstance) {

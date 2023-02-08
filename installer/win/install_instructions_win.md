@@ -529,3 +529,28 @@ Expected values:
     msiexec /i Symphony.msi CHROME_FLAGS="--debug --debug2 --debug3"
 
 
+-------------------------------------------------------------------
+### ENABLE_SEAMLESS_LOGIN
+
+Expected values:
+
+* "true"
+  SDA will authenticate the user by relying on third-party browser
+* "false"
+  SDA will authenticate the user in SDA
+
+#### Example, install with user-agent override
+
+    msiexec /i Symphony.msi ENABLE_SEAMLESS_LOGIN="true"
+
+#### Example, install without user-agent override
+
+    msiexec /i Symphony.msi ENABLE_SEAMLESS_LOGIN="false"
+
+or
+
+    msiexec /i Symphony.msi
+	
+
+	
+-------------------------------------------------------------------
