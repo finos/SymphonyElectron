@@ -123,6 +123,10 @@
           "to": "ScreenSnippet.exe"
         },
         {
+          "from": "node_modules/symphony-native-window-handle-helper/SymphonyNativeWindowHandleHelper.exe",
+          "to": "SymphonyNativeWindowHandleHelper.exe"
+        },
+        {
           "from": "node_modules/@symphony/symphony-c9-shell/shell",
           "to": "cloud9/shell",
           "filter": [
@@ -168,7 +172,7 @@
     "builder-util-runtime": "^9.0.3",
     "cross-env": "5.2.1",
     "del": "3.0.0",
-    "electron": "^22.0.0",
+    "electron": "^22.0.3",
     "electron-builder": "23.6.0",
     "electron-builder-squirrel-windows": "20.44.0",
     "electron-icon-maker": "0.0.5",
@@ -221,8 +225,9 @@
   },
   "optionalDependencies": {
     "@symphony/symphony-c9-shell": "3.19.0-0.98.8.132",
-    "screen-share-indicator-frame": "git+https://github.com/symphonyoss/ScreenShareIndicatorFrame.git#v1.4.13",
-    "screen-snippet": "git+https://github.com/symphonyoss/ScreenSnippet2.git#9.2.2",
+    "screen-share-indicator-frame": "git+https://github.com/finos/ScreenShareIndicatorFrame.git#v1.4.13",
+    "screen-snippet": "git+https://github.com/finos/ScreenSnippet2.git#9.2.2",
+    "symphony-native-window-handle-helper": "github:finos/SymphonyWindowsHwndHelper#1.0.1",
     "winreg": "^1.2.4"
   },
   "ava": {
