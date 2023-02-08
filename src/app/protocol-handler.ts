@@ -135,6 +135,7 @@ class ProtocolHandler {
       const mainWebContents = windowHandler.getMainWebContents();
       if (mainWebContents && !mainWebContents?.isDestroyed() && url) {
         logger.info('protocol-handler: redirecting main webContents', url);
+        windowHandler.setMainWindowOrigin(url);
         mainWebContents?.loadURL(url);
       }
     }

@@ -371,7 +371,13 @@ export class AppBridge {
    * @param data {any}
    */
   private broadcastMessage(method: string, data: any): void {
-    window.postMessage({ method, data }, this.origin);
+    ipcRenderer
+      .invoke(apiName.symphonyApi, {
+        cmd: apiCmds.getCurrentOriginUrl,
+      })
+      .then((origin) => {
+        window.postMessage({ method, data }, origin);
+      });
   }
 }
 

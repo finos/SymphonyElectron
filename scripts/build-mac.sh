@@ -99,7 +99,8 @@ sed -i -e 's/\"url\"[[:space:]]*\:[[:space:]]*\".*\"/\"url\":\"https:\/\/my.symp
 
 # Setup the build version
 echo "Setting build version to ${PARENT_BUILD_VERSION}"
-sed -i -e "s/\"buildNumber\"[[:space:]]*\:[[:space:]]*\".*\"/\"buildNumber\":\" ${PARENT_BUILD_VERSION}\"/g" package.json
+sed -i -e "s/\"buildNumber\"[[:space:]]*\:[[:space:]]*\".*\"/\"buildNumber\": \"${PARENT_BUILD_VERSION}\"/g" package.json
+sed -i -e "s/\"version\"[[:space:]]*\:[[:space:]]\"\(.*\)\"/\"version\": \"\1-${PARENT_BUILD_VERSION}\"/g" package.json 
 
 # Replace version number in pre-install script
 echo "Setting package version in pre install script to ${PKG_VERSION}"
@@ -130,7 +131,7 @@ echo "Package created: ${PACKAGE}"
 # Sign the app
 PKG_VERSION=$(node -e "console.log(require('./package.json').version);")
 echo "Signing Package: ${PACKAGE}"
-SIGNED_PACKAGE=installer/mac/build/Symphony_Signed_${PKG_VERSION}_${PARENT_BUILD_VERSION}.pkg
+SIGNED_PACKAGE=installer/mac/build/Symphony_Signed_${PKG_VERSION}.pkg
 productsign --sign "Developer ID Installer: Symphony Communication Services LLC" $PACKAGE $SIGNED_PACKAGE
 echo "Signing Package complete: ${PACKAGE}"
 
@@ -164,13 +165,13 @@ mkdir -p targets
 
 # Attach artifacts to build
 if [ "${EXPIRY_PERIOD}" != "0" ]; then
-  cp $SIGNED_PACKAGE "targets/Symphony-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}-TTL-${EXPIRY_PERIOD}.pkg"
-  cp installer/mac/install_instructions_mac.pdf "targets/Install-Instructions-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}-TTL-${EXPIRY_PERIOD}.pdf"
-  cp RELEASE_NOTES.pdf "targets/Release-Notes-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}-TTL-${EXPIRY_PERIOD}.pdf"
+  cp $SIGNED_PACKAGE "targets/Symphony-macOS-${PKG_VERSION}-TTL-${EXPIRY_PERIOD}.pkg"
+  cp installer/mac/install_instructions_mac.pdf "targets/Install-Instructions-macOS-${PKG_VERSION}-TTL-${EXPIRY_PERIOD}.pdf"
+  cp RELEASE_NOTES.pdf "targets/Release-Notes-macOS-${PKG_VERSION}-TTL-${EXPIRY_PERIOD}.pdf"
 else
-  cp $SIGNED_PACKAGE "targets/Symphony-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}.pkg"
-  cp installer/mac/install_instructions_mac.pdf "targets/Install-Instructions-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}.pdf"
-  cp RELEASE_NOTES.pdf "targets/Release-Notes-macOS-${PKG_VERSION}-${PARENT_BUILD_VERSION}.pdf"
+  cp $SIGNED_PACKAGE "targets/Symphony-macOS-${PKG_VERSION}.pkg"
+  cp installer/mac/install_instructions_mac.pdf "targets/Install-Instructions-macOS-${PKG_VERSION}.pdf"
+  cp RELEASE_NOTES.pdf "targets/Release-Notes-macOS-${PKG_VERSION}-.pdf"
 fi
 
 echo "All done, job successfull :)"
