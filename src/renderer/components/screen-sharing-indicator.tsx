@@ -12,6 +12,8 @@ interface IState {
   streamId: string;
 }
 
+const SCREEN_SHARING_NAMESPACE = 'ScreenSharingIndicator';
+
 type mouseEventButton = React.MouseEvent<HTMLButtonElement>;
 /**
  * Window that display a banner when the users starting sharing screen
@@ -40,26 +42,16 @@ export default class ScreenSharingIndicator extends React.Component<
    */
   public render(): JSX.Element {
     const { id } = this.state;
-    const namespace = 'ScreenSharingIndicator';
-    const appName = productName || 'Symphony';
 
     return (
       <div className={classNames('ScreenSharingIndicator', { mac: isMac })}>
-        <span className='text-label'>
-          {i18n
-            .t(
-              `You are sharing your screen on {appName}`,
-              namespace,
-            )({ appName })
-            .replace(appName, '')}
-          <span className='text-label2'>&nbsp;{appName}</span>
-        </span>
+        <span className='text-label'>{this.getLabelInBold()}</span>
         <span className='buttons'>
           <button
             className='stop-sharing-button'
             onClick={this.eventHandlers.onStopScreenSharing(id)}
           >
-            {i18n.t('Stop sharing', namespace)()}
+            {i18n.t('Stop sharing', SCREEN_SHARING_NAMESPACE)()}
           </button>
         </span>
       </div>
@@ -112,5 +104,28 @@ export default class ScreenSharingIndicator extends React.Component<
    */
   private updateState(_event, data): void {
     this.setState(data as IState);
+  }
+
+  /**
+   * Put App name in bold
+   */
+  private getLabelInBold(): JSX.Element {
+    const appName = productName || 'Symphony';
+    const translatedLabel = i18n.t(
+      `You are sharing your screen on {appName}`,
+      SCREEN_SHARING_NAMESPACE,
+    )({ appName });
+    const appNameStartPosition = translatedLabel.indexOf(appName);
+    if (appNameStartPosition === -1) {
+      return <>{translatedLabel}</>;
+    }
+    const appNameEndPosition = appNameStartPosition + appName.length;
+    return (
+      <>
+        {`${translatedLabel.slice(0, appNameStartPosition)}`}
+        <b> {appName} </b>
+        {translatedLabel.slice(appNameEndPosition)}
+      </>
+    );
   }
 }
