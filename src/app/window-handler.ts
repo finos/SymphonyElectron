@@ -2244,6 +2244,15 @@ export class WindowHandler {
   }
 
   /**
+   * Setting origin for main window
+   */
+  public setMainWindowOrigin(url: string) {
+    if (this.mainWindow && windowExists(this.mainWindow)) {
+      this.mainWindow.origin = url;
+    }
+  }
+
+  /**
    * Listens for app load timeouts and reloads if required
    */
   private listenForLoad() {

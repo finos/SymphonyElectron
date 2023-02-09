@@ -38,7 +38,8 @@ call snyk config set org=%SNYK_ORG%
 call snyk config set api=%SNYK_API_TOKEN%
 
 :: Below command replaces buildVersion with the appropriate build number from jenkins
-sed -i -e "s/\"buildNumber\"[[:space:]]*\:[[:space:]]*\".*\"/\"buildNumber\":\"%PARENT_BUILD_VERSION%\"/g" package.json
+sed -i -e "s/\"buildNumber\"[[:space:]]*\:[[:space:]]*\".*\"/\"buildNumber\": \"%PARENT_BUILD_VERSION%\"/g" package.json
+sed -i -e "s/\"version\"[[:space:]]*\:[[:space:]]\"\(.*\)\"/\"version\": \"\1-%PARENT_BUILD_VERSION%\"/g" package.json 
 
 :: Copy search libraries onto the project root
 echo "Copying search libraries"
@@ -106,9 +107,9 @@ mkdir targets
 set targetsDir="%CD%\targets\"
 
 IF "%EXPIRY_PERIOD%"=="0" (
-    set archiveName=Symphony-Win64-%SYMVER%-%PARENT_BUILD_VERSION%
+    set archiveName=Symphony-Win64-%SYMVER%
 ) else (
-    set archiveName=Symphony-Win64-%SYMVER%-%PARENT_BUILD_VERSION%-TTL-%EXPIRY_PERIOD%
+    set archiveName=Symphony-Win64-%SYMVER%-TTL-%EXPIRY_PERIOD%
 )
 
 set installerDir="%CD%\installer\win"

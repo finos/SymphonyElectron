@@ -518,6 +518,7 @@ export class AppMenu {
           !bringToFrontCC || bringToFrontCC === CloudConfigDataTypes.NOT_SET,
       },
       {
+        type: 'checkbox',
         label: i18n.t('Third-party browser login')(),
         checked: enableSeamlessLogin,
         click: () => {

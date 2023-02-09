@@ -1,13 +1,14 @@
-@white: rgba(255,255,255, 1);
+@white: rgba(255, 255, 255, 1);
 @background: #6b717c;
 @button-color: #303237;
-@stop-sharing-background:#EE3D3D;
-@font: "system";
+@stop-sharing-background: #ee3d3d;
+@font: 'system';
 
 @font-face {
   font-family: system;
   font-style: normal;
-  src: local(".SFNSText"), local(".HelveticaNeueDeskInterface"), local("Ubuntu Light"), local("Segoe UI"), local("Roboto"), local("Tahoma");
+  src: local('.SFNSText'), local('.HelveticaNeueDeskInterface'),
+    local('Ubuntu Light'), local('Segoe UI'), local('Roboto'), local('Tahoma');
 }
 
 body {
@@ -22,7 +23,7 @@ body {
 }
 
 .ScreenSharingIndicator {
-  background: #FFFFFF;
+  background: #ffffff;
   width: 584px;
   height: 40px;
   border-radius: 24px;
@@ -62,10 +63,6 @@ body {
     color: #000000;
   }
 
-  .text-label2 {
-    font-weight: bold
-  }
-
   .mac {
     .hide-button {
       color: @button-color;
@@ -75,5 +72,4 @@ body {
       padding: 6px 18px;
     }
   }
-
 }
