@@ -121,11 +121,11 @@ export default class ScreenSharingIndicator extends React.Component<
     }
     const appNameEndPosition = appNameStartPosition + appName.length;
     return (
-      <>
+      <span>
         {`${translatedLabel.slice(0, appNameStartPosition)}`}
         <b> {appName} </b>
         {translatedLabel.slice(appNameEndPosition)}
-      </>
+      </span>
     );
   }
 }
