@@ -7,12 +7,14 @@ exports[`screen sharing indicator should render correctly 1`] = `
   <span
     className="text-label"
   >
-    You are sharing your screen on 
-    <b>
-       
-      Symphony
-       
-    </b>
+    <span>
+      You are sharing your screen on 
+      <b>
+         
+        Symphony
+         
+      </b>
+    </span>
   </span>
   <span
     className="buttons"
