@@ -423,7 +423,7 @@ ipcMain.on(
         closeC9Pipe();
         break;
       case apiCmds.launchCloud9:
-        loadC9Shell(event.sender);
+        await loadC9Shell(event.sender);
         break;
       case apiCmds.terminateCloud9:
         terminateC9Shell(event.sender);
