@@ -94,11 +94,9 @@ class C9ShellHandler {
   ): Promise<ChildProcess | undefined> {
     this._curStatus = undefined;
     const uniquePipeName = getGuid();
-    const resolvedProxy =
-      (await webContents.session.resolveProxy(webContents.getURL() ?? '')) ??
-      '';
-    const proxy =
-      resolvedProxy === 'DIRECT' ? '' : resolvedProxy.replace('PROXY ', '');
+    const proxy = (
+      await webContents.session.resolveProxy(webContents.getURL() ?? '')
+    ).replace('PROXY ', '');
 
     const c9ShellPath = isDevEnv
       ? path.join(

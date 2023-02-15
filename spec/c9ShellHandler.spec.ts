@@ -1,9 +1,8 @@
 describe('C9 shell handler', () => {
-  const resolveProxy = jest.fn().mockImplementation(() => Promise.resolve(''));
   const webContentsMocked = {
     send: jest.fn(),
     session: {
-      resolveProxy,
+      resolveProxy: jest.fn(),
     },
     getURL: jest.fn(),
   };
@@ -51,6 +50,9 @@ describe('C9 shell handler', () => {
         kill: mockKill,
       };
     });
+    webContentsMocked.session.resolveProxy = jest
+      .fn()
+      .mockImplementation(() => Promise.resolve(''));
     mockIsWindows = true;
   });
 
@@ -132,7 +134,7 @@ describe('C9 shell handler', () => {
 
       expect(mockSpawn).toBeCalledWith(
         expect.stringContaining('c9shell.exe'),
-        ['--symphonyHost', 'just-another-guid', '--proxyServer', ''],
+        ['--symphonyHost', 'just-another-guid', '--proxyServer', 'DIRECT'],
         { stdio: 'pipe' },
       );
     });
