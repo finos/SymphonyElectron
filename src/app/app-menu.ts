@@ -722,6 +722,7 @@ export class AppMenu {
               checked: windowHandler.url?.startsWith(CORP_URL + '/client-bff'),
               id: `${Target.C2}-${Channels.Stable}`,
               label: i18n.t('Stable')(),
+              accelerator: 'CmdorCtrl+1',
             },
             {
               click: (_item) =>
@@ -733,6 +734,7 @@ export class AppMenu {
               ),
               id: `${Target.C2}-${Channels.Daily}`,
               label: i18n.t('Daily')(),
+              accelerator: 'CmdorCtrl+2',
             },
           ],
         },
