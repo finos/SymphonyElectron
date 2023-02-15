@@ -1,8 +1,9 @@
-import { session, WebContents } from 'electron';
+import { CookiesSetDetails, session, WebContents } from 'electron';
 import { apiName } from '../common/api-interface';
 import { isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
+import { whitelistHandler } from '../common/whitelist-handler';
 import { config } from './config-handler';
 import { activate } from './window-actions';
 import { windowHandler } from './window-handler';
@@ -112,29 +113,47 @@ class ProtocolHandler {
    * Sets session cookies and navigates to the pod url
    */
   public async handleSeamlessLogin(protocolUri: string): Promise<void> {
-    const { url } = config.getUserConfigFields(['url']);
+    const globalConfig = config.getGlobalConfigFields(['url']);
+    const userConfig = config.getUserConfigFields(['url']);
+    const url = userConfig.url ? userConfig.url : globalConfig.url;
+    const { subdomain, tld, domain } = whitelistHandler.parseDomain(url);
+    const cookieDomain = `.${subdomain}.${domain}${tld}`;
     if (protocolUri) {
       const urlParams = new URLSearchParams(new URL(protocolUri).search);
       const skeyValue = urlParams.get('skey');
       const anticsrfValue = urlParams.get('anticsrf');
-      if (skeyValue) {
-        await session.defaultSession.cookies.set({
+      if (skeyValue && anticsrfValue) {
+        const skeyCookie: CookiesSetDetails = {
           url,
           name: 'skey',
           value: skeyValue,
-        });
-      }
-      if (anticsrfValue) {
-        await session.defaultSession.cookies.set({
+          secure: true,
+          httpOnly: true,
+          sameSite: 'no_restriction',
+          domain: cookieDomain,
+        };
+        const csrfCookie: CookiesSetDetails = {
           url,
           name: 'anti-csrf-cookie',
           value: anticsrfValue,
-        });
+          secure: true,
+          sameSite: 'no_restriction',
+          domain: cookieDomain,
+        };
+        try {
+          await session.defaultSession.cookies.set(skeyCookie);
+          await session.defaultSession.cookies.set(csrfCookie);
+          logger.info('protocol-handler: cookies has been set');
+        } catch (error) {
+          logger.error(
+            'protocol-handler: error occurred with cookies. Details: ',
+            error,
+          );
+        }
       }
-      logger.info('protocol-handler: cookies has been set');
       const mainWebContents = windowHandler.getMainWebContents();
       if (mainWebContents && !mainWebContents?.isDestroyed() && url) {
-        logger.info('protocol-handler: redirecting main webContents', url);
+        logger.info('protocol-handler: redirecting main webContents ', url);
         windowHandler.setMainWindowOrigin(url);
         mainWebContents?.loadURL(url);
       }
