@@ -87,6 +87,34 @@ class C9ShellHandler {
   }
 
   /**
+   * only return resolved proxy from Electron, if proxy-server or proxy-pac-url
+   * was passed as arguments
+   */
+  private async _getCloud9ProxyArgs(webContents: WebContents) {
+    const hasProxyServerArgs = getCommandLineArgs(
+      process.argv,
+      '--proxy-server=',
+      false,
+    );
+    const hasProxyPacFileArgs = getCommandLineArgs(
+      process.argv,
+      '--proxy-pac-url=',
+      false,
+    );
+
+    if (hasProxyPacFileArgs || hasProxyServerArgs) {
+      const proxy = (
+        await webContents.session.resolveProxy(webContents.getURL() ?? '')
+      )
+        .split(';')[0]
+        .replace('PROXY ', '');
+
+      return ['--proxyServer', proxy];
+    }
+    return [];
+  }
+
+  /**
    * Launches the correct c9shell process
    */
   private async _launchC9Shell(
@@ -94,9 +122,6 @@ class C9ShellHandler {
   ): Promise<ChildProcess | undefined> {
     this._curStatus = undefined;
     const uniquePipeName = getGuid();
-    const proxy = (
-      await webContents.session.resolveProxy(webContents.getURL() ?? '')
-    ).replace('PROXY ', '');
 
     const c9ShellPath = isDevEnv
       ? path.join(
@@ -115,7 +140,11 @@ class C9ShellHandler {
       : [];
 
     customC9ShellArgList.push(
-      ...['--symphonyHost', uniquePipeName, '--proxyServer', proxy],
+      ...[
+        '--symphonyHost',
+        uniquePipeName,
+        ...(await this._getCloud9ProxyArgs(webContents)),
+      ],
     );
 
     logger.info(
