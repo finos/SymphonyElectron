@@ -1,4 +1,4 @@
-import { app, WebContents } from 'electron';
+import { app, powerMonitor, WebContents } from 'electron';
 import { isDevEnv, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
 
@@ -20,6 +20,16 @@ class C9ShellHandler {
   private _c9shell: ChildProcess | undefined;
   private _curStatus: IShellStatus | undefined;
   private _statusCallback: StatusCallback | undefined;
+
+  constructor() {
+    powerMonitor.on('suspend', () => {
+      this.terminateShell();
+    });
+
+    powerMonitor.on('resume', () => {
+      this.startShell();
+    });
+  }
 
   /**
    * Starts the c9shell process
