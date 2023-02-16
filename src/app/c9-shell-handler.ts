@@ -24,13 +24,13 @@ class C9ShellHandler {
   /**
    * Starts the c9shell process
    */
-  public startShell() {
+  public async startShell(sender: WebContents) {
     if (this._attachExistingC9Shell()) {
       return;
     }
 
     if (!this._c9shell) {
-      this._c9shell = this._launchC9Shell();
+      this._c9shell = await this._launchC9Shell(sender);
     }
   }
 
@@ -89,9 +89,14 @@ class C9ShellHandler {
   /**
    * Launches the correct c9shell process
    */
-  private _launchC9Shell(): ChildProcess | undefined {
+  private async _launchC9Shell(
+    webContents: WebContents,
+  ): Promise<ChildProcess | undefined> {
     this._curStatus = undefined;
     const uniquePipeName = getGuid();
+    const proxy = (
+      await webContents.session.resolveProxy(webContents.getURL() ?? '')
+    ).replace('PROXY ', '');
 
     const c9ShellPath = isDevEnv
       ? path.join(
@@ -109,16 +114,20 @@ class C9ShellHandler {
       ? customC9ShellArgs.substring(9).split(' ')
       : [];
 
-    logger.info('c9-shell: launching shell', c9ShellPath, customC9ShellArgList);
+    customC9ShellArgList.push(
+      ...['--symphonyHost', uniquePipeName, '--proxyServer', proxy],
+    );
+
+    logger.info(
+      'c9-shell: launching shell with path',
+      c9ShellPath,
+      customC9ShellArgList,
+    );
     this._updateStatus({ status: 'starting' });
 
-    const c9Shell = spawn(
-      c9ShellPath,
-      ['--symphonyHost', uniquePipeName, ...customC9ShellArgList],
-      {
-        stdio: 'pipe',
-      },
-    );
+    const c9Shell = spawn(c9ShellPath, customC9ShellArgList, {
+      stdio: 'pipe',
+    });
     c9Shell.on('close', (code) => {
       logger.info('c9-shell: closed with code', code);
       this._c9shell = undefined;
@@ -147,7 +156,7 @@ let c9ShellHandler: C9ShellHandler | undefined;
 /**
  * Starts the C9 shell process asynchronously, if not already started.
  */
-export const loadC9Shell = (sender: WebContents) => {
+export const loadC9Shell = async (sender: WebContents) => {
   if (!isWindowsOS) {
     logger.error("c9-shell: can't load shell on non-Windows OS");
     return;
@@ -159,7 +168,7 @@ export const loadC9Shell = (sender: WebContents) => {
     logger.info('c9-shell: sending status', status);
     sender.send('c9-status-event', { status });
   });
-  c9ShellHandler.startShell();
+  await c9ShellHandler.startShell(sender);
 };
 
 /**
