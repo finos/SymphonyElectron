@@ -112,10 +112,17 @@ describe('C9 shell handler', () => {
     });
 
     it('args', async () => {
+      mockGetCommandLineArgs.mockImplementation((_, name) =>
+        name === '--proxy-server=' ? '--proxy-server=512' : null,
+      );
+      webContentsMocked.session.resolveProxy = jest
+        .fn()
+        .mockImplementation(() => Promise.resolve(''));
       mockGetGuid.mockReturnValue('just-another-guid');
-
       const { loadC9Shell } = require('../src/app/c9-shell-handler');
+
       await loadC9Shell(webContentsMocked as any);
+
       expect(mockSpawn).toBeCalledWith(
         expect.stringContaining('c9shell.exe'),
         ['--symphonyHost', 'just-another-guid', '--proxyServer', ''],
@@ -124,6 +131,9 @@ describe('C9 shell handler', () => {
     });
 
     it('args, when resolveProxy returns DIRECT', async () => {
+      mockGetCommandLineArgs.mockImplementation((_, name) =>
+        name === '--proxy-server=' ? '--proxy-server=512' : null,
+      );
       webContentsMocked.session.resolveProxy = jest
         .fn()
         .mockImplementation(() => Promise.resolve('DIRECT'));
@@ -140,6 +150,9 @@ describe('C9 shell handler', () => {
     });
 
     it('args, when resolveProxy returns string starting with PROXY ', async () => {
+      mockGetCommandLineArgs.mockImplementation((_, name) =>
+        name === '--proxy-server=' ? '--proxy-server=512' : null,
+      );
       webContentsMocked.session.resolveProxy = jest
         .fn()
         .mockImplementation(() => Promise.resolve('PROXY 52.207.140.132:8443'));
@@ -156,6 +169,40 @@ describe('C9 shell handler', () => {
           '--proxyServer',
           '52.207.140.132:8443',
         ],
+        { stdio: 'pipe' },
+      );
+    });
+
+    it('args, when --proxy-server= is not passed as argument, do not pass resolved proxy to cloud9', async () => {
+      mockGetCommandLineArgs.mockReturnValue('');
+      webContentsMocked.session.resolveProxy = jest
+        .fn()
+        .mockImplementation(() => Promise.resolve('DIRECT'));
+      mockGetGuid.mockReturnValue('just-another-guid');
+      const { loadC9Shell } = require('../src/app/c9-shell-handler');
+
+      await loadC9Shell(webContentsMocked as any);
+
+      expect(mockSpawn).toBeCalledWith(
+        expect.stringContaining('c9shell.exe'),
+        ['--symphonyHost', 'just-another-guid'],
+        { stdio: 'pipe' },
+      );
+    });
+
+    it('args, when --proxy-pac-url= is not passed as argument, do not pass resolved proxy to cloud9', async () => {
+      mockGetCommandLineArgs.mockReturnValue('');
+      webContentsMocked.session.resolveProxy = jest
+        .fn()
+        .mockImplementation(() => Promise.resolve('DIRECT'));
+      mockGetGuid.mockReturnValue('just-another-guid');
+      const { loadC9Shell } = require('../src/app/c9-shell-handler');
+
+      await loadC9Shell(webContentsMocked as any);
+
+      expect(mockSpawn).toBeCalledWith(
+        expect.stringContaining('c9shell.exe'),
+        ['--symphonyHost', 'just-another-guid'],
         { stdio: 'pipe' },
       );
     });
