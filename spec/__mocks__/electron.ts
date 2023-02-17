@@ -62,6 +62,7 @@ interface IWebContents {
 }
 interface IPowerMonitor {
   getSystemIdleTime(): void;
+  on(): void;
 }
 
 const pathToConfigDir = (): string => {
@@ -131,6 +132,7 @@ export const ipcMain: IIpcMain = {
 
 export const powerMonitor: IPowerMonitor = {
   getSystemIdleTime: jest.fn().mockReturnValue(mockIdleTime),
+  on: jest.fn(),
 };
 
 export const ipcRenderer: IIpcRenderer = {
