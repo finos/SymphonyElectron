@@ -426,7 +426,7 @@ ipcMain.on(
         await loadC9Shell(event.sender);
         break;
       case apiCmds.terminateCloud9:
-        terminateC9Shell(event.sender);
+        terminateC9Shell();
         break;
       case apiCmds.updateAndRestart:
         autoUpdate.updateAndRestart();
