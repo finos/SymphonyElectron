@@ -1,4 +1,4 @@
-import { app, WebContents } from 'electron';
+import { app, powerMonitor, WebContents } from 'electron';
 import { isDevEnv, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
 
@@ -19,18 +19,31 @@ type StatusCallback = (status: IShellStatus) => void;
 class C9ShellHandler {
   private _c9shell: ChildProcess | undefined;
   private _curStatus: IShellStatus | undefined;
+  private _sender: WebContents;
   private _statusCallback: StatusCallback | undefined;
+
+  constructor(sender: WebContents) {
+    this._sender = sender;
+
+    powerMonitor.on('suspend', () => {
+      this.terminateShell();
+    });
+
+    powerMonitor.on('resume', () => {
+      this.startShell();
+    });
+  }
 
   /**
    * Starts the c9shell process
    */
-  public async startShell(sender: WebContents) {
+  public async startShell() {
     if (this._attachExistingC9Shell()) {
       return;
     }
 
     if (!this._c9shell) {
-      this._c9shell = await this._launchC9Shell(sender);
+      this._c9shell = await this._launchC9Shell();
     }
   }
 
@@ -90,7 +103,7 @@ class C9ShellHandler {
    * only return resolved proxy from Electron, if proxy-server or proxy-pac-url
    * was passed as arguments
    */
-  private async _getCloud9ProxyArgs(webContents: WebContents) {
+  private async _getCloud9ProxyArgs() {
     const hasProxyServerArgs = getCommandLineArgs(
       process.argv,
       '--proxy-server=',
@@ -104,7 +117,7 @@ class C9ShellHandler {
 
     if (hasProxyPacFileArgs || hasProxyServerArgs) {
       const proxy = (
-        await webContents.session.resolveProxy(webContents.getURL() ?? '')
+        await this._sender.session.resolveProxy(this._sender.getURL() ?? '')
       )
         .split(';')[0]
         .replace('PROXY ', '');
@@ -117,9 +130,7 @@ class C9ShellHandler {
   /**
    * Launches the correct c9shell process
    */
-  private async _launchC9Shell(
-    webContents: WebContents,
-  ): Promise<ChildProcess | undefined> {
+  private async _launchC9Shell(): Promise<ChildProcess | undefined> {
     this._curStatus = undefined;
     const uniquePipeName = getGuid();
 
@@ -143,7 +154,7 @@ class C9ShellHandler {
       ...[
         '--symphonyHost',
         uniquePipeName,
-        ...(await this._getCloud9ProxyArgs(webContents)),
+        ...(await this._getCloud9ProxyArgs()),
       ],
     );
 
@@ -191,19 +202,19 @@ export const loadC9Shell = async (sender: WebContents) => {
     return;
   }
   if (!c9ShellHandler) {
-    c9ShellHandler = new C9ShellHandler();
+    c9ShellHandler = new C9ShellHandler(sender);
   }
   c9ShellHandler.setStatusCallback((status: IShellStatus) => {
     logger.info('c9-shell: sending status', status);
     sender.send('c9-status-event', { status });
   });
-  await c9ShellHandler.startShell(sender);
+  await c9ShellHandler.startShell();
 };
 
 /**
  * Terminates the C9 shell process asynchronously, if it is running.
  */
-export const terminateC9Shell = (_sender: WebContents) => {
+export const terminateC9Shell = () => {
   if (!c9ShellHandler) {
     return;
   }
