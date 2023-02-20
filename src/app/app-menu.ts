@@ -619,7 +619,8 @@ export class AppMenu {
       (windowHandler.url &&
         windowHandler.url.startsWith('https://corporate.symphony.com')) ||
       false;
-
+    const isBFFServedContent =
+      windowHandler.url && windowHandler.url.includes('bff');
     return {
       label: i18n.t('Help')(),
       role: 'help',
@@ -715,22 +716,32 @@ export class AppMenu {
           id: C2_CHANNELS_MENU_ID,
           submenu: [
             {
-              click: (_item) =>
-                windowHandler.switchClient(ClientSwitchType.CLIENT_2_0),
+              click: (_item) => {
+                const clientSwitchType = isBFFServedContent
+                  ? ClientSwitchType.CLIENT_2_0
+                  : ClientSwitchType.STARTPAGE_CLIENT_2_0;
+                windowHandler.switchClient(clientSwitchType);
+              },
               visible: isCorp,
               type: 'checkbox',
-              checked: windowHandler.url?.startsWith(CORP_URL + '/client-bff'),
+              checked:
+                windowHandler.url?.startsWith(CORP_URL) &&
+                !windowHandler.url?.includes('daily'),
               id: `${Target.C2}-${Channels.Stable}`,
               label: i18n.t('Stable')(),
             },
             {
-              click: (_item) =>
-                windowHandler.switchClient(ClientSwitchType.CLIENT_2_0_DAILY),
+              click: (_item) => {
+                const clientSwitchType = isBFFServedContent
+                  ? ClientSwitchType.CLIENT_2_0_DAILY
+                  : ClientSwitchType.STARTPAGE_CLIENT_2_0_DAILY;
+                windowHandler.switchClient(clientSwitchType);
+              },
               visible: isCorp,
               type: 'checkbox',
-              checked: windowHandler.url?.startsWith(
-                CORP_URL + '/bff-daily/daily',
-              ),
+              checked:
+                windowHandler.url?.startsWith(CORP_URL) &&
+                windowHandler.url.includes('daily'),
               id: `${Target.C2}-${Channels.Daily}`,
               label: i18n.t('Daily')(),
             },
