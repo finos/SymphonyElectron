@@ -100,14 +100,39 @@ class C9ShellHandler {
   }
 
   /**
+   * only return resolved proxy from Electron, if proxy-server or proxy-pac-url
+   * was passed as arguments
+   */
+  private async _getCloud9ProxyArgs() {
+    const hasProxyServerArgs = getCommandLineArgs(
+      process.argv,
+      '--proxy-server=',
+      false,
+    );
+    const hasProxyPacFileArgs = getCommandLineArgs(
+      process.argv,
+      '--proxy-pac-url=',
+      false,
+    );
+
+    if (hasProxyPacFileArgs || hasProxyServerArgs) {
+      const proxy = (
+        await this._sender.session.resolveProxy(this._sender.getURL() ?? '')
+      )
+        .split(';')[0]
+        .replace('PROXY ', '');
+
+      return ['--proxyServer', proxy];
+    }
+    return [];
+  }
+
+  /**
    * Launches the correct c9shell process
    */
   private async _launchC9Shell(): Promise<ChildProcess | undefined> {
     this._curStatus = undefined;
     const uniquePipeName = getGuid();
-    const proxy = (
-      await this._sender.session.resolveProxy(this._sender.getURL() ?? '')
-    ).replace('PROXY ', '');
 
     const c9ShellPath = isDevEnv
       ? path.join(
@@ -126,7 +151,11 @@ class C9ShellHandler {
       : [];
 
     customC9ShellArgList.push(
-      ...['--symphonyHost', uniquePipeName, '--proxyServer', proxy],
+      ...[
+        '--symphonyHost',
+        uniquePipeName,
+        ...(await this._getCloud9ProxyArgs()),
+      ],
     );
 
     logger.info(
