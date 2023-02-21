@@ -207,7 +207,7 @@
   },
   "dependencies": {
     "@types/lazy-brush": "^1.0.0",
-    "archiver": "4.0.2",
+    "archiver": "5.3.1",
     "async.map": "0.5.2",
     "classnames": "2.2.6",
     "electron-dl": "3.5.0",
