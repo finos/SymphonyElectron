@@ -25,12 +25,18 @@ class C9ShellHandler {
   constructor(sender: WebContents) {
     this._sender = sender;
 
-    powerMonitor.on('suspend', () => {
-      this.terminateShell();
-    });
+    app.on('ready', () => {
+      powerMonitor.on('shutdown', () => {
+        this.terminateShell();
+      });
 
-    powerMonitor.on('resume', () => {
-      this.startShell();
+      powerMonitor.on('suspend', () => {
+        this.terminateShell();
+      });
+
+      powerMonitor.on('resume', () => {
+        this.startShell();
+      });
     });
   }
 
