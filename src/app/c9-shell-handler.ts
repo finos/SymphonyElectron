@@ -19,6 +19,8 @@ type StatusCallback = (status: IShellStatus) => void;
 class C9ShellHandler {
   private _c9shell: ChildProcess | undefined;
   private _curStatus: IShellStatus | undefined;
+  private _isStarting = false;
+  private _isTerminating = false;
   private _sender: WebContents;
   private _statusCallback: StatusCallback | undefined;
 
@@ -42,9 +44,17 @@ class C9ShellHandler {
       return;
     }
 
-    if (!this._c9shell) {
-      this._c9shell = await this._launchC9Shell();
+    if (this._isStarting) {
+      return;
     }
+
+    this._isStarting = true;
+
+    if (!this._c9shell) {
+      this._c9shell = await this._launchC9Shell(); // _c9shell won't be set until the promise is resolved/rejected
+    }
+
+    this._isStarting = false;
   }
 
   /**
@@ -61,10 +71,18 @@ class C9ShellHandler {
    * Terminates the c9shell process if it was started by this handler.
    */
   public terminateShell() {
+    if (this._isTerminating) {
+      return;
+    }
+
+    this._isTerminating = true;
+
     if (!this._c9shell) {
       return;
     }
+
     this._c9shell.kill();
+    this._isTerminating = false;
   }
 
   /**
