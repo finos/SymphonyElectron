@@ -619,7 +619,6 @@ export class AppMenu {
       (windowHandler.url &&
         windowHandler.url.startsWith('https://corporate.symphony.com')) ||
       false;
-
     return {
       label: i18n.t('Help')(),
       role: 'help',
@@ -715,23 +714,23 @@ export class AppMenu {
           id: C2_CHANNELS_MENU_ID,
           submenu: [
             {
-              click: (_item) =>
-                windowHandler.switchClient(ClientSwitchType.CLIENT_2_0),
+              click: (_item) => this.switchTo(Channels.Stable),
               visible: isCorp,
               type: 'checkbox',
-              checked: windowHandler.url?.startsWith(CORP_URL + '/client-bff'),
+              checked:
+                windowHandler.url?.startsWith(CORP_URL) &&
+                !windowHandler.url?.includes('daily'),
               id: `${Target.C2}-${Channels.Stable}`,
               label: i18n.t('Stable')(),
               accelerator: 'CmdorCtrl+1',
             },
             {
-              click: (_item) =>
-                windowHandler.switchClient(ClientSwitchType.CLIENT_2_0_DAILY),
+              click: (_item) => this.switchTo(Channels.Daily),
               visible: isCorp,
               type: 'checkbox',
-              checked: windowHandler.url?.startsWith(
-                CORP_URL + '/bff-daily/daily',
-              ),
+              checked:
+                windowHandler.url?.startsWith(CORP_URL) &&
+                windowHandler.url.includes('daily'),
               id: `${Target.C2}-${Channels.Daily}`,
               label: i18n.t('Daily')(),
               accelerator: 'CmdorCtrl+2',
@@ -909,5 +908,32 @@ export class AppMenu {
       }
     });
     autoUpdate.checkUpdates(AutoUpdateTrigger.MANUAL);
+  }
+
+  /**
+   * Allow user to switch C2 from stable to daily
+   * @param channel Targeted C2 channel
+   */
+  private switchTo(channel: Channels) {
+    const isBFFServedContent =
+      windowHandler.url && windowHandler.url.includes('bff');
+    let clientSwitchType;
+    switch (channel) {
+      case Channels.Daily:
+        clientSwitchType = isBFFServedContent
+          ? ClientSwitchType.CLIENT_2_0_DAILY
+          : ClientSwitchType.STARTPAGE_CLIENT_2_0_DAILY;
+        break;
+      case Channels.Stable:
+        clientSwitchType = isBFFServedContent
+          ? ClientSwitchType.CLIENT_2_0
+          : ClientSwitchType.STARTPAGE_CLIENT_2_0;
+        break;
+      default:
+        break;
+    }
+    if (clientSwitchType) {
+      windowHandler.switchClient(clientSwitchType);
+    }
   }
 }

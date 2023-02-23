@@ -288,7 +288,14 @@ export type NotificationActionCallback = (
 export type ConfigUpdateType = 'restart' | 'reload';
 
 export interface ICloud9Pipe {
+  /**
+   * Ability to write in C9 named pipe
+   */
   write(data: Uint8Array): void;
+
+  /**
+   * Ability to close named pipe
+   */
   close(): void;
 }
 

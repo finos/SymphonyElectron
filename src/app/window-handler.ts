@@ -79,6 +79,8 @@ const windowSize: string | null = getCommandLineArgs(
 export enum ClientSwitchType {
   CLIENT_2_0 = 'CLIENT_2_0',
   CLIENT_2_0_DAILY = 'CLIENT_2_0_DAILY',
+  STARTPAGE_CLIENT_2_0 = 'START_PAGE_CLIENT_2_0',
+  STARTPAGE_CLIENT_2_0_DAILY = 'START_PAGE_CLIENT_2_0_DAILY',
 }
 
 export const DEFAULT_WELCOME_SCREEN_WIDTH: number = 542;
@@ -411,10 +413,18 @@ export class WindowHandler {
       exportLogs();
     }, SHORTCUT_KEY_THROTTLE);
     const switchToClient2 = throttle(() => {
-      windowHandler.switchClient(ClientSwitchType.CLIENT_2_0);
+      const clientSwitchType =
+        this.url && this.url.includes('bff')
+          ? ClientSwitchType.CLIENT_2_0
+          : ClientSwitchType.STARTPAGE_CLIENT_2_0;
+      windowHandler.switchClient(clientSwitchType);
     }, SHORTCUT_KEY_THROTTLE);
     const switchToDaily = throttle(() => {
-      windowHandler.switchClient(ClientSwitchType.CLIENT_2_0_DAILY);
+      const clientSwitchType =
+        this.url && this.url.includes('bff')
+          ? ClientSwitchType.CLIENT_2_0_DAILY
+          : ClientSwitchType.STARTPAGE_CLIENT_2_0_DAILY;
+      windowHandler.switchClient(clientSwitchType);
     }, SHORTCUT_KEY_THROTTLE);
     this.mainWebContents.on('before-input-event', (event, input) => {
       if (input.control && input.shift && input.key.toLowerCase() === 'd') {
@@ -2192,12 +2202,19 @@ export class WindowHandler {
       const csrfToken = await this.mainWebContents?.executeJavaScript(
         `localStorage.getItem('x-km-csrf-token')`,
       );
+
       switch (clientSwitch) {
         case ClientSwitchType.CLIENT_2_0:
           this.url = `https://${parsedUrl.hostname}/client-bff/index.html?x-km-csrf-token=${csrfToken}`;
           break;
         case ClientSwitchType.CLIENT_2_0_DAILY:
           this.url = `https://${parsedUrl.hostname}/bff-daily/daily/index.html?x-km-csrf-token=${csrfToken}`;
+          break;
+        case ClientSwitchType.STARTPAGE_CLIENT_2_0:
+          this.url = `https://${parsedUrl.hostname}/apps/client2`;
+          break;
+        case ClientSwitchType.STARTPAGE_CLIENT_2_0_DAILY:
+          this.url = `https://${parsedUrl.hostname}/apps/client2/daily`;
           break;
         default:
           this.url = this.globalConfig.url + `?x-km-csrf-token=${csrfToken}`;
