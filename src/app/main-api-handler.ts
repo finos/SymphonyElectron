@@ -300,7 +300,11 @@ ipcMain.on(
           await notificationHelper.closeNotification(arg.notificationId);
         }
         break;
+      /**
+       * This gets called from mana, when user logs out
+       */
       case apiCmds.closeAllWrapperWindows:
+        terminateC9Shell();
         windowHandler.closeAllWindows();
         break;
       case apiCmds.setZoomLevel:
