@@ -166,7 +166,7 @@
     "@types/jest": "23.3.12",
     "@types/node": "^12.12.43",
     "@types/react": "16.14.34",
-    "@types/react-dom": "16.9.17",
+    "@types/react-dom": "18.0.11",
     "@types/rimraf": "^3.0.0",
     "browserify": "17.0.0",
     "builder-util-runtime": "^9.0.3",
