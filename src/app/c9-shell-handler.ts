@@ -75,14 +75,12 @@ class C9ShellHandler {
       return;
     }
 
-    this._isTerminating = true;
-
     if (!this._c9shell) {
       return;
     }
 
+    this._isTerminating = true;
     this._c9shell.kill();
-    this._isTerminating = false;
   }
 
   /**
@@ -189,6 +187,7 @@ class C9ShellHandler {
     c9Shell.on('close', (code) => {
       logger.info('c9-shell: closed with code', code);
       this._c9shell = undefined;
+      this._isTerminating = false;
       this._updateStatus({ status: 'inactive' });
     });
     c9Shell.on('spawn', () => {
