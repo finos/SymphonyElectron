@@ -106,10 +106,10 @@ class PresenceStatus {
     }
     if (!tray) {
       tray = initSysTray();
-      logger.info('main-api-handler: create and save Symphony tray');
+      logger.info('presence-status-handler: create and save Symphony tray');
     } else {
       tray.setImage(backgroundImage);
-      logger.info('main-api-handler: new Symphony status updated');
+      logger.info('presence-status-handler: new Symphony status updated');
     }
     const currentStatus = presenceStatusStore.getStatus();
     const presenceNamespace = 'PresenceStatus';
