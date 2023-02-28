@@ -1,4 +1,4 @@
-import { Size } from 'electron';
+import { NativeImage, Size, Tray } from 'electron';
 import { AutoUpdateTrigger } from '../app/auto-update-handler';
 
 export enum apiCmds {
@@ -73,6 +73,9 @@ export enum apiCmds {
   downloadUpdate = 'download-update',
   checkForUpdates = 'check-for-updates',
   seamlessLogin = 'seamless-login',
+  updateMyPresence = 'update-my-presence',
+  getMyPresence = 'get-my-presence',
+  updateSymphonyTray = 'update-system-tray',
 }
 
 export enum apiName {
@@ -130,6 +133,7 @@ export interface IApiArgs {
   data: Uint8Array;
   autoUpdateTrigger: AutoUpdateTrigger;
   hideOnCapture: boolean;
+  status: IPresenceStatus;
 }
 
 export type Themes = 'light' | 'dark';
@@ -155,6 +159,54 @@ export interface IScreenSnippet {
 
 export interface IBoundsChange extends Electron.Rectangle {
   windowName: string;
+}
+
+// Presence Status
+export interface IThumbarButton {
+  icon: NativeImage;
+  click: () => void;
+  tooltip?: string;
+  flags?: Array<
+    | 'enabled'
+    | 'disabled'
+    | 'dismissonclick'
+    | 'nobackground'
+    | 'hidden'
+    | 'noninteractive'
+  >;
+}
+
+export interface IStatusBadge extends IBadgeCount {
+  status: EPresenceStatus;
+}
+
+export interface ITray {
+  current: Tray | null;
+}
+
+export interface IPresenceStore {
+  statusBadge: IStatusBadge;
+  presenceStatus: IPresenceStatus;
+}
+
+export enum EPresenceStatus {
+  'ONLINE' = 'ONLINE',
+  'OFFLINE' = 'OFFLINE',
+  'AWAY' = 'AWAY',
+  'DO_NOT_DISTURB' = 'DO_NOT_DISTURB',
+  'BUSY' = 'BUSY',
+  'ON_THE_PHONE' = 'ON_THE_PHONE',
+  'AVAILABLE' = 'AVAILABLE',
+  'OUT_OF_OFFICE' = 'OUT_OF_OFFICE',
+  'IN_A_MEETING' = 'IN_A_MEETING',
+  'BE_RIGHT_BACK' = 'BE_RIGHT_BACK',
+  'OFF_WORK' = 'OFF_WORK',
+}
+
+export interface IPresenceStatus {
+  category: EPresenceStatus;
+  statusGroup: string;
+  timestamp: number;
 }
 
 /**

@@ -88,7 +88,7 @@ gulp.task('copy', function () {
   return gulp
     .src(
       [
-        './src/renderer/assets/*',
+        './src/renderer/assets/**',
         './src/renderer/*.html',
         './src/locale/*',
         './package.json',

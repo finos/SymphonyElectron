@@ -241,5 +241,14 @@
   "Allow once (risky)": "Allow once (risky)",
   "Deny": "Deny",
   "Invalid security certificate": "has an invalid security certificate.",
-  "IV Dogfooding": "IV Dogfooding"
+  "IV Dogfooding": "IV Dogfooding",
+  "PresenceStatus": {
+    "OFFLINE": "Offline",
+    "AWAY": "Away",
+    "DO_NOT_DISTURB": "Do not disturb",
+    "BUSY": "Busy",
+    "AVAILABLE": "Available",
+    "OUT_OF_OFFICE": "Out of office",
+    "BE_RIGHT_BACK": "Be right back"
+  }
 }

@@ -13,17 +13,19 @@ import {
   apiCmds,
   apiName,
   ConfigUpdateType,
-  IBadgeCount,
+  EPresenceStatus,
   IBoundsChange,
   ICloud9Pipe,
   ICPUUsage,
   ILogMsg,
   IMediaPermission,
   INotificationData,
+  IPresenceStatus,
   IRestartFloaterData,
   IScreenSharingIndicator,
   IScreenSharingIndicatorOptions,
   IScreenSnippet,
+  IStatusBadge,
   IVersionInfo,
   KeyCodes,
   LogLevel,
@@ -58,6 +60,7 @@ export interface ILocalObject {
   >;
   c9PipeEventCallback?: (event: string, arg?: any) => void;
   c9MessageCallback?: (status: IShellStatus) => void;
+  updateMyPresenceCallback?: (presence: EPresenceStatus) => void;
 }
 
 const local: ILocalObject = {
@@ -362,6 +365,30 @@ export class SSFApi {
    */
   // tslint:disable-next-line
   public ScreenSnippet = ScreenSnippetBcHandler;
+
+  /**
+   * Update presence of current user
+   * @param callback (presence:IPresenceStatus)=>void
+   * if none is provided then the old logic will be triggered.
+   * I dont send this event to main-api-handler because this will only act as a callback assignment
+   * It will only trigger if you hit any button at presence-status-handler
+   *
+   */
+  public updateMyPresence(callback: (category: EPresenceStatus) => void) {
+    if (typeof callback === 'function') {
+      local.updateMyPresenceCallback = callback;
+    }
+  }
+  /**
+   * Get presence of current user
+   * @param myPresence IPresenceStatus
+   */
+  public getMyPresence(myPresence: IPresenceStatus) {
+    local.ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.getMyPresence,
+      status: myPresence,
+    });
+  }
 
   /**
    * Allow user to capture portion of screen.
@@ -863,7 +890,7 @@ export class SSFApi {
  */
 local.ipcRenderer.on(
   'create-badge-data-url',
-  (_event: Event, arg: IBadgeCount) => {
+  (_event: Event, arg: IStatusBadge) => {
     const count = (arg && arg.count) || 0;
 
     // create 32 x 32 img
@@ -899,6 +926,15 @@ local.ipcRenderer.on(
         count,
         dataUrl,
       });
+    }
+  },
+);
+
+local.ipcRenderer.on(
+  'send-presence-status-data',
+  (_event: Event, arg: EPresenceStatus) => {
+    if (typeof local.updateMyPresenceCallback === 'function') {
+      local.updateMyPresenceCallback(arg);
     }
   },
 );

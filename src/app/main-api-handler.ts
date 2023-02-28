@@ -51,6 +51,8 @@ import {
 
 import { getCommandLineArgs } from '../common/utils';
 import { autoUpdate, AutoUpdateTrigger } from './auto-update-handler';
+import { presenceStatus } from './presence-status-handler';
+import { presenceStatusStore } from './stores/index';
 
 // Swift search API
 let swiftSearchInstance;
@@ -108,6 +110,8 @@ ipcMain.on(
       case apiCmds.setBadgeCount:
         if (typeof arg.count === 'number') {
           showBadgeCount(arg.count);
+          presenceStatusStore.setNotificationCount(arg.count);
+          logger.info(`main-api-handler: show and update count: ${arg.count}`);
         }
         break;
       case apiCmds.registerProtocolHandler:
@@ -128,8 +132,11 @@ ipcMain.on(
         finalizeLogExports(arg.logs);
         break;
       case apiCmds.badgeDataUrl:
-        if (typeof arg.dataUrl === 'string' && typeof arg.count === 'number') {
-          setDataUrl(arg.dataUrl, arg.count);
+        if (typeof arg.dataUrl === 'string') {
+          if (typeof arg.count === 'number' && arg.count > 0) {
+            setDataUrl(arg.dataUrl, arg.count);
+            logger.info(`main-api-handler: set badge count: ${arg.count}`);
+          }
         }
         break;
       case apiCmds.activate:
@@ -209,6 +216,10 @@ ipcMain.on(
           handleKeyPress(arg.keyCode);
         }
         break;
+      case apiCmds.getMyPresence:
+        presenceStatus.setMyPresence(arg.status);
+        logger.info('main-api-handler: get presence from C2 to set in SDA');
+        break;
       case apiCmds.openScreenSnippet:
         screenSnippet.capture(event.sender, arg.hideOnCapture);
         break;
@@ -283,6 +294,15 @@ ipcMain.on(
           windowHandler.isMana = arg.isMana;
           // Update App Menu
           const appMenu = windowHandler.appMenu;
+          const mainWindow = windowHandler.getMainWindow();
+
+          if (mainWebContents) {
+            const items = presenceStatus.createThumbarButtons(mainWebContents);
+
+            mainWindow?.setThumbarButtons(items);
+            logger.info('main-api-handler: Add actions preview menu');
+          }
+
           if (appMenu && windowHandler.isMana) {
             appMenu.buildMenu();
           }

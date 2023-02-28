@@ -97,6 +97,8 @@ if (ssfWindow.ssf) {
     updateAndRestart: ssfWindow.ssf.updateAndRestart,
     downloadUpdate: ssfWindow.ssf.downloadUpdate,
     checkForUpdates: ssfWindow.ssf.checkForUpdates,
+    updateMyPresence: ssfWindow.ssf.updateMyPresence,
+    getMyPresence: ssfWindow.ssf.getMyPresence,
   });
 }
 
