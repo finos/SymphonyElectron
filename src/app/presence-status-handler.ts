@@ -82,11 +82,11 @@ class PresenceStatus {
   public setMyPresence = (myPresence: IPresenceStatus) => {
     const currentPresenceStatus = presenceStatusStore.getStatus();
     const count = presenceStatusStore.getNotificationCount();
-    showBadgeCount(count);
     if (currentPresenceStatus !== myPresence.category) {
       presenceStatusStore.setStatus(myPresence.category);
       this.updateSystemTrayPresence();
     }
+    showBadgeCount(count);
   };
 
   /**
@@ -148,7 +148,7 @@ class PresenceStatus {
             type: 'checkbox',
             checked: currentStatus === EPresenceStatus.OUT_OF_OFFICE,
             click: (_item) => {
-              this.handlePresenceChange(currentStatus);
+              this.handlePresenceChange(EPresenceStatus.OUT_OF_OFFICE);
             },
           },
         ],
@@ -180,6 +180,7 @@ class PresenceStatus {
   ) => {
     webContents.send('send-presence-status-data', status);
     presenceStatusStore.setStatus(status);
+    this.updateSystemTrayPresence();
   };
 }
 

@@ -38,6 +38,14 @@ export class PresenceStatus {
 
   public getCurrentTray = () => this.tray.current;
 
+  public destroyCurrentTray = () => {
+    if (this.tray.current) {
+      this.tray.current.removeAllListeners();
+      this.tray.current.destroy();
+      this.tray.current = null;
+    }
+  };
+
   public generateImagePath = (status: EPresenceStatus, place: string) => {
     let backgroundImage: string = '';
     const os = isWindowsOS ? 'windows' : isMac ? 'macOS' : 'linux';
@@ -80,9 +88,8 @@ export class PresenceStatus {
         }`;
         break;
       case EPresenceStatus.NO_PRESENCE:
-        backgroundImage = `../../../${assetsPath}/${
-          place === 'tray' ? 'no-status-tray.png' : 'no-status.png'
-        }`;
+        backgroundImage =
+          place === 'tray' ? `../../../${assetsPath}/no-status-tray.png` : '';
         break;
       default:
         break;
