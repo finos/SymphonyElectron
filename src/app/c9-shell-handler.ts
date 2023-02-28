@@ -28,10 +28,12 @@ class C9ShellHandler {
     this._sender = sender;
 
     powerMonitor.on('suspend', () => {
+      logger.info('c9-shell-handler: suspend');
       this.terminateShell();
     });
 
     powerMonitor.on('resume', () => {
+      logger.info('c9-shell-handler: resume');
       this.startShell();
     });
   }
@@ -41,17 +43,22 @@ class C9ShellHandler {
    */
   public async startShell() {
     if (this._attachExistingC9Shell()) {
+      logger.info('c9-shell-handler: _attachExistingC9Shell, skip start');
       return;
     }
 
     if (this._isStarting) {
+      logger.info('c9-shell-handler: _isStarting, skip start');
       return;
     }
 
     this._isStarting = true;
 
     if (!this._c9shell) {
+      logger.info('c9-shell-handler: start');
       this._c9shell = await this._launchC9Shell(); // _c9shell won't be set until the promise is resolved/rejected
+    } else {
+      logger.info('c9-shell-handler: _c9shell, skip start');
     }
 
     this._isStarting = false;
@@ -72,13 +79,16 @@ class C9ShellHandler {
    */
   public terminateShell() {
     if (this._isTerminating) {
+      logger.info('c9-shell-handler: _isTerminating, skip terminate');
       return;
     }
 
     if (!this._c9shell) {
+      logger.info('c9-shell-handler: no _c9shell, skip terminate');
       return;
     }
 
+    logger.info('c9-shell-handler: terminate');
     this._isTerminating = true;
     this._c9shell.kill();
   }
@@ -162,6 +172,7 @@ class C9ShellHandler {
       '--c9args=',
       false,
     );
+
     const customC9ShellArgList = customC9ShellArgs
       ? customC9ShellArgs.substring(9).split(' ')
       : [];
@@ -179,17 +190,17 @@ class C9ShellHandler {
       c9ShellPath,
       customC9ShellArgList,
     );
-    this._updateStatus({ status: 'starting' });
 
-    const c9Shell = spawn(c9ShellPath, customC9ShellArgList, {
-      stdio: 'pipe',
-    });
+    this._updateStatus({ status: 'starting' });
+    const c9Shell = spawn(c9ShellPath, customC9ShellArgList, { stdio: 'pipe' });
+
     c9Shell.on('close', (code) => {
       logger.info('c9-shell: closed with code', code);
       this._c9shell = undefined;
       this._isTerminating = false;
       this._updateStatus({ status: 'inactive' });
     });
+
     c9Shell.on('spawn', () => {
       logger.info('c9-shell: shell process successfully spawned');
       this._updateStatus({
@@ -197,9 +208,11 @@ class C9ShellHandler {
         pipeName: 'symphony-c9-' + uniquePipeName,
       });
     });
+
     c9Shell.stdout.on('data', (data) => {
       logger.info(`c9-shell: ${data.toString().trim()}`);
     });
+
     c9Shell.stderr.on('data', (data) => {
       logger.error(`c9-shell: ${data.toString().trim()}`);
     });
@@ -225,6 +238,7 @@ export const loadC9Shell = async (sender: WebContents) => {
     logger.info('c9-shell: sending status', status);
     sender.send('c9-status-event', { status });
   });
+
   await c9ShellHandler.startShell();
 };
 
