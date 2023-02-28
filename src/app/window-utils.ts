@@ -7,6 +7,7 @@ import {
   Rectangle,
   screen,
   shell,
+  Tray,
   WebContents,
 } from 'electron';
 import electron = require('electron');
@@ -15,7 +16,11 @@ import * as filesize from 'filesize';
 import * as fs from 'fs';
 import * as path from 'path';
 import { format, parse } from 'url';
-import { apiName } from '../common/api-interface';
+import {
+  apiName,
+  EPresenceStatus,
+  // IStatusBadge,
+} from '../common/api-interface';
 
 import { isDevEnv, isLinux, isMac, isWindowsOS } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
@@ -50,6 +55,7 @@ import { notification } from '../renderer/notification';
 import { autoLaunchInstance } from './auto-launch-controller';
 import { autoUpdate, AutoUpdateTrigger } from './auto-update-handler';
 import { mainEvents } from './main-event-handler';
+import { presenceStatusStore } from './stores';
 
 interface IStyles {
   name: styleNames;
@@ -269,7 +275,6 @@ export const showBadgeCount = (count: number): void => {
   }
 
   // handle ms windows...
-  const mainWindow = windowHandler.getMainWindow();
   const mainWebContents = windowHandler.getMainWebContents();
   if (!mainWebContents || mainWebContents.isDestroyed()) {
     return;
@@ -280,14 +285,39 @@ export const showBadgeCount = (count: number): void => {
   if (count > 0) {
     mainWebContents.send('create-badge-data-url', { count });
     return;
-  }
+  } else {
+    const status = presenceStatusStore.getStatus();
+    const backgroundImage = presenceStatusStore.generateImagePath(
+      status,
+      'taskbar',
+    );
 
-  if (!mainWindow || !windowExists(mainWindow)) {
+    if (backgroundImage) {
+      setStatusBadge(backgroundImage, status);
+    }
+  }
+};
+
+/**
+ * Shows the badge count
+ *
+ * @param count {number}
+ */
+export const showSystemTrayPresence = (status: EPresenceStatus): void => {
+  const tray = presenceStatusStore.getCurrentTray();
+  const backgroundImage = presenceStatusStore.generateImagePath(status, 'tray');
+  if (!backgroundImage) {
     return;
   }
-
-  // clear badge count icon
-  mainWindow.setOverlayIcon(null, '');
+  if (!tray) {
+    const symphonyTray = new Tray(backgroundImage);
+    presenceStatusStore.setCurrentTray(symphonyTray);
+    symphonyTray.setToolTip('Symphony');
+    logger.info('main-api-handler: create and save Symphony tray');
+  } else {
+    tray.setImage(backgroundImage);
+    logger.info('main-api-handler: new Symphony status updated');
+  }
 };
 
 /**
@@ -296,6 +326,20 @@ export const showBadgeCount = (count: number): void => {
  * @param dataUrl
  * @param count
  */
+export const setStatusBadge = (
+  path: string,
+  status?: EPresenceStatus,
+): void => {
+  const mainWindow = windowHandler.getMainWindow();
+  if (mainWindow && path && status) {
+    const img = nativeImage.createFromPath(path);
+    // for accessibility screen readers
+    const desc = `Your current status is ${i18n.t(status, 'PresenceStatus')()}`;
+    mainWindow.setOverlayIcon(img, desc);
+    logger.info('window-utils: Taskbar Presence Updated');
+  }
+};
+
 export const setDataUrl = (dataUrl: string, count: number): void => {
   const mainWindow = windowHandler.getMainWindow();
   if (mainWindow && dataUrl && count) {
