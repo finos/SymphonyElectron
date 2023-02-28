@@ -1,16 +1,17 @@
-import { Tray } from 'electron';
+import { nativeTheme, Tray } from 'electron';
 import * as path from 'path';
 import {
   EPresenceStatus,
   IStatusBadge,
   ITray,
 } from '../../common/api-interface';
+import { isMac, isWindowsOS } from '../../common/env';
 
 // Flags can be read more here https://www.electronjs.org/docs/latest/api/browser-window#winsetthumbarbuttonsbuttons-windows
 
 export class PresenceStatus {
   private presenceStatus: IStatusBadge = {
-    status: EPresenceStatus.AVAILABLE,
+    status: EPresenceStatus.NO_PRESENCE,
     count: 0,
   };
   private tray: ITray = {
@@ -39,7 +40,9 @@ export class PresenceStatus {
 
   public generateImagePath = (status: EPresenceStatus, place: string) => {
     let backgroundImage: string = '';
-    const assetsPath = 'src/renderer/assets/presence-status';
+    const os = isWindowsOS ? 'windows' : isMac ? 'macOS' : 'linux';
+    const theme = nativeTheme.shouldUseDarkColors ? 'light' : 'dark';
+    const assetsPath = `src/renderer/assets/presence-status/${os}/${theme}`;
 
     switch (status) {
       case EPresenceStatus.AVAILABLE:
@@ -71,7 +74,16 @@ export class PresenceStatus {
           place === 'tray' ? 'out-of-office-tray.png' : 'out-of-office.png'
         }`;
         break;
-
+      case EPresenceStatus.IN_A_MEETING:
+        backgroundImage = `../../../${assetsPath}/${
+          place === 'tray' ? 'in-a-meeting-tray.png' : 'in-a-meeting.png'
+        }`;
+        break;
+      case EPresenceStatus.NO_PRESENCE:
+        backgroundImage = `../../../${assetsPath}/${
+          place === 'tray' ? 'no-status-tray.png' : 'no-status.png'
+        }`;
+        break;
       default:
         break;
     }

@@ -1,4 +1,4 @@
-import { nativeImage, WebContents } from 'electron';
+import { app, Menu, nativeImage, WebContents } from 'electron';
 import {
   EPresenceStatus,
   IPresenceStatus,
@@ -7,7 +7,8 @@ import {
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
 import { presenceStatusStore } from './stores';
-import { showBadgeCount, showSystemTrayPresence } from './window-utils';
+import { windowHandler } from './window-handler';
+import { initSysTray, showBadgeCount } from './window-utils';
 
 export interface IListItem {
   name: string;
@@ -79,11 +80,98 @@ class PresenceStatus {
   };
 
   public setMyPresence = (myPresence: IPresenceStatus) => {
+    const currentPresenceStatus = presenceStatusStore.getStatus();
     const count = presenceStatusStore.getNotificationCount();
-
-    presenceStatusStore.setStatus(myPresence.category);
     showBadgeCount(count);
-    showSystemTrayPresence(myPresence.category);
+    if (currentPresenceStatus !== myPresence.category) {
+      presenceStatusStore.setStatus(myPresence.category);
+      this.updateSystemTrayPresence();
+    }
+  };
+
+  /**
+   * Shows the badge count
+   *
+   * @param count {number}
+   */
+  public updateSystemTrayPresence = (): void => {
+    const status = presenceStatusStore.getStatus();
+    let tray = presenceStatusStore.getCurrentTray();
+    const backgroundImage = presenceStatusStore.generateImagePath(
+      status,
+      'tray',
+    );
+    if (!backgroundImage) {
+      return;
+    }
+    if (!tray) {
+      tray = initSysTray();
+      logger.info('main-api-handler: create and save Symphony tray');
+    } else {
+      tray.setImage(backgroundImage);
+      logger.info('main-api-handler: new Symphony status updated');
+    }
+    const currentStatus = presenceStatusStore.getStatus();
+    const presenceNamespace = 'PresenceStatus';
+    const isMana = !!windowHandler.isMana;
+    const contextMenu = Menu.buildFromTemplate([
+      {
+        label: i18n.t('My presence')(),
+        visible: isMana,
+        submenu: [
+          {
+            label: i18n.t(EPresenceStatus.AVAILABLE, presenceNamespace)(),
+            type: 'checkbox',
+            checked: currentStatus === EPresenceStatus.AVAILABLE,
+            click: (_item) => {
+              this.handlePresenceChange(EPresenceStatus.AVAILABLE);
+            },
+          },
+          {
+            label: i18n.t(EPresenceStatus.BUSY, presenceNamespace)(),
+            type: 'checkbox',
+            checked: currentStatus === EPresenceStatus.BUSY,
+            click: (_item) => {
+              this.handlePresenceChange(EPresenceStatus.BUSY);
+            },
+          },
+          {
+            label: i18n.t(EPresenceStatus.BE_RIGHT_BACK, presenceNamespace)(),
+            type: 'checkbox',
+            checked: currentStatus === EPresenceStatus.BE_RIGHT_BACK,
+            click: (_item) => {
+              this.handlePresenceChange(EPresenceStatus.BE_RIGHT_BACK);
+            },
+          },
+          {
+            label: i18n.t(EPresenceStatus.OUT_OF_OFFICE, presenceNamespace)(),
+            type: 'checkbox',
+            checked: currentStatus === EPresenceStatus.OUT_OF_OFFICE,
+            click: (_item) => {
+              this.handlePresenceChange(currentStatus);
+            },
+          },
+        ],
+      },
+      {
+        label: i18n.t('Quit Symphony')(),
+        click: () => app.quit(),
+      },
+    ]);
+    tray?.setContextMenu(contextMenu);
+  };
+
+  private handlePresenceChange = (currentStatus: EPresenceStatus) => {
+    const status = {
+      category: currentStatus,
+      statusGroup: '',
+      timestamp: 0,
+    };
+    presenceStatus.setMyPresence(status);
+    const mainWebContents = windowHandler.getMainWebContents();
+    if (mainWebContents) {
+      mainWebContents.send('send-presence-status-data', currentStatus);
+    }
   };
 
   private setPresenceStatus = (

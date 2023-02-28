@@ -201,6 +201,7 @@ export enum EPresenceStatus {
   'IN_A_MEETING' = 'IN_A_MEETING',
   'BE_RIGHT_BACK' = 'BE_RIGHT_BACK',
   'OFF_WORK' = 'OFF_WORK',
+  'NO_PRESENCE' = 'NO_PRESENCE',
 }
 
 export interface IPresenceStatus {
