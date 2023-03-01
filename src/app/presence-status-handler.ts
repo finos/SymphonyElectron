@@ -123,7 +123,7 @@ class PresenceStatus {
             label: i18n.t(EPresenceStatus.AVAILABLE, presenceNamespace)(),
             type: 'checkbox',
             checked: currentStatus === EPresenceStatus.AVAILABLE,
-            click: (_item) => {
+            click: () => {
               this.handlePresenceChange(EPresenceStatus.AVAILABLE);
             },
           },
@@ -131,7 +131,7 @@ class PresenceStatus {
             label: i18n.t(EPresenceStatus.BUSY, presenceNamespace)(),
             type: 'checkbox',
             checked: currentStatus === EPresenceStatus.BUSY,
-            click: (_item) => {
+            click: () => {
               this.handlePresenceChange(EPresenceStatus.BUSY);
             },
           },
@@ -139,7 +139,7 @@ class PresenceStatus {
             label: i18n.t(EPresenceStatus.BE_RIGHT_BACK, presenceNamespace)(),
             type: 'checkbox',
             checked: currentStatus === EPresenceStatus.BE_RIGHT_BACK,
-            click: (_item) => {
+            click: () => {
               this.handlePresenceChange(EPresenceStatus.BE_RIGHT_BACK);
             },
           },
@@ -147,7 +147,7 @@ class PresenceStatus {
             label: i18n.t(EPresenceStatus.OUT_OF_OFFICE, presenceNamespace)(),
             type: 'checkbox',
             checked: currentStatus === EPresenceStatus.OUT_OF_OFFICE,
-            click: (_item) => {
+            click: () => {
               this.handlePresenceChange(EPresenceStatus.OUT_OF_OFFICE);
             },
           },
@@ -165,7 +165,7 @@ class PresenceStatus {
     const status = {
       category: currentStatus,
       statusGroup: '',
-      timestamp: 0,
+      timestamp: Date.now(),
     };
     presenceStatus.setMyPresence(status);
     const mainWebContents = windowHandler.getMainWebContents();
