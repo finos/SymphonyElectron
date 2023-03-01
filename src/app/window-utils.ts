@@ -3,7 +3,9 @@ import {
   BrowserView,
   BrowserWindow,
   dialog,
+  Menu,
   nativeImage,
+  nativeTheme,
   Rectangle,
   screen,
   shell,
@@ -299,25 +301,30 @@ export const showBadgeCount = (count: number): void => {
 };
 
 /**
- * Shows the badge count
- *
- * @param count {number}
+ * Creates sys tray
  */
-export const showSystemTrayPresence = (status: EPresenceStatus): void => {
-  const tray = presenceStatusStore.getCurrentTray();
-  const backgroundImage = presenceStatusStore.generateImagePath(status, 'tray');
-  if (!backgroundImage) {
-    return;
-  }
-  if (!tray) {
-    const symphonyTray = new Tray(backgroundImage);
-    presenceStatusStore.setCurrentTray(symphonyTray);
-    symphonyTray.setToolTip('Symphony');
-    logger.info('main-api-handler: create and save Symphony tray');
-  } else {
-    tray.setImage(backgroundImage);
-    logger.info('main-api-handler: new Symphony status updated');
-  }
+export const initSysTray = () => {
+  const defaultSysTrayIcon = 'no-status-tray.png';
+  const os = isWindowsOS ? 'windows' : isMac ? 'macOS' : 'linux';
+  const theme = nativeTheme.shouldUseDarkColors ? 'light' : 'dark';
+  logger.info('theme: ', theme, nativeTheme.themeSource);
+  const assetsPath = `renderer/assets/presence-status/${os}/${theme}`;
+  const defaultSysTrayIconPath = path.join(
+    __dirname,
+    `../${assetsPath}/${defaultSysTrayIcon}`,
+  );
+  const backgroundImage = nativeImage.createFromPath(defaultSysTrayIconPath);
+  const tray = new Tray(backgroundImage);
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: i18n.t('Quit Symphony')(),
+      click: () => app.quit(),
+    },
+  ]);
+  tray.setContextMenu(contextMenu);
+  tray.setToolTip('Symphony');
+  presenceStatusStore.setCurrentTray(tray);
+  return tray;
 };
 
 /**
