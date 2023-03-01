@@ -51,45 +51,45 @@ export class PresenceStatus {
     const os = isWindowsOS ? 'windows' : isMac ? 'macOS' : 'linux';
     const theme = nativeTheme.shouldUseDarkColors ? 'light' : 'dark';
     const assetsPath = `src/renderer/assets/presence-status/${os}/${theme}`;
-
+    let fileExtension = 'png';
+    let iconPlace = '';
+    switch (place) {
+      case 'tray':
+        iconPlace = '-tray';
+        fileExtension = isWindowsOS ? 'ico' : isMac ? 'png' : 'png';
+        break;
+      case 'thumbnail':
+        iconPlace = '-thumbnail';
+        fileExtension = 'ico';
+        break;
+      default:
+        break;
+    }
     switch (status) {
       case EPresenceStatus.AVAILABLE:
-        backgroundImage = `../../../${assetsPath}/${
-          place === 'tray' ? 'online-tray.png' : 'online.png'
-        }`;
+        backgroundImage = `../../../${assetsPath}/${`available${iconPlace}.${fileExtension}`}`;
         break;
 
       case EPresenceStatus.BUSY:
-        backgroundImage = `../../../${assetsPath}/${
-          place === 'tray' ? 'busy-tray.png' : 'busy.png'
-        }`;
+        backgroundImage = `../../../${assetsPath}/busy${iconPlace}.${fileExtension}`;
         break;
 
       case EPresenceStatus.BE_RIGHT_BACK || EPresenceStatus.AWAY:
-        backgroundImage = `../../../${assetsPath}/${
-          place === 'tray' ? 'brb-tray.png' : 'brb.png'
-        }`;
+        backgroundImage = `../../../${assetsPath}/brb${iconPlace}.${fileExtension}`;
         break;
 
       case EPresenceStatus.OFFLINE:
-        backgroundImage = `../../../${assetsPath}/${
-          place === 'tray' ? 'offline-tray.png' : 'offline.png'
-        }`;
+        backgroundImage = `../../../${assetsPath}/offline${iconPlace}.${fileExtension}`;
         break;
 
       case EPresenceStatus.OUT_OF_OFFICE:
-        backgroundImage = `../../../${assetsPath}/${
-          place === 'tray' ? 'out-of-office-tray.png' : 'out-of-office.png'
-        }`;
+        backgroundImage = `../../../${assetsPath}/out-of-office${iconPlace}.${fileExtension}`;
         break;
       case EPresenceStatus.IN_A_MEETING:
-        backgroundImage = `../../../${assetsPath}/${
-          place === 'tray' ? 'in-a-meeting-tray.png' : 'in-a-meeting.png'
-        }`;
+        backgroundImage = `../../../${assetsPath}/in-a-meeting${iconPlace}.${fileExtension}`;
         break;
       case EPresenceStatus.NO_PRESENCE:
-        backgroundImage =
-          place === 'tray' ? `../../../${assetsPath}/no-status-tray.png` : '';
+        backgroundImage = `../../../${assetsPath}/no-status${iconPlace}.${fileExtension}`;
         break;
       default:
         break;

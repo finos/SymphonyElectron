@@ -304,14 +304,15 @@ export const showBadgeCount = (count: number): void => {
  * Creates sys tray
  */
 export const initSysTray = () => {
-  const defaultSysTrayIcon = 'no-status-tray.png';
+  const defaultSysTrayIcon = 'no-status-tray';
+  const defaultSysTrayIconExtension = isWindowsOS ? 'ico' : 'png';
   const os = isWindowsOS ? 'windows' : isMac ? 'macOS' : 'linux';
   const theme = nativeTheme.shouldUseDarkColors ? 'light' : 'dark';
   logger.info('theme: ', theme, nativeTheme.themeSource);
   const assetsPath = `renderer/assets/presence-status/${os}/${theme}`;
   const defaultSysTrayIconPath = path.join(
     __dirname,
-    `../${assetsPath}/${defaultSysTrayIcon}`,
+    `../${assetsPath}/${defaultSysTrayIcon}.${defaultSysTrayIconExtension}`,
   );
   const backgroundImage = nativeImage.createFromPath(defaultSysTrayIconPath);
   const tray = new Tray(backgroundImage);

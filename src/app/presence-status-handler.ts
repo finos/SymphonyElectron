@@ -116,43 +116,47 @@ class PresenceStatus {
     const isMana = !!windowHandler.isMana;
     const contextMenu = Menu.buildFromTemplate([
       {
-        label: i18n.t('My presence')(),
+        label: i18n.t('Status')(),
         visible: isMana,
-        submenu: [
-          {
-            label: i18n.t(EPresenceStatus.AVAILABLE, presenceNamespace)(),
-            type: 'checkbox',
-            checked: currentStatus === EPresenceStatus.AVAILABLE,
-            click: () => {
-              this.handlePresenceChange(EPresenceStatus.AVAILABLE);
-            },
-          },
-          {
-            label: i18n.t(EPresenceStatus.BUSY, presenceNamespace)(),
-            type: 'checkbox',
-            checked: currentStatus === EPresenceStatus.BUSY,
-            click: () => {
-              this.handlePresenceChange(EPresenceStatus.BUSY);
-            },
-          },
-          {
-            label: i18n.t(EPresenceStatus.BE_RIGHT_BACK, presenceNamespace)(),
-            type: 'checkbox',
-            checked: currentStatus === EPresenceStatus.BE_RIGHT_BACK,
-            click: () => {
-              this.handlePresenceChange(EPresenceStatus.BE_RIGHT_BACK);
-            },
-          },
-          {
-            label: i18n.t(EPresenceStatus.OUT_OF_OFFICE, presenceNamespace)(),
-            type: 'checkbox',
-            checked: currentStatus === EPresenceStatus.OUT_OF_OFFICE,
-            click: () => {
-              this.handlePresenceChange(EPresenceStatus.OUT_OF_OFFICE);
-            },
-          },
-        ],
+        enabled: false,
       },
+      {
+        label: i18n.t(EPresenceStatus.AVAILABLE, presenceNamespace)(),
+        type: 'checkbox',
+        visible: isMana,
+        checked: currentStatus === EPresenceStatus.AVAILABLE,
+        click: () => {
+          this.handlePresenceChange(EPresenceStatus.AVAILABLE);
+        },
+      },
+      {
+        label: i18n.t(EPresenceStatus.BUSY, presenceNamespace)(),
+        type: 'checkbox',
+        visible: isMana,
+        checked: currentStatus === EPresenceStatus.BUSY,
+        click: () => {
+          this.handlePresenceChange(EPresenceStatus.BUSY);
+        },
+      },
+      {
+        label: i18n.t(EPresenceStatus.BE_RIGHT_BACK, presenceNamespace)(),
+        type: 'checkbox',
+        visible: isMana,
+        checked: currentStatus === EPresenceStatus.BE_RIGHT_BACK,
+        click: () => {
+          this.handlePresenceChange(EPresenceStatus.BE_RIGHT_BACK);
+        },
+      },
+      {
+        label: i18n.t(EPresenceStatus.OUT_OF_OFFICE, presenceNamespace)(),
+        type: 'checkbox',
+        visible: isMana,
+        checked: currentStatus === EPresenceStatus.OUT_OF_OFFICE,
+        click: () => {
+          this.handlePresenceChange(EPresenceStatus.OUT_OF_OFFICE);
+        },
+      },
+      { type: 'separator', visible: isMana },
       {
         label: i18n.t('Quit Symphony')(),
         click: () => app.quit(),

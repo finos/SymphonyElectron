@@ -9,6 +9,7 @@ import {
   dialog,
   Event,
   ipcMain,
+  nativeImage,
   nativeTheme,
   RenderProcessGoneDetails,
   screen,
