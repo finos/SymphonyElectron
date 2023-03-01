@@ -224,7 +224,7 @@
     "win32-api": "^20.1.0"
   },
   "optionalDependencies": {
-    "@symphony/symphony-c9-shell": "3.19.0-0.98.15.154",
+    "@symphony/symphony-c9-shell": "3.19.0-0.98.16.156",
     "screen-share-indicator-frame": "git+https://github.com/finos/ScreenShareIndicatorFrame.git#v1.4.13",
     "screen-snippet": "git+https://github.com/finos/ScreenSnippet2.git#9.2.2",
     "symphony-native-window-handle-helper": "github:finos/SymphonyWindowsHwndHelper#1.0.1",
