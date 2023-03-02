@@ -14,6 +14,7 @@ import { protocolHandler } from './protocol-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
 import { autoLaunchInstance } from './auto-launch-controller';
+import { presenceStatusStore } from './stores';
 
 // Set automatic period substitution to false because of a bug in draft js on the client app
 // See https://perzoinc.atlassian.net/browse/SDA-2215 for more details
@@ -171,6 +172,7 @@ app.on('window-all-closed', () => {
  */
 app.on('quit', () => {
   logger.info(`main: quitting the app!`);
+  presenceStatusStore.destroyCurrentTray();
   cleanUpAppCache();
 });
 

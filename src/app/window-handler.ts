@@ -9,6 +9,8 @@ import {
   dialog,
   Event,
   ipcMain,
+  nativeImage,
+  nativeTheme,
   RenderProcessGoneDetails,
   screen,
   shell,
@@ -43,6 +45,7 @@ import {
 import crashHandler from './crash-handler';
 import LocalMenuShortcuts from './local-menu-shortcuts';
 import { mainEvents } from './main-event-handler';
+import { presenceStatus } from './presence-status-handler';
 import { exportLogs } from './reports-handler';
 import { SpellChecker } from './spell-check-handler';
 import { winStore } from './stores';
@@ -60,6 +63,7 @@ import {
   getWindowByName,
   handleCertificateProxyVerification,
   handleDownloadManager,
+  initSysTray,
   injectStyles,
   isSymphonyReachable,
   loadBrowserViews,
@@ -455,6 +459,12 @@ export class WindowHandler {
       mainEvents.publish('maximize');
     }
     this.mainWindow.show();
+    initSysTray();
+    if (isMac) {
+      nativeTheme.on('updated', () => {
+        presenceStatus.updateSystemTrayPresence();
+      });
+    }
 
     // check for build expiry in case of test builds
     this.checkExpiry(this.mainWindow);
