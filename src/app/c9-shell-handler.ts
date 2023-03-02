@@ -19,9 +19,11 @@ type StatusCallback = (status: IShellStatus) => void;
 class C9ShellHandler {
   private _c9shell: ChildProcess | undefined;
   private _curStatus: IShellStatus | undefined;
+  private _isDisconnected = false;
   private _isStarting = false;
   private _isTerminating = false;
   private _sender: WebContents;
+  private _shouldRestart = false;
   private _statusCallback: StatusCallback | undefined;
 
   constructor(sender: WebContents) {
@@ -77,7 +79,7 @@ class C9ShellHandler {
   /**
    * Terminates the c9shell process if it was started by this handler.
    */
-  public terminateShell() {
+  public terminateShell(shouldRestart = false) {
     if (this._isTerminating) {
       logger.info('c9-shell-handler: _isTerminating, skip terminate');
       return;
@@ -90,6 +92,7 @@ class C9ShellHandler {
 
     logger.info('c9-shell-handler: terminate');
     this._isTerminating = true;
+    this._shouldRestart = shouldRestart;
     this._c9shell.kill();
   }
 
@@ -199,6 +202,10 @@ class C9ShellHandler {
       this._c9shell = undefined;
       this._isTerminating = false;
       this._updateStatus({ status: 'inactive' });
+      if (this._shouldRestart) {
+        this._shouldRestart = false;
+        this.startShell();
+      }
     });
 
     c9Shell.on('spawn', () => {
@@ -210,7 +217,9 @@ class C9ShellHandler {
     });
 
     c9Shell.stdout.on('data', (data) => {
-      logger.info(`c9-shell: ${data.toString().trim()}`);
+      const message: string = data.toString().trim();
+      logger.info(`c9-shell: ${message}`);
+      this._updateNetworkStatus(message);
     });
 
     c9Shell.stderr.on('data', (data) => {
@@ -218,6 +227,34 @@ class C9ShellHandler {
     });
 
     return c9Shell;
+  }
+
+  /**
+   * Update network status
+   * @param c9ShellMessage Any message provided by c9-shell
+   */
+  private _updateNetworkStatus(c9ShellMessage: string) {
+    if (this._isDisconnected) {
+      if (
+        c9ShellMessage.includes('NetworkConnectivityService|Internet Available')
+      ) {
+        this._isDisconnected = false;
+        this._onNetworkReconnection();
+      }
+    } else if (
+      c9ShellMessage.includes(
+        'NetworkConnectivityService|No Internet Available',
+      )
+    ) {
+      this._isDisconnected = true;
+    }
+  }
+
+  /**
+   * Executed after the network connection is restored
+   */
+  private _onNetworkReconnection() {
+    this.terminateShell(true);
   }
 }
 
