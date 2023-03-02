@@ -65,7 +65,8 @@
       "config/Symphony.config",
       "config/titleBarStyles.css",
       "config/InstallVariant.info",
-      "dictionaries/**"
+      "dictionaries/**",
+      "node_modules/screen-share-indicator-frame/SymphonyScreenShareIndicator"
     ],
     "mac": {
       "category": "public.app-category.business",
