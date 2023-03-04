@@ -243,13 +243,13 @@
   "Invalid security certificate": "のセキュリティ証明書は無効です。",
   "IV Dogfooding": "IV Dogfooding",
   "PresenceStatus": {
-    "OFFLINE": "Offline",
-    "AWAY": "Away",
-    "DO_NOT_DISTURB": "Do not disturb",
-    "BUSY": "Busy",
-    "AVAILABLE": "Available",
-    "OUT_OF_OFFICE": "Out of office",
-    "BE_RIGHT_BACK": "Be right back"
+    "OFFLINE": "オフライン",
+    "AWAY": "退席中",
+    "DO_NOT_DISTURB": "取り込み中",
+    "BUSY": "取り込み中",
+    "AVAILABLE": "連絡可能",
+    "OUT_OF_OFFICE": "不在",
+    "BE_RIGHT_BACK": "一時退席中"
   },
-  "Status": "Status"
+  "Status": "ステータス"
 }
