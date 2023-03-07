@@ -1,6 +1,7 @@
 import { app, Menu, nativeImage, WebContents } from 'electron';
 import {
-  EPresenceStatus,
+  EPresenceStatusCategory,
+  EPresenceStatusGroup,
   IPresenceStatus,
   IThumbarButton,
 } from '../common/api-interface';
@@ -27,63 +28,88 @@ class PresenceStatus {
       {
         click: () => {
           logger.info('presence-status-handler: Available Clicked');
-          this.setPresenceStatus(webContents, EPresenceStatus.AVAILABLE);
+          this.handlePresenceChange(
+            EPresenceStatusCategory.AVAILABLE,
+            EPresenceStatusGroup.ONLINE,
+            webContents,
+          );
         },
         icon: nativeImage.createFromPath(
           presenceStatusStore.generateImagePath(
-            EPresenceStatus.AVAILABLE,
+            EPresenceStatusGroup.ONLINE,
             'thumbnail',
           ),
         ),
-        tooltip: i18n.t(EPresenceStatus.AVAILABLE, this.NAMESPACE)(),
+        tooltip: i18n.t(EPresenceStatusCategory.AVAILABLE, this.NAMESPACE)(),
       },
       {
         click: () => {
           logger.info('presence-status-handler: Busy Clicked');
-          this.setPresenceStatus(webContents, EPresenceStatus.BUSY);
+          this.handlePresenceChange(
+            EPresenceStatusCategory.BUSY,
+            EPresenceStatusGroup.BUSY,
+            webContents,
+          );
         },
         icon: nativeImage.createFromPath(
           presenceStatusStore.generateImagePath(
-            EPresenceStatus.BUSY,
+            EPresenceStatusGroup.BUSY,
             'thumbnail',
           ),
         ),
-        tooltip: i18n.t(EPresenceStatus.BUSY, this.NAMESPACE)(),
+        tooltip: i18n.t(EPresenceStatusCategory.BUSY, this.NAMESPACE)(),
       },
       {
         click: () => {
           logger.info('presence-status-handler: Be Right Back Clicked');
-          this.setPresenceStatus(webContents, EPresenceStatus.BE_RIGHT_BACK);
+          this.handlePresenceChange(
+            EPresenceStatusCategory.BE_RIGHT_BACK,
+            EPresenceStatusGroup.IDLE,
+            webContents,
+          );
         },
         icon: nativeImage.createFromPath(
           presenceStatusStore.generateImagePath(
-            EPresenceStatus.BE_RIGHT_BACK,
+            EPresenceStatusGroup.IDLE,
             'thumbnail',
           ),
         ),
-        tooltip: i18n.t(EPresenceStatus.BE_RIGHT_BACK, this.NAMESPACE)(),
+        tooltip: i18n.t(
+          EPresenceStatusCategory.BE_RIGHT_BACK,
+          this.NAMESPACE,
+        )(),
       },
       {
         click: () => {
           logger.info('presence-status-handler: Out of Office Clicked');
-          this.setPresenceStatus(webContents, EPresenceStatus.OUT_OF_OFFICE);
+          this.handlePresenceChange(
+            EPresenceStatusCategory.OUT_OF_OFFICE,
+            EPresenceStatusGroup.ABSENT,
+            webContents,
+          );
         },
         icon: nativeImage.createFromPath(
           presenceStatusStore.generateImagePath(
-            EPresenceStatus.OUT_OF_OFFICE,
+            EPresenceStatusGroup.ABSENT,
             'thumbnail',
           ),
         ),
-        tooltip: i18n.t(EPresenceStatus.OUT_OF_OFFICE, this.NAMESPACE)(),
+        tooltip: i18n.t(
+          EPresenceStatusCategory.OUT_OF_OFFICE,
+          this.NAMESPACE,
+        )(),
       },
     ];
   };
 
   public setMyPresence = (myPresence: IPresenceStatus) => {
-    const currentPresenceStatus = presenceStatusStore.getStatus();
+    const currentPresence = presenceStatusStore.getPresence();
     const count = presenceStatusStore.getNotificationCount();
-    if (currentPresenceStatus !== myPresence.category) {
-      presenceStatusStore.setStatus(myPresence.category);
+    if (
+      currentPresence.statusCategory !== myPresence.statusCategory ||
+      currentPresence.statusGroup !== myPresence.statusGroup
+    ) {
+      presenceStatusStore.setPresence(myPresence);
       this.updateSystemTrayPresence();
     }
     showBadgeCount(count);
@@ -95,10 +121,10 @@ class PresenceStatus {
    * @param count {number}
    */
   public updateSystemTrayPresence = (): void => {
-    const status = presenceStatusStore.getStatus();
+    const presence = presenceStatusStore.getPresence();
     let tray = presenceStatusStore.getCurrentTray();
     const backgroundImage = presenceStatusStore.generateImagePath(
-      status,
+      presence.statusGroup,
       'tray',
     );
     if (!backgroundImage) {
@@ -111,7 +137,6 @@ class PresenceStatus {
       tray.setImage(backgroundImage);
       logger.info('presence-status-handler: new Symphony status updated');
     }
-    const currentStatus = presenceStatusStore.getStatus();
     const presenceNamespace = 'PresenceStatus';
     const isMana = !!windowHandler.isMana;
     const contextMenu = Menu.buildFromTemplate([
@@ -121,39 +146,57 @@ class PresenceStatus {
         enabled: false,
       },
       {
-        label: i18n.t(EPresenceStatus.AVAILABLE, presenceNamespace)(),
+        label: i18n.t(EPresenceStatusCategory.AVAILABLE, presenceNamespace)(),
         type: 'checkbox',
         visible: isMana,
-        checked: currentStatus === EPresenceStatus.AVAILABLE,
+        checked: presence.statusGroup === EPresenceStatusGroup.ONLINE,
         click: () => {
-          this.handlePresenceChange(EPresenceStatus.AVAILABLE);
+          this.handlePresenceChange(
+            EPresenceStatusCategory.AVAILABLE,
+            EPresenceStatusGroup.ONLINE,
+          );
         },
       },
       {
-        label: i18n.t(EPresenceStatus.BUSY, presenceNamespace)(),
+        label: i18n.t(EPresenceStatusCategory.BUSY, presenceNamespace)(),
         type: 'checkbox',
         visible: isMana,
-        checked: currentStatus === EPresenceStatus.BUSY,
+        checked: presence.statusGroup === EPresenceStatusGroup.BUSY,
         click: () => {
-          this.handlePresenceChange(EPresenceStatus.BUSY);
+          this.handlePresenceChange(
+            EPresenceStatusCategory.BUSY,
+            EPresenceStatusGroup.BUSY,
+          );
         },
       },
       {
-        label: i18n.t(EPresenceStatus.BE_RIGHT_BACK, presenceNamespace)(),
+        label: i18n.t(
+          EPresenceStatusCategory.BE_RIGHT_BACK,
+          presenceNamespace,
+        )(),
         type: 'checkbox',
         visible: isMana,
-        checked: currentStatus === EPresenceStatus.BE_RIGHT_BACK,
+        checked: presence.statusGroup === EPresenceStatusGroup.IDLE,
         click: () => {
-          this.handlePresenceChange(EPresenceStatus.BE_RIGHT_BACK);
+          this.handlePresenceChange(
+            EPresenceStatusCategory.BE_RIGHT_BACK,
+            EPresenceStatusGroup.IDLE,
+          );
         },
       },
       {
-        label: i18n.t(EPresenceStatus.OUT_OF_OFFICE, presenceNamespace)(),
+        label: i18n.t(
+          EPresenceStatusCategory.OUT_OF_OFFICE,
+          presenceNamespace,
+        )(),
         type: 'checkbox',
         visible: isMana,
-        checked: currentStatus === EPresenceStatus.OUT_OF_OFFICE,
+        checked: presence.statusGroup === EPresenceStatusGroup.OFFLINE,
         click: () => {
-          this.handlePresenceChange(EPresenceStatus.OUT_OF_OFFICE);
+          this.handlePresenceChange(
+            EPresenceStatusCategory.OUT_OF_OFFICE,
+            EPresenceStatusGroup.OFFLINE,
+          );
         },
       },
       { type: 'separator', visible: isMana },
@@ -165,26 +208,30 @@ class PresenceStatus {
     tray?.setContextMenu(contextMenu);
   };
 
-  private handlePresenceChange = (currentStatus: EPresenceStatus) => {
-    const status = {
-      category: currentStatus,
-      statusGroup: '',
+  private handlePresenceChange = (
+    statusCategory: EPresenceStatusCategory,
+    statusGroup: EPresenceStatusGroup,
+    webContents?: WebContents,
+  ) => {
+    const status: IPresenceStatus = {
+      statusCategory,
+      statusGroup,
       timestamp: Date.now(),
     };
-    presenceStatus.setMyPresence(status);
-    const mainWebContents = windowHandler.getMainWebContents();
-    if (mainWebContents) {
-      mainWebContents.send('send-presence-status-data', currentStatus);
+    if (webContents) {
+      webContents.send('send-presence-status-data', statusCategory);
+      presenceStatusStore.setPresence(status);
+      this.updateSystemTrayPresence();
+    } else {
+      presenceStatus.setMyPresence(status);
+      const mainWebContents = windowHandler.getMainWebContents();
+      if (mainWebContents) {
+        mainWebContents.send(
+          'send-presence-status-data',
+          status.statusCategory,
+        );
+      }
     }
-  };
-
-  private setPresenceStatus = (
-    webContents: WebContents,
-    status: EPresenceStatus,
-  ) => {
-    webContents.send('send-presence-status-data', status);
-    presenceStatusStore.setStatus(status);
-    this.updateSystemTrayPresence();
   };
 }
 
