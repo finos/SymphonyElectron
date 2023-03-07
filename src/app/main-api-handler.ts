@@ -295,10 +295,8 @@ ipcMain.on(
           // Update App Menu
           const appMenu = windowHandler.appMenu;
           const mainWindow = windowHandler.getMainWindow();
-
           if (mainWebContents) {
-            const items = presenceStatus.createThumbarButtons(mainWebContents);
-
+            const items = presenceStatus.createThumbarButtons();
             mainWindow?.setThumbarButtons(items);
             logger.info('main-api-handler: Add actions preview menu');
           }

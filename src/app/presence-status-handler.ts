@@ -1,4 +1,4 @@
-import { app, Menu, nativeImage, WebContents } from 'electron';
+import { app, Menu, nativeImage } from 'electron';
 import {
   EPresenceStatusCategory,
   EPresenceStatusGroup,
@@ -21,9 +21,7 @@ export interface IListItem {
 class PresenceStatus {
   private NAMESPACE = 'PresenceStatus';
 
-  public createThumbarButtons = (
-    webContents: WebContents,
-  ): IThumbarButton[] => {
+  public createThumbarButtons = (): IThumbarButton[] => {
     return [
       {
         click: () => {
@@ -31,7 +29,6 @@ class PresenceStatus {
           this.handlePresenceChange(
             EPresenceStatusCategory.AVAILABLE,
             EPresenceStatusGroup.ONLINE,
-            webContents,
           );
         },
         icon: nativeImage.createFromPath(
@@ -48,7 +45,6 @@ class PresenceStatus {
           this.handlePresenceChange(
             EPresenceStatusCategory.BUSY,
             EPresenceStatusGroup.BUSY,
-            webContents,
           );
         },
         icon: nativeImage.createFromPath(
@@ -65,7 +61,6 @@ class PresenceStatus {
           this.handlePresenceChange(
             EPresenceStatusCategory.BE_RIGHT_BACK,
             EPresenceStatusGroup.IDLE,
-            webContents,
           );
         },
         icon: nativeImage.createFromPath(
@@ -85,7 +80,6 @@ class PresenceStatus {
           this.handlePresenceChange(
             EPresenceStatusCategory.OUT_OF_OFFICE,
             EPresenceStatusGroup.ABSENT,
-            webContents,
           );
         },
         icon: nativeImage.createFromPath(
@@ -211,26 +205,16 @@ class PresenceStatus {
   private handlePresenceChange = (
     statusCategory: EPresenceStatusCategory,
     statusGroup: EPresenceStatusGroup,
-    webContents?: WebContents,
   ) => {
     const status: IPresenceStatus = {
       statusCategory,
       statusGroup,
       timestamp: Date.now(),
     };
-    if (webContents) {
-      webContents.send('send-presence-status-data', statusCategory);
-      presenceStatusStore.setPresence(status);
-      this.updateSystemTrayPresence();
-    } else {
-      presenceStatus.setMyPresence(status);
-      const mainWebContents = windowHandler.getMainWebContents();
-      if (mainWebContents) {
-        mainWebContents.send(
-          'send-presence-status-data',
-          status.statusCategory,
-        );
-      }
+    presenceStatus.setMyPresence(status);
+    const mainWebContents = windowHandler.getMainWebContents();
+    if (mainWebContents) {
+      mainWebContents.send('send-presence-status-data', status.statusCategory);
     }
   };
 }
