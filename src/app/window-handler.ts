@@ -565,7 +565,7 @@ export class WindowHandler {
             url: userConfigUrl,
             message: '',
             urlValid: !!userConfigUrl,
-            isPodConfigured: this.isPodConfigured,
+            isPodConfigured: this.isPodConfigured && !!userConfigUrl,
             isSeamlessLoginEnabled: this.config.enableSeamlessLogin,
           });
           this.didShowWelcomeScreen = true;

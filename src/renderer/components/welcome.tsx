@@ -151,7 +151,7 @@ export default class Welcome extends React.Component<{}, IState> {
     const url = _event.target.value.trim();
     const match =
       url.match(
-        /(https?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&/=]*)/g,
+        /^https:\/\/.(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&/=]*)/g,
       ) != null;
     if (url === 'https://[POD].symphony.com' || !match) {
       this.updateState(_event, {
