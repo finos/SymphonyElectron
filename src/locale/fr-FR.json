@@ -243,13 +243,13 @@
   "Invalid security certificate": "possède un certificat de sécurité non valide.",
   "IV Dogfooding": "IV essaye la pâtée de ton chien",
   "PresenceStatus": {
-    "OFFLINE": "Offline",
-    "AWAY": "Away",
-    "DO_NOT_DISTURB": "Do not disturb",
-    "BUSY": "Busy",
-    "AVAILABLE": "Available",
-    "OUT_OF_OFFICE": "Out of office",
-    "BE_RIGHT_BACK": "Be right back"
+    "OFFLINE": "Hors ligne",
+    "AWAY": "Absent(e)",
+    "DO_NOT_DISTURB": "Ne pas déranger",
+    "BUSY": "Occupé(e)",
+    "AVAILABLE": "Disponible",
+    "OUT_OF_OFFICE": "Absent(e) du bureau",
+    "BE_RIGHT_BACK": "De retour dans quelques minutes"
   },
-  "Status": "Status"
+  "Status": "Statut"
 }
