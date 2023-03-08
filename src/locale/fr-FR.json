@@ -221,7 +221,7 @@
     "Enable Single Sign On": "Activer le SSO",
     "Find your pod URL in your invitation email.": "L'URL de votre instance Symphony est indiquée dans l'email d'invitation.",
     "Welcome to the largest global community in financial services with over": "Bienvenue dans la communauté des services financiers la plus large au monde avec plus d'",
-    " half a million users": "un demi million d'usagers",
+    " half a million users": " un demi million d'usagers",
     " 1,000 institutions.": " 1000 institutions.",
     "Log in with your pod URL": "Connectez-vous avec l'URL de votre instance",
     "You’ll momentarily be redirected to your web browser.": "Vous allez être redirigé(e) vers votre navigateur internet.",
@@ -241,5 +241,15 @@
   "Allow once (risky)": "Autoriser une fois (risqué)",
   "Deny": "Refuser",
   "Invalid security certificate": "possède un certificat de sécurité non valide.",
-  "IV Dogfooding": "IV essaye la pâtée de ton chien"
+  "IV Dogfooding": "IV essaye la pâtée de ton chien",
+  "PresenceStatus": {
+    "OFFLINE": "Hors ligne",
+    "AWAY": "Absent(e)",
+    "DO_NOT_DISTURB": "Ne pas déranger",
+    "BUSY": "Occupé(e)",
+    "AVAILABLE": "Disponible",
+    "OUT_OF_OFFICE": "Absent(e) du bureau",
+    "BE_RIGHT_BACK": "De retour dans quelques minutes"
+  },
+  "Status": "Statut"
 }

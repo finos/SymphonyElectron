@@ -241,5 +241,15 @@
   "Allow once (risky)": "今回は許可(推奨されません)",
   "Deny": "拒否",
   "Invalid security certificate": "のセキュリティ証明書は無効です。",
-  "IV Dogfooding": "IV Dogfooding"
+  "IV Dogfooding": "IV Dogfooding",
+  "PresenceStatus": {
+    "OFFLINE": "オフライン",
+    "AWAY": "退席中",
+    "DO_NOT_DISTURB": "取り込み中",
+    "BUSY": "取り込み中",
+    "AVAILABLE": "連絡可能",
+    "OUT_OF_OFFICE": "不在",
+    "BE_RIGHT_BACK": "一時退席中"
+  },
+  "Status": "ステータス"
 }
