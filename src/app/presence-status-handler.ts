@@ -140,9 +140,20 @@ class PresenceStatus {
         enabled: false,
       },
       {
+        label: i18n.t(
+          EPresenceStatusCategory.IN_A_MEETING,
+          presenceNamespace,
+        )(),
+        type: 'checkbox',
+        visible:
+          isMana && presence.statusGroup === EPresenceStatusGroup.MEETING,
+        checked: presence.statusGroup === EPresenceStatusGroup.MEETING,
+      },
+      {
         label: i18n.t(EPresenceStatusCategory.AVAILABLE, presenceNamespace)(),
         type: 'checkbox',
-        visible: isMana,
+        visible:
+          isMana && presence.statusGroup !== EPresenceStatusGroup.MEETING,
         checked: presence.statusGroup === EPresenceStatusGroup.ONLINE,
         click: () => {
           this.handlePresenceChange(
