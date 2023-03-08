@@ -13,7 +13,7 @@ import {
   apiCmds,
   apiName,
   ConfigUpdateType,
-  EPresenceStatus,
+  EPresenceStatusCategory,
   IBoundsChange,
   ICloud9Pipe,
   ICPUUsage,
@@ -60,7 +60,7 @@ export interface ILocalObject {
   >;
   c9PipeEventCallback?: (event: string, arg?: any) => void;
   c9MessageCallback?: (status: IShellStatus) => void;
-  updateMyPresenceCallback?: (presence: EPresenceStatus) => void;
+  updateMyPresenceCallback?: (presence: EPresenceStatusCategory) => void;
 }
 
 const local: ILocalObject = {
@@ -374,7 +374,9 @@ export class SSFApi {
    * It will only trigger if you hit any button at presence-status-handler
    *
    */
-  public updateMyPresence(callback: (category: EPresenceStatus) => void) {
+  public updateMyPresence(
+    callback: (category: EPresenceStatusCategory) => void,
+  ) {
     if (typeof callback === 'function') {
       local.updateMyPresenceCallback = callback;
     }
@@ -932,7 +934,7 @@ local.ipcRenderer.on(
 
 local.ipcRenderer.on(
   'send-presence-status-data',
-  (_event: Event, arg: EPresenceStatus) => {
+  (_event: Event, arg: EPresenceStatusCategory) => {
     if (typeof local.updateMyPresenceCallback === 'function') {
       local.updateMyPresenceCallback(arg);
     }

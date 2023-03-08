@@ -1,7 +1,9 @@
 import { nativeTheme, Tray } from 'electron';
 import * as path from 'path';
 import {
-  EPresenceStatus,
+  EPresenceStatusCategory,
+  EPresenceStatusGroup,
+  IPresenceStatus,
   IStatusBadge,
   ITray,
 } from '../../common/api-interface';
@@ -11,23 +13,25 @@ import { isMac, isWindowsOS } from '../../common/env';
 
 export class PresenceStatus {
   private presenceStatus: IStatusBadge = {
-    status: EPresenceStatus.NO_PRESENCE,
+    statusCategory: EPresenceStatusCategory.NO_PRESENCE,
+    statusGroup: EPresenceStatusGroup.OFFLINE,
     count: 0,
   };
   private tray: ITray = {
     current: null,
   };
 
-  public setStatus = (status: EPresenceStatus) => {
-    this.presenceStatus.status = status;
+  public setPresence = (presence: IPresenceStatus) => {
+    this.presenceStatus.statusCategory = presence.statusCategory;
+    this.presenceStatus.statusGroup = presence.statusGroup;
   };
 
   public setNotificationCount = (count: number) => {
     this.presenceStatus.count = count;
   };
 
-  public getStatus = () => {
-    return this.presenceStatus.status;
+  public getPresence = () => {
+    return this.presenceStatus;
   };
 
   public getNotificationCount = () => {
@@ -46,7 +50,10 @@ export class PresenceStatus {
     }
   };
 
-  public generateImagePath = (status: EPresenceStatus, place: string) => {
+  public generateImagePath = (
+    statusGroup: EPresenceStatusGroup,
+    place: string,
+  ) => {
     let backgroundImage: string = '';
     const os = isWindowsOS ? 'windows' : isMac ? 'macOS' : 'linux';
     const theme = nativeTheme.shouldUseDarkColors ? 'light' : 'dark';
@@ -65,30 +72,30 @@ export class PresenceStatus {
       default:
         break;
     }
-    switch (status) {
-      case EPresenceStatus.AVAILABLE:
+    switch (statusGroup) {
+      case EPresenceStatusGroup.ONLINE:
         backgroundImage = `../../../${assetsPath}/${`available${iconPlace}.${fileExtension}`}`;
         break;
 
-      case EPresenceStatus.BUSY:
+      case EPresenceStatusGroup.BUSY:
         backgroundImage = `../../../${assetsPath}/busy${iconPlace}.${fileExtension}`;
         break;
 
-      case EPresenceStatus.BE_RIGHT_BACK || EPresenceStatus.AWAY:
+      case EPresenceStatusGroup.IDLE:
         backgroundImage = `../../../${assetsPath}/brb${iconPlace}.${fileExtension}`;
         break;
 
-      case EPresenceStatus.OFFLINE:
+      case EPresenceStatusGroup.OFFLINE:
         backgroundImage = `../../../${assetsPath}/offline${iconPlace}.${fileExtension}`;
         break;
 
-      case EPresenceStatus.OUT_OF_OFFICE:
+      case EPresenceStatusGroup.ABSENT:
         backgroundImage = `../../../${assetsPath}/out-of-office${iconPlace}.${fileExtension}`;
         break;
-      case EPresenceStatus.IN_A_MEETING:
+      case EPresenceStatusGroup.MEETING:
         backgroundImage = `../../../${assetsPath}/in-a-meeting${iconPlace}.${fileExtension}`;
         break;
-      case EPresenceStatus.NO_PRESENCE:
+      case EPresenceStatusGroup.HIDE_PRESENCE:
         backgroundImage = `../../../${assetsPath}/no-status${iconPlace}.${fileExtension}`;
         break;
       default:

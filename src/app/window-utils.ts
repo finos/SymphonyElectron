@@ -20,7 +20,7 @@ import * as path from 'path';
 import { format, parse } from 'url';
 import {
   apiName,
-  EPresenceStatus,
+  EPresenceStatusGroup,
   // IStatusBadge,
 } from '../common/api-interface';
 
@@ -288,14 +288,14 @@ export const showBadgeCount = (count: number): void => {
     mainWebContents.send('create-badge-data-url', { count });
     return;
   } else {
-    const status = presenceStatusStore.getStatus();
+    const status = presenceStatusStore.getPresence();
     const backgroundImage = presenceStatusStore.generateImagePath(
-      status,
+      status.statusGroup,
       'taskbar',
     );
 
     if (backgroundImage) {
-      setStatusBadge(backgroundImage, status);
+      setStatusBadge(backgroundImage, status.statusGroup);
     }
   }
 };
@@ -336,13 +336,16 @@ export const initSysTray = () => {
  */
 export const setStatusBadge = (
   path: string,
-  status?: EPresenceStatus,
+  statusGroup?: EPresenceStatusGroup,
 ): void => {
   const mainWindow = windowHandler.getMainWindow();
-  if (mainWindow && path && status) {
+  if (mainWindow && path && statusGroup) {
     const img = nativeImage.createFromPath(path);
     // for accessibility screen readers
-    const desc = `Your current status is ${i18n.t(status, 'PresenceStatus')()}`;
+    const desc = `Your current status group is ${i18n.t(
+      statusGroup,
+      'PresenceStatus',
+    )()}`;
     mainWindow.setOverlayIcon(img, desc);
     logger.info('window-utils: Taskbar Presence Updated');
   }

@@ -177,7 +177,8 @@ export interface IThumbarButton {
 }
 
 export interface IStatusBadge extends IBadgeCount {
-  status: EPresenceStatus;
+  statusCategory: EPresenceStatusCategory;
+  statusGroup: EPresenceStatusGroup;
 }
 
 export interface ITray {
@@ -189,7 +190,7 @@ export interface IPresenceStore {
   presenceStatus: IPresenceStatus;
 }
 
-export enum EPresenceStatus {
+export enum EPresenceStatusCategory {
   'ONLINE' = 'ONLINE',
   'OFFLINE' = 'OFFLINE',
   'AWAY' = 'AWAY',
@@ -204,9 +205,19 @@ export enum EPresenceStatus {
   'NO_PRESENCE' = 'NO_PRESENCE',
 }
 
+export enum EPresenceStatusGroup {
+  ONLINE = 'online',
+  BUSY = 'busy',
+  IDLE = 'idle',
+  OFFLINE = 'offline',
+  ABSENT = 'absent',
+  MEETING = 'meeting',
+  HIDE_PRESENCE = 'hide',
+}
+
 export interface IPresenceStatus {
-  category: EPresenceStatus;
-  statusGroup: string;
+  statusCategory: EPresenceStatusCategory;
+  statusGroup: EPresenceStatusGroup;
   timestamp: number;
 }
 
