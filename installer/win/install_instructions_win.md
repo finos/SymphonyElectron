@@ -530,7 +530,7 @@ Expected values:
 
 
 -------------------------------------------------------------------
-### ENABLE_SEAMLESS_LOGIN
+### ENABLE_BROWSER_LOGIN
 
 Expected values:
 
@@ -541,11 +541,11 @@ Expected values:
 
 #### Example, install with user-agent override
 
-    msiexec /i Symphony.msi ENABLE_SEAMLESS_LOGIN="true"
+    msiexec /i Symphony.msi ENABLE_BROWSER_LOGIN="true"
 
 #### Example, install without user-agent override
 
-    msiexec /i Symphony.msi ENABLE_SEAMLESS_LOGIN="false"
+    msiexec /i Symphony.msi ENABLE_BROWSER_LOGIN="false"
 
 or
 
