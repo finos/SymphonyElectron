@@ -18,11 +18,7 @@ import * as filesize from 'filesize';
 import * as fs from 'fs';
 import * as path from 'path';
 import { format, parse } from 'url';
-import {
-  apiName,
-  EPresenceStatusGroup,
-  // IStatusBadge,
-} from '../common/api-interface';
+import { apiName, EPresenceStatusGroup } from '../common/api-interface';
 
 import { isDevEnv, isLinux, isMac, isWindowsOS } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
@@ -284,11 +280,11 @@ export const showBadgeCount = (count: number): void => {
 
   // get badge img from renderer process, will return
   // img dataUrl in setDataUrl func.
-  if (count > 0) {
+  const status = presenceStatusStore.getPresence();
+  if (count > 0 && status.statusGroup !== EPresenceStatusGroup.OFFLINE) {
     mainWebContents.send('create-badge-data-url', { count });
     return;
   } else {
-    const status = presenceStatusStore.getPresence();
     const backgroundImage = presenceStatusStore.generateImagePath(
       status.statusGroup,
       'taskbar',

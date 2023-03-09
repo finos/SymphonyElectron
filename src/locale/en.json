@@ -249,7 +249,8 @@
     "BUSY": "Busy",
     "AVAILABLE": "Available",
     "OUT_OF_OFFICE": "Out of office",
-    "BE_RIGHT_BACK": "Be right back"
+    "BE_RIGHT_BACK": "Be right back",
+    "IN_A_MEETING": "In a meeting"
   },
   "Status": "Status"
 }
