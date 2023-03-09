@@ -221,7 +221,7 @@ export class WindowHandler {
       'customFlags',
       'clientSwitch',
       'enableRendererLogs',
-      'enableSeamlessLogin',
+      'enableBrowserLogin',
     ]);
     logger.info(
       `window-handler: main windows initialized with following config data`,
@@ -252,7 +252,7 @@ export class WindowHandler {
     this.isPodConfigured = !config.isFirstTimeLaunch();
     this.didShowWelcomeScreen = false;
     this.shouldShowWelcomeScreen =
-      config.isFirstTimeLaunch() || this.config.enableSeamlessLogin;
+      config.isFirstTimeLaunch() || this.config.enableBrowserLogin;
 
     this.windowOpts = {
       ...this.getWindowOpts(
@@ -566,7 +566,7 @@ export class WindowHandler {
             message: '',
             urlValid: !!userConfigUrl,
             isPodConfigured: this.isPodConfigured && !!userConfigUrl,
-            isSeamlessLoginEnabled: this.config.enableSeamlessLogin,
+            isSeamlessLoginEnabled: this.config.enableBrowserLogin,
           });
           this.didShowWelcomeScreen = true;
         }

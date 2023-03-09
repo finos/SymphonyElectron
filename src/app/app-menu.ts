@@ -84,7 +84,7 @@ const menuItemConfigFields = [
   'isCustomTitleBar',
   'devToolsEnabled',
   'isAutoUpdateEnabled',
-  'enableSeamlessLogin',
+  'enableBrowserLogin',
 ];
 
 let {
@@ -96,7 +96,7 @@ let {
   isCustomTitleBar,
   devToolsEnabled,
   isAutoUpdateEnabled,
-  enableSeamlessLogin,
+  enableBrowserLogin,
 } = config.getConfigFields(menuItemConfigFields) as IConfig;
 let initialAnalyticsSent = false;
 const CORP_URL = 'https://corporate.symphony.com';
@@ -242,7 +242,7 @@ export class AppMenu {
     isCustomTitleBar = configData.isCustomTitleBar;
     devToolsEnabled = configData.devToolsEnabled;
     isAutoUpdateEnabled = configData.isAutoUpdateEnabled;
-    enableSeamlessLogin = configData.enableSeamlessLogin;
+    enableBrowserLogin = configData.enableBrowserLogin;
     // fetch updated cloud config
     this.cloudConfig = config.getFilteredCloudConfigFields(
       this.menuItemConfigFields,
@@ -519,10 +519,10 @@ export class AppMenu {
       },
       {
         type: 'checkbox',
-        label: i18n.t('Third-party browser login')(),
-        checked: enableSeamlessLogin,
+        label: i18n.t('Browser login')(),
+        checked: enableBrowserLogin,
         click: () => {
-          restartDialog({ enableSeamlessLogin: !enableSeamlessLogin });
+          restartDialog({ enableBrowserLogin: !enableBrowserLogin });
         },
       },
       this.buildSeparator(),

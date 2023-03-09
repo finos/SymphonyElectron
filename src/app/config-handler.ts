@@ -58,7 +58,7 @@ export interface IConfig {
   installVariant?: string;
   bootCount?: number;
   startedAfterAutoUpdate?: boolean;
-  enableSeamlessLogin: boolean;
+  enableBrowserLogin: boolean;
 }
 
 export interface IGlobalConfig {
