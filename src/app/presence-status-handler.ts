@@ -196,11 +196,11 @@ class PresenceStatus {
         )(),
         type: 'checkbox',
         visible: isMana,
-        checked: presence.statusGroup === EPresenceStatusGroup.OFFLINE,
+        checked: presence.statusGroup === EPresenceStatusGroup.ABSENT,
         click: () => {
           this.handlePresenceChange(
             EPresenceStatusCategory.OUT_OF_OFFICE,
-            EPresenceStatusGroup.OFFLINE,
+            EPresenceStatusGroup.ABSENT,
           );
         },
       },
