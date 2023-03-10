@@ -249,7 +249,9 @@
     "BUSY": "Occupé(e)",
     "AVAILABLE": "Disponible",
     "OUT_OF_OFFICE": "Absent(e) du bureau",
-    "BE_RIGHT_BACK": "De retour dans quelques minutes"
+    "BE_RIGHT_BACK": "De retour dans quelques minutes",
+    "IN_A_MEETING": "En réunion"
   },
-  "Status": "Statut"
+  "Status": "Statut",
+  "Browser login": "Authentification par navigateur"
 }

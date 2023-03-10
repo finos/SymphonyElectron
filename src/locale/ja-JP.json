@@ -249,7 +249,9 @@
     "BUSY": "取り込み中",
     "AVAILABLE": "連絡可能",
     "OUT_OF_OFFICE": "不在",
-    "BE_RIGHT_BACK": "一時退席中"
+    "BE_RIGHT_BACK": "一時退席中",
+    "IN_A_MEETING": "ミーティング中"
   },
-  "Status": "ステータス"
+  "Status": "ステータス",
+  "Browser login": "ブラウザログイン"
 }
