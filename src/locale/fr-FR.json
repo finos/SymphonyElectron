@@ -224,7 +224,7 @@
     " half a million users": " un demi million d'usagers",
     " 1,000 institutions.": " 1000 institutions.",
     "Log in with your pod URL": "Connectez-vous avec l'URL de votre instance",
-    "You’ll momentarily be redirected to your web browser.": "Vous allez être redirigé(e) vers votre navigateur internet.",
+    "You’ll momentarily be redirected to your web browser.": "Vous allez être redirigé(e) brièvement vers votre navigateur internet.",
     "log in": "identification",
     "Please enter a valid url": "Veuillez saisir une URL valide",
     "Pod URL": "URL du pod",
@@ -253,5 +253,5 @@
     "IN_A_MEETING": "En réunion"
   },
   "Status": "Statut",
-  "Browser login": "Authentification par navigateur"
+  "Browser login": "Authentification par navigateur (Accès Conditionnel)"
 }
