@@ -17,6 +17,7 @@ launch_on_startup=$(sed -n '4p' ${settingsFilePath});
 always_on_top=$(sed -n '5p' ${settingsFilePath});
 bring_to_front=$(sed -n '6p' ${settingsFilePath});
 dev_tools_enabled=$(sed -n '7p' ${settingsFilePath});
+enable_browser_login=$(sed -n '8p' ${settingsFilePath});
 
 ## If any of the above values turn out to be empty, set default values ##
 if [ "$pod_url" = "" ]; then pod_url="https://my.symphony.com"; fi
@@ -26,6 +27,7 @@ if [ "$launch_on_startup" = "" ] || [ "$launch_on_startup" = 'true' ]; then laun
 if [ "$always_on_top" = "" ] || [ "$always_on_top" = 'false' ]; then always_on_top='DISABLED'; else always_on_top='ENABLED'; fi
 if [ "$bring_to_front" = "" ] || [ "$bring_to_front" = 'false' ]; then bring_to_front='DISABLED'; else bring_to_front='ENABLED'; fi
 if [ "$dev_tools_enabled" = "" ]; then dev_tools_enabled=true; fi
+if [ "$enable_browser_login" = "" ]; then enable_browser_login=false; fi
 pod_url_escaped=$(sed 's#[&/\]#\\&#g' <<<"$pod_url")
 context_origin_url_escaped=$(sed 's#[&/\]#\\&#g' <<<"$context_origin_url")
 
@@ -37,6 +39,7 @@ sed -i "" -E "s#\"alwaysOnTop\" ?: ?\"([Ee][Nn][Aa][Bb][Ll][Ee][Dd]|[Dd][Ii][Ss]
 sed -i "" -E "s#\"launchOnStartup\" ?: ?\"([Ee][Nn][Aa][Bb][Ll][Ee][Dd]|[Dd][Ii][Ss][Aa][Bb][Ll][Ee][Dd])\"#\"launchOnStartup\":\ \"$launch_on_startup\"#g" "${newPath}"
 sed -i "" -E "s#\"bringToFront\" ?: ?\"([Ee][Nn][Aa][Bb][Ll][Ee][Dd]|[Dd][Ii][Ss][Aa][Bb][Ll][Ee][Dd])\"#\"bringToFront\":\ \"$bring_to_front\"#g" "${newPath}"
 sed -i "" -E "s#\"devToolsEnabled\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"devToolsEnabled\":\ $dev_tools_enabled#g" "${newPath}"
+sed -i "" -E "s#\"enableBrowserLogin\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"enableBrowserLogin\":\ $enable_browser_login#g" "${newPath}"
 
 ## Get Symphony Permissions from the temp file ##
 media=$(sed -n '1p' ${permissionsFilePath});
