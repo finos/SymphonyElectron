@@ -94,12 +94,16 @@ export default class AboutApp extends React.Component<{}, IState> {
     } = this.state;
 
     const appName = productName || 'Symphony';
+    const sfeVersionPrefix = 'sfe-lite-';
     const copyright = `${i18n.t(
       'Copyright',
       ABOUT_SYMPHONY_NAMESPACE,
     )()} \xA9 ${new Date().getFullYear()} ${appName}`;
     const podVersion = `${clientVersion} (${buildNumber})`;
     const sdaVersionBuild = `${sdaVersion} (${sdaBuildNumber})`;
+    const formattedSfeVersion = sfeVersion?.includes(sfeVersionPrefix)
+      ? sfeVersion.split(sfeVersionPrefix)[1]
+      : sfeVersion;
     const symphonySectionItems = [
       {
         key: 'POD:',
@@ -115,7 +119,7 @@ export default class AboutApp extends React.Component<{}, IState> {
       },
       {
         key: `${SFE_CLIENT_TYPE_NAME}:`,
-        value: `${sfeVersion} ${client}`,
+        value: `${formattedSfeVersion} ${client}`,
       },
     ];
 
