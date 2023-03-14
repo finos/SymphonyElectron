@@ -323,12 +323,12 @@ ipcMain.on(
        * This gets called from mana, when user logs out
        */
       case apiCmds.closeAllWrapperWindows:
+        windowHandler.closeAllWindows();
         const main = windowHandler.getMainWindow();
         terminateC9Shell();
 
         main?.setThumbarButtons([]);
         presenceStatus.onSignOut();
-        windowHandler.closeAllWindows();
         break;
       case apiCmds.setZoomLevel:
         if (typeof arg.zoomLevel === 'number') {
