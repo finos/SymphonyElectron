@@ -1209,11 +1209,7 @@ export class WindowHandler {
     this.aboutAppWindow.webContents.once('did-finish-load', async () => {
       let client = '';
       if (this.url && this.url.startsWith('https://corporate.symphony.com')) {
-        client = this.url.includes('bff')
-          ? this.url.includes('daily')
-            ? 'Symphony 2.0 - Daily'
-            : 'Symphony 2.0'
-          : 'Symphony Classic';
+        client = this.url.includes('daily') ? '- Daily' : '';
       }
       const ABOUT_SYMPHONY_NAMESPACE = 'AboutSymphony';
       const versionLocalised = i18n.t('Version', ABOUT_SYMPHONY_NAMESPACE)();
