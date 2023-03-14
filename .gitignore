@@ -1,8 +1,6 @@
-node_modules
 dist
 js/preload/_*.js
 .idea/
-coverage/
 npm-debug.log
 DerivedData/
 *.pbxuser
@@ -39,3 +37,9 @@ build
 
 # Local History plugin
 .history
+
+# Dependency directories
+node_modules
+
+# Coverage directory used by tools like istanbul
+coverage/

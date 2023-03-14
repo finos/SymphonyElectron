@@ -30,7 +30,7 @@ describe('Toast notification component', () => {
     expect(spy).toBeCalledWith('close-notification', 0);
   });
 
-  it('should click on the notification when use clicks on main container', async () => {
+  it('should click on the notification when the user clicks on main container', async () => {
     const spy = jest.spyOn(ipcRenderer, 'send');
     const notificationContainer = wrapper.find('.main-container');
     expect(notificationContainer).toBeTruthy();
