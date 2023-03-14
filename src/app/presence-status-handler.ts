@@ -213,7 +213,19 @@ class PresenceStatus {
     tray?.setContextMenu(contextMenu);
   };
 
-  public updateSignedOutContextMenu = () => {
+  public onSignOut = () => {
+    const offlinePresence: IPresenceStatus = {
+      statusCategory: EPresenceStatusCategory.OFFLINE,
+      statusGroup: EPresenceStatusGroup.HIDE_PRESENCE,
+      timestamp: Date.now(),
+    };
+    presenceStatusStore.setNotificationCount(0);
+    presenceStatusStore.setPresence(offlinePresence);
+    showBadgeCount(0);
+    const backgroundImage = presenceStatusStore.generateImagePath(
+      offlinePresence.statusGroup,
+      'tray',
+    );
     const tray = presenceStatusStore.getCurrentTray();
     const contextDefault = Menu.buildFromTemplate([
       {
@@ -221,8 +233,8 @@ class PresenceStatus {
         click: () => app.quit(),
       },
     ]);
-
     tray?.setContextMenu(contextDefault);
+    tray?.setImage(backgroundImage);
   };
 
   private handlePresenceChange = (
