@@ -20,6 +20,7 @@ class C9ShellHandler {
   private _c9shell: ChildProcess | undefined;
   private _curStatus: IShellStatus | undefined;
   private _isDisconnected = false;
+  private _isFreshStart = true;
   private _isStarting = false;
   private _isTerminating = false;
   private _sender: WebContents;
@@ -195,6 +196,7 @@ class C9ShellHandler {
     );
 
     this._updateStatus({ status: 'starting' });
+    this._isFreshStart = true;
     const c9Shell = spawn(c9ShellPath, customC9ShellArgList, { stdio: 'pipe' });
 
     c9Shell.on('close', (code) => {
@@ -234,10 +236,11 @@ class C9ShellHandler {
    * @param c9ShellMessage Any message provided by c9-shell
    */
   private _updateNetworkStatus(c9ShellMessage: string) {
-    if (this._isDisconnected) {
-      if (
-        c9ShellMessage.includes('NetworkConnectivityService|Internet Available')
-      ) {
+    if (
+      c9ShellMessage.includes('NetworkConnectivityService|Internet Available')
+    ) {
+      this._isFreshStart = false;
+      if (this._isDisconnected) {
         this._isDisconnected = false;
         this._onNetworkReconnection();
       }
@@ -246,7 +249,7 @@ class C9ShellHandler {
         'NetworkConnectivityService|No Internet Available',
       )
     ) {
-      this._isDisconnected = true;
+      this._isDisconnected = !this._isFreshStart;
     }
   }
 
