@@ -111,6 +111,10 @@
       <input type="checkbox" id="isExternal" />
     </p>
     <p>
+      <label for="isUpdated">is updated:</label>
+      <input type="checkbox" id="isUpdated" />
+    </p>
+    <p>
       <label for="hasMention">has mention:</label>
       <input type="checkbox" id="hasMention" />
     </p>
@@ -359,13 +363,15 @@
       var imageUrl = document.getElementById('image').value;
       var shouldFlash = document.getElementById('flash').checked;
       var isExternal = document.getElementById('isExternal').checked;
+      var isUpdated = document.getElementById('isUpdated').checked;
       var hasMention = document.getElementById('hasMention').checked;
       var shouldStick = document.getElementById('sticky').checked;
       var color = document.getElementById('color').value;
       var tag = document.getElementById('tag').value;
       var company = document.getElementById('company').value;
-      var isNativeNotification = document.getElementById('isNativeNotification')
-        .checked;
+      var isNativeNotification = document.getElementById(
+        'isNativeNotification',
+      ).checked;
       num++;
 
       var theme = document.getElementById('select-theme').value;
@@ -379,6 +385,7 @@
         color: color,
         sticky: shouldStick,
         isExternal: isExternal,
+        isUpdated,
         theme: theme,
         data: {
           hello: `Notification with id ${num} clicked')`,
@@ -1196,8 +1203,9 @@
             .join('');
           document.getElementById('text-window-handle').value = handleStr;
         };
-        const windowName = document.getElementById('text-window-handle-name')
-          .value;
+        const windowName = document.getElementById(
+          'text-window-handle-name',
+        ).value;
         if (window.ssf) {
           window.ssf.getNativeWindowHandle(windowName).then(resultCallback);
         } else if (window.manaSSF) {

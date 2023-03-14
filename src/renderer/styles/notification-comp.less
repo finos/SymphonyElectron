@@ -146,7 +146,21 @@ body {
         cursor: default;
         text-overflow: ellipsis;
         color: var(--text-color);
-        white-space: pre-line;
+
+        .updated-badge {
+          float: left;
+          display: inline-flex;
+          font-weight: 600;
+          padding: 0rem 0.25rem;
+          text-transform: uppercase;
+          text-align: center;
+          align-items: center;
+          white-space: nowrap;
+          color: #27292c;
+          background-color: #cdcfd4;
+          border-radius: 0.1875rem;
+          margin-right: 2px;
+        }
       }
     }
   }

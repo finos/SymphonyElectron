@@ -253,6 +253,7 @@ export interface INotificationData {
   company: string;
   displayTime: number;
   isExternal: boolean;
+  isUpdated: boolean;
   theme: Theme;
   isElectronNotification?: boolean;
   callback?: () => void;

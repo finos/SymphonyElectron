@@ -202,12 +202,10 @@ class Notification extends NotificationHandler {
     notificationWindow.notificationData = data;
     notificationWindow.winName = apiName.notificationWindowName;
     notificationWindow.once('closed', () => {
-      const activeWindowIndex = this.activeNotifications.indexOf(
-        notificationWindow,
-      );
-      const inactiveWindowIndex = this.inactiveWindows.indexOf(
-        notificationWindow,
-      );
+      const activeWindowIndex =
+        this.activeNotifications.indexOf(notificationWindow);
+      const inactiveWindowIndex =
+        this.inactiveWindows.indexOf(notificationWindow);
 
       if (activeWindowIndex !== -1) {
         this.activeNotifications.splice(activeWindowIndex, 1);
@@ -275,6 +273,7 @@ class Notification extends NotificationHandler {
       color,
       flash,
       isExternal,
+      isUpdated,
       theme,
       hasIgnore,
       hasReply,
@@ -290,6 +289,7 @@ class Notification extends NotificationHandler {
       color,
       flash,
       isExternal,
+      isUpdated,
       theme,
       hasIgnore,
       hasReply,
@@ -507,7 +507,8 @@ class Notification extends NotificationHandler {
    * fullscreen state when notification is clicked
    */
   public exitFullScreen(): void {
-    const browserWindows: ICustomBrowserWindow[] = BrowserWindow.getAllWindows() as ICustomBrowserWindow[];
+    const browserWindows: ICustomBrowserWindow[] =
+      BrowserWindow.getAllWindows() as ICustomBrowserWindow[];
     for (const win in browserWindows) {
       if (Object.prototype.hasOwnProperty.call(browserWindows, win)) {
         const browserWin = browserWindows[win];

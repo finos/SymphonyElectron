@@ -22,6 +22,22 @@ describe('Toast notification component', () => {
     expect(container.text()).toBe(defaultProps.title);
   });
 
+  it('should close the notification when the close button is clicked', async () => {
+    const spy = jest.spyOn(ipcRenderer, 'send');
+    const closeButton = wrapper.find('.close-button img');
+    expect(closeButton).toBeTruthy();
+    closeButton.simulate('click', { stopPropagation: jest.fn() });
+    expect(spy).toBeCalledWith('close-notification', 0);
+  });
+
+  it('should click on the notification when use clicks on main container', async () => {
+    const spy = jest.spyOn(ipcRenderer, 'send');
+    const notificationContainer = wrapper.find('.main-container');
+    expect(notificationContainer).toBeTruthy();
+    notificationContainer.simulate('click', { stopPropagation: jest.fn() });
+    expect(spy).toBeCalledWith('notification-clicked', 0);
+  });
+
   it('should render Symphony logo if no image provided', () => {
     const logo = '';
     ipcRenderer.send(IPC_RENDERER_NOTIFICATION_DATA_CHANNEL, {
@@ -150,5 +166,18 @@ describe('Toast notification component', () => {
     expect(notificationContainer).toBeTruthy();
     notificationContainer.simulate('mouseenter');
     expect(spy).toBeCalledWith('notification-mouseenter', 0);
+  });
+
+  it('should display the updated badge when message is an update', async () => {
+    let updatedBadge = wrapper.find('.updated-badge');
+    expect(updatedBadge.exists()).toBeFalsy();
+    const isUpdated = true;
+    ipcRenderer.send(IPC_RENDERER_NOTIFICATION_DATA_CHANNEL, {
+      ...defaultProps,
+      isUpdated,
+    });
+
+    updatedBadge = wrapper.find('.updated-badge');
+    expect(updatedBadge.exists()).toBeTruthy();
   });
 });
