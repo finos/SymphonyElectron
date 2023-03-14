@@ -213,6 +213,18 @@ class PresenceStatus {
     tray?.setContextMenu(contextMenu);
   };
 
+  public updateSignedOutContextMenu = () => {
+    const tray = presenceStatusStore.getCurrentTray();
+    const contextDefault = Menu.buildFromTemplate([
+      {
+        label: i18n.t('Quit Symphony')(),
+        click: () => app.quit(),
+      },
+    ]);
+
+    tray?.setContextMenu(contextDefault);
+  };
+
   private handlePresenceChange = (
     statusCategory: EPresenceStatusCategory,
     statusGroup: EPresenceStatusGroup,
