@@ -214,6 +214,7 @@
   "Unable to generate crash reports due to ": "クラッシュレポートを生成できません｡理由: ",
   "Unable to generate logs due to ": "ログを生成できません｡理由：",
   "Undo": "元に戻す",
+  "Updated": "編集済み",
   "Updating Title bar style requires Symphony to relaunch.": "タイトルバーのスタイルを更新するには、Symphonyが再起動する必要があります。",
   "View": "ビュー",
   "Welcome": {

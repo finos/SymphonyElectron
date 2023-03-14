@@ -46,6 +46,7 @@ interface INotificationState {
   color: string;
   flash: boolean;
   isExternal: boolean;
+  isUpdated: boolean;
   theme: Theme;
   hasIgnore: boolean;
   hasReply: boolean;
@@ -100,6 +101,7 @@ export default class NotificationComp extends React.Component<
       color: '',
       flash: false,
       isExternal: false,
+      isUpdated: false,
       theme: '',
       isInputHidden: true,
       hasIgnore: false,
@@ -140,6 +142,7 @@ export default class NotificationComp extends React.Component<
       id,
       color,
       isExternal,
+      isUpdated,
       theme,
       containerHeight,
       icon,
@@ -198,7 +201,10 @@ export default class NotificationComp extends React.Component<
               {this.renderReplyButton(id, themeClassName)}
               {this.renderIgnoreButton(id, themeClassName)}
             </div>
-            <span className={`message-preview ${themeClassName}`}>{body}</span>
+            <div className={`message-preview ${themeClassName}`}>
+              {this.renderUpdatedBadge(isUpdated)}
+              {body}
+            </div>
           </div>
         </div>
         {this.renderRTE(themeClassName)}
@@ -245,6 +251,18 @@ export default class NotificationComp extends React.Component<
       );
     }
     return;
+  }
+
+  /**
+   * Renders the UPDATED badge
+   * @param isUpdated
+   * @returns the updated badge if the message is updated
+   */
+  private renderUpdatedBadge(isUpdated: boolean) {
+    if (!isUpdated) {
+      return;
+    }
+    return <div className='updated-badge'>{i18n.t('Updated')()}</div>;
   }
 
   /**
@@ -504,12 +522,11 @@ export default class NotificationComp extends React.Component<
       if (isExternal) {
         if (!hasMention) {
           currentColors.notificationBorderColor = '#F7CA3B';
-          currentColors.notificationBackgroundColor = externalFlashingBackgroundColor;
+          currentColors.notificationBackgroundColor =
+            externalFlashingBackgroundColor;
           if (this.isCustomColor(color)) {
-            currentColors.notificationBorderColor = this.getThemedCustomBorderColor(
-              theme,
-              color,
-            );
+            currentColors.notificationBorderColor =
+              this.getThemedCustomBorderColor(theme, color);
             currentColors.notificationBackgroundColor = color;
           }
         } else {

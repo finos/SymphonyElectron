@@ -1,6 +1,5 @@
 node_modules
 dist
-.DS_Store
 js/preload/_*.js
 .idea/
 coverage/
@@ -35,3 +34,8 @@ out
 lib
 build
 
+# Mac system file
+.DS_Store
+
+# Local History plugin
+.history
