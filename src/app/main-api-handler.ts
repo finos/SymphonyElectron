@@ -420,6 +420,7 @@ ipcMain.on(
           );
           const mainWebContents = windowHandler.getMainWebContents();
           if (mainWebContents && !mainWebContents.isDestroyed()) {
+            windowHandler.setMainWindowOrigin(formattedPodUrl);
             mainWebContents.loadURL(formattedPodUrl);
           }
         }
