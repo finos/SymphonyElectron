@@ -72,6 +72,7 @@
       "category": "public.app-category.business",
       "icon": "images/icon.icns",
       "entitlements": "entitlements.mac.plist",
+      "notarize": false,
       "entitlementsInherit": "entitlements.mac.plist",
       "gatekeeperAssess": true,
       "hardenedRuntime": true,
