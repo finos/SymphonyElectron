@@ -297,6 +297,7 @@ ipcMain.on(
           const mainWindow = windowHandler.getMainWindow();
           if (mainWebContents) {
             const items = presenceStatus.createThumbarButtons();
+            presenceStatus.updateSystemTrayPresence();
             mainWindow?.setThumbarButtons(items);
             logger.info('main-api-handler: Add actions preview menu');
           }
@@ -326,7 +327,7 @@ ipcMain.on(
         terminateC9Shell();
 
         main?.setThumbarButtons([]);
-        presenceStatus.updateSignedOutContextMenu();
+        presenceStatus.onSignOut();
         windowHandler.closeAllWindows();
         break;
       case apiCmds.setZoomLevel:
