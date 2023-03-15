@@ -19,6 +19,7 @@ type StatusCallback = (status: IShellStatus) => void;
 class C9ShellHandler {
   private _c9shell: ChildProcess | undefined;
   private _curStatus: IShellStatus | undefined;
+  private _firstSuccessfulConnectionDate = 0;
   private _isDisconnected = false;
   private _isFreshStart = true;
   private _isStarting = false;
@@ -239,10 +240,18 @@ class C9ShellHandler {
     if (
       c9ShellMessage.includes('NetworkConnectivityService|Internet Available')
     ) {
-      this._isFreshStart = false;
+      if (this._isFreshStart) {
+        this._isFreshStart = false;
+        this._firstSuccessfulConnectionDate = Date.now();
+      }
       if (this._isDisconnected) {
         this._isDisconnected = false;
-        this._onNetworkReconnection();
+        const millisecondsElapsed =
+          Date.now() - this._firstSuccessfulConnectionDate;
+        // Sometime, we have 2 network connections in 4 seconds (while using a virtual machine)
+        if (millisecondsElapsed > 10000) {
+          this._onNetworkReconnection();
+        }
       }
     } else if (
       c9ShellMessage.includes(
