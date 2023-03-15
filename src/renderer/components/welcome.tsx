@@ -14,8 +14,6 @@ interface IState {
 
 const WELCOME_NAMESPACE = 'Welcome';
 const DEFAULT_MESSAGE = 'Find your pod URL in your invitation email.';
-const HEIGHT_WITH_POD_INPUT = '494px';
-const HEIGHT_WITHOUT_POD_INPUT = '376px';
 const DEFAULT_POD_URL = 'https://[POD].symphony.com';
 
 export default class Welcome extends React.Component<{}, IState> {
@@ -42,15 +40,7 @@ export default class Welcome extends React.Component<{}, IState> {
   public render(): JSX.Element {
     const { url, message, isPodConfigured } = this.state;
     return (
-      <div
-        className='Welcome'
-        style={{
-          height: isPodConfigured
-            ? HEIGHT_WITHOUT_POD_INPUT
-            : HEIGHT_WITH_POD_INPUT,
-        }}
-        lang={i18n.getLocale()}
-      >
+      <div className='Welcome' lang={i18n.getLocale()}>
         <div className='Welcome-content'>
           <div className='Welcome-image-container'>
             {this.getWelcomeImage()}
