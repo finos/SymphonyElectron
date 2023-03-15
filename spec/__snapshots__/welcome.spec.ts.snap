@@ -4,11 +4,6 @@ exports[`welcome should render correctly 1`] = `
 <div
   className="Welcome"
   lang="en-US"
-  style={
-    Object {
-      "height": "494px",
-    }
-  }
 >
   <div
     className="Welcome-content"
