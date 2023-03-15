@@ -15,7 +15,7 @@ interface IState {
 const WELCOME_NAMESPACE = 'Welcome';
 const DEFAULT_MESSAGE = 'Find your pod URL in your invitation email.';
 const HEIGHT_WITH_POD_INPUT = '494px';
-const HEIGHT_WITHOUT_POD_INPUT = '376px';
+const HEIGHT_WITHOUT_POD_INPUT = 'auto';
 const DEFAULT_POD_URL = 'https://[POD].symphony.com';
 
 export default class Welcome extends React.Component<{}, IState> {
