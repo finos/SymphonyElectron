@@ -248,8 +248,8 @@ class C9ShellHandler {
         this._isDisconnected = false;
         const millisecondsElapsed =
           Date.now() - this._firstSuccessfulConnectionDate;
-        // Sometime, we have 2 network connections in 4 seconds (while using a virtual machine)
-        if (millisecondsElapsed > 10000) {
+        // Using a virtual machine, we got 18 network connections in 40 seconds
+        if (millisecondsElapsed > 90000) {
           this._onNetworkReconnection();
         }
       }
