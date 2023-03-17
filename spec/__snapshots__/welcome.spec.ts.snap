@@ -118,6 +118,7 @@ exports[`welcome should render correctly 1`] = `
             className="Welcome-main-container-podurl-box"
             data-testid="Welcome-main-container-podurl-box"
             onChange={[Function]}
+            tabIndex={0}
             type="url"
             value="https://[POD].symphony.com"
           />
@@ -134,6 +135,7 @@ exports[`welcome should render correctly 1`] = `
       disabled={true}
       onClick={[Function]}
       style={Object {}}
+      tabIndex={1}
     >
       log in
     </button>
