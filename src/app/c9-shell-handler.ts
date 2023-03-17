@@ -19,13 +19,9 @@ type StatusCallback = (status: IShellStatus) => void;
 class C9ShellHandler {
   private _c9shell: ChildProcess | undefined;
   private _curStatus: IShellStatus | undefined;
-  private _firstSuccessfulConnectionDate = 0;
-  private _isDisconnected = false;
-  private _isFreshStart = true;
   private _isStarting = false;
   private _isTerminating = false;
   private _sender: WebContents;
-  private _shouldRestart = false;
   private _statusCallback: StatusCallback | undefined;
 
   constructor(sender: WebContents) {
@@ -81,7 +77,7 @@ class C9ShellHandler {
   /**
    * Terminates the c9shell process if it was started by this handler.
    */
-  public terminateShell(shouldRestart = false) {
+  public terminateShell() {
     if (this._isTerminating) {
       logger.info('c9-shell-handler: _isTerminating, skip terminate');
       return;
@@ -94,7 +90,6 @@ class C9ShellHandler {
 
     logger.info('c9-shell-handler: terminate');
     this._isTerminating = true;
-    this._shouldRestart = shouldRestart;
     this._c9shell.kill();
   }
 
@@ -197,7 +192,6 @@ class C9ShellHandler {
     );
 
     this._updateStatus({ status: 'starting' });
-    this._isFreshStart = true;
     const c9Shell = spawn(c9ShellPath, customC9ShellArgList, { stdio: 'pipe' });
 
     c9Shell.on('close', (code) => {
@@ -205,10 +199,6 @@ class C9ShellHandler {
       this._c9shell = undefined;
       this._isTerminating = false;
       this._updateStatus({ status: 'inactive' });
-      if (this._shouldRestart) {
-        this._shouldRestart = false;
-        this.startShell();
-      }
     });
 
     c9Shell.on('spawn', () => {
@@ -222,7 +212,6 @@ class C9ShellHandler {
     c9Shell.stdout.on('data', (data) => {
       const message: string = data.toString().trim();
       logger.info(`c9-shell: ${message}`);
-      this._updateNetworkStatus(message);
     });
 
     c9Shell.stderr.on('data', (data) => {
@@ -230,43 +219,6 @@ class C9ShellHandler {
     });
 
     return c9Shell;
-  }
-
-  /**
-   * Update network status
-   * @param c9ShellMessage Any message provided by c9-shell
-   */
-  private _updateNetworkStatus(c9ShellMessage: string) {
-    if (
-      c9ShellMessage.includes('NetworkConnectivityService|Internet Available')
-    ) {
-      if (this._isFreshStart) {
-        this._isFreshStart = false;
-        this._firstSuccessfulConnectionDate = Date.now();
-      }
-      if (this._isDisconnected) {
-        this._isDisconnected = false;
-        const millisecondsElapsed =
-          Date.now() - this._firstSuccessfulConnectionDate;
-        // Using a virtual machine, we got 18 network connections in 40 seconds
-        if (millisecondsElapsed > 90000) {
-          this._onNetworkReconnection();
-        }
-      }
-    } else if (
-      c9ShellMessage.includes(
-        'NetworkConnectivityService|No Internet Available',
-      )
-    ) {
-      this._isDisconnected = !this._isFreshStart;
-    }
-  }
-
-  /**
-   * Executed after the network connection is restored
-   */
-  private _onNetworkReconnection() {
-    this.terminateShell(true);
   }
 }
 
