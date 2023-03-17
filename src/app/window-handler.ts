@@ -571,6 +571,7 @@ export class WindowHandler {
             browserLoginAutoConnect: this.config.browserLoginAutoConnect,
           });
           this.didShowWelcomeScreen = true;
+          this.mainWebContents.focus();
         }
 
         // Injects custom title bar and snack bar css into the webContents
