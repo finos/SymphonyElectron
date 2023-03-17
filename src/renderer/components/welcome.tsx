@@ -76,6 +76,7 @@ export default class Welcome extends React.Component<{}, IState> {
                   <input
                     data-testid={'Welcome-main-container-podurl-box'}
                     className='Welcome-main-container-podurl-box'
+                    tabIndex={0}
                     type='url'
                     value={url}
                     onChange={this.updatePodUrl.bind(this)}
@@ -167,6 +168,7 @@ export default class Welcome extends React.Component<{}, IState> {
       return (
         <button
           className='Welcome-continue-button'
+          tabIndex={1}
           disabled={(!isPodConfigured && !urlValid) || isLoading}
           onClick={this.eventHandlers.onLogin}
           style={isPodConfigured ? { marginTop: '40px' } : {}}

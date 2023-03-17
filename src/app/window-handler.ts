@@ -569,6 +569,7 @@ export class WindowHandler {
             isSeamlessLoginEnabled: this.config.enableBrowserLogin,
           });
           this.didShowWelcomeScreen = true;
+          this.mainWebContents.focus();
         }
 
         // Injects custom title bar and snack bar css into the webContents
