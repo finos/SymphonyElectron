@@ -72,7 +72,7 @@ describe('chrome flags', () => {
     );
     expect(spy).nthCalledWith(2, 'auth-server-whitelist', 'url');
     expect(spy).nthCalledWith(3, 'disable-background-timer-throttling', 'true');
-    expect(spy).nthCalledWith(4, 'disable-d3d11', true);
+    expect(spy).nthCalledWith(4, 'disable-d3d11', false);
     expect(spy).nthCalledWith(5, 'disable-gpu', true);
     expect(spy).nthCalledWith(6, 'disable-gpu-compositing', true);
   });
@@ -190,7 +190,7 @@ describe('chrome flags', () => {
         'disable-background-timer-throttling',
         'true',
       );
-      expect(spy).nthCalledWith(4, 'disable-d3d11', true);
+      expect(spy).nthCalledWith(4, 'disable-d3d11', false);
       expect(spy).nthCalledWith(5, 'disable-gpu', true);
       expect(spy).nthCalledWith(6, 'disable-gpu-compositing', true);
     });
