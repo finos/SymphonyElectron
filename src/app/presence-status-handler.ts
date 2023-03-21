@@ -148,6 +148,12 @@ class PresenceStatus {
         visible:
           isMana && presence.statusGroup === EPresenceStatusGroup.MEETING,
         checked: presence.statusGroup === EPresenceStatusGroup.MEETING,
+        click: () => {
+          this.handlePresenceChange(
+            EPresenceStatusCategory.IN_A_MEETING,
+            EPresenceStatusGroup.MEETING,
+          );
+        },
       },
       {
         label: i18n.t(EPresenceStatusCategory.AVAILABLE, presenceNamespace)(),
