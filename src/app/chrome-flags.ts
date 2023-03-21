@@ -42,7 +42,7 @@ export const setChromeFlags = () => {
       flagsConfig.customFlags.authNegotiateDelegateWhitelist,
     'auth-server-whitelist': flagsConfig.customFlags.authServerWhitelist,
     'disable-background-timer-throttling': 'true',
-    'disable-d3d11': flagsConfig.disableGpu || null,
+    'disable-d3d11': true,
     'disable-gpu': flagsConfig.disableGpu || null,
     'disable-gpu-compositing': flagsConfig.disableGpu || null,
     'enable-blink-features': 'RTCInsertableStreams',
