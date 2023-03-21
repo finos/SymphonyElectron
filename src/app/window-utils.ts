@@ -14,7 +14,7 @@ import {
 } from 'electron';
 import electron = require('electron');
 import fetch from 'electron-fetch';
-import * as filesize from 'filesize';
+import { filesize } from 'filesize';
 import * as fs from 'fs';
 import * as path from 'path';
 import { format, parse } from 'url';
@@ -607,10 +607,13 @@ export const handleDownloadManager = (
   item.once('done', (_e, state) => {
     if (state === 'completed') {
       const savePathSplit = item.getSavePath()?.split(path.sep);
+      const downloadedItemTotalBytes: number = item.getTotalBytes() || 0;
       const data: IDownloadItem = {
         _id: getGuid(),
         savedPath: item.getSavePath() || '',
-        total: filesize(item.getTotalBytes() || 0),
+        total: filesize(downloadedItemTotalBytes, {
+          output: 'string',
+        }) as string,
         fileName: savePathSplit[savePathSplit.length - 1] || 'No name',
       };
       logger.info(
