@@ -111,8 +111,8 @@ describe('chrome flags', () => {
     });
     const spy = jest.spyOn(app.commandLine, 'appendSwitch');
     setChromeFlags();
-    expect(spy).nthCalledWith(5, 'disable-renderer-backgrounding', 'true');
-    expect(spy).not.nthCalledWith(6);
+    expect(spy).nthCalledWith(6, 'disable-renderer-backgrounding', 'true');
+    expect(spy).not.nthCalledWith(7);
   });
 
   it('should set `disable-renderer-backgrounding` chrome flag correctly when cloud config PMP setting is ENABLED', () => {
@@ -145,8 +145,8 @@ describe('chrome flags', () => {
     });
     const spy = jest.spyOn(app.commandLine, 'appendSwitch');
     setChromeFlags();
-    expect(spy).nthCalledWith(5, 'disable-renderer-backgrounding', 'true');
-    expect(spy).not.nthCalledWith(6);
+    expect(spy).nthCalledWith(6, 'disable-renderer-backgrounding', 'true');
+    expect(spy).not.nthCalledWith(7);
   });
 
   it('should set `disable-renderer-backgrounding` chrome flag when PMP is ENABLED', () => {
@@ -167,8 +167,8 @@ describe('chrome flags', () => {
     });
     const spy = jest.spyOn(app.commandLine, 'appendSwitch');
     setChromeFlags();
-    expect(spy).nthCalledWith(5, 'disable-renderer-backgrounding', 'true');
-    expect(spy).not.nthCalledWith(6);
+    expect(spy).nthCalledWith(6, 'disable-renderer-backgrounding', 'true');
+    expect(spy).not.nthCalledWith(7);
   });
 
   describe('`isDevEnv`', () => {
