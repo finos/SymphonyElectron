@@ -230,7 +230,9 @@
     "Pod URL": "Pod URL",
     "SSO": "SSO",
     "Symphony Logo": "Symphony",
-    "WelcomeText": "Welcome"
+    "WelcomeText": "Welcome",
+    "Automatically redirect to your web browser on launch": "Automatically redirect to your web browser on launch",
+    "Retry": "Retry"
   },
   "Window": "Window",
   "Would you like to restart and apply these new settings now?": "Would you like to restart and apply these new settings now?",

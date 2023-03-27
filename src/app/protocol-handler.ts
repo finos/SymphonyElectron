@@ -63,7 +63,7 @@ class ProtocolHandler {
     );
     // Handle protocol for Seamless login
     if (url?.includes('skey') && url?.includes('anticsrf')) {
-      await this.handleSeamlessLogin(url);
+      await this.handleBrowserLogin(url);
       return;
     }
 
@@ -112,7 +112,7 @@ class ProtocolHandler {
   /**
    * Sets session cookies and navigates to the pod url
    */
-  public async handleSeamlessLogin(protocolUri: string): Promise<void> {
+  public async handleBrowserLogin(protocolUri: string): Promise<void> {
     const globalConfig = config.getGlobalConfigFields(['url']);
     const userConfig = config.getUserConfigFields(['url']);
     const url = userConfig.url ? userConfig.url : globalConfig.url;
