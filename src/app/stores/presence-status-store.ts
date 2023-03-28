@@ -14,7 +14,7 @@ import { isMac, isWindowsOS } from '../../common/env';
 export class PresenceStatus {
   private presenceStatus: IStatusBadge = {
     statusCategory: EPresenceStatusCategory.NO_PRESENCE,
-    statusGroup: EPresenceStatusGroup.OFFLINE,
+    statusGroup: EPresenceStatusGroup.HIDE_PRESENCE,
     count: 0,
   };
   private tray: ITray = {
