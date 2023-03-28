@@ -550,20 +550,17 @@ export class WindowHandler {
       if (this.mainWebContents && !this.mainWebContents.isDestroyed()) {
         // Load welcome screen
         if (this.shouldShowWelcomeScreen && !this.didShowWelcomeScreen) {
-          const userConfigUrl =
-            this.userConfig.url &&
-            this.userConfig.url.indexOf('/login/sso/initsso') > -1
-              ? this.userConfig.url.slice(
-                  0,
-                  this.userConfig.url.indexOf('/login/sso/initsso'),
-                )
-              : this.userConfig.url;
+          const defaultUrl = 'my.symphony.com';
+          const podUrl = this.userConfig.url
+            ? this.userConfig.url
+            : !this.globalConfig.url.includes(defaultUrl) &&
+              this.globalConfig.url;
           this.mainWebContents.send('page-load-welcome', {
             locale: i18n.getLocale(),
             resources: i18n.loadedResources,
           });
           this.mainWebContents.send('welcome', {
-            url: userConfigUrl,
+            url: podUrl,
             message: '',
             urlValid: !!userConfigUrl,
             isPodConfigured: this.isPodConfigured && !!userConfigUrl,
