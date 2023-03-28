@@ -69,7 +69,7 @@ const broadcastMessage = (method, data) => {
   mainEvents.publish(apiCmds.onSwiftSearchMessage, [method, data]);
 };
 
-const getSeamlessLoginUrl = (pod: string) =>
+const getBrowserLoginUrl = (pod: string) =>
   `${pod}/login/sso/initsso?RelayState=${pod}/client-bff/device-login/index.html?callbackScheme=symphony&action=login`;
 const AUTH_STATUS_PATH = '/login/checkauth?type=user';
 /**
@@ -384,9 +384,14 @@ ipcMain.on(
           mainWebContents.focus();
         }
         break;
-      case apiCmds.seamlessLogin:
+      case apiCmds.browserLogin:
+        await config.updateUserConfig({
+          browserLoginAutoConnect: arg.browserLoginAutoConnect,
+        });
         if (!arg.isPodConfigured) {
-          await config.updateUserConfig({ url: arg.newPodUrl });
+          await config.updateUserConfig({
+            url: arg.newPodUrl,
+          });
         }
         const urlFromCmd = getCommandLineArgs(process.argv, '--url=', false);
         const { url: userConfigURL } = config.getUserConfigFields(['url']);
@@ -398,7 +403,7 @@ ipcMain.on(
           : globalConfigURL;
         const { subdomain, domain, tld } = whitelistHandler.parseDomain(podUrl);
         const formattedPodUrl = `https://${subdomain}.${domain}${tld}`;
-        const loginUrl = getSeamlessLoginUrl(formattedPodUrl);
+        const loginUrl = getBrowserLoginUrl(formattedPodUrl);
         logger.info(
           'main-api-handler:',
           'check if sso is enabled for the pod',
@@ -408,19 +413,19 @@ ipcMain.on(
         const authResponse = (await response.json()) as IAuthResponse;
         logger.info('main-api-handler:', 'check auth response', authResponse);
         if (
-          arg.isSeamlessLoginEnabled &&
+          arg.isBrowserLoginEnabled &&
           authResponse.authenticationType === 'sso'
         ) {
           logger.info(
             'main-api-handler:',
-            'seamless login is enabled - logging in',
+            'browser login is enabled - logging in',
             loginUrl,
           );
           await shell.openExternal(loginUrl);
         } else {
           logger.info(
             'main-api-handler:',
-            'seamless login is not enabled - loading main window with',
+            'browser login is not enabled - loading main window with',
             formattedPodUrl,
           );
           const mainWebContents = windowHandler.getMainWebContents();

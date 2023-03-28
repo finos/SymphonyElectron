@@ -10,7 +10,8 @@ describe('welcome', () => {
     message: '',
     urlValid: true,
     isPodConfigured: false,
-    isSeamlessLoginEnabled: true,
+    isBrowserLoginEnabled: false,
+    browserLoginAutoConnect: false,
   };
   const onLabelEvent = 'on';
   const removeListenerLabelEvent = 'removeListener';
@@ -24,17 +25,6 @@ describe('welcome', () => {
     const spy = jest.spyOn(ipcRenderer, onLabelEvent);
     shallow(React.createElement(Welcome));
     expect(spy).toBeCalledWith(welcomeLabel, expect.any(Function));
-  });
-
-  it('should remove listener `welcome` when component is unmounted', () => {
-    const spyMount = jest.spyOn(ipcRenderer, onLabelEvent);
-    const spyUnmount = jest.spyOn(ipcRenderer, removeListenerLabelEvent);
-
-    const wrapper = shallow(React.createElement(Welcome));
-    expect(spyMount).toBeCalledWith(welcomeLabel, expect.any(Function));
-
-    wrapper.unmount();
-    expect(spyUnmount).toBeCalledWith(welcomeLabel, expect.any(Function));
   });
 
   it('should call `updateState` when component is mounted', () => {
@@ -113,11 +103,24 @@ describe('welcome', () => {
       message: '',
       urlValid: true,
       isPodConfigured: true,
-      isSeamlessLoginEnabled: true,
+      isBrowserLoginEnabled: false,
+      browserLoginAutoConnect: false,
+      isLoading: false,
     };
     const wrapper = shallow(React.createElement(Welcome));
     ipcRenderer.send('welcome', welcomeMock);
     const podUrlBox = `input.Welcome-main-container-podurl-box`;
     expect(wrapper.find(podUrlBox).getElements()).toEqual([]);
+  });
+
+  it('should remove listener `welcome` when component is unmounted', () => {
+    const spyMount = jest.spyOn(ipcRenderer, onLabelEvent);
+    const spyUnmount = jest.spyOn(ipcRenderer, removeListenerLabelEvent);
+
+    const wrapper = shallow(React.createElement(Welcome));
+    expect(spyMount).toBeCalledWith(welcomeLabel, expect.any(Function));
+
+    wrapper.unmount();
+    expect(spyUnmount).toBeCalledWith(welcomeLabel, expect.any(Function));
   });
 });
