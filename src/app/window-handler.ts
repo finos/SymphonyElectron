@@ -222,6 +222,7 @@ export class WindowHandler {
       'clientSwitch',
       'enableRendererLogs',
       'enableBrowserLogin',
+      'browserLoginAutoConnect',
     ]);
     logger.info(
       `window-handler: main windows initialized with following config data`,
@@ -252,7 +253,7 @@ export class WindowHandler {
     this.isPodConfigured = !config.isFirstTimeLaunch();
     this.didShowWelcomeScreen = false;
     this.shouldShowWelcomeScreen =
-      config.isFirstTimeLaunch() || this.config.enableBrowserLogin;
+      config.isFirstTimeLaunch() || !!this.config.enableBrowserLogin;
 
     this.windowOpts = {
       ...this.getWindowOpts(
@@ -566,7 +567,8 @@ export class WindowHandler {
             message: '',
             urlValid: !!userConfigUrl,
             isPodConfigured: this.isPodConfigured && !!userConfigUrl,
-            isSeamlessLoginEnabled: this.config.enableBrowserLogin,
+            isBrowserLoginEnabled: this.config.enableBrowserLogin,
+            browserLoginAutoConnect: this.config.browserLoginAutoConnect,
           });
           this.didShowWelcomeScreen = true;
           this.mainWebContents.focus();
@@ -860,11 +862,6 @@ export class WindowHandler {
         return;
       }
       logger.info(`finished loading welcome screen.`);
-      const ssoValue = !!(
-        this.userConfig.url &&
-        this.userConfig.url.indexOf('/login/sso/initsso') > -1
-      );
-
       this.welcomeScreenWindow.webContents.send('page-load-welcome', {
         locale: i18n.getLocale(),
         resource: i18n.loadedResources,
@@ -882,7 +879,6 @@ export class WindowHandler {
         url: userConfigUrl || this.startUrl,
         message: '',
         urlValid: !!userConfigUrl,
-        sso: ssoValue,
       });
       this.appMenu = new AppMenu();
       this.addWindow(opts.winKey, this.welcomeScreenWindow);

@@ -8,18 +8,22 @@ interface IState {
   message: string;
   urlValid: boolean;
   isPodConfigured: boolean;
-  isSeamlessLoginEnabled: boolean;
+  isBrowserLoginEnabled: boolean;
+  browserLoginAutoConnect: boolean;
   isLoading: boolean;
 }
 
 const WELCOME_NAMESPACE = 'Welcome';
 const DEFAULT_MESSAGE = 'Find your pod URL in your invitation email.';
 const DEFAULT_POD_URL = 'https://[POD].symphony.com';
+const BROWSER_LOGIN_AUTO_REDIRECT_TIMEOUT = 2000;
 
 export default class Welcome extends React.Component<{}, IState> {
   private readonly eventHandlers = {
     onLogin: () => this.login(),
   };
+
+  private browserLoginTimeoutId: NodeJS.Timeout | undefined;
 
   constructor(props) {
     super(props);
@@ -28,7 +32,8 @@ export default class Welcome extends React.Component<{}, IState> {
       message: '',
       urlValid: false,
       isPodConfigured: false,
-      isSeamlessLoginEnabled: true,
+      isBrowserLoginEnabled: true,
+      browserLoginAutoConnect: false,
       isLoading: false,
     };
     this.updateState = this.updateState.bind(this);
@@ -38,33 +43,44 @@ export default class Welcome extends React.Component<{}, IState> {
    * Render the component
    */
   public render(): JSX.Element {
-    const { url, message, isPodConfigured } = this.state;
+    const { url, message, isPodConfigured, isLoading, isBrowserLoginEnabled } =
+      this.state;
     return (
       <div className='Welcome' lang={i18n.getLocale()}>
         <div className='Welcome-content'>
           <div className='Welcome-image-container'>
             {this.getWelcomeImage()}
           </div>
-          <div
-            className='Welcome-about-symphony-text'
-            style={{ marginTop: isPodConfigured ? '35px' : '8px' }}
-          >
-            <span>
-              {i18n.t(
-                'Welcome to the largest global community in financial services with over',
-                WELCOME_NAMESPACE,
-              )()}
-            </span>
-            <span className='Welcome-text-bold'>
-              {i18n.t(' half a million users', WELCOME_NAMESPACE)()}
-            </span>
-            <span>{i18n.t(' and more than', WELCOME_NAMESPACE)()}</span>
-            <span className='Welcome-text-bold'>
-              {i18n.t(' 1,000 institutions.', WELCOME_NAMESPACE)()}
-            </span>
-          </div>
+          {isPodConfigured && (
+            <React.Fragment>
+              <span className='Welcome-welcome-back'>
+                {i18n.t('Welcome back!', WELCOME_NAMESPACE)()}
+              </span>
+              <span className='Welcome-login-label'>
+                {i18n.t('Please login to continue', WELCOME_NAMESPACE)()}
+              </span>
+            </React.Fragment>
+          )}
           {!isPodConfigured && (
-            <div>
+            <React.Fragment>
+              <div
+                className='Welcome-about-symphony-text'
+                style={{ marginTop: isPodConfigured ? '35px' : '8px' }}
+              >
+                <span>
+                  {i18n.t(
+                    'Welcome to the largest global community in financial services with over',
+                    WELCOME_NAMESPACE,
+                  )()}
+                </span>
+                <span className='Welcome-text-bold'>
+                  {i18n.t(' half a million users', WELCOME_NAMESPACE)()}
+                </span>
+                <span>{i18n.t(' and more than', WELCOME_NAMESPACE)()}</span>
+                <span className='Welcome-text-bold'>
+                  {i18n.t(' 1,000 institutions.', WELCOME_NAMESPACE)()}
+                </span>
+              </div>
               <div className='Welcome-login-text'>
                 <span>
                   {i18n.t('Log in with your pod URL', WELCOME_NAMESPACE)()}
@@ -74,6 +90,7 @@ export default class Welcome extends React.Component<{}, IState> {
                 <span>{i18n.t('Pod URL', WELCOME_NAMESPACE)()}</span>
                 <div>
                   <input
+                    disabled={isLoading}
                     data-testid={'Welcome-main-container-podurl-box'}
                     className='Welcome-main-container-podurl-box'
                     tabIndex={0}
@@ -88,19 +105,29 @@ export default class Welcome extends React.Component<{}, IState> {
                   </label>
                 </div>
               </div>
-            </div>
+            </React.Fragment>
           )}
 
           {this.renderLoginButton()}
 
-          <div className='Welcome-redirect-info-text-container'>
-            <span>
-              {i18n.t(
-                'You’ll momentarily be redirected to your web browser.',
-                WELCOME_NAMESPACE,
-              )()}
-            </span>
-          </div>
+          {isBrowserLoginEnabled && (
+            <div className='Welcome-redirect-info-text-container'>
+              <span>
+                {i18n.t(
+                  'You’ll momentarily be redirected to your web browser.',
+                  WELCOME_NAMESPACE,
+                )()}
+              </span>
+              {isLoading && (
+                <button
+                  className='Welcome-retry-button'
+                  onClick={this.eventHandlers.onLogin}
+                >
+                  {i18n.t('Retry', WELCOME_NAMESPACE)()}
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     );
@@ -110,7 +137,18 @@ export default class Welcome extends React.Component<{}, IState> {
    * Perform actions on component being mounted
    */
   public componentDidMount(): void {
-    ipcRenderer.on('welcome', this.updateState);
+    ipcRenderer.on('welcome', (_event, data) => {
+      if (
+        data.isPodConfigured &&
+        data.browserLoginAutoConnect &&
+        data.isBrowserLoginEnabled
+      ) {
+        this.browserLoginTimeoutId = setTimeout(() => {
+          this.login();
+        }, BROWSER_LOGIN_AUTO_REDIRECT_TIMEOUT);
+      }
+      this.updateState(_event, data);
+    });
   }
 
   /**
@@ -125,12 +163,18 @@ export default class Welcome extends React.Component<{}, IState> {
    */
   public login(): void {
     this.setState({ isLoading: true });
-    const { url, isPodConfigured, isSeamlessLoginEnabled } = this.state;
+    const {
+      url,
+      isPodConfigured,
+      isBrowserLoginEnabled,
+      browserLoginAutoConnect,
+    } = this.state;
     ipcRenderer.send(apiName.symphonyApi, {
-      cmd: apiCmds.seamlessLogin,
+      cmd: apiCmds.browserLogin,
       newPodUrl: url,
       isPodConfigured,
-      isSeamlessLoginEnabled,
+      isBrowserLoginEnabled,
+      browserLoginAutoConnect,
     });
   }
 
@@ -160,12 +204,72 @@ export default class Welcome extends React.Component<{}, IState> {
   }
 
   /**
+   * Update pod url from the text box
+   * @param event
+   */
+  public updateBrowserLoginAutoConnect(event) {
+    const { urlValid } = this.state;
+    const browserLoginAutoConnect = event.target.checked;
+    if (!browserLoginAutoConnect) {
+      if (this.browserLoginTimeoutId) {
+        clearTimeout(this.browserLoginTimeoutId);
+      }
+      this.setState({
+        browserLoginAutoConnect,
+      });
+    }
+
+    if (urlValid && browserLoginAutoConnect) {
+      this.setState({
+        browserLoginAutoConnect,
+        isLoading: true,
+      });
+      const { url, isPodConfigured, isBrowserLoginEnabled } = this.state;
+      ipcRenderer.send(apiName.symphonyApi, {
+        cmd: apiCmds.browserLogin,
+        newPodUrl: url,
+        isPodConfigured,
+        isBrowserLoginEnabled,
+        browserLoginAutoConnect,
+      });
+    }
+  }
+
+  /**
    * Renders login button content
    */
   private renderLoginButton() {
-    const { isLoading, isPodConfigured, urlValid } = this.state;
-    if (!isLoading) {
-      return (
+    const {
+      isLoading,
+      isPodConfigured,
+      urlValid,
+      isBrowserLoginEnabled,
+      browserLoginAutoConnect,
+    } = this.state;
+    return (
+      <React.Fragment>
+        {isBrowserLoginEnabled && (
+          <div className='Welcome-auto-connect-wrapper'>
+            <label className='switch'>
+              <input
+                type='checkbox'
+                disabled={isLoading}
+                checked={browserLoginAutoConnect}
+                onChange={this.updateBrowserLoginAutoConnect.bind(this)}
+              />
+              <span className='slider round'></span>
+            </label>
+            <div className='auto-connect-labels'>
+              <span className='auto-connect-label'>
+                {i18n.t(
+                  'Automatically redirect to your web browser on launch',
+                  WELCOME_NAMESPACE,
+                )()}
+              </span>
+            </div>
+          </div>
+        )}
+
         <button
           className='Welcome-continue-button'
           tabIndex={1}
@@ -173,29 +277,29 @@ export default class Welcome extends React.Component<{}, IState> {
           onClick={this.eventHandlers.onLogin}
           style={isPodConfigured ? { marginTop: '40px' } : {}}
         >
-          {i18n.t('log in', WELCOME_NAMESPACE)()}
+          {isLoading && (
+            <div className='splash-screen--spinner-container'>
+              <div
+                className='splash-screen--spinner'
+                role='progressbar'
+                data-testid='SPLASH_SCREEN_SPINNER'
+              >
+                <svg viewBox='22 22 44 44'>
+                  <circle
+                    className='splash-screen--spinner-circle'
+                    cx='44'
+                    cy='44'
+                    r='20.2'
+                    fill='none'
+                    stroke-width='3.6'
+                  ></circle>
+                </svg>
+              </div>
+            </div>
+          )}
+          {!isLoading && i18n.t('log in', WELCOME_NAMESPACE)()}
         </button>
-      );
-    }
-    return (
-      <div className='splash-screen--spinner-container'>
-        <div
-          className='splash-screen--spinner'
-          role='progressbar'
-          data-testid='SPLASH_SCREEN_SPINNER'
-        >
-          <svg viewBox='22 22 44 44'>
-            <circle
-              className='splash-screen--spinner-circle'
-              cx='44'
-              cy='44'
-              r='20.2'
-              fill='none'
-              stroke-width='3.6'
-            ></circle>
-          </svg>
-        </div>
-      </div>
+      </React.Fragment>
     );
   }
 
