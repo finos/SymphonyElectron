@@ -116,7 +116,8 @@ class ProtocolHandler {
     const globalConfig = config.getGlobalConfigFields(['url']);
     const userConfig = config.getUserConfigFields(['url']);
     const redirectURL = userConfig.url ? userConfig.url : globalConfig.url;
-    const { subdomain, tld, domain } = whitelistHandler.parseDomain(url);
+    const { subdomain, tld, domain } =
+      whitelistHandler.parseDomain(redirectURL);
     const cookieDomain = `.${subdomain}.${domain}${tld}`;
     if (protocolUri) {
       const urlParams = new URLSearchParams(new URL(protocolUri).search);
