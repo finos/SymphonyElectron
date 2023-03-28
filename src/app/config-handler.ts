@@ -58,7 +58,8 @@ export interface IConfig {
   installVariant?: string;
   bootCount?: number;
   startedAfterAutoUpdate?: boolean;
-  enableBrowserLogin: boolean;
+  enableBrowserLogin?: boolean;
+  browserLoginAutoConnect?: boolean;
 }
 
 export interface IGlobalConfig {

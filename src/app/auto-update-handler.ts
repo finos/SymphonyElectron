@@ -95,6 +95,9 @@ export class AutoUpdate {
             data: info,
           });
         }
+        if (isMac) {
+          config.backupGlobalConfig();
+        }
       });
 
       this.autoUpdater.on('error', (error) => {

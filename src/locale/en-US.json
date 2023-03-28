@@ -223,6 +223,7 @@
     "Find your pod URL in your invitation email.": "Find your pod URL in your invitation email.",
     "Welcome to the largest global community in financial services with over": "Welcome to the largest global community in financial services with over",
     " half a million users": " half a million users",
+    " and more than": " and more than",
     " 1,000 institutions.": " 1,000 institutions.",
     "Log in with your pod URL": "Log in with your pod URL",
     "You’ll momentarily be redirected to your web browser.": "You’ll momentarily be redirected to your web browser.",
@@ -231,7 +232,9 @@
     "Pod URL": "Pod URL",
     "SSO": "SSO",
     "Symphony Logo": "Symphony",
-    "WelcomeText": "Welcome"
+    "WelcomeText": "Welcome",
+    "Automatically redirect to your web browser on launch": "Automatically redirect to your web browser on launch",
+    "Retry": "Retry"
   },
   "Window": "Window",
   "Would you like to restart and apply these new settings now?": "Would you like to restart and apply these new settings now?",

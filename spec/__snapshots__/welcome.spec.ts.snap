@@ -99,35 +99,60 @@ exports[`welcome should render correctly 1`] = `
          1,000 institutions.
       </span>
     </div>
-    <div>
-      <div
-        className="Welcome-login-text"
-      >
-        <span>
-          Log in with your pod URL
-        </span>
+    <div
+      className="Welcome-login-text"
+    >
+      <span>
+        Log in with your pod URL
+      </span>
+    </div>
+    <div
+      className="Welcome-input-container"
+    >
+      <span>
+        Pod URL
+      </span>
+      <div>
+        <input
+          className="Welcome-main-container-podurl-box"
+          data-testid="Welcome-main-container-podurl-box"
+          disabled={false}
+          onChange={[Function]}
+          tabIndex={0}
+          type="url"
+          value="https://[POD].symphony.com"
+        />
+        <label
+          className="Welcome-input-message"
+        >
+          Find your pod URL in your invitation email.
+        </label>
       </div>
-      <div
-        className="Welcome-input-container"
+    </div>
+    <div
+      className="Welcome-auto-connect-wrapper"
+    >
+      <label
+        className="switch"
       >
-        <span>
-          Pod URL
+        <input
+          checked={false}
+          disabled={false}
+          onChange={[Function]}
+          type="checkbox"
+        />
+        <span
+          className="slider round"
+        />
+      </label>
+      <div
+        className="auto-connect-labels"
+      >
+        <span
+          className="auto-connect-label"
+        >
+          Automatically redirect to your web browser on launch
         </span>
-        <div>
-          <input
-            className="Welcome-main-container-podurl-box"
-            data-testid="Welcome-main-container-podurl-box"
-            onChange={[Function]}
-            tabIndex={0}
-            type="url"
-            value="https://[POD].symphony.com"
-          />
-          <label
-            className="Welcome-input-message"
-          >
-            Find your pod URL in your invitation email.
-          </label>
-        </div>
       </div>
     </div>
     <button

@@ -517,6 +517,7 @@ export class AppMenu {
         enabled:
           !bringToFrontCC || bringToFrontCC === CloudConfigDataTypes.NOT_SET,
       },
+      this.buildSeparator(),
       {
         type: 'checkbox',
         label: i18n.t('Browser login')(),
