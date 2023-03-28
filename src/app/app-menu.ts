@@ -85,7 +85,6 @@ const menuItemConfigFields = [
   'devToolsEnabled',
   'isAutoUpdateEnabled',
   'enableBrowserLogin',
-  'browserLoginAutoConnect',
 ];
 
 let {
@@ -98,7 +97,6 @@ let {
   devToolsEnabled,
   isAutoUpdateEnabled,
   enableBrowserLogin,
-  browserLoginAutoConnect,
 } = config.getConfigFields(menuItemConfigFields) as IConfig;
 let initialAnalyticsSent = false;
 const CORP_URL = 'https://corporate.symphony.com';
@@ -245,7 +243,6 @@ export class AppMenu {
     devToolsEnabled = configData.devToolsEnabled;
     isAutoUpdateEnabled = configData.isAutoUpdateEnabled;
     enableBrowserLogin = configData.enableBrowserLogin;
-    browserLoginAutoConnect = configData.browserLoginAutoConnect;
     // fetch updated cloud config
     this.cloudConfig = config.getFilteredCloudConfigFields(
       this.menuItemConfigFields,
@@ -527,15 +524,6 @@ export class AppMenu {
         checked: enableBrowserLogin,
         click: () => {
           restartDialog({ enableBrowserLogin: !enableBrowserLogin });
-        },
-      },
-      {
-        type: 'checkbox',
-        label: i18n.t('Automatic browser login')(),
-        checked: browserLoginAutoConnect,
-        click: async (item) => {
-          browserLoginAutoConnect = item.checked;
-          await config.updateUserConfig({ browserLoginAutoConnect });
         },
       },
       this.buildSeparator(),
