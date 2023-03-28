@@ -209,8 +209,10 @@ export default class Welcome extends React.Component<{}, IState> {
   public updateBrowserLoginAutoConnect(event) {
     const { urlValid } = this.state;
     const browserLoginAutoConnect = event.target.checked;
-    if (!browserLoginAutoConnect && this.browserLoginTimeoutId) {
-      clearTimeout(this.browserLoginTimeoutId);
+    if (!browserLoginAutoConnect) {
+      if (this.browserLoginTimeoutId) {
+        clearTimeout(this.browserLoginTimeoutId);
+      }
       this.setState({
         browserLoginAutoConnect,
       });
