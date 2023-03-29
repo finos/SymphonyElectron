@@ -1,8 +1,8 @@
+import classnames from 'classnames';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { apiCmds, apiName } from '../../common/api-interface';
 import { i18n } from '../../common/i18n-preload';
-
 interface IState {
   url: string;
   message: string;
@@ -93,7 +93,6 @@ export default class Welcome extends React.Component<{}, IState> {
                     disabled={isLoading}
                     data-testid={'Welcome-main-container-podurl-box'}
                     className='Welcome-main-container-podurl-box'
-                    tabIndex={0}
                     type='url'
                     value={url}
                     onChange={this.updatePodUrl.bind(this)}
@@ -210,29 +209,29 @@ export default class Welcome extends React.Component<{}, IState> {
   public updateBrowserLoginAutoConnect(event) {
     const { urlValid } = this.state;
     const browserLoginAutoConnect = event.target.checked;
-    if (!browserLoginAutoConnect) {
-      if (this.browserLoginTimeoutId) {
-        clearTimeout(this.browserLoginTimeoutId);
+    if (browserLoginAutoConnect) {
+      if (urlValid) {
+        this.setState({
+          browserLoginAutoConnect,
+          isLoading: true,
+        });
+        const { url, isPodConfigured, isBrowserLoginEnabled } = this.state;
+        ipcRenderer.send(apiName.symphonyApi, {
+          cmd: apiCmds.browserLogin,
+          newPodUrl: url,
+          isPodConfigured,
+          isBrowserLoginEnabled,
+          browserLoginAutoConnect,
+        });
+        return;
       }
-      this.setState({
-        browserLoginAutoConnect,
-      });
     }
-
-    if (urlValid && browserLoginAutoConnect) {
-      this.setState({
-        browserLoginAutoConnect,
-        isLoading: true,
-      });
-      const { url, isPodConfigured, isBrowserLoginEnabled } = this.state;
-      ipcRenderer.send(apiName.symphonyApi, {
-        cmd: apiCmds.browserLogin,
-        newPodUrl: url,
-        isPodConfigured,
-        isBrowserLoginEnabled,
-        browserLoginAutoConnect,
-      });
+    if (this.browserLoginTimeoutId) {
+      clearTimeout(this.browserLoginTimeoutId);
     }
+    this.setState({
+      browserLoginAutoConnect,
+    });
   }
 
   /**
@@ -246,6 +245,9 @@ export default class Welcome extends React.Component<{}, IState> {
       isBrowserLoginEnabled,
       browserLoginAutoConnect,
     } = this.state;
+    const loginButtonClasses = classnames('Welcome-continue-button', {
+      'Welcome-continue-button-loading': isLoading,
+    });
     return (
       <React.Fragment>
         {isBrowserLoginEnabled && (
@@ -271,8 +273,7 @@ export default class Welcome extends React.Component<{}, IState> {
         )}
 
         <button
-          className='Welcome-continue-button'
-          tabIndex={1}
+          className={loginButtonClasses}
           disabled={(!isPodConfigured && !urlValid) || isLoading}
           onClick={this.eventHandlers.onLogin}
           style={isPodConfigured ? { marginTop: '40px' } : {}}
