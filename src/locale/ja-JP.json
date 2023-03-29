@@ -223,6 +223,7 @@
     "Find your pod URL in your invitation email.": "招待メールでpod URLをご確認ください。",
     "Welcome to the largest global community in financial services with over": "Welcome to the largest global community in financial services with over",
     " half a million users": " half a million users",
+    " and more than": " and more than",
     " 1,000 institutions.": " 1,000 institutions.",
     "Log in with your pod URL": "Pod URLからログインください",
     "You’ll momentarily be redirected to your web browser.": "まもなくウェブブラウザーにリダイレクトさせていただきます。",
@@ -231,7 +232,9 @@
     "Pod URL": "ポッドURL",
     "SSO": "SSO(シングルサインオン)",
     "Symphony Logo": "Symphony",
-    "WelcomeText": "ようこそ"
+    "WelcomeText": "ようこそ",
+    "Automatically redirect to your web browser on launch": "Automatically redirect to your web browser on launch",
+    "Retry": "Retry"
   },
   "Window": "ウインドウ",
   "Would you like to restart and apply these new settings now?": "今すぐ再起動して、新しい設定を適用しますか？",
