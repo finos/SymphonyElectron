@@ -235,6 +235,10 @@ body {
     }
   }
 
+  &-continue-button-loading:disabled {
+    background-color: @electricity-ui-50;
+  }
+
   &-redirect-info-text-container {
     margin-top: 40px;
     margin-bottom: 16px;
@@ -363,7 +367,7 @@ body {
 .splash-screen--spinner {
   display: inline-block;
   line-height: 1;
-  color: @electricity-ui-50;
+  color: #f8f8f8;
   width: 20px;
   height: 20px;
   animation: progress-circular-rotate 1.4s linear infinite;
@@ -381,7 +385,7 @@ body {
   position: relative;
   display: inline-block;
   width: 43px;
-  height: 8px;
+  height: auto;
 }
 
 /* Hide default HTML checkbox */
@@ -395,10 +399,11 @@ body {
 .slider {
   position: absolute;
   cursor: pointer;
-  top: 0;
+  top: 5px;
   left: 0;
   right: 0;
   bottom: 0;
+  height: 8px;
   -webkit-transition: 0.4s;
   transition: 0.4s;
   background-color: @graphite-60;
@@ -441,6 +446,19 @@ input:checked + .slider {
       border-color: @electricity-ui-30;
     }
   }
+}
+
+input:disabled + .slider {
+  background-color: @graphite-60;
+}
+
+input:disabled + .slider:before {
+  background-color: @graphite-70;
+  border-color: @graphite-60;
+}
+
+input:focus + .slider:before {
+  box-shadow: 0 0 10px #3da2fd;
 }
 
 /* Rounded sliders */
