@@ -175,7 +175,7 @@
     "builder-util-runtime": "^9.0.3",
     "cross-env": "7.0.3",
     "del": "3.0.0",
-    "electron": "^23.1.4",
+    "electron": "^23.2.1",
     "electron-builder": "24.0.0",
     "electron-builder-squirrel-windows": "20.44.0",
     "electron-icon-maker": "0.0.5",
