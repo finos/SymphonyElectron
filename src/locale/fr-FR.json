@@ -116,7 +116,7 @@
   },
   "Oops! Looks like we have had a crash.": "Oups ! On dirait que nous avons eu un crash.",
   "Oops! Looks like we have had a crash. Please reload or close this window.": "Oups ! On dirait que nous avons eu un crash. Veuillez recharger ou fermer cette fenêtre.",
-  "Oops! Something went wrong. Would you like to restart the app?": "Oups ! Quelque chose s'est mal passé. Voulez-vous redémarrer l'application ?",
+  "Oops! Something went wrong. Would you like to restart the app?": "Une erreur imprévue est survenue. Voulez-vous redémarrer l'application ?",
   "Paste": "Coller",
   "Paste and Match Style": "Coller et appliquer le style",
   "Paste as plain text": "Coller sans le formatage",
@@ -232,10 +232,12 @@
     "Pod URL": "URL du pod",
     "SSO": "Authentification unique (SSO)",
     "Symphony Logo": "Symphony",
-    "WelcomeText": "Bienvenue"
+    "WelcomeText": "Bienvenue",
+    "Automatically redirect to your web browser on launch": "Rediriger automatiquement vers votre navigateur par défaut au lancement",
+    "Retry": "Réessayer"
   },
   "Window": "Fenêtre",
-  "Would you like to restart and apply these new settings now?": "Voulez-vous redémarrer et appliquer ce nouveau paramètre maintenant?",
+  "Would you like to restart and apply these new settings now?": "Souhaitez-vous relancer Symphony maintenant afin d'appliquer cette nouvelle configuration ?",
   "Your administrator has disabled": "Votre administrateur a désactivé",
   "Zoom": "Zoom",
   "Zoom In": "Zoom Avant",
@@ -255,5 +257,5 @@
     "IN_A_MEETING": "En réunion"
   },
   "Status": "Statut",
-  "Browser login": "Authentification par navigateur (Accès Conditionnel)"
+  "Browser login": "Authentification par navigateur"
 }

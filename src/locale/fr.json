@@ -232,7 +232,9 @@
     "Pod URL": "URL du pod",
     "SSO": "SSO",
     "Symphony Logo": "Symphony",
-    "WelcomeText": "Bienvenue"
+    "WelcomeText": "Bienvenue",
+    "Automatically redirect to your web browser on launch": "Automatically redirect to your web browser on launch",
+    "Retry": "Retry"
   },
   "Window": "Fenêtre",
   "Would you like to restart and apply these new settings now?": "Voulez-vous redémarrer et appliquer ces nouveaux paramètres maintenant?",
