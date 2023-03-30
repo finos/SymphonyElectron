@@ -222,6 +222,7 @@ export class WindowHandler {
       'clientSwitch',
       'enableRendererLogs',
       'enableBrowserLogin',
+      'browserLoginAutoConnect',
     ]);
     logger.info(
       `window-handler: main windows initialized with following config data`,
@@ -252,7 +253,7 @@ export class WindowHandler {
     this.isPodConfigured = !config.isFirstTimeLaunch();
     this.didShowWelcomeScreen = false;
     this.shouldShowWelcomeScreen =
-      config.isFirstTimeLaunch() || this.config.enableBrowserLogin;
+      config.isFirstTimeLaunch() || !!this.config.enableBrowserLogin;
 
     this.windowOpts = {
       ...this.getWindowOpts(
@@ -549,24 +550,23 @@ export class WindowHandler {
       if (this.mainWebContents && !this.mainWebContents.isDestroyed()) {
         // Load welcome screen
         if (this.shouldShowWelcomeScreen && !this.didShowWelcomeScreen) {
-          const userConfigUrl =
-            this.userConfig.url &&
-            this.userConfig.url.indexOf('/login/sso/initsso') > -1
-              ? this.userConfig.url.slice(
-                  0,
-                  this.userConfig.url.indexOf('/login/sso/initsso'),
-                )
-              : this.userConfig.url;
+          const defaultUrl = 'my.symphony.com';
+          const podUrl = this.userConfig.url
+            ? this.userConfig.url
+            : !this.globalConfig.url.includes(defaultUrl)
+            ? this.globalConfig.url
+            : undefined;
           this.mainWebContents.send('page-load-welcome', {
             locale: i18n.getLocale(),
             resources: i18n.loadedResources,
           });
           this.mainWebContents.send('welcome', {
-            url: userConfigUrl,
+            url: podUrl,
             message: '',
-            urlValid: !!userConfigUrl,
-            isPodConfigured: this.isPodConfigured && !!userConfigUrl,
-            isSeamlessLoginEnabled: this.config.enableBrowserLogin,
+            urlValid: !!podUrl,
+            isPodConfigured: this.isPodConfigured && !!podUrl,
+            isBrowserLoginEnabled: this.config.enableBrowserLogin,
+            browserLoginAutoConnect: this.config.browserLoginAutoConnect,
           });
           this.didShowWelcomeScreen = true;
           this.mainWebContents.focus();
@@ -860,11 +860,6 @@ export class WindowHandler {
         return;
       }
       logger.info(`finished loading welcome screen.`);
-      const ssoValue = !!(
-        this.userConfig.url &&
-        this.userConfig.url.indexOf('/login/sso/initsso') > -1
-      );
-
       this.welcomeScreenWindow.webContents.send('page-load-welcome', {
         locale: i18n.getLocale(),
         resource: i18n.loadedResources,
@@ -882,7 +877,6 @@ export class WindowHandler {
         url: userConfigUrl || this.startUrl,
         message: '',
         urlValid: !!userConfigUrl,
-        sso: ssoValue,
       });
       this.appMenu = new AppMenu();
       this.addWindow(opts.winKey, this.welcomeScreenWindow);

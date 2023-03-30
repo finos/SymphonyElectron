@@ -72,7 +72,7 @@ export enum apiCmds {
   updateAndRestart = 'update-and-restart',
   downloadUpdate = 'download-update',
   checkForUpdates = 'check-for-updates',
-  seamlessLogin = 'seamless-login',
+  browserLogin = 'browser-login',
   updateMyPresence = 'update-my-presence',
   getMyPresence = 'get-my-presence',
   updateSymphonyTray = 'update-system-tray',
@@ -125,7 +125,8 @@ export interface IApiArgs {
   newPodUrl: string;
   startUrl: string;
   isPodConfigured: boolean;
-  isSeamlessLoginEnabled: boolean;
+  isBrowserLoginEnabled: boolean;
+  browserLoginAutoConnect: boolean;
   swiftSearchData: any;
   types: string[];
   thumbnailSize: Size;

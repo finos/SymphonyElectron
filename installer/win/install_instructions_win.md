@@ -535,15 +535,15 @@ Expected values:
 Expected values:
 
 * "true"
-  SDA will authenticate the user by relying on third-party browser
+  SDA will authenticate the user by relying on default browser
 * "false"
   SDA will authenticate the user in SDA
 
-#### Example, install with user-agent override
+#### Example, install with browser login enabled
 
     msiexec /i Symphony.msi ENABLE_BROWSER_LOGIN="true"
 
-#### Example, install without user-agent override
+#### Example, install without browser login enabled
 
     msiexec /i Symphony.msi ENABLE_BROWSER_LOGIN="false"
 
@@ -554,3 +554,25 @@ or
 
 	
 -------------------------------------------------------------------
+### BROWSER_LOGIN_AUTOCONNECT
+
+Acts in combination with ENABLE_BROWSER_LOGIN, if ENABLE_BROWSER_LOGIN is set to true.
+
+Expected values:
+
+* "true"
+  SDA will automatically authenticate the user by relying on default browser 
+* "false"
+  User will need to click on Login button to start browser login flow.
+
+#### Example, install with browser login autoconnect enabled
+
+    msiexec /i Symphony.msi BROWSER_LOGIN_AUTOCONNECT="true"
+
+#### Example, install with browser login autoconnect disabled
+
+    msiexec /i Symphony.msi BROWSER_LOGIN_AUTOCONNECT="false"
+
+or
+
+    msiexec /i Symphony.msi

@@ -63,7 +63,7 @@ class ProtocolHandler {
     );
     // Handle protocol for Seamless login
     if (url?.includes('skey') && url?.includes('anticsrf')) {
-      await this.handleSeamlessLogin(url);
+      await this.handleBrowserLogin(url);
       return;
     }
 
@@ -112,11 +112,12 @@ class ProtocolHandler {
   /**
    * Sets session cookies and navigates to the pod url
    */
-  public async handleSeamlessLogin(protocolUri: string): Promise<void> {
+  public async handleBrowserLogin(protocolUri: string): Promise<void> {
     const globalConfig = config.getGlobalConfigFields(['url']);
     const userConfig = config.getUserConfigFields(['url']);
-    const url = userConfig.url ? userConfig.url : globalConfig.url;
-    const { subdomain, tld, domain } = whitelistHandler.parseDomain(url);
+    const redirectURL = userConfig.url ? userConfig.url : globalConfig.url;
+    const { subdomain, tld, domain } =
+      whitelistHandler.parseDomain(redirectURL);
     const cookieDomain = `.${subdomain}.${domain}${tld}`;
     if (protocolUri) {
       const urlParams = new URLSearchParams(new URL(protocolUri).search);
@@ -124,7 +125,7 @@ class ProtocolHandler {
       const anticsrfValue = urlParams.get('anticsrf');
       if (skeyValue && anticsrfValue) {
         const skeyCookie: CookiesSetDetails = {
-          url,
+          url: redirectURL,
           name: 'skey',
           value: skeyValue,
           secure: true,
@@ -133,7 +134,7 @@ class ProtocolHandler {
           domain: cookieDomain,
         };
         const csrfCookie: CookiesSetDetails = {
-          url,
+          url: redirectURL,
           name: 'anti-csrf-cookie',
           value: anticsrfValue,
           secure: true,
@@ -152,10 +153,13 @@ class ProtocolHandler {
         }
       }
       const mainWebContents = windowHandler.getMainWebContents();
-      if (mainWebContents && !mainWebContents?.isDestroyed() && url) {
-        logger.info('protocol-handler: redirecting main webContents ', url);
-        windowHandler.setMainWindowOrigin(url);
-        mainWebContents?.loadURL(url);
+      if (mainWebContents && !mainWebContents?.isDestroyed() && redirectURL) {
+        logger.info(
+          'protocol-handler: redirecting main webContents ',
+          redirectURL,
+        );
+        windowHandler.setMainWindowOrigin(redirectURL);
+        mainWebContents?.loadURL(redirectURL);
       }
     }
   }
