@@ -167,13 +167,7 @@ class ProtocolHandler {
           mainWindow.restore();
         } else if (mainWindow?.isFullScreen()) {
           mainWindow.once('leave-full-screen', () => {
-            if (isMac) {
-              mainWindow.hide();
-            } else {
-              setTimeout(() => {
-                mainWindow.hide();
-              }, 0);
-            }
+            mainWindow.setFullScreen(true);
           });
           mainWindow.setFullScreen(false);
         }
