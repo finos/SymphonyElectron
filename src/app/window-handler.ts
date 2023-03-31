@@ -178,6 +178,7 @@ export class WindowHandler {
   private isPodConfigured: boolean = false;
   private shouldShowWelcomeScreen: boolean = true;
   private didShowWelcomeScreen: boolean = false;
+  private defaultUrl: string = 'my.symphony.com';
 
   constructor(opts?: Electron.BrowserViewConstructorOptions) {
     this.opts = opts;
@@ -253,7 +254,9 @@ export class WindowHandler {
     this.isPodConfigured = !config.isFirstTimeLaunch();
     this.didShowWelcomeScreen = false;
     this.shouldShowWelcomeScreen =
-      config.isFirstTimeLaunch() || !!this.config.enableBrowserLogin;
+      !(this.globalConfig.url !== this.defaultUrl) ||
+      config.isFirstTimeLaunch() ||
+      !!this.config.enableBrowserLogin;
 
     this.windowOpts = {
       ...this.getWindowOpts(
@@ -550,10 +553,9 @@ export class WindowHandler {
       if (this.mainWebContents && !this.mainWebContents.isDestroyed()) {
         // Load welcome screen
         if (this.shouldShowWelcomeScreen && !this.didShowWelcomeScreen) {
-          const defaultUrl = 'my.symphony.com';
           const podUrl = this.userConfig.url
             ? this.userConfig.url
-            : !this.globalConfig.url.includes(defaultUrl)
+            : !this.globalConfig.url.includes(this.defaultUrl)
             ? this.globalConfig.url
             : undefined;
           this.mainWebContents.send('page-load-welcome', {
