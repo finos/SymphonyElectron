@@ -1,4 +1,4 @@
-@import "theme";
+@import 'theme';
 
 @color-red: red;
 
@@ -10,8 +10,13 @@ html {
 
 body {
   margin: 0;
-  height: 100%;
+  height: calc(100% - 40px);
+  margin: 20px;
   font-size: 14px;
+}
+
+.components-window-root {
+  height: 100%;
 }
 
 .container {
@@ -19,7 +24,8 @@ body {
   flex-direction: column;
   font-family: @font-family;
   text-align: center;
-  padding: 20px;
+  height: 100%;
+  justify-content: space-evenly;
 }
 
 .container:lang(ja-JP) {
@@ -27,12 +33,11 @@ body {
 }
 
 span {
-  padding-top: 10px;
   text-align: start;
 }
 
 .hostname {
-  font-size: .9em;
+  font-size: 0.9em;
 }
 
 .credentials-error {
@@ -44,28 +49,40 @@ span {
   display: block;
 }
 
-form {
-  padding-top: 15px;
-}
-
 table {
   border-spacing: 5px;
+  display: flex;
+  tbody {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    tr {
+      display: flex;
+      justify-content: space-between;
+      text-align: left;
+      td:last-child {
+        margin-left: 8px;
+        display: flex;
+        flex: 1;
+        justify-content: flex-end;
+      }
+    }
+  }
 }
 
 input {
-  width: 200px;
+  width: calc(100% - 8px);
   height: 20px;
   display: inline-block;
-}
-
-button {
-  width: 80px;
+  &:lang(fr-FR) {
+    max-width: 180px;
+  }
 }
 
 .footer {
   display: flex;
   text-align: center;
-  padding-top: 25px;
+  padding-top: 20px;
 }
 
 .button-container {
