@@ -62,7 +62,7 @@ export default class BasicAuth extends React.Component<{}, IState> {
             BASIC_AUTH_NAMESPACE,
           )()}
         </span>
-        <span className='hostname'>{hostname}</span>
+        {hostname && <span className='hostname'>{hostname}</span>}
         <span id='credentialsError' className={shouldShowError}>
           {i18n.t('Invalid user name/password', BASIC_AUTH_NAMESPACE)()}
         </span>
