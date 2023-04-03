@@ -72,6 +72,24 @@ const broadcastMessage = (method, data) => {
 const getBrowserLoginUrl = (pod: string) =>
   `${pod}/login/sso/initsso?RelayState=${pod}/client-bff/device-login/index.html?callbackScheme=symphony&action=login`;
 const AUTH_STATUS_PATH = '/login/checkauth?type=user';
+interface IProxyDetails {
+  username: string;
+  password: string;
+  hostname: string;
+  retries: number;
+}
+const proxyDetails: IProxyDetails = {
+  username: '',
+  password: '',
+  hostname: '',
+  retries: 0,
+};
+
+let loginUrl = '';
+let formattedPodUrl = '';
+let credentialsPromise;
+const credentialsPromiseRefHolder: { [key: string]: any } = {};
+
 /**
  * Handle API related ipc messages from renderers. Only messages from windows
  * we have created are allowed.
@@ -368,7 +386,8 @@ ipcMain.on(
         }
         break;
       case apiCmds.unmaximizeMainWindow:
-        const mainWindow = windowHandler.getMainWindow();
+        const mainWindow =
+          windowHandler.getMainWindow() as ICustomBrowserWindow;
         if (mainWindow && windowExists(mainWindow)) {
           if (mainWindow.isFullScreen()) {
             mainWindow.setFullScreen(false);
@@ -402,38 +421,14 @@ ipcMain.on(
           ? userConfigURL
           : globalConfigURL;
         const { subdomain, domain, tld } = whitelistHandler.parseDomain(podUrl);
-        const formattedPodUrl = `https://${subdomain}.${domain}${tld}`;
-        const loginUrl = getBrowserLoginUrl(formattedPodUrl);
+        formattedPodUrl = `https://${subdomain}.${domain}${tld}`;
+        loginUrl = getBrowserLoginUrl(formattedPodUrl);
         logger.info(
           'main-api-handler:',
           'check if sso is enabled for the pod',
           formattedPodUrl,
         );
-        const response = await fetch(`${formattedPodUrl}${AUTH_STATUS_PATH}`);
-        const authResponse = (await response.json()) as IAuthResponse;
-        logger.info('main-api-handler:', 'check auth response', authResponse);
-        if (
-          arg.isBrowserLoginEnabled &&
-          authResponse.authenticationType === 'sso'
-        ) {
-          logger.info(
-            'main-api-handler:',
-            'browser login is enabled - logging in',
-            loginUrl,
-          );
-          await shell.openExternal(loginUrl);
-        } else {
-          logger.info(
-            'main-api-handler:',
-            'browser login is not enabled - loading main window with',
-            formattedPodUrl,
-          );
-          const mainWebContents = windowHandler.getMainWebContents();
-          if (mainWebContents && !mainWebContents.isDestroyed()) {
-            windowHandler.setMainWindowOrigin(formattedPodUrl);
-            mainWebContents.loadURL(formattedPodUrl);
-          }
-        }
+        loadPodUrl();
         break;
       case apiCmds.setBroadcastMessage:
         if (swiftSearchInstance) {
@@ -649,4 +644,71 @@ const logApiCallParams = (arg: any) => {
       );
       break;
   }
+};
+
+const loadPodUrl = (proxyLogin = false) => {
+  logger.info('loading pod URL. Proxy: ', proxyLogin);
+  let onLogin = {};
+  if (proxyLogin) {
+    onLogin = {
+      async onLogin(authInfo) {
+        // this 'authInfo' is the one received by the 'login' event. See https://www.electronjs.org/docs/latest/api/client-request#event-login
+        proxyDetails.hostname = authInfo.host || authInfo.realm;
+        await credentialsPromise;
+        return Promise.resolve({
+          username: proxyDetails.username,
+          password: proxyDetails.password,
+        });
+      },
+    };
+  }
+  fetch(`${formattedPodUrl}${AUTH_STATUS_PATH}`, onLogin)
+    .then(async (response) => {
+      const authResponse = (await response.json()) as IAuthResponse;
+      logger.info('main-api-handler:', 'check auth response', authResponse);
+      if (authResponse.authenticationType === 'sso') {
+        logger.info(
+          'main-api-handler:',
+          'browser login is enabled - logging in',
+          loginUrl,
+        );
+        await shell.openExternal(loginUrl);
+      } else {
+        logger.info(
+          'main-api-handler:',
+          'browser login is not enabled - loading main window with',
+          formattedPodUrl,
+        );
+        const mainWebContents = windowHandler.getMainWebContents();
+        if (mainWebContents && !mainWebContents.isDestroyed()) {
+          windowHandler.setMainWindowOrigin(formattedPodUrl);
+          mainWebContents.loadURL(formattedPodUrl);
+        }
+      }
+    })
+    .catch(async (error) => {
+      if (
+        (error.type === 'proxy' && error.code === 'PROXY_AUTH_FAILED') ||
+        (error.code === 'ERR_TOO_MANY_RETRIES' && proxyLogin)
+      ) {
+        credentialsPromise = new Promise((res, _rej) => {
+          credentialsPromiseRefHolder.resolutionCallback = res;
+        });
+        const welcomeWindow =
+          windowHandler.getMainWindow() as ICustomBrowserWindow;
+        windowHandler.createBasicAuthWindow(
+          welcomeWindow,
+          proxyDetails.hostname,
+          proxyDetails.retries === 0,
+          undefined,
+          (username, password) => {
+            proxyDetails.username = username;
+            proxyDetails.password = password;
+            credentialsPromiseRefHolder.resolutionCallback(true);
+            loadPodUrl(true);
+          },
+        );
+        proxyDetails.retries += 1;
+      }
+    });
 };
