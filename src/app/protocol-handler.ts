@@ -132,6 +132,7 @@ class ProtocolHandler {
           httpOnly: true,
           sameSite: 'no_restriction',
           domain: cookieDomain,
+          path: '/',
         };
         const csrfCookie: CookiesSetDetails = {
           url: redirectURL,
@@ -140,6 +141,7 @@ class ProtocolHandler {
           secure: true,
           sameSite: 'no_restriction',
           domain: cookieDomain,
+          path: '/',
         };
         try {
           await session.defaultSession.cookies.set(skeyCookie);
