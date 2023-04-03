@@ -53,6 +53,7 @@ import { notification } from '../renderer/notification';
 import { autoLaunchInstance } from './auto-launch-controller';
 import { autoUpdate, AutoUpdateTrigger } from './auto-update-handler';
 import { mainEvents } from './main-event-handler';
+import { presenceStatus } from './presence-status-handler';
 import { presenceStatusStore } from './stores';
 
 interface IStyles {
@@ -815,6 +816,7 @@ export const reloadWindow = (browserWindow: ICustomBrowserWindow) => {
 
   const windowName = browserWindow.winName;
   const mainWebContents = windowHandler.getMainWebContents();
+  const main = windowHandler.getMainWindow();
   // reload the main window
   if (
     windowName === apiName.mainWindowName &&
@@ -825,6 +827,8 @@ export const reloadWindow = (browserWindow: ICustomBrowserWindow) => {
     mainWebContents.reload();
 
     windowHandler.closeAllWindows();
+    main?.setThumbarButtons([]);
+    presenceStatus.onSignOut();
 
     windowHandler.closeScreenSharingIndicator();
 
