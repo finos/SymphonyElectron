@@ -824,7 +824,7 @@ export const reloadWindow = (browserWindow: ICustomBrowserWindow) => {
     !mainWebContents.isDestroyed()
   ) {
     logger.info(`window-utils: reloading the main window`);
-    mainWebContents.reload();
+    windowHandler.reloadSymphony();
 
     windowHandler.closeAllWindows();
     main?.setThumbarButtons([]);
