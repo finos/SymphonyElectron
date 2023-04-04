@@ -234,7 +234,9 @@
     "Symphony Logo": "Symphony",
     "WelcomeText": "Welcome",
     "Automatically redirect to your web browser on launch": "Automatically redirect to your web browser on launch",
-    "Retry": "Retry"
+    "Retry": "Retry",
+    "Welcome back!": "Welcome back!",
+    "Please login to continue": "Please login to continue"
   },
   "Window": "Window",
   "Would you like to restart and apply these new settings now?": "Would you like to restart and apply these new settings now?",
