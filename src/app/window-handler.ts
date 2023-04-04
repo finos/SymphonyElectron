@@ -254,9 +254,8 @@ export class WindowHandler {
     this.isPodConfigured = !config.isFirstTimeLaunch();
     this.didShowWelcomeScreen = false;
     this.shouldShowWelcomeScreen =
-      !(this.globalConfig.url !== this.defaultUrl) ||
-      config.isFirstTimeLaunch() ||
-      !!this.config.enableBrowserLogin;
+      this.globalConfig.url.includes(this.defaultUrl) &&
+      (config.isFirstTimeLaunch() || !!this.config.enableBrowserLogin);
 
     this.windowOpts = {
       ...this.getWindowOpts(
