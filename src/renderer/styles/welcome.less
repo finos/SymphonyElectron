@@ -286,14 +286,9 @@ body {
     }
   }
   &-welcome-back {
-    font-size: 14px;
-    color: @graphite-05;
-    margin-top: 40px;
-  }
-  &-login-label {
     font-size: 18px;
     color: @graphite-05;
-    margin-top: 13px;
+    margin-top: 40px;
   }
 }
 
@@ -380,12 +375,14 @@ body {
 }
 
 .switch {
-  margin: auto;
+  margin: auto 0;
   margin-right: 8px;
   position: relative;
   display: inline-block;
-  width: 43px;
+  width: 38px;
   height: auto;
+  flex-grow: 0;
+  flex-shrink: 0;
 }
 
 /* Hide default HTML checkbox */
