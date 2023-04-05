@@ -234,7 +234,9 @@
     "Symphony Logo": "Symphony",
     "WelcomeText": "Bienvenue",
     "Automatically redirect to your web browser on launch": "Rediriger automatiquement vers votre navigateur par défaut au lancement",
-    "Retry": "Réessayer"
+    "Retry": "Réessayer",
+    "Welcome back!": "Bienvenue !",
+    "Please login to continue": "Veuillez vous authentifier afin de continuer"
   },
   "Window": "Fenêtre",
   "Would you like to restart and apply these new settings now?": "Souhaitez-vous relancer Symphony maintenant afin d'appliquer cette nouvelle configuration ?",
