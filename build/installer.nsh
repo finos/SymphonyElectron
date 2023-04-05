@@ -40,7 +40,7 @@ FunctionEnd
 !macroend
 
 !macro bothM
-	MessageBox MB_OK "Auto update not supported as there is two version installed"
+	MessageBox MB_OK "Auto update not supported as there are two versions installed"
 !macroend
 
 !macro perUserM
