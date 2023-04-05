@@ -234,7 +234,9 @@
     "Symphony Logo": "Symphony",
     "WelcomeText": "ようこそ",
     "Automatically redirect to your web browser on launch": "起動時にブラウザにリダイレクト",
-    "Retry": "再試行"
+    "Retry": "再試行",
+    "Welcome back!": " ",
+    "Please login to continue": "続けるにはログインしてください"
   },
   "Window": "ウインドウ",
   "Would you like to restart and apply these new settings now?": "今すぐ再起動して、新しい設定を適用しますか？",
