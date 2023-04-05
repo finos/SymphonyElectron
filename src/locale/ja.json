@@ -235,7 +235,7 @@
     "WelcomeText": "ようこそ",
     "Automatically redirect to your web browser on launch": "起動時にブラウザにリダイレクト",
     "Retry": "再試行",
-    "Welcome back!": "Welcome back!",
+    "Welcome back!": " ",
     "Please login to continue": "続けるにはログインしてください"
   },
   "Window": "ウインドウ",
