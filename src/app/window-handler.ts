@@ -176,6 +176,7 @@ export class WindowHandler {
   private hideOnCapture: boolean = false;
   private currentWindow?: string = undefined;
   private shouldShowWelcomeScreen: boolean = true;
+  private didShowWelcomeScreen: boolean = false;
   private defaultUrl: string = 'my.symphony.com';
 
   constructor(opts?: Electron.BrowserViewConstructorOptions) {
@@ -249,6 +250,7 @@ export class WindowHandler {
       this.config.isCustomTitleBar === CloudConfigDataTypes.ENABLED;
     // Get url to load from cmd line or from global config file
     const urlFromCmd = getCommandLineArgs(process.argv, '--url=', false);
+    this.didShowWelcomeScreen = false;
     this.shouldShowWelcomeScreen =
       (this.globalConfig.url.includes(this.defaultUrl) &&
         config.isFirstTimeLaunch()) ||
@@ -548,7 +550,7 @@ export class WindowHandler {
 
       if (this.mainWebContents && !this.mainWebContents.isDestroyed()) {
         // Load welcome screen
-        if (this.shouldShowWelcomeScreen) {
+        if (this.shouldShowWelcomeScreen && !this.didShowWelcomeScreen) {
           const podUrl = this.userConfig.url
             ? this.userConfig.url
             : !this.globalConfig.url.includes(this.defaultUrl)
@@ -566,6 +568,7 @@ export class WindowHandler {
             isBrowserLoginEnabled: this.config.enableBrowserLogin,
             browserLoginAutoConnect: this.config.browserLoginAutoConnect,
           });
+          this.didShowWelcomeScreen = true;
           this.mainWebContents.focus();
         }
 
