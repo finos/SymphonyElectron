@@ -179,6 +179,7 @@ export class WindowHandler {
   private shouldShowWelcomeScreen: boolean = true;
   private didShowWelcomeScreen: boolean = false;
   private defaultUrl: string = 'my.symphony.com';
+  private didShowWelcomeScreen: boolean = false;
 
   constructor(opts?: Electron.BrowserViewConstructorOptions) {
     this.opts = opts;
