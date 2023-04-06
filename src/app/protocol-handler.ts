@@ -162,7 +162,6 @@ class ProtocolHandler {
         );
         windowHandler.setMainWindowOrigin(redirectURL);
         mainWebContents?.loadURL(redirectURL);
-        mainWebContents.send('unload-welcome-styles');
         const mainWindow = windowHandler.getMainWindow();
         if (mainWindow?.isMinimized()) {
           mainWindow.restore();
