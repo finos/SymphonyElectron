@@ -21,6 +21,7 @@ const minMemoryFetchInterval = 4 * 60 * 60 * 1000;
 const maxMemoryFetchInterval = 12 * 60 * 60 * 1000;
 const snackBar = new SnackBar();
 const banner = new MessageBanner();
+const WELCOME_STYLES_ID = 'welcome-styles';
 
 /**
  * creates API exposed from electron.
@@ -190,6 +191,7 @@ ipcRenderer.on('page-load-welcome', (_event, { locale, resources }) => {
   i18n.setResource(locale, resources);
   document.title = i18n.t('WelcomeText', 'Welcome')();
   const styles = document.createElement('link');
+  styles.id = WELCOME_STYLES_ID;
   styles.rel = 'stylesheet';
   styles.type = 'text/css';
   styles.href = `./styles/welcome.css`;
@@ -197,4 +199,11 @@ ipcRenderer.on('page-load-welcome', (_event, { locale, resources }) => {
   const component = Welcome;
   const element = React.createElement(component);
   ReactDOM.render(element, document.getElementById('Root'));
+});
+
+ipcRenderer.on('unload-welcome-styles', (_event) => {
+  const welcomeStylesNode = document.getElementById(WELCOME_STYLES_ID);
+  if (welcomeStylesNode) {
+    document.getElementsByTagName('head')[0].removeChild(welcomeStylesNode);
+  }
 });
