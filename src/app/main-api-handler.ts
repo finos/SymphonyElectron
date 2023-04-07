@@ -692,11 +692,20 @@ const loadPodUrl = (proxyLogin = false) => {
       logger.info('main-api-handler:', 'check auth response', authResponse);
       if (authResponse.authenticationType === 'sso') {
         logger.info(
-          'main-api-handler:',
-          'browser login is enabled - logging in',
+          'main-api-handler: browser login is enabled - logging in',
           loginUrl,
         );
         await shell.openExternal(loginUrl);
+      } else {
+        logger.info(
+          'main-api-handler: no SSO - loading main window with',
+          formattedPodUrl,
+        );
+        const mainWebContents = windowHandler.getMainWebContents();
+        if (mainWebContents && !mainWebContents.isDestroyed()) {
+          windowHandler.setMainWindowOrigin(formattedPodUrl);
+          mainWebContents.loadURL(formattedPodUrl);
+        }
       }
     })
     .catch(async (error) => {
