@@ -421,6 +421,8 @@ ipcMain.on(
           ? userConfigURL
           : globalConfigURL;
         const { subdomain, domain, tld } = whitelistHandler.parseDomain(podUrl);
+        const localConfig = config.getConfigFields(['enableBrowserLogin']);
+
         formattedPodUrl = `https://${subdomain}.${domain}${tld}`;
         loginUrl = getBrowserLoginUrl(formattedPodUrl);
         logger.info(
@@ -428,7 +430,27 @@ ipcMain.on(
           'check if sso is enabled for the pod',
           formattedPodUrl,
         );
-        loadPodUrl();
+
+        if (localConfig.enableBrowserLogin) {
+          logger.info(
+            'main-api-handler:',
+            'check if sso is enabled for the pod',
+            formattedPodUrl,
+          );
+          loadPodUrl(false);
+        } else {
+          logger.info(
+            'main-api-handler:',
+            'browser login is not enabled - loading main window with',
+            formattedPodUrl,
+          );
+          const mainWebContents = windowHandler.getMainWebContents();
+          if (mainWebContents && !mainWebContents.isDestroyed()) {
+            windowHandler.setMainWindowOrigin(formattedPodUrl);
+            mainWebContents.loadURL(formattedPodUrl);
+          }
+        }
+
         break;
       case apiCmds.setBroadcastMessage:
         if (swiftSearchInstance) {
@@ -673,17 +695,6 @@ const loadPodUrl = (proxyLogin = false) => {
           loginUrl,
         );
         await shell.openExternal(loginUrl);
-      } else {
-        logger.info(
-          'main-api-handler:',
-          'browser login is not enabled - loading main window with',
-          formattedPodUrl,
-        );
-        const mainWebContents = windowHandler.getMainWebContents();
-        if (mainWebContents && !mainWebContents.isDestroyed()) {
-          windowHandler.setMainWindowOrigin(formattedPodUrl);
-          mainWebContents.loadURL(formattedPodUrl);
-        }
       }
     })
     .catch(async (error) => {
