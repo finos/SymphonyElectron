@@ -8,6 +8,7 @@ interface IState {
   message: string;
   urlValid: boolean;
   isPodConfigured: boolean;
+  isFirstTimeLaunch: boolean;
   isBrowserLoginEnabled: boolean;
   browserLoginAutoConnect: boolean;
   isLoading: boolean;
@@ -32,6 +33,7 @@ export default class Welcome extends React.Component<{}, IState> {
       message: '',
       urlValid: false,
       isPodConfigured: false,
+      isFirstTimeLaunch: false,
       isBrowserLoginEnabled: true,
       browserLoginAutoConnect: false,
       isLoading: false,
@@ -43,8 +45,14 @@ export default class Welcome extends React.Component<{}, IState> {
    * Render the component
    */
   public render(): JSX.Element {
-    const { url, message, isPodConfigured, isLoading, isBrowserLoginEnabled } =
-      this.state;
+    const {
+      url,
+      message,
+      isPodConfigured,
+      isLoading,
+      isBrowserLoginEnabled,
+      isFirstTimeLaunch,
+    } = this.state;
     return (
       <div className='Welcome' lang={i18n.getLocale()}>
         <div className='Welcome-content'>
@@ -58,7 +66,7 @@ export default class Welcome extends React.Component<{}, IState> {
               </span>
             </React.Fragment>
           )}
-          {!isPodConfigured && (
+          {(!isPodConfigured || isFirstTimeLaunch) && (
             <React.Fragment>
               <div
                 className='Welcome-about-symphony-text'
