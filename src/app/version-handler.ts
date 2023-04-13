@@ -183,10 +183,10 @@ class VersionHandler {
       /* Get SFE version */
       let urlSfeVersion: string;
       let newUrlSfeVersion: string;
-      urlSfeVersion = mainUrl?.includes('/daily/')
+      urlSfeVersion = mainUrl?.includes('/daily')
         ? `${protocol}//${hostname}/bff-daily/daily/version.json`
         : `${protocol}//${hostname}/client-bff/version.json`;
-      newUrlSfeVersion = mainUrl?.includes('/daily/')
+      newUrlSfeVersion = mainUrl?.includes('/daily')
         ? `${protocol}//${hostname}/apps/client2/daily/info`
         : `${protocol}//${hostname}/apps/client2/info`;
       const sfeVersionInfo: string = mainUrl?.includes('client2')
