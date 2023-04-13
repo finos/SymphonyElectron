@@ -1144,7 +1144,7 @@ export class WindowHandler {
   /**
    * Creates a about app window
    */
-  public createAboutAppWindow(windowName: string): void {
+  public async createAboutAppWindow(windowName: string): Promise<void> {
     // This prevents creating multiple instances of the
     // about window
     if (didVerifyAndRestoreWindow(this.aboutAppWindow)) {
@@ -1178,6 +1178,8 @@ export class WindowHandler {
         this.aboutAppWindow = null;
       }
     };
+
+    await versionHandler.getClientVersion(true, this.url);
 
     if (
       this.mainWindow &&
