@@ -408,7 +408,10 @@ ipcMain.on(
         await config.updateUserConfig({
           browserLoginAutoConnect: arg.browserLoginAutoConnect,
         });
-        if (!arg.isPodConfigured) {
+        const { url: previousUserConfigURL } = config.getUserConfigFields([
+          'url',
+        ]);
+        if (!arg.isPodConfigured || previousUserConfigURL !== arg.newPodUrl) {
           await config.updateUserConfig({
             url: arg.newPodUrl,
           });
