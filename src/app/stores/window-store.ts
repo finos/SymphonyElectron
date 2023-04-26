@@ -1,7 +1,8 @@
 import { BrowserWindow } from 'electron';
+import { presenceStatusStore } from '.';
 import { isMac, isWindowsOS } from '../../common/env';
 import { ICustomBrowserWindow, windowHandler } from '../window-handler';
-import { getWindowByName } from '../window-utils';
+import { getWindowByName, showBadgeCount } from '../window-utils';
 
 export interface IWindowObject {
   windows: IWindowState[];
@@ -102,6 +103,7 @@ export class WindowStore {
         focusedWindowToRestore,
       );
 
+      showBadgeCount(presenceStatusStore.getNotificationCount());
       // Store reset
       this.destroyWindowStore();
     }
