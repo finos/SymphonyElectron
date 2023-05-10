@@ -53,6 +53,7 @@ import { getCommandLineArgs } from '../common/utils';
 import { autoUpdate, AutoUpdateTrigger } from './auto-update-handler';
 import { presenceStatus } from './presence-status-handler';
 import { presenceStatusStore } from './stores/index';
+import { voiceHandler } from './voice-handler';
 
 // Swift search API
 let swiftSearchInstance;
@@ -492,7 +493,8 @@ ipcMain.on(
           autoUpdate.checkUpdates();
         }
         break;
-      default:
+      case apiCmds.registerVoiceServices:
+        voiceHandler.registerSymphonyAsDefaultCallApp();
         break;
     }
   },

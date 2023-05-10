@@ -547,6 +547,7 @@ export const handlePermissionRequests = (webContents: WebContents): void => {
         case Permissions.OPEN_EXTERNAL:
           if (
             details?.externalURL?.startsWith('symphony:') ||
+            details?.externalURL?.startsWith('tel:') ||
             details?.externalURL?.startsWith('mailto:')
           ) {
             return callback(true);

@@ -67,18 +67,6 @@ fi
 NODE_VERSION=$(node --version)
 echo "Executing using Node Version: ${NODE_VERSION}"
 
-# We need to include swift search libraries to build SDA
-if [ ! -d "$HOME/tronlibraries/library" ]; then
-  echo 'Search libraries do not exist! Not building with swift search' >&2
-else
-  cp -r "$HOME/tronlibraries/library" .
-  echo 'Copied search libraries'
-  ls -lrth $HOME/tronlibraries/library
-fi
-
-codesign --force --options runtime -s "Developer ID Application: Symphony Communication Services LLC" library/lz4.exec
-codesign --force --options runtime -s "Developer ID Application: Symphony Communication Services LLC" library/indexvalidator.exec
-
 PKG_VERSION=$(node -e "console.log(require('./package.json').version);")
 
 # Install app dependencies

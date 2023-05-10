@@ -74,15 +74,19 @@
       "entitlements": "entitlements.mac.plist",
       "notarize": false,
       "entitlementsInherit": "entitlements.mac.plist",
+      "extendInfo": {
+        "CFBundleURLTypes": [
+          {
+            "CFBundleTypeRole": "Viewer",
+            "CFBundleURLName": "SymTel",
+            "CFBundleURLSchemes": [
+              "tel"
+            ]
+          }
+        ]
+      },
       "gatekeeperAssess": true,
       "hardenedRuntime": true,
-      "binaries": [
-        "library/lz4.exec",
-        "library/indexvalidator.exec",
-        "library/libsymphonysearch.dylib",
-        "library/cryptoLib.dylib",
-        "library/dictionary"
-      ],
       "target": [
         "dir",
         "zip"

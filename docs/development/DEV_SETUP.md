@@ -75,7 +75,7 @@ npm run test:unit -- --match=spell*
 
 ```
 registry = https://repo.symphony.com/artifactory/api/npm/npm-virtual-dev/
-_auth = <auth value from #4>
+//repo.symphony.com/artifactory/api/npm/npm-virtual-dev/:_auth = <auth value from #4>
 always-auth = true
 ```
 
