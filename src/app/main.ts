@@ -83,7 +83,6 @@ const startApplication = async () => {
   await config.initializeUserConfig();
   await config.readUserConfig();
   await config.checkFirstTimeLaunch();
-
   if (config.isFirstTimeLaunch()) {
     logger.info(
       `main: This is a first time launch! will update config and handle auto launch`,

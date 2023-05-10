@@ -76,6 +76,7 @@ export enum apiCmds {
   updateMyPresence = 'update-my-presence',
   getMyPresence = 'get-my-presence',
   updateSymphonyTray = 'update-system-tray',
+  registerVoiceServices = 'register-voice-services',
 }
 
 export enum apiName {

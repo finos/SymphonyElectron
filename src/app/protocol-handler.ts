@@ -10,6 +10,7 @@ import { windowHandler } from './window-handler';
 
 enum protocol {
   SymphonyProtocol = 'symphony://',
+  TelProtocol = 'tel:',
 }
 
 class ProtocolHandler {
@@ -31,12 +32,12 @@ class ProtocolHandler {
   public setPreloadWebContents(webContents: WebContents): void {
     this.preloadWebContents = webContents;
     logger.info(
-      `protocol handler: SFE is active and we have a valid protocol window with web contents!`,
+      `protocol-handler: SFE is active and we have a valid protocol window with web contents!`,
     );
     if (this.protocolUri) {
       this.sendProtocol(this.protocolUri);
       logger.info(
-        `protocol handler: we have a cached url ${this.protocolUri}, so, processed the request to SFE!`,
+        `protocol-handler: we have a cached url ${this.protocolUri}, so, processed the request to SFE!`,
       );
       this.protocolUri = null;
     }
@@ -59,7 +60,7 @@ class ProtocolHandler {
       return;
     }
     logger.info(
-      `protocol handler: processing protocol request for the url ${url}!`,
+      `protocol-handler: processing protocol request for the url ${url}!`,
     );
     // Handle protocol for Seamless login
     if (url?.includes('skey') && url?.includes('anticsrf')) {
@@ -69,7 +70,7 @@ class ProtocolHandler {
 
     if (!this.preloadWebContents || !isAppRunning) {
       logger.info(
-        `protocol handler: app was started from the protocol request. Caching the URL ${url}!`,
+        `protocol-handler: app was started from the protocol request. Caching the URL ${url}!`,
       );
       this.protocolUri = url;
       return;
@@ -83,9 +84,14 @@ class ProtocolHandler {
 
     if (ProtocolHandler.isValidProtocolUri(url)) {
       logger.info(
-        `protocol handler: our protocol request is a valid url ${url}! sending request to SFE for further action!`,
+        `protocol-handler: our protocol request is a valid url ${url}! sending request to SFE for further action!`,
       );
       this.preloadWebContents.send('protocol-action', url);
+    } else if (url?.includes('tel:')) {
+      this.preloadWebContents.send(
+        'phone-number-received',
+        url.split('tel:')[1],
+      );
     }
   }
 
@@ -95,17 +101,27 @@ class ProtocolHandler {
    * @param argv {String[]} - data received from process.argv
    */
   public processArgv(argv?: string[], isAppAlreadyOpen: boolean = false): void {
-    logger.info(`protocol handler: processing protocol args!`);
+    logger.info(`protocol-handler: processing protocol args!`);
     const protocolUriFromArgv = getCommandLineArgs(
       argv || process.argv,
       protocol.SymphonyProtocol,
       false,
     );
+    const telArgFromArgv = getCommandLineArgs(
+      argv || process.argv,
+      protocol.TelProtocol,
+      false,
+    );
     if (protocolUriFromArgv) {
       logger.info(
-        `protocol handler: we have a protocol request for the url ${protocolUriFromArgv}!`,
+        `protocol-handler: we have a protocol request for the url ${protocolUriFromArgv}!`,
       );
       this.sendProtocol(protocolUriFromArgv, isAppAlreadyOpen);
+    } else if (telArgFromArgv) {
+      logger.info(
+        `protocol-handler: we have a tel request for ${telArgFromArgv}!`,
+      );
+      this.sendProtocol(telArgFromArgv, isAppAlreadyOpen);
     }
   }
 

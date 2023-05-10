@@ -99,6 +99,7 @@ if (ssfWindow.ssf) {
     checkForUpdates: ssfWindow.ssf.checkForUpdates,
     updateMyPresence: ssfWindow.ssf.updateMyPresence,
     getMyPresence: ssfWindow.ssf.getMyPresence,
+    registerVoiceServices: ssfWindow.ssf.registerVoiceServices,
   });
 }
 

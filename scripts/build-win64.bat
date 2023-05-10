@@ -41,10 +41,6 @@ call snyk config set api=%SNYK_API_TOKEN%
 sed -i -e "s/\"buildNumber\"[[:space:]]*\:[[:space:]]*\".*\"/\"buildNumber\": \"%PARENT_BUILD_VERSION%\"/g" package.json
 sed -i -e "s/\"version\"[[:space:]]*\:[[:space:]]\"\(.*\)\"/\"version\": \"\1-%PARENT_BUILD_VERSION%\"/g" package.json
 
-:: Copy search libraries onto the project root
-echo "Copying search libraries"
-echo D | xcopy /y "C:\jenkins\workspace\tronlibraries\library" "library"
-
 echo "Installing dependencies..."
 call npm install
 
@@ -138,23 +134,6 @@ IF %errorlevel% neq 0 (
 	exit /b -1
 )
 
-call %SIGNING_FILE_PATH% ..\..\library\indexvalidator-x64.exe
-IF %errorlevel% neq 0 (
-	echo "Signing failed"
-	exit /b -1
-)
-
-call %SIGNING_FILE_PATH% ..\..\library\lz4-win-x64.exe
-IF %errorlevel% neq 0 (
-	echo "Signing failed"
-	exit /b -1
-)
-
-call %SIGNING_FILE_PATH% ..\..\library\tar-win.exe
-IF %errorlevel% neq 0 (
-	echo "Signing failed"
-	exit /b -1
-)
 
 node ..\..\scripts\windows_update_checksum.js "..\..\dist\Symphony-%SYMVER%-win.exe" "..\..\dist\latest.yml"
 

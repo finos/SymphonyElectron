@@ -48,9 +48,6 @@ call snyk config set api=%SNYK_API_TOKEN%
 :: Below command replaces buildVersion with the appropriate build number from jenkins
 sed -i -e "s/\"buildNumber\"[[:space:]]*\:[[:space:]]*\".*\"/\"buildNumber\":\"%PARENT_BUILD_VERSION%\"/g" package.json
 
-:: Copy search libraries onto the project root
-echo "Copying search libraries"
-echo D | xcopy /y "C:\jenkins\workspace\tronlibraries\library" "library"
 
 echo "Installing dependencies..."
 call npm install
