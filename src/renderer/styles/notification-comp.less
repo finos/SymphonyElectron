@@ -117,7 +117,7 @@ body {
           .title {
             font-family: sans-serif;
             font-weight: 600;
-            max-width: 190px;
+            max-width: 194px;
             font-size: 14px;
             font-style: normal;
             overflow: hidden;
@@ -127,9 +127,10 @@ body {
             -webkit-box-orient: vertical;
             cursor: default;
             color: var(--text-color);
+            margin-right: 4px;
           }
           .title:lang(fr-FR) {
-            max-width: 165px;
+            max-width: 169px;
           }
         }
       }
@@ -198,12 +199,18 @@ body {
   color: #008eff;
 }
 
-.ext-badge-container {
+.ext-badge-container,
+.phone-badge-container {
   height: 16px;
   width: 26px;
-  margin-left: 8px;
+  margin-left: 4px;
   padding-top: 1px;
   align-items: center;
+}
+
+.phone-badge-container {
+  padding-top: 1px;
+  width: 45px;
 }
 
 .user-profile-pic {
@@ -315,7 +322,14 @@ body {
 }
 
 .external-border .title {
-  max-width: 142px !important;
+  max-width: 146px !important;
+}
+
+.is-phone .title {
+  max-width: 134px !important;
+  &:lang(fr-FR) {
+    max-width: 109px !important;
+  }
 }
 
 .company {

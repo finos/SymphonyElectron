@@ -254,6 +254,7 @@ export interface INotificationData {
   company: string;
   displayTime: number;
   isExternal: boolean;
+  isPhone: boolean;
   isUpdated: boolean;
   theme: Theme;
   isElectronNotification?: boolean;

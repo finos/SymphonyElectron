@@ -46,6 +46,7 @@ interface INotificationState {
   color: string;
   flash: boolean;
   isExternal: boolean;
+  isPhone: boolean;
   isUpdated: boolean;
   theme: Theme;
   hasIgnore: boolean;
@@ -101,6 +102,7 @@ export default class NotificationComp extends React.Component<
       color: '',
       flash: false,
       isExternal: false,
+      isPhone: false,
       isUpdated: false,
       theme: '',
       isInputHidden: true,
@@ -142,6 +144,7 @@ export default class NotificationComp extends React.Component<
       id,
       color,
       isExternal,
+      isPhone,
       isUpdated,
       theme,
       containerHeight,
@@ -197,6 +200,7 @@ export default class NotificationComp extends React.Component<
               <div className='notification-header-content'>
                 <span className={`title ${themeClassName}`}>{title}</span>
                 {this.renderExtBadge(isExternal)}
+                {this.renderPhoneBadge(isPhone)}
               </div>
               {this.renderReplyButton(id, themeClassName)}
               {this.renderIgnoreButton(id, themeClassName)}
@@ -282,6 +286,25 @@ export default class NotificationComp extends React.Component<
       </div>
     );
   }
+
+  /**
+   * Renders phone badge if the content is from a phone
+   * @param isPhone
+   */
+  private renderPhoneBadge(isPhone: boolean): JSX.Element | undefined {
+    if (!isPhone) {
+      return;
+    }
+    return (
+      <div className='phone-badge-container'>
+        <img
+          src='../renderer/assets/notification-phone-badge.svg'
+          alt='phone-badge'
+        />
+      </div>
+    );
+  }
+
   /**
    * Renders image if provided otherwise renders symphony logo
    * @param imageUrl
@@ -619,10 +642,15 @@ export default class NotificationComp extends React.Component<
    */
   private getContainerCssClasses(): string[] {
     const customClasses: string[] = [];
-    const { flash, theme, hasMention, isExternal } = this.state;
+    const { flash, theme, hasMention, isExternal, isPhone } = this.state;
+    if (isExternal) {
+      customClasses.push('external-border');
+    }
+    if (isPhone) {
+      customClasses.push('is-phone');
+    }
     if (flash && theme) {
       if (isExternal) {
-        customClasses.push('external-border');
         if (hasMention) {
           customClasses.push(`${theme}-ext-mention-flashing`);
         } else {
@@ -634,8 +662,6 @@ export default class NotificationComp extends React.Component<
         // In case it's a regular message notification
         customClasses.push(`${theme}-flashing`);
       }
-    } else if (isExternal) {
-      customClasses.push('external-border');
     }
     return customClasses;
   }
