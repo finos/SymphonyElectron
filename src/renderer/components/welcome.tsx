@@ -56,9 +56,6 @@ export default class Welcome extends React.Component<{}, IState> {
               <span className='Welcome-welcome-back'>
                 {i18n.t('Welcome back!', WELCOME_NAMESPACE)()}
               </span>
-              <span className='Welcome-login-label'>
-                {i18n.t('Please login to continue', WELCOME_NAMESPACE)()}
-              </span>
             </React.Fragment>
           )}
           {!isPodConfigured && (
@@ -276,7 +273,7 @@ export default class Welcome extends React.Component<{}, IState> {
           className={loginButtonClasses}
           disabled={(!isPodConfigured && !urlValid) || isLoading}
           onClick={this.eventHandlers.onLogin}
-          style={isPodConfigured ? { marginTop: '40px' } : {}}
+          style={isPodConfigured ? { marginTop: '24px' } : {}}
         >
           {isLoading && (
             <div className='splash-screen--spinner-container'>

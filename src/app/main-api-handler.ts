@@ -710,5 +710,10 @@ const loadPodUrl = (proxyLogin = false) => {
         );
         proxyDetails.retries += 1;
       }
+      logger.error(
+        'main-api-handler: browser login error. Details: ',
+        error.type,
+        error.code,
+      );
     });
 };
