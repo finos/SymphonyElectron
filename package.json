@@ -178,7 +178,7 @@
     "builder-util-runtime": "^9.0.3",
     "cross-env": "7.0.3",
     "del": "3.0.0",
-    "electron": "^24",
+    "electron": "25.2.0",
     "electron-builder": "^24.2.1",
     "electron-icon-maker": "0.0.5",
     "electron-osx-sign": "^0.6.0",
