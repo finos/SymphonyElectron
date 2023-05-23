@@ -1,6 +1,8 @@
 import { BrowserWindow } from 'electron';
 import { presenceStatusStore } from '.';
 import { isMac, isWindowsOS } from '../../common/env';
+import { logger } from '../../common/logger';
+import { presenceStatus } from '../presence-status-handler';
 import { ICustomBrowserWindow, windowHandler } from '../window-handler';
 import { getWindowByName, showBadgeCount } from '../window-utils';
 
@@ -104,6 +106,14 @@ export class WindowStore {
       );
 
       showBadgeCount(presenceStatusStore.getNotificationCount());
+      const mainWindow = windowHandler.getMainWindow();
+      if (mainWindow) {
+        const items = presenceStatus.createThumbarButtons();
+        presenceStatus.updateSystemTrayPresence();
+        mainWindow?.setThumbarButtons(items);
+        logger.info('window-store: restoring thumbnail toolbar buttons');
+      }
+
       // Store reset
       this.destroyWindowStore();
     }
