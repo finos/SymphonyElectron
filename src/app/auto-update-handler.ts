@@ -55,6 +55,10 @@ export class AutoUpdate {
         this.autoUpdateTrigger = undefined;
       });
 
+      const { autoUpdateChannel } = config.getConfigFields([
+        'autoUpdateChannel',
+      ]);
+      const { installVariant } = config.getConfigFields(['installVariant']);
       this.autoUpdater.on('update-available', (info) => {
         const mainWebContents = windowHandler.mainWebContents;
         // Display client banner
@@ -62,7 +66,16 @@ export class AutoUpdate {
           mainWebContents.send('display-client-banner', {
             reason: 'autoUpdate',
             action: 'update-available',
-            data: info,
+            data: {
+              ...info,
+              autoUpdateTrigger: this.autoUpdateTrigger,
+              autoUpdateChannel,
+              installVariant,
+              channelConfigLocation: null,
+              sessionStartDatetime: null,
+              machineStartDatetime: null,
+              machineId: null,
+            },
           });
         }
       });
@@ -78,7 +91,16 @@ export class AutoUpdate {
           mainWebContents.send('display-client-banner', {
             reason: 'autoUpdate',
             action: 'download-progress',
-            data: info,
+            data: {
+              ...info,
+              autoUpdateTrigger: this.autoUpdateTrigger,
+              autoUpdateChannel,
+              installVariant,
+              channelConfigLocation: null,
+              sessionStartDatetime: null,
+              machineStartDatetime: null,
+              machineId: null,
+            },
           });
           this.didPublishDownloadProgress = true;
         }
@@ -92,7 +114,16 @@ export class AutoUpdate {
           mainWebContents.send('display-client-banner', {
             reason: 'autoUpdate',
             action: 'update-downloaded',
-            data: info,
+            data: {
+              ...info,
+              autoUpdateTrigger: this.autoUpdateTrigger,
+              autoUpdateChannel,
+              installVariant,
+              channelConfigLocation: null,
+              sessionStartDatetime: null,
+              machineStartDatetime: null,
+              machineId: null,
+            },
           });
         }
         if (isMac) {
