@@ -44,9 +44,11 @@ export class WindowStore {
 
       currentWindows.forEach((currentWindow) => {
         const isFullScreen = currentWindow.isFullScreen();
+        const isMinimized = currentWindow.isMinimized();
         if (isFullScreen) {
           this.hideFullscreenWindow(currentWindow);
-        } else {
+          // No need to hide minimized windows
+        } else if (!isMinimized) {
           currentWindow?.hide();
         }
       });
