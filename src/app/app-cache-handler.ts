@@ -1,4 +1,10 @@
-import { app, BrowserWindow, dialog, session } from 'electron';
+import {
+  app,
+  BrowserWindow,
+  dialog,
+  MessageBoxOptions,
+  session,
+} from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as rimraf from 'rimraf';
@@ -103,7 +109,7 @@ export const cleanAppCacheOnCrash = (window: BrowserWindow): void => {
       ) {
         return;
       }
-      const options: Electron.MessageBoxOptions = {
+      const options: MessageBoxOptions = {
         type: 'question',
         title: i18n.t('Relaunch Application')(),
         message: i18n.t(

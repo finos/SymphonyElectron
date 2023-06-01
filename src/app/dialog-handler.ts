@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog } from 'electron';
+import { app, BrowserWindow, dialog, MessageBoxOptions } from 'electron';
 
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
@@ -178,7 +178,7 @@ export const titleBarChangeDialog = async (
   if (!focusedWindow || !windowExists(focusedWindow)) {
     return;
   }
-  const options: Electron.MessageBoxOptions = {
+  const options: MessageBoxOptions = {
     type: 'question',
     title: i18n.t('Relaunch Application')(),
     message: i18n.t(
@@ -208,7 +208,7 @@ export const restartDialog = async (configFields: any) => {
   if (!focusedWindow || !windowExists(focusedWindow)) {
     return;
   }
-  const options: Electron.MessageBoxOptions = {
+  const options: MessageBoxOptions = {
     type: 'question',
     title: i18n.t('Relaunch Application')(),
     message: i18n.t(
