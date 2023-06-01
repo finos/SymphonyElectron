@@ -35,6 +35,12 @@ export class AppStats {
     logger.info(`Total Memory (MB) -> `, os.totalmem() / this.MB_IN_BYTES);
     logger.info(`Free Memory (MB) -> `, os.freemem() / this.MB_IN_BYTES);
     logger.info(`Load Average -> `, os.loadavg());
+    let uptime = 0;
+    try {
+      uptime = os.uptime();
+    } catch (error) {
+      logger.error('stats: Error getting machine uptime', error);
+    }
     logger.info(`Uptime -> `, os.uptime());
     logger.info(`User Info (OS Returned) -> `, os.userInfo());
   }
