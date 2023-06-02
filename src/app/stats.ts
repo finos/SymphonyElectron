@@ -41,7 +41,7 @@ export class AppStats {
     } catch (error) {
       logger.error('stats: Error getting machine uptime', error);
     }
-    logger.info(`Uptime -> `, os.uptime());
+    logger.info(`Uptime -> `, uptime);
     logger.info(`User Info (OS Returned) -> `, os.userInfo());
   }
 
