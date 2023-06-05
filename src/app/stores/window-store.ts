@@ -15,6 +15,7 @@ export interface IWindowState {
   minimized?: boolean;
   focused?: boolean;
   isFullScreen?: boolean;
+  isVisible?: boolean;
 }
 
 export class WindowStore {
@@ -77,7 +78,7 @@ export class WindowStore {
       const fullscreenedWindows: IWindowState[] = [];
       // Restoring all windows except focused one
       storedWindows.windows.forEach((currentWindow) => {
-        if (currentWindow) {
+        if (currentWindow && currentWindow.isVisible) {
           const window: ICustomBrowserWindow | undefined = getWindowByName(
             currentWindow.id || '',
           ) as ICustomBrowserWindow;
