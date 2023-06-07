@@ -474,6 +474,7 @@ class ScreenSnippet {
           focused: mainWindow?.isFocused(),
           minimized: mainWindow?.isMinimized(),
           isFullScreen: mainWindow?.isFullScreen(),
+          isVisible: mainWindow?.isVisible(),
         },
       ];
 
@@ -487,6 +488,7 @@ class ScreenSnippet {
             focused: window.isFocused(),
             minimized: window?.isMinimized(),
             isFullScreen: window?.isFullScreen(),
+            isVisible: window?.isVisible(),
           });
         }
       });
@@ -497,6 +499,7 @@ class ScreenSnippet {
           focused: currentWindowObj?.isFocused(),
           minimized: currentWindowObj?.isMinimized(),
           isFullScreen: currentWindowObj?.isFullScreen(),
+          isVisible: currentWindowObj?.isVisible(),
         });
         windowsArr = mainArr.concat(windowsArr);
       } else {
