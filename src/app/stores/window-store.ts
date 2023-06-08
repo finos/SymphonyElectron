@@ -1,5 +1,6 @@
 import { BrowserWindow } from 'electron';
 import { presenceStatusStore } from '.';
+import { apiName } from '../../common/api-interface';
 import { isMac, isWindowsOS } from '../../common/env';
 import { logger } from '../../common/logger';
 import { presenceStatus } from '../presence-status-handler';
@@ -16,6 +17,7 @@ export interface IWindowState {
   focused?: boolean;
   isFullScreen?: boolean;
   isVisible?: boolean;
+  isAlwaysOnTop?: boolean;
 }
 
 export class WindowStore {
@@ -49,11 +51,16 @@ export class WindowStore {
       currentWindows.forEach((currentWindow) => {
         const isFullScreen = currentWindow.isFullScreen();
         const isMinimized = currentWindow.isMinimized();
-        if (isFullScreen) {
-          this.hideFullscreenWindow(currentWindow);
-          // No need to hide minimized windows
-        } else if (!isMinimized) {
-          currentWindow?.hide();
+        if (
+          (currentWindow as ICustomBrowserWindow).winName !==
+          apiName.notificationWindowName
+        ) {
+          if (isFullScreen) {
+            this.hideFullscreenWindow(currentWindow);
+            // No need to hide minimized windows
+          } else if (!isMinimized) {
+            currentWindow?.hide();
+          }
         }
       });
     }
@@ -95,6 +102,9 @@ export class WindowStore {
             if (currentWindow.focused) {
               focusedWindowToRestore = window;
             }
+          }
+          if (currentWindow && currentWindow.isAlwaysOnTop) {
+            window.setAlwaysOnTop(true);
           }
         }
       });
