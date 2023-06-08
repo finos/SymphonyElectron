@@ -222,11 +222,21 @@ export class AutoUpdate {
   };
 
   private getGenericServerOptions = (): GenericServerOptions => {
-    const { autoUpdateChannel } = config.getConfigFields(['autoUpdateChannel']);
+    let userAutoUpdateChannel;
+    const { autoUpdateChannel, betaAutoUpdateChannelEnabled } =
+      config.getConfigFields([
+        'autoUpdateChannel',
+        'betaAutoUpdateChannelEnabled',
+      ]);
+    userAutoUpdateChannel = betaAutoUpdateChannelEnabled
+      ? 'beta'
+      : autoUpdateChannel;
+    logger.info(`auto-update-handler: using channel ${userAutoUpdateChannel}`);
+
     const opts: GenericServerOptions = {
       provider: 'generic',
       url: this.getUpdateUrl(),
-      channel: autoUpdateChannel || null,
+      channel: userAutoUpdateChannel || null,
     };
     return opts;
   };
