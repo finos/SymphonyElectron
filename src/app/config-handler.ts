@@ -60,6 +60,7 @@ export interface IConfig {
   startedAfterAutoUpdate?: boolean;
   enableBrowserLogin?: boolean;
   browserLoginAutoConnect?: boolean;
+  betaAutoUpdateChannelEnabled?: boolean;
 }
 
 export interface IGlobalConfig {
@@ -99,6 +100,7 @@ export interface IPodLevelEntitlements {
 }
 
 export interface IACPFeatureLevelEntitlements {
+  betaAutoUpdateChannelEnabled: boolean;
   devToolsEnabled: boolean;
   permissions: IPermission;
 }
@@ -449,6 +451,8 @@ class Config {
       autoLaunchPath: latestGlobalConfig.autoLaunchPath,
       userDataPath: latestGlobalConfig.userDataPath,
       customFlags: latestGlobalConfig.customFlags,
+      betaAutoUpdateChannelEnabled:
+        latestGlobalConfig.betaAutoUpdateChannelEnabled,
     });
   }
 
