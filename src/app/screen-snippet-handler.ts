@@ -473,6 +473,9 @@ class ScreenSnippet {
           id: 'main',
           focused: mainWindow?.isFocused(),
           minimized: mainWindow?.isMinimized(),
+          isFullScreen: mainWindow?.isFullScreen(),
+          isVisible: mainWindow?.isVisible(),
+          isAlwaysOnTop: mainWindow?.isAlwaysOnTop(),
         },
       ];
 
@@ -485,6 +488,9 @@ class ScreenSnippet {
             id: (window as ICustomBrowserWindow).winName,
             focused: window.isFocused(),
             minimized: window?.isMinimized(),
+            isFullScreen: window?.isFullScreen(),
+            isVisible: window?.isVisible(),
+            isAlwaysOnTop: window?.isAlwaysOnTop(),
           });
         }
       });
@@ -494,6 +500,9 @@ class ScreenSnippet {
           id: currentWindowName,
           focused: currentWindowObj?.isFocused(),
           minimized: currentWindowObj?.isMinimized(),
+          isFullScreen: currentWindowObj?.isFullScreen(),
+          isVisible: currentWindowObj?.isVisible(),
+          isAlwaysOnTop: currentWindowObj?.isAlwaysOnTop(),
         });
         windowsArr = mainArr.concat(windowsArr);
       } else {
