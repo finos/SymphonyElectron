@@ -14,7 +14,7 @@ import * as path from 'path';
 
 import { ChildProcess, execFile, ExecFileException } from 'child_process';
 import * as util from 'util';
-import { IScreenSnippet } from '../common/api-interface';
+import { apiName, IScreenSnippet } from '../common/api-interface';
 import {
   isDevEnv,
   isElectronQA,
@@ -482,7 +482,9 @@ class ScreenSnippet {
       allWindows.forEach((window) => {
         if (
           (window as ICustomBrowserWindow).winName !== currentWindowName &&
-          (window as ICustomBrowserWindow).winName !== 'main'
+          (window as ICustomBrowserWindow).winName !== 'main' &&
+          (window as ICustomBrowserWindow).winName !==
+            apiName.notificationWindowName
         ) {
           windowsArr.push({
             id: (window as ICustomBrowserWindow).winName,
