@@ -170,7 +170,7 @@ export class WindowHandler {
   private screenSharingFrameWindow: Electron.BrowserWindow | null = null;
   private basicAuthWindow: Electron.BrowserWindow | null = null;
   private notificationSettingsWindow: Electron.BrowserWindow | null = null;
-  private snippingToolWindow: Electron.BrowserWindow | null = null;
+  private snippingToolWindow: ICustomBrowserWindow | null = null;
   private finishedLoading: boolean = false;
   private readonly opts: Electron.BrowserViewConstructorOptions | undefined;
   private hideOnCapture: boolean = false;
@@ -1364,7 +1364,11 @@ export class WindowHandler {
       opts.modal = true;
     }
 
-    this.snippingToolWindow = createComponentWindow('snipping-tool', opts);
+    this.snippingToolWindow = createComponentWindow(
+      'snipping-tool',
+      opts,
+    ) as ICustomBrowserWindow;
+    this.snippingToolWindow.winName = apiName.snippingToolWindowName;
     this.moveWindow(this.snippingToolWindow, undefined, parentWindow);
     this.snippingToolWindow.setVisibleOnAllWorkspaces(true);
 
