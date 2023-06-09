@@ -12,6 +12,7 @@ export interface IWindowState {
   minimized?: boolean;
   focused?: boolean;
   isFullScreen?: boolean;
+  isVisible?: boolean;
 }
 
 export class WindowStore {

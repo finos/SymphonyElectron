@@ -1007,6 +1007,9 @@ export const didVerifyAndRestoreWindow = (
   if (browserWindow.isMinimized()) {
     browserWindow.restore();
   }
+  if (!browserWindow.isVisible()) {
+    browserWindow.show();
+  }
   browserWindow.focus();
   return true;
 };

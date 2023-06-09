@@ -229,6 +229,7 @@ export const updateAlwaysOnTop = async (
   }
   if (browserWins.length > 0) {
     browserWins
+      .filter((browser) => browser && windowExists(browser))
       .filter((browser) => typeof browser.notificationData !== 'object')
       .forEach((browser) => browser.setAlwaysOnTop(shouldSetAlwaysOnTop));
 
