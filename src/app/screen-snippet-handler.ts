@@ -95,7 +95,7 @@ class ScreenSnippet {
     const currentWindowName = (currentWindowObj as ICustomBrowserWindow)
       ?.winName;
     const mainWindow = windowHandler.getMainWindow();
-
+    windowHandler.closeSnippingToolWindow();
     if (hideOnCapture) {
       this.storeWindowsState(mainWindow, currentWindowObj);
       winStore.hideWindowsOnCapturing(hideOnCapture);
@@ -465,55 +465,54 @@ class ScreenSnippet {
     const windowObj = winStore.getWindowStore();
     const currentWindowName = (currentWindowObj as ICustomBrowserWindow)
       ?.winName;
-    if (windowObj.windows.length < 1) {
-      const allWindows = BrowserWindow.getAllWindows();
-      let windowsArr: IWindowState[] = [];
-      const mainArr: IWindowState[] = [
-        {
-          id: 'main',
-          focused: mainWindow?.isFocused(),
-          minimized: mainWindow?.isMinimized(),
-          isFullScreen: mainWindow?.isFullScreen(),
-          isVisible: mainWindow?.isVisible(),
-          isAlwaysOnTop: mainWindow?.isAlwaysOnTop(),
-        },
-      ];
-
-      allWindows.forEach((window) => {
-        if (
-          (window as ICustomBrowserWindow).winName !== currentWindowName &&
-          (window as ICustomBrowserWindow).winName !== 'main' &&
-          (window as ICustomBrowserWindow).winName !==
-            apiName.notificationWindowName
-        ) {
-          windowsArr.push({
-            id: (window as ICustomBrowserWindow).winName,
-            focused: window.isFocused(),
-            minimized: window?.isMinimized(),
-            isFullScreen: window?.isFullScreen(),
-            isVisible: window?.isVisible(),
-            isAlwaysOnTop: window?.isAlwaysOnTop(),
-          });
-        }
-      });
-
-      if (currentWindowName !== 'main') {
-        windowsArr.push({
-          id: currentWindowName,
-          focused: currentWindowObj?.isFocused(),
-          minimized: currentWindowObj?.isMinimized(),
-          isFullScreen: currentWindowObj?.isFullScreen(),
-          isVisible: currentWindowObj?.isVisible(),
-          isAlwaysOnTop: currentWindowObj?.isAlwaysOnTop(),
-        });
-        windowsArr = mainArr.concat(windowsArr);
-      } else {
-        windowsArr = windowsArr.concat(mainArr);
-      }
-      winStore.setWindowStore({
-        windows: windowsArr,
-      });
+    if (windowObj.windows.length > 0) {
+      winStore.destroyWindowStore();
     }
+    const allWindows = BrowserWindow.getAllWindows();
+    let windowsArr: IWindowState[] = [];
+    const mainArr: IWindowState[] = [
+      {
+        id: 'main',
+        focused: mainWindow?.isFocused(),
+        minimized: mainWindow?.isMinimized(),
+        isFullScreen: mainWindow?.isFullScreen(),
+        isVisible: mainWindow?.isVisible(),
+      },
+    ];
+
+    allWindows.forEach((window) => {
+      if (
+        (window as ICustomBrowserWindow).winName &&
+        (window as ICustomBrowserWindow).winName !== currentWindowName &&
+        (window as ICustomBrowserWindow).winName !== 'main' &&
+        (window as ICustomBrowserWindow).winName !==
+          apiName.notificationWindowName
+      ) {
+        windowsArr.push({
+          id: (window as ICustomBrowserWindow).winName,
+          focused: window.isFocused(),
+          minimized: window?.isMinimized(),
+          isFullScreen: window?.isFullScreen(),
+          isVisible: window?.isVisible(),
+        });
+      }
+    });
+
+    if (currentWindowName !== 'main') {
+      windowsArr.push({
+        id: currentWindowName,
+        focused: currentWindowObj?.isFocused(),
+        minimized: currentWindowObj?.isMinimized(),
+        isFullScreen: currentWindowObj?.isFullScreen(),
+        isVisible: currentWindowObj?.isVisible(),
+      });
+      windowsArr = mainArr.concat(windowsArr);
+    } else {
+      windowsArr = windowsArr.concat(mainArr);
+    }
+    winStore.setWindowStore({
+      windows: windowsArr,
+    });
   };
 
   /**

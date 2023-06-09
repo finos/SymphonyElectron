@@ -17,7 +17,6 @@ export interface IWindowState {
   focused?: boolean;
   isFullScreen?: boolean;
   isVisible?: boolean;
-  isAlwaysOnTop?: boolean;
 }
 
 export class WindowStore {
@@ -103,9 +102,6 @@ export class WindowStore {
             if (currentWindow.focused) {
               focusedWindowToRestore = window;
             }
-          }
-          if (currentWindow && currentWindow.isAlwaysOnTop) {
-            window.setAlwaysOnTop(true);
           }
         }
       });

@@ -83,6 +83,7 @@ export enum apiName {
   mainWindowName = 'main',
   notificationWindowName = 'notification-window',
   welcomeScreenName = 'welcome-screen',
+  snippingToolWindowName = 'snipping-tool-window',
 }
 
 export const NOTIFICATION_WINDOW_TITLE = 'Notification - Symphony';
