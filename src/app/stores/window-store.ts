@@ -68,6 +68,7 @@ export class WindowStore {
 
   public restoreWindows = (hideOnCapture?: boolean) => {
     if (hideOnCapture) {
+      this.restoreNotificationProperties();
       const storedWindows = this.getWindowStore();
       let currentWindow = storedWindows.windows.find(
         (currentWindow) => currentWindow.focused,
@@ -130,6 +131,25 @@ export class WindowStore {
       // Store reset
       this.destroyWindowStore();
     }
+  };
+
+  /**
+   * Restores notification properties reset to default post hiding main window
+   * @param windowsNames
+   */
+  private restoreNotificationProperties = () => {
+    const windows = BrowserWindow.getAllWindows();
+
+    windows
+      .filter(
+        (window) =>
+          (window as ICustomBrowserWindow).winName ===
+          apiName.notificationWindowName,
+      )
+      .map((notificationWindow) => {
+        notificationWindow.setAlwaysOnTop(true);
+        notificationWindow.setSkipTaskbar(true);
+      });
   };
 
   private hideFullscreenWindow = (window: BrowserWindow) => {
