@@ -132,9 +132,8 @@ export default class BasicAuth extends React.Component<{}, IState> {
    * @param event
    */
   private change(event): void {
-    this.setState({
-      [(event.target as any).id]: (event.target as any).value,
-    } as IState);
+    const { id, value } = event.target as HTMLInputElement;
+    this.setState((prevState) => ({ ...prevState, [id]: value }));
   }
 
   /**

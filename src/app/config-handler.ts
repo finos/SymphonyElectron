@@ -691,7 +691,7 @@ class Config {
     try {
       parsedData = JSON.parse(data);
       logger.info(`config-handler: parsed JSON file with data`, parsedData);
-    } catch (e) {
+    } catch (e: any) {
       logger.error(
         `config-handler: parsing JSON file failed due to error ${e}`,
       );
