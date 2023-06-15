@@ -4,7 +4,7 @@
 echo "Unlocking keychain"
 security -v unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
 
-NODE_REQUIRED_VERSION=v16.13.2
+NODE_REQUIRED_VERSION=v18.16.0
 SNYK_ORG=sda
 SNYK_PROJECT_NAME="Symphony Desktop Application"
 
@@ -100,7 +100,7 @@ sed -i -e 's/\"url\"[[:space:]]*\:[[:space:]]*\".*\"/\"url\":\"https:\/\/my.symp
 # Setup the build version
 echo "Setting build version to ${PARENT_BUILD_VERSION}"
 sed -i -e "s/\"buildNumber\"[[:space:]]*\:[[:space:]]*\".*\"/\"buildNumber\": \"${PARENT_BUILD_VERSION}\"/g" package.json
-sed -i -e "s/\"version\"[[:space:]]*\:[[:space:]]\"\(.*\)\"/\"version\": \"\1-${PARENT_BUILD_VERSION}\"/g" package.json 
+sed -i -e "s/\"version\"[[:space:]]*\:[[:space:]]\"\(.*\)\"/\"version\": \"\1-${PARENT_BUILD_VERSION}\"/g" package.json
 
 # Replace version number in pre-install script
 echo "Setting package version in pre install script to ${PKG_VERSION}"

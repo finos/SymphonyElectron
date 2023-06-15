@@ -5,7 +5,7 @@ call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tool
 echo %PATH%
 
 set DISABLE_REBUILD=true
-set NODE_REQUIRED_VERSION=16.13.2
+set NODE_REQUIRED_VERSION=18.16.0
 set SNYK_ORG=sda
 set SNYK_PROJECT_NAME="Symphony Desktop Application"
 
@@ -39,7 +39,7 @@ call snyk config set api=%SNYK_API_TOKEN%
 
 :: Below command replaces buildVersion with the appropriate build number from jenkins
 sed -i -e "s/\"buildNumber\"[[:space:]]*\:[[:space:]]*\".*\"/\"buildNumber\": \"%PARENT_BUILD_VERSION%\"/g" package.json
-sed -i -e "s/\"version\"[[:space:]]*\:[[:space:]]\"\(.*\)\"/\"version\": \"\1-%PARENT_BUILD_VERSION%\"/g" package.json 
+sed -i -e "s/\"version\"[[:space:]]*\:[[:space:]]\"\(.*\)\"/\"version\": \"\1-%PARENT_BUILD_VERSION%\"/g" package.json
 
 :: Copy search libraries onto the project root
 echo "Copying search libraries"

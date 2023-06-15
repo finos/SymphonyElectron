@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NODE_REQUIRED_VERSION=v12.13.1
+NODE_REQUIRED_VERSION=v18.16.0
 SNYK_ORG=sda
 SNYK_PROJECT_NAME="Symphony Desktop Application"
 
