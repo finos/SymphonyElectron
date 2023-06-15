@@ -1,4 +1,4 @@
-import { ExecException, execFile } from 'child_process';
+import { execFile, ExecFileException } from 'child_process';
 import { app } from 'electron';
 import * as path from 'path';
 import { isDevEnv, isWindowsOS } from '../common/env';
@@ -25,7 +25,7 @@ export const getContentWindowHandle = async (
       return execFile(
         captureUtil,
         captureUtilArgs,
-        (error: ExecException | null, stdout: any) => {
+        (error: ExecFileException | null, stdout: any) => {
           if (error && error.killed) {
             return reject(error);
           }
