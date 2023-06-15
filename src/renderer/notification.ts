@@ -162,6 +162,7 @@ class Notification extends NotificationHandler {
         if (
           window &&
           window.notificationData.tag === data.tag &&
+          winHeight &&
           winHeight < CONTAINER_HEIGHT_WITH_INPUT
         ) {
           this.setNotificationContent(window, data);
