@@ -1,4 +1,4 @@
-import { ExecException, execFile } from 'child_process';
+import { execFile, ExecFileException } from 'child_process';
 import {
   app,
   BrowserView,
@@ -2053,7 +2053,7 @@ export class WindowHandler {
   public execCmd(util: string, utilArgs: ReadonlyArray<string>): Promise<void> {
     logger.info(`window handler: execCmd: util: ${util} utilArgs: ${utilArgs}`);
     return new Promise<void>((resolve, reject) => {
-      return execFile(util, utilArgs, (error: ExecException | null) => {
+      return execFile(util, utilArgs, (error: ExecFileException | null) => {
         if (error) {
           logger.info(`window handler: execCmd: error: ${error}`);
         }

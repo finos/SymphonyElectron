@@ -12,7 +12,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-import { ChildProcess, ExecException, execFile } from 'child_process';
+import { ChildProcess, execFile, ExecFileException } from 'child_process';
 import * as util from 'util';
 import { IScreenSnippet } from '../common/api-interface';
 import {
@@ -261,7 +261,7 @@ class ScreenSnippet {
       return (this.child = execFile(
         captureUtil,
         captureUtilArgs,
-        (error: ExecException | null) => {
+        (error: ExecFileException | null) => {
           if (error && error.killed) {
             // process was killed, just resolve with no data.
             return reject(error);
