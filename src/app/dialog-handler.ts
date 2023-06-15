@@ -178,7 +178,7 @@ export const titleBarChangeDialog = async (
   if (!focusedWindow || !windowExists(focusedWindow)) {
     return;
   }
-  const options = {
+  const options: Electron.MessageBoxOptions = {
     type: 'question',
     title: i18n.t('Relaunch Application')(),
     message: i18n.t(
@@ -208,7 +208,7 @@ export const restartDialog = async (configFields: any) => {
   if (!focusedWindow || !windowExists(focusedWindow)) {
     return;
   }
-  const options = {
+  const options: Electron.MessageBoxOptions = {
     type: 'question',
     title: i18n.t('Relaunch Application')(),
     message: i18n.t(

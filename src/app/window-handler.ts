@@ -2343,7 +2343,7 @@ export class WindowHandler {
       `window handler: build expired, will inform the user and quit the app!`,
     );
 
-    const options = {
+    const options: Electron.MessageBoxOptions = {
       type: 'error',
       title: i18n.t('Build expired')(),
       message: i18n.t(
