@@ -103,7 +103,7 @@ export const cleanAppCacheOnCrash = (window: BrowserWindow): void => {
       ) {
         return;
       }
-      const options = {
+      const options: Electron.MessageBoxOptions = {
         type: 'question',
         title: i18n.t('Relaunch Application')(),
         message: i18n.t(
