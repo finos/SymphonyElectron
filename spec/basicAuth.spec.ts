@@ -9,6 +9,10 @@ describe('basic auth', () => {
   const passwordTargetMock: object = {
     target: { id: 'password', value: '123456' },
   };
+  const defaultState: object = {
+    hostname: 'unknown',
+    isValidCredentials: true,
+  };
   const basicAuthMock: object = {
     hostname: 'example',
     isValidCredentials: true,
@@ -27,9 +31,13 @@ describe('basic auth', () => {
     const spy: jest.SpyInstance = jest.spyOn(BasicAuth.prototype, 'setState');
     const wrapper: ShallowWrapper = shallow(React.createElement(BasicAuth));
     wrapper.find('#username').simulate('change', usernameTargetMock);
-    expect(spy).lastCalledWith(usernameMock);
+    expect(spy).lastCalledWith({ ...defaultState, ...usernameMock });
     wrapper.find('#password').simulate('change', passwordTargetMock);
-    expect(spy).lastCalledWith(passwordMock);
+    expect(spy).lastCalledWith({
+      ...defaultState,
+      ...usernameMock,
+      ...passwordMock,
+    });
   });
 
   it('should call submit login', () => {
