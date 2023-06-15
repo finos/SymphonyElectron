@@ -205,7 +205,7 @@ export default class ScreenPicker extends React.Component<{}, IState> {
     this.isApplicationsAvailable = applications.length > 0;
     if (!this.isScreensAvailable && !this.isApplicationsAvailable) {
       return (
-        <div className='ScreenPicker-error-content'>
+        <div className='ScreenPicker-error-content' key='spec'>
           <span className='error-message'>
             {i18n.t(
               'No screens or applications are currently available.',
@@ -217,7 +217,7 @@ export default class ScreenPicker extends React.Component<{}, IState> {
     }
 
     return (
-      <div className='ScreenPicker-main-content'>
+      <div className='ScreenPicker-main-content' key='spmc'>
         {this.renderTabTitles()}
         <section id='screen-contents'>{screens}</section>
         <section id='application-contents'> {applications}</section>

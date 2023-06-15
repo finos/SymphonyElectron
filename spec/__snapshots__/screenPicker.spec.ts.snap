@@ -32,6 +32,7 @@ exports[`screen picker should render correctly 1`] = `
   </div>
   <div
     className="ScreenPicker-error-content"
+    key="spec"
   >
     <span
       className="error-message"
