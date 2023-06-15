@@ -29,7 +29,7 @@ export class AnimationQueue {
   public async animate(object): Promise<void> {
     try {
       await object.func.apply(null, object.args);
-    } catch (err) {
+    } catch (err: any) {
       logger.error(
         `animation-queue: encountered an error: ${err} with stack trace: ${err.stack}`,
       );

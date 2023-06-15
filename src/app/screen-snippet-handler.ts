@@ -296,7 +296,7 @@ class ScreenSnippet {
       // convert binary data to base64 encoded string
       const output = Buffer.from(data).toString('base64');
       return { message: 'success', data: output, type: 'image/png;base64' };
-    } catch (error) {
+    } catch (error: any) {
       // no such file exists or user likely aborted
       // creating snippet. also include any error when
       // creating child process.
