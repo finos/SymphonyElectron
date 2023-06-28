@@ -70,7 +70,7 @@ const broadcastMessage = (method, data) => {
 };
 
 const getBrowserLoginUrl = (pod: string) =>
-  `${pod}/login/sso/initsso?RelayState=${pod}/client-bff/device-login/index.html?callbackScheme=symphony&action=login`;
+  `${pod}/login/sso/initsso?RelayState=${pod}/apps/login?callbackScheme=symphony&action=login`;
 const AUTH_STATUS_PATH = '/login/checkauth?type=user';
 interface IProxyDetails {
   username: string;
