@@ -431,7 +431,6 @@ public class CustomActions
                 }
             }
 
-
             // Remove registry keys added by protocol handlers
 
             using (var key = Registry.LocalMachine.OpenSubKey(@"Software\Classes", true))
@@ -475,13 +474,34 @@ public class CustomActions
                 }
             }
 
-            // Remove registry keys added by protocol handlers
+            // Remove registry keys added by protocol handlers & for phone calls
 
             using (var key = Registry.CurrentUser.OpenSubKey(@"Software\Classes", true))
             {
                 if (key != null)
                 {
                     key.DeleteSubKeyTree("symphony", false);
+                    key.DeleteSubKeyTree("Symphony.tel", false);
+                }
+            }
+
+            // Remove registry keys added for phone calls
+
+            using (var key = Registry.CurrentUser.OpenSubKey(@"Software", true))
+            {
+                if (key != null)
+                {
+                    key.DeleteSubKeyTree("Symphony", false);
+                }
+            }
+
+            // Remove registry keys added by phone calls - symphony app registration
+
+            using (var key = Registry.CurrentUser.OpenSubKey(@"Software\RegisteredApplications", true))
+            {
+                if (key != null)
+                {
+                    key.DeleteValue("Symphony", false);
                 }
             }
         }
