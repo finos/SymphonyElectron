@@ -1,4 +1,4 @@
-import { ipcRenderer } from 'electron';
+import { Event, ipcRenderer } from 'electron';
 import { apiCmds, apiName, IScreenSnippet } from '../common/api-interface';
 
 /**
