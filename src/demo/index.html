@@ -1,10 +1,71 @@
 <html>
   <head>
     <style>
+      body {
+        font-family: 'Segoe UI', 'Helvetica Neue', 'Verdana', 'Arial',
+          sans-serif;
+      }
+
+      button {
+        padding: 6px 6px;
+        margin-bottom: 6px;
+        background-color: #3f51b5;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .input-container {
+        position: relative;
+        padding: 6px 0;
+      }
+
+      input[type='text'] {
+        height: 20px;
+        width: 280px;
+        border: 1px solid #c0c0c0;
+        border-radius: 4px;
+        box-sizing: border-box;
+        padding: 16px;
+        color: grey;
+      }
+
+      .label {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 16px;
+        display: flex;
+        align-items: center;
+        pointer-events: none;
+      }
+
+      input[type='text'],
+      .label .text {
+        font-family: 'Segoe UI';
+        font-size: 16px;
+      }
+
+      .label .text {
+        transition: all 0.15s ease-out;
+        transform: translate(0, -100%);
+        color: #3f51b5;
+        background-color: #f8f8f8;
+        font-size: 12px;
+      }
+
+      input[type='text']:focus {
+        outline: none;
+        border: 2px solid blue;
+        color: black;
+      }
+
       table {
         border-collapse: collapse;
         border-spacing: 0;
       }
+
       table,
       th,
       td {
@@ -27,13 +88,15 @@
         border-radius: 50%;
         display: inline-block;
       }
+
       .origin-reminder {
         background: lightyellow;
-        padding: 20px;
-        margin: 40px;
+        padding: 10px;
+        margin: 20px;
         border: 2px solid black;
         display: block;
       }
+
       .origin-reminder-tt {
         font-weight: normal;
         background: yellow;
@@ -61,148 +124,338 @@
         <u>Make sure to comment it out again before you commit.</u>
       </p>
     </div>
-    <hr />
-    <p>Notifications:</p>
-    <p>
-      <button id="notf">show notification</button>
-    </p>
+    <!--Toast Notification-->
+    <div
+      style="
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 16px;
+        padding: 8px;
+      "
+    >
+      <div
+        style="
+          background-color: #f8f8f8;
+          padding: 16px;
+          border: 1px solid #e0e0e0;
+          border-radius: 4px;
+        "
+      >
+        <h3>Notifications:</h3>
+        <div>
+          <button id="notf">show notification</button>
+        </div>
+        <div>
+          <div style="padding-top: 10px">
+            <button id="closeNotification">close notification</button>
+            <input
+              type="number"
+              id="notificationTag"
+              value="Notification Tag to close"
+            />
+          </div>
+        </div>
+        <p id="reply">Reply content will display here</p>
+        <div class="input-container">
+          <label class="label" for="title">
+            <div class="text">Title</div>
+          </label>
+          <input type="text" id="title" value="Callam Davis" />
+        </div>
+        <div class="input-container">
+          <label class="label" for="body">
+            <div class="text">body</div>
+          </label>
+          <input
+            type="text"
+            id="body"
+            value="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+          />
+        </div>
+        <div class="input-container">
+          <label class="label" for="image">
+            <div class="text">image url</div>
+          </label>
+          <input
+            type="text"
+            id="image"
+            value="https://i.pinimg.com/originals/ea/11/fb/ea11fb152820f63d536e8396c89f81e9.jpg"
+          />
+        </div>
+        <div class="input-container">
+          <label class="label" for="company">
+            <div class="text">company</div>
+          </label>
+          <input type="text" id="company" value="Symphony" />
+        </div>
+        <div class="input-container">
+          <label class="label" for="color">
+            <div class="text">Color</div>
+          </label>
+          <input type="text" id="color" value="" />
+        </div>
+        <div class="input-container">
+          <label class="label" for="tag">
+            <div class="text">Tag</div>
+          </label>
+          <input type="text" id="tag" value="" />
+        </div>
+        <div class="input-container">
+          <label for="flash">Flash</label>
+          <input type="checkbox" id="flash" />
+        </div>
+        <div class="input-container">
+          <label for="isExternal">External</label>
+          <input type="checkbox" id="isExternal" />
+        </div>
+        <div class="input-container">
+          <label for="isUpdated">Is updated</label>
+          <input type="checkbox" id="isUpdated" />
+        </div>
+        <div class="input-container">
+          <label for="hasMention">Has mention</label>
+          <input type="checkbox" id="hasMention" />
+        </div>
+        <div class="input-container">
+          <label for="isNativeNotification"
+            >Native Electron Notification:</label
+          >
+          <input type="checkbox" id="isNativeNotification" />
+        </div>
+        <div class="input-container">
+          <label for="sticky">Sticky</label>
+          <input type="checkbox" id="sticky" />
+        </div>
+        <div style="padding-bottom: 10px">
+          <label for="select-theme">Change theme</label>
+          <select id="select-theme" name="theme">
+            <option value="">select</option>
+            <option selected="selected" value="dark">dark</option>
+            <option value="light">light</option>
+          </select>
+        </div>
 
-    <div>
-      <p>
-        <button id="closeNotification">close notification</button>
-        <input
-          type="number"
-          id="notificationTag"
-          value="Notification Tag to close"
-        />
-      </p>
+        <button id="open-config-win">Open configure window</button>
+      </div>
+      <!--Call Notification-->
+      <div
+        style="
+          background-color: #f8f8f8;
+          padding: 16px;
+          border: 1px solid #e0e0e0;
+          border-radius: 4px;
+        "
+      >
+        <h3>Call Notification Input</h3>
+        <div style="padding-bottom: 10px">
+          <button id="call-notf">show call notification</button>
+          <button id="close-call-notf">close call notification</button>
+        </div>
+        <div class="input-container">
+          <label class="label" for="profilePlaceHolderText">
+            <div class="text">Profile PlaceHolder Text</div>
+          </label>
+          <input type="text" id="profilePlaceHolderText" value="+3" />
+        </div>
+        <div class="input-container">
+          <label class="label" for="primaryText">
+            <div class="text">Primary Text</div>
+          </label>
+          <input type="text" id="primaryText" value="Anna Galbraith" />
+        </div>
+        <div class="input-container">
+          <label class="label" for="secondaryText">
+            <div class="text">Secondary Text</div>
+          </label>
+          <input type="text" id="secondaryText" value="Broker" />
+        </div>
+        <div class="input-container">
+          <label class="label" for="companyIconUrl">
+            <div class="text">Tertiary Text Icon</div>
+          </label>
+          <input
+            type="text"
+            id="companyIconUrl"
+            value="https://creazilla-store.fra1.digitaloceanspaces.com/icons/3431275/whatsapp-icon-md.png"
+          />
+        </div>
+        <div class="input-container">
+          <label class="label" for="acceptButtonText">
+            <div class="text">Accept Button Text</div>
+          </label>
+          <input type="text" id="acceptButtonText" value="" />
+        </div>
+        <div class="input-container">
+          <label class="label" for="rejectButtonText">
+            <div class="text">Reject Button Text</div>
+          </label>
+          <input type="text" id="rejectButtonText" value="" />
+        </div>
+        <div class="input-container">
+          <label class="label" for="actionIconUrl">
+            <div class="text">Action IconUrl</div>
+          </label>
+          <input type="text" id="actionIconUrl" value="" />
+        </div>
+        <div class="input-container">
+          <label for="select-call-type">Notification Type</label>
+          <select id="select-call-type" name="call-type">
+            <option value="">select</option>
+            <option selected="selected" value="IM">IM</option>
+            <option value="ROOM">ROOM</option>
+            <option value="OTHER">OTHER</option>
+          </select>
+          <br />
+        </div>
+        <div class="input-container">
+          <label for="shouldDisplayBadge">shouldDisplayBadge:</label>
+          <input type="checkbox" id="shouldDisplayBadge" checked />
+        </div>
+      </div>
     </div>
-    <p id="reply">Reply content will display here</p>
-    <p>
-      <label for="title">title:</label>
-      <input type="text" id="title" value="Callam Davis" />
-    </p>
-    <p>
-      <label for="body">body:</label>
-      <input
-        type="text"
-        id="body"
-        value="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-      />
-    </p>
-    <p>
-      <label for="image">image url:</label>
-      <input
-        type="text"
-        id="image"
-        value="https://i.pinimg.com/originals/ea/11/fb/ea11fb152820f63d536e8396c89f81e9.jpg"
-      />
-    </p>
-    <p>
-      <label for="company">company:</label>
-      <input type="text" id="company" value="Symphony" />
-    </p>
-    <p>
-      <label for="flash">flash:</label>
-      <input type="checkbox" id="flash" />
-    </p>
-    <p>
-      <label for="isExternal">external:</label>
-      <input type="checkbox" id="isExternal" />
-    </p>
-    <p>
-      <label for="isUpdated">is updated:</label>
-      <input type="checkbox" id="isUpdated" />
-    </p>
-    <p>
-      <label for="hasMention">has mention:</label>
-      <input type="checkbox" id="hasMention" />
-    </p>
-    <p>
-      <label for="isNativeNotification">Native Electron Notification:</label>
-      <input type="checkbox" id="isNativeNotification" />
-    </p>
-    <p>Change theme:</p>
-    <p>
-      <select id="select-theme" name="theme">
-        <option value="">select</option>
-        <option selected="selected" value="dark">dark</option>
-        <option value="light">light</option>
-      </select>
-      <br />
-    </p>
+    <div
+      style="
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        padding: 8px;
+      "
+    >
+      <div
+        style="
+          background-color: #f8f8f8;
+          padding: 16px;
+          border: 1px solid #e0e0e0;
+          border-radius: 4px;
+        "
+      >
+        <textarea id="text-val" rows="4">
+Writes some thing to the file</textarea
+        >
+        <div style="padding: 10px 0px">
+          <button id="download-file1" value="Download">Download</button>
+          <button type="button" id="download-file2" value="Download">
+            Download 2
+          </button>
+        </div>
+        <div id="footer" style="padding: 10px 0px" class="hidden">
+          <div id="download-manager-footer" class="download-bar">
+            Downloaded File
+          </div>
+        </div>
+        <button type="button" id="open-download-item">Open Latest Item</button>
+        <button
+          type="button"
+          id="show-download-item"
+          value="Show Latest Item in Finder"
+        >
+          Show Latest Item in Finder
+        </button>
+        <button
+          type="button"
+          id="close-download-manager"
+          value="Close Download Manager"
+        >
+          Close Download Manager
+        </button>
+      </div>
 
-    <p>
-      <label for="sticky">sticky:</label>
-      <input type="checkbox" id="sticky" />
-    </p>
-    <p>
-      <label for="color">color:</label>
-      <input type="text" id="color" value="" />
-    </p>
-    <p>
-      <label for="tag">tag:</label>
-      <input type="text" id="tag" value="" />
-    </p>
-    <button id="open-config-win">Open configure window</button>
-    <br />
-    <hr />
-    <textarea id="text-val" rows="4">Writes some thing to the file</textarea>
-    <br />
-    <input type="button" id="download-file1" value="Download" />
-    <input type="button" id="download-file2" value="Download" />
-    <div id="footer" class="hidden">
-      <div id="download-manager-footer" class="download-bar"></div>
+      <div
+        style="
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          padding: 8px;
+        "
+      >
+        <div
+          style="
+            background-color: #f8f8f8;
+            padding: 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+          "
+        >
+          <div>Activity Detection:</div>
+
+          <div style="padding: 10px">
+            <button id="activity-detection">Init activity</button>
+            <span id="activity-status" class="green-dot"></span>
+          </div>
+        </div>
+      </div>
     </div>
-    <input type="button" id="open-download-item" value="Open Latest Item" />
-    <input
-      type="button"
-      id="show-download-item"
-      value="Show Latest Item in Finder"
-    />
-    <input
-      type="button"
-      id="close-download-manager"
-      value="Close Download Manager"
-    />
-    <br />
-    <hr />
-    <p>Activity Detection:</p>
-
-    <p>
-      <button id="activity-detection">Init activity</button>
-      <span id="activity-status" class="green-dot"></span>
-    </p>
-    <br />
-    <hr />
-    <p>Change language:</p>
-    <p>
-      <select id="locale-select" name="locale">
-        <option value="en-US">en-US</option>
-        <option value="ja-JP">ja-JP</option>
-        <option value="fr-FR">fr-FR</option>
-      </select>
-      <button id="changeLocale">Submit</button>
-      <br />
-    </p>
-
-    <hr />
-    <p>Badge Count:</p>
-    <p>
-      <button id="inc-badge">increment badge count</button>
-      <br />
-      <button id="clear-badge">clear badge count</button>
-      <br />
-    </p>
-
-    <hr />
-    <p>Screen Snippet:</p>
-    <button id="snippet">get snippet</button>
-    <p>snippet output:</p>
-    <image id="snippet-img" />
-    <button id="cancel-snippet">cancel snippet</button>
-
-    <hr />
+    <div
+      style="
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        padding: 8px;
+      "
+    >
+      <div
+        style="
+          background-color: #f8f8f8;
+          padding: 16px;
+          border: 1px solid #e0e0e0;
+          border-radius: 4px;
+        "
+      >
+        <p>Change language:</p>
+        <p>
+          <select id="locale-select" name="locale">
+            <option value="en-US">en-US</option>
+            <option value="ja-JP">ja-JP</option>
+            <option value="fr-FR">fr-FR</option>
+          </select>
+          <button id="changeLocale">Submit</button>
+          <br />
+        </p>
+      </div>
+    </div>
+    <div
+      style="
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        padding: 8px;
+      "
+    >
+      <div
+        style="
+          background-color: #f8f8f8;
+          padding: 16px;
+          border: 1px solid #e0e0e0;
+          border-radius: 4px;
+        "
+      >
+        <p>Badge Count:</p>
+        <p>
+          <button id="inc-badge">increment badge count</button>
+          <br />
+          <button id="clear-badge">clear badge count</button>
+          <br />
+        </p>
+      </div>
+    </div>
+    <div
+      style="
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        padding: 8px;
+      "
+    >
+      <div
+        style="
+          background-color: #f8f8f8;
+          padding: 16px;
+          border: 1px solid #e0e0e0;
+          border-radius: 4px;
+        "
+      >
+        <p>Screen Snippet:</p>
+        <button id="snippet">get snippet</button>
+        <p>snippet output:</p>
+        <image id="snippet-img" />
+        <button id="cancel-snippet">cancel snippet</button>
+      </div>
+    </div>
     <p>Logs:</p>
     Filename <input type="text" id="log-filename" value="test_log.log" />
     <p>Contents</p>
@@ -293,6 +546,14 @@
     <br />
   </body>
   <script>
+    const inputs = document.querySelectorAll('input');
+
+    inputs.forEach((input) => {
+      input.addEventListener('input', () => {
+        input.setAttribute('value', input.value);
+      });
+    });
+
     window.name = 'main';
 
     const apiCmds = {
@@ -437,6 +698,97 @@
       if (window.manaSSF) {
         const id = document.getElementById('notificationTag').value;
         window.manaSSF.closeNotification(parseInt(id));
+      }
+    });
+
+    var callNotifEl = document.getElementById('call-notf');
+    var closeCallNotifEl = document.getElementById('close-call-notf');
+    // note: notification will close when clicked
+    callNotifEl.addEventListener('click', function () {
+      var title = document.getElementById('title').value;
+      var body = document.getElementById('body').value;
+      var imageUrl = document.getElementById('image').value;
+      var shouldFlash = document.getElementById('flash').checked;
+      var isExternal = document.getElementById('isExternal').checked;
+      var color = document.getElementById('color').value;
+      var company = document.getElementById('company').value;
+      num++;
+
+      var theme = document.getElementById('select-theme').value;
+      var notf = {
+        id: num,
+        title,
+        image: imageUrl,
+        icon: imageUrl,
+        color: color,
+        flash: shouldFlash,
+        isExternal: isExternal,
+        theme: theme,
+        data: {
+          hello: `Notification with id ${num} clicked')`,
+        },
+        method: 'notification',
+        primaryText: document.getElementById('primaryText').value,
+        secondaryText: document.getElementById('secondaryText').value,
+        company: company,
+        companyIconUrl: document.getElementById('companyIconUrl').value,
+        profilePlaceHolderText: document.getElementById(
+          'profilePlaceHolderText',
+        ).value,
+        actionIconUrl: document.getElementById('actionIconUrl').value,
+        callType: document.getElementById('select-call-type').value,
+        shouldDisplayBadge:
+          document.getElementById('shouldDisplayBadge').checked,
+        acceptButtonText: document.getElementById('acceptButtonText').value,
+        rejectButtonText: document.getElementById('rejectButtonText').value,
+      };
+      if (window.ssf) {
+        console.log(notf);
+        const ssfNotificationHandler = new window.ssf.Notification(
+          notf.title,
+          notf,
+        );
+        const onclick = (event) => {
+          event.target.close();
+          if (!process.env.NODE_ENV) {
+            alert('notification clicked: ' + event.target.data.hello);
+          }
+        };
+        ssfNotificationHandler.addEventListener('click', onclick);
+
+        const onclose = () => {
+          if (!process.env.NODE_ENV) {
+            alert('notification closed');
+          }
+        };
+        ssfNotificationHandler.addEventListener('close', onclose);
+
+        const onerror = (event) => {
+          alert('error=' + event.result);
+        };
+        ssfNotificationHandler.addEventListener('error', onerror);
+      } else if (window.manaSSF) {
+        const callback = (event, data) => {
+          if (event === 'notification-reply') {
+            document.getElementById('reply').innerText = data.notificationData;
+          }
+        };
+        window.manaSSF.showCallNotification(notf, callback);
+      } else {
+        window.postMessage({ method: 'notification', data: notf }, '*');
+      }
+    });
+
+    closeNotificationEl.addEventListener('click', () => {
+      if (window.manaSSF) {
+        const id = document.getElementById('notificationTag').value;
+        window.manaSSF.closeNotification(parseInt(id));
+      }
+    });
+
+    closeCallNotifEl.addEventListener('click', () => {
+      if (window.manaSSF) {
+        window.manaSSF.closeCallNotification(num);
       }
     });
 
