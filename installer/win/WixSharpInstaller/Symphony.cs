@@ -484,6 +484,7 @@ public class CustomActions
                 {
                     key.DeleteSubKeyTree("symphony", false);
                     key.DeleteSubKeyTree("Symphony.tel", false);
+                    key.DeleteSubKeyTree("Symphony.sms", false);
                 }
             }
 

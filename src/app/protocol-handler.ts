@@ -11,6 +11,7 @@ import { windowHandler } from './window-handler';
 enum protocol {
   SymphonyProtocol = 'symphony://',
   TelProtocol = 'tel:',
+  SmsProtocol = 'sms:',
 }
 
 class ProtocolHandler {
@@ -87,11 +88,8 @@ class ProtocolHandler {
         `protocol-handler: our protocol request is a valid url ${url}! sending request to SFE for further action!`,
       );
       this.preloadWebContents.send('protocol-action', url);
-    } else if (url?.includes('tel:')) {
-      this.preloadWebContents.send(
-        'phone-number-received',
-        url.split('tel:')[1],
-      );
+    } else if (url?.includes('tel:') || url?.includes('sms:')) {
+      this.preloadWebContents.send('phone-number-received', url);
     }
   }
 
@@ -112,6 +110,11 @@ class ProtocolHandler {
       protocol.TelProtocol,
       false,
     );
+    const smsArgFromArgv = getCommandLineArgs(
+      argv || process.argv,
+      protocol.SmsProtocol,
+      false,
+    );
     if (protocolUriFromArgv) {
       logger.info(
         `protocol-handler: we have a protocol request for the url ${protocolUriFromArgv}!`,
@@ -122,6 +125,11 @@ class ProtocolHandler {
         `protocol-handler: we have a tel request for ${telArgFromArgv}!`,
       );
       this.sendProtocol(telArgFromArgv, isAppAlreadyOpen);
+    } else if (smsArgFromArgv) {
+      logger.info(
+        `protocol-handler: we have an sms request for ${smsArgFromArgv}!`,
+      );
+      this.sendProtocol(smsArgFromArgv, isAppAlreadyOpen);
     }
   }
 
