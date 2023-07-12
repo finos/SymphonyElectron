@@ -496,8 +496,13 @@ ipcMain.on(
           autoUpdate.checkUpdates();
         }
         break;
-      case apiCmds.registerVoiceServices:
-        voiceHandler.registerSymphonyAsDefaultCallApp();
+      case apiCmds.registerPhoneNumberServices:
+        voiceHandler.registerSymphonyAsDefaultApp(arg.protocols);
+        break;
+      case apiCmds.unregisterPhoneNumberServices:
+        voiceHandler.unregisterSymphonyAsDefaultApp(arg.protocols);
+        break;
+      default:
         break;
     }
   },

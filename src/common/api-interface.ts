@@ -76,7 +76,8 @@ export enum apiCmds {
   updateMyPresence = 'update-my-presence',
   getMyPresence = 'get-my-presence',
   updateSymphonyTray = 'update-system-tray',
-  registerVoiceServices = 'register-voice-services',
+  registerPhoneNumberServices = 'register-phone-numbers-services',
+  unregisterPhoneNumberServices = 'unregister-phone-numbers-services',
 }
 
 export enum apiName {
@@ -137,6 +138,7 @@ export interface IApiArgs {
   autoUpdateTrigger: AutoUpdateTrigger;
   hideOnCapture: boolean;
   status: IPresenceStatus;
+  protocols: PhoneNumberProtocol[];
 }
 
 export type Themes = 'light' | 'dark';
@@ -375,4 +377,9 @@ export interface IAuthResponse {
   authenticationType: AuthType;
   ssoDisabledForMobile: boolean;
   keymanagerUrl: string;
+}
+
+export enum PhoneNumberProtocol {
+  Tel = 'tel',
+  Sms = 'sms',
 }

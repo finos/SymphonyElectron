@@ -57,7 +57,7 @@ const verifyProtocolForNewUrl = (url: string): boolean => {
     return false;
   }
 
-  const allowedProtocols = ['http:', 'https:', 'mailto:', 'symphony:'];
+  const allowedProtocols = ['http:', 'https:', 'mailto:', 'symphony:', 'sms:'];
   // url parse returns protocol with :
   if (allowedProtocols.includes(parsedUrl.protocol)) {
     logger.info(
@@ -207,7 +207,8 @@ export const handleChildWindow = (webContents: WebContents): void => {
   webContents.on(
     'did-create-window',
     (browserWindow: BrowserWindow, details: DidCreateWindowDetails) => {
-      const newWinOptions = details.options as ICustomBrowserWindowConstructorOpts;
+      const newWinOptions =
+        details.options as ICustomBrowserWindowConstructorOpts;
       const width = newWinOptions.width || DEFAULT_POP_OUT_WIDTH;
       const height = newWinOptions.height || DEFAULT_POP_OUT_HEIGHT;
       const newWinKey = getGuid();

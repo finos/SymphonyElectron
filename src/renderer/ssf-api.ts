@@ -30,6 +30,7 @@ import {
   KeyCodes,
   LogLevel,
   NotificationActionCallback,
+  PhoneNumberProtocol,
 } from '../common/api-interface';
 import { i18n, LocaleType } from '../common/i18n-preload';
 import { throttle } from '../common/utils';
@@ -879,17 +880,30 @@ export class SSFApi {
   }
 
   /**
-   * Allows JS to register SDA for calls
-   * @param {Function} phoneNumberCallback callback function invoked when receiving a phone number
+   * Allows JS to register SDA for phone numbers clicks
+   * @param {Function} phoneNumberCallback callback function invoked when receiving a phone number for calls/sms
    */
-  public registerVoiceServices(
+  public registerPhoneNumberServices(
+    protocols: PhoneNumberProtocol[],
     phoneNumberCallback: (arg: string) => void,
   ): void {
     if (typeof phoneNumberCallback === 'function') {
       local.phoneNumberCallback = phoneNumberCallback;
     }
     ipcRenderer.send(apiName.symphonyApi, {
-      cmd: apiCmds.registerVoiceServices,
+      cmd: apiCmds.registerPhoneNumberServices,
+      protocols,
+    });
+  }
+
+  /**
+   * Allows JS to unregister app to sms/call protocols
+   * @param protocol protocol to be unregistered.
+   */
+  public unregisterPhoneNumberServices(protocols: PhoneNumberProtocol[]) {
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.unregisterPhoneNumberServices,
+      protocols,
     });
   }
 }
