@@ -61,6 +61,7 @@ export interface IConfig {
   enableBrowserLogin?: boolean;
   browserLoginAutoConnect?: boolean;
   betaAutoUpdateChannelEnabled?: boolean;
+  forceAutoUpdate?: boolean;
 }
 
 export interface IGlobalConfig {
