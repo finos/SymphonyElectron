@@ -160,8 +160,11 @@ export default class CallNotification extends React.Component<
           </div>
           <div className='info-text-container'>
             <div className='primary-text-container'>
-              <div className='caller-name'>
-                <div className={`caller-name ${themeClassName}`}>
+              <div className='caller-name-container'>
+                <div
+                  data-testid='CALL_NOTIFICATION_NAME'
+                  className={`caller-name ${themeClassName}`}
+                >
                   {primaryText}
                 </div>
                 {this.renderExtBadge(isExternal)}
@@ -204,7 +207,11 @@ export default class CallNotification extends React.Component<
               'call-type-other': callType === 'OTHER',
             })}
           >
-            <div className='label' onClick={this.eventHandlers.onReject(id)}>
+            <div
+              data-testid='CALL_NOTIFICATION_REJECT_BUTTON'
+              className='label'
+              onClick={this.eventHandlers.onReject(id)}
+            >
               {rejectText}
             </div>
           </button>
@@ -229,7 +236,11 @@ export default class CallNotification extends React.Component<
                 className='profile-picture-badge'
               />
             )}
-            <div className='label' onClick={this.eventHandlers.onAccept(id)}>
+            <div
+              data-testid='CALL_NOTIFICATION_ACCEPT_BUTTON'
+              className='label'
+              onClick={this.eventHandlers.onAccept(id)}
+            >
               {acceptText}
             </div>
           </button>

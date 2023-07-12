@@ -1,4 +1,5 @@
 import { activityDetection } from '../src/app/activity-detection';
+import * as c9PipeHandler from '../src/app/c9-pipe-handler';
 import { downloadHandler } from '../src/app/download-handler';
 import '../src/app/main-api-handler';
 import { protocolHandler } from '../src/app/protocol-handler';
@@ -7,7 +8,6 @@ import * as windowActions from '../src/app/window-actions';
 import { windowHandler } from '../src/app/window-handler';
 import * as utils from '../src/app/window-utils';
 import { apiCmds, apiName } from '../src/common/api-interface';
-import * as c9PipeHandler from '../src/app/c9-pipe-handler';
 import { logger } from '../src/common/logger';
 import { BrowserWindow, ipcMain } from './__mocks__/electron';
 
