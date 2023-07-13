@@ -85,6 +85,7 @@ const menuItemConfigFields = [
   'devToolsEnabled',
   'isAutoUpdateEnabled',
   'enableBrowserLogin',
+  'forceAutoUpdate',
 ];
 
 let {
@@ -97,6 +98,7 @@ let {
   devToolsEnabled,
   isAutoUpdateEnabled,
   enableBrowserLogin,
+  forceAutoUpdate,
 } = config.getConfigFields(menuItemConfigFields) as IConfig;
 let initialAnalyticsSent = false;
 const CORP_URL = 'https://corporate.symphony.com';
@@ -243,6 +245,7 @@ export class AppMenu {
     devToolsEnabled = configData.devToolsEnabled;
     isAutoUpdateEnabled = configData.isAutoUpdateEnabled;
     enableBrowserLogin = configData.enableBrowserLogin;
+    forceAutoUpdate = configData.forceAutoUpdate;
     // fetch updated cloud config
     this.cloudConfig = config.getFilteredCloudConfigFields(
       this.menuItemConfigFields,
@@ -307,7 +310,10 @@ export class AppMenu {
           click: (_item) => {
             autoUpdate.checkUpdates(AutoUpdateTrigger.MANUAL);
           },
-          visible: isMac && !!isAutoUpdateEnabled && !!windowHandler.isMana,
+          visible:
+            isMac &&
+            !!(isAutoUpdateEnabled || forceAutoUpdate) &&
+            !!windowHandler.isMana,
           label: i18n.t('Check for updates')(),
         },
         this.buildSeparator(),
@@ -706,7 +712,9 @@ export class AppMenu {
             autoUpdate.checkUpdates(AutoUpdateTrigger.MANUAL);
           },
           visible:
-            isWindowsOS && !!isAutoUpdateEnabled && !!windowHandler.isMana,
+            isWindowsOS &&
+            !!(isAutoUpdateEnabled || forceAutoUpdate) &&
+            !!windowHandler.isMana,
           label: i18n.t('Check for updates')(),
         },
         {

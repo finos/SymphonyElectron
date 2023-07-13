@@ -1089,6 +1089,7 @@ export const updateFeaturesForCloudConfig = async (
     memoryThreshold,
     isAutoUpdateEnabled,
     autoUpdateCheckInterval,
+    forceAutoUpdate,
   } = config.getConfigFields([
     'launchOnStartup',
     'alwaysOnTop',
@@ -1096,6 +1097,7 @@ export const updateFeaturesForCloudConfig = async (
     'memoryThreshold',
     'isAutoUpdateEnabled',
     'autoUpdateCheckInterval',
+    'forceAutoUpdate',
   ]) as IConfig;
 
   const mainWebContents = windowHandler.getMainWebContents();
@@ -1147,7 +1149,7 @@ export const updateFeaturesForCloudConfig = async (
 
   // SDA auto updater
   logger.info(`window-utils: initiate auto update?`, isAutoUpdateEnabled);
-  if (isAutoUpdateEnabled) {
+  if (forceAutoUpdate || isAutoUpdateEnabled) {
     if (!autoUpdateIntervalId) {
       // randomised to avoid having all users getting SDA update at the same time
       autoUpdateIntervalId = setInterval(async () => {

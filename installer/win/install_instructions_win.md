@@ -565,6 +565,20 @@ Expected values:
 * "false"
   User will need to click on Login button to start browser login flow.
 
+-------------------------------------------------------------------
+### FORCE_AUTO_UPDATE
+
+The provided property will enable user ability to overwrite PMP settings of auto update. Thus,
+the update option will take "FORCE_AUTO_UPDATE" first then consider PMP later
+By default its value will be 'false'
+
+Expected values:
+
+* "true"
+  Allow user to check for update regardless conditions
+* "false"
+  Will also consider PMP settings
+
 #### Example, install with browser login autoconnect enabled
 
     msiexec /i Symphony.msi BROWSER_LOGIN_AUTOCONNECT="true"
@@ -576,3 +590,10 @@ Expected values:
 or
 
     msiexec /i Symphony.msi
+
+#### Example, install with force auto-update
+
+    msiexec /i Symphony.msi FORCE_AUTO_UPDATE="true"
+or
+    msiexec /i Symphony.msi
+    This equals to msiexec /i Symphony.msi FORCE_AUTO_UPDATE="false"

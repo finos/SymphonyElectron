@@ -45,6 +45,11 @@ sed -i "" -E "s#\"devToolsEnabled\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#
 sed -i "" -E "s#\"enableBrowserLogin\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"enableBrowserLogin\":\ $enable_browser_login#g" "${newPath}"
 sed -i "" -E "s#\"browserLoginAutoConnect\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"browserLoginAutoConnect\":\ $browser_login_autoconnect#g" "${newPath}"
 
+## Add settings force auto update
+force_auto_update=$(sed -n '10p' ${settingsFilePath});
+if [ "$force_auto_update" = "" ]; then force_auto_update=false; fi
+sed -i "" -E "s#\"forceAutoUpdate\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"forceAutoUpdate\":\ $force_auto_update#g" "${newPath}"
+
 ## Get Symphony Permissions from the temp file ##
 media=$(sed -n '1p' ${permissionsFilePath});
 geo_location=$(sed -n '2p' ${permissionsFilePath});
