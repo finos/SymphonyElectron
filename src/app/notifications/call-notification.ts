@@ -78,7 +78,7 @@ class CallNotification {
         parseInt(String(y), 10),
       );
     } catch (err) {
-      console.warn(
+      logger.info(
         `Failed to set window position. x: ${x} y: ${y}. Contact the developers for more details`,
       );
     }
