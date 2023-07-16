@@ -36,6 +36,26 @@ class CallNotification {
     ipcMain.on('call-notification-on-reject', (_event, windowId) => {
       this.onCallNotificationOnReject(windowId);
     });
+    ipcMain.on('notification-settings-update', async (_event) => {
+      setTimeout(() => {
+        const { x, y } = notification.getCallNotificationPosition();
+        if (
+          this.callNotificationWindow &&
+          windowExists(this.callNotificationWindow)
+        ) {
+          try {
+            this.callNotificationWindow.setPosition(
+              parseInt(String(x), 10),
+              parseInt(String(y), 10),
+            );
+          } catch (err) {
+            logger.info(
+              `Failed to set window position. x: ${x} y: ${y}. Contact the developers for more details`,
+            );
+          }
+        }
+      }, 500);
+    });
   }
 
   public createCallNotificationWindow = (

@@ -44,8 +44,8 @@ export default class CallNotification extends React.Component<
 > {
   private readonly eventHandlers = {
     onClick: (data) => (_event: mouseEventButton) => this.click(data),
-    onAccept: (data) => (_event: mouseEventButton) => this.accept(data),
-    onReject: (data) => (_event: mouseEventButton) => this.reject(data),
+    onAccept: (data) => (event: mouseEventButton) => this.accept(event, data),
+    onReject: (data) => (event: mouseEventButton) => this.reject(event, data),
   };
 
   constructor(props) {
@@ -253,11 +253,13 @@ export default class CallNotification extends React.Component<
     ipcRenderer.send('call-notification-clicked', id);
   };
 
-  private accept = (id: number) => {
+  private accept = (event, id: number) => {
+    event.stopPropagation();
     ipcRenderer.send('call-notification-on-accept', id);
   };
 
-  private reject = (id: number) => {
+  private reject = (event, id: number) => {
+    event.stopPropagation();
     ipcRenderer.send('call-notification-on-reject', id);
   };
 
