@@ -82,6 +82,8 @@ if (ssfWindow.ssf) {
     checkMediaPermission: ssfWindow.ssf.checkMediaPermission,
     showNotification: ssfWindow.ssf.showNotification,
     closeNotification: ssfWindow.ssf.closeNotification,
+    showCallNotification: ssfWindow.ssf.showCallNotification,
+    closeCallNotification: ssfWindow.ssf.closeCallNotification,
     restartApp: ssfWindow.ssf.restartApp,
     closeAllWrapperWindows: ssfWindow.ssf.closeAllWrapperWindows,
     setZoomLevel: ssfWindow.ssf.setZoomLevel,

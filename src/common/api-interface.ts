@@ -33,6 +33,7 @@ export enum apiCmds {
   getMediaSource = 'get-media-source',
   notification = 'notification',
   closeNotification = 'close-notification',
+  closeCallNotification = 'close-call-notification',
   memoryInfo = 'memory-info',
   swiftSearch = 'swift-search',
   getConfigUrl = 'get-config-url',
@@ -47,6 +48,7 @@ export enum apiCmds {
   restartApp = 'restart-app',
   setIsMana = 'set-is-mana',
   showNotification = 'show-notification',
+  showCallNotification = 'show-call-notification',
   closeAllWrapperWindows = 'close-all-windows',
   setZoomLevel = 'set-zoom-level',
   aboutAppClipBoardData = 'about-app-clip-board-data',
@@ -241,6 +243,7 @@ export enum KeyCodes {
 }
 
 type Theme = '' | 'light' | 'dark';
+type CallType = 'IM' | 'ROOM' | 'OTHER';
 
 /**
  * Notification
@@ -267,11 +270,37 @@ export interface INotificationData {
   hasMention?: boolean;
 }
 
+/**
+ * Notification
+ */
+export interface ICallNotificationData {
+  id: number;
+  title: string;
+  image: string;
+  icon?: string;
+  color: string;
+  company: string;
+  isExternal: boolean;
+  theme: Theme;
+  primaryText: string;
+  callback?: () => void;
+  secondaryText?: string;
+  companyIconUrl?: string;
+  profilePlaceHolderText: string;
+  actionIconUrl?: string;
+  callType: CallType;
+  shouldDisplayBadge: boolean;
+  acceptButtonText: string;
+  rejectButtonText: string;
+}
+
 export enum NotificationActions {
   notificationClicked = 'notification-clicked',
   notificationClosed = 'notification-closed',
   notificationReply = 'notification-reply',
   notificationIgnore = 'notification-ignore',
+  notificationAccept = 'notification-accept',
+  notificationReject = 'notification-reject',
 }
 
 /**

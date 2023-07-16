@@ -21,7 +21,7 @@ import {
 } from '../common/api-interface';
 import { isMac } from '../common/env';
 import { logger } from '../common/logger';
-import NotificationHandler from './notification-handler';
+import NotificationHandler, { ICorner } from './notification-handler';
 
 const CLEAN_UP_INTERVAL = 60 * 1000; // Closes inactive notification
 const animationQueue = new AnimationQueue();
@@ -525,6 +525,14 @@ class Notification extends NotificationHandler {
       }
     }
   }
+
+  /**
+   * Get the call notification insert position
+   * @return ICorner
+   */
+  public getCallNotificationPosition = (): ICorner => {
+    return this.callNotificationSettings;
+  };
 
   /**
    * Waits for window to load and resolves

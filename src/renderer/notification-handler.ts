@@ -20,7 +20,7 @@ interface ISettings {
   differentialHeight: number;
 }
 
-interface ICorner {
+export interface ICorner {
   x: number;
   y: number;
 }
@@ -29,9 +29,11 @@ type startCorner = 'upper-right' | 'upper-left' | 'lower-right' | 'lower-left';
 const NEXT_INSERT_POSITION = 100;
 const NEXT_INSERT_POSITION_WITH_INPUT = 142;
 const NOTIFICATIONS_PADDING_SEPARATION = 12;
-
+const CALL_NOTIFICATION_WIDTH = 264;
+const CALL_NOTIFICATION_HEIGHT = 286;
 export default class NotificationHandler {
   public settings: ISettings;
+  public callNotificationSettings: ICorner = { x: 0, y: 0 };
   public nextInsertPos: ICorner = { x: 0, y: 0 };
 
   private readonly eventHandlers = {
@@ -98,6 +100,8 @@ export default class NotificationHandler {
     const display = this.externalDisplay || screen.getPrimaryDisplay();
     this.settings.corner.x = display.workArea.x;
     this.settings.corner.y = display.workArea.y;
+    this.callNotificationSettings.x = display.workArea.x;
+    this.callNotificationSettings.y = display.workArea.y;
 
     // update corner x/y based on corner of screen where notification should appear
     const workAreaWidth = display.workAreaSize.width;
@@ -107,21 +111,42 @@ export default class NotificationHandler {
       case 'upper-right':
         this.settings.corner.x += workAreaWidth - offSet;
         this.settings.corner.y += offSet;
+        // Call Notification settings
+        this.callNotificationSettings.x +=
+          workAreaWidth - offSet - CALL_NOTIFICATION_WIDTH;
+        this.callNotificationSettings.y +=
+          workAreaHeight - offSet - CALL_NOTIFICATION_HEIGHT;
         break;
       case 'lower-right':
         this.settings.corner.x += workAreaWidth - offSet;
         this.settings.corner.y += workAreaHeight - offSet;
+        // Call Notification settings
+        this.callNotificationSettings.x +=
+          workAreaWidth - offSet - CALL_NOTIFICATION_WIDTH;
+        this.callNotificationSettings.y += offSet;
         break;
       case 'lower-left':
         this.settings.corner.x += offSet;
-        this.settings.corner.y += workAreaHeight - offSet;
+        this.settings.corner.y +=
+          workAreaHeight - offSet - CALL_NOTIFICATION_HEIGHT;
+        // Call Notification settings
+        this.callNotificationSettings.x += offSet;
+        this.callNotificationSettings.y += offSet;
         break;
       case 'upper-left':
         this.settings.corner.x += offSet;
         this.settings.corner.y += offSet;
+        // Call Notification settings
+        this.callNotificationSettings.x += offSet;
+        this.callNotificationSettings.y +=
+          workAreaHeight - offSet - CALL_NOTIFICATION_HEIGHT;
         break;
       default:
         // no change needed
+        this.callNotificationSettings.x +=
+          workAreaWidth - offSet - CALL_NOTIFICATION_WIDTH;
+        this.callNotificationSettings.y +=
+          workAreaHeight - offSet - CALL_NOTIFICATION_HEIGHT;
         break;
     }
     this.calculateDimensions();

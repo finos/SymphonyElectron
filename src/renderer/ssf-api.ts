@@ -15,6 +15,7 @@ import {
   ConfigUpdateType,
   EPresenceStatusCategory,
   IBoundsChange,
+  ICallNotificationData,
   ICloud9Pipe,
   ICPUUsage,
   ILogMsg,
@@ -70,6 +71,11 @@ const local: ILocalObject = {
 };
 
 const notificationActionCallbacks = new Map<
+  number,
+  NotificationActionCallback
+>();
+
+const callNotificationActionCallbacks = new Map<
   number,
   NotificationActionCallback
 >();
@@ -698,6 +704,45 @@ export class SSFApi {
   }
 
   /**
+   * Displays a call notification from the main process
+   * @param notificationOpts {INotificationData}
+   * @param notificationCallback {NotificationActionCallback}
+   */
+  public showCallNotification(
+    notificationOpts: ICallNotificationData,
+    notificationCallback: NotificationActionCallback,
+  ): void {
+    // Store callbacks based on notification id so,
+    // we can use this to trigger on notification action
+    if (typeof notificationOpts.id === 'number') {
+      callNotificationActionCallbacks.set(
+        notificationOpts.id,
+        notificationCallback,
+      );
+    }
+    // ipc does not support sending Functions, Promises, Symbols, WeakMaps,
+    // or WeakSets will throw an exception
+    if (notificationOpts.callback) {
+      delete notificationOpts.callback;
+    }
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.showCallNotification,
+      notificationOpts,
+    });
+  }
+
+  /**
+   * Closes a specific call notification based on id
+   * @param notificationId {number} Id of a notification
+   */
+  public closeCallNotification(notificationId: number): void {
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.closeCallNotification,
+      notificationId,
+    });
+  }
+
+  /**
    * Get zoom level
    *
    */
@@ -1138,6 +1183,19 @@ local.ipcRenderer.on(
  */
 local.ipcRenderer.on('notification-actions', (_event, args) => {
   const callback = notificationActionCallbacks.get(args.data.id);
+  const data = args.data;
+  data.notificationData = args.notificationData;
+  if (args && callback) {
+    callback(args.event, data);
+  }
+});
+
+/**
+ * An event triggered by the main process on call notification actions
+ * @param {ICallNotificationData}
+ */
+local.ipcRenderer.on('call-notification-actions', (_event, args) => {
+  const callback = callNotificationActionCallbacks.get(args.data.id);
   const data = args.data;
   data.notificationData = args.notificationData;
   if (args && callback) {

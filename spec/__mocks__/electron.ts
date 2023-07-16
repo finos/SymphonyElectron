@@ -270,6 +270,22 @@ export const session = {
   },
 };
 
+export const screen = {
+  getAllDisplays: jest.fn(),
+  getPrimaryDisplay: jest.fn(() => {
+    return {
+      workArea: {
+        x: '',
+        y: '',
+      },
+      workAreaSize: {
+        width: '',
+        height: '',
+      },
+    };
+  }),
+};
+
 export const remote = {
   app,
   getCurrentWindow,

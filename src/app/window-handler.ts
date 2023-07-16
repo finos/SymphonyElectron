@@ -19,7 +19,13 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { format, parse } from 'url';
 
-import { apiName, Themes, WindowTypes } from '../common/api-interface';
+import {
+  apiName,
+  ICallNotificationData,
+  INotificationData,
+  Themes,
+  WindowTypes,
+} from '../common/api-interface';
 import { isDevEnv, isLinux, isMac, isWindowsOS } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { ScreenShotAnnotation } from '../common/ipcEvent';
@@ -99,7 +105,7 @@ export interface ICustomBrowserWindowConstructorOpts
 
 export interface ICustomBrowserWindow extends Electron.BrowserWindow {
   winName: string;
-  notificationData?: object;
+  notificationData?: INotificationData | ICallNotificationData;
   origin?: string;
 }
 

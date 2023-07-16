@@ -5,6 +5,7 @@ import * as ReactDOM from 'react-dom';
 import { i18n } from '../common/i18n-preload';
 import AboutBox from './components/about-app';
 import BasicAuth from './components/basic-auth';
+import CallNotification from './components/call-notification';
 import NotificationComp from './components/notification-comp';
 import NotificationSettings from './components/notification-settings';
 import ScreenPicker from './components/screen-picker';
@@ -22,6 +23,7 @@ const enum components {
   basicAuth = 'basic-auth',
   notification = 'notification-comp',
   notificationSettings = 'notification-settings',
+  callNotification = 'call-notification',
   welcome = 'welcome',
   snippingTool = 'snipping-tool',
   titleBar = 'windows-title-bar',
@@ -70,6 +72,10 @@ const load = () => {
         'NotificationSettings',
       )();
       component = NotificationSettings;
+      break;
+    case components.callNotification:
+      document.title = i18n.t('Call Notification - Symphony')();
+      component = CallNotification;
       break;
     case components.welcome:
       document.title = i18n.t('WelcomeText', 'Welcome')();

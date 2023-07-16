@@ -3,39 +3,16 @@ import { ipcRenderer } from 'electron';
 import * as React from 'react';
 
 import { i18n } from '../../common/i18n-preload';
+import {
+  darkTheme,
+  getContainerCssClasses,
+  getThemeColors,
+  isValidColor,
+  Theme,
+  whiteColorRegExp,
+} from '../notification-theme';
 import { Themes } from './notification-settings';
 
-const whiteColorRegExp = new RegExp(
-  /^(?:white|#fff(?:fff)?|rgba?\(\s*255\s*,\s*255\s*,\s*255\s*(?:,\s*1\s*)?\))$/i,
-);
-const darkTheme = [
-  '#e23030',
-  '#b5616a',
-  '#ab8ead',
-  '#ebc875',
-  '#a3be77',
-  '#58c6ff',
-  '#ebab58',
-];
-
-const Colors = {
-  dark: {
-    regularFlashingNotificationBgColor: '#27588e',
-    notificationBackgroundColor: '#27292c',
-    notificationBorderColor: '#717681',
-    mentionBackgroundColor: '#99342c',
-    mentionBorderColor: '#ff5d50',
-  },
-  light: {
-    regularFlashingNotificationBgColor: '#aad4f8',
-    notificationBackgroundColor: '#f1f1f3',
-    notificationBorderColor: 'transparent',
-    mentionBackgroundColor: '#fcc1b9',
-    mentionBorderColor: 'transparent',
-  },
-};
-
-type Theme = '' | Themes.DARK | Themes.LIGHT;
 interface INotificationState {
   title: string;
   company: string;
@@ -64,8 +41,6 @@ type keyboardEvent = React.KeyboardEvent<HTMLInputElement>;
 // Notification container height
 const CONTAINER_HEIGHT = 100;
 const CONTAINER_HEIGHT_WITH_INPUT = 142;
-const LIGHT_THEME = '#EAEBEC';
-const DARK_THEME = '#25272B';
 
 export default class NotificationComp extends React.Component<
   {},
@@ -144,7 +119,9 @@ export default class NotificationComp extends React.Component<
       isExternal,
       isUpdated,
       theme,
+      hasMention,
       containerHeight,
+      flash,
       icon,
     } = this.state;
     let themeClassName;
@@ -156,10 +133,21 @@ export default class NotificationComp extends React.Component<
       themeClassName =
         color && color.match(whiteColorRegExp) ? Themes.LIGHT : Themes.DARK;
     }
-    const themeColors = this.getThemeColors();
+    const themeColors = getThemeColors(
+      theme,
+      flash,
+      isExternal,
+      hasMention,
+      color,
+    );
     const closeImgFilePath = `../renderer/assets/close-icon-${themeClassName}.svg`;
     let containerCssClass = `container ${themeClassName} `;
-    const customCssClasses = this.getContainerCssClasses();
+    const customCssClasses = getContainerCssClasses(
+      theme,
+      flash,
+      isExternal,
+      hasMention,
+    );
     containerCssClass += customCssClasses.join(' ');
     return (
       <div
@@ -470,11 +458,7 @@ export default class NotificationComp extends React.Component<
     // FYI: 1.5 sends hex color but without '#', reason why we check and add prefix if necessary.
     // Goal is to keep backward compatibility with 1.5 colors (SDA v. 9.2.0)
     const isOldColor = /^([A-Fa-f0-9]{6})/.test(color);
-    data.color = isOldColor
-      ? `#${color}`
-      : this.isValidColor(color)
-      ? color
-      : '';
+    data.color = isOldColor ? `#${color}` : isValidColor(color) ? color : '';
     data.isInputHidden = true;
     data.containerHeight = CONTAINER_HEIGHT;
     // FYI: 1.5 doesn't send current theme. We need to deduce it from the color that is sent.
@@ -490,15 +474,6 @@ export default class NotificationComp extends React.Component<
   }
 
   /**
-   * Validates the color
-   * @param color
-   * @private
-   */
-  private isValidColor(color: string): boolean {
-    return /^#([A-Fa-f0-9]{6})/.test(color);
-  }
-
-  /**
    * Reset data for new notification
    * @private
    */
@@ -506,65 +481,6 @@ export default class NotificationComp extends React.Component<
     if (this.input.current) {
       this.input.current.value = '';
     }
-  }
-
-  /**
-   * Returns notification colors based on theme
-   * @param theme Current theme, can be either light or dark
-   */
-  private getThemeColors(): { [key: string]: string } {
-    const { theme, flash, isExternal, hasMention, color } = this.state;
-    const currentColors =
-      theme === Themes.DARK ? { ...Colors.dark } : { ...Colors.light };
-    const externalFlashingBackgroundColor =
-      theme === Themes.DARK ? '#70511f' : '#f6e5a6';
-    if (flash && theme) {
-      if (isExternal) {
-        if (!hasMention) {
-          currentColors.notificationBorderColor = '#F7CA3B';
-          currentColors.notificationBackgroundColor =
-            externalFlashingBackgroundColor;
-          if (this.isCustomColor(color)) {
-            currentColors.notificationBorderColor =
-              this.getThemedCustomBorderColor(theme, color);
-            currentColors.notificationBackgroundColor = color;
-          }
-        } else {
-          currentColors.notificationBorderColor = '#F7CA3B';
-        }
-      } else if (hasMention) {
-        currentColors.notificationBorderColor =
-          currentColors.notificationBorderColor;
-      } else {
-        // in case of regular message without mention
-        // FYI: SDA versions prior to 9.2.3 do not support theme color properly, reason why SFE-lite is pushing notification default background color.
-        // For this reason, to be backward compatible, we check if sent color correspond to 'default' background color. If yes, we should ignore it and not consider it as a custom color.
-        currentColors.notificationBackgroundColor = this.isCustomColor(color)
-          ? color
-          : currentColors.regularFlashingNotificationBgColor;
-        currentColors.notificationBorderColor = this.isCustomColor(color)
-          ? this.getThemedCustomBorderColor(theme, color)
-          : theme === Themes.DARK
-          ? '#2996fd'
-          : 'transparent';
-      }
-    } else if (!flash) {
-      if (hasMention) {
-        currentColors.notificationBackgroundColor =
-          currentColors.mentionBackgroundColor;
-        currentColors.notificationBorderColor =
-          currentColors.mentionBorderColor;
-      } else if (this.isCustomColor(color)) {
-        currentColors.notificationBackgroundColor = color;
-        currentColors.notificationBorderColor = this.getThemedCustomBorderColor(
-          theme,
-          color,
-        );
-      } else if (isExternal) {
-        currentColors.notificationBorderColor = '#F7CA3B';
-      }
-    }
-    return currentColors;
   }
 
   /**
@@ -612,84 +528,5 @@ export default class NotificationComp extends React.Component<
       );
     }
     return;
-  }
-
-  /**
-   * This function aims at providing toast notification css classes
-   */
-  private getContainerCssClasses(): string[] {
-    const customClasses: string[] = [];
-    const { flash, theme, hasMention, isExternal } = this.state;
-    if (flash && theme) {
-      if (isExternal) {
-        customClasses.push('external-border');
-        if (hasMention) {
-          customClasses.push(`${theme}-ext-mention-flashing`);
-        } else {
-          customClasses.push(`${theme}-ext-flashing`);
-        }
-      } else if (hasMention) {
-        customClasses.push(`${theme}-mention-flashing`);
-      } else {
-        // In case it's a regular message notification
-        customClasses.push(`${theme}-flashing`);
-      }
-    } else if (isExternal) {
-      customClasses.push('external-border');
-    }
-    return customClasses;
-  }
-
-  /**
-   * SDA versions prior to 9.2.3 do not support theme color properly, reason why SFE-lite is pushing notification default background color and theme.
-   * For that reason, we try to identify if provided color is the default one or not.
-   * @param color color sent through SDABridge
-   * @returns boolean
-   */
-  private isCustomColor(color: string): boolean {
-    if (color && color !== LIGHT_THEME && color !== DARK_THEME) {
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * Function that allows to increase color brightness
-   * @param hex hes color
-   * @param percent percent
-   * @returns new hex color
-   */
-  private increaseBrightness(hex: string, percent: number) {
-    // strip the leading # if it's there
-    hex = hex.replace(/^\s*#|\s*$/g, '');
-    const r = parseInt(hex.substr(0, 2), 16);
-    const g = parseInt(hex.substr(2, 2), 16);
-    const b = parseInt(hex.substr(4, 2), 16);
-
-    return (
-      '#' +
-      // tslint:disable-next-line: no-bitwise
-      (0 | ((1 << 8) + r + ((256 - r) * percent) / 100))
-        .toString(16)
-        .substr(1) +
-      // tslint:disable-next-line: no-bitwise
-      (0 | ((1 << 8) + g + ((256 - g) * percent) / 100))
-        .toString(16)
-        .substr(1) +
-      // tslint:disable-next-line: no-bitwise
-      (0 | ((1 << 8) + b + ((256 - b) * percent) / 100)).toString(16).substr(1)
-    );
-  }
-
-  /**
-   * Returns custom border color
-   * @param theme current theme
-   * @param customColor color
-   * @returns custom border color
-   */
-  private getThemedCustomBorderColor(theme: string, customColor: string) {
-    return theme === Themes.DARK
-      ? this.increaseBrightness(customColor, 50)
-      : 'transparent';
   }
 }

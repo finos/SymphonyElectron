@@ -13,6 +13,7 @@ import {
   apiName,
   IApiArgs,
   IAuthResponse,
+  ICallNotificationData,
   INotificationData,
 } from '../common/api-interface';
 import { i18n, LocaleType } from '../common/i18n';
@@ -50,6 +51,7 @@ import {
 } from './window-utils';
 
 import { getCommandLineArgs } from '../common/utils';
+import callNotificationHelper from '../renderer/call-notification-helper';
 import { autoUpdate, AutoUpdateTrigger } from './auto-update-handler';
 import { presenceStatus } from './presence-status-handler';
 import { presenceStatusStore } from './stores/index';
@@ -336,6 +338,17 @@ ipcMain.on(
       case apiCmds.closeNotification:
         if (typeof arg.notificationId === 'number') {
           await notificationHelper.closeNotification(arg.notificationId);
+        }
+        break;
+      case apiCmds.showCallNotification:
+        if (typeof arg.notificationOpts === 'object') {
+          const opts = arg.notificationOpts as ICallNotificationData;
+          callNotificationHelper.showNotification(opts);
+        }
+        break;
+      case apiCmds.closeCallNotification:
+        if (typeof arg.notificationId === 'number') {
+          await callNotificationHelper.closeNotification(arg.notificationId);
         }
         break;
       /**
