@@ -80,6 +80,18 @@ class VoiceHandler {
           );
         }
       };
+
+      const protocolClassRegKey = new Registry({
+        hive: Registry.HKCU,
+        key: `${REGISTRY_PATHS.Classes}\\${protocol}`,
+      });
+      await protocolClassRegKey.set(
+        '',
+        Registry.REG_SZ,
+        `URL:${protocol}`,
+        errorCallback,
+      );
+
       await applicationCapabilitiesRegKey.set(
         'ApplicationName',
         Registry.REG_SZ,
