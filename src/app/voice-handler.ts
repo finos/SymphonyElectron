@@ -1,13 +1,9 @@
-import { exec } from 'child_process';
 import { app } from 'electron';
-import * as fs from 'fs';
 import * as path from 'path';
 import { PhoneNumberProtocol } from '../common/api-interface';
 import { isDevEnv, isMac, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
 
-const LS_REGISTER_PATH =
-  '/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister';
 enum REGISTRY_PATHS {
   Classes = '\\Software\\Classes',
   Capabilities = '\\Software\\Symphony\\Capabilities',
@@ -80,6 +76,18 @@ class VoiceHandler {
           );
         }
       };
+
+      const protocolClassRegKey = new Registry({
+        hive: Registry.HKCU,
+        key: `${REGISTRY_PATHS.Classes}\\${protocol}`,
+      });
+      await protocolClassRegKey.set(
+        '',
+        Registry.REG_SZ,
+        `URL:${protocol}`,
+        errorCallback,
+      );
+
       await applicationCapabilitiesRegKey.set(
         'ApplicationName',
         Registry.REG_SZ,
@@ -183,128 +191,28 @@ class VoiceHandler {
    * Registers app on macOS
    */
   private registerAppOnMacOS(protocols: PhoneNumberProtocol[]) {
-    this.readLaunchServicesPlist((plist) => {
-      for (const protocol of protocols) {
-        const itemIdx = plist.LSHandlers.findIndex(
-          (lsHandler) => lsHandler.LSHandlerURLScheme === protocol,
-        );
-        // macOS allows only one app being declared as able to make calls
-        if (itemIdx !== -1) {
-          plist.splice(itemIdx, 1);
-        }
-        const plistEntry = {
-          LSHandlerURLScheme: protocol,
-          LSHandlerRoleAll: 'com.symphony.electron-desktop',
-          LSHandlerPreferredVersions: {
-            LSHandlerRoleAll: '-',
-          },
-        };
-        plist.LSHandlers.push(plistEntry);
+    const allowedProtocols = [PhoneNumberProtocol.Sms, PhoneNumberProtocol.Tel];
+    for (const protocol of protocols) {
+      const idx = allowedProtocols.indexOf(protocol);
+      if (idx > -1) {
+        app.setAsDefaultProtocolClient(protocol);
+        allowedProtocols.splice(idx, 1);
       }
-      this.updateLaunchServicesPlist(plist);
-    });
+    }
+    if (allowedProtocols.length) {
+      for (const unsupportedProtocol of allowedProtocols) {
+        app.removeAsDefaultProtocolClient(unsupportedProtocol);
+      }
+    }
   }
 
   /**
    * Unregisters app for tel/sms on macOS
    */
   private unregisterAppOnMacOS(protocols: PhoneNumberProtocol[]) {
-    this.readLaunchServicesPlist((plist) => {
-      if (plist) {
-        const filteredList = plist.LSHandlers.filter(
-          (lsHandler) => protocols.indexOf(lsHandler.LSHandlerURLScheme) === -1,
-        );
-        plist.LSHandlers = filteredList;
-        this.updateLaunchServicesPlist(plist);
-      }
-    });
-  }
-
-  /**
-   * Reads macOS launch services plist
-   * @param callback
-   */
-  private readLaunchServicesPlist(callback) {
-    const plistPath = this.getLaunchServicesPlistPath();
-    const tmpPath = `${plistPath}.${Math.random()}`;
-    exec(`plutil -convert json "${plistPath}" -o "${tmpPath}"`, (err) => {
-      if (err) {
-        logger.error(
-          'voice-handler: error while converting binary file: ',
-          err,
-        );
-        return;
-      }
-      fs.readFile(tmpPath, (readErr, data) => {
-        if (readErr) {
-          logger.error('voice-handler: error while reading tmp file:');
-          return;
-        }
-        try {
-          const plistContent = JSON.parse(data.toString());
-          callback(plistContent);
-          fs.unlink(tmpPath, (err) => {
-            if (err) {
-              logger.error('voice-handler: error clearing tmp file ', err);
-            }
-          });
-        } catch (e) {
-          logger.error('voice-handler: unexpected error occured ', err);
-          return;
-        }
-      });
-    });
-  }
-
-  /**
-   * Updates launch services plist file
-   * @param defaults
-   */
-  private updateLaunchServicesPlist(defaults) {
-    const plistPath = this.getLaunchServicesPlistPath();
-    const tmpPath = `${plistPath}.${Math.random()}`;
-    try {
-      fs.writeFileSync(tmpPath, JSON.stringify(defaults));
-    } catch (e) {
-      logger.error('voice-handler: error while creating tmp plist ', e);
-      return;
+    for (const protocol of protocols) {
+      app.removeAsDefaultProtocolClient(protocol);
     }
-    exec(`plutil -convert binary1 "${tmpPath}" -o "${plistPath}"`, () => {
-      fs.unlink(tmpPath, (err) => {
-        if (err) {
-          logger.error(`voice-handler: error while clearing ${tmpPath}: `, err);
-        }
-      });
-      // Relaunch Launch Services so it take into consideration updated plist file
-      exec(
-        `${LS_REGISTER_PATH} -kill -r -domain local -domain system -domain user`,
-        (registerErr) => {
-          if (registerErr) {
-            logger.error(
-              'voice-handler: error relaunching Launch Services ',
-              registerErr,
-            );
-          }
-        },
-      );
-    });
-  }
-
-  /**
-   * Returns Launch services plist filepath
-   * @param callback
-   */
-  private getLaunchServicesPlistPath() {
-    const secureLaunchServicesPlist = `${process.env.HOME}/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist`;
-    const insecureLaunchServicesPlist = `${process.env.HOME}/Library/Preferences/com.apple.LaunchServices.plist`;
-
-    const secureLaunchServicesPlistExists = fs.existsSync(
-      secureLaunchServicesPlist,
-    );
-    if (secureLaunchServicesPlistExists) {
-      return secureLaunchServicesPlist;
-    }
-    return insecureLaunchServicesPlist;
   }
 }
 
