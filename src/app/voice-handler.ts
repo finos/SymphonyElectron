@@ -88,6 +88,13 @@ class VoiceHandler {
         errorCallback,
       );
 
+      await protocolClassRegKey.set(
+        'URL Protocol',
+        Registry.REG_SZ,
+        '',
+        errorCallback,
+      );
+
       await applicationCapabilitiesRegKey.set(
         'ApplicationName',
         Registry.REG_SZ,
