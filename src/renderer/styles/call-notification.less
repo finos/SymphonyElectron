@@ -26,6 +26,16 @@
   --profile-place-holder-text: @electricity-ui-40;
 }
 
+.mac {
+  --button-width: 80px;
+  --button-with-other: 104px;
+}
+
+.windows {
+  --button-width: 72px;
+  --button-with-other: 94px;
+}
+
 body {
   margin: 0;
 }
@@ -226,7 +236,7 @@ text {
     display: flex;
     padding: 4px 12px;
     justify-content: center;
-    width: 72px;
+    width: var(--button-width);
     align-items: center;
     gap: 8px;
     border-radius: 16px;
@@ -249,7 +259,7 @@ text {
   }
 
   .call-type-other {
-    width: 94px;
+    width: var(--button-with-other);
   }
 }
 

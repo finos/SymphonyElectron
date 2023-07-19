@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
+import { isMac } from '../../common/env';
 import {
   darkTheme,
   getContainerCssClasses,
@@ -125,6 +126,7 @@ export default class CallNotification extends React.Component<
       false,
     );
     let containerCssClass = `container ${themeClassName} `;
+    customCssClasses.push(isMac ? 'mac' : 'windows');
     containerCssClass += customCssClasses.join(' ');
 
     const acceptText = acceptButtonText
