@@ -126,8 +126,8 @@ export default class CallNotification extends React.Component<
       false,
     );
     let containerCssClass = `container ${themeClassName} `;
+    customCssClasses.push(isMac ? 'mac' : 'windows');
     containerCssClass += customCssClasses.join(' ');
-    containerCssClass += customCssClasses.join(isMac ? 'mac' : 'windows');
 
     const acceptText = acceptButtonText
       ? acceptButtonText
