@@ -107,6 +107,7 @@ export default class AboutApp extends React.Component<{}, IState> {
       sdaBuildNumber,
       client,
       didUpdateHostname,
+      isValidHostname,
     } = this.state;
 
     const appName = productName || 'Symphony';
@@ -138,9 +139,10 @@ export default class AboutApp extends React.Component<{}, IState> {
         value: `${formattedSfeVersion} ${client}`,
       },
     ];
-    const closButtonText = didUpdateHostname
-      ? i18n.t('Save and Restart', ABOUT_SYMPHONY_NAMESPACE)()
-      : i18n.t('Close', ABOUT_SYMPHONY_NAMESPACE)();
+    const closButtonText =
+      isValidHostname && didUpdateHostname
+        ? i18n.t('Save and Restart', ABOUT_SYMPHONY_NAMESPACE)()
+        : i18n.t('Close', ABOUT_SYMPHONY_NAMESPACE)();
 
     return (
       <div className='AboutApp' lang={i18n.getLocale()}>
