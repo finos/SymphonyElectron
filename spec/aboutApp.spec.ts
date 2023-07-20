@@ -31,6 +31,7 @@ describe('about app', () => {
     httpParserVersion: '11.12',
     swiftSearchVersion: '1.55.3-beta.1',
     swiftSearchSupportedVersion: 'N/A',
+    updatedHostname: 'N/A',
   };
   const onLabelEvent = 'on';
   const ipcSendEvent = 'send';

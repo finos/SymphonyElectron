@@ -220,7 +220,10 @@ export default class AboutApp extends React.Component<{}, IState> {
    */
   public copy(): void {
     const { clientVersion, ...rest } = this.state;
-    const data = { ...{ sbeVersion: clientVersion }, ...rest };
+    const { isPodEditing, isValidHostname, didUpdateHostname, ...data } = {
+      ...{ sbeVersion: clientVersion },
+      ...rest,
+    };
     if (data) {
       ipcRenderer.send(apiName.symphonyApi, {
         cmd: apiCmds.aboutAppClipBoardData,
