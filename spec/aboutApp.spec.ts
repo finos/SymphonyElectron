@@ -77,4 +77,15 @@ describe('about app', () => {
     };
     expect(spyIpc).toBeCalledWith('symphony-api', expectedData);
   });
+
+  it('should display input when triple clicked on pod', () => {
+    const wrapper = shallow(React.createElement(AboutApp));
+    ipcRenderer.send('about-app-data', aboutDataMock);
+    const pod = wrapper.find(`[data-testid="POD_INFO"]`);
+    pod.simulate('click', { detail: 1 });
+    pod.simulate('click', { detail: 2 });
+    pod.simulate('click', { detail: 3 });
+    const podInput = wrapper.find('.AboutApp-pod-input');
+    expect(podInput.exists()).toEqual(true);
+  });
 });

@@ -139,7 +139,7 @@ export default class AboutApp extends React.Component<{}, IState> {
         value: `${formattedSfeVersion} ${client}`,
       },
     ];
-    const closButtonText =
+    const closeButtonText =
       isValidHostname && didUpdateHostname
         ? i18n.t('Save and Restart', ABOUT_SYMPHONY_NAMESPACE)()
         : i18n.t('Close', ABOUT_SYMPHONY_NAMESPACE)();
@@ -183,11 +183,11 @@ export default class AboutApp extends React.Component<{}, IState> {
             <button
               className='AboutApp-close-button'
               onClick={this.eventHandlers.onClose}
-              title={closButtonText}
+              title={closeButtonText}
               data-testid={'CLOSE_BUTTON'}
               ref={this.closeButtonRef}
             >
-              {closButtonText}
+              {closeButtonText}
             </button>
           </div>
         </div>
@@ -282,7 +282,6 @@ export default class AboutApp extends React.Component<{}, IState> {
         hostname: updatedHostname || hostname,
       });
     }
-    this.forceUpdate();
   };
 
   /**
@@ -336,6 +335,7 @@ export default class AboutApp extends React.Component<{}, IState> {
           />
         ) : (
           <span
+            data-testid={'POD_INFO'}
             className={classNames({ 'invalid-pod': !isValidHostname })}
             onClick={this.eventHandlers.onPodClick}
           >
