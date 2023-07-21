@@ -1,5 +1,5 @@
 import { logger } from '../common/logger';
-import { RegistryStore } from './stores/registry-store';
+import { EChannelRegistry, RegistryStore } from './stores/registry-store';
 
 enum RegistryValueType {
   REG_SZ = 'REG_SZ',
@@ -44,7 +44,12 @@ export const retrieveWindowsRegistry = async (): Promise<string> => {
 
   return new Promise((resolve) => {
     regKeyUser.get(CHANNEL_KEY, (error, channel) => {
-      if (error || !channel) {
+      if (
+        error ||
+        ![EChannelRegistry.BETA, EChannelRegistry.LATEST].includes(
+          channel?.value,
+        )
+      ) {
         logger.error('registry-handler: error occurred. Details: ', error);
 
         regKeyLocal.get(CHANNEL_KEY, (err, localChannel) => {
