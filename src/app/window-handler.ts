@@ -1224,7 +1224,7 @@ export class WindowHandler {
       }
       const ABOUT_SYMPHONY_NAMESPACE = 'AboutSymphony';
       const versionLocalised = i18n.t('Version', ABOUT_SYMPHONY_NAMESPACE)();
-      const { hostname } = parse(this.url || this.globalConfig.url);
+      const { hostname } = parse(this.userConfig.url || this.globalConfig.url);
       const userConfig = config.userConfig;
       const globalConfig = config.globalConfig;
       const cloudConfig = config.cloudConfig;
