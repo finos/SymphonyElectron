@@ -1,6 +1,7 @@
 import { BrowserWindow } from 'electron';
 import { presenceStatusStore } from '.';
 import { apiName } from '../../common/api-interface';
+import { isMac } from '../../common/env';
 import { logger } from '../../common/logger';
 import { presenceStatus } from '../presence-status-handler';
 import { ICustomBrowserWindow, windowHandler } from '../window-handler';
@@ -47,11 +48,22 @@ export class WindowStore {
       const currentWindows = BrowserWindow.getAllWindows();
 
       currentWindows.forEach((currentWindow) => {
+        const isFullScreen = currentWindow.isFullScreen();
+        const isMinimized = currentWindow.isMinimized();
         if (
           (currentWindow as ICustomBrowserWindow).winName !==
           apiName.notificationWindowName
         ) {
-          currentWindow.minimize();
+          if (isMac) {
+            if (isFullScreen) {
+              this.hideFullscreenWindow(currentWindow);
+              // No need to hide minimized windows
+            } else if (!isMinimized) {
+              currentWindow?.hide();
+            }
+          } else {
+            currentWindow.minimize();
+          }
         }
       });
     }
@@ -82,7 +94,15 @@ export class WindowStore {
             currentWindow.id || '',
           ) as ICustomBrowserWindow;
           if (window) {
-            window.restore();
+            if (isMac) {
+              if (currentWindow.isFullScreen) {
+                fullscreenedWindows.push(currentWindow);
+              } else if (!currentWindow.minimized && !currentWindow.focused) {
+                window.showInactive();
+              }
+            } else {
+              window.restore();
+            }
             if (currentWindow.focused) {
               focusedWindowToRestore = window;
             }
@@ -130,6 +150,19 @@ export class WindowStore {
         notificationWindow.setAlwaysOnTop(true);
         notificationWindow.setSkipTaskbar(true);
       });
+  };
+
+  private hideFullscreenWindow = (window: BrowserWindow) => {
+    window.once('leave-full-screen', () => {
+      if (isMac) {
+        window.hide();
+      } else {
+        setTimeout(() => {
+          window.hide();
+        }, 0);
+      }
+    });
+    window.setFullScreen(false);
   };
 
   /**
