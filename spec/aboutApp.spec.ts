@@ -31,6 +31,7 @@ describe('about app', () => {
     httpParserVersion: '11.12',
     swiftSearchVersion: '1.55.3-beta.1',
     swiftSearchSupportedVersion: 'N/A',
+    updatedHostname: 'N/A',
   };
   const onLabelEvent = 'on';
   const ipcSendEvent = 'send';
@@ -75,5 +76,16 @@ describe('about app', () => {
       clipboardType: 'clipboard',
     };
     expect(spyIpc).toBeCalledWith('symphony-api', expectedData);
+  });
+
+  it('should display input when triple clicked on pod', () => {
+    const wrapper = shallow(React.createElement(AboutApp));
+    ipcRenderer.send('about-app-data', aboutDataMock);
+    const pod = wrapper.find(`[data-testid="POD_INFO"]`);
+    pod.simulate('click', { detail: 1 });
+    pod.simulate('click', { detail: 2 });
+    pod.simulate('click', { detail: 3 });
+    const podInput = wrapper.find('.AboutApp-pod-input');
+    expect(podInput.exists()).toEqual(true);
   });
 });
