@@ -205,22 +205,20 @@ export default class CallNotification extends React.Component<
         </div>
         <div className='actions'>
           <button
+            data-testid='CALL_NOTIFICATION_REJECT_BUTTON'
             className={classNames('decline', {
               'call-type-other': callType === 'OTHER',
             })}
+            onClick={this.eventHandlers.onReject(id)}
           >
-            <div
-              data-testid='CALL_NOTIFICATION_REJECT_BUTTON'
-              className='label'
-              onClick={this.eventHandlers.onReject(id)}
-            >
-              {rejectText}
-            </div>
+            <div className='label'>{rejectText}</div>
           </button>
           <button
+            data-testid='CALL_NOTIFICATION_ACCEPT_BUTTON'
             className={classNames('accept', {
               'call-type-other': callType === 'OTHER',
             })}
+            onClick={this.eventHandlers.onAccept(id)}
           >
             {actionIconUrl ? (
               <img
@@ -238,13 +236,7 @@ export default class CallNotification extends React.Component<
                 className='profile-picture-badge'
               />
             )}
-            <div
-              data-testid='CALL_NOTIFICATION_ACCEPT_BUTTON'
-              className='label'
-              onClick={this.eventHandlers.onAccept(id)}
-            >
-              {acceptText}
-            </div>
+            <div className='label'>{acceptText}</div>
           </button>
         </div>
       </div>
