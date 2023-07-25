@@ -132,19 +132,6 @@ export class WindowStore {
       });
   };
 
-  /*private hideFullscreenWindow = (window: BrowserWindow) => {
-    window.once('leave-full-screen', () => {
-      if (isMac) {
-        window.hide();
-      } else {
-        setTimeout(() => {
-          window.hide();
-        }, 0);
-      }
-    });
-    window.setFullScreen(false);
-  };*/
-
   /**
    * Restores windows that are in fullscreen and focus on the right window
    * On macOS, windows in fullscreen need to be restore one by one
