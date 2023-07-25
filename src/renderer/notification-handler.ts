@@ -127,8 +127,7 @@ export default class NotificationHandler {
         break;
       case 'lower-left':
         this.settings.corner.x += offSet;
-        this.settings.corner.y +=
-          workAreaHeight - offSet - CALL_NOTIFICATION_HEIGHT;
+        this.settings.corner.y += workAreaHeight - offSet;
         // Call Notification settings
         this.callNotificationSettings.x += offSet;
         this.callNotificationSettings.y += offSet;
