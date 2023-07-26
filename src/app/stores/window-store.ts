@@ -1,7 +1,7 @@
 import { BrowserWindow } from 'electron';
 import { presenceStatusStore } from '.';
 import { apiName } from '../../common/api-interface';
-import { isMac, isWindowsOS } from '../../common/env';
+import { isMac } from '../../common/env';
 import { logger } from '../../common/logger';
 import { presenceStatus } from '../presence-status-handler';
 import { ICustomBrowserWindow, windowHandler } from '../window-handler';
@@ -54,11 +54,15 @@ export class WindowStore {
           (currentWindow as ICustomBrowserWindow).winName !==
           apiName.notificationWindowName
         ) {
-          if (isFullScreen) {
-            this.hideFullscreenWindow(currentWindow);
-            // No need to hide minimized windows
-          } else if (!isMinimized) {
-            currentWindow?.hide();
+          if (isMac) {
+            if (isFullScreen) {
+              this.hideFullscreenWindow(currentWindow);
+              // No need to hide minimized windows
+            } else if (!isMinimized) {
+              currentWindow?.hide();
+            }
+          } else {
+            currentWindow.minimize();
           }
         }
       });
@@ -90,14 +94,14 @@ export class WindowStore {
             currentWindow.id || '',
           ) as ICustomBrowserWindow;
           if (window) {
-            if (currentWindow.isFullScreen) {
-              fullscreenedWindows.push(currentWindow);
-              // Window should be shown before putting it in fullscreen on Windows
-              if (isWindowsOS) {
-                window.show();
+            if (isMac) {
+              if (currentWindow.isFullScreen) {
+                fullscreenedWindows.push(currentWindow);
+              } else if (!currentWindow.minimized && !currentWindow.focused) {
+                window.showInactive();
               }
-            } else if (!currentWindow.minimized && !currentWindow.focused) {
-              window.showInactive();
+            } else {
+              window.restore();
             }
             if (currentWindow.focused) {
               focusedWindowToRestore = window;
