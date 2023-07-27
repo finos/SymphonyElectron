@@ -1184,6 +1184,13 @@ export class WindowHandler {
         this.aboutAppWindow = null;
       }
     };
+    const handleUserPodUpdate = async (_event, hostname) => {
+      logger.info('window-handler: user updated pod url', hostname);
+      const url = new URL(`https://${hostname}`).toString();
+      await config.updateUserConfig({ url });
+      app.relaunch();
+      app.exit();
+    };
 
     await versionHandler.getClientVersion(true, this.url);
 
@@ -1208,6 +1215,7 @@ export class WindowHandler {
     });
 
     ipcMain.once('close-about-app', closeAboutApp);
+    ipcMain.once('user-pod-updated', handleUserPodUpdate);
 
     this.aboutAppWindow.webContents.once('did-finish-load', async () => {
       let client = '';
@@ -1216,7 +1224,7 @@ export class WindowHandler {
       }
       const ABOUT_SYMPHONY_NAMESPACE = 'AboutSymphony';
       const versionLocalised = i18n.t('Version', ABOUT_SYMPHONY_NAMESPACE)();
-      const { hostname } = parse(this.url || this.globalConfig.url);
+      const { hostname } = parse(this.userConfig.url || this.globalConfig.url);
       const userConfig = config.userConfig;
       const globalConfig = config.globalConfig;
       const cloudConfig = config.cloudConfig;

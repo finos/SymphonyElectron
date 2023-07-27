@@ -64,8 +64,7 @@ class CallNotification {
   ) => {
     if (
       this.callNotificationWindow &&
-      windowExists(this.callNotificationWindow) &&
-      this.callNotificationWindow.notificationData?.id
+      windowExists(this.callNotificationWindow)
     ) {
       this.callNotificationWindow.notificationData = callNotificationData;
       this.callNotificationWindow.winName = apiName.notificationWindowName;

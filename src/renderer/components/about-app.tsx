@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { productName } from '../../../package.json';
@@ -5,6 +6,9 @@ import { apiCmds, apiName } from '../../common/api-interface';
 import { i18n } from '../../common/i18n-preload';
 import * as CopyIcon from '../../renderer/assets/copy-icon.svg';
 import * as SymphonyLogo from '../../renderer/assets/new-symphony-logo.svg';
+
+const HOSTNAME_REGEX = /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
 interface IState {
   userConfig: object;
   globalConfig: object;
@@ -32,6 +36,10 @@ interface IState {
   swiftSearchVersion?: string;
   swiftSearchSupportedVersion?: string;
   client?: string;
+  updatedHostname: string;
+  isPodEditing: boolean;
+  isValidHostname: boolean;
+  didUpdateHostname: boolean;
 }
 
 const ABOUT_SYMPHONY_NAMESPACE = 'AboutSymphony';
@@ -44,6 +52,9 @@ export default class AboutApp extends React.Component<{}, IState> {
   private readonly eventHandlers = {
     onCopy: () => this.copy(),
     onClose: () => this.close(),
+    onPodClick: (event) => this.onPodClick(event),
+    onPodChange: (event) => this.handlePodChange(event),
+    onPodInputBlur: (event) => this.handlePodInputBlur(event),
   };
   private closeButtonRef: React.RefObject<HTMLButtonElement>;
 
@@ -75,6 +86,10 @@ export default class AboutApp extends React.Component<{}, IState> {
       httpParserVersion: '',
       swiftSearchVersion: '',
       swiftSearchSupportedVersion: '',
+      updatedHostname: '',
+      isPodEditing: false,
+      isValidHostname: true,
+      didUpdateHostname: false,
     };
     this.updateState = this.updateState.bind(this);
   }
@@ -91,6 +106,8 @@ export default class AboutApp extends React.Component<{}, IState> {
       sdaVersion,
       sdaBuildNumber,
       client,
+      didUpdateHostname,
+      isValidHostname,
     } = this.state;
 
     const appName = productName || 'Symphony';
@@ -122,6 +139,10 @@ export default class AboutApp extends React.Component<{}, IState> {
         value: `${formattedSfeVersion} ${client}`,
       },
     ];
+    const closeButtonText =
+      isValidHostname && didUpdateHostname
+        ? i18n.t('Save and Restart', ABOUT_SYMPHONY_NAMESPACE)()
+        : i18n.t('Close', ABOUT_SYMPHONY_NAMESPACE)();
 
     return (
       <div className='AboutApp' lang={i18n.getLocale()}>
@@ -162,11 +183,11 @@ export default class AboutApp extends React.Component<{}, IState> {
             <button
               className='AboutApp-close-button'
               onClick={this.eventHandlers.onClose}
-              title={i18n.t('Close', ABOUT_SYMPHONY_NAMESPACE)()}
+              title={closeButtonText}
               data-testid={'CLOSE_BUTTON'}
               ref={this.closeButtonRef}
             >
-              {i18n.t('Close', ABOUT_SYMPHONY_NAMESPACE)()}
+              {closeButtonText}
             </button>
           </div>
         </div>
@@ -199,7 +220,10 @@ export default class AboutApp extends React.Component<{}, IState> {
    */
   public copy(): void {
     const { clientVersion, ...rest } = this.state;
-    const data = { ...{ sbeVersion: clientVersion }, ...rest };
+    const { isPodEditing, isValidHostname, didUpdateHostname, ...data } = {
+      ...{ sbeVersion: clientVersion },
+      ...rest,
+    };
     if (data) {
       ipcRenderer.send(apiName.symphonyApi, {
         cmd: apiCmds.aboutAppClipBoardData,
@@ -213,8 +237,52 @@ export default class AboutApp extends React.Component<{}, IState> {
    * Close modal
    */
   public close(): void {
+    const { isValidHostname, didUpdateHostname, hostname } = this.state;
     ipcRenderer.send('close-about-app');
+    if (isValidHostname && didUpdateHostname) {
+      ipcRenderer.send('user-pod-updated', hostname);
+    }
   }
+
+  /**
+   * Enables editing mode
+   */
+  public onPodClick(e): void {
+    if (e.detail === 3) {
+      this.setState({
+        isPodEditing: true,
+        didUpdateHostname: true,
+      });
+    }
+  }
+
+  /**
+   * Updates state with new POD URL
+   * @param e
+   */
+  public handlePodChange = (e) => {
+    const { value } = e.target;
+    this.setState({ updatedHostname: value });
+  };
+
+  /**
+   * Validates and sets new hostname
+   */
+  public handlePodInputBlur = (_event) => {
+    const { updatedHostname, hostname } = this.state;
+    if (!HOSTNAME_REGEX.test(updatedHostname)) {
+      this.setState({
+        isPodEditing: false,
+        isValidHostname: false,
+      });
+    } else {
+      this.setState({
+        isPodEditing: false,
+        isValidHostname: true,
+        hostname: updatedHostname || hostname,
+      });
+    }
+  };
 
   /**
    * Sets the component state
@@ -223,7 +291,8 @@ export default class AboutApp extends React.Component<{}, IState> {
    * @param data {Object} { buildNumber, clientVersion, version }
    */
   private updateState(_event, data): void {
-    this.setState(data as IState);
+    const updatedData = { ...data, updatedHostname: data.hostname };
+    this.setState(updatedData as IState);
   }
 
   /**
@@ -234,14 +303,46 @@ export default class AboutApp extends React.Component<{}, IState> {
     return (
       <section>
         <ul className='AboutApp-symphony-section'>
-          {symphonySectionItems.map((item, key) => (
-            <li key={key}>
-              <strong>{item.key}</strong>
-              <span>{item.value}</span>
-            </li>
-          ))}
+          {symphonySectionItems.map((item, key) => {
+            if (item.key === 'POD:') {
+              return this.renderEditablePodElement(item, key);
+            }
+            return (
+              <li key={key}>
+                <strong>{item.key}</strong>
+                <span>{item.value}</span>
+              </li>
+            );
+          })}
         </ul>
       </section>
     );
   }
+
+  private renderEditablePodElement = (item, key) => {
+    const { isPodEditing, isValidHostname, updatedHostname } = this.state;
+    return (
+      <li key={key}>
+        <strong className={'AboutApp-pod'}>{item.key}</strong>
+        {isPodEditing ? (
+          <input
+            className={'AboutApp-pod-input'}
+            type='text'
+            value={updatedHostname}
+            onChange={this.handlePodChange}
+            onBlur={this.handlePodInputBlur}
+            autoFocus
+          />
+        ) : (
+          <span
+            data-testid={'POD_INFO'}
+            className={classNames({ 'invalid-pod': !isValidHostname })}
+            onClick={this.eventHandlers.onPodClick}
+          >
+            {updatedHostname}
+          </span>
+        )}
+      </li>
+    );
+  };
 }
