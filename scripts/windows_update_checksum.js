@@ -16,7 +16,20 @@ function updateYamlFile(yamlFilePath, installerHash) {
   fs.writeFileSync(yamlFilePath, yaml.dump(doc, { lineWidth: -1 }));
 }
 
-function getHashFile(
+function generateChannelsFiles(srcFile) {
+  // "latest" channel is already created so we need to generate stable, beta and daily
+  const targetedAutoUpdateChannels = ['stable', 'beta', 'iv', 'daily'];
+  for (const channel of targetedAutoUpdateChannels) {
+    const updatedFileName = srcFile.replace('latest', channel);
+    fs.copyFileSync(
+      yamlFilePath,
+      updatedFileName,
+      fs.constants.COPYFILE_FICLONE_FORCE,
+    );
+  }
+}
+
+function updateHash(
   file,
   yamlFilePath,
   algorithm = 'sha512',
@@ -50,5 +63,6 @@ function getHashFile(
 (async () => {
   const installerPath = process.argv[2];
   const yamlFilePath = process.argv[3];
-  await getHashFile(installerPath, yamlFilePath);
+  await updateHash(installerPath, yamlFilePath);
+  generateChannelsFiles(yamlFilePath);
 })();
