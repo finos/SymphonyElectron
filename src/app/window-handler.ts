@@ -1188,8 +1188,7 @@ export class WindowHandler {
       logger.info('window-handler: user updated pod url', hostname);
       const url = new URL(`https://${hostname}`).toString();
       await config.updateUserConfig({ url });
-      app.relaunch();
-      app.exit();
+      await windowHandler.exitApplication(true);
     };
 
     await versionHandler.getClientVersion(true, this.url);
@@ -2289,6 +2288,14 @@ export class WindowHandler {
     }
   }
 
+  public exitApplication = async (shouldRelaunch: boolean = true) => {
+    await config.writeUserConfig();
+    if (shouldRelaunch) {
+      app.relaunch();
+    }
+    app.exit();
+  };
+
   /**
    * Listens for app load timeouts and reloads if required
    */
@@ -2374,7 +2381,7 @@ export class WindowHandler {
 
     const { response } = await dialog.showMessageBox(browserWindow, options);
     if (response === 0) {
-      app.exit();
+      await this.exitApplication(false);
     }
   }
 

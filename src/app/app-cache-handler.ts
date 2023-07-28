@@ -11,6 +11,7 @@ import * as rimraf from 'rimraf';
 import { i18n } from '../common/i18n';
 
 import { logger } from '../common/logger';
+import { windowHandler } from './window-handler';
 
 // Cache check file path
 const userDataPath: string = app.getPath('userData');
@@ -123,8 +124,7 @@ export const cleanAppCacheOnCrash = (window: BrowserWindow): void => {
 
       if (response === 0) {
         cleanOldCache();
-        app.relaunch();
-        app.exit();
+        await windowHandler.exitApplication(true);
       }
     });
   });

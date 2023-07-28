@@ -1,5 +1,6 @@
-import { app, powerSaveBlocker } from 'electron';
+import { powerSaveBlocker } from 'electron';
 import { logger } from '../common/logger';
+import { windowHandler } from './window-handler';
 class AppStateHandler {
   private id?: number;
 
@@ -9,8 +10,7 @@ class AppStateHandler {
    */
   public restart() {
     logger.info(`Restarting app as per instruction from SFE`);
-    app.relaunch();
-    app.exit();
+    windowHandler.exitApplication(true);
   }
 
   /**

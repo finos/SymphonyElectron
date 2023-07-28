@@ -194,8 +194,7 @@ export const titleBarChangeDialog = async (
   if (response === 0) {
     logger.error(`test`, isNativeStyle);
     await config.updateUserConfig({ isCustomTitleBar: isNativeStyle });
-    app.relaunch();
-    app.exit();
+    await windowHandler.exitApplication(true);
   }
 };
 
@@ -220,7 +219,6 @@ export const restartDialog = async (configFields: any) => {
   const { response } = await dialog.showMessageBox(focusedWindow, options);
   await config.updateUserConfig(configFields);
   if (response === 0) {
-    app.relaunch();
-    app.exit();
+    await windowHandler.exitApplication(true);
   }
 };
