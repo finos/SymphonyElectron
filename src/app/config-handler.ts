@@ -148,6 +148,8 @@ class Config {
   private isFirstTime: boolean = true;
   private installVariant: string | undefined;
   private bootCount: number | undefined;
+  private userConfigSemaphore: number = 1;
+  private userConfigWriteQueue: Array<Partial<IConfig>> = [];
   private readonly configFileName: string;
   private readonly installVariantFilename: string;
   private readonly tempGlobalConfigFilePath: string;
@@ -315,11 +317,20 @@ class Config {
    * @param data {IConfig}
    */
   public async updateUserConfig(data: Partial<IConfig>): Promise<void> {
+    if (this.userConfigSemaphore === 0) {
+      this.userConfigWriteQueue.push(data);
+      logger.info(
+        `config-handler: user config file is not available for writing, pushing to queue`,
+        JSON.stringify(data),
+      );
+      return;
+    }
     logger.info(
       `config-handler: updating user config values with the data`,
       JSON.stringify(data),
     );
     this.userConfig = { ...this.userConfig, ...data };
+    this.userConfigSemaphore -= 1;
     try {
       await writeFile(
         this.userConfigPath,
@@ -342,6 +353,19 @@ class Config {
         `Update failed`,
         `Failed to update user config due to error: ${error}`,
       );
+    }
+    this.userConfigSemaphore += 1;
+
+    // Check the queue.
+    if (this.userConfigWriteQueue.length > 0) {
+      logger.info(
+        `config-handler: queue item exists, Writing user config data`,
+        this.userConfigWriteQueue.length,
+      );
+      const data = this.userConfigWriteQueue.shift();
+      if (data) {
+        await this.updateUserConfig(data);
+      }
     }
   }
 
