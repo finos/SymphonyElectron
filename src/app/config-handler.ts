@@ -148,8 +148,6 @@ class Config {
   private isFirstTime: boolean = true;
   private installVariant: string | undefined;
   private bootCount: number | undefined;
-  private userConfigSemaphore: number = 1;
-  private userConfigWriteQueue: Array<Partial<IConfig>> = [];
   private readonly configFileName: string;
   private readonly installVariantFilename: string;
   private readonly tempGlobalConfigFilePath: string;
@@ -221,6 +219,8 @@ class Config {
     this.readGlobalConfig();
     this.readInstallVariant();
     this.readCloudConfig();
+
+    app.on('before-quit', this.writeUserConfig);
   }
 
   /**
@@ -317,20 +317,18 @@ class Config {
    * @param data {IConfig}
    */
   public async updateUserConfig(data: Partial<IConfig>): Promise<void> {
-    if (this.userConfigSemaphore === 0) {
-      this.userConfigWriteQueue.push(data);
-      logger.info(
-        `config-handler: user config file is not available for writing, pushing to queue`,
-        JSON.stringify(data),
-      );
-      return;
-    }
     logger.info(
       `config-handler: updating user config values with the data`,
       JSON.stringify(data),
     );
     this.userConfig = { ...this.userConfig, ...data };
-    this.userConfigSemaphore -= 1;
+  }
+
+  /**
+   * Writes the config data into the user config file
+   */
+  public writeUserConfig = async (): Promise<void> => {
+    logger.info(`config-handler: Updating user config file`);
     try {
       await writeFile(
         this.userConfigPath,
@@ -339,13 +337,13 @@ class Config {
       );
       logger.info(
         `config-handler: updated user config values with the data ${JSON.stringify(
-          data,
+          this.userConfig,
         )}`,
       );
     } catch (error) {
       logger.error(
         `config-handler: failed to update user config file with ${JSON.stringify(
-          data,
+          this.userConfig,
         )}`,
         error,
       );
@@ -354,20 +352,7 @@ class Config {
         `Failed to update user config due to error: ${error}`,
       );
     }
-    this.userConfigSemaphore += 1;
-
-    // Check the queue.
-    if (this.userConfigWriteQueue.length > 0) {
-      logger.info(
-        `config-handler: queue item exists, Writing user config data`,
-        this.userConfigWriteQueue.length,
-      );
-      const data = this.userConfigWriteQueue.shift();
-      if (data) {
-        await this.updateUserConfig(data);
-      }
-    }
-  }
+  };
 
   /**
    * updates new data to the cloud config
