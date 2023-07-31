@@ -1,4 +1,5 @@
 import { CookiesSetDetails, session, WebContents } from 'electron';
+import { parse } from 'url';
 import { apiName } from '../common/api-interface';
 import { isMac } from '../common/env';
 import { logger } from '../common/logger';
@@ -13,6 +14,38 @@ enum protocol {
   TelProtocol = 'tel:',
   SmsProtocol = 'sms:',
 }
+
+/**
+ * Verifies protocol for a new url to check if it is http or https
+ * @param url URL to be verified
+ */
+export const verifyProtocolForNewUrl = (url: string): boolean => {
+  const parsedUrl = parse(url);
+  if (!parsedUrl || !parsedUrl.protocol) {
+    logger.info(
+      `child-window-handler: The url ${url} doesn't have a protocol. Returning false for verification!`,
+    );
+    return false;
+  }
+
+  const allowedProtocols = [
+    'http:',
+    'https:',
+    'mailto:',
+    'symphony:',
+    'sms:',
+    'tel:',
+  ];
+  // url parse returns protocol with :
+  if (allowedProtocols.includes(parsedUrl.protocol)) {
+    logger.info(
+      `child-window-handler: Protocol of the url ${url} is whitelisted! Returning true for verification!`,
+    );
+    return true;
+  }
+
+  return false;
+};
 
 class ProtocolHandler {
   private static isValidProtocolUri = (uri: string): boolean =>
