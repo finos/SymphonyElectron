@@ -2281,6 +2281,14 @@ export class WindowHandler {
     }
   }
 
+  public exitApplication = async (shouldRelaunch: boolean = true) => {
+    await config.writeUserConfig();
+    if (shouldRelaunch) {
+      app.relaunch();
+    }
+    app.exit();
+  };
+
   /**
    * Listens for app load timeouts and reloads if required
    */
@@ -2366,7 +2374,7 @@ export class WindowHandler {
 
     const { response } = await dialog.showMessageBox(browserWindow, options);
     if (response === 0) {
-      app.exit();
+      await this.exitApplication(false);
     }
   }
 
