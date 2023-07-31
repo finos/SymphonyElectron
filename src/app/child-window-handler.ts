@@ -18,7 +18,6 @@ import { whitelistHandler } from '../common/whitelist-handler';
 import { CloudConfigDataTypes, config } from './config-handler';
 import crashHandler from './crash-handler';
 import { mainEvents } from './main-event-handler';
-import { verifyProtocolForNewUrl } from './protocol-handler';
 import {
   handlePermissionRequests,
   monitorWindowActions,
@@ -44,6 +43,31 @@ const MIN_WIDTH = 300;
 const MIN_HEIGHT = 300;
 
 const CHILD_WINDOW_EVENTS = ['enter-full-screen', 'leave-full-screen'];
+
+/**
+ * Verifies protocol for a new url to check if it is http or https
+ * @param url URL to be verified
+ */
+const verifyProtocolForNewUrl = (url: string): boolean => {
+  const parsedUrl = parse(url);
+  if (!parsedUrl || !parsedUrl.protocol) {
+    logger.info(
+      `child-window-handler: The url ${url} doesn't have a protocol. Returning false for verification!`,
+    );
+    return false;
+  }
+
+  const allowedProtocols = ['http:', 'https:', 'mailto:', 'symphony:', 'sms:'];
+  // url parse returns protocol with :
+  if (allowedProtocols.includes(parsedUrl.protocol)) {
+    logger.info(
+      `child-window-handler: Protocol of the url ${url} is whitelisted! Returning true for verification!`,
+    );
+    return true;
+  }
+
+  return false;
+};
 
 /**
  * Verifies if the url is valid and forcefully appends https if not present
@@ -109,7 +133,7 @@ export const handleChildWindow = (webContents: WebContents): void => {
     const mainWinDomainName = `${mainWinUrlData.domain}${mainWinUrlData.tld}`;
 
     logger.info(
-      `child-window-handler: main window url: ${mainWinUrlData.subdomain}.${mainWinUrlData.domain}${mainWinUrlData.tld}`,
+      `child-window-handler: main window url: ${mainWinUrlData.subdomain}.${mainWinUrlData.domain}.${mainWinUrlData.tld}`,
     );
 
     const emptyUrlString = ['about:blank', 'about:blank#blocked'];
