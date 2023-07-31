@@ -42,6 +42,16 @@ jest.mock('../src/common/logger', () => {
   };
 });
 
+jest.mock('../src/app/window-handler', () => {
+  return {
+    windowHandler: {
+      createMoreInfoWindow: jest.fn(),
+      getMainWindow: jest.fn(),
+      isMana: true,
+    },
+  };
+});
+
 describe('app cache handler', () => {
   describe('check app cache file', () => {
     const cachePathExpected = path.join(app.getPath('userData'), 'CacheCheck');

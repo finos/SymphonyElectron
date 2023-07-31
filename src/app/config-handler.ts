@@ -219,6 +219,8 @@ class Config {
     this.readGlobalConfig();
     this.readInstallVariant();
     this.readCloudConfig();
+
+    app.on('before-quit', this.writeUserConfig);
   }
 
   /**
@@ -320,6 +322,13 @@ class Config {
       JSON.stringify(data),
     );
     this.userConfig = { ...this.userConfig, ...data };
+  }
+
+  /**
+   * Writes the config data into the user config file
+   */
+  public writeUserConfig = async (): Promise<void> => {
+    logger.info(`config-handler: Updating user config file`);
     try {
       await writeFile(
         this.userConfigPath,
@@ -328,13 +337,13 @@ class Config {
       );
       logger.info(
         `config-handler: updated user config values with the data ${JSON.stringify(
-          data,
+          this.userConfig,
         )}`,
       );
     } catch (error) {
       logger.error(
         `config-handler: failed to update user config file with ${JSON.stringify(
-          data,
+          this.userConfig,
         )}`,
         error,
       );
@@ -343,7 +352,7 @@ class Config {
         `Failed to update user config due to error: ${error}`,
       );
     }
-  }
+  };
 
   /**
    * updates new data to the cloud config
