@@ -54,6 +54,7 @@ import { autoLaunchInstance } from './auto-launch-controller';
 import { autoUpdate, AutoUpdateTrigger } from './auto-update-handler';
 import { mainEvents } from './main-event-handler';
 import { presenceStatus } from './presence-status-handler';
+import { verifyProtocolForNewUrl } from './protocol-handler';
 import { presenceStatusStore } from './stores';
 
 interface IStyles {
@@ -130,7 +131,7 @@ export const preventWindowNavigation = (
   );
 
   const listener = async (e: Electron.Event, winUrl: string) => {
-    if (!winUrl.startsWith('https')) {
+    if (!verifyProtocolForNewUrl(winUrl)) {
       logger.error(
         `window-utils: ${winUrl} doesn't start with https, so, not navigating!`,
       );
