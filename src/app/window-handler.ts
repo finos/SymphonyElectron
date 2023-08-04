@@ -2116,12 +2116,9 @@ export class WindowHandler {
         `window-utils: user hasn't logged in yet, loading login page again`,
       );
       const userAgent = this.getUserAgent(this.mainWebContents);
-      await this.mainWebContents.loadURL(
-        this.userConfig.url || this.globalConfig.url,
-        {
-          userAgent,
-        },
-      );
+      await this.mainWebContents.loadURL(this.url || this.globalConfig.url, {
+        userAgent,
+      });
     }
   }
 
