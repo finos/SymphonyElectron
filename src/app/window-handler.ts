@@ -597,6 +597,20 @@ export class WindowHandler {
           MAIN_WEB_CONTENTS_EVENTS,
           this.mainWebContents,
         );
+
+        // workaround for https://perzoinc.atlassian.net/browse/SDA-4251
+        this.mainWindow?.on('focus', () => {
+          const { alwaysOnTop } = config.getConfigFields(['alwaysOnTop']);
+          logger.info('window-handler: main window focused', alwaysOnTop);
+          if (
+            alwaysOnTop === CloudConfigDataTypes.ENABLED &&
+            this.mainWindow &&
+            windowExists(this.mainWindow)
+          ) {
+            this.mainWindow.setAlwaysOnTop(false);
+            this.mainWindow.setAlwaysOnTop(true);
+          }
+        });
       }
     });
 
