@@ -17,12 +17,15 @@ export enum AutoUpdateTrigger {
   MANUAL = 'MANUAL',
   AUTOMATED = 'AUTOMATED',
 }
+const AUTO_UPDATE_REASON = 'autoUpdate';
 
 export class AutoUpdate {
   public isUpdateAvailable: boolean = false;
   public didPublishDownloadProgress: boolean = false;
   public autoUpdater: MacUpdater | NsisUpdater | undefined = undefined;
   private autoUpdateTrigger: AutoUpdateTrigger | undefined = undefined;
+  private finalAutoUpdateChannel: string | undefined = undefined;
+  private installVariant: string | undefined = undefined;
 
   constructor() {
     this.getGenericServerOptions().then((opts) => {
@@ -57,10 +60,12 @@ export class AutoUpdate {
           this.autoUpdateTrigger = undefined;
         });
 
-        const { autoUpdateChannel } = config.getConfigFields([
+        const { autoUpdateChannel, installVariant } = config.getConfigFields([
           'autoUpdateChannel',
+          'installVariant',
         ]);
-        let finalAutoUpdateChannel = autoUpdateChannel;
+        this.finalAutoUpdateChannel = autoUpdateChannel;
+        this.installVariant = installVariant;
 
         if (isWindowsOS) {
           const registryAutoUpdate = RegistryStore.getRegistry();
@@ -72,82 +77,18 @@ export class AutoUpdate {
             : '';
 
           if (identifiedChannelFromRegistry) {
-            finalAutoUpdateChannel = identifiedChannelFromRegistry;
+            this.finalAutoUpdateChannel = identifiedChannelFromRegistry;
           }
         }
-
-        const { installVariant } = config.getConfigFields(['installVariant']);
-        this.autoUpdater.on('update-available', (info) => {
-          const mainWebContents = windowHandler.mainWebContents;
-          // Display client banner
-          if (mainWebContents && !mainWebContents.isDestroyed()) {
-            mainWebContents.send('display-client-banner', {
-              reason: 'autoUpdate',
-              action: 'update-available',
-              data: {
-                ...info,
-                autoUpdateTrigger: this.autoUpdateTrigger,
-                autoUpdateChannel: finalAutoUpdateChannel,
-                installVariant,
-                channelConfigLocation: null,
-                sessionStartDatetime: null,
-                machineStartDatetime: null,
-                machineId: null,
-              },
-            });
-          }
-        });
-
-        this.autoUpdater.on('download-progress', (info) => {
-          const mainWebContents = windowHandler.mainWebContents;
-          // Display client banner
-          if (
-            mainWebContents &&
-            !mainWebContents.isDestroyed() &&
-            !this.didPublishDownloadProgress
-          ) {
-            mainWebContents.send('display-client-banner', {
-              reason: 'autoUpdate',
-              action: 'download-progress',
-              data: {
-                ...info,
-                autoUpdateTrigger: this.autoUpdateTrigger,
-                autoUpdateChannel: finalAutoUpdateChannel,
-                installVariant,
-                channelConfigLocation: null,
-                sessionStartDatetime: null,
-                machineStartDatetime: null,
-                machineId: null,
-              },
-            });
-            this.didPublishDownloadProgress = true;
-          }
-        });
-
-        this.autoUpdater.on('update-downloaded', (info) => {
-          this.isUpdateAvailable = true;
-          const mainWebContents = windowHandler.mainWebContents;
-          // Display client banner
-          if (mainWebContents && !mainWebContents.isDestroyed()) {
-            mainWebContents.send('display-client-banner', {
-              reason: 'autoUpdate',
-              action: 'update-downloaded',
-              data: {
-                ...info,
-                autoUpdateTrigger: this.autoUpdateTrigger,
-                autoUpdateChannel: finalAutoUpdateChannel,
-                installVariant,
-                channelConfigLocation: null,
-                sessionStartDatetime: null,
-                machineStartDatetime: null,
-                machineId: null,
-              },
-            });
-          }
-          if (isMac) {
-            config.backupGlobalConfig();
-          }
-        });
+        this.autoUpdater.on('update-available', (info) =>
+          this.updateEventHandler(info, 'update-available'),
+        );
+        this.autoUpdater.on('download-progress', (info) =>
+          this.updateEventHandler(info, 'download-progress'),
+        );
+        this.autoUpdater.on('update-downloaded', (info) =>
+          this.updateEventHandler(info, 'update-downloaded'),
+        );
 
         this.autoUpdater.on('error', (error) => {
           this.autoUpdateTrigger = undefined;
@@ -239,6 +180,38 @@ export class AutoUpdate {
 
     return updateUrl;
   };
+  private updateEventHandler = (info, eventType: string) => {
+    const mainWebContents = windowHandler.mainWebContents;
+    if (mainWebContents && !mainWebContents.isDestroyed()) {
+      const eventData = {
+        reason: AUTO_UPDATE_REASON,
+        action: eventType,
+        data: {
+          ...info,
+          autoUpdateTrigger: this.autoUpdateTrigger,
+          autoUpdateChannel: this.finalAutoUpdateChannel,
+          installVariant: this.installVariant,
+          channelConfigLocation: null,
+          sessionStartDatetime: null,
+          machineStartDatetime: null,
+          machineId: null,
+        },
+      };
+      mainWebContents.send('display-client-banner', eventData);
+      switch (eventType) {
+        case 'download-progress':
+          if (!this.didPublishDownloadProgress) {
+            this.didPublishDownloadProgress = true;
+          }
+          break;
+        case 'update-downloaded':
+          this.isUpdateAvailable = true;
+          if (isMac) {
+            config.backupGlobalConfig();
+          }
+      }
+    }
+  };
 
   private getGenericServerOptions = async (): Promise<GenericServerOptions> => {
     let userAutoUpdateChannel;
@@ -267,12 +240,11 @@ export class AutoUpdate {
 
     logger.info(`auto-update-handler: using channel ${userAutoUpdateChannel}`);
 
-    const opts: GenericServerOptions = {
+    return {
       provider: 'generic',
       url: this.getUpdateUrl(),
       channel: userAutoUpdateChannel || null,
     };
-    return opts;
   };
 }
 
