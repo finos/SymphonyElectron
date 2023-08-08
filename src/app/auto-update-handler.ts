@@ -17,6 +17,7 @@ export enum AutoUpdateTrigger {
   MANUAL = 'MANUAL',
   AUTOMATED = 'AUTOMATED',
 }
+
 const AUTO_UPDATE_REASON = 'autoUpdate';
 
 export class AutoUpdate {
@@ -59,27 +60,6 @@ export class AutoUpdate {
           }
           this.autoUpdateTrigger = undefined;
         });
-
-        const { autoUpdateChannel, installVariant } = config.getConfigFields([
-          'autoUpdateChannel',
-          'installVariant',
-        ]);
-        this.finalAutoUpdateChannel = autoUpdateChannel;
-        this.installVariant = installVariant;
-
-        if (isWindowsOS) {
-          const registryAutoUpdate = RegistryStore.getRegistry();
-          const identifiedChannelFromRegistry = [
-            EChannelRegistry.BETA,
-            EChannelRegistry.LATEST,
-          ].includes(registryAutoUpdate.currentChannel)
-            ? registryAutoUpdate.currentChannel
-            : '';
-
-          if (identifiedChannelFromRegistry) {
-            this.finalAutoUpdateChannel = identifiedChannelFromRegistry;
-          }
-        }
         this.autoUpdater.on('update-available', (info) =>
           this.updateEventHandler(info, 'update-available'),
         );
@@ -183,6 +163,26 @@ export class AutoUpdate {
   private updateEventHandler = (info, eventType: string) => {
     const mainWebContents = windowHandler.mainWebContents;
     if (mainWebContents && !mainWebContents.isDestroyed()) {
+      const { autoUpdateChannel, installVariant } = config.getConfigFields([
+        'autoUpdateChannel',
+        'installVariant',
+      ]);
+      this.finalAutoUpdateChannel = autoUpdateChannel;
+      this.installVariant = installVariant;
+      if (isWindowsOS) {
+        const registryAutoUpdate = RegistryStore.getRegistry();
+        const identifiedChannelFromRegistry = [
+          EChannelRegistry.BETA,
+          EChannelRegistry.LATEST,
+        ].includes(registryAutoUpdate.currentChannel)
+          ? registryAutoUpdate.currentChannel
+          : '';
+
+        if (identifiedChannelFromRegistry) {
+          this.finalAutoUpdateChannel = identifiedChannelFromRegistry;
+        }
+      }
+
       const eventData = {
         reason: AUTO_UPDATE_REASON,
         action: eventType,
