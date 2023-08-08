@@ -197,15 +197,19 @@ export class AutoUpdate {
           machineId: null,
         },
       };
-      mainWebContents.send('display-client-banner', eventData);
       switch (eventType) {
+        case 'update-available':
+          mainWebContents.send('display-client-banner', eventData);
+          break;
         case 'download-progress':
           if (!this.didPublishDownloadProgress) {
+            mainWebContents.send('display-client-banner', eventData);
             this.didPublishDownloadProgress = true;
           }
           break;
         case 'update-downloaded':
           this.isUpdateAvailable = true;
+          mainWebContents.send('display-client-banner', eventData);
           if (isMac) {
             config.backupGlobalConfig();
           }
