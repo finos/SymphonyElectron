@@ -9,7 +9,8 @@
     "Copy config to clipboard": "コンフィグをクリップボードにコピー",
     "Close": "閉じる",
     "Copyright": "Copyright",
-    "Desktop Application": "デスクトップアプリケーション"
+    "Desktop Application": "デスクトップアプリケーション",
+    "Save and Restart": "保存して再起動"
   },
   "Actual Size": "実際のサイズ",
   "Always on Top": "つねに前面に表示",

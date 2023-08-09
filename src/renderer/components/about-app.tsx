@@ -266,6 +266,18 @@ export default class AboutApp extends React.Component<{}, IState> {
   };
 
   /**
+   * Handles key down on input
+   * @param e
+   */
+  public onKeyDown = (e) => {
+    if (e.keyCode === 13) {
+      const { value } = e.target;
+      this.setState({ updatedHostname: value });
+      this.handlePodInputBlur(e);
+    }
+  };
+
+  /**
    * Validates and sets new hostname
    */
   public handlePodInputBlur = (_event) => {
@@ -329,6 +341,7 @@ export default class AboutApp extends React.Component<{}, IState> {
             className={'AboutApp-pod-input'}
             type='text'
             value={updatedHostname}
+            onKeyDown={this.onKeyDown}
             onChange={this.handlePodChange}
             onBlur={this.handlePodInputBlur}
             autoFocus
