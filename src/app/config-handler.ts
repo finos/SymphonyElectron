@@ -248,6 +248,10 @@ class Config {
    * @param fields {Array}
    */
   public getUserConfigFields(fields: string[]): IConfig {
+    if (!this.userConfig) {
+      logger.error(`config-handler: user config is undefined`, this.userConfig);
+      return {} as IConfig;
+    }
     const userConfigData = pick(this.userConfig, fields) as IConfig;
     logger.info(
       `config-handler: getting user config values for the fields ${fields}`,
@@ -571,6 +575,13 @@ class Config {
   public async readUserConfig() {
     if (fs.existsSync(this.userConfigPath)) {
       const userConfig = fs.readFileSync(this.userConfigPath, 'utf8');
+      if (!userConfig) {
+        logger.error(
+          `config-handler: User configuration is empty and nothing to read`,
+          userConfig,
+        );
+        return;
+      }
       this.userConfig = this.parseConfigData(userConfig);
     }
     logger.info(`config-handler: User configuration: `, this.userConfig);
