@@ -332,6 +332,9 @@ class Config {
    * Writes the config data into the user config file
    */
   public writeUserConfig = async (): Promise<void> => {
+    if (!this.userConfig) {
+      return;
+    }
     logger.info(`config-handler: Updating user config file`);
     try {
       await writeFile(
