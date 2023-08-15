@@ -72,6 +72,7 @@
   "Edit": "編集",
   "Enable Hamburger menu": "ハンバーガーメニューを有効にする",
   "Enable GPU": "GPUを有効にする",
+  "Error in Main Process. Would you like to restart the app?": "Error in Main Process. Would you like to restart the app?",
   "Error loading configuration": "構成の読み込みエラー",
   "Error loading URL": "URLの読み込みエラー",
   "Error loading window": "ウィンドウを読み込みエラー",
