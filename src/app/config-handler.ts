@@ -146,6 +146,7 @@ class Config {
   public cloudConfig: ICloudConfig | {};
   public filteredCloudConfig: ICloudConfig | {};
   private isFirstTime: boolean = true;
+  private didUpdateConfigFile: boolean = false;
   private installVariant: string | undefined;
   private bootCount: number | undefined;
   private readonly configFileName: string;
@@ -220,7 +221,14 @@ class Config {
     this.readInstallVariant();
     this.readCloudConfig();
 
-    app.on('before-quit', this.writeUserConfig);
+    app.on('before-quit', async (event) => {
+      if (!this.didUpdateConfigFile) {
+        event.preventDefault();
+        await this.writeUserConfig();
+        this.didUpdateConfigFile = true;
+        app.quit();
+      }
+    });
   }
 
   /**
