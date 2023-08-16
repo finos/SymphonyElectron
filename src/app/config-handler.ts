@@ -147,6 +147,7 @@ class Config {
   public filteredCloudConfig: ICloudConfig | {};
   private isFirstTime: boolean = true;
   private didUpdateConfigFile: boolean = false;
+  private isFirstQuit: boolean = false;
   private installVariant: string | undefined;
   private bootCount: number | undefined;
   private readonly configFileName: string;
@@ -222,9 +223,15 @@ class Config {
     this.readCloudConfig();
 
     app.on('before-quit', async (event) => {
+      if (this.isFirstQuit) {
+        this.isFirstQuit = false;
+        event.preventDefault();
+      } else if (!this.isFirstQuit && this.didUpdateConfigFile) {
+        return;
+      }
       logger.info('config-handler: before-quit application is terminated');
-      event.preventDefault();
       if (!this.didUpdateConfigFile) {
+        event.preventDefault();
         const id = powerSaveBlocker.start('prevent-app-suspension');
         logger.info(
           `config-handler: power save blocker id ${id} and is started`,
