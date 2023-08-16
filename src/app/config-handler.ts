@@ -146,7 +146,7 @@ class Config {
   public cloudConfig: ICloudConfig | {};
   public filteredCloudConfig: ICloudConfig | {};
   private isFirstTime: boolean = true;
-  private didUpdateConfigFile: boolean = true;
+  private didUpdateConfigFile: boolean = false;
   private installVariant: string | undefined;
   private bootCount: number | undefined;
   private readonly configFileName: string;
