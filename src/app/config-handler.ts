@@ -1,4 +1,4 @@
-import { app, dialog } from 'electron';
+import { app, dialog, powerSaveBlocker } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -224,8 +224,14 @@ class Config {
     app.on('before-quit', async (event) => {
       if (!this.didUpdateConfigFile) {
         event.preventDefault();
+        const id = powerSaveBlocker.start('prevent-app-suspension');
+        logger.info(
+          `config-handler: power save blocker id ${id} and is started`,
+          powerSaveBlocker.isStarted(id),
+        );
         await this.writeUserConfig();
         this.didUpdateConfigFile = true;
+        powerSaveBlocker.stop(id);
         app.quit();
       }
     });
