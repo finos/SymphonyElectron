@@ -2320,7 +2320,7 @@ export class WindowHandler {
   }
 
   public exitApplication = async (shouldRelaunch: boolean = true) => {
-    await config.writeUserConfig();
+    config.writeUserConfig();
     if (shouldRelaunch) {
       app.relaunch();
     }
