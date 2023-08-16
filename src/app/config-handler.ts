@@ -222,8 +222,9 @@ class Config {
     this.readCloudConfig();
 
     app.on('before-quit', async (event) => {
+      logger.info('config-handler: before-quit application is terminated');
+      event.preventDefault();
       if (!this.didUpdateConfigFile) {
-        event.preventDefault();
         const id = powerSaveBlocker.start('prevent-app-suspension');
         logger.info(
           `config-handler: power save blocker id ${id} and is started`,
