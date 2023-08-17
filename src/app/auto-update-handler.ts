@@ -27,6 +27,7 @@ export class AutoUpdate {
   private autoUpdateTrigger: AutoUpdateTrigger | undefined = undefined;
   private finalAutoUpdateChannel: string | undefined = undefined;
   private installVariant: string | undefined = undefined;
+  private shouldRetrieveRegistry: boolean = true;
 
   constructor() {
     this.getGenericServerOptions().then((opts) => {
@@ -60,15 +61,15 @@ export class AutoUpdate {
           }
           this.autoUpdateTrigger = undefined;
         });
-        this.autoUpdater.on('update-available', (info) =>
-          this.updateEventHandler(info, 'update-available'),
-        );
-        this.autoUpdater.on('download-progress', (info) =>
-          this.updateEventHandler(info, 'download-progress'),
-        );
-        this.autoUpdater.on('update-downloaded', (info) =>
-          this.updateEventHandler(info, 'update-downloaded'),
-        );
+        this.autoUpdater.on('update-available', async (info) => {
+          await this.updateEventHandler(info, 'update-available');
+        });
+        this.autoUpdater.on('download-progress', async (info) => {
+          await this.updateEventHandler(info, 'download-progress');
+        });
+        this.autoUpdater.on('update-downloaded', async (info) => {
+          await this.updateEventHandler(info, 'update-downloaded');
+        });
 
         this.autoUpdater.on('error', (error) => {
           this.autoUpdateTrigger = undefined;
@@ -160,29 +161,10 @@ export class AutoUpdate {
 
     return updateUrl;
   };
-  private updateEventHandler = (info, eventType: string) => {
+  private updateEventHandler = async (info, eventType: string) => {
     const mainWebContents = windowHandler.mainWebContents;
     if (mainWebContents && !mainWebContents.isDestroyed()) {
-      const { autoUpdateChannel, installVariant } = config.getConfigFields([
-        'autoUpdateChannel',
-        'installVariant',
-      ]);
-      this.finalAutoUpdateChannel = autoUpdateChannel;
-      this.installVariant = installVariant;
-      if (isWindowsOS) {
-        const registryAutoUpdate = RegistryStore.getRegistry();
-        const identifiedChannelFromRegistry = [
-          EChannelRegistry.BETA,
-          EChannelRegistry.LATEST,
-        ].includes(registryAutoUpdate.currentChannel)
-          ? registryAutoUpdate.currentChannel
-          : '';
-
-        if (identifiedChannelFromRegistry) {
-          this.finalAutoUpdateChannel = identifiedChannelFromRegistry;
-        }
-      }
-
+      await this.setAutoUpdateChannel();
       const eventData = {
         reason: AUTO_UPDATE_REASON,
         action: eventType,
@@ -218,18 +200,30 @@ export class AutoUpdate {
   };
 
   private getGenericServerOptions = async (): Promise<GenericServerOptions> => {
-    let userAutoUpdateChannel;
-    const { autoUpdateChannel, betaAutoUpdateChannelEnabled } =
-      config.getConfigFields([
-        'autoUpdateChannel',
-        'betaAutoUpdateChannelEnabled',
-      ]);
+    await this.setAutoUpdateChannel();
+    logger.info(
+      `auto-update-handler: using channel ${this.finalAutoUpdateChannel}`,
+    );
 
-    userAutoUpdateChannel = betaAutoUpdateChannelEnabled
-      ? 'beta'
-      : autoUpdateChannel;
+    return {
+      provider: 'generic',
+      url: this.getUpdateUrl(),
+      channel: this.finalAutoUpdateChannel || null,
+    };
+  };
+
+  private setAutoUpdateChannel = async (): Promise<void> => {
+    const { autoUpdateChannel, installVariant } = config.getConfigFields([
+      'autoUpdateChannel',
+      'installVariant',
+    ]);
+    this.finalAutoUpdateChannel = autoUpdateChannel;
+    this.installVariant = installVariant;
     if (isWindowsOS) {
-      await retrieveWindowsRegistry();
+      if (this.shouldRetrieveRegistry) {
+        await retrieveWindowsRegistry();
+        this.shouldRetrieveRegistry = false;
+      }
       const registryAutoUpdate = RegistryStore.getRegistry();
       const identifiedChannelFromRegistry = [
         EChannelRegistry.BETA,
@@ -238,17 +232,9 @@ export class AutoUpdate {
         ? registryAutoUpdate.currentChannel
         : '';
       if (identifiedChannelFromRegistry) {
-        userAutoUpdateChannel = identifiedChannelFromRegistry;
+        this.finalAutoUpdateChannel = identifiedChannelFromRegistry;
       }
     }
-
-    logger.info(`auto-update-handler: using channel ${userAutoUpdateChannel}`);
-
-    return {
-      provider: 'generic',
-      url: this.getUpdateUrl(),
-      channel: userAutoUpdateChannel || null,
-    };
   };
 }
 
