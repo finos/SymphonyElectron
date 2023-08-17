@@ -1,5 +1,6 @@
 import { app } from 'electron';
 import * as os from 'os';
+import { buildNumber, version } from '../../package.json';
 import { logger } from '../common/logger';
 
 export class AppStats {
@@ -119,6 +120,7 @@ export class AppStats {
     logger.info(`stats: Resources Path? ${process.resourcesPath}`);
     logger.info(`stats: Chrome Version? ${process.versions.chrome}`);
     logger.info(`stats: Electron Version? ${process.versions.electron}`);
+    logger.info(`stats: SDA Version? ${version} (${buildNumber})`);
   }
 }
 
