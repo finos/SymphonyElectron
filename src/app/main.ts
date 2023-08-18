@@ -83,7 +83,8 @@ const startApplication = async () => {
   await config.initializeUserConfig();
   await config.readUserConfig();
   await config.checkFirstTimeLaunch();
-  if (config.isFirstTimeLaunch()) {
+  const isFirstTimeLaunch = config.isFirstTimeLaunch();
+  if (isFirstTimeLaunch) {
     logger.info(
       `main: This is a first time launch! will update config and handle auto launch`,
     );
@@ -91,6 +92,7 @@ const startApplication = async () => {
     if (!isLinux) {
       await autoLaunchInstance.handleAutoLaunch();
     }
+    config.writeUserConfig();
   }
   await app.whenReady();
   if (oneStart) {
