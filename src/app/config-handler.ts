@@ -1,4 +1,4 @@
-import { app, dialog } from 'electron';
+import { app, dialog, powerSaveBlocker } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -146,6 +146,8 @@ class Config {
   public cloudConfig: ICloudConfig | {};
   public filteredCloudConfig: ICloudConfig | {};
   private isFirstTime: boolean = true;
+  private didUpdateConfigFile: boolean = false;
+  private isUpdatingConfigFile: boolean = false;
   private installVariant: string | undefined;
   private bootCount: number | undefined;
   private readonly configFileName: string;
@@ -220,7 +222,27 @@ class Config {
     this.readInstallVariant();
     this.readCloudConfig();
 
-    app.on('before-quit', this.writeUserConfig);
+    app.on('before-quit', async (event) => {
+      const id = powerSaveBlocker.start('prevent-app-suspension');
+      logger.info('config-handler: before-quit application is terminated');
+      if (!this.didUpdateConfigFile) {
+        this.isUpdatingConfigFile = true;
+        event.preventDefault();
+        logger.info(
+          `config-handler: power save blocker id ${id} and is started`,
+          powerSaveBlocker.isStarted(id),
+        );
+        this.writeUserConfig();
+        this.isUpdatingConfigFile = false;
+        this.didUpdateConfigFile = true;
+        powerSaveBlocker.stop(id);
+        app.quit();
+      } else if (!this.didUpdateConfigFile && this.isUpdatingConfigFile) {
+        logger.info('config-handler: config file updating...');
+        event.preventDefault();
+      }
+      logger.info('config-handler: config file updated. Closing the app.');
+    });
   }
 
   /**
@@ -331,13 +353,10 @@ class Config {
   /**
    * Writes the config data into the user config file
    */
-  public writeUserConfig = async (): Promise<void> => {
-    if (!this.userConfig) {
-      return;
-    }
+  public writeUserConfig = (): void => {
     logger.info(`config-handler: Updating user config file`);
     try {
-      await writeFile(
+      fs.writeFileSync(
         this.userConfigPath,
         JSON.stringify(this.userConfig, null, 2),
         { encoding: 'utf8' },
