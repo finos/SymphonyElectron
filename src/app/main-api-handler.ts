@@ -429,6 +429,7 @@ ipcMain.on(
             url: arg.newPodUrl,
           });
         }
+        config.writeUserConfig();
         const urlFromCmd = getCommandLineArgs(process.argv, '--url=', false);
         const { url: userConfigURL } = config.getUserConfigFields(['url']);
         const { url: globalConfigURL } = config.getGlobalConfigFields(['url']);

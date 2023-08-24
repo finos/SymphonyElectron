@@ -9,6 +9,7 @@ import {
   dialog,
   Event,
   ipcMain,
+  MessageBoxSyncOptions,
   nativeTheme,
   RenderProcessGoneDetails,
   screen,
@@ -210,6 +211,25 @@ export class WindowHandler {
           );
     }
     this.listenForLoad();
+    // Handle uncaught exception and terminate application
+    process.on('uncaughtException', async (error) => {
+      logger.error('window-handler: uncaught exception', error);
+      const messageBoxOptions: MessageBoxSyncOptions = {
+        type: 'question',
+        title: i18n.t('Relaunch Application')(),
+        message: i18n.t(
+          `Error in Main Process. Would you like to restart the app?`,
+        )(),
+        detail: error.message,
+        buttons: [i18n.t('Relaunch')(), i18n.t('Cancel')()],
+        cancelId: 1,
+      };
+
+      const response = dialog.showMessageBoxSync(messageBoxOptions);
+      if (response === 0) {
+        await windowHandler.exitApplication(true);
+      }
+    });
   }
 
   /**
@@ -2300,7 +2320,7 @@ export class WindowHandler {
   }
 
   public exitApplication = async (shouldRelaunch: boolean = true) => {
-    await config.writeUserConfig();
+    config.writeUserConfig();
     if (shouldRelaunch) {
       app.relaunch();
     }
