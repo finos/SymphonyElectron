@@ -1,7 +1,7 @@
 {
   "name": "symphony",
   "productName": "Symphony",
-  "version": "23.8.0",
+  "version": "23.8.1",
   "clientVersion": "2.0.1",
   "buildNumber": "0",
   "searchAPIVersion": "1.55.3",
@@ -230,7 +230,7 @@
     "win32-api": "^20.1.0"
   },
   "optionalDependencies": {
-    "@symphony/symphony-c9-shell": "3.19.0-0.98.18.158",
+    "@symphony/symphony-c9-shell": "3.25.0-0.99.3.163",
     "screen-share-indicator-frame": "git+https://github.com/finos/ScreenShareIndicatorFrame.git#v1.4.13",
     "screen-snippet": "git+https://github.com/finos/ScreenSnippet2.git#9.2.2",
     "symphony-native-window-handle-helper": "github:finos/SymphonyWindowsHwndHelper#1.0.1",
