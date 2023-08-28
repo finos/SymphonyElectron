@@ -626,6 +626,7 @@ export class AppMenu {
       (windowHandler.url &&
         windowHandler.url.startsWith('https://corporate.symphony.com')) ||
       false;
+    const updateChannel = this.getUpdateChannel();
     return {
       label: i18n.t('Help')(),
       role: 'help',
@@ -757,7 +758,7 @@ export class AppMenu {
                 this.setUpdateChannelForMenuEntry(Target.SDA, Channels.Stable),
               visible: isCorp,
               type: 'checkbox',
-              checked: this.getUpdateChannel() === Channels.Stable,
+              checked: updateChannel === Channels.Stable,
               label: i18n.t('Stable')(),
             },
             {
@@ -766,7 +767,7 @@ export class AppMenu {
                 this.setUpdateChannelForMenuEntry(Target.SDA, Channels.Latest),
               visible: isCorp,
               type: 'checkbox',
-              checked: this.getUpdateChannel() === Channels.Latest,
+              checked: updateChannel === Channels.Latest,
               label: i18n.t('Latest')(),
             },
             {
@@ -775,7 +776,7 @@ export class AppMenu {
                 this.setUpdateChannelForMenuEntry(Target.SDA, Channels.IV),
               visible: isCorp && isWindowsOS,
               type: 'checkbox',
-              checked: this.getUpdateChannel() === Channels.IV,
+              checked: updateChannel === Channels.IV,
               label: i18n.t('IV Dogfooding')(),
             },
             {
@@ -784,7 +785,7 @@ export class AppMenu {
                 this.setUpdateChannelForMenuEntry(Target.SDA, Channels.Beta),
               visible: isCorp,
               type: 'checkbox',
-              checked: this.getUpdateChannel() === Channels.Beta,
+              checked: updateChannel === Channels.Beta,
               label: i18n.t('Beta')(),
             },
             {
@@ -793,7 +794,7 @@ export class AppMenu {
                 this.setUpdateChannelForMenuEntry(Target.SDA, Channels.Daily),
               visible: isCorp,
               type: 'checkbox',
-              checked: this.getUpdateChannel() === Channels.Daily,
+              checked: updateChannel === Channels.Daily,
               label: i18n.t('Daily')(),
             },
           ],
