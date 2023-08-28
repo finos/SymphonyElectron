@@ -18,11 +18,16 @@ export enum AutoUpdateTrigger {
   AUTOMATED = 'AUTOMATED',
 }
 
+const AUTO_UPDATE_REASON = 'autoUpdate';
+
 export class AutoUpdate {
   public isUpdateAvailable: boolean = false;
   public didPublishDownloadProgress: boolean = false;
   public autoUpdater: MacUpdater | NsisUpdater | undefined = undefined;
   private autoUpdateTrigger: AutoUpdateTrigger | undefined = undefined;
+  private finalAutoUpdateChannel: string | undefined = undefined;
+  private installVariant: string | undefined = undefined;
+  private shouldRetrieveRegistry: boolean = true;
 
   constructor() {
     this.getGenericServerOptions().then((opts) => {
@@ -56,97 +61,14 @@ export class AutoUpdate {
           }
           this.autoUpdateTrigger = undefined;
         });
-
-        const { autoUpdateChannel } = config.getConfigFields([
-          'autoUpdateChannel',
-        ]);
-        let finalAutoUpdateChannel = autoUpdateChannel;
-
-        if (isWindowsOS) {
-          const registryAutoUpdate = RegistryStore.getRegistry();
-          const identifiedChannelFromRegistry = [
-            EChannelRegistry.BETA,
-            EChannelRegistry.LATEST,
-          ].includes(registryAutoUpdate.currentChannel)
-            ? registryAutoUpdate.currentChannel
-            : '';
-
-          if (identifiedChannelFromRegistry) {
-            finalAutoUpdateChannel = identifiedChannelFromRegistry;
-          }
-        }
-
-        const { installVariant } = config.getConfigFields(['installVariant']);
-        this.autoUpdater.on('update-available', (info) => {
-          const mainWebContents = windowHandler.mainWebContents;
-          // Display client banner
-          if (mainWebContents && !mainWebContents.isDestroyed()) {
-            mainWebContents.send('display-client-banner', {
-              reason: 'autoUpdate',
-              action: 'update-available',
-              data: {
-                ...info,
-                autoUpdateTrigger: this.autoUpdateTrigger,
-                autoUpdateChannel: finalAutoUpdateChannel,
-                installVariant,
-                channelConfigLocation: null,
-                sessionStartDatetime: null,
-                machineStartDatetime: null,
-                machineId: null,
-              },
-            });
-          }
+        this.autoUpdater.on('update-available', async (info) => {
+          await this.updateEventHandler(info, 'update-available');
         });
-
-        this.autoUpdater.on('download-progress', (info) => {
-          const mainWebContents = windowHandler.mainWebContents;
-          // Display client banner
-          if (
-            mainWebContents &&
-            !mainWebContents.isDestroyed() &&
-            !this.didPublishDownloadProgress
-          ) {
-            mainWebContents.send('display-client-banner', {
-              reason: 'autoUpdate',
-              action: 'download-progress',
-              data: {
-                ...info,
-                autoUpdateTrigger: this.autoUpdateTrigger,
-                autoUpdateChannel: finalAutoUpdateChannel,
-                installVariant,
-                channelConfigLocation: null,
-                sessionStartDatetime: null,
-                machineStartDatetime: null,
-                machineId: null,
-              },
-            });
-            this.didPublishDownloadProgress = true;
-          }
+        this.autoUpdater.on('download-progress', async (info) => {
+          await this.updateEventHandler(info, 'download-progress');
         });
-
-        this.autoUpdater.on('update-downloaded', (info) => {
-          this.isUpdateAvailable = true;
-          const mainWebContents = windowHandler.mainWebContents;
-          // Display client banner
-          if (mainWebContents && !mainWebContents.isDestroyed()) {
-            mainWebContents.send('display-client-banner', {
-              reason: 'autoUpdate',
-              action: 'update-downloaded',
-              data: {
-                ...info,
-                autoUpdateTrigger: this.autoUpdateTrigger,
-                autoUpdateChannel: finalAutoUpdateChannel,
-                installVariant,
-                channelConfigLocation: null,
-                sessionStartDatetime: null,
-                machineStartDatetime: null,
-                machineId: null,
-              },
-            });
-          }
-          if (isMac) {
-            config.backupGlobalConfig();
-          }
+        this.autoUpdater.on('update-downloaded', async (info) => {
+          await this.updateEventHandler(info, 'update-downloaded');
         });
 
         this.autoUpdater.on('error', (error) => {
@@ -239,20 +161,69 @@ export class AutoUpdate {
 
     return updateUrl;
   };
+  private updateEventHandler = async (info, eventType: string) => {
+    const mainWebContents = windowHandler.mainWebContents;
+    if (mainWebContents && !mainWebContents.isDestroyed()) {
+      await this.setAutoUpdateChannel();
+      const eventData = {
+        reason: AUTO_UPDATE_REASON,
+        action: eventType,
+        data: {
+          ...info,
+          autoUpdateTrigger: this.autoUpdateTrigger,
+          autoUpdateChannel: this.finalAutoUpdateChannel,
+          installVariant: this.installVariant,
+          channelConfigLocation: null,
+          sessionStartDatetime: null,
+          machineStartDatetime: null,
+          machineId: null,
+        },
+      };
+      switch (eventType) {
+        case 'update-available':
+          mainWebContents.send('display-client-banner', eventData);
+          break;
+        case 'download-progress':
+          if (!this.didPublishDownloadProgress) {
+            mainWebContents.send('display-client-banner', eventData);
+            this.didPublishDownloadProgress = true;
+          }
+          break;
+        case 'update-downloaded':
+          this.isUpdateAvailable = true;
+          mainWebContents.send('display-client-banner', eventData);
+          if (isMac) {
+            config.backupGlobalConfig();
+          }
+      }
+    }
+  };
 
   private getGenericServerOptions = async (): Promise<GenericServerOptions> => {
-    let userAutoUpdateChannel;
-    const { autoUpdateChannel, betaAutoUpdateChannelEnabled } =
-      config.getConfigFields([
-        'autoUpdateChannel',
-        'betaAutoUpdateChannelEnabled',
-      ]);
+    await this.setAutoUpdateChannel();
+    logger.info(
+      `auto-update-handler: using channel ${this.finalAutoUpdateChannel}`,
+    );
 
-    userAutoUpdateChannel = betaAutoUpdateChannelEnabled
-      ? 'beta'
-      : autoUpdateChannel;
+    return {
+      provider: 'generic',
+      url: this.getUpdateUrl(),
+      channel: this.finalAutoUpdateChannel || null,
+    };
+  };
+
+  private setAutoUpdateChannel = async (): Promise<void> => {
+    const { autoUpdateChannel, installVariant } = config.getConfigFields([
+      'autoUpdateChannel',
+      'installVariant',
+    ]);
+    this.finalAutoUpdateChannel = autoUpdateChannel;
+    this.installVariant = installVariant;
     if (isWindowsOS) {
-      await retrieveWindowsRegistry();
+      if (this.shouldRetrieveRegistry) {
+        await retrieveWindowsRegistry();
+        this.shouldRetrieveRegistry = false;
+      }
       const registryAutoUpdate = RegistryStore.getRegistry();
       const identifiedChannelFromRegistry = [
         EChannelRegistry.BETA,
@@ -261,18 +232,9 @@ export class AutoUpdate {
         ? registryAutoUpdate.currentChannel
         : '';
       if (identifiedChannelFromRegistry) {
-        userAutoUpdateChannel = identifiedChannelFromRegistry;
+        this.finalAutoUpdateChannel = identifiedChannelFromRegistry;
       }
     }
-
-    logger.info(`auto-update-handler: using channel ${userAutoUpdateChannel}`);
-
-    const opts: GenericServerOptions = {
-      provider: 'generic',
-      url: this.getUpdateUrl(),
-      channel: userAutoUpdateChannel || null,
-    };
-    return opts;
   };
 }
 
