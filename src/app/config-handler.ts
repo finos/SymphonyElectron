@@ -603,6 +603,7 @@ class Config {
           userConfig,
         );
         fs.unlinkSync(this.userConfigPath);
+        return;
       }
       this.userConfig = this.parseConfigData(userConfig);
     }
