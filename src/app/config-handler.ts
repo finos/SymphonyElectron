@@ -602,6 +602,7 @@ class Config {
           `config-handler: User configuration is empty and nothing to read`,
           userConfig,
         );
+        fs.unlinkSync(this.userConfigPath);
         return;
       }
       this.userConfig = this.parseConfigData(userConfig);
