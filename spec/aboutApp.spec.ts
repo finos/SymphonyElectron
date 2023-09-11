@@ -9,7 +9,7 @@ describe('about app', () => {
   const aboutDataMock = {
     sbeVersion: '1',
     userConfig: {},
-    globalConfig: {},
+    globalConfig: { isPodUrlEditable: true },
     cloudConfig: {},
     finalConfig: {},
     appName: 'Symphony',
@@ -81,6 +81,54 @@ describe('about app', () => {
   it('should display input when triple clicked on pod', () => {
     const wrapper = shallow(React.createElement(AboutApp));
     ipcRenderer.send('about-app-data', aboutDataMock);
+    const pod = wrapper.find(`[data-testid="POD_INFO"]`);
+    pod.simulate('click', { detail: 1 });
+    pod.simulate('click', { detail: 2 });
+    pod.simulate('click', { detail: 3 });
+    const podInput = wrapper.find('.AboutApp-pod-input');
+    expect(podInput.exists()).toEqual(true);
+  });
+
+  it('should not display input when triple clicked on pod', () => {
+    const cloneAboutDataMock = aboutDataMock;
+
+    cloneAboutDataMock.globalConfig = { isPodUrlEditable: false };
+    cloneAboutDataMock.userConfig = { isPodUrlEditable: true };
+
+    const wrapper = shallow(React.createElement(AboutApp));
+    ipcRenderer.send('about-app-data', cloneAboutDataMock);
+    const pod = wrapper.find(`[data-testid="POD_INFO"]`);
+    pod.simulate('click', { detail: 1 });
+    pod.simulate('click', { detail: 2 });
+    pod.simulate('click', { detail: 3 });
+    const podInput = wrapper.find('.AboutApp-pod-input');
+    expect(podInput.exists()).toEqual(false);
+  });
+
+  it('should not display config based on global config only', () => {
+    const cloneAboutDataMock = aboutDataMock;
+
+    cloneAboutDataMock.globalConfig = { isPodUrlEditable: false };
+    cloneAboutDataMock.userConfig = { isPodUrlEditable: false };
+
+    const wrapper = shallow(React.createElement(AboutApp));
+    ipcRenderer.send('about-app-data', cloneAboutDataMock);
+    const pod = wrapper.find(`[data-testid="POD_INFO"]`);
+    pod.simulate('click', { detail: 1 });
+    pod.simulate('click', { detail: 2 });
+    pod.simulate('click', { detail: 3 });
+    const podInput = wrapper.find('.AboutApp-pod-input');
+    expect(podInput.exists()).toEqual(false);
+  });
+
+  it('should display config based on global config only', () => {
+    const cloneAboutDataMock = aboutDataMock;
+
+    cloneAboutDataMock.globalConfig = { isPodUrlEditable: true };
+    cloneAboutDataMock.userConfig = { isPodUrlEditable: false };
+
+    const wrapper = shallow(React.createElement(AboutApp));
+    ipcRenderer.send('about-app-data', cloneAboutDataMock);
     const pod = wrapper.find(`[data-testid="POD_INFO"]`);
     pod.simulate('click', { detail: 1 });
     pod.simulate('click', { detail: 2 });

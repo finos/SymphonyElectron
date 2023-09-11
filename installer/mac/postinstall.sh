@@ -50,6 +50,11 @@ force_auto_update=$(sed -n '10p' ${settingsFilePath});
 if [ "$force_auto_update" = "" ]; then force_auto_update=false; fi
 sed -i "" -E "s#\"forceAutoUpdate\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"forceAutoUpdate\":\ $force_auto_update#g" "${newPath}"
 
+## Add settings is pod url editable
+is_pod_url_editable=$(sed -n '11p' ${settingsFilePath});
+if [ "$is_pod_url_editable" = "" ]; then is_pod_url_editable=true; fi
+sed -i "" -E "s#\"isPodUrlEditable\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"isPodUrlEditable\":\ $is_pod_url_editable#g" "${newPath}"
+
 ## Get Symphony Permissions from the temp file ##
 media=$(sed -n '1p' ${permissionsFilePath});
 geo_location=$(sed -n '2p' ${permissionsFilePath});

@@ -62,6 +62,7 @@ export interface IConfig {
   browserLoginAutoConnect?: boolean;
   betaAutoUpdateChannelEnabled?: boolean;
   forceAutoUpdate?: boolean;
+  isPodUrlEditable?: boolean;
 }
 
 export interface IGlobalConfig {

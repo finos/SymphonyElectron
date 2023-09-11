@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { productName } from '../../../package.json';
+import { IConfig } from '../../app/config-handler';
 import { apiCmds, apiName } from '../../common/api-interface';
 import { i18n } from '../../common/i18n-preload';
 import * as CopyIcon from '../../renderer/assets/copy-icon.svg';
@@ -250,8 +251,9 @@ export default class AboutApp extends React.Component<{}, IState> {
   public onPodClick(e): void {
     if (e.detail === 3) {
       this.setState({
-        isPodEditing: true,
-        didUpdateHostname: true,
+        isPodEditing: !!(this.state.globalConfig as IConfig)?.isPodUrlEditable,
+        didUpdateHostname: !!(this.state.globalConfig as IConfig)
+          ?.isPodUrlEditable,
       });
     }
   }

@@ -161,6 +161,7 @@ class Script
             new PublicProperty("ENABLE_BROWSER_LOGIN", "false"),
             new PublicProperty("BROWSER_LOGIN_AUTOCONNECT", "false"),
             new PublicProperty("FORCE_AUTO_UPDATE","false"),
+            new PublicProperty("IS_POD_URL_EDITABLE","true"),
             new PublicProperty("CHROME_FLAGS", ""),
             new Property("MSIINSTALLPERUSER", "1"),
             new Property("PROGRAMSFOLDER", System.Environment.ExpandEnvironmentVariables(@"%PROGRAMFILES%"))
@@ -189,7 +190,7 @@ class Script
             new ElevatedManagedAction(CustomActions.UpdateConfig, Return.check, When.After, Step.InstallFiles, Condition.NOT_BeingRemoved )
             {
                 // The UpdateConfig action needs the built-in property INSTALLDIR as well as most of the custom properties
-                UsesProperties = "INSTALLDIR,POD_URL,CONTEXT_ORIGIN_URL,MINIMIZE_ON_CLOSE,ALWAYS_ON_TOP,AUTO_START,BRING_TO_FRONT,MEDIA,LOCATION,NOTIFICATIONS,MIDI_SYSEX,POINTER_LOCK,FULL_SCREEN,OPEN_EXTERNAL,CUSTOM_TITLE_BAR,DEV_TOOLS_ENABLED,AUTO_LAUNCH_PATH,USER_DATA_PATH,OVERRIDE_USER_AGENT,CHROME_FLAGS,ENABLE_BROWSER_LOGIN,BROWSER_LOGIN_AUTOCONNECT,FORCE_AUTO_UPDATE"
+                UsesProperties = "INSTALLDIR,POD_URL,CONTEXT_ORIGIN_URL,MINIMIZE_ON_CLOSE,ALWAYS_ON_TOP,AUTO_START,BRING_TO_FRONT,MEDIA,LOCATION,NOTIFICATIONS,MIDI_SYSEX,POINTER_LOCK,FULL_SCREEN,OPEN_EXTERNAL,CUSTOM_TITLE_BAR,DEV_TOOLS_ENABLED,AUTO_LAUNCH_PATH,USER_DATA_PATH,OVERRIDE_USER_AGENT,CHROME_FLAGS,ENABLE_BROWSER_LOGIN,BROWSER_LOGIN_AUTOCONNECT,FORCE_AUTO_UPDATE,IS_POD_URL_EDITABLE"
             },
 
             // CleanRegistry
@@ -366,6 +367,7 @@ public class CustomActions
             data = ReplaceBooleanProperty(data, "enableBrowserLogin", session.Property("ENABLE_BROWSER_LOGIN"));
             data = ReplaceBooleanProperty(data, "browserLoginAutoConnect", session.Property("BROWSER_LOGIN_AUTOCONNECT"));
             data = ReplaceBooleanProperty(data, "forceAutoUpdate", session.Property("FORCE_AUTO_UPDATE"));
+            data = ReplaceBooleanProperty(data, "isPodUrlEditable", session.Property("IS_POD_URL_EDITABLE"));
             // Write the contents back to the file
             System.IO.File.WriteAllText(filename, data);
         }
