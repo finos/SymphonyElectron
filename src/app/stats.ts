@@ -13,8 +13,8 @@ import {
 } from './analytics-handler';
 
 export class AppStats {
-  private MB_IN_BYTES = 1048576;
   public startTime = new Date().toISOString();
+  private MB_IN_BYTES = 1048576;
 
   /**
    * Logs all statistics of the app
@@ -33,7 +33,11 @@ export class AppStats {
    * Sends an analytics event
    * @private
    */
-  public async sendAnalytics(actionType: SDAUserSessionActionTypes, endReason?: SDAEndReasonTypes, crashProcess: string = '') {
+  public async sendAnalytics(
+    actionType: SDAUserSessionActionTypes,
+    endReason?: SDAEndReasonTypes,
+    crashProcess: string = '',
+  ) {
     console.time(`stats ${actionType}`);
     const cpu = await si.cpu();
     const mem = await si.mem();
@@ -203,7 +207,7 @@ export class AppStats {
     if (!uptime) {
       return '';
     }
-    const uptimeDatetime = new Date(Date.now() - (uptime * 1000));
+    const uptimeDatetime = new Date(Date.now() - uptime * 1000);
     return uptimeDatetime.toISOString();
   }
 }

@@ -38,7 +38,7 @@ export interface ISessionData extends IAnalyticsData {
     vdi?: boolean;
     endReason?: string;
     crashProcess?: string;
-  },
+  };
 }
 
 export enum MenuActionTypes {
