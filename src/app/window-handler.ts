@@ -18,36 +18,20 @@ import {
 } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
-import { format, parse } from 'url';
+import {format, parse} from 'url';
 
-import {
-  apiName,
-  ICallNotificationData,
-  INotificationData,
-  Themes,
-  WindowTypes,
-} from '../common/api-interface';
-import { isDevEnv, isLinux, isMac, isWindowsOS } from '../common/env';
-import { i18n, LocaleType } from '../common/i18n';
-import { ScreenShotAnnotation } from '../common/ipcEvent';
-import { logger } from '../common/logger';
-import {
-  calculatePercentage,
-  getCommandLineArgs,
-  getGuid,
-  throttle,
-} from '../common/utils';
-import { notification } from '../renderer/notification';
-import { cleanAppCacheOnCrash } from './app-cache-handler';
-import { AppMenu } from './app-menu';
-import { closeC9Pipe } from './c9-pipe-handler';
-import { handleChildWindow } from './child-window-handler';
-import {
-  CloudConfigDataTypes,
-  config,
-  IConfig,
-  IGlobalConfig,
-} from './config-handler';
+import {apiName, ICallNotificationData, INotificationData, Themes, WindowTypes,} from '../common/api-interface';
+import {isDevEnv, isLinux, isMac, isWindowsOS} from '../common/env';
+import {i18n, LocaleType} from '../common/i18n';
+import {ScreenShotAnnotation} from '../common/ipcEvent';
+import {logger} from '../common/logger';
+import {calculatePercentage, getCommandLineArgs, getGuid, throttle,} from '../common/utils';
+import {notification} from '../renderer/notification';
+import {cleanAppCacheOnCrash} from './app-cache-handler';
+import {AppMenu} from './app-menu';
+import {closeC9Pipe} from './c9-pipe-handler';
+import {handleChildWindow} from './child-window-handler';
+import {CloudConfigDataTypes, config, IConfig, IGlobalConfig,} from './config-handler';
 import crashHandler from './crash-handler';
 import LocalMenuShortcuts from './local-menu-shortcuts';
 import { mainEvents } from './main-event-handler';
@@ -79,6 +63,8 @@ import {
   viewExists,
   windowExists,
 } from './window-utils';
+import { SDAEndReasonTypes, SDAUserSessionActionTypes } from "./analytics-handler";
+import { appStats } from "./stats";
 
 const windowSize: string | null = getCommandLineArgs(
   process.argv,
@@ -2320,6 +2306,7 @@ export class WindowHandler {
   }
 
   public exitApplication = async (shouldRelaunch: boolean = true) => {
+    await appStats.sendAnalytics(SDAUserSessionActionTypes.End, shouldRelaunch ? SDAEndReasonTypes.Reboot : SDAEndReasonTypes.Closed);
     config.writeUserConfig();
     if (shouldRelaunch) {
       app.relaunch();

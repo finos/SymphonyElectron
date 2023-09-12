@@ -1,10 +1,20 @@
 import { app } from 'electron';
 import * as os from 'os';
+import * as si from 'systeminformation';
+
 import { buildNumber, version } from '../../package.json';
 import { logger } from '../common/logger';
+import {
+  analytics,
+  AnalyticsElements,
+  ISessionData,
+  SDAEndReasonTypes,
+  SDAUserSessionActionTypes,
+} from './analytics-handler';
 
 export class AppStats {
   private MB_IN_BYTES = 1048576;
+  public startTime = new Date().toISOString();
 
   /**
    * Logs all statistics of the app
@@ -16,6 +26,48 @@ export class AppStats {
     this.logAppMetrics();
     this.logConfigurationData();
     this.logAppEvents();
+    this.sendAnalytics(SDAUserSessionActionTypes.Start);
+  }
+
+  /**
+   * Sends an analytics event
+   * @private
+   */
+  public async sendAnalytics(actionType: SDAUserSessionActionTypes, endReason?: SDAEndReasonTypes, crashProcess: string = '') {
+    console.time(`stats ${actionType}`);
+    const cpu = await si.cpu();
+    const mem = await si.mem();
+    const cpuUsage = await si.currentLoad();
+    const osInfo = await si.osInfo();
+    const uuid = await si.uuid();
+    const time = await si.time();
+    const totalMem = this.convertToMB(os.totalmem());
+    const usedMem = this.convertToMB(mem.used);
+    console.timeEnd(`stats ${actionType}`);
+    const event: ISessionData = {
+      element: AnalyticsElements.SDA_SESSION,
+      action_type: actionType,
+      extra_data: {
+        sessionStartDatetime: this.startTime,
+        machineStartDatetime: this.convertUptime(time.uptime),
+        machineId: uuid.os,
+        osName: os.platform(),
+        osVersion: osInfo.release,
+        osLanguage: app.getLocale(),
+        cpuNumberOfCores: cpu.cores,
+        cpuMaxFrequency: cpu.speedMax,
+        cpuUsagePercent: Math.round(cpuUsage.currentLoad),
+        memoryTotal: this.convertToMB(os.totalmem()),
+        memoryUsedPercent: this.calculatePercentage(usedMem, totalMem),
+        sdaUsedMemory: this.convertToMB(process.memoryUsage().heapUsed),
+        memoryAvailable: this.convertToMB(mem.available),
+        vdi: !!osInfo.hypervizor,
+        endReason: endReason ? endReason : undefined,
+        crashProcess,
+      },
+    };
+    logger.info(`Analytics Track -> `, event);
+    analytics.track(event);
   }
 
   /**
@@ -121,6 +173,38 @@ export class AppStats {
     logger.info(`stats: Chrome Version? ${process.versions.chrome}`);
     logger.info(`stats: Electron Version? ${process.versions.electron}`);
     logger.info(`stats: SDA Version? ${version} (${buildNumber})`);
+  }
+
+  /**
+   * Calculates percentage
+   * @param value
+   * @param total
+   * @private
+   */
+  private calculatePercentage(value: number = 0, total: number = 0): number {
+    return Math.round((value / total) * 100);
+  }
+
+  /**
+   * Converts and fixes number
+   * @param value
+   * @private
+   */
+  private convertToMB(value: number = 0): number {
+    return Math.round(value / this.MB_IN_BYTES);
+  }
+
+  /**
+   * Converts time to datetime
+   * @param uptime
+   * @private
+   */
+  private convertUptime(uptime): string {
+    if (!uptime) {
+      return '';
+    }
+    const uptimeDatetime = new Date(Date.now() - (uptime * 1000));
+    return uptimeDatetime.toISOString();
   }
 }
 

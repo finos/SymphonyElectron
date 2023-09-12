@@ -7,6 +7,8 @@ import { buildNumber } from '../../package.json';
 import { isDevEnv, isElectronQA, isLinux, isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { arrayEquals, filterOutSelectedValues, pick } from '../common/utils';
+import { appStats } from './stats';
+import { SDAEndReasonTypes, SDAUserSessionActionTypes } from './analytics-handler';
 
 const writeFile = util.promisify(fs.writeFile);
 
@@ -233,6 +235,7 @@ class Config {
           powerSaveBlocker.isStarted(id),
         );
         this.writeUserConfig();
+        await appStats.sendAnalytics(SDAUserSessionActionTypes.End, SDAEndReasonTypes.Closed);
         this.isUpdatingConfigFile = false;
         this.didUpdateConfigFile = true;
         powerSaveBlocker.stop(id);
