@@ -72,6 +72,7 @@
   "Edit": "Modifier",
   "Enable Hamburger menu": "Activer le menu hamburger",
   "Enable GPU": "Activer le GPU",
+  "Error in Main Process. Would you like to restart the app?": "Une erreur est survenue dans la procédure principale. Souhaitez-vous redémarrer l'application ?",
   "Error loading configuration": "Erreur de chargement de la configuration",
   "Error loading URL": "Erreur de chargement de l'URL",
   "Error loading window": "Erreur de chargement de la fenêtre",
@@ -256,7 +257,7 @@
     "BUSY": "Occupé(e)",
     "AVAILABLE": "En ligne",
     "OUT_OF_OFFICE": "Absent(e) du bureau",
-    "BE_RIGHT_BACK": "De retour dans quelques minutes",
+    "BE_RIGHT_BACK": "De retour dans quelques instants",
     "IN_A_MEETING": "En réunion"
   },
   "Status": "Statut",
