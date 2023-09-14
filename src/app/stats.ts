@@ -35,7 +35,6 @@ export class AppStats {
     this.logConfigurationData();
     this.logAppEvents();
     this.sendAnalytics(SDAUserSessionActionTypes.Start);
-    this.sendLocalAnalytics();
   }
 
   /**
@@ -110,6 +109,31 @@ export class AppStats {
         `stats: failed to update stats with ${JSON.stringify(this.stats)}`,
         error,
       );
+    }
+  };
+
+  /**
+   * Sends all the locally stored stats
+   */
+  public sendLocalAnalytics = async () => {
+    if (fs.existsSync(this.statsEventsDataFilePath)) {
+      const localStats = fs.readFileSync(this.statsEventsDataFilePath, 'utf8');
+      if (!localStats) {
+        return;
+      }
+      let parsedStats: ISessionData[];
+      try {
+        parsedStats = JSON.parse(localStats);
+        logger.info(`stats: parsed stats JSON file with data`, parsedStats);
+        if (parsedStats && parsedStats.length) {
+          parsedStats.forEach((event) => {
+            analytics.track(event);
+          });
+          fs.unlinkSync(this.statsEventsDataFilePath);
+        }
+      } catch (e: any) {
+        logger.error(`stats: parsing stats JSON file failed due to error ${e}`);
+      }
     }
   };
 
@@ -249,31 +273,6 @@ export class AppStats {
     const uptimeDatetime = new Date(Date.now() - uptime * 1000);
     return uptimeDatetime.toISOString();
   }
-
-  /**
-   * Sends all the locally stored stats
-   */
-  private sendLocalAnalytics = async () => {
-    if (fs.existsSync(this.statsEventsDataFilePath)) {
-      const localStats = fs.readFileSync(this.statsEventsDataFilePath, 'utf8');
-      if (!localStats) {
-        return;
-      }
-      let parsedStats: ISessionData[];
-      try {
-        parsedStats = JSON.parse(localStats);
-        logger.info(`stats: parsed stats JSON file with data`, parsedStats);
-        if (parsedStats && parsedStats.length) {
-          parsedStats.forEach((event) => {
-            analytics.track(event);
-          });
-          fs.unlinkSync(this.statsEventsDataFilePath);
-        }
-      } catch (e: any) {
-        logger.error(`stats: parsing stats JSON file failed due to error ${e}`);
-      }
-    }
-  };
 }
 
 const appStats = new AppStats();

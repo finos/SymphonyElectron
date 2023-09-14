@@ -31,6 +31,7 @@ interface IApp {
   once(eventName: any, cb: any): void;
   setPath(value: string, path: string): void;
   setLoginItemSettings(settings: { openAtLogin: boolean; path: string }): void;
+  getLocale(): string;
   getLoginItemSettings(options?: {
     path: string;
     args: string[];
@@ -102,6 +103,9 @@ export const app: IApp = {
   setLoginItemSettings: () => jest.fn(),
   getLoginItemSettings: (): ILoginItemSettings => {
     return { openAtLogin: true };
+  },
+  getLocale(): string {
+    return '';
   },
   setAppLogsPath: (): void => {
     return;
