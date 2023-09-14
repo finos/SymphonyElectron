@@ -1,5 +1,7 @@
 import { app } from 'electron';
+import * as fs from 'fs';
 import * as os from 'os';
+import * as path from 'path';
 import * as si from 'systeminformation';
 
 import { buildNumber, version } from '../../package.json';
@@ -7,6 +9,7 @@ import { logger } from '../common/logger';
 import {
   analytics,
   AnalyticsElements,
+  IAnalyticsData,
   ISessionData,
   SDAEndReasonTypes,
   SDAUserSessionActionTypes,
@@ -15,6 +18,11 @@ import {
 export class AppStats {
   public startTime = new Date().toISOString();
   private MB_IN_BYTES = 1048576;
+  private stats: IAnalyticsData[] = [];
+  private statsEventsDataFilePath = path.join(
+    app.getPath('userData'),
+    'statsAnalytics.json',
+  );
 
   /**
    * Logs all statistics of the app
@@ -27,6 +35,7 @@ export class AppStats {
     this.logConfigurationData();
     this.logAppEvents();
     this.sendAnalytics(SDAUserSessionActionTypes.Start);
+    this.sendLocalAnalytics();
   }
 
   /**
@@ -71,8 +80,38 @@ export class AppStats {
       },
     };
     logger.info(`Analytics Track -> `, event);
-    analytics.track(event);
+    if (
+      actionType === SDAUserSessionActionTypes.End ||
+      actionType === SDAUserSessionActionTypes.Logout
+    ) {
+      this.stats.push(event);
+    } else {
+      analytics.track(event);
+    }
   }
+
+  /**
+   * Writes all the pending stats into a file
+   */
+  public writeAnalyticFile = () => {
+    try {
+      fs.writeFileSync(
+        this.statsEventsDataFilePath,
+        JSON.stringify(this.stats, null, 2),
+        { encoding: 'utf8' },
+      );
+      logger.info(
+        `stats: updated stats values with the data ${JSON.stringify(
+          this.stats,
+        )}`,
+      );
+    } catch (error) {
+      logger.error(
+        `stats: failed to update stats with ${JSON.stringify(this.stats)}`,
+        error,
+      );
+    }
+  };
 
   /**
    * Logs system related statistics
@@ -210,6 +249,31 @@ export class AppStats {
     const uptimeDatetime = new Date(Date.now() - uptime * 1000);
     return uptimeDatetime.toISOString();
   }
+
+  /**
+   * Sends all the locally stored stats
+   */
+  private sendLocalAnalytics = async () => {
+    if (fs.existsSync(this.statsEventsDataFilePath)) {
+      const localStats = fs.readFileSync(this.statsEventsDataFilePath, 'utf8');
+      if (!localStats) {
+        return;
+      }
+      let parsedStats: ISessionData[];
+      try {
+        parsedStats = JSON.parse(localStats);
+        logger.info(`stats: parsed stats JSON file with data`, parsedStats);
+        if (parsedStats && parsedStats.length) {
+          parsedStats.forEach((event) => {
+            analytics.track(event);
+          });
+          fs.unlinkSync(this.statsEventsDataFilePath);
+        }
+      } catch (e: any) {
+        logger.error(`stats: parsing stats JSON file failed due to error ${e}`);
+      }
+    }
+  };
 }
 
 const appStats = new AppStats();

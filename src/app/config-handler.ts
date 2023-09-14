@@ -242,6 +242,7 @@ class Config {
           SDAUserSessionActionTypes.End,
           SDAEndReasonTypes.Closed,
         );
+        appStats.writeAnalyticFile();
         this.isUpdatingConfigFile = false;
         this.didUpdateConfigFile = true;
         powerSaveBlocker.stop(id);

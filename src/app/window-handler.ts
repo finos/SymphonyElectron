@@ -2329,6 +2329,7 @@ export class WindowHandler {
       SDAUserSessionActionTypes.End,
       shouldRelaunch ? SDAEndReasonTypes.Reboot : SDAEndReasonTypes.Closed,
     );
+    appStats.writeAnalyticFile();
     config.writeUserConfig();
     if (shouldRelaunch) {
       app.relaunch();
