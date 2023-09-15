@@ -34,7 +34,8 @@ export class AutoUpdate {
   private finalAutoUpdateChannel: string | undefined = undefined;
   private installVariant: string | undefined = undefined;
   private shouldRetrieveRegistry: boolean = true;
-  private channelConfigLocation: ChannelConfigLocation = ChannelConfigLocation.LOCALFILE;
+  private channelConfigLocation: ChannelConfigLocation =
+    ChannelConfigLocation.LOCALFILE;
 
   constructor() {
     this.getGenericServerOptions().then((opts) => {
@@ -225,7 +226,9 @@ export class AutoUpdate {
       'installVariant',
     ]);
 
-    const cc = config.getFilteredCloudConfigFields(['autoUpdateChannel']);
+    const cc = config.getFilteredCloudConfigFields([
+      'betaAutoUpdateChannelEnabled',
+    ]);
     this.channelConfigLocation =
       'autoUpdateChannel' in cc && cc?.autoUpdateChannel
         ? ChannelConfigLocation.ACP
