@@ -38,6 +38,10 @@ import {
   throttle,
 } from '../common/utils';
 import { notification } from '../renderer/notification';
+import {
+  SDAEndReasonTypes,
+  SDAUserSessionActionTypes,
+} from './analytics-handler';
 import { cleanAppCacheOnCrash } from './app-cache-handler';
 import { AppMenu } from './app-menu';
 import { closeC9Pipe } from './c9-pipe-handler';
@@ -54,6 +58,7 @@ import { mainEvents } from './main-event-handler';
 import { presenceStatus } from './presence-status-handler';
 import { exportLogs } from './reports-handler';
 import { SpellChecker } from './spell-check-handler';
+import { appStats } from './stats';
 import { winStore } from './stores';
 import { checkIfBuildExpired } from './ttl-handler';
 import { versionHandler } from './version-handler';
@@ -2320,6 +2325,11 @@ export class WindowHandler {
   }
 
   public exitApplication = async (shouldRelaunch: boolean = true) => {
+    await appStats.sendAnalytics(
+      SDAUserSessionActionTypes.End,
+      shouldRelaunch ? SDAEndReasonTypes.Reboot : SDAEndReasonTypes.Closed,
+    );
+    appStats.writeAnalyticFile();
     config.writeUserConfig();
     if (shouldRelaunch) {
       app.relaunch();

@@ -20,7 +20,7 @@ import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { whitelistHandler } from '../common/whitelist-handler';
 import { activityDetection } from './activity-detection';
-import { analytics } from './analytics-handler';
+import { analytics, SDAUserSessionActionTypes } from './analytics-handler';
 import appStateHandler from './app-state-handler';
 import { closeC9Pipe, connectC9Pipe, writeC9Pipe } from './c9-pipe-handler';
 import { loadC9Shell, terminateC9Shell } from './c9-shell-handler';
@@ -54,6 +54,7 @@ import { getCommandLineArgs } from '../common/utils';
 import callNotificationHelper from '../renderer/call-notification-helper';
 import { autoUpdate, AutoUpdateTrigger } from './auto-update-handler';
 import { presenceStatus } from './presence-status-handler';
+import { appStats } from './stats';
 import { presenceStatusStore } from './stores/index';
 import { voiceHandler } from './voice-handler';
 
@@ -75,12 +76,14 @@ const broadcastMessage = (method, data) => {
 const getBrowserLoginUrl = (pod: string) =>
   `${pod}/login/sso/initsso?RelayState=${pod}/apps/login?callbackScheme=symphony&action=login`;
 const AUTH_STATUS_PATH = '/login/checkauth?type=user';
+
 interface IProxyDetails {
   username: string;
   password: string;
   hostname: string;
   retries: number;
 }
+
 const proxyDetails: IProxyDetails = {
   username: '',
   password: '',
@@ -294,7 +297,7 @@ ipcMain.on(
         break;
       case apiCmds.memoryInfo:
         if (typeof arg.memoryInfo === 'object') {
-          memoryMonitor.setMemoryInfo(arg.memoryInfo);
+          await memoryMonitor.setMemoryInfo(arg.memoryInfo);
         }
         break;
       case apiCmds.getConfigUrl:
@@ -327,6 +330,8 @@ ipcMain.on(
             appMenu.buildMenu();
           }
           logger.info('main-api-handler: isMana: ' + windowHandler.isMana);
+          await appStats.sendAnalytics(SDAUserSessionActionTypes.Login);
+          appStats.sendLocalAnalytics();
         }
         break;
       case apiCmds.showNotification:
@@ -361,6 +366,7 @@ ipcMain.on(
 
         main?.setThumbarButtons([]);
         presenceStatus.onSignOut();
+        await appStats.sendAnalytics(SDAUserSessionActionTypes.Logout);
         break;
       case apiCmds.setZoomLevel:
         if (typeof arg.zoomLevel === 'number') {

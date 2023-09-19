@@ -1,10 +1,32 @@
 import { app } from 'electron';
+import * as fs from 'fs';
 import * as os from 'os';
+import * as path from 'path';
+import * as si from 'systeminformation';
+
 import { buildNumber, version } from '../../package.json';
 import { logger } from '../common/logger';
+import {
+  analytics,
+  AnalyticsElements,
+  IAnalyticsData,
+  ISessionData,
+  SDAEndReasonTypes,
+  SDAUserSessionActionTypes,
+} from './analytics-handler';
+
+const MAX_USAGE_CHECK_INTERVAL = 15 * 60 * 1000; // every 15min
 
 export class AppStats {
+  public startTime = new Date().toISOString();
   private MB_IN_BYTES = 1048576;
+  private stats: IAnalyticsData[] = [];
+  private statsEventsDataFilePath = path.join(
+    app.getPath('userData'),
+    'statsAnalytics.json',
+  );
+  private maxMemoryUsed: number = 0;
+  private maxCPUUsage: number = 0;
 
   /**
    * Logs all statistics of the app
@@ -16,7 +38,113 @@ export class AppStats {
     this.logAppMetrics();
     this.logConfigurationData();
     this.logAppEvents();
+    this.sendAnalytics(SDAUserSessionActionTypes.Start);
+    setInterval(async () => {
+      await this.captureMaxValue();
+    }, MAX_USAGE_CHECK_INTERVAL);
   }
+
+  /**
+   * Sends an analytics event
+   * @private
+   */
+  public async sendAnalytics(
+    actionType: SDAUserSessionActionTypes,
+    endReason?: SDAEndReasonTypes,
+    crashProcess: string = '',
+  ) {
+    console.time(`stats ${actionType}`);
+    const cpu = await si.cpu();
+    const mem = await si.mem();
+    const cpuUsage = await si.currentLoad();
+    const osInfo = await si.osInfo();
+    const uuid = await si.uuid();
+    const time = await si.time();
+    const totalMem = this.convertToMB(os.totalmem());
+    const usedMem = this.convertToMB(mem.used);
+    console.timeEnd(`stats ${actionType}`);
+    const event: ISessionData = {
+      element: AnalyticsElements.SDA_SESSION,
+      action_type: actionType,
+      extra_data: {
+        sessionStartDatetime: this.startTime,
+        machineStartDatetime: this.convertUptime(time.uptime),
+        machineId: uuid.os,
+        osName: os.platform(),
+        osVersion: osInfo.release,
+        osLanguage: app.getLocale(),
+        cpuNumberOfCores: cpu.cores,
+        cpuMaxFrequency: cpu.speedMax,
+        cpuUsagePercent: Math.round(cpuUsage.currentLoad),
+        maxCPUUsagePercent: this.maxCPUUsage,
+        memoryTotal: this.convertToMB(os.totalmem()),
+        memoryUsedPercent: this.calculatePercentage(usedMem, totalMem),
+        maxMemoryUsedPercent: this.maxMemoryUsed,
+        sdaUsedMemory: this.convertToMB(process.memoryUsage().heapUsed),
+        memoryAvailable: this.convertToMB(mem.available),
+        vdi: !!osInfo.hypervizor,
+        endReason: endReason ? endReason : undefined,
+        crashProcess,
+      },
+    };
+    logger.info(`Analytics Track -> `, event);
+    if (
+      actionType === SDAUserSessionActionTypes.End ||
+      actionType === SDAUserSessionActionTypes.Logout
+    ) {
+      this.stats.push(event);
+    } else {
+      analytics.track(event);
+    }
+  }
+
+  /**
+   * Writes all the pending stats into a file
+   */
+  public writeAnalyticFile = () => {
+    try {
+      fs.writeFileSync(
+        this.statsEventsDataFilePath,
+        JSON.stringify(this.stats, null, 2),
+        { encoding: 'utf8' },
+      );
+      logger.info(
+        `stats: updated stats values with the data ${JSON.stringify(
+          this.stats,
+        )}`,
+      );
+    } catch (error) {
+      logger.error(
+        `stats: failed to update stats with ${JSON.stringify(this.stats)}`,
+        error,
+      );
+    }
+  };
+
+  /**
+   * Sends all the locally stored stats
+   */
+  public sendLocalAnalytics = async () => {
+    if (fs.existsSync(this.statsEventsDataFilePath)) {
+      const localStats = fs.readFileSync(this.statsEventsDataFilePath, 'utf8');
+      if (!localStats) {
+        return;
+      }
+      let parsedStats: ISessionData[];
+      try {
+        parsedStats = JSON.parse(localStats);
+        logger.info(`stats: parsed stats JSON file with data`, parsedStats);
+        if (parsedStats && parsedStats.length) {
+          parsedStats.forEach((event) => {
+            analytics.track(event);
+          });
+          fs.unlinkSync(this.statsEventsDataFilePath);
+        }
+      } catch (e: any) {
+        logger.error(`stats: parsing stats JSON file failed due to error ${e}`);
+      }
+    }
+  };
 
   /**
    * Logs system related statistics
@@ -121,6 +249,58 @@ export class AppStats {
     logger.info(`stats: Chrome Version? ${process.versions.chrome}`);
     logger.info(`stats: Electron Version? ${process.versions.electron}`);
     logger.info(`stats: SDA Version? ${version} (${buildNumber})`);
+  }
+
+  /**
+   * Calculates percentage
+   * @param value
+   * @param total
+   * @private
+   */
+  private calculatePercentage(value: number = 0, total: number = 0): number {
+    return Math.round((value / total) * 100);
+  }
+
+  /**
+   * Converts and fixes number
+   * @param value
+   * @private
+   */
+  private convertToMB(value: number = 0): number {
+    return Math.round(value / this.MB_IN_BYTES);
+  }
+
+  /**
+   * Converts time to datetime
+   * @param uptime
+   * @private
+   */
+  private convertUptime(uptime): string {
+    if (!uptime) {
+      return '';
+    }
+    const uptimeDatetime = new Date(Date.now() - uptime * 1000);
+    return uptimeDatetime.toISOString();
+  }
+
+  /**
+   * Captures the max CPU & Memory value
+   * @private
+   */
+  private async captureMaxValue(): Promise<void> {
+    const mem = await si.mem();
+    const cpuUsage = await si.currentLoad();
+
+    const cpuUsagePercent = Math.round(cpuUsage.currentLoad);
+    const totalMem = this.convertToMB(os.totalmem());
+    const usedMem = this.convertToMB(mem.used);
+    const memUsedPercentage = this.calculatePercentage(usedMem, totalMem);
+    if (memUsedPercentage > this.maxMemoryUsed) {
+      this.maxMemoryUsed = memUsedPercentage;
+    }
+    if (cpuUsagePercent > this.maxCPUUsage) {
+      this.maxCPUUsage = cpuUsagePercent;
+    }
   }
 }
 

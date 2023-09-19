@@ -5,7 +5,8 @@ export interface IAnalyticsData {
   action_type?:
     | MenuActionTypes
     | ScreenSnippetActionTypes
-    | ToastNotificationActionTypes;
+    | ToastNotificationActionTypes
+    | SDAUserSessionActionTypes;
   action_result?: AnalyticsActions;
   extra_data?: object;
 }
@@ -15,6 +16,31 @@ export interface ICrashData extends IAnalyticsData {
   crashCause: string;
   windowName: string;
   miniDump?: string;
+}
+
+export interface ISessionData extends IAnalyticsData {
+  extra_data?: {
+    sessionStartDatetime?: string;
+    machineStartDatetime?: string;
+    machineId?: string;
+    InstallVariant?: string;
+    osName?: string;
+    osVersion?: string;
+    osLanguage?: string;
+    osTimeZone?: string;
+    cpuNumberOfCores?: number;
+    cpuMaxFrequency?: number;
+    cpuUsagePercent?: number;
+    maxCPUUsagePercent?: number;
+    memoryTotal?: number;
+    memoryUsedPercent?: number;
+    maxMemoryUsedPercent?: number;
+    sdaUsedMemory?: number;
+    memoryAvailable?: number;
+    vdi?: boolean;
+    endReason?: string;
+    crashProcess?: string;
+  };
 }
 
 export enum MenuActionTypes {
@@ -42,6 +68,21 @@ export enum ToastNotificationActionTypes {
   TOAST_CLOSED = 'toast_closed',
 }
 
+export enum SDAUserSessionActionTypes {
+  Start = 'Start',
+  End = 'End',
+  Login = 'Login',
+  Logout = 'Logout',
+  Crash = 'Crash',
+  ForceReload = 'Force_reload',
+}
+
+export enum SDAEndReasonTypes {
+  Reboot = 'Reboot',
+  Closed = 'Closed',
+  Crashed = 'Crashed',
+}
+
 export enum AnalyticsActions {
   ENABLED = 'ON',
   DISABLED = 'OFF',
@@ -52,6 +93,7 @@ export enum AnalyticsElements {
   SCREEN_CAPTURE_ANNOTATE = 'screen_capture_annotate',
   TOAST_NOTIFICATION = 'toast_notification',
   SDA_CRASH = 'sda_crash',
+  SDA_SESSION = 'sda_session',
 }
 
 export enum SDACrashProcess {

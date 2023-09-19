@@ -18,6 +18,12 @@ export enum AutoUpdateTrigger {
   AUTOMATED = 'AUTOMATED',
 }
 
+export enum ChannelConfigLocation {
+  LOCALFILE = 'LOCALEFILE',
+  ACP = 'ACP',
+  REGISTRY = 'REGISTRY',
+}
+
 const AUTO_UPDATE_REASON = 'autoUpdate';
 
 export class AutoUpdate {
@@ -28,6 +34,8 @@ export class AutoUpdate {
   private finalAutoUpdateChannel: string | undefined = undefined;
   private installVariant: string | undefined = undefined;
   private shouldRetrieveRegistry: boolean = true;
+  private channelConfigLocation: ChannelConfigLocation =
+    ChannelConfigLocation.LOCALFILE;
 
   constructor() {
     this.getGenericServerOptions().then((opts) => {
@@ -173,7 +181,7 @@ export class AutoUpdate {
           autoUpdateTrigger: this.autoUpdateTrigger,
           autoUpdateChannel: this.finalAutoUpdateChannel,
           installVariant: this.installVariant,
-          channelConfigLocation: null,
+          channelConfigLocation: this.channelConfigLocation,
           sessionStartDatetime: null,
           machineStartDatetime: null,
           machineId: null,
@@ -217,6 +225,14 @@ export class AutoUpdate {
       'autoUpdateChannel',
       'installVariant',
     ]);
+
+    const cc = config.getFilteredCloudConfigFields([
+      'betaAutoUpdateChannelEnabled',
+    ]);
+    this.channelConfigLocation = cc
+      ? ChannelConfigLocation.ACP
+      : ChannelConfigLocation.LOCALFILE;
+
     this.finalAutoUpdateChannel = autoUpdateChannel;
     this.installVariant = installVariant;
     if (isWindowsOS) {
@@ -233,6 +249,7 @@ export class AutoUpdate {
         : '';
       if (identifiedChannelFromRegistry) {
         this.finalAutoUpdateChannel = identifiedChannelFromRegistry;
+        this.channelConfigLocation = ChannelConfigLocation.REGISTRY;
       }
     }
   };
