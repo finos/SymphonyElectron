@@ -92,6 +92,11 @@ export enum apiName {
 
 export const NOTIFICATION_WINDOW_TITLE = 'Notification - Symphony';
 
+enum ScreenTypes {
+  Screen = 'screen',
+  Window = 'window',
+}
+
 export interface IApiArgs {
   memoryInfo: Electron.ProcessMemoryInfo;
   word: string;
@@ -133,7 +138,7 @@ export interface IApiArgs {
   isBrowserLoginEnabled: boolean;
   browserLoginAutoConnect: boolean;
   swiftSearchData: any;
-  types: string[];
+  types: ScreenTypes[];
   thumbnailSize: Size;
   pipe: string;
   data: Uint8Array;
