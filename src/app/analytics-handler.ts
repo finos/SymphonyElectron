@@ -31,8 +31,10 @@ export interface ISessionData extends IAnalyticsData {
     cpuNumberOfCores?: number;
     cpuMaxFrequency?: number;
     cpuUsagePercent?: number;
+    maxCPUUsagePercent?: number;
     memoryTotal?: number;
     memoryUsedPercent?: number;
+    maxMemoryUsedPercent?: number;
     sdaUsedMemory?: number;
     memoryAvailable?: number;
     vdi?: boolean;
@@ -72,6 +74,7 @@ export enum SDAUserSessionActionTypes {
   Login = 'Login',
   Logout = 'Logout',
   Crash = 'Crash',
+  ForceReload = 'Force_reload',
 }
 
 export enum SDAEndReasonTypes {

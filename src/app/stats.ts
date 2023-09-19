@@ -15,6 +15,8 @@ import {
   SDAUserSessionActionTypes,
 } from './analytics-handler';
 
+const MAX_USAGE_CHECK_INTERVAL = 15 * 60 * 1000; // every 15min
+
 export class AppStats {
   public startTime = new Date().toISOString();
   private MB_IN_BYTES = 1048576;
@@ -23,6 +25,8 @@ export class AppStats {
     app.getPath('userData'),
     'statsAnalytics.json',
   );
+  private maxMemoryUsed: number = 0;
+  private maxCPUUsage: number = 0;
 
   /**
    * Logs all statistics of the app
@@ -35,6 +39,9 @@ export class AppStats {
     this.logConfigurationData();
     this.logAppEvents();
     this.sendAnalytics(SDAUserSessionActionTypes.Start);
+    setInterval(async () => {
+      await this.captureMaxValue();
+    }, MAX_USAGE_CHECK_INTERVAL);
   }
 
   /**
@@ -69,8 +76,10 @@ export class AppStats {
         cpuNumberOfCores: cpu.cores,
         cpuMaxFrequency: cpu.speedMax,
         cpuUsagePercent: Math.round(cpuUsage.currentLoad),
+        maxCPUUsagePercent: this.maxCPUUsage,
         memoryTotal: this.convertToMB(os.totalmem()),
         memoryUsedPercent: this.calculatePercentage(usedMem, totalMem),
+        maxMemoryUsedPercent: this.maxMemoryUsed,
         sdaUsedMemory: this.convertToMB(process.memoryUsage().heapUsed),
         memoryAvailable: this.convertToMB(mem.available),
         vdi: !!osInfo.hypervizor,
@@ -272,6 +281,26 @@ export class AppStats {
     }
     const uptimeDatetime = new Date(Date.now() - uptime * 1000);
     return uptimeDatetime.toISOString();
+  }
+
+  /**
+   * Captures the max CPU & Memory value
+   * @private
+   */
+  private async captureMaxValue(): Promise<void> {
+    const mem = await si.mem();
+    const cpuUsage = await si.currentLoad();
+
+    const cpuUsagePercent = Math.round(cpuUsage.currentLoad);
+    const totalMem = this.convertToMB(os.totalmem());
+    const usedMem = this.convertToMB(mem.used);
+    const memUsedPercentage = this.calculatePercentage(usedMem, totalMem);
+    if (memUsedPercentage > this.maxMemoryUsed) {
+      this.maxMemoryUsed = memUsedPercentage;
+    }
+    if (cpuUsagePercent > this.maxCPUUsage) {
+      this.maxCPUUsage = cpuUsagePercent;
+    }
   }
 }
 

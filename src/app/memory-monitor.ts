@@ -2,7 +2,9 @@ import * as electron from 'electron';
 
 import { isMac } from '../common/env';
 import { logger } from '../common/logger';
+import { SDAUserSessionActionTypes } from './analytics-handler';
 import { CloudConfigDataTypes, config } from './config-handler';
+import { appStats } from './stats';
 import { windowHandler } from './window-handler';
 import { windowExists } from './window-utils';
 
@@ -30,12 +32,14 @@ class MemoryMonitor {
    *
    * @param memoryInfo {Electron.ProcessMemoryInfo}
    */
-  public setMemoryInfo(memoryInfo: Electron.ProcessMemoryInfo): void {
+  public async setMemoryInfo(
+    memoryInfo: Electron.ProcessMemoryInfo,
+  ): Promise<void> {
     this.memoryInfo = memoryInfo;
     logger.info(
       `memory-monitor: setting memory info to ${JSON.stringify(memoryInfo)}`,
     );
-    this.validateMemory();
+    await this.validateMemory();
   }
 
   /**
@@ -60,7 +64,7 @@ class MemoryMonitor {
   /**
    * Validates the predefined conditions and refreshes the client
    */
-  private validateMemory(): void {
+  private async validateMemory(): Promise<void> {
     logger.info('memory-monitor: validating memory refresh conditions');
     const { memoryRefresh } = config.getConfigFields(['memoryRefresh']);
     if (memoryRefresh !== CloudConfigDataTypes.ENABLED) {
@@ -135,6 +139,7 @@ class MemoryMonitor {
     logger.info(
       'memory-monitor: RELOADING -> auto reloading the app as all the conditions are satisfied',
     );
+    await appStats.sendAnalytics(SDAUserSessionActionTypes.ForceReload);
     this.reloadMainWindow();
   }
 

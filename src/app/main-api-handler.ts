@@ -297,7 +297,7 @@ ipcMain.on(
         break;
       case apiCmds.memoryInfo:
         if (typeof arg.memoryInfo === 'object') {
-          memoryMonitor.setMemoryInfo(arg.memoryInfo);
+          await memoryMonitor.setMemoryInfo(arg.memoryInfo);
         }
         break;
       case apiCmds.getConfigUrl:
