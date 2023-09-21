@@ -6,7 +6,8 @@ export interface IAnalyticsData {
     | MenuActionTypes
     | ScreenSnippetActionTypes
     | ToastNotificationActionTypes
-    | SDAUserSessionActionTypes;
+    | SDAUserSessionActionTypes
+    | InstallActionTypes;
   action_result?: AnalyticsActions;
   extra_data?: object;
 }
@@ -40,6 +41,13 @@ export interface ISessionData extends IAnalyticsData {
     vdi?: boolean;
     endReason?: string;
     crashProcess?: string;
+  };
+}
+
+export interface IInstallData extends IAnalyticsData {
+  extra_data?: {
+    installLocation: string;
+    installType: string;
   };
 }
 
@@ -77,6 +85,24 @@ export enum SDAUserSessionActionTypes {
   ForceReload = 'Force_reload',
 }
 
+export enum InstallActionTypes {
+  InstallStarted = 'Install_started',
+  InstallCompleted = 'Install_completed',
+  InstallFailed = 'Install_failed',
+}
+
+export enum InstallTypes {
+  Auto = 'auto',
+  Manual = 'manual',
+}
+
+export enum InstallLocationTypes {
+  PROG_FILES = 'PROG_FILES',
+  REMOTE = 'REMOTE',
+  LOCAL = 'LOCAL',
+  CUSTOM = 'CUSTOM',
+}
+
 export enum SDAEndReasonTypes {
   Reboot = 'Reboot',
   Closed = 'Closed',
@@ -94,6 +120,7 @@ export enum AnalyticsElements {
   TOAST_NOTIFICATION = 'toast_notification',
   SDA_CRASH = 'sda_crash',
   SDA_SESSION = 'sda_session',
+  SDA_INSTALL = 'sda_install',
 }
 
 export enum SDACrashProcess {
