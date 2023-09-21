@@ -21,11 +21,7 @@ function generateChannelsFiles(srcFile) {
   const targetedAutoUpdateChannels = ['stable', 'beta', 'iv', 'daily'];
   for (const channel of targetedAutoUpdateChannels) {
     const updatedFileName = srcFile.replace('latest', channel);
-    fs.copyFileSync(
-      yamlFilePath,
-      updatedFileName,
-      fs.constants.COPYFILE_FICLONE_FORCE,
-    );
+    fs.copyFileSync(srcFile, updatedFileName);
   }
 }
 
