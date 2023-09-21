@@ -4,6 +4,9 @@ import * as path from 'path';
 import { IConfig, IGlobalConfig } from '../src/app/config-handler';
 
 jest.mock('electron-log');
+jest.mock('../src/app/auto-update-handler', () => {
+  return {};
+});
 
 describe('config', () => {
   const configFileName: string = 'Symphony.config';
@@ -75,9 +78,8 @@ describe('config', () => {
       configInstance.readUserConfig();
       configInstance.readGlobalConfig();
 
-      const configField: IGlobalConfig = configInstance.getGlobalConfigFields(
-        fieldMock,
-      );
+      const configField: IGlobalConfig =
+        configInstance.getGlobalConfigFields(fieldMock);
 
       expect(configField.url).toBe('something');
     });
