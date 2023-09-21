@@ -11,7 +11,7 @@ import { retrieveWindowsRegistry } from './registry-handler';
 import { EChannelRegistry, RegistryStore } from './stores/registry-store';
 import { windowHandler } from './window-handler';
 
-const DEFAULT_AUTO_UPDATE_CHANNEL = 'client-bff/sda-update';
+const DEFAULT_AUTO_UPDATE_CHANNEL = 'apps/sda-update/default';
 
 export enum AutoUpdateTrigger {
   MANUAL = 'MANUAL',
