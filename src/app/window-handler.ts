@@ -1262,7 +1262,6 @@ export class WindowHandler {
       }
       const ABOUT_SYMPHONY_NAMESPACE = 'AboutSymphony';
       const versionLocalised = i18n.t('Version', ABOUT_SYMPHONY_NAMESPACE)();
-      const { hostname } = parse(this.userConfig.url || this.globalConfig.url);
       const userConfig = config.userConfig;
       const globalConfig = config.globalConfig;
       const cloudConfig = config.cloudConfig;
@@ -1272,15 +1271,18 @@ export class WindowHandler {
         ...userConfig,
         ...filteredConfig,
       };
+      const host = parse(
+        (userConfig as IConfig).url || (globalConfig as IConfig).url,
+      );
       const aboutInfo = {
         userConfig,
         globalConfig,
         cloudConfig,
         finalConfig,
-        hostname,
         versionLocalised,
         ...versionHandler.versionInfo,
         client,
+        hostname: host.hostname,
       };
       if (this.aboutAppWindow && windowExists(this.aboutAppWindow)) {
         this.aboutAppWindow.webContents.send('about-app-data', aboutInfo);
