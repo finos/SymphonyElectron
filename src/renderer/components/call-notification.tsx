@@ -48,10 +48,11 @@ export default class CallNotification extends React.Component<
     onAccept: (data) => (event: mouseEventButton) => this.accept(event, data),
     onReject: (data) => (event: mouseEventButton) => this.reject(event, data),
   };
+  private readonly defaultState: ICallNotificationState;
 
   constructor(props) {
     super(props);
-    this.state = {
+    this.defaultState = {
       title: 'Incoming call',
       primaryText: 'unknown',
       secondaryText: '',
@@ -68,6 +69,7 @@ export default class CallNotification extends React.Component<
       isExternal: false,
       theme: '',
     };
+    this.state = { ...this.defaultState };
     this.updateState = this.updateState.bind(this);
   }
 
@@ -134,11 +136,7 @@ export default class CallNotification extends React.Component<
       : callType === 'IM' || callType === 'ROOM'
       ? 'join'
       : 'answer';
-    const rejectText = rejectButtonText
-      ? rejectButtonText
-      : callType === 'IM' || callType === 'ROOM'
-      ? 'ignore'
-      : 'decline';
+    const rejectText = rejectButtonText ? rejectButtonText : 'decline';
 
     return (
       <div
@@ -165,8 +163,11 @@ export default class CallNotification extends React.Component<
               <div className='caller-name-container'>
                 <div
                   data-testid='CALL_NOTIFICATION_NAME'
-                  className={`caller-name ${themeClassName}`}
+                  className={`caller-name ${themeClassName} tooltip-trigger`}
                 >
+                  {primaryText}
+                </div>
+                <div className='tooltip-content tooltip-primary'>
                   {primaryText}
                 </div>
                 {this.renderExtBadge(isExternal)}
@@ -175,7 +176,12 @@ export default class CallNotification extends React.Component<
             {secondaryText ? (
               <div className='secondary-text-container'>
                 <div className='caller-details'>
-                  <div className={`caller-role ${themeClassName}`}>
+                  <div
+                    className={`caller-role ${themeClassName} tooltip-trigger`}
+                  >
+                    {secondaryText}
+                  </div>
+                  <div className='tooltip-content tooltip-secondary'>
                     {secondaryText}
                   </div>
                 </div>
@@ -264,6 +270,7 @@ export default class CallNotification extends React.Component<
    * @param data {Object}
    */
   private updateState(_event, data): void {
+    this.setState({ ...this.defaultState });
     const { color } = data;
     // FYI: 1.5 sends hex color but without '#', reason why we check and add prefix if necessary.
     // Goal is to keep backward compatibility with 1.5 colors (SDA v. 9.2.0)
@@ -305,7 +312,7 @@ export default class CallNotification extends React.Component<
       alt = 'Profile picture';
     }
 
-    if (!imageUrl) {
+    if (!imageUrl || isDefaultUrl) {
       const profilePlaceHolderClassName =
         callType === 'IM'
           ? 'profilePlaceHolderContainer'
