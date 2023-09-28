@@ -1,5 +1,5 @@
 import { app, powerMonitor, WebContents } from 'electron';
-import Timer = NodeJS.Timer;
+import Timeout = NodeJS.Timeout;
 
 import { logger } from '../common/logger';
 import { windowHandler } from './window-handler';
@@ -7,8 +7,8 @@ import { windowHandler } from './window-handler';
 class ActivityDetection {
   private idleThreshold: number;
   private window: WebContents | null;
-  private timer: Timer | undefined;
-  private queryInterval: NodeJS.Timer | undefined;
+  private timer: Timeout | undefined;
+  private queryInterval: Timeout | undefined;
 
   constructor() {
     this.idleThreshold = 60 * 60 * 1000;
