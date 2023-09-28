@@ -31,7 +31,7 @@ const CONTAINER_WIDTH = 363;
 interface ICustomBrowserWindow extends Electron.BrowserWindow {
   winName: string;
   notificationData: INotificationData;
-  displayTimer: NodeJS.Timer;
+  displayTimer: NodeJS.Timeout;
   clientId: number;
 }
 
@@ -75,7 +75,7 @@ class Notification extends NotificationHandler {
   };
   private activeNotifications: ICustomBrowserWindow[] = [];
   private inactiveWindows: ICustomBrowserWindow[] = [];
-  private cleanUpTimer: NodeJS.Timer;
+  private cleanUpTimer: NodeJS.Timeout;
   private notificationQueue: INotificationData[] = [];
 
   private readonly notificationCallbacks: any[] = [];
