@@ -457,9 +457,16 @@ export class WindowHandler {
       windowHandler.switchClient(clientSwitchType);
     }, SHORTCUT_KEY_THROTTLE);
     this.mainWebContents.on('before-input-event', (event, input) => {
+      const windowsDevTools =
+        input.control && input.shift && input.key.toLowerCase() === 'i';
+      const macDevTools =
+        input.meta && input.alt && input.key.toLowerCase() === 'i';
       if (input.control && input.shift && input.key.toLowerCase() === 'd') {
         event.preventDefault();
         throttledExportLogs();
+      } else if (windowsDevTools || macDevTools) {
+        event.preventDefault();
+        this.mainWebContents?.toggleDevTools();
       }
       const isCtrlOrMeta = isMac ? input.meta : input.control;
       if (this.url && this.url.startsWith('https://corporate.symphony.com')) {
