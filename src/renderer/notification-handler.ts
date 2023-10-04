@@ -31,6 +31,7 @@ const NEXT_INSERT_POSITION_WITH_INPUT = 142;
 const NOTIFICATIONS_PADDING_SEPARATION = 12;
 const CALL_NOTIFICATION_WIDTH = 264;
 const CALL_NOTIFICATION_HEIGHT = 286;
+const MAX_VISIBLE_TOAST_FOR_CALL_NOTIFICATION = 3;
 export default class NotificationHandler {
   public settings: ISettings;
   public callNotificationSettings: ICorner = { x: 0, y: 0 };
@@ -150,9 +151,9 @@ export default class NotificationHandler {
     }
     this.calculateDimensions();
     // Maximum amount of Notifications we can show:
-    this.settings.maxVisibleNotifications = Math.floor(
-      display.workAreaSize.height / this.settings.totalHeight,
-    );
+    this.settings.maxVisibleNotifications =
+      Math.floor(display.workAreaSize.height / this.settings.totalHeight) -
+      MAX_VISIBLE_TOAST_FOR_CALL_NOTIFICATION;
   }
 
   /**
