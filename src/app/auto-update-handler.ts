@@ -257,9 +257,10 @@ export class AutoUpdate {
     const cc = config.getFilteredCloudConfigFields([
       'betaAutoUpdateChannelEnabled',
     ]);
-    this.channelConfigLocation = cc
-      ? ChannelConfigLocation.ACP
-      : ChannelConfigLocation.LOCALFILE;
+    this.channelConfigLocation =
+      'betaAutoUpdateChannelEnabled' in cc && cc.betaAutoUpdateChannelEnabled
+        ? ChannelConfigLocation.ACP
+        : ChannelConfigLocation.LOCALFILE;
 
     this.finalAutoUpdateChannel = autoUpdateChannel;
     this.installVariant = installVariant;
