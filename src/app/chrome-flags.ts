@@ -48,6 +48,9 @@ export const setChromeFlags = () => {
     'enable-blink-features': 'RTCInsertableStreams',
     'disable-features': 'ChromeRootStoreUsed',
   };
+  if (flagsConfig.disableGpu) {
+    app.disableHardwareAcceleration();
+  }
   if (
     flagsConfig.customFlags.disableThrottling ===
       CloudConfigDataTypes.ENABLED ||
