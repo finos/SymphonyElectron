@@ -45,6 +45,10 @@ interface IState {
 
 const ABOUT_SYMPHONY_NAMESPACE = 'AboutSymphony';
 const SFE_CLIENT_TYPE_NAME = 'SFE-Lite';
+const KEY_CODE = {
+  ENTER: 13,
+  ESCAPE: 27,
+};
 
 /**
  * Window that display app version and copyright info
@@ -58,6 +62,7 @@ export default class AboutApp extends React.Component<{}, IState> {
     onPodInputBlur: (event) => this.handlePodInputBlur(event),
   };
   private closeButtonRef: React.RefObject<HTMLButtonElement>;
+  private previousUrl: string = '';
 
   constructor(props) {
     super(props);
@@ -272,10 +277,19 @@ export default class AboutApp extends React.Component<{}, IState> {
    * @param e
    */
   public onKeyDown = (e) => {
-    if (e.keyCode === 13) {
+    if (e.keyCode === KEY_CODE.ENTER) {
       const { value } = e.target;
       this.setState({ updatedHostname: value });
       this.handlePodInputBlur(e);
+      this.previousUrl = value;
+    }
+    if (e.keyCode === KEY_CODE.ESCAPE) {
+      this.setState({
+        updatedHostname: this.previousUrl,
+        isPodEditing: false,
+        isValidHostname: true,
+        hostname: this.previousUrl,
+      });
     }
   };
 
@@ -306,6 +320,7 @@ export default class AboutApp extends React.Component<{}, IState> {
    */
   private updateState(_event, data): void {
     const updatedData = { ...data, updatedHostname: data.hostname };
+    this.previousUrl = data.hostname;
     this.setState(updatedData as IState);
   }
 
