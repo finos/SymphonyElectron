@@ -99,7 +99,6 @@ export default class CallNotification extends React.Component<
       company,
       companyIconUrl,
       color,
-      actionIconUrl,
       profilePlaceHolderText,
       callType,
       acceptButtonText,
@@ -226,22 +225,6 @@ export default class CallNotification extends React.Component<
             })}
             onClick={this.eventHandlers.onAccept(id)}
           >
-            {actionIconUrl ? (
-              <img
-                onError={(event) => {
-                  (event.target as any).src =
-                    '../renderer/assets/call-icon.svg';
-                }}
-                className={'action-icon'}
-                src={actionIconUrl}
-              />
-            ) : (
-              <img
-                src='../renderer/assets/call-icon.svg'
-                alt='join call icon'
-                className='profile-picture-badge'
-              />
-            )}
             <div className='label'>{acceptText}</div>
           </button>
         </div>
