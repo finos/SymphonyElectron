@@ -13,7 +13,7 @@ import {
   AnalyticsElements,
   ICrashData,
   SDACrashProcess,
-} from './analytics-handler';
+} from './bi/analytics-handler';
 import { ICustomBrowserWindow } from './window-handler';
 import { windowExists } from './window-utils';
 

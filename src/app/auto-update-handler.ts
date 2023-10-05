@@ -2,19 +2,12 @@ import { GenericServerOptions } from 'builder-util-runtime';
 import electronLog from 'electron-log';
 import { MacUpdater, NsisUpdater } from 'electron-updater';
 
-import { app } from 'electron';
 import { isMac, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
 import { isUrl } from '../common/utils';
 import { whitelistHandler } from '../common/whitelist-handler';
-import {
-  analytics,
-  AnalyticsElements,
-  IInstallData,
-  InstallActionTypes,
-  InstallLocationTypes,
-  InstallTypes,
-} from './analytics-handler';
+import { InstallActionTypes, InstallTypes } from './bi/analytics-handler';
+import { sendAutoUpdateAnalytics } from './bi/auto-update-analytics';
 import { config } from './config-handler';
 import { retrieveWindowsRegistry } from './registry-handler';
 import { EChannelRegistry, RegistryStore } from './stores/registry-store';
@@ -106,7 +99,10 @@ export class AutoUpdate {
     if (!this.isUpdateAvailable) {
       return;
     }
-    this.sendAnalytics(InstallActionTypes.InstallStarted, InstallTypes.Auto);
+    sendAutoUpdateAnalytics(
+      InstallActionTypes.InstallStarted,
+      InstallTypes.Auto,
+    );
     // Handle update and restart for macOS
     if (isMac) {
       windowHandler.setIsAutoUpdating(true);
@@ -179,24 +175,7 @@ export class AutoUpdate {
 
     return updateUrl;
   };
-  /**
-   * Sends install analytics
-   */
-  public sendAnalytics = (
-    action: InstallActionTypes,
-    installType: InstallTypes,
-  ) => {
-    const installLocation = this.getInstallLocation();
-    const event: IInstallData = {
-      element: AnalyticsElements.SDA_INSTALL,
-      action_type: action,
-      extra_data: {
-        installLocation,
-        installType,
-      },
-    };
-    analytics.track(event);
-  };
+
   private updateEventHandler = async (info, eventType: string) => {
     const mainWebContents = windowHandler.mainWebContents;
     if (mainWebContents && !mainWebContents.isDestroyed()) {
@@ -281,30 +260,6 @@ export class AutoUpdate {
         this.channelConfigLocation = ChannelConfigLocation.REGISTRY;
       }
     }
-  };
-
-  /**
-   * Identifies and returns the installation location
-   */
-  private getInstallLocation = () => {
-    const appPath = app.getPath('exe');
-    if (isWindowsOS) {
-      if (appPath.includes('AppData\\Local\\Programs')) {
-        return InstallLocationTypes.LOCAL;
-      }
-      if (appPath.includes('Program Files')) {
-        return InstallLocationTypes.PROG_FILES;
-      }
-      return InstallLocationTypes.CUSTOM;
-    }
-    if (isMac) {
-      if (appPath.includes('/Applications')) {
-        return InstallLocationTypes.PROG_FILES;
-      }
-      return InstallLocationTypes.LOCAL;
-    }
-
-    return InstallLocationTypes.PROG_FILES;
   };
 }
 

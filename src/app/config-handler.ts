@@ -12,8 +12,8 @@ import {
   InstallTypes,
   SDAEndReasonTypes,
   SDAUserSessionActionTypes,
-} from './analytics-handler';
-import { autoUpdate } from './auto-update-handler';
+} from './bi/analytics-handler';
+import { sendAutoUpdateAnalytics } from './bi/auto-update-analytics';
 import { appStats } from './stats';
 
 const writeFile = util.promisify(fs.writeFile);
@@ -638,7 +638,7 @@ class Config {
       );
       this.isFirstTime = true;
       this.bootCount = 0;
-      autoUpdate.sendAnalytics(
+      sendAutoUpdateAnalytics(
         InstallActionTypes.InstallCompleted,
         InstallTypes.Manual,
       );
@@ -653,7 +653,7 @@ class Config {
       await this.setUpFirstTimeLaunch();
       // Skip welcome screen
       this.isFirstTime = false;
-      autoUpdate.sendAnalytics(
+      sendAutoUpdateAnalytics(
         InstallActionTypes.InstallCompleted,
         InstallTypes.Auto,
       );
@@ -670,7 +670,7 @@ class Config {
       );
       this.isFirstTime = true;
       this.bootCount = 0;
-      autoUpdate.sendAnalytics(
+      sendAutoUpdateAnalytics(
         InstallActionTypes.InstallCompleted,
         InstallTypes.Manual,
       );

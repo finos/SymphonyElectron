@@ -38,12 +38,12 @@ import {
   throttle,
 } from '../common/utils';
 import { notification } from '../renderer/notification';
+import { cleanAppCacheOnCrash } from './app-cache-handler';
+import { AppMenu } from './app-menu';
 import {
   SDAEndReasonTypes,
   SDAUserSessionActionTypes,
-} from './analytics-handler';
-import { cleanAppCacheOnCrash } from './app-cache-handler';
-import { AppMenu } from './app-menu';
+} from './bi/analytics-handler';
 import { closeC9Pipe } from './c9-pipe-handler';
 import { handleChildWindow } from './child-window-handler';
 import {

@@ -29,7 +29,7 @@ import {
   analytics,
   AnalyticsElements,
   ScreenSnippetActionTypes,
-} from './analytics-handler';
+} from './bi/analytics-handler';
 import { winStore } from './stores';
 import { IWindowState } from './stores/window-store';
 import { updateAlwaysOnTop } from './window-actions';
