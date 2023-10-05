@@ -13,7 +13,7 @@ import {
   SDAEndReasonTypes,
   SDAUserSessionActionTypes,
 } from './bi/analytics-handler';
-import { sendAnalytics } from './bi/auto-update-analytics';
+import { sendAutoUpdateAnalytics } from './bi/auto-update-analytics';
 import { appStats } from './stats';
 
 const writeFile = util.promisify(fs.writeFile);
@@ -638,7 +638,10 @@ class Config {
       );
       this.isFirstTime = true;
       this.bootCount = 0;
-      sendAnalytics(InstallActionTypes.InstallCompleted, InstallTypes.Manual);
+      sendAutoUpdateAnalytics(
+        InstallActionTypes.InstallCompleted,
+        InstallTypes.Manual,
+      );
       return;
     }
 
@@ -650,7 +653,10 @@ class Config {
       await this.setUpFirstTimeLaunch();
       // Skip welcome screen
       this.isFirstTime = false;
-      sendAnalytics(InstallActionTypes.InstallCompleted, InstallTypes.Auto);
+      sendAutoUpdateAnalytics(
+        InstallActionTypes.InstallCompleted,
+        InstallTypes.Auto,
+      );
       return;
     }
 
@@ -664,7 +670,10 @@ class Config {
       );
       this.isFirstTime = true;
       this.bootCount = 0;
-      sendAnalytics(InstallActionTypes.InstallCompleted, InstallTypes.Manual);
+      sendAutoUpdateAnalytics(
+        InstallActionTypes.InstallCompleted,
+        InstallTypes.Manual,
+      );
       return;
     }
     logger.info(

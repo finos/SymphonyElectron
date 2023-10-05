@@ -7,7 +7,7 @@ import { logger } from '../common/logger';
 import { isUrl } from '../common/utils';
 import { whitelistHandler } from '../common/whitelist-handler';
 import { InstallActionTypes, InstallTypes } from './bi/analytics-handler';
-import { sendAnalytics } from './bi/auto-update-analytics';
+import { sendAutoUpdateAnalytics } from './bi/auto-update-analytics';
 import { config } from './config-handler';
 import { retrieveWindowsRegistry } from './registry-handler';
 import { EChannelRegistry, RegistryStore } from './stores/registry-store';
@@ -99,7 +99,10 @@ export class AutoUpdate {
     if (!this.isUpdateAvailable) {
       return;
     }
-    sendAnalytics(InstallActionTypes.InstallStarted, InstallTypes.Auto);
+    sendAutoUpdateAnalytics(
+      InstallActionTypes.InstallStarted,
+      InstallTypes.Auto,
+    );
     // Handle update and restart for macOS
     if (isMac) {
       windowHandler.setIsAutoUpdating(true);

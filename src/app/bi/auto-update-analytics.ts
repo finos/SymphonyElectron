@@ -14,7 +14,7 @@ import {
  * @param action
  * @param installType
  */
-export const sendAnalytics = (
+export const sendAutoUpdateAnalytics = (
   action: InstallActionTypes,
   installType: InstallTypes,
 ) => {
