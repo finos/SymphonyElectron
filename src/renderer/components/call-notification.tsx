@@ -287,15 +287,14 @@ export default class CallNotification extends React.Component<
     let imgClass = 'default-logo';
     let url = '../renderer/assets/notification-symphony-logo.svg';
     let alt = 'Symphony logo';
-    const isDefaultUrl = imageUrl && imageUrl.includes('default.png');
 
-    if (imageUrl && !isDefaultUrl) {
+    if (imageUrl) {
       imgClass = 'profile-picture';
       url = imageUrl;
       alt = 'Profile picture';
     }
 
-    if (!imageUrl || isDefaultUrl) {
+    if (!imageUrl) {
       const profilePlaceHolderClassName =
         callType === 'IM'
           ? 'profilePlaceHolderContainer'
