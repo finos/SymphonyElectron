@@ -1,15 +1,15 @@
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { svgAsPngUri } from 'save-svg-as-png';
+import {
+  AnalyticsElements,
+  ScreenSnippetActionTypes,
+} from '../../app/bi/analytics-handler';
 import { i18n } from '../../common/i18n-preload';
 import { ScreenShotAnnotation } from '../../common/ipcEvent';
 import * as PenIcon from '../../renderer/assets/snip-draw.svg';
 import * as EraseIcon from '../../renderer/assets/snip-erase.svg';
 import * as HighlightIcon from '../../renderer/assets/snip-highlight.svg';
-import {
-  AnalyticsElements,
-  ScreenSnippetActionTypes,
-} from './../../app/analytics-handler';
 import AnnotateArea from './annotate-area';
 import ColorPickerPill, { IColor } from './color-picker-pill';
 import MenuButton from './menu-button';

@@ -13,7 +13,7 @@ import {
   ISessionData,
   SDAEndReasonTypes,
   SDAUserSessionActionTypes,
-} from './analytics-handler';
+} from './bi/analytics-handler';
 
 const MAX_USAGE_CHECK_INTERVAL = 15 * 60 * 1000; // every 15min
 
@@ -149,6 +149,12 @@ export class AppStats {
       } catch (e: any) {
         logger.error(`stats: parsing stats JSON file failed due to error ${e}`);
       }
+    }
+    if (this.stats.length > 0) {
+      this.stats.forEach((event) => {
+        analytics.track(event);
+      });
+      this.stats = [];
     }
   };
 

@@ -15,7 +15,7 @@ import {
   AnalyticsActions,
   AnalyticsElements,
   MenuActionTypes,
-} from './analytics-handler';
+} from './bi/analytics-handler';
 import { CloudConfigDataTypes, config, IConfig } from './config-handler';
 import { restartDialog, titleBarChangeDialog } from './dialog-handler';
 import { exportCrashDumps, exportLogs } from './reports-handler';

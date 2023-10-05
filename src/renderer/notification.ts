@@ -4,7 +4,7 @@ import {
   analytics,
   AnalyticsElements,
   ToastNotificationActionTypes,
-} from '../app/analytics-handler';
+} from '../app/bi/analytics-handler';
 import { config } from '../app/config-handler';
 import {
   AUX_CLICK,
