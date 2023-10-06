@@ -136,10 +136,11 @@ body {
   font-style: normal;
   font-weight: 600;
   line-height: 24px;
-  display: flex;
+  display: inline-block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  position: relative;
   max-width: 200px;
 }
 
@@ -228,26 +229,29 @@ text {
 
 .actions {
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-flow: row;
+  width: 100%;
   gap: 16px;
-  align-self: stretch;
 
   button {
     display: flex;
+    flex-grow: 1;
+    flex-basis: calc(100% / 2);
+    padding: 4px 8px;
     padding: 4px 12px;
     justify-content: center;
-    width: var(--button-width);
     align-items: center;
-    gap: 8px;
     border-radius: 16px;
     border-style: none;
     cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     .label {
       color: @red-05;
       text-align: center;
-      font-size: 12px;
+      font-size: 11px;
       font-family: @font-family;
       font-style: normal;
       font-weight: 600;
@@ -266,6 +270,10 @@ text {
 
 .decline {
   background-color: @red-50;
+
+  &:hover {
+    background-color: @red-40;
+  }
 }
 
 .action-icon {
@@ -274,6 +282,45 @@ text {
 
 .accept {
   background-color: @green-50;
+
+  &:hover {
+    background-color: @green-40;
+  }
+}
+
+.tooltip-content {
+  visibility: hidden;
+  background-color: #333;
+  color: #fff;
+  border-radius: 4px;
+  padding: 5px 10px;
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  width: auto;
+  max-width: 200px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  height: auto;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+
+.tooltip-primary {
+  bottom: 50%;
+}
+.tooltip-secondary {
+  bottom: 40%;
+}
+
+.tooltip-trigger {
+  &:hover {
+    & + .tooltip-content {
+      visibility: visible;
+      opacity: 1;
+    }
+  }
 }
 
 .light-flashing {
