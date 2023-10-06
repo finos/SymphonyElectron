@@ -99,7 +99,6 @@ export default class CallNotification extends React.Component<
       company,
       companyIconUrl,
       color,
-      actionIconUrl,
       profilePlaceHolderText,
       callType,
       acceptButtonText,
@@ -226,22 +225,6 @@ export default class CallNotification extends React.Component<
             })}
             onClick={this.eventHandlers.onAccept(id)}
           >
-            {actionIconUrl ? (
-              <img
-                onError={(event) => {
-                  (event.target as any).src =
-                    '../renderer/assets/call-icon.svg';
-                }}
-                className={'action-icon'}
-                src={actionIconUrl}
-              />
-            ) : (
-              <img
-                src='../renderer/assets/call-icon.svg'
-                alt='join call icon'
-                className='profile-picture-badge'
-              />
-            )}
             <div className='label'>{acceptText}</div>
           </button>
         </div>
@@ -304,15 +287,14 @@ export default class CallNotification extends React.Component<
     let imgClass = 'default-logo';
     let url = '../renderer/assets/notification-symphony-logo.svg';
     let alt = 'Symphony logo';
-    const isDefaultUrl = imageUrl && imageUrl.includes('default.png');
 
-    if (imageUrl && !isDefaultUrl) {
+    if (imageUrl) {
       imgClass = 'profile-picture';
       url = imageUrl;
       alt = 'Profile picture';
     }
 
-    if (!imageUrl || isDefaultUrl) {
+    if (!imageUrl) {
       const profilePlaceHolderClassName =
         callType === 'IM'
           ? 'profilePlaceHolderContainer'
