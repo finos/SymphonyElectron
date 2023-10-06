@@ -119,16 +119,16 @@ describe('Call toast notification component', () => {
     expect(imClass.exists()).toBeTruthy();
   });
 
-  it('should render Symphony logo if Symphony default image provided', () => {
+  it('should render profile picture if Symphony default image provided', () => {
     const icon = './default.png';
     ipcRenderer.send(IPC_RENDERER_NOTIFICATION_DATA_CHANNEL, {
       ...defaultProps,
       icon,
     });
     const defaultLogoContainer = wrapper.find('.default-logo');
-    expect(defaultLogoContainer).toBeTruthy();
+    expect(defaultLogoContainer.exists()).toBeFalsy();
     const imageContainer = wrapper.find('.profile-picture');
-    expect(imageContainer.exists()).toBeFalsy();
+    expect(imageContainer).toBeTruthy();
   });
 
   it('should flash in a custom way when theme is set', () => {
