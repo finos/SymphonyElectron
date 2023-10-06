@@ -238,12 +238,13 @@ text {
     display: flex;
     padding: 4px 12px;
     justify-content: center;
-    width: var(--button-width);
     align-items: center;
     gap: 8px;
     border-radius: 16px;
     border-style: none;
     cursor: pointer;
+    min-width: var(--button-width);
+    max-width: 120px;
 
     .label {
       color: @red-05;
