@@ -155,6 +155,7 @@ export default class CallNotification extends React.Component<
               profilePlaceHolderText,
               callType,
               shouldDisplayBadge,
+              isExternal,
             )}
           </div>
           <div className='info-text-container'>
@@ -283,6 +284,7 @@ export default class CallNotification extends React.Component<
     profilePlaceHolderText: string,
     callType: CallType,
     shouldDisplayBadge: boolean,
+    isExternal: boolean,
   ): JSX.Element | undefined {
     let imgClass = 'default-logo';
     let url = '../renderer/assets/notification-symphony-logo.svg';
@@ -293,7 +295,6 @@ export default class CallNotification extends React.Component<
       url = imageUrl;
       alt = 'Profile picture';
     }
-
     if (!imageUrl) {
       const profilePlaceHolderClassName =
         callType === 'IM'
@@ -301,7 +302,11 @@ export default class CallNotification extends React.Component<
           : 'roomPlaceHolderContainer';
       return (
         <div className='logo'>
-          <div className={`thumbnail ${profilePlaceHolderClassName}`}>
+          <div
+            className={classNames('thumbnail', profilePlaceHolderClassName, {
+              external: isExternal,
+            })}
+          >
             <p className={'profilePlaceHolderText'}>{profilePlaceHolderText}</p>
           </div>
           {this.renderSymphonyBadge(shouldDisplayBadge, callType)}
