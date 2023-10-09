@@ -15,6 +15,8 @@
   --notification-bg-color: @light-notification-bg-color;
   --notification-border-color: @graphite-10;
   --profile-place-holder-text: @electricity-ui-50;
+  --profile-place-holder-text-ext: @yellow-50;
+  --profile-placeholder-ext-border-color: @yellow-20;
 }
 
 .dark {
@@ -24,6 +26,8 @@
   --notification-bg-color: @dark-notification-bg-color;
   --notification-border-color: @graphite-60;
   --profile-place-holder-text: @electricity-ui-40;
+  --profile-place-holder-text-ext: @yellow-30;
+  --profile-placeholder-ext-border-color: @yellow-30;
 }
 
 .mac {
@@ -125,6 +129,12 @@ body {
     .badge-position-room {
       right: -2px;
       bottom: -1px;
+    }
+    .external {
+      border-color: var(--profile-placeholder-ext-border-color);
+      .profilePlaceHolderText {
+        color: var(--profile-place-holder-text-ext);
+      }
     }
   }
 }
