@@ -28,6 +28,9 @@ export const sendAutoUpdateAnalytics = (
     },
   };
   analytics.track(event);
+  if (action === InstallActionTypes.InstallStarted) {
+    analytics.writeAnalyticFile();
+  }
 };
 
 /**

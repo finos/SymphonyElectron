@@ -8,6 +8,7 @@ import { isDevEnv, isElectronQA, isLinux, isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { arrayEquals, filterOutSelectedValues, pick } from '../common/utils';
 import {
+  analytics,
   InstallActionTypes,
   InstallTypes,
   SDAEndReasonTypes,
@@ -246,7 +247,7 @@ class Config {
           SDAUserSessionActionTypes.End,
           SDAEndReasonTypes.Closed,
         );
-        appStats.writeAnalyticFile();
+        analytics.writeAnalyticFile();
         this.isUpdatingConfigFile = false;
         this.didUpdateConfigFile = true;
         powerSaveBlocker.stop(id);

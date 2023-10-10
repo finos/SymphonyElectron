@@ -41,6 +41,7 @@ import { notification } from '../renderer/notification';
 import { cleanAppCacheOnCrash } from './app-cache-handler';
 import { AppMenu } from './app-menu';
 import {
+  analytics,
   SDAEndReasonTypes,
   SDAUserSessionActionTypes,
 } from './bi/analytics-handler';
@@ -2338,7 +2339,7 @@ export class WindowHandler {
       SDAUserSessionActionTypes.End,
       shouldRelaunch ? SDAEndReasonTypes.Reboot : SDAEndReasonTypes.Closed,
     );
-    appStats.writeAnalyticFile();
+    analytics.writeAnalyticFile();
     config.writeUserConfig();
     if (shouldRelaunch) {
       app.relaunch();

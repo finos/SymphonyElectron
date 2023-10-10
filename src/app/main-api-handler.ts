@@ -331,7 +331,7 @@ ipcMain.on(
           }
           logger.info('main-api-handler: isMana: ' + windowHandler.isMana);
           await appStats.sendAnalytics(SDAUserSessionActionTypes.Login);
-          appStats.sendLocalAnalytics();
+          analytics.sendLocalAnalytics();
         }
         break;
       case apiCmds.showNotification:
