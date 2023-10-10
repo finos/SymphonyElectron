@@ -200,13 +200,13 @@ class Analytics {
         { encoding: 'utf8' },
       );
       logger.info(
-        `stats: updated stats values with the data ${JSON.stringify(
+        `analytics-handler: updated analytic values with the data ${JSON.stringify(
           this.analyticsEndEventQueue,
         )}`,
       );
     } catch (error) {
       logger.error(
-        `stats: failed to update stats with ${JSON.stringify(
+        `analytics-handler: failed to update analytic with ${JSON.stringify(
           this.analyticsEndEventQueue,
         )}`,
         error,
@@ -217,7 +217,7 @@ class Analytics {
   /**
    * Sends all the locally stored stats
    */
-  public sendLocalAnalytics = async () => {
+  public sendLocalAnalytics = () => {
     if (fs.existsSync(this.analyticEventsDataFilePath)) {
       const localStats = fs.readFileSync(
         this.analyticEventsDataFilePath,
@@ -229,7 +229,10 @@ class Analytics {
       let parsedStats: ISessionData[];
       try {
         parsedStats = JSON.parse(localStats);
-        logger.info(`stats: parsed stats JSON file with data`, parsedStats);
+        logger.info(
+          `analytics-handler: parsed stats JSON file with data`,
+          parsedStats,
+        );
         if (parsedStats && parsedStats.length) {
           parsedStats.forEach((event) => {
             this.sendAnalyticsOrAddToQueue(event);
@@ -237,7 +240,9 @@ class Analytics {
           fs.unlinkSync(this.analyticEventsDataFilePath);
         }
       } catch (e: any) {
-        logger.error(`stats: parsing stats JSON file failed due to error ${e}`);
+        logger.error(
+          `analytics-handler: parsing stats JSON file failed due to error ${e}`,
+        );
       }
     }
     if (this.analyticsEndEventQueue.length > 0) {
