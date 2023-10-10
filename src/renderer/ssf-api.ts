@@ -44,6 +44,7 @@ const MAIN_WINDOW_NAME = 'main';
 
 let isAltKey: boolean = false;
 let isMenuOpen: boolean = false;
+let pendingAnalytics: object[] = [];
 
 export interface ILocalObject {
   ipcRenderer;
@@ -363,6 +364,12 @@ export class SSFApi {
       local.ipcRenderer.send(apiName.symphonyApi, {
         cmd: apiCmds.registerAnalyticsHandler,
       });
+      // Invoke all pending analytic calls.
+      for (const data of pendingAnalytics) {
+        analyticsEventHandler(data);
+      }
+      // Clear the pending data.
+      pendingAnalytics = [];
     }
   }
 
@@ -1161,6 +1168,8 @@ local.ipcRenderer.on('protocol-action', (_event, arg: string) => {
 local.ipcRenderer.on('analytics-callback', (_event, arg: object) => {
   if (typeof local.analyticsEventHandler === 'function' && arg) {
     local.analyticsEventHandler(arg);
+  } else if (arg) {
+    pendingAnalytics.push(arg);
   }
 });
 
