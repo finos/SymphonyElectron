@@ -228,10 +228,12 @@ export class AutoUpdate {
   };
 
   private setAutoUpdateChannel = async (): Promise<void> => {
-    const { autoUpdateChannel, installVariant } = config.getConfigFields([
-      'autoUpdateChannel',
-      'installVariant',
-    ]);
+    const { autoUpdateChannel, installVariant, betaAutoUpdateChannelEnabled } =
+      config.getConfigFields([
+        'autoUpdateChannel',
+        'installVariant',
+        'betaAutoUpdateChannelEnabled',
+      ]);
 
     const cc = config.getFilteredCloudConfigFields([
       'betaAutoUpdateChannelEnabled',
@@ -241,7 +243,9 @@ export class AutoUpdate {
         ? ChannelConfigLocation.ACP
         : ChannelConfigLocation.LOCALFILE;
 
-    this.finalAutoUpdateChannel = autoUpdateChannel;
+    this.finalAutoUpdateChannel = betaAutoUpdateChannelEnabled
+      ? 'beta'
+      : autoUpdateChannel;
     this.installVariant = installVariant;
     if (isWindowsOS) {
       if (this.shouldRetrieveRegistry) {
