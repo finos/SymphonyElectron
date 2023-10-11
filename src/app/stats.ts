@@ -4,13 +4,13 @@ import * as si from 'systeminformation';
 
 import { buildNumber, version } from '../../package.json';
 import { logger } from '../common/logger';
+import { analytics } from './bi/analytics-handler';
 import {
-  analytics,
   AnalyticsElements,
   ISessionData,
   SDAEndReasonTypes,
   SDAUserSessionActionTypes,
-} from './bi/analytics-handler';
+} from './bi/interface';
 
 const MAX_USAGE_CHECK_INTERVAL = 15 * 60 * 1000; // every 15min
 

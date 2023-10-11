@@ -10,12 +10,7 @@ import { apiName } from '../common/api-interface';
 import { isLinux, isMac, isWindowsOS } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
-import {
-  analytics,
-  AnalyticsActions,
-  AnalyticsElements,
-  MenuActionTypes,
-} from './bi/analytics-handler';
+import { analytics } from './bi/analytics-handler';
 import { CloudConfigDataTypes, config, IConfig } from './config-handler';
 import { restartDialog, titleBarChangeDialog } from './dialog-handler';
 import { exportCrashDumps, exportLogs } from './reports-handler';
@@ -39,6 +34,11 @@ import {
 
 import { autoLaunchInstance as autoLaunch } from './auto-launch-controller';
 import { autoUpdate, AutoUpdateTrigger } from './auto-update-handler';
+import {
+  AnalyticsActions,
+  AnalyticsElements,
+  MenuActionTypes,
+} from './bi/interface';
 
 export const menuSections = {
   about: 'about',

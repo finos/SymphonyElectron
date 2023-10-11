@@ -3,7 +3,7 @@ import * as React from 'react';
 import {
   AnalyticsElements,
   ScreenSnippetActionTypes,
-} from '../../app/bi/analytics-handler';
+} from '../../app/bi/interface';
 import {
   IDimensions,
   IPath,

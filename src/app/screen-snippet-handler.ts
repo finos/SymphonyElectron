@@ -25,11 +25,8 @@ import {
 import { i18n } from '../common/i18n';
 import { ScreenShotAnnotation } from '../common/ipcEvent';
 import { logger } from '../common/logger';
-import {
-  analytics,
-  AnalyticsElements,
-  ScreenSnippetActionTypes,
-} from './bi/analytics-handler';
+import { analytics } from './bi/analytics-handler';
+import { AnalyticsElements, ScreenSnippetActionTypes } from './bi/interface';
 import { winStore } from './stores';
 import { IWindowState } from './stores/window-store';
 import { updateAlwaysOnTop } from './window-actions';

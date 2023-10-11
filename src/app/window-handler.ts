@@ -40,11 +40,8 @@ import {
 import { notification } from '../renderer/notification';
 import { cleanAppCacheOnCrash } from './app-cache-handler';
 import { AppMenu } from './app-menu';
-import {
-  analytics,
-  SDAEndReasonTypes,
-  SDAUserSessionActionTypes,
-} from './bi/analytics-handler';
+import { analytics } from './bi/analytics-handler';
+import { SDAEndReasonTypes, SDAUserSessionActionTypes } from './bi/interface';
 import { closeC9Pipe } from './c9-pipe-handler';
 import { handleChildWindow } from './child-window-handler';
 import {

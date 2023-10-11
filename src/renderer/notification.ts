@@ -1,10 +1,10 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 
+import { analytics } from '../app/bi/analytics-handler';
 import {
-  analytics,
   AnalyticsElements,
   ToastNotificationActionTypes,
-} from '../app/bi/analytics-handler';
+} from '../app/bi/interface';
 import { config } from '../app/config-handler';
 import {
   AUX_CLICK,

@@ -8,12 +8,8 @@ import {
 } from 'electron';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
-import {
-  analytics,
-  AnalyticsElements,
-  ICrashData,
-  SDACrashProcess,
-} from './bi/analytics-handler';
+import { analytics } from './bi/analytics-handler';
+import { AnalyticsElements, ICrashData, SDACrashProcess } from './bi/interface';
 import { ICustomBrowserWindow } from './window-handler';
 import { windowExists } from './window-utils';
 

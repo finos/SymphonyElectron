@@ -21,7 +21,7 @@ import { logger } from '../common/logger';
 import { whitelistHandler } from '../common/whitelist-handler';
 import { activityDetection } from './activity-detection';
 import appStateHandler from './app-state-handler';
-import { analytics, SDAUserSessionActionTypes } from './bi/analytics-handler';
+import { analytics } from './bi/analytics-handler';
 import { closeC9Pipe, connectC9Pipe, writeC9Pipe } from './c9-pipe-handler';
 import { loadC9Shell, terminateC9Shell } from './c9-shell-handler';
 import { getCitrixMediaRedirectionStatus } from './citrix-handler';
@@ -53,6 +53,7 @@ import {
 import { getCommandLineArgs } from '../common/utils';
 import callNotificationHelper from '../renderer/call-notification-helper';
 import { autoUpdate, AutoUpdateTrigger } from './auto-update-handler';
+import { SDAUserSessionActionTypes } from './bi/interface';
 import { presenceStatus } from './presence-status-handler';
 import { appStats } from './stats';
 import { presenceStatusStore } from './stores/index';

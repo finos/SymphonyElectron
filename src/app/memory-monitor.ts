@@ -2,7 +2,7 @@ import * as electron from 'electron';
 
 import { isMac } from '../common/env';
 import { logger } from '../common/logger';
-import { SDAUserSessionActionTypes } from './bi/analytics-handler';
+import { SDAUserSessionActionTypes } from './bi/interface';
 import { CloudConfigDataTypes, config } from './config-handler';
 import { appStats } from './stats';
 import { windowHandler } from './window-handler';

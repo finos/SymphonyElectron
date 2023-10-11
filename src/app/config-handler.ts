@@ -7,14 +7,14 @@ import { buildNumber } from '../../package.json';
 import { isDevEnv, isElectronQA, isLinux, isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { arrayEquals, filterOutSelectedValues, pick } from '../common/utils';
+import { analytics } from './bi/analytics-handler';
+import { sendAutoUpdateAnalytics } from './bi/auto-update-analytics';
 import {
-  analytics,
   InstallActionTypes,
   InstallTypes,
   SDAEndReasonTypes,
   SDAUserSessionActionTypes,
-} from './bi/analytics-handler';
-import { sendAutoUpdateAnalytics } from './bi/auto-update-analytics';
+} from './bi/interface';
 import { appStats } from './stats';
 
 const writeFile = util.promisify(fs.writeFile);
