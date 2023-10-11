@@ -655,6 +655,7 @@ class Notification extends NotificationHandler {
       frame: false,
       transparent: true,
       fullscreenable: false,
+      type: 'toolbar',
       acceptFirstMouse: true,
       title: NOTIFICATION_WINDOW_TITLE,
       webPreferences: {
