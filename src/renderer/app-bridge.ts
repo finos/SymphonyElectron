@@ -1,5 +1,5 @@
 import { ipcRenderer } from 'electron';
-import { IAnalyticsData } from '../app/bi/analytics-handler';
+import { IAnalyticsData } from '../app/bi/interface';
 import {
   apiCmds,
   apiName,

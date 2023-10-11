@@ -4,7 +4,7 @@ import { svgAsPngUri } from 'save-svg-as-png';
 import {
   AnalyticsElements,
   ScreenSnippetActionTypes,
-} from '../../app/bi/analytics-handler';
+} from '../../app/bi/interface';
 import { i18n } from '../../common/i18n-preload';
 import { ScreenShotAnnotation } from '../../common/ipcEvent';
 import * as PenIcon from '../../renderer/assets/snip-draw.svg';

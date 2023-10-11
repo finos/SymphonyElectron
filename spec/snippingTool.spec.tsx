@@ -1,6 +1,6 @@
 jest.mock('save-svg-as-png', function () {
   return {
-    svgAsPngUri: async function (svg) {
+    async svgAsPngUri(svg) {
       return Promise.resolve(svg);
     },
   };
@@ -8,7 +8,7 @@ jest.mock('save-svg-as-png', function () {
 
 import { mount, shallow } from 'enzyme';
 import * as React from 'react';
-import { ScreenSnippetActionTypes } from '../src/app/bi/analytics-handler';
+import { ScreenSnippetActionTypes } from '../src/app/bi/interface';
 import { ScreenShotAnnotation } from '../src/common/ipcEvent';
 import SnippingTool from '../src/renderer/components/snipping-tool';
 import { ipcRenderer } from './__mocks__/electron';
