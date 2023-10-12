@@ -8,7 +8,7 @@ import { isUrl } from '../common/utils';
 import { whitelistHandler } from '../common/whitelist-handler';
 import { sendAutoUpdateAnalytics } from './bi/auto-update-analytics';
 import { InstallActionTypes, InstallTypes } from './bi/interface';
-import { config } from './config-handler';
+import { config, IConfig } from './config-handler';
 import { retrieveWindowsRegistry } from './registry-handler';
 import { EChannelRegistry, RegistryStore } from './stores/registry-store';
 import { windowHandler } from './window-handler';
@@ -237,9 +237,9 @@ export class AutoUpdate {
 
     const cc = config.getFilteredCloudConfigFields([
       'betaAutoUpdateChannelEnabled',
-    ]);
+    ]) as IConfig;
     this.channelConfigLocation =
-      'betaAutoUpdateChannelEnabled' in cc && cc.betaAutoUpdateChannelEnabled
+      Object.keys(cc).length === 0 || cc.betaAutoUpdateChannelEnabled
         ? ChannelConfigLocation.ACP
         : ChannelConfigLocation.LOCALFILE;
 
