@@ -34,7 +34,7 @@ import {
   PhoneNumberProtocol,
 } from '../common/api-interface';
 import { i18n, LocaleType } from '../common/i18n-preload';
-import { throttle } from '../common/utils';
+import { DelayedFunctionQueue, throttle } from '../common/utils';
 import { getSource } from './desktop-capturer';
 import SSFNotificationHandler from './notification-ssf-handler';
 import { ScreenSnippetBcHandler } from './screen-snippet-bc-handler';
@@ -45,6 +45,7 @@ const MAIN_WINDOW_NAME = 'main';
 let isAltKey: boolean = false;
 let isMenuOpen: boolean = false;
 let pendingAnalytics: object[] = [];
+const analyticsDelayedFuncQueue = new DelayedFunctionQueue(100);
 
 export interface ILocalObject {
   ipcRenderer;
@@ -366,7 +367,7 @@ export class SSFApi {
       });
       // Invoke all pending analytic calls.
       for (const data of pendingAnalytics) {
-        analyticsEventHandler(data);
+        analyticsDelayedFuncQueue.add(analyticsEventHandler, data);
       }
       // Clear the pending data.
       pendingAnalytics = [];
@@ -1167,7 +1168,7 @@ local.ipcRenderer.on('protocol-action', (_event, arg: string) => {
 
 local.ipcRenderer.on('analytics-callback', (_event, arg: object) => {
   if (typeof local.analyticsEventHandler === 'function' && arg) {
-    local.analyticsEventHandler(arg);
+    analyticsDelayedFuncQueue.add(local.analyticsEventHandler, arg);
   } else if (arg) {
     pendingAnalytics.push(arg);
   }
