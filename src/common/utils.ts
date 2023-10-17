@@ -321,7 +321,7 @@ export const isUrl = (str: string): boolean => {
  */
 export class DelayedFunctionQueue {
   private queue: Array<(...args: any[]) => void> = [];
-  private timer: NodeJS.Timer | null = null;
+  private timer: NodeJS.Timeout | null = null;
 
   constructor(private delay: number = 100) {}
 
