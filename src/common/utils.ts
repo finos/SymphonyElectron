@@ -315,3 +315,37 @@ export const isUrl = (str: string): boolean => {
     return false;
   }
 };
+
+/**
+ * Queues and delays function call with a given delay
+ */
+export class DelayedFunctionQueue {
+  private queue: Array<(...args: any[]) => void> = [];
+  private timer: NodeJS.Timeout | null = null;
+
+  constructor(private delay: number = 100) {}
+
+  /**
+   * Add a function to the queue
+   * @param func
+   * @param args
+   */
+  public add(func: (...args: any[]) => void, ...args: any[]): void {
+    const boundFunc = () => func(...args);
+    this.queue.push(boundFunc);
+
+    if (!this.timer) {
+      this.timer = setInterval(() => {
+        const func = this.queue.shift();
+        if (func) {
+          func();
+        } else {
+          if (this.timer) {
+            clearInterval(this.timer);
+          }
+          this.timer = null;
+        }
+      }, this.delay);
+    }
+  }
+}
