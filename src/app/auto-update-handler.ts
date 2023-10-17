@@ -35,7 +35,6 @@ export class AutoUpdate {
   private autoUpdateTrigger: AutoUpdateTrigger | undefined = undefined;
   private finalAutoUpdateChannel: string | undefined = undefined;
   private installVariant: string | undefined = undefined;
-  private shouldRetrieveRegistry: boolean = true;
   private channelConfigLocation: ChannelConfigLocation =
     ChannelConfigLocation.LOCALFILE;
 
@@ -248,10 +247,7 @@ export class AutoUpdate {
       : autoUpdateChannel;
     this.installVariant = installVariant;
     if (isWindowsOS) {
-      if (this.shouldRetrieveRegistry) {
-        await retrieveWindowsRegistry();
-        this.shouldRetrieveRegistry = false;
-      }
+      await retrieveWindowsRegistry();
       const registryAutoUpdate = RegistryStore.getRegistry();
       const identifiedChannelFromRegistry = [
         EChannelRegistry.BETA,
