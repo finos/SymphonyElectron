@@ -37,7 +37,7 @@ interface IState {
   swiftSearchVersion?: string;
   swiftSearchSupportedVersion?: string;
   client?: string;
-  updatedHostname: string;
+  updatedHostname?: string;
   isPodEditing: boolean;
   isValidHostname: boolean;
   didUpdateHostname: boolean;
@@ -57,6 +57,7 @@ export default class AboutApp extends React.Component<{}, IState> {
   private readonly eventHandlers = {
     onCopy: () => this.copy(),
     onClose: () => this.close(),
+    onCancel: () => this.cancel(),
     onPodClick: (event) => this.onPodClick(event),
     onPodChange: (event) => this.handlePodChange(event),
     onPodInputBlur: (event) => this.handlePodInputBlur(event),
@@ -149,6 +150,7 @@ export default class AboutApp extends React.Component<{}, IState> {
       isValidHostname && didUpdateHostname
         ? i18n.t('Save and Restart', ABOUT_SYMPHONY_NAMESPACE)()
         : i18n.t('Close', ABOUT_SYMPHONY_NAMESPACE)();
+    const cancelText = i18n.t('Cancel', ABOUT_SYMPHONY_NAMESPACE)();
 
     return (
       <div className='AboutApp' lang={i18n.getLocale()}>
@@ -186,6 +188,16 @@ export default class AboutApp extends React.Component<{}, IState> {
             </button>
           </div>
           <div className='AboutApp-close-container'>
+            {this.state.isPodEditing && (
+              <button
+                className='AboutApp-cancel-button'
+                onClick={this.eventHandlers.onCancel}
+                title={cancelText}
+                data-testid={'CANCEL_BUTTON'}
+              >
+                {cancelText}
+              </button>
+            )}
             <button
               className='AboutApp-close-button'
               onClick={this.eventHandlers.onClose}
@@ -231,6 +243,7 @@ export default class AboutApp extends React.Component<{}, IState> {
       ...rest,
     };
     if (data) {
+      delete data.updatedHostname;
       ipcRenderer.send(apiName.symphonyApi, {
         cmd: apiCmds.aboutAppClipBoardData,
         clipboard: data,
@@ -248,6 +261,18 @@ export default class AboutApp extends React.Component<{}, IState> {
     if (isValidHostname && didUpdateHostname) {
       ipcRenderer.send('user-pod-updated', hostname);
     }
+  }
+
+  /**
+   * Cancel modal and restore old url
+   */
+  public cancel(): void {
+    this.setState({
+      updatedHostname: this.previousUrl,
+      isPodEditing: false,
+      isValidHostname: true,
+      hostname: this.previousUrl,
+    });
   }
 
   /**
@@ -298,7 +323,7 @@ export default class AboutApp extends React.Component<{}, IState> {
    */
   public handlePodInputBlur = (_event) => {
     const { updatedHostname, hostname } = this.state;
-    if (!HOSTNAME_REGEX.test(updatedHostname)) {
+    if (!HOSTNAME_REGEX.test(updatedHostname || '')) {
       this.setState({
         isPodEditing: false,
         isValidHostname: false,
