@@ -16,7 +16,9 @@ export default class LocalMenuShortcuts {
       new MenuItem(
         this.getMenuItemOptions({
           accelerator: isMac ? 'Alt+Command+I' : 'Ctrl+Shift+I',
-          click: () => windowHandler.onRegisterDevtools(),
+          click: () => {
+            windowHandler.onRegisterDevtools();
+          },
         }),
       ),
     );
