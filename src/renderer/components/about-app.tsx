@@ -257,10 +257,10 @@ export default class AboutApp extends React.Component<{}, IState> {
    */
   public close(): void {
     const { isValidHostname, didUpdateHostname, hostname } = this.state;
-    ipcRenderer.send('close-about-app');
     if (isValidHostname && didUpdateHostname) {
       ipcRenderer.send('user-pod-updated', hostname);
     }
+    ipcRenderer.send('close-about-app');
   }
 
   /**
