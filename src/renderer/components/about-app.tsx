@@ -37,7 +37,7 @@ interface IState {
   swiftSearchVersion?: string;
   swiftSearchSupportedVersion?: string;
   client?: string;
-  updatedHostname: string;
+  updatedHostname?: string;
   isPodEditing: boolean;
   isValidHostname: boolean;
   didUpdateHostname: boolean;
@@ -231,6 +231,7 @@ export default class AboutApp extends React.Component<{}, IState> {
       ...rest,
     };
     if (data) {
+      delete data.updatedHostname;
       ipcRenderer.send(apiName.symphonyApi, {
         cmd: apiCmds.aboutAppClipBoardData,
         clipboard: data,
@@ -298,7 +299,7 @@ export default class AboutApp extends React.Component<{}, IState> {
    */
   public handlePodInputBlur = (_event) => {
     const { updatedHostname, hostname } = this.state;
-    if (!HOSTNAME_REGEX.test(updatedHostname)) {
+    if (!HOSTNAME_REGEX.test(updatedHostname || '')) {
       this.setState({
         isPodEditing: false,
         isValidHostname: false,

@@ -6,7 +6,7 @@ import { ipcRenderer } from './__mocks__/electron';
 
 describe('about app', () => {
   const aboutAppDataLabel = 'about-app-data';
-  const aboutDataMock = {
+  const aboutDataMockClipboard = {
     sbeVersion: '1',
     userConfig: {},
     globalConfig: { isPodUrlEditable: true },
@@ -31,6 +31,9 @@ describe('about app', () => {
     httpParserVersion: '11.12',
     swiftSearchVersion: '1.55.3-beta.1',
     swiftSearchSupportedVersion: 'N/A',
+  };
+  const aboutDataMockState = {
+    ...aboutDataMockClipboard,
     updatedHostname: 'N/A',
   };
   const onLabelEvent = 'on';
@@ -60,19 +63,19 @@ describe('about app', () => {
   it('should call `updateState` when component is mounted', () => {
     const spy = jest.spyOn(AboutApp.prototype, 'setState');
     shallow(React.createElement(AboutApp));
-    ipcRenderer.send('about-app-data', aboutDataMock);
-    expect(spy).toBeCalledWith(aboutDataMock);
+    ipcRenderer.send('about-app-data', aboutDataMockState);
+    expect(spy).toBeCalledWith(aboutDataMockState);
   });
 
   it('should copy the correct data on to clipboard', () => {
     const spyIpc = jest.spyOn(ipcRenderer, ipcSendEvent);
     const wrapper = shallow(React.createElement(AboutApp));
-    ipcRenderer.send('about-app-data', aboutDataMock);
+    ipcRenderer.send('about-app-data', aboutDataMockClipboard);
     const copyButtonSelector = `[data-testid="COPY_BUTTON"]`;
     wrapper.find(copyButtonSelector).simulate('click');
     const expectedData = {
       cmd: apiCmds.aboutAppClipBoardData,
-      clipboard: aboutDataMock,
+      clipboard: aboutDataMockClipboard,
       clipboardType: 'clipboard',
     };
     expect(spyIpc).toBeCalledWith('symphony-api', expectedData);
@@ -80,7 +83,7 @@ describe('about app', () => {
 
   it('should display input when triple clicked on pod', () => {
     const wrapper = shallow(React.createElement(AboutApp));
-    ipcRenderer.send('about-app-data', aboutDataMock);
+    ipcRenderer.send('about-app-data', aboutDataMockState);
     const pod = wrapper.find(`[data-testid="POD_INFO"]`);
     pod.simulate('click', { detail: 1 });
     pod.simulate('click', { detail: 2 });
@@ -90,7 +93,7 @@ describe('about app', () => {
   });
 
   it('should not display input when triple clicked on pod', () => {
-    const cloneAboutDataMock = aboutDataMock;
+    const cloneAboutDataMock = aboutDataMockState;
 
     cloneAboutDataMock.globalConfig = { isPodUrlEditable: false };
     cloneAboutDataMock.userConfig = { isPodUrlEditable: true };
@@ -106,7 +109,7 @@ describe('about app', () => {
   });
 
   it('should not display config based on global config only', () => {
-    const cloneAboutDataMock = aboutDataMock;
+    const cloneAboutDataMock = aboutDataMockState;
 
     cloneAboutDataMock.globalConfig = { isPodUrlEditable: false };
     cloneAboutDataMock.userConfig = { isPodUrlEditable: false };
@@ -122,7 +125,7 @@ describe('about app', () => {
   });
 
   it('should display config based on global config only', () => {
-    const cloneAboutDataMock = aboutDataMock;
+    const cloneAboutDataMock = aboutDataMockState;
 
     cloneAboutDataMock.globalConfig = { isPodUrlEditable: true };
     cloneAboutDataMock.userConfig = { isPodUrlEditable: false };
