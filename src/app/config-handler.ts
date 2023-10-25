@@ -15,6 +15,7 @@ import {
   SDAEndReasonTypes,
   SDAUserSessionActionTypes,
 } from './bi/interface';
+import { terminateC9Shell } from './c9-shell-handler';
 import { appStats } from './stats';
 
 const writeFile = util.promisify(fs.writeFile);
@@ -235,6 +236,7 @@ class Config {
     app.on('before-quit', async (event) => {
       const id = powerSaveBlocker.start('prevent-app-suspension');
       logger.info('config-handler: before-quit application is terminated');
+      terminateC9Shell();
       if (!this.didUpdateConfigFile) {
         this.isUpdatingConfigFile = true;
         event.preventDefault();
