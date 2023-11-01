@@ -2344,7 +2344,7 @@ export class WindowHandler {
     if (shouldRelaunch) {
       app.relaunch();
     }
-    app.quit();
+    app.exit();
   };
 
   /**
