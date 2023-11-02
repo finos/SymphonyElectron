@@ -29,7 +29,7 @@ class AutoLaunchController {
    */
   public enableAutoLaunch(): void {
     const { userDataPath } = config.getConfigFields(['userDataPath']);
-    if (userDataPath === '') {
+    if (!userDataPath) {
       app.setLoginItemSettings({ openAtLogin: true, path: props.path });
     } else {
       app.setLoginItemSettings({
@@ -67,9 +67,8 @@ class AutoLaunchController {
     const { launchOnStartup }: IConfig = config.getConfigFields([
       'launchOnStartup',
     ]);
-    const {
-      openAtLogin: isAutoLaunchEnabled,
-    }: LoginItemSettings = this.isAutoLaunchEnabled();
+    const { openAtLogin: isAutoLaunchEnabled }: LoginItemSettings =
+      this.isAutoLaunchEnabled();
 
     if (launchOnStartup === CloudConfigDataTypes.ENABLED) {
       if (!isAutoLaunchEnabled) {
