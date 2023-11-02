@@ -62,7 +62,7 @@ export class WindowStore {
               currentWindow?.hide();
             }
           } else {
-            currentWindow.minimize();
+            currentWindow.hide();
           }
         }
       });
@@ -94,14 +94,11 @@ export class WindowStore {
             currentWindow.id || '',
           ) as ICustomBrowserWindow;
           if (window) {
-            if (isMac) {
-              if (currentWindow.isFullScreen) {
-                fullscreenedWindows.push(currentWindow);
-              } else if (!currentWindow.minimized && !currentWindow.focused) {
-                window.showInactive();
-              }
-            } else {
-              window.restore();
+            if (currentWindow.isFullScreen) {
+              fullscreenedWindows.push(currentWindow);
+            } else if (!currentWindow.minimized && !currentWindow.focused) {
+              window.showInactive();
+              window.moveTop();
             }
             if (currentWindow.focused) {
               focusedWindowToRestore = window;
@@ -119,7 +116,6 @@ export class WindowStore {
         focusedWindowToRestore,
       );
 
-      showBadgeCount(presenceStatusStore.getNotificationCount());
       const mainWindow = windowHandler.getMainWindow();
       if (mainWindow) {
         const items = presenceStatus.createThumbarButtons();
@@ -127,6 +123,8 @@ export class WindowStore {
         mainWindow?.setThumbarButtons(items);
         logger.info('window-store: restoring thumbnail toolbar buttons');
       }
+
+      showBadgeCount(presenceStatusStore.getNotificationCount());
 
       // Store reset
       this.destroyWindowStore();
@@ -187,6 +185,7 @@ export class WindowStore {
     } else {
       if (windowToFocus) {
         windowToFocus?.show();
+        windowToFocus?.moveTop();
         windowHandler.moveSnippingToolWindow(windowToFocus);
       }
       this.windowsRestored = true;
