@@ -33,6 +33,8 @@ interface ICallNotificationState {
   flash: boolean;
   isExternal: boolean;
   theme: Theme;
+  isPrimaryTextOverflowing: boolean;
+  isSecondaryTextOverflowing: boolean;
 }
 
 type mouseEventButton =
@@ -49,9 +51,13 @@ export default class CallNotification extends React.Component<
     onReject: (data) => (event: mouseEventButton) => this.reject(event, data),
   };
   private readonly defaultState: ICallNotificationState;
+  private readonly primaryTooltipRef: React.RefObject<HTMLDivElement>;
+  private readonly secondaryTooltipRef: React.RefObject<HTMLDivElement>;
 
   constructor(props) {
     super(props);
+    this.primaryTooltipRef = React.createRef();
+    this.secondaryTooltipRef = React.createRef();
     this.defaultState = {
       title: 'Incoming call',
       primaryText: 'unknown',
@@ -68,6 +74,8 @@ export default class CallNotification extends React.Component<
       flash: false,
       isExternal: false,
       theme: '',
+      isPrimaryTextOverflowing: false,
+      isSecondaryTextOverflowing: false,
     };
     this.state = { ...this.defaultState };
     this.updateState = this.updateState.bind(this);
@@ -108,6 +116,8 @@ export default class CallNotification extends React.Component<
       theme,
       flash,
       icon,
+      isPrimaryTextOverflowing,
+      isSecondaryTextOverflowing,
     } = this.state;
 
     let themeClassName;
@@ -164,12 +174,15 @@ export default class CallNotification extends React.Component<
                 <div
                   data-testid='CALL_NOTIFICATION_NAME'
                   className={`caller-name ${themeClassName} tooltip-trigger`}
+                  ref={this.primaryTooltipRef}
                 >
                   {primaryText}
                 </div>
-                <div className='tooltip-content tooltip-primary'>
-                  {primaryText}
-                </div>
+                {isPrimaryTextOverflowing && (
+                  <div className='tooltip-content tooltip-primary'>
+                    {primaryText}
+                  </div>
+                )}
                 {this.renderExtBadge(isExternal)}
               </div>
             </div>
@@ -178,12 +191,15 @@ export default class CallNotification extends React.Component<
                 <div className='caller-details'>
                   <div
                     className={`caller-role ${themeClassName} tooltip-trigger`}
+                    ref={this.secondaryTooltipRef}
                   >
                     {secondaryText}
                   </div>
-                  <div className='tooltip-content tooltip-secondary'>
-                    {secondaryText}
-                  </div>
+                  {isSecondaryTextOverflowing && (
+                    <div className='tooltip-content tooltip-secondary'>
+                      {secondaryText}
+                    </div>
+                  )}
                 </div>
               </div>
             ) : (
@@ -247,6 +263,29 @@ export default class CallNotification extends React.Component<
     ipcRenderer.send('call-notification-on-reject', id);
   };
 
+  private checkTextOverflow = () => {
+    const primaryTooltipElement = this.primaryTooltipRef.current;
+    const secondaryTooltipElement = this.secondaryTooltipRef.current;
+    // Check if the primary text content overflows the element
+    if (
+      primaryTooltipElement &&
+      primaryTooltipElement.scrollWidth > primaryTooltipElement.clientWidth
+    ) {
+      this.setState({ isPrimaryTextOverflowing: true });
+    } else {
+      this.setState({ isPrimaryTextOverflowing: false });
+    }
+    // Check if the secondary text content overflows the element
+    if (
+      secondaryTooltipElement &&
+      secondaryTooltipElement.scrollWidth > secondaryTooltipElement.clientWidth
+    ) {
+      this.setState({ isSecondaryTextOverflowing: true });
+    } else {
+      this.setState({ isSecondaryTextOverflowing: false });
+    }
+  };
+
   /**
    * Sets the component state
    *
@@ -270,6 +309,7 @@ export default class CallNotification extends React.Component<
         ? data.theme
         : Themes.LIGHT;
     this.setState(data as ICallNotificationState);
+    this.checkTextOverflow();
   }
 
   /**
