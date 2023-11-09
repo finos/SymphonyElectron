@@ -43,6 +43,7 @@ import { AppMenu } from './app-menu';
 import { analytics } from './bi/analytics-handler';
 import { SDAEndReasonTypes, SDAUserSessionActionTypes } from './bi/interface';
 import { closeC9Pipe } from './c9-pipe-handler';
+import { terminateC9Shell } from './c9-shell-handler';
 import { handleChildWindow } from './child-window-handler';
 import {
   CloudConfigDataTypes,
@@ -2344,6 +2345,7 @@ export class WindowHandler {
     if (shouldRelaunch) {
       app.relaunch();
     }
+    terminateC9Shell();
     app.exit();
   };
 
