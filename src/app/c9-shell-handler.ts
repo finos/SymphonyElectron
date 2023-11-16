@@ -77,7 +77,7 @@ class C9ShellHandler {
   /**
    * Terminates the c9shell process if it was started by this handler.
    */
-  public terminateShell() {
+  public terminateShell = async () => {
     if (this._isTerminating) {
       logger.info('c9-shell-handler: _isTerminating, skip terminate');
       return;
@@ -91,7 +91,12 @@ class C9ShellHandler {
     logger.info('c9-shell-handler: terminate');
     this._isTerminating = true;
     this._c9shell.kill();
-  }
+    return new Promise<number>((resolve) => {
+      this._c9shell?.on('exit', (code) => {
+        resolve(code || 0);
+      });
+    });
+  };
 
   /**
    * Update the current shell status and notify the callback if set.
@@ -246,9 +251,9 @@ export const loadC9Shell = async (sender: WebContents) => {
 /**
  * Terminates the C9 shell process asynchronously, if it is running.
  */
-export const terminateC9Shell = () => {
+export const terminateC9Shell = async () => {
   if (!c9ShellHandler) {
     return;
   }
-  c9ShellHandler.terminateShell();
+  await c9ShellHandler.terminateShell();
 };
