@@ -2345,7 +2345,7 @@ export class WindowHandler {
     if (shouldRelaunch) {
       app.relaunch();
     }
-    terminateC9Shell();
+    await terminateC9Shell();
     app.exit();
   };
 
