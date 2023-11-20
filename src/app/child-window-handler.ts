@@ -342,6 +342,17 @@ export const handleChildWindow = (webContents: WebContents): void => {
             permissions.media,
           );
         }
+        const { devToolsEnabled } = config.getConfigFields(['devToolsEnabled']);
+        webContents.on('before-input-event', (event, input) => {
+          const windowsDevTools =
+            input.control && input.shift && input.key.toLowerCase() === 'i';
+          const macDevTools =
+            input.meta && input.alt && input.key.toLowerCase() === 'i';
+          if (devToolsEnabled && (windowsDevTools || macDevTools)) {
+            event.preventDefault();
+            webContents?.toggleDevTools();
+          }
+        });
 
         // Subscribe events for main view - snack bar
         mainEvents.subscribeMultipleEvents(
