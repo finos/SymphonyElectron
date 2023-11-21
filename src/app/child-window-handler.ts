@@ -343,14 +343,14 @@ export const handleChildWindow = (webContents: WebContents): void => {
           );
         }
         const { devToolsEnabled } = config.getConfigFields(['devToolsEnabled']);
-        webContents.on('before-input-event', (event, input) => {
+        browserWin.webContents.on('before-input-event', (event, input) => {
           const windowsDevTools =
             input.control && input.shift && input.key.toLowerCase() === 'i';
           const macDevTools =
             input.meta && input.alt && input.key.toLowerCase() === 'i';
           if (devToolsEnabled && (windowsDevTools || macDevTools)) {
             event.preventDefault();
-            webContents?.toggleDevTools();
+            browserWin.webContents?.toggleDevTools();
           }
         });
 
