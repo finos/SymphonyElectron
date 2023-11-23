@@ -202,3 +202,16 @@ ipcRenderer.on('page-load-welcome', (_event, { locale, resources }) => {
   const element = React.createElement(component);
   ReactDOM.render(element, document.getElementById('Root'));
 });
+
+window.addEventListener('mouseup', (e) => {
+  if (e.button === 3 || e.button === 4) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+});
+window.addEventListener('mousedown', (e) => {
+  if (e.button === 3 || e.button === 4) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+});
