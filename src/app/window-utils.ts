@@ -1440,3 +1440,20 @@ export const loadBrowserViews = async (
 
   return mainView.webContents;
 };
+
+export const hideFullscreenWindow = (window: BrowserWindow) => {
+  window.once('leave-full-screen', () => {
+    if (!window && !windowExists(window)) {
+      logger.info('window-utils: window does not exists');
+      return;
+    }
+    if (isMac) {
+      window.hide();
+    } else {
+      setTimeout(() => {
+        window.hide();
+      }, 0);
+    }
+    window.setFullScreen(false);
+  });
+};

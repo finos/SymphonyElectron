@@ -5,7 +5,11 @@ import { isMac } from '../../common/env';
 import { logger } from '../../common/logger';
 import { presenceStatus } from '../presence-status-handler';
 import { ICustomBrowserWindow, windowHandler } from '../window-handler';
-import { getWindowByName, showBadgeCount } from '../window-utils';
+import {
+  getWindowByName,
+  hideFullscreenWindow,
+  showBadgeCount,
+} from '../window-utils';
 
 export interface IWindowObject {
   windows: IWindowState[];
@@ -56,7 +60,7 @@ export class WindowStore {
         ) {
           if (isMac) {
             if (isFullScreen) {
-              this.hideFullscreenWindow(currentWindow);
+              hideFullscreenWindow(currentWindow);
               // No need to hide minimized windows
             } else if (!isMinimized) {
               currentWindow?.hide();
@@ -148,19 +152,6 @@ export class WindowStore {
         notificationWindow.setAlwaysOnTop(true);
         notificationWindow.setSkipTaskbar(true);
       });
-  };
-
-  private hideFullscreenWindow = (window: BrowserWindow) => {
-    window.once('leave-full-screen', () => {
-      if (isMac) {
-        window.hide();
-      } else {
-        setTimeout(() => {
-          window.hide();
-        }, 0);
-      }
-    });
-    window.setFullScreen(false);
   };
 
   /**
