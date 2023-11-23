@@ -438,6 +438,7 @@ export class WindowHandler {
     ) {
       this.mainWebContents = await loadBrowserViews(this.mainWindow);
       this.mainWebContents.loadURL(this.url, { userAgent });
+      this.mainWindow.loadURL('about:blank', { userAgent });
     } else {
       this.mainWindow.loadURL(this.url, { userAgent });
       this.mainWebContents = this.mainWindow.webContents;
