@@ -73,6 +73,7 @@ import {
   getWindowByName,
   handleCertificateProxyVerification,
   handleDownloadManager,
+  hideFullscreenWindow,
   initSysTray,
   injectStyles,
   isSymphonyReachable,
@@ -775,7 +776,13 @@ export class WindowHandler {
 
       if (isMac && !this.isAutoUpdating) {
         event.preventDefault();
-        this.mainWindow.hide();
+        // this is a workaround for an issue with macOS
+        // https://github.com/electron/electron/issues/39572
+        if (this.mainWindow.isFullScreen()) {
+          hideFullscreenWindow(this.mainWindow);
+        } else {
+          this.mainWindow.hide();
+        }
         return;
       }
 
