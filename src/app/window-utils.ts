@@ -1454,6 +1454,6 @@ export const hideFullscreenWindow = (window: BrowserWindow) => {
         window.hide();
       }, 0);
     }
-    window.setFullScreen(false);
   });
+  window.setFullScreen(false);
 };
