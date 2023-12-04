@@ -66,6 +66,7 @@ export interface ILocalObject {
   c9MessageCallback?: (status: IShellStatus) => void;
   updateMyPresenceCallback?: (presence: EPresenceStatusCategory) => void;
   phoneNumberCallback?: (arg: string) => void;
+  writeImageToClipboard?: (blob: string) => void;
 }
 
 const local: ILocalObject = {
@@ -381,6 +382,17 @@ export class SSFApi {
       }
       // Clear the pending data.
       pendingAnalytics = [];
+    }
+  }
+
+  /**
+   * Register Event to expose callback when Copy Image is clicked
+   *
+   * @param analyticsEventHandler
+   */
+  public registerWriteImageToClipboard(callback): void {
+    if (typeof callback === 'function') {
+      local.writeImageToClipboard = callback;
     }
   }
 
@@ -1021,6 +1033,15 @@ local.ipcRenderer.on(
   (_event: Event, arg: EPresenceStatusCategory) => {
     if (typeof local.updateMyPresenceCallback === 'function') {
       local.updateMyPresenceCallback(arg);
+    }
+  },
+);
+
+local.ipcRenderer.on(
+  'copy-to-clipboard',
+  async (_event: Event, arg: string) => {
+    if (typeof local.writeImageToClipboard === 'function') {
+      local.writeImageToClipboard(arg);
     }
   },
 );
