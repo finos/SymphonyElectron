@@ -74,7 +74,6 @@ const generateArchiveForDirectory = (
     for (const logs of retrievedLogs) {
       for (const logFile of logs.logFiles) {
         const file = path.join(source, logFile.filename);
-        fs.writeFileSync(file, logFile.contents);
         archive.file(file, { name: 'logs/' + logFile.filename });
         filesForCleanup.push(file);
       }
@@ -107,7 +106,7 @@ export const collectLogs = (): void => {
  * MacOS - /Library/Logs/Symphony/
  * Windows - AppData\Roaming\Symphony\logs
  */
-export const packageLogs = (retrievedLogs: ILogs[]): void => {
+export const packageLogs = async (retrievedLogs: ILogs[]): Promise<void> => {
   const FILE_EXTENSIONS = ['.log'];
   const logsPath = app.getPath('logs');
   const focusedWindow = BrowserWindow.getFocusedWindow();
@@ -128,6 +127,13 @@ export const packageLogs = (retrievedLogs: ILogs[]): void => {
   const destPath = isMac || isLinux ? '/logs_symphony_' : '\\logs_symphony_';
   const timestamp = new Date().getTime();
   const destination = app.getPath('downloads') + destPath + timestamp + '.zip';
+
+  for await (const logs of retrievedLogs) {
+    for (const logFile of logs.logFiles) {
+      const file = path.join(logsPath, logFile.filename);
+      await writeDataToFile(file, logFile.contents);
+    }
+  }
 
   generateArchiveForDirectory(
     logsPath,
@@ -151,6 +157,10 @@ export const packageLogs = (retrievedLogs: ILogs[]): void => {
 };
 
 export const finalizeLogExports = (logs: ILogs) => {
+  if (!(!('shouldExportLogs' in logs) || !!logs.shouldExportLogs)) {
+    receivedLogs.push(logs);
+    return;
+  }
   receivedLogs.push(logs);
 
   let allReceived = true;
@@ -228,4 +238,37 @@ const getCrashesDirectory = (): string => {
     source += '\\reports';
   }
   return source;
+};
+
+/**
+ * Write data in chunk
+ * @param chunk
+ * @param stream
+ */
+const writeChunk = (chunk: string, stream: fs.WriteStream) => {
+  stream.write(chunk + '\n');
+};
+
+const writeDataToFile = async (filePath: string, data: string) => {
+  const writeStream = fs.createWriteStream(filePath, { encoding: 'utf8' });
+
+  await new Promise((resolve, reject) => {
+    let chunkIndex = 0;
+
+    const writeNextChunk = () => {
+      if (chunkIndex < data.length) {
+        const chunk = data.slice(chunkIndex, chunkIndex + 1000);
+        writeChunk(chunk, writeStream);
+        chunkIndex += chunk.length;
+        writeStream.once('drain', writeNextChunk);
+      } else {
+        writeStream.end();
+      }
+    };
+
+    writeStream.on('error', reject);
+    writeStream.on('finish', resolve);
+
+    writeNextChunk();
+  });
 };

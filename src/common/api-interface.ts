@@ -375,6 +375,7 @@ export interface ILogFile {
 export interface ILogs {
   logName: string;
   logFiles: ILogFile[];
+  shouldExportLogs?: boolean;
 }
 
 export interface IRestartFloaterData {
