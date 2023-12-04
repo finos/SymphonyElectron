@@ -770,7 +770,11 @@ export class WindowHandler {
         !this.isAutoUpdating
       ) {
         event.preventDefault();
-        this.mainWindow.minimize();
+        if (this.mainWindow.isFullScreen()) {
+          hideFullscreenWindow(this.mainWindow);
+        } else {
+          this.mainWindow.minimize();
+        }
         return;
       }
 
