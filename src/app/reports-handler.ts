@@ -245,30 +245,26 @@ const getCrashesDirectory = (): string => {
  * @param chunk
  * @param stream
  */
-const writeChunk = (chunk: string, stream: fs.WriteStream) => {
-  stream.write(chunk + '\n');
+const writeChunk = (chunk: string[], stream: fs.WriteStream): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const dataString = chunk.join('\n');
+    stream.write(dataString + '\n', (error) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve();
+      }
+    });
+  });
 };
 
 const writeDataToFile = async (filePath: string, data: string) => {
   const writeStream = fs.createWriteStream(filePath, { encoding: 'utf8' });
 
-  await new Promise((resolve, reject) => {
-    let chunkIndex = 0;
+  for (let chunkIndex = 0; chunkIndex < data.length; chunkIndex += 1000) {
+    const chunk = data.slice(chunkIndex, chunkIndex + 1000);
+    await writeChunk([chunk], writeStream);
+  }
 
-    const writeNextChunk = () => {
-      if (chunkIndex < data.length) {
-        const chunk = data.slice(chunkIndex, chunkIndex + 1000);
-        writeChunk(chunk, writeStream);
-        chunkIndex += chunk.length;
-        writeStream.once('drain', writeNextChunk);
-      } else {
-        writeStream.end();
-      }
-    };
-
-    writeStream.on('error', reject);
-    writeStream.on('finish', resolve);
-
-    writeNextChunk();
-  });
+  writeStream.end();
 };
