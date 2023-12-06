@@ -87,6 +87,15 @@ let logWebContents: WebContents;
 const logTypes: string[] = [];
 const receivedLogs: ILogs[] = [];
 
+const writeClientLogs = async (retrievedLogs: ILogs[]) => {
+  for await (const logs of retrievedLogs) {
+    for (const logFile of logs.logFiles) {
+      const file = path.join(app.getPath('logs'), logFile.filename);
+      await writeDataToFile(file, logFile.contents);
+    }
+  }
+};
+
 export const registerLogRetriever = (
   sender: WebContents,
   logName: string,
@@ -96,7 +105,6 @@ export const registerLogRetriever = (
 };
 
 export const collectLogs = (): void => {
-  receivedLogs.length = 0;
   logWebContents.send('collect-logs');
 };
 
@@ -128,13 +136,7 @@ export const packageLogs = async (retrievedLogs: ILogs[]): Promise<void> => {
   const timestamp = new Date().getTime();
   const destination = app.getPath('downloads') + destPath + timestamp + '.zip';
 
-  for await (const logs of retrievedLogs) {
-    for (const logFile of logs.logFiles) {
-      const file = path.join(logsPath, logFile.filename);
-      await writeDataToFile(file, logFile.contents);
-    }
-  }
-
+  await writeClientLogs(retrievedLogs);
   generateArchiveForDirectory(
     logsPath,
     destination,
@@ -158,7 +160,28 @@ export const packageLogs = async (retrievedLogs: ILogs[]): Promise<void> => {
 
 export const finalizeLogExports = (logs: ILogs) => {
   if (!(!('shouldExportLogs' in logs) || !!logs.shouldExportLogs)) {
-    receivedLogs.push(logs);
+    const existingLogIndex = receivedLogs.findIndex(
+      (receivedLog) => receivedLog.logName === logs.logName,
+    );
+    if (existingLogIndex === -1) {
+      receivedLogs.push(logs);
+    } else {
+      const existingLog = receivedLogs[existingLogIndex];
+      const existingLogFileIndex = existingLog.logFiles.findIndex(
+        (logFile) => logFile.filename === logs.logFiles[0].filename,
+      );
+
+      if (existingLogFileIndex === -1) {
+        existingLog.logFiles.push(logs.logFiles[0]);
+      } else {
+        const logContent = `${existingLog.logFiles[existingLogFileIndex].contents} \n ${logs.logFiles[0].contents}`;
+        const logEntries = logContent.split('\n');
+        const uniqueLogEntries = new Set(logEntries);
+        const filteredLogEntries = [...uniqueLogEntries];
+        existingLog.logFiles[existingLogFileIndex].contents =
+          filteredLogEntries.join('\n');
+      }
+    }
     return;
   }
   receivedLogs.push(logs);
