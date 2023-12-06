@@ -87,10 +87,18 @@ let logWebContents: WebContents;
 const logTypes: string[] = [];
 const receivedLogs: ILogs[] = [];
 
+const validateFilename = (filename: string): string => {
+  return filename?.replace(/[^a-zA-Z0-9_.-]/g, '_');
+};
+
 const writeClientLogs = async (retrievedLogs: ILogs[]) => {
   for await (const logs of retrievedLogs) {
     for (const logFile of logs.logFiles) {
-      const file = path.join(app.getPath('logs'), logFile.filename);
+      const sanitizedFilename = validateFilename(logFile.filename);
+      if (!sanitizedFilename) {
+        continue;
+      }
+      const file = path.join(app.getPath('logs'), sanitizedFilename);
       await writeDataToFile(file, logFile.contents);
     }
   }
