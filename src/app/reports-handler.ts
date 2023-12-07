@@ -98,6 +98,7 @@ const writeClientLogs = async (retrievedLogs: ILogs[]) => {
       if (!sanitizedFilename) {
         continue;
       }
+      // nosemgrep
       const file = path.join(app.getPath('logs'), sanitizedFilename);
       await writeDataToFile(file, logFile.contents);
     }
