@@ -345,14 +345,20 @@ export class SSFApi {
   /**
    * Send log files to main process when requested.
    */
-  public sendLogs(
-    logName: string,
-    logFiles,
-    shouldExportLogs: boolean = true,
-  ): void {
+  public sendLogs(logName: string, logFiles): void {
     local.ipcRenderer.send(apiName.symphonyApi, {
       cmd: apiCmds.sendLogs,
-      logs: { logName, logFiles, shouldExportLogs },
+      logs: { logName, logFiles },
+    });
+  }
+
+  /**
+   * Adds log into respective data.
+   */
+  public addLogs(logName: string, logFiles): void {
+    local.ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.addLogs,
+      logs: { logName, logFiles },
     });
   }
 

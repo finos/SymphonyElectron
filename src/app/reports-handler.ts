@@ -167,32 +167,32 @@ export const packageLogs = async (retrievedLogs: ILogs[]): Promise<void> => {
     });
 };
 
-export const finalizeLogExports = (logs: ILogs) => {
-  if (!(!('shouldExportLogs' in logs) || !!logs.shouldExportLogs)) {
-    const existingLogIndex = receivedLogs.findIndex(
-      (receivedLog) => receivedLog.logName === logs.logName,
+export const addLogs = (logs: ILogs) => {
+  const existingLogIndex = receivedLogs.findIndex(
+    (receivedLog) => receivedLog.logName === logs.logName,
+  );
+  if (existingLogIndex === -1) {
+    receivedLogs.push(logs);
+  } else {
+    const existingLog = receivedLogs[existingLogIndex];
+    const existingLogFileIndex = existingLog.logFiles.findIndex(
+      (logFile) => logFile.filename === logs.logFiles[0].filename,
     );
-    if (existingLogIndex === -1) {
-      receivedLogs.push(logs);
-    } else {
-      const existingLog = receivedLogs[existingLogIndex];
-      const existingLogFileIndex = existingLog.logFiles.findIndex(
-        (logFile) => logFile.filename === logs.logFiles[0].filename,
-      );
 
-      if (existingLogFileIndex === -1) {
-        existingLog.logFiles.push(logs.logFiles[0]);
-      } else {
-        const logContent = `${existingLog.logFiles[existingLogFileIndex].contents} \n ${logs.logFiles[0].contents}`;
-        const logEntries = logContent.split('\n');
-        const uniqueLogEntries = new Set(logEntries);
-        const filteredLogEntries = [...uniqueLogEntries];
-        existingLog.logFiles[existingLogFileIndex].contents =
-          filteredLogEntries.join('\n');
-      }
+    if (existingLogFileIndex === -1) {
+      existingLog.logFiles.push(logs.logFiles[0]);
+    } else {
+      const logContent = `${existingLog.logFiles[existingLogFileIndex].contents} \n ${logs.logFiles[0].contents}`;
+      const logEntries = logContent.split('\n');
+      const uniqueLogEntries = new Set(logEntries);
+      const filteredLogEntries = [...uniqueLogEntries];
+      existingLog.logFiles[existingLogFileIndex].contents =
+        filteredLogEntries.join('\n');
     }
-    return;
   }
+};
+
+export const finalizeLogExports = (logs: ILogs) => {
   receivedLogs.push(logs);
 
   let allReceived = true;
