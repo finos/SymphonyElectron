@@ -12,6 +12,7 @@ export enum apiCmds {
   registerProtocolHandler = 'register-protocol-handler',
   registerLogRetriever = 'register-log-retriever',
   sendLogs = 'send-logs',
+  addLogs = 'add-logs',
   registerAnalyticsHandler = 'register-analytics-handler',
   registerActivityDetection = 'register-activity-detection',
   showNotificationSettings = 'show-notification-settings',
@@ -375,6 +376,7 @@ export interface ILogFile {
 export interface ILogs {
   logName: string;
   logFiles: ILogFile[];
+  shouldExportLogs?: boolean;
 }
 
 export interface IRestartFloaterData {

@@ -32,7 +32,11 @@ import { mainEvents } from './main-event-handler';
 import { memoryMonitor } from './memory-monitor';
 import notificationHelper from './notifications/notification-helper';
 import { protocolHandler } from './protocol-handler';
-import { finalizeLogExports, registerLogRetriever } from './reports-handler';
+import {
+  addLogs,
+  finalizeLogExports,
+  registerLogRetriever,
+} from './reports-handler';
 import { screenSnippet } from './screen-snippet-handler';
 import { activate, handleKeyPress } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
@@ -155,6 +159,9 @@ ipcMain.on(
         break;
       case apiCmds.sendLogs:
         finalizeLogExports(arg.logs);
+        break;
+      case apiCmds.addLogs:
+        addLogs(arg.logs);
         break;
       case apiCmds.badgeDataUrl:
         if (typeof arg.dataUrl === 'string') {
@@ -669,6 +676,20 @@ const logApiCallParams = (arg: any) => {
       logger.info(
         `main-api-handler: - ${apiCmd} - Properties: ${JSON.stringify(
           logDetails,
+          null,
+          2,
+        )}`,
+      );
+      break;
+    case apiCmds.addLogs:
+      const lf = 'hidden';
+      const ld = {
+        ...arg.logs,
+        logFiles: lf,
+      };
+      logger.info(
+        `main-api-handler: - ${apiCmd} - Properties: ${JSON.stringify(
+          ld,
           null,
           2,
         )}`,

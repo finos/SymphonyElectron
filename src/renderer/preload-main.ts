@@ -66,6 +66,7 @@ if (ssfWindow.ssf) {
     registerProtocolHandler: ssfWindow.ssf.registerProtocolHandler,
     registerLogRetriever: ssfWindow.ssf.registerLogRetriever,
     sendLogs: ssfWindow.ssf.sendLogs,
+    addLogs: ssfWindow.ssf.addLogs,
     registerAnalyticsEvent: ssfWindow.ssf.registerAnalyticsEvent,
     ScreenSnippet: ssfWindow.ssf.ScreenSnippet,
     openScreenSnippet: ssfWindow.ssf.openScreenSnippet,
