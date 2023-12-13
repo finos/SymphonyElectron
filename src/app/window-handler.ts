@@ -131,6 +131,7 @@ export const AUX_CLICK = 'Auxclick';
 // Timeout on restarting SDA in case it's stuck
 const LISTEN_TIMEOUT: number = 25 * 1000;
 
+const HOSTNAME_REGEX = /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 export class WindowHandler {
   /**
    * Verifies if the url is valid and
@@ -190,6 +191,7 @@ export class WindowHandler {
   private shouldShowWelcomeScreen: boolean = true;
   private defaultUrl: string = 'my.symphony.com';
   private didShowWelcomeScreen: boolean = false;
+  private cmdUrl: string = '';
 
   constructor(opts?: Electron.BrowserViewConstructorOptions) {
     this.opts = opts;
@@ -385,6 +387,7 @@ export class WindowHandler {
           logger.info(
             `window-handler: setting ${commandLineUrl} from the command line as the main window url.`,
           );
+          this.cmdUrl = commandLineUrl;
           this.url = commandLineUrl;
         } else {
           logger.info(
@@ -395,6 +398,7 @@ export class WindowHandler {
         logger.info(
           `window-handler: setting ${commandLineUrl} from the command line as the main window url since pod whitelist is empty.`,
         );
+        this.cmdUrl = commandLineUrl;
         this.url = commandLineUrl;
       }
     }
@@ -2188,9 +2192,21 @@ export class WindowHandler {
         `window-utils: user hasn't logged in yet, loading login page again`,
       );
       const userAgent = this.getUserAgent(this.mainWebContents);
-      await this.mainWebContents.loadURL(this.url || this.globalConfig.url, {
-        userAgent,
-      });
+      const urlFromConfig = config.getUserConfigFields(['url']);
+      const isValidUrl =
+        HOSTNAME_REGEX.test(urlFromConfig.url || '') ||
+        urlFromConfig.url.includes('https://local-dev.symphony.com');
+
+      await this.mainWebContents.loadURL(
+        this.cmdUrl
+          ? this.cmdUrl
+          : isValidUrl
+          ? urlFromConfig.url
+          : this.globalConfig.url,
+        {
+          userAgent,
+        },
+      );
     }
   }
 
