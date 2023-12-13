@@ -22,8 +22,6 @@ jest.mock('fs', () => ({
   readFileSync: jest.fn(() => '{"configVersion": "4.0.0"}'),
 }));
 
-jest.mock('electron-log');
-
 jest.mock('../src/common/env', () => {
   return {
     isWindowsOS: true,
@@ -55,20 +53,6 @@ jest.mock('../src/app/window-handler', () => {
 jest.mock('../src/app/window-actions', () => {
   return {
     monitorWindowActions: jest.fn(),
-  };
-});
-
-jest.mock('../src/common/logger', () => {
-  return {
-    logger: {
-      setLoggerWindow: jest.fn(),
-      error: jest.fn(),
-      warn: jest.fn(),
-      info: jest.fn(),
-      verbose: jest.fn(),
-      debug: jest.fn(),
-      silly: jest.fn(),
-    },
   };
 });
 
