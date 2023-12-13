@@ -41,6 +41,7 @@ interface IState {
   isPodEditing: boolean;
   isValidHostname: boolean;
   didUpdateHostname: boolean;
+  isEditMode?: boolean;
 }
 
 const ABOUT_SYMPHONY_NAMESPACE = 'AboutSymphony';
@@ -97,6 +98,7 @@ export default class AboutApp extends React.Component<{}, IState> {
       isPodEditing: false,
       isValidHostname: true,
       didUpdateHostname: false,
+      isEditMode: false,
     };
     this.updateState = this.updateState.bind(this);
   }
@@ -198,15 +200,26 @@ export default class AboutApp extends React.Component<{}, IState> {
                 {cancelText}
               </button>
             )}
-            <button
-              className='AboutApp-close-button'
-              onClick={this.eventHandlers.onClose}
-              title={closeButtonText}
-              data-testid={'CLOSE_BUTTON'}
-              ref={this.closeButtonRef}
-            >
-              {closeButtonText}
-            </button>
+            {this.state.isEditMode ? (
+              <button
+                className='AboutApp-save-button'
+                onClick={this.eventHandlers.onPodInputBlur}
+                title={i18n.t('Save', ABOUT_SYMPHONY_NAMESPACE)()}
+                data-testid={'SAVE_BUTTON'}
+              >
+                {i18n.t('Save', ABOUT_SYMPHONY_NAMESPACE)()}
+              </button>
+            ) : (
+              <button
+                className='AboutApp-close-button'
+                onClick={this.eventHandlers.onClose}
+                title={closeButtonText}
+                data-testid={'CLOSE_BUTTON'}
+                ref={this.closeButtonRef}
+              >
+                {closeButtonText}
+              </button>
+            )}
           </div>
         </div>
         <div className='AboutApp-version-container'>
@@ -244,6 +257,7 @@ export default class AboutApp extends React.Component<{}, IState> {
     };
     if (data) {
       delete data.updatedHostname;
+      delete data.isEditMode;
       ipcRenderer.send(apiName.symphonyApi, {
         cmd: apiCmds.aboutAppClipBoardData,
         clipboard: data,
@@ -272,6 +286,7 @@ export default class AboutApp extends React.Component<{}, IState> {
       isPodEditing: false,
       isValidHostname: true,
       hostname: this.previousUrl,
+      isEditMode: false,
     });
   }
 
@@ -284,6 +299,7 @@ export default class AboutApp extends React.Component<{}, IState> {
         isPodEditing: !!(this.state.globalConfig as IConfig)?.isPodUrlEditable,
         didUpdateHostname: !!(this.state.globalConfig as IConfig)
           ?.isPodUrlEditable,
+        isEditMode: true,
       });
     }
   }
@@ -314,6 +330,7 @@ export default class AboutApp extends React.Component<{}, IState> {
         isPodEditing: false,
         isValidHostname: true,
         hostname: this.previousUrl,
+        isEditMode: false,
       });
     }
   };
@@ -327,11 +344,13 @@ export default class AboutApp extends React.Component<{}, IState> {
       this.setState({
         isPodEditing: false,
         isValidHostname: false,
+        isEditMode: false,
       });
     } else {
       this.setState({
         isPodEditing: false,
         isValidHostname: true,
+        isEditMode: false,
         hostname: updatedHostname || hostname,
       });
     }
@@ -385,7 +404,6 @@ export default class AboutApp extends React.Component<{}, IState> {
             value={updatedHostname}
             onKeyDown={this.onKeyDown}
             onChange={this.handlePodChange}
-            onBlur={this.handlePodInputBlur}
             autoFocus
           />
         ) : (
