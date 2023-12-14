@@ -173,7 +173,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
           onContextMenu={this.eventHandlers.onDisableContextMenu}
           onMouseDown={this.handleMouseDown}
         >
-          <svg x='0px' y='0px' viewBox='0 0 14 10.2'>
+          <svg x='0px' y='0px' viewBox='0 0 14 11.2'>
             <path
               fill={
                 isDisabled
@@ -194,7 +194,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
         onContextMenu={this.eventHandlers.onDisableContextMenu}
         onMouseDown={this.handleMouseDown}
       >
-        <svg x='0px' y='0px' viewBox='0 0 14 10.2'>
+        <svg x='0px' y='0px' viewBox='0 0 14 11.2'>
           <path
             fill={
               isDisabled

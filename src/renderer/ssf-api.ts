@@ -353,6 +353,16 @@ export class SSFApi {
   }
 
   /**
+   * Adds log into respective data.
+   */
+  public addLogs(logName: string, logFiles): void {
+    local.ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.addLogs,
+      logs: { logName, logFiles },
+    });
+  }
+
+  /**
    * Allows JS to register analytics event handler
    * to pass analytics event data
    *

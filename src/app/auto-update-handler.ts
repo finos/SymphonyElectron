@@ -25,6 +25,7 @@ export enum ChannelConfigLocation {
   ACP = 'ACP',
   REGISTRY = 'REGISTRY',
 }
+const DOWNLOAD_PROGRESS_BANNER_DELAY = 1000 * 10; // 10 sec
 
 const AUTO_UPDATE_REASON = 'autoUpdate';
 
@@ -37,6 +38,7 @@ export class AutoUpdate {
   private installVariant: string | undefined = undefined;
   private channelConfigLocation: ChannelConfigLocation =
     ChannelConfigLocation.LOCALFILE;
+  private downloadProgressDelayTimer: NodeJS.Timeout | null = null;
 
   constructor() {
     this.getGenericServerOptions().then((opts) => {
@@ -199,11 +201,16 @@ export class AutoUpdate {
           break;
         case 'download-progress':
           if (!this.didPublishDownloadProgress) {
-            mainWebContents.send('display-client-banner', eventData);
+            this.downloadProgressDelayTimer = setTimeout(() => {
+              mainWebContents.send('display-client-banner', eventData);
+            }, DOWNLOAD_PROGRESS_BANNER_DELAY);
             this.didPublishDownloadProgress = true;
           }
           break;
         case 'update-downloaded':
+          if (this.downloadProgressDelayTimer) {
+            clearTimeout(this.downloadProgressDelayTimer);
+          }
           this.isUpdateAvailable = true;
           mainWebContents.send('display-client-banner', eventData);
           if (isMac) {

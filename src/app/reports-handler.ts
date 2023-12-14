@@ -74,7 +74,6 @@ const generateArchiveForDirectory = (
     for (const logs of retrievedLogs) {
       for (const logFile of logs.logFiles) {
         const file = path.join(source, logFile.filename);
-        fs.writeFileSync(file, logFile.contents);
         archive.file(file, { name: 'logs/' + logFile.filename });
         filesForCleanup.push(file);
       }
@@ -88,6 +87,24 @@ let logWebContents: WebContents;
 const logTypes: string[] = [];
 const receivedLogs: ILogs[] = [];
 
+const validateFilename = (filename: string): string => {
+  return filename?.replace(/[^a-zA-Z0-9/_\.-]/g, '_');
+};
+
+const writeClientLogs = async (retrievedLogs: ILogs[]) => {
+  for await (const logs of retrievedLogs) {
+    for (const logFile of logs.logFiles) {
+      const sanitizedFilename = validateFilename(logFile.filename);
+      if (!sanitizedFilename) {
+        continue;
+      }
+      // nosemgrep
+      const file = path.join(app.getPath('logs'), sanitizedFilename);
+      await writeDataToFile(file, logFile.contents);
+    }
+  }
+};
+
 export const registerLogRetriever = (
   sender: WebContents,
   logName: string,
@@ -97,7 +114,6 @@ export const registerLogRetriever = (
 };
 
 export const collectLogs = (): void => {
-  receivedLogs.length = 0;
   logWebContents.send('collect-logs');
 };
 
@@ -107,7 +123,7 @@ export const collectLogs = (): void => {
  * MacOS - /Library/Logs/Symphony/
  * Windows - AppData\Roaming\Symphony\logs
  */
-export const packageLogs = (retrievedLogs: ILogs[]): void => {
+export const packageLogs = async (retrievedLogs: ILogs[]): Promise<void> => {
   const FILE_EXTENSIONS = ['.log'];
   const logsPath = app.getPath('logs');
   const focusedWindow = BrowserWindow.getFocusedWindow();
@@ -129,6 +145,7 @@ export const packageLogs = (retrievedLogs: ILogs[]): void => {
   const timestamp = new Date().getTime();
   const destination = app.getPath('downloads') + destPath + timestamp + '.zip';
 
+  await writeClientLogs(retrievedLogs);
   generateArchiveForDirectory(
     logsPath,
     destination,
@@ -148,6 +165,31 @@ export const packageLogs = (retrievedLogs: ILogs[]): void => {
         });
       }
     });
+};
+
+export const addLogs = (logs: ILogs) => {
+  const existingLogIndex = receivedLogs.findIndex(
+    (receivedLog) => receivedLog.logName === logs.logName,
+  );
+  if (existingLogIndex === -1) {
+    receivedLogs.push(logs);
+  } else {
+    const existingLog = receivedLogs[existingLogIndex];
+    const existingLogFileIndex = existingLog.logFiles.findIndex(
+      (logFile) => logFile.filename === logs.logFiles[0].filename,
+    );
+
+    if (existingLogFileIndex === -1) {
+      existingLog.logFiles.push(logs.logFiles[0]);
+    } else {
+      const logContent = `${existingLog.logFiles[existingLogFileIndex].contents} \n ${logs.logFiles[0].contents}`;
+      const logEntries = logContent.split('\n');
+      const uniqueLogEntries = new Set(logEntries);
+      const filteredLogEntries = [...uniqueLogEntries];
+      existingLog.logFiles[existingLogFileIndex].contents =
+        filteredLogEntries.join('\n');
+    }
+  }
 };
 
 export const finalizeLogExports = (logs: ILogs) => {
@@ -228,4 +270,33 @@ const getCrashesDirectory = (): string => {
     source += '\\reports';
   }
   return source;
+};
+
+/**
+ * Write data in chunk
+ * @param chunk
+ * @param stream
+ */
+const writeChunk = (chunk: string[], stream: fs.WriteStream): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const dataString = chunk.join('\n');
+    stream.write(dataString + '\n', (error) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve();
+      }
+    });
+  });
+};
+
+const writeDataToFile = async (filePath: string, data: string) => {
+  const writeStream = fs.createWriteStream(filePath, { encoding: 'utf8' });
+
+  for (let chunkIndex = 0; chunkIndex < data.length; chunkIndex += 1000) {
+    const chunk = data.slice(chunkIndex, chunkIndex + 1000);
+    await writeChunk([chunk], writeStream);
+  }
+
+  writeStream.end();
 };
