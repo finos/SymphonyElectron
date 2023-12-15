@@ -1,6 +1,6 @@
 import { app, powerMonitor, WebContents } from 'electron';
+import { logger } from '../common/c9-logger';
 import { isDevEnv, isWindowsOS } from '../common/env';
-import { logger } from '../common/logger';
 
 import { ChildProcess, spawn } from 'child_process';
 import * as path from 'path';

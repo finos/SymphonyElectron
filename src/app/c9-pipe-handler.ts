@@ -1,6 +1,6 @@
 import { WebContents } from 'electron';
 import { createConnection, Socket } from 'net';
-import { logger } from '../common/logger';
+import { logger } from '../common/c9-logger';
 
 class C9PipeHandler {
   private _socket: Socket | undefined;
