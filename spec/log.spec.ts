@@ -12,8 +12,6 @@ jest.mock('../src/common/env', () => {
   };
 });
 
-jest.mock('electron-log');
-
 describe('logger', () => {
   let instance;
   beforeEach(() => {
