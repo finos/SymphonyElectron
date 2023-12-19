@@ -125,7 +125,7 @@ echo "Signing Package complete: ${PACKAGE}"
 
 # Notarize the app
 # xcrun altool --notarize-app --primary-bundle-id "$pwd" --username "$APPLE_ID" --password "$APPLE_ID_PASSWORD" --file $SIGNED_PACKAGE > /tmp/notarize.txt
-xcrun notarytool submit --apple-id "$APPLE_ID" --password "$APPLE_ID_PASSWORD" --team-id "$TEAM_ID" $SIGNED_PACKAGE --wait > /tmp/notarize.txt
+xcrun notarytool submit --apple-id "$APPLE_ID" --password "$APPLE_ID_PASSWORD" --team-id "$TEAM_ID" $SIGNED_PACKAGE > /tmp/notarize.txt
 
 cat /tmp/notarize.txt
 REQUEST_ID=$(sed -n '2p' /tmp/notarize.txt)
