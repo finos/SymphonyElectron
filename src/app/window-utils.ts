@@ -16,6 +16,7 @@ import electron = require('electron');
 import fetch from 'electron-fetch';
 import { filesize } from 'filesize';
 import * as fs from 'fs';
+import * as debounce from 'lodash.debounce';
 import * as path from 'path';
 import { format, parse } from 'url';
 import { apiName, EPresenceStatusGroup } from '../common/api-interface';
@@ -86,7 +87,7 @@ const DOWNLOAD_MANAGER_NAMESPACE = 'DownloadManager';
 const TITLE_BAR_EVENTS = [
   'maximize',
   'unmaximize',
-  'move',
+  'moved',
   'enter-full-screen',
   'leave-full-screen',
 ];
@@ -1315,7 +1316,9 @@ export const loadBrowserViews = async (
       }, 500);
       mainEvents.publish('enter-full-screen');
     });
+
     mainWindow?.on('leave-full-screen', () => {
+      logger.info('EVENT leave-full-screen!!');
       if (
         !titleBarView ||
         !viewExists(titleBarView) ||
@@ -1360,41 +1363,46 @@ export const loadBrowserViews = async (
       mainEvents.publish('leave-full-screen');
     });
 
-    mainWindow?.on('maximize', () => {
-      if (!mainView || !viewExists(mainView)) {
-        return;
-      }
-      const winBounds: Rectangle = mainWindow.getBounds();
-      const currentScreenBounds: Rectangle = screen.getDisplayMatching({
-        ...winBounds,
-      }).workArea;
+    mainWindow?.on('maximize', async () => {
+      const width = await mainWindow?.webContents.executeJavaScript(
+        'window.innerWidth',
+      );
+      const height = await mainWindow?.webContents.executeJavaScript(
+        'window.innerHeight',
+      );
+      const titleBarDisplayed = mainWindow.getBrowserViews().length > 1;
       mainView.setBounds({
-        width: currentScreenBounds.width,
-        height: currentScreenBounds.height - TITLE_BAR_HEIGHT,
+        height: titleBarDisplayed ? height - TITLE_BAR_HEIGHT : height,
+        width,
         x: 0,
-        y: TITLE_BAR_HEIGHT,
+        y: titleBarDisplayed ? TITLE_BAR_HEIGHT : 0,
       });
-      titleBarView.setBounds({
-        width: currentScreenBounds.width,
+
+      titleBarView?.setBounds({
         height: TITLE_BAR_HEIGHT,
+        width,
         x: 0,
         y: 0,
       });
     });
-    mainWindow?.on('unmaximize', () => {
-      if (!mainView || !viewExists(mainView)) {
-        return;
-      }
-      const [width, height] = mainWindow.getSize();
+    const resizeWindow = async () => {
+      const width = await mainWindow?.webContents.executeJavaScript(
+        'window.innerWidth',
+      );
+      const height = await mainWindow?.webContents.executeJavaScript(
+        'window.innerHeight',
+      );
+      const titleBarDisplayed = mainWindow.getBrowserViews().length > 1;
       mainView.setBounds({
+        height: titleBarDisplayed ? height - TITLE_BAR_HEIGHT : height,
         width,
-        height: height - TITLE_BAR_HEIGHT,
         x: 0,
-        y: TITLE_BAR_HEIGHT,
+        y: titleBarDisplayed ? TITLE_BAR_HEIGHT : 0,
       });
-      titleBarView.setBounds({
-        width,
+
+      titleBarView?.setBounds({
         height: TITLE_BAR_HEIGHT,
+        width,
         x: 0,
         y: 0,
       });
@@ -1403,7 +1411,12 @@ export const loadBrowserViews = async (
         mainView.webContents.toggleDevTools();
         mainView.webContents.toggleDevTools();
       }
-    });
+    };
+    const onResize = debounce(async () => {
+      resizeWindow();
+    }, 100);
+    mainWindow?.on('resize', onResize);
+    mainWindow?.on('unmaximize', resizeWindow);
 
     if (mainWindow?.isMaximized()) {
       mainEvents.publish('maximize');
@@ -1418,9 +1431,7 @@ export const loadBrowserViews = async (
     ...{ x: 0, y: 0, height: TITLE_BAR_HEIGHT },
   });
   titleBarView.setAutoResize({
-    vertical: false,
-    horizontal: true,
-    width: true,
+    width: false,
     height: false,
   });
 
@@ -1431,8 +1442,8 @@ export const loadBrowserViews = async (
     y: TITLE_BAR_HEIGHT,
   });
   mainView.setAutoResize({
-    width: true,
-    height: true,
+    width: false,
+    height: false,
   });
 
   windowHandler.setMainView(mainView);
