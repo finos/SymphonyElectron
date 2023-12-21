@@ -1406,6 +1406,11 @@ export const loadBrowserViews = async (
         x: 0,
         y: 0,
       });
+      // Workaround as electron does not resize devtools automatically
+      if (mainView.webContents.isDevToolsOpened()) {
+        mainView.webContents.toggleDevTools();
+        mainView.webContents.toggleDevTools();
+      }
     };
     const onResize = debounce(async () => {
       resizeWindow();
