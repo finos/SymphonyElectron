@@ -14,7 +14,7 @@ interface IState {
   userConfig: object;
   globalConfig: object;
   cloudConfig: object;
-  finalConfig: object;
+  finalConfig: IConfig;
   appName: string;
   copyWrite?: string;
   clientVersion: string;
@@ -41,7 +41,6 @@ interface IState {
   isPodEditing: boolean;
   isValidHostname: boolean;
   didUpdateHostname: boolean;
-  isEditMode?: boolean;
 }
 
 const ABOUT_SYMPHONY_NAMESPACE = 'AboutSymphony';
@@ -73,7 +72,7 @@ export default class AboutApp extends React.Component<{}, IState> {
       userConfig: {},
       globalConfig: {},
       cloudConfig: {},
-      finalConfig: {},
+      finalConfig: {} as IConfig,
       appName: 'Symphony',
       versionLocalised: 'Version',
       clientVersion: '',
@@ -98,7 +97,6 @@ export default class AboutApp extends React.Component<{}, IState> {
       isPodEditing: false,
       isValidHostname: true,
       didUpdateHostname: false,
-      isEditMode: false,
     };
     this.updateState = this.updateState.bind(this);
   }
@@ -149,7 +147,9 @@ export default class AboutApp extends React.Component<{}, IState> {
       },
     ];
     const closeButtonText =
-      isValidHostname && didUpdateHostname
+      isValidHostname &&
+      didUpdateHostname &&
+      !this.state.finalConfig.url.includes(this.state.updatedHostname ?? '')
         ? i18n.t('Save and Restart', ABOUT_SYMPHONY_NAMESPACE)()
         : i18n.t('Close', ABOUT_SYMPHONY_NAMESPACE)();
     const cancelText = i18n.t('Cancel', ABOUT_SYMPHONY_NAMESPACE)();
@@ -193,33 +193,27 @@ export default class AboutApp extends React.Component<{}, IState> {
             {this.state.isPodEditing && (
               <button
                 className='AboutApp-cancel-button'
-                onClick={this.eventHandlers.onCancel}
+                onMouseDown={this.eventHandlers.onCancel}
                 title={cancelText}
                 data-testid={'CANCEL_BUTTON'}
               >
                 {cancelText}
               </button>
             )}
-            {this.state.isEditMode ? (
-              <button
-                className='AboutApp-save-button'
-                onClick={this.eventHandlers.onPodInputBlur}
-                title={i18n.t('Save', ABOUT_SYMPHONY_NAMESPACE)()}
-                data-testid={'SAVE_BUTTON'}
-              >
-                {i18n.t('Save', ABOUT_SYMPHONY_NAMESPACE)()}
-              </button>
-            ) : (
-              <button
-                className='AboutApp-close-button'
-                onClick={this.eventHandlers.onClose}
-                title={closeButtonText}
-                data-testid={'CLOSE_BUTTON'}
-                ref={this.closeButtonRef}
-              >
-                {closeButtonText}
-              </button>
-            )}
+            <button
+              className={
+                isValidHostname
+                  ? 'AboutApp-close-button'
+                  : 'AboutApp-close-button-disabled'
+              }
+              onClick={this.eventHandlers.onClose}
+              title={closeButtonText}
+              data-testid={'CLOSE_BUTTON'}
+              ref={this.closeButtonRef}
+              disabled={!isValidHostname}
+            >
+              {closeButtonText}
+            </button>
           </div>
         </div>
         <div className='AboutApp-version-container'>
@@ -257,7 +251,6 @@ export default class AboutApp extends React.Component<{}, IState> {
     };
     if (data) {
       delete data.updatedHostname;
-      delete data.isEditMode;
       ipcRenderer.send(apiName.symphonyApi, {
         cmd: apiCmds.aboutAppClipBoardData,
         clipboard: data,
@@ -286,7 +279,6 @@ export default class AboutApp extends React.Component<{}, IState> {
       isPodEditing: false,
       isValidHostname: true,
       hostname: this.previousUrl,
-      isEditMode: false,
     });
   }
 
@@ -299,7 +291,6 @@ export default class AboutApp extends React.Component<{}, IState> {
         isPodEditing: !!(this.state.globalConfig as IConfig)?.isPodUrlEditable,
         didUpdateHostname: !!(this.state.globalConfig as IConfig)
           ?.isPodUrlEditable,
-        isEditMode: true,
       });
     }
   }
@@ -310,7 +301,10 @@ export default class AboutApp extends React.Component<{}, IState> {
    */
   public handlePodChange = (e) => {
     const { value } = e.target;
-    this.setState({ updatedHostname: value });
+    this.setState({
+      updatedHostname: value,
+      isValidHostname: HOSTNAME_REGEX.test(value || ''),
+    });
   };
 
   /**
@@ -330,7 +324,6 @@ export default class AboutApp extends React.Component<{}, IState> {
         isPodEditing: false,
         isValidHostname: true,
         hostname: this.previousUrl,
-        isEditMode: false,
       });
     }
   };
@@ -340,17 +333,18 @@ export default class AboutApp extends React.Component<{}, IState> {
    */
   public handlePodInputBlur = (_event) => {
     const { updatedHostname, hostname } = this.state;
+    if (!this.state.isValidHostname) {
+      return;
+    }
     if (!HOSTNAME_REGEX.test(updatedHostname || '')) {
       this.setState({
         isPodEditing: false,
         isValidHostname: false,
-        isEditMode: false,
       });
     } else {
       this.setState({
         isPodEditing: false,
         isValidHostname: true,
-        isEditMode: false,
         hostname: updatedHostname || hostname,
       });
     }
@@ -404,6 +398,7 @@ export default class AboutApp extends React.Component<{}, IState> {
             value={updatedHostname}
             onKeyDown={this.onKeyDown}
             onChange={this.handlePodChange}
+            onBlur={this.handlePodInputBlur}
             autoFocus
           />
         ) : (

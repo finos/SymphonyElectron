@@ -11,11 +11,11 @@ describe('about app', () => {
     userConfig: {},
     globalConfig: { isPodUrlEditable: true },
     cloudConfig: {},
-    finalConfig: {},
+    finalConfig: { url: 'abcxyz.symphony.com' },
     appName: 'Symphony',
     versionLocalised: 'Version',
     buildNumber: '4.x.x',
-    hostname: 'N/A',
+    hostname: 'abcxyz.symphony.com',
     sfeVersion: 'N/A',
     sfeClientType: '1.5',
     sdaVersion: '3.8.0',
@@ -34,7 +34,7 @@ describe('about app', () => {
   };
   const aboutDataMockState = {
     ...aboutDataMockClipboard,
-    updatedHostname: 'N/A',
+    updatedHostname: 'abcxyz.symphony.com',
   };
   const onLabelEvent = 'on';
   const ipcSendEvent = 'send';
@@ -153,7 +153,7 @@ describe('about app', () => {
     pod.simulate('click', { detail: 2 });
     pod.simulate('click', { detail: 3 });
     const podInput = wrapper.find('[data-testid="CANCEL_BUTTON"]');
-    podInput.simulate('click');
+    podInput.simulate('mousedown');
     expect(wrapper.find(`[data-testid="POD_INFO"]`).exists()).toEqual(true);
   });
 });
