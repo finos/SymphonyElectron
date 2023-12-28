@@ -227,6 +227,16 @@ export const createComponentWindow = (
       browserWindow.show();
     });
   }
+
+  // SDA-4422 workaround
+  if (!options.frame && options.transparent) {
+    browserWindow.on('blur', () => {
+      browserWindow.setBackgroundColor('#00000000');
+    });
+    browserWindow.on('focus', () => {
+      browserWindow.setBackgroundColor('#00000000');
+    });
+  }
   browserWindow.webContents.once('did-finish-load', () => {
     if (!browserWindow || !windowExists(browserWindow)) {
       return;
