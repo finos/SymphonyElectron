@@ -113,7 +113,6 @@ export default class AboutApp extends React.Component<{}, IState> {
       sdaVersion,
       sdaBuildNumber,
       client,
-      didUpdateHostname,
       isValidHostname,
     } = this.state;
 
@@ -146,12 +145,17 @@ export default class AboutApp extends React.Component<{}, IState> {
         value: `${formattedSfeVersion} ${client}`,
       },
     ];
-    const closeButtonText =
-      isValidHostname &&
-      didUpdateHostname &&
-      !this.state.finalConfig.url.includes(this.state.updatedHostname ?? '')
-        ? i18n.t('Save and Restart', ABOUT_SYMPHONY_NAMESPACE)()
-        : i18n.t('Close', ABOUT_SYMPHONY_NAMESPACE)();
+    const finalConfig = this.state.finalConfig?.url
+      ?.replace(/https:\/\//g, '')
+      ?.split('/')[0];
+    const updatedHostname = this.state.updatedHostname
+      ?.replace(/https:\/\//g, '')
+      ?.split('/')[0];
+    const isHostNamechanged =
+      finalConfig && updatedHostname && finalConfig !== updatedHostname;
+    const closeButtonText = isHostNamechanged
+      ? i18n.t('Save and Restart', ABOUT_SYMPHONY_NAMESPACE)()
+      : i18n.t('Close', ABOUT_SYMPHONY_NAMESPACE)();
     const cancelText = i18n.t('Cancel', ABOUT_SYMPHONY_NAMESPACE)();
 
     return (
@@ -192,7 +196,11 @@ export default class AboutApp extends React.Component<{}, IState> {
           <div className='AboutApp-close-container'>
             {this.state.isPodEditing && (
               <button
-                className='AboutApp-cancel-button'
+                className={
+                  isHostNamechanged
+                    ? 'AboutApp-cancel-button-save-restart'
+                    : 'AboutApp-cancel-button'
+                }
                 onMouseDown={this.eventHandlers.onCancel}
                 title={cancelText}
                 data-testid={'CANCEL_BUTTON'}
@@ -202,9 +210,11 @@ export default class AboutApp extends React.Component<{}, IState> {
             )}
             <button
               className={
-                isValidHostname
-                  ? 'AboutApp-close-button'
-                  : 'AboutApp-close-button-disabled'
+                isHostNamechanged && isValidHostname
+                  ? 'AboutApp-button-save-restart'
+                  : !isValidHostname
+                  ? 'AboutApp-button-save-restart-disabled'
+                  : 'AboutApp-close-button'
               }
               onClick={this.eventHandlers.onClose}
               title={closeButtonText}
@@ -264,7 +274,16 @@ export default class AboutApp extends React.Component<{}, IState> {
    */
   public close(): void {
     const { isValidHostname, didUpdateHostname, hostname } = this.state;
-    if (isValidHostname && didUpdateHostname) {
+    const finalConfig = this.state.finalConfig?.url
+      .replace(/https:\/\//g, '')
+      ?.split('/')[0];
+    const updatedHostname = this.state.updatedHostname
+      ?.replace(/https:\/\//g, '')
+      ?.split('/')[0];
+    const compareHostName =
+      finalConfig && updatedHostname && finalConfig !== updatedHostname;
+
+    if (isValidHostname && didUpdateHostname && compareHostName) {
       ipcRenderer.send('user-pod-updated', hostname);
     }
     ipcRenderer.send('close-about-app');
