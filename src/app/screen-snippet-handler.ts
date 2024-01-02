@@ -355,6 +355,7 @@ class ScreenSnippet {
           );
           webContents.send('screen-snippet-data', payload);
           winStore.restoreWindows(hideOnCapture);
+          webContents.focus();
           await this.verifyAndUpdateAlwaysOnTop();
         } catch (error) {
           await this.verifyAndUpdateAlwaysOnTop();
