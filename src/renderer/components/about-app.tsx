@@ -216,7 +216,7 @@ export default class AboutApp extends React.Component<{}, IState> {
                   ? 'AboutApp-button-save-restart-disabled'
                   : 'AboutApp-close-button'
               }
-              onClick={this.eventHandlers.onClose}
+              onMouseDown={this.eventHandlers.onClose}
               title={closeButtonText}
               data-testid={'CLOSE_BUTTON'}
               ref={this.closeButtonRef}
