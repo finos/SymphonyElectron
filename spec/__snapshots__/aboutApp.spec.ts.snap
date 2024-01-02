@@ -49,7 +49,7 @@ exports[`about app should render correctly 1`] = `
         className="AboutApp-close-button"
         data-testid="CLOSE_BUTTON"
         disabled={false}
-        onClick={[Function]}
+        onMouseDown={[Function]}
         title="Close"
       >
         Close
@@ -62,7 +62,7 @@ exports[`about app should render correctly 1`] = `
     <p
       className="AboutApp-copyright-text"
     >
-      Copyright © 2023 Symphony
+      Copyright © 2024 Symphony
     </p>
   </div>
 </div>
