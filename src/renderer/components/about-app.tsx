@@ -40,7 +40,6 @@ interface IState {
   updatedHostname?: string;
   isPodEditing: boolean;
   isValidHostname: boolean;
-  didUpdateHostname: boolean;
 }
 
 const ABOUT_SYMPHONY_NAMESPACE = 'AboutSymphony';
@@ -96,7 +95,6 @@ export default class AboutApp extends React.Component<{}, IState> {
       updatedHostname: '',
       isPodEditing: false,
       isValidHostname: true,
-      didUpdateHostname: false,
     };
     this.updateState = this.updateState.bind(this);
   }
@@ -222,7 +220,9 @@ export default class AboutApp extends React.Component<{}, IState> {
               ref={this.closeButtonRef}
               disabled={!isValidHostname}
             >
-              {closeButtonText}
+              <span className='AboutApp-button-save-restart-text'>
+                {closeButtonText}
+              </span>
             </button>
           </div>
         </div>
@@ -255,7 +255,7 @@ export default class AboutApp extends React.Component<{}, IState> {
    */
   public copy(): void {
     const { clientVersion, ...rest } = this.state;
-    const { isPodEditing, isValidHostname, didUpdateHostname, ...data } = {
+    const { isPodEditing, isValidHostname, ...data } = {
       ...{ sbeVersion: clientVersion },
       ...rest,
     };
@@ -273,7 +273,7 @@ export default class AboutApp extends React.Component<{}, IState> {
    * Close modal
    */
   public close(): void {
-    const { isValidHostname, didUpdateHostname, hostname } = this.state;
+    const { isValidHostname } = this.state;
     const finalConfig = this.state.finalConfig?.url
       .replace(/https:\/\//g, '')
       ?.split('/')[0];
@@ -283,8 +283,8 @@ export default class AboutApp extends React.Component<{}, IState> {
     const compareHostName =
       finalConfig && updatedHostname && finalConfig !== updatedHostname;
 
-    if (isValidHostname && didUpdateHostname && compareHostName) {
-      ipcRenderer.send('user-pod-updated', hostname);
+    if (isValidHostname && compareHostName) {
+      ipcRenderer.send('user-pod-updated', this.state.updatedHostname);
     }
     ipcRenderer.send('close-about-app');
   }
@@ -308,8 +308,6 @@ export default class AboutApp extends React.Component<{}, IState> {
     if (e.detail === 3) {
       this.setState({
         isPodEditing: !!(this.state.globalConfig as IConfig)?.isPodUrlEditable,
-        didUpdateHostname: !!(this.state.globalConfig as IConfig)
-          ?.isPodUrlEditable,
       });
     }
   }
