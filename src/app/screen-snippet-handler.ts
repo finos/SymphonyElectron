@@ -187,7 +187,7 @@ class ScreenSnippet {
           hideOnCapture,
         );
         this.uploadSnippet(webContents, hideOnCapture);
-        this.closeSnippet();
+        this.closeSnippet(webContents);
         this.copyToClipboard();
         this.saveAs();
         return;
@@ -355,7 +355,6 @@ class ScreenSnippet {
           );
           webContents.send('screen-snippet-data', payload);
           winStore.restoreWindows(hideOnCapture);
-          webContents.focus();
           await this.verifyAndUpdateAlwaysOnTop();
         } catch (error) {
           await this.verifyAndUpdateAlwaysOnTop();
@@ -363,6 +362,7 @@ class ScreenSnippet {
             `screen-snippet-handler: upload of screen capture failed with error: ${error}!`,
           );
         }
+        webContents.focus();
       },
     );
   }
@@ -370,7 +370,7 @@ class ScreenSnippet {
   /**
    * Close the current snippet
    */
-  private closeSnippet() {
+  private closeSnippet(webContents: WebContents) {
     ipcMain.once(ScreenShotAnnotation.CLOSE, async (_event) => {
       try {
         windowHandler.closeSnippingToolWindow();
@@ -381,6 +381,8 @@ class ScreenSnippet {
           `screen-snippet-handler: close window failed with error: ${error}!`,
         );
       }
+
+      webContents?.focus();
     });
   }
 
