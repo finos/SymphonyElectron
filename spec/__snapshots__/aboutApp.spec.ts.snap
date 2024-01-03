@@ -52,7 +52,11 @@ exports[`about app should render correctly 1`] = `
         onMouseDown={[Function]}
         title="Close"
       >
-        Close
+        <span
+          className="AboutApp-button-save-restart-text"
+        >
+          Close
+        </span>
       </button>
     </div>
   </div>
