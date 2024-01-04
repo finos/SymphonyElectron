@@ -77,15 +77,17 @@ export class WindowStore {
     if (hideOnCapture) {
       this.restoreNotificationProperties();
       const storedWindows = this.getWindowStore();
-      let currentWindow = storedWindows.windows.find(
+      let _currentWindow = storedWindows.windows.find(
         (currentWindow) => currentWindow.focused,
       );
-      if (!currentWindow) {
+      if (!_currentWindow) {
         // In case there is no window focused, we automatically focus on the main one.
-        currentWindow = storedWindows.windows.find(
+        _currentWindow = storedWindows.windows.find(
           (currentWindow) => currentWindow.id === 'main',
         );
-        currentWindow!.focused = true;
+        if (_currentWindow) {
+          _currentWindow!.focused = true;
+        }
       }
 
       let focusedWindowToRestore: ICustomBrowserWindow | undefined;
