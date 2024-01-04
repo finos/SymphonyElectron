@@ -53,7 +53,7 @@ exports[`about app should render correctly 1`] = `
         title="Close"
       >
         <span
-          className="AboutApp-button-save-restart-text"
+          className=""
         >
           Close
         </span>
