@@ -220,7 +220,11 @@ export default class AboutApp extends React.Component<{}, IState> {
               ref={this.closeButtonRef}
               disabled={!isValidHostname}
             >
-              <span className='AboutApp-button-save-restart-text'>
+              <span
+                className={classNames({
+                  'AboutApp-button-save-restart-text': isHostNamechanged,
+                })}
+              >
                 {closeButtonText}
               </span>
             </button>
@@ -410,6 +414,7 @@ export default class AboutApp extends React.Component<{}, IState> {
         <strong className={'AboutApp-pod'}>{item.key}</strong>
         {isPodEditing ? (
           <input
+            data-testid={'POD_INFO_INPUT'}
             className={'AboutApp-pod-input'}
             type='text'
             value={updatedHostname}
