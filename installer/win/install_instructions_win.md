@@ -15,8 +15,8 @@ As errors are not reported during silent installation, it is a good idea to enab
 this option (see below).
 
 Note that the default installation path will require elevated user rights, so a silent install will 
-either have to be run from an Administrator command promp, or specify a different INSTALLDIR path 
-(see below) or the installation will silently fail (but an error will be logged if logging is enabled).
+either have to be run from an Administrator command promp or the installation will silently fail 
+(but an error will be logged if logging is enabled).
 
 
 Logging
@@ -28,24 +28,6 @@ enabled by specifying the /l* command line flag
 #### Example
 
     msiexec /i Symphony.msi /l* symphony_install.log```
-
-
-Installation path
------------------
-
-By default, Symphony will be installed to the location
-
-    %LOCALAPPDATA%\Programs\Symphony
-
-which requires elevated user rights. If running a normal (not silent) installation, the user will get 
-the usual UAC prompt to grant access.
-
-To specify a different install location, the `INSTALLDIR` parameter can be specified
-
-#### Example
-
-    msiexec /i Symphony.msi INSTALLDIR="C:\MyLocation"
-
 
 
 Install parameters
