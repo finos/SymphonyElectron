@@ -643,6 +643,8 @@ export class WindowHandler {
 
     // workaround for https://perzoinc.atlassian.net/browse/SDA-4251
     this.mainWindow?.on('focus', () => {
+      const mainView = this.getMainView();
+      mainView?.webContents.focus();
       if (
         this.mainWindow &&
         windowExists(this.mainWindow) &&
