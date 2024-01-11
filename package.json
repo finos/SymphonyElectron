@@ -31,7 +31,7 @@
     "postinstall": "electron-builder install-app-deps",
     "start": "run-s compile browserify && cross-env ELECTRON_DEV=true electron .",
     "test": "run-s lint test:unit",
-    "test:unit": "cross-env ELECTRON_QA=true jest --config jest-config.json --runInBand --detectOpenHandles",
+    "test:unit": "cross-env ELECTRON_FORCE_IS_PACKAGED=false ELECTRON_QA=true jest --config jest-config.json --runInBand --detectOpenHandles",
     "unpacked-mac": "npm run prebuild && npm run test && ./node_modules/.bin/electron-builder build --mac",
     "unpacked-win": "npm run prebuild && npm run test && node_modules\\.bin\\electron-builder build --win --x64"
   },
