@@ -47,6 +47,7 @@ const SFE_CLIENT_TYPE_NAME = 'SFE-Lite';
 const KEY_CODE = {
   ENTER: 13,
   ESCAPE: 27,
+  SPACE: 32,
 };
 
 /**
@@ -202,6 +203,7 @@ export default class AboutApp extends React.Component<{}, IState> {
                 onMouseDown={this.eventHandlers.onCancel}
                 title={cancelText}
                 data-testid={'CANCEL_BUTTON'}
+                onKeyDown={this.onCancelKeyDown}
               >
                 {cancelText}
               </button>
@@ -219,6 +221,7 @@ export default class AboutApp extends React.Component<{}, IState> {
               data-testid={'CLOSE_BUTTON'}
               ref={this.closeButtonRef}
               disabled={!isValidHostname}
+              onKeyDown={this.onCloseKeyDown}
             >
               <span
                 className={classNames({
@@ -334,6 +337,9 @@ export default class AboutApp extends React.Component<{}, IState> {
    */
   public onKeyDown = (e) => {
     if (e.keyCode === KEY_CODE.ENTER) {
+      if (!this.state.isValidHostname) {
+        return;
+      }
       const { value } = e.target;
       this.setState({ updatedHostname: value });
       this.handlePodInputBlur(e);
@@ -346,6 +352,25 @@ export default class AboutApp extends React.Component<{}, IState> {
         isValidHostname: true,
         hostname: this.previousUrl,
       });
+    }
+  };
+  /**
+   * Handles handle keydown on Close
+   * @param e
+   */
+  public onCloseKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (e.keyCode === KEY_CODE.ENTER || e.keyCode === KEY_CODE.SPACE) {
+      this.close();
+    }
+  };
+
+  /**
+   * Handles key down on Cancel
+   * @param e
+   */
+  public onCancelKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (e.keyCode === KEY_CODE.ENTER || e.keyCode === KEY_CODE.SPACE) {
+      this.cancel();
     }
   };
 
