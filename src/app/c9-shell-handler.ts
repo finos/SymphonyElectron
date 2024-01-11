@@ -163,7 +163,7 @@ class C9ShellHandler {
    * Launches the correct c9shell process
    */
   private async _launchC9Shell(): Promise<ChildProcess | undefined> {
-    if (windowHandler.isOnline) {
+    if (!windowHandler.isOnline) {
       logger.info(
         'c9-shell: launching of shell aborted due to network unavailability.',
       );
