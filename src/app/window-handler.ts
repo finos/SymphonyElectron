@@ -2390,8 +2390,7 @@ export class WindowHandler {
           logger.info(
             `window-handler: Current main window url is ${webContentsUrl}.`,
           );
-          const reloadUrl =
-            webContentsUrl || this.userConfig.url || this.globalConfig.url;
+          const reloadUrl = this.userConfig.url || this.globalConfig.url;
           logger.info(`window-handler: Trying to reload ${reloadUrl}.`);
           const userAgent = this.getUserAgent(this.mainWebContents);
           await this.mainWebContents.loadURL(reloadUrl, { userAgent });
