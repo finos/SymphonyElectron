@@ -1,6 +1,5 @@
-export const isDevEnv = process.env.ELECTRON_DEV
-  ? process.env.ELECTRON_DEV.trim().toLowerCase() === 'true'
-  : false;
+import { app } from 'electron';
+export const isDevEnv = !app?.isPackaged;
 export const isElectronQA = !!process.env.ELECTRON_QA;
 
 export const isMac = process.platform === 'darwin';
