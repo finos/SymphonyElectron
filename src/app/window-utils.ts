@@ -1478,3 +1478,11 @@ export const hideFullscreenWindow = (window: BrowserWindow) => {
   });
   window.setFullScreen(false);
 };
+
+export const isValidUrl = (text: string): false | URL => {
+  try {
+    return new URL(text);
+  } catch (err) {
+    return false;
+  }
+};

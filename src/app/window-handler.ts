@@ -77,6 +77,7 @@ import {
   initSysTray,
   injectStyles,
   isSymphonyReachable,
+  isValidUrl,
   loadBrowserViews,
   monitorNetworkInterception,
   preventWindowNavigation,
@@ -130,8 +131,6 @@ export const IS_NODE_INTEGRATION_ENABLED: boolean = false;
 export const AUX_CLICK = 'Auxclick';
 // Timeout on restarting SDA in case it's stuck
 const LISTEN_TIMEOUT: number = 25 * 1000;
-
-const HOSTNAME_REGEX = /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 export class WindowHandler {
   /**
    * Verifies if the url is valid and
@@ -2191,14 +2190,14 @@ export class WindowHandler {
       );
       const userAgent = this.getUserAgent(this.mainWebContents);
       const urlFromConfig = config.getUserConfigFields(['url']);
-      const isValidUrl =
-        HOSTNAME_REGEX.test(urlFromConfig.url || '') ||
+      const isPodUrlValid =
+        isValidUrl(urlFromConfig.url || '') ||
         urlFromConfig.url.includes('https://local-dev.symphony.com');
 
       await this.mainWebContents.loadURL(
         this.cmdUrl
           ? this.cmdUrl
-          : isValidUrl
+          : isPodUrlValid
           ? urlFromConfig.url
           : this.globalConfig.url,
         {
