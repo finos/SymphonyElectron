@@ -31,7 +31,7 @@
     "postinstall": "electron-builder install-app-deps",
     "start": "run-s compile browserify && cross-env ELECTRON_DEV=true electron .",
     "test": "run-s lint test:unit",
-    "test:unit": "cross-env ELECTRON_QA=true jest --config jest-config.json --runInBand --detectOpenHandles",
+    "test:unit": "cross-env ELECTRON_FORCE_IS_PACKAGED=false ELECTRON_QA=true jest --config jest-config.json --runInBand --detectOpenHandles",
     "unpacked-mac": "npm run prebuild && npm run test && ./node_modules/.bin/electron-builder build --mac",
     "unpacked-win": "npm run prebuild && npm run test && node_modules\\.bin\\electron-builder build --win --x64"
   },
@@ -173,7 +173,6 @@
     "@types/node": "^18.16.0",
     "@types/react": "16.14.34",
     "@types/react-dom": "16.9.17",
-    "@types/rimraf": "^3.0.0",
     "browserify": "17.0.0",
     "builder-util-runtime": "^9.0.3",
     "cross-env": "7.0.3",
@@ -225,13 +224,13 @@
     "lodash.debounce": "^4.0.8",
     "react": "16.14.0",
     "react-dom": "16.14.0",
-    "rimraf": "^3.0.2",
+    "rimraf": "^4.3.1",
     "save-svg-as-png": "^1.4.17",
     "shell-path": "^3.0.0",
     "systeminformation": "5.21.7"
   },
   "optionalDependencies": {
-    "@symphony/symphony-c9-shell": "3.29.0-0.98.2.174",
+    "@symphony/symphony-c9-shell": "3.29.0-0.98.3.175",
     "screen-share-indicator-frame": "git+https://github.com/finos/ScreenShareIndicatorFrame.git#v1.4.13",
     "screen-snippet": "git+https://github.com/finos/ScreenSnippet2.git#9.2.2",
     "symphony-native-window-handle-helper": "github:finos/SymphonyWindowsHwndHelper#1.0.1",

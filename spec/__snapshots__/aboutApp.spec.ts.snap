@@ -49,10 +49,15 @@ exports[`about app should render correctly 1`] = `
         className="AboutApp-close-button"
         data-testid="CLOSE_BUTTON"
         disabled={false}
+        onKeyDown={[Function]}
         onMouseDown={[Function]}
         title="Close"
       >
-        Close
+        <span
+          className=""
+        >
+          Close
+        </span>
       </button>
     </div>
   </div>

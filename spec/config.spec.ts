@@ -7,6 +7,24 @@ jest.mock('electron-log');
 jest.mock('../src/app/auto-update-handler', () => {
   return {};
 });
+jest.mock('../src/common/env', () => {
+  return {
+    isWindowsOS: true,
+    isLinux: false,
+    isMac: false,
+    isDevEnv: true,
+  };
+});
+
+jest.mock('../src/common/logger', () => {
+  return {
+    logger: {
+      setLoggerWindow: jest.fn(),
+      error: jest.fn(),
+      info: jest.fn(),
+    },
+  };
+});
 
 describe('config', () => {
   const configFileName: string = 'Symphony.config';
