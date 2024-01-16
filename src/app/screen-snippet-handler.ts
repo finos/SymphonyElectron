@@ -187,7 +187,7 @@ class ScreenSnippet {
           hideOnCapture,
         );
         this.uploadSnippet(currentWindowObj, webContents, hideOnCapture);
-        this.closeSnippet(webContents);
+        this.closeSnippet(currentWindowObj?.webContents);
         this.copyToClipboard();
         this.saveAs();
         return;
@@ -374,7 +374,7 @@ class ScreenSnippet {
   /**
    * Close the current snippet
    */
-  private closeSnippet(webContents: WebContents) {
+  private closeSnippet(webContents: WebContents | undefined) {
     ipcMain.once(ScreenShotAnnotation.CLOSE, async (_event) => {
       try {
         windowHandler.closeSnippingToolWindow();
