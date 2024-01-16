@@ -37,6 +37,12 @@ describe('C9 shell handler', () => {
     };
   });
 
+  jest.mock('../src/app/window-handler', () => {
+    return {
+      windowHandler: { isOnline: true },
+    };
+  });
+
   beforeEach(() => {
     jest.clearAllMocks().resetModules().resetAllMocks();
     mockSpawnEvents.clear();

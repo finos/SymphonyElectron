@@ -5,6 +5,7 @@ import { isDevEnv, isWindowsOS } from '../common/env';
 import { ChildProcess, spawn } from 'child_process';
 import * as path from 'path';
 import { getCommandLineArgs, getGuid } from '../common/utils';
+import { windowHandler } from './window-handler';
 
 /**
  * Current state of the C9 shell process.
@@ -162,6 +163,13 @@ class C9ShellHandler {
    * Launches the correct c9shell process
    */
   private async _launchC9Shell(): Promise<ChildProcess | undefined> {
+    if (!windowHandler.isOnline) {
+      logger.info(
+        'c9-shell: launching of shell aborted due to network unavailability.',
+      );
+      return;
+    }
+
     this._curStatus = undefined;
     const uniquePipeName = getGuid();
 

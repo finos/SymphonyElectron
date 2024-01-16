@@ -26,6 +26,12 @@ jest.mock('../src/common/logger', () => {
   };
 });
 
+jest.mock('../src/app/window-handler', () => {
+  return {
+    windowHandler: { isOnline: true },
+  };
+});
+
 describe('config', () => {
   const configFileName: string = 'Symphony.config';
   let userConfigDir: string;
