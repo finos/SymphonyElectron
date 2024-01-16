@@ -186,8 +186,8 @@ class ScreenSnippet {
           currentWindowName,
           hideOnCapture,
         );
-        this.uploadSnippet(webContents, hideOnCapture);
-        this.closeSnippet(webContents);
+        this.uploadSnippet(currentWindowObj, webContents, hideOnCapture);
+        this.closeSnippet(currentWindowObj?.webContents);
         this.copyToClipboard();
         this.saveAs();
         return;
@@ -335,7 +335,11 @@ class ScreenSnippet {
    * Uploads a screen snippet
    * @param webContents A browser window's web contents object
    */
-  private uploadSnippet(webContents: WebContents, hideOnCapture?: boolean) {
+  private uploadSnippet(
+    focusedWindow: BrowserWindow | null,
+    webContents: WebContents,
+    hideOnCapture?: boolean,
+  ) {
     ipcMain.once(
       'upload-snippet',
       async (
@@ -362,7 +366,7 @@ class ScreenSnippet {
             `screen-snippet-handler: upload of screen capture failed with error: ${error}!`,
           );
         }
-        webContents.focus();
+        focusedWindow?.webContents.focus();
       },
     );
   }
@@ -370,7 +374,7 @@ class ScreenSnippet {
   /**
    * Close the current snippet
    */
-  private closeSnippet(webContents: WebContents) {
+  private closeSnippet(webContents: WebContents | undefined) {
     ipcMain.once(ScreenShotAnnotation.CLOSE, async (_event) => {
       try {
         windowHandler.closeSnippingToolWindow();
@@ -381,7 +385,6 @@ class ScreenSnippet {
           `screen-snippet-handler: close window failed with error: ${error}!`,
         );
       }
-
       webContents?.focus();
     });
   }
