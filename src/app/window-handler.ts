@@ -2194,7 +2194,7 @@ export class WindowHandler {
       const urlFromConfig = config.getUserConfigFields(['url']);
       const isPodUrlValid =
         isValidUrl(urlFromConfig.url || '') ||
-        urlFromConfig.url.includes('https://local-dev.symphony.com');
+        urlFromConfig.url?.includes('https://local-dev.symphony.com');
 
       await this.mainWebContents.loadURL(
         this.cmdUrl
