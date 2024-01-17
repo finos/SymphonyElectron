@@ -281,7 +281,10 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({
       AnalyticsElements.SCREEN_CAPTURE_ANNOTATE,
       ScreenSnippetActionTypes.ANNOTATE_ADD,
     );
-    ipcRenderer.send('upload-snippet', { screenSnippetPath, mergedImageData });
+    ipcRenderer.send(ScreenShotAnnotation.UPLOAD, {
+      screenSnippetPath,
+      mergedImageData,
+    });
   };
 
   const onClose = async () => {
