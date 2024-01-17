@@ -1439,7 +1439,6 @@ export class WindowHandler {
     ) {
       opts.alwaysOnTop = true;
     }
-
     const areWindowsRestoredPostHide =
       (winStore.windowsRestored && this.hideOnCapture) || !this.hideOnCapture;
 
@@ -1512,6 +1511,8 @@ export class WindowHandler {
       logger.info(
         'window-handler: createSnippingToolWindow: Closing snipping window, attempting to delete temp snip image',
       );
+      ipcMain.removeAllListeners(ScreenShotAnnotation.CLOSE);
+      ipcMain.removeAllListeners(ScreenShotAnnotation.UPLOAD);
       ipcMain.removeAllListeners(ScreenShotAnnotation.COPY_TO_CLIPBOARD);
       ipcMain.removeAllListeners(ScreenShotAnnotation.SAVE_AS);
       this.snippingToolWindow?.close();
