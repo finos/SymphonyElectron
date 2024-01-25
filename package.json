@@ -230,7 +230,7 @@
     "systeminformation": "5.21.7"
   },
   "optionalDependencies": {
-    "@symphony/symphony-c9-shell": "3.29.0-0.98.3.175",
+    "@symphony/symphony-c9-shell": "3.30.0-37.176",
     "screen-share-indicator-frame": "git+https://github.com/finos/ScreenShareIndicatorFrame.git#v1.4.13",
     "screen-snippet": "git+https://github.com/finos/ScreenSnippet2.git#9.2.2",
     "symphony-native-window-handle-helper": "github:finos/SymphonyWindowsHwndHelper#1.0.1",
