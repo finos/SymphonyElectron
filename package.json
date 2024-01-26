@@ -1,7 +1,7 @@
 {
   "name": "symphony",
   "productName": "Symphony",
-  "version": "24.2.0",
+  "version": "24.3.0",
   "clientVersion": "2.0.1",
   "buildNumber": "0",
   "searchAPIVersion": "1.55.3",
@@ -177,7 +177,7 @@
     "builder-util-runtime": "^9.0.3",
     "cross-env": "7.0.3",
     "del": "3.0.0",
-    "electron": "^28.1.3",
+    "electron": "^28.2.0",
     "electron-builder": "^24.2.1",
     "electron-icon-maker": "0.0.5",
     "electron-osx-sign": "^0.6.0",
