@@ -251,32 +251,9 @@ export class AutoUpdate {
       'latestAutoUpdateChannelEnabled',
     ]);
 
-    const cc = config.getFilteredCloudConfigFields([
-      'betaAutoUpdateChannelEnabled',
-    ]) as IConfig;
-    this.channelConfigLocation =
-      Object.keys(cc).length === 0 || cc.betaAutoUpdateChannelEnabled
-        ? ChannelConfigLocation.ACP
-        : ChannelConfigLocation.LOCALFILE;
-
-    this.finalAutoUpdateChannel = betaAutoUpdateChannelEnabled
-      ? UpdateChannel.BETA
-      : autoUpdateChannel;
+    this.channelConfigLocation = ChannelConfigLocation.LOCALFILE;
+    this.finalAutoUpdateChannel = autoUpdateChannel;
     this.installVariant = installVariant;
-    if (isWindowsOS) {
-      await retrieveWindowsRegistry();
-      const registryAutoUpdate = RegistryStore.getRegistry();
-      const identifiedChannelFromRegistry = [
-        EChannelRegistry.BETA,
-        EChannelRegistry.LATEST,
-      ].includes(registryAutoUpdate.currentChannel)
-        ? registryAutoUpdate.currentChannel
-        : '';
-      if (identifiedChannelFromRegistry) {
-        this.finalAutoUpdateChannel = identifiedChannelFromRegistry;
-        this.channelConfigLocation = ChannelConfigLocation.REGISTRY;
-      }
-    }
 
     const pmp = config.getFilteredCloudConfigFields([
       'sdaInstallerMsiUrlEnabledVisible',
@@ -304,6 +281,22 @@ export class AutoUpdate {
         this.finalAutoUpdateChannel = UpdateChannel.BETA;
       }
       this.channelConfigLocation = ChannelConfigLocation.ACP;
+    }
+
+    // Registry has higher priority
+    if (isWindowsOS) {
+      await retrieveWindowsRegistry();
+      const registryAutoUpdate = RegistryStore.getRegistry();
+      const identifiedChannelFromRegistry = [
+        EChannelRegistry.BETA,
+        EChannelRegistry.LATEST,
+      ].includes(registryAutoUpdate.currentChannel)
+        ? registryAutoUpdate.currentChannel
+        : '';
+      if (identifiedChannelFromRegistry) {
+        this.finalAutoUpdateChannel = identifiedChannelFromRegistry;
+        this.channelConfigLocation = ChannelConfigLocation.REGISTRY;
+      }
     }
   };
 }
