@@ -25,6 +25,11 @@ export enum ChannelConfigLocation {
   ACP = 'ACP',
   REGISTRY = 'REGISTRY',
 }
+export enum UpdateChannel {
+  LATEST = 'latest',
+  BETA = 'beta',
+}
+
 const DOWNLOAD_PROGRESS_BANNER_DELAY = 1000 * 10; // 10 sec
 
 const AUTO_UPDATE_REASON = 'autoUpdate';
@@ -234,12 +239,17 @@ export class AutoUpdate {
   };
 
   private setAutoUpdateChannel = async (): Promise<void> => {
-    const { autoUpdateChannel, installVariant, betaAutoUpdateChannelEnabled } =
-      config.getConfigFields([
-        'autoUpdateChannel',
-        'installVariant',
-        'betaAutoUpdateChannelEnabled',
-      ]);
+    const {
+      autoUpdateChannel,
+      installVariant,
+      betaAutoUpdateChannelEnabled,
+      latestAutoUpdateChannelEnabled,
+    } = config.getConfigFields([
+      'autoUpdateChannel',
+      'installVariant',
+      'betaAutoUpdateChannelEnabled',
+      'latestAutoUpdateChannelEnabled',
+    ]);
 
     const cc = config.getFilteredCloudConfigFields([
       'betaAutoUpdateChannelEnabled',
@@ -250,7 +260,7 @@ export class AutoUpdate {
         : ChannelConfigLocation.LOCALFILE;
 
     this.finalAutoUpdateChannel = betaAutoUpdateChannelEnabled
-      ? 'beta'
+      ? UpdateChannel.BETA
       : autoUpdateChannel;
     this.installVariant = installVariant;
     if (isWindowsOS) {
@@ -266,6 +276,34 @@ export class AutoUpdate {
         this.finalAutoUpdateChannel = identifiedChannelFromRegistry;
         this.channelConfigLocation = ChannelConfigLocation.REGISTRY;
       }
+    }
+
+    const pmp = config.getFilteredCloudConfigFields([
+      'sdaInstallerMsiUrlEnabledVisible',
+      'sdaInstallerMsiUrlBetaEnabledVisible',
+    ]) as IConfig;
+
+    if (
+      Object.keys(pmp).length > 0 &&
+      !pmp?.sdaInstallerMsiUrlEnabledVisible &&
+      !pmp?.sdaInstallerMsiUrlBetaEnabledVisible
+    ) {
+      this.finalAutoUpdateChannel = UpdateChannel.LATEST;
+      this.channelConfigLocation = ChannelConfigLocation.ACP;
+    }
+
+    if (
+      Object.keys(pmp).length === 0 ||
+      pmp.sdaInstallerMsiUrlEnabledVisible ||
+      pmp.sdaInstallerMsiUrlBetaEnabledVisible
+    ) {
+      if (latestAutoUpdateChannelEnabled) {
+        this.finalAutoUpdateChannel = UpdateChannel.LATEST;
+      }
+      if (betaAutoUpdateChannelEnabled) {
+        this.finalAutoUpdateChannel = UpdateChannel.BETA;
+      }
+      this.channelConfigLocation = ChannelConfigLocation.ACP;
     }
   };
 }

@@ -86,6 +86,8 @@ const menuItemConfigFields = [
   'isAutoUpdateEnabled',
   'enableBrowserLogin',
   'forceAutoUpdate',
+  'betaAutoUpdateChannelEnabled',
+  'latestAutoUpdateChannelEnabled',
 ];
 
 let {
@@ -99,6 +101,8 @@ let {
   isAutoUpdateEnabled,
   enableBrowserLogin,
   forceAutoUpdate,
+  betaAutoUpdateChannelEnabled,
+  latestAutoUpdateChannelEnabled,
 } = config.getConfigFields(menuItemConfigFields) as IConfig;
 let initialAnalyticsSent = false;
 const CORP_URL = 'https://corporate.symphony.com';
@@ -246,6 +250,8 @@ export class AppMenu {
     isAutoUpdateEnabled = configData.isAutoUpdateEnabled;
     enableBrowserLogin = configData.enableBrowserLogin;
     forceAutoUpdate = configData.forceAutoUpdate;
+    betaAutoUpdateChannelEnabled = configData.betaAutoUpdateChannelEnabled;
+    latestAutoUpdateChannelEnabled = configData.latestAutoUpdateChannelEnabled;
     // fetch updated cloud config
     this.cloudConfig = config.getFilteredCloudConfigFields(
       this.menuItemConfigFields,
@@ -312,7 +318,10 @@ export class AppMenu {
           },
           visible:
             isMac &&
-            !!(isAutoUpdateEnabled || forceAutoUpdate) &&
+            !!(
+              (isAutoUpdateEnabled || forceAutoUpdate) &&
+              (betaAutoUpdateChannelEnabled || latestAutoUpdateChannelEnabled)
+            ) &&
             !!windowHandler.isMana,
           label: i18n.t('Check for updates')(),
         },
@@ -714,7 +723,10 @@ export class AppMenu {
           },
           visible:
             isWindowsOS &&
-            !!(isAutoUpdateEnabled || forceAutoUpdate) &&
+            !!(
+              (isAutoUpdateEnabled || forceAutoUpdate) &&
+              (betaAutoUpdateChannelEnabled || latestAutoUpdateChannelEnabled)
+            ) &&
             !!windowHandler.isMana,
           label: i18n.t('Check for updates')(),
         },
