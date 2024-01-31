@@ -14,6 +14,7 @@ export enum apiCmds {
   sendLogs = 'send-logs',
   addLogs = 'add-logs',
   registerAnalyticsHandler = 'register-analytics-handler',
+  registerWriteImageToClipboard = 'register-write-image-to-clipboard',
   registerActivityDetection = 'register-activity-detection',
   showNotificationSettings = 'show-notification-settings',
   sanitize = 'sanitize',
