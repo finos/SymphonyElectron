@@ -379,7 +379,10 @@ export class ContextMenuBuilder {
     const target = this.getWebContents();
     const copyImage = new MenuItem({
       label: this.stringTable.copyImage(),
-      click: () => target.copyImageAt(menuInfo.x, menuInfo.y),
+      click: (_e) => {
+        logger.info('Context-Menu-Builder: Copy Image to clipboard');
+        target.send('copy-to-clipboard', menuInfo.srcURL);
+      },
     });
 
     menu.append(copyImage);
