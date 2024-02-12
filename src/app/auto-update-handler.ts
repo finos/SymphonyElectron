@@ -25,6 +25,11 @@ export enum ChannelConfigLocation {
   ACP = 'ACP',
   REGISTRY = 'REGISTRY',
 }
+export enum UpdateChannel {
+  LATEST = 'latest',
+  BETA = 'beta',
+}
+
 const DOWNLOAD_PROGRESS_BANNER_DELAY = 1000 * 10; // 10 sec
 
 const AUTO_UPDATE_REASON = 'autoUpdate';
@@ -234,25 +239,51 @@ export class AutoUpdate {
   };
 
   private setAutoUpdateChannel = async (): Promise<void> => {
-    const { autoUpdateChannel, installVariant, betaAutoUpdateChannelEnabled } =
-      config.getConfigFields([
-        'autoUpdateChannel',
-        'installVariant',
-        'betaAutoUpdateChannelEnabled',
-      ]);
-
-    const cc = config.getFilteredCloudConfigFields([
+    const {
+      autoUpdateChannel,
+      installVariant,
+      betaAutoUpdateChannelEnabled,
+      latestAutoUpdateChannelEnabled,
+    } = config.getConfigFields([
+      'autoUpdateChannel',
+      'installVariant',
       'betaAutoUpdateChannelEnabled',
-    ]) as IConfig;
-    this.channelConfigLocation =
-      Object.keys(cc).length === 0 || cc.betaAutoUpdateChannelEnabled
-        ? ChannelConfigLocation.ACP
-        : ChannelConfigLocation.LOCALFILE;
+      'latestAutoUpdateChannelEnabled',
+    ]);
 
-    this.finalAutoUpdateChannel = betaAutoUpdateChannelEnabled
-      ? 'beta'
-      : autoUpdateChannel;
+    this.channelConfigLocation = ChannelConfigLocation.LOCALFILE;
+    this.finalAutoUpdateChannel = autoUpdateChannel;
     this.installVariant = installVariant;
+
+    const pmp = config.getFilteredCloudConfigFields([
+      'sdaInstallerMsiUrlEnabledVisible',
+      'sdaInstallerMsiUrlBetaEnabledVisible',
+    ]) as IConfig;
+
+    if (
+      Object.keys(pmp).length > 0 &&
+      !pmp?.sdaInstallerMsiUrlEnabledVisible &&
+      !pmp?.sdaInstallerMsiUrlBetaEnabledVisible
+    ) {
+      this.finalAutoUpdateChannel = UpdateChannel.LATEST;
+      this.channelConfigLocation = ChannelConfigLocation.ACP;
+    }
+
+    if (
+      Object.keys(pmp).length === 0 ||
+      pmp.sdaInstallerMsiUrlEnabledVisible ||
+      pmp.sdaInstallerMsiUrlBetaEnabledVisible
+    ) {
+      if (latestAutoUpdateChannelEnabled) {
+        this.finalAutoUpdateChannel = UpdateChannel.LATEST;
+      }
+      if (betaAutoUpdateChannelEnabled) {
+        this.finalAutoUpdateChannel = UpdateChannel.BETA;
+      }
+      this.channelConfigLocation = ChannelConfigLocation.ACP;
+    }
+
+    // Registry has higher priority
     if (isWindowsOS) {
       await retrieveWindowsRegistry();
       const registryAutoUpdate = RegistryStore.getRegistry();

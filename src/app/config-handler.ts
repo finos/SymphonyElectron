@@ -71,8 +71,11 @@ export interface IConfig {
   enableBrowserLogin?: boolean;
   browserLoginAutoConnect?: boolean;
   betaAutoUpdateChannelEnabled?: boolean;
+  latestAutoUpdateChannelEnabled?: boolean;
   forceAutoUpdate?: boolean;
   isPodUrlEditable?: boolean;
+  sdaInstallerMsiUrlEnabledVisible?: boolean;
+  sdaInstallerMsiUrlBetaEnabledVisible?: boolean;
 }
 
 export interface IGlobalConfig {
@@ -123,6 +126,8 @@ export interface IPMPEntitlements {
   memoryRefresh: CloudConfigDataTypes;
   refreshAppThreshold: CloudConfigDataTypes;
   disableThrottling: CloudConfigDataTypes;
+  sdaInstallerMsiUrlEnabledVisible: boolean;
+  sdaInstallerMsiUrlBetaEnabledVisible: boolean;
 }
 
 export interface IPermission {
