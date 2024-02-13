@@ -87,25 +87,25 @@ pod_url_escaped=$(sed 's#[&/\]#\\&#g' <<<"$pod_url")
 context_origin_url_escaped=$(sed 's#[&/\]#\\&#g' <<<"$context_origin_url")
 
 ## Replace the default settings with the user selected settings ##
-plutil -replace url -string "${pod_url_escaped}" $plistFilePath
-plutil -replace contextOriginUrl -string "${context_origin_url_escaped}" $plistFilePath
-plutil -replace minimizeOnClose -string "${minimize_on_close}" $plistFilePath
-plutil -replace alwaysOnTop -string "${always_on_top}" $plistFilePath
-plutil -replace launchOnStartup -string "${launch_on_startup}" $plistFilePath
-plutil -replace bringToFront -string "${bring_to_front}" $plistFilePath
-plutil -replace devToolsEnabled -bool "${dev_tools_enabled}" $plistFilePath
-plutil -replace enableBrowserLogin -bool "${enable_browser_login}" $plistFilePath
-plutil -replace browserLoginAutoConnect -bool "${browser_login_autoconnect}" $plistFilePath
+plutil -replace url -string $pod_url_escaped $plistFilePath
+plutil -replace contextOriginUrl -string $context_origin_url_escaped $plistFilePath
+plutil -replace minimizeOnClose -string $minimize_on_close $plistFilePath
+plutil -replace alwaysOnTop -string $always_on_top $plistFilePath
+plutil -replace launchOnStartup -string $launch_on_startup $plistFilePath
+plutil -replace bringToFront -string $bring_to_front $plistFilePath
+plutil -replace devToolsEnabled -bool $dev_tools_enabled $plistFilePath
+plutil -replace enableBrowserLogin -bool $enable_browser_login $plistFilePath
+plutil -replace browserLoginAutoConnect -bool $browser_login_autoconnect $plistFilePath
 
 ## Add settings force auto update
 force_auto_update=$(sed -n '10p' ${settingsFilePath});
 if [ "$force_auto_update" = "" ]; then force_auto_update=false; fi
-plutil -replace forceAutoUpdate -bool "${force_auto_update}" $plistFilePath
+plutil -replace forceAutoUpdate -bool $force_auto_update $plistFilePath
 
 ## Add settings is pod url editable
 is_pod_url_editable=$(sed -n '11p' ${settingsFilePath});
 if [ "$is_pod_url_editable" = "" ]; then is_pod_url_editable=true; fi
-plutil -replace isPodUrlEditable -bool "${is_pod_url_editable}" $plistFilePath
+plutil -replace isPodUrlEditable -bool $is_pod_url_editable $plistFilePath
 
 ## Get Symphony Permissions from the temp file ##
 media=$(sed -n '1p' ${permissionsFilePath});
@@ -126,16 +126,17 @@ if [ "$full_screen" = "" ]; then full_screen=true; fi
 if [ "$open_external_app" = "" ]; then open_external_app=true; fi
 
 ## Replace the default permissions with the user selected permissions ##
-plutil -replace media -bool "${media}" $plistFilePath
-plutil -replace geolocation -bool "${geo_location}" $plistFilePath
-plutil -replace notifications -bool "${notifications}" $plistFilePath
-plutil -replace midiSysex -bool "${midi_sysex}" $plistFilePath
-plutil -replace pointerLock -bool "${pointer_lock}" $plistFilePath
-plutil -replace fullscreen -bool "${full_screen}" $plistFilePath
-plutil -replace openExternal -bool "${open_external_app}" $plistFilePath
+plutil -replace media -bool $media $plistFilePath
+plutil -replace geolocation -bool $geo_location $plistFilePath
+plutil -replace notifications -bool $notifications $plistFilePath
+plutil -replace midiSysex -bool $midi_sysex $plistFilePath
+plutil -replace pointerLock -bool $pointer_lock $plistFilePath
+plutil -replace fullscreen -bool $full_screen $plistFilePath
+plutil -replace openExternal -bool $open_external_app $plistFilePath
 
 ## Remove the temp settings & permissions file created ##
-rm -f ${settingsFilePath}
-rm -f ${permissionsFilePath}
+# rm -f ${settingsFilePath}
+# rm -f ${permissionsFilePath}
 
-plutil -replace installVariant -string "${uuidgen}" $plistFilePath
+uuid=$(uuidgen)
+plutil -replace installVariant -string $uuid $plistFilePath
