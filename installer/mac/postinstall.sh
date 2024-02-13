@@ -135,8 +135,8 @@ plutil -replace fullscreen -bool $full_screen $plistFilePath
 plutil -replace openExternal -bool $open_external_app $plistFilePath
 
 ## Remove the temp settings & permissions file created ##
-# rm -f ${settingsFilePath}
-# rm -f ${permissionsFilePath}
+rm -f ${settingsFilePath}
+rm -f ${permissionsFilePath}
 
 uuid=$(uuidgen)
 plutil -replace installVariant -string $uuid $plistFilePath
