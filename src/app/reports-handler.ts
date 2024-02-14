@@ -24,56 +24,41 @@ const generateArchiveForDirectory = (
   fileExtensions: string[],
   retrievedLogs: ILogs[],
 ): Promise<void> => {
-  return new Promise((resolve, _reject) => {
-    logger.info(`reports-handler: generating archive for directory ${source}`);
-    const output = fs.createWriteStream(destination);
-    const archive = new zip();
-    const filesForCleanup: string[] = [];
-
-    output.on('close', () => {
-      for (const file of filesForCleanup) {
-        if (fs.existsSync(file)) {
-          fs.unlinkSync(file);
-        }
+  logger.info(`reports-handler: generating archive for directory ${source}`);
+  const archive = new zip();
+  const filesForCleanup: string[] = [];
+  const files = fs.readdirSync(source);
+  files
+    .filter((file) => fileExtensions.indexOf(path.extname(file)) !== -1)
+    .forEach((file) => {
+      switch (path.extname(file)) {
+        case '.log':
+          archive.addLocalFile(source + '/' + file, 'logs');
+          break;
+        case '.dmp':
+        case '.txt': // on Windows .txt files will be created as part of crash dump
+          archive.addLocalFile(source + '/' + file, 'crashes');
+          break;
+        default:
+          break;
       }
-      logger.info(`reports-handler: generated archive for directory ${source}`);
-      return resolve();
     });
 
-    const files = fs.readdirSync(source);
-    files
-      .filter((file) => fileExtensions.indexOf(path.extname(file)) !== -1)
-      .forEach((file) => {
-        switch (path.extname(file)) {
-          case '.log':
-            archive.addLocalFile(source + '/' + file, 'logs');
-            break;
-          case '.dmp':
-          case '.txt': // on Windows .txt files will be created as part of crash dump
-            archive.addLocalFile(source + '/' + file, 'crashes');
-            break;
-          default:
-            break;
-        }
-      });
-
-    for (const logs of retrievedLogs) {
-      for (const logFile of logs.logFiles) {
-        const file = path.join(source, logFile.filename);
-        archive.addLocalFile(file, 'logs');
-        filesForCleanup.push(file);
-      }
+  for (const logs of retrievedLogs) {
+    for (const logFile of logs.logFiles) {
+      const file = path.join(source, logFile.filename);
+      archive.addLocalFile(file, 'logs');
+      filesForCleanup.push(file);
     }
-    archive
-      .writeZipPromise(destination)
-      .then(() => {
-        logger.info('reports-handler: successfully created archive');
-      })
-      .catch((error) => {
-        logger.error('reports-handler: error while archiving ', error);
-      });
-    archive.writeZip(destination);
-  });
+  }
+  return archive
+    .writeZipPromise(destination)
+    .then(() => {
+      logger.info('reports-handler: successfully created archive');
+    })
+    .catch((error) => {
+      logger.error('reports-handler: error while archiving ', error);
+    });
 };
 
 let logWebContents: WebContents;
