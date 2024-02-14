@@ -39,6 +39,47 @@ jest.mock('../src/app/window-handler', () => {
   };
 });
 
+jest.mock('../src/app/plist-handler', () => {
+  return {};
+});
+jest.mock('../src/app/config-handler', () => {
+  return {
+    CloudConfigDataTypes: {
+      NOT_SET: 'NOT_SET',
+      ENABLED: 'ENABLED',
+      DISABLED: 'DISABLED',
+    },
+    config: {
+      getConfigFields: jest.fn(() => {
+        return {
+          minimizeOnClose: 'ENABLED',
+          launchOnStartup: 'ENABLED',
+          alwaysOnTop: 'ENABLED',
+          isAlwaysOnTop: 'ENABLED',
+          bringToFront: 'ENABLED',
+          devToolsEnabled: true,
+        };
+      }),
+      getGlobalConfigFields: jest.fn(() => {
+        return {
+          devToolsEnabled: true,
+        };
+      }),
+      getFilteredCloudConfigFields: jest.fn(() => {
+        return {
+          devToolsEnabled: true,
+        };
+      }),
+      getCloudConfigFields: jest.fn(() => {
+        return {
+          devToolsEnabled: true,
+        };
+      }),
+      updateUserConfig: jest.fn(),
+    },
+  };
+});
+
 jest.mock('../src/renderer/notification', () => {
   return {
     setupNotificationPosition: jest.fn(),
