@@ -290,10 +290,6 @@ export const screen = {
   }),
 };
 
-export const systemPreferences = {
-  getUserDefault: jest.fn(),
-};
-
 export const remote = {
   app,
   getCurrentWindow,
