@@ -46,8 +46,6 @@ FunctionEnd
 !macro perUserM
     !insertmacro copyLocalGlobalConfig
     Call uninstallSymphony
-    Sleep 10000
-	SetRegView 64
     WriteRegExpandStr HKLM "${INSTALL_REGISTRY_KEY}" InstallLocation "$LOCALAPPDATA\Programs\Symphony\Symphony"
     WriteRegExpandStr HKCU "${INSTALL_REGISTRY_KEY}" InstallLocation "$LOCALAPPDATA\Programs\Symphony\Symphony"
 !macroend
@@ -60,8 +58,6 @@ FunctionEnd
     ${endif}
     !insertmacro copySystemGlobalConfig
     Call uninstallSymphony
-    Sleep 10000
-	SetRegView 64
     WriteRegExpandStr HKLM "${INSTALL_REGISTRY_KEY}" InstallLocation "$PROGRAMFILES64\Symphony\Symphony"
     WriteRegExpandStr HKCU "${INSTALL_REGISTRY_KEY}" InstallLocation "$PROGRAMFILES64\Symphony\Symphony"
 !macroend
