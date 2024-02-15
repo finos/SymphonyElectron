@@ -1,4 +1,4 @@
-import { app, dialog, powerSaveBlocker, systemPreferences } from 'electron';
+import { app, dialog, powerSaveBlocker } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -16,7 +16,6 @@ import {
   SDAUserSessionActionTypes,
 } from './bi/interface';
 import { terminateC9Shell } from './c9-shell-handler';
-import { getAllUserDefaults } from './plist-handler';
 import { appStats } from './stats';
 
 const writeFile = util.promisify(fs.writeFile);
@@ -787,20 +786,12 @@ class Config {
    * Reads a stores the global config file
    */
   private readGlobalConfig() {
-    if (isMac) {
-      this.globalConfig = getAllUserDefaults();
-      logger.info(
-        `config-handler: Global configuration from plist: `,
-        this.globalConfig,
-      );
-      return;
-    }
     if (!fs.existsSync(this.globalConfigPath)) {
       throw new Error(
         `Global config file missing! App will not run as expected!`,
       );
     }
-    /*if (fs.existsSync(this.tempGlobalConfigFilePath)) {
+    if (fs.existsSync(this.tempGlobalConfigFilePath)) {
       this.globalConfig = this.parseConfigData(
         fs.readFileSync(this.tempGlobalConfigFilePath, 'utf8'),
       );
@@ -813,7 +804,7 @@ class Config {
         this.copyGlobalConfig();
       }
       return;
-    }*/
+    }
     const parsedConfigData = this.parseConfigData(
       fs.readFileSync(this.globalConfigPath, 'utf8'),
     );
@@ -827,17 +818,6 @@ class Config {
    * Reads the install variant from a file
    */
   private readInstallVariant() {
-    if (isMac) {
-      this.installVariant = systemPreferences.getUserDefault(
-        'installVariant',
-        'string',
-      );
-      logger.info(
-        `config-handler: Install variant from plist: `,
-        this.installVariant,
-      );
-      return;
-    }
     this.installVariant = fs.readFileSync(this.installVariantPath, 'utf8');
     logger.info(`config-handler: Install variant: `, this.installVariant);
   }
