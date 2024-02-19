@@ -66,6 +66,7 @@
       "config/titleBarStyles.css",
       "config/InstallVariant.info",
       "dictionaries/**",
+      "installer/mac/postinstall.sh",
       "node_modules/screen-share-indicator-frame/SymphonyScreenShareIndicator"
     ],
     "mac": {

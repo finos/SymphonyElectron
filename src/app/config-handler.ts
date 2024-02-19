@@ -1,4 +1,4 @@
-import { app, dialog, powerSaveBlocker } from 'electron';
+import { app, dialog, powerSaveBlocker, systemPreferences } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -16,6 +16,7 @@ import {
   SDAUserSessionActionTypes,
 } from './bi/interface';
 import { terminateC9Shell } from './c9-shell-handler';
+import { getAllUserDefaults, initializePlistFile } from './plist-handler';
 import { appStats } from './stats';
 
 const writeFile = util.promisify(fs.writeFile);
@@ -174,6 +175,7 @@ class Config {
   private readonly appPath: string;
   private readonly globalConfigPath: string;
   private readonly cloudConfigPath: string;
+  private readonly postInstallScriptPath: string;
 
   constructor() {
     this.configFileName = 'Symphony.config';
@@ -201,6 +203,9 @@ class Config {
           'config',
           this.configFileName,
         );
+    this.postInstallScriptPath = isDevEnv
+      ? path.join(this.appPath, path.join('installer', 'mac', 'postinstall.sh'))
+      : path.join(this.appPath, '..', 'installer', 'mac', 'postinstall.sh');
 
     this.installVariantPath = isDevEnv
       ? path.join(
@@ -234,8 +239,8 @@ class Config {
     this.cloudConfig = {};
     this.filteredCloudConfig = {};
 
-    this.readGlobalConfig();
     this.readInstallVariant();
+    this.readGlobalConfig();
     this.readCloudConfig();
 
     app.on('before-quit', async (event) => {
@@ -786,24 +791,18 @@ class Config {
    * Reads a stores the global config file
    */
   private readGlobalConfig() {
+    if (isMac) {
+      this.globalConfig = getAllUserDefaults();
+      logger.info(
+        `config-handler: Global configuration from plist: `,
+        this.globalConfig,
+      );
+      return;
+    }
     if (!fs.existsSync(this.globalConfigPath)) {
       throw new Error(
         `Global config file missing! App will not run as expected!`,
       );
-    }
-    if (fs.existsSync(this.tempGlobalConfigFilePath)) {
-      this.globalConfig = this.parseConfigData(
-        fs.readFileSync(this.tempGlobalConfigFilePath, 'utf8'),
-      );
-      logger.info(
-        `config-handler: temp global config exists using this file: `,
-        this.tempGlobalConfigFilePath,
-        this.globalConfig,
-      );
-      if (isMac) {
-        this.copyGlobalConfig();
-      }
-      return;
     }
     const parsedConfigData = this.parseConfigData(
       fs.readFileSync(this.globalConfigPath, 'utf8'),
@@ -818,6 +817,28 @@ class Config {
    * Reads the install variant from a file
    */
   private readInstallVariant() {
+    if (isMac) {
+      this.installVariant = systemPreferences.getUserDefault(
+        'installVariant',
+        'string',
+      );
+      if (!this.installVariant || this.installVariant === '') {
+        logger.info(
+          `config-handler: Initializing new plist file: `,
+          this.installVariant,
+        );
+        initializePlistFile(this.postInstallScriptPath);
+        this.installVariant = systemPreferences.getUserDefault(
+          'installVariant',
+          'string',
+        );
+      }
+      logger.info(
+        `config-handler: Install variant from plist: `,
+        this.installVariant,
+      );
+      return;
+    }
     this.installVariant = fs.readFileSync(this.installVariantPath, 'utf8');
     logger.info(`config-handler: Install variant: `, this.installVariant);
   }
