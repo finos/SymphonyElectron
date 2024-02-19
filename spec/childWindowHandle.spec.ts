@@ -60,6 +60,10 @@ jest.mock('../src/app/auto-update-handler', () => {
   return {};
 });
 
+jest.mock('../src/app/config-handler', () => {
+  return {};
+});
+
 describe('child window handle', () => {
   it('should set open window handler', () => {
     const spy = jest.spyOn(webContents, 'setWindowOpenHandler');

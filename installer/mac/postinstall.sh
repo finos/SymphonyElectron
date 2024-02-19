@@ -3,11 +3,25 @@
 ## Create file path variables ##
 settingsFilePath='/tmp/sym_settings.txt'
 permissionsFilePath='/tmp/sym_permissions.txt'
-installPath="$2"
-configPath="/Symphony.app/Contents/config"
-configFilePath="${installPath}${configPath}/Symphony.config"
-installVariantPath="${installPath}${configPath}/InstallVariant.info"
-newPath=${configFilePath}
+plistFileName="com.symphony.electron-desktop.plist"
+userName=$(stat -f%Su /dev/console)
+plistFilePath="/Users/$userName/Library/Preferences/$plistFileName"
+
+echo "$plistFilePath"
+echo "$userName"
+echo "$EUID"
+
+# Create a plist file it not exist
+if [ ! -f "$plistFilePath" ]
+then
+  # Add a default entry
+  echo "Plist file does not exists creating new file"
+  if [ "$EUID" -ne 0 ]; then
+    defaults write "$plistFilePath" ApplicationName Symphony
+  else
+    sudo -u "$userName" defaults write "$plistFilePath" ApplicationName Symphony
+  fi
+fi
 
 ## Get Symphony Settings from the temp file ##
 pod_url=$(sed -n '1p' ${settingsFilePath});
@@ -34,26 +48,14 @@ if [ "$browser_login_autoconnect" = "" ]; then browser_login_autoconnect=false; 
 pod_url_escaped=$(sed 's#[&/\]#\\&#g' <<<"$pod_url")
 context_origin_url_escaped=$(sed 's#[&/\]#\\&#g' <<<"$context_origin_url")
 
-## Replace the default settings with the user selected settings ##
-sed -i "" -E "s#\"url\" ?: ?\".*\"#\"url\"\: \"$pod_url_escaped\"#g" "${newPath}"
-sed -i "" -E "s#\"contextOriginUrl\" ?: ?\".*\"#\"contextOriginUrl\"\: \"$context_origin_url_escaped\"#g" "${newPath}"
-sed -i "" -E "s#\"minimizeOnClose\" ?: ?\"([Ee][Nn][Aa][Bb][Ll][Ee][Dd]|[Dd][Ii][Ss][Aa][Bb][Ll][Ee][Dd])\"#\"minimizeOnClose\":\ \"$minimize_on_close\"#g" "${newPath}"
-sed -i "" -E "s#\"alwaysOnTop\" ?: ?\"([Ee][Nn][Aa][Bb][Ll][Ee][Dd]|[Dd][Ii][Ss][Aa][Bb][Ll][Ee][Dd])\"#\"alwaysOnTop\":\ \"$always_on_top\"#g" "${newPath}"
-sed -i "" -E "s#\"launchOnStartup\" ?: ?\"([Ee][Nn][Aa][Bb][Ll][Ee][Dd]|[Dd][Ii][Ss][Aa][Bb][Ll][Ee][Dd])\"#\"launchOnStartup\":\ \"$launch_on_startup\"#g" "${newPath}"
-sed -i "" -E "s#\"bringToFront\" ?: ?\"([Ee][Nn][Aa][Bb][Ll][Ee][Dd]|[Dd][Ii][Ss][Aa][Bb][Ll][Ee][Dd])\"#\"bringToFront\":\ \"$bring_to_front\"#g" "${newPath}"
-sed -i "" -E "s#\"devToolsEnabled\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"devToolsEnabled\":\ $dev_tools_enabled#g" "${newPath}"
-sed -i "" -E "s#\"enableBrowserLogin\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"enableBrowserLogin\":\ $enable_browser_login#g" "${newPath}"
-sed -i "" -E "s#\"browserLoginAutoConnect\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"browserLoginAutoConnect\":\ $browser_login_autoconnect#g" "${newPath}"
-
 ## Add settings force auto update
 force_auto_update=$(sed -n '10p' ${settingsFilePath});
 if [ "$force_auto_update" = "" ]; then force_auto_update=false; fi
-sed -i "" -E "s#\"forceAutoUpdate\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"forceAutoUpdate\":\ $force_auto_update#g" "${newPath}"
 
 ## Add settings is pod url editable
 is_pod_url_editable=$(sed -n '11p' ${settingsFilePath});
 if [ "$is_pod_url_editable" = "" ]; then is_pod_url_editable=true; fi
-sed -i "" -E "s#\"isPodUrlEditable\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"isPodUrlEditable\":\ $is_pod_url_editable#g" "${newPath}"
+
 
 ## Get Symphony Permissions from the temp file ##
 media=$(sed -n '1p' ${permissionsFilePath});
@@ -73,17 +75,97 @@ if [ "$pointer_lock" = "" ]; then pointer_lock=true;fi
 if [ "$full_screen" = "" ]; then full_screen=true; fi
 if [ "$open_external_app" = "" ]; then open_external_app=true; fi
 
-## Replace the default permissions with the user selected permissions ##
-sed -i "" -E "s#\"media\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"media\":\ $media#g" "${newPath}"
-sed -i "" -E "s#\"geolocation\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"geolocation\":\ $geo_location#g" "${newPath}"
-sed -i "" -E "s#\"notifications\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"notifications\":\ $notifications#g" "${newPath}"
-sed -i "" -E "s#\"midiSysex\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"midiSysex\":\ $midi_sysex#g" "${newPath}"
-sed -i "" -E "s#\"pointerLock\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"pointerLock\":\ $pointer_lock#g" "${newPath}"
-sed -i "" -E "s#\"fullscreen\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"fullscreen\":\ $full_screen#g" "${newPath}"
-sed -i "" -E "s#\"openExternal\" ?: ?([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])#\"openExternal\":\ $open_external_app#g" "${newPath}"
+uuid=$(uuidgen)
+
+#Set default value
+if [ "$EUID" -ne 0 ]; then
+  defaults write "$plistFilePath" url -string "$pod_url_escaped"
+  defaults write "$plistFilePath" autoUpdateUrl -string ""
+  defaults write "$plistFilePath" autoUpdateChannel -string "latest"
+  defaults write "$plistFilePath" isAutoUpdateEnabled -bool true
+  defaults write "$plistFilePath" isPodUrlEditable -bool true
+  defaults write "$plistFilePath" forceAutoUpdate -bool "$force_auto_update"
+  defaults write "$plistFilePath" autoUpdateCheckInterval -string "30"
+  defaults write "$plistFilePath" enableBrowserLogin -bool "$enable_browser_login"
+  defaults write "$plistFilePath" browserLoginAutoConnect -bool "$browser_login_autoconnect"
+  defaults write "$plistFilePath" overrideUserAgent -bool false
+  defaults write "$plistFilePath" minimizeOnClose -string "$minimize_on_close"
+  defaults write "$plistFilePath" launchOnStartup -string "$launch_on_startup"
+  defaults write "$plistFilePath" alwaysOnTop -string "$always_on_top"
+  defaults write "$plistFilePath" bringToFront -string "$bring_to_front"
+  defaults write "$plistFilePath" whitelistUrl -string "*"
+  defaults write "$plistFilePath" isCustomTitleBar -string "ENABLED"
+  defaults write "$plistFilePath" memoryRefresh -string "ENABLED"
+  defaults write "$plistFilePath" memoryThreshold -string "800"
+  defaults write "$plistFilePath" devToolsEnabled -bool "$dev_tools_enabled"
+  defaults write "$plistFilePath" contextIsolation -bool true
+  defaults write "$plistFilePath" contextOriginUrl -string "$context_origin_url_escaped"
+  defaults write "$plistFilePath" disableGpu -bool false
+  defaults write "$plistFilePath" enableRendererLogs -bool false
+  defaults write "$plistFilePath" ctWhitelist -array
+  defaults write "$plistFilePath" podWhitelist -array
+  defaults write "$plistFilePath" position -string "upper-right"
+  defaults write "$plistFilePath" display -string ""
+  defaults write "$plistFilePath" authServerWhitelist -string ""
+  defaults write "$plistFilePath" authNegotiateDelegateWhitelist -string ""
+  defaults write "$plistFilePath" disableThrottling -string "DISABLED"
+  defaults write "$plistFilePath" media -bool "$media"
+  defaults write "$plistFilePath" geolocation -bool "$geo_location"
+  defaults write "$plistFilePath" notifications -bool "$notifications"
+  defaults write "$plistFilePath" midiSysex -bool "$midi_sysex"
+  defaults write "$plistFilePath" pointerLock -bool "$pointer_lock"
+  defaults write "$plistFilePath" fullscreen -bool "$full_screen"
+  defaults write "$plistFilePath" openExternal -bool "$open_external_app"
+  defaults write "$plistFilePath" autoLaunchPath -string ""
+  defaults write "$plistFilePath" userDataPath -string ""
+  defaults write "$plistFilePath" chromeFlags -string ""
+  defaults write "$plistFilePath" betaAutoUpdateChannelEnabled -bool true
+  defaults write "$plistFilePath" installVariant -string "$uuid"
+else
+  sudo -u "$userName" defaults write "$plistFilePath" url -string "$pod_url_escaped"
+  sudo -u "$userName" defaults write "$plistFilePath" autoUpdateUrl -string ""
+  sudo -u "$userName" defaults write "$plistFilePath" autoUpdateChannel -string "latest"
+  sudo -u "$userName" defaults write "$plistFilePath" isAutoUpdateEnabled -bool true
+  sudo -u "$userName" defaults write "$plistFilePath" isPodUrlEditable -bool true
+  sudo -u "$userName" defaults write "$plistFilePath" forceAutoUpdate -bool "$force_auto_update"
+  sudo -u "$userName" defaults write "$plistFilePath" autoUpdateCheckInterval -string "30"
+  sudo -u "$userName" defaults write "$plistFilePath" enableBrowserLogin -bool "$enable_browser_login"
+  sudo -u "$userName" defaults write "$plistFilePath" browserLoginAutoConnect -bool "$browser_login_autoconnect"
+  sudo -u "$userName" defaults write "$plistFilePath" overrideUserAgent -bool false
+  sudo -u "$userName" defaults write "$plistFilePath" minimizeOnClose -string "$minimize_on_close"
+  sudo -u "$userName" defaults write "$plistFilePath" launchOnStartup -string "$launch_on_startup"
+  sudo -u "$userName" defaults write "$plistFilePath" alwaysOnTop -string "$always_on_top"
+  sudo -u "$userName" defaults write "$plistFilePath" bringToFront -string "$bring_to_front"
+  sudo -u "$userName" defaults write "$plistFilePath" whitelistUrl -string "*"
+  sudo -u "$userName" defaults write "$plistFilePath" isCustomTitleBar -string "ENABLED"
+  sudo -u "$userName" defaults write "$plistFilePath" memoryRefresh -string "ENABLED"
+  sudo -u "$userName" defaults write "$plistFilePath" memoryThreshold -string "800"
+  sudo -u "$userName" defaults write "$plistFilePath" devToolsEnabled -bool "$dev_tools_enabled"
+  sudo -u "$userName" defaults write "$plistFilePath" contextIsolation -bool true
+  sudo -u "$userName" defaults write "$plistFilePath" contextOriginUrl -string "$context_origin_url_escaped"
+  sudo -u "$userName" defaults write "$plistFilePath" disableGpu -bool false
+  sudo -u "$userName" defaults write "$plistFilePath" enableRendererLogs -bool false
+  sudo -u "$userName" defaults write "$plistFilePath" ctWhitelist -array
+  sudo -u "$userName" defaults write "$plistFilePath" podWhitelist -array
+  sudo -u "$userName" defaults write "$plistFilePath" position -string "upper-right"
+  sudo -u "$userName" defaults write "$plistFilePath" display -string ""
+  sudo -u "$userName" defaults write "$plistFilePath" authServerWhitelist -string ""
+  sudo -u "$userName" defaults write "$plistFilePath" authNegotiateDelegateWhitelist -string ""
+  sudo -u "$userName" defaults write "$plistFilePath" disableThrottling -string "DISABLED"
+  sudo -u "$userName" defaults write "$plistFilePath" media -bool "$media"
+  sudo -u "$userName" defaults write "$plistFilePath" geolocation -bool "$geo_location"
+  sudo -u "$userName" defaults write "$plistFilePath" notifications -bool "$notifications"
+  sudo -u "$userName" defaults write "$plistFilePath" midiSysex -bool "$midi_sysex"
+  sudo -u "$userName" defaults write "$plistFilePath" pointerLock -bool "$pointer_lock"
+  sudo -u "$userName" defaults write "$plistFilePath" fullscreen -bool "$full_screen"
+  sudo -u "$userName" defaults write "$plistFilePath" openExternal -bool "$open_external_app"
+  sudo -u "$userName" defaults write "$plistFilePath" autoLaunchPath -string ""
+  sudo -u "$userName" defaults write "$plistFilePath" userDataPath -string ""
+  sudo -u "$userName" defaults write "$plistFilePath" chromeFlags -string ""
+  sudo -u "$userName" defaults write "$plistFilePath" betaAutoUpdateChannelEnabled -bool true
+  sudo -u "$userName" defaults write "$plistFilePath" installVariant -string "$uuid"
+fi
 
 ## Remove the temp settings & permissions file created ##
 rm -f ${settingsFilePath}
 rm -f ${permissionsFilePath}
-
-uuidgen > "${installVariantPath}"
