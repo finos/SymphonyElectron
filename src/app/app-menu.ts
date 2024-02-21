@@ -298,6 +298,10 @@ export class AppMenu {
    */
   private buildAboutMenu(): Electron.MenuItemConstructorOptions {
     logger.info(`app-menu: building about menu`);
+    const isCorp =
+      (windowHandler.url &&
+        windowHandler.url.startsWith('https://corporate.symphony.com')) ||
+      false;
     return {
       id: menuSections.about,
       label: app.getName(),
@@ -320,7 +324,9 @@ export class AppMenu {
             isMac &&
             !!(
               (isAutoUpdateEnabled || forceAutoUpdate) &&
-              (betaAutoUpdateChannelEnabled || latestAutoUpdateChannelEnabled)
+              (betaAutoUpdateChannelEnabled ||
+                latestAutoUpdateChannelEnabled ||
+                isCorp)
             ) &&
             !!windowHandler.isMana,
           label: i18n.t('Check for updates')(),
@@ -725,7 +731,9 @@ export class AppMenu {
             isWindowsOS &&
             !!(
               (isAutoUpdateEnabled || forceAutoUpdate) &&
-              (betaAutoUpdateChannelEnabled || latestAutoUpdateChannelEnabled)
+              (betaAutoUpdateChannelEnabled ||
+                latestAutoUpdateChannelEnabled ||
+                isCorp)
             ) &&
             !!windowHandler.isMana,
           label: i18n.t('Check for updates')(),

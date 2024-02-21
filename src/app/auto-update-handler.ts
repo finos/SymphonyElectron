@@ -255,6 +255,16 @@ export class AutoUpdate {
     this.finalAutoUpdateChannel = autoUpdateChannel;
     this.installVariant = installVariant;
 
+    const isCorp =
+      (windowHandler?.url &&
+        windowHandler.url.startsWith('https://corporate.symphony.com')) ||
+      false;
+
+    // Corp should keep the ability to get auto-update channel from user config as top prio
+    if (isCorp && this.finalAutoUpdateChannel !== UpdateChannel.LATEST) {
+      return;
+    }
+
     const pmp = config.getFilteredCloudConfigFields([
       'sdaInstallerMsiUrlEnabledVisible',
       'sdaInstallerMsiUrlBetaEnabledVisible',

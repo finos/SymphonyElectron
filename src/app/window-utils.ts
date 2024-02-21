@@ -1348,6 +1348,7 @@ export const loadBrowserViews = async (
   }, 50);
 
   const onMaximizeHandler = () => {
+    logger.info('window-change: maximizing');
     if (!mainView || !viewExists(mainView)) {
       return;
     }
@@ -1361,6 +1362,11 @@ export const loadBrowserViews = async (
     ) {
       return;
     }
+    logger.info(
+      'window-change: maximizing with bounds ',
+      currentScreenBounds.width,
+      currentScreenBounds.height,
+    );
     mainView.setBounds({
       width: currentScreenBounds.width,
       height: currentScreenBounds.height - TITLE_BAR_HEIGHT,
