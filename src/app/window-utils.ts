@@ -49,13 +49,13 @@ import {
   windowHandler,
 } from './window-handler';
 
+import * as debounce from 'lodash.debounce';
 import { notification } from '../renderer/notification';
 import { autoLaunchInstance } from './auto-launch-controller';
 import { autoUpdate, AutoUpdateTrigger } from './auto-update-handler';
 import { mainEvents } from './main-event-handler';
 import { presenceStatus } from './presence-status-handler';
 import { presenceStatusStore } from './stores';
-
 interface IStyles {
   name: styleNames;
   content: string;
@@ -1264,7 +1264,159 @@ export const loadBrowserViews = async (
 
   mainWindow.addBrowserView(titleBarView);
   mainWindow.addBrowserView(mainView);
+  mainWindow.on('enter-full-screen', () => {
+    if (
+      !titleBarView ||
+      !viewExists(titleBarView) ||
+      !mainWindow ||
+      !windowExists(mainWindow)
+    ) {
+      return;
+    }
+    // Workaround: Need to delay getting the window bounds
+    // to get updated window bounds
+    setTimeout(() => {
+      const [width, height] = mainWindow.getSize();
+      mainWindow.removeBrowserView(titleBarView);
+      if (!mainView || !viewExists(mainView)) {
+        return;
+      }
+      mainView.setBounds({
+        width,
+        height,
+        x: 0,
+        y: 0,
+      });
+    }, 500);
+    mainEvents.publish('enter-full-screen');
+  });
+  mainWindow.on('leave-full-screen', () => {
+    logger.info('EVENT leave-full-screen!!');
+    if (
+      !titleBarView ||
+      !viewExists(titleBarView) ||
+      !mainWindow ||
+      !windowExists(mainWindow)
+    ) {
+      return;
+    }
+    let width: number;
+    let height: number;
+    if (mainWindow.isMaximized()) {
+      const winBounds: Rectangle = mainWindow.getBounds();
+      const currentScreenBounds: Rectangle = screen.getDisplayMatching({
+        ...winBounds,
+      }).workArea;
+      width = currentScreenBounds.width;
+      height = currentScreenBounds.height;
+    } else {
+      [width, height] = mainWindow.getSize();
+    }
+    mainWindow.addBrowserView(titleBarView);
+    const titleBarViewBounds = titleBarView.getBounds();
+    titleBarView.setBounds({
+      ...titleBarViewBounds,
+      ...{
+        width,
+      },
+    });
+    const mainViewBounds = mainView.getBounds();
+    mainView.setBounds({
+      ...mainViewBounds,
+      ...{
+        y: TITLE_BAR_HEIGHT,
+        height: height - TITLE_BAR_HEIGHT,
+      },
+    });
+    // Workaround as electron does not resize devtools automatically
+    if (mainView.webContents.isDevToolsOpened()) {
+      mainView.webContents.toggleDevTools();
+      mainView.webContents.toggleDevTools();
+    }
+    mainEvents.publish('leave-full-screen');
+  });
 
+  const onMaximize = debounce(async () => {
+    onMaximizeHandler();
+  }, 50);
+
+  const onMaximizeHandler = () => {
+    if (!mainView || !viewExists(mainView)) {
+      return;
+    }
+    const winBounds: Rectangle = mainWindow.getBounds();
+    const currentScreenBounds: Rectangle = screen.getDisplayMatching({
+      ...winBounds,
+    }).workArea;
+    if (
+      winBounds.width === currentScreenBounds.width &&
+      winBounds.height === currentScreenBounds.height - TITLE_BAR_HEIGHT
+    ) {
+      return;
+    }
+    mainView.setBounds({
+      width: currentScreenBounds.width,
+      height: currentScreenBounds.height - TITLE_BAR_HEIGHT,
+      x: 0,
+      y: TITLE_BAR_HEIGHT,
+    });
+    titleBarView.setBounds({
+      width: currentScreenBounds.width,
+      height: TITLE_BAR_HEIGHT,
+      x: 0,
+      y: 0,
+    });
+  };
+  mainWindow.on('maximize', onMaximize);
+  const onResizeHandler = () => {
+    logger.info('window-change: resizing');
+    // Resize event is also triggered on maximize. As we already have a handler for maximize event we don't need to perform any action
+    // We also need to ensure that everything works well while connecting/disconnecting an external monitor with a maximized BrowserWindow
+    if (mainWindow.isMaximized()) {
+      onMaximize();
+      return;
+    }
+    // Electron fires a resize event on minimize too, which is not needed while resizing browserViews
+    if (mainWindow.isMinimized()) {
+      return;
+    }
+    if (!mainView || !viewExists(mainView)) {
+      return;
+    }
+    const mainWindowBounds = mainWindow.getBounds();
+    mainView.setBounds({
+      width: mainWindowBounds.width,
+      height: mainWindowBounds.height - TITLE_BAR_HEIGHT,
+      x: 0,
+      y: TITLE_BAR_HEIGHT,
+    });
+    titleBarView.setBounds({
+      width: mainWindowBounds.width,
+      height: TITLE_BAR_HEIGHT,
+      x: 0,
+      y: 0,
+    });
+    // Workaround as electron does not resize devtools automatically
+    if (mainView.webContents.isDevToolsOpened()) {
+      mainView.webContents.toggleDevTools();
+      mainView.webContents.toggleDevTools();
+    }
+  };
+
+  const onResize = debounce(async () => {
+    onResizeHandler();
+  }, 50);
+
+  // we cannot use resized event rather than 'resize' and avoid debounce usage: Electron doesn't fire this event everytime
+  mainWindow.on('resize', onResize);
+  mainWindow.on('unmaximize', onResizeHandler);
+
+  if (mainWindow?.isMaximized()) {
+    mainEvents.publish('maximize');
+  }
+  if (mainWindow?.isFullScreen()) {
+    mainEvents.publish('enter-full-screen');
+  }
   const titleBarWindowUrl = format({
     pathname: require.resolve('../renderer/windows-title-bar.html'),
     protocol: 'file',
@@ -1288,152 +1440,20 @@ export const loadBrowserViews = async (
       TITLE_BAR_EVENTS,
       titleBarView.webContents,
     );
-
-    mainWindow?.on('enter-full-screen', () => {
-      if (
-        !titleBarView ||
-        !viewExists(titleBarView) ||
-        !mainWindow ||
-        !windowExists(mainWindow)
-      ) {
-        return;
-      }
-      // Workaround: Need to delay getting the window bounds
-      // to get updated window bounds
-      setTimeout(() => {
-        const [width, height] = mainWindow.getSize();
-        mainWindow.removeBrowserView(titleBarView);
-        if (!mainView || !viewExists(mainView)) {
-          return;
-        }
-        mainView.setBounds({
-          width,
-          height,
-          x: 0,
-          y: 0,
-        });
-      }, 500);
-      mainEvents.publish('enter-full-screen');
-    });
-    mainWindow?.on('leave-full-screen', () => {
-      logger.info('EVENT leave-full-screen!!');
-      if (
-        !titleBarView ||
-        !viewExists(titleBarView) ||
-        !mainWindow ||
-        !windowExists(mainWindow)
-      ) {
-        return;
-      }
-      let width: number;
-      let height: number;
-      if (mainWindow.isMaximized()) {
-        const winBounds: Rectangle = mainWindow.getBounds();
-        const currentScreenBounds: Rectangle = screen.getDisplayMatching({
-          ...winBounds,
-        }).workArea;
-        width = currentScreenBounds.width;
-        height = currentScreenBounds.height;
-      } else {
-        [width, height] = mainWindow.getSize();
-      }
-      mainWindow.addBrowserView(titleBarView);
-      const titleBarViewBounds = titleBarView.getBounds();
-      titleBarView.setBounds({
-        ...titleBarViewBounds,
-        ...{
-          width,
-        },
-      });
-      const mainViewBounds = mainView.getBounds();
-      mainView.setBounds({
-        ...mainViewBounds,
-        ...{
-          y: TITLE_BAR_HEIGHT,
-          height: height - TITLE_BAR_HEIGHT,
-        },
-      });
-      // Workaround as electron does not resize devtools automatically
-      if (mainView.webContents.isDevToolsOpened()) {
-        mainView.webContents.toggleDevTools();
-        mainView.webContents.toggleDevTools();
-      }
-      mainEvents.publish('leave-full-screen');
-    });
-
-    mainWindow?.on('maximize', () => {
-      if (!mainView || !viewExists(mainView)) {
-        return;
-      }
-      const winBounds: Rectangle = mainWindow.getBounds();
-      const currentScreenBounds: Rectangle = screen.getDisplayMatching({
-        ...winBounds,
-      }).workArea;
-      mainView.setBounds({
-        width: currentScreenBounds.width,
-        height: currentScreenBounds.height - TITLE_BAR_HEIGHT,
-        x: 0,
-        y: TITLE_BAR_HEIGHT,
-      });
-      titleBarView.setBounds({
-        width: currentScreenBounds.width,
-        height: TITLE_BAR_HEIGHT,
-        x: 0,
-        y: 0,
-      });
-    });
-    mainWindow?.on('unmaximize', () => {
-      if (!mainView || !viewExists(mainView)) {
-        return;
-      }
-      const [width, height] = mainWindow.getSize();
-      mainView.setBounds({
-        width,
-        height: height - TITLE_BAR_HEIGHT,
-        x: 0,
-        y: TITLE_BAR_HEIGHT,
-      });
-      titleBarView.setBounds({
-        width,
-        height: TITLE_BAR_HEIGHT,
-        x: 0,
-        y: 0,
-      });
-      // Workaround as electron does not resize devtools automatically
-      if (mainView.webContents.isDevToolsOpened()) {
-        mainView.webContents.toggleDevTools();
-        mainView.webContents.toggleDevTools();
-      }
-    });
-
-    if (mainWindow?.isMaximized()) {
-      mainEvents.publish('maximize');
-    }
-    if (mainWindow?.isFullScreen()) {
-      mainEvents.publish('enter-full-screen');
-    }
   });
   await titleBarView.webContents.loadURL(titleBarWindowUrl);
   titleBarView.setBounds({
     ...mainWindow.getBounds(),
     ...{ x: 0, y: 0, height: TITLE_BAR_HEIGHT },
   });
-  titleBarView.setAutoResize({
-    vertical: false,
-    horizontal: true,
-    width: true,
-    height: false,
-  });
 
   mainView.setBounds({
-    width: mainWindowBounds?.width || DEFAULT_WIDTH,
-    height: (mainWindowBounds?.height || DEFAULT_HEIGHT) - TITLE_BAR_HEIGHT,
-    x: 0,
-    y: TITLE_BAR_HEIGHT,
-  });
-  mainView.setAutoResize({
-    width: true,
-    height: true,
+    ...mainWindow.getBounds(),
+    ...{
+      x: 0,
+      y: TITLE_BAR_HEIGHT,
+      height: (mainWindowBounds?.height || DEFAULT_HEIGHT) - TITLE_BAR_HEIGHT,
+    },
   });
 
   windowHandler.setMainView(mainView);
