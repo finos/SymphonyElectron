@@ -16,7 +16,11 @@ import {
   SDAUserSessionActionTypes,
 } from './bi/interface';
 import { terminateC9Shell } from './c9-shell-handler';
-import { getAllUserDefaults, initializePlistFile } from './plist-handler';
+import {
+  getAllUserDefaults,
+  initializePlistFile,
+  setPlistFromPreviousSettings,
+} from './plist-handler';
 import { appStats } from './stats';
 
 const writeFile = util.promisify(fs.writeFile);
@@ -706,16 +710,24 @@ class Config {
    * Creates a backup of the global config file
    */
   public backupGlobalConfig() {
-    fs.copyFileSync(this.globalConfigPath, this.tempGlobalConfigFilePath);
+    const installVariant = systemPreferences.getUserDefault(
+      'installVariant',
+      'string',
+    );
+    // If we already have a valid install variant in the plist
+    // we have already migrated the data form global config to plist
+    if (installVariant === '') {
+      fs.copyFileSync(this.globalConfigPath, this.tempGlobalConfigFilePath);
+    }
   }
 
   /**
    * Overwrites the global config file with the backed up config file
    */
-  public copyGlobalConfig() {
+  public copyGlobalConfig(settings: IConfig) {
     try {
-      if (fs.existsSync(this.tempGlobalConfigFilePath)) {
-        fs.copyFileSync(this.tempGlobalConfigFilePath, this.globalConfigPath);
+      if (settings) {
+        setPlistFromPreviousSettings(settings);
         fs.unlinkSync(this.tempGlobalConfigFilePath);
       }
     } catch (e) {
@@ -792,6 +804,29 @@ class Config {
    */
   private readGlobalConfig() {
     if (isMac) {
+      if (fs.existsSync(this.tempGlobalConfigFilePath)) {
+        this.globalConfig = this.parseConfigData(
+          fs.readFileSync(this.tempGlobalConfigFilePath, 'utf8'),
+        );
+        logger.info(
+          `config-handler: temp global config exists using this file: `,
+          this.tempGlobalConfigFilePath,
+          this.globalConfig,
+        );
+        this.copyGlobalConfig(this.globalConfig as IConfig);
+        return;
+      }
+      if (!this.installVariant || this.installVariant === '') {
+        logger.info(
+          `config-handler: Initializing new plist file: `,
+          this.installVariant,
+        );
+        initializePlistFile(this.postInstallScriptPath);
+      }
+      this.installVariant = systemPreferences.getUserDefault(
+        'installVariant',
+        'string',
+      );
       this.globalConfig = getAllUserDefaults();
       logger.info(
         `config-handler: Global configuration from plist: `,
@@ -822,17 +857,6 @@ class Config {
         'installVariant',
         'string',
       );
-      if (!this.installVariant || this.installVariant === '') {
-        logger.info(
-          `config-handler: Initializing new plist file: `,
-          this.installVariant,
-        );
-        initializePlistFile(this.postInstallScriptPath);
-        this.installVariant = systemPreferences.getUserDefault(
-          'installVariant',
-          'string',
-        );
-      }
       logger.info(
         `config-handler: Install variant from plist: `,
         this.installVariant,

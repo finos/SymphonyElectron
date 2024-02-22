@@ -11,7 +11,7 @@ describe('Plist Handler', () => {
       betaAutoUpdateChannelEnabled: undefined,
       bringToFront: undefined,
       browserLoginAutoConnect: undefined,
-      chromeFlags: {
+      customFlags: {
         authNegotiateDelegateWhitelist: undefined,
         authServerWhitelist: undefined,
         disableThrottling: undefined,
@@ -49,6 +49,7 @@ describe('Plist Handler', () => {
       url: undefined,
       userDataPath: undefined,
       whitelistUrl: undefined,
+      chromeFlags: undefined,
     });
   });
 });

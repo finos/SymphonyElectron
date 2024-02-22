@@ -1,6 +1,7 @@
 import { execSync } from 'child_process';
 import { systemPreferences } from 'electron';
 import { logger } from '../common/logger';
+import { getGuid } from '../common/utils';
 import { IConfig } from './config-handler';
 
 const GENERAL_SETTINGS = {
@@ -40,7 +41,7 @@ const NOTIFICATION_SETTINGS = {
   display: 'string',
 };
 
-const CHROME_FLAGS = {
+const CUSTOM_FLAGS = {
   authServerWhitelist: 'string',
   authNegotiateDelegateWhitelist: 'string',
   disableThrottling: 'string',
@@ -74,13 +75,13 @@ export const getAllUserDefaults = (): IConfig => {
       NOTIFICATION_SETTINGS[key],
     );
   });
-  Object.keys(CHROME_FLAGS).map((key) => {
-    if (!settings.chromeFlags) {
-      settings.chromeFlags = {};
+  Object.keys(CUSTOM_FLAGS).map((key) => {
+    if (!settings.customFlags) {
+      settings.customFlags = {};
     }
-    settings.chromeFlags[key] = systemPreferences.getUserDefault(
+    settings.customFlags[key] = systemPreferences.getUserDefault(
       key,
-      CHROME_FLAGS[key],
+      CUSTOM_FLAGS[key],
     );
   });
   Object.keys(PERMISSIONS).map((key) => {
@@ -94,6 +95,34 @@ export const getAllUserDefaults = (): IConfig => {
   });
   logger.info('plist-handler: getting all user defaults', settings);
   return settings;
+};
+
+export const setPlistFromPreviousSettings = (settings: IConfig) => {
+  Object.keys(GENERAL_SETTINGS).map((key) => {
+    systemPreferences.setUserDefault(key, GENERAL_SETTINGS[key], settings[key]);
+  });
+  Object.keys(NOTIFICATION_SETTINGS).map((key) => {
+    systemPreferences.setUserDefault(
+      key,
+      NOTIFICATION_SETTINGS[key],
+      settings.notificationSettings[key],
+    );
+  });
+  Object.keys(CUSTOM_FLAGS).map((key) => {
+    systemPreferences.setUserDefault(
+      key,
+      CUSTOM_FLAGS[key],
+      settings.customFlags[key],
+    );
+  });
+  Object.keys(PERMISSIONS).map((key) => {
+    systemPreferences.setUserDefault(
+      key,
+      PERMISSIONS[key],
+      settings.permissions[key],
+    );
+  });
+  systemPreferences.setUserDefault('installVariant', 'string', getGuid());
 };
 
 /**
