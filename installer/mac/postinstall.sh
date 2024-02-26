@@ -45,8 +45,6 @@ if [ "$dev_tools_enabled" = "" ]; then dev_tools_enabled=true; fi
 if [ "$enable_browser_login" = "" ]; then enable_browser_login=false; fi
 if [ "$browser_login_autoconnect" = "" ]; then browser_login_autoconnect=false; fi
 
-pod_url_escaped=$(sed 's#[&/\]#\\&#g' <<<"$pod_url")
-context_origin_url_escaped=$(sed 's#[&/\]#\\&#g' <<<"$context_origin_url")
 
 ## Add settings force auto update
 force_auto_update=$(sed -n '10p' ${settingsFilePath});
@@ -79,11 +77,11 @@ uuid=$(uuidgen)
 
 #Set default value
 if [ "$EUID" -ne 0 ]; then
-  defaults write "$plistFilePath" url -string "$pod_url_escaped"
+  defaults write "$plistFilePath" url -string "$pod_url"
   defaults write "$plistFilePath" autoUpdateUrl -string ""
   defaults write "$plistFilePath" autoUpdateChannel -string "latest"
   defaults write "$plistFilePath" isAutoUpdateEnabled -bool true
-  defaults write "$plistFilePath" isPodUrlEditable -bool true
+  defaults write "$plistFilePath" isPodUrlEditable -bool "$is_pod_url_editable"
   defaults write "$plistFilePath" forceAutoUpdate -bool "$force_auto_update"
   defaults write "$plistFilePath" autoUpdateCheckInterval -string "30"
   defaults write "$plistFilePath" enableBrowserLogin -bool "$enable_browser_login"
@@ -99,7 +97,7 @@ if [ "$EUID" -ne 0 ]; then
   defaults write "$plistFilePath" memoryThreshold -string "800"
   defaults write "$plistFilePath" devToolsEnabled -bool "$dev_tools_enabled"
   defaults write "$plistFilePath" contextIsolation -bool true
-  defaults write "$plistFilePath" contextOriginUrl -string "$context_origin_url_escaped"
+  defaults write "$plistFilePath" contextOriginUrl -string "$context_origin_url"
   defaults write "$plistFilePath" disableGpu -bool false
   defaults write "$plistFilePath" enableRendererLogs -bool false
   defaults write "$plistFilePath" ctWhitelist -array
@@ -122,11 +120,11 @@ if [ "$EUID" -ne 0 ]; then
   defaults write "$plistFilePath" betaAutoUpdateChannelEnabled -bool true
   defaults write "$plistFilePath" installVariant -string "$uuid"
 else
-  sudo -u "$userName" defaults write "$plistFilePath" url -string "$pod_url_escaped"
+  sudo -u "$userName" defaults write "$plistFilePath" url -string "$pod_url"
   sudo -u "$userName" defaults write "$plistFilePath" autoUpdateUrl -string ""
   sudo -u "$userName" defaults write "$plistFilePath" autoUpdateChannel -string "latest"
   sudo -u "$userName" defaults write "$plistFilePath" isAutoUpdateEnabled -bool true
-  sudo -u "$userName" defaults write "$plistFilePath" isPodUrlEditable -bool true
+  sudo -u "$userName" defaults write "$plistFilePath" isPodUrlEditable -bool "$is_pod_url_editable"
   sudo -u "$userName" defaults write "$plistFilePath" forceAutoUpdate -bool "$force_auto_update"
   sudo -u "$userName" defaults write "$plistFilePath" autoUpdateCheckInterval -string "30"
   sudo -u "$userName" defaults write "$plistFilePath" enableBrowserLogin -bool "$enable_browser_login"
@@ -142,7 +140,7 @@ else
   sudo -u "$userName" defaults write "$plistFilePath" memoryThreshold -string "800"
   sudo -u "$userName" defaults write "$plistFilePath" devToolsEnabled -bool "$dev_tools_enabled"
   sudo -u "$userName" defaults write "$plistFilePath" contextIsolation -bool true
-  sudo -u "$userName" defaults write "$plistFilePath" contextOriginUrl -string "$context_origin_url_escaped"
+  sudo -u "$userName" defaults write "$plistFilePath" contextOriginUrl -string "$context_origin_url"
   sudo -u "$userName" defaults write "$plistFilePath" disableGpu -bool false
   sudo -u "$userName" defaults write "$plistFilePath" enableRendererLogs -bool false
   sudo -u "$userName" defaults write "$plistFilePath" ctWhitelist -array
