@@ -104,7 +104,6 @@ let {
   betaAutoUpdateChannelEnabled,
   latestAutoUpdateChannelEnabled,
 } = config.getConfigFields(menuItemConfigFields) as IConfig;
-let initialAnalyticsSent = false;
 const CORP_URL = 'https://corporate.symphony.com';
 const SDA_CHANNELS_MENU_ID = 'sda-channels';
 const C2_CHANNELS_MENU_ID = 'c2-channels';
@@ -148,42 +147,6 @@ export class AppMenu {
       'enableRendererLogs',
     ]).enableRendererLogs;
     this.buildMenu();
-    // send initial analytic
-    if (!initialAnalyticsSent) {
-      this.sendAnalytics(
-        AnalyticsElements.MENU,
-        MenuActionTypes.MINIMIZE_ON_CLOSE,
-        minimizeOnClose === CloudConfigDataTypes.ENABLED,
-      );
-      this.sendAnalytics(
-        AnalyticsElements.MENU,
-        MenuActionTypes.AUTO_LAUNCH_ON_START_UP,
-        launchOnStartup === CloudConfigDataTypes.ENABLED,
-      );
-      this.sendAnalytics(
-        AnalyticsElements.MENU,
-        MenuActionTypes.ALWAYS_ON_TOP,
-        isAlwaysOnTop === CloudConfigDataTypes.ENABLED,
-      );
-      this.sendAnalytics(
-        AnalyticsElements.MENU,
-        MenuActionTypes.FLASH_NOTIFICATION_IN_TASK_BAR,
-        bringToFront === CloudConfigDataTypes.ENABLED,
-      );
-      this.sendAnalytics(
-        AnalyticsElements.MENU,
-        MenuActionTypes.REFRESH_APP_IN_IDLE,
-        memoryRefresh === CloudConfigDataTypes.ENABLED,
-      );
-      this.sendAnalytics(
-        AnalyticsElements.MENU,
-        MenuActionTypes.HAMBURGER_MENU,
-        isMac || isLinux
-          ? false
-          : isCustomTitleBar === CloudConfigDataTypes.ENABLED,
-      );
-    }
-    initialAnalyticsSent = true;
   }
 
   /**
