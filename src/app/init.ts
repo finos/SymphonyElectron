@@ -1,4 +1,4 @@
-import { app, crashReporter } from 'electron';
+import { app, crashReporter, Menu } from 'electron';
 import * as path from 'path';
 
 import { isDevEnv } from '../common/env';
@@ -23,6 +23,9 @@ app.enableSandbox();
 // need to set this explicitly if using Squirrel
 // https://www.electron.build/configuration/configuration#Configuration-squirrelWindows
 app.setAppUserModelId('com.symphony.electron-desktop');
+
+// This will prevent loading default menu and performance of application startup
+Menu.setApplicationMenu(null);
 
 // Set user data path before app ready event
 if (isDevEnv) {
