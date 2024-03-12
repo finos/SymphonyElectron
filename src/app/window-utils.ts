@@ -1193,6 +1193,11 @@ export const updateFeaturesForCloudConfig = async (
         }
       }, getRandomTime(MIN_AUTO_UPDATE_CHECK_INTERVAL, MAX_AUTO_UPDATE_CHECK_INTERVAL));
     }
+  } else {
+    // Clear the interval if autoUpdate is disabled
+    if (autoUpdateIntervalId) {
+      clearInterval(autoUpdateCheckInterval);
+    }
   }
 };
 
