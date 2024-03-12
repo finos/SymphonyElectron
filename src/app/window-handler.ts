@@ -287,6 +287,9 @@ export class WindowHandler {
       (this.globalConfig.url.includes(this.defaultUrl) &&
         config.isFirstTimeLaunch()) ||
       !!this.config.enableBrowserLogin;
+    // Force welcome screen if pod url is not configured correctly
+    this.shouldShowWelcomeScreen =
+      !!this.userConfig.url && this.userConfig.url.includes(this.defaultUrl);
 
     this.windowOpts = {
       ...this.getWindowOpts(
@@ -596,11 +599,13 @@ export class WindowHandler {
       if (this.mainWebContents && !this.mainWebContents.isDestroyed()) {
         // Load welcome screen
         if (this.shouldShowWelcomeScreen && !this.didShowWelcomeScreen) {
-          const podUrl = this.userConfig.url
-            ? this.userConfig.url
-            : !this.globalConfig.url.includes(this.defaultUrl)
-            ? this.globalConfig.url
-            : undefined;
+          const podUrl =
+            this.userConfig.url &&
+            !this.userConfig.url.includes(this.defaultUrl)
+              ? this.userConfig.url
+              : !this.globalConfig.url.includes(this.defaultUrl)
+              ? this.globalConfig.url
+              : undefined;
           this.mainWebContents.send('page-load-welcome', {
             locale: i18n.getLocale(),
             resources: i18n.loadedResources,
