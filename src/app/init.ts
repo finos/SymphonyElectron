@@ -1,7 +1,7 @@
 import { app, crashReporter, Menu, systemPreferences } from 'electron';
 import * as path from 'path';
 
-import { isDevEnv } from '../common/env';
+import { isDevEnv, isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
 import { appStats } from './stats';
@@ -31,8 +31,14 @@ Menu.setApplicationMenu(null);
 if (isDevEnv) {
   const devDataPath = path.join(app.getPath('appData'), 'Symphony-dev');
   // dev related config settings should be set here
-  systemPreferences.setUserDefault('contextIsolation', 'boolean', true);
-  systemPreferences.setUserDefault('installVariant', 'string', '1234-5678-910');
+  if (isMac) {
+    systemPreferences.setUserDefault('contextIsolation', 'boolean', true);
+    systemPreferences.setUserDefault(
+      'installVariant',
+      'string',
+      '1234-5678-910',
+    );
+  }
   logger.info(`init: Setting user data path to`, devDataPath);
   app.setPath('userData', devDataPath);
 }
