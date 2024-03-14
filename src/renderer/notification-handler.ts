@@ -109,7 +109,7 @@ export default class NotificationHandler {
     const workAreaHeight = display.workAreaSize.height;
     const offSet = isMac || isLinux ? 20 : 10;
     switch (this.settings.startCorner) {
-      case 'upper-right':
+      case 'lower-right':
         this.settings.corner.x += workAreaWidth - offSet;
         this.settings.corner.y += offSet;
         // Call Notification settings
@@ -118,7 +118,7 @@ export default class NotificationHandler {
         this.callNotificationSettings.y +=
           workAreaHeight - offSet - CALL_NOTIFICATION_HEIGHT;
         break;
-      case 'lower-right':
+      case 'upper-right':
         this.settings.corner.x += workAreaWidth - offSet;
         this.settings.corner.y += workAreaHeight - offSet;
         // Call Notification settings
@@ -126,14 +126,14 @@ export default class NotificationHandler {
           workAreaWidth - offSet - CALL_NOTIFICATION_WIDTH;
         this.callNotificationSettings.y += offSet;
         break;
-      case 'lower-left':
+      case 'upper-left':
         this.settings.corner.x += offSet;
         this.settings.corner.y += workAreaHeight - offSet;
         // Call Notification settings
         this.callNotificationSettings.x += offSet;
         this.callNotificationSettings.y += offSet;
         break;
-      case 'upper-left':
+      case 'lower-left':
         this.settings.corner.x += offSet;
         this.settings.corner.y += offSet;
         // Call Notification settings
