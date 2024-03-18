@@ -275,6 +275,7 @@ export interface INotificationData {
   hasIgnore?: boolean;
   hasReply?: boolean;
   hasMention?: boolean;
+  isFederatedEnabled?: boolean;
 }
 
 /**

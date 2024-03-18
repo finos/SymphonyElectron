@@ -38,6 +38,7 @@ if (isDevEnv) {
       'string',
       '1234-5678-910',
     );
+    systemPreferences.setUserDefault('devToolsEnabled', 'boolean', true);
   }
   logger.info(`init: Setting user data path to`, devDataPath);
   app.setPath('userData', devDataPath);

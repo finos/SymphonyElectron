@@ -31,6 +31,7 @@ interface INotificationState {
   isInputHidden: boolean;
   containerHeight: number;
   canSendMessage: boolean;
+  isFederatedEnabled?: boolean;
 }
 
 type mouseEventButton =
@@ -84,6 +85,7 @@ export default class NotificationComp extends React.Component<
       hasMention: false,
       containerHeight: CONTAINER_HEIGHT,
       canSendMessage: false,
+      isFederatedEnabled: false,
     };
     this.updateState = this.updateState.bind(this);
     this.onInputChange = this.onInputChange.bind(this);
@@ -123,6 +125,7 @@ export default class NotificationComp extends React.Component<
       containerHeight,
       flash,
       icon,
+      isFederatedEnabled,
     } = this.state;
     let themeClassName;
     if (theme) {
@@ -139,6 +142,7 @@ export default class NotificationComp extends React.Component<
       isExternal,
       hasMention,
       color,
+      isFederatedEnabled,
     );
     const closeImgFilePath = `../renderer/assets/close-icon-${themeClassName}.svg`;
     let containerCssClass = `container ${themeClassName} `;
@@ -147,6 +151,7 @@ export default class NotificationComp extends React.Component<
       flash,
       isExternal,
       hasMention,
+      isFederatedEnabled,
     );
     containerCssClass += customCssClasses.join(' ');
     return (

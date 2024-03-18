@@ -279,6 +279,7 @@ class Notification extends NotificationHandler {
       hasIgnore,
       hasReply,
       hasMention,
+      isFederatedEnabled,
     } = data;
     notificationWindow.webContents.send('notification-data', {
       title,
@@ -295,6 +296,7 @@ class Notification extends NotificationHandler {
       hasIgnore,
       hasReply,
       hasMention,
+      isFederatedEnabled,
     });
     notificationWindow.showInactive();
   }
