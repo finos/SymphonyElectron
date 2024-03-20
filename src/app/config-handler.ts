@@ -612,7 +612,6 @@ class Config {
       );
       const { url, ...rest } = this.globalConfig as IConfig;
       await this.updateUserConfig({
-        configVersion: app.getVersion().toString(),
         buildNumber,
         ...rest,
       } as IConfig);
