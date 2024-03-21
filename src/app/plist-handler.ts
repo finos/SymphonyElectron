@@ -34,6 +34,7 @@ const GENERAL_SETTINGS = {
   userDataPath: 'string',
   chromeFlags: 'string',
   betaAutoUpdateChannelEnabled: 'boolean',
+  latestAutoUpdateChannelEnabled: 'boolean',
 };
 
 const NOTIFICATION_SETTINGS = {
@@ -97,30 +98,49 @@ export const getAllUserDefaults = (): IConfig => {
   return settings;
 };
 
-export const setPlistFromPreviousSettings = (settings: IConfig) => {
+export const setPlistFromPreviousSettings = (
+  settings: any,
+  appGlobalConfig: IConfig,
+) => {
   Object.keys(GENERAL_SETTINGS).map((key) => {
-    systemPreferences.setUserDefault(key, GENERAL_SETTINGS[key], settings[key]);
+    let value = settings?.[key];
+    if (value === undefined) {
+      if (appGlobalConfig?.[key] === undefined) {
+        return;
+      }
+      value = appGlobalConfig[key];
+    }
+    systemPreferences.setUserDefault(key, GENERAL_SETTINGS[key], value);
   });
   Object.keys(NOTIFICATION_SETTINGS).map((key) => {
-    systemPreferences.setUserDefault(
-      key,
-      NOTIFICATION_SETTINGS[key],
-      settings.notificationSettings[key],
-    );
+    let value = settings?.notificationSettings?.[key];
+    if (value === undefined) {
+      if (appGlobalConfig?.notificationSettings?.[key] === undefined) {
+        return;
+      }
+      value = appGlobalConfig.notificationSettings[key];
+    }
+    systemPreferences.setUserDefault(key, NOTIFICATION_SETTINGS[key], value);
   });
   Object.keys(CUSTOM_FLAGS).map((key) => {
-    systemPreferences.setUserDefault(
-      key,
-      CUSTOM_FLAGS[key],
-      settings.customFlags[key],
-    );
+    let value = settings?.customFlags?.[key];
+    if (value === undefined) {
+      if (appGlobalConfig?.customFlags?.[key] === undefined) {
+        return;
+      }
+      value = appGlobalConfig.customFlags[key];
+    }
+    systemPreferences.setUserDefault(key, CUSTOM_FLAGS[key], value);
   });
   Object.keys(PERMISSIONS).map((key) => {
-    systemPreferences.setUserDefault(
-      key,
-      PERMISSIONS[key],
-      settings.permissions[key],
-    );
+    let value = settings?.permissions?.[key];
+    if (value === undefined) {
+      if (appGlobalConfig?.permissions?.[key] === undefined) {
+        return;
+      }
+      value = appGlobalConfig.permissions[key];
+    }
+    systemPreferences.setUserDefault(key, PERMISSIONS[key], value);
   });
   systemPreferences.setUserDefault('installVariant', 'string', getGuid());
 };
