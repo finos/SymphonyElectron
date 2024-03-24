@@ -288,8 +288,12 @@ export class WindowHandler {
         config.isFirstTimeLaunch()) ||
       !!this.config.enableBrowserLogin;
     // Force welcome screen if pod url is not configured correctly
-    this.shouldShowWelcomeScreen =
-      !!this.userConfig.url && this.userConfig.url.includes(this.defaultUrl);
+    if (
+      !!this.userConfig.url &&
+      this.userConfig.url.includes(this.defaultUrl)
+    ) {
+      this.shouldShowWelcomeScreen = true;
+    }
 
     this.windowOpts = {
       ...this.getWindowOpts(
