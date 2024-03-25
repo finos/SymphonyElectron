@@ -50,6 +50,7 @@ describe('Plist Handler', () => {
       userDataPath: undefined,
       whitelistUrl: undefined,
       chromeFlags: undefined,
+      latestAutoUpdateChannelEnabled: undefined,
     });
   });
 });

@@ -724,10 +724,10 @@ class Config {
   /**
    * Overwrites the global config file with the backed up config file
    */
-  public copyGlobalConfig(settings: IConfig) {
+  public copyGlobalConfig(settings: IConfig, appGlobalConfig: IConfig) {
     try {
       if (settings) {
-        setPlistFromPreviousSettings(settings);
+        setPlistFromPreviousSettings(settings, appGlobalConfig);
         fs.unlinkSync(this.tempGlobalConfigFilePath);
       }
     } catch (e) {
@@ -813,7 +813,19 @@ class Config {
           this.tempGlobalConfigFilePath,
           this.globalConfig,
         );
-        this.copyGlobalConfig(this.globalConfig as IConfig);
+
+        let appGlobalConfigData = {} as IConfig;
+        if (fs.existsSync(this.globalConfigPath)) {
+          appGlobalConfigData = this.parseConfigData(
+            fs.readFileSync(this.globalConfigPath, 'utf8'),
+          ) as IConfig;
+        }
+        this.copyGlobalConfig(
+          this.globalConfig as IConfig,
+          appGlobalConfigData,
+        );
+        // After everything is set from previous SDA version
+        this.globalConfig = getAllUserDefaults();
         return;
       }
       if (!this.installVariant || this.installVariant === '') {
