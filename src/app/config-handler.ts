@@ -824,6 +824,8 @@ class Config {
           this.globalConfig as IConfig,
           appGlobalConfigData,
         );
+        // After everything is set from previous SDA version
+        this.globalConfig = getAllUserDefaults();
         return;
       }
       if (!this.installVariant || this.installVariant === '') {
