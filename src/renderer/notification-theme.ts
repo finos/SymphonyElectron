@@ -147,7 +147,7 @@ export const getThemeColors = (
     theme === Themes.DARK ? '#70511f' : '#f6e5a6';
 
   const federatedFlashingBackgroundColor =
-    theme === Themes.DARK ? '#32602F' : '#EAF4EA';
+    theme === Themes.DARK ? '#32602F' : '#D6EBD5';
   if (flash && theme) {
     if (isFederatedEnabled) {
       if (!hasMention) {
