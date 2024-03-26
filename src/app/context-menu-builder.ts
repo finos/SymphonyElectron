@@ -1,6 +1,8 @@
 import { BrowserWindow, clipboard, Menu, MenuItem, shell } from 'electron';
+import { apiName } from '../common/api-interface';
 import { isDevEnv } from '../common/env';
 import { logger } from '../common/logger';
+import { ICustomBrowserWindow } from './window-handler';
 
 interface IContextMenuStringTable {
   copyMail: () => string;
@@ -376,12 +378,19 @@ export class ContextMenuBuilder {
    * Adds "Copy Image" and "Copy Image URL" items when `src` is valid.
    */
   public addImageItems(menu, menuInfo) {
-    const target = this.getWebContents();
+    const current = this.getWebContents();
+    const focusedWindow =
+      BrowserWindow.getFocusedWindow() as ICustomBrowserWindow;
     const copyImage = new MenuItem({
       label: this.stringTable.copyImage(),
       click: (_e) => {
+        if (focusedWindow && focusedWindow.winName === apiName.mainWindowName) {
+          current?.send('copy-to-clipboard', menuInfo.srcURL);
+        } else {
+          current.copyImageAt(menuInfo.x, menuInfo.y);
+        }
+
         logger.info('Context-Menu-Builder: Copy Image to clipboard');
-        target.send('copy-to-clipboard', menuInfo.srcURL);
       },
     });
 
