@@ -61,10 +61,18 @@ export const getContainerCssClasses = (
   flash,
   isExternal,
   hasMention,
+  isFederatedEnabled = false,
 ): string[] => {
   const customClasses: string[] = [];
   if (flash && theme) {
-    if (isExternal) {
+    if (isFederatedEnabled) {
+      customClasses.push('federated-border');
+      if (hasMention) {
+        customClasses.push(`${theme}-federated-mention-flashing`);
+      } else {
+        customClasses.push(`${theme}-federated-flashing`);
+      }
+    } else if (isExternal) {
       customClasses.push('external-border');
       if (hasMention) {
         customClasses.push(`${theme}-ext-mention-flashing`);
@@ -131,13 +139,32 @@ export const getThemeColors = (
   isExternal,
   hasMention,
   color,
+  isFederatedEnabled = false,
 ): { [key: string]: string } => {
   const currentColors =
     theme === Themes.DARK ? { ...Colors.dark } : { ...Colors.light };
   const externalFlashingBackgroundColor =
     theme === Themes.DARK ? '#70511f' : '#f6e5a6';
+
+  const federatedFlashingBackgroundColor =
+    theme === Themes.DARK ? '#32602F' : '#D6EBD5';
   if (flash && theme) {
-    if (isExternal) {
+    if (isFederatedEnabled) {
+      if (!hasMention) {
+        currentColors.notificationBorderColor = '#65C862';
+        currentColors.notificationBackgroundColor =
+          federatedFlashingBackgroundColor;
+        if (isCustomColor(color)) {
+          currentColors.notificationBorderColor = getThemedCustomBorderColor(
+            theme,
+            color,
+          );
+          currentColors.notificationBackgroundColor = color;
+        }
+      } else {
+        currentColors.notificationBorderColor = '#65C862';
+      }
+    } else if (isExternal) {
       if (!hasMention) {
         currentColors.notificationBorderColor = '#F7CA3B';
         currentColors.notificationBackgroundColor =
@@ -179,6 +206,8 @@ export const getThemeColors = (
         theme,
         color,
       );
+    } else if (isFederatedEnabled) {
+      currentColors.notificationBorderColor = '#65C862';
     } else if (isExternal) {
       currentColors.notificationBorderColor = '#F7CA3B';
     }
