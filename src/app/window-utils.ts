@@ -90,6 +90,7 @@ const TITLE_BAR_EVENTS = [
   'enter-full-screen',
   'leave-full-screen',
 ];
+const ZOOM_FACTOR_CHANGE = 'zoom-factor-change';
 
 /**
  * Checks if window is valid and exists
@@ -857,15 +858,6 @@ export const zoomIn = () => {
     return;
   }
 
-  // Disable Zoom for notification windows
-  if (
-    (focusedWindow as ICustomBrowserWindow).winName &&
-    (focusedWindow as ICustomBrowserWindow).winName ===
-      apiName.notificationWindowName
-  ) {
-    return;
-  }
-
   let { webContents } = focusedWindow;
 
   // If the focused window is mainWindow we should use mainWebContents
@@ -878,29 +870,66 @@ export const zoomIn = () => {
     }
   }
 
-  if (windowHandler.isMana) {
+  const setZoomFactor = (
+    webContents: WebContents,
+    notificationWebContents: any = {},
+    isNotificationWindow = false,
+  ) => {
     const zoomFactor = webContents.getZoomFactor();
-    if (zoomFactor < 1.5) {
-      if (zoomFactor < 0.7) {
-        webContents.setZoomFactor(0.7);
-      } else if (zoomFactor >= 0.7 && zoomFactor < 0.8) {
-        webContents.setZoomFactor(0.8);
-      } else if (zoomFactor >= 0.8 && zoomFactor < 0.9) {
-        webContents.setZoomFactor(0.9);
-      } else if (zoomFactor >= 0.9 && zoomFactor < 1.0) {
-        webContents.setZoomFactor(1.0);
-      } else if (zoomFactor >= 1.0 && zoomFactor < 1.1) {
-        webContents.setZoomFactor(1.1);
-      } else if (zoomFactor >= 1.1 && zoomFactor < 1.25) {
-        webContents.setZoomFactor(1.25);
-      } else if (zoomFactor >= 1.25 && zoomFactor < 1.5) {
-        webContents.setZoomFactor(1.5);
+    if (windowHandler.isMana) {
+      if (zoomFactor < 1.5) {
+        if (zoomFactor < 0.7) {
+          isNotificationWindow
+            ? notificationWebContents.send(ZOOM_FACTOR_CHANGE, 0.7)
+            : webContents.setZoomFactor(0.7);
+        } else if (zoomFactor >= 0.7 && zoomFactor < 0.8) {
+          isNotificationWindow
+            ? notificationWebContents.send(ZOOM_FACTOR_CHANGE, 0.8)
+            : webContents.setZoomFactor(0.8);
+        } else if (zoomFactor >= 0.8 && zoomFactor < 0.9) {
+          isNotificationWindow
+            ? notificationWebContents.send(ZOOM_FACTOR_CHANGE, 0.9)
+            : webContents.setZoomFactor(0.9);
+        } else if (zoomFactor >= 0.9 && zoomFactor < 1.0) {
+          isNotificationWindow
+            ? notificationWebContents.send(ZOOM_FACTOR_CHANGE, 1.0)
+            : webContents.setZoomFactor(1.0);
+        } else if (zoomFactor >= 1.0 && zoomFactor < 1.1) {
+          isNotificationWindow
+            ? notificationWebContents.send(ZOOM_FACTOR_CHANGE, 1.1)
+            : webContents.setZoomFactor(1.1);
+        } else if (zoomFactor >= 1.1 && zoomFactor < 1.25) {
+          isNotificationWindow
+            ? notificationWebContents.send(ZOOM_FACTOR_CHANGE, 1.25)
+            : webContents.setZoomFactor(1.25);
+        } else if (zoomFactor >= 1.25 && zoomFactor < 1.5) {
+          isNotificationWindow
+            ? notificationWebContents.send(ZOOM_FACTOR_CHANGE, 1.5)
+            : webContents.setZoomFactor(1.5);
+        }
       }
+    } else {
+      const currentZoomLevel = webContents.getZoomLevel();
+      isNotificationWindow
+        ? notificationWebContents.send(ZOOM_FACTOR_CHANGE, zoomFactor)
+        : webContents.setZoomLevel(currentZoomLevel + 0.5);
     }
-  } else {
-    const currentZoomLevel = webContents.getZoomLevel();
-    webContents.setZoomLevel(currentZoomLevel + 0.5);
-  }
+  };
+
+  const notificationWindows = BrowserWindow.getAllWindows().filter(
+    (win) =>
+      (win as ICustomBrowserWindow).winName &&
+      (win as ICustomBrowserWindow).winName === apiName.notificationWindowName,
+  );
+
+  notificationWindows.map((notificationWindow) => {
+    const notificationWebContents = notificationWindow?.webContents;
+    if (!notificationWindow || !windowExists(notificationWindow)) {
+      return;
+    }
+    setZoomFactor(webContents, notificationWebContents, true);
+  });
+  setZoomFactor(webContents);
 };
 
 /**
@@ -917,15 +946,6 @@ export const zoomOut = () => {
     return;
   }
 
-  // Disable Zoom for notification windows
-  if (
-    (focusedWindow as ICustomBrowserWindow).winName &&
-    (focusedWindow as ICustomBrowserWindow).winName ===
-      apiName.notificationWindowName
-  ) {
-    return;
-  }
-
   let { webContents } = focusedWindow;
 
   // If the focused window is mainWindow we should use mainWebContents
@@ -938,29 +958,68 @@ export const zoomOut = () => {
     }
   }
 
-  if (windowHandler.isMana) {
+  const setZoomFactor = (
+    webContents: WebContents,
+    notificationWebContents: any = {},
+    isNotificationWindow = false,
+  ) => {
     const zoomFactor = webContents.getZoomFactor();
-    if (zoomFactor > 0.7) {
-      if (zoomFactor > 1.5) {
-        webContents.setZoomFactor(1.5);
-      } else if (zoomFactor > 1.25 && zoomFactor <= 1.5) {
-        webContents.setZoomFactor(1.25);
-      } else if (zoomFactor > 1.1 && zoomFactor <= 1.25) {
-        webContents.setZoomFactor(1.1);
-      } else if (zoomFactor > 1.0 && zoomFactor <= 1.1) {
-        webContents.setZoomFactor(1.0);
-      } else if (zoomFactor > 0.9 && zoomFactor <= 1.0) {
-        webContents.setZoomFactor(0.9);
-      } else if (zoomFactor > 0.8 && zoomFactor <= 0.9) {
-        webContents.setZoomFactor(0.8);
-      } else if (zoomFactor > 0.7 && zoomFactor <= 0.8) {
-        webContents.setZoomFactor(0.7);
+    if (windowHandler.isMana) {
+      const zoomFactor = webContents.getZoomFactor();
+      if (zoomFactor > 0.7) {
+        if (zoomFactor > 1.5) {
+          isNotificationWindow
+            ? notificationWebContents?.send(ZOOM_FACTOR_CHANGE, 1.5)
+            : webContents.setZoomFactor(1.5);
+        } else if (zoomFactor > 1.25 && zoomFactor <= 1.5) {
+          isNotificationWindow
+            ? notificationWebContents?.send(ZOOM_FACTOR_CHANGE, 1.25)
+            : webContents.setZoomFactor(1.25);
+        } else if (zoomFactor > 1.1 && zoomFactor <= 1.25) {
+          isNotificationWindow
+            ? notificationWebContents?.send(ZOOM_FACTOR_CHANGE, 1.1)
+            : webContents.setZoomFactor(1.1);
+        } else if (zoomFactor > 1.0 && zoomFactor <= 1.1) {
+          isNotificationWindow
+            ? notificationWebContents?.send(ZOOM_FACTOR_CHANGE, 1.0)
+            : webContents.setZoomFactor(1.0);
+        } else if (zoomFactor > 0.9 && zoomFactor <= 1.0) {
+          isNotificationWindow
+            ? notificationWebContents?.send(ZOOM_FACTOR_CHANGE, 0.9)
+            : webContents.setZoomFactor(0.9);
+        } else if (zoomFactor > 0.8 && zoomFactor <= 0.9) {
+          isNotificationWindow
+            ? notificationWebContents?.send(ZOOM_FACTOR_CHANGE, 0.8)
+            : webContents.setZoomFactor(0.8);
+        } else if (zoomFactor > 0.7 && zoomFactor <= 0.8) {
+          isNotificationWindow
+            ? notificationWebContents?.send(ZOOM_FACTOR_CHANGE, 0.7)
+            : webContents.setZoomFactor(0.7);
+        }
       }
+    } else {
+      const currentZoomLevel = webContents.getZoomLevel();
+      isNotificationWindow
+        ? notificationWebContents?.send(ZOOM_FACTOR_CHANGE, zoomFactor)
+        : webContents.setZoomLevel(currentZoomLevel - 0.5);
     }
-  } else {
-    const currentZoomLevel = webContents.getZoomLevel();
-    webContents.setZoomLevel(currentZoomLevel - 0.5);
-  }
+  };
+
+  const notificationWindows = BrowserWindow.getAllWindows().filter(
+    (win) =>
+      (win as ICustomBrowserWindow).winName &&
+      (win as ICustomBrowserWindow).winName === apiName.notificationWindowName,
+  );
+
+  notificationWindows.map((notificationWindow) => {
+    const notificationWebContents = notificationWindow?.webContents;
+    if (!notificationWindow || !windowExists(notificationWindow)) {
+      return;
+    }
+    setZoomFactor(webContents, notificationWebContents, true);
+  });
+
+  setZoomFactor(webContents);
 };
 
 /**
@@ -972,14 +1031,6 @@ export const resetZoomLevel = () => {
   if (!focusedWindow || !windowExists(focusedWindow)) {
     return;
   }
-  // Disable Zoom for notification windows
-  if (
-    (focusedWindow as ICustomBrowserWindow).winName &&
-    (focusedWindow as ICustomBrowserWindow).winName ===
-      apiName.notificationWindowName
-  ) {
-    return;
-  }
   let { webContents } = focusedWindow;
   // If the focused window is mainWindow we should use mainWebContents
   if (
@@ -990,6 +1041,19 @@ export const resetZoomLevel = () => {
       webContents = mainWebContents;
     }
   }
+  const notificationWebContents = BrowserWindow.getAllWindows().filter(
+    (win) =>
+      (win as ICustomBrowserWindow).winName &&
+      (win as ICustomBrowserWindow).winName === apiName.notificationWindowName,
+  );
+
+  notificationWebContents.map((notificationWindow) => {
+    const notificationWebContents = notificationWindow.webContents;
+    if (!notificationWindow || !windowExists(notificationWindow)) {
+      return;
+    }
+    notificationWebContents.send(ZOOM_FACTOR_CHANGE, 1);
+  });
   webContents.setZoomLevel(0);
 };
 
