@@ -1196,7 +1196,7 @@ export const updateFeaturesForCloudConfig = async (
   } else {
     // Clear the interval if autoUpdate is disabled
     if (autoUpdateIntervalId) {
-      clearInterval(autoUpdateCheckInterval);
+      clearInterval(autoUpdateIntervalId);
     }
   }
 };
