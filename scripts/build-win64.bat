@@ -8,6 +8,12 @@ set DISABLE_REBUILD=true
 set NODE_REQUIRED_VERSION=18.16.0
 set SNYK_ORG=sda
 set SNYK_PROJECT_NAME="Symphony Desktop Application"
+set SCREENSHARE_INDICATOR_PATH="node_modules\screen-share-indicator-frame\ScreenShareIndicatorFrame.exe"
+set NATIVE_WINDOW_HANDLE_PATH="node_modules\symphony-native-window-handle-helper\SymphonyNativeWindowHandleHelper.exe"
+set SCREEN_SNIPPET_PATH="node_modules\screen-snippet\ScreenSnippet.exe"
+set SYMPHONY_EXE_PATH="..\..\dist\win-unpacked\Symphony.exe"
+set SYMPHONY_SYMVER_EXE_PATH="..\..\dist\Symphony-%SYMVER%-win.exe"
+set SYMPHONY_MSI_PATH="WixSharpInstaller\Symphony.msi"
 
 set PATH=%PATH%;C:\Program Files\nodejs\;C:\Program Files\Git\cmd
 echo %PATH%
@@ -44,24 +50,22 @@ sed -i -e "s/\"version\"[[:space:]]*\:[[:space:]]\"\(.*\)\"/\"version\": \"\1-%P
 echo "Installing dependencies..."
 call npm install
 
-:: Signing screen snippet and screen share indicator
+echo "Sign screen-share indicator..."
+echo %SS_FOLDER%
+call smctl sign  --fingerprint %DIGICERT_FINGERPRINT% --input %SCREENSHARE_INDICATOR_PATH% --tool signtool --verbose
+smctl sign verify --input node_modules\screen-share-indicator-frame\ScreenShareIndicatorFrame.exe
 
-if NOT EXIST %SIGNING_FILE_PATH% (
-    echo Signing failed, 'signing.bat' not found.
-    exit /b -1
-)
-
-call %SIGNING_FILE_PATH% node_modules\screen-share-indicator-frame\ScreenShareIndicatorFrame.exe
-
-call %SIGNING_FILE_PATH% node_modules\symphony-native-window-handle-helper\SymphonyNativeWindowHandleHelper.exe
-
+smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input %NATIVE_WINDOW_HANDLE_PATH%
+smctl sign verify --input %NATIVE_WINDOW_HANDLE_PATH%
 
 IF %errorlevel% neq 0 (
 	echo "Signing failed"
 	exit /b -1
 )
 
-call %SIGNING_FILE_PATH% node_modules\screen-snippet\ScreenSnippet.exe
+smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input %SCREEN_SNIPPET_PATH%
+smctl sign verify --input %SCREEN_SNIPPET_PATH%
+
 IF %errorlevel% neq 0 (
 	echo "Signing failed"
 	exit /b -1
@@ -112,23 +116,19 @@ set installerDir="%CD%\installer\win"
 set distDir="%CD%\dist"
 set rootDir="%CD%"
 
-if NOT EXIST "%PFX_DIR%\%PFX_FILE%" (
-  echo "can not find .pfx file" "%pfxDir%\%pfxFile%"
-  exit /b -1
-)
-
-copy /y "%PFX_DIR%\%PFX_FILE%" "%installerDir%\%PFX_FILE%"
 
 cd %installerDir%
 
 
-call %SIGNING_FILE_PATH% ..\..\dist\win-unpacked\Symphony.exe
+smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input %SYMPHONY_EXE_PATH%
+smctl sign verify --input %SYMPHONY_EXE_PATH%
 IF %errorlevel% neq 0 (
 	echo "Signing failed"
 	exit /b -1
 )
 
-call %SIGNING_FILE_PATH% ..\..\dist\Symphony-%SYMVER%-win.exe
+smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input %SYMPHONY_SYMVER_EXE_PATH%
+smctl sign verify --input %SYMPHONY_SYMVER_EXE_PATH%
 IF %errorlevel% neq 0 (
 	echo "Signing failed"
 	exit /b -1
@@ -140,7 +140,8 @@ node ..\..\scripts\windows_update_checksum.js "..\..\dist\Symphony-%SYMVER%-win.
 echo "Building new installer with Wix Sharp"
 call "BuildWixSharpInstaller.bat"
 
-call %SIGNING_FILE_PATH% WixSharpInstaller\Symphony.msi
+smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input  %SYMPHONY_MSI_PATH%
+smctl sign verify --input %SYMPHONY_MSI_PATH%
 IF %errorlevel% neq 0 (
 	echo "Failed to sign installer"
 	exit /b -1
