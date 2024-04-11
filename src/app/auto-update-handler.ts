@@ -139,9 +139,8 @@ export class AutoUpdate {
       return;
     }
 
-    const isOnLatestVersion = files.some((item) =>
-      item.includes(`${version}-${buildNumber}`),
-    );
+    const isOnLatestVersion =
+      latestVersionFromServer === `${version}-${buildNumber}`;
     if (isOnLatestVersion) {
       logger.info(
         'auto-update-handler: already running the latest version skipping force update',
