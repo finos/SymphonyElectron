@@ -95,16 +95,19 @@ export class WindowStore {
       const fullscreenedWindows: IWindowState[] = [];
       // Restoring all windows except focused one
       storedWindows.windows.forEach((currentWindow) => {
-        if (currentWindow && currentWindow.isVisible) {
+        if (currentWindow) {
           const window: ICustomBrowserWindow | undefined = getWindowByName(
             currentWindow.id || '',
           ) as ICustomBrowserWindow;
           if (window) {
             if (currentWindow.isFullScreen) {
               fullscreenedWindows.push(currentWindow);
-            } else if (!currentWindow.minimized && !currentWindow.focused) {
+            } else if (!currentWindow.focused) {
               window.showInactive();
               window.moveTop();
+              if (currentWindow.minimized) {
+                window.minimize();
+              }
             }
             if (currentWindow.focused) {
               focusedWindowToRestore = window;
