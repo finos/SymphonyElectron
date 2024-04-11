@@ -1,4 +1,4 @@
-import { app, session, systemPreferences } from 'electron';
+import { app, systemPreferences } from 'electron';
 import * as electronDownloader from 'electron-dl';
 
 import { isDevEnv, isLinux, isMac } from '../common/env';
@@ -8,19 +8,15 @@ import { cleanUpAppCache, createAppCacheFile } from './app-cache-handler';
 import { setChromeFlags, setSessionProperties } from './chrome-flags';
 import { config } from './config-handler';
 import './dialog-handler';
+import { loadReactDevToolsExtension } from './extension-handler';
 import './main-api-handler';
 import { handlePerformanceSettings } from './perf-handler';
 import { protocolHandler } from './protocol-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
-import { promises } from 'fs';
-import * as os from 'os';
-import path = require('path');
-import { Logger } from '../common/loggerBase';
 import { autoLaunchInstance } from './auto-launch-controller';
 import { presenceStatusStore } from './stores';
 
-const { access, constants, readdir } = promises;
 // Set automatic period substitution to false because of a bug in draft js on the client app
 // See https://perzoinc.atlassian.net/browse/SDA-2215 for more details
 if (isMac) {
@@ -80,85 +76,6 @@ if (!isDevEnv) {
 }
 
 /**
- * Asynchronously check if path exists
- * @param path
- * @returns Promise<string> path if path exists or empty string
- */
-const exists = async (path: string) => {
-  try {
-    await access(path, constants.R_OK);
-    return path;
-  } catch (error) {
-    return '';
-  }
-};
-
-/**
- * Return Chrome extensions folder path if it exists
- * @returns Promise<string> Chrome extensions folder path if it exists or empty string
- */
-const getExtensionsFolderPath = async () => {
-  switch (os.platform()) {
-    case 'win32':
-      const winPath =
-        process.env.LOCALAPPDATA +
-        '\\Google\\Chrome\\User Data\\Default\\Extensions';
-      return exists(winPath);
-    case 'darwin':
-      const macOsPath =
-        '/Library/Application Support/Google/Chrome/Default/Extensions';
-      return exists(macOsPath);
-    case 'linux':
-      const paths = [
-        '~/.config/google-chrome/Default/Extensions/',
-        '~/.config/google-chrome-beta/Default/Extensions/',
-        '~/.config/google-chrome-canary/Default/Extensions/',
-        '~/.config/chromium/Default/Extensions/',
-      ];
-      for (const path of paths) {
-        if (await exists(path)) {
-          return path;
-        }
-      }
-  }
-  return '';
-};
-
-/**
- * Load React Dev Tools extension
- * @param logger
- * @returns Promise<void>
- */
-const loadReactDevToolsExtension = async (logger: Logger) => {
-  if (
-    !getCommandLineArgs(process.argv, '--reactDevToolsEnabled', true) &&
-    !getCommandLineArgs(process.argv, '--reactDevToolsEnabled=1', true) &&
-    !getCommandLineArgs(process.argv, '--reactDevToolsEnabled=true', true)
-  ) {
-    return;
-  }
-
-  const extensionsPath = await getExtensionsFolderPath();
-
-  let reactDevToolsPath =
-    extensionsPath &&
-    path.join(extensionsPath, 'fmkadmapgofadopljbjfkapdkoienihi');
-  if (!reactDevToolsPath) {
-    return;
-  }
-
-  const versionFolders = await readdir(reactDevToolsPath);
-  if (!versionFolders.length) {
-    return;
-  }
-
-  logger.info(`main: Loading ReactDevTools extension ${versionFolders[0]}`);
-  reactDevToolsPath = path.join(reactDevToolsPath, versionFolders[0]);
-  await session.defaultSession.loadExtension(reactDevToolsPath);
-  logger.info(`main: ReactDevTools extension loaded`);
-};
-
-/**
  * Main function that initialises the application
  */
 let oneStart = false;
@@ -193,6 +110,7 @@ const startApplication = async () => {
   setSessionProperties();
   await windowHandler.createApplication();
   logger.info(`main: created application`);
+
   await loadReactDevToolsExtension(logger);
 };
 
