@@ -1,5 +1,4 @@
 import { GenericServerOptions } from 'builder-util-runtime';
-import fetch from 'electron-fetch';
 import electronLog from 'electron-log';
 import { MacUpdater, NsisUpdater } from 'electron-updater';
 import * as fs from 'fs';
@@ -252,7 +251,7 @@ export class AutoUpdate {
     return;
   };
 
-  private fetchLatestVersion = async (): Promise<string> => {
+  private fetchLatestVersion = async (): Promise<string | void> => {
     await this.setAutoUpdateChannel();
     return new Promise((resolve) => {
       const url = this.getUpdateUrl();
@@ -276,6 +275,7 @@ export class AutoUpdate {
             url,
             error,
           );
+          resolve();
         });
     });
   };
