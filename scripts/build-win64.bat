@@ -11,8 +11,8 @@ set SNYK_PROJECT_NAME="Symphony Desktop Application"
 set SCREENSHARE_INDICATOR_PATH="node_modules\screen-share-indicator-frame\ScreenShareIndicatorFrame.exe"
 set NATIVE_WINDOW_HANDLE_PATH="node_modules\symphony-native-window-handle-helper\SymphonyNativeWindowHandleHelper.exe"
 set SCREEN_SNIPPET_PATH="node_modules\screen-snippet\ScreenSnippet.exe"
-set SYMPHONY_EXE_PATH="..\..\dist\win-unpacked\Symphony.exe"
-set SYMPHONY_SYMVER_EXE_PATH="..\..\dist\Symphony-%SYMVER%-win.exe"
+set SYMPHONY_EXE_PATH=%WORKSPACE%\dist\win-unpacked\Symphony.exe
+set SYMPHONY_SYMVER_EXE_PATH=%WORKSPACE%\dist\Symphony-%SYMVER%-win.exe
 set SYMPHONY_MSI_PATH="WixSharpInstaller\Symphony.msi"
 
 set PATH=%PATH%;C:\Program Files\nodejs\;C:\Program Files\Git\cmd
@@ -89,9 +89,6 @@ call npm run unpacked-win
 
 echo "creating 64 bit msi..."
 
-set PATH="%PATH%";C:\Program Files\nodejs\
-echo %PATH%
-
 call node -e "console.log(require('./package.json').version);" > version.txt
 set /p baseVer=<version.txt
 
@@ -119,7 +116,7 @@ set rootDir="%CD%"
 
 cd %installerDir%
 
-
+echo "Signing Symphony.exe file.."
 smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input %SYMPHONY_EXE_PATH%
 smctl sign verify --input %SYMPHONY_EXE_PATH%
 IF %errorlevel% neq 0 (
@@ -127,6 +124,7 @@ IF %errorlevel% neq 0 (
 	exit /b -1
 )
 
+echo "Signing Symphony-SYMVER-win.exe file.."
 smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input %SYMPHONY_SYMVER_EXE_PATH%
 smctl sign verify --input %SYMPHONY_SYMVER_EXE_PATH%
 IF %errorlevel% neq 0 (
@@ -140,6 +138,7 @@ node ..\..\scripts\windows_update_checksum.js "..\..\dist\Symphony-%SYMVER%-win.
 echo "Building new installer with Wix Sharp"
 call "BuildWixSharpInstaller.bat"
 
+echo "Signing MSI file.."
 smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input  %SYMPHONY_MSI_PATH%
 smctl sign verify --input %SYMPHONY_MSI_PATH%
 IF %errorlevel% neq 0 (
