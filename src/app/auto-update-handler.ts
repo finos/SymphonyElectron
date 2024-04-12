@@ -1,7 +1,12 @@
 import { GenericServerOptions } from 'builder-util-runtime';
+import fetch from 'electron-fetch';
 import electronLog from 'electron-log';
 import { MacUpdater, NsisUpdater } from 'electron-updater';
+import * as fs from 'fs';
+import { homedir as getHomedir } from 'os';
+import * as path from 'path';
 
+import { buildNumber, version } from '../../package.json';
 import { isMac, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
 import { isUrl } from '../common/utils';
@@ -14,6 +19,7 @@ import { EChannelRegistry, RegistryStore } from './stores/registry-store';
 import { windowHandler } from './window-handler';
 
 const DEFAULT_AUTO_UPDATE_CHANNEL = 'apps/sda-update/default';
+const VERSION_REGEX = /version: (.*)/;
 
 export enum AutoUpdateTrigger {
   MANUAL = 'MANUAL',
@@ -99,6 +105,60 @@ export class AutoUpdate {
   }
 
   /**
+   * Checks for updates and performs a forced installation if the latest version is already downloaded.
+   */
+  public performForcedAutoUpdate = async () => {
+    const cacheDir = this.getCacheDir();
+    if (!cacheDir) {
+      logger.info(
+        'auto-update-handler: cache path does not exists, skipping forced auto-update.',
+      );
+      return;
+    }
+
+    const updaterFilePath = path.join(cacheDir, 'symphony-updater/pending');
+    if (!fs.existsSync(updaterFilePath)) {
+      logger.info(
+        'auto-update-handler: Updater directory not found, skipping forced auto-update.',
+      );
+      return;
+    }
+
+    const files = fs.readdirSync(updaterFilePath, 'utf8');
+    if (!files.length) {
+      logger.info('auto-update-handler: no pending update files found');
+      return;
+    }
+
+    logger.info('auto-update-handler: pending update files', files);
+    const latestVersionFromServer = await this.fetchLatestVersion();
+    if (!latestVersionFromServer) {
+      logger.info(
+        'auto-update-handler: no version info from server skipping force auto update',
+      );
+      return;
+    }
+
+    const isOnLatestVersion =
+      latestVersionFromServer === `${version}-${buildNumber}`;
+    if (isOnLatestVersion) {
+      logger.info(
+        'auto-update-handler: already running the latest version skipping force update',
+      );
+      return;
+    }
+
+    const hasPendingInstaller = files.some((item) =>
+      item.includes(latestVersionFromServer),
+    );
+    if (hasPendingInstaller) {
+      logger.info('auto-update-handler: latest version found force installing');
+      this.isUpdateAvailable = true;
+      await this.updateAndRestart();
+    }
+  };
+
+  /**
    * Installs the latest update quits and relaunches application
    */
   public updateAndRestart = async (): Promise<void> => {
@@ -180,6 +240,44 @@ export class AutoUpdate {
     logger.info(`auto-update-handler: using generic pod url`, updateUrl);
 
     return updateUrl;
+  };
+
+  private getCacheDir = () => {
+    const homedir = getHomedir();
+    if (isWindowsOS) {
+      return process.env.LOCALAPPDATA || path.join(homedir, 'AppData', 'Local');
+    } else if (isMac) {
+      return path.join(homedir, 'Library', 'Caches');
+    }
+    return;
+  };
+
+  private fetchLatestVersion = async (): Promise<string> => {
+    await this.setAutoUpdateChannel();
+    return new Promise((resolve) => {
+      const url = this.getUpdateUrl();
+      fetch(url)
+        .then((res) => res.blob())
+        .then((blob) => blob.text())
+        .then(async (response) => {
+          logger.info(
+            'auto-update-handler: latest version info from server',
+            response,
+          );
+          const match = VERSION_REGEX.exec(response);
+          if (match && match.length) {
+            logger.info('auto-update-handler: version found', match[1]);
+            resolve(match[1]);
+          }
+        })
+        .catch(async (error) => {
+          logger.error(
+            'auto-update-handler: error fetching latest auto-update version from server',
+            url,
+            error,
+          );
+        });
+    });
   };
 
   private updateEventHandler = async (info, eventType: string) => {

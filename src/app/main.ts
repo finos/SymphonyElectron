@@ -14,6 +14,7 @@ import { protocolHandler } from './protocol-handler';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
 import { autoLaunchInstance } from './auto-launch-controller';
+import { autoUpdate } from './auto-update-handler';
 import { presenceStatusStore } from './stores';
 
 // Set automatic period substitution to false because of a bug in draft js on the client app
@@ -82,6 +83,7 @@ const startApplication = async () => {
   // Validate user config before starting the application
   await config.initializeUserConfig();
   await config.readUserConfig();
+  await autoUpdate.performForcedAutoUpdate();
   await config.checkFirstTimeLaunch();
   const isFirstTimeLaunch = config.isFirstTimeLaunch();
   if (isFirstTimeLaunch) {
