@@ -55,7 +55,7 @@ echo %SS_FOLDER%
 call smctl sign  --fingerprint %DIGICERT_FINGERPRINT% --input %SCREENSHARE_INDICATOR_PATH% --tool signtool --verbose
 smctl sign verify --input node_modules\screen-share-indicator-frame\ScreenShareIndicatorFrame.exe
 
-smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input %NATIVE_WINDOW_HANDLE_PATH% --file-name
+smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input %NATIVE_WINDOW_HANDLE_PATH% --file-name="true"
 smctl sign verify --input %NATIVE_WINDOW_HANDLE_PATH%
 
 IF %errorlevel% neq 0 (
@@ -63,7 +63,7 @@ IF %errorlevel% neq 0 (
 	exit /b -1
 )
 
-smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input %SCREEN_SNIPPET_PATH% --file-name
+smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input %SCREEN_SNIPPET_PATH% --file-name="true"
 smctl sign verify --input %SCREEN_SNIPPET_PATH%
 
 IF %errorlevel% neq 0 (
@@ -117,7 +117,7 @@ set rootDir="%CD%"
 cd %installerDir%
 
 echo "Signing Symphony.exe file.."
-smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input %SYMPHONY_EXE_PATH% --file-name="Symphony"
+smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input %SYMPHONY_EXE_PATH% --file-name="true"
 smctl sign verify --input %SYMPHONY_EXE_PATH%
 IF %errorlevel% neq 0 (
 	echo "Signing failed"
@@ -125,7 +125,7 @@ IF %errorlevel% neq 0 (
 )
 
 echo "Signing Symphony-SYMVER-win.exe file.."
-smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input %SYMPHONY_SYMVER_EXE_PATH% --file-name
+smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input %SYMPHONY_SYMVER_EXE_PATH% --file-name="true"
 smctl sign verify --input %SYMPHONY_SYMVER_EXE_PATH%
 IF %errorlevel% neq 0 (
 	echo "Signing failed"
@@ -139,7 +139,7 @@ echo "Building new installer with Wix Sharp"
 call "BuildWixSharpInstaller.bat"
 
 echo "Signing MSI file.."
-smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input  %SYMPHONY_MSI_PATH% --file-name="Symphony"
+smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input  %SYMPHONY_MSI_PATH% --file-name="true"
 smctl sign verify --input %SYMPHONY_MSI_PATH%
 IF %errorlevel% neq 0 (
 	echo "Failed to sign installer"
