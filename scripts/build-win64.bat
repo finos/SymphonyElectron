@@ -139,7 +139,7 @@ echo "Building new installer with Wix Sharp"
 call "BuildWixSharpInstaller.bat"
 
 echo "Signing MSI file.."
-smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input  %SYMPHONY_MSI_PATH% --file-name
+smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input  %SYMPHONY_MSI_PATH% --file-name --verbose
 smctl sign verify --input %SYMPHONY_MSI_PATH%
 IF %errorlevel% neq 0 (
 	echo "Failed to sign installer"
