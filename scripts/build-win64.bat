@@ -12,7 +12,6 @@ set SCREENSHARE_INDICATOR_PATH="node_modules\screen-share-indicator-frame\Screen
 set NATIVE_WINDOW_HANDLE_PATH="node_modules\symphony-native-window-handle-helper\SymphonyNativeWindowHandleHelper.exe"
 set SCREEN_SNIPPET_PATH="node_modules\screen-snippet\ScreenSnippet.exe"
 set SYMPHONY_EXE_PATH=%WORKSPACE%\dist\win-unpacked\Symphony.exe
-set SYMPHONY_SYMVER_EXE_PATH=%WORKSPACE%\dist\Symphony-%SYMVER%-win.exe
 set SYMPHONY_MSI_PATH="WixSharpInstaller\Symphony.msi"
 
 set PATH=%PATH%;C:\Program Files\nodejs\;C:\Program Files\Git\cmd
@@ -124,6 +123,7 @@ IF %errorlevel% neq 0 (
 	exit /b -1
 )
 
+set SYMPHONY_SYMVER_EXE_PATH=%WORKSPACE%\dist\Symphony-%SYMVER%-win.exe
 echo "Signing Symphony-SYMVER-win.exe file.."
 smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input %SYMPHONY_SYMVER_EXE_PATH% --file-name="true"
 smctl sign verify --input %SYMPHONY_SYMVER_EXE_PATH%
