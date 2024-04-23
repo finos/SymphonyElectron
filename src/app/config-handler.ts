@@ -642,6 +642,8 @@ class Config {
           `config-handler: User config file is corrupted. Initializing new file`,
           e,
         );
+        fs.unlinkSync(this.userConfigPath);
+        this.userConfig = {};
         await this.initializeUserConfig();
       }
     }
