@@ -90,7 +90,7 @@ const TITLE_BAR_EVENTS = [
   'enter-full-screen',
   'leave-full-screen',
 ];
-const ZOOM_FACTOR_CHANGE = 'zoom-factor-change';
+export const ZOOM_FACTOR_CHANGE = 'zoom-factor-change';
 
 /**
  * Checks if window is valid and exists
