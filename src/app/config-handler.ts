@@ -635,7 +635,17 @@ class Config {
         fs.unlinkSync(this.userConfigPath);
         return;
       }
-      this.userConfig = this.parseConfigData(userConfig);
+      try {
+        this.userConfig = this.parseConfigData(userConfig);
+      } catch (e) {
+        logger.info(
+          `config-handler: User config file is corrupted. Initializing new file`,
+          e,
+        );
+        fs.unlinkSync(this.userConfigPath);
+        this.userConfig = {};
+        await this.initializeUserConfig();
+      }
     }
     logger.info(`config-handler: User configuration: `, this.userConfig);
   }
