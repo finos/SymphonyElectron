@@ -51,70 +51,70 @@ export class AutoUpdate {
   private downloadProgressDelayTimer: NodeJS.Timeout | null = null;
   private isForceUpdate: boolean = false;
 
-  constructor() {
-    this.getGenericServerOptions().then((opts) => {
-      if (isMac) {
-        this.autoUpdater = new MacUpdater(opts);
-      } else if (isWindowsOS) {
-        this.autoUpdater = new NsisUpdater(opts);
-      }
+  public init = async () => {
+    const opts = await this.getGenericServerOptions();
+    if (isMac) {
+      this.autoUpdater = new MacUpdater(opts);
+    } else if (isWindowsOS) {
+      this.autoUpdater = new NsisUpdater(opts);
+    }
 
-      if (this.autoUpdater) {
-        this.autoUpdater.logger = electronLog;
-        this.autoUpdater.autoDownload = false;
-        this.autoUpdater.autoInstallOnAppQuit = true;
-        this.autoUpdater.allowDowngrade = true;
+    if (this.autoUpdater) {
+      this.autoUpdater.logger = electronLog;
+      this.autoUpdater.autoDownload = false;
+      this.autoUpdater.autoInstallOnAppQuit = true;
+      this.autoUpdater.allowDowngrade = true;
 
-        this.autoUpdater.on('update-not-available', () => {
-          if (this.autoUpdateTrigger === AutoUpdateTrigger.AUTOMATED) {
-            logger.info(
-              'auto-update-handler: no update available found with automatic check',
-            );
-            this.autoUpdateTrigger = undefined;
-            return;
-          }
-          const mainWebContents = windowHandler.mainWebContents;
-          // Display client banner
-          if (mainWebContents && !mainWebContents.isDestroyed()) {
-            mainWebContents.send('display-client-banner', {
-              reason: 'autoUpdate',
-              action: 'update-not-available',
-            });
-          }
-          this.autoUpdateTrigger = undefined;
-        });
-        this.autoUpdater.on('update-available', async (info) => {
-          await this.updateEventHandler(info, 'update-available');
-        });
-        this.autoUpdater.on('download-progress', async (info) => {
-          await this.updateEventHandler(info, 'download-progress');
-        });
-        this.autoUpdater.on('update-downloaded', async (info) => {
-          if (this.isForceUpdate) {
-            this.isForceUpdate = false;
-            logger.info(
-              'auto-update-handler: update downloaded and isForceUpdate',
-            );
-            // Handle update and restart for macOS
-            if (isMac) {
-              windowHandler.setIsAutoUpdating(true);
-            }
-            this.autoUpdater?.quitAndInstall();
-            return;
-          }
-          await this.updateEventHandler(info, 'update-downloaded');
-        });
-
-        this.autoUpdater.on('error', (error) => {
-          this.autoUpdateTrigger = undefined;
-          logger.error(
-            'auto-update-handler: Error occurred while updating. ',
-            error,
+      this.autoUpdater.on('update-not-available', () => {
+        if (this.autoUpdateTrigger === AutoUpdateTrigger.AUTOMATED) {
+          logger.info(
+            'auto-update-handler: no update available found with automatic check',
           );
-        });
-      }
-    });
-  }
+          this.autoUpdateTrigger = undefined;
+          return;
+        }
+        const mainWebContents = windowHandler.mainWebContents;
+        // Display client banner
+        if (mainWebContents && !mainWebContents.isDestroyed()) {
+          mainWebContents.send('display-client-banner', {
+            reason: 'autoUpdate',
+            action: 'update-not-available',
+          });
+        }
+        this.autoUpdateTrigger = undefined;
+      });
+      this.autoUpdater.on('update-available', async (info) => {
+        await this.updateEventHandler(info, 'update-available');
+      });
+      this.autoUpdater.on('download-progress', async (info) => {
+        await this.updateEventHandler(info, 'download-progress');
+      });
+      this.autoUpdater.on('update-downloaded', async (info) => {
+        if (this.isForceUpdate) {
+          this.isForceUpdate = false;
+          logger.info(
+            'auto-update-handler: update downloaded and isForceUpdate',
+          );
+          // Handle update and restart for macOS
+          if (isMac) {
+            windowHandler.setIsAutoUpdating(true);
+          }
+          this.autoUpdater?.quitAndInstall();
+          return;
+        }
+        await this.updateEventHandler(info, 'update-downloaded');
+      });
+
+      this.autoUpdater.on('error', (error) => {
+        this.autoUpdateTrigger = undefined;
+        logger.error(
+          'auto-update-handler: Error occurred while updating. ',
+          error,
+        );
+      });
+      await this.performForcedAutoUpdate();
+    }
+  };
 
   /**
    * Checks for updates and performs a forced installation if the latest version is already downloaded.
