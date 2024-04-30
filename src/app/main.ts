@@ -108,7 +108,7 @@ const startApplication = async () => {
   // Picks global config values and updates them in the user config
   await config.updateUserConfigOnStart();
   setSessionProperties();
-  await autoUpdate.performForcedAutoUpdate();
+  await autoUpdate.init();
   await windowHandler.createApplication();
   logger.info(`main: created application`);
 };
