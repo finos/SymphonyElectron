@@ -83,6 +83,7 @@ const startApplication = async () => {
   // Validate user config before starting the application
   await config.initializeUserConfig();
   await config.readUserConfig();
+  await autoUpdate.performForcedAutoUpdate();
   await config.checkFirstTimeLaunch();
   const isFirstTimeLaunch = config.isFirstTimeLaunch();
   if (isFirstTimeLaunch) {
@@ -108,7 +109,6 @@ const startApplication = async () => {
   // Picks global config values and updates them in the user config
   await config.updateUserConfigOnStart();
   setSessionProperties();
-  await autoUpdate.performForcedAutoUpdate();
   await windowHandler.createApplication();
   logger.info(`main: created application`);
 };

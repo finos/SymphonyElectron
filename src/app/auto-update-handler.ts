@@ -95,10 +95,6 @@ export class AutoUpdate {
             logger.info(
               'auto-update-handler: update downloaded and isForceUpdate',
             );
-            // Handle update and restart for macOS
-            if (isMac) {
-              windowHandler.setIsAutoUpdating(true);
-            }
             this.autoUpdater?.quitAndInstall();
             return;
           }
@@ -128,7 +124,7 @@ export class AutoUpdate {
       return;
     }
 
-    const updaterFilePath = path.join(cacheDir, 'symphony-updater', 'pending');
+    const updaterFilePath = path.join(cacheDir, 'symphony-updater/pending');
     if (!fs.existsSync(updaterFilePath)) {
       logger.info(
         'auto-update-handler: Updater directory not found, skipping forced auto-update.',
@@ -160,9 +156,8 @@ export class AutoUpdate {
       return;
     }
 
-    const hasPendingInstaller = files.some(
-      (item) =>
-        item.includes(latestVersionFromServer) && !item.startsWith('temp'),
+    const hasPendingInstaller = files.some((item) =>
+      item.includes(latestVersionFromServer),
     );
     if (hasPendingInstaller) {
       logger.info('auto-update-handler: latest version found force installing');
@@ -268,12 +263,16 @@ export class AutoUpdate {
   };
 
   private fetchLatestVersion = async (): Promise<string | void> => {
-    return new Promise(async (resolve) => {
-      const opts = await this.getGenericServerOptions();
-      const url = opts.channel ? `${opts.url}/${opts.channel}.yml` : opts.url;
+    await this.setAutoUpdateChannel();
+    return new Promise((resolve) => {
+      const url = this.getUpdateUrl();
+      const { autoUpdateChannel } = config.getConfigFields([
+        'autoUpdateChannel',
+      ]);
+      const endpoint = `${url}/${autoUpdateChannel}.yml`;
       logger.info(
         'auto-update-handler: fetching latest version info from',
-        url,
+        endpoint,
       );
       const controller = new AbortController();
       const signal = controller.signal;
@@ -281,7 +280,7 @@ export class AutoUpdate {
         () => controller.abort(),
         FORCE_UPDATE_TIMEOUT,
       );
-      fetch(url, { signal })
+      fetch(endpoint, { signal })
         .then((res) => res.blob())
         .then((blob) => blob.text())
         .then(async (response) => {
@@ -294,8 +293,6 @@ export class AutoUpdate {
           if (match && match.length) {
             logger.info('auto-update-handler: version found', match[1]);
             resolve(match[1]);
-          } else {
-            resolve();
           }
         })
         .catch(async (error) => {
