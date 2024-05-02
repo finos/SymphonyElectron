@@ -36,8 +36,8 @@ export enum UpdateChannel {
 }
 
 const DOWNLOAD_PROGRESS_BANNER_DELAY = 1000 * 10; // 10 sec
+
 const AUTO_UPDATE_REASON = 'autoUpdate';
-const FORCE_UPDATE_TIMEOUT = 1000 * 10; // 10 sec
 
 export class AutoUpdate {
   public isUpdateAvailable: boolean = false;
@@ -49,7 +49,6 @@ export class AutoUpdate {
   private channelConfigLocation: ChannelConfigLocation =
     ChannelConfigLocation.LOCALFILE;
   private downloadProgressDelayTimer: NodeJS.Timeout | null = null;
-  private isForceUpdate: boolean = false;
 
   constructor() {
     this.getGenericServerOptions().then((opts) => {
@@ -90,14 +89,6 @@ export class AutoUpdate {
           await this.updateEventHandler(info, 'download-progress');
         });
         this.autoUpdater.on('update-downloaded', async (info) => {
-          if (this.isForceUpdate) {
-            this.isForceUpdate = false;
-            logger.info(
-              'auto-update-handler: update downloaded and isForceUpdate',
-            );
-            this.autoUpdater?.quitAndInstall();
-            return;
-          }
           await this.updateEventHandler(info, 'update-downloaded');
         });
 
@@ -161,9 +152,8 @@ export class AutoUpdate {
     );
     if (hasPendingInstaller) {
       logger.info('auto-update-handler: latest version found force installing');
-      this.isForceUpdate = true;
-      await this.checkUpdates(AutoUpdateTrigger.AUTOMATED);
-      await this.downloadUpdate();
+      this.isUpdateAvailable = true;
+      await this.updateAndRestart();
     }
   };
 
@@ -188,7 +178,6 @@ export class AutoUpdate {
         if (isMac) {
           config.backupGlobalConfig();
         }
-        logger.info('auto-update-handler: quitAndInstall');
         this.autoUpdater.quitAndInstall();
       }
     });
@@ -266,25 +255,10 @@ export class AutoUpdate {
     await this.setAutoUpdateChannel();
     return new Promise((resolve) => {
       const url = this.getUpdateUrl();
-      const { autoUpdateChannel } = config.getConfigFields([
-        'autoUpdateChannel',
-      ]);
-      const endpoint = `${url}/${autoUpdateChannel}.yml`;
-      logger.info(
-        'auto-update-handler: fetching latest version info from',
-        endpoint,
-      );
-      const controller = new AbortController();
-      const signal = controller.signal;
-      const timeoutId = setTimeout(
-        () => controller.abort(),
-        FORCE_UPDATE_TIMEOUT,
-      );
-      fetch(endpoint, { signal })
+      fetch(url)
         .then((res) => res.blob())
         .then((blob) => blob.text())
         .then(async (response) => {
-          clearTimeout(timeoutId);
           logger.info(
             'auto-update-handler: latest version info from server',
             response,
@@ -302,15 +276,11 @@ export class AutoUpdate {
             error,
           );
           resolve();
-        })
-        .finally(() => {
-          clearTimeout(timeoutId);
         });
     });
   };
 
   private updateEventHandler = async (info, eventType: string) => {
-    logger.info('auto-update-handler: auto update events', info, eventType);
     const mainWebContents = windowHandler.mainWebContents;
     if (mainWebContents && !mainWebContents.isDestroyed()) {
       await this.setAutoUpdateChannel();
