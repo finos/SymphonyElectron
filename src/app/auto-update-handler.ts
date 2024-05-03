@@ -1,7 +1,11 @@
 import { GenericServerOptions } from 'builder-util-runtime';
 import electronLog from 'electron-log';
 import { MacUpdater, NsisUpdater } from 'electron-updater';
+import * as fs from 'fs';
+import { homedir as getHomedir } from 'os';
+import * as path from 'path';
 
+import { buildNumber, version } from '../../package.json';
 import { isMac, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
 import { isUrl } from '../common/utils';
@@ -14,6 +18,7 @@ import { EChannelRegistry, RegistryStore } from './stores/registry-store';
 import { windowHandler } from './window-handler';
 
 const DEFAULT_AUTO_UPDATE_CHANNEL = 'apps/sda-update/default';
+const VERSION_REGEX = /version: (.*)/;
 
 export enum AutoUpdateTrigger {
   MANUAL = 'MANUAL',
@@ -31,8 +36,8 @@ export enum UpdateChannel {
 }
 
 const DOWNLOAD_PROGRESS_BANNER_DELAY = 1000 * 10; // 10 sec
-
 const AUTO_UPDATE_REASON = 'autoUpdate';
+const FORCE_UPDATE_TIMEOUT = 1000 * 10; // 10 sec
 
 export class AutoUpdate {
   public isUpdateAvailable: boolean = false;
@@ -44,59 +49,128 @@ export class AutoUpdate {
   private channelConfigLocation: ChannelConfigLocation =
     ChannelConfigLocation.LOCALFILE;
   private downloadProgressDelayTimer: NodeJS.Timeout | null = null;
+  private isForceUpdate: boolean = false;
 
-  constructor() {
-    this.getGenericServerOptions().then((opts) => {
-      if (isMac) {
-        this.autoUpdater = new MacUpdater(opts);
-      } else if (isWindowsOS) {
-        this.autoUpdater = new NsisUpdater(opts);
-      }
+  public init = async () => {
+    const opts = await this.getGenericServerOptions();
+    if (isMac) {
+      this.autoUpdater = new MacUpdater(opts);
+    } else if (isWindowsOS) {
+      this.autoUpdater = new NsisUpdater(opts);
+    }
 
-      if (this.autoUpdater) {
-        this.autoUpdater.logger = electronLog;
-        this.autoUpdater.autoDownload = false;
-        this.autoUpdater.autoInstallOnAppQuit = true;
-        this.autoUpdater.allowDowngrade = true;
+    if (this.autoUpdater) {
+      this.autoUpdater.logger = electronLog;
+      this.autoUpdater.autoDownload = false;
+      this.autoUpdater.autoInstallOnAppQuit = true;
+      this.autoUpdater.allowDowngrade = true;
 
-        this.autoUpdater.on('update-not-available', () => {
-          if (this.autoUpdateTrigger === AutoUpdateTrigger.AUTOMATED) {
-            logger.info(
-              'auto-update-handler: no update available found with automatic check',
-            );
-            this.autoUpdateTrigger = undefined;
-            return;
-          }
-          const mainWebContents = windowHandler.mainWebContents;
-          // Display client banner
-          if (mainWebContents && !mainWebContents.isDestroyed()) {
-            mainWebContents.send('display-client-banner', {
-              reason: 'autoUpdate',
-              action: 'update-not-available',
-            });
-          }
-          this.autoUpdateTrigger = undefined;
-        });
-        this.autoUpdater.on('update-available', async (info) => {
-          await this.updateEventHandler(info, 'update-available');
-        });
-        this.autoUpdater.on('download-progress', async (info) => {
-          await this.updateEventHandler(info, 'download-progress');
-        });
-        this.autoUpdater.on('update-downloaded', async (info) => {
-          await this.updateEventHandler(info, 'update-downloaded');
-        });
-
-        this.autoUpdater.on('error', (error) => {
-          this.autoUpdateTrigger = undefined;
-          logger.error(
-            'auto-update-handler: Error occurred while updating. ',
-            error,
+      this.autoUpdater.on('update-not-available', () => {
+        if (this.autoUpdateTrigger === AutoUpdateTrigger.AUTOMATED) {
+          logger.info(
+            'auto-update-handler: no update available found with automatic check',
           );
-        });
-      }
-    });
-  }
+          this.autoUpdateTrigger = undefined;
+          return;
+        }
+        const mainWebContents = windowHandler.mainWebContents;
+        // Display client banner
+        if (mainWebContents && !mainWebContents.isDestroyed()) {
+          mainWebContents.send('display-client-banner', {
+            reason: 'autoUpdate',
+            action: 'update-not-available',
+          });
+        }
+        this.autoUpdateTrigger = undefined;
+      });
+      this.autoUpdater.on('update-available', async (info) => {
+        await this.updateEventHandler(info, 'update-available');
+      });
+      this.autoUpdater.on('download-progress', async (info) => {
+        await this.updateEventHandler(info, 'download-progress');
+      });
+      this.autoUpdater.on('update-downloaded', async (info) => {
+        if (this.isForceUpdate) {
+          this.isForceUpdate = false;
+          logger.info(
+            'auto-update-handler: update downloaded and isForceUpdate',
+          );
+          // Handle update and restart for macOS
+          if (isMac) {
+            windowHandler.setIsAutoUpdating(true);
+          }
+          this.autoUpdater?.quitAndInstall();
+          return;
+        }
+        await this.updateEventHandler(info, 'update-downloaded');
+      });
+
+      this.autoUpdater.on('error', (error) => {
+        this.autoUpdateTrigger = undefined;
+        logger.error(
+          'auto-update-handler: Error occurred while updating. ',
+          error,
+        );
+      });
+      await this.performForcedAutoUpdate();
+    }
+  };
+
+  /**
+   * Checks for updates and performs a forced installation if the latest version is already downloaded.
+   */
+  public performForcedAutoUpdate = async () => {
+    const cacheDir = this.getCacheDir();
+    if (!cacheDir) {
+      logger.info(
+        'auto-update-handler: cache path does not exists, skipping forced auto-update.',
+      );
+      return;
+    }
+
+    const updaterFilePath = path.join(cacheDir, 'symphony-updater', 'pending');
+    if (!fs.existsSync(updaterFilePath)) {
+      logger.info(
+        'auto-update-handler: Updater directory not found, skipping forced auto-update.',
+      );
+      return;
+    }
+
+    const files = fs.readdirSync(updaterFilePath, 'utf8');
+    if (!files.length) {
+      logger.info('auto-update-handler: no pending update files found');
+      return;
+    }
+
+    logger.info('auto-update-handler: pending update files', files);
+    const latestVersionFromServer = await this.fetchLatestVersion();
+    if (!latestVersionFromServer) {
+      logger.info(
+        'auto-update-handler: no version info from server skipping force auto update',
+      );
+      return;
+    }
+
+    const isOnLatestVersion =
+      latestVersionFromServer === `${version}-${buildNumber}`;
+    if (isOnLatestVersion) {
+      logger.info(
+        'auto-update-handler: already running the latest version skipping force update',
+      );
+      return;
+    }
+
+    const hasPendingInstaller = files.some(
+      (item) =>
+        item.includes(latestVersionFromServer) && !item.startsWith('temp'),
+    );
+    if (hasPendingInstaller) {
+      logger.info('auto-update-handler: latest version found force installing');
+      this.isForceUpdate = true;
+      await this.checkUpdates(AutoUpdateTrigger.AUTOMATED);
+      await this.downloadUpdate();
+    }
+  };
 
   /**
    * Installs the latest update quits and relaunches application
@@ -119,6 +193,7 @@ export class AutoUpdate {
         if (isMac) {
           config.backupGlobalConfig();
         }
+        logger.info('auto-update-handler: quitAndInstall');
         this.autoUpdater.quitAndInstall();
       }
     });
@@ -182,7 +257,63 @@ export class AutoUpdate {
     return updateUrl;
   };
 
+  private getCacheDir = () => {
+    const homedir = getHomedir();
+    if (isWindowsOS) {
+      return process.env.LOCALAPPDATA || path.join(homedir, 'AppData', 'Local');
+    } else if (isMac) {
+      return path.join(homedir, 'Library', 'Caches');
+    }
+    return;
+  };
+
+  private fetchLatestVersion = async (): Promise<string | void> => {
+    return new Promise(async (resolve) => {
+      const opts = await this.getGenericServerOptions();
+      const url = opts.channel ? `${opts.url}/${opts.channel}.yml` : opts.url;
+      logger.info(
+        'auto-update-handler: fetching latest version info from',
+        url,
+      );
+      const controller = new AbortController();
+      const signal = controller.signal;
+      const timeoutId = setTimeout(
+        () => controller.abort(),
+        FORCE_UPDATE_TIMEOUT,
+      );
+      fetch(url, { signal })
+        .then((res) => res.blob())
+        .then((blob) => blob.text())
+        .then(async (response) => {
+          clearTimeout(timeoutId);
+          logger.info(
+            'auto-update-handler: latest version info from server',
+            response,
+          );
+          const match = VERSION_REGEX.exec(response);
+          if (match && match.length) {
+            logger.info('auto-update-handler: version found', match[1]);
+            resolve(match[1]);
+          } else {
+            resolve();
+          }
+        })
+        .catch(async (error) => {
+          logger.error(
+            'auto-update-handler: error fetching latest auto-update version from server',
+            url,
+            error,
+          );
+          resolve();
+        })
+        .finally(() => {
+          clearTimeout(timeoutId);
+        });
+    });
+  };
+
   private updateEventHandler = async (info, eventType: string) => {
+    logger.info('auto-update-handler: auto update events', info, eventType);
     const mainWebContents = windowHandler.mainWebContents;
     if (mainWebContents && !mainWebContents.isDestroyed()) {
       await this.setAutoUpdateChannel();
