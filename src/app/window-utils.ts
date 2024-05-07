@@ -858,6 +858,13 @@ export const zoomIn = () => {
     return;
   }
 
+  if (
+    (focusedWindow as ICustomBrowserWindow).winName ===
+    apiName.notificationWindowName
+  ) {
+    return;
+  }
+
   let { webContents } = focusedWindow;
 
   // If the focused window is mainWindow we should use mainWebContents
@@ -946,6 +953,13 @@ export const zoomOut = () => {
     return;
   }
 
+  if (
+    (focusedWindow as ICustomBrowserWindow).winName ===
+    apiName.notificationWindowName
+  ) {
+    return;
+  }
+
   let { webContents } = focusedWindow;
 
   // If the focused window is mainWindow we should use mainWebContents
@@ -1029,6 +1043,12 @@ export const zoomOut = () => {
 export const resetZoomLevel = () => {
   const focusedWindow = BrowserWindow.getFocusedWindow();
   if (!focusedWindow || !windowExists(focusedWindow)) {
+    return;
+  }
+  if (
+    (focusedWindow as ICustomBrowserWindow).winName ===
+    apiName.notificationWindowName
+  ) {
     return;
   }
   let { webContents } = focusedWindow;
