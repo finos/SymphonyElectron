@@ -854,7 +854,10 @@ export const zoomIn = () => {
     return;
   }
 
-  if (focusedWindow.getTitle() === 'Screen Sharing Indicator - Symphony') {
+  if (
+    focusedWindow.getTitle() === 'Screen Sharing Indicator - Symphony' ||
+    focusedWindow.getTitle() === 'About Symphony'
+  ) {
     return;
   }
 
@@ -949,7 +952,10 @@ export const zoomOut = () => {
     return;
   }
 
-  if (focusedWindow.getTitle() === 'Screen Sharing Indicator - Symphony') {
+  if (
+    focusedWindow.getTitle() === 'Screen Sharing Indicator - Symphony' ||
+    focusedWindow.getTitle() === 'About Symphony'
+  ) {
     return;
   }
 
