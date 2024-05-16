@@ -45,275 +45,275 @@ Var PerUser
 Var AllUser
 
 Function uninstallSymphony
-    StrCpy $0 0
-    SetRegView 64
-    loop:
-        EnumRegKey $1 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" $0
-        StrCmp $1 "" done
-        ReadRegStr $2 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$1" "DisplayName"
-        ${If} $2 == "Symphony"
-            ReadRegStr $3 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$1" "UninstallString"
-            ExecWait '$3  /qn'
-        ${EndIf}
-        IntOp $0 $0 + 1
-        Goto loop
-    done:
+  StrCpy $0 0
+  SetRegView 64
+  loop:
+    EnumRegKey $1 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" $0
+    StrCmp $1 "" done
+    ReadRegStr $2 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$1" "DisplayName"
+    ${If} $2 == "Symphony"
+      ReadRegStr $3 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$1" "UninstallString"
+      ExecWait '$3  /qn'
+    ${EndIf}
+    IntOp $0 $0 + 1
+    Goto loop
+  done:
 FunctionEnd
 
 Function WriteFindAt
-	Exch $0 ;file
-    Exch
-    Exch $1 ;key
-    Exch 2
-    Exch $2 ;string to write
-    Exch 2
-    Push $3
-    Push $4
-	
+  Exch $0 ;file
+  Exch
+  Exch $1 ;key
+  Exch 2
+  Exch $2 ;string to write
+  Exch 2
+  Push $3
+  Push $4
+  
 
-    FileOpen $4 $0 r
-	GetTempFileName $R0 $LOCALAPPDATA\Programs
-	FileOpen $R4 $R0 w
-	
-	#FileOpen $8 "E:\Projects\NSIS\$1_0.txt" w This one is for debugging purpose if you need, open it
-	#CopyFiles /SILENT $0 "E:\Projects\NSIS\$1.txt"
+  FileOpen $4 $0 r
+  GetTempFileName $R0 $LOCALAPPDATA\Programs
+  FileOpen $R4 $R0 w
+  
+  #FileOpen $8 "E:\Projects\NSIS\$1_0.txt" w This one is for debugging purpose if you need, open it
+  #CopyFiles /SILENT $0 "E:\Projects\NSIS\$1.txt"
 
-	loopFind:
-		FileRead $4 $R1
-		${If} $R1 == ""
-			#FileWrite $8 "At Error"
-			#FileWrite $8 "$R1$\r$\n"
-			Goto done
-		${Else}
-			${StrContains} $R5 "$\"url$\":" $R1
-			#FileWrite $8 "$R1$\r$\n"
-			#FileWrite $8 "At loop find"
+  loopFind:
+    FileRead $4 $R1
+    ${If} $R1 == ""
+      #FileWrite $8 "At Error"
+      #FileWrite $8 "$R1$\r$\n"
+      Goto done
+    ${Else}
+      ${StrContains} $R5 "$\"url$\":" $R1
+      #FileWrite $8 "$R1$\r$\n"
+      #FileWrite $8 "At loop find"
 
-			StrCmp $R5 "" notfound
-				#FileWrite $8 "$R5$\r$\n"
-				#FileWrite $8 "At URL found"
-				FileWrite $R4 "$R1"
-				FileWrite $R4 "$2$\r$\n"
-				Goto loopFind
-			notfound:
-				${StrContains} $R6 $1 $R1
-				#FileWrite $8 "At not found"
-				#FileWrite $8 "$R6$\r$\n"
-				StrCmp $R6 "" notmatchkey
-					#FileWrite $8 "At key found"
-					#FileWrite $8 "$R6$\r$\n"
-					Goto loopFind
-				notmatchkey:
-					#FileWrite $8 "At key not found"
-					#FileWrite $8 "$R1$\r$\n"
-					FileWrite $R4 $R1
-					Goto loopFind
-		${EndIf}
-		done:
-			FileClose $R4
-			FileClose $4
-			#FileWrite $8 "At done"
-			#FileWrite $8 "$4$\r$\n"
-			#FileWrite $8 "At done"
-			#FileWrite $8 "$R4$\r$\n"
-			CopyFiles /SILENT $R0 $0
-			Delete $R0
-			pop $0
-			pop $1
-			pop $2
-			pop $3
-			pop $4
-			pop $5
-			pop $6
-			pop $R0
-			pop $R1
-			pop $R4
-			pop $R5
-			pop $R6
+      StrCmp $R5 "" notfound
+        #FileWrite $8 "$R5$\r$\n"
+        #FileWrite $8 "At URL found"
+        FileWrite $R4 "$R1"
+        FileWrite $R4 "$2$\r$\n"
+        Goto loopFind
+      notfound:
+        ${StrContains} $R6 $1 $R1
+        #FileWrite $8 "At not found"
+        #FileWrite $8 "$R6$\r$\n"
+        StrCmp $R6 "" notmatchkey
+        #FileWrite $8 "At key found"
+        #FileWrite $8 "$R6$\r$\n"
+          Goto loopFind
+        notmatchkey:
+          #FileWrite $8 "At key not found"
+          #FileWrite $8 "$R1$\r$\n"
+          FileWrite $R4 $R1
+          Goto loopFind
+    ${EndIf}
+    done:
+      FileClose $R4
+      FileClose $4
+      #FileWrite $8 "At done"
+      #FileWrite $8 "$4$\r$\n"
+      #FileWrite $8 "At done"
+      #FileWrite $8 "$R4$\r$\n"
+      CopyFiles /SILENT $R0 $0
+      Delete $R0
+      pop $0
+      pop $1
+      pop $2
+      pop $3
+      pop $4
+      pop $5
+      pop $6
+      pop $R0
+      pop $R1
+      pop $R4
+      pop $R5
+      pop $R6
 FunctionEnd
 
 !macro migrationFailed
-	MessageBox MB_OK "Auto update migration not supported as there are two versions installed"
+  MessageBox MB_OK "Auto update migration not supported as there are two versions installed"
 !macroend
 
 Function SearchAndReplace
-	${If} $PerUser == "exists"
-        ${AndIf} $AllUser == "exists"
-            !insertmacro migrationFailed
-	${ElseIf} $AllUser == "exists"
-		StrCpy $3 "$PROGRAMFILES64\Symphony\Symphony\config\Symphony.config"
+  ${If} $PerUser == "exists"
+    ${AndIf} $AllUser == "exists"
+      !insertmacro migrationFailed
+  ${ElseIf} $AllUser == "exists"
+    StrCpy $3 "$PROGRAMFILES64\Symphony\Symphony\config\Symphony.config"
     ${ElseIf} $PerUser == "exists"
-        StrCpy $3 "$LOCALAPPDATA\Programs\Symphony\Symphony\config\Symphony.config"
+      StrCpy $3 "$LOCALAPPDATA\Programs\Symphony\Symphony\config\Symphony.config"
     ${EndIf}
-	pop $0
-	pop $1
+  pop $0
+  pop $1
     StrCpy $4 "$\t$\"$0$\": $1,"
-	
-	#FileOpen $8 "E:\Projects\NSIS\text.txt" w
-	#FileWrite $8 "$0$\r$\n"
-	#FileWrite $8 "$1$\r$\n"
-	#FileWrite $8 "$4$\r$\n"
-	#FileClose $8
+  
+  #FileOpen $8 "E:\Projects\NSIS\text.txt" w
+  #FileWrite $8 "$0$\r$\n"
+  #FileWrite $8 "$1$\r$\n"
+  #FileWrite $8 "$4$\r$\n"
+  #FileClose $8
 
-	#LogText $0
-	#DetailPrint $0
-	#DetailPrint $1
-	#DetailPrint $4
+  #LogText $0
+  #DetailPrint $0
+  #DetailPrint $1
+  #DetailPrint $4
 
-	# Find the term in the config
+  # Find the term in the config
 
     IfFileExists $3 0 +2
-        Push $4
-        Push $0
-        Push $3
-        Call WriteFindAt
-	Pop $0
-	Pop $1
-	Pop $2
-	Pop $3
-	Pop $4
+      Push $4
+      Push $0
+      Push $3
+      Call WriteFindAt
+  Pop $0
+  Pop $1
+  Pop $2
+  Pop $3
+  Pop $4
 
 FunctionEnd
 
 # isPodUrlEditable
 Function updateConfigIsPodUrlEditable
-	push true
-	push isPodUrlEditable
-	call SearchAndReplace
+  push true
+  push isPodUrlEditable
+  call SearchAndReplace
 FunctionEnd
 
 # forceAutoUpdate
 Function updateConfigForceAutoUpdate
-	push false
-	push forceAutoUpdate
-	call SearchAndReplace
+  push false
+  push forceAutoUpdate
+  call SearchAndReplace
 FunctionEnd
 
 # enableBrowserLogin
 Function updateConfigEnableBrowserLogin
-	push false
-	push enableBrowserLogin
-	call SearchAndReplace
+  push false
+  push enableBrowserLogin
+  call SearchAndReplace
 FunctionEnd
 
 # browserLoginAutoConnect
 Function updateConfigBrowserLoginAutoConnect
-	push false
-	push browserLoginAutoConnect
-	call SearchAndReplace
+  push false
+  push browserLoginAutoConnect
+  call SearchAndReplace
 FunctionEnd
 
 # betaAutoUpdateChannelEnabled
 Function updateConfigBetaAutoUpdateChannelEnabled
-	push true
-	push betaAutoUpdateChannelEnabled
-	call SearchAndReplace
+  push true
+  push betaAutoUpdateChannelEnabled
+  call SearchAndReplace
 FunctionEnd
 
 # latestAutoUpdateChannelEnabled
 Function updateConfigLatestAutoUpdateChannelEnabled
-	push true
-	push latestAutoUpdateChannelEnabled
-	call SearchAndReplace
+  push true
+  push latestAutoUpdateChannelEnabled
+  call SearchAndReplace
 FunctionEnd
 
 Function scriptMigration
-    call updateConfigIsPodUrlEditable
-	call updateConfigForceAutoUpdate
-	call updateConfigEnableBrowserLogin
-	call updateConfigBrowserLoginAutoConnect
-	call updateConfigBetaAutoUpdateChannelEnabled
-	call updateConfigLatestAutoUpdateChannelEnabled
+  call updateConfigIsPodUrlEditable
+  call updateConfigForceAutoUpdate
+  call updateConfigEnableBrowserLogin
+  call updateConfigBrowserLoginAutoConnect
+  call updateConfigBetaAutoUpdateChannelEnabled
+  call updateConfigLatestAutoUpdateChannelEnabled
 FunctionEnd
 
 !macro copySystemGlobalConfig
-    IfFileExists $PROGRAMFILES64\Symphony\Symphony\config\Symphony.config 0 +2
-    CopyFiles /SILENT $PROGRAMFILES64\Symphony\Symphony\config\Symphony.config $WINDIR\Temp\temp-sys-Symphony.config
+  IfFileExists $PROGRAMFILES64\Symphony\Symphony\config\Symphony.config 0 +2
+  CopyFiles /SILENT $PROGRAMFILES64\Symphony\Symphony\config\Symphony.config $WINDIR\Temp\temp-sys-Symphony.config
 !macroend
 
 !macro copyLocalGlobalConfig
-    IfFileExists $LOCALAPPDATA\Programs\Symphony\Symphony\config\Symphony.config 0 +2
-    CopyFiles /SILENT $LOCALAPPDATA\Programs\Symphony\Symphony\config\Symphony.config $LOCALAPPDATA\Temp\temp-local-Symphony.config
+  IfFileExists $LOCALAPPDATA\Programs\Symphony\Symphony\config\Symphony.config 0 +2
+  CopyFiles /SILENT $LOCALAPPDATA\Programs\Symphony\Symphony\config\Symphony.config $LOCALAPPDATA\Temp\temp-local-Symphony.config
 !macroend
 
 !macro replaceSystemGlobalConfig
-    IfFileExists $WINDIR\Temp\temp-sys-Symphony.config 0 +2
-    CopyFiles /SILENT $WINDIR\Temp\temp-sys-Symphony.config $PROGRAMFILES64\Symphony\Symphony\config\Symphony.config
+  IfFileExists $WINDIR\Temp\temp-sys-Symphony.config 0 +2
+  CopyFiles /SILENT $WINDIR\Temp\temp-sys-Symphony.config $PROGRAMFILES64\Symphony\Symphony\config\Symphony.config
 !macroend
 
 !macro replaceLocalGlobalConfig
-    IfFileExists $LOCALAPPDATA\Temp\temp-local-Symphony.config 0 +2
-    CopyFiles /SILENT $LOCALAPPDATA\Temp\temp-local-Symphony.config $LOCALAPPDATA\Programs\Symphony\Symphony\config\Symphony.config
+  IfFileExists $LOCALAPPDATA\Temp\temp-local-Symphony.config 0 +2
+  CopyFiles /SILENT $LOCALAPPDATA\Temp\temp-local-Symphony.config $LOCALAPPDATA\Programs\Symphony\Symphony\config\Symphony.config
 !macroend
 
 !macro bothM
-	MessageBox MB_OK "Auto update not supported as there are two versions installed"
+  MessageBox MB_OK "Auto update not supported as there are two versions installed"
 !macroend
 
 !macro perUserM
-	call scriptMigration
-    !insertmacro copyLocalGlobalConfig
-    Call uninstallSymphony
-    WriteRegExpandStr HKLM "${INSTALL_REGISTRY_KEY}" InstallLocation "$LOCALAPPDATA\Programs\Symphony\Symphony"
-    WriteRegExpandStr HKCU "${INSTALL_REGISTRY_KEY}" InstallLocation "$LOCALAPPDATA\Programs\Symphony\Symphony"
+  call scriptMigration
+  !insertmacro copyLocalGlobalConfig
+  Call uninstallSymphony
+  WriteRegExpandStr HKLM "${INSTALL_REGISTRY_KEY}" InstallLocation "$LOCALAPPDATA\Programs\Symphony\Symphony"
+  WriteRegExpandStr HKCU "${INSTALL_REGISTRY_KEY}" InstallLocation "$LOCALAPPDATA\Programs\Symphony\Symphony"
 !macroend
 
 !macro allUserM
-    ${IfNot} ${UAC_IsAdmin}
-        ShowWindow $HWNDPARENT ${SW_HIDE}
-        !insertmacro UAC_RunElevated
-        Quit
-    ${endif}
-	call scriptMigration
-    !insertmacro copySystemGlobalConfig
-    Call uninstallSymphony
-    WriteRegExpandStr HKLM "${INSTALL_REGISTRY_KEY}" InstallLocation "$PROGRAMFILES64\Symphony\Symphony"
-    WriteRegExpandStr HKCU "${INSTALL_REGISTRY_KEY}" InstallLocation "$PROGRAMFILES64\Symphony\Symphony"
+  ${IfNot} ${UAC_IsAdmin}
+    ShowWindow $HWNDPARENT ${SW_HIDE}
+    !insertmacro UAC_RunElevated
+    Quit
+  ${endif}
+  call scriptMigration
+  !insertmacro copySystemGlobalConfig
+  Call uninstallSymphony
+  WriteRegExpandStr HKLM "${INSTALL_REGISTRY_KEY}" InstallLocation "$PROGRAMFILES64\Symphony\Symphony"
+  WriteRegExpandStr HKCU "${INSTALL_REGISTRY_KEY}" InstallLocation "$PROGRAMFILES64\Symphony\Symphony"
 !macroend
 
 !macro abortM
-	; MessageBox MB_OK "Something went wrong!! Could not find existing SDA"
+  ; MessageBox MB_OK "Something went wrong!! Could not find existing SDA"
 !macroend
 
 !macro validateInstallation
-	IfFileExists $PROGRAMFILES64\Symphony\Symphony\Symphony.exe 0 +2
-	StrCpy $AllUser "exists"
+  IfFileExists $PROGRAMFILES64\Symphony\Symphony\Symphony.exe 0 +2
+  StrCpy $AllUser "exists"
 
-	IfFileExists $LOCALAPPDATA\Programs\Symphony\Symphony\Symphony.exe 0 +2
-	StrCpy $PerUser "exists"
+  IfFileExists $LOCALAPPDATA\Programs\Symphony\Symphony\Symphony.exe 0 +2
+  StrCpy $PerUser "exists"
 !macroend
 
 !macro preInit
-    !insertmacro validateInstallation
-    ${If} $PerUser == "exists"
-        ${AndIf} $AllUser == "exists"
-            !insertmacro bothM
-    ${ElseIf} $PerUser == "exists"
-        !insertmacro perUserM
-    ${ElseIf} $AllUser == "exists"
-        !insertmacro allUserM
-    ${Else}
-        !insertmacro abortM
-    ${EndIf}
+  !insertmacro validateInstallation
+  ${If} $PerUser == "exists"
+    ${AndIf} $AllUser == "exists"
+      !insertmacro bothM
+  ${ElseIf} $PerUser == "exists"
+      !insertmacro perUserM
+  ${ElseIf} $AllUser == "exists"
+      !insertmacro allUserM
+  ${Else}
+      !insertmacro abortM
+  ${EndIf}
 !macroend
 
 !macro customInstall
-    ${If} $PerUser == "exists"
-        !insertmacro replaceLocalGlobalConfig
-    ${ElseIf} $AllUser == "exists"
-        !insertmacro replaceSystemGlobalConfig
-    ${Else}
-        !insertmacro abortM
-    ${EndIf}
+  ${If} $PerUser == "exists"
+    !insertmacro replaceLocalGlobalConfig
+  ${ElseIf} $AllUser == "exists"
+    !insertmacro replaceSystemGlobalConfig
+  ${Else}
+    !insertmacro abortM
+  ${EndIf}
 !macroend
 
 !macro customUnInit
-    !insertmacro validateInstallation
-    ${If} $AllUser == "exists"
-        ${IfNot} ${UAC_IsAdmin}
-            ShowWindow $HWNDPARENT ${SW_HIDE}
-            !insertmacro UAC_RunElevated
-            Quit
-        ${endif}
-    ${EndIf}
+  !insertmacro validateInstallation
+  ${If} $AllUser == "exists"
+    ${IfNot} ${UAC_IsAdmin}
+      ShowWindow $HWNDPARENT ${SW_HIDE}
+      !insertmacro UAC_RunElevated
+      Quit
+    ${endif}
+  ${EndIf}
 !macroend
