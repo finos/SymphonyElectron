@@ -15,7 +15,6 @@ import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
 import { autoLaunchInstance } from './auto-launch-controller';
 import { autoUpdate } from './auto-update-handler';
-import { loadReactDevToolsExtension } from './extension-handler';
 import { presenceStatusStore } from './stores';
 
 // Set automatic period substitution to false because of a bug in draft js on the client app
@@ -113,7 +112,10 @@ const startApplication = async () => {
   await windowHandler.createApplication();
   logger.info(`main: created application`);
 
-  await loadReactDevToolsExtension(logger);
+  if (isDevEnv) {
+    const { loadReactDevToolsExtension } = require('./extension-handler');
+    await loadReactDevToolsExtension(logger);
+  }
 };
 
 // Handle multiple/single instances
