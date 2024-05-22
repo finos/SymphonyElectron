@@ -527,7 +527,7 @@ public class CustomActions
     [CustomAction]
     public static ActionResult CleanNSISRegistryForCurrentUser(Session session)
     {
-        if (e.Session["INSTALLDIR"].StartsWith(System.Environment.ExpandEnvironmentVariables(@"%LOCALAPPDATA%\Programs\")))
+        if (session["INSTALLDIR"].StartsWith(System.Environment.ExpandEnvironmentVariables(@"%LOCALAPPDATA%\Programs\")))
         {
             try
             {
@@ -542,11 +542,14 @@ public class CustomActions
                         break;
                     }
 
-                    var displayName = Registry.CurrentUser.OpenSubKey(Path.Combine(uninstallKey, subkey), "DisplayName");
+                    string displayName = (string)Registry.CurrentUser.OpenSubKey(System.IO.Path.Combine(uninstallKey, subkey), "DisplayName");
                     if (displayName == displayNameValue)
                     {
-                        var uninstallString = Registry.CurrentUser.OpenSubKey(Path.Combine(uninstallKey, subkey), "UninstallString");
-                        session.ShellExecute(uninstallString, "/qn");
+                        var uninstallString = Registry.CurrentUser.OpenSubKey(System.IO.Path.Combine(uninstallKey, subkey), "UninstallString");
+                        System.Diagnostics.Process process = new System.Diagnostics.Process();
+                        process.StartInfo.FileName = uninstallString;
+                        process.StartInfo.Arguments = "/qn";
+                        process.Start();
                     }
                 }
             }
