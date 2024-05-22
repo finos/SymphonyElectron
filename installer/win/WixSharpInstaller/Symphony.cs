@@ -170,6 +170,15 @@ class Script
         // Define the custom actions we want to run, and at what point of the installation we want to execute them.
         project.Actions = new WixSharp.Action[]
         {
+
+            // CleanNSISRegistryForCurrentUser
+            //
+            // This custom action is to remove any registry entries from HKEY_CURRENT_USER if exists
+            new ManagedAction(CustomActions.CleanNSISRegistryForCurrentUser, Return.check, When.Before, Step.LaunchConditions, Condition.NOT_Installed )
+            {
+                UsesProperties = "INSTALLDIR"
+            },
+
             // InstallVariant
             //
             // We want to be able to display the POD URL dialog every time SDA starts after a reinstall, regardless of
@@ -191,14 +200,6 @@ class Script
             {
                 // The UpdateConfig action needs the built-in property INSTALLDIR as well as most of the custom properties
                 UsesProperties = "INSTALLDIR,POD_URL,CONTEXT_ORIGIN_URL,MINIMIZE_ON_CLOSE,ALWAYS_ON_TOP,AUTO_START,BRING_TO_FRONT,MEDIA,LOCATION,NOTIFICATIONS,MIDI_SYSEX,POINTER_LOCK,FULL_SCREEN,OPEN_EXTERNAL,CUSTOM_TITLE_BAR,DEV_TOOLS_ENABLED,AUTO_LAUNCH_PATH,USER_DATA_PATH,OVERRIDE_USER_AGENT,CHROME_FLAGS,ENABLE_BROWSER_LOGIN,BROWSER_LOGIN_AUTOCONNECT,FORCE_AUTO_UPDATE,IS_POD_URL_EDITABLE"
-            },
-
-            // CleanNSISRegistryForCurrentUser
-            //
-            // This custom action is to remove any registry entries from HKEY_CURRENT_USER if exists
-            new ManagedAction(CustomActions.CleanNSISRegistryForCurrentUser, Return.check, When.After, Step.InstallFiles, Condition.NOT_BeingRemoved )
-            {
-                UsesProperties = "INSTALLDIR"
             },
 
             // CleanRegistry
