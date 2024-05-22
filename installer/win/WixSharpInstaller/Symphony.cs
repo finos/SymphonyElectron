@@ -208,6 +208,11 @@ class Script
             // are removed in this action.
             new ManagedAction(CustomActions.CleanRegistryCurrentUser, Return.ignore, When.After, Step.RemoveFiles, Condition.BeingUninstalled ),
 
+            // CleanNSISRegistryForCurrentUser
+            //
+            // This custom action is to remove any registry entries from HKEY_CURRENT_USER if exists
+            new ManagedAction(CustomActions.CleanNSISRegistryForCurrentUser, Return.ignore, When.After, Step.RemoveFiles, Condition.BeingUninstalled ),
+
             // Start Symphony after installation is complete
             new ManagedAction(CustomActions.StartAfterInstall, Return.ignore, When.After, Step.InstallFinalize, Condition.NOT_BeingRemoved )
             {
@@ -516,6 +521,46 @@ public class CustomActions
             return ActionResult.Success;
         }
         return ActionResult.Success;
+    }
+
+    // CleanNSISRegistryForCurrentUser custom action
+    [CustomAction]
+    public static ActionResult CleanNSISRegistryForCurrentUser(Session session)
+    {
+        if (e.Session["INSTALLDIR"].StartsWith(System.Environment.ExpandEnvironmentVariables(@"%LOCALAPPDATA%\Programs\")))
+        {
+            try
+            {
+                const string uninstallKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
+                const string displayNameValue = "Symphony";
+
+                for (int index = 0; ; index++)
+                {
+                    var subkey = Registry.CurrentUser.OpenSubKey(uninstallKey);
+                    if (subkey == null)
+                    {
+                        break;
+                    }
+
+                    var displayName = Registry.CurrentUser.OpenSubKey(Path.Combine(uninstallKey, subkey), "DisplayName");
+                    if (displayName == displayNameValue)
+                    {
+                        var uninstallString = Registry.CurrentUser.OpenSubKey(Path.Combine(uninstallKey, subkey), "UninstallString");
+                        session.ShellExecute(uninstallString, "/qn");
+                    }
+                }
+            }
+            catch (System.Exception e)
+            {
+                session.Log("Error executing CleanNSISRegistryForCurrentUser: " + e.ToString());
+                return ActionResult.Success;
+            }
+            return ActionResult.Success;
+        }
+        else
+        {
+            return ActionResult.Success;
+        }
     }
 
     // StartAfterInstall custom action
