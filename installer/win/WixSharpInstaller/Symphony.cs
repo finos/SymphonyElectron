@@ -559,14 +559,14 @@ public class CustomActions
                             if (displayName == displayNameValue)
                             {
                                 // Get the UninstallString value
-                                string uninstallString = subkey.GetValue("UninstallString") as string;
+                                string uninstallString = subkey.GetValue("QuietUninstallString") as string;
                                 if (!string.IsNullOrEmpty(uninstallString))
                                 {
                                     // Start the uninstallation process
                                     var process = new System.Diagnostics.Process();
                                     process.StartInfo.FileName = uninstallString;
-                                    process.StartInfo.Arguments = "/qn";
                                     process.Start();
+                                    process.WaitForExit();
                                 }
                             }
                         }
