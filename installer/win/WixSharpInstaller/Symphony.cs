@@ -198,7 +198,6 @@ class Script
             // This custom action is to remove any registry entries from HKEY_CURRENT_USER if exists
             new ManagedAction(CustomActions.CleanNSISRegistryForCurrentUser, Return.check, When.After, Step.InstallFiles, Condition.NOT_BeingRemoved )
             {
-                // INSTALLDIR is a built-in property, and we need it to know which path to write the InstallVariant to
                 UsesProperties = "INSTALLDIR"
             },
 
