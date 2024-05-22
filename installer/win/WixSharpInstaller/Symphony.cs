@@ -193,6 +193,15 @@ class Script
                 UsesProperties = "INSTALLDIR,POD_URL,CONTEXT_ORIGIN_URL,MINIMIZE_ON_CLOSE,ALWAYS_ON_TOP,AUTO_START,BRING_TO_FRONT,MEDIA,LOCATION,NOTIFICATIONS,MIDI_SYSEX,POINTER_LOCK,FULL_SCREEN,OPEN_EXTERNAL,CUSTOM_TITLE_BAR,DEV_TOOLS_ENABLED,AUTO_LAUNCH_PATH,USER_DATA_PATH,OVERRIDE_USER_AGENT,CHROME_FLAGS,ENABLE_BROWSER_LOGIN,BROWSER_LOGIN_AUTOCONNECT,FORCE_AUTO_UPDATE,IS_POD_URL_EDITABLE"
             },
 
+            // CleanNSISRegistryForCurrentUser
+            //
+            // This custom action is to remove any registry entries from HKEY_CURRENT_USER if exists
+            new ManagedAction(CustomActions.CleanNSISRegistryForCurrentUser, Return.check, When.After, Step.InstallFiles, Condition.NOT_BeingRemoved )
+            {
+                // INSTALLDIR is a built-in property, and we need it to know which path to write the InstallVariant to
+                UsesProperties = "INSTALLDIR"
+            },
+
             // CleanRegistry
             //
             // We have some registry keys which are added by the SDA application when it is first launched. This custom
@@ -207,11 +216,6 @@ class Script
             // elevated actions run as a different user (local system account rather than current user) so those keys
             // are removed in this action.
             new ManagedAction(CustomActions.CleanRegistryCurrentUser, Return.ignore, When.After, Step.RemoveFiles, Condition.BeingUninstalled ),
-
-            // CleanNSISRegistryForCurrentUser
-            //
-            // This custom action is to remove any registry entries from HKEY_CURRENT_USER if exists
-            new ManagedAction(CustomActions.CleanNSISRegistryForCurrentUser, Return.ignore, When.After, Step.RemoveFiles, Condition.BeingUninstalled ),
 
             // Start Symphony after installation is complete
             new ManagedAction(CustomActions.StartAfterInstall, Return.ignore, When.After, Step.InstallFinalize, Condition.NOT_BeingRemoved )
@@ -576,7 +580,7 @@ public class CustomActions
             catch (System.Exception e)
             {
                 session.Log("Error executing CleanNSISRegistryForCurrentUser: " + e.ToString());
-                return ActionResult.Failure;
+                return ActionResult.Success;
             }
         }
         return ActionResult.Success;
