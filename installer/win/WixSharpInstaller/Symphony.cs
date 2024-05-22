@@ -527,6 +527,7 @@ public class CustomActions
     [CustomAction]
     public static ActionResult CleanNSISRegistryForCurrentUser(Session session)
     {
+        // Check if the INSTALLDIR starts with the per user installation path
         if (session["INSTALLDIR"].StartsWith(System.Environment.ExpandEnvironmentVariables(@"%LOCALAPPDATA%\Programs\")))
         {
             try
@@ -534,36 +535,51 @@ public class CustomActions
                 const string uninstallKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
                 const string displayNameValue = "Symphony";
 
-                for (int index = 0; ; index++)
+                // Open the Uninstall key
+                using (var key = Registry.CurrentUser.OpenSubKey(uninstallKey))
                 {
-                    var subkey = Registry.CurrentUser.OpenSubKey(uninstallKey);
-                    if (subkey == null)
+                    if (key == null)
                     {
-                        break;
+                        session.Log("Uninstall key not found.");
+                        return ActionResult.Success;
                     }
 
-                    string displayName = (string)Registry.CurrentUser.OpenSubKey(System.IO.Path.Combine(uninstallKey, subkey), "DisplayName");
-                    if (displayName == displayNameValue)
+                    // Iterate through all subkeys
+                    foreach (string subkeyName in key.GetSubKeyNames())
                     {
-                        var uninstallString = Registry.CurrentUser.OpenSubKey(System.IO.Path.Combine(uninstallKey, subkey), "UninstallString");
-                        System.Diagnostics.Process process = new System.Diagnostics.Process();
-                        process.StartInfo.FileName = uninstallString;
-                        process.StartInfo.Arguments = "/qn";
-                        process.Start();
+                        using (var subkey = key.OpenSubKey(subkeyName))
+                        {
+                            if (subkey == null)
+                            {
+                                continue;
+                            }
+
+                            // Get the DisplayName value
+                            string displayName = subkey.GetValue("DisplayName") as string;
+                            if (displayName == displayNameValue)
+                            {
+                                // Get the UninstallString value
+                                string uninstallString = subkey.GetValue("UninstallString") as string;
+                                if (!string.IsNullOrEmpty(uninstallString))
+                                {
+                                    // Start the uninstallation process
+                                    var process = new System.Diagnostics.Process();
+                                    process.StartInfo.FileName = uninstallString;
+                                    process.StartInfo.Arguments = "/qn";
+                                    process.Start();
+                                }
+                            }
+                        }
                     }
                 }
             }
             catch (System.Exception e)
             {
                 session.Log("Error executing CleanNSISRegistryForCurrentUser: " + e.ToString());
-                return ActionResult.Success;
+                return ActionResult.Failure;
             }
-            return ActionResult.Success;
         }
-        else
-        {
-            return ActionResult.Success;
-        }
+        return ActionResult.Success;
     }
 
     // StartAfterInstall custom action
