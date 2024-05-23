@@ -568,7 +568,9 @@ public class CustomActions
                                 {
                                     // Start the uninstallation process
                                     var process = new System.Diagnostics.Process();
-                                    process.StartInfo.FileName = uninstallString;
+                                    process.StartInfo.FileName = "cmd.exe";
+                                    process.StartInfo.Arguments = $"/c \"{uninstallString}\"";
+                                    process.StartInfo.UseShellExecute = false;
                                     process.Start();
                                     process.WaitForExit();
                                 }
