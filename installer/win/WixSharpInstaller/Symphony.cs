@@ -170,6 +170,15 @@ class Script
         // Define the custom actions we want to run, and at what point of the installation we want to execute them.
         project.Actions = new WixSharp.Action[]
         {
+
+            // CleanNSISRegistryForCurrentUser
+            //
+            // This custom action is to remove any registry entries from HKEY_CURRENT_USER if exists
+            new ManagedAction(CustomActions.CleanNSISRegistryForCurrentUser, Return.check, When.Before, Step.LaunchConditions, Condition.NOT_Installed )
+            {
+                UsesProperties = "INSTALLDIR"
+            },
+
             // InstallVariant
             //
             // We want to be able to display the POD URL dialog every time SDA starts after a reinstall, regardless of
@@ -514,6 +523,67 @@ public class CustomActions
         {
             session.Log("Error executing CleanRegistryCurrentUser: " + e.ToString());
             return ActionResult.Success;
+        }
+        return ActionResult.Success;
+    }
+
+    // CleanNSISRegistryForCurrentUser custom action
+    [CustomAction]
+    public static ActionResult CleanNSISRegistryForCurrentUser(Session session)
+    {
+        // Check if the INSTALLDIR starts with the per user installation path
+        if (session["INSTALLDIR"].StartsWith(System.Environment.ExpandEnvironmentVariables(@"%LOCALAPPDATA%\Programs\")))
+        {
+            try
+            {
+                const string uninstallKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
+                const string displayNameValue = "Symphony";
+
+                // Open the Uninstall key
+                using (var key = Registry.CurrentUser.OpenSubKey(uninstallKey))
+                {
+                    if (key == null)
+                    {
+                        session.Log("Uninstall key not found.");
+                        return ActionResult.Success;
+                    }
+
+                    // Iterate through all subkeys
+                    foreach (string subkeyName in key.GetSubKeyNames())
+                    {
+                        using (var subkey = key.OpenSubKey(subkeyName))
+                        {
+                            if (subkey == null)
+                            {
+                                continue;
+                            }
+
+                            // Get the DisplayName value
+                            string displayName = subkey.GetValue("DisplayName") as string;
+                            if (displayName == displayNameValue)
+                            {
+                                // Get the UninstallString value
+                                string uninstallString = subkey.GetValue("QuietUninstallString") as string;
+                                if (!string.IsNullOrEmpty(uninstallString))
+                                {
+                                    // Start the uninstallation process
+                                    var process = new System.Diagnostics.Process();
+                                    process.StartInfo.FileName = "cmd.exe";
+                                    process.StartInfo.Arguments = string.Format("/c \"{0}\"", uninstallString);
+                                    process.StartInfo.UseShellExecute = false;
+                                    process.Start();
+                                    process.WaitForExit();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (System.Exception e)
+            {
+                session.Log("Error executing CleanNSISRegistryForCurrentUser: " + e.ToString());
+                return ActionResult.Success;
+            }
         }
         return ActionResult.Success;
     }
