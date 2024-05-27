@@ -95,10 +95,8 @@ export class AutoUpdate {
           logger.info(
             'auto-update-handler: update downloaded and isForceUpdate',
           );
-          // Handle update and restart for macOS
-          if (isMac) {
-            windowHandler.setIsAutoUpdating(true);
-          }
+          // Handle update and restart
+          windowHandler.setIsAutoUpdating(true);
           this.autoUpdater?.quitAndInstall();
           return;
         }
@@ -386,10 +384,11 @@ export class AutoUpdate {
     this.finalAutoUpdateChannel = autoUpdateChannel;
     this.installVariant = installVariant;
 
+    const { url: userUrl } = config.getUserConfigFields(['url']);
+    const { url: globalUrl } = config.getGlobalConfigFields(['url']);
+    const url = userUrl ? userUrl : globalUrl;
     const isCorp =
-      (windowHandler?.url &&
-        windowHandler.url.startsWith('https://corporate.symphony.com')) ||
-      false;
+      (url && url.startsWith('https://corporate.symphony.com')) || false;
 
     // Corp should keep the ability to get auto-update channel from user config as top prio
     if (isCorp && this.finalAutoUpdateChannel !== UpdateChannel.LATEST) {
