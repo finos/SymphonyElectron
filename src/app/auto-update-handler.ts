@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import { homedir as getHomedir } from 'os';
 import * as path from 'path';
 
-import { buildNumber, version } from '../../package.json';
+import { version } from '../../package.json';
 import { isMac, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
 import { isUrl } from '../common/utils';
@@ -149,8 +149,12 @@ export class AutoUpdate {
       return;
     }
 
-    const isOnLatestVersion =
-      latestVersionFromServer === `${version}-${buildNumber}`;
+    const isOnLatestVersion = latestVersionFromServer === version;
+    logger.info(
+      'auto-update-handler: latest version from server',
+      latestVersionFromServer,
+    );
+    logger.info('auto-update-handler: current version', version);
     if (isOnLatestVersion) {
       logger.info(
         'auto-update-handler: already running the latest version skipping force update',
