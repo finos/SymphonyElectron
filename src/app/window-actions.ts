@@ -1,7 +1,8 @@
 import {
   BrowserWindow,
   dialog,
-  PermissionRequestHandlerHandlerDetails,
+  MediaAccessPermissionRequest,
+  OpenExternalPermissionRequest,
   systemPreferences,
   WebContents,
 } from 'electron';
@@ -414,13 +415,13 @@ export const handleSessionPermissions = async (
  * @param permission {boolean} - config value to a specific permission (only supports media permissions)
  * @param message {string} - custom message displayed to the user
  * @param callback {function}
- * @param details {PermissionRequestHandlerHandlerDetails} - object passed along with certain permission types. see {@link https://www.electronjs.org/docs/api/session#sessetpermissionrequesthandlerhandler}
+ * @param details MediaAccessPermissionRequest see {@link https://www.electronjs.org/docs/latest/api/session/#sessetpermissionrequesthandlerhandler}
  */
 const handleMediaPermissions = async (
   permission: boolean,
   message: string,
   callback: (permission: boolean) => void,
-  details: PermissionRequestHandlerHandlerDetails,
+  details: MediaAccessPermissionRequest,
 ): Promise<void> => {
   logger.info('window-action: permission is ->', permission);
   let systemAudioPermission;
@@ -497,7 +498,7 @@ export const handlePermissionRequests = (webContents: WebContents): void => {
               PERMISSIONS_NAMESPACE,
             )(),
             callback,
-            details,
+            details as MediaAccessPermissionRequest,
           );
         case Permissions.LOCATION:
           return handleSessionPermissions(
@@ -546,9 +547,15 @@ export const handlePermissionRequests = (webContents: WebContents): void => {
           );
         case Permissions.OPEN_EXTERNAL:
           if (
-            details?.externalURL?.startsWith('symphony:') ||
-            details?.externalURL?.startsWith('tel:') ||
-            details?.externalURL?.startsWith('mailto:')
+            (details as OpenExternalPermissionRequest)?.externalURL?.startsWith(
+              'symphony:',
+            ) ||
+            (details as OpenExternalPermissionRequest)?.externalURL?.startsWith(
+              'tel:',
+            ) ||
+            (details as OpenExternalPermissionRequest)?.externalURL?.startsWith(
+              'mailto:',
+            )
           ) {
             return callback(true);
           }
