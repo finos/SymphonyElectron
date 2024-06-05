@@ -581,6 +581,7 @@ public class CustomActions
             session.Log("Error executing CleanNSISRegistryForCurrentUser: " + e.ToString());
             return ActionResult.Success;
         }
+        return ActionResult.Success;
     }
 
     // StartAfterInstall custom action
