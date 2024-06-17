@@ -529,7 +529,7 @@ export class WindowHandler {
     // Event needed to hide native menu bar on Windows 10 as we use custom menu bar
     this.mainWebContents.once('did-start-loading', () => {
       logger.info(
-        `window-handler: main window web contents started loading for url ${this.mainView?.webContents.getURL()}!`,
+        `window-handler: main window web contents started loading for url ${this.mainView?.webContents?.getURL()}!`,
       );
       this.finishedLoading = false;
       this.listenForLoad();
@@ -652,7 +652,7 @@ export class WindowHandler {
     // workaround for https://perzoinc.atlassian.net/browse/SDA-4251
     this.mainWindow?.on('focus', () => {
       const mainView = this.getMainView();
-      mainView?.webContents.focus();
+      mainView?.webContents?.focus();
       if (
         this.mainWindow &&
         windowExists(this.mainWindow) &&
