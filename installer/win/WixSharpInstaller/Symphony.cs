@@ -15,6 +15,8 @@
 //css_imp MaintenanceDialog.cs;
 //css_imp MaintenanceDialog.designer.cs;
 
+using System;
+using System.Security.Principal;
 using WixSharp;
 using WixSharp.Forms;
 using Microsoft.Deployment.WindowsInstaller;
@@ -532,55 +534,59 @@ public class CustomActions
     [CustomAction]
     public static ActionResult CleanNSISRegistryForCurrentUser(Session session)
     {
-        try
+
+        if (IsUserAdministrator())
         {
-            const string uninstallKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
-            const string displayNameValue = "Symphony";
-
-            // Open the Uninstall key
-            using (var key = Registry.CurrentUser.OpenSubKey(uninstallKey))
+            try
             {
-                if (key == null)
-                {
-                    session.Log("Uninstall key not found.");
-                    return ActionResult.Success;
-                }
+                const string uninstallKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
+                const string displayNameValue = "Symphony";
 
-                // Iterate through all subkeys
-                foreach (string subkeyName in key.GetSubKeyNames())
+                // Open the Uninstall key
+                using (var key = Registry.CurrentUser.OpenSubKey(uninstallKey))
                 {
-                    using (var subkey = key.OpenSubKey(subkeyName))
+                    if (key == null)
                     {
-                        if (subkey == null)
-                        {
-                            continue;
-                        }
+                        session.Log("Uninstall key not found.");
+                        return ActionResult.Success;
+                    }
 
-                        // Get the DisplayName value
-                        string displayName = subkey.GetValue("DisplayName") as string;
-                        if (displayName == displayNameValue)
+                    // Iterate through all subkeys
+                    foreach (string subkeyName in key.GetSubKeyNames())
+                    {
+                        using (var subkey = key.OpenSubKey(subkeyName))
                         {
-                            // Get the UninstallString value
-                            string uninstallString = subkey.GetValue("QuietUninstallString") as string;
-                            if (!string.IsNullOrEmpty(uninstallString))
+                            if (subkey == null)
                             {
-                                // Start the uninstallation process
-                                var process = new System.Diagnostics.Process();
-                                process.StartInfo.FileName = "cmd.exe";
-                                process.StartInfo.Arguments = string.Format("/c \"{0}\"", uninstallString);
-                                process.StartInfo.UseShellExecute = false;
-                                process.Start();
-                                process.WaitForExit();
+                                continue;
+                            }
+
+                            // Get the DisplayName value
+                            string displayName = subkey.GetValue("DisplayName") as string;
+                            if (displayName == displayNameValue)
+                            {
+                                // Get the UninstallString value
+                                string uninstallString = subkey.GetValue("QuietUninstallString") as string;
+                                if (!string.IsNullOrEmpty(uninstallString))
+                                {
+                                    // Start the uninstallation process
+                                    var process = new System.Diagnostics.Process();
+                                    process.StartInfo.FileName = "cmd.exe";
+                                    process.StartInfo.Arguments = string.Format("/c \"{0}\"", uninstallString);
+                                    process.StartInfo.UseShellExecute = false;
+                                    process.Start();
+                                    process.WaitForExit();
+                                }
                             }
                         }
                     }
                 }
             }
-        }
-        catch (System.Exception e)
-        {
-            session.Log("Error executing CleanNSISRegistryForCurrentUser: " + e.ToString());
-            return ActionResult.Success;
+            catch (System.Exception e)
+            {
+                session.Log("Error executing CleanNSISRegistryForCurrentUser: " + e.ToString());
+                return ActionResult.Success;
+            }
         }
         return ActionResult.Success;
     }
@@ -608,5 +614,25 @@ public class CustomActions
             return ActionResult.Failure;
         }
         return ActionResult.Success;
+    }
+
+    private static bool IsUserAdministrator()
+    {
+        bool isAdmin;
+        try
+        {
+            WindowsIdentity user = WindowsIdentity.GetCurrent();
+            WindowsPrincipal principal = new WindowsPrincipal(user);
+            isAdmin = principal.IsInRole(WindowsBuiltInRole.Administrator);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            isAdmin = false;
+        }
+        catch (Exception ex)
+        {
+            isAdmin = false;
+        }
+        return isAdmin;
     }
 }
