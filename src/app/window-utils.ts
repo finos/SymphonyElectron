@@ -778,7 +778,7 @@ export const isSymphonyReachable = (
     if (!hostname || !protocol) {
       return;
     }
-    const podUrl = `${protocol}//${hostname}`;
+    const podUrl = `${protocol}//${hostname}/apps/client2/version`;
     logger.info(`window-utils: checking to see if pod ${podUrl} is reachable!`);
     fetch(podUrl, { method: 'GET' })
       .then(async (rsp) => {
