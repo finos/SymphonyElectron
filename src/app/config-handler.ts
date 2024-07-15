@@ -31,6 +31,15 @@ export enum CloudConfigDataTypes {
   DISABLED = 'DISABLED',
 }
 
+export const ConfigFieldsDefaultValues: Partial<IConfig> = {
+  isPodUrlEditable: true,
+  forceAutoUpdate: false,
+  enableBrowserLogin: false,
+  browserLoginAutoConnect: false,
+  latestAutoUpdateChannelEnabled: true,
+  betaAutoUpdateChannelEnabled: true,
+};
+
 export const ConfigFieldsToRestart = new Set([
   'permissions',
   'disableThrottling',
@@ -284,6 +293,7 @@ class Config {
    */
   public getConfigFields(fields: string[]): IConfig {
     const configFields: IConfig = {
+      ...this.getConfigfromDefaultFields(fields),
       ...this.getGlobalConfigFields(fields),
       ...this.getUserConfigFields(fields),
       ...this.getFilteredCloudConfigFields(fields),
@@ -311,6 +321,23 @@ class Config {
       userConfigData,
     );
     return userConfigData;
+  }
+
+  /**
+   * Returns default value of specified fields
+   *
+   * @param fields {Array}
+   */
+  public getConfigfromDefaultFields(fields: string[]): IGlobalConfig {
+    const defaultConfigData = pick(
+      ConfigFieldsDefaultValues,
+      fields,
+    ) as IGlobalConfig;
+    logger.info(
+      `config-handler: getting default config values for the fields ${fields}`,
+      defaultConfigData,
+    );
+    return defaultConfigData;
   }
 
   /**
