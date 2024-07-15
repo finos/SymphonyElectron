@@ -1,7 +1,11 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { IConfig, IGlobalConfig } from '../src/app/config-handler';
+import {
+  ConfigFieldsDefaultValues,
+  IConfig,
+  IGlobalConfig,
+} from '../src/app/config-handler';
 
 jest.mock('electron-log');
 jest.mock('../src/app/auto-update-handler', () => {
@@ -86,6 +90,32 @@ describe('config', () => {
 
       const configField: IConfig = configInstance.getConfigFields(fieldMock);
       expect(configField).toEqual({});
+    });
+
+    it('should retrieve default values when field not present in either user or global config', () => {
+      const fieldMock: string[] = [
+        'isPodUrlEditable',
+        'forceAutoUpdate',
+        'enableBrowserLogin',
+        'browserLoginAutoConnect',
+        'latestAutoUpdateChannelEnabled',
+        'betaAutoUpdateChannelEnabled',
+      ];
+      const globalConfig: object = { url: 'test' };
+      const userConfig: object = { configVersion: '4.0.1' };
+
+      // creating temp file
+      writeConfigFile(globalConfig);
+      writeUserFile(userConfig);
+
+      // changing path from /Users/.../SymphonyElectron/config/Symphony.config to temp path
+      configInstance.globalConfigPath = globalConfigDir;
+      configInstance.userConfigPath = userConfigDir;
+      configInstance.readGlobalConfig();
+      configInstance.readUserConfig();
+
+      const configField: IConfig = configInstance.getConfigFields(fieldMock);
+      expect(configField).toEqual({ ...ConfigFieldsDefaultValues });
     });
 
     it('should succeed when only present in user config', () => {
