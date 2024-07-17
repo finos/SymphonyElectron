@@ -340,7 +340,7 @@ describe('main api handler', () => {
         reason: 'notification',
         windowName: 'notification',
       };
-      const expectedValue = ['notification', false];
+      const expectedValue = ['notification'];
       ipcMain.send(apiName.symphonyApi, value);
       expect(spy).toBeCalledWith(...expectedValue);
     });
