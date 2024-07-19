@@ -207,7 +207,7 @@ ipcMain.on(
         if (typeof arg.reason === 'string' && arg.reason === 'notification') {
           const { bringToFront } = config.getConfigFields(['bringToFront']);
           if (bringToFront === CloudConfigDataTypes.ENABLED) {
-            activate(arg.windowName);
+            activate(arg.windowName, false);
           }
         }
         break;
