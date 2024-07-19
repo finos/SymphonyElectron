@@ -187,7 +187,9 @@ export const activate = (
         // Bring the window to the top without focusing
         // Flash task bar icon in Windows for windows
         if (!shouldFocus) {
-          return isMac || isLinux ? window.show() : window.flashFrame(true);
+          return isMac || isLinux
+            ? window.showInactive()
+            : window.flashFrame(true);
         }
 
         // Note: On window just focusing will preserve window snapped state
