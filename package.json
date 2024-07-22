@@ -220,7 +220,7 @@
     "electron-dl": "3.5.0",
     "electron-fetch": "1.9.1",
     "electron-log": "4.4.8",
-    "electron-updater": "^6.1.9",
+    "electron-updater": "6.3.0",
     "filesize": "^10.0.6",
     "lazy-brush": "^1.0.1",
     "lodash.debounce": "^4.0.8",
