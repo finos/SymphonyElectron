@@ -175,6 +175,7 @@ class ProtocolHandler {
     const redirectURL = userConfig.url ? userConfig.url : globalConfig.url;
     const { subdomain, tld, domain } =
       whitelistHandler.parseDomain(redirectURL);
+    const navigateURL = `https://${subdomain}.${domain}${tld}`;
     const cookieDomain = `.${subdomain}.${domain}${tld}`;
     if (protocolUri) {
       const urlParams = new URLSearchParams(new URL(protocolUri).search);
@@ -182,7 +183,7 @@ class ProtocolHandler {
       const anticsrfValue = urlParams.get('anticsrf');
       if (skeyValue && anticsrfValue) {
         const skeyCookie: CookiesSetDetails = {
-          url: redirectURL,
+          url: navigateURL,
           name: 'skey',
           value: skeyValue,
           secure: true,
@@ -192,7 +193,7 @@ class ProtocolHandler {
           path: '/',
         };
         const csrfCookie: CookiesSetDetails = {
-          url: redirectURL,
+          url: navigateURL,
           name: 'anti-csrf-cookie',
           value: anticsrfValue,
           secure: true,
@@ -212,13 +213,13 @@ class ProtocolHandler {
         }
       }
       const mainWebContents = windowHandler.getMainWebContents();
-      if (mainWebContents && !mainWebContents?.isDestroyed() && redirectURL) {
+      if (mainWebContents && !mainWebContents?.isDestroyed() && navigateURL) {
         logger.info(
           'protocol-handler: redirecting main webContents ',
-          redirectURL,
+          navigateURL,
         );
-        windowHandler.setMainWindowOrigin(redirectURL);
-        mainWebContents?.loadURL(redirectURL);
+        windowHandler.setMainWindowOrigin(navigateURL);
+        mainWebContents?.loadURL(navigateURL);
         const mainWindow = windowHandler.getMainWindow();
         if (mainWindow?.isMinimized()) {
           mainWindow.restore();
