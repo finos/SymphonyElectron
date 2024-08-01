@@ -1952,6 +1952,7 @@ export class WindowHandler {
           maximizable: false,
           title: 'Screen Sharing Indicator - Symphony',
           closable: false,
+          useContentSize: true,
         },
         {
           devTools: isDevEnv,
