@@ -233,7 +233,7 @@
   },
   "optionalDependencies": {
     "@symphony/symphony-c9-shell": "3.30.0-37.176",
-    "screen-share-indicator-frame": "git+https://github.com/finos/ScreenShareIndicatorFrame.git#v1.4.13",
+    "screen-share-indicator-frame": "git+https://github.com/finos/ScreenShareIndicatorFrame.git#v1.5.0",
     "screen-snippet": "git+https://github.com/finos/ScreenSnippet2.git#9.2.2",
     "symphony-native-window-handle-helper": "github:finos/SymphonyWindowsHwndHelper#1.0.1",
     "winreg": "^1.2.4"
