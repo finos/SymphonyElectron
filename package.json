@@ -178,7 +178,7 @@
     "builder-util-runtime": "^9.0.3",
     "cross-env": "7.0.3",
     "del": "3.0.0",
-    "electron": "31.3.0",
+    "electron": "31.4.0",
     "electron-builder": "^24.13.2",
     "electron-devtools-installer": "^3.2.0",
     "electron-icon-maker": "0.0.5",
@@ -233,7 +233,7 @@
   },
   "optionalDependencies": {
     "@symphony/symphony-c9-shell": "3.30.0-37.176",
-    "screen-share-indicator-frame": "git+https://github.com/finos/ScreenShareIndicatorFrame.git#v1.4.13",
+    "screen-share-indicator-frame": "git+https://github.com/finos/ScreenShareIndicatorFrame.git#v1.5.0",
     "screen-snippet": "git+https://github.com/finos/ScreenSnippet2.git#9.2.2",
     "symphony-native-window-handle-helper": "github:finos/SymphonyWindowsHwndHelper#1.0.1",
     "winreg": "^1.2.4"
