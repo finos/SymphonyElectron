@@ -1569,9 +1569,22 @@ export class WindowHandler {
           logger.info(
             'window-handler: source.display_id: ' + source.display_id,
           );
-          const [sharedScreen] = displays.filter(
-            (display) => display.id.toString() === source.display_id.toString(),
-          );
+          let displayId = source.display_id;
+          let sharedScreen;
+          if (displayId) {
+            [sharedScreen] = displays.filter(
+              (display) => display.id.toString() === displayId.toString(),
+            );
+          } else {
+            logger.warn(
+              'window-handler: no display id found - trying to find correct display',
+            );
+            const dispId = source.id.split(':')[1];
+            displayId = Math.min(dispId, displays.length - 1);
+            logger.info('window-handler: dispId: ' + dispId);
+            logger.info('window-handler: clampedDispId: ' + displayId);
+            sharedScreen = displays[displayId];
+          }
           if (sharedScreen) {
             const left =
               sharedScreen.nativeOrigin.x * (sharedScreen.scaleFactor || 1);
@@ -1591,7 +1604,7 @@ export class WindowHandler {
             ]);
           } else {
             logger.error(
-              `window-handler: no screen found with id ${source.display_id}`,
+              `window-handler: no screen found with id ${source.display_id} or ${displayId}`,
             );
           }
         }
