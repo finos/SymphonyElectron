@@ -178,7 +178,7 @@
     "builder-util-runtime": "^9.0.3",
     "cross-env": "7.0.3",
     "del": "3.0.0",
-    "electron": "31.2.1",
+    "electron": "32.0.1",
     "electron-builder": "^24.13.2",
     "electron-devtools-installer": "^3.2.0",
     "electron-icon-maker": "0.0.5",
@@ -210,7 +210,8 @@
     "ts-jest": "25.3.0",
     "tslint": "5.20.1",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "cheerio": "v1.0.0-rc.12"
   },
   "dependencies": {
     "@types/lazy-brush": "^1.0.0",
@@ -233,7 +234,7 @@
   },
   "optionalDependencies": {
     "@symphony/symphony-c9-shell": "3.30.0-37.176",
-    "screen-share-indicator-frame": "git+https://github.com/finos/ScreenShareIndicatorFrame.git#v1.4.13",
+    "screen-share-indicator-frame": "github:finos/ScreenShareIndicatorFrame#v1.5.0",
     "screen-snippet": "git+https://github.com/finos/ScreenSnippet2.git#9.2.2",
     "symphony-native-window-handle-helper": "github:finos/SymphonyWindowsHwndHelper#1.0.1",
     "winreg": "^1.2.4"

@@ -1569,25 +1569,43 @@ export class WindowHandler {
           logger.info(
             'window-handler: source.display_id: ' + source.display_id,
           );
-          if (source.display_id !== '') {
+          let displayId = source.display_id;
+          let sharedScreen;
+          if (displayId) {
+            [sharedScreen] = displays.filter(
+              (display) => display.id.toString() === displayId.toString(),
+            );
+          } else {
+            logger.warn(
+              'window-handler: no display id found - trying to find correct display',
+            );
+            const dispId = source.id.split(':')[1];
+            displayId = Math.min(dispId, displays.length - 1);
+            logger.info('window-handler: dispId: ' + dispId);
+            logger.info('window-handler: clampedDispId: ' + displayId);
+            sharedScreen = displays[displayId];
+          }
+          if (sharedScreen) {
+            const left =
+              sharedScreen.nativeOrigin.x * (sharedScreen.scaleFactor || 1);
+            const top =
+              sharedScreen.nativeOrigin.y * (sharedScreen.scaleFactor || 1);
+            const right =
+              left +
+              sharedScreen.bounds.width * (sharedScreen.scaleFactor || 1);
+            const bottom =
+              top +
+              sharedScreen.bounds.height * (sharedScreen.scaleFactor || 1);
             this.execCmd(this.screenShareIndicatorFrameUtil, [
-              source.display_id,
+              left.toString(),
+              top.toString(),
+              right.toString(),
+              bottom.toString(),
             ]);
           } else {
-            const dispId = source.id.split(':')[1];
-            const clampedDispId = Math.min(dispId, displays.length - 1);
-            const keyId = 'id';
-            logger.info('window-utils: dispId: ' + dispId);
-            logger.info('window-utils: clampedDispId: ' + clampedDispId);
-            logger.info(
-              'window-utils: displays [' +
-                clampedDispId +
-                '] [id]: ' +
-                displays[clampedDispId][keyId],
+            logger.error(
+              `window-handler: no screen found with id ${source.display_id} or ${displayId}`,
             );
-            this.execCmd(this.screenShareIndicatorFrameUtil, [
-              displays[clampedDispId][keyId].toString(),
-            ]);
           }
         }
       }
