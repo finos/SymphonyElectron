@@ -163,25 +163,36 @@ export default class NotificationHandler {
       return;
     }
 
-    // Set initial position
-    const posY = this.settings.firstPos.y;
-
+    let posY;
     const stackOffset = 10; // Vertical offset for each stacked notification
 
-    activeNotifications.forEach((notificationWindow, index) => {
-      if (!windowExists(notificationWindow)) {
-        return;
-      }
+    switch (this.settings.startCorner) {
+      case 'upper-right':
+      case 'upper-left':
+        posY = this.settings.firstPos.y;
+        activeNotifications.forEach((notificationWindow, index) => {
+          if (!windowExists(notificationWindow)) {
+            return;
+          }
+          const newY = posY + stackOffset * index;
+          const newX = this.settings.firstPos.x;
+          this.setWindowPosition(notificationWindow, newX, newY);
+        });
+        break;
+      case 'lower-right':
+      case 'lower-left':
+        posY = this.settings.firstPos.y;
+        activeNotifications.forEach((notificationWindow, index) => {
+          if (!windowExists(notificationWindow)) {
+            return;
+          }
+          const newY = posY - stackOffset * index;
+          const newX = this.settings.firstPos.x;
+          this.setWindowPosition(notificationWindow, newX, newY);
+        });
+        break;
+    }
 
-      // Calculate new position for each notification in the stack
-      const newY = posY + stackOffset * index;
-
-      // Keep the x position constant
-      const newX = this.settings.firstPos.x;
-
-      // Set the position of the notification window
-      this.setWindowPosition(notificationWindow, newX, newY);
-    });
     this.isNotificationStacked = true;
   }
 
@@ -214,7 +225,6 @@ export default class NotificationHandler {
           break;
         case 'lower-right':
         case 'lower-left':
-        default:
           cumulativeHeight += height + this.settings.spacing;
           newY = this.settings.corner.y - cumulativeHeight;
           break;
