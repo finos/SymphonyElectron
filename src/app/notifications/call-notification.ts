@@ -120,6 +120,7 @@ class CallNotification {
     this.callNotificationWindow.once('closed', () => {
       this.callNotificationWindow = undefined;
     });
+    notification.stack();
   };
 
   /**
@@ -127,7 +128,8 @@ class CallNotification {
    *
    * @param clientId {number}
    */
-  public notificationClicked(clientId): void {
+  public notificationClicked(clientId: number): void {
+    notification.unstack();
     const browserWindow = this.callNotificationWindow;
     if (
       browserWindow &&
@@ -148,6 +150,7 @@ class CallNotification {
    * @param clientId {number}
    */
   public onCallNotificationOnAccept(clientId: number): void {
+    notification.unstack();
     const browserWindow = this.callNotificationWindow;
     if (
       browserWindow &&
@@ -168,6 +171,7 @@ class CallNotification {
    * @param clientId {number}
    */
   public onCallNotificationOnReject(clientId: number): void {
+    notification.unstack();
     const browserWindow = this.callNotificationWindow;
     if (
       browserWindow &&
@@ -187,6 +191,7 @@ class CallNotification {
    * Close the notification window
    */
   public closeNotification(clientId: number): void {
+    notification.unstack();
     const browserWindow = this.callNotificationWindow;
     if (browserWindow && windowExists(browserWindow)) {
       if (

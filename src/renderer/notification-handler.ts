@@ -1,5 +1,4 @@
-import * as asyncMap from 'async.map';
-import { app, screen } from 'electron';
+import { app, BrowserWindow, screen } from 'electron';
 
 import { windowExists } from '../app/window-utils';
 import { isLinux, isMac } from '../common/env';
@@ -31,7 +30,8 @@ const NEXT_INSERT_POSITION_WITH_INPUT = 142;
 const NOTIFICATIONS_PADDING_SEPARATION = 12;
 const CALL_NOTIFICATION_WIDTH = 264;
 const CALL_NOTIFICATION_HEIGHT = 286;
-const MAX_VISIBLE_TOAST_FOR_CALL_NOTIFICATION = 3;
+const MAX_VISIBLE_TOAST_FOR_CALL_NOTIFICATION = 0;
+const NOTIFICATION_STACK_HEIGHT = 10;
 export default class NotificationHandler {
   public settings: ISettings;
   public callNotificationSettings: ICorner = { x: 0, y: 0 };
@@ -42,8 +42,9 @@ export default class NotificationHandler {
   };
 
   private externalDisplay: Electron.Display | undefined;
+  private isNotificationStacked: boolean = false;
 
-  constructor(opts) {
+  constructor(opts: ISettings) {
     this.settings = opts as ISettings;
     this.setupNotificationPosition();
 
@@ -71,11 +72,7 @@ export default class NotificationHandler {
         window.setPosition(parseInt(String(x), 10), parseInt(String(y), 10));
       } catch (err) {
         console.warn(
-          'Failed to set window position. x: ' +
-            x +
-            ' y: ' +
-            y +
-            '. Contact the developers for more details',
+          `Failed to set window position. x: ${x} y: ${y}. Contact the developers for more details`,
         );
       }
     }
@@ -92,10 +89,9 @@ export default class NotificationHandler {
 
     const screens = screen.getAllDisplays();
     if (screens && screens.length >= 0) {
-      this.externalDisplay = screens.find((screen) => {
-        const screenId = screen.id.toString();
-        return screenId === this.settings.displayId;
-      });
+      this.externalDisplay = screens.find(
+        (screen) => screen.id.toString() === this.settings.displayId,
+      );
     }
 
     const display = this.externalDisplay || screen.getPrimaryDisplay();
@@ -157,9 +153,91 @@ export default class NotificationHandler {
   }
 
   /**
-   * Find next possible insert position (on top)
+   * Stacks all active notifications on top of each other
+   * like cards stacked with a small offset.
+   *
+   * @param activeNotifications {BrowserWindow[]}
    */
-  public calcNextInsertPos(activeNotifications) {
+  public stackNotifications(activeNotifications: BrowserWindow[]) {
+    if (!activeNotifications || activeNotifications.length === 0) {
+      return;
+    }
+
+    // Set initial position
+    const posY = this.settings.firstPos.y;
+
+    const stackOffset = 10; // Vertical offset for each stacked notification
+
+    activeNotifications.forEach((notificationWindow, index) => {
+      if (!windowExists(notificationWindow)) {
+        return;
+      }
+
+      // Calculate new position for each notification in the stack
+      const newY = posY + stackOffset * index;
+
+      // Keep the x position constant
+      const newX = this.settings.firstPos.x;
+
+      // Set the position of the notification window
+      this.setWindowPosition(notificationWindow, newX, newY);
+    });
+    this.isNotificationStacked = true;
+  }
+
+  /**
+   * Unstacks all active notifications, restoring them to their original positions.
+   *
+   * @param activeNotifications {BrowserWindow[]}
+   */
+  public unstackNotifications(activeNotifications: BrowserWindow[]) {
+    if (!activeNotifications || activeNotifications.length === 0) {
+      return;
+    }
+
+    let cumulativeHeight = 0;
+
+    activeNotifications.forEach((notificationWindow) => {
+      if (!windowExists(notificationWindow)) {
+        return;
+      }
+
+      // Get actual height of the notification
+      const height = notificationWindow.getBounds().height;
+
+      let newY;
+      switch (this.settings.startCorner) {
+        case 'upper-right':
+        case 'upper-left':
+          newY = this.settings.corner.y + cumulativeHeight;
+          cumulativeHeight += height + this.settings.spacing;
+          break;
+        case 'lower-right':
+        case 'lower-left':
+        default:
+          cumulativeHeight += height + this.settings.spacing;
+          newY = this.settings.corner.y - cumulativeHeight;
+          break;
+      }
+
+      // The x position should remain the same as the first position
+      const newX = this.settings.firstPos.x;
+
+      // Set the position of the notification window
+      this.setWindowPosition(notificationWindow, newX, newY);
+    });
+
+    this.isNotificationStacked = false;
+  }
+
+  /**
+   * Calculates the next insert position for new notifications based on the current layout.
+   *
+   * @public
+   * @param {BrowserWindow[]} activeNotifications - An array containing references to all active notification windows.
+   * @returns {void}
+   */
+  public calcNextInsertPos(activeNotifications: BrowserWindow[]): void {
     let nextNotificationY: number = 0;
     activeNotifications.forEach((notification) => {
       if (notification && windowExists(notification)) {
@@ -168,7 +246,13 @@ export default class NotificationHandler {
           height > this.settings.height
             ? NEXT_INSERT_POSITION_WITH_INPUT
             : NEXT_INSERT_POSITION;
-        nextNotificationY += shift + NOTIFICATIONS_PADDING_SEPARATION;
+        if (this.isNotificationStacked) {
+          // When stacked, only consider padding separation for next insert position
+          nextNotificationY += NOTIFICATIONS_PADDING_SEPARATION;
+        } else {
+          // When not stacked, use the standard shift height and padding
+          nextNotificationY += shift + NOTIFICATIONS_PADDING_SEPARATION;
+        }
       }
     });
     if (activeNotifications.length < this.settings.maxVisibleNotifications) {
@@ -177,7 +261,6 @@ export default class NotificationHandler {
         case 'upper-left':
           this.nextInsertPos.y = this.settings.corner.y + nextNotificationY;
           break;
-
         default:
         case 'lower-right':
         case 'lower-left':
@@ -189,101 +272,128 @@ export default class NotificationHandler {
   }
 
   /**
-   * Moves the notification by one step
+   * Animates the position of notifications when the notification is closed or added.
    *
-   * @param startPos {number}
-   * @param activeNotifications {ICustomBrowserWindow[]}
-   * @param height {number} height of the closed notification
-   * @param isReset {boolean} whether to reset all notification position
+   * @public
+   * @param {number} startPos - The starting position in the active notifications array from which to begin the animation.
+   * @param {BrowserWindow[]} activeNotifications - An array containing references to all active notification windows.
+   * @param {number} closedNotificationHeight - The height of the closed notification, used for adjusting positions.
+   * @param {boolean} isReset - Indicates whether the notification positions should be reset to their original positions.
+   * @returns {void}
    */
-  public moveNotificationDown(
-    startPos,
-    activeNotifications,
-    height: number = 0,
+  public moveNotification(
+    startPos: number,
+    activeNotifications: BrowserWindow[],
+    closedNotificationHeight: number = 0,
     isReset: boolean = false,
-  ) {
-    if (startPos >= activeNotifications || startPos === -1) {
+  ): void {
+    if (startPos >= activeNotifications.length || startPos === -1) {
       return;
     }
-    // Build array with index of affected notifications
+
     const notificationPosArray: number[] = [];
     for (let i = startPos; i < activeNotifications.length; i++) {
       notificationPosArray.push(i);
     }
-    asyncMap(notificationPosArray, (i, done) => {
-      // Get notification to move
+
+    notificationPosArray.forEach((i) => {
       const notificationWindow = activeNotifications[i];
       if (!windowExists(notificationWindow)) {
         return;
       }
-      const [, y] = notificationWindow.getPosition();
 
-      // Calc new y position
       let newY;
-      switch (this.settings.startCorner) {
-        case 'upper-right':
-        case 'upper-left':
-          newY = isReset
-            ? this.settings.corner.y + this.settings.totalHeight * i
-            : y - height - this.settings.spacing;
-          break;
-        default:
-        case 'lower-right':
-        case 'lower-left':
-          newY = isReset
-            ? this.settings.corner.y - this.settings.totalHeight * (i + 1)
-            : y + height + this.settings.spacing;
-          break;
+      const newX = this.settings.firstPos.x;
+
+      if (this.isNotificationStacked) {
+        newY = this.settings.firstPos.y + NOTIFICATION_STACK_HEIGHT * i;
+      } else {
+        const [, y] = notificationWindow.getPosition();
+
+        switch (this.settings.startCorner) {
+          case 'upper-right':
+          case 'upper-left':
+            if (isReset) {
+              newY = this.settings.corner.y + this.settings.totalHeight * i;
+            } else {
+              const heightAdjustment = closedNotificationHeight
+                ? closedNotificationHeight + this.settings.spacing
+                : this.settings.totalHeight + this.settings.spacing;
+              newY = y - heightAdjustment;
+            }
+            break;
+          default:
+          case 'lower-right':
+          case 'lower-left':
+            if (isReset) {
+              newY =
+                this.settings.corner.y - this.settings.totalHeight * (i + 1);
+            } else {
+              const heightAdjustment = closedNotificationHeight
+                ? closedNotificationHeight + this.settings.spacing
+                : this.settings.totalHeight + this.settings.spacing;
+              newY = y + heightAdjustment;
+            }
+            break;
+        }
       }
 
-      this.animateNotificationPosition(notificationWindow, newY, done);
+      this.animateNotificationPosition(notificationWindow, newY, newX);
     });
   }
 
   /**
-   * Moves the notification by one step
+   * Moves a notification up in the stack.
    *
-   * @param startPos {number}
-   * @param activeNotifications {ICustomBrowserWindow[]}
+   * @public
+   * @param {number} startPos - The starting position in the active notifications array.
+   * @param {BrowserWindow[]} activeNotifications - An array containing references to all active notification windows.
+   * @returns {void}
    */
-  public moveNotificationUp(startPos, activeNotifications) {
-    if (startPos >= activeNotifications || startPos === -1) {
+  public moveNotificationUp(
+    startPos: number,
+    activeNotifications: BrowserWindow[],
+  ): void {
+    if (startPos >= activeNotifications.length || startPos === -1) {
       return;
     }
-    if (
-      this.settings.startCorner === 'lower-right' ||
-      this.settings.startCorner === 'lower-left'
-    ) {
+
+    // Adjust startPos for lower corners
+    if (['lower-right', 'lower-left'].includes(this.settings.startCorner)) {
       startPos -= 1;
     }
-    // Build array with index of affected notifications
+
     const notificationPosArray: number[] = [];
     for (let i = startPos; i < activeNotifications.length; i++) {
       notificationPosArray.push(i);
     }
-    asyncMap(notificationPosArray, (i, done) => {
-      // Get notification to move
+
+    notificationPosArray.forEach((i) => {
       const notificationWindow = activeNotifications[i];
       if (!windowExists(notificationWindow)) {
         return;
       }
-      const [, y] = notificationWindow.getPosition();
 
-      // Calc new y position
-      let newY;
+      const [, y] = notificationWindow.getPosition();
+      let newY: number;
+      const newX = this.settings.firstPos.x;
+
+      // Calculate new Y position based on the start corner
       switch (this.settings.startCorner) {
         case 'upper-right':
         case 'upper-left':
           newY = y + this.settings.differentialHeight;
           break;
-        default:
         case 'lower-right':
         case 'lower-left':
           newY = y - this.settings.differentialHeight;
           break;
+        default:
+          newY = y;
       }
 
-      this.animateNotificationPosition(notificationWindow, newY, done);
+      // Animate the notification to the new position
+      this.animateNotificationPosition(notificationWindow, newY, newX);
     });
   }
 
@@ -291,30 +401,31 @@ export default class NotificationHandler {
    * Get startPos, calc step size and start animationInterval
    * @param notificationWindow
    * @param newY
-   * @param done
-   * @private
+   * @param newX
    */
-  private animateNotificationPosition(notificationWindow, newY, done) {
-    const startY = notificationWindow.getPosition()[1];
-    const step = (newY - startY) / this.settings.animationSteps;
+  private animateNotificationPosition(
+    notificationWindow: Electron.BrowserWindow,
+    newY: number,
+    newX: number,
+  ) {
+    const [startX, startY] = notificationWindow.getPosition();
+    const stepY = (newY - startY) / this.settings.animationSteps;
+    const stepX = (newX - startX) / this.settings.animationSteps;
+
     let curStep = 1;
     const animationInterval = setInterval(() => {
       // Abort condition
       if (curStep === this.settings.animationSteps) {
-        this.setWindowPosition(
-          notificationWindow,
-          this.settings.firstPos.x,
-          newY,
-        );
+        this.setWindowPosition(notificationWindow, newX, newY);
         clearInterval(animationInterval);
-        done(null, 'done');
         return;
       }
-      // Move one step down
+
+      // Move one step in both x and y directions
       this.setWindowPosition(
         notificationWindow,
-        this.settings.firstPos.x,
-        startY + curStep * step,
+        startX + curStep * stepX,
+        startY + curStep * stepY,
       );
       curStep++;
     }, this.settings.animationStepMs);

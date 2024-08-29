@@ -325,7 +325,7 @@ class Notification extends NotificationHandler {
         browserWindow.close();
       }
 
-      this.moveNotificationDown(pos, this.activeNotifications, height);
+      this.moveNotification(pos, this.activeNotifications, height, false);
 
       if (
         this.notificationQueue.length > 0 &&
@@ -452,7 +452,7 @@ class Notification extends NotificationHandler {
 
     // recalculate notification position
     this.setupNotificationPosition();
-    this.moveNotificationDown(0, this.activeNotifications, 0, true);
+    this.moveNotification(0, this.activeNotifications, 0, true);
   }
 
   /**
@@ -504,6 +504,20 @@ class Notification extends NotificationHandler {
           browserWindow.moveTop();
         }
       });
+  }
+
+  /**
+   * Stacks the active notifications
+   */
+  public stack() {
+    this.stackNotifications(this.activeNotifications);
+  }
+
+  /**
+   * unstacks the active notifications
+   */
+  public unstack(): void {
+    this.unstackNotifications(this.activeNotifications);
   }
 
   /**
