@@ -14,6 +14,7 @@ import {
   IApiArgs,
   IAuthResponse,
   ICallNotificationData,
+  IClientSpecificSupportLink,
   INotificationData,
 } from '../common/api-interface';
 import { i18n, LocaleType } from '../common/i18n';
@@ -61,7 +62,7 @@ import { autoUpdate, AutoUpdateTrigger } from './auto-update-handler';
 import { SDAUserSessionActionTypes } from './bi/interface';
 import { presenceStatus } from './presence-status-handler';
 import { appStats } from './stats';
-import { presenceStatusStore } from './stores/index';
+import { presenceStatusStore, sdaMenuStore } from './stores/index';
 import { voiceHandler } from './voice-handler';
 
 // Swift search API
@@ -543,6 +544,17 @@ ipcMain.on(
         break;
       case apiCmds.unregisterPhoneNumberServices:
         voiceHandler.unregisterSymphonyAsDefaultApp(arg.protocols);
+        break;
+      case apiCmds.getHelpInfo:
+        const helpCenter: IClientSpecificSupportLink = await arg.callback?.();
+        const helpMenu = sdaMenuStore.getHelpMenuSingleton();
+
+        logger.info(
+          `main-api-handler: getHelpInfo is triggered with value ${helpCenter.linkAddress}`,
+          helpCenter,
+        );
+
+        helpMenu.setValue(helpCenter);
         break;
       default:
         break;

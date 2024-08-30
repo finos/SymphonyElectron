@@ -69,6 +69,7 @@ if (ssfWindow.ssf) {
     addLogs: ssfWindow.ssf.addLogs,
     registerAnalyticsEvent: ssfWindow.ssf.registerAnalyticsEvent,
     registerWriteImageToClipboard: ssfWindow.ssf.registerWriteImageToClipboard,
+    registerGetHelpInfo: ssfWindow.ssf.registerGetHelpInfo,
     ScreenSnippet: ssfWindow.ssf.ScreenSnippet,
     openScreenSnippet: ssfWindow.ssf.openScreenSnippet,
     closeScreenSnippet: ssfWindow.ssf.closeScreenSnippet,

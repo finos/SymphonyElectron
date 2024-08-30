@@ -1,4 +1,4 @@
-import Timer = NodeJS.Timer;
+// import Timer = NodeJS.Timer;
 import { ipcRenderer } from 'electron';
 
 import { i18n } from '../../common/i18n-preload';
@@ -11,7 +11,7 @@ export default class SnackBar {
     onRemoveSnackBar: () => this.removeSnackBar(),
   };
 
-  private snackBarTimer: Timer | undefined;
+  private snackBarTimer: any;
   private domParser: DOMParser | undefined;
   private body: HTMLCollectionOf<Element> | undefined;
   private snackBar: HTMLElement | null = null;

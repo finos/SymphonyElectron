@@ -39,6 +39,7 @@ import {
   AnalyticsElements,
   MenuActionTypes,
 } from './bi/interface';
+import { sdaMenuStore } from './stores';
 
 export const menuSections = {
   about: 'about',
@@ -134,6 +135,7 @@ export class AppMenu {
   private readonly menuItemConfigFields: string[];
   private disableGpu: boolean;
   private enableRendererLogs: boolean;
+  private helpMenuSingleton = sdaMenuStore.getHelpMenuSingleton();
 
   constructor() {
     this.menuList = [];
@@ -146,6 +148,7 @@ export class AppMenu {
     this.enableRendererLogs = config.getConfigFields([
       'enableRendererLogs',
     ]).enableRendererLogs;
+
     this.buildMenu();
   }
 
@@ -605,6 +608,7 @@ export class AppMenu {
         windowHandler.url.startsWith('https://corporate.symphony.com')) ||
       false;
     const updateChannel = this.getUpdateChannel();
+
     return {
       label: i18n.t('Help')(),
       role: 'help',
@@ -612,6 +616,14 @@ export class AppMenu {
         {
           click: () => shell.openExternal(i18n.t('Help Url')()),
           label: i18n.t('Symphony Help')(),
+        },
+        {
+          click: () =>
+            shell.openExternal(
+              this.helpMenuSingleton.getValue()?.linkAddress ?? '',
+            ),
+          label: i18n.t('Helpdesk portals')(),
+          visible: !!this.helpMenuSingleton.getValue()?.linkAddress,
         },
         {
           click: () => shell.openExternal(i18n.t('Symphony Url')()),

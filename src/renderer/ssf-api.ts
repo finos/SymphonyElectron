@@ -16,6 +16,7 @@ import {
   EPresenceStatusCategory,
   IBoundsChange,
   ICallNotificationData,
+  IClientSpecificSupportLink,
   ICloud9Pipe,
   ICPUUsage,
   ILogMsg,
@@ -67,6 +68,7 @@ export interface ILocalObject {
   updateMyPresenceCallback?: (presence: EPresenceStatusCategory) => void;
   phoneNumberCallback?: (arg: string) => void;
   writeImageToClipboard?: (blob: string) => void;
+  getHelpInfo?: () => Promise<IClientSpecificSupportLink>;
 }
 
 const local: ILocalObject = {
@@ -227,6 +229,12 @@ export class SSFApi {
       searchApiVer: searchAPIVersion,
     });
   }
+
+  // public getHelpInfo = async (): Promise<
+  //   IClientSpecificSupportLink | undefined
+  // > => {
+  //   return await local.getHelpInfo?.();
+  // };
 
   /**
    * Allows JS to register a activity detector that can be used by electron main process.
@@ -393,6 +401,23 @@ export class SSFApi {
   public registerWriteImageToClipboard(callback): void {
     if (typeof callback === 'function') {
       local.writeImageToClipboard = callback;
+    }
+  }
+
+  /**
+   * Register event to getHelpInfo API
+   *
+   * @param callback retrieve callback getHelpInfo
+   */
+  public registerGetHelpInfo(
+    callback: () => Promise<IClientSpecificSupportLink>,
+  ): void {
+    if (typeof callback === 'function') {
+      local.getHelpInfo = callback;
+      ipcRenderer.send(apiName.symphonyApi, {
+        cmd: apiCmds.getHelpInfo,
+        callback,
+      });
     }
   }
 

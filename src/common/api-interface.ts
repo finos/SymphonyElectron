@@ -82,6 +82,7 @@ export enum apiCmds {
   updateSymphonyTray = 'update-system-tray',
   registerPhoneNumberServices = 'register-phone-numbers-services',
   unregisterPhoneNumberServices = 'unregister-phone-numbers-services',
+  getHelpInfo = 'get-help-info',
 }
 
 export enum apiName {
@@ -148,6 +149,7 @@ export interface IApiArgs {
   hideOnCapture: boolean;
   status: IPresenceStatus;
   protocols: PhoneNumberProtocol[];
+  callback?: any;
 }
 
 export type Themes = 'light' | 'dark';
@@ -424,4 +426,11 @@ export interface IAuthResponse {
 export enum PhoneNumberProtocol {
   Tel = 'tel',
   Sms = 'sms',
+}
+
+export interface IClientSpecificSupportLink {
+  linkAddress: string;
+  linkText: string;
+  enableClientSpecificSupportLink: boolean;
+  configurationType: 'clientSpecificSupportLink' | string;
 }
