@@ -164,7 +164,6 @@ export default class NotificationHandler {
     }
 
     let posY;
-    const stackOffset = 10; // Vertical offset for each stacked notification
 
     switch (this.settings.startCorner) {
       case 'upper-right':
@@ -174,7 +173,7 @@ export default class NotificationHandler {
           if (!windowExists(notificationWindow)) {
             return;
           }
-          const newY = posY + stackOffset * index;
+          const newY = posY + NOTIFICATION_STACK_HEIGHT * index;
           const newX = this.settings.firstPos.x;
           this.setWindowPosition(notificationWindow, newX, newY);
         });
@@ -186,7 +185,7 @@ export default class NotificationHandler {
           if (!windowExists(notificationWindow)) {
             return;
           }
-          const newY = posY - stackOffset * index;
+          const newY = posY - NOTIFICATION_STACK_HEIGHT * index;
           const newX = this.settings.firstPos.x;
           this.setWindowPosition(notificationWindow, newX, newY);
         });
@@ -316,7 +315,21 @@ export default class NotificationHandler {
       const newX = this.settings.firstPos.x;
 
       if (this.isNotificationStacked) {
-        newY = this.settings.firstPos.y + NOTIFICATION_STACK_HEIGHT * i;
+        if (isReset) {
+          switch (this.settings.startCorner) {
+            case 'upper-right':
+            case 'upper-left':
+              newY = this.settings.corner.y + NOTIFICATION_STACK_HEIGHT * i;
+              break;
+            case 'lower-right':
+            case 'lower-left':
+              const posY = this.settings.firstPos.y;
+              newY = posY - NOTIFICATION_STACK_HEIGHT * i;
+              break;
+          }
+        } else {
+          newY = this.settings.firstPos.y + NOTIFICATION_STACK_HEIGHT * i;
+        }
       } else {
         const [, y] = notificationWindow.getPosition();
 
