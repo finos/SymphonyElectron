@@ -14,8 +14,8 @@ import {
   IApiArgs,
   IAuthResponse,
   ICallNotificationData,
-  IClientSpecificSupportLink,
   INotificationData,
+  IPodSettingsClientSpecificSupportLink,
 } from '../common/api-interface';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
@@ -546,13 +546,9 @@ ipcMain.on(
         voiceHandler.unregisterSymphonyAsDefaultApp(arg.protocols);
         break;
       case apiCmds.getHelpInfo:
-        const helpCenter: IClientSpecificSupportLink = await arg.callback?.();
+        const helpCenter: IPodSettingsClientSpecificSupportLink =
+          arg.menu?.supportPage;
         const helpMenu = sdaMenuStore.getHelpMenuSingleton();
-
-        logger.info(
-          `main-api-handler: getHelpInfo is triggered with value ${helpCenter.linkAddress}`,
-          helpCenter,
-        );
 
         helpMenu.setValue(helpCenter);
         break;

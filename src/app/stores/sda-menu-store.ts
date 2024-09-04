@@ -1,8 +1,9 @@
-import { IClientSpecificSupportLink } from '../../common/api-interface';
+import { IPodSettingsClientSpecificSupportLink } from '../../common/api-interface';
 import { BaseSingleton } from './Singleton/BaseSingleton';
 
 export class SDAMenuStore {
-  protected helpMenuSingleton = new BaseSingleton<IClientSpecificSupportLink>();
+  protected helpMenuSingleton =
+    new BaseSingleton<IPodSettingsClientSpecificSupportLink>();
 
   public getHelpMenuSingleton = () => {
     return this.helpMenuSingleton;

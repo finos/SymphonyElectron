@@ -16,12 +16,12 @@ import {
   EPresenceStatusCategory,
   IBoundsChange,
   ICallNotificationData,
-  IClientSpecificSupportLink,
   ICloud9Pipe,
   ICPUUsage,
   ILogMsg,
   IMediaPermission,
   INotificationData,
+  IPodSettingsClientSpecificSupportLink,
   IPresenceStatus,
   IRestartFloaterData,
   IScreenSharingIndicator,
@@ -68,7 +68,7 @@ export interface ILocalObject {
   updateMyPresenceCallback?: (presence: EPresenceStatusCategory) => void;
   phoneNumberCallback?: (arg: string) => void;
   writeImageToClipboard?: (blob: string) => void;
-  getHelpInfo?: () => Promise<IClientSpecificSupportLink>;
+  getHelpInfo?: () => Promise<IPodSettingsClientSpecificSupportLink>;
 }
 
 const local: ILocalObject = {
@@ -229,12 +229,6 @@ export class SSFApi {
       searchApiVer: searchAPIVersion,
     });
   }
-
-  // public getHelpInfo = async (): Promise<
-  //   IClientSpecificSupportLink | undefined
-  // > => {
-  //   return await local.getHelpInfo?.();
-  // };
 
   /**
    * Allows JS to register a activity detector that can be used by electron main process.
@@ -410,13 +404,12 @@ export class SSFApi {
    * @param callback retrieve callback getHelpInfo
    */
   public registerGetHelpInfo(
-    callback: () => Promise<IClientSpecificSupportLink>,
+    supportPage: IPodSettingsClientSpecificSupportLink,
   ): void {
-    if (typeof callback === 'function') {
-      local.getHelpInfo = callback;
+    if (supportPage && Object.keys(supportPage).length > 0) {
       ipcRenderer.send(apiName.symphonyApi, {
         cmd: apiCmds.getHelpInfo,
-        callback,
+        menu: { supportPage },
       });
     }
   }

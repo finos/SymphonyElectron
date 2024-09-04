@@ -622,8 +622,10 @@ export class AppMenu {
             shell.openExternal(
               this.helpMenuSingleton.getValue()?.linkAddress ?? '',
             ),
-          label: i18n.t('Helpdesk portals')(),
-          visible: !!this.helpMenuSingleton.getValue()?.linkAddress,
+          label: this.helpMenuSingleton.getValue()?.linkText,
+          visible:
+            !!this.helpMenuSingleton.getValue()?.linkAddress &&
+            !!this.helpMenuSingleton.getValue()?.enabled,
         },
         {
           click: () => shell.openExternal(i18n.t('Symphony Url')()),

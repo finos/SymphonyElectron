@@ -149,7 +149,7 @@ export interface IApiArgs {
   hideOnCapture: boolean;
   status: IPresenceStatus;
   protocols: PhoneNumberProtocol[];
-  callback?: any;
+  menu?: any;
 }
 
 export type Themes = 'light' | 'dark';
@@ -428,9 +428,17 @@ export enum PhoneNumberProtocol {
   Sms = 'sms',
 }
 
-export interface IClientSpecificSupportLink {
+export interface IPodSettingsClientSpecificSupportLink {
+  /**
+   * Whether the custom link feature is activated.
+   */
+  enabled: boolean;
+  /**
+   * The URL which points to the internal support documentation.
+   */
   linkAddress: string;
+  /**
+   * The label for the link that will be displayed to the users.
+   */
   linkText: string;
-  enableClientSpecificSupportLink: boolean;
-  configurationType: 'clientSpecificSupportLink' | string;
 }
