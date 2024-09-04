@@ -82,6 +82,7 @@ export enum apiCmds {
   updateSymphonyTray = 'update-system-tray',
   registerPhoneNumberServices = 'register-phone-numbers-services',
   unregisterPhoneNumberServices = 'unregister-phone-numbers-services',
+  getHelpInfo = 'get-help-info',
 }
 
 export enum apiName {
@@ -148,6 +149,7 @@ export interface IApiArgs {
   hideOnCapture: boolean;
   status: IPresenceStatus;
   protocols: PhoneNumberProtocol[];
+  menu?: any;
 }
 
 export type Themes = 'light' | 'dark';
@@ -424,4 +426,19 @@ export interface IAuthResponse {
 export enum PhoneNumberProtocol {
   Tel = 'tel',
   Sms = 'sms',
+}
+
+export interface IPodSettingsClientSpecificSupportLink {
+  /**
+   * Whether the custom link feature is activated.
+   */
+  enabled: boolean;
+  /**
+   * The URL which points to the internal support documentation.
+   */
+  linkAddress: string;
+  /**
+   * The label for the link that will be displayed to the users.
+   */
+  linkText: string;
 }

@@ -21,6 +21,7 @@ import {
   ILogMsg,
   IMediaPermission,
   INotificationData,
+  IPodSettingsClientSpecificSupportLink,
   IPresenceStatus,
   IRestartFloaterData,
   IScreenSharingIndicator,
@@ -67,6 +68,7 @@ export interface ILocalObject {
   updateMyPresenceCallback?: (presence: EPresenceStatusCategory) => void;
   phoneNumberCallback?: (arg: string) => void;
   writeImageToClipboard?: (blob: string) => void;
+  getHelpInfo?: () => Promise<IPodSettingsClientSpecificSupportLink>;
 }
 
 const local: ILocalObject = {
@@ -393,6 +395,22 @@ export class SSFApi {
   public registerWriteImageToClipboard(callback): void {
     if (typeof callback === 'function') {
       local.writeImageToClipboard = callback;
+    }
+  }
+
+  /**
+   * Register event to getHelpInfo API
+   *
+   * @param callback retrieve callback getHelpInfo
+   */
+  public registerGetHelpInfo(
+    supportPage: IPodSettingsClientSpecificSupportLink,
+  ): void {
+    if (supportPage && Object.keys(supportPage).length > 0) {
+      ipcRenderer.send(apiName.symphonyApi, {
+        cmd: apiCmds.getHelpInfo,
+        menu: { supportPage },
+      });
     }
   }
 

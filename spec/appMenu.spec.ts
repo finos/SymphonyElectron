@@ -8,6 +8,21 @@ import * as envMock from '../src/common/env';
 import { logger } from '../src/common/logger';
 import { dialog, session, shell } from './__mocks__/electron';
 
+jest.mock('../src/app/stores', () => {
+  const mock = new Map<string, any>();
+  mock.set('value', {
+    linkText: 'test',
+    linkAddress: 'test-abc',
+    enabled: true,
+  });
+
+  return {
+    sdaMenuStore: {
+      getHelpMenuSingleton: () => ({ getValue: () => mock.get('value') }),
+    },
+  };
+});
+
 jest.mock('../src/app/reports-handler', () => {
   return {
     exportLogs: jest.fn(),
@@ -326,6 +341,13 @@ describe('app menu', () => {
         const menuItem = findMenuItemBuildHelpMenu('Symphony Help');
         menuItem.click();
         expect(spy).toBeCalledWith(expectedValue);
+      });
+
+      it('should call `Helpdesk Portals` correctly', () => {
+        const spy = jest.spyOn(shell, 'openExternal');
+        const menuItem = findMenuItemBuildHelpMenu('test');
+        menuItem.click();
+        expect(spy).toBeCalledWith('test-abc');
       });
 
       it('should call `Learn More` correctly', () => {
