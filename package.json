@@ -41,6 +41,7 @@
     "artifactName": "${productName}-${version}-${os}.${ext}",
     "asar": true,
     "asarUnpack": "**/*.node",
+    "afterPack": "scripts/afterPackHoock.js",
     "nsis": {
       "perMachine": false,
       "oneClick": true,
@@ -167,6 +168,7 @@
     "url": "https://support.symphony.com"
   },
   "devDependencies": {
+    "@electron/fuses": "^1.8.0",
     "@types/cheerio": "^0.22.22",
     "@types/enzyme": "^3.10.7",
     "@types/fs-extra": "^9.0.0",
