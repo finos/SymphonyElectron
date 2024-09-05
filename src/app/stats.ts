@@ -69,7 +69,7 @@ export class AppStats {
         maxMemoryUsedPercent: this.maxMemoryUsed,
         sdaUsedMemory: this.convertToMB(process.memoryUsage().heapUsed),
         memoryAvailable: totalMem,
-        vdi: undefined,
+        vdi: false,
         endReason: endReason ? endReason : undefined,
         crashProcess,
       },
