@@ -1,6 +1,5 @@
 import { app } from 'electron';
 import * as os from 'os';
-import * as si from 'systeminformation';
 
 import { buildNumber, version } from '../../package.json';
 import { logger } from '../common/logger';
@@ -17,12 +16,6 @@ const MAX_USAGE_CHECK_INTERVAL = 15 * 60 * 1000; // every 15min
 export class AppStats {
   public startTime = new Date().toISOString();
   private MB_IN_BYTES = 1048576;
-  private cpu: si.Systeminformation.CpuData | undefined;
-  private mem: si.Systeminformation.MemData | undefined;
-  private cpuUsage: si.Systeminformation.CurrentLoadData | undefined;
-  private osInfo: si.Systeminformation.OsData | undefined;
-  private uuid: si.Systeminformation.UuidData | undefined;
-  private time: si.Systeminformation.TimeData | undefined;
   private maxMemoryUsed: number = 0;
   private maxCPUUsage: number = 0;
 
@@ -52,35 +45,31 @@ export class AppStats {
     crashProcess: string = '',
   ) {
     console.time(`stats ${actionType}`);
-    this.cpu = this.cpu ?? (await si.cpu());
-    this.mem = this.mem ?? (await si.mem());
-    this.cpuUsage = this.cpuUsage ?? (await si.currentLoad());
-    this.osInfo = this.osInfo ?? (await si.osInfo());
-    this.uuid = this.uuid ?? (await si.uuid());
-    this.time = this.time ?? si.time();
     const totalMem = this.convertToMB(os.totalmem());
-    const usedMem = this.convertToMB(this.mem.used);
+    const freeMem = this.convertToMB(os.freemem());
+    const usedMem = totalMem - freeMem;
+    const cpuUsagePercentage = await this.getCPUUsage();
     console.timeEnd(`stats ${actionType}`);
     const event: ISessionData = {
       element: AnalyticsElements.SDA_SESSION,
       action_type: actionType,
       extra_data: {
         sessionStartDatetime: this.startTime,
-        machineStartDatetime: this.convertUptime(this.time.uptime),
-        machineId: this.uuid.os,
+        machineStartDatetime: this.convertUptime(os.uptime()),
+        machineId: '',
         osName: os.platform(),
-        osVersion: this.osInfo.release,
+        osVersion: os.release(),
         osLanguage: app.getLocale(),
-        cpuNumberOfCores: this.cpu.cores,
-        cpuMaxFrequency: this.cpu.speedMax,
-        cpuUsagePercent: Math.round(this.cpuUsage.currentLoad),
+        cpuNumberOfCores: os.cpus().length,
+        cpuMaxFrequency: this.getMaxCPUSpeed(),
+        cpuUsagePercent: cpuUsagePercentage,
         maxCPUUsagePercent: this.maxCPUUsage,
         memoryTotal: this.convertToMB(os.totalmem()),
         memoryUsedPercent: this.calculatePercentage(usedMem, totalMem),
         maxMemoryUsedPercent: this.maxMemoryUsed,
         sdaUsedMemory: this.convertToMB(process.memoryUsage().heapUsed),
-        memoryAvailable: this.convertToMB(this.mem.available),
-        vdi: !!this.osInfo.hypervizor,
+        memoryAvailable: totalMem,
+        vdi: false,
         endReason: endReason ? endReason : undefined,
         crashProcess,
       },
@@ -227,17 +216,64 @@ export class AppStats {
   }
 
   /**
+   * Gets the maximum CPU speed in MHz.
+   *
+   * @returns {number} The maximum CPU speed in MHz.
+   */
+  private getMaxCPUSpeed(): number {
+    return Math.max(...os.cpus().map((cpu) => cpu.speed)) / 1000;
+  }
+
+  /**
+   * Calculates the average CPU usage across all cores.
+   * @returns {{ idle: number, total: number }} An object
+   */
+  private calculateCPUUsage(): { idle: number; total: number } {
+    const cpus = os.cpus();
+
+    let totalIdle = 0;
+    let totalTick = 0;
+
+    cpus.forEach((cpu) => {
+      const { user, nice, sys, idle, irq } = cpu.times;
+      totalIdle += idle;
+      totalTick += user + nice + sys + idle + irq;
+    });
+
+    return { idle: totalIdle / cpus.length, total: totalTick / cpus.length };
+  }
+
+  /**
+   * Calculates the average CPU usage over a 1-second interval.
+   *
+   * @returns {Promise<string>} A promise that resolves to a string representing
+   * the CPU usage percentage, formatted to two decimal places.
+   */
+  private getCPUUsage(): Promise<number> {
+    return new Promise((resolve) => {
+      const start = this.calculateCPUUsage();
+
+      // Wait for 1 second and then calculate the CPU usage
+      setTimeout(() => {
+        const end = this.calculateCPUUsage();
+        const idleDiff = end.idle - start.idle;
+        const totalDiff = end.total - start.total;
+        const usage = 100 - (100 * idleDiff) / totalDiff;
+
+        resolve(parseInt(usage.toFixed(2), 10));
+      }, 1000);
+    });
+  }
+
+  /**
    * Captures the max CPU & Memory value
    * @private
    */
   private async retrieveLatestData(): Promise<void> {
-    this.mem = await si.mem();
-    this.cpu = await si.cpu();
-    this.cpuUsage = await si.currentLoad();
-
-    const cpuUsagePercent = Math.round(this.cpuUsage.currentLoad);
+    const cpuUsagePercent = await this.getCPUUsage();
     const totalMem = this.convertToMB(os.totalmem());
-    const usedMem = this.convertToMB(this.mem.used);
+    const freeMem = this.convertToMB(os.freemem());
+    const usedMem = totalMem - freeMem;
     const memUsedPercentage = this.calculatePercentage(usedMem, totalMem);
     if (memUsedPercentage > this.maxMemoryUsed) {
       this.maxMemoryUsed = memUsedPercentage;
