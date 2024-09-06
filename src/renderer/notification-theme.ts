@@ -24,7 +24,7 @@ export const Colors = {
   light: {
     regularFlashingNotificationBgColor: '#aad4f8',
     notificationBackgroundColor: '#f1f1f3',
-    notificationBorderColor: 'transparent',
+    notificationBorderColor: '#717681',
     mentionBackgroundColor: '#fcc1b9',
     mentionBorderColor: 'transparent',
   },
