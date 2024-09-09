@@ -26,7 +26,7 @@ export const Colors = {
     notificationBackgroundColor: '#f1f1f3',
     notificationBorderColor: '#717681',
     mentionBackgroundColor: '#fcc1b9',
-    mentionBorderColor: 'transparent',
+    mentionBorderColor: '#ff8f80',
   },
 };
 
@@ -117,17 +117,11 @@ export const increaseBrightness = (hex: string, percent: number) => {
 
 /**
  * Returns custom border color
- * @param theme current theme
  * @param customColor color
  * @returns custom border color
  */
-export const getThemedCustomBorderColor = (
-  theme: string,
-  customColor: string,
-) => {
-  return theme === Themes.DARK
-    ? increaseBrightness(customColor, 50)
-    : 'transparent';
+export const getThemedCustomBorderColor = (customColor: string) => {
+  return increaseBrightness(customColor, 50);
 };
 
 /**
@@ -155,10 +149,8 @@ export const getThemeColors = (
         currentColors.notificationBackgroundColor =
           federatedFlashingBackgroundColor;
         if (isCustomColor(color)) {
-          currentColors.notificationBorderColor = getThemedCustomBorderColor(
-            theme,
-            color,
-          );
+          currentColors.notificationBorderColor =
+            getThemedCustomBorderColor(color);
           currentColors.notificationBackgroundColor = color;
         }
       } else {
@@ -170,10 +162,8 @@ export const getThemeColors = (
         currentColors.notificationBackgroundColor =
           externalFlashingBackgroundColor;
         if (isCustomColor(color)) {
-          currentColors.notificationBorderColor = getThemedCustomBorderColor(
-            theme,
-            color,
-          );
+          currentColors.notificationBorderColor =
+            getThemedCustomBorderColor(color);
           currentColors.notificationBackgroundColor = color;
         }
       } else {
@@ -190,10 +180,8 @@ export const getThemeColors = (
         ? color
         : currentColors.regularFlashingNotificationBgColor;
       currentColors.notificationBorderColor = isCustomColor(color)
-        ? getThemedCustomBorderColor(theme, color)
-        : theme === Themes.DARK
-        ? '#2996fd'
-        : 'transparent';
+        ? getThemedCustomBorderColor(color)
+        : '#2996fd';
     }
   } else if (!flash) {
     if (hasMention) {
@@ -202,10 +190,7 @@ export const getThemeColors = (
       currentColors.notificationBorderColor = currentColors.mentionBorderColor;
     } else if (isCustomColor(color)) {
       currentColors.notificationBackgroundColor = color;
-      currentColors.notificationBorderColor = getThemedCustomBorderColor(
-        theme,
-        color,
-      );
+      currentColors.notificationBorderColor = getThemedCustomBorderColor(color);
     } else if (isFederatedEnabled) {
       currentColors.notificationBorderColor = '#65C862';
     } else if (isExternal) {

@@ -1,5 +1,6 @@
 import { app, BrowserWindow, screen } from 'electron';
 
+import { callNotification } from '../app/notifications/call-notification';
 import { windowExists } from '../app/window-utils';
 import { isLinux, isMac } from '../common/env';
 
@@ -42,7 +43,6 @@ export default class NotificationHandler {
   };
 
   private externalDisplay: Electron.Display | undefined;
-  private isNotificationStacked: boolean = false;
 
   constructor(opts: ISettings) {
     this.settings = opts as ISettings;
@@ -70,6 +70,7 @@ export default class NotificationHandler {
     if (window && !window.isDestroyed()) {
       try {
         window.setPosition(parseInt(String(x), 10), parseInt(String(y), 10));
+        window.moveTop();
       } catch (err) {
         console.warn(
           `Failed to set window position. x: ${x} y: ${y}. Contact the developers for more details`,
@@ -191,8 +192,6 @@ export default class NotificationHandler {
         });
         break;
     }
-
-    this.isNotificationStacked = true;
   }
 
   /**
@@ -235,8 +234,6 @@ export default class NotificationHandler {
       // Set the position of the notification window
       this.setWindowPosition(notificationWindow, newX, newY);
     });
-
-    this.isNotificationStacked = false;
   }
 
   /**
@@ -255,7 +252,7 @@ export default class NotificationHandler {
           height > this.settings.height
             ? NEXT_INSERT_POSITION_WITH_INPUT
             : NEXT_INSERT_POSITION;
-        if (this.isNotificationStacked) {
+        if (callNotification.isCallNotificationOpen()) {
           // When stacked, only consider padding separation for next insert position
           nextNotificationY += NOTIFICATIONS_PADDING_SEPARATION;
         } else {
@@ -314,7 +311,7 @@ export default class NotificationHandler {
       let newY;
       const newX = this.settings.firstPos.x;
 
-      if (this.isNotificationStacked) {
+      if (callNotification.isCallNotificationOpen()) {
         if (isReset) {
           switch (this.settings.startCorner) {
             case 'upper-right':

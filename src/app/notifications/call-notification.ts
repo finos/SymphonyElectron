@@ -108,6 +108,7 @@ class CallNotification {
       ) {
         return;
       }
+      notification.stack();
       this.callNotificationWindow.webContents.setZoomFactor(1);
       this.callNotificationWindow.webContents.setVisualZoomLevelLimits(1, 1);
       this.callNotificationWindow.webContents.send(
@@ -119,8 +120,8 @@ class CallNotification {
 
     this.callNotificationWindow.once('closed', () => {
       this.callNotificationWindow = undefined;
+      notification.unstack();
     });
-    notification.stack();
   };
 
   /**
@@ -129,7 +130,6 @@ class CallNotification {
    * @param clientId {number}
    */
   public notificationClicked(clientId: number): void {
-    notification.unstack();
     const browserWindow = this.callNotificationWindow;
     if (
       browserWindow &&
@@ -150,7 +150,6 @@ class CallNotification {
    * @param clientId {number}
    */
   public onCallNotificationOnAccept(clientId: number): void {
-    notification.unstack();
     const browserWindow = this.callNotificationWindow;
     if (
       browserWindow &&
@@ -171,7 +170,6 @@ class CallNotification {
    * @param clientId {number}
    */
   public onCallNotificationOnReject(clientId: number): void {
-    notification.unstack();
     const browserWindow = this.callNotificationWindow;
     if (
       browserWindow &&
@@ -191,7 +189,6 @@ class CallNotification {
    * Close the notification window
    */
   public closeNotification(clientId: number): void {
-    notification.unstack();
     const browserWindow = this.callNotificationWindow;
     if (browserWindow && windowExists(browserWindow)) {
       if (
@@ -211,6 +208,15 @@ class CallNotification {
       );
     }
     return;
+  }
+
+  /**
+   * Checks if the call notification window is open.
+   *
+   * @returns {boolean} True if the call notification window is open, false otherwise.
+   */
+  public isCallNotificationOpen(): boolean {
+    return !!this.callNotificationWindow;
   }
 
   private getCallNotificationOpts =
