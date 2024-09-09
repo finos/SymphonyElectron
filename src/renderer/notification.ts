@@ -6,6 +6,7 @@ import {
   ToastNotificationActionTypes,
 } from '../app/bi/interface';
 import { config } from '../app/config-handler';
+import { callNotification } from '../app/notifications/call-notification';
 import {
   AUX_CLICK,
   IS_NODE_INTEGRATION_ENABLED,
@@ -300,6 +301,9 @@ class Notification extends NotificationHandler {
       zoomFactor: data?.zoomFactor,
     });
     notificationWindow.showInactive();
+    if (callNotification.isCallNotificationOpen()) {
+      notification.stackNotifications(this.activeNotifications);
+    }
   }
 
   /**
@@ -586,6 +590,7 @@ class Notification extends NotificationHandler {
       windowId: notificationWindow.id,
     });
     this.activeNotifications.push(notificationWindow);
+    notificationWindow.moveTop();
   }
 
   /**
