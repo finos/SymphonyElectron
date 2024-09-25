@@ -1,4 +1,5 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
+import * as debounce from 'lodash.debounce';
 
 import { analytics } from '../app/bi/analytics-handler';
 import {
@@ -29,6 +30,7 @@ const animationQueue = new AnimationQueue();
 const CONTAINER_HEIGHT = 104; // Notification container height
 const CONTAINER_HEIGHT_WITH_INPUT = 146; // Notification container height including input field
 const CONTAINER_WIDTH = 363;
+const DEBOUNCE_DELAY = 50;
 interface ICustomBrowserWindow extends Electron.BrowserWindow {
   winName: string;
   notificationData: INotificationData;
@@ -83,6 +85,10 @@ class Notification extends NotificationHandler {
 
   constructor(opts) {
     super(opts);
+    this.hideNotification = debounce(
+      this.hideNotification.bind(this),
+      DEBOUNCE_DELAY,
+    );
     ipcMain.on('close-notification', (_event, windowId) => {
       const browserWindow = this.getNotificationWindow(windowId);
       if (
