@@ -349,3 +349,51 @@ export class DelayedFunctionQueue {
     }
   }
 }
+export interface IFunctionQueue {
+  enqueue: (fn: () => void) => void;
+}
+
+/**
+ * Creates a function queue that executes functions sequentially with a specified interval.
+ *
+ * @param {number} interval - The interval (in milliseconds) between function executions.
+ * @returns {IFunctionQueue} - An object representing the function queue.
+ */
+export const createSequentialFunctionQueue = (
+  interval: number,
+): IFunctionQueue => {
+  const queue: Array<() => void> = [];
+  let isProcessing: boolean = false;
+
+  // Enqueue a function call
+  const enqueue = (fn: () => void): void => {
+    queue.push(fn);
+    processQueue();
+  };
+
+  // Process the queue
+  const processQueue = (): void => {
+    if (isProcessing) {
+      return;
+    }
+    isProcessing = true;
+
+    const processNext = (): void => {
+      if (queue.length === 0) {
+        isProcessing = false;
+        return;
+      }
+      const fn = queue.shift();
+      if (fn) {
+        fn();
+      }
+      // Schedule the next function execution after the interval
+      setTimeout(() => {
+        processNext();
+      }, interval);
+    };
+    processNext();
+  };
+
+  return { enqueue };
+};
