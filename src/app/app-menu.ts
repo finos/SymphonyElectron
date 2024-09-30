@@ -1,5 +1,7 @@
 import {
   app,
+  BaseWindow,
+  BrowserWindow,
   Menu,
   MenuItemConstructorOptions,
   session,
@@ -650,11 +652,12 @@ export class AppMenu {
                 (typeof isDevToolsEnabledCC === 'boolean' &&
                   isDevToolsEnabledCC) ||
                 devToolsEnabled,
-              click(_item, focusedWindow) {
-                if (!focusedWindow || !windowExists(focusedWindow)) {
-                  return;
-                }
+              click(_item, _window: BaseWindow | undefined) {
                 if (devToolsEnabled) {
+                  const focusedWindow = BrowserWindow.getFocusedWindow();
+                  if (!focusedWindow || !windowExists(focusedWindow)) {
+                    return;
+                  }
                   if (
                     (focusedWindow as ICustomBrowserWindow).winName ===
                     apiName.mainWindowName

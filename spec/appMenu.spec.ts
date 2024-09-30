@@ -6,7 +6,9 @@ import { updateAlwaysOnTop } from '../src/app/window-actions';
 import { zoomIn, zoomOut } from '../src/app/window-utils';
 import * as envMock from '../src/common/env';
 import { logger } from '../src/common/logger';
-import { dialog, session, shell } from './__mocks__/electron';
+import { BrowserWindow, dialog, session, shell } from './__mocks__/electron';
+import { windowHandler } from '../src/app/window-handler';
+import { apiName } from '../src/common/api-interface';
 
 jest.mock('../src/app/stores', () => {
   const mock = new Map<string, any>();
@@ -100,6 +102,7 @@ jest.mock('../src/app/window-handler', () => {
     windowHandler: {
       createMoreInfoWindow: jest.fn(),
       getMainWindow: jest.fn(),
+      getMainWebContents: jest.fn(),
       isMana: true,
     },
   };
@@ -373,20 +376,78 @@ describe('app menu', () => {
       });
 
       describe(`Toggle Developer Tools`, () => {
-        it('should call `toggleDevTools` when focusedWindow is not null', () => {
-          const focusedWindow = {
+        it('should toggle devtools on focused window - focused window is not main window', () => {
+          const focusedWindowMock = {
             isDestroyed: jest.fn(() => false),
             reload: jest.fn(),
             webContents: {
               toggleDevTools: jest.fn(),
             },
           };
-          const spy = jest.spyOn(focusedWindow.webContents, 'toggleDevTools');
+
+          const mainWebContentsMock = {
+            toggleDevTools: jest.fn(),
+          };
+
+          jest
+            .spyOn(BrowserWindow, 'getFocusedWindow')
+            .mockReturnValue(focusedWindowMock);
+          const focusedWindowDevtoolsSpy = jest.spyOn(
+            focusedWindowMock.webContents,
+            'toggleDevTools',
+          );
+          const mainWebContentsSpy = jest
+            .spyOn(windowHandler, 'getMainWebContents')
+            .mockReturnValue(mainWebContentsMock);
+          const mainWebContentsDevToolsSpy = jest.spyOn(
+            mainWebContentsMock,
+            'toggleDevTools',
+          );
           const menuItem = findHelpTroubleshootingMenuItem(
             'Toggle Developer Tools',
           );
-          menuItem.click({}, focusedWindow);
-          expect(spy).toBeCalled();
+          menuItem.click({}, undefined);
+          expect(focusedWindowDevtoolsSpy).toBeCalled();
+          expect(mainWebContentsSpy).not.toBeCalled();
+          expect(mainWebContentsDevToolsSpy).not.toBeCalled();
+        });
+
+        it('should toggle devtools on focused window - focused window is main window', () => {
+          const focusedWindowMock = {
+            isDestroyed: jest.fn(() => false),
+            reload: jest.fn(),
+            webContents: {
+              toggleDevTools: jest.fn(),
+            },
+            winName: apiName.mainWindowName,
+          };
+
+          const mainWebContentsMock = {
+            toggleDevTools: jest.fn(),
+            isDestroyed: jest.fn(() => false),
+          };
+
+          jest
+            .spyOn(BrowserWindow, 'getFocusedWindow')
+            .mockReturnValue(focusedWindowMock);
+          const focusedWindowDevtoolsSpy = jest.spyOn(
+            focusedWindowMock.webContents,
+            'toggleDevTools',
+          );
+          const mainWebContentsSpy = jest
+            .spyOn(windowHandler, 'getMainWebContents')
+            .mockReturnValue(mainWebContentsMock);
+          const mainWebContentsDevToolsSpy = jest.spyOn(
+            mainWebContentsMock,
+            'toggleDevTools',
+          );
+          const menuItem = findHelpTroubleshootingMenuItem(
+            'Toggle Developer Tools',
+          );
+          menuItem.click({}, undefined);
+          expect(focusedWindowDevtoolsSpy).not.toBeCalled();
+          expect(mainWebContentsSpy).toBeCalled();
+          expect(mainWebContentsDevToolsSpy).toBeCalled();
         });
 
         it('should not call `electron.dialog` when focusedWindow is null', () => {
