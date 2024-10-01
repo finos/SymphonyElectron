@@ -37,6 +37,7 @@ export default class NotificationHandler {
   public settings: ISettings;
   public callNotificationSettings: ICorner = { x: 0, y: 0 };
   public nextInsertPos: ICorner = { x: 0, y: 0 };
+  private scaleFactor: number = 1.0;
 
   private readonly eventHandlers = {
     onSetup: () => this.setupNotificationPosition(),
@@ -69,7 +70,13 @@ export default class NotificationHandler {
   ) {
     if (window && !window.isDestroyed()) {
       try {
-        window.setPosition(parseInt(String(x), 10), parseInt(String(y), 10));
+        // Adjust positions based on scale factor
+        const adjustedX = Math.round(x * this.scaleFactor);
+        const adjustedY = Math.round(y * this.scaleFactor);
+        window.setPosition(
+          parseInt(String(adjustedX), 10),
+          parseInt(String(adjustedY), 10),
+        );
         window.moveTop();
       } catch (err) {
         console.warn(
@@ -96,6 +103,7 @@ export default class NotificationHandler {
     }
 
     const display = this.externalDisplay || screen.getPrimaryDisplay();
+    this.scaleFactor = display.scaleFactor;
     this.settings.corner.x = display.workArea.x;
     this.settings.corner.y = display.workArea.y;
     this.callNotificationSettings.x = display.workArea.x;
@@ -443,7 +451,7 @@ export default class NotificationHandler {
       this.setWindowPosition(notificationWindow, currentX, currentY);
 
       if (progress < 1) {
-        setTimeout(animateStep, 16);
+        setTimeout(animateStep, this.settings.animationStepMs);
       } else {
         // Ensure final position is set
         this.setWindowPosition(notificationWindow, newX, newY);
@@ -451,7 +459,7 @@ export default class NotificationHandler {
     };
 
     // Start the animation
-    setTimeout(animateStep, 16);
+    setTimeout(animateStep, this.settings.animationStepMs);
   }
 
   /**
