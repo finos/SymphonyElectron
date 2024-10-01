@@ -35,11 +35,7 @@ import {
   PhoneNumberProtocol,
 } from '../common/api-interface';
 import { i18n, LocaleType } from '../common/i18n-preload';
-import {
-  createSequentialFunctionQueue,
-  DelayedFunctionQueue,
-  throttle,
-} from '../common/utils';
+import { DelayedFunctionQueue, throttle } from '../common/utils';
 import { getSource } from './desktop-capturer';
 import SSFNotificationHandler from './notification-ssf-handler';
 import { ScreenSnippetBcHandler } from './screen-snippet-bc-handler';
@@ -90,9 +86,6 @@ const callNotificationActionCallbacks = new Map<
 >();
 
 const DEFAULT_THROTTLE = 1000;
-const NOTIFICATION_DELAY = 500;
-
-const notificationQueue = createSequentialFunctionQueue(NOTIFICATION_DELAY);
 
 // Throttle func
 const throttledSetBadgeCount = throttle((count) => {
@@ -719,24 +712,22 @@ export class SSFApi {
     notificationOpts: INotificationData,
     notificationCallback: NotificationActionCallback,
   ): void {
-    notificationQueue.enqueue(() => {
-      // Store callbacks based on notification id so,
-      // we can use this to trigger on notification action
-      if (typeof notificationOpts.id === 'number') {
-        notificationActionCallbacks.set(
-          notificationOpts.id,
-          notificationCallback,
-        );
-      }
-      // ipc does not support sending Functions, Promises, Symbols, WeakMaps,
-      // or WeakSets will throw an exception
-      if (notificationOpts.callback) {
-        delete notificationOpts.callback;
-      }
-      ipcRenderer.send(apiName.symphonyApi, {
-        cmd: apiCmds.showNotification,
-        notificationOpts,
-      });
+    // Store callbacks based on notification id so,
+    // we can use this to trigger on notification action
+    if (typeof notificationOpts.id === 'number') {
+      notificationActionCallbacks.set(
+        notificationOpts.id,
+        notificationCallback,
+      );
+    }
+    // ipc does not support sending Functions, Promises, Symbols, WeakMaps,
+    // or WeakSets will throw an exception
+    if (notificationOpts.callback) {
+      delete notificationOpts.callback;
+    }
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.showNotification,
+      notificationOpts,
     });
   }
 
