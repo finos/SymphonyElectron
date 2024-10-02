@@ -255,8 +255,6 @@ class Notification extends NotificationHandler {
       notificationSettings.height,
       true,
     );
-    // Move notification to top
-    notificationWindow.moveTop();
 
     if (!data.sticky) {
       timeoutId = setTimeout(async () => {
@@ -590,7 +588,6 @@ class Notification extends NotificationHandler {
       windowId: notificationWindow.id,
     });
     this.activeNotifications.push(notificationWindow);
-    notificationWindow.moveTop();
   }
 
   /**

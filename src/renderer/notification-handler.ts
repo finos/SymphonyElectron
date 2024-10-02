@@ -70,7 +70,6 @@ export default class NotificationHandler {
     if (window && !window.isDestroyed()) {
       try {
         window.setPosition(parseInt(String(x), 10), parseInt(String(y), 10));
-        window.moveTop();
       } catch (err) {
         console.warn(
           `Failed to set window position. x: ${x} y: ${y}. Contact the developers for more details`,
@@ -429,26 +428,29 @@ export default class NotificationHandler {
     newX: number,
   ) {
     const [startX, startY] = notificationWindow.getPosition();
-    const stepY = (newY - startY) / this.settings.animationSteps;
-    const stepX = (newX - startX) / this.settings.animationSteps;
+    const duration = this.settings.animationSteps;
+    const startTime = Date.now();
 
-    let curStep = 1;
-    const animationInterval = setInterval(() => {
-      // Abort condition
-      if (curStep === this.settings.animationSteps) {
+    const animateStep = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      const currentX = startX + (newX - startX) * progress;
+      const currentY = startY + (newY - startY) * progress;
+
+      // Set new position
+      this.setWindowPosition(notificationWindow, currentX, currentY);
+
+      if (progress < 1) {
+        setTimeout(animateStep, 16);
+      } else {
+        // Ensure final position is set
         this.setWindowPosition(notificationWindow, newX, newY);
-        clearInterval(animationInterval);
-        return;
       }
+    };
 
-      // Move one step in both x and y directions
-      this.setWindowPosition(
-        notificationWindow,
-        startX + curStep * stepX,
-        startY + curStep * stepY,
-      );
-      curStep++;
-    }, this.settings.animationStepMs);
+    // Start the animation
+    setTimeout(animateStep, 16);
   }
 
   /**
