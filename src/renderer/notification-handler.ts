@@ -373,13 +373,13 @@ export default class NotificationHandler {
     startPos: number,
     activeNotifications: BrowserWindow[],
   ): void {
-    if (startPos >= activeNotifications.length || startPos === -1) {
+    if (activeNotifications.length === 0 || startPos === -1) {
       return;
     }
 
     // Adjust startPos for lower corners
     if (['lower-right', 'lower-left'].includes(this.settings.startCorner)) {
-      startPos -= 1;
+      startPos = Math.max(0, startPos - 1);
     }
 
     const notificationPosArray: number[] = [];
