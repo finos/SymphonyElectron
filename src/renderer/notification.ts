@@ -249,6 +249,7 @@ class Notification extends NotificationHandler {
     if (notificationWindow.displayTimer) {
       clearTimeout(notificationWindow.displayTimer);
     }
+    notificationWindow.moveTop();
     // Reset notification window size to default
     notificationWindow.setSize(
       notificationSettings.width,
