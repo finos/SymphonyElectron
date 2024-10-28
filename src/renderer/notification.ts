@@ -220,7 +220,7 @@ class Notification extends NotificationHandler {
 
     // This is a workaround to fix an issue with electron framework
     // https://github.com/electron/electron/issues/611
-    notificationWindow.on('resize', (event) => {
+    notificationWindow.on('will-resize', (event) => {
       event.preventDefault();
     });
 
