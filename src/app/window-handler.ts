@@ -559,10 +559,6 @@ export class WindowHandler {
       });
     });
 
-    this.mainWindow.once('ready-to-show', (event: Event) => {
-      logger.info(`window-handler: Main Window ready to show: ${event}`);
-    });
-
     this.mainWebContents.on(
       'did-fail-load',
       (_, errorCode: number, errorDescription: string) => {
