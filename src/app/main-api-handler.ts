@@ -25,7 +25,6 @@ import appStateHandler from './app-state-handler';
 import { analytics } from './bi/analytics-handler';
 import { closeC9Pipe, connectC9Pipe, writeC9Pipe } from './c9-pipe-handler';
 import { loadC9Shell, terminateC9Shell } from './c9-shell-handler';
-import { getCitrixMediaRedirectionStatus } from './citrix-handler';
 import { CloudConfigDataTypes, config, ICloudConfig } from './config-handler';
 import { downloadHandler } from './download-handler';
 import { getContentWindowHandle } from './hwnd-handler';
@@ -620,8 +619,6 @@ ipcMain.handle(
           return getContentWindowHandle(windowHandle);
         }
         break;
-      case apiCmds.getCitrixMediaRedirectionStatus:
-        return getCitrixMediaRedirectionStatus();
       default:
         break;
     }

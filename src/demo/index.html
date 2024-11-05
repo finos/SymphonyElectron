@@ -108,6 +108,7 @@
     </style>
     <link rel="stylesheet" href="download-manager.css" />
   </head>
+
   <body style="background-color: white">
     <h1>Symphony Electron API Demo</h1>
     <div class="origin-reminder">
@@ -539,13 +540,6 @@ Writes some thing to the file</textarea
     <input type="text" id="text-window-handle" />
     <hr />
     <br />
-
-    <hr />
-    <p>Citrix Media Redirection Status:</p>
-    <button id="get-citrix-media-redir">Get status</button>
-    <input type="text" id="text-citrix-media-redir" />
-    <hr />
-    <br />
   </body>
   <script>
     const inputs = document.querySelectorAll('input');
@@ -599,7 +593,6 @@ Writes some thing to the file</textarea
       checkMediaPermission: 'check-media-permission',
       restartApp: 'restart-app',
       getNativeWindowHandle: 'get-native-window-handle',
-      getCitrixMediaRedirectionStatus: 'get-citrix-media-redirection-status',
     };
     let requestId = 0;
 
@@ -1573,23 +1566,6 @@ Writes some thing to the file</textarea
         } else {
           postRequest(apiCmds.getNativeWindowHandle, null, {
             windowName,
-            successCallback: resultCallback,
-          });
-        }
-      });
-
-    document
-      .getElementById('get-citrix-media-redir')
-      .addEventListener('click', () => {
-        const resultCallback = (status) => {
-          document.getElementById('text-citrix-media-redir').value = status;
-        };
-        if (window.ssf) {
-          window.ssf.getCitrixMediaRedirectionStatus().then(resultCallback);
-        } else if (window.manaSSF) {
-          window.manaSSF.getCitrixMediaRedirectionStatus().then(resultCallback);
-        } else {
-          postRequest(apiCmds.getCitrixMediaRedirectionStatus, null, {
             successCallback: resultCallback,
           });
         }
