@@ -7,7 +7,6 @@ import {
 } from '../../package.json';
 import { AutoUpdateTrigger } from '../app/auto-update-handler';
 import { IShellStatus } from '../app/c9-shell-handler';
-import { RedirectionStatus } from '../app/citrix-handler';
 import { IDownloadItem } from '../app/download-handler';
 import {
   apiCmds,
@@ -824,16 +823,6 @@ export class SSFApi {
     return ipcRenderer.invoke(apiName.symphonyApi, {
       cmd: apiCmds.getNativeWindowHandle,
       windowName,
-    });
-  }
-
-  /**
-   * Retrieves the current status of Citrix' media redirection feature
-   * @returns status
-   */
-  public getCitrixMediaRedirectionStatus(): Promise<RedirectionStatus> {
-    return ipcRenderer.invoke(apiName.symphonyApi, {
-      cmd: apiCmds.getCitrixMediaRedirectionStatus,
     });
   }
 

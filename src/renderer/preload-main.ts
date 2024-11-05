@@ -93,8 +93,6 @@ if (ssfWindow.ssf) {
     getZoomLevel: ssfWindow.ssf.getZoomLevel,
     supportedSettings: ssfWindow.ssf.supportedSettings,
     getNativeWindowHandle: ssfWindow.ssf.getNativeWindowHandle,
-    getCitrixMediaRedirectionStatus:
-      ssfWindow.ssf.getCitrixMediaRedirectionStatus,
     registerClientBanner: ssfWindow.ssf.registerClientBanner,
     launchCloud9: ssfWindow.ssf.launchCloud9,
     terminateCloud9: ssfWindow.ssf.terminateCloud9,

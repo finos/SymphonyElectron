@@ -66,7 +66,6 @@ export enum apiCmds {
   handleSwiftSearchMessageEvents = 'handle-shift-search-message-events',
   onSwiftSearchMessage = 'on-shift-search-message',
   getNativeWindowHandle = 'get-native-window-handle',
-  getCitrixMediaRedirectionStatus = 'get-citrix-media-redirection-status',
   getSources = 'getSources',
   launchCloud9 = 'launch-cloud9',
   terminateCloud9 = 'terminate-cloud9',
