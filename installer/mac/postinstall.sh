@@ -118,6 +118,7 @@ if [ "$EUID" -ne 0 ]; then
   defaults write "$plistFilePath" userDataPath -string ""
   defaults write "$plistFilePath" chromeFlags -string ""
   defaults write "$plistFilePath" betaAutoUpdateChannelEnabled -bool true
+  defaults write "$plistFilePath" latestAutoUpdateChannelEnabled -bool true
   defaults write "$plistFilePath" installVariant -string "$uuid"
 else
   sudo -u "$userName" defaults write "$plistFilePath" url -string "$pod_url"
@@ -161,6 +162,7 @@ else
   sudo -u "$userName" defaults write "$plistFilePath" userDataPath -string ""
   sudo -u "$userName" defaults write "$plistFilePath" chromeFlags -string ""
   sudo -u "$userName" defaults write "$plistFilePath" betaAutoUpdateChannelEnabled -bool true
+  sudo -u "$userName" defaults write "$plistFilePath" latestAutoUpdateChannelEnabled -bool true
   sudo -u "$userName" defaults write "$plistFilePath" installVariant -string "$uuid"
 fi
 
