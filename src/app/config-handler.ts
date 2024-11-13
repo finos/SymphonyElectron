@@ -547,6 +547,8 @@ class Config {
       customFlags: latestGlobalConfig.customFlags,
       betaAutoUpdateChannelEnabled:
         latestGlobalConfig.betaAutoUpdateChannelEnabled,
+      latestAutoUpdateChannelEnabled:
+        latestGlobalConfig.latestAutoUpdateChannelEnabled,
     });
   }
 
