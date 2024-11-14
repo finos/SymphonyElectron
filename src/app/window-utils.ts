@@ -1289,6 +1289,8 @@ export const updateFeaturesForCloudConfig = async (
       clearInterval(autoUpdateIntervalId);
     }
   }
+  // Refreshes the in-memory window handler's config
+  windowHandler.fetchConfigFields();
 };
 
 /**
