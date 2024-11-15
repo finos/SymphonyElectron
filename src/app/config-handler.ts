@@ -19,6 +19,7 @@ import { terminateC9Shell } from './c9-shell-handler';
 import {
   getAllUserDefaults,
   initializePlistFile,
+  readPlistFile,
   setPlistFromPreviousSettings,
 } from './plist-handler';
 import { appStats } from './stats';
@@ -840,7 +841,7 @@ class Config {
   /**
    * Reads a stores the global config file
    */
-  private readGlobalConfig() {
+  private async readGlobalConfig() {
     if (isMac) {
       if (fs.existsSync(this.tempGlobalConfigFilePath)) {
         this.globalConfig = this.parseConfigData(
@@ -862,6 +863,8 @@ class Config {
           this.globalConfig as IConfig,
           appGlobalConfigData,
         );
+        // Validate user config before starting the application
+        await readPlistFile();
         // After everything is set from previous SDA version
         this.globalConfig = getAllUserDefaults();
         return;
@@ -877,6 +880,8 @@ class Config {
         'installVariant',
         'string',
       );
+      // Validate user config before starting the application
+      await readPlistFile();
       this.globalConfig = getAllUserDefaults();
       logger.info(
         `config-handler: Global configuration from plist: `,
