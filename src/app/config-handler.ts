@@ -83,6 +83,7 @@ export interface IConfig {
   isPodUrlEditable?: boolean;
   sdaInstallerMsiUrlEnabledVisible?: boolean;
   sdaInstallerMsiUrlBetaEnabledVisible?: boolean;
+  openfin?: IOpenfin;
 }
 
 export interface IGlobalConfig {
@@ -161,6 +162,13 @@ export interface INotificationSetting {
 export interface ICustomRectangle extends Partial<Electron.Rectangle> {
   isMaximized?: boolean;
   isFullScreen?: boolean;
+}
+
+export interface IOpenfin {
+  uuid: string;
+  licenseKey: string;
+  runtimeVersion: string;
+  autoConnect: boolean;
 }
 
 class Config {
