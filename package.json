@@ -218,6 +218,7 @@
   "dependencies": {
     "@types/lazy-brush": "^1.0.0",
     "adm-zip": "^0.5.10",
+    "bplist-parser": "^0.3.2",
     "classnames": "2.2.6",
     "electron-dl": "3.5.0",
     "electron-fetch": "1.9.1",
