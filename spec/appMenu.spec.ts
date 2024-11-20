@@ -3,12 +3,12 @@ import { autoLaunchInstance } from '../src/app/auto-launch-controller';
 import { config } from '../src/app/config-handler';
 import { exportCrashDumps, exportLogs } from '../src/app/reports-handler';
 import { updateAlwaysOnTop } from '../src/app/window-actions';
+import { windowHandler } from '../src/app/window-handler';
 import { zoomIn, zoomOut } from '../src/app/window-utils';
+import { apiName } from '../src/common/api-interface';
 import * as envMock from '../src/common/env';
 import { logger } from '../src/common/logger';
 import { BrowserWindow, dialog, session, shell } from './__mocks__/electron';
-import { windowHandler } from '../src/app/window-handler';
-import { apiName } from '../src/common/api-interface';
 
 jest.mock('../src/app/stores', () => {
   const mock = new Map<string, any>();

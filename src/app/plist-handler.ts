@@ -1,8 +1,13 @@
+import * as bplistParser from 'bplist-parser';
 import { execSync } from 'child_process';
-import { systemPreferences } from 'electron';
+import { app, systemPreferences } from 'electron';
+import * as fs from 'fs';
+
 import { logger } from '../common/logger';
 import { getGuid } from '../common/utils';
-import { IConfig } from './config-handler';
+import { ConfigFieldsDefaultValues, IConfig } from './config-handler';
+
+let plistData = {};
 
 const GENERAL_SETTINGS = {
   url: 'string',
@@ -62,6 +67,18 @@ export const getAllUserDefaults = (): IConfig => {
   const settings: any = {};
 
   Object.keys(GENERAL_SETTINGS).map((key) => {
+    // Validate plist file only for keys that exist in ConfigFieldsDefaultValues
+    if (ConfigFieldsDefaultValues.hasOwnProperty(key)) {
+      // If plistData has entries but the key is missing, set it to the default value
+      if (Object.keys(plistData).length && !hasField(key)) {
+        logger.info(
+          'plist-handler: field does not exists in plist file using default value',
+          key,
+        );
+        settings[key] = ConfigFieldsDefaultValues[key];
+        return;
+      }
+    }
     settings[key] = systemPreferences.getUserDefault(
       key,
       GENERAL_SETTINGS[key],
@@ -157,4 +174,38 @@ export const initializePlistFile = (path: string) => {
   } catch (error: any) {
     logger.error('plist-handler: initialize exception', error?.message);
   }
+};
+
+/**
+ * Reads and parses a plist file from the user's home directory.
+ * The plist file is located at `~/Library/Preferences/com.symphony.electron-desktop.plist`.
+ * If the file exists and is successfully parsed, its data is stored in the `plistData` variable.
+ *
+ * @returns {Promise<void>} A promise that resolves once the file has been read and processed.
+ * @throws {Error} Throws an error if the plist file cannot be read or parsed, which is logged using the logger.
+ */
+export const readPlistFile = async () => {
+  const userPath = app.getPath('home');
+  const plistPath = `${userPath}/Library/Preferences/com.symphony.electron-desktop.plist`;
+  try {
+    if (fs.existsSync(plistPath)) {
+      const data = fs.readFileSync(plistPath);
+      const parsedData = bplistParser.parseBuffer(data);
+      if (parsedData && parsedData.length > 0) {
+        plistData = parsedData[0];
+      }
+    }
+  } catch (error) {
+    logger.error('plist-handler: failed to read plist', error);
+  }
+};
+
+/**
+ * Checks if a given field name exists in the `plistData` object.
+ *
+ * @param {string} fieldName - The name of the field to check for in the `plistData` object.
+ * @returns {boolean} Returns `true` if the field exists, `false` otherwise.
+ */
+export const hasField = (fieldName: string): boolean => {
+  return plistData.hasOwnProperty(fieldName);
 };
