@@ -131,6 +131,21 @@ export const IS_NODE_INTEGRATION_ENABLED: boolean = false;
 export const AUX_CLICK = 'Auxclick';
 // Timeout on restarting SDA in case it's stuck
 const LISTEN_TIMEOUT: number = 25 * 1000;
+const REQUIRED_CONFIG_FIELDS = [
+  'isCustomTitleBar',
+  'mainWinPos',
+  'minimizeOnClose',
+  'notificationSettings',
+  'alwaysOnTop',
+  'locale',
+  'customFlags',
+  'clientSwitch',
+  'enableRendererLogs',
+  'enableBrowserLogin',
+  'browserLoginAutoConnect',
+  'devToolsEnabled',
+];
+
 export class WindowHandler {
   /**
    * Verifies if the url is valid and
@@ -243,20 +258,7 @@ export class WindowHandler {
    */
   public async createApplication() {
     // Use these variables only on initial setup
-    this.config = config.getConfigFields([
-      'isCustomTitleBar',
-      'mainWinPos',
-      'minimizeOnClose',
-      'notificationSettings',
-      'alwaysOnTop',
-      'locale',
-      'customFlags',
-      'clientSwitch',
-      'enableRendererLogs',
-      'enableBrowserLogin',
-      'browserLoginAutoConnect',
-      'devToolsEnabled',
-    ]);
+    this.config = config.getConfigFields(REQUIRED_CONFIG_FIELDS);
     logger.info(
       `window-handler: main windows initialized with following config data`,
       this.config,
@@ -963,6 +965,13 @@ export class WindowHandler {
       this.welcomeScreenWindow = null;
     });
   }
+
+  /**
+   * Fetches the required configuration fields from the `config` module.
+   */
+  public fetchConfigFields = () => {
+    this.config = config.getConfigFields(REQUIRED_CONFIG_FIELDS);
+  };
 
   /**
    * Gets the main window
