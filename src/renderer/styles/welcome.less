@@ -242,6 +242,7 @@ body {
 
   &-continue-button-loading:disabled {
     background-color: @electricity-ui-50;
+    cursor: not-allowed;
   }
 
   &-redirect-info-text-container {
@@ -269,6 +270,11 @@ body {
     text-decoration: none;
     background-color: transparent;
     color: @electricity-ui-30;
+  }
+
+  &-retry-button:disabled {
+    cursor: not-allowed;
+    color: @graphite-60;
   }
 
   &-auto-connect-wrapper {

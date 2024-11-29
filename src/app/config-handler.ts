@@ -39,6 +39,7 @@ export const ConfigFieldsDefaultValues: Partial<IConfig> = {
   browserLoginAutoConnect: false,
   latestAutoUpdateChannelEnabled: true,
   betaAutoUpdateChannelEnabled: true,
+  browserLoginRetryTimeout: '5',
 };
 
 export const ConfigFieldsToRestart = new Set([
@@ -85,6 +86,7 @@ export interface IConfig {
   startedAfterAutoUpdate?: boolean;
   enableBrowserLogin?: boolean;
   browserLoginAutoConnect?: boolean;
+  browserLoginRetryTimeout?: string;
   betaAutoUpdateChannelEnabled?: boolean;
   latestAutoUpdateChannelEnabled?: boolean;
   forceAutoUpdate?: boolean;
