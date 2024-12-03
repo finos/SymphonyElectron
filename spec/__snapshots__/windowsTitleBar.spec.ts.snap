@@ -43,44 +43,15 @@ exports[`windows title bar should render correctly 1`] = `
   <div
     className="title-container"
   >
-    <svg
-      fill="none"
-      viewBox="-10 0 60 60"
-      width="20"
-    >
-      <path
-        d="M40 20.111V9.653c0-2.142-1.1-4.153-2.883-5.255C34.458 2.754 28.7 0 20 0 11.3 0 5.542 2.754 2.883 4.407 1.1 5.5 0 7.511 0 9.653v15.705l31.667 9.618v6.995c0 .945-.567 1.61-1.534 2.108L20 49.404 9.808 44.052c-.908-.472-1.475-1.136-1.475-2.08v-5.247L0 34.102v7.87c0 4.319 2.358 7.991 6.108 9.906L20 59.46l13.833-7.546C37.642 49.963 40 46.291 40 41.971V28.855L8.333 19.237v-7.983C10.6 10.108 14.45 8.744 20 8.744s9.4 1.364 11.667 2.51v6.234L40 20.111z"
-        fill="#0098FF"
-      />
-      <path
-        d="M40 20.111V9.653c0-2.142-1.1-4.153-2.883-5.255C34.458 2.754 28.7 0 20 0 11.3 0 5.542 2.754 2.883 4.407 1.1 5.5 0 7.511 0 9.653v15.705l31.667 9.618v6.995c0 .945-.567 1.61-1.534 2.108L20 49.404 9.808 44.052c-.908-.472-1.475-1.136-1.475-2.08v-5.247L0 34.102v7.87c0 4.319 2.358 7.991 6.108 9.906L20 59.46l13.833-7.546C37.642 49.963 40 46.291 40 41.971V28.855L8.333 19.237v-7.983C10.6 10.108 14.45 8.744 20 8.744s9.4 1.364 11.667 2.51v6.234L40 20.111z"
-        fill="url(#prefix__paint0_radial)"
-      />
-      <defs>
-        <radialGradient
-          cx={0}
-          cy={0}
-          gradientTransform="matrix(0 40.259 -50.3704 0 20.07 0)"
-          gradientUnits="userSpaceOnUse"
-          id="prefix__paint0_radial"
-          r={1}
-        >
-          <stop
-            stopColor="#fff"
-            stopOpacity={0.4}
-          />
-          <stop
-            offset={1}
-            stopColor="#fff"
-            stopOpacity={0}
-          />
-        </radialGradient>
-      </defs>
-    </svg>
+    <img
+      alt="Symphony Messaging Logo"
+      className="symphony-messaging-logo"
+      src="../renderer/assets/symphony-messaging.png"
+    />
     <p
       id="title-bar-title"
     >
-      Symphony
+      Symphony Messaging
     </p>
   </div>
   <div
