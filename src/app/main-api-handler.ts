@@ -102,6 +102,7 @@ let formattedPodUrl = '';
 let credentialsPromise;
 const credentialsPromiseRefHolder: { [key: string]: any } = {};
 const BROWSER_LOGIN_RETRY = 15 * 1000; // 15sec
+const BROWSER_LOGIN_ABORT_TIMEOUT = 10 * 1000; // 10sec
 
 /**
  * Handle API related ipc messages from renderers. Only messages from windows
@@ -795,11 +796,16 @@ const loadPodUrl = (() => {
         };
       }
 
+      const controller = new AbortController();
+      const timeout = setTimeout(
+        () => controller.abort(),
+        BROWSER_LOGIN_ABORT_TIMEOUT,
+      );
       try {
-        const response = await fetch(
-          `${formattedPodUrl}${AUTH_STATUS_PATH}`,
-          onLogin,
-        );
+        const response = await fetch(`${formattedPodUrl}${AUTH_STATUS_PATH}`, {
+          ...onLogin,
+          signal: controller.signal,
+        });
         const authResponse = (await response.json()) as IAuthResponse;
         logger.info('main-api-handler: check auth response', authResponse);
 
@@ -854,7 +860,7 @@ const loadPodUrl = (() => {
             error.code,
           );
           retryCount++;
-          if (retryCount < maxRetries) {
+          if (retryCount < maxRetries || error.code === 'ERR_NETWORK_CHANGED') {
             retryTimeoutId = setTimeout(attemptFetch, BROWSER_LOGIN_RETRY);
           } else {
             logger.error(
@@ -863,6 +869,10 @@ const loadPodUrl = (() => {
             isRetryInProgress = false;
             setLoginRetryState(isRetryInProgress);
           }
+        }
+      } finally {
+        if (timeout) {
+          clearTimeout(timeout);
         }
       }
     };
