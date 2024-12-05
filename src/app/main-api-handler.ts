@@ -101,6 +101,8 @@ let loginUrl = '';
 let formattedPodUrl = '';
 let credentialsPromise;
 const credentialsPromiseRefHolder: { [key: string]: any } = {};
+const BROWSER_LOGIN_RETRY = 15 * 1000; // 15sec
+const BROWSER_LOGIN_ABORT_TIMEOUT = 10 * 1000; // 10sec
 
 /**
  * Handle API related ipc messages from renderers. Only messages from windows
@@ -467,7 +469,10 @@ ipcMain.on(
           ? userConfigURL
           : globalConfigURL;
         const { subdomain, domain, tld } = whitelistHandler.parseDomain(podUrl);
-        const localConfig = config.getConfigFields(['enableBrowserLogin']);
+        const localConfig = config.getConfigFields([
+          'enableBrowserLogin',
+          'browserLoginRetryTimeout',
+        ]);
 
         formattedPodUrl = `https://${subdomain}.${domain}${tld}`;
         loginUrl = getBrowserLoginUrl(formattedPodUrl);
@@ -483,7 +488,10 @@ ipcMain.on(
             'check if sso is enabled for the pod',
             formattedPodUrl,
           );
-          loadPodUrl(false);
+          const timeout = localConfig.browserLoginRetryTimeout
+            ? parseInt(localConfig.browserLoginRetryTimeout, 10)
+            : 0;
+          loadPodUrl(false, timeout);
         } else {
           logger.info(
             'main-api-handler:',
@@ -739,72 +747,162 @@ const logApiCallParams = (arg: any) => {
   }
 };
 
-const loadPodUrl = (proxyLogin = false) => {
-  logger.info('loading pod URL. Proxy: ', proxyLogin);
-  let onLogin = {};
-  if (proxyLogin) {
-    onLogin = {
-      async onLogin(authInfo) {
-        // this 'authInfo' is the one received by the 'login' event. See https://www.electronjs.org/docs/latest/api/client-request#event-login
-        proxyDetails.hostname = authInfo.host || authInfo.realm;
-        await credentialsPromise;
-        return Promise.resolve({
-          username: proxyDetails.username,
-          password: proxyDetails.password,
+/**
+ * Loads the Pod URL and handles potential authentication challenges.
+ *
+ * This function attempts to fetch the Pod URL and handles various authentication scenarios:
+ * - Standard login (no proxy)
+ * - Proxy login with authentication window
+ * - Login retry logic for failed attempts
+ *
+ * @param {boolean} [proxyLogin=false] - Whether to use a proxy for the request. Defaults to false.
+ * @param {number} [retryDurationInMinutes=0] - The duration (in minutes) for the retry logic. Defaults to 0 (no retries).
+ */
+const loadPodUrl = (() => {
+  let isRetryInProgress: boolean = false;
+  let retryTimeoutId: NodeJS.Timeout | null = null;
+
+  return (proxyLogin = false, retryDurationInMinutes = 0) => {
+    logger.info('main-api-handler: loading pod URL. Proxy: ', proxyLogin);
+
+    const maxRetries = Math.floor(
+      (retryDurationInMinutes * 60 * 1000) / BROWSER_LOGIN_RETRY,
+    );
+    let retryCount = 0;
+
+    // Function to attempt fetching the endpoint
+    const attemptFetch = async () => {
+      if (retryTimeoutId) {
+        clearTimeout(retryTimeoutId); // Clear any existing timeout to avoid overlaps
+      }
+
+      logger.info(
+        'main-api-handler: Attempting to fetch the pod URL. Attempt:',
+        retryCount + 1,
+      );
+
+      let onLogin = {};
+      if (proxyLogin) {
+        onLogin = {
+          async onLogin(authInfo) {
+            // this 'authInfo' is the one received by the 'login' event. See https://www.electronjs.org/docs/latest/api/client-request#event-login
+            proxyDetails.hostname = authInfo.host || authInfo.realm;
+            await credentialsPromise;
+            return Promise.resolve({
+              username: proxyDetails.username,
+              password: proxyDetails.password,
+            });
+          },
+        };
+      }
+
+      const controller = new AbortController();
+      const timeout = setTimeout(
+        () => controller.abort(),
+        BROWSER_LOGIN_ABORT_TIMEOUT,
+      );
+      try {
+        const response = await fetch(`${formattedPodUrl}${AUTH_STATUS_PATH}`, {
+          ...onLogin,
+          signal: controller.signal,
         });
-      },
-    };
-  }
-  fetch(`${formattedPodUrl}${AUTH_STATUS_PATH}`, onLogin)
-    .then(async (response) => {
-      const authResponse = (await response.json()) as IAuthResponse;
-      logger.info('main-api-handler:', 'check auth response', authResponse);
-      if (authResponse.authenticationType === 'sso') {
-        logger.info(
-          'main-api-handler: browser login is enabled - logging in',
-          loginUrl,
-        );
-        await shell.openExternal(loginUrl);
-      } else {
-        logger.info(
-          'main-api-handler: no SSO - loading main window with',
-          formattedPodUrl,
-        );
-        const mainWebContents = windowHandler.getMainWebContents();
-        if (mainWebContents && !mainWebContents.isDestroyed()) {
-          windowHandler.setMainWindowOrigin(formattedPodUrl);
-          mainWebContents.loadURL(formattedPodUrl);
+        const authResponse = (await response.json()) as IAuthResponse;
+        logger.info('main-api-handler: check auth response', authResponse);
+
+        if (authResponse.authenticationType === 'sso') {
+          logger.info(
+            'main-api-handler: browser login is enabled - logging in',
+            loginUrl,
+          );
+          await shell.openExternal(loginUrl);
+        } else {
+          logger.info(
+            'main-api-handler: no SSO - loading main window with',
+            formattedPodUrl,
+          );
+          const mainWebContents = windowHandler.getMainWebContents();
+          if (mainWebContents && !mainWebContents.isDestroyed()) {
+            windowHandler.setMainWindowOrigin(formattedPodUrl);
+            mainWebContents.loadURL(formattedPodUrl);
+          }
+        }
+
+        isRetryInProgress = false;
+        setLoginRetryState(isRetryInProgress);
+        retryTimeoutId = null;
+      } catch (error: any) {
+        if (
+          (error.type === 'proxy' && error.code === 'PROXY_AUTH_FAILED') ||
+          (error.code === 'ERR_TOO_MANY_RETRIES' && proxyLogin)
+        ) {
+          credentialsPromise = new Promise((res, _rej) => {
+            credentialsPromiseRefHolder.resolutionCallback = res;
+          });
+          const welcomeWindow =
+            windowHandler.getMainWindow() as ICustomBrowserWindow;
+          windowHandler.createBasicAuthWindow(
+            welcomeWindow,
+            proxyDetails.hostname,
+            proxyDetails.retries === 0,
+            undefined,
+            (username, password) => {
+              proxyDetails.username = username;
+              proxyDetails.password = password;
+              credentialsPromiseRefHolder.resolutionCallback(true);
+              loadPodUrl(true);
+            },
+          );
+          proxyDetails.retries += 1;
+        } else {
+          logger.error(
+            'main-api-handler: browser login error. Details: ',
+            error.type,
+            error.code,
+          );
+          retryCount++;
+          if (retryCount < maxRetries || error.code === 'ERR_NETWORK_CHANGED') {
+            retryTimeoutId = setTimeout(attemptFetch, BROWSER_LOGIN_RETRY);
+          } else {
+            logger.error(
+              'main-api-handler: Retry attempts exhausted. Endpoint unreachable.',
+            );
+            isRetryInProgress = false;
+            setLoginRetryState(isRetryInProgress);
+          }
+        }
+      } finally {
+        if (timeout) {
+          clearTimeout(timeout);
         }
       }
-    })
-    .catch(async (error) => {
-      if (
-        (error.type === 'proxy' && error.code === 'PROXY_AUTH_FAILED') ||
-        (error.code === 'ERR_TOO_MANY_RETRIES' && proxyLogin)
-      ) {
-        credentialsPromise = new Promise((res, _rej) => {
-          credentialsPromiseRefHolder.resolutionCallback = res;
-        });
-        const welcomeWindow =
-          windowHandler.getMainWindow() as ICustomBrowserWindow;
-        windowHandler.createBasicAuthWindow(
-          welcomeWindow,
-          proxyDetails.hostname,
-          proxyDetails.retries === 0,
-          undefined,
-          (username, password) => {
-            proxyDetails.username = username;
-            proxyDetails.password = password;
-            credentialsPromiseRefHolder.resolutionCallback(true);
-            loadPodUrl(true);
-          },
-        );
-        proxyDetails.retries += 1;
-      }
-      logger.error(
-        'main-api-handler: browser login error. Details: ',
-        error.type,
-        error.code,
+    };
+
+    // Start the retry logic only if it's not already in progress
+    if (!isRetryInProgress) {
+      isRetryInProgress = true;
+      setLoginRetryState(isRetryInProgress);
+      attemptFetch();
+    } else {
+      logger.info(
+        'main-api-handler: Retry logic already in progress. Ignoring duplicate call.',
       );
+    }
+  };
+})();
+
+/**
+ * Updates the login retry state in the main web content.
+ *
+ * Sends a message to the main web content indicating whether a login retry is in progress.
+ * This message is used to update the UI accordingly.
+ *
+ * @param {boolean} isRetryInProgress - A boolean indicating whether a login retry is in progress.
+ */
+const setLoginRetryState = (isRetryInProgress: boolean) => {
+  const mainWebContents = windowHandler.getMainWebContents();
+  if (mainWebContents && !mainWebContents.isDestroyed()) {
+    mainWebContents.send('welcome', {
+      isRetryInProgress,
     });
+  }
 };

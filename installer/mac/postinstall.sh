@@ -33,6 +33,7 @@ bring_to_front=$(sed -n '6p' ${settingsFilePath});
 dev_tools_enabled=$(sed -n '7p' ${settingsFilePath});
 enable_browser_login=$(sed -n '8p' ${settingsFilePath});
 browser_login_autoconnect=$(sed -n '9p' ${settingsFilePath});
+browser_login_retry_timeout=$(sed -n '10p' ${settingsFilePath});
 
 ## If any of the above values turn out to be empty, set default values ##
 if [ "$pod_url" = "" ]; then pod_url="https://my.symphony.com"; fi
@@ -44,6 +45,7 @@ if [ "$bring_to_front" = "" ] || [ "$bring_to_front" = 'false' ]; then bring_to_
 if [ "$dev_tools_enabled" = "" ]; then dev_tools_enabled=true; fi
 if [ "$enable_browser_login" = "" ]; then enable_browser_login=false; fi
 if [ "$browser_login_autoconnect" = "" ]; then browser_login_autoconnect=false; fi
+if [ "$browser_login_retry_timeout" = "" ]; then browser_login_retry_timeout='5'; fi
 
 
 ## Add settings force auto update
@@ -86,6 +88,7 @@ if [ "$EUID" -ne 0 ]; then
   defaults write "$plistFilePath" autoUpdateCheckInterval -string "30"
   defaults write "$plistFilePath" enableBrowserLogin -bool "$enable_browser_login"
   defaults write "$plistFilePath" browserLoginAutoConnect -bool "$browser_login_autoconnect"
+  defaults write "$plistFilePath" browserLoginRetryTimeout -string "$browser_login_retry_timeout"
   defaults write "$plistFilePath" overrideUserAgent -bool false
   defaults write "$plistFilePath" minimizeOnClose -string "$minimize_on_close"
   defaults write "$plistFilePath" launchOnStartup -string "$launch_on_startup"
@@ -130,6 +133,7 @@ else
   sudo -u "$userName" defaults write "$plistFilePath" autoUpdateCheckInterval -string "30"
   sudo -u "$userName" defaults write "$plistFilePath" enableBrowserLogin -bool "$enable_browser_login"
   sudo -u "$userName" defaults write "$plistFilePath" browserLoginAutoConnect -bool "$browser_login_autoconnect"
+  sudo -u "$userName" defaults write "$plistFilePath" browserLoginRetryTimeout -string "$browser_login_retry_timeout"
   sudo -u "$userName" defaults write "$plistFilePath" overrideUserAgent -bool false
   sudo -u "$userName" defaults write "$plistFilePath" minimizeOnClose -string "$minimize_on_close"
   sudo -u "$userName" defaults write "$plistFilePath" launchOnStartup -string "$launch_on_startup"

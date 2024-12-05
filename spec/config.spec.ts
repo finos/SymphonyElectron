@@ -100,6 +100,7 @@ describe('config', () => {
         'browserLoginAutoConnect',
         'latestAutoUpdateChannelEnabled',
         'betaAutoUpdateChannelEnabled',
+        'browserLoginRetryTimeout',
       ];
       const globalConfig: object = { url: 'test' };
       const userConfig: object = { configVersion: '4.0.1' };

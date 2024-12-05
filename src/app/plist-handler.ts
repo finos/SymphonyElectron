@@ -19,6 +19,7 @@ const GENERAL_SETTINGS = {
   autoUpdateCheckInterval: 'string',
   enableBrowserLogin: 'boolean',
   browserLoginAutoConnect: 'boolean',
+  browserLoginRetryTimeout: 'string',
   overrideUserAgent: 'boolean',
   minimizeOnClose: 'string',
   launchOnStartup: 'string',

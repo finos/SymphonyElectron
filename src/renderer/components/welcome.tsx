@@ -12,6 +12,7 @@ interface IState {
   isBrowserLoginEnabled: boolean;
   browserLoginAutoConnect: boolean;
   isLoading: boolean;
+  isRetryInProgress: boolean;
 }
 
 const WELCOME_NAMESPACE = 'Welcome';
@@ -37,6 +38,7 @@ export default class Welcome extends React.Component<{}, IState> {
       isBrowserLoginEnabled: true,
       browserLoginAutoConnect: false,
       isLoading: false,
+      isRetryInProgress: false,
     };
     this.updateState = this.updateState.bind(this);
   }
@@ -52,6 +54,7 @@ export default class Welcome extends React.Component<{}, IState> {
       isLoading,
       isBrowserLoginEnabled,
       isFirstTimeLaunch,
+      isRetryInProgress,
     } = this.state;
     return (
       <div className='Welcome' lang={i18n.getLocale()}>
@@ -126,6 +129,7 @@ export default class Welcome extends React.Component<{}, IState> {
                 <button
                   className='Welcome-retry-button'
                   onClick={this.eventHandlers.onLogin}
+                  disabled={isRetryInProgress}
                 >
                   {i18n.t('Retry', WELCOME_NAMESPACE)()}
                 </button>

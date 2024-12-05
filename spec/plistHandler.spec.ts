@@ -50,6 +50,7 @@ describe('Plist Handler', () => {
       betaAutoUpdateChannelEnabled: undefined,
       bringToFront: undefined,
       browserLoginAutoConnect: undefined,
+      browserLoginRetryTimeout: undefined,
       customFlags: {
         authNegotiateDelegateWhitelist: undefined,
         authServerWhitelist: undefined,
