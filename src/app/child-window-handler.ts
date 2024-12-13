@@ -40,8 +40,8 @@ import {
 const DEFAULT_POP_OUT_WIDTH = 300;
 const DEFAULT_POP_OUT_HEIGHT = 600;
 
-const MIN_WIDTH = 300;
-const MIN_HEIGHT = 300;
+const MIN_WIDTH = 400;
+const MIN_HEIGHT = 400;
 
 const CHILD_WINDOW_EVENTS = ['enter-full-screen', 'leave-full-screen'];
 
