@@ -102,6 +102,9 @@ export enum ClientSwitchType {
 export const DEFAULT_WELCOME_SCREEN_WIDTH: number = 542;
 export const DEFAULT_WELCOME_SCREEN_HEIGHT: number = 333;
 
+const MIN_WIDTH = 400;
+const MIN_HEIGHT = 400;
+
 const MAIN_WEB_CONTENTS_EVENTS = ['enter-full-screen', 'leave-full-screen'];
 const SHORTCUT_KEY_THROTTLE = 1000; // 1sec
 
@@ -303,8 +306,8 @@ export class WindowHandler {
           alwaysOnTop:
             this.config.alwaysOnTop === CloudConfigDataTypes.ENABLED || false,
           frame: !this.isCustomTitleBar,
-          minHeight: 300,
-          minWidth: 300,
+          minHeight: MIN_HEIGHT,
+          minWidth: MIN_WIDTH,
           title: 'Symphony',
           show: false,
         },
