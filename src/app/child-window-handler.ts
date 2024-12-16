@@ -37,7 +37,7 @@ import {
   preventWindowNavigation,
 } from './window-utils';
 
-const DEFAULT_POP_OUT_WIDTH = 300;
+const DEFAULT_POP_OUT_WIDTH = 400;
 const DEFAULT_POP_OUT_HEIGHT = 600;
 
 const MIN_WIDTH = 400;
@@ -247,6 +247,7 @@ export const handleChildWindow = (webContents: WebContents): void => {
           'contextOriginUrl',
         ]);
         browserWin.setFullScreenable(true);
+        browserWin.setMinimumSize(MIN_WIDTH, MIN_HEIGHT);
         browserWin.origin = contextOriginUrl || windowHandler.url;
         if (browserWin && !browserWin.isDestroyed()) {
           browserWin.setBounds({
