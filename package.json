@@ -40,10 +40,7 @@
     "compression": "maximum",
     "artifactName": "${productName}-${version}-${os}.${ext}",
     "asar": true,
-    "asarUnpack": [
-      "**/*.node",
-      "node_modules/@symphony/symphony-c9-shell"
-    ],
+    "asarUnpack": "**/*.node",
     "afterPack": "scripts/afterPackHoock.js",
     "nsis": {
       "perMachine": false,
