@@ -25,7 +25,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
   constructor(props) {
     super(props);
     this.state = {
-      title: document.title || i18n.t('Symphony Messaging')(),
+      title: document.title || 'Symphony',
       isMaximized: false,
       isDisabled: false,
     };
@@ -55,7 +55,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
     this.observer = new MutationObserver((mutations) => {
       const title: string = mutations[0].target.textContent
         ? mutations[0].target.textContent
-        : i18n.t('Symphony Messaging')();
+        : 'Symphony';
       this.setState({ title });
     });
     if (target) {
@@ -118,11 +118,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
           </button>
         </div>
         <div className='title-container'>
-          <img
-            className='symphony-messaging-logo'
-            alt={'Symphony Messaging Logo'}
-            src={'../renderer/assets/symphony-messaging.png'}
-          />
+          {this.getSymphonyLogo()}
           <p id='title-bar-title'>{title}</p>
         </div>
         <div className='title-bar-button-container'>
@@ -281,6 +277,37 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
 
     document.body.appendChild(borderBottom);
     document.body.classList.add('window-border');
+  }
+
+  /**
+   * Returns the title bar logo
+   */
+  private getSymphonyLogo(): JSX.Element {
+    return (
+      <svg width='20' viewBox='-10 0 60 60' fill='none'>
+        <path
+          d='M40 20.111V9.653c0-2.142-1.1-4.153-2.883-5.255C34.458 2.754 28.7 0 20 0 11.3 0 5.542 2.754 2.883 4.407 1.1 5.5 0 7.511 0 9.653v15.705l31.667 9.618v6.995c0 .945-.567 1.61-1.534 2.108L20 49.404 9.808 44.052c-.908-.472-1.475-1.136-1.475-2.08v-5.247L0 34.102v7.87c0 4.319 2.358 7.991 6.108 9.906L20 59.46l13.833-7.546C37.642 49.963 40 46.291 40 41.971V28.855L8.333 19.237v-7.983C10.6 10.108 14.45 8.744 20 8.744s9.4 1.364 11.667 2.51v6.234L40 20.111z'
+          fill='#0098FF'
+        />
+        <path
+          d='M40 20.111V9.653c0-2.142-1.1-4.153-2.883-5.255C34.458 2.754 28.7 0 20 0 11.3 0 5.542 2.754 2.883 4.407 1.1 5.5 0 7.511 0 9.653v15.705l31.667 9.618v6.995c0 .945-.567 1.61-1.534 2.108L20 49.404 9.808 44.052c-.908-.472-1.475-1.136-1.475-2.08v-5.247L0 34.102v7.87c0 4.319 2.358 7.991 6.108 9.906L20 59.46l13.833-7.546C37.642 49.963 40 46.291 40 41.971V28.855L8.333 19.237v-7.983C10.6 10.108 14.45 8.744 20 8.744s9.4 1.364 11.667 2.51v6.234L40 20.111z'
+          fill='url(#prefix__paint0_radial)'
+        />
+        <defs>
+          <radialGradient
+            id='prefix__paint0_radial'
+            cx={0}
+            cy={0}
+            r={1}
+            gradientUnits='userSpaceOnUse'
+            gradientTransform='matrix(0 40.259 -50.3704 0 20.07 0)'
+          >
+            <stop stopColor='#fff' stopOpacity={0.4} />
+            <stop offset={1} stopColor='#fff' stopOpacity={0} />
+          </radialGradient>
+        </defs>
+      </svg>
+    );
   }
 
   /**
