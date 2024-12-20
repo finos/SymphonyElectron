@@ -60,6 +60,8 @@
       "!node_modules/@nornagon/cld/deps/cld${/*}",
       "!node_modules/@nornagon/cld/build/deps${/*}",
       "!node_modules/@nornagon/spellchecker/vendor${/*}",
+      "!node_modules/@symphony/symphony-c9-shell/**",
+      "!spec/**/*",
       "!**/*.map"
     ],
     "extraFiles": [
@@ -104,10 +106,12 @@
         "**/*",
         "!.git${/*}",
         "!**/installer${/*}",
-        "!node_modules/@symphony/symphony-c9-shell${/*}",
+        "!spec/**/*",
+        "!images/linux/**",
         "!**/node_modules/@nornagon/cld/deps/cld${/*}",
         "!**/node_modules/@nornagon/cld/build/deps${/*}",
         "!**/node_modules/@nornagon/spellchecker/vendor${/*}",
+        "!**/node_modules/@symphony/symphony-c9-shell/**",
         "!**/*.map",
         "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
         "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
