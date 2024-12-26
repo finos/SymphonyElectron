@@ -4,6 +4,7 @@ import * as path from 'path';
 
 import * as util from 'util';
 import { buildNumber } from '../../package.json';
+import { ConfigFieldsDefaultValues } from '../common/config-interface';
 import { isDevEnv, isElectronQA, isLinux, isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { arrayEquals, filterOutSelectedValues, pick } from '../common/utils';
@@ -19,7 +20,6 @@ import { terminateC9Shell } from './c9-shell-handler';
 import {
   getAllUserDefaults,
   initializePlistFile,
-  readPlistFile,
   setPlistFromPreviousSettings,
 } from './plist-handler';
 import { appStats } from './stats';
@@ -31,16 +31,6 @@ export enum CloudConfigDataTypes {
   ENABLED = 'ENABLED',
   DISABLED = 'DISABLED',
 }
-
-export const ConfigFieldsDefaultValues: Partial<IConfig> = {
-  isPodUrlEditable: true,
-  forceAutoUpdate: false,
-  enableBrowserLogin: false,
-  browserLoginAutoConnect: false,
-  latestAutoUpdateChannelEnabled: true,
-  betaAutoUpdateChannelEnabled: true,
-  browserLoginRetryTimeout: '5',
-};
 
 export const ConfigFieldsToRestart = new Set([
   'permissions',
@@ -865,8 +855,6 @@ class Config {
           this.globalConfig as IConfig,
           appGlobalConfigData,
         );
-        // Validate user config before starting the application
-        await readPlistFile();
         // After everything is set from previous SDA version
         this.globalConfig = getAllUserDefaults();
         return;
@@ -882,8 +870,6 @@ class Config {
         'installVariant',
         'string',
       );
-      // Validate user config before starting the application
-      await readPlistFile();
       this.globalConfig = getAllUserDefaults();
       logger.info(
         `config-handler: Global configuration from plist: `,

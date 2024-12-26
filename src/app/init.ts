@@ -4,6 +4,7 @@ import * as path from 'path';
 import { isDevEnv, isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
+import { readPlistFile } from './plist-handler';
 import { appStats } from './stats';
 
 // Handle custom user data path from process.argv
@@ -15,6 +16,11 @@ const userDataPathArg: string | null = getCommandLineArgs(
 const userDataPath =
   userDataPathArg &&
   userDataPathArg.substring(userDataPathArg.indexOf('=') + 1);
+
+if (isMac) {
+  // Validate user config before starting the application
+  readPlistFile();
+}
 
 // If we are running in production, sandbox the entire app
 // and set the app user model id for windows native notifications
