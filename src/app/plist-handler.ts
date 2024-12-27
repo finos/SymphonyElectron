@@ -183,7 +183,7 @@ export const initializePlistFile = (path: string) => {
  * The plist file is located at `~/Library/Preferences/com.symphony.electron-desktop.plist`.
  * If the file exists and is successfully parsed, its data is stored in the `plistData` variable.
  *
- * @returns {void} A promise that resolves once the file has been read and processed.
+ * @returns {void}
  * @throws {Error} Throws an error if the plist file cannot be read or parsed, which is logged using the logger.
  */
 export const readPlistFile = (): void => {
