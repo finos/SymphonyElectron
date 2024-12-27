@@ -3,9 +3,10 @@ import { execSync } from 'child_process';
 import { app, systemPreferences } from 'electron';
 import * as fs from 'fs';
 
+import { ConfigFieldsDefaultValues } from '../common/config-interface';
 import { logger } from '../common/logger';
 import { getGuid } from '../common/utils';
-import { ConfigFieldsDefaultValues, IConfig } from './config-handler';
+import { IConfig } from './config-handler';
 
 let plistData = {};
 
@@ -182,10 +183,10 @@ export const initializePlistFile = (path: string) => {
  * The plist file is located at `~/Library/Preferences/com.symphony.electron-desktop.plist`.
  * If the file exists and is successfully parsed, its data is stored in the `plistData` variable.
  *
- * @returns {Promise<void>} A promise that resolves once the file has been read and processed.
+ * @returns {void}
  * @throws {Error} Throws an error if the plist file cannot be read or parsed, which is logged using the logger.
  */
-export const readPlistFile = async () => {
+export const readPlistFile = (): void => {
   const userPath = app.getPath('home');
   const plistPath = `${userPath}/Library/Preferences/com.symphony.electron-desktop.plist`;
   try {
