@@ -224,6 +224,8 @@
   "Welcome": {
     "Continue": "Continue",
     "Enable Single Sign On": "Enable Single Sign On",
+    "Establishing a secure connection.": "Establishing a secure connection.",
+    "Unable to establish a secure mechanism.": "Unable to establish a secure mechanism.",
     "Find your pod URL in your invitation email.": "Find your pod URL in your invitation email.",
     "Welcome to the largest global community in financial services with over": "Welcome to the largest global community in financial services with over",
     " half a million users": " half a million users",
