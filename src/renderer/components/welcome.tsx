@@ -410,7 +410,7 @@ export default class Welcome extends React.Component<{}, IState> {
       return i18n.t('Establishing a secure connection.', WELCOME_NAMESPACE)();
     } else if (retryFailed) {
       return i18n.t(
-        'Unable to establish a secure mechanism.',
+        'Unable to establish a secure connection.',
         WELCOME_NAMESPACE,
       )();
     } else {
