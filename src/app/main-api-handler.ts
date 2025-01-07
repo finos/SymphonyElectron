@@ -828,7 +828,7 @@ const loadPodUrl = (() => {
         }
 
         isRetryInProgress = false;
-        setLoginRetryState(isRetryInProgress);
+        setLoginRetryState(isRetryInProgress, false);
         retryTimeoutId = null;
       } catch (error: any) {
         if (
@@ -867,7 +867,7 @@ const loadPodUrl = (() => {
               'main-api-handler: Retry attempts exhausted. Endpoint unreachable.',
             );
             isRetryInProgress = false;
-            setLoginRetryState(isRetryInProgress);
+            setLoginRetryState(isRetryInProgress, true);
           }
         }
       } finally {
@@ -880,7 +880,7 @@ const loadPodUrl = (() => {
     // Start the retry logic only if it's not already in progress
     if (!isRetryInProgress) {
       isRetryInProgress = true;
-      setLoginRetryState(isRetryInProgress);
+      setLoginRetryState(isRetryInProgress, false);
       attemptFetch();
     } else {
       logger.info(
@@ -897,12 +897,17 @@ const loadPodUrl = (() => {
  * This message is used to update the UI accordingly.
  *
  * @param {boolean} isRetryInProgress - A boolean indicating whether a login retry is in progress.
+ * @param {boolean} retryFailed - A boolean indicating a failure of retry mechanism
  */
-const setLoginRetryState = (isRetryInProgress: boolean) => {
+const setLoginRetryState = (
+  isRetryInProgress: boolean,
+  retryFailed: boolean = false,
+) => {
   const mainWebContents = windowHandler.getMainWebContents();
   if (mainWebContents && !mainWebContents.isDestroyed()) {
     mainWebContents.send('welcome', {
       isRetryInProgress,
+      retryFailed,
     });
   }
 };

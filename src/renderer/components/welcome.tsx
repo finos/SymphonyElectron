@@ -13,6 +13,7 @@ interface IState {
   browserLoginAutoConnect: boolean;
   isLoading: boolean;
   isRetryInProgress: boolean;
+  retryFailed: boolean;
 }
 
 const WELCOME_NAMESPACE = 'Welcome';
@@ -39,6 +40,7 @@ export default class Welcome extends React.Component<{}, IState> {
       browserLoginAutoConnect: false,
       isLoading: false,
       isRetryInProgress: false,
+      retryFailed: false,
     };
     this.updateState = this.updateState.bind(this);
   }
@@ -55,6 +57,7 @@ export default class Welcome extends React.Component<{}, IState> {
       isBrowserLoginEnabled,
       isFirstTimeLaunch,
       isRetryInProgress,
+      retryFailed,
     } = this.state;
     return (
       <div className='Welcome' lang={i18n.getLocale()}>
@@ -120,10 +123,10 @@ export default class Welcome extends React.Component<{}, IState> {
           {isBrowserLoginEnabled && (
             <div className='Welcome-redirect-info-text-container'>
               <span>
-                {i18n.t(
-                  'You’ll momentarily be redirected to your web browser.',
-                  WELCOME_NAMESPACE,
-                )()}
+                {this.getConnectionStatusMessage(
+                  isRetryInProgress,
+                  retryFailed,
+                )}
               </span>
               {isLoading && (
                 <button
@@ -392,4 +395,29 @@ export default class Welcome extends React.Component<{}, IState> {
       </svg>
     );
   }
+
+  /**
+   * Gets the appropriate connection status message based on retry status.
+   * @param {boolean} isRetryInProgress Whether a retry is currently in progress.
+   * @param {boolean} retryFailed Whether the retry attempt failed.
+   * @returns {string} The connection status message.
+   */
+  private getConnectionStatusMessage = (
+    isRetryInProgress: boolean,
+    retryFailed: boolean,
+  ): string => {
+    if (isRetryInProgress) {
+      return i18n.t('Establishing a secure connection.', WELCOME_NAMESPACE)();
+    } else if (retryFailed) {
+      return i18n.t(
+        'Unable to establish a secure connection.',
+        WELCOME_NAMESPACE,
+      )();
+    } else {
+      return i18n.t(
+        'You’ll momentarily be redirected to your web browser.',
+        WELCOME_NAMESPACE,
+      )();
+    }
+  };
 }
