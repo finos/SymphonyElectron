@@ -185,7 +185,7 @@
     "cheerio": "v1.0.0-rc.12",
     "cross-env": "7.0.3",
     "del": "3.0.0",
-    "electron": "33.3.0",
+    "electron": "33.2.0",
     "electron-builder": "^24.13.2",
     "electron-devtools-installer": "^3.2.0",
     "electron-icon-maker": "0.0.5",
