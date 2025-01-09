@@ -199,7 +199,6 @@
   "Client 2.0 channel": "Client 2.0チャンネル",
   "SDA update channel": "SDAアップデートチャンネル",
   "Stable": "安定版",
-  "Symphony Messaging": "Symphony Messaging",
   "Latest": "最新版",
   "Daily": "Daily版",
   "Beta": "Beta版",
@@ -225,6 +224,8 @@
   "Welcome": {
     "Continue": "持続する",
     "Enable Single Sign On": "シングルサインオンを有効にする",
+    "Establishing a secure connection.": "セキュリティ保護された接続を確立しています。",
+    "Unable to establish a secure connection.": "セキュリティ保護された接続を確立できませんでした。",
     "Find your pod URL in your invitation email.": "招待メールでpod URLをご確認ください。",
     "Welcome to the largest global community in financial services with over": "全世界で50万人以上のユーザーと1000を超える企業の参加する金融サービス業界最大のグローバルコミュニティへようこそ。",
     " half a million users": " ",

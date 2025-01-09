@@ -198,7 +198,6 @@
   "Client 2.0 channel": "Canal Client 2.0",
   "SDA update channel": "Canal de mise à jour de SDA",
   "Stable": "Stable",
-  "Symphony Messaging": "Symphony Messaging",
   "Latest": "Dernière version",
   "Daily": "Quotidien",
   "Beta": "Beta",
@@ -224,6 +223,8 @@
   "Welcome": {
     "Continue": "Continuer",
     "Enable Single Sign On": "Activer le SSO",
+    "Establishing a secure connection.": "Établissement d'une connexion sécurisée.",
+    "Unable to establish a secure connection.": "Impossible d'établir une connexion sécurisée.",
     "Find your pod URL in your invitation email.": "L'URL de votre instance Symphony est indiquée dans l'email d'invitation que vous avez reçu(e).",
     "Welcome to the largest global community in financial services with over": "Bienvenue dans la communauté des services financiers la plus large au monde avec plus d'",
     " half a million users": " un demi million d'usagers",
