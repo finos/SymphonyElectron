@@ -10,6 +10,7 @@ import { isMac, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
 import { isUrl } from '../common/utils';
 import { whitelistHandler } from '../common/whitelist-handler';
+import { fetchLatestVersion } from './auto-update-utils';
 import { sendAutoUpdateAnalytics } from './bi/auto-update-analytics';
 import { InstallActionTypes, InstallTypes } from './bi/interface';
 import { config, IConfig } from './config-handler';
@@ -141,7 +142,13 @@ export class AutoUpdate {
     }
 
     logger.info('auto-update-handler: pending update files', files);
-    const latestVersionFromServer = await this.fetchLatestVersion();
+    const opts = await this.getGenericServerOptions();
+    const url = opts.channel ? `${opts.url}/${opts.channel}.yml` : opts.url;
+    const latestVersionFromServer = await fetchLatestVersion(
+      url,
+      FORCE_UPDATE_TIMEOUT,
+      VERSION_REGEX,
+    );
     if (!latestVersionFromServer) {
       logger.info(
         'auto-update-handler: no version info from server skipping force auto update',
@@ -267,51 +274,6 @@ export class AutoUpdate {
       return path.join(homedir, 'Library', 'Caches');
     }
     return;
-  };
-
-  private fetchLatestVersion = async (): Promise<string | void> => {
-    return new Promise(async (resolve) => {
-      const opts = await this.getGenericServerOptions();
-      const url = opts.channel ? `${opts.url}/${opts.channel}.yml` : opts.url;
-      logger.info(
-        'auto-update-handler: fetching latest version info from',
-        url,
-      );
-      const controller = new AbortController();
-      const signal = controller.signal;
-      const timeoutId = setTimeout(
-        () => controller.abort(),
-        FORCE_UPDATE_TIMEOUT,
-      );
-      fetch(url, { signal })
-        .then((res) => res.blob())
-        .then((blob) => blob.text())
-        .then(async (response) => {
-          clearTimeout(timeoutId);
-          logger.info(
-            'auto-update-handler: latest version info from server',
-            response,
-          );
-          const match = VERSION_REGEX.exec(response);
-          if (match && match.length) {
-            logger.info('auto-update-handler: version found', match[1]);
-            resolve(match[1]);
-          } else {
-            resolve();
-          }
-        })
-        .catch(async (error) => {
-          logger.error(
-            'auto-update-handler: error fetching latest auto-update version from server',
-            url,
-            error,
-          );
-          resolve();
-        })
-        .finally(() => {
-          clearTimeout(timeoutId);
-        });
-    });
   };
 
   private updateEventHandler = async (info, eventType: string) => {
