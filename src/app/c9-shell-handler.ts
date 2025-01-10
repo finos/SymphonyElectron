@@ -17,6 +17,12 @@ export interface IShellStatus {
 
 type StatusCallback = (status: IShellStatus) => void;
 
+let isAppQuitting = false;
+
+app.on('before-quit', () => {
+  isAppQuitting = true;
+});
+
 class C9ShellHandler {
   private _c9shell: ChildProcess | undefined;
   private _curStatus: IShellStatus | undefined;
@@ -43,6 +49,12 @@ class C9ShellHandler {
    * Starts the c9shell process
    */
   public async startShell() {
+    if (isAppQuitting) {
+      logger.info(
+        'c9-shell-handler: App is quitting, preventing c9 shell start.',
+      );
+      return;
+    }
     if (this._attachExistingC9Shell()) {
       logger.info('c9-shell-handler: _attachExistingC9Shell, skip start');
       return;
