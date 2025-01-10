@@ -1,6 +1,12 @@
-import { WebContents } from 'electron';
+import { app, WebContents } from 'electron';
 import { createConnection, Socket } from 'net';
 import { logger } from '../common/c9-logger';
+
+let isAppQuitting = false;
+
+app.on('before-quit', () => {
+  isAppQuitting = true;
+});
 
 class C9PipeHandler {
   private _socket: Socket | undefined;
@@ -89,6 +95,12 @@ let c9PipeHandler: C9PipeHandler | undefined;
  * @param pipe pipe identifier
  */
 export const connectC9Pipe = (sender: WebContents, pipe: string) => {
+  if (isAppQuitting) {
+    logger.info(
+      'c9-pipe-handler: App is quitting, preventing c9 pipe connect.',
+    );
+    return;
+  }
   if (!c9PipeHandler) {
     c9PipeHandler = new C9PipeHandler();
   } else {
@@ -104,6 +116,9 @@ export const connectC9Pipe = (sender: WebContents, pipe: string) => {
  * @param data the data to be written
  */
 export const writeC9Pipe = (data: Uint8Array) => {
+  if (isAppQuitting) {
+    return;
+  }
   c9PipeHandler?.write(data);
 };
 
