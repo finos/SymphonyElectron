@@ -303,6 +303,9 @@ export class WindowHandler {
     this.windowOpts = {
       ...this.getWindowOpts(
         {
+          icon: isWindowsOS
+            ? '../renderer/assets/windows-taskbar.ico'
+            : undefined,
           alwaysOnTop:
             this.config.alwaysOnTop === CloudConfigDataTypes.ENABLED || false,
           frame: !this.isCustomTitleBar,
