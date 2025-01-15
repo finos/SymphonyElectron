@@ -18,6 +18,7 @@ import { filesize } from 'filesize';
 import * as fs from 'fs';
 import * as path from 'path';
 import { format, parse } from 'url';
+import { productDisplayName } from '../../package.json';
 import { apiName, EPresenceStatusGroup } from '../common/api-interface';
 
 import { isDevEnv, isLinux, isMac, isWindowsOS } from '../common/env';
@@ -305,9 +306,11 @@ export const initSysTray = () => {
   const defaultSysTrayIcon = 'no-status-tray';
   const defaultSysTrayIconExtension = isWindowsOS ? 'ico' : 'png';
   const os = isWindowsOS ? 'windows' : isMac ? 'macOS' : 'linux';
-  const theme = nativeTheme.shouldUseDarkColors ? 'light' : 'dark';
+  const theme = nativeTheme.shouldUseDarkColors ? 'dark' : 'light';
   logger.info('theme: ', theme, nativeTheme.themeSource);
-  const assetsPath = `renderer/assets/presence-status/${os}/${theme}`;
+  const assetsPath = isMac
+    ? `renderer/assets/presence-status/${os}`
+    : `renderer/assets/presence-status/${os}/${theme}`;
   const defaultSysTrayIconPath = path.join(
     __dirname,
     `../${assetsPath}/${defaultSysTrayIcon}.${defaultSysTrayIconExtension}`,
@@ -316,12 +319,12 @@ export const initSysTray = () => {
   const tray = new Tray(backgroundImage);
   const contextMenu = Menu.buildFromTemplate([
     {
-      label: i18n.t('Quit Symphony')(),
+      label: i18n.t('Quit Symphony Messaging')(),
       click: () => app.quit(),
     },
   ]);
   tray.setContextMenu(contextMenu);
-  tray.setToolTip('Symphony');
+  tray.setToolTip(productDisplayName);
   presenceStatusStore.setCurrentTray(tray);
   return tray;
 };
