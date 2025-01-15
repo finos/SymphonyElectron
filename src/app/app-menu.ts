@@ -275,7 +275,7 @@ export class AppMenu {
       label: app.getName(),
       submenu: [
         {
-          label: i18n.t('About Symphony')(),
+          label: i18n.t('About Symphony Messaging')(),
           click(_menuItem, focusedWindow) {
             const windowName = focusedWindow
               ? (focusedWindow as ICustomBrowserWindow).winName
@@ -800,7 +800,7 @@ export class AppMenu {
           ],
         },
         {
-          label: i18n.t('About Symphony')(),
+          label: i18n.t('About Symphony Messaging')(),
           visible: isWindowsOS || isLinux,
           click(_menuItem, focusedWindow) {
             const windowName = focusedWindow
