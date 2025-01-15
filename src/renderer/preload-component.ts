@@ -41,7 +41,7 @@ const load = () => {
   switch (componentName) {
     case components.aboutApp:
       component = AboutBox;
-      document.title = i18n.t('About Symphony', 'AboutSymphony')();
+      document.title = i18n.t('About Symphony Messaging', 'AboutSymphony')();
       break;
     case components.screenPicker:
       document.title = i18n.t('Screen Picker - Symphony')();
