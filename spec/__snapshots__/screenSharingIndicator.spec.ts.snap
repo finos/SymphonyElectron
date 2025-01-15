@@ -11,7 +11,7 @@ exports[`screen sharing indicator should render correctly 1`] = `
       You are sharing your screen on 
       <b>
          
-        Symphony Messaging
+        Symphony
          
       </b>
     </span>
