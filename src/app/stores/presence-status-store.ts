@@ -56,7 +56,7 @@ export class PresenceStatus {
   ) => {
     let backgroundImage: string = '';
     const os = isWindowsOS ? 'windows' : isMac ? 'macOS' : 'linux';
-    const theme = nativeTheme.shouldUseDarkColors ? 'light' : 'dark';
+    const theme = nativeTheme.shouldUseDarkColors ? 'dark' : 'light';
     const assetsPath = isMac
       ? `src/renderer/assets/presence-status/${os}`
       : `src/renderer/assets/presence-status/${os}/${theme}`;
