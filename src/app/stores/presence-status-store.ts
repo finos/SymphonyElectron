@@ -57,12 +57,14 @@ export class PresenceStatus {
     let backgroundImage: string = '';
     const os = isWindowsOS ? 'windows' : isMac ? 'macOS' : 'linux';
     const theme = nativeTheme.shouldUseDarkColors ? 'light' : 'dark';
-    const assetsPath = `src/renderer/assets/presence-status/${os}/${theme}`;
+    const assetsPath = isMac
+      ? `src/renderer/assets/presence-status/${os}`
+      : `src/renderer/assets/presence-status/${os}/${theme}`;
     let fileExtension = 'png';
     let iconPlace = '';
     switch (place) {
       case 'tray':
-        iconPlace = '-tray';
+        iconPlace = isMac ? '-trayTemplate' : '-tray';
         fileExtension = isWindowsOS ? 'ico' : isMac ? 'png' : 'png';
         break;
       case 'thumbnail':
