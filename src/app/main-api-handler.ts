@@ -59,6 +59,7 @@ import { getCommandLineArgs } from '../common/utils';
 import callNotificationHelper from '../renderer/call-notification-helper';
 import { autoUpdate, AutoUpdateTrigger } from './auto-update-handler';
 import { SDAUserSessionActionTypes } from './bi/interface';
+import { openfinHandler } from './openfin-handler';
 import { presenceStatus } from './presence-status-handler';
 import { appStats } from './stats';
 import { presenceStatusStore, sdaMenuStore } from './stores/index';
@@ -559,6 +560,21 @@ ipcMain.on(
 
         helpMenu.setValue(helpCenter);
         break;
+      case apiCmds.openfinConnect:
+        openfinHandler.connect();
+        break;
+      case apiCmds.openfinFireIntent:
+        openfinHandler.fireIntent(arg.intent);
+        break;
+      case apiCmds.openfinJoinContextGroup:
+        openfinHandler.joinContextGroup(arg.contextGroupId, arg.target);
+        break;
+      case apiCmds.openfinRegisterIntentHandler:
+        openfinHandler.registerIntentHandler(arg.intentName);
+        break;
+      case apiCmds.openfinUnregisterIntentHandler:
+        openfinHandler.unregisterIntentHandler(arg.intentName);
+        break;
       default:
         break;
     }
@@ -627,6 +643,14 @@ ipcMain.handle(
           return getContentWindowHandle(windowHandle);
         }
         break;
+      case apiCmds.openfinGetConnectionStatus:
+        return openfinHandler.getConnectionStatus();
+      case apiCmds.openfinGetInfo:
+        return openfinHandler.getInfo();
+      case apiCmds.openfinGetContextGroups:
+        return openfinHandler.getContextGroups();
+      case apiCmds.openfinGetAllClientsInContextGroup:
+        return openfinHandler.getAllClientsInContextGroup(arg.contextGroupId);
       default:
         break;
     }
