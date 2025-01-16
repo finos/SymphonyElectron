@@ -1,7 +1,7 @@
 {
-  "About Symphony": "Symphonyについて",
+  "About Symphony Messaging": "About Symphony Messaging",
   "AboutSymphony": {
-    "About Symphony": "Symphonyについて",
+    "About Symphony Messaging": "About Symphony Messaging",
     "Others": "その他",
     "Swift Search": "Swift検索",
     "Swift Search API": "Swift検索API",
@@ -136,7 +136,7 @@
   },
   "Please contact your admin for help": "不明な点がある場合は､管理者にお問い合わせください",
   "please contact your administrator for more details": "詳細は、管理者にお問い合わせください",
-  "Quit Symphony": "Symphonyを終了",
+  "Quit Symphony Messaging": "Quit Symphony Messaging",
   "Redo": "やり直し",
   "Refresh app when idle": "アイドル時にアプリを再表示",
   "Relaunch": "「リスタート」",
