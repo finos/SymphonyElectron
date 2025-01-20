@@ -1,7 +1,7 @@
 {
-  "About Symphony": "À propos de Symphony",
+  "About Symphony Messaging": "A propos de Symphony Messaging",
   "AboutSymphony": {
-    "About Symphony": "À propos de Symphony",
+    "About Symphony Messaging": "A propos de Symphony Messaging",
     "Others": "Autres",
     "Swift Search": "Recherche Rapide",
     "Swift Search API": "API Recherche Rapide",
@@ -136,7 +136,7 @@
   },
   "Please contact your admin for help": "Veuillez contacter votre administrateur pour obtenir de l'aide.",
   "please contact your administrator for more details": "veuillez contacter votre administrateur pour plus de détails",
-  "Quit Symphony": "Quitter Symphony",
+  "Quit Symphony Messaging": "Quitter Symphony Messaging",
   "Redo": "Répéter la dernière opération",
   "Refresh app when idle": "Rafraîchir Symphony pendant les périodes d'inactivité",
   "Relaunch": "Redémarrer",
@@ -198,6 +198,7 @@
   "Client 2.0 channel": "Canal Client 2.0",
   "SDA update channel": "Canal de mise à jour de SDA",
   "Stable": "Stable",
+  "Symphony Messaging": "Symphony Messaging",
   "Latest": "Dernière version",
   "Daily": "Quotidien",
   "Beta": "Beta",
