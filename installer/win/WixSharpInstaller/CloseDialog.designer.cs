@@ -117,8 +117,8 @@ namespace Symphony
             this.labelBody.Name = "labelBody";
             this.labelBody.Size = new System.Drawing.Size(294, 52);
             this.labelBody.TabIndex = 1;
-            this.labelBody.Text = "It looks like an instance of Symphony Messaging is running.\r\n You\'ll need to close that befo" +
-    "re continuing with the installation.\r\n Please click the below \"Close Symphony Messaging\"\r\n bu" +
+            this.labelBody.Text = "It looks like an instance of Symphony Messaging is running.\r\nYou\'ll need to close that befo" +
+    "re continuing with the installation.\r\nPlease click the below \"Close Symphony Messaging\"\r\nbu" +
     "tton to close Symphony Messaging and continue.";
             //
             // labelHeader
