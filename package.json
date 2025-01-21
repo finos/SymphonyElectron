@@ -113,6 +113,7 @@
         "!**/node_modules/@nornagon/cld/build/deps${/*}",
         "!**/node_modules/@nornagon/spellchecker/vendor${/*}",
         "!**/node_modules/@symphony/symphony-c9-shell/**",
+        "!**/resources/darwin/**/*",
         "!**/*.map",
         "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
         "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
