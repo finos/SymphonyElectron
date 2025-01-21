@@ -1013,7 +1013,13 @@ export class SSFApi {
       cmd: apiCmds.openfinRegisterIntentHandler,
       intentName,
     });
-    local.intentsCallbacks[intentName][uuid] = intentHandler;
+    if (local.intentsCallbacks.has(intentName)) {
+      local.intentsCallbacks.get(intentName)?.set(uuid, intentHandler);
+    } else {
+      const innerMap = new Map();
+      innerMap.set(uuid, intentHandler);
+      local.intentsCallbacks.set(intentName, innerMap);
+    }
     return uuid;
   }
 
@@ -1022,6 +1028,13 @@ export class SSFApi {
    * @param UUID
    */
   public openfinUnregisterIntentHandler(callbackId: UUID): void {
+    for (const innerMap of local.intentsCallbacks.values()) {
+      if (innerMap.has(callbackId)) {
+        innerMap.delete(callbackId);
+        break;
+      }
+    }
+
     local.ipcRenderer.send(apiName.symphonyApi, {
       cmd: apiCmds.openfinUnregisterIntentHandler,
       callbackId,
@@ -1400,11 +1413,14 @@ local.ipcRenderer.on(
 );
 
 local.ipcRenderer.on('intent-received', (_event: Event, intent: any) => {
-  if (typeof intent.name === 'string' && local.intentsCallbacks[intent.name]) {
-    const callbacks = local.intentsCallbacks[intent.name];
-    for (const callback of callbacks) {
-      callback(intent.context);
-    }
+  if (
+    typeof intent.name === 'string' &&
+    local.intentsCallbacks.has(intent.name)
+  ) {
+    const uuidCallbacks = local.intentsCallbacks.get(intent.name);
+    uuidCallbacks?.forEach((callbacks, _uuid) => {
+      callbacks(intent.context);
+    });
   }
 });
 

@@ -4,46 +4,91 @@ import { logger } from '../common/openfin-logger';
 import { config, IConfig } from './config-handler';
 import { windowHandler } from './window-handler';
 
+const OPENFIN_PROVIDER = 'Openfin';
+const TIMEOUT_THRESHOLD = 10000;
+
 export class OpenfinHandler {
   private interopClient;
   private intentHandlerSubscriptions: Map<UUID, any> = new Map();
   private isConnected: boolean = false;
+  private fin: any;
 
   /**
    * Connection to interop brocker
    */
   public async connect() {
-    logger.info('openfin-handler: connecting');
     const { openfin }: IConfig = config.getConfigFields(['openfin']);
-    try {
-      if (openfin) {
-        const fin = await connect({
-          uuid: openfin.uuid,
-          licenseKey: openfin.licenseKey,
-          runtime: {
-            version: openfin.runtimeVersion,
-          },
-        });
-        logger.info('openfin-handler: connected');
-        logger.info('openfin-handler: connecting to interop broker');
-        this.interopClient = fin.Interop.connectSync(
-          'workspace-platform-starter',
+    if (!openfin) {
+      logger.error('openfin-handler: missing openfin params to connect.');
+      return { isConnected: false };
+    }
+    logger.info('openfin-handler: connecting');
+    const parsedTimeoutValue = parseInt(openfin.connectionTimeout, 10);
+    const timeoutValue = isNaN(parsedTimeoutValue)
+      ? TIMEOUT_THRESHOLD
+      : parsedTimeoutValue;
+    const connectionTimeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => {
+        logger.error(
+          `openfin-handler: Connection timeout after ${
+            timeoutValue / 1000
+          } seconds`,
         );
+        return reject(
+          new Error(`Connection timeout after ${timeoutValue / 1000} seconds`),
+        );
+      }, timeoutValue),
+    );
+
+    const connectionPromise = (async () => {
+      try {
+        if (!this.fin) {
+          this.fin = await connect({
+            uuid: openfin.uuid,
+            licenseKey: openfin.licenseKey,
+            runtime: {
+              version: openfin.runtimeVersion,
+            },
+          });
+        }
+
+        logger.info(
+          'openfin-handler: connection established to Openfin runtime',
+        );
+        logger.info(
+          `openfin-handler: starting connection to interop broker using channel ${openfin.channelName}`,
+        );
+
+        this.interopClient = this.fin.Interop.connectSync(openfin.channelName);
         this.isConnected = true;
+
         this.interopClient.onDisconnection((event) => {
           const { brokerName } = event;
           logger.warn(
-            `openfin-handler: Disconnected from Interop Broker ${brokerName} `,
+            `openfin-handler: Disconnected from Interop Broker ${brokerName}`,
           );
           this.clearSubscriptions();
         });
+
         return true;
+      } catch (error) {
+        logger.error('openfin-handler: error while connecting: ', error);
+        return false;
       }
-      logger.error('openfin-handler: missing openfin params to connect.');
-      return false;
+    })();
+
+    try {
+      const isConnected = await Promise.race([
+        connectionPromise,
+        connectionTimeoutPromise,
+      ]);
+      return { isConnected };
     } catch (error) {
-      logger.error('openfin-handler: error while connecting: ', error);
-      return false;
+      logger.error(
+        'openfin-handler: error or timeout while connecting: ',
+        error,
+      );
+      return { isConnected: false };
     }
   }
 
@@ -122,8 +167,10 @@ export class OpenfinHandler {
   /**
    * Returns openfin connection status
    */
-  public getConnectionStatus(): boolean {
-    return this.isConnected;
+  public getConnectionStatus() {
+    return {
+      isConnected: this.isConnected,
+    };
   }
 
   /**
@@ -131,8 +178,8 @@ export class OpenfinHandler {
    */
   public getInfo() {
     return {
-      provider: 'Openfin',
-      isConnected: this.getConnectionStatus(),
+      provider: OPENFIN_PROVIDER,
+      isConnected: this.getConnectionStatus().isConnected,
     };
   }
 
