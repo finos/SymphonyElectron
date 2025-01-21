@@ -1,3 +1,4 @@
+import { UUID } from 'crypto';
 import { ipcRenderer, webFrame } from 'electron';
 import {
   buildNumber,
@@ -66,14 +67,14 @@ export interface ILocalObject {
   c9MessageCallback?: (status: IShellStatus) => void;
   updateMyPresenceCallback?: (presence: EPresenceStatusCategory) => void;
   phoneNumberCallback?: (arg: string) => void;
-  intentsCallbacks: {};
+  intentsCallbacks: Map<string, Map<UUID, any>>;
   writeImageToClipboard?: (blob: string) => void;
   getHelpInfo?: () => Promise<IPodSettingsClientSpecificSupportLink>;
 }
 
 const local: ILocalObject = {
   ipcRenderer,
-  intentsCallbacks: {},
+  intentsCallbacks: new Map(),
 };
 
 const notificationActionCallbacks = new Map<
@@ -957,10 +958,14 @@ export class SSFApi {
   /**
    * Openfin Interop client initialization
    */
-  public openfinInit(): void {
-    local.ipcRenderer.send(apiName.symphonyApi, {
-      cmd: apiCmds.openfinConnect,
-    });
+  public async openfinInit(): Promise<boolean> {
+    const connectionStatus = await local.ipcRenderer.invoke(
+      apiName.symphonyApi,
+      {
+        cmd: apiCmds.openfinConnect,
+      },
+    );
+    return connectionStatus;
   }
 
   /**
@@ -1000,25 +1005,26 @@ export class SSFApi {
   /**
    * Registers a handler for a given intent
    */
-  public openfinRegisterIntentHandler(
+  public async openfinRegisterIntentHandler(
     intentHandler: any,
     intentName: any,
-  ): void {
-    local.intentsCallbacks[intentName] = intentHandler;
-    local.ipcRenderer.send(apiName.symphonyApi, {
+  ): Promise<UUID> {
+    const uuid: UUID = await local.ipcRenderer.invoke(apiName.symphonyApi, {
       cmd: apiCmds.openfinRegisterIntentHandler,
       intentName,
     });
+    local.intentsCallbacks[intentName][uuid] = intentHandler;
+    return uuid;
   }
 
   /**
-   * Unregisters a handler based on a given intent name
-   * @param intentName
+   * Unregisters a handler based on a given intent handler callback id
+   * @param UUID
    */
-  public openfinUnregisterIntentHandler(intentName: string): void {
+  public openfinUnregisterIntentHandler(callbackId: UUID): void {
     local.ipcRenderer.send(apiName.symphonyApi, {
       cmd: apiCmds.openfinUnregisterIntentHandler,
-      intentName,
+      callbackId,
     });
   }
 
@@ -1393,9 +1399,12 @@ local.ipcRenderer.on(
   },
 );
 
-local.ipcRenderer.on('intent-received', (_event: Event, intentName: string) => {
-  if (typeof intentName === 'string' && local.intentsCallbacks[intentName]) {
-    local.intentsCallbacks[intentName]();
+local.ipcRenderer.on('intent-received', (_event: Event, intent: any) => {
+  if (typeof intent.name === 'string' && local.intentsCallbacks[intent.name]) {
+    const callbacks = local.intentsCallbacks[intent.name];
+    for (const callback of callbacks) {
+      callback(intent.context);
+    }
   }
 });
 
@@ -1407,7 +1416,7 @@ const sanitize = (): void => {
       windowName: window.name,
     });
   }
-  local.intentsCallbacks = {};
+  local.intentsCallbacks = new Map();
 };
 
 // listens for the online/offline events and updates the main process
