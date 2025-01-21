@@ -281,13 +281,13 @@ export default class NotificationComp extends React.Component<
     );
   }
   /**
-   * Renders image if provided otherwise renders symphony logo
+   * Renders image if provided otherwise renders Symphony Messaging logo
    * @param imageUrl
    */
   private renderImage(imageUrl: string | undefined): JSX.Element | undefined {
     let imgClass = 'default-logo';
     let url = '../renderer/assets/notification-symphony-logo.svg';
-    let alt = 'Symphony logo';
+    let alt = 'Symphony Messaging logo';
     const isDefaultUrl = imageUrl && imageUrl.includes('default.png');
     const shouldDisplayBadge = !!imageUrl && !isDefaultUrl;
     if (imageUrl && !isDefaultUrl) {

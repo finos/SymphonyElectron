@@ -126,7 +126,7 @@ export default class LoadingScreen extends React.Component<{}, IState> {
             onClick={this.eventHandlers.onQuit}
             className='LoadingScreen-button'
           >
-            {i18n.t('Quit Symphony')()}
+            {i18n.t('Quit Symphony Messaging')()}
           </button>
         </div>
       </div>

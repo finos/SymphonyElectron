@@ -338,7 +338,7 @@ export default class CallNotification extends React.Component<
   };
 
   /**
-   * Renders image if provided otherwise renders symphony logo
+   * Renders image if provided otherwise renders Symphony Messaging logo
    * @param imageUrl
    * @param profilePlaceHolderText
    * @param callType
@@ -353,7 +353,7 @@ export default class CallNotification extends React.Component<
   ): JSX.Element | undefined {
     let imgClass = 'default-logo';
     let url = '../renderer/assets/notification-symphony-logo.svg';
-    let alt = 'Symphony logo';
+    let alt = 'Symphony Messaging logo';
 
     if (imageUrl) {
       imgClass = 'profile-picture';

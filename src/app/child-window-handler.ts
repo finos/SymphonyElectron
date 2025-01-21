@@ -142,7 +142,7 @@ export const handleChildWindow = (webContents: WebContents): void => {
         minHeight: 300,
         minWidth: 300,
         fullscreen: false,
-        title: 'Symphony',
+        title: 'Symphony Messaging',
       };
       if (!windowHandler.isMana) {
         opts.webPreferences = {

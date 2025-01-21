@@ -163,7 +163,7 @@ export default class AboutApp extends React.Component<{}, IState> {
           <img
             className='AboutApp-logo'
             src={SymphonyLogo}
-            alt={i18n.t('Symphony Logo', ABOUT_SYMPHONY_NAMESPACE)()}
+            alt={i18n.t('Symphony Messaging Logo', ABOUT_SYMPHONY_NAMESPACE)()}
           />
         </div>
         <div className='AboutApp-main-container'>
@@ -185,7 +185,10 @@ export default class AboutApp extends React.Component<{}, IState> {
             >
               <img
                 src={CopyIcon}
-                alt={i18n.t('Symphony Logo', ABOUT_SYMPHONY_NAMESPACE)()}
+                alt={i18n.t(
+                  'Symphony Messaging Logo',
+                  ABOUT_SYMPHONY_NAMESPACE,
+                )()}
               ></img>
               <span>
                 {i18n.t('Copy config to clipboard', ABOUT_SYMPHONY_NAMESPACE)()}

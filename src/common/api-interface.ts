@@ -103,7 +103,7 @@ export enum apiName {
   snippingToolWindowName = 'snipping-tool-window',
 }
 
-export const NOTIFICATION_WINDOW_TITLE = 'Notification - Symphony';
+export const NOTIFICATION_WINDOW_TITLE = 'Notification - Symphony Messaging';
 
 enum ScreenTypes {
   Screen = 'screen',

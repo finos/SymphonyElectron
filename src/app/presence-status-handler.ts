@@ -212,7 +212,7 @@ class PresenceStatus {
       },
       { type: 'separator', visible: isMana },
       {
-        label: i18n.t('Quit Symphony')(),
+        label: i18n.t('Quit Symphony Messaging')(),
         click: () => app.quit(),
       },
     ]);
@@ -235,7 +235,7 @@ class PresenceStatus {
     const tray = presenceStatusStore.getCurrentTray();
     const contextDefault = Menu.buildFromTemplate([
       {
-        label: i18n.t('Quit Symphony')(),
+        label: i18n.t('Quit Symphony Messaging')(),
         click: () => app.quit(),
       },
     ]);

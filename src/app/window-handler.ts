@@ -311,7 +311,7 @@ export class WindowHandler {
           frame: !this.isCustomTitleBar,
           minHeight: MIN_HEIGHT,
           minWidth: MIN_WIDTH,
-          title: 'Symphony',
+          title: i18n.t('Symphony Messaging')(),
           show: false,
         },
         {
@@ -443,7 +443,7 @@ export class WindowHandler {
         query: {
           componentName: 'welcome',
           locale: i18n.getLocale(),
-          title: i18n.t('WelcomeText', 'Welcome')(),
+          title: i18n.t('Welcome', 'Welcome')(),
         },
         slashes: true,
       });
@@ -910,7 +910,7 @@ export class WindowHandler {
         query: {
           componentName,
           locale: i18n.getLocale(),
-          title: i18n.t('WelcomeText', 'Welcome')(),
+          title: i18n.t('Welcome', 'Welcome')(),
         },
         slashes: true,
       });
@@ -1979,7 +1979,7 @@ export class WindowHandler {
           titleBarStyle: 'customButtonsOnHover',
           minimizable: false,
           maximizable: false,
-          title: 'Screen Sharing Indicator - Symphony',
+          title: 'Screen Sharing Indicator - Symphony Messaging',
           closable: false,
           useContentSize: true,
         },
