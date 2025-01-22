@@ -989,6 +989,36 @@ export class SSFApi {
   }
 
   /**
+   * Fires an intent for a given context
+   * @param context
+   */
+  public openfinFireIntentForContext(context: any): void {
+    local.ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.openfinFireIntentForContext,
+      context,
+    });
+  }
+
+  /**
+   * Removes client from current context group
+   */
+  public openfinRemoveClientFromContextGroup() {
+    local.ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.openfinRemoveClientFromContextGroup,
+    });
+  }
+
+  /**
+   * Returns client info
+   */
+  public async openfinGetClientInfo() {
+    const info = await local.ipcRenderer.invoke(apiName.symphonyApi, {
+      cmd: apiCmds.openfinGetClientInfo,
+    });
+    return info;
+  }
+
+  /**
    *
    * Returns Openfin connection status
    */
