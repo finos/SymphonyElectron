@@ -44,41 +44,43 @@ const load = () => {
       document.title = i18n.t('About Symphony Messaging', 'AboutSymphony')();
       break;
     case components.screenPicker:
-      document.title = i18n.t('Screen Picker - Symphony')();
+      document.title = i18n.t('Screen Picker - Symphony Messaging')();
       component = ScreenPicker;
       break;
     case components.screenSharingIndicator:
-      document.title = i18n.t('Screen Sharing Indicator - Symphony')();
+      document.title = i18n.t(
+        'Screen Sharing Indicator - Symphony Messaging',
+      )();
       component = ScreenSharingIndicator;
       break;
     case components.screenSharingFrame:
       component = ScreenSharingFrame;
       break;
     case components.snippingTool:
-      document.title = i18n.t('Symphony')();
+      document.title = i18n.t('Symphony Messaging')();
       component = SnippingTool;
       break;
     case components.basicAuth:
-      document.title = i18n.t('Basic Authentication - Symphony')();
+      document.title = i18n.t('Basic Authentication - Symphony Messaging')();
       component = BasicAuth;
       break;
     case components.notification:
-      document.title = i18n.t('Notification - Symphony')();
+      document.title = i18n.t('Notification - Symphony Messaging')();
       component = NotificationComp;
       break;
     case components.notificationSettings:
       document.title = i18n.t(
-        'Notification Settings - Symphony',
+        'Notification Settings - Symphony Messaging',
         'NotificationSettings',
       )();
       component = NotificationSettings;
       break;
     case components.callNotification:
-      document.title = i18n.t('Call Notification - Symphony')();
+      document.title = i18n.t('Call Notification - Symphony Messaging')();
       component = CallNotification;
       break;
     case components.welcome:
-      document.title = i18n.t('WelcomeText', 'Welcome')();
+      document.title = i18n.t('Welcome', 'Welcome')();
       component = Welcome;
       break;
     case components.titleBar:

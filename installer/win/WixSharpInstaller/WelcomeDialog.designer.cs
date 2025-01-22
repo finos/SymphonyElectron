@@ -163,7 +163,7 @@ namespace Symphony
             this.labelBody.Name = "labelBody";
             this.labelBody.Size = new System.Drawing.Size(232, 52);
             this.labelBody.TabIndex = 1;
-            this.labelBody.Text = "Symphony allows you to:\r\n - Collaborate securely\r\n - Communicate via messages, vo" +
+            this.labelBody.Text = "Symphony Messaging allows you to:\r\n - Collaborate securely\r\n - Communicate via messages, vo" +
     "ice, and video\r\n - Connect with colleagues and coworkers\r\n";
             // 
             // labelHeader
@@ -175,7 +175,7 @@ namespace Symphony
             this.labelHeader.Name = "labelHeader";
             this.labelHeader.Size = new System.Drawing.Size(246, 40);
             this.labelHeader.TabIndex = 0;
-            this.labelHeader.Text = "Thanks for downloading \r\nSymphony";
+            this.labelHeader.Text = "Thanks for downloading \r\nSymphony Messaging";
             // 
             // WelcomeDialog
             // 
@@ -185,7 +185,7 @@ namespace Symphony
             this.Controls.Add(this.backgroundPanel);
             this.Controls.Add(this.bottomPanel);
             this.Name = "WelcomeDialog";
-            this.Text = "Symphony Setup";
+            this.Text = "Symphony Messaging Setup";
             this.Load += new System.EventHandler(this.dialog_Load);
             this.bottomPanel.ResumeLayout(false);
             this.tableLayoutbackgroundPanel.ResumeLayout(false);

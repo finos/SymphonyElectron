@@ -117,9 +117,9 @@ namespace Symphony
             this.labelBody.Name = "labelBody";
             this.labelBody.Size = new System.Drawing.Size(294, 52);
             this.labelBody.TabIndex = 1;
-            this.labelBody.Text = "It looks like an instance of Symphony is running. You\'ll need\r\nto close that befo" +
-    "re continuing with the installation. Please\r\nclick the below \"Close Symphony\" bu" +
-    "tton to close Symphony\r\nand continue.";
+            this.labelBody.Text = "It looks like an instance of Symphony Messaging is running.\r\nYou\'ll need to close that befo" +
+    "re continuing with the installation.\r\nPlease click the below \"Close Symphony Messaging\"\r\nbu" +
+    "tton to close Symphony Messaging and continue.";
             //
             // labelHeader
             //
@@ -130,7 +130,7 @@ namespace Symphony
             this.labelHeader.Name = "labelHeader";
             this.labelHeader.Size = new System.Drawing.Size(166, 20);
             this.labelHeader.TabIndex = 0;
-            this.labelHeader.Text = "Close Symphony";
+            this.labelHeader.Text = "Close Symphony Messaging";
             //
             // closeButton
             //
@@ -138,7 +138,7 @@ namespace Symphony
             this.closeButton.Name = "closeButton";
             this.closeButton.Size = new System.Drawing.Size(106, 33);
             this.closeButton.TabIndex = 2;
-            this.closeButton.Text = "Close Symphony";
+            this.closeButton.Text = "Close Symphony Messaging";
             this.closeButton.UseVisualStyleBackColor = true;
             this.closeButton.Click += new System.EventHandler(this.closeButton_Click);
             //
@@ -150,7 +150,7 @@ namespace Symphony
             this.Controls.Add(this.backgroundPanel);
             this.Controls.Add(this.bottomPanel);
             this.Name = "CloseDialog";
-            this.Text = "Symphony Setup";
+            this.Text = "Symphony Messaging Setup";
             this.Load += new System.EventHandler(this.dialog_Load);
             this.bottomPanel.ResumeLayout(false);
             this.tableLayoutbackgroundPanel.ResumeLayout(false);

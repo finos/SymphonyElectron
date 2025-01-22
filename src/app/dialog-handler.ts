@@ -182,7 +182,7 @@ export const titleBarChangeDialog = async (
     type: 'question',
     title: i18n.t('Relaunch Application')(),
     message: i18n.t(
-      'Updating Title bar style requires Symphony to relaunch.',
+      'Updating Title bar style requires Symphony Messaging to relaunch.',
     )(),
     detail: i18n.t(
       'Note: When Hamburger menu is disabled, you can trigger the main menu by pressing the Alt key.',

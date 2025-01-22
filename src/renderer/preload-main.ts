@@ -206,7 +206,7 @@ ipcRenderer.on('exit-html-fullscreen', async () => {
 
 ipcRenderer.on('page-load-welcome', (_event, { locale, resources }) => {
   i18n.setResource(locale, resources);
-  document.title = i18n.t('WelcomeText', 'Welcome')();
+  document.title = i18n.t('Welcome', 'Welcome')();
   const styles = document.createElement('link');
   styles.rel = 'stylesheet';
   styles.type = 'text/css';

@@ -358,7 +358,9 @@ export const setDataUrl = (dataUrl: string, count: number): void => {
   if (mainWindow && dataUrl && count) {
     const img = nativeImage.createFromDataURL(dataUrl);
     // for accessibility screen readers
-    const desc = 'Symphony has ' + count + ' unread messages';
+    const desc = i18n.t('Symphony Messaging has {count} unread messages')({
+      count,
+    });
     mainWindow.setOverlayIcon(img, desc);
   }
 };
@@ -860,7 +862,8 @@ export const zoomIn = () => {
   }
 
   if (
-    focusedWindow.getTitle() === 'Screen Sharing Indicator - Symphony' ||
+    focusedWindow.getTitle() ===
+      'Screen Sharing Indicator - Symphony Messaging' ||
     focusedWindow.getTitle() === 'About Symphony Messaging'
   ) {
     return;
@@ -958,7 +961,8 @@ export const zoomOut = () => {
   }
 
   if (
-    focusedWindow.getTitle() === 'Screen Sharing Indicator - Symphony' ||
+    focusedWindow.getTitle() ===
+      'Screen Sharing Indicator - Symphony Messaging' ||
     focusedWindow.getTitle() === 'About Symphony Messaging'
   ) {
     return;
