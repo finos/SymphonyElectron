@@ -25,6 +25,8 @@ jest.mock('../src/app/config-handler', () => ({
         uuid: 'mock-uuid',
         licenseKey: 'mock-license',
         runtimeVersion: 'mock-version',
+        channelName: 'mock-channel',
+        connectionTimeout: '10000',
       },
     })),
   },
@@ -43,13 +45,16 @@ describe('Openfin', () => {
   beforeAll(async () => {
     connectMock = await connect({} as any);
   });
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
   it('should not be connected', () => {
     const info = openfinHandler.getInfo();
-    const isConnected = openfinHandler.getConnectionStatus();
+    const connectionStatus = openfinHandler.getConnectionStatus();
 
     expect(info.isConnected).toBeFalsy();
-    expect(isConnected).toBeFalsy();
+    expect(connectionStatus.isConnected).toBeFalsy();
   });
 
   it('should connect', async () => {
@@ -63,6 +68,43 @@ describe('Openfin', () => {
     expect(connectSyncSpy).toHaveBeenCalledTimes(1);
     expect(info.isConnected).toBeTruthy();
     expect(isConnected).toBeTruthy();
+  });
+
+  it('should reject and return false if connection times out', async () => {
+    jest.useFakeTimers();
+    const connectSyncSpy = jest
+      .spyOn(connectMock.Interop, 'connectSync')
+      .mockImplementationOnce((_channelName) => {
+        return new Promise<void>((resolve) => {
+          setTimeout(() => {
+            resolve();
+          }, 12000);
+        });
+      });
+
+    const connectionTimeoutSpy = jest.spyOn(global, 'setTimeout');
+
+    let connectionStatus;
+
+    const connectPromise = openfinHandler.connect();
+    const resultPromise = connectPromise.then((res) => {
+      connectionStatus = res;
+    });
+
+    jest.advanceTimersByTime(10000);
+
+    expect(connectionStatus).toBeUndefined();
+
+    await resultPromise;
+
+    expect(connectionStatus.isConnected).toBe(false);
+
+    expect(connectionTimeoutSpy).toHaveBeenCalledTimes(2);
+    expect(connectionTimeoutSpy.mock.calls[0][1]).toBeGreaterThanOrEqual(10000);
+
+    expect(connectSyncSpy).toHaveBeenCalledTimes(1);
+
+    jest.useRealTimers();
   });
 
   it('should fire an intent', async () => {
