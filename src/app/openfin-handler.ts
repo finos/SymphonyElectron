@@ -1,20 +1,22 @@
+/// <reference types="@openfin/core/fin" />
+
 import { connect } from '@openfin/node-adapter';
 import { randomUUID, UUID } from 'crypto';
 import { logger } from '../common/openfin-logger';
 import { config, IConfig } from './config-handler';
 import { windowHandler } from './window-handler';
 
-const OPENFIN_PROVIDER = 'Openfin';
+const OPENFIN_PROVIDER = 'OpenFin';
 const TIMEOUT_THRESHOLD = 10000;
 
 export class OpenfinHandler {
-  private interopClient;
+  private interopClient: OpenFin.InteropClient | undefined;
   private intentHandlerSubscriptions: Map<UUID, any> = new Map();
   private isConnected: boolean = false;
   private fin: any;
 
   /**
-   * Connection to interop brocker
+   * Connection to interop broker
    */
   public async connect() {
     const { openfin }: IConfig = config.getConfigFields(['openfin']);
@@ -30,7 +32,8 @@ export class OpenfinHandler {
     const connectionTimeoutPromise = new Promise((_, reject) =>
       setTimeout(() => {
         logger.error(
-          `openfin-handler: Connection timeout after ${timeoutValue / 1000
+          `openfin-handler: Connection timeout after ${
+            timeoutValue / 1000
           } seconds`,
         );
         return reject(
@@ -61,7 +64,7 @@ export class OpenfinHandler {
         this.interopClient = this.fin.Interop.connectSync(openfin.channelName);
         this.isConnected = true;
 
-        this.interopClient.onDisconnection((event) => {
+        this.interopClient?.onDisconnection((event) => {
           const { brokerName } = event;
           logger.warn(
             `openfin-handler: Disconnected from Interop Broker ${brokerName}`,
@@ -95,7 +98,7 @@ export class OpenfinHandler {
    * Sends an intent to the Interop Broker
    */
   public fireIntent(intent) {
-    this.interopClient.fireIntent(intent);
+    return this.interopClient?.fireIntent(intent);
   }
 
   /**
@@ -103,7 +106,7 @@ export class OpenfinHandler {
    */
   public async registerIntentHandler(intentName: string): Promise<UUID> {
     const unsubscriptionCallback =
-      await this.interopClient.registerIntentHandler(
+      await this.interopClient?.registerIntentHandler(
         this.intentHandler,
         intentName,
       );
@@ -125,21 +128,28 @@ export class OpenfinHandler {
    * Join all Interop Clients at the given identity to context group contextGroupId. If no target is specified, it adds the sender to the context group.
    */
   public async joinContextGroup(contextGroupId: string, target?: any) {
-    await this.interopClient.joinContextGroup(contextGroupId, target);
+    return this.interopClient?.joinContextGroup(contextGroupId, target);
+  }
+
+  /**
+   * Joins or create a context group that does not persist between runs and aren't present on snapshots.
+   */
+  public async joinSessionContextGroup(contextGroupId: string) {
+    return this.interopClient?.joinSessionContextGroup(contextGroupId);
   }
 
   /**
    * Returns the Interop-Broker-defined context groups available for an entity to join.
    */
   public async getContextGroups() {
-    return this.interopClient.getContextGroups();
+    return this.interopClient?.getContextGroups();
   }
 
   /**
    * Gets all clients for a context group.
    */
-  public getAllClientsInContextGroup(contextGroupId: string) {
-    return this.interopClient.getAllClientsInContextGroup(contextGroupId);
+  public async getAllClientsInContextGroup(contextGroupId: string) {
+    return this.interopClient?.getAllClientsInContextGroup(contextGroupId);
   }
 
   /**
@@ -178,7 +188,7 @@ export class OpenfinHandler {
   public getInfo() {
     return {
       provider: OPENFIN_PROVIDER,
-      fdc3Version: '',
+      fdc3Version: '2.0',
       optionalFeatures: {
         OriginatingAppMetadata: false,
         UserChannelMembershipAPIs: false,
@@ -193,14 +203,14 @@ export class OpenfinHandler {
    * @param context
    */
   public fireIntentForContext(context: any) {
-    this.interopClient.fireIntentForContext(context);
+    return this.interopClient?.fireIntentForContext(context);
   }
 
   /**
-   * Removes a client from current context group
+   * Leaves current context group
    */
-  public removeClientFromContextGroup() {
-    this.interopClient.removeClientFromContextGroup();
+  public removeFromContextGroup() {
+    return this.interopClient?.removeFromContextGroup();
   }
 
   /**
