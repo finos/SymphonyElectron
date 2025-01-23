@@ -91,10 +91,11 @@ export enum apiCmds {
   openfinGetConnectionStatus = 'openfin-get-connection-status',
   openfinGetInfo = 'openfin-get-info',
   openfinJoinContextGroup = 'openfin-join-context-group',
+  openfinJoinSessionContextGroup = 'openfin-join-session-context-group',
   openfinGetContextGroups = 'openfin-get-context-groups',
   openfinGetAllClientsInContextGroup = 'openfin-get-all-clients-in-context-group',
   openfinFireIntentForContext = 'openfin-fire-intent-for-context',
-  openfinRemoveClientFromContextGroup = 'openfin-remove-client-from-context-group',
+  openfinRemoveFromContextGroup = 'openfin-remove-from-context-group',
   openfinGetClientInfo = 'openfin-get-client-info',
 }
 
