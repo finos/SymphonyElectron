@@ -11,6 +11,10 @@ jest.mock('../src/common/env', () => {
   };
 });
 
+const mockThumbnail = {
+  toDataURL: () => {},
+};
+
 describe('screen picker', () => {
   const keyCode = {
     pageDown: { keyCode: 34 },
@@ -40,26 +44,26 @@ describe('screen picker', () => {
         display_id: '0',
         id: '0',
         name: 'Application screen 0',
-        thumbnail: undefined,
+        thumbnail: mockThumbnail,
       },
       {
         display_id: '1',
         id: '1',
         name: 'Application screen 1',
-        thumbnail: undefined,
+        thumbnail: mockThumbnail,
       },
       {
         display_id: '2',
         id: '2',
         name: 'Application screen 2',
-        thumbnail: undefined,
+        thumbnail: mockThumbnail,
       },
     ],
     selectedSource: {
       display_id: '1',
       id: '1',
       name: 'Application screen 1',
-      thumbnail: undefined,
+      thumbnail: mockThumbnail,
     },
   };
 
@@ -85,7 +89,7 @@ describe('screen picker', () => {
       display_id: '1',
       id: '1',
       name: 'Entire screen',
-      thumbnail: undefined,
+      thumbnail: mockThumbnail,
     };
     const customSelector = 'button.ScreenPicker-share-button';
     wrapper.setState({ selectedSource });
@@ -101,7 +105,7 @@ describe('screen picker', () => {
           display_id: '0',
           id: '0',
           name: 'Entire screen',
-          thumbnail: undefined,
+          thumbnail: mockThumbnail,
         },
       ],
       selectedSource: undefined,
@@ -119,14 +123,14 @@ describe('screen picker', () => {
           display_id: '0',
           id: '0',
           name: 'Entire screen',
-          thumbnail: undefined,
+          thumbnail: mockThumbnail,
         },
       ],
       selectedSource: {
         display_id: '0',
         id: '0',
         name: 'Entire screen',
-        thumbnail: undefined,
+        thumbnail: mockThumbnail,
       },
     };
     const applicationScreenStateMock = {
@@ -135,14 +139,14 @@ describe('screen picker', () => {
           display_id: '',
           id: '1',
           name: 'Application 1',
-          thumbnail: undefined,
+          thumbnail: mockThumbnail,
         },
       ],
       selectedSource: {
         display_id: '',
         id: '1',
         name: 'Application 1',
-        thumbnail: undefined,
+        thumbnail: mockThumbnail,
       },
     };
 
@@ -175,7 +179,7 @@ describe('screen picker', () => {
           fileName: 'fullscreen',
           id: '0',
           name: 'Entire screen',
-          thumbnail: undefined,
+          thumbnail: mockThumbnail,
         },
       };
       const customSelector = '.ScreenPicker-item-container';
@@ -185,19 +189,19 @@ describe('screen picker', () => {
             display_id: '0',
             id: '0',
             name: 'Entire screen',
-            thumbnail: undefined,
+            thumbnail: mockThumbnail,
           },
           {
             display_id: '1',
             id: '1',
             name: 'Application screen 1',
-            thumbnail: undefined,
+            thumbnail: mockThumbnail,
           },
           {
             display_id: '2',
             id: '2',
             name: 'Application screen 2',
-            thumbnail: undefined,
+            thumbnail: mockThumbnail,
           },
         ],
         selectedSource: {
@@ -205,7 +209,7 @@ describe('screen picker', () => {
           fileName: 'fullscreen',
           id: '1',
           name: 'Application screen 1',
-          thumbnail: undefined,
+          thumbnail: mockThumbnail,
         },
       };
       wrapper.setState(applicationScreenStateMock);
@@ -222,7 +226,7 @@ describe('screen picker', () => {
           fileName: 'fullscreen',
           id: '2',
           name: 'Application screen 2',
-          thumbnail: undefined,
+          thumbnail: mockThumbnail,
         },
       };
       const customSelector = '.ScreenPicker-item-container';
@@ -232,19 +236,19 @@ describe('screen picker', () => {
             display_id: '0',
             id: '0',
             name: 'Entire screen',
-            thumbnail: undefined,
+            thumbnail: mockThumbnail,
           },
           {
             display_id: '1',
             id: '1',
             name: 'Application screen 1',
-            thumbnail: undefined,
+            thumbnail: mockThumbnail,
           },
           {
             display_id: '2',
             id: '2',
             name: 'Application screen 2',
-            thumbnail: undefined,
+            thumbnail: mockThumbnail,
           },
         ],
         selectedSource: {
@@ -252,7 +256,7 @@ describe('screen picker', () => {
           fileName: 'fullscreen',
           id: '1',
           name: 'Application screen 1',
-          thumbnail: undefined,
+          thumbnail: mockThumbnail,
         },
       };
       wrapper.setState(applicationScreenStateMock);
@@ -289,7 +293,7 @@ describe('screen picker', () => {
           fileName: 'fullscreen',
           id: '2',
           name: 'Application screen 2',
-          thumbnail: undefined,
+          thumbnail: mockThumbnail,
         },
       };
       const wrapper = shallow(React.createElement(ScreenPicker));
@@ -306,7 +310,7 @@ describe('screen picker', () => {
           fileName: 'fullscreen',
           id: '2',
           name: 'Application screen 2',
-          thumbnail: undefined,
+          thumbnail: mockThumbnail,
         },
       };
       const wrapper = shallow(React.createElement(ScreenPicker));
@@ -323,7 +327,7 @@ describe('screen picker', () => {
           fileName: 'fullscreen',
           id: '0',
           name: 'Application screen 0',
-          thumbnail: undefined,
+          thumbnail: mockThumbnail,
         },
       };
       const wrapper = shallow(React.createElement(ScreenPicker));
@@ -340,7 +344,7 @@ describe('screen picker', () => {
           fileName: 'fullscreen',
           id: '0',
           name: 'Application screen 0',
-          thumbnail: undefined,
+          thumbnail: mockThumbnail,
         },
       };
       const wrapper = shallow(React.createElement(ScreenPicker));
@@ -357,7 +361,7 @@ describe('screen picker', () => {
           fileName: 'fullscreen',
           id: '0',
           name: 'Application screen 0',
-          thumbnail: undefined,
+          thumbnail: mockThumbnail,
         },
       };
       const wrapper = shallow(React.createElement(ScreenPicker));
@@ -374,7 +378,7 @@ describe('screen picker', () => {
           fileName: 'fullscreen',
           id: '2',
           name: 'Application screen 2',
-          thumbnail: undefined,
+          thumbnail: mockThumbnail,
         },
       };
       const wrapper = shallow(React.createElement(ScreenPicker));
@@ -389,7 +393,7 @@ describe('screen picker', () => {
         display_id: '1',
         id: '1',
         name: 'Application screen 1',
-        thumbnail: undefined,
+        thumbnail: mockThumbnail,
       };
       const wrapper = shallow(React.createElement(ScreenPicker));
       wrapper.setState(stateMock);
@@ -418,7 +422,7 @@ describe('screen picker', () => {
           fileName: 'fullscreen',
           id: '0',
           name: 'Application screen 0',
-          thumbnail: undefined,
+          thumbnail: mockThumbnail,
         },
       };
       const wrapper = shallow(React.createElement(ScreenPicker));
@@ -437,19 +441,19 @@ describe('screen picker', () => {
             display_id: '',
             id: '1',
             name: 'Application Screen',
-            thumbnail: undefined,
+            thumbnail: mockThumbnail,
           },
           {
             display_id: '',
             id: '2',
             name: 'Application Screen 2',
-            thumbnail: undefined,
+            thumbnail: mockThumbnail,
           },
           {
             display_id: '',
             id: '3',
             name: 'Application Screen 3',
-            thumbnail: undefined,
+            thumbnail: mockThumbnail,
           },
         ],
       };
@@ -466,10 +470,20 @@ describe('screen picker', () => {
             display_id: '1',
             id: '1',
             name: 'Entire screen',
-            thumbnail: undefined,
+            thumbnail: mockThumbnail,
           },
-          { display_id: '2', id: '2', name: 'Screen 2', thumbnail: undefined },
-          { display_id: '3', id: '3', name: 'screen 3', thumbnail: undefined },
+          {
+            display_id: '2',
+            id: '2',
+            name: 'Screen 2',
+            thumbnail: mockThumbnail,
+          },
+          {
+            display_id: '3',
+            id: '3',
+            name: 'screen 3',
+            thumbnail: mockThumbnail,
+          },
         ],
       };
       wrapper.setState(entireScreenStateMock);
@@ -486,10 +500,20 @@ describe('screen picker', () => {
             display_id: '',
             id: '1',
             name: 'Entire screen',
-            thumbnail: undefined,
+            thumbnail: mockThumbnail,
           },
-          { display_id: '', id: '2', name: 'Screen 2', thumbnail: undefined },
-          { display_id: '', id: '3', name: 'screen 3', thumbnail: undefined },
+          {
+            display_id: '',
+            id: '2',
+            name: 'Screen 2',
+            thumbnail: mockThumbnail,
+          },
+          {
+            display_id: '',
+            id: '3',
+            name: 'screen 3',
+            thumbnail: mockThumbnail,
+          },
         ],
       };
       env.isWindowsOS = true;
@@ -509,10 +533,20 @@ describe('screen picker', () => {
             display_id: '',
             id: '1',
             name: 'Entire screen',
-            thumbnail: undefined,
+            thumbnail: mockThumbnail,
           },
-          { display_id: '', id: '2', name: 'Screen 2', thumbnail: undefined },
-          { display_id: '', id: '3', name: 'screen 3', thumbnail: undefined },
+          {
+            display_id: '',
+            id: '2',
+            name: 'Screen 2',
+            thumbnail: mockThumbnail,
+          },
+          {
+            display_id: '',
+            id: '3',
+            name: 'screen 3',
+            thumbnail: mockThumbnail,
+          },
         ],
       };
       env.isWindowsOS = false;
@@ -531,13 +565,13 @@ describe('screen picker', () => {
             display_id: '1',
             id: '1',
             name: 'Entire screen',
-            thumbnail: undefined,
+            thumbnail: mockThumbnail,
           },
           {
             display_id: '',
             id: '1',
             name: 'Application screen',
-            thumbnail: undefined,
+            thumbnail: mockThumbnail,
           },
         ],
       };
