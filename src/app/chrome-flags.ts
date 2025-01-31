@@ -115,15 +115,14 @@ export const setChromeFlags = () => {
 export const setSessionProperties = () => {
   logger.info(`chrome-flags: Settings session properties`);
   const { customFlags } = config.getConfigFields(['customFlags']) as IConfig;
-  const { defaultSession } = session;
 
   if (
-    defaultSession &&
+    session.defaultSession &&
     customFlags &&
     customFlags.authServerWhitelist &&
     customFlags.authServerWhitelist !== ''
   ) {
-    defaultSession.allowNTLMCredentialsForDomains(
+    session.defaultSession.allowNTLMCredentialsForDomains(
       customFlags.authServerWhitelist,
     );
   }
