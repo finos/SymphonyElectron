@@ -35,10 +35,13 @@ jest.mock('../src/app/config-handler', () => ({
   },
 }));
 
+const mockSend = jest.fn();
 jest.mock('../src/app/window-handler', () => {
   return {
     windowHandler: {
-      getMainWebContents: jest.fn(),
+      getMainWebContents: jest.fn(() => ({
+        send: mockSend,
+      })),
     },
   };
 });
@@ -163,17 +166,23 @@ describe('Openfin', () => {
     expect(fireIntentSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('should register an intent handler', async () => {
+  it('should register an intent handler and trigger intent handler on intent received', async () => {
+    const intentName = 'my-intent';
     const connectSyncMock = await connectMock.Interop.connectSync();
-    const intentHandlerRegistrationSpy = jest.spyOn(
-      connectSyncMock,
-      'registerIntentHandler',
-    );
 
     await openfinHandler.connect();
-    await openfinHandler.registerIntentHandler('my-intent');
+    await openfinHandler.registerIntentHandler(intentName);
 
-    expect(intentHandlerRegistrationSpy).toHaveBeenCalledTimes(1);
+    expect(connectSyncMock.registerIntentHandler).toHaveBeenCalledTimes(1);
+
+    const intentHandler =
+      connectSyncMock.registerIntentHandler.mock.calls[0][0];
+    intentHandler('intent-data');
+
+    expect(mockSend).toHaveBeenCalledWith(
+      'openfin-intent-received',
+      'intent-data',
+    );
   });
 
   it('should join a context group', async () => {
@@ -252,5 +261,26 @@ describe('Openfin', () => {
     await openfinHandler.removeFromContextGroup();
 
     expect(removeFromContextGroupSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should trigger disconnection handler when disconnected', async () => {
+    const disconnectionEvent = {
+      type: 'type',
+      topic: 'topic',
+      brokerName: 'broken-name',
+    };
+
+    const connectSyncMock = await connectMock.Interop.connectSync();
+
+    await openfinHandler.connect();
+
+    const disconnectionHandler =
+      connectSyncMock.onDisconnection.mock.calls[0][0];
+    disconnectionHandler(disconnectionEvent);
+
+    expect(mockSend).toHaveBeenCalledWith(
+      'openfin-disconnection',
+      disconnectionEvent,
+    );
   });
 });
