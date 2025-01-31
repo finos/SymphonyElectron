@@ -67,14 +67,15 @@ export interface ILocalObject {
   c9MessageCallback?: (status: IShellStatus) => void;
   updateMyPresenceCallback?: (presence: EPresenceStatusCategory) => void;
   phoneNumberCallback?: (arg: string) => void;
-  intentsCallbacks: Map<string, Map<UUID, any>>;
+  openfinIntentCallbacks: Map<string, Map<UUID, any>>; // by intent name, then by callback id
+  openfinDisconnectionCallback?: (event?: any) => void;
   writeImageToClipboard?: (blob: string) => void;
   getHelpInfo?: () => Promise<IPodSettingsClientSpecificSupportLink>;
 }
 
 const local: ILocalObject = {
   ipcRenderer,
-  intentsCallbacks: new Map(),
+  openfinIntentCallbacks: new Map(),
 };
 
 const notificationActionCallbacks = new Map<
@@ -958,13 +959,17 @@ export class SSFApi {
   /**
    * Openfin Interop client initialization
    */
-  public async openfinInit() {
+  public async openfinInit(options?: {
+    onDisconnection?: (event: any) => void;
+  }): Promise<void> {
     const connectionStatus = await local.ipcRenderer.invoke(
       apiName.symphonyApi,
-      {
-        cmd: apiCmds.openfinConnect,
-      },
+      { cmd: apiCmds.openfinConnect },
     );
+
+    local.openfinIntentCallbacks.clear();
+    local.openfinDisconnectionCallback = options?.onDisconnection;
+
     return connectionStatus;
   }
 
@@ -1046,12 +1051,12 @@ export class SSFApi {
       cmd: apiCmds.openfinRegisterIntentHandler,
       intentName,
     });
-    if (local.intentsCallbacks.has(intentName)) {
-      local.intentsCallbacks.get(intentName)?.set(uuid, intentHandler);
+    if (local.openfinIntentCallbacks.has(intentName)) {
+      local.openfinIntentCallbacks.get(intentName)?.set(uuid, intentHandler);
     } else {
       const innerMap = new Map();
       innerMap.set(uuid, intentHandler);
-      local.intentsCallbacks.set(intentName, innerMap);
+      local.openfinIntentCallbacks.set(intentName, innerMap);
     }
     return uuid;
   }
@@ -1061,7 +1066,7 @@ export class SSFApi {
    * @param UUID
    */
   public async openfinUnregisterIntentHandler(callbackId: UUID): Promise<void> {
-    for (const innerMap of local.intentsCallbacks.values()) {
+    for (const innerMap of local.openfinIntentCallbacks.values()) {
       if (innerMap.has(callbackId)) {
         innerMap.delete(callbackId);
         break;
@@ -1460,16 +1465,23 @@ local.ipcRenderer.on(
   },
 );
 
-local.ipcRenderer.on('intent-received', (_event: Event, intent: any) => {
-  if (
-    typeof intent.name === 'string' &&
-    local.intentsCallbacks.has(intent.name)
-  ) {
-    const uuidCallbacks = local.intentsCallbacks.get(intent.name);
-    uuidCallbacks?.forEach((callbacks, _uuid) => {
-      callbacks(intent.context);
-    });
-  }
+local.ipcRenderer.on(
+  'openfin-intent-received',
+  (_event: Event, intent: any) => {
+    if (
+      typeof intent.name === 'string' &&
+      local.openfinIntentCallbacks.has(intent.name)
+    ) {
+      const uuidCallbacks = local.openfinIntentCallbacks.get(intent.name);
+      uuidCallbacks?.forEach((callbacks, _uuid) => {
+        callbacks(intent.context);
+      });
+    }
+  },
+);
+
+local.ipcRenderer.on('openfin-disconnection', (_event: Event) => {
+  local.openfinDisconnectionCallback?.();
 });
 
 // Invoked whenever the app is reloaded/navigated
@@ -1480,7 +1492,7 @@ const sanitize = (): void => {
       windowName: window.name,
     });
   }
-  local.intentsCallbacks = new Map();
+  local.openfinIntentCallbacks = new Map();
 };
 
 // listens for the online/offline events and updates the main process

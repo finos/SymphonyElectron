@@ -1,6 +1,6 @@
 /// <reference types="@openfin/core/fin" />
 
-import { connect } from '@openfin/node-adapter';
+import { connect, NodeFin } from '@openfin/node-adapter';
 import { randomUUID, UUID } from 'crypto';
 import { logger } from '../common/openfin-logger';
 import { config, IConfig } from './config-handler';
@@ -13,33 +13,35 @@ export class OpenfinHandler {
   private interopClient: OpenFin.InteropClient | undefined;
   private intentHandlerSubscriptions: Map<UUID, any> = new Map();
   private isConnected: boolean = false;
-  private fin: any;
+  private fin: NodeFin | undefined;
 
   /**
    * Connection to interop broker
    */
   public async connect() {
+    this.reset();
+
     const { openfin }: IConfig = config.getConfigFields(['openfin']);
     if (!openfin) {
       logger.error('openfin-handler: missing openfin params to connect.');
       return { isConnected: false };
     }
-    logger.info('openfin-handler: connecting');
+    logger.info('openfin-handler: connecting...');
+
     const parsedTimeoutValue = parseInt(openfin.connectionTimeout, 10);
     const timeoutValue = isNaN(parsedTimeoutValue)
       ? TIMEOUT_THRESHOLD
       : parsedTimeoutValue;
     const connectionTimeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => {
-        logger.error(
-          `openfin-handler: Connection timeout after ${
-            timeoutValue / 1000
-          } seconds`,
-        );
-        return reject(
-          new Error(`Connection timeout after ${timeoutValue / 1000} seconds`),
-        );
-      }, timeoutValue),
+      setTimeout(
+        () =>
+          reject(
+            new Error(
+              `connection timeout after ${timeoutValue / 1000} seconds`,
+            ),
+          ),
+        timeoutValue,
+      ),
     );
 
     const connectionPromise = (async () => {
@@ -49,28 +51,21 @@ export class OpenfinHandler {
             uuid: openfin.uuid,
             licenseKey: openfin.licenseKey,
             runtime: {
-              version: openfin.runtimeVersion,
+              version: openfin.runtimeVersion || 'stable',
             },
           });
         }
 
         logger.info(
-          'openfin-handler: connection established to Openfin runtime',
+          'openfin-handler: connection established to openfin runtime',
         );
         logger.info(
-          `openfin-handler: starting connection to interop broker using channel ${openfin.channelName}`,
+          `openfin-handler: starting connection to interop broker using channel ${openfin.channelName}...`,
         );
 
         this.interopClient = this.fin.Interop.connectSync(openfin.channelName);
         this.isConnected = true;
-
-        this.interopClient?.onDisconnection((event) => {
-          const { brokerName } = event;
-          logger.warn(
-            `openfin-handler: Disconnected from Interop Broker ${brokerName}`,
-          );
-          this.clearSubscriptions();
-        });
+        this.interopClient?.onDisconnection(this.disconnectionHandler);
 
         return true;
       } catch (error) {
@@ -87,7 +82,7 @@ export class OpenfinHandler {
       return { isConnected };
     } catch (error) {
       logger.error(
-        'openfin-handler: error or timeout while connecting: ',
+        'openfin-handler: error or timeout while connecting:',
         error,
       );
       return { isConnected: false };
@@ -105,13 +100,13 @@ export class OpenfinHandler {
    * Adds an intent handler for incoming intents
    */
   public async registerIntentHandler(intentName: string): Promise<UUID> {
-    const unsubscriptionCallback =
-      await this.interopClient?.registerIntentHandler(
-        this.intentHandler,
-        intentName,
-      );
+    const subscription = await this.interopClient?.registerIntentHandler(
+      this.intentHandler,
+      intentName,
+    );
+
     const uuid = randomUUID();
-    this.intentHandlerSubscriptions.set(uuid, unsubscriptionCallback);
+    this.intentHandlerSubscriptions.set(uuid, subscription);
     return uuid;
   }
 
@@ -119,9 +114,9 @@ export class OpenfinHandler {
    * Removes an intent handler for a given intent
    */
   public async unregisterIntentHandler(uuid: UUID) {
-    const unsubscriptionCallback = this.intentHandlerSubscriptions.get(uuid);
+    const subscription = this.intentHandlerSubscriptions.get(uuid);
 
-    const response = await unsubscriptionCallback.unsubscribe();
+    const response = await subscription.unsubscribe();
     this.intentHandlerSubscriptions.delete(uuid);
     return response;
   }
@@ -155,23 +150,21 @@ export class OpenfinHandler {
   }
 
   /**
-   * Clears all openfin subscriptions
+   * Reset connection status, interop client, and existing subscriptions (if any).
    */
-  public clearSubscriptions() {
+  public reset() {
     this.isConnected = false;
     this.interopClient = undefined;
-    this.intentHandlerSubscriptions.forEach(
-      (unsubscriptionCallback, intent) => {
-        try {
-          unsubscriptionCallback.unsubscribe();
-        } catch (e) {
-          logger.error(
-            `openfin-handler: Error unsubscribing from intent ${intent}:`,
-            e,
-          );
-        }
-      },
-    );
+    this.intentHandlerSubscriptions.forEach((subscriptions, intent) => {
+      try {
+        subscriptions.unsubscribe();
+      } catch (e) {
+        logger.error(
+          `openfin-handler: error unsubscribing from intent ${intent}:`,
+          e,
+        );
+      }
+    });
     this.intentHandlerSubscriptions.clear();
   }
 
@@ -227,10 +220,25 @@ export class OpenfinHandler {
     };
   }
 
+  /**
+   * Forward intent to main window when intent is received
+   */
   private intentHandler = (intent: any) => {
     logger.info('openfin-handler: intent received - ', intent);
-    const mainWebContents = windowHandler.getMainWebContents();
-    mainWebContents?.send('intent-received', intent);
+    windowHandler.getMainWebContents()?.send('openfin-intent-received', intent);
+  };
+
+  /**
+   * Forward disconnection event to main window when disconnected from Interop Broker
+   */
+  private disconnectionHandler = (
+    event: OpenFin.InteropBrokerDisconnectionEvent,
+  ) => {
+    logger.warn(
+      `openfin-handler: disconnected from interop broker ${event.brokerName}`,
+    );
+    windowHandler.getMainWebContents()?.send('openfin-disconnection', event);
+    this.reset();
   };
 }
 
