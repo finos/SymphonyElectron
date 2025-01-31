@@ -139,16 +139,9 @@ export const getSource = async (
     }
   }
 
-  const updatedSources = sources
-    .filter((source) => source.name !== NOTIFICATION_WINDOW_TITLE)
-    .map((source) => {
-      return {
-        ...source,
-        ...{
-          thumbnail: source.thumbnail.toDataURL(),
-        },
-      };
-    });
+  const updatedSources = sources.filter(
+    (source) => source.name !== NOTIFICATION_WINDOW_TITLE,
+  );
 
   ipcRenderer.send(apiName.symphonyApi, {
     cmd: apiCmds.openScreenPickerWindow,

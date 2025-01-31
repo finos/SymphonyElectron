@@ -2420,6 +2420,36 @@ export class WindowHandler {
   };
 
   /**
+   * Returns constructor opts for the browser window
+   *
+   * @param windowOpts {Electron.BrowserWindowConstructorOptions}
+   * @param webPreferences {Electron.WebPreferences}
+   */
+  public getWindowOpts(
+    windowOpts: Electron.BrowserWindowConstructorOptions,
+    webPreferences: Electron.WebPreferences,
+  ): ICustomBrowserWindowConstructorOpts {
+    const defaultPreferencesOpts = {
+      ...{
+        sandbox: IS_SAND_BOXED,
+        nodeIntegration: IS_NODE_INTEGRATION_ENABLED,
+        contextIsolation: this.contextIsolation,
+        backgroundThrottling: this.backgroundThrottling,
+        enableRemoteModule: true,
+        disableBlinkFeatures: AUX_CLICK,
+      },
+      ...webPreferences,
+    };
+    const defaultWindowOpts = {
+      alwaysOnTop: false,
+      webPreferences: defaultPreferencesOpts,
+      winKey: getGuid(),
+    };
+
+    return { ...defaultWindowOpts, ...windowOpts };
+  }
+
+  /**
    * Listens for app load timeouts and reloads if required
    */
   private listenForLoad() {
@@ -2505,36 +2535,6 @@ export class WindowHandler {
     if (response === 0) {
       await this.exitApplication(false);
     }
-  }
-
-  /**
-   * Returns constructor opts for the browser window
-   *
-   * @param windowOpts {Electron.BrowserWindowConstructorOptions}
-   * @param webPreferences {Electron.WebPreferences}
-   */
-  private getWindowOpts(
-    windowOpts: Electron.BrowserWindowConstructorOptions,
-    webPreferences: Electron.WebPreferences,
-  ): ICustomBrowserWindowConstructorOpts {
-    const defaultPreferencesOpts = {
-      ...{
-        sandbox: IS_SAND_BOXED,
-        nodeIntegration: IS_NODE_INTEGRATION_ENABLED,
-        contextIsolation: this.contextIsolation,
-        backgroundThrottling: this.backgroundThrottling,
-        enableRemoteModule: true,
-        disableBlinkFeatures: AUX_CLICK,
-      },
-      ...webPreferences,
-    };
-    const defaultWindowOpts = {
-      alwaysOnTop: false,
-      webPreferences: defaultPreferencesOpts,
-      winKey: getGuid(),
-    };
-
-    return { ...defaultWindowOpts, ...windowOpts };
   }
 
   /**
