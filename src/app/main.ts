@@ -8,7 +8,6 @@ import { cleanUpAppCache, createAppCacheFile } from './app-cache-handler';
 import { setChromeFlags, setSessionProperties } from './chrome-flags';
 import { config } from './config-handler';
 import './dialog-handler';
-import { setDisplayMediaRequestHandler } from './display-media-request-handler';
 import './main-api-handler';
 import { handlePerformanceSettings } from './perf-handler';
 import { protocolHandler } from './protocol-handler';
@@ -109,7 +108,6 @@ const startApplication = async () => {
   // Picks global config values and updates them in the user config
   await config.updateUserConfigOnStart();
   setSessionProperties();
-  setDisplayMediaRequestHandler();
   await autoUpdate.init();
   await windowHandler.createApplication();
   logger.info(`main: created application`);
