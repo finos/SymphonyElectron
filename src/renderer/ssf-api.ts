@@ -1481,7 +1481,8 @@ local.ipcRenderer.on(
 );
 
 local.ipcRenderer.on('openfin-disconnection', (_event: Event) => {
-  local.openfinDisconnectionCallback?.();
+local.ipcRenderer.on('openfin-disconnection', (_event: Event, disconnectionEvent) => {
+  local.openfinDisconnectionCallback?.(disconnectionEvent);
 });
 
 // Invoked whenever the app is reloaded/navigated
