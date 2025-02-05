@@ -1,3 +1,4 @@
+import { connect } from '@openfin/node-adapter';
 import { activityDetection } from '../src/app/activity-detection';
 import * as c9PipeHandler from '../src/app/c9-pipe-handler';
 import { downloadHandler } from '../src/app/download-handler';
@@ -11,7 +12,6 @@ import * as utils from '../src/app/window-utils';
 import { apiCmds, apiName } from '../src/common/api-interface';
 import { logger } from '../src/common/logger';
 import { BrowserWindow, ipcMain } from './__mocks__/electron';
-import { connect } from '@openfin/node-adapter';
 
 jest.mock('electron-log');
 
