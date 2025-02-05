@@ -5,7 +5,7 @@ call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tool
 echo %PATH%
 
 set DISABLE_REBUILD=true
-set NODE_REQUIRED_VERSION=18.16.0
+set NODE_REQUIRED_VERSION=20.18.1
 set SNYK_ORG=sda
 set SNYK_PROJECT_NAME="Symphony Desktop Application"
 set SCREENSHARE_INDICATOR_PATH="node_modules\screen-share-indicator-frame\ScreenShareIndicatorFrame.exe"
