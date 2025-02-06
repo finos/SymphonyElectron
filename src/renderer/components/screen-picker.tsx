@@ -172,7 +172,7 @@ export default class ScreenPicker extends React.Component<{}, IState> {
             <div className='ScreenPicker-screen-section-box'>
               <img
                 className='ScreenPicker-img-wrapper'
-                src={source.thumbnail as any}
+                src={source.thumbnail.toDataURL()}
                 alt='thumbnail image'
               />
             </div>
@@ -190,7 +190,7 @@ export default class ScreenPicker extends React.Component<{}, IState> {
             <div className='ScreenPicker-screen-section-box'>
               <img
                 className='ScreenPicker-img-wrapper'
-                src={source.thumbnail as any}
+                src={source.thumbnail.toDataURL()}
                 alt='thumbnail image'
               />
             </div>

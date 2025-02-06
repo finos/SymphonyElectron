@@ -9,7 +9,7 @@ exports[`about app should render correctly 1`] = `
     className="AboutApp-header-container"
   >
     <img
-      alt="Symphony Logo"
+      alt="Symphony Messaging Logo"
       className="AboutApp-logo"
       src={Object {}}
     />
@@ -34,7 +34,7 @@ exports[`about app should render correctly 1`] = `
         title="Copy config to clipboard"
       >
         <img
-          alt="Symphony Logo"
+          alt="Symphony Messaging Logo"
           src={Object {}}
         />
         <span>

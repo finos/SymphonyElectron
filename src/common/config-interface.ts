@@ -8,4 +8,12 @@ export const ConfigFieldsDefaultValues: Partial<IConfig> = {
   latestAutoUpdateChannelEnabled: true,
   betaAutoUpdateChannelEnabled: true,
   browserLoginRetryTimeout: '5',
+  openfin: {
+    uuid: '',
+    licenseKey: '',
+    runtimeVersion: '',
+    channelName: '',
+    autoConnect: false,
+    connectionTimeout: '10000',
+  },
 };

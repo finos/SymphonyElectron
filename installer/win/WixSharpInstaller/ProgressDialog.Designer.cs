@@ -230,7 +230,7 @@ namespace Symphony
             this.Controls.Add(this.description);
             this.Controls.Add(this.currentActionLabel);
             this.Name = "ProgressDialog";
-            this.Text = "Symphony Setup";
+            this.Text = "Symphony Messaging Setup";
             this.Load += new System.EventHandler(this.ProgressDialog_Load);
             this.topPanel.ResumeLayout(false);
             this.topPanel.PerformLayout();

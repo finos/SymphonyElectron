@@ -55,6 +55,7 @@ import { notification } from '../renderer/notification';
 import { autoLaunchInstance } from './auto-launch-controller';
 import { autoUpdate, AutoUpdateTrigger } from './auto-update-handler';
 import { mainEvents } from './main-event-handler';
+import { openfinHandler } from './openfin-handler';
 import { presenceStatus } from './presence-status-handler';
 import { presenceStatusStore } from './stores';
 interface IStyles {
@@ -357,7 +358,9 @@ export const setDataUrl = (dataUrl: string, count: number): void => {
   if (mainWindow && dataUrl && count) {
     const img = nativeImage.createFromDataURL(dataUrl);
     // for accessibility screen readers
-    const desc = 'Symphony has ' + count + ' unread messages';
+    const desc = i18n.t('Symphony Messaging has {count} unread messages')({
+      count,
+    });
     mainWindow.setOverlayIcon(img, desc);
   }
 };
@@ -472,7 +475,8 @@ export const sanitize = (windowName: string): void => {
   if (mainWindow && windowName === mainWindow.winName) {
     // reset the badge count whenever an user refreshes the electron client
     showBadgeCount(0);
-
+    // Clear all openfin subscriptions
+    openfinHandler.reset();
     // Terminates the screen snippet process and screen share indicator frame on reload
     if (!isMac || !isLinux) {
       logger.info(
@@ -858,7 +862,8 @@ export const zoomIn = () => {
   }
 
   if (
-    focusedWindow.getTitle() === 'Screen Sharing Indicator - Symphony' ||
+    focusedWindow.getTitle() ===
+      'Screen Sharing Indicator - Symphony Messaging' ||
     focusedWindow.getTitle() === 'About Symphony Messaging'
   ) {
     return;
@@ -956,7 +961,8 @@ export const zoomOut = () => {
   }
 
   if (
-    focusedWindow.getTitle() === 'Screen Sharing Indicator - Symphony' ||
+    focusedWindow.getTitle() ===
+      'Screen Sharing Indicator - Symphony Messaging' ||
     focusedWindow.getTitle() === 'About Symphony Messaging'
   ) {
     return;

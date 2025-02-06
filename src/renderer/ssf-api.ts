@@ -1,3 +1,4 @@
+import { UUID } from 'crypto';
 import { ipcRenderer, webFrame } from 'electron';
 import {
   buildNumber,
@@ -66,12 +67,15 @@ export interface ILocalObject {
   c9MessageCallback?: (status: IShellStatus) => void;
   updateMyPresenceCallback?: (presence: EPresenceStatusCategory) => void;
   phoneNumberCallback?: (arg: string) => void;
+  openfinIntentCallbacks: Map<string, Map<UUID, any>>; // by intent name, then by callback id
+  openfinDisconnectionCallback?: (event?: any) => void;
   writeImageToClipboard?: (blob: string) => void;
   getHelpInfo?: () => Promise<IPodSettingsClientSpecificSupportLink>;
 }
 
 const local: ILocalObject = {
   ipcRenderer,
+  openfinIntentCallbacks: new Map(),
 };
 
 const notificationActionCallbacks = new Map<
@@ -953,6 +957,177 @@ export class SSFApi {
   }
 
   /**
+   * Openfin Interop client initialization
+   */
+  public async openfinInit(options?: {
+    onDisconnection?: (event: any) => void;
+  }): Promise<void> {
+    const connectionStatus = await local.ipcRenderer.invoke(
+      apiName.symphonyApi,
+      { cmd: apiCmds.openfinConnect },
+    );
+
+    local.openfinIntentCallbacks.clear();
+    local.openfinDisconnectionCallback = options?.onDisconnection;
+
+    return connectionStatus;
+  }
+
+  /**
+   * Returns provider and connection status
+   */
+  public async openfinGetInfo() {
+    const info = await local.ipcRenderer.invoke(apiName.symphonyApi, {
+      cmd: apiCmds.openfinGetInfo,
+    });
+    return info;
+  }
+
+  /**
+   * Fires an intent
+   */
+  public async openfinFireIntent(intent: any): Promise<void> {
+    const response = await local.ipcRenderer.invoke(apiName.symphonyApi, {
+      cmd: apiCmds.openfinFireIntent,
+      intent,
+    });
+    return response;
+  }
+
+  /**
+   * Fires an intent for a given context
+   * @param context
+   */
+  public async openfinFireIntentForContext(context: any): Promise<void> {
+    const response = await local.ipcRenderer.invoke(apiName.symphonyApi, {
+      cmd: apiCmds.openfinFireIntentForContext,
+      context,
+    });
+    return response;
+  }
+
+  /**
+   * Leaves current context group
+   */
+  public async openfinRemoveFromContextGroup() {
+    const response = await local.ipcRenderer.invoke(apiName.symphonyApi, {
+      cmd: apiCmds.openfinRemoveFromContextGroup,
+    });
+    return response;
+  }
+
+  /**
+   * Returns client info
+   */
+  public async openfinGetClientInfo() {
+    const info = await local.ipcRenderer.invoke(apiName.symphonyApi, {
+      cmd: apiCmds.openfinGetClientInfo,
+    });
+    return info;
+  }
+
+  /**
+   *
+   * Returns Openfin connection status
+   */
+  public async openfinGetConnectionStatus() {
+    const connectionStatus = await local.ipcRenderer.invoke(
+      apiName.symphonyApi,
+      {
+        cmd: apiCmds.openfinGetConnectionStatus,
+      },
+    );
+    return connectionStatus;
+  }
+
+  /**
+   * Registers a handler for a given intent
+   */
+  public async openfinRegisterIntentHandler(
+    intentHandler: any,
+    intentName: any,
+  ): Promise<UUID> {
+    const uuid: UUID = await local.ipcRenderer.invoke(apiName.symphonyApi, {
+      cmd: apiCmds.openfinRegisterIntentHandler,
+      intentName,
+    });
+    if (local.openfinIntentCallbacks.has(intentName)) {
+      local.openfinIntentCallbacks.get(intentName)?.set(uuid, intentHandler);
+    } else {
+      const innerMap = new Map();
+      innerMap.set(uuid, intentHandler);
+      local.openfinIntentCallbacks.set(intentName, innerMap);
+    }
+    return uuid;
+  }
+
+  /**
+   * Unregisters a handler based on a given intent handler callback id
+   * @param UUID
+   */
+  public async openfinUnregisterIntentHandler(callbackId: UUID): Promise<void> {
+    for (const innerMap of local.openfinIntentCallbacks.values()) {
+      if (innerMap.has(callbackId)) {
+        innerMap.delete(callbackId);
+        break;
+      }
+    }
+
+    const response = await local.ipcRenderer.invoke(apiName.symphonyApi, {
+      cmd: apiCmds.openfinUnregisterIntentHandler,
+      uuid: callbackId,
+    });
+    return response;
+  }
+
+  /**
+   * Returns openfin context groups
+   */
+  public async openfinGetContextGroups() {
+    const contextGroups = await local.ipcRenderer.invoke(apiName.symphonyApi, {
+      cmd: apiCmds.openfinGetContextGroups,
+    });
+    return contextGroups;
+  }
+
+  /**
+   * Allows to join an Openfin context group
+   * @param contextGroupId
+   * @param target
+   */
+  public async openfinJoinContextGroup(contextGroupId: string, target?: any) {
+    const response = await local.ipcRenderer.invoke(apiName.symphonyApi, {
+      cmd: apiCmds.openfinJoinContextGroup,
+      contextGroupId,
+      target,
+    });
+    return response;
+  }
+
+  /**
+   * Allows to join or create an Openfin session context group
+   * @param contextGroupId
+   */
+  public async openfinJoinSessionContextGroup(contextGroupId: string) {
+    const response = await local.ipcRenderer.invoke(apiName.symphonyApi, {
+      cmd: apiCmds.openfinJoinSessionContextGroup,
+      contextGroupId,
+    });
+    return response;
+  }
+
+  /**
+   * Returns registered clients in a given context group
+   */
+  public async openfinGetAllClientsInContextGroup(contextGroupId: string) {
+    const clients = await local.ipcRenderer.invoke(apiName.symphonyApi, {
+      cmd: apiCmds.openfinGetAllClientsInContextGroup,
+      contextGroupId,
+    });
+    return clients;
+  }
+
+  /**
    * Allows JS to register SDA for phone numbers clicks
    * @param {Function} phoneNumberCallback callback function invoked when receiving a phone number for calls/sms
    */
@@ -1290,6 +1465,28 @@ local.ipcRenderer.on(
   },
 );
 
+local.ipcRenderer.on(
+  'openfin-intent-received',
+  (_event: Event, intent: any) => {
+    if (
+      typeof intent.name === 'string' &&
+      local.openfinIntentCallbacks.has(intent.name)
+    ) {
+      const uuidCallbacks = local.openfinIntentCallbacks.get(intent.name);
+      uuidCallbacks?.forEach((callbacks, _uuid) => {
+        callbacks(intent.context);
+      });
+    }
+  },
+);
+
+local.ipcRenderer.on(
+  'openfin-disconnection',
+  (_event: Event, disconnectionEvent) => {
+    local.openfinDisconnectionCallback?.(disconnectionEvent);
+  },
+);
+
 // Invoked whenever the app is reloaded/navigated
 const sanitize = (): void => {
   if (window.name === apiName.mainWindowName) {
@@ -1298,6 +1495,7 @@ const sanitize = (): void => {
       windowName: window.name,
     });
   }
+  local.openfinIntentCallbacks = new Map();
 };
 
 // listens for the online/offline events and updates the main process

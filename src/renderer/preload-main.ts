@@ -105,6 +105,23 @@ if (ssfWindow.ssf) {
     registerPhoneNumberServices: ssfWindow.ssf.registerPhoneNumberServices,
     unregisterPhoneNumberServices: ssfWindow.ssf.unregisterPhoneNumberServices,
   });
+
+  contextBridge.exposeInMainWorld('openfin', {
+    init: ssfWindow.ssf.openfinInit,
+    getInfo: ssfWindow.ssf.openfinGetInfo,
+    getConnectionStatus: ssfWindow.ssf.openfinGetConnectionStatus,
+    fireIntent: ssfWindow.ssf.openfinFireIntent,
+    registerIntentHandler: ssfWindow.ssf.openfinRegisterIntentHandler,
+    unregisterIntentHandler: ssfWindow.ssf.openfinUnregisterIntentHandler,
+    getContextGroups: ssfWindow.ssf.openfinGetContextGroups,
+    joinContextGroup: ssfWindow.ssf.openfinJoinContextGroup,
+    joinSessionContextGroup: ssfWindow.ssf.openfinJoinSessionContextGroup,
+    getAllClientsInContextGroup:
+      ssfWindow.ssf.openfinGetAllClientsInContextGroup,
+    fireIntentForContext: ssfWindow.ssf.openfinFireIntentForContext,
+    removeFromContextGroup: ssfWindow.ssf.openfinRemoveFromContextGroup,
+    getClientInfo: ssfWindow.ssf.openfinGetClientInfo,
+  });
 }
 
 /**
@@ -193,7 +210,7 @@ ipcRenderer.on('exit-html-fullscreen', async () => {
 
 ipcRenderer.on('page-load-welcome', (_event, { locale, resources }) => {
   i18n.setResource(locale, resources);
-  document.title = i18n.t('WelcomeText', 'Welcome')();
+  document.title = i18n.t('Welcome', 'Welcome')();
   const styles = document.createElement('link');
   styles.rel = 'stylesheet';
   styles.type = 'text/css';

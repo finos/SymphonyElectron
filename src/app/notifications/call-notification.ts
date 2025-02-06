@@ -237,7 +237,7 @@ class CallNotification {
         autoHideMenuBar: true,
         minimizable: false,
         maximizable: false,
-        title: 'Call Notification - Symphony',
+        title: 'Call Notification - Symphony Messaging',
         webPreferences: {
           sandbox: IS_SAND_BOXED,
           nodeIntegration: IS_NODE_INTEGRATION_ENABLED,

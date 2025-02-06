@@ -303,12 +303,15 @@ export class WindowHandler {
     this.windowOpts = {
       ...this.getWindowOpts(
         {
+          icon: isWindowsOS
+            ? '../renderer/assets/windows-taskbar.ico'
+            : undefined,
           alwaysOnTop:
             this.config.alwaysOnTop === CloudConfigDataTypes.ENABLED || false,
           frame: !this.isCustomTitleBar,
           minHeight: MIN_HEIGHT,
           minWidth: MIN_WIDTH,
-          title: 'Symphony',
+          title: i18n.t('Symphony Messaging')(),
           show: false,
         },
         {
@@ -440,7 +443,7 @@ export class WindowHandler {
         query: {
           componentName: 'welcome',
           locale: i18n.getLocale(),
-          title: i18n.t('WelcomeText', 'Welcome')(),
+          title: i18n.t('Welcome', 'Welcome')(),
         },
         slashes: true,
       });
@@ -907,7 +910,7 @@ export class WindowHandler {
         query: {
           componentName,
           locale: i18n.getLocale(),
-          title: i18n.t('WelcomeText', 'Welcome')(),
+          title: i18n.t('Welcome', 'Welcome')(),
         },
         slashes: true,
       });
@@ -1976,7 +1979,7 @@ export class WindowHandler {
           titleBarStyle: 'customButtonsOnHover',
           minimizable: false,
           maximizable: false,
-          title: 'Screen Sharing Indicator - Symphony',
+          title: 'Screen Sharing Indicator - Symphony Messaging',
           closable: false,
           useContentSize: true,
         },
@@ -2417,6 +2420,36 @@ export class WindowHandler {
   };
 
   /**
+   * Returns constructor opts for the browser window
+   *
+   * @param windowOpts {Electron.BrowserWindowConstructorOptions}
+   * @param webPreferences {Electron.WebPreferences}
+   */
+  public getWindowOpts(
+    windowOpts: Electron.BrowserWindowConstructorOptions,
+    webPreferences: Electron.WebPreferences,
+  ): ICustomBrowserWindowConstructorOpts {
+    const defaultPreferencesOpts = {
+      ...{
+        sandbox: IS_SAND_BOXED,
+        nodeIntegration: IS_NODE_INTEGRATION_ENABLED,
+        contextIsolation: this.contextIsolation,
+        backgroundThrottling: this.backgroundThrottling,
+        enableRemoteModule: true,
+        disableBlinkFeatures: AUX_CLICK,
+      },
+      ...webPreferences,
+    };
+    const defaultWindowOpts = {
+      alwaysOnTop: false,
+      webPreferences: defaultPreferencesOpts,
+      winKey: getGuid(),
+    };
+
+    return { ...defaultWindowOpts, ...windowOpts };
+  }
+
+  /**
    * Listens for app load timeouts and reloads if required
    */
   private listenForLoad() {
@@ -2502,36 +2535,6 @@ export class WindowHandler {
     if (response === 0) {
       await this.exitApplication(false);
     }
-  }
-
-  /**
-   * Returns constructor opts for the browser window
-   *
-   * @param windowOpts {Electron.BrowserWindowConstructorOptions}
-   * @param webPreferences {Electron.WebPreferences}
-   */
-  private getWindowOpts(
-    windowOpts: Electron.BrowserWindowConstructorOptions,
-    webPreferences: Electron.WebPreferences,
-  ): ICustomBrowserWindowConstructorOpts {
-    const defaultPreferencesOpts = {
-      ...{
-        sandbox: IS_SAND_BOXED,
-        nodeIntegration: IS_NODE_INTEGRATION_ENABLED,
-        contextIsolation: this.contextIsolation,
-        backgroundThrottling: this.backgroundThrottling,
-        enableRemoteModule: true,
-        disableBlinkFeatures: AUX_CLICK,
-      },
-      ...webPreferences,
-    };
-    const defaultWindowOpts = {
-      alwaysOnTop: false,
-      webPreferences: defaultPreferencesOpts,
-      winKey: getGuid(),
-    };
-
-    return { ...defaultWindowOpts, ...windowOpts };
   }
 
   /**

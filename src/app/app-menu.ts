@@ -302,11 +302,11 @@ export class AppMenu {
         this.buildSeparator(),
         { label: i18n.t('Services')(), role: 'services' },
         this.buildSeparator(),
-        { label: i18n.t('Hide Symphony')(), role: 'hide' },
+        { label: i18n.t('Hide Symphony Messaging')(), role: 'hide' },
         { label: i18n.t('Hide Others')(), role: 'hideOthers' },
         { label: i18n.t('Show All')(), role: 'unhide' },
         this.buildSeparator(),
-        { label: i18n.t('Quit Symphony')(), role: 'quit' },
+        { label: i18n.t('Quit Symphony Messaging')(), role: 'quit' },
       ],
     };
   }
@@ -576,7 +576,7 @@ export class AppMenu {
       submenu.push({
         role: 'quit',
         visible: isWindowsOS,
-        label: i18n.t('Quit Symphony')(),
+        label: i18n.t('Quit Symphony Messaging')(),
       });
     }
 
