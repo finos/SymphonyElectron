@@ -521,11 +521,9 @@ export class WindowHandler {
     }
     this.mainWindow.show();
     initSysTray();
-    if (isMac) {
-      nativeTheme.on('updated', () => {
-        presenceStatus.updateSystemTrayPresence();
-      });
-    }
+    nativeTheme.on('updated', () => {
+      presenceStatus.updateSystemTrayPresence();
+    });
 
     // check for build expiry in case of test builds
     this.checkExpiry(this.mainWindow);
