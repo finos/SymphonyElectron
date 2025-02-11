@@ -521,9 +521,11 @@ export class WindowHandler {
     }
     this.mainWindow.show();
     initSysTray();
-    nativeTheme.on('updated', () => {
-      presenceStatus.updateSystemTrayPresence();
-    });
+    if (isWindowsOS) {
+      nativeTheme.on('updated', () => {
+        presenceStatus.updateSystemTrayPresence();
+      });
+    }
 
     // check for build expiry in case of test builds
     this.checkExpiry(this.mainWindow);
