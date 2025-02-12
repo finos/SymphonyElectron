@@ -521,7 +521,7 @@ export class WindowHandler {
     }
     this.mainWindow.show();
     initSysTray();
-    if (isMac) {
+    if (isWindowsOS) {
       nativeTheme.on('updated', () => {
         presenceStatus.updateSystemTrayPresence();
       });
