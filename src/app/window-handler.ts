@@ -1446,6 +1446,7 @@ export class WindowHandler {
         alwaysOnTop: this.hideOnCapture,
         resizable: false,
         fullscreenable: false,
+        show: true,
       },
       {
         devTools: true,
