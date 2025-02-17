@@ -242,7 +242,7 @@
     "shell-path": "^3.0.0"
   },
   "optionalDependencies": {
-    "@symphony/symphony-c9-shell": "3.38.0-94.195",
+    "@symphony/symphony-c9-shell": "3.35.4-4.197",
     "screen-share-indicator-frame": "github:finos/ScreenShareIndicatorFrame#v1.6.0",
     "screen-snippet": "git+https://github.com/finos/ScreenSnippet2.git#v2.5.0",
     "symphony-native-window-handle-helper": "github:finos/SymphonyWindowsHwndHelper#v1.1.0",
