@@ -1,7 +1,6 @@
 import { execFile, ExecFileException } from 'child_process';
 import {
   app,
-  BrowserView,
   BrowserWindow,
   BrowserWindowConstructorOptions,
   crashReporter,
@@ -78,7 +77,7 @@ import {
   injectStyles,
   isSymphonyReachable,
   isValidUrl,
-  loadBrowserViews,
+  loadWebContentsView,
   monitorNetworkInterception,
   preventWindowNavigation,
   reloadWindow,
@@ -119,7 +118,7 @@ export interface ICustomBrowserWindow extends Electron.BrowserWindow {
   origin?: string;
 }
 
-export interface ICustomBrowserView extends Electron.BrowserView {
+export interface ICustomWebContentsView extends Electron.WebContentsView {
   winName: string;
   notificationData?: object;
   origin?: string;
@@ -165,9 +164,8 @@ export class WindowHandler {
     }
     return format(parsedUrl);
   }
-  public mainView: ICustomBrowserView | null = null;
-  public titleBarView: ICustomBrowserView | null = null;
-  public welcomeScreenWindow: BrowserWindow | null = null;
+  public mainView: ICustomWebContentsView | null = null;
+  public titleBarView: ICustomWebContentsView | null = null;
   public mainWebContents: WebContents | undefined;
   public appMenu: AppMenu | null = null;
   public isAutoReload: boolean = false;
@@ -202,7 +200,7 @@ export class WindowHandler {
   private notificationSettingsWindow: Electron.BrowserWindow | null = null;
   private snippingToolWindow: ICustomBrowserWindow | null = null;
   private finishedLoading: boolean = false;
-  private readonly opts: Electron.BrowserViewConstructorOptions | undefined;
+  private readonly opts: Electron.BrowserWindowConstructorOptions | undefined;
   private hideOnCapture: boolean = false;
   private currentWindow?: string = undefined;
   private shouldShowWelcomeScreen: boolean = true;
@@ -210,7 +208,7 @@ export class WindowHandler {
   private didShowWelcomeScreen: boolean = false;
   private cmdUrl: string = '';
 
-  constructor(opts?: Electron.BrowserViewConstructorOptions) {
+  constructor(opts?: Electron.BrowserWindowConstructorOptions) {
     this.opts = opts;
     this.screenShareIndicatorFrameUtil = '';
     if (isWindowsOS) {
@@ -455,7 +453,7 @@ export class WindowHandler {
       this.mainWindow &&
       windowExists(this.mainWindow)
     ) {
-      this.mainWebContents = await loadBrowserViews(this.mainWindow);
+      this.mainWebContents = await loadWebContentsView(this.mainWindow);
       this.mainWebContents.loadURL(this.url, { userAgent });
       this.mainWindow.loadURL('about:blank', { userAgent });
     } else {
@@ -864,115 +862,6 @@ export class WindowHandler {
   }
 
   /**
-   * Handles the use case of showing
-   * welcome screen for first time installs
-   */
-  public showWelcomeScreen() {
-    if (!this.url) {
-      return;
-    }
-    const opts: ICustomBrowserWindowConstructorOpts = this.getWindowOpts(
-      {
-        width: DEFAULT_WELCOME_SCREEN_WIDTH,
-        height: DEFAULT_WELCOME_SCREEN_HEIGHT,
-        frame: !this.isCustomTitleBar,
-        alwaysOnTop: isMac,
-        resizable: false,
-        minimizable: true,
-        fullscreenable: false,
-      },
-      {
-        devTools: isDevEnv,
-      },
-    );
-
-    this.welcomeScreenWindow = createComponentWindow('welcome', opts);
-    (this.welcomeScreenWindow as ICustomBrowserWindow).winName =
-      apiName.welcomeScreenName;
-
-    if (
-      this.config.isCustomTitleBar === CloudConfigDataTypes.ENABLED &&
-      isWindowsOS
-    ) {
-      const titleBarView = new BrowserView({
-        webPreferences: {
-          sandbox: IS_SAND_BOXED,
-          nodeIntegration: IS_NODE_INTEGRATION_ENABLED,
-          preload: path.join(__dirname, '../renderer/_preload-component.js'),
-          devTools: isDevEnv,
-          disableBlinkFeatures: AUX_CLICK,
-        },
-      }) as ICustomBrowserView;
-      const componentName = 'windows-title-bar';
-      const titleBarWindowUrl = format({
-        pathname: require.resolve(`../renderer/${componentName}.html`),
-        protocol: 'file',
-        query: {
-          componentName,
-          locale: i18n.getLocale(),
-          title: i18n.t('Welcome', 'Welcome')(),
-        },
-        slashes: true,
-      });
-
-      titleBarView.webContents.once('did-finish-load', async () => {
-        if (!titleBarView || titleBarView.webContents.isDestroyed()) {
-          return;
-        }
-        titleBarView?.webContents.send('page-load', {
-          isWindowsOS,
-          locale: i18n.getLocale(),
-          resource: i18n.loadedResources,
-          isMainWindow: true,
-        });
-        // disables action buttons in title bar
-        titleBarView.webContents.send('disable-action-button');
-      });
-      titleBarView.webContents.loadURL(titleBarWindowUrl);
-      titleBarView.setBounds({
-        x: 0,
-        y: 0,
-        height: TITLE_BAR_HEIGHT,
-        width: DEFAULT_WELCOME_SCREEN_WIDTH,
-      });
-      this.welcomeScreenWindow.setBrowserView(titleBarView);
-    }
-
-    this.welcomeScreenWindow.webContents.on('did-finish-load', () => {
-      if (!this.welcomeScreenWindow || this.welcomeScreenWindow.isDestroyed()) {
-        return;
-      }
-      logger.info(`finished loading welcome screen.`);
-      this.welcomeScreenWindow.webContents.send('page-load-welcome', {
-        locale: i18n.getLocale(),
-        resource: i18n.loadedResources,
-      });
-
-      const userConfigUrl =
-        this.userConfig.url &&
-        this.userConfig.url.indexOf('/login/sso/initsso') > -1
-          ? this.userConfig.url.slice(
-              0,
-              this.userConfig.url.indexOf('/login/sso/initsso'),
-            )
-          : this.userConfig.url;
-      this.welcomeScreenWindow.webContents.send('welcome', {
-        url: userConfigUrl || this.startUrl,
-        message: '',
-        urlValid: !!userConfigUrl,
-      });
-      this.appMenu = new AppMenu();
-      this.addWindow(opts.winKey, this.welcomeScreenWindow);
-      this.mainWindow = this.welcomeScreenWindow as ICustomBrowserWindow;
-    });
-
-    this.welcomeScreenWindow.once('closed', () => {
-      this.removeWindow(opts.winKey);
-      this.welcomeScreenWindow = null;
-    });
-  }
-
-  /**
    * Fetches the required configuration fields from the `config` module.
    */
   public fetchConfigFields = () => {
@@ -996,7 +885,7 @@ export class WindowHandler {
   /**
    * Gets the main browser view
    */
-  public getMainView(): ICustomBrowserView | null {
+  public getMainView(): ICustomWebContentsView | null {
     return this.mainView;
   }
 
@@ -1024,7 +913,7 @@ export class WindowHandler {
    *
    * @param mainView
    */
-  public setMainView(mainView: ICustomBrowserView): void {
+  public setMainView(mainView: ICustomWebContentsView): void {
     this.mainView = mainView;
   }
 
@@ -1033,7 +922,7 @@ export class WindowHandler {
    *
    * @param titleBarView
    */
-  public setTitleBarView(titleBarView: ICustomBrowserView): void {
+  public setTitleBarView(titleBarView: ICustomWebContentsView): void {
     this.titleBarView = titleBarView;
   }
 

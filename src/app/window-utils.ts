@@ -1,6 +1,5 @@
 import {
   app,
-  BrowserView,
   BrowserWindow,
   dialog,
   Menu,
@@ -11,6 +10,7 @@ import {
   shell,
   Tray,
   WebContents,
+  WebContentsView,
 } from 'electron';
 import electron = require('electron');
 import fetch from 'electron-fetch';
@@ -42,8 +42,8 @@ import {
   AUX_CLICK,
   DEFAULT_HEIGHT,
   DEFAULT_WIDTH,
-  ICustomBrowserView,
   ICustomBrowserWindow,
+  ICustomWebContentsView,
   IS_NODE_INTEGRATION_ENABLED,
   IS_SAND_BOXED,
   TITLE_BAR_HEIGHT,
@@ -106,10 +106,10 @@ export const windowExists = (window: BrowserWindow): boolean =>
 /**
  * Checks if view is valid and exists
  *
- * @param view {BrowserView}
+ * @param view {WebContentsView}
  * @return boolean
  */
-export const viewExists = (view: BrowserView): boolean =>
+export const viewExists = (view: WebContentsView): boolean =>
   !!view &&
   typeof view.webContents.isDestroyed === 'function' &&
   !view.webContents.isDestroyed();
@@ -1350,12 +1350,12 @@ export const monitorNetworkInterception = (url: string) => {
   }
 };
 
-export const loadBrowserViews = async (
+export const loadWebContentsView = async (
   mainWindow: BrowserWindow,
 ): Promise<WebContents> => {
   mainWindow.setMenuBarVisibility(false);
 
-  const titleBarView = new BrowserView({
+  const titleBarView = new WebContentsView({
     webPreferences: {
       sandbox: IS_SAND_BOXED,
       nodeIntegration: IS_NODE_INTEGRATION_ENABLED,
@@ -1363,9 +1363,9 @@ export const loadBrowserViews = async (
       devTools: isDevEnv,
       disableBlinkFeatures: AUX_CLICK,
     },
-  }) as ICustomBrowserView;
+  }) as ICustomWebContentsView;
   const mainWindowBounds = windowHandler.getMainWindow()?.getBounds();
-  const mainView = new BrowserView({
+  const mainView = new WebContentsView({
     ...windowHandler.getMainWindowOpts(),
     ...{
       width: mainWindowBounds?.width || DEFAULT_WIDTH,
@@ -1373,10 +1373,10 @@ export const loadBrowserViews = async (
       x: 0,
       y: TITLE_BAR_HEIGHT,
     },
-  }) as ICustomBrowserView;
+  }) as ICustomWebContentsView;
 
-  mainWindow.addBrowserView(titleBarView);
-  mainWindow.addBrowserView(mainView);
+  mainWindow.contentView.addChildView(titleBarView);
+  mainWindow.contentView.addChildView(mainView);
   mainWindow.on('enter-full-screen', () => {
     if (
       !titleBarView ||
@@ -1390,7 +1390,7 @@ export const loadBrowserViews = async (
     // to get updated window bounds
     setTimeout(() => {
       const [width, height] = mainWindow.getSize();
-      mainWindow.removeBrowserView(titleBarView);
+      mainWindow.contentView.removeChildView(titleBarView);
       if (!mainView || !viewExists(mainView)) {
         return;
       }
@@ -1425,7 +1425,7 @@ export const loadBrowserViews = async (
     } else {
       [width, height] = mainWindow.getSize();
     }
-    mainWindow.addBrowserView(titleBarView);
+    mainWindow.contentView.addChildView(titleBarView);
     const titleBarViewBounds = titleBarView.getBounds();
     titleBarView.setBounds({
       ...titleBarViewBounds,
