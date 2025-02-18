@@ -21,6 +21,9 @@
   --profile-place-holder-text: @electricity-ui-50;
   --profile-place-holder-text-ext: @yellow-50;
   --profile-placeholder-ext-border-color: @yellow-20;
+  --profile-placeholder-ext-border-color: @yellow-20;
+  --profile-placeholder-fed-border-color: @green-30;
+  --profile-place-holder-text-fed: @green-50;
 }
 
 .dark {
@@ -31,7 +34,8 @@
   --notification-border-color: @graphite-60;
   --profile-place-holder-text: @electricity-ui-40;
   --profile-place-holder-text-ext: @yellow-30;
-  --profile-placeholder-ext-border-color: @yellow-30;
+  --profile-placeholder-fed-border-color: @green-30;
+  --profile-place-holder-text-fed: @green-30;
 }
 
 .mac {
@@ -133,6 +137,12 @@ body {
     .badge-position-room {
       right: -2px;
       bottom: -1px;
+    }
+    .federation {
+      border-color: var(--profile-placeholder-fed-border-color);
+      .profilePlaceHolderText {
+        color: var(--profile-place-holder-text-fed);
+      }
     }
     .external {
       border-color: var(--profile-placeholder-ext-border-color);
@@ -245,13 +255,13 @@ text {
   display: flex;
   flex-flow: row;
   width: 100%;
+  justify-content: center;
   gap: 16px;
 
   button {
     display: flex;
     flex-grow: 1;
     flex-basis: calc(100% / 2);
-    padding: 4px 8px;
     padding: 4px 12px;
     justify-content: center;
     align-items: center;
@@ -300,6 +310,17 @@ text {
   &:hover {
     background-color: @green-40;
   }
+}
+
+.call-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 16px !important;
+
+  max-width: 79px;
+  height: 32px;
 }
 
 .tooltip-content {
