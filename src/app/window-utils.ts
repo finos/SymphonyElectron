@@ -55,7 +55,6 @@ import { notification } from '../renderer/notification';
 import { autoLaunchInstance } from './auto-launch-controller';
 import { autoUpdate, AutoUpdateTrigger } from './auto-update-handler';
 import { mainEvents } from './main-event-handler';
-import { openfinHandler } from './openfin-handler';
 import { presenceStatus } from './presence-status-handler';
 import { presenceStatusStore } from './stores';
 interface IStyles {
@@ -475,8 +474,7 @@ export const sanitize = (windowName: string): void => {
   if (mainWindow && windowName === mainWindow.winName) {
     // reset the badge count whenever an user refreshes the electron client
     showBadgeCount(0);
-    // Clear all openfin subscriptions
-    openfinHandler.reset();
+
     // Terminates the screen snippet process and screen share indicator frame on reload
     if (!isMac || !isLinux) {
       logger.info(

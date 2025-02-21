@@ -34,7 +34,6 @@ describe('Shell Script Field Validation', () => {
       'notificationSettings',
       'customFlags',
       'permissions',
-      'openfin',
     ]);
 
     // Read fields from post install script file
@@ -55,12 +54,12 @@ describe('Shell Script Field Validation', () => {
       'notificationSettings',
       'customFlags',
       'permissions',
-      'openfin',
     ]);
 
     // Read fields from post install script file
     const scriptFields = extractSystemDefaults(scriptFilePath);
     scriptFields.splice(scriptFields.indexOf('ApplicationName'), 1);
+
     expect(isArraySubset(scriptFields, filteredFields)).toBe(true);
   });
 });

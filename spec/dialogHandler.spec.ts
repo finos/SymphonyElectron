@@ -86,10 +86,6 @@ jest.mock('../src/renderer/notification', () => {
   };
 });
 
-jest.mock('@openfin/node-adapter', () => ({
-  connect: jest.fn(),
-}));
-
 jest.mock('electron-log');
 
 describe('dialog handler', () => {
