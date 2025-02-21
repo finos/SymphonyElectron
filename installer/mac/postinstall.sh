@@ -126,7 +126,6 @@ if [ "$EUID" -ne 0 ]; then
   defaults write "$plistFilePath" uuid -string ""
   defaults write "$plistFilePath" licenseKey -string ""
   defaults write "$plistFilePath" runtimeVersion -string ""
-  defaults write "$plistFilePath" channelName -string ""
   defaults write "$plistFilePath" autoConnect -bool false
 else
   sudo -u "$userName" defaults write "$plistFilePath" url -string "$pod_url"
@@ -176,7 +175,6 @@ else
   sudo -u "$userName" defaults write "$plistFilePath" uuid -string ""
   sudo -u "$userName" defaults write "$plistFilePath" licenseKey -string ""
   sudo -u "$userName" defaults write "$plistFilePath" runtimeVersion -string ""
-  sudo -u "$userName" defaults write "$plistFilePath" channelName -string ""
   sudo -u "$userName" defaults write "$plistFilePath" autoConnect -bool false
 fi
 

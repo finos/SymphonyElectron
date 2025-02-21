@@ -560,11 +560,17 @@ ipcMain.on(
 
         helpMenu.setValue(helpCenter);
         break;
+      case apiCmds.openfinConnect:
+        openfinHandler.connect();
+        break;
       case apiCmds.openfinFireIntent:
         openfinHandler.fireIntent(arg.intent);
         break;
       case apiCmds.openfinJoinContextGroup:
         openfinHandler.joinContextGroup(arg.contextGroupId, arg.target);
+        break;
+      case apiCmds.openfinRegisterIntentHandler:
+        openfinHandler.registerIntentHandler(arg.intentName);
         break;
       case apiCmds.openfinUnregisterIntentHandler:
         openfinHandler.unregisterIntentHandler(arg.intentName);
@@ -637,10 +643,6 @@ ipcMain.handle(
           return getContentWindowHandle(windowHandle);
         }
         break;
-      case apiCmds.openfinConnect:
-        return openfinHandler.connect();
-      case apiCmds.openfinRegisterIntentHandler:
-        return openfinHandler.registerIntentHandler(arg.intentName);
       case apiCmds.openfinGetConnectionStatus:
         return openfinHandler.getConnectionStatus();
       case apiCmds.openfinGetInfo:

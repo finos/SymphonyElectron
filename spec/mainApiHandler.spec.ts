@@ -54,8 +54,6 @@ jest.mock('../src/app/config-handler', () => {
             uuid: 'some-uuid',
             licenseKey: 'some-license-key',
             runtimeVersion: 'some-runtime-version',
-            channelName: 'some-channel-name',
-            connectionTimeout: '1000',
           },
         };
       }),

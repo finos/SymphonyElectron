@@ -12,8 +12,6 @@ export const ConfigFieldsDefaultValues: Partial<IConfig> = {
     uuid: '',
     licenseKey: '',
     runtimeVersion: '',
-    channelName: '',
     autoConnect: false,
-    connectionTimeout: '10000',
   },
 };

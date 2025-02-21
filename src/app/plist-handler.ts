@@ -69,9 +69,7 @@ const OPENFIN = {
   uuid: 'string',
   licenseKey: 'string',
   runtimeVersion: 'string',
-  channelName: 'string',
   autoConnect: 'boolean',
-  connectionTimeout: 'string',
 };
 
 export const getAllUserDefaults = (): IConfig => {

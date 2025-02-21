@@ -95,9 +95,7 @@ describe('Plist Handler', () => {
         autoConnect: undefined,
         licenseKey: undefined,
         runtimeVersion: undefined,
-        channelName: undefined,
         uuid: undefined,
-        connectionTimeout: undefined,
       },
     });
   });
