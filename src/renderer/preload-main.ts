@@ -117,10 +117,6 @@ if (ssfWindow.ssf) {
     joinContextGroup: ssfWindow.ssf.openfinJoinContextGroup,
     getAllClientsInContextGroup:
       ssfWindow.ssf.openfinGetAllClientsInContextGroup,
-    fireIntentForContext: ssfWindow.ssf.openfinFireIntentForContext,
-    removeClientFromContextGroup:
-      ssfWindow.ssf.openfinRemoveClientFromContextGroup,
-    getClientInfo: ssfWindow.ssf.openfinGetClientInfo,
   });
 }
 

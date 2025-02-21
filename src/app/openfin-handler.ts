@@ -30,7 +30,8 @@ export class OpenfinHandler {
     const connectionTimeoutPromise = new Promise((_, reject) =>
       setTimeout(() => {
         logger.error(
-          `openfin-handler: Connection timeout after ${timeoutValue / 1000
+          `openfin-handler: Connection timeout after ${
+            timeoutValue / 1000
           } seconds`,
         );
         return reject(
@@ -173,45 +174,12 @@ export class OpenfinHandler {
   }
 
   /**
-   * Returns provider name
+   * Returns connection status and provider name
    */
   public getInfo() {
     return {
       provider: OPENFIN_PROVIDER,
-      fdc3Version: '',
-      optionalFeatures: {
-        OriginatingAppMetadata: false,
-        UserChannelMembershipAPIs: false,
-        DesktopAgentBridging: false,
-      },
-      appMetadata: null,
-    };
-  }
-
-  /**
-   * Fires an intent for a given context
-   * @param context
-   */
-  public fireIntentForContext(context: any) {
-    this.interopClient.fireIntentForContext(context);
-  }
-
-  /**
-   * Removes a client from current context group
-   */
-  public removeClientFromContextGroup() {
-    this.interopClient.removeClientFromContextGroup();
-  }
-
-  /**
-   * Returns client name
-   *
-   */
-  public getClientInfo(): unknown {
-    const { openfin }: IConfig = config.getConfigFields(['openfin']);
-
-    return {
-      name: openfin?.uuid || '',
+      isConnected: this.getConnectionStatus().isConnected,
     };
   }
 

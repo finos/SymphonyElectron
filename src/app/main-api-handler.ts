@@ -569,12 +569,6 @@ ipcMain.on(
       case apiCmds.openfinUnregisterIntentHandler:
         openfinHandler.unregisterIntentHandler(arg.intentName);
         break;
-      case apiCmds.openfinFireIntentForContext:
-        openfinHandler.fireIntentForContext(arg.context);
-        break;
-      case apiCmds.openfinRemoveClientFromContextGroup:
-        openfinHandler.removeClientFromContextGroup();
-        break;
       default:
         break;
     }
@@ -655,8 +649,6 @@ ipcMain.handle(
         return openfinHandler.getContextGroups();
       case apiCmds.openfinGetAllClientsInContextGroup:
         return openfinHandler.getAllClientsInContextGroup(arg.contextGroupId);
-      case apiCmds.openfinGetClientInfo:
-        return openfinHandler.getClientInfo();
       default:
         break;
     }

@@ -14,8 +14,6 @@ jest.mock('@openfin/node-adapter', () => ({
       getAllClientsInContextGroup: jest.fn(),
       joinContextGroup: jest.fn(),
       getContextGroups: jest.fn(),
-      fireIntentForContext: jest.fn(),
-      removeClientFromContextGroup: jest.fn(),
     }),
   },
 });
@@ -52,8 +50,10 @@ describe('Openfin', () => {
   });
 
   it('should not be connected', () => {
+    const info = openfinHandler.getInfo();
     const connectionStatus = openfinHandler.getConnectionStatus();
 
+    expect(info.isConnected).toBeFalsy();
     expect(connectionStatus.isConnected).toBeFalsy();
   });
 
@@ -61,48 +61,13 @@ describe('Openfin', () => {
     const connectSyncSpy = jest.spyOn(connectMock.Interop, 'connectSync');
 
     await openfinHandler.connect();
-    const connectionStatus = openfinHandler.getConnectionStatus();
+    const info = openfinHandler.getInfo();
+    const isConnected = openfinHandler.getConnectionStatus();
 
     expect(connect).toHaveBeenCalled();
     expect(connectSyncSpy).toHaveBeenCalledTimes(1);
-    expect(connectionStatus.isConnected).toBeTruthy();
-  });
-
-  it('should reject and return false if connection times out', async () => {
-    jest.useFakeTimers();
-    const connectSyncSpy = jest
-      .spyOn(connectMock.Interop, 'connectSync')
-      .mockImplementationOnce((_channelName) => {
-        return new Promise<void>((resolve) => {
-          setTimeout(() => {
-            resolve();
-          }, 12000);
-        });
-      });
-
-    const connectionTimeoutSpy = jest.spyOn(global, 'setTimeout');
-
-    let connectionStatus;
-
-    const connectPromise = openfinHandler.connect();
-    const resultPromise = connectPromise.then((res) => {
-      connectionStatus = res;
-    });
-
-    jest.advanceTimersByTime(10000);
-
-    expect(connectionStatus).toBeUndefined();
-
-    await resultPromise;
-
-    expect(connectionStatus.isConnected).toBe(false);
-
-    expect(connectionTimeoutSpy).toHaveBeenCalledTimes(2);
-    expect(connectionTimeoutSpy.mock.calls[0][1]).toBeGreaterThanOrEqual(10000);
-
-    expect(connectSyncSpy).toHaveBeenCalledTimes(1);
-
-    jest.useRealTimers();
+    expect(info.isConnected).toBeTruthy();
+    expect(isConnected).toBeTruthy();
   });
 
   it('should reject and return false if connection times out', async () => {
@@ -148,13 +113,10 @@ describe('Openfin', () => {
 
     await openfinHandler.connect();
     const customIntent = {
-      name: 'ViewContact',
-      context: {
-        type: 'fdc3.contact',
-        name: 'Andy Young',
-        id: {
-          email: 'andy.young@example.com',
-        },
+      type: 'fdc3.contact',
+      name: 'Andy Young',
+      id: {
+        email: 'andy.young@example.com',
       },
     };
     await openfinHandler.fireIntent(customIntent);
@@ -206,34 +168,5 @@ describe('Openfin', () => {
     await openfinHandler.getAllClientsInContextGroup('contextGroup1');
 
     expect(getAllClientsInContextGroupSpy).toHaveBeenCalledTimes(1);
-  });
-
-  it('should fire an intent for a given context', async () => {
-    const connectSyncMock = await connectMock.Interop.connectSync();
-    const fireIntentSpy = jest.spyOn(connectSyncMock, 'fireIntentForContext');
-
-    await openfinHandler.connect();
-    const context = {
-      type: 'fdc3.contact',
-      name: 'Andy Young',
-      id: {
-        email: 'andy.young@example.com',
-      },
-    };
-    await openfinHandler.fireIntentForContext(context);
-
-    expect(fireIntentSpy).toHaveBeenCalledTimes(1);
-  });
-
-  it('should remove client from context group', async () => {
-    const connectSyncMock = await connectMock.Interop.connectSync();
-    const fireIntentSpy = jest.spyOn(
-      connectSyncMock,
-      'removeClientFromContextGroup',
-    );
-
-    await openfinHandler.removeClientFromContextGroup();
-
-    expect(fireIntentSpy).toHaveBeenCalledTimes(1);
   });
 });
