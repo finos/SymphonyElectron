@@ -105,19 +105,6 @@ if (ssfWindow.ssf) {
     registerPhoneNumberServices: ssfWindow.ssf.registerPhoneNumberServices,
     unregisterPhoneNumberServices: ssfWindow.ssf.unregisterPhoneNumberServices,
   });
-
-  contextBridge.exposeInMainWorld('openfin', {
-    init: ssfWindow.ssf.openfinInit,
-    getInfo: ssfWindow.ssf.openfinGetInfo,
-    getConnectionStatus: ssfWindow.ssf.openfinGetConnectionStatus,
-    fireIntent: ssfWindow.ssf.openfinFireIntent,
-    registerIntentHandler: ssfWindow.ssf.openfinRegisterIntentHandler,
-    unregisterIntentHandler: ssfWindow.ssf.openfinUnregisterIntentHandler,
-    getContextGroups: ssfWindow.ssf.openfinGetContextGroups,
-    joinContextGroup: ssfWindow.ssf.openfinJoinContextGroup,
-    getAllClientsInContextGroup:
-      ssfWindow.ssf.openfinGetAllClientsInContextGroup,
-  });
 }
 
 /**
