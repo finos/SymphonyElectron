@@ -168,7 +168,7 @@ export interface IOpenfin {
   uuid: string;
   licenseKey: string;
   runtimeVersion: string;
-  channelName: string;
+  platformUuid: string;
   autoConnect: boolean;
   connectionTimeout: string;
 }

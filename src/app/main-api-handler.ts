@@ -654,6 +654,8 @@ ipcMain.handle(
         return openfinHandler.fireIntentForContext(arg.context);
       case apiCmds.openfinRemoveFromContextGroup:
         return openfinHandler.removeFromContextGroup();
+      case apiCmds.openfinSetContext:
+        return openfinHandler.setContext(arg.context);
       default:
         break;
     }

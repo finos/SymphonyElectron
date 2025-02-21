@@ -121,6 +121,7 @@ if (ssfWindow.ssf) {
     fireIntentForContext: ssfWindow.ssf.openfinFireIntentForContext,
     removeFromContextGroup: ssfWindow.ssf.openfinRemoveFromContextGroup,
     getClientInfo: ssfWindow.ssf.openfinGetClientInfo,
+    setContext: ssfWindow.ssf.openfinSetContext,
   });
 }
 

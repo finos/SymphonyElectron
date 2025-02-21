@@ -28,7 +28,7 @@ jest.mock('../src/app/config-handler', () => ({
         uuid: 'mock-uuid',
         licenseKey: 'mock-license',
         runtimeVersion: 'mock-version',
-        channelName: 'mock-channel',
+        platformUuid: 'platform-uuid',
         connectionTimeout: '10000',
       },
     })),
@@ -76,7 +76,7 @@ describe('Openfin', () => {
     jest.useFakeTimers();
     const connectSyncSpy = jest
       .spyOn(connectMock.Interop, 'connectSync')
-      .mockImplementationOnce((_channelName) => {
+      .mockImplementationOnce((_platformUuid) => {
         return new Promise<void>((resolve) => {
           setTimeout(() => {
             resolve();
@@ -113,7 +113,7 @@ describe('Openfin', () => {
     jest.useFakeTimers();
     const connectSyncSpy = jest
       .spyOn(connectMock.Interop, 'connectSync')
-      .mockImplementationOnce((_channelName) => {
+      .mockImplementationOnce((_platformUuid) => {
         return new Promise<void>((resolve) => {
           setTimeout(() => {
             resolve();
