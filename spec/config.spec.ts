@@ -98,7 +98,6 @@ describe('config', () => {
         'latestAutoUpdateChannelEnabled',
         'betaAutoUpdateChannelEnabled',
         'browserLoginRetryTimeout',
-        'openfin',
       ];
       const globalConfig: object = { url: 'test' };
       const userConfig: object = { configVersion: '4.0.1' };

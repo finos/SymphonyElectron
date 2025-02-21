@@ -123,10 +123,6 @@ if [ "$EUID" -ne 0 ]; then
   defaults write "$plistFilePath" betaAutoUpdateChannelEnabled -bool true
   defaults write "$plistFilePath" latestAutoUpdateChannelEnabled -bool true
   defaults write "$plistFilePath" installVariant -string "$uuid"
-  defaults write "$plistFilePath" uuid -string ""
-  defaults write "$plistFilePath" licenseKey -string ""
-  defaults write "$plistFilePath" runtimeVersion -string ""
-  defaults write "$plistFilePath" autoConnect -bool false
 else
   sudo -u "$userName" defaults write "$plistFilePath" url -string "$pod_url"
   sudo -u "$userName" defaults write "$plistFilePath" autoUpdateUrl -string ""
@@ -172,10 +168,6 @@ else
   sudo -u "$userName" defaults write "$plistFilePath" betaAutoUpdateChannelEnabled -bool true
   sudo -u "$userName" defaults write "$plistFilePath" latestAutoUpdateChannelEnabled -bool true
   sudo -u "$userName" defaults write "$plistFilePath" installVariant -string "$uuid"
-  sudo -u "$userName" defaults write "$plistFilePath" uuid -string ""
-  sudo -u "$userName" defaults write "$plistFilePath" licenseKey -string ""
-  sudo -u "$userName" defaults write "$plistFilePath" runtimeVersion -string ""
-  sudo -u "$userName" defaults write "$plistFilePath" autoConnect -bool false
 fi
 
 ## Remove the temp settings & permissions file created ##

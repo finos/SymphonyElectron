@@ -1,4 +1,3 @@
-import { UUID } from 'crypto';
 import { NativeImage, Size, Tray } from 'electron';
 import { AutoUpdateTrigger } from '../app/auto-update-handler';
 
@@ -83,16 +82,6 @@ export enum apiCmds {
   registerPhoneNumberServices = 'register-phone-numbers-services',
   unregisterPhoneNumberServices = 'unregister-phone-numbers-services',
   getHelpInfo = 'get-help-info',
-  // Openfin API commands
-  openfinConnect = 'openfin-connect',
-  openfinFireIntent = 'openfin-fire-intent',
-  openfinRegisterIntentHandler = 'openfin-register-intent-handler',
-  openfinUnregisterIntentHandler = 'openfin-unregister-intent-handler',
-  openfinGetConnectionStatus = 'openfin-get-connection-status',
-  openfinGetInfo = 'openfin-get-info',
-  openfinJoinContextGroup = 'openfin-join-context-group',
-  openfinGetContextGroups = 'openfin-get-context-groups',
-  openfinGetAllClientsInContextGroup = 'openfin-get-all-clients-in-context-group',
 }
 
 export enum apiName {
@@ -160,18 +149,6 @@ export interface IApiArgs {
   status: IPresenceStatus;
   protocols: PhoneNumberProtocol[];
   menu?: any;
-  handler: any;
-  uuid: UUID;
-  intent: any;
-  intentHandler: any;
-  intentName: any;
-  infoForIntentOptions: any;
-  context: any;
-  sessionContextGroupId: any;
-  contextForIntent: any;
-  contextType: any;
-  contextGroupId: string;
-  target: any;
 }
 
 export type Themes = 'light' | 'dark';

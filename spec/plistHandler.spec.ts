@@ -91,12 +91,6 @@ describe('Plist Handler', () => {
       whitelistUrl: undefined,
       chromeFlags: undefined,
       latestAutoUpdateChannelEnabled: undefined,
-      openfin: {
-        autoConnect: undefined,
-        licenseKey: undefined,
-        runtimeVersion: undefined,
-        uuid: undefined,
-      },
     });
   });
 });

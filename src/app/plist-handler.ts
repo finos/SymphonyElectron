@@ -65,13 +65,6 @@ const PERMISSIONS = {
   openExternal: 'boolean',
 };
 
-const OPENFIN = {
-  uuid: 'string',
-  licenseKey: 'string',
-  runtimeVersion: 'string',
-  autoConnect: 'boolean',
-};
-
 export const getAllUserDefaults = (): IConfig => {
   const settings: any = {};
 
@@ -120,14 +113,6 @@ export const getAllUserDefaults = (): IConfig => {
       PERMISSIONS[key],
     );
   });
-
-  Object.keys(OPENFIN).map((key) => {
-    if (!settings.openfin) {
-      settings.openfin = {};
-    }
-    settings.openfin[key] = systemPreferences.getUserDefault(key, OPENFIN[key]);
-  });
-
   logger.info('plist-handler: getting all user defaults', settings);
   return settings;
 };
@@ -176,18 +161,6 @@ export const setPlistFromPreviousSettings = (
     }
     systemPreferences.setUserDefault(key, PERMISSIONS[key], value);
   });
-
-  Object.keys(OPENFIN).map((key) => {
-    let value = settings?.openfin?.[key];
-    if (value === undefined) {
-      if (appGlobalConfig?.openfin?.[key] === undefined) {
-        return;
-      }
-      value = appGlobalConfig.openfin[key];
-    }
-    systemPreferences.setUserDefault(key, OPENFIN[key], value);
-  });
-
   systemPreferences.setUserDefault('installVariant', 'string', getGuid());
 };
 
