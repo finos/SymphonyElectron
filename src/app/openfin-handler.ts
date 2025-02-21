@@ -60,10 +60,10 @@ export class OpenfinHandler {
           'openfin-handler: connection established to openfin runtime',
         );
         logger.info(
-          `openfin-handler: starting connection to interop broker using channel ${openfin.channelName}...`,
+          `openfin-handler: starting connection to interop broker using channel ${openfin.platformUuid}...`,
         );
 
-        this.interopClient = this.fin.Interop.connectSync(openfin.channelName);
+        this.interopClient = this.fin.Interop.connectSync(openfin.platformUuid);
         this.isConnected = true;
         this.interopClient?.onDisconnection(this.disconnectionHandler);
 
@@ -200,6 +200,14 @@ export class OpenfinHandler {
    */
   public fireIntentForContext(context: any) {
     return this.interopClient?.fireIntentForContext(context);
+  }
+
+  /**
+   * Sets a context for the context group of the current entity.
+   * @param context
+   */
+  public setContext(context: any) {
+    return this.interopClient?.setContext(context);
   }
 
   /**

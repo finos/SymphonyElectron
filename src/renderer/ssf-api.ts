@@ -1128,6 +1128,18 @@ export class SSFApi {
   }
 
   /**
+   * Sets a context for the context group of the current entity.
+   * @param context
+   */
+  public async openfinSetContext(context: any) {
+    const response = await local.ipcRenderer.invoke(apiName.symphonyApi, {
+      cmd: apiCmds.openfinSetContext,
+      context,
+    });
+    return response;
+  }
+
+  /**
    * Allows JS to register SDA for phone numbers clicks
    * @param {Function} phoneNumberCallback callback function invoked when receiving a phone number for calls/sms
    */

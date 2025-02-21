@@ -97,6 +97,7 @@ export enum apiCmds {
   openfinFireIntentForContext = 'openfin-fire-intent-for-context',
   openfinRemoveFromContextGroup = 'openfin-remove-from-context-group',
   openfinGetClientInfo = 'openfin-get-client-info',
+  openfinSetContext = 'openfin-set-context',
 }
 
 export enum apiName {
