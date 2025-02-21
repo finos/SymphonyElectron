@@ -476,7 +476,7 @@ export const sanitize = (windowName: string): void => {
     // reset the badge count whenever an user refreshes the electron client
     showBadgeCount(0);
     // Clear all openfin subscriptions
-    openfinHandler.reset();
+    openfinHandler.clearSubscriptions();
     // Terminates the screen snippet process and screen share indicator frame on reload
     if (!isMac || !isLinux) {
       logger.info(
