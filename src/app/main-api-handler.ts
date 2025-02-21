@@ -649,7 +649,7 @@ ipcMain.handle(
       case apiCmds.openfinJoinSessionContextGroup:
         return openfinHandler.joinSessionContextGroup(arg.contextGroupId);
       case apiCmds.openfinUnregisterIntentHandler:
-        return openfinHandler.unregisterIntentHandler(arg.uuid);
+        return openfinHandler.unregisterIntentHandler(arg.intentName);
       case apiCmds.openfinFireIntentForContext:
         return openfinHandler.fireIntentForContext(arg.context);
       case apiCmds.openfinRemoveFromContextGroup:

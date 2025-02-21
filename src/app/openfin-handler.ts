@@ -118,12 +118,10 @@ export class OpenfinHandler {
   /**
    * Removes an intent handler for a given intent
    */
-  public async unregisterIntentHandler(uuid: UUID) {
+  public unregisterIntentHandler(uuid: UUID) {
     const unsubscriptionCallback = this.intentHandlerSubscriptions.get(uuid);
-
-    const response = await unsubscriptionCallback.unsubscribe();
+    unsubscriptionCallback.unsubscribe();
     this.intentHandlerSubscriptions.delete(uuid);
-    return response;
   }
 
   /**

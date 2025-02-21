@@ -673,7 +673,7 @@ describe('main api handler', () => {
       const spy = jest.spyOn(openfinHandler, 'unregisterIntentHandler');
       const value = {
         cmd: apiCmds.openfinUnregisterIntentHandler,
-        uuid: 'uuid',
+        intentName: 'ViewContact',
       };
 
       ipcMain.send(apiName.symphonyApi, value);

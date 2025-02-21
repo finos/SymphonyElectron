@@ -1070,7 +1070,7 @@ export class SSFApi {
 
     const response = await local.ipcRenderer.invoke(apiName.symphonyApi, {
       cmd: apiCmds.openfinUnregisterIntentHandler,
-      uuid: callbackId,
+      callbackId,
     });
     return response;
   }
