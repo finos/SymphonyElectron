@@ -560,6 +560,21 @@ ipcMain.on(
 
         helpMenu.setValue(helpCenter);
         break;
+      case apiCmds.openfinFireIntent:
+        openfinHandler.fireIntent(arg.intent);
+        break;
+      case apiCmds.openfinJoinContextGroup:
+        openfinHandler.joinContextGroup(arg.contextGroupId, arg.target);
+        break;
+      case apiCmds.openfinUnregisterIntentHandler:
+        openfinHandler.unregisterIntentHandler(arg.intentName);
+        break;
+      case apiCmds.openfinFireIntentForContext:
+        openfinHandler.fireIntentForContext(arg.context);
+        break;
+      case apiCmds.openfinRemoveClientFromContextGroup:
+        openfinHandler.removeClientFromContextGroup();
+        break;
       default:
         break;
     }
@@ -642,18 +657,6 @@ ipcMain.handle(
         return openfinHandler.getAllClientsInContextGroup(arg.contextGroupId);
       case apiCmds.openfinGetClientInfo:
         return openfinHandler.getClientInfo();
-      case apiCmds.openfinFireIntent:
-        return openfinHandler.fireIntent(arg.intent);
-      case apiCmds.openfinJoinContextGroup:
-        return openfinHandler.joinContextGroup(arg.contextGroupId, arg.target);
-      case apiCmds.openfinJoinSessionContextGroup:
-        return openfinHandler.joinSessionContextGroup(arg.contextGroupId);
-      case apiCmds.openfinUnregisterIntentHandler:
-        return openfinHandler.unregisterIntentHandler(arg.intentName);
-      case apiCmds.openfinFireIntentForContext:
-        return openfinHandler.fireIntentForContext(arg.context);
-      case apiCmds.openfinRemoveFromContextGroup:
-        return openfinHandler.removeFromContextGroup();
       default:
         break;
     }

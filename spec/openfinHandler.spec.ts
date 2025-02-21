@@ -13,10 +13,9 @@ jest.mock('@openfin/node-adapter', () => ({
       registerIntentHandler: jest.fn(),
       getAllClientsInContextGroup: jest.fn(),
       joinContextGroup: jest.fn(),
-      joinSessionContextGroup: jest.fn(),
       getContextGroups: jest.fn(),
       fireIntentForContext: jest.fn(),
-      removeFromContextGroup: jest.fn(),
+      removeClientFromContextGroup: jest.fn(),
     }),
   },
 });
@@ -186,19 +185,6 @@ describe('Openfin', () => {
     expect(joinContextGroupSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('should join a session context group', async () => {
-    const connectSyncMock = await connectMock.Interop.connectSync();
-    const joinSessionContextGroupSpy = jest.spyOn(
-      connectSyncMock,
-      'joinSessionContextGroup',
-    );
-
-    await openfinHandler.connect();
-    await openfinHandler.joinSessionContextGroup('contextGroupId');
-
-    expect(joinSessionContextGroupSpy).toHaveBeenCalledTimes(1);
-  });
-
   it('should return all context groups', async () => {
     const connectSyncMock = await connectMock.Interop.connectSync();
     const getContextGroupsSpy = jest.spyOn(connectSyncMock, 'getContextGroups');
@@ -224,10 +210,7 @@ describe('Openfin', () => {
 
   it('should fire an intent for a given context', async () => {
     const connectSyncMock = await connectMock.Interop.connectSync();
-    const fireIntentForContextSpy = jest.spyOn(
-      connectSyncMock,
-      'fireIntentForContext',
-    );
+    const fireIntentSpy = jest.spyOn(connectSyncMock, 'fireIntentForContext');
 
     await openfinHandler.connect();
     const context = {
@@ -239,18 +222,18 @@ describe('Openfin', () => {
     };
     await openfinHandler.fireIntentForContext(context);
 
-    expect(fireIntentForContextSpy).toHaveBeenCalledTimes(1);
+    expect(fireIntentSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('should remove from context group', async () => {
+  it('should remove client from context group', async () => {
     const connectSyncMock = await connectMock.Interop.connectSync();
-    const removeFromContextGroupSpy = jest.spyOn(
+    const fireIntentSpy = jest.spyOn(
       connectSyncMock,
-      'removeFromContextGroup',
+      'removeClientFromContextGroup',
     );
 
-    await openfinHandler.removeFromContextGroup();
+    await openfinHandler.removeClientFromContextGroup();
 
-    expect(removeFromContextGroupSpy).toHaveBeenCalledTimes(1);
+    expect(fireIntentSpy).toHaveBeenCalledTimes(1);
   });
 });

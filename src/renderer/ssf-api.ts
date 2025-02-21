@@ -958,7 +958,7 @@ export class SSFApi {
   /**
    * Openfin Interop client initialization
    */
-  public async openfinInit() {
+  public async openfinInit(): Promise<boolean> {
     const connectionStatus = await local.ipcRenderer.invoke(
       apiName.symphonyApi,
       {
@@ -981,34 +981,31 @@ export class SSFApi {
   /**
    * Fires an intent
    */
-  public async openfinFireIntent(intent: any): Promise<void> {
-    const response = await local.ipcRenderer.invoke(apiName.symphonyApi, {
+  public openfinFireIntent(intent: any): void {
+    local.ipcRenderer.send(apiName.symphonyApi, {
       cmd: apiCmds.openfinFireIntent,
       intent,
     });
-    return response;
   }
 
   /**
    * Fires an intent for a given context
    * @param context
    */
-  public async openfinFireIntentForContext(context: any): Promise<void> {
-    const response = await local.ipcRenderer.invoke(apiName.symphonyApi, {
+  public openfinFireIntentForContext(context: any): void {
+    local.ipcRenderer.send(apiName.symphonyApi, {
       cmd: apiCmds.openfinFireIntentForContext,
       context,
     });
-    return response;
   }
 
   /**
-   * Leaves current context group
+   * Removes client from current context group
    */
-  public async openfinRemoveFromContextGroup() {
-    const response = await local.ipcRenderer.invoke(apiName.symphonyApi, {
-      cmd: apiCmds.openfinRemoveFromContextGroup,
+  public openfinRemoveClientFromContextGroup() {
+    local.ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.openfinRemoveClientFromContextGroup,
     });
-    return response;
   }
 
   /**
@@ -1060,7 +1057,7 @@ export class SSFApi {
    * Unregisters a handler based on a given intent handler callback id
    * @param UUID
    */
-  public async openfinUnregisterIntentHandler(callbackId: UUID): Promise<void> {
+  public openfinUnregisterIntentHandler(callbackId: UUID): void {
     for (const innerMap of local.intentsCallbacks.values()) {
       if (innerMap.has(callbackId)) {
         innerMap.delete(callbackId);
@@ -1068,11 +1065,10 @@ export class SSFApi {
       }
     }
 
-    const response = await local.ipcRenderer.invoke(apiName.symphonyApi, {
+    local.ipcRenderer.send(apiName.symphonyApi, {
       cmd: apiCmds.openfinUnregisterIntentHandler,
       callbackId,
     });
-    return response;
   }
 
   /**
@@ -1090,36 +1086,22 @@ export class SSFApi {
    * @param contextGroupId
    * @param target
    */
-  public async openfinJoinContextGroup(contextGroupId: string, target?: any) {
-    const response = await local.ipcRenderer.invoke(apiName.symphonyApi, {
+  public openfinJoinContextGroup(contextGroupId: string, target?: any) {
+    local.ipcRenderer.send(apiName.symphonyApi, {
       cmd: apiCmds.openfinJoinContextGroup,
       contextGroupId,
       target,
     });
-    return response;
-  }
-
-  /**
-   * Allows to join or create an Openfin session context group
-   * @param contextGroupId
-   */
-  public async openfinJoinSessionContextGroup(contextGroupId: string) {
-    const response = await local.ipcRenderer.invoke(apiName.symphonyApi, {
-      cmd: apiCmds.openfinJoinSessionContextGroup,
-      contextGroupId,
-    });
-    return response;
   }
 
   /**
    * Returns registered clients in a given context group
    */
-  public async openfinGetAllClientsInContextGroup(contextGroupId: string) {
-    const clients = await local.ipcRenderer.invoke(apiName.symphonyApi, {
+  public openfinGetAllClientsInContextGroup(contextGroupId: string) {
+    return local.ipcRenderer.invoke(apiName.symphonyApi, {
       cmd: apiCmds.openfinGetAllClientsInContextGroup,
       contextGroupId,
     });
-    return clients;
   }
 
   /**

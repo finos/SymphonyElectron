@@ -115,11 +115,11 @@ if (ssfWindow.ssf) {
     unregisterIntentHandler: ssfWindow.ssf.openfinUnregisterIntentHandler,
     getContextGroups: ssfWindow.ssf.openfinGetContextGroups,
     joinContextGroup: ssfWindow.ssf.openfinJoinContextGroup,
-    joinSessionContextGroup: ssfWindow.ssf.openfinJoinSessionContextGroup,
     getAllClientsInContextGroup:
       ssfWindow.ssf.openfinGetAllClientsInContextGroup,
     fireIntentForContext: ssfWindow.ssf.openfinFireIntentForContext,
-    removeFromContextGroup: ssfWindow.ssf.openfinRemoveFromContextGroup,
+    removeClientFromContextGroup:
+      ssfWindow.ssf.openfinRemoveClientFromContextGroup,
     getClientInfo: ssfWindow.ssf.openfinGetClientInfo,
   });
 }

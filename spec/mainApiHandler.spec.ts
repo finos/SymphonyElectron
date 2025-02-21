@@ -21,7 +21,6 @@ jest.mock('../src/app/openfin-handler', () => {
       connect: jest.fn(),
       fireIntent: jest.fn(),
       joinContextGroup: jest.fn(),
-      joinSessionContextGroup: jest.fn(),
       getContextGroups: jest.fn(),
       getConnectionStatus: jest.fn(),
       getInfo: jest.fn(),
@@ -29,7 +28,7 @@ jest.mock('../src/app/openfin-handler', () => {
       registerIntentHandler: jest.fn(),
       unregisterIntentHandler: jest.fn(),
       fireIntentForContext: jest.fn(),
-      removeFromContextGroup: jest.fn(),
+      removeClientFromContextGroup: jest.fn(),
     },
   };
 });
@@ -727,22 +726,10 @@ describe('main api handler', () => {
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    it('should call `removeFromContextGroup`', () => {
-      const spy = jest.spyOn(openfinHandler, 'removeFromContextGroup');
+    it('should call `removeClientFromContextGroup`', () => {
+      const spy = jest.spyOn(openfinHandler, 'removeClientFromContextGroup');
       const value = {
-        cmd: apiCmds.openfinRemoveFromContextGroup,
-      };
-
-      ipcMain.send(apiName.symphonyApi, value);
-
-      expect(spy).toHaveBeenCalledTimes(1);
-    });
-
-    it('should call `joinSessionContextGroup`', () => {
-      const spy = jest.spyOn(openfinHandler, 'joinSessionContextGroup');
-      const value = {
-        cmd: apiCmds.openfinJoinSessionContextGroup,
-        contextGroupId: 'group-id',
+        cmd: apiCmds.openfinRemoveClientFromContextGroup,
       };
 
       ipcMain.send(apiName.symphonyApi, value);
