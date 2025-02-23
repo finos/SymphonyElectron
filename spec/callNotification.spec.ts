@@ -154,4 +154,68 @@ describe('Call toast notification component', () => {
     externalBadge = wrapper.find('.ext-badge-container');
     expect(externalBadge.exists()).toBeTruthy();
   });
+
+  it('should display check for new federation toast - Unknown User', () => {
+    const isExternal = true;
+
+    ipcRenderer.send(IPC_RENDERER_NOTIFICATION_DATA_CHANNEL, {
+      ...defaultProps,
+      isExternal,
+      isFederatedEnabled: true,
+      callerName: '',
+      callerNumber: '123',
+      primaryText: '123 [PHONE]',
+    });
+
+    let federationTypeText = wrapper.find('[data-testid="FEDERATION_TYPE"]');
+    let federationUnknownUserAvatar = wrapper.find(
+      '[data-testid="FEDERATION_UNKNOWN_USER_AVATAR"]',
+    );
+    let federationPrimaryText = wrapper.find(
+      '[data-testid="CALL_NOTIFICATION_NAME"]',
+    );
+    let avatarBadge = wrapper.find('[data-testid="AVATAR_BADGE"]');
+
+    expect(federationTypeText.exists()).toBeTruthy();
+    expect(federationUnknownUserAvatar.exists()).toBeTruthy();
+    expect(federationPrimaryText.exists()).toBeTruthy();
+    expect(avatarBadge.exists()).toBeFalsy();
+
+    expect(federationPrimaryText.text()).toBe('123 ');
+    expect(federationTypeText.text()).toBe('SMS & Voice');
+  });
+
+  it('should display check for new federation toast - Known User', () => {
+    const isExternal = true;
+
+    ipcRenderer.send(IPC_RENDERER_NOTIFICATION_DATA_CHANNEL, {
+      ...defaultProps,
+      isExternal,
+      isFederatedEnabled: true,
+      callerName: 'Helen',
+      callerNumber: '123',
+      primaryText: 'Helen',
+    });
+    let federationTypeText = wrapper.find('[data-testid="FEDERATION_TYPE"]');
+    let federationUnknownUserAvatar = wrapper.find(
+      '[data-testid="FEDERATION_NAMED_USER_AVATAR"]',
+    );
+    let federationNumber = wrapper.find(
+      '[data-testid="FEDERATION_NAMED_USER_NUMBER"]',
+    );
+    let federationPrimaryText = wrapper.find(
+      '[data-testid="CALL_NOTIFICATION_NAME"]',
+    );
+    let avatarBadge = wrapper.find('[data-testid="AVATAR_BADGE"]');
+
+    expect(federationTypeText.exists()).toBeTruthy();
+    expect(federationUnknownUserAvatar.exists()).toBeTruthy();
+    expect(federationPrimaryText.exists()).toBeTruthy();
+    expect(avatarBadge.exists()).toBeFalsy();
+    expect(federationNumber.exists()).toBeTruthy();
+
+    expect(federationPrimaryText.text()).toBe('Helen');
+    expect(federationTypeText.text()).toBe('SMS & Voice');
+    expect(federationNumber.text()).toBe('123');
+  });
 });
