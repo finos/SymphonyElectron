@@ -246,7 +246,7 @@
     "screen-share-indicator-frame": "github:finos/ScreenShareIndicatorFrame#v1.6.0",
     "screen-snippet": "github:finos/ScreenSnippet2.git#v2.5.1",
     "symphony-native-window-handle-helper": "github:finos/SymphonyWindowsHwndHelper#v1.1.0",
-    "winreg": "^1.2.4"
+    "winreg": "1.2.4"
   },
   "ava": {
     "failFast": true,
