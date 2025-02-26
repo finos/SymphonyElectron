@@ -53,7 +53,6 @@ import {
   updateFeaturesForCloudConfig,
   updateLocale,
   windowExists,
-  ZOOM_FACTOR_CHANGE,
 } from './window-utils';
 
 import { getCommandLineArgs } from '../common/utils';
@@ -383,19 +382,19 @@ ipcMain.on(
           const mainWebContents = windowHandler.getMainWebContents();
           if (mainWebContents && !mainWebContents.isDestroyed()) {
             mainWebContents.setZoomFactor(arg.zoomLevel as number);
-            const notificationWindows = BrowserWindow.getAllWindows().filter(
-              (win) =>
-                (win as ICustomBrowserWindow).winName &&
-                (win as ICustomBrowserWindow).winName ===
-                  apiName.notificationWindowName,
-            );
-            notificationWindows.map((notificationWindow) => {
-              const notificationWebContents = notificationWindow?.webContents;
-              if (!notificationWindow || !windowExists(notificationWindow)) {
-                return;
-              }
-              notificationWebContents.send(ZOOM_FACTOR_CHANGE, arg.zoomLevel);
-            });
+            // const notificationWindows = BrowserWindow.getAllWindows().filter(
+            //   (win) =>
+            //     (win as ICustomBrowserWindow).winName &&
+            //     (win as ICustomBrowserWindow).winName ===
+            //       apiName.notificationWindowName,
+            // );
+            // notificationWindows.map((notificationWindow) => {
+            //   const notificationWebContents = notificationWindow?.webContents;
+            //   if (!notificationWindow || !windowExists(notificationWindow)) {
+            //     return;
+            //   }
+            //   notificationWebContents.send(ZOOM_FACTOR_CHANGE, arg.zoomLevel);
+            // });
           }
         }
         break;
