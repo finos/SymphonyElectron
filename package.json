@@ -222,7 +222,6 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "@openfin/node-adapter": "^40.102.1",
     "@types/lazy-brush": "^1.0.0",
     "adm-zip": "^0.5.10",
     "bplist-parser": "^0.3.2",
