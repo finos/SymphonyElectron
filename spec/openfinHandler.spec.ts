@@ -197,15 +197,17 @@ describe('Openfin', () => {
 
   it('should join a session context group', async () => {
     const connectSyncMock = await connectMock.Interop.connectSync();
-    const joinSessionContextGroupSpy = jest.spyOn(
-      connectSyncMock,
-      'joinSessionContextGroup',
-    );
+    const joinSessionContextGroupSpy = jest
+      .spyOn(connectSyncMock, 'joinSessionContextGroup')
+      .mockResolvedValue({
+        id: 'createdId',
+      });
 
     await openfinHandler.connect();
-    await openfinHandler.joinSessionContextGroup('contextGroupId');
+    const id = await openfinHandler.joinSessionContextGroup('contextGroupId');
 
     expect(joinSessionContextGroupSpy).toHaveBeenCalledTimes(1);
+    expect(id).toEqual('createdId');
   });
 
   it('should return all context groups', async () => {
