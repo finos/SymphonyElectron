@@ -133,7 +133,9 @@ export class OpenfinHandler {
    * Joins or create a context group that does not persist between runs and aren't present on snapshots.
    */
   public async joinSessionContextGroup(contextGroupId: string) {
-    return this.interopClient?.joinSessionContextGroup(contextGroupId);
+    return this.interopClient
+      ?.joinSessionContextGroup(contextGroupId)
+      .then(({ id }) => id);
   }
 
   /**
