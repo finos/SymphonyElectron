@@ -281,10 +281,14 @@ export enum KeyCodes {
 type Theme = '' | 'light' | 'dark';
 type CallType = 'IM' | 'ROOM' | 'OTHER';
 
+export const CallType = { IM: 'IM', ROOM: 'ROOM', OTHER: 'OTHER' };
+
 /**
  * Notification
  */
 export interface INotificationData {
+  isPhone?: boolean;
+  notificationType?: string;
   id: number;
   title: string;
   body: string;
@@ -330,7 +334,12 @@ export interface ICallNotificationData {
   shouldDisplayBadge: boolean;
   acceptButtonText: string;
   rejectButtonText: string;
+  isFederatedEnabled?: boolean;
+  isPhone?: boolean;
+  notificationType?: string;
   zoomFactor: number;
+  callerNumber: string;
+  callerName?: string;
 }
 
 export enum NotificationActions {

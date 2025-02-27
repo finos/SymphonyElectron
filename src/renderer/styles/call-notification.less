@@ -21,6 +21,9 @@
   --profile-place-holder-text: @electricity-ui-50;
   --profile-place-holder-text-ext: @yellow-50;
   --profile-placeholder-ext-border-color: @yellow-20;
+  --profile-placeholder-ext-border-color: @yellow-20;
+  --profile-placeholder-fed-border-color: @green-30;
+  --profile-place-holder-text-fed: @green-50;
 }
 
 .dark {
@@ -31,7 +34,8 @@
   --notification-border-color: @graphite-60;
   --profile-place-holder-text: @electricity-ui-40;
   --profile-place-holder-text-ext: @yellow-30;
-  --profile-placeholder-ext-border-color: @yellow-30;
+  --profile-placeholder-fed-border-color: @green-30;
+  --profile-place-holder-text-fed: @green-30;
 }
 
 .mac {
@@ -109,6 +113,19 @@ body {
 .logo-container {
   display: flex;
   position: relative;
+  .federation {
+    display: flex;
+    justify-content: center;
+    border-color: var(--profile-placeholder-fed-border-color);
+    .profilePlaceHolderText {
+      color: var(--profile-place-holder-text-fed);
+    }
+  }
+  .default-logo {
+    top: 0;
+    width: 40px;
+    border-radius: 5px;
+  }
   .logo {
     display: flex;
     flex-direction: column;
@@ -116,11 +133,6 @@ body {
     .profile-picture {
       width: 86px;
       border-radius: 70px;
-    }
-    .default-logo {
-      top: 0;
-      width: 40px;
-      border-radius: 5px;
     }
     .profile-picture-badge {
       width: 32px;
@@ -245,13 +257,13 @@ text {
   display: flex;
   flex-flow: row;
   width: 100%;
+  justify-content: center;
   gap: 16px;
 
   button {
     display: flex;
     flex-grow: 1;
     flex-basis: calc(100% / 2);
-    padding: 4px 8px;
     padding: 4px 12px;
     justify-content: center;
     align-items: center;
@@ -286,7 +298,19 @@ text {
   background-color: @red-50;
 
   &:hover {
-    background-color: @red-40;
+    background-color: @red-60;
+  }
+
+  &:active {
+    background-color: @red-70;
+  }
+
+  &:focus-visible {
+    outline: 2px solid @blue-40;
+  }
+
+  &:focus {
+    background-color: @red-60;
   }
 }
 
@@ -298,8 +322,31 @@ text {
   background-color: @green-50;
 
   &:hover {
-    background-color: @green-40;
+    background-color: @green-60;
   }
+
+  &:active {
+    background-color: @green-70;
+  }
+
+  &:focus-visible {
+    outline: 2px solid @blue-40;
+  }
+
+  &:focus {
+    background-color: @green-60;
+  }
+}
+
+.call-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 16px !important;
+
+  max-width: 79px;
+  height: 32px;
 }
 
 .tooltip-content {

@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
+import { CallType } from '../../common/api-interface';
 import { isMac } from '../../common/env';
 import {
   darkTheme,
@@ -37,6 +38,10 @@ interface ICallNotificationState {
   isSecondaryTextOverflowing: boolean;
   isFederatedEnabled: boolean;
   zoomFactor: number;
+  isPhone?: boolean;
+  notificationType?: string;
+  callerNumber?: string;
+  callerName?: string;
 }
 
 type mouseEventButton =
@@ -80,6 +85,7 @@ export default class CallNotification extends React.Component<
       isSecondaryTextOverflowing: false,
       isFederatedEnabled: false,
       zoomFactor: 1,
+      callerNumber: '',
     };
     this.state = { ...this.defaultState };
     this.updateState = this.updateState.bind(this);
@@ -126,6 +132,9 @@ export default class CallNotification extends React.Component<
       isSecondaryTextOverflowing,
       isFederatedEnabled,
       zoomFactor,
+      isPhone,
+      callerNumber,
+      callerName,
     } = this.state;
 
     let themeClassName;
@@ -163,6 +172,133 @@ export default class CallNotification extends React.Component<
       : 'answer';
     const rejectText = rejectButtonText ? rejectButtonText : 'decline';
 
+    const renderAvatarSection = () => {
+      return (
+        <div className='logo-container'>
+          {this.renderImage(
+            icon,
+            profilePlaceHolderText,
+            callType,
+            shouldDisplayBadge,
+            isExternal,
+            isFederatedEnabled,
+            callerName ?? '',
+          )}
+        </div>
+      );
+    };
+
+    const renderNameSection = () => {
+      return (
+        <div className='info-text-container'>
+          <div className='primary-text-container'>
+            <div className='caller-name-container'>
+              <div
+                data-testid='CALL_NOTIFICATION_NAME'
+                className={`caller-name ${themeClassName} tooltip-trigger`}
+                ref={this.primaryTooltipRef}
+              >
+                {primaryText}
+              </div>
+              {isPrimaryTextOverflowing && (
+                <div className='tooltip-content tooltip-primary'>
+                  {primaryText}
+                </div>
+              )}
+              {this.renderExtBadge(isExternal)}
+            </div>
+          </div>
+          {isFederatedEnabled ? (
+            <>
+              {callerName && (
+                <div
+                  className='secondary-text-container'
+                  data-testid='FEDERATION_NAMED_USER_NUMBER'
+                >
+                  <div className='caller-details'>
+                    <div
+                      className={`caller-role ${themeClassName} tooltip-trigger`}
+                      ref={this.secondaryTooltipRef}
+                    >
+                      {callerNumber}
+                    </div>
+                    {isSecondaryTextOverflowing && (
+                      <div className='tooltip-content tooltip-secondary'>
+                        {callerNumber}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+              <div
+                className='tertiary-text-container'
+                data-testid='FEDERATION_TYPE'
+              >
+                <div className='application-details'>
+                  {isPhone && (
+                    <img
+                      className={'company-icon'}
+                      src={
+                        theme === Themes.LIGHT
+                          ? '../renderer/assets/phone-light.svg'
+                          : '../renderer/assets/phone-dark.svg'
+                      }
+                      alt={'Federation'}
+                    />
+                  )}
+                  <div className={`company-name ${themeClassName}`}>
+                    SMS & Voice
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              {secondaryText ? (
+                <div className='secondary-text-container'>
+                  <div className='caller-details'>
+                    <div
+                      className={`caller-role ${themeClassName} tooltip-trigger`}
+                      ref={this.secondaryTooltipRef}
+                    >
+                      {secondaryText}
+                    </div>
+                    {isSecondaryTextOverflowing && (
+                      <div className='tooltip-content tooltip-secondary'>
+                        {secondaryText}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <></>
+              )}
+              {company || companyIconUrl ? (
+                <div className='tertiary-text-container'>
+                  <div className='application-details'>
+                    {company && companyIconUrl && (
+                      <img
+                        className={'company-icon'}
+                        src={companyIconUrl}
+                        alt={'company logo'}
+                      />
+                    )}
+                    {callType !== CallType.ROOM && (
+                      <div className={`company-name ${themeClassName}`}>
+                        {company}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <></>
+              )}
+            </>
+          )}
+        </div>
+      );
+    };
+
     return (
       <div
         data-testid='CALL_NOTIFICATION_CONTAINER'
@@ -177,76 +313,13 @@ export default class CallNotification extends React.Component<
           {title}
         </div>
         <div className='caller-info-container' style={{ zoom: zoomFactor }}>
-          <div className='logo-container'>
-            {this.renderImage(
-              icon,
-              profilePlaceHolderText,
-              callType,
-              shouldDisplayBadge,
-              isExternal,
-            )}
-          </div>
-          <div className='info-text-container'>
-            <div className='primary-text-container'>
-              <div className='caller-name-container'>
-                <div
-                  data-testid='CALL_NOTIFICATION_NAME'
-                  className={`caller-name ${themeClassName} tooltip-trigger`}
-                  ref={this.primaryTooltipRef}
-                >
-                  {primaryText}
-                </div>
-                {isPrimaryTextOverflowing && (
-                  <div className='tooltip-content tooltip-primary'>
-                    {primaryText}
-                  </div>
-                )}
-                {this.renderExtBadge(isExternal)}
-              </div>
-            </div>
-            {secondaryText ? (
-              <div className='secondary-text-container'>
-                <div className='caller-details'>
-                  <div
-                    className={`caller-role ${themeClassName} tooltip-trigger`}
-                    ref={this.secondaryTooltipRef}
-                  >
-                    {secondaryText}
-                  </div>
-                  {isSecondaryTextOverflowing && (
-                    <div className='tooltip-content tooltip-secondary'>
-                      {secondaryText}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <></>
-            )}
-            {company || companyIconUrl ? (
-              <div className='tertiary-text-container'>
-                <div className='application-details'>
-                  {company && companyIconUrl && (
-                    <img
-                      className={'company-icon'}
-                      src={companyIconUrl}
-                      alt={'company logo'}
-                    />
-                  )}
-                  <div className={`company-name ${themeClassName}`}>
-                    {company}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <></>
-            )}
-          </div>
+          {renderAvatarSection()}
+          {renderNameSection()}
         </div>
         <div className='actions' style={{ zoom: zoomFactor }}>
           <button
             data-testid='CALL_NOTIFICATION_REJECT_BUTTON'
-            className={classNames('decline', {
+            className={classNames('decline', 'call-button', {
               'call-type-other': callType === 'OTHER',
             })}
             onClick={this.eventHandlers.onReject(id)}
@@ -255,7 +328,7 @@ export default class CallNotification extends React.Component<
           </button>
           <button
             data-testid='CALL_NOTIFICATION_ACCEPT_BUTTON'
-            className={classNames('accept', {
+            className={classNames('accept', 'call-button', {
               'call-type-other': callType === 'OTHER',
             })}
             onClick={this.eventHandlers.onAccept(id)}
@@ -326,6 +399,8 @@ export default class CallNotification extends React.Component<
         : data.theme
         ? data.theme
         : Themes.LIGHT;
+    data.company = data.company === 'undefined' ? '' : data.company;
+    data.primaryText = data.primaryText?.replace('[PHONE]', '') ?? 'unknown';
     this.setState(data as ICallNotificationState);
     this.checkTextOverflow();
   }
@@ -350,6 +425,8 @@ export default class CallNotification extends React.Component<
     callType: CallType,
     shouldDisplayBadge: boolean,
     isExternal: boolean,
+    isFederatedEnabled: boolean,
+    callerName: string,
   ): JSX.Element | undefined {
     let imgClass = 'default-logo';
     let url = '../renderer/assets/notification-symphony-logo.svg';
@@ -360,29 +437,54 @@ export default class CallNotification extends React.Component<
       url = imageUrl;
       alt = 'Profile picture';
     }
-    if (!imageUrl) {
-      const profilePlaceHolderClassName =
-        callType === 'IM'
-          ? 'profilePlaceHolderContainer'
-          : 'roomPlaceHolderContainer';
+
+    const profilePlaceHolderClassName =
+      callType === 'IM'
+        ? 'profilePlaceHolderContainer'
+        : 'roomPlaceHolderContainer';
+
+    if (!callerName && isFederatedEnabled) {
+      return (
+        <div
+          className={classNames('thumbnail', profilePlaceHolderClassName, {
+            external: isExternal && !isFederatedEnabled,
+            federation: isFederatedEnabled,
+          })}
+        >
+          <img
+            data-testid='FEDERATION_UNKNOWN_USER_AVATAR'
+            className={classNames('default-logo')}
+            src='../renderer/assets/federation-user.svg'
+            alt={alt}
+          />
+        </div>
+      );
+    }
+
+    if (!imageUrl || isFederatedEnabled) {
       return (
         <div className='logo'>
           <div
+            data-testid={
+              isFederatedEnabled ? 'FEDERATION_NAMED_USER_AVATAR' : 'AVATAR'
+            }
             className={classNames('thumbnail', profilePlaceHolderClassName, {
-              external: isExternal,
+              external: isExternal && !isFederatedEnabled,
+              federation: isFederatedEnabled,
             })}
           >
             <p className={'profilePlaceHolderText'}>{profilePlaceHolderText}</p>
           </div>
-          {this.renderSymphonyBadge(shouldDisplayBadge, callType)}
+          {!isFederatedEnabled &&
+            this.renderSymphonyBadge(shouldDisplayBadge, callType)}
         </div>
       );
     }
 
     return (
-      <div className='logo'>
+      <div className='logo' data-testid={'AVATAR'}>
         <img className={imgClass} src={url} alt={alt} />
-        {this.renderSymphonyBadge(shouldDisplayBadge)}
+        {!isFederatedEnabled && this.renderSymphonyBadge(shouldDisplayBadge)}
       </div>
     );
   }
@@ -401,6 +503,7 @@ export default class CallNotification extends React.Component<
     if (hasImageUrl) {
       return (
         <img
+          data-testid='AVATAR_BADGE'
           src='../renderer/assets/symphony-badge.svg'
           alt=''
           className={`profile-picture-badge ${badgePositionClass}`}
