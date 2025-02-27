@@ -36,7 +36,6 @@ interface ICallNotificationState {
   isPrimaryTextOverflowing: boolean;
   isSecondaryTextOverflowing: boolean;
   isFederatedEnabled: boolean;
-  zoomFactor: number;
 }
 
 type mouseEventButton =
@@ -79,7 +78,6 @@ export default class CallNotification extends React.Component<
       isPrimaryTextOverflowing: false,
       isSecondaryTextOverflowing: false,
       isFederatedEnabled: false,
-      zoomFactor: 1,
     };
     this.state = { ...this.defaultState };
     this.updateState = this.updateState.bind(this);
@@ -90,7 +88,6 @@ export default class CallNotification extends React.Component<
    */
   public componentDidMount(): void {
     ipcRenderer.on('call-notification-data', this.updateState);
-    ipcRenderer.on('zoom-factor-change', this.setZoomFactor);
   }
 
   /**
@@ -98,7 +95,6 @@ export default class CallNotification extends React.Component<
    */
   public componentWillUnmount(): void {
     ipcRenderer.removeListener('call-notification-data', this.updateState);
-    ipcRenderer.on('zoom-factor-change', this.setZoomFactor);
   }
 
   /**
@@ -125,7 +121,6 @@ export default class CallNotification extends React.Component<
       isPrimaryTextOverflowing,
       isSecondaryTextOverflowing,
       isFederatedEnabled,
-      zoomFactor,
     } = this.state;
 
     let themeClassName;
@@ -173,10 +168,8 @@ export default class CallNotification extends React.Component<
         }}
         onClick={this.eventHandlers.onClick(id)}
       >
-        <div className={`title ${themeClassName}`} style={{ zoom: zoomFactor }}>
-          {title}
-        </div>
-        <div className='caller-info-container' style={{ zoom: zoomFactor }}>
+        <div className={`title ${themeClassName}`}>{title}</div>
+        <div className='caller-info-container'>
           <div className='logo-container'>
             {this.renderImage(
               icon,
@@ -243,7 +236,7 @@ export default class CallNotification extends React.Component<
             )}
           </div>
         </div>
-        <div className='actions' style={{ zoom: zoomFactor }}>
+        <div className='actions'>
           <button
             data-testid='CALL_NOTIFICATION_REJECT_BUTTON'
             className={classNames('decline', {
@@ -329,13 +322,6 @@ export default class CallNotification extends React.Component<
     this.setState(data as ICallNotificationState);
     this.checkTextOverflow();
   }
-
-  /**
-   * Set notification zoom factor
-   */
-  private setZoomFactor = (_event, zoomFactor) => {
-    this.setState({ zoomFactor });
-  };
 
   /**
    * Renders image if provided otherwise renders symphony logo
