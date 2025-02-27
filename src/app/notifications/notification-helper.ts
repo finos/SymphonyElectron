@@ -48,8 +48,6 @@ class NotificationHelper {
       electronToast.show();
       return;
     }
-    options.zoomFactor =
-      windowHandler?.getMainWebContents()?.getZoomFactor() || 1;
     notification.showNotification(options, this.notificationCallback);
   }
 

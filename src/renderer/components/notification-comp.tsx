@@ -33,7 +33,6 @@ interface INotificationState {
   containerHeight: number;
   canSendMessage: boolean;
   isFederatedEnabled?: boolean;
-  zoomFactor?: number;
   isTahoe?: boolean;
 }
 
@@ -89,7 +88,6 @@ export default class NotificationComp extends React.Component<
       containerHeight: CONTAINER_HEIGHT,
       canSendMessage: false,
       isFederatedEnabled: false,
-      zoomFactor: 1,
     };
     this.updateState = this.updateState.bind(this);
     this.onInputChange = this.onInputChange.bind(this);
@@ -104,7 +102,6 @@ export default class NotificationComp extends React.Component<
    */
   public componentDidMount(): void {
     ipcRenderer.on('notification-data', this.updateState);
-    ipcRenderer.on('zoom-factor-change', this.setZoomFactor);
   }
 
   /**
@@ -112,7 +109,6 @@ export default class NotificationComp extends React.Component<
    */
   public componentWillUnmount(): void {
     ipcRenderer.removeListener('notification-data', this.updateState);
-    ipcRenderer.removeListener('zoom-factor-change', this.setZoomFactor);
   }
 
   /**
@@ -132,7 +128,6 @@ export default class NotificationComp extends React.Component<
       flash,
       icon,
       isFederatedEnabled,
-      zoomFactor,
     } = this.state;
     let themeClassName;
     if (theme) {
@@ -196,7 +191,7 @@ export default class NotificationComp extends React.Component<
           onClick={this.eventHandlers.onClick(id)}
         >
           <div className='logo-container'>{this.renderImage(icon)}</div>
-          <div className='notification-container' style={{ zoom: zoomFactor }}>
+          <div className='notification-container'>
             <div className='notification-header'>
               <div className='notification-header-content'>
                 <span className={`title ${themeClassName}`}>{title}</span>
@@ -488,13 +483,6 @@ export default class NotificationComp extends React.Component<
     this.resetNotificationData();
     this.setState(data as INotificationState);
   }
-
-  /**
-   * Set notification zoom factor
-   */
-  private setZoomFactor = (_event, zoomFactor) => {
-    this.setState({ zoomFactor });
-  };
 
   /**
    * Reset data for new notification
