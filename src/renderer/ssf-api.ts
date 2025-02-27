@@ -1131,10 +1131,11 @@ export class SSFApi {
    * Sets a context for the context group of the current entity.
    * @param context
    */
-  public async openfinSetContext(context: any) {
+  public async openfinSetContext(context: any, sessionContextGroupId?: string) {
     const response = await local.ipcRenderer.invoke(apiName.symphonyApi, {
       cmd: apiCmds.openfinSetContext,
       context,
+      sessionContextGroupId,
     });
     return response;
   }

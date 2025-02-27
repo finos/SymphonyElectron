@@ -10,6 +10,7 @@ jest.mock('@openfin/node-adapter', () => ({
     connectSync: jest.fn().mockReturnValue({
       onDisconnection: jest.fn(),
       fireIntent: jest.fn(),
+      setContext: jest.fn(),
       registerIntentHandler: jest.fn(),
       getAllClientsInContextGroup: jest.fn(),
       joinContextGroup: jest.fn(),
@@ -251,6 +252,52 @@ describe('Openfin', () => {
     await openfinHandler.fireIntentForContext(context);
 
     expect(fireIntentForContextSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should set context in current context group', async () => {
+    const connectSyncMock = await connectMock.Interop.connectSync();
+    const setContextSpy = jest.spyOn(connectSyncMock, 'setContext');
+
+    await openfinHandler.connect();
+    const context = {
+      type: 'fdc3.contact',
+      name: 'Andy Young',
+      id: {
+        email: 'andy.young@example.com',
+      },
+    };
+    await openfinHandler.setContext(context);
+
+    expect(setContextSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should set context in the provided session context group', async () => {
+    const connectSyncMock = await connectMock.Interop.connectSync();
+    const setContextSpy = jest.spyOn(connectSyncMock, 'setContext');
+
+    const sessionContextGroupId = 'sessionContextGroupId';
+    const sessionContextGroup = {
+      id: sessionContextGroupId,
+      setContext: jest.fn(),
+    };
+    jest
+      .spyOn(connectSyncMock, 'joinSessionContextGroup')
+      .mockResolvedValue(sessionContextGroup);
+
+    await openfinHandler.connect();
+    const context = {
+      type: 'fdc3.contact',
+      name: 'Andy Young',
+      id: {
+        email: 'andy.young@example.com',
+      },
+    };
+
+    await openfinHandler.joinSessionContextGroup(sessionContextGroupId);
+    await openfinHandler.setContext(context, sessionContextGroupId);
+
+    expect(setContextSpy).not.toHaveBeenCalled();
+    expect(sessionContextGroup.setContext).toHaveBeenCalledTimes(1);
   });
 
   it('should remove from context group', async () => {

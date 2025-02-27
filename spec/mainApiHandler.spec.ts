@@ -20,6 +20,7 @@ jest.mock('../src/app/openfin-handler', () => {
     openfinHandler: {
       connect: jest.fn(),
       fireIntent: jest.fn(),
+      setContext: jest.fn(),
       joinContextGroup: jest.fn(),
       joinSessionContextGroup: jest.fn(),
       getContextGroups: jest.fn(),
@@ -748,6 +749,31 @@ describe('main api handler', () => {
       ipcMain.send(apiName.symphonyApi, value);
 
       expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call `setContext`', () => {
+      const spy = jest.spyOn(openfinHandler, 'setContext');
+      const value = {
+        cmd: apiCmds.openfinSetContext,
+        context: 'context',
+      };
+
+      ipcMain.send(apiName.symphonyApi, value);
+
+      expect(spy).toHaveBeenCalledWith('context', undefined);
+    });
+
+    it('should call `setContext` with session group id', () => {
+      const spy = jest.spyOn(openfinHandler, 'setContext');
+      const value = {
+        cmd: apiCmds.openfinSetContext,
+        context: 'context',
+        sessionContextGroupId: 'session-context-group-id',
+      };
+
+      ipcMain.send(apiName.symphonyApi, value);
+
+      expect(spy).toHaveBeenCalledWith('context', 'session-context-group-id');
     });
   });
 });
