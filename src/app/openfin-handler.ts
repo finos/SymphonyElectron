@@ -12,6 +12,8 @@ const TIMEOUT_THRESHOLD = 10000;
 export class OpenfinHandler {
   private interopClient: OpenFin.InteropClient | undefined;
   private intentHandlerSubscriptions: Map<UUID, any> = new Map();
+  private sessionContextGroups: Map<string, OpenFin.SessionContextGroup> =
+    new Map();
   private isConnected: boolean = false;
   private fin: NodeFin | undefined;
 
@@ -135,7 +137,13 @@ export class OpenfinHandler {
   public async joinSessionContextGroup(contextGroupId: string) {
     return this.interopClient
       ?.joinSessionContextGroup(contextGroupId)
-      .then(({ id }) => id);
+      .then((sessionContextGroup) => {
+        this.sessionContextGroups.set(
+          sessionContextGroup.id,
+          sessionContextGroup,
+        );
+        return sessionContextGroup.id;
+      });
   }
 
   /**
@@ -169,6 +177,8 @@ export class OpenfinHandler {
       }
     });
     this.intentHandlerSubscriptions.clear();
+
+    this.sessionContextGroups.clear();
   }
 
   /**
@@ -205,10 +215,17 @@ export class OpenfinHandler {
   }
 
   /**
-   * Sets a context for the context group of the current entity.
+   * Sets a context for the current context group.
+   * If no session context group is specified, the context is set for the current context group (joined through joinContextGroup).
+   * If a session context group is specified, the context is set for the given session context group (joined through joinSessionContextGroup).
    * @param context
    */
-  public setContext(context: any) {
+  public setContext(context: any, sessionContextGroupId?: string) {
+    if (sessionContextGroupId) {
+      return this.sessionContextGroups
+        .get(sessionContextGroupId)
+        ?.setContext(context);
+    }
     return this.interopClient?.setContext(context);
   }
 

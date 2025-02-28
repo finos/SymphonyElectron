@@ -655,7 +655,10 @@ ipcMain.handle(
       case apiCmds.openfinRemoveFromContextGroup:
         return openfinHandler.removeFromContextGroup();
       case apiCmds.openfinSetContext:
-        return openfinHandler.setContext(arg.context);
+        return openfinHandler.setContext(
+          arg.context,
+          arg.sessionContextGroupId,
+        );
       default:
         break;
     }
