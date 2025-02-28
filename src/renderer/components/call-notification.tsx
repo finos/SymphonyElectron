@@ -461,7 +461,11 @@ export default class CallNotification extends React.Component<
       );
     }
 
-    if (!imageUrl || isFederatedEnabled) {
+    if (
+      !imageUrl ||
+      isFederatedEnabled ||
+      url.includes('/avatars/static/150/default.png')
+    ) {
       return (
         <div className='logo'>
           <div
