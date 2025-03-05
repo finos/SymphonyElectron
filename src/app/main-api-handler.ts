@@ -38,7 +38,12 @@ import {
   registerLogRetriever,
 } from './reports-handler';
 import { screenSnippet } from './screen-snippet-handler';
-import { activate, handleKeyPress } from './window-actions';
+import {
+  activate,
+  activateMiniView,
+  deactivateMiniView,
+  handleKeyPress,
+} from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 import {
   downloadManagerAction,
@@ -517,6 +522,24 @@ ipcMain.on(
         if (swiftSearchInstance) {
           swiftSearchInstance.handleMessageEvents(arg.swiftSearchData);
         }
+        break;
+      case apiCmds.isMiniViewFeatureEnabled:
+        const { isMiniViewFeatureEnabled } = arg;
+        windowHandler.setIsMiniViewFeatureEnabled(isMiniViewFeatureEnabled);
+        windowHandler?.appMenu?.buildMenu();
+        break;
+      case apiCmds.isMiniViewEnabled:
+        const { isMiniViewEnabled } = arg;
+        windowHandler.setIsMiniViewEnabled(isMiniViewEnabled);
+        windowHandler?.appMenu?.buildMenu();
+        break;
+      case apiCmds.onEnterMiniView:
+        windowHandler.setIsMiniViewTransition(true);
+        activateMiniView();
+        break;
+      case apiCmds.onExitMiniView:
+        windowHandler.setIsMiniViewTransition(true);
+        deactivateMiniView();
         break;
       case apiCmds.connectCloud9Pipe:
         connectC9Pipe(event.sender, arg.pipe);

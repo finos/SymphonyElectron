@@ -83,6 +83,10 @@ export enum apiCmds {
   registerPhoneNumberServices = 'register-phone-numbers-services',
   unregisterPhoneNumberServices = 'unregister-phone-numbers-services',
   getHelpInfo = 'get-help-info',
+  isMiniViewFeatureEnabled = 'is-mini-view-feature-enabled',
+  isMiniViewEnabled = 'is-mini-view-enabled',
+  onEnterMiniView = 'on-enter-mini-view',
+  onExitMiniView = 'on-exit-mini-view',
   // Openfin API commands
   openfinConnect = 'openfin-connect',
   openfinFireIntent = 'openfin-fire-intent',
@@ -177,6 +181,8 @@ export interface IApiArgs {
   contextType: any;
   contextGroupId: string;
   target: any;
+  isMiniViewFeatureEnabled: boolean;
+  isMiniViewEnabled: boolean;
 }
 
 export type Themes = 'light' | 'dark';

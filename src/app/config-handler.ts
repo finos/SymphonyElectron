@@ -70,6 +70,7 @@ export interface IConfig {
   configVersion?: string;
   notificationSettings: INotificationSetting;
   mainWinPos?: ICustomRectangle;
+  mainWinPosInMiniView?: ICustomRectangle;
   locale?: string;
   installVariant?: string;
   bootCount?: number;

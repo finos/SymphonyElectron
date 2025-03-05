@@ -8,7 +8,10 @@ interface IState {
   title: string;
   isMaximized: boolean;
   isDisabled: boolean;
+  isMiniViewFeatureEnabled: boolean;
+  isMiniViewEnabled: boolean;
 }
+
 const TITLE_BAR_NAMESPACE = 'TitleBar';
 
 export default class WindowsTitleBar extends React.Component<{}, IState> {
@@ -18,6 +21,8 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
     onMinimize: () => this.minimize(),
     onShowMenu: () => this.showMenu(),
     onUnmaximize: () => this.unmaximize(),
+    onExitMiniView: () => this.onExitMiniView(),
+    onEnterMiniView: () => this.onEnterMiniView(),
     onDisableContextMenu: (event) => this.disableContextMenu(event),
   };
   private observer: MutationObserver | undefined;
@@ -28,6 +33,8 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
       title: document.title || i18n.t('Symphony Messaging')(),
       isMaximized: false,
       isDisabled: false,
+      isMiniViewFeatureEnabled: false,
+      isMiniViewEnabled: false,
     };
     // Adds borders to the window
     this.addWindowBorders();
@@ -44,6 +51,17 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
 
     ipcRenderer.once('disable-action-button', () => {
       this.updateState({ isDisabled: true });
+    });
+
+    ipcRenderer.on(
+      'on-mini-view-feature',
+      (_event, [isMiniViewFeatureEnabled]) => {
+        this.updateState({ isMiniViewFeatureEnabled });
+      },
+    );
+
+    ipcRenderer.on('on-mini-view', (_event, [isMiniViewEnabled]) => {
+      this.updateState({ isMiniViewEnabled });
     });
   }
 
@@ -81,7 +99,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
    * Renders the component
    */
   public render(): JSX.Element | null {
-    const { title } = this.state;
+    const { title, isMiniViewFeatureEnabled } = this.state;
 
     return (
       <div
@@ -100,31 +118,25 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
             onContextMenu={this.eventHandlers.onDisableContextMenu}
             onMouseDown={this.handleMouseDown}
           >
-            <svg x='0px' y='0px' viewBox='0 0 15 10'>
-              <rect fill='rgba(255, 255, 255, 0.9)' width='15' height='1' />
-              <rect
-                fill='rgba(255, 255, 255, 0.9)'
-                y='4'
-                width='15'
-                height='1'
-              />
-              <rect
-                fill='rgba(255, 255, 255, 0.9)'
-                y='8'
-                width='152'
-                height='1'
-              />
-            </svg>
+            <img
+              alt={'hamburger menu icon'}
+              src={'../renderer/assets/title-bar-hamburger.svg'}
+            />
           </button>
         </div>
         <div className='title-container'>
           <img
             className='symphony-messaging-logo'
             alt={'Symphony Messaging Logo'}
-            src={'../renderer/assets/symphony-messaging.png'}
+            src={'../renderer/assets/title-bar-symphony-icon.svg'}
           />
           <p id='title-bar-title'>{title}</p>
         </div>
+        {isMiniViewFeatureEnabled && (
+          <div className='title-bar-button-container'>
+            {this.getMiniViewButton()}
+          </div>
+        )}
         <div className='title-bar-button-container'>
           <button
             className='title-bar-button'
@@ -133,9 +145,10 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
             onContextMenu={this.eventHandlers.onDisableContextMenu}
             onMouseDown={this.handleMouseDown}
           >
-            <svg x='0px' y='0px' viewBox='0 0 14 1'>
-              <rect fill='rgba(255, 255, 255, 0.9)' width='14' height='0.6' />
-            </svg>
+            <img
+              alt={'minimize icon'}
+              src={'../renderer/assets/title-bar-minimize.svg'}
+            />
           </button>
         </div>
         <div className='title-bar-button-container'>
@@ -143,18 +156,16 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
         </div>
         <div className='title-bar-button-container'>
           <button
-            className='title-bar-button'
+            className='title-bar-button close'
             title={i18n.t('Close', TITLE_BAR_NAMESPACE)()}
             onClick={this.eventHandlers.onClose}
             onContextMenu={this.eventHandlers.onDisableContextMenu}
             onMouseDown={this.handleMouseDown}
           >
-            <svg x='0px' y='0px' viewBox='0 0 14 10.2'>
-              <polygon
-                fill='rgba(255, 255, 255, 0.9)'
-                points='10.2,0.7 9.5,0 5.1,4.4 0.7,0 0,0.7 4.4,5.1 0,9.5 0.7,10.2 5.1,5.8 9.5,10.2 10.2,9.5 5.8,5.1 '
-              />
-            </svg>
+            <img
+              alt={'minimize icon'}
+              src={'../renderer/assets/title-bar-close.svg'}
+            />
           </button>
         </div>
         <div className='branding-logo' />
@@ -198,19 +209,44 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
         onContextMenu={this.eventHandlers.onDisableContextMenu}
         onMouseDown={this.handleMouseDown}
       >
-        <svg x='0px' y='0px' viewBox='0 0 14 11.2'>
-          <path
-            fill={
-              isDisabled
-                ? 'rgba(149, 149, 149, 0.9)'
-                : 'rgba(255, 255, 255, 0.9)'
-            }
-            d='M0,0v10.1h10.2V0H0z M9.2,9.2H1.1V1h8.1V9.2z'
-          />
-        </svg>
+        <img
+          alt={'maximize icon'}
+          src={'../renderer/assets/title-bar-maximize.svg'}
+        />
       </button>
     );
   }
+
+  public getMiniViewButton = (): JSX.Element => {
+    const { isMiniViewEnabled } = this.state;
+    return isMiniViewEnabled ? (
+      <button
+        className='title-bar-button'
+        title={i18n.t('Exit Mini view', TITLE_BAR_NAMESPACE)()}
+        onClick={this.eventHandlers.onExitMiniView}
+        onContextMenu={this.eventHandlers.onDisableContextMenu}
+        onMouseDown={this.handleMouseDown}
+      >
+        <img
+          alt={'Exit mini view icon'}
+          src={'../renderer/assets/title-bar-exit-mini-view.svg'}
+        />
+      </button>
+    ) : (
+      <button
+        className='title-bar-button'
+        title={i18n.t('Mini view', TITLE_BAR_NAMESPACE)()}
+        onClick={this.eventHandlers.onEnterMiniView}
+        onContextMenu={this.eventHandlers.onDisableContextMenu}
+        onMouseDown={this.handleMouseDown}
+      >
+        <img
+          alt={'Mini view icon'}
+          src={'../renderer/assets/title-bar-mini-view.svg'}
+        />
+      </button>
+    );
+  };
 
   /**
    * Method that closes the browser window
@@ -254,6 +290,32 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
       cmd: apiCmds.unmaximizeMainWindow,
     });
   }
+
+  /**
+   * Handles the event when the mini view is exited.
+   * Sends an IPC message to the main process indicating the exit of the mini view.
+   *
+   * @function onExitMiniView
+   * @returns {void}
+   */
+  public onExitMiniView = (): void => {
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.onExitMiniView,
+    });
+  };
+
+  /**
+   * Handles the event when the mini view is entered.
+   * Sends an IPC message to the main process indicating the entry of the mini view.
+   *
+   * @function onEnterMiniView
+   * @returns {void}
+   */
+  public onEnterMiniView = (): void => {
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.onEnterMiniView,
+    });
+  };
 
   /**
    * Method that popup the application menu

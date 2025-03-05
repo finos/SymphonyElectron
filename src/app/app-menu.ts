@@ -17,6 +17,8 @@ import { CloudConfigDataTypes, config, IConfig } from './config-handler';
 import { restartDialog, titleBarChangeDialog } from './dialog-handler';
 import { exportCrashDumps, exportLogs } from './reports-handler';
 import {
+  activateMiniView,
+  deactivateMiniView,
   registerConsoleMessages,
   unregisterConsoleMessages,
   updateAlwaysOnTop,
@@ -66,6 +68,7 @@ const windowsAccelerator = {
     undo: 'Ctrl+Z',
     zoomIn: 'Ctrl+=',
     zoomOut: 'Ctrl+-',
+    miniView: 'Ctrl+Shift+D',
   },
 };
 
@@ -75,6 +78,7 @@ const macAccelerator = {
     zoomOut: 'CommandOrControl+-',
     resetZoom: 'CommandOrControl+0',
     pasteAndMatchStyle: 'Cmd+Shift+V',
+    miniView: 'CommandOrControl+Shift+D',
   },
 };
 
@@ -419,9 +423,31 @@ export class AppMenu {
       isCustomTitleBar: isCustomTitleBarCC,
     } = this.cloudConfig as IConfig;
 
+    const miniViewAccelerator = isMac
+      ? macAccelerator.miniView
+      : isWindowsOS || isLinux
+      ? windowsAccelerator.miniView
+      : '';
+
     const submenu: MenuItemConstructorOptions[] = [
       this.assignRoleOrLabel({ role: 'minimize', label: i18n.t('Minimize')() }),
       this.assignRoleOrLabel({ role: 'close', label: i18n.t('Close')() }),
+      {
+        click: async () => {
+          windowHandler.setIsMiniViewTransition(true);
+          if (windowHandler.getIsMiniViewEnabled()) {
+            deactivateMiniView();
+          } else {
+            activateMiniView();
+          }
+        },
+        accelerator: miniViewAccelerator,
+        label: windowHandler.getIsMiniViewEnabled()
+          ? i18n.t('Exit Mini View')()
+          : i18n.t('Mini View')(),
+        type: 'normal',
+        visible: windowHandler.getIsMiniViewFeatureEnabled(),
+      },
       this.buildSeparator(),
       {
         checked: launchOnStartup === CloudConfigDataTypes.ENABLED,

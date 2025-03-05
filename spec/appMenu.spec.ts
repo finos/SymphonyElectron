@@ -2,7 +2,11 @@ import { AppMenu, menuSections } from '../src/app/app-menu';
 import { autoLaunchInstance } from '../src/app/auto-launch-controller';
 import { config } from '../src/app/config-handler';
 import { exportCrashDumps, exportLogs } from '../src/app/reports-handler';
-import { updateAlwaysOnTop } from '../src/app/window-actions';
+import {
+  activateMiniView,
+  deactivateMiniView,
+  updateAlwaysOnTop,
+} from '../src/app/window-actions';
 import { windowHandler } from '../src/app/window-handler';
 import { zoomIn, zoomOut } from '../src/app/window-utils';
 import { apiName } from '../src/common/api-interface';
@@ -43,6 +47,8 @@ jest.mock('../src/common/env', () => {
 jest.mock('../src/app/window-actions', () => {
   return {
     updateAlwaysOnTop: jest.fn(),
+    activateMiniView: jest.fn(),
+    deactivateMiniView: jest.fn(),
   };
 });
 
@@ -104,6 +110,10 @@ jest.mock('../src/app/window-handler', () => {
       getMainWindow: jest.fn(),
       getMainWebContents: jest.fn(),
       isMana: true,
+      setIsMiniViewEnabled: jest.fn(),
+      getIsMiniViewEnabled: jest.fn(),
+      getIsMiniViewFeatureEnabled: jest.fn(),
+      setIsMiniViewTransition: jest.fn(),
     },
   };
 });
@@ -327,6 +337,54 @@ describe('app menu', () => {
         const menuItem = findMenuItemBuildWindowMenu('Clear cache and Reload');
         menuItem.click(item, focusedWindow);
         expect(spySession).toBeCalled();
+      });
+
+      describe('Mini view functionality', () => {
+        it('should activate mini view when "Mini View" is clicked', async () => {
+          jest
+            .spyOn(windowHandler, 'getIsMiniViewFeatureEnabled')
+            .mockReturnValue(true);
+          jest
+            .spyOn(windowHandler, 'getIsMiniViewEnabled')
+            .mockReturnValue(false);
+
+          const menuItem = findMenuItemBuildWindowMenu('Mini View');
+          await menuItem.click(item);
+          expect(activateMiniView).toHaveBeenCalled();
+          expect(windowHandler.setIsMiniViewTransition).toHaveBeenCalledWith(
+            true,
+          );
+        });
+
+        it('should deactivate mini view when "Exit Mini View" is clicked', async () => {
+          jest
+            .spyOn(windowHandler, 'getIsMiniViewFeatureEnabled')
+            .mockReturnValue(true);
+          jest
+            .spyOn(windowHandler, 'getIsMiniViewEnabled')
+            .mockReturnValue(true);
+
+          const menuItem = findMenuItemBuildWindowMenu('Exit Mini View');
+          await menuItem.click(item);
+          expect(deactivateMiniView).toHaveBeenCalled();
+          expect(windowHandler.setIsMiniViewTransition).toHaveBeenCalledWith(
+            true,
+          );
+        });
+
+        it('should not show mini view options when feature is disabled', () => {
+          jest
+            .spyOn(windowHandler, 'getIsMiniViewEnabled')
+            .mockReturnValue(true);
+          jest
+            .spyOn(windowHandler, 'getIsMiniViewFeatureEnabled')
+            .mockReturnValue(false);
+
+          const exitMiniViewMenuItem =
+            findMenuItemBuildWindowMenu('Exit Mini View');
+
+          expect(exitMiniViewMenuItem.visible).toBe(false);
+        });
       });
     });
 

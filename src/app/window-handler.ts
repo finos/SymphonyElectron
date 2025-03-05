@@ -98,8 +98,9 @@ export enum ClientSwitchType {
   STARTPAGE_CLIENT_2_0_DAILY = 'START_PAGE_CLIENT_2_0_DAILY',
 }
 
-export const DEFAULT_WELCOME_SCREEN_WIDTH: number = 542;
-export const DEFAULT_WELCOME_SCREEN_HEIGHT: number = 333;
+// Mini View window size
+export const DEFAULT_MINI_VIEW_WINDOW_WIDTH: number = 600;
+export const MINI_VIEW_THRESHOLD_WINDOW_WIDTH: number = 750;
 
 const MIN_WIDTH = 400;
 const MIN_HEIGHT = 400;
@@ -207,6 +208,9 @@ export class WindowHandler {
   private defaultUrl: string = 'my.symphony.com';
   private didShowWelcomeScreen: boolean = false;
   private cmdUrl: string = '';
+  private isMiniViewFeatureEnabled: boolean = false;
+  private isMiniViewEnabled: boolean = false;
+  private isMiniViewTransition: boolean = false;
 
   constructor(opts?: Electron.BrowserWindowConstructorOptions) {
     this.opts = opts;
@@ -860,6 +864,61 @@ export class WindowHandler {
 
     return this.mainWindow;
   }
+
+  /**
+   * Gets the current state of the mini view feature.
+   * @returns {boolean} Whether the mini view feature is enabled.
+   */
+  public getIsMiniViewFeatureEnabled = (): boolean => {
+    return this.isMiniViewFeatureEnabled;
+  };
+
+  /**
+   * Sets the state of the mini view feature.
+   * @param {boolean} isMiniViewFeatureEnabled - Whether the mini view feature should be enabled.
+   */
+  public setIsMiniViewFeatureEnabled = (
+    isMiniViewFeatureEnabled: boolean,
+  ): void => {
+    this.isMiniViewFeatureEnabled = isMiniViewFeatureEnabled;
+    mainEvents.publish('on-mini-view-feature', [isMiniViewFeatureEnabled]);
+  };
+
+  /**
+   * Gets the current state of the mini view.
+   * @returns {boolean} Whether mini view is enabled.
+   */
+  public getIsMiniViewEnabled = (): boolean => {
+    return this.isMiniViewEnabled;
+  };
+
+  /**
+   * Sets the state of mini view.
+   * @param {boolean} isMiniViewEnabled - Whether mini view should be enabled.
+   */
+  public setIsMiniViewEnabled = (isMiniViewEnabled: boolean): void => {
+    this.isMiniViewEnabled = isMiniViewEnabled;
+    mainEvents.publish('on-mini-view', [isMiniViewEnabled]);
+  };
+
+  /**
+   * Sets the flag indicating whether a mini-view transition is in progress.
+   *
+   * @param {boolean} isMiniViewTransition - The new value for the mini-view transition flag.
+   * @returns {void}
+   */
+  public setIsMiniViewTransition = (isMiniViewTransition: boolean): void => {
+    this.isMiniViewTransition = isMiniViewTransition;
+  };
+
+  /**
+   * Gets the current value of the mini-view transition flag.
+   *
+   * @returns {boolean} - The current value of the mini-view transition flag.
+   */
+  public getIsMiniViewTransition = (): boolean => {
+    return this.isMiniViewTransition;
+  };
 
   /**
    * Fetches the required configuration fields from the `config` module.

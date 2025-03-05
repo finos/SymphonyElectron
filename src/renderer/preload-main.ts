@@ -104,6 +104,9 @@ if (ssfWindow.ssf) {
     getMyPresence: ssfWindow.ssf.getMyPresence,
     registerPhoneNumberServices: ssfWindow.ssf.registerPhoneNumberServices,
     unregisterPhoneNumberServices: ssfWindow.ssf.unregisterPhoneNumberServices,
+    setMiniViewFeatureEnabled: ssfWindow.ssf.setMiniViewFeatureEnabled,
+    setMiniViewEnabled: ssfWindow.ssf.setMiniViewEnabled,
+    registerMiniViewChange: ssfWindow.ssf.registerMiniViewChange,
   });
 
   contextBridge.exposeInMainWorld('openfin', {
