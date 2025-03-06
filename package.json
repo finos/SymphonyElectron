@@ -176,6 +176,7 @@
   "devDependencies": {
     "@electron/fuses": "^1.8.0",
     "@types/cheerio": "^0.22.22",
+    "@types/classnames": "^2.3.0",
     "@types/enzyme": "^3.10.7",
     "@types/fs-extra": "^9.0.0",
     "@types/jest": "23.3.12",
@@ -222,6 +223,7 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
+    "@fluentui/react-icons": "^2.0.279",
     "@openfin/node-adapter": "^40.102.1",
     "@types/lazy-brush": "^1.0.0",
     "adm-zip": "^0.5.10",

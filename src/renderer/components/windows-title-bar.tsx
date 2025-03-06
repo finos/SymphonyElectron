@@ -1,3 +1,11 @@
+import {
+  Dismiss12Filled,
+  LineHorizontal1Filled,
+  LineHorizontal3Filled,
+  Maximize16Filled,
+  SquareMultiple16Regular,
+} from '@fluentui/react-icons';
+import { classNames } from 'classnames';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
 
@@ -118,10 +126,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
             onContextMenu={this.eventHandlers.onDisableContextMenu}
             onMouseDown={this.handleMouseDown}
           >
-            <img
-              alt={'hamburger menu icon'}
-              src={'../renderer/assets/title-bar-hamburger.svg'}
-            />
+            <LineHorizontal3Filled fontSize={'16px'} />
           </button>
         </div>
         <div className='title-container'>
@@ -130,7 +135,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
             alt={'Symphony Messaging Logo'}
             src={'../renderer/assets/title-bar-symphony-icon.svg'}
           />
-          <p id='title-bar-title'>{title}</p>
+          {!this.state.isMiniViewEnabled && <p id='title-bar-title'>{title}</p>}
         </div>
         {isMiniViewFeatureEnabled && (
           <div className='title-bar-button-container'>
@@ -145,10 +150,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
             onContextMenu={this.eventHandlers.onDisableContextMenu}
             onMouseDown={this.handleMouseDown}
           >
-            <img
-              alt={'minimize icon'}
-              src={'../renderer/assets/title-bar-minimize.svg'}
-            />
+            <LineHorizontal1Filled />
           </button>
         </div>
         <div className='title-bar-button-container'>
@@ -162,10 +164,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
             onContextMenu={this.eventHandlers.onDisableContextMenu}
             onMouseDown={this.handleMouseDown}
           >
-            <img
-              alt={'minimize icon'}
-              src={'../renderer/assets/title-bar-close.svg'}
-            />
+            <Dismiss12Filled />
           </button>
         </div>
         <div className='branding-logo' />
@@ -188,16 +187,9 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
           onContextMenu={this.eventHandlers.onDisableContextMenu}
           onMouseDown={this.handleMouseDown}
         >
-          <svg x='0px' y='0px' viewBox='0 0 14 11.2'>
-            <path
-              fill={
-                isDisabled
-                  ? 'rgba(149, 149, 149, 0.9)'
-                  : 'rgba(255, 255, 255, 0.9)'
-              }
-              d='M2.1,0v2H0v8.1h8.2v-2h2V0H2.1z M7.2,9.2H1.1V3h6.1V9.2z M9.2,7.1h-1V2H3.1V1h6.1V7.1z'
-            />
-          </svg>
+          <SquareMultiple16Regular
+            className={classNames({ disabled: isDisabled })}
+          />
         </button>
       );
     }
@@ -209,10 +201,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
         onContextMenu={this.eventHandlers.onDisableContextMenu}
         onMouseDown={this.handleMouseDown}
       >
-        <img
-          alt={'maximize icon'}
-          src={'../renderer/assets/title-bar-maximize.svg'}
-        />
+        <Maximize16Filled />
       </button>
     );
   }
