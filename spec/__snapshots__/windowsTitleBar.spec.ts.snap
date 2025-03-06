@@ -15,9 +15,8 @@ exports[`windows title bar should render correctly 1`] = `
       onMouseDown={[Function]}
       title="Menu"
     >
-      <img
-        alt="hamburger menu icon"
-        src="../renderer/assets/title-bar-hamburger.svg"
+      <LineHorizontal3Filled
+        fontSize="16px"
       />
     </button>
   </div>
@@ -45,10 +44,7 @@ exports[`windows title bar should render correctly 1`] = `
       onMouseDown={[Function]}
       title="Minimize"
     >
-      <img
-        alt="minimize icon"
-        src="../renderer/assets/title-bar-minimize.svg"
-      />
+      <LineHorizontal1Filled />
     </button>
   </div>
   <div
@@ -61,10 +57,7 @@ exports[`windows title bar should render correctly 1`] = `
       onMouseDown={[Function]}
       title="Maximize"
     >
-      <img
-        alt="maximize icon"
-        src="../renderer/assets/title-bar-maximize.svg"
-      />
+      <Maximize16Filled />
     </button>
   </div>
   <div
@@ -77,10 +70,7 @@ exports[`windows title bar should render correctly 1`] = `
       onMouseDown={[Function]}
       title="Close"
     >
-      <img
-        alt="minimize icon"
-        src="../renderer/assets/title-bar-close.svg"
-      />
+      <Dismiss12Filled />
     </button>
   </div>
   <div

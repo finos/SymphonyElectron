@@ -4,6 +4,10 @@ import { apiCmds } from '../src/common/api-interface';
 import WindowsTitleBar from '../src/renderer/components/windows-title-bar';
 import { ipcRenderer } from './__mocks__/electron';
 
+jest.mock('classnames', () => ({
+  classNames: jest.fn(),
+}));
+
 // @ts-ignore
 global.MutationObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
