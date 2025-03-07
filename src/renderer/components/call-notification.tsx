@@ -60,6 +60,7 @@ export default class CallNotification extends React.Component<
   private readonly defaultState: ICallNotificationState;
   private readonly primaryTooltipRef: React.RefObject<HTMLDivElement>;
   private readonly secondaryTooltipRef: React.RefObject<HTMLDivElement>;
+  private isNamedUser: boolean = false;
 
   constructor(props) {
     super(props);
@@ -134,7 +135,6 @@ export default class CallNotification extends React.Component<
       zoomFactor,
       isPhone,
       callerNumber,
-      callerName,
     } = this.state;
 
     let themeClassName;
@@ -162,6 +162,9 @@ export default class CallNotification extends React.Component<
       isFederatedEnabled,
     );
     let containerCssClass = `container ${themeClassName} `;
+    this.isNamedUser =
+      callerNumber?.split(' ').join('') !==
+      primaryText?.replace(' [PHONE]', '').split(' ').join('');
     customCssClasses.push(isMac ? 'mac' : 'windows');
     containerCssClass += customCssClasses.join(' ');
 
@@ -182,7 +185,6 @@ export default class CallNotification extends React.Component<
             shouldDisplayBadge,
             isExternal,
             isFederatedEnabled,
-            callerName ?? '',
           )}
         </div>
       );
@@ -210,7 +212,7 @@ export default class CallNotification extends React.Component<
           </div>
           {isFederatedEnabled ? (
             <>
-              {callerName && (
+              {this.isNamedUser && (
                 <div
                   className='secondary-text-container'
                   data-testid='FEDERATION_NAMED_USER_NUMBER'
@@ -426,7 +428,6 @@ export default class CallNotification extends React.Component<
     shouldDisplayBadge: boolean,
     isExternal: boolean,
     isFederatedEnabled: boolean,
-    callerName: string,
   ): JSX.Element | undefined {
     let imgClass = 'default-logo';
     let url = '../renderer/assets/notification-symphony-logo.svg';
@@ -443,7 +444,7 @@ export default class CallNotification extends React.Component<
         ? 'profilePlaceHolderContainer'
         : 'roomPlaceHolderContainer';
 
-    if (!callerName && isFederatedEnabled) {
+    if (!this.isNamedUser && isFederatedEnabled) {
       return (
         <div
           className={classNames('thumbnail', profilePlaceHolderClassName, {
