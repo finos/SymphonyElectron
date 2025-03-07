@@ -15,29 +15,9 @@ exports[`windows title bar should render correctly 1`] = `
       onMouseDown={[Function]}
       title="Menu"
     >
-      <svg
-        viewBox="0 0 15 10"
-        x="0px"
-        y="0px"
-      >
-        <rect
-          fill="rgba(255, 255, 255, 0.9)"
-          height="1"
-          width="15"
-        />
-        <rect
-          fill="rgba(255, 255, 255, 0.9)"
-          height="1"
-          width="15"
-          y="4"
-        />
-        <rect
-          fill="rgba(255, 255, 255, 0.9)"
-          height="1"
-          width="152"
-          y="8"
-        />
-      </svg>
+      <LineHorizontal3Filled
+        fontSize="16px"
+      />
     </button>
   </div>
   <div
@@ -46,7 +26,7 @@ exports[`windows title bar should render correctly 1`] = `
     <img
       alt="Symphony Messaging Logo"
       className="symphony-messaging-logo"
-      src="../renderer/assets/symphony-messaging.png"
+      src="../renderer/assets/title-bar-symphony-icon.svg"
     />
     <p
       id="title-bar-title"
@@ -64,17 +44,7 @@ exports[`windows title bar should render correctly 1`] = `
       onMouseDown={[Function]}
       title="Minimize"
     >
-      <svg
-        viewBox="0 0 14 1"
-        x="0px"
-        y="0px"
-      >
-        <rect
-          fill="rgba(255, 255, 255, 0.9)"
-          height="0.6"
-          width="14"
-        />
-      </svg>
+      <LineHorizontal1Filled />
     </button>
   </div>
   <div
@@ -87,38 +57,20 @@ exports[`windows title bar should render correctly 1`] = `
       onMouseDown={[Function]}
       title="Maximize"
     >
-      <svg
-        viewBox="0 0 14 11.2"
-        x="0px"
-        y="0px"
-      >
-        <path
-          d="M0,0v10.1h10.2V0H0z M9.2,9.2H1.1V1h8.1V9.2z"
-          fill="rgba(255, 255, 255, 0.9)"
-        />
-      </svg>
+      <Maximize16Filled />
     </button>
   </div>
   <div
     className="title-bar-button-container"
   >
     <button
-      className="title-bar-button"
+      className="title-bar-button close"
       onClick={[Function]}
       onContextMenu={[Function]}
       onMouseDown={[Function]}
       title="Close"
     >
-      <svg
-        viewBox="0 0 14 10.2"
-        x="0px"
-        y="0px"
-      >
-        <polygon
-          fill="rgba(255, 255, 255, 0.9)"
-          points="10.2,0.7 9.5,0 5.1,4.4 0.7,0 0,0.7 4.4,5.1 0,9.5 0.7,10.2 5.1,5.8 9.5,10.2 10.2,9.5 5.8,5.1 "
-        />
-      </svg>
+      <Dismiss12Filled />
     </button>
   </div>
   <div

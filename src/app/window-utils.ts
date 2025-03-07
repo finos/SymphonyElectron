@@ -91,6 +91,8 @@ const TITLE_BAR_EVENTS = [
   'move',
   'enter-full-screen',
   'leave-full-screen',
+  'on-mini-view-feature',
+  'on-mini-view',
 ];
 export const ZOOM_FACTOR_CHANGE = 'zoom-factor-change';
 

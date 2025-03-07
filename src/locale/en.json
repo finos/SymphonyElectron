@@ -208,9 +208,11 @@
   "Title Bar Style": "Title Bar Style",
   "TitleBar": {
     "Close": "Close",
+    "Exit Mini view": "Exit Mini view",
     "Maximize": "Maximize",
     "Menu": "Menu",
     "Minimize": "Minimize",
+    "Mini view": "Mini view",
     "Restore": "Restore"
   },
   "Toggle Developer Tools": "Toggle Developer Tools",

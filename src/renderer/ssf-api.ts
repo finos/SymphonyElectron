@@ -71,6 +71,7 @@ export interface ILocalObject {
   openfinDisconnectionCallback?: (event?: any) => void;
   writeImageToClipboard?: (blob: string) => void;
   getHelpInfo?: () => Promise<IPodSettingsClientSpecificSupportLink>;
+  setMiniView?: (isMiniViewEnabled: boolean) => void;
 }
 
 const local: ILocalObject = {
@@ -1167,6 +1168,44 @@ export class SSFApi {
       protocols,
     });
   }
+
+  /**
+   * Enables or disables the mini view feature.
+   * This function sends a message to the main process via IPC to update the mini view feature's enabled state.
+   * @param {boolean} isMiniViewFeatureEnabled - Whether the mini view feature should be enabled.
+   */
+  public setMiniViewFeatureEnabled(isMiniViewFeatureEnabled: boolean): void {
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.isMiniViewFeatureEnabled,
+      isMiniViewFeatureEnabled,
+    });
+  }
+
+  /**
+   * Enables or disables mini view.
+   * This function sends a message to the main process via IPC to update the mini view's enabled state.
+   * @param {boolean} isMiniViewEnabled - Whether mini view should be enabled.
+   */
+  public setMiniViewEnabled(isMiniViewEnabled: boolean): void {
+    ipcRenderer.send(apiName.symphonyApi, {
+      cmd: apiCmds.isMiniViewEnabled,
+      isMiniViewEnabled,
+    });
+  }
+
+  /**
+   * Registers a callback function to be executed when the mini view state changes.
+   *
+   * @param {function(boolean): void} callback - The function to call when the mini view state changes.
+   * The function receives a boolean argument indicating whether the mini view is enabled.
+   */
+  public registerMiniViewChange(
+    callback: (isMiniViewEnabled: boolean) => void,
+  ): void {
+    if (typeof callback === 'function') {
+      local.setMiniView = callback;
+    }
+  }
 }
 
 /**
@@ -1499,6 +1538,10 @@ local.ipcRenderer.on(
     local.openfinDisconnectionCallback?.(disconnectionEvent);
   },
 );
+
+local.ipcRenderer.on('set-mini-view', (_event: Event, isMiniView: boolean) => {
+  local.setMiniView?.(isMiniView);
+});
 
 // Invoked whenever the app is reloaded/navigated
 const sanitize = (): void => {
