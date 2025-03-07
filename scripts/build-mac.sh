@@ -4,7 +4,7 @@
 echo "Unlocking keychain"
 security -v unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
 
-NODE_REQUIRED_VERSION=v20.18.1
+NODE_REQUIRED_VERSION=v22.14.0
 SNYK_ORG=sda
 SNYK_PROJECT_NAME="Symphony Desktop Application"
 
