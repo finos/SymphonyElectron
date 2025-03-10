@@ -136,6 +136,12 @@ const throttledWindowChanges = throttle(async (eventName, window) => {
     const isMaximized = window.isMaximized();
     mainEvents.publish(eventName, isMaximized);
   }
+  if (eventName === 'enter-full-screen' || eventName === 'leave-full-screen') {
+    const appMenu = windowHandler.appMenu;
+    if (appMenu) {
+      appMenu.buildMenu();
+    }
+  }
 }, 300);
 
 const throttledWindowRestore = throttle(async () => {

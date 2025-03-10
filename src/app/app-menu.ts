@@ -68,7 +68,7 @@ const windowsAccelerator = {
     undo: 'Ctrl+Z',
     zoomIn: 'Ctrl+=',
     zoomOut: 'Ctrl+-',
-    miniView: 'Ctrl+Shift+D',
+    miniView: 'Ctrl+Shift+M',
   },
 };
 
@@ -78,7 +78,7 @@ const macAccelerator = {
     zoomOut: 'CommandOrControl+-',
     resetZoom: 'CommandOrControl+0',
     pasteAndMatchStyle: 'Cmd+Shift+V',
-    miniView: 'CommandOrControl+Shift+D',
+    miniView: 'CommandOrControl+Shift+M',
   },
 };
 
@@ -428,6 +428,7 @@ export class AppMenu {
       : isWindowsOS || isLinux
       ? windowsAccelerator.miniView
       : '';
+    const mainWindow = windowHandler.getMainWindow();
 
     const submenu: MenuItemConstructorOptions[] = [
       this.assignRoleOrLabel({ role: 'minimize', label: i18n.t('Minimize')() }),
@@ -446,7 +447,9 @@ export class AppMenu {
           ? i18n.t('Exit Mini View')()
           : i18n.t('Mini View')(),
         type: 'normal',
-        visible: windowHandler.getIsMiniViewFeatureEnabled(),
+        visible:
+          windowHandler.getIsMiniViewFeatureEnabled() &&
+          !mainWindow?.isFullScreen(),
       },
       this.buildSeparator(),
       {
