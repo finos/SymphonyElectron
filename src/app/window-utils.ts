@@ -487,6 +487,9 @@ export const sanitize = (windowName: string): void => {
       screenSnippet.killChildProcess();
       windowHandler.execCmd(windowHandler.screenShareIndicatorFrameUtil, []);
     }
+    // reset mini view state
+    windowHandler.setIsMiniViewFeatureEnabled(false);
+    windowHandler.setIsMiniViewEnabled(false);
     // Closes all the child windows
     windowHandler.closeAllWindows();
   }
