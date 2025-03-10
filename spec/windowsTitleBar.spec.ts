@@ -4,9 +4,13 @@ import { apiCmds } from '../src/common/api-interface';
 import WindowsTitleBar from '../src/renderer/components/windows-title-bar';
 import { ipcRenderer } from './__mocks__/electron';
 
-jest.mock('classnames', () => ({
-  classNames: jest.fn(),
-}));
+jest.mock('classnames', () => {
+  const actualClassNames = jest.requireActual('classnames'); // Import actual classnames
+  return {
+    __esModule: true,
+    default: jest.fn((...args) => actualClassNames.default(...args)),
+  };
+});
 
 // @ts-ignore
 global.MutationObserver = jest.fn().mockImplementation(() => ({
