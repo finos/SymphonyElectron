@@ -57,7 +57,9 @@ exports[`windows title bar should render correctly 1`] = `
       onMouseDown={[Function]}
       title="Maximize"
     >
-      <Maximize16Filled />
+      <Maximize16Filled
+        className=""
+      />
     </button>
   </div>
   <div
