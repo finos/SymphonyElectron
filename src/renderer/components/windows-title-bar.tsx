@@ -5,7 +5,7 @@ import {
   Maximize16Filled,
   SquareMultiple16Regular,
 } from '@fluentui/react-icons';
-import { classNames } from 'classnames';
+import classNames from 'classnames';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
 
@@ -201,7 +201,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
         onContextMenu={this.eventHandlers.onDisableContextMenu}
         onMouseDown={this.handleMouseDown}
       >
-        <Maximize16Filled />
+        <Maximize16Filled className={classNames({ disabled: isDisabled })} />
       </button>
     );
   }
