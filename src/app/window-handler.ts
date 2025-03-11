@@ -32,6 +32,7 @@ import { ScreenShotAnnotation } from '../common/ipcEvent';
 import { logger } from '../common/logger';
 import {
   calculatePercentage,
+  debounce,
   getCommandLineArgs,
   getGuid,
   throttle,
@@ -61,6 +62,8 @@ import { winStore } from './stores';
 import { checkIfBuildExpired } from './ttl-handler';
 import { versionHandler } from './version-handler';
 import {
+  activateMiniView,
+  deactivateMiniView,
   handlePermissionRequests,
   monitorWindowActions,
   onConsoleMessages,
@@ -165,6 +168,7 @@ export class WindowHandler {
     }
     return format(parsedUrl);
   }
+
   public mainView: ICustomWebContentsView | null = null;
   public titleBarView: ICustomWebContentsView | null = null;
   public mainWebContents: WebContents | undefined;
@@ -483,6 +487,15 @@ export class WindowHandler {
           : ClientSwitchType.STARTPAGE_CLIENT_2_0_DAILY;
       windowHandler.switchClient(clientSwitchType);
     }, SHORTCUT_KEY_THROTTLE);
+
+    // throttled mini view switch
+    const throttledSwitchMiniView = debounce(() => {
+      if (this.isMiniViewEnabled) {
+        deactivateMiniView();
+      } else {
+        activateMiniView();
+      }
+    }, SHORTCUT_KEY_THROTTLE);
     this.mainWebContents.on('before-input-event', (event, input) => {
       const windowsDevTools =
         input.control && input.shift && input.key.toLowerCase() === 'i';
@@ -509,6 +522,13 @@ export class WindowHandler {
               switchToDaily();
               break;
           }
+        }
+      }
+      if (isWindowsOS && this.isMiniViewFeatureEnabled) {
+        const isSwitchMiniView =
+          input.control && input.shift && input.key.toLowerCase() === 'm';
+        if (isSwitchMiniView) {
+          throttledSwitchMiniView();
         }
       }
     });
@@ -882,6 +902,7 @@ export class WindowHandler {
   ): void => {
     this.isMiniViewFeatureEnabled = isMiniViewFeatureEnabled;
     mainEvents.publish('on-mini-view-feature', [isMiniViewFeatureEnabled]);
+    this.appMenu?.buildMenu();
   };
 
   /**
@@ -899,6 +920,7 @@ export class WindowHandler {
   public setIsMiniViewEnabled = (isMiniViewEnabled: boolean): void => {
     this.isMiniViewEnabled = isMiniViewEnabled;
     mainEvents.publish('on-mini-view', [isMiniViewEnabled]);
+    this.appMenu?.buildMenu();
   };
 
   /**

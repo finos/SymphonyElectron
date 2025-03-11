@@ -663,9 +663,16 @@ export const registerConsoleMessages = () => {
  * @returns {void}
  */
 export const activateMiniView = (): void => {
+  windowHandler.setIsMiniViewTransition(true);
   logger.info('window-actions: activateMiniView called');
   const mainWindow = windowHandler.getMainWindow();
   if (mainWindow && windowExists(mainWindow)) {
+    if (mainWindow.isFullScreen()) {
+      mainWindow.setFullScreen(false);
+    }
+    if (mainWindow.isMaximized()) {
+      unMaximizeMainWindow();
+    }
     const { mainWinPosInMiniView } = config.getUserConfigFields([
       'mainWinPosInMiniView',
     ]);
@@ -711,6 +718,7 @@ export const activateMiniView = (): void => {
  * @returns {void}
  */
 export const deactivateMiniView = (): void => {
+  windowHandler.setIsMiniViewTransition(true);
   logger.info('window-actions: deactivateMiniView called');
   const mainWindow = windowHandler.getMainWindow();
   if (mainWindow && windowExists(mainWindow)) {
@@ -746,4 +754,29 @@ export const deactivateMiniView = (): void => {
   logger.error(
     'window-actions: activateMiniView main window does not exist or is invalid',
   );
+};
+
+/**
+ * Unmaximizes the main window, exiting fullscreen if necessary, and restores focus.
+ *
+ * @function unMaximizeMainWindow
+ * @returns {void}
+ */
+export const unMaximizeMainWindow = (): void => {
+  const mainWindow = windowHandler.getMainWindow() as ICustomBrowserWindow;
+  if (mainWindow && windowExists(mainWindow)) {
+    if (mainWindow.isFullScreen()) {
+      mainWindow.setFullScreen(false);
+    } else {
+      mainWindow.unmaximize();
+      setTimeout(() => {
+        windowHandler.forceUnmaximize();
+      }, 100);
+    }
+  }
+  const mainWebContents = windowHandler.getMainWebContents();
+  // Give focus back to main webContents
+  if (mainWebContents && !mainWebContents.isDestroyed()) {
+    mainWebContents.focus();
+  }
 };
