@@ -351,9 +351,6 @@ describe('app menu', () => {
           const menuItem = findMenuItemBuildWindowMenu('Mini View');
           await menuItem.click(item);
           expect(activateMiniView).toHaveBeenCalled();
-          expect(windowHandler.setIsMiniViewTransition).toHaveBeenCalledWith(
-            true,
-          );
         });
 
         it('should deactivate mini view when "Exit Mini View" is clicked', async () => {
@@ -367,9 +364,6 @@ describe('app menu', () => {
           const menuItem = findMenuItemBuildWindowMenu('Exit Mini View');
           await menuItem.click(item);
           expect(deactivateMiniView).toHaveBeenCalled();
-          expect(windowHandler.setIsMiniViewTransition).toHaveBeenCalledWith(
-            true,
-          );
         });
 
         it('should not show mini view options when feature is disabled', () => {

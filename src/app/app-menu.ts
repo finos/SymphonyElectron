@@ -428,14 +428,12 @@ export class AppMenu {
       : isWindowsOS || isLinux
       ? windowsAccelerator.miniView
       : '';
-    const mainWindow = windowHandler.getMainWindow();
 
     const submenu: MenuItemConstructorOptions[] = [
       this.assignRoleOrLabel({ role: 'minimize', label: i18n.t('Minimize')() }),
       this.assignRoleOrLabel({ role: 'close', label: i18n.t('Close')() }),
       {
         click: async () => {
-          windowHandler.setIsMiniViewTransition(true);
           if (windowHandler.getIsMiniViewEnabled()) {
             deactivateMiniView();
           } else {
@@ -447,9 +445,7 @@ export class AppMenu {
           ? i18n.t('Exit Mini View')()
           : i18n.t('Mini View')(),
         type: 'normal',
-        visible:
-          windowHandler.getIsMiniViewFeatureEnabled() &&
-          !mainWindow?.isFullScreen(),
+        visible: windowHandler.getIsMiniViewFeatureEnabled(),
       },
       this.buildSeparator(),
       {

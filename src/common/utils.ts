@@ -228,6 +228,28 @@ export const throttle = (
 };
 
 /**
+ * Debounces a function, ensuring it's only called after a specified delay
+ * has passed since the last invocation.
+ *
+ * @template T The type of the function to debounce.
+ * @param {T} func The function to debounce.
+ * @param {number} delay The delay in milliseconds before the function is invoked.
+ * @returns {(...args: Parameters<T>) => void} A debounced version of the function.
+ */
+export const debounce = <T extends (...args: any[]) => void>(
+  func: T,
+  delay: number,
+): ((...args: Parameters<T>) => void) => {
+  let timer: ReturnType<typeof setTimeout>;
+  return (...args: Parameters<T>): void => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
+};
+
+/**
  * Formats a string with dynamic values
  * @param str {String} String to be formatted
  * @param data {Object} - Data to be added

@@ -43,6 +43,7 @@ import {
   activateMiniView,
   deactivateMiniView,
   handleKeyPress,
+  unMaximizeMainWindow,
 } from './window-actions';
 import { ICustomBrowserWindow, windowHandler } from './window-handler';
 import {
@@ -384,6 +385,9 @@ ipcMain.on(
         main?.setThumbarButtons([]);
         presenceStatus.onSignOut();
         await appStats.sendAnalytics(SDAUserSessionActionTypes.Logout);
+        // reset mini view state
+        windowHandler.setIsMiniViewFeatureEnabled(false);
+        windowHandler.setIsMiniViewEnabled(false);
         break;
       case apiCmds.setZoomLevel:
         if (typeof arg.zoomLevel === 'number') {
@@ -433,25 +437,16 @@ ipcMain.on(
         // Give focus back to main webContents
         if (mainWebContents && !mainWebContents.isDestroyed()) {
           mainWebContents.focus();
+          if (
+            windowHandler.getIsMiniViewFeatureEnabled() &&
+            windowHandler.getIsMiniViewEnabled()
+          ) {
+            mainWebContents.send('set-mini-view', false);
+          }
         }
         break;
       case apiCmds.unmaximizeMainWindow:
-        const mainWindow =
-          windowHandler.getMainWindow() as ICustomBrowserWindow;
-        if (mainWindow && windowExists(mainWindow)) {
-          if (mainWindow.isFullScreen()) {
-            mainWindow.setFullScreen(false);
-          } else {
-            mainWindow.unmaximize();
-            setTimeout(() => {
-              windowHandler.forceUnmaximize();
-            }, 100);
-          }
-        }
-        // Give focus back to main webContents
-        if (mainWebContents && !mainWebContents.isDestroyed()) {
-          mainWebContents.focus();
-        }
+        unMaximizeMainWindow();
         break;
       case apiCmds.browserLogin:
         await config.updateUserConfig({
@@ -526,19 +521,15 @@ ipcMain.on(
       case apiCmds.isMiniViewFeatureEnabled:
         const { isMiniViewFeatureEnabled } = arg;
         windowHandler.setIsMiniViewFeatureEnabled(isMiniViewFeatureEnabled);
-        windowHandler?.appMenu?.buildMenu();
         break;
       case apiCmds.isMiniViewEnabled:
         const { isMiniViewEnabled } = arg;
         windowHandler.setIsMiniViewEnabled(isMiniViewEnabled);
-        windowHandler?.appMenu?.buildMenu();
         break;
       case apiCmds.onEnterMiniView:
-        windowHandler.setIsMiniViewTransition(true);
         activateMiniView();
         break;
       case apiCmds.onExitMiniView:
-        windowHandler.setIsMiniViewTransition(true);
         deactivateMiniView();
         break;
       case apiCmds.connectCloud9Pipe:
