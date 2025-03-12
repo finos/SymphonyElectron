@@ -180,7 +180,7 @@ describe('Call toast notification component', () => {
     expect(federationTypeText.exists()).toBeTruthy();
     expect(federationUnknownUserAvatar.exists()).toBeTruthy();
     expect(federationPrimaryText.exists()).toBeTruthy();
-    expect(avatarBadge.exists()).toBeFalsy();
+    expect(avatarBadge.exists()).toBeTruthy();
 
     expect(federationPrimaryText.text()).toBe('123 ');
     expect(federationTypeText.text()).toBe('SMS & Voice');
@@ -213,7 +213,7 @@ describe('Call toast notification component', () => {
     expect(federationTypeText.exists()).toBeTruthy();
     expect(federationUnknownUserAvatar.exists()).toBeTruthy();
     expect(federationPrimaryText.exists()).toBeTruthy();
-    expect(avatarBadge.exists()).toBeFalsy();
+    expect(avatarBadge.exists()).toBeTruthy();
     expect(federationNumber.exists()).toBeTruthy();
 
     expect(federationPrimaryText.text()).toBe('Helen');
