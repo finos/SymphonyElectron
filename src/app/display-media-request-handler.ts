@@ -51,7 +51,7 @@ export const setDisplayMediaRequestHandler = () => {
         'screen-picker',
         browserWindowOptions,
       );
-
+      windowHandler.moveWindow(screenPickerWindow);
       screenPickerWindow.webContents.once('did-finish-load', () => {
         if (!screenPickerWindow || !windowExists(screenPickerWindow)) {
           return;
