@@ -446,18 +446,25 @@ export default class CallNotification extends React.Component<
 
     if (!this.isNamedUser && isFederatedEnabled) {
       return (
-        <div
-          className={classNames('thumbnail', profilePlaceHolderClassName, {
-            external: isExternal && !isFederatedEnabled,
-            federation: isFederatedEnabled,
-          })}
-        >
-          <img
-            data-testid='FEDERATION_UNKNOWN_USER_AVATAR'
-            className={classNames('default-logo')}
-            src='../renderer/assets/federation-user.svg'
-            alt={alt}
-          />
+        <div className='logo'>
+          <div
+            className={classNames('thumbnail', profilePlaceHolderClassName, {
+              external: isExternal && !isFederatedEnabled,
+              federation: isFederatedEnabled,
+            })}
+          >
+            <img
+              data-testid='FEDERATION_UNKNOWN_USER_AVATAR'
+              className={classNames('default-logo')}
+              src={
+                this.state.theme === Themes.DARK
+                  ? '../renderer/assets/federation-user-dark.svg'
+                  : '../renderer/assets/federation-user-light.svg'
+              }
+              alt={alt}
+            />
+          </div>
+          {this.renderSymphonyBadge(shouldDisplayBadge, callType)}
         </div>
       );
     }
@@ -480,8 +487,7 @@ export default class CallNotification extends React.Component<
           >
             <p className={'profilePlaceHolderText'}>{profilePlaceHolderText}</p>
           </div>
-          {!isFederatedEnabled &&
-            this.renderSymphonyBadge(shouldDisplayBadge, callType)}
+          {this.renderSymphonyBadge(shouldDisplayBadge, callType)}
         </div>
       );
     }
@@ -489,7 +495,7 @@ export default class CallNotification extends React.Component<
     return (
       <div className='logo' data-testid={'AVATAR'}>
         <img className={imgClass} src={url} alt={alt} />
-        {!isFederatedEnabled && this.renderSymphonyBadge(shouldDisplayBadge)}
+        {this.renderSymphonyBadge(shouldDisplayBadge)}
       </div>
     );
   }
