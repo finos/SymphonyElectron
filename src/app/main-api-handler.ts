@@ -40,8 +40,6 @@ import {
 import { screenSnippet } from './screen-snippet-handler';
 import {
   activate,
-  activateMiniView,
-  deactivateMiniView,
   handleKeyPress,
   unMaximizeMainWindow,
 } from './window-actions';
@@ -66,6 +64,7 @@ import callNotificationHelper from '../renderer/call-notification-helper';
 import { autoUpdate, AutoUpdateTrigger } from './auto-update-handler';
 import { SDAUserSessionActionTypes } from './bi/interface';
 import { displayMediaRequestHandler } from './display-media-request-handler';
+import { miniViewHandler } from './mini-view-handler';
 import { openfinHandler } from './openfin-handler';
 import { presenceStatus } from './presence-status-handler';
 import { appStats } from './stats';
@@ -529,10 +528,10 @@ ipcMain.on(
         windowHandler.setIsMiniViewEnabled(isMiniViewEnabled);
         break;
       case apiCmds.onEnterMiniView:
-        activateMiniView();
+        miniViewHandler.activateMiniView();
         break;
       case apiCmds.onExitMiniView:
-        deactivateMiniView();
+        miniViewHandler.deactivateMiniView();
         break;
       case apiCmds.connectCloud9Pipe:
         connectC9Pipe(event.sender, arg.pipe);
