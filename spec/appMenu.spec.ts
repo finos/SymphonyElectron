@@ -1,12 +1,9 @@
 import { AppMenu, menuSections } from '../src/app/app-menu';
 import { autoLaunchInstance } from '../src/app/auto-launch-controller';
 import { config } from '../src/app/config-handler';
+import { miniViewHandler } from '../src/app/mini-view-handler';
 import { exportCrashDumps, exportLogs } from '../src/app/reports-handler';
-import {
-  activateMiniView,
-  deactivateMiniView,
-  updateAlwaysOnTop,
-} from '../src/app/window-actions';
+import { updateAlwaysOnTop } from '../src/app/window-actions';
 import { windowHandler } from '../src/app/window-handler';
 import { zoomIn, zoomOut } from '../src/app/window-utils';
 import { apiName } from '../src/common/api-interface';
@@ -133,6 +130,15 @@ jest.mock('../src/app/window-utils', () => {
     zoomIn: jest.fn(),
     zoomOut: jest.fn(),
     reloadWindow: jest.fn(),
+  };
+});
+
+jest.mock('../src/app/mini-view-handler', () => {
+  return {
+    miniViewHandler: {
+      activateMiniView: jest.fn(),
+      deactivateMiniView: jest.fn(),
+    },
   };
 });
 
@@ -350,7 +356,7 @@ describe('app menu', () => {
 
           const menuItem = findMenuItemBuildWindowMenu('Mini View');
           await menuItem.click(item);
-          expect(activateMiniView).toHaveBeenCalled();
+          expect(miniViewHandler.activateMiniView).toHaveBeenCalled();
         });
 
         it('should deactivate mini view when "Exit Mini View" is clicked', async () => {
@@ -363,7 +369,7 @@ describe('app menu', () => {
 
           const menuItem = findMenuItemBuildWindowMenu('Exit Mini View');
           await menuItem.click(item);
-          expect(deactivateMiniView).toHaveBeenCalled();
+          expect(miniViewHandler.deactivateMiniView).toHaveBeenCalled();
         });
 
         it('should not show mini view options when feature is disabled', () => {

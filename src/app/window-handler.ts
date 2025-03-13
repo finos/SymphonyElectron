@@ -54,6 +54,7 @@ import {
 import crashHandler from './crash-handler';
 import LocalMenuShortcuts from './local-menu-shortcuts';
 import { mainEvents } from './main-event-handler';
+import { miniViewHandler } from './mini-view-handler';
 import { presenceStatus } from './presence-status-handler';
 import { exportLogs } from './reports-handler';
 import { SpellChecker } from './spell-check-handler';
@@ -62,8 +63,6 @@ import { winStore } from './stores';
 import { checkIfBuildExpired } from './ttl-handler';
 import { versionHandler } from './version-handler';
 import {
-  activateMiniView,
-  deactivateMiniView,
   handlePermissionRequests,
   monitorWindowActions,
   onConsoleMessages,
@@ -101,15 +100,12 @@ export enum ClientSwitchType {
   STARTPAGE_CLIENT_2_0_DAILY = 'START_PAGE_CLIENT_2_0_DAILY',
 }
 
-// Mini View window size
-export const DEFAULT_MINI_VIEW_WINDOW_WIDTH: number = 600;
-export const MINI_VIEW_THRESHOLD_WINDOW_WIDTH: number = 750;
-
 const MIN_WIDTH = 400;
 const MIN_HEIGHT = 400;
 
 const MAIN_WEB_CONTENTS_EVENTS = ['enter-full-screen', 'leave-full-screen'];
 const SHORTCUT_KEY_THROTTLE = 1000; // 1sec
+const SHORTCUT_KEY_DEBOUNCE = 300; // 0.3sec
 
 export interface ICustomBrowserWindowConstructorOpts
   extends Electron.BrowserWindowConstructorOptions {
@@ -491,11 +487,11 @@ export class WindowHandler {
     // throttled mini view switch
     const throttledSwitchMiniView = debounce(() => {
       if (this.isMiniViewEnabled) {
-        deactivateMiniView();
+        miniViewHandler.deactivateMiniView();
       } else {
-        activateMiniView();
+        miniViewHandler.activateMiniView();
       }
-    }, SHORTCUT_KEY_THROTTLE);
+    }, SHORTCUT_KEY_DEBOUNCE);
     this.mainWebContents.on('before-input-event', (event, input) => {
       const windowsDevTools =
         input.control && input.shift && input.key.toLowerCase() === 'i';
