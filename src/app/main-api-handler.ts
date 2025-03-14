@@ -64,6 +64,7 @@ import callNotificationHelper from '../renderer/call-notification-helper';
 import { autoUpdate, AutoUpdateTrigger } from './auto-update-handler';
 import { SDAUserSessionActionTypes } from './bi/interface';
 import { miniViewHandler } from './mini-view-handler';
+import { displayMediaRequestHandler } from './display-media-request-handler';
 import { openfinHandler } from './openfin-handler';
 import { presenceStatus } from './presence-status-handler';
 import { appStats } from './stats';
@@ -307,6 +308,7 @@ ipcMain.on(
           memoryMonitor.setMeetingStatus(arg.isInMeeting);
           appStateHandler.preventDisplaySleep(arg.isInMeeting);
           if (!arg.isInMeeting) {
+            displayMediaRequestHandler.closeScreenPickerWindow();
             windowHandler.closeScreenPickerWindow();
             windowHandler.closeScreenSharingIndicator();
           }
@@ -397,7 +399,7 @@ ipcMain.on(
               (win) =>
                 (win as ICustomBrowserWindow).winName &&
                 (win as ICustomBrowserWindow).winName ===
-                  apiName.notificationWindowName,
+                apiName.notificationWindowName,
             );
             notificationWindows.map((notificationWindow) => {
               const notificationWebContents = notificationWindow?.webContents;
@@ -466,8 +468,8 @@ ipcMain.on(
         const podUrl = urlFromCmd
           ? urlFromCmd.substr(6)
           : userConfigURL
-          ? userConfigURL
-          : globalConfigURL;
+            ? userConfigURL
+            : globalConfigURL;
         const { subdomain, domain, tld } = whitelistHandler.parseDomain(podUrl);
         const localConfig = config.getConfigFields([
           'enableBrowserLogin',
