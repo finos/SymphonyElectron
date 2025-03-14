@@ -60,7 +60,6 @@ export default class CallNotification extends React.Component<
   private readonly defaultState: ICallNotificationState;
   private readonly primaryTooltipRef: React.RefObject<HTMLDivElement>;
   private readonly secondaryTooltipRef: React.RefObject<HTMLDivElement>;
-  private isNamedUser: boolean = false;
 
   constructor(props) {
     super(props);
@@ -87,6 +86,7 @@ export default class CallNotification extends React.Component<
       isFederatedEnabled: false,
       zoomFactor: 1,
       callerNumber: '',
+      callerName: '',
     };
     this.state = { ...this.defaultState };
     this.updateState = this.updateState.bind(this);
@@ -120,11 +120,9 @@ export default class CallNotification extends React.Component<
       company,
       companyIconUrl,
       color,
-      profilePlaceHolderText,
       callType,
       acceptButtonText,
       rejectButtonText,
-      shouldDisplayBadge,
       isExternal,
       theme,
       flash,
@@ -162,9 +160,6 @@ export default class CallNotification extends React.Component<
       isFederatedEnabled,
     );
     let containerCssClass = `container ${themeClassName} `;
-    this.isNamedUser =
-      callerNumber?.split(' ').join('') !==
-      primaryText?.replace(' [PHONE]', '').split(' ').join('');
     customCssClasses.push(isMac ? 'mac' : 'windows');
     containerCssClass += customCssClasses.join(' ');
 
@@ -176,18 +171,7 @@ export default class CallNotification extends React.Component<
     const rejectText = rejectButtonText ? rejectButtonText : 'decline';
 
     const renderAvatarSection = () => {
-      return (
-        <div className='logo-container'>
-          {this.renderImage(
-            icon,
-            profilePlaceHolderText,
-            callType,
-            shouldDisplayBadge,
-            isExternal,
-            isFederatedEnabled,
-          )}
-        </div>
-      );
+      return <div className='logo-container'>{this.renderImage(icon)}</div>;
     };
 
     const renderNameSection = () => {
@@ -212,7 +196,7 @@ export default class CallNotification extends React.Component<
           </div>
           {isFederatedEnabled ? (
             <>
-              {this.isNamedUser && (
+              {this.state.callerName && (
                 <div
                   className='secondary-text-container'
                   data-testid='FEDERATION_NAMED_USER_NUMBER'
@@ -401,8 +385,6 @@ export default class CallNotification extends React.Component<
         : data.theme
         ? data.theme
         : Themes.LIGHT;
-    data.company = data.company === 'undefined' ? '' : data.company;
-    data.primaryText = data.primaryText?.replace('[PHONE]', '') ?? 'unknown';
     this.setState(data as ICallNotificationState);
     this.checkTextOverflow();
   }
@@ -421,14 +403,7 @@ export default class CallNotification extends React.Component<
    * @param callType
    * @param shouldDisplayBadge
    */
-  private renderImage(
-    imageUrl: string | undefined,
-    profilePlaceHolderText: string,
-    callType: CallType,
-    shouldDisplayBadge: boolean,
-    isExternal: boolean,
-    isFederatedEnabled: boolean,
-  ): JSX.Element | undefined {
+  private renderImage(imageUrl: string | undefined): JSX.Element | undefined {
     let imgClass = 'default-logo';
     let url = '../renderer/assets/notification-symphony-logo.svg';
     let alt = 'Symphony Messaging logo';
@@ -440,17 +415,16 @@ export default class CallNotification extends React.Component<
     }
 
     const profilePlaceHolderClassName =
-      callType === 'IM'
+      this.state.callType === 'IM'
         ? 'profilePlaceHolderContainer'
         : 'roomPlaceHolderContainer';
-
-    if (!this.isNamedUser && isFederatedEnabled) {
+    if (!this.state.callerName && this.state.isFederatedEnabled) {
       return (
         <div className='logo'>
           <div
             className={classNames('thumbnail', profilePlaceHolderClassName, {
-              external: isExternal && !isFederatedEnabled,
-              federation: isFederatedEnabled,
+              external: this.state.isExternal && !this.state.isFederatedEnabled,
+              federation: this.state.isFederatedEnabled,
             })}
           >
             <img
@@ -464,30 +438,40 @@ export default class CallNotification extends React.Component<
               alt={alt}
             />
           </div>
-          {this.renderSymphonyBadge(shouldDisplayBadge, callType)}
+          {this.renderSymphonyBadge(
+            this.state.shouldDisplayBadge,
+            this.state.callType,
+          )}
         </div>
       );
     }
 
     if (
       !imageUrl ||
-      isFederatedEnabled ||
+      this.state.isFederatedEnabled ||
       url.includes('/avatars/static/150/default.png')
     ) {
       return (
         <div className='logo'>
           <div
             data-testid={
-              isFederatedEnabled ? 'FEDERATION_NAMED_USER_AVATAR' : 'AVATAR'
+              this.state.isFederatedEnabled
+                ? 'FEDERATION_NAMED_USER_AVATAR'
+                : 'AVATAR'
             }
             className={classNames('thumbnail', profilePlaceHolderClassName, {
-              external: isExternal && !isFederatedEnabled,
-              federation: isFederatedEnabled,
+              external: this.state.isExternal && !this.state.isFederatedEnabled,
+              federation: this.state.isFederatedEnabled,
             })}
           >
-            <p className={'profilePlaceHolderText'}>{profilePlaceHolderText}</p>
+            <p className={'profilePlaceHolderText'}>
+              {this.state.profilePlaceHolderText}
+            </p>
           </div>
-          {this.renderSymphonyBadge(shouldDisplayBadge, callType)}
+          {this.renderSymphonyBadge(
+            this.state.shouldDisplayBadge,
+            this.state.callType,
+          )}
         </div>
       );
     }
@@ -495,7 +479,7 @@ export default class CallNotification extends React.Component<
     return (
       <div className='logo' data-testid={'AVATAR'}>
         <img className={imgClass} src={url} alt={alt} />
-        {this.renderSymphonyBadge(shouldDisplayBadge)}
+        {this.renderSymphonyBadge(this.state.shouldDisplayBadge)}
       </div>
     );
   }

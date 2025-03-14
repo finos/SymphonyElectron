@@ -165,7 +165,7 @@ describe('Call toast notification component', () => {
       profilePlaceHolderText: '+1',
       callerName: '',
       callerNumber: '123',
-      primaryText: '123 [PHONE]',
+      primaryText: '123 ',
     });
 
     let federationTypeText = wrapper.find('[data-testid="FEDERATION_TYPE"]');
