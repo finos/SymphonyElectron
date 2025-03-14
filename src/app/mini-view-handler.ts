@@ -1,3 +1,6 @@
+import { BrowserWindow } from 'electron';
+
+import { isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { config } from './config-handler';
 import { mainEvents } from './main-event-handler';
@@ -17,13 +20,13 @@ class MiniViewHandler {
    *
    * @returns {void}
    */
-  public activateMiniView = (): void => {
+  public activateMiniView = async (): Promise<void> => {
     windowHandler.setIsMiniViewTransition(true);
     logger.info('mini-view-handler: activateMiniView called');
     const mainWindow = windowHandler.getMainWindow();
     if (mainWindow && windowExists(mainWindow)) {
       if (mainWindow.isFullScreen()) {
-        mainWindow.setFullScreen(false);
+        await this.exitFullscreenAsync(mainWindow);
       }
       if (mainWindow.isMaximized()) {
         mainWindow.unmaximize();
@@ -116,6 +119,28 @@ class MiniViewHandler {
     if (mainWebContents && !mainWebContents.isDestroyed()) {
       mainWebContents.send('set-mini-view', miniViewState);
     }
+  };
+
+  private exitFullscreenAsync = (window: BrowserWindow): Promise<void> => {
+    return new Promise<void>((resolve) => {
+      window.once('leave-full-screen', () => {
+        if (!window || window.isDestroyed()) {
+          logger.error(
+            'mini-view-handler: window does not exist or is destroyed',
+          );
+          resolve();
+          return;
+        }
+        if (isMac) {
+          resolve();
+        } else {
+          setTimeout(() => {
+            resolve();
+          }, 0);
+        }
+      });
+      window.setFullScreen(false);
+    });
   };
 }
 
