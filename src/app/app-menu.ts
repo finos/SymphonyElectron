@@ -17,8 +17,6 @@ import { CloudConfigDataTypes, config, IConfig } from './config-handler';
 import { restartDialog, titleBarChangeDialog } from './dialog-handler';
 import { exportCrashDumps, exportLogs } from './reports-handler';
 import {
-  activateMiniView,
-  deactivateMiniView,
   registerConsoleMessages,
   unregisterConsoleMessages,
   updateAlwaysOnTop,
@@ -43,6 +41,7 @@ import {
   AnalyticsElements,
   MenuActionTypes,
 } from './bi/interface';
+import { miniViewHandler } from './mini-view-handler';
 import { sdaMenuStore } from './stores';
 
 export const menuSections = {
@@ -435,9 +434,9 @@ export class AppMenu {
       {
         click: async () => {
           if (windowHandler.getIsMiniViewEnabled()) {
-            deactivateMiniView();
+            miniViewHandler.deactivateMiniView();
           } else {
-            activateMiniView();
+            miniViewHandler.activateMiniView();
           }
         },
         accelerator: miniViewAccelerator,

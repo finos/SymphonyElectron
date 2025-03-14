@@ -15,12 +15,7 @@ import { throttle } from '../common/utils';
 import { notification } from '../renderer/notification';
 import { CloudConfigDataTypes, config } from './config-handler';
 import { mainEvents } from './main-event-handler';
-import {
-  DEFAULT_MINI_VIEW_WINDOW_WIDTH,
-  ICustomBrowserWindow,
-  MINI_VIEW_THRESHOLD_WINDOW_WIDTH,
-  windowHandler,
-} from './window-handler';
+import { ICustomBrowserWindow, windowHandler } from './window-handler';
 import { showPopupMenu, windowExists } from './window-utils';
 
 enum Permissions {
@@ -91,6 +86,9 @@ const saveWindowSettings = async (): Promise<void> => {
         }
 
         if (isMiniModeEnabled) {
+          if (isMaximized || isFullScreen) {
+            return;
+          }
           await config.updateUserConfig({
             mainWinPosInMiniView: {
               ...mainWinPosInMiniView,
@@ -135,12 +133,6 @@ const throttledWindowChanges = throttle(async (eventName, window) => {
   ) {
     const isMaximized = window.isMaximized();
     mainEvents.publish(eventName, isMaximized);
-  }
-  if (eventName === 'enter-full-screen' || eventName === 'leave-full-screen') {
-    const appMenu = windowHandler.appMenu;
-    if (appMenu) {
-      appMenu.buildMenu();
-    }
   }
 }, 300);
 
@@ -652,108 +644,6 @@ export const registerConsoleMessages = () => {
     }
     browserWindow.webContents.on('console-message', onConsoleMessages);
   }
-};
-
-/**
- * Activates the mini view for the main application window.
- *
- * Sets the main window to mini view, using saved bounds if valid,
- * or a default width with the original height.
- *
- * @returns {void}
- */
-export const activateMiniView = (): void => {
-  windowHandler.setIsMiniViewTransition(true);
-  logger.info('window-actions: activateMiniView called');
-  const mainWindow = windowHandler.getMainWindow();
-  if (mainWindow && windowExists(mainWindow)) {
-    if (mainWindow.isFullScreen()) {
-      mainWindow.setFullScreen(false);
-    }
-    if (mainWindow.isMaximized()) {
-      unMaximizeMainWindow();
-    }
-    const { mainWinPosInMiniView } = config.getUserConfigFields([
-      'mainWinPosInMiniView',
-    ]);
-    const [, height] = mainWindow.getSize();
-    if (
-      mainWinPosInMiniView &&
-      mainWinPosInMiniView?.width &&
-      mainWinPosInMiniView?.width <= DEFAULT_MINI_VIEW_WINDOW_WIDTH
-    ) {
-      logger.info(
-        'window-actions: setting window bounds from user config',
-        mainWinPosInMiniView,
-      );
-      mainWindow.setBounds(mainWinPosInMiniView);
-    } else {
-      logger.info(
-        `window-actions: setting window width to ${DEFAULT_MINI_VIEW_WINDOW_WIDTH}, preserving height`,
-      );
-      mainWindow.setSize(DEFAULT_MINI_VIEW_WINDOW_WIDTH, height);
-    }
-    setTimeout(() => {
-      windowHandler.setIsMiniViewTransition(false);
-      // update client mini view state
-      const mainWebContents = windowHandler.getMainWebContents();
-      if (mainWebContents && !mainWebContents.isDestroyed()) {
-        mainWebContents.send('set-mini-view', true);
-      }
-    }, 100);
-    return;
-  }
-  windowHandler.setIsMiniViewTransition(false);
-  logger.error(
-    'window-actions: activateMiniView main window does not exist or is invalid',
-  );
-};
-
-/**
- * Deactivates the mini-view mode for the main application window.
- *
- * deactivates the main window from mini view, using saved bounds if valid,
- * or a default width with the original height.
- *
- * @returns {void}
- */
-export const deactivateMiniView = (): void => {
-  windowHandler.setIsMiniViewTransition(true);
-  logger.info('window-actions: deactivateMiniView called');
-  const mainWindow = windowHandler.getMainWindow();
-  if (mainWindow && windowExists(mainWindow)) {
-    const { mainWinPos } = config.getUserConfigFields(['mainWinPos']);
-    const [, height] = mainWindow.getSize();
-    if (
-      mainWinPos &&
-      mainWinPos?.width &&
-      mainWinPos?.width > MINI_VIEW_THRESHOLD_WINDOW_WIDTH
-    ) {
-      logger.info(
-        'window-actions: setting window bounds from user config',
-        mainWinPos,
-      );
-      mainWindow.setBounds(mainWinPos);
-    } else {
-      logger.info(
-        `window-actions: setting window width to ${MINI_VIEW_THRESHOLD_WINDOW_WIDTH}, preserving height`,
-      );
-      mainWindow.setSize(MINI_VIEW_THRESHOLD_WINDOW_WIDTH, height);
-    }
-    setTimeout(() => {
-      windowHandler.setIsMiniViewTransition(false);
-      // update client mini view state
-      const mainWebContents = windowHandler.getMainWebContents();
-      if (mainWebContents && !mainWebContents.isDestroyed()) {
-        mainWebContents.send('set-mini-view', false);
-      }
-    }, 100);
-    return;
-  }
-  windowHandler.setIsMiniViewTransition(false);
-  logger.error(
-    'window-actions: activateMiniView main window does not exist or is invalid',
-  );
 };
 
 /**
