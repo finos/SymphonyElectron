@@ -528,6 +528,16 @@ export class WindowHandler {
         }
       }
     });
+
+    this.mainWindow.on('enter-full-screen', () => {
+      if (this.isMiniViewFeatureEnabled && this.isMiniViewEnabled) {
+        miniViewHandler.notifyClient(false);
+        const appMenu = this.appMenu;
+        if (appMenu) {
+          appMenu.buildMenu();
+        }
+      }
+    });
     if (isMaximized || isMaximizedFlag) {
       this.mainWindow.maximize();
       logger.info(

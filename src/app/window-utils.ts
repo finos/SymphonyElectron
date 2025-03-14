@@ -55,7 +55,6 @@ import { notification } from '../renderer/notification';
 import { autoLaunchInstance } from './auto-launch-controller';
 import { autoUpdate, AutoUpdateTrigger } from './auto-update-handler';
 import { mainEvents } from './main-event-handler';
-import { miniViewHandler } from './mini-view-handler';
 import { openfinHandler } from './openfin-handler';
 import { presenceStatus } from './presence-status-handler';
 import { presenceStatusStore } from './stores';
@@ -1408,16 +1407,6 @@ export const loadWebContentsView = async (
       });
     }, 500);
     mainEvents.publish('enter-full-screen');
-    if (
-      windowHandler.getIsMiniViewFeatureEnabled() &&
-      windowHandler.getIsMiniViewEnabled()
-    ) {
-      miniViewHandler.notifyClient(false);
-      const appMenu = windowHandler.appMenu;
-      if (appMenu) {
-        appMenu.buildMenu();
-      }
-    }
   });
   mainWindow.on('leave-full-screen', () => {
     logger.info('EVENT leave-full-screen!!');
