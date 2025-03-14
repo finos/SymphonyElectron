@@ -62,6 +62,11 @@ class DisplayMediaRequestHandler {
           this.screenPickerWindow?.focus();
         });
 
+        this.screenPickerWindow.on('closed', () => {
+          this.screenPickerWindow = null;
+          ipcMain.removeAllListeners('screen-source-select');
+        });
+
         this.screenPickerWindow.webContents.once('did-finish-load', () => {
           if (!this.screenPickerWindow) {
             return;
@@ -111,6 +116,7 @@ class DisplayMediaRequestHandler {
       'display-media-request-handler: close screen picker if it exists',
     );
     this.screenPickerWindow?.close();
+    this.screenPickerWindow = null;
   }
 }
 
