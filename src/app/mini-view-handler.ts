@@ -19,7 +19,7 @@ class MiniViewHandler {
    */
   public activateMiniView = (): void => {
     windowHandler.setIsMiniViewTransition(true);
-    logger.info('window-actions: activateMiniView called');
+    logger.info('mini-view-handler: activateMiniView called');
     const mainWindow = windowHandler.getMainWindow();
     if (mainWindow && windowExists(mainWindow)) {
       if (mainWindow.isFullScreen()) {
@@ -39,13 +39,13 @@ class MiniViewHandler {
         mainWinPosInMiniView?.width <= DEFAULT_MINI_VIEW_WINDOW_WIDTH
       ) {
         logger.info(
-          'window-actions: setting window bounds from user config',
+          'mini-view-handler: setting window bounds from user config',
           mainWinPosInMiniView,
         );
         mainWindow.setBounds(mainWinPosInMiniView);
       } else {
         logger.info(
-          `window-actions: setting window width to ${DEFAULT_MINI_VIEW_WINDOW_WIDTH}, preserving height`,
+          `mini-view-handler: setting window width to ${DEFAULT_MINI_VIEW_WINDOW_WIDTH}, preserving height`,
         );
         mainWindow.setSize(DEFAULT_MINI_VIEW_WINDOW_WIDTH, height);
       }
@@ -57,7 +57,7 @@ class MiniViewHandler {
     }
     windowHandler.setIsMiniViewTransition(false);
     logger.error(
-      'window-actions: activateMiniView main window does not exist or is invalid',
+      'mini-view-handler: activateMiniView main window does not exist or is invalid',
     );
   };
 
@@ -71,7 +71,7 @@ class MiniViewHandler {
    */
   public deactivateMiniView = (): void => {
     windowHandler.setIsMiniViewTransition(true);
-    logger.info('window-actions: deactivateMiniView called');
+    logger.info('mini-view-handler: deactivateMiniView called');
     const mainWindow = windowHandler.getMainWindow();
     if (mainWindow && windowExists(mainWindow)) {
       const { mainWinPos } = config.getUserConfigFields(['mainWinPos']);
@@ -82,13 +82,13 @@ class MiniViewHandler {
         mainWinPos?.width > MINI_VIEW_THRESHOLD_WINDOW_WIDTH
       ) {
         logger.info(
-          'window-actions: setting window bounds from user config',
+          'mini-view-handler: setting window bounds from user config',
           mainWinPos,
         );
         mainWindow.setBounds(mainWinPos);
       } else {
         logger.info(
-          `window-actions: setting window width to ${MINI_VIEW_THRESHOLD_WINDOW_WIDTH}, preserving height`,
+          `mini-view-handler: setting window width to ${MINI_VIEW_THRESHOLD_WINDOW_WIDTH}, preserving height`,
         );
         mainWindow.setSize(MINI_VIEW_THRESHOLD_WINDOW_WIDTH, height);
       }
@@ -100,7 +100,7 @@ class MiniViewHandler {
     }
     windowHandler.setIsMiniViewTransition(false);
     logger.error(
-      'window-actions: activateMiniView main window does not exist or is invalid',
+      'mini-view-handler: activateMiniView main window does not exist or is invalid',
     );
   };
 

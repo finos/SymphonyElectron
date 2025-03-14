@@ -485,7 +485,7 @@ export class WindowHandler {
     }, SHORTCUT_KEY_THROTTLE);
 
     // throttled mini view switch
-    const throttledSwitchMiniView = debounce(() => {
+    const debouncedSwitchMiniView = debounce(() => {
       if (this.isMiniViewEnabled) {
         miniViewHandler.deactivateMiniView();
       } else {
@@ -524,7 +524,7 @@ export class WindowHandler {
         const isSwitchMiniView =
           input.control && input.shift && input.key.toLowerCase() === 'm';
         if (isSwitchMiniView) {
-          throttledSwitchMiniView();
+          debouncedSwitchMiniView();
         }
       }
     });
