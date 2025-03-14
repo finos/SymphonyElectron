@@ -53,6 +53,7 @@ describe('MiniViewHandler', () => {
       unmaximize: jest.fn(),
       setSize: jest.fn(),
       setAlwaysOnTop: jest.fn(),
+      once: jest.fn(),
     };
 
     mockMainWebContents = {
@@ -73,12 +74,12 @@ describe('MiniViewHandler', () => {
   });
 
   describe('activateMiniView', () => {
-    it('should set correct bounds when mainWinPosInMiniView exists', () => {
+    it('should set correct bounds when mainWinPosInMiniView exists', async () => {
       (config.getUserConfigFields as jest.Mock).mockReturnValue({
         mainWinPosInMiniView: { x: 10, y: 20, width: 500, height: 400 },
       });
 
-      miniViewHandler.activateMiniView();
+      await miniViewHandler.activateMiniView();
 
       expect(mockMainWindow.setBounds).toHaveBeenCalledWith({
         x: 10,
@@ -88,11 +89,11 @@ describe('MiniViewHandler', () => {
       });
     });
 
-    it('should set default width and preserve height when mainWinPosInMiniView does not exist or has width > DEFAULT_MINI_VIEW_WINDOW_WIDTH', () => {
+    it('should set default width and preserve height when mainWinPosInMiniView does not exist or has width > DEFAULT_MINI_VIEW_WINDOW_WIDTH', async () => {
       (config.getUserConfigFields as jest.Mock).mockReturnValue({
         mainWinPosInMiniView: { x: 10, y: 20, width: 700, height: 400 },
       });
-      miniViewHandler.activateMiniView();
+      await miniViewHandler.activateMiniView();
 
       expect(mockMainWindow.setSize).toHaveBeenCalledWith(
         DEFAULT_MINI_VIEW_WINDOW_WIDTH,
@@ -102,32 +103,46 @@ describe('MiniViewHandler', () => {
 
     it('should call setIsMiniViewTransition and notifyClient with true', (done) => {
       jest.useFakeTimers();
-      miniViewHandler.activateMiniView();
-
+      miniViewHandler.activateMiniView().then(() => {
+        expect(windowHandler.setIsMiniViewTransition).toHaveBeenLastCalledWith(
+          false,
+        );
+        expect(mockMainWebContents.send).toHaveBeenCalledWith(
+          'set-mini-view',
+          true,
+        );
+        done();
+      });
       expect(windowHandler.setIsMiniViewTransition).toHaveBeenLastCalledWith(
         true,
       );
-
       jest.runAllTimers();
-      expect(windowHandler.setIsMiniViewTransition).toHaveBeenLastCalledWith(
-        false,
-      );
-      expect(mockMainWebContents.send).toHaveBeenCalledWith(
-        'set-mini-view',
-        true,
-      );
-      done();
     });
 
-    it('should set fullscreen to false if currently is in fullscreen', () => {
+    it('should set fullscreen to false if currently is in fullscreen', async () => {
+      jest.useFakeTimers();
       (mockMainWindow.isFullScreen as jest.Mock).mockReturnValue(true);
-      miniViewHandler.activateMiniView();
+      (mockMainWindow.once as jest.Mock).mockImplementation(
+        (event, callback) => {
+          if (event === 'leave-full-screen') {
+            callback();
+            jest.runAllTimers();
+          }
+        },
+      );
+      await miniViewHandler.activateMiniView();
       expect(mockMainWindow.setFullScreen).toHaveBeenCalledWith(false);
+      expect(mockMainWindow.once).toHaveBeenCalledWith(
+        'leave-full-screen',
+        expect.any(Function),
+      );
     });
 
-    it('should call unmaximize if currently is maximized', () => {
+    it('should call unmaximize if currently is maximized', async () => {
+      jest.useFakeTimers();
       (mockMainWindow.isMaximized as jest.Mock).mockReturnValue(true);
-      miniViewHandler.activateMiniView();
+      await miniViewHandler.activateMiniView();
+      jest.runAllTimers();
       expect(mockMainWindow.unmaximize).toHaveBeenCalled();
       expect(mainEvents.publish).toHaveBeenCalledWith('unmaximize');
     });
