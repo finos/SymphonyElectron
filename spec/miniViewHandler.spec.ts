@@ -120,11 +120,13 @@ describe('MiniViewHandler', () => {
     });
 
     it('should set fullscreen to false if currently is in fullscreen', async () => {
+      jest.useFakeTimers();
       (mockMainWindow.isFullScreen as jest.Mock).mockReturnValue(true);
       (mockMainWindow.once as jest.Mock).mockImplementation(
         (event, callback) => {
           if (event === 'leave-full-screen') {
             callback();
+            jest.runAllTimers();
           }
         },
       );
@@ -137,8 +139,10 @@ describe('MiniViewHandler', () => {
     });
 
     it('should call unmaximize if currently is maximized', async () => {
+      jest.useFakeTimers();
       (mockMainWindow.isMaximized as jest.Mock).mockReturnValue(true);
       await miniViewHandler.activateMiniView();
+      jest.runAllTimers();
       expect(mockMainWindow.unmaximize).toHaveBeenCalled();
       expect(mainEvents.publish).toHaveBeenCalledWith('unmaximize');
     });
