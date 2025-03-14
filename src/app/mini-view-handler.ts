@@ -124,7 +124,7 @@ class MiniViewHandler {
   private exitFullscreenAsync = (window: BrowserWindow): Promise<void> => {
     return new Promise<void>((resolve) => {
       window.once('leave-full-screen', () => {
-        if (!window || window.isDestroyed()) {
+        if (!window || !windowExists(window)) {
           logger.error(
             'mini-view-handler: window does not exist or is destroyed',
           );
