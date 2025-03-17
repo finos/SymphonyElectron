@@ -103,19 +103,19 @@ export class AppBridge {
     const { method, data } = event.data;
     switch (method) {
       case apiCmds.getVersionInfo:
-        const versionInfo = await ssf.getVersionInfo();
+        { const versionInfo = await ssf.getVersionInfo();
         this.broadcastMessage('get-version-info-callback', {
           requestId: data.requestId,
           response: versionInfo,
         });
-        break;
+        break; }
       case apiCmds.activate:
         ssf.activate(data as string);
         break;
       case apiCmds.bringToFront:
-        const { windowName, reason } = data;
+        { const { windowName, reason } = data;
         ssf.bringToFront(windowName as string, reason as string);
-        break;
+        break; }
       case apiCmds.setBadgeCount:
         if (typeof data === 'number') {
           ssf.setBadgeCount(data as number);
@@ -231,19 +231,19 @@ export class AppBridge {
         });
         break;
       case apiCmds.getCPUUsage:
-        const cpuUsage = await ssf.getCPUUsage();
+        { const cpuUsage = await ssf.getCPUUsage();
         this.broadcastMessage('get-cpu-usage-callback', {
           requestId: data.requestId,
           response: cpuUsage,
         });
-        break;
+        break; }
       case apiCmds.checkMediaPermission:
-        const mediaPermission = await ssf.checkMediaPermission();
+        { const mediaPermission = await ssf.checkMediaPermission();
         this.broadcastMessage('check-media-permission-callback', {
           requestId: data.requestId,
           response: mediaPermission,
         });
-        break;
+        break; }
     }
   }
 

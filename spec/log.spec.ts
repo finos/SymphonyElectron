@@ -1,4 +1,5 @@
 import * as os from 'os';
+import { Logger } from '../src/common/loggerBase';
 
 jest.mock('../src/common/utils.ts', () => {
   return {
@@ -15,10 +16,7 @@ jest.mock('../src/common/env', () => {
 describe('logger', () => {
   let instance;
   beforeEach(() => {
-    // I did it for reset module imported between tests
-    const { logger } = require('../src/common/logger');
-    instance = logger;
-    jest.resetModules();
+    instance = new Logger('dummy');
   });
 
   it('when no logger registered then queue items', () => {

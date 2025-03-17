@@ -775,7 +775,11 @@ export class WindowHandler {
         if (!this.mainWindow || !windowExists(this.mainWindow)) {
           return;
         }
-        response === 0 ? this.mainWindow.reload() : this.mainWindow.close();
+        if(response === 0) {
+          this.reloadSymphony();
+          return;          
+        }
+        this.mainWindow.close();
       },
     );
 
@@ -2241,6 +2245,8 @@ export class WindowHandler {
         ) {
           return;
         }
+        
+        // eslint-disable-next-line no-unsafe-optional-chaining
         const [width, height] = this.mainWindow?.getSize();
         this.mainView.setBounds({
           width,

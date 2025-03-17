@@ -73,6 +73,7 @@ export default class NotificationHandler {
       } catch (err) {
         console.warn(
           `Failed to set window position. x: ${x} y: ${y}. Contact the developers for more details`,
+          err,
         );
       }
     }
@@ -318,10 +319,11 @@ export default class NotificationHandler {
               newY = this.settings.corner.y + NOTIFICATION_STACK_HEIGHT * i;
               break;
             case 'lower-right':
-            case 'lower-left':
+            case 'lower-left': {
               const posY = this.settings.firstPos.y;
               newY = posY - NOTIFICATION_STACK_HEIGHT * i;
               break;
+            }
           }
         } else {
           newY = this.settings.firstPos.y + NOTIFICATION_STACK_HEIGHT * i;

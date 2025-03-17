@@ -2,14 +2,13 @@ import { shallow } from 'enzyme';
 import * as React from 'react';
 import ScreenPicker from '../src/renderer/components/screen-picker';
 import { ipcRenderer } from './__mocks__/electron';
+import * as env from '../src/common/env';
 
-jest.mock('../src/common/env', () => {
-  return {
-    isWindowsOS: false,
-    isLinux: false,
-    isMac: true,
-  };
-});
+const mockEnv = env as {
+  isWindowsOS: boolean;
+  isLinux: boolean;
+  isMac: boolean;
+};
 
 const mockThumbnail = {
   toDataURL: () => {},
@@ -492,7 +491,6 @@ describe('screen picker', () => {
     });
 
     it('should show `screen-tab` for Windows when source name is Entire screen and display_id is not present', () => {
-      const env = require('../src/common/env');
       const wrapper = shallow(React.createElement(ScreenPicker));
       const entireScreenStateMock = {
         sources: [
@@ -516,16 +514,15 @@ describe('screen picker', () => {
           },
         ],
       };
-      env.isWindowsOS = true;
-      env.isLinux = false;
-      env.isMac = false;
+      mockEnv.isWindowsOS = true;
+      mockEnv.isLinux = false;
+      mockEnv.isMac = false;
       wrapper.setState(entireScreenStateMock);
       expect(wrapper.find(screenTabCustomSelector)).toHaveLength(1);
       expect(wrapper.find(applicationTabCustomSelector)).toHaveLength(0);
     });
 
     it('should not show `screen-tab` for Mac when source name is Entire screen and display_id is not present', () => {
-      const env = require('../src/common/env');
       const wrapper = shallow(React.createElement(ScreenPicker));
       const entireScreenStateMock = {
         sources: [
@@ -549,9 +546,9 @@ describe('screen picker', () => {
           },
         ],
       };
-      env.isWindowsOS = false;
-      env.isLinux = false;
-      env.isMac = true;
+      mockEnv.isWindowsOS = false;
+      mockEnv.isLinux = false;
+      mockEnv.isMac = true;
       wrapper.setState(entireScreenStateMock);
       expect(wrapper.find(screenTabCustomSelector)).toHaveLength(0);
       expect(wrapper.find(applicationTabCustomSelector)).toHaveLength(1);
@@ -605,10 +602,9 @@ describe('screen picker', () => {
   });
 
   it('should call `ScreenPicker-window-border` event when component is mounted and is WindowsOS', () => {
-    const env = require('../src/common/env');
     const spy = jest.spyOn(document.body.classList, 'add');
     const expectedValue = 'ScreenPicker-window-border';
-    env.isWindowsOS = true;
+    mockEnv.isWindowsOS = true;
     shallow(React.createElement(ScreenPicker));
     expect(spy).toBeCalledWith(expectedValue);
   });

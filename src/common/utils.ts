@@ -70,8 +70,10 @@ export const compareVersions = (v1: string, v2: string): number => {
   }
 
   if ([s1[2], s2[2]].every(patch.test.bind(patch))) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const p1 = patch.exec(s1[2])[1].split('.').map(tryParse);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const p2 = patch.exec(s2[2])[1].split('.').map(tryParse);
 
@@ -211,6 +213,7 @@ export const throttle = (
 
   return (...args) => {
     if (!lastRan) {
+      // eslint-disable-next-line prefer-spread
       func.apply(null, args);
       lastRan = Date.now();
     } else {
@@ -219,6 +222,7 @@ export const throttle = (
       }
       timer = setTimeout(() => {
         if (Date.now() - lastRan >= wait) {
+          // eslint-disable-next-line prefer-spread
           func.apply(null, args);
           lastRan = Date.now();
         }
@@ -333,6 +337,7 @@ export const getDifferenceInDays = (startDate: Date, endDate: Date): number => {
 export const isUrl = (str: string): boolean => {
   try {
     return Boolean(new URL(str).protocol === 'https:');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (_e) {
     return false;
   }

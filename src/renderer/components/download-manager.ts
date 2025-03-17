@@ -76,9 +76,11 @@ export default class DownloadManager {
     const mainFooter = document.getElementById('footer');
     const { items } = this.state;
     if (mainFooter) {
-      items && items.length
-        ? mainFooter.classList.remove('hidden')
-        : mainFooter.classList.add('hidden');
+      if (items && items.length) {
+        mainFooter.classList.remove('hidden');
+      } else {
+        mainFooter.classList.add('hidden');
+      }
     }
   }
 

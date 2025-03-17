@@ -50,6 +50,7 @@ let isAppAlreadyOpen: boolean = false;
       ].join(':');
     }
   } catch (e) {
+    logger.error('main: error while setting path env variable ', e);
     if (isMac) {
       process.env.PATH = [
         './node_modules/.bin',
@@ -115,6 +116,7 @@ const startApplication = async () => {
   logger.info(`main: created application`);
 
   if (isDevEnv) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { loadReactDevToolsExtension } = require('./extension-handler');
     await loadReactDevToolsExtension(logger);
   }

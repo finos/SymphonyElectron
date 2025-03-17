@@ -140,6 +140,7 @@ const SnippingTool: React.FunctionComponent<ISnippingToolProps> = ({
   ];
 
   const getSnipImageData = (
+    // eslint-disable-next-line no-empty-pattern
     {},
     {
       snipImage,

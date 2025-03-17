@@ -11,7 +11,7 @@ import { logger } from '../common/logger';
 import { analytics } from './bi/analytics-handler';
 import { AnalyticsElements, ICrashData, SDACrashProcess } from './bi/interface';
 import { ICustomBrowserWindow } from './window-handler';
-import { windowExists } from './window-utils';
+import { reloadWindow, windowExists } from './window-utils';
 
 class CrashHandler {
   /**
@@ -31,7 +31,11 @@ class CrashHandler {
       )(),
       buttons: ['Reload', 'Close'],
     });
-    response === 0 ? browserWindow.reload() : browserWindow.close();
+    if(response === 0) {
+      reloadWindow(browserWindow);
+      return;
+    }
+    browserWindow.close();
   }
 
   /**

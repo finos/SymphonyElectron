@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 describe('C9 shell handler', () => {
   const webContentsMocked = {
     send: jest.fn(),
@@ -6,7 +7,7 @@ describe('C9 shell handler', () => {
     },
     getURL: jest.fn(),
   };
-  const mockSpawnEvents = new Map<String, any>();
+  const mockSpawnEvents = new Map<string, any>();
   const mockSpawn = jest.fn();
   const mockGetCommandLineArgs = jest.fn();
   const mockGetGuid = jest.fn();

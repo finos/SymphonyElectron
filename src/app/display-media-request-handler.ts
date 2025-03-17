@@ -97,6 +97,7 @@ class DisplayMediaRequestHandler {
           );
           if (!source) {
             windowHandler.closeScreenSharingIndicator();
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             callback();
           } else {

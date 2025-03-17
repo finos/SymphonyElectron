@@ -72,6 +72,7 @@ export default class MessageBanner {
           break;
         case 'warning':
           this.banner.classList.add('sda-banner-warning');
+          break;
         default:
           break;
       }
@@ -121,7 +122,9 @@ export default class MessageBanner {
           this.reload();
         }
         // tslint:disable-next-line:no-empty
-      } catch (e) {}
+      } catch (e) {
+        console.error('error while monitoring online state', e);
+      }
     }, onlineStateInterval);
   }
 

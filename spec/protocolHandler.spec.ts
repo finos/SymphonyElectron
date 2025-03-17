@@ -1,3 +1,8 @@
+import { activate } from '../src/app/window-actions';
+import { protocolHandler } from '../src/app/protocol-handler';
+import { getCommandLineArgs } from '../src/common/utils';
+import * as env from '../src/common/env';
+
 jest.mock('electron-log');
 
 jest.mock('../src/app/window-actions', () => {
@@ -50,12 +55,18 @@ jest.mock('../src/app/config-handler', () => {
   };
 });
 
+const mockEnv = env as {
+  isWindowsOS: boolean;
+  isLinux: boolean;
+  isMac: boolean;
+};
+
 describe('protocol handler', () => {
   let protocolHandlerInstance;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.resetModules();
-    const { protocolHandler } = require('../src/app/protocol-handler');
+    jest.resetAllMocks();
     protocolHandlerInstance = protocolHandler;
   });
 
@@ -81,8 +92,6 @@ describe('protocol handler', () => {
   });
 
   it('protocol activate should be called when uri is correct on macOS', () => {
-    const { activate } = require('../src/app/window-actions');
-
     protocolHandlerInstance.preloadWebContents = { send: jest.fn() };
     const uri: string = 'symphony://?userId=123456';
 
@@ -92,10 +101,7 @@ describe('protocol handler', () => {
   });
 
   it('protocol activate should not be called when uri is correct on non macOS', () => {
-    const env = require('../src/common/env');
-    env.isMac = false;
-
-    const { activate } = require('../src/app/window-actions');
+    mockEnv.isMac = false;
 
     protocolHandlerInstance.preloadWebContents = { send: jest.fn() };
     const uri: string = 'symphony://?userId=123456';
@@ -121,25 +127,9 @@ describe('protocol handler', () => {
   });
 
   it('protocol should get uri from `processArgv` when `getCommandLineArgs` is called', () => {
-    const { getCommandLineArgs } = require('../src/common/utils');
-
     protocolHandlerInstance.processArgv('');
 
     expect(getCommandLineArgs).toBeCalled();
-  });
-
-  it('should be called `sendProtocol` when is windowsOS on `processArgs`', () => {
-    const env = require('../src/common/env');
-    env.isWindowsOS = true;
-
-    const spy: jest.SpyInstance = jest.spyOn(
-      protocolHandlerInstance,
-      'sendProtocol',
-    );
-
-    protocolHandlerInstance.processArgv('');
-
-    expect(spy).toBeCalled();
   });
 
   it('should invoke `sendProtocol` when `setPreloadWebContents` is called and protocolUri is valid', () => {

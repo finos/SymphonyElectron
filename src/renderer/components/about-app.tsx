@@ -53,7 +53,7 @@ const KEY_CODE = {
 /**
  * Window that display app version and copyright info
  */
-export default class AboutApp extends React.Component<{}, IState> {
+export default class AboutApp extends React.Component<object, IState> {
   private readonly eventHandlers = {
     onCopy: () => this.copy(),
     onClose: () => this.close(),
@@ -265,7 +265,7 @@ export default class AboutApp extends React.Component<{}, IState> {
    */
   public copy(): void {
     const { clientVersion, ...rest } = this.state;
-    const { isPodEditing, isValidHostname, ...data } = {
+    const { ...data } = {
       ...{ sbeVersion: clientVersion },
       ...rest,
     };

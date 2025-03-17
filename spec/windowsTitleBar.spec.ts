@@ -11,7 +11,7 @@ jest.mock('classnames', () => {
     default: jest.fn((...args) => actualClassNames.default(...args)),
   };
 });
-
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 global.MutationObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),

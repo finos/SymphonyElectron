@@ -168,14 +168,14 @@ describe('Call toast notification component', () => {
       primaryText: '123 [PHONE]',
     });
 
-    let federationTypeText = wrapper.find('[data-testid="FEDERATION_TYPE"]');
-    let federationUnknownUserAvatar = wrapper.find(
+    const federationTypeText = wrapper.find('[data-testid="FEDERATION_TYPE"]');
+    const federationUnknownUserAvatar = wrapper.find(
       '[data-testid="FEDERATION_UNKNOWN_USER_AVATAR"]',
     );
-    let federationPrimaryText = wrapper.find(
+    const federationPrimaryText = wrapper.find(
       '[data-testid="CALL_NOTIFICATION_NAME"]',
     );
-    let avatarBadge = wrapper.find('[data-testid="AVATAR_BADGE"]');
+    const avatarBadge = wrapper.find('[data-testid="AVATAR_BADGE"]');
 
     expect(federationTypeText.exists()).toBeTruthy();
     expect(federationUnknownUserAvatar.exists()).toBeTruthy();
@@ -198,17 +198,17 @@ describe('Call toast notification component', () => {
       callerNumber: '123',
       primaryText: 'Helen',
     });
-    let federationTypeText = wrapper.find('[data-testid="FEDERATION_TYPE"]');
-    let federationUnknownUserAvatar = wrapper.find(
+    const federationTypeText = wrapper.find('[data-testid="FEDERATION_TYPE"]');
+    const federationUnknownUserAvatar = wrapper.find(
       '[data-testid="FEDERATION_NAMED_USER_AVATAR"]',
     );
-    let federationNumber = wrapper.find(
+    const federationNumber = wrapper.find(
       '[data-testid="FEDERATION_NAMED_USER_NUMBER"]',
     );
-    let federationPrimaryText = wrapper.find(
+    const federationPrimaryText = wrapper.find(
       '[data-testid="CALL_NOTIFICATION_NAME"]',
     );
-    let avatarBadge = wrapper.find('[data-testid="AVATAR_BADGE"]');
+    const avatarBadge = wrapper.find('[data-testid="AVATAR_BADGE"]');
 
     expect(federationTypeText.exists()).toBeTruthy();
     expect(federationUnknownUserAvatar.exists()).toBeTruthy();

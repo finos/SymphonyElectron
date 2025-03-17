@@ -1,7 +1,14 @@
 import { setChromeFlags } from '../src/app/chrome-flags';
 import { config } from '../src/app/config-handler';
-import { isDevEnv, isLinux, isMac, isWindowsOS } from '../src/common/env';
+import * as env from '../src/common/env';
 import { app } from './__mocks__/electron';
+
+const mockEnv = env as {
+  isWindowsOS: boolean;
+  isLinux: boolean;
+  isMac: boolean;
+  isDevEnv: boolean;
+};
 
 jest.mock('../src/app/config-handler', () => {
   return {
@@ -46,10 +53,10 @@ jest.mock('electron-log');
 
 describe('chrome flags', () => {
   beforeEach(() => {
-    (isDevEnv as any) = false;
-    (isMac as any) = true;
-    (isWindowsOS as any) = false;
-    (isLinux as any) = false;
+    mockEnv.isDevEnv = false;
+    mockEnv.isMac = true;
+    mockEnv.isWindowsOS = false;
+    mockEnv.isLinux = false;
     config.getConfigFields = jest.fn(() => {
       return {
         customFlags: {
@@ -179,7 +186,7 @@ describe('chrome flags', () => {
 
   describe('`isDevEnv`', () => {
     beforeEach(() => {
-      (isDevEnv as any) = true;
+      mockEnv.isDevEnv = true;
     });
 
     it('should call `setChromeFlags` correctly', () => {

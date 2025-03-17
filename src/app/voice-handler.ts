@@ -1,5 +1,6 @@
 import { app } from 'electron';
 import * as path from 'path';
+import Registry from 'winreg';
 import { PhoneNumberProtocol } from '../common/api-interface';
 import { isDevEnv, isMac, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
@@ -41,7 +42,6 @@ class VoiceHandler {
    * Registers app on Windows
    */
   private async registerAppOnWindows(protocols: PhoneNumberProtocol[]) {
-    const Registry = require('winreg');
     const appPath = isDevEnv
       ? path.join(path.dirname(app.getPath('exe')), 'Electron.exe')
       : path.join(path.dirname(app.getPath('exe')), 'Symphony.exe');
@@ -162,7 +162,6 @@ class VoiceHandler {
    * Unregisters tel / sms protocols on Windows
    */
   private async unregisterAppOnWindows(protocols: PhoneNumberProtocol[]) {
-    const Registry = require('winreg');
     const symURLAssociationRegKey = new Registry({
       hive: Registry.HKCU,
       key: REGISTRY_PATHS.UrlRegistration,

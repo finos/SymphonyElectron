@@ -1,4 +1,5 @@
 import { logger } from '../common/logger';
+import Registry from 'winreg';
 import { EChannelRegistry, RegistryStore } from './stores/registry-store';
 
 enum RegistryValueType {
@@ -9,7 +10,6 @@ const CHANNEL_NEST_LOCATION = '\\SOFTWARE\\Policies\\Symphony\\Update';
 const CHANNEL_KEY = 'channel';
 
 export const retrieveWindowsRegistry = async (): Promise<string> => {
-  const Registry = require('winreg');
   const registryLocalStore = RegistryStore;
   const fetchLogic = (err, channel) => {
     if (err || !channel) {

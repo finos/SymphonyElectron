@@ -175,10 +175,10 @@ export interface IOpenfin {
 }
 
 class Config {
-  public userConfig: IConfig | {};
-  public globalConfig: IConfig | {};
-  public cloudConfig: ICloudConfig | {};
-  public filteredCloudConfig: ICloudConfig | {};
+  public userConfig: IConfig | object;
+  public globalConfig: IConfig | object;
+  public cloudConfig: ICloudConfig | object;
+  public filteredCloudConfig: ICloudConfig | object;
   private isFirstTime: boolean = true;
   private didUpdateConfigFile: boolean = false;
   private isUpdatingConfigFile: boolean = false;
@@ -264,7 +264,7 @@ class Config {
       const id = powerSaveBlocker.start('prevent-app-suspension');
       logger.info('config-handler: before-quit application is terminated');
       terminateC9Shell();
-      if (!this.didUpdateConfigFile) {
+      if (!this.didUpdateConfigFile && !this.isUpdatingConfigFile) {
         this.isUpdatingConfigFile = true;
         event.preventDefault();
         logger.info(
@@ -363,7 +363,7 @@ class Config {
    *
    * @param fields {Array}
    */
-  public getFilteredCloudConfigFields(fields: string[]): IConfig | {} {
+  public getFilteredCloudConfigFields(fields: string[]): IConfig | object {
     const filteredCloudConfigData = pick(
       this.filteredCloudConfig,
       fields,
@@ -491,15 +491,7 @@ class Config {
     const shouldUpdateUserConfig =
       execPath.indexOf('AppData\\Local\\Programs') !== -1 || isMac;
     if (shouldUpdateUserConfig) {
-      const {
-        minimizeOnClose,
-        launchOnStartup,
-        alwaysOnTop,
-        memoryRefresh,
-        bringToFront,
-        isCustomTitleBar,
-        ...filteredFields
-      }: IConfig = this.userConfig as IConfig;
+      const { ...filteredFields }: IConfig = this.userConfig as IConfig;
       // update to the new build number
       filteredFields.buildNumber = buildNumber;
       filteredFields.installVariant = this.installVariant;
@@ -568,7 +560,7 @@ class Config {
     const updatedField: string[] = [];
     if (sdaCloudConfig && sfeCloudConfig) {
       for (const sdaKey in sdaCloudConfig) {
-        if (sdaCloudConfig.hasOwnProperty(sdaKey)) {
+        if (Object.prototype.hasOwnProperty.call(sdaCloudConfig, sdaKey)) {
           for (const sfeKey in sfeCloudConfig) {
             if (sdaKey !== sfeKey) {
               continue;
@@ -590,7 +582,12 @@ class Config {
               typeof sfeCloudConfig[sfeKey] === 'object'
             ) {
               for (const sdaObjectKey in sdaCloudConfig[sdaKey]) {
-                if (sdaCloudConfig[sdaKey].hasOwnProperty(sdaObjectKey)) {
+                if (
+                  Object.prototype.hasOwnProperty.call(
+                    sdaCloudConfig[sdaKey],
+                    sdaObjectKey,
+                  )
+                ) {
                   for (const sfeObjectKey in sfeCloudConfig[sfeKey]) {
                     if (
                       sdaObjectKey === sfeObjectKey &&
@@ -643,7 +640,7 @@ class Config {
       logger.info(
         `config-handler: user config doesn't exist! will create new one and update config`,
       );
-      const { url, ...rest } = this.globalConfig as IConfig;
+      const { ...rest } = this.globalConfig as IConfig;
       await this.updateUserConfig({
         buildNumber,
         ...rest,

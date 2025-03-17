@@ -15,7 +15,7 @@ process.on('unhandledRejection', (reason, promise) => {
     'Unhandled promise rejection:',
     promise,
     'reason:',
-    reason ? (reason as any).stack : 'unknown' || reason,
+    reason ? (reason as any).stack : 'unknown',
   );
 });
 

@@ -169,9 +169,6 @@ export const getThemeColors = (
       } else {
         currentColors.notificationBorderColor = '#F7CA3B';
       }
-    } else if (hasMention) {
-      currentColors.notificationBorderColor =
-        currentColors.notificationBorderColor;
     } else {
       // in case of regular message without mention
       // FYI: SDA versions prior to 9.2.3 do not support theme color properly, reason why SFE-lite is pushing notification default background color.

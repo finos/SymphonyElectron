@@ -113,6 +113,7 @@ class Translation {
       return null;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     return (this.loadedResources[this.locale] = require(resourcePath));
   }
 }

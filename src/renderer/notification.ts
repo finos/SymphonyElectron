@@ -318,10 +318,7 @@ class Notification extends NotificationHandler {
       const pos = this.activeNotifications.indexOf(browserWindow);
       this.activeNotifications.splice(pos, 1);
 
-      if (
-        this.inactiveWindows.length < this.settings.maxVisibleNotifications ||
-        5
-      ) {
+      if (this.inactiveWindows.length < this.settings.maxVisibleNotifications) {
         this.inactiveWindows.push(browserWindow);
         browserWindow.hide();
       } else {

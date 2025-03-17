@@ -79,7 +79,7 @@ export const getAllUserDefaults = (): IConfig => {
 
   Object.keys(GENERAL_SETTINGS).map((key) => {
     // Validate plist file only for keys that exist in ConfigFieldsDefaultValues
-    if (ConfigFieldsDefaultValues.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(ConfigFieldsDefaultValues, key)) {
       // If plistData has entries but the key is missing, set it to the default value
       if (Object.keys(plistData).length && !hasField(key)) {
         logger.info(
@@ -238,5 +238,5 @@ export const readPlistFile = (): void => {
  * @returns {boolean} Returns `true` if the field exists, `false` otherwise.
  */
 export const hasField = (fieldName: string): boolean => {
-  return plistData.hasOwnProperty(fieldName);
+  return Object.prototype.hasOwnProperty.call(plistData, fieldName);
 };

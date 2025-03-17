@@ -135,7 +135,7 @@ export class AppMenu {
   private menu: Electron.Menu | undefined;
   private menuList: Electron.MenuItemConstructorOptions[];
   private locale: LocaleType;
-  private cloudConfig: IConfig | {};
+  private cloudConfig: IConfig | object;
 
   private readonly menuItemConfigFields: string[];
   private disableGpu: boolean;

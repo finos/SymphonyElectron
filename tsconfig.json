@@ -16,7 +16,6 @@
     "declaration": true,
     "noImplicitAny": false,
     "noImplicitReturns": true,
-    "suppressImplicitAnyIndexErrors": true,
     "strictNullChecks": true,
     "noUnusedLocals": true,
     "noImplicitThis": true,

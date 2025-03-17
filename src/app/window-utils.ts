@@ -12,7 +12,6 @@ import {
   WebContents,
   WebContentsView,
 } from 'electron';
-import electron = require('electron');
 import fetch from 'electron-fetch';
 import { filesize } from 'filesize';
 import * as fs from 'fs';
@@ -531,7 +530,7 @@ export const getBounds = (
   }
 
   // Fit in the middle of immediate display
-  const display = screen.getDisplayMatching(winPos as electron.Rectangle);
+  const display = screen.getDisplayMatching(winPos as Rectangle);
 
   if (display) {
     // Check that defaultWidth fits
@@ -902,40 +901,28 @@ export const zoomIn = () => {
     if (windowHandler.isMana) {
       if (zoomFactor < 1.5) {
         if (zoomFactor < 0.7) {
-          isNotificationWindow
-            ? notificationWebContents.send(ZOOM_FACTOR_CHANGE, 0.7)
-            : webContents.setZoomFactor(0.7);
+          handleZoom(isNotificationWindow, webContents, notificationWebContents, 0.7);
         } else if (zoomFactor >= 0.7 && zoomFactor < 0.8) {
-          isNotificationWindow
-            ? notificationWebContents.send(ZOOM_FACTOR_CHANGE, 0.8)
-            : webContents.setZoomFactor(0.8);
+          handleZoom(isNotificationWindow, webContents, notificationWebContents, 0.8);
         } else if (zoomFactor >= 0.8 && zoomFactor < 0.9) {
-          isNotificationWindow
-            ? notificationWebContents.send(ZOOM_FACTOR_CHANGE, 0.9)
-            : webContents.setZoomFactor(0.9);
+          handleZoom(isNotificationWindow, webContents, notificationWebContents, 0.9);
         } else if (zoomFactor >= 0.9 && zoomFactor < 1.0) {
-          isNotificationWindow
-            ? notificationWebContents.send(ZOOM_FACTOR_CHANGE, 1.0)
-            : webContents.setZoomFactor(1.0);
+          handleZoom(isNotificationWindow, webContents, notificationWebContents, 1);
         } else if (zoomFactor >= 1.0 && zoomFactor < 1.1) {
-          isNotificationWindow
-            ? notificationWebContents.send(ZOOM_FACTOR_CHANGE, 1.1)
-            : webContents.setZoomFactor(1.1);
+          handleZoom(isNotificationWindow, webContents, notificationWebContents, 1.1);
         } else if (zoomFactor >= 1.1 && zoomFactor < 1.25) {
-          isNotificationWindow
-            ? notificationWebContents.send(ZOOM_FACTOR_CHANGE, 1.25)
-            : webContents.setZoomFactor(1.25);
+          handleZoom(isNotificationWindow, webContents, notificationWebContents, 1.25);
         } else if (zoomFactor >= 1.25 && zoomFactor < 1.5) {
-          isNotificationWindow
-            ? notificationWebContents.send(ZOOM_FACTOR_CHANGE, 1.5)
-            : webContents.setZoomFactor(1.5);
+          handleZoom(isNotificationWindow, webContents, notificationWebContents, 1.5);
         }
       }
     } else {
       const currentZoomLevel = webContents.getZoomLevel();
-      isNotificationWindow
-        ? notificationWebContents.send(ZOOM_FACTOR_CHANGE, zoomFactor)
-        : webContents.setZoomLevel(currentZoomLevel + 0.5);
+      if(isNotificationWindow) {
+        notificationWebContents.send(ZOOM_FACTOR_CHANGE, zoomFactor);
+      } else {
+        webContents.setZoomLevel(currentZoomLevel + 0.5);
+      }
     }
   };
 
@@ -1002,40 +989,26 @@ export const zoomOut = () => {
       const zoomFactor = webContents.getZoomFactor();
       if (zoomFactor > 0.7) {
         if (zoomFactor > 1.5) {
-          isNotificationWindow
-            ? notificationWebContents?.send(ZOOM_FACTOR_CHANGE, 1.5)
-            : webContents.setZoomFactor(1.5);
+          handleZoom(isNotificationWindow, webContents, notificationWebContents, 1.5);
         } else if (zoomFactor > 1.25 && zoomFactor <= 1.5) {
-          isNotificationWindow
-            ? notificationWebContents?.send(ZOOM_FACTOR_CHANGE, 1.25)
-            : webContents.setZoomFactor(1.25);
+          handleZoom(isNotificationWindow, webContents, notificationWebContents, 1.25);
         } else if (zoomFactor > 1.1 && zoomFactor <= 1.25) {
-          isNotificationWindow
-            ? notificationWebContents?.send(ZOOM_FACTOR_CHANGE, 1.1)
-            : webContents.setZoomFactor(1.1);
+          handleZoom(isNotificationWindow, webContents, notificationWebContents, 1.1);
         } else if (zoomFactor > 1.0 && zoomFactor <= 1.1) {
-          isNotificationWindow
-            ? notificationWebContents?.send(ZOOM_FACTOR_CHANGE, 1.0)
-            : webContents.setZoomFactor(1.0);
+          handleZoom(isNotificationWindow, webContents, notificationWebContents, 1);
         } else if (zoomFactor > 0.9 && zoomFactor <= 1.0) {
-          isNotificationWindow
-            ? notificationWebContents?.send(ZOOM_FACTOR_CHANGE, 0.9)
-            : webContents.setZoomFactor(0.9);
+          handleZoom(isNotificationWindow, webContents, notificationWebContents, 0.9);
         } else if (zoomFactor > 0.8 && zoomFactor <= 0.9) {
-          isNotificationWindow
-            ? notificationWebContents?.send(ZOOM_FACTOR_CHANGE, 0.8)
-            : webContents.setZoomFactor(0.8);
+          handleZoom(isNotificationWindow, webContents, notificationWebContents, 0.8);
         } else if (zoomFactor > 0.7 && zoomFactor <= 0.8) {
-          isNotificationWindow
-            ? notificationWebContents?.send(ZOOM_FACTOR_CHANGE, 0.7)
-            : webContents.setZoomFactor(0.7);
+          handleZoom(isNotificationWindow, webContents, notificationWebContents, 0.7);
         }
       }
     } else {
       const currentZoomLevel = webContents.getZoomLevel();
-      isNotificationWindow
-        ? notificationWebContents?.send(ZOOM_FACTOR_CHANGE, zoomFactor)
-        : webContents.setZoomLevel(currentZoomLevel - 0.5);
+      if(isNotificationWindow) {
+        notificationWebContents?.send(ZOOM_FACTOR_CHANGE, zoomFactor);
+      } else {webContents.setZoomLevel(currentZoomLevel - 0.5);}
     }
   };
 
@@ -1218,9 +1191,11 @@ export const updateFeaturesForCloudConfig = async (
   );
 
   // Update launch on start up
-  launchOnStartup === CloudConfigDataTypes.ENABLED
-    ? autoLaunchInstance.enableAutoLaunch()
-    : autoLaunchInstance.disableAutoLaunch();
+  if(launchOnStartup === CloudConfigDataTypes.ENABLED) {
+    autoLaunchInstance.enableAutoLaunch()
+  } else {
+    autoLaunchInstance.disableAutoLaunch();
+  }
 
   if (mainWebContents && !mainWebContents.isDestroyed()) {
     if (memoryRefresh && memoryRefresh === CloudConfigDataTypes.ENABLED) {
@@ -1607,6 +1582,15 @@ export const isValidUrl = (text: string): false | URL => {
   try {
     return new URL(text);
   } catch (err) {
+    logger.error('window-utils: unable to parse url', err);
     return false;
   }
 };
+
+function handleZoom(isNotificationWindow: boolean, webContents: Electron.WebContents, notificationWebContents: any, zoomFactor: number) {
+  if(isNotificationWindow) {
+    notificationWebContents.send(ZOOM_FACTOR_CHANGE, zoomFactor);
+  } else {
+    webContents.setZoomFactor(zoomFactor);
+  }
+}

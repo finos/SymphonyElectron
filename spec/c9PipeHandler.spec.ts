@@ -5,8 +5,8 @@ jest.mock('net');
 
 describe('C9 pipe handler', () => {
   const webContentsMocked = { send: jest.fn() };
-  const mockConnectionEvents = new Map<String, any>();
-  const mockCreateConnection = (createConnection as unknown) as jest.MockInstance<
+  const mockConnectionEvents = new Map<string, any>();
+  const mockCreateConnection = createConnection as unknown as jest.MockInstance<
     typeof createConnection
   >;
 

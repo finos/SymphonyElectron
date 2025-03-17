@@ -3,6 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { IConfig, IGlobalConfig } from '../src/app/config-handler';
 import { ConfigFieldsDefaultValues } from '../src/common/config-interface';
+import { config } from '../src/app/config-handler';
 
 jest.mock('electron-log');
 jest.mock('../src/app/auto-update-handler', () => {
@@ -60,8 +61,6 @@ describe('config', () => {
   };
 
   beforeEach(() => {
-    const { config } = require('../src/app/config-handler');
-
     globalConfigDir = createTempGlobalConfig(configFileName);
     userConfigDir = createTempUserConfig(configFileName);
 

@@ -1,3 +1,5 @@
+import { downloadHandler } from '../src/app/download-handler';
+
 jest.mock('electron-log');
 
 jest.mock('../src/app/window-handler', () => {
@@ -20,7 +22,6 @@ describe('download handler', () => {
   beforeEach(() => {
     jest.resetModules();
     // I did it for reset module imported between tests
-    const { downloadHandler } = require('../src/app/download-handler');
     downloadHandlerInstance = downloadHandler;
   });
 

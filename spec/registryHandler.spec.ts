@@ -4,7 +4,7 @@ import {
   RegistryStore,
 } from '../src/app/stores/registry-store';
 
-let mockChannel = { value: '', type: 'REG_SZ' };
+const mockChannel = { value: '', type: 'REG_SZ' };
 
 jest.mock('winreg', () => {
   return jest.fn().mockImplementation(() => {

@@ -18,7 +18,7 @@ const props = isMac
       name: 'Symphony',
       path: autoLaunchPath
         ? autoLaunchPath.replace(/\//g, '\\')
-        : null || process.execPath,
+        : process.execPath,
     };
 
 class AutoLaunchController {

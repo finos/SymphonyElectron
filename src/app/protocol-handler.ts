@@ -132,6 +132,7 @@ class ProtocolHandler {
    * @param argv {String[]} - data received from process.argv
    */
   public processArgv(argv?: string[], isAppAlreadyOpen: boolean = false): void {
+    console.log('toto called', argv);
     logger.info(`protocol-handler: processing protocol args!`);
     const protocolUriFromArgv = getCommandLineArgs(
       argv || process.argv,

@@ -1,3 +1,4 @@
+import { ipcRenderer } from 'electron';
 import { shallow, ShallowWrapper } from 'enzyme';
 import * as React from 'react';
 import BasicAuth from '../src/renderer/components/basic-auth';
@@ -22,6 +23,15 @@ describe('basic auth', () => {
   const usernameMock = { username: 'foo' };
   const passwordMock = { password: '123456' };
 
+  jest.mock('electron', () => ({
+    ipcRenderer: {
+      send: jest.fn(),
+      on: jest.fn(),
+      removeListener: jest.fn(),
+      once: jest.fn(),
+    },
+  }));
+
   it('should render correctly', () => {
     const wrapper: ShallowWrapper = shallow(React.createElement(BasicAuth));
     expect(wrapper).toMatchSnapshot();
@@ -42,7 +52,6 @@ describe('basic auth', () => {
 
   it('should call submit login', () => {
     const fakeEvent = { preventDefault: () => {} };
-    const { ipcRenderer } = require('./__mocks__/electron');
     const spy: jest.SpyInstance = jest.spyOn(ipcRenderer, 'send');
     const wrapper: ShallowWrapper = shallow(React.createElement(BasicAuth));
     wrapper.find('#username').simulate('change', usernameTargetMock);
@@ -55,7 +64,6 @@ describe('basic auth', () => {
   });
 
   it('should call `basic-auth-closed` event when cancel button is clicked', () => {
-    const { ipcRenderer } = require('./__mocks__/electron');
     const spy: jest.SpyInstance = jest.spyOn(ipcRenderer, 'send');
     const wrapper: ShallowWrapper = shallow(React.createElement(BasicAuth));
     wrapper.find('#cancel').simulate('click');
@@ -63,22 +71,16 @@ describe('basic auth', () => {
   });
 
   describe('basic auth mount and unmount event', () => {
-    const { ipcRenderer } = require('./__mocks__/electron');
     const basicAuthDataLabel: string = 'basic-auth-data';
-    const onLabelEvent: string = 'on';
-    const removeListenerLabelEvent: string = 'removeListener';
 
     it('should call `basic-auth-data` event when component is mounted', () => {
-      const spy: jest.SpyInstance = jest.spyOn(ipcRenderer, onLabelEvent);
+      const spy: jest.SpyInstance = jest.spyOn(ipcRenderer, 'on');
       shallow(React.createElement(BasicAuth));
       expect(spy).toBeCalledWith(basicAuthDataLabel, expect.any(Function));
     });
 
     it('should remove listen `basic-auth-data` when component is unmounted', () => {
-      const spy: jest.SpyInstance = jest.spyOn(
-        ipcRenderer,
-        removeListenerLabelEvent,
-      );
+      const spy: jest.SpyInstance = jest.spyOn(ipcRenderer, 'removeListener');
       const wrapper: ShallowWrapper = shallow(React.createElement(BasicAuth));
       wrapper.unmount();
       expect(spy).toBeCalledWith(basicAuthDataLabel, expect.any(Function));

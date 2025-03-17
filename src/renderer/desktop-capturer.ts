@@ -57,8 +57,6 @@ export const getSource = async (
   callback: CallbackType,
 ) => {
   let captureWindow;
-  let captureScreen;
-  let id;
   const sourcesOpts: string[] = [];
   const { requestId, ...updatedOptions } = options;
   if (!isValid(options)) {
@@ -70,7 +68,7 @@ export const getSource = async (
     return;
   }
   captureWindow = includes.call(options.types, 'window');
-  captureScreen = includes.call(options.types, 'screen');
+  const captureScreen = includes.call(options.types, 'screen');
 
   if (!updatedOptions.thumbnailSize) {
     updatedOptions.thumbnailSize = {
@@ -112,7 +110,7 @@ export const getSource = async (
     return;
   }
 
-  id = getNextId();
+  const id = getNextId();
   const sources: DesktopCapturerSource[] = await ipcRenderer.invoke(
     apiName.symphonyApi,
     {

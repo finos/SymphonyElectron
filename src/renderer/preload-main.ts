@@ -39,7 +39,6 @@ const createAPI = () => {
   //
   // API exposed to renderer process.
   //
-  // @ts-ignore
   ssfWindow.ssf = new SSFApi();
   Object.freeze(ssfWindow.ssf);
 };
@@ -196,7 +195,7 @@ ipcRenderer.on('network-error', (_event, { error }) => {
 });
 
 ipcRenderer.on('show-banner', (_event, { show, bannerType, url }) => {
-  if (!!document.getElementsByClassName('sda-banner-show').length) {
+  if (document.getElementsByClassName('sda-banner-show').length) {
     return;
   }
   banner.showBanner(show, bannerType, url);

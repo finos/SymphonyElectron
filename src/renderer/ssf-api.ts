@@ -632,7 +632,7 @@ export class SSFApi {
    *
    * @param data {ICloudConfig}
    */
-  public setCloudConfig(data: {}): void {
+  public setCloudConfig(data: object): void {
     throttledSetCloudConfig(data);
   }
 
@@ -872,7 +872,7 @@ export class SSFApi {
         local.c9PipeEventCallback = (event: string, arg?: any) => {
           switch (event) {
             case 'connected':
-              const ret = {
+              { const ret = {
                 write: (data: Uint8Array) => {
                   ipcRenderer.send(apiName.symphonyApi, {
                     cmd: apiCmds.writeCloud9Pipe,
@@ -886,7 +886,7 @@ export class SSFApi {
                 },
               };
               resolve(ret);
-              break;
+              break; }
             case 'connection-failed':
               local.c9PipeEventCallback = undefined;
               reject(arg);

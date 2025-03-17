@@ -287,7 +287,7 @@ export const handleKeyPress = (key: number): void => {
       break;
     }
     case KeyCodes.Alt:
-      if (isMac || isLinux) {
+      { if (isMac || isLinux) {
         return;
       }
       const browserWin =
@@ -300,7 +300,7 @@ export const handleKeyPress = (key: number): void => {
         logger.info(`window-actions: popping up menu by alt key action`);
         showPopupMenu({ window: browserWin });
       }
-      break;
+      break; }
     default:
       break;
   }
@@ -338,6 +338,7 @@ export const monitorWindowActions = (window: BrowserWindow): void => {
   const eventNames = ['move', 'resize'];
   eventNames.forEach((event: string) => {
     if (window) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       window.on(event, () => throttledWindowChanges(event, window));
     }
@@ -376,6 +377,7 @@ export const removeWindowEventListener = (window: BrowserWindow): void => {
   const eventNames = ['move', 'resize'];
   eventNames.forEach((event: string) => {
     if (window) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       window.removeListener(event, throttledWindowChanges);
     }

@@ -49,8 +49,8 @@ class CallNotification {
               parseInt(String(y), 10),
             );
           } catch (err) {
-            logger.info(
-              `Failed to set window position. x: ${x} y: ${y}. Contact the developers for more details`,
+            logger.error(
+              `Failed to set window position. x: ${x} y: ${y}. Contact the developers for more details`, err
             );
           }
         }
@@ -97,8 +97,8 @@ class CallNotification {
         parseInt(String(y), 10),
       );
     } catch (err) {
-      logger.info(
-        `Failed to set window position. x: ${x} y: ${y}. Contact the developers for more details`,
+      logger.error(
+        `Failed to set window position. x: ${x} y: ${y}. Contact the developers for more details`, err
       );
     }
     this.callNotificationWindow.webContents.once('did-finish-load', () => {

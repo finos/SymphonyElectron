@@ -17,6 +17,7 @@ describe('activity detection', () => {
     jest.resetModules();
     jest.useFakeTimers();
     // I did it for reset module imported between tests
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { activityDetection } = require('../src/app/activity-detection');
     activityDetectionInstance = activityDetection;
   });

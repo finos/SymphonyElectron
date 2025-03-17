@@ -68,5 +68,5 @@ logger.info(`Crash Reporter started`);
 // Log app statistics
 appStats.logStats();
 
-// tslint:disable-next-line
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 require('./main');

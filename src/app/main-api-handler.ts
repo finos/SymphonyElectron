@@ -77,7 +77,8 @@ try {
   // tslint:disable-next-line:no-var-requires
   const { SSAPIBridge } = {} as any; // require('swift-search');
   swiftSearchInstance = new SSAPIBridge();
-} catch (e) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+} catch (_e) {
   console.warn(
     "Failed to initialize swift search. You'll need to include the search dependency. Contact the developers for more details",
   );
@@ -272,7 +273,7 @@ ipcMain.on(
         windowHandler.closeWindow(arg.windowType, arg.winKey);
         break;
       case apiCmds.openScreenSharingIndicator:
-        const { displayId, id, streamId } = arg;
+        { const { displayId, id, streamId } = arg;
         if (typeof displayId === 'string' && typeof id === 'number') {
           windowHandler.createScreenSharingIndicatorWindow(
             event.sender,
@@ -281,7 +282,7 @@ ipcMain.on(
             streamId,
           );
         }
-        break;
+        break; }
       case apiCmds.downloadManagerAction:
         if (typeof arg.path === 'string') {
           downloadManagerAction(arg.type, arg.path);
@@ -320,9 +321,9 @@ ipcMain.on(
         }
         break;
       case apiCmds.getConfigUrl:
-        const { url } = config.getGlobalConfigFields(['url']);
+        { const { url } = config.getGlobalConfigFields(['url']);
         event.returnValue = url;
-        break;
+        break; }
       case apiCmds.registerAnalyticsHandler:
         analytics.registerPreloadWindow(event.sender);
         break;
@@ -379,7 +380,7 @@ ipcMain.on(
        * This gets called from mana, when user logs out
        */
       case apiCmds.closeAllWrapperWindows:
-        windowHandler.closeAllWindows();
+        { windowHandler.closeAllWindows();
         const main = windowHandler.getMainWindow();
         terminateC9Shell();
 
@@ -389,7 +390,7 @@ ipcMain.on(
         // reset mini view state
         windowHandler.setIsMiniViewFeatureEnabled(false);
         windowHandler.setIsMiniViewEnabled(false);
-        break;
+        break; }
       case apiCmds.setZoomLevel:
         if (typeof arg.zoomLevel === 'number') {
           const mainWebContents = windowHandler.getMainWebContents();
@@ -450,7 +451,7 @@ ipcMain.on(
         unMaximizeMainWindow();
         break;
       case apiCmds.browserLogin:
-        await config.updateUserConfig({
+        { await config.updateUserConfig({
           browserLoginAutoConnect: arg.browserLoginAutoConnect,
         });
         const { url: previousUserConfigURL } = config.getUserConfigFields([
@@ -507,7 +508,7 @@ ipcMain.on(
           }
         }
 
-        break;
+        break; }
       case apiCmds.setBroadcastMessage:
         if (swiftSearchInstance) {
           mainEvents.subscribe(apiCmds.onSwiftSearchMessage, event.sender);
@@ -520,13 +521,13 @@ ipcMain.on(
         }
         break;
       case apiCmds.isMiniViewFeatureEnabled:
-        const { isMiniViewFeatureEnabled } = arg;
+        { const { isMiniViewFeatureEnabled } = arg;
         windowHandler.setIsMiniViewFeatureEnabled(isMiniViewFeatureEnabled);
-        break;
+        break; }
       case apiCmds.isMiniViewEnabled:
-        const { isMiniViewEnabled } = arg;
+        { const { isMiniViewEnabled } = arg;
         windowHandler.setIsMiniViewEnabled(isMiniViewEnabled);
-        break;
+        break; }
       case apiCmds.onEnterMiniView:
         miniViewHandler.activateMiniView();
         break;
@@ -555,13 +556,13 @@ ipcMain.on(
         autoUpdate.downloadUpdate();
         break;
       case apiCmds.checkForUpdates:
-        const autoUpdateTrigger = arg.autoUpdateTrigger;
+        { const autoUpdateTrigger = arg.autoUpdateTrigger;
         if (autoUpdateTrigger && autoUpdateTrigger in AutoUpdateTrigger) {
           autoUpdate.checkUpdates(arg.autoUpdateTrigger);
         } else {
           autoUpdate.checkUpdates();
         }
-        break;
+        break; }
       case apiCmds.registerPhoneNumberServices:
         voiceHandler.registerSymphonyAsDefaultApp(arg.protocols);
         break;
@@ -569,12 +570,12 @@ ipcMain.on(
         voiceHandler.unregisterSymphonyAsDefaultApp(arg.protocols);
         break;
       case apiCmds.getHelpInfo:
-        const helpCenter: IPodSettingsClientSpecificSupportLink =
+        { const helpCenter: IPodSettingsClientSpecificSupportLink =
           arg.menu?.supportPage;
         const helpMenu = sdaMenuStore.getHelpMenuSingleton();
 
         helpMenu.setValue(helpCenter);
-        break;
+        break; }
       default:
         break;
     }
@@ -622,27 +623,27 @@ ipcMain.handle(
         return;
       }
       case apiCmds.getMediaAccessStatus:
-        const camera = systemPreferences.getMediaAccessStatus('camera');
+        { const camera = systemPreferences.getMediaAccessStatus('camera');
         const microphone = systemPreferences.getMediaAccessStatus('microphone');
         const screen = systemPreferences.getMediaAccessStatus('screen');
         return {
           camera,
           microphone,
           screen,
-        };
+        }; }
       case apiCmds.getSources:
-        const { types, thumbnailSize } = arg;
+        { const { types, thumbnailSize } = arg;
         return desktopCapturer.getSources({
           types,
           thumbnailSize,
-        });
+        }); }
       case apiCmds.getNativeWindowHandle:
-        const browserWin = getWindowByName(arg.windowName);
+        { const browserWin = getWindowByName(arg.windowName);
         if (browserWin && windowExists(browserWin)) {
           const windowHandle = browserWin.getNativeWindowHandle();
           return getContentWindowHandle(windowHandle);
         }
-        break;
+        break; }
       case apiCmds.openfinConnect:
         return openfinHandler.connect();
       case apiCmds.openfinRegisterIntentHandler:
@@ -688,7 +689,7 @@ const logApiCallParams = (arg: any) => {
   const apiCmd = arg.cmd;
   switch (apiCmd) {
     case apiCmds.showNotification:
-      const title = 'hidden';
+      { const title = 'hidden';
       const body = 'hidden';
       const data = 'hidden';
       const notificationDetails: INotificationData = {
@@ -704,9 +705,9 @@ const logApiCallParams = (arg: any) => {
           2,
         )}`,
       );
-      break;
+      break; }
     case apiCmds.badgeDataUrl:
-      const dataUrl = 'hidden';
+      { const dataUrl = 'hidden';
       const badgeDataUrlDetails = {
         ...arg,
         dataUrl,
@@ -718,9 +719,9 @@ const logApiCallParams = (arg: any) => {
           2,
         )}`,
       );
-      break;
+      break; }
     case apiCmds.openScreenPickerWindow:
-      const sources = arg.sources.map((source: any) => {
+      { const sources = arg.sources.map((source: any) => {
         return {
           name: source.name,
           id: source.id,
@@ -740,9 +741,9 @@ const logApiCallParams = (arg: any) => {
           2,
         )}`,
       );
-      break;
+      break; }
     case apiCmds.sendLogs:
-      const logFiles = 'hidden';
+      { const logFiles = 'hidden';
       const logDetails = {
         ...arg.logs,
         logFiles,
@@ -754,9 +755,9 @@ const logApiCallParams = (arg: any) => {
           2,
         )}`,
       );
-      break;
+      break; }
     case apiCmds.addLogs:
-      const lf = 'hidden';
+      { const lf = 'hidden';
       const ld = {
         ...arg.logs,
         logFiles: lf,
@@ -768,9 +769,9 @@ const logApiCallParams = (arg: any) => {
           2,
         )}`,
       );
-      break;
+      break; }
     case apiCmds.writeCloud9Pipe:
-      const compressedData = {
+      { const compressedData = {
         ...arg,
         data: Buffer.from(arg.data).toString('base64'),
       };
@@ -781,7 +782,7 @@ const logApiCallParams = (arg: any) => {
           2,
         )}`,
       );
-      break;
+      break; }
     default:
       logger.info(
         `main-api-handler: - ${apiCmd} - Properties: ${JSON.stringify(
