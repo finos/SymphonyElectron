@@ -524,6 +524,7 @@ export class WindowHandler {
         const isSwitchMiniView =
           input.control && input.shift && input.key.toLowerCase() === 'm';
         if (isSwitchMiniView) {
+          event.preventDefault();
           debouncedSwitchMiniView();
         }
       }
