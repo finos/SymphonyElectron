@@ -12,11 +12,6 @@ import {
   IScreenSnippet,
   LogLevel,
 } from '../common/api-interface';
-import {
-  ICustomDesktopCapturerSource,
-  ICustomSourcesOptions,
-  IScreenSourceError,
-} from './desktop-capturer';
 import { SSFApi } from './ssf-api';
 
 const ssf = new SSFApi();
@@ -54,10 +49,6 @@ export class AppBridge {
     onCollectLogsCallback: () => this.collectLogsCallback(),
     onScreenSharingIndicatorCallback: (arg: IScreenSharingIndicator) =>
       this.screenSharingIndicatorCallback(arg),
-    onMediaSourceCallback: (
-      error: IScreenSourceError | null,
-      source: ICustomDesktopCapturerSource | undefined,
-    ): void => this.gotMediaSource(error, source),
     onNotificationCallback: (event, data) =>
       this.notificationCallback(event, data),
     onAnalyticsEventCallback: (data) => this.analyticsEventCallback(data),
@@ -72,9 +63,9 @@ export class AppBridge {
       .invoke(apiName.symphonyApi, {
         cmd: apiCmds.getCurrentOriginUrl,
       })
-      .then((origin) => {
-        this.origin = origin;
-        // this.origin = '*'; // DEMO-APP: Comment this line back in only to test demo-app - DO NOT COMMIT
+      .then((_origin) => {
+        // this.origin = origin;
+        this.origin = '*'; // DEMO-APP: Comment this line back in only to test demo-app - DO NOT COMMIT
         ipcRenderer.send(apiName.symphonyApi, {
           cmd: apiCmds.setBroadcastMessage,
         });
@@ -189,12 +180,6 @@ export class AppBridge {
         break;
       case apiCmds.closeScreenSharingIndicator:
         ssf.closeScreenSharingIndicator(data.streamId as string);
-        break;
-      case apiCmds.getMediaSource:
-        await ssf.getMediaSource(
-          data as ICustomSourcesOptions,
-          this.callbackHandlers.onMediaSourceCallback,
-        );
         break;
       case apiCmds.notification:
         ssf.showNotification(
@@ -322,36 +307,6 @@ export class AppBridge {
    */
   private restartFloater(arg: IRestartFloaterData): void {
     this.broadcastMessage('restart-floater-callback', arg);
-  }
-
-  /**
-   * Broadcast the user selected source
-   * @param sourceError {IScreenSourceError}
-   * @param selectedSource {ICustomDesktopCapturerSource}
-   */
-  private gotMediaSource(
-    sourceError: IScreenSourceError | null,
-    selectedSource: ICustomDesktopCapturerSource | undefined,
-  ): void {
-    if (sourceError) {
-      const { requestId, ...error } = sourceError;
-      this.broadcastMessage('media-source-callback', { requestId, error });
-      this.broadcastMessage('media-source-callback-v1', { requestId, error });
-      return;
-    }
-
-    if (selectedSource && selectedSource.requestId) {
-      const { requestId, ...source } = selectedSource;
-      this.broadcastMessage('media-source-callback', {
-        requestId,
-        source,
-        error: sourceError,
-      });
-      this.broadcastMessage('media-source-callback-v1', {
-        requestId,
-        response: { source, error: sourceError },
-      });
-    }
   }
 
   /**
