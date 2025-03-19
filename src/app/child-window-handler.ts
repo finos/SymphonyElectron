@@ -338,13 +338,6 @@ export const handleChildWindow = (webContents: WebContents): void => {
         if (browserWin.webContents) {
           // validate link and create a child window or open in browser
           handleChildWindow(browserWin.webContents);
-
-          // Updates media permissions for preload context
-          const { permissions } = config.getConfigFields(['permissions']);
-          browserWin.webContents.send(
-            'is-screen-share-enabled',
-            permissions.media,
-          );
         }
         const { devToolsEnabled } = config.getConfigFields(['devToolsEnabled']);
         browserWin.webContents.on('before-input-event', (event, input) => {

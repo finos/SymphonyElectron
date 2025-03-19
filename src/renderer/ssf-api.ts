@@ -36,7 +36,6 @@ import {
 } from '../common/api-interface';
 import { i18n, LocaleType } from '../common/i18n-preload';
 import { DelayedFunctionQueue, throttle } from '../common/utils';
-import { getSource } from './desktop-capturer';
 import SSFNotificationHandler from './notification-ssf-handler';
 import { ScreenSnippetBcHandler } from './screen-snippet-bc-handler';
 
@@ -180,17 +179,6 @@ let nextIndicatorId = 0;
 
 export class SSFApi {
   public Notification = SSFNotificationHandler; // tslint:disable-line
-
-  /**
-   * Implements equivalent of desktopCapturer.getSources - that works in
-   * a sandboxed renderer process.
-   * see: https://electron.atom.io/docs/api/desktop-capturer/
-   * for interface: see documentation in desktopCapturer/getSource.js
-   *
-   * This opens a window and displays all the desktop sources
-   * and returns selected source
-   */
-  public getMediaSource = getSource;
 
   /**
    * Brings window forward and gives focus.

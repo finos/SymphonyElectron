@@ -52,7 +52,6 @@ if (ssfWindow.ssf) {
   contextBridge.exposeInMainWorld('manaSSF', {
     setIsMana: ssfWindow.ssf.setIsMana,
     Notification: ssfWindow.ssf.Notification,
-    getMediaSource: ssfWindow.ssf.getMediaSource,
     activate: ssfWindow.ssf.activate,
     bringToFront: ssfWindow.ssf.bringToFront,
     getVersionInfo: ssfWindow.ssf.getVersionInfo,
