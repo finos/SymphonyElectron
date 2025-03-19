@@ -1,7 +1,6 @@
 import {
   BrowserWindow,
   clipboard,
-  desktopCapturer,
   dialog,
   ipcMain,
   shell,
@@ -630,12 +629,6 @@ ipcMain.handle(
           microphone,
           screen,
         };
-      case apiCmds.getSources:
-        const { types, thumbnailSize } = arg;
-        return desktopCapturer.getSources({
-          types,
-          thumbnailSize,
-        });
       case apiCmds.getNativeWindowHandle:
         const browserWin = getWindowByName(arg.windowName);
         if (browserWin && windowExists(browserWin)) {

@@ -585,7 +585,6 @@ Writes some thing to the file</textarea
       openScreenSharingIndicator: 'open-screen-sharing-indicator',
       closeScreenSharingIndicator: 'close-screen-sharing-indicator',
       downloadManagerAction: 'download-manager-action',
-      getMediaSource: 'get-media-source',
       notification: 'notification',
       closeNotification: 'close-notification',
       registerRestartFloater: 'register-restart-floater',
@@ -1059,8 +1058,6 @@ Writes some thing to the file</textarea
             }
           }
           break;
-        case 'media-source-callback':
-        case 'screen-sharing-indicator-callback':
         case 'get-version-info-callback':
           handleResponse(data);
           console.log(event.data);
@@ -1279,98 +1276,17 @@ Writes some thing to the file</textarea
       }
     });
 
-    /**
-     * Desktop capture
-     */
     const getSources = document.getElementById('get-sources');
     getSources.addEventListener('click', () => {
-      if (window.ssf) {
-        ssf.getMediaSource(
-          { types: ['window', 'screen'] },
-          function (error, source) {
-            if (error) throw error;
-            navigator.webkitGetUserMedia(
-              {
-                audio: false,
-                video: {
-                  mandatory: {
-                    chromeMediaSource: 'desktop',
-                    chromeMediaSourceId: source.id,
-                    minWidth: 1280,
-                    maxWidth: 1280,
-                    minHeight: 720,
-                    maxHeight: 720,
-                  },
-                },
-              },
-              (stream) => {
-                handleStream(stream, source.display_id);
-              },
-              handleError,
-            );
-          },
-        );
-      } else if (window.manaSSF) {
-        window.manaSSF.getMediaSource(
-          { types: ['window', 'screen'] },
-          function (error, source) {
-            if (error) throw error;
-            navigator.webkitGetUserMedia(
-              {
-                audio: false,
-                video: {
-                  mandatory: {
-                    chromeMediaSource: 'desktop',
-                    chromeMediaSourceId: source.id,
-                    minWidth: 1280,
-                    maxWidth: 1280,
-                    minHeight: 720,
-                    maxHeight: 720,
-                  },
-                },
-              },
-              (stream) => {
-                handleStream(stream, source.display_id);
-              },
-              handleError,
-            );
-          },
-        );
-      } else {
-        const successHandler = (data) => {
-          const constraints = {
-            mandatory: {
-              chromeMediaSource: 'desktop',
-              maxWidth: screen.width > 1920 ? 1920 : screen.width,
-              maxHeight: screen.height > 1080 ? 1080 : screen.height,
-              chromeMediaSourceId: data.source.id,
-            },
-            optional: [],
-          };
-          navigator.mediaDevices
-            .getUserMedia({ video: constraints })
-            .then((stream) => {
-              handleStream(stream, data.source.display_id);
-            });
-        };
-        const errorHandler = (data) => {
-          if (data.error) {
-            if (data.error.message === 'User Cancelled') {
-              console.error('user canceled');
-            } else {
-              throw new Error(data.error);
-            }
-          }
-        };
-        postRequest(
-          apiCmds.getMediaSource,
-          { types: ['window', 'screen'] },
-          {
-            successCallback: (data) => successHandler(data),
-            errorCallback: (error) => errorHandler(error),
-          },
-        );
-      }
+      navigator.mediaDevices.getDisplayMedia({
+        audio: true,
+        video: {
+          width: 800,
+          height: 800,
+          echoCancellation: true,
+          frameRate: 30,
+        },
+      });
     });
 
     const handleStream = (stream, displayId) => {
