@@ -671,9 +671,6 @@ export class WindowHandler {
 
         this.appMenu = new AppMenu();
 
-        const { permissions } = config.getConfigFields(['permissions']);
-        this.mainWebContents.send('is-screen-share-enabled', permissions.media);
-
         // Subscribe events for main view - snack bar
         mainEvents.subscribeMultipleEvents(
           MAIN_WEB_CONTENTS_EVENTS,
