@@ -227,10 +227,10 @@ export const handleChildWindow = (webContents: WebContents): void => {
         newWinOptions.y = y + 50;
       }
 
-      newWinOptions.width = Math.max(width, DEFAULT_POP_OUT_WIDTH);
-      newWinOptions.height = Math.max(height, DEFAULT_POP_OUT_HEIGHT);
-      newWinOptions.minWidth = MIN_WIDTH;
-      newWinOptions.minHeight = MIN_HEIGHT;
+      newWinOptions.height = height;
+      newWinOptions.width = width;
+      newWinOptions.minWidth = Math.min(newWinOptions.width, MIN_WIDTH);
+      newWinOptions.minHeight = Math.min(newWinOptions.height, MIN_HEIGHT);
       newWinOptions.alwaysOnTop = mainWindow.isAlwaysOnTop();
       newWinOptions.frame = true;
       newWinOptions.winKey = newWinKey;
@@ -247,7 +247,10 @@ export const handleChildWindow = (webContents: WebContents): void => {
           'contextOriginUrl',
         ]);
         browserWin.setFullScreenable(true);
-        browserWin.setMinimumSize(MIN_WIDTH, MIN_HEIGHT);
+        browserWin.setMinimumSize(
+          newWinOptions.minWidth!,
+          newWinOptions.minHeight!,
+        );
         browserWin.origin = contextOriginUrl || windowHandler.url;
         if (browserWin && !browserWin.isDestroyed()) {
           browserWin.setBounds({
