@@ -151,9 +151,6 @@
     },
     "linux": {
       "category": "Network;InstantMessaging;Chat",
-      "desktop": {
-        "StartupWMClass": "Symphony"
-      },
       "target": [
         "deb",
         "rpm"
