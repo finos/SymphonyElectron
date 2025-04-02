@@ -61,7 +61,7 @@ export class FileHelper extends FileHelperBase {
       const sanitizedFolderPath = path.normalize(folderPath);
 
       if (!sanitizedLogname || !this.validateFilePath(sanitizedFolderPath)) {
-        logger.log(
+        logger.error(
           'error',
           'file-helper: Log file has a malicious format to be exported',
         );
@@ -87,7 +87,7 @@ export class FileHelper extends FileHelperBase {
           modifiedTimestamp: currentLogModifiedTimestamp,
         };
 
-        if (timestampDiffInMinutes <= LogUtilities.LOG_TIMESTAMP_THRESH_HOLD) {
+        if (timestampDiffInMinutes <= LogUtilities.LOG_TIMESTAMP_THRESHOLD) {
           this.files.get().set(`${LogCategory.LATEST}_${index}`, modifiedFile);
           latestModifiedLogTimestamp = logFileStats.mtime.getTime();
         } else if (currentLogModifiedTimestamp > latestModifiedLogTimestamp) {
