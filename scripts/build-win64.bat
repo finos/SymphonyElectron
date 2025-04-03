@@ -6,7 +6,6 @@ echo %PATH%
 
 set DISABLE_REBUILD=true
 set NODE_REQUIRED_VERSION=22.14.0
-set SNYK_ORG=sda
 set SNYK_PROJECT_NAME="Symphony Desktop Application"
 set SCREENSHARE_INDICATOR_PATH="node_modules\screen-share-indicator-frame\ScreenShareIndicatorFrame.exe"
 set NATIVE_WINDOW_HANDLE_PATH="node_modules\symphony-native-window-handle-helper\SymphonyNativeWindowHandleHelper.exe"
