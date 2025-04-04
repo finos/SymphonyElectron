@@ -105,26 +105,42 @@ echo "Running tests, code coverage, linting and building..."
 npm run unpacked-mac
 
 # Create .pkg installer
-echo "Creating .pkg"
+echo "Creating x64 .pkg"
 /usr/local/bin/packagesbuild -v installer/mac/symphony-mac-packager.pkgproj
 
-PACKAGE=installer/mac/build/Symphony.pkg
-if [ ! -e ${PACKAGE} ]; then
-  echo "BUILD PACKAGE FAILED: package not created: ${PACKAGE}"
+echo "Creating arm64 .pkg"
+/usr/local/bin/packagesbuild -v installer/mac/symphony-mac-packager-arm64.pkgproj
+
+PACKAGE_X64=installer/mac/build/Symphony-x64.pkg
+if [ ! -e ${PACKAGE_X64} ]; then
+  echo "BUILD PACKAGE FAILED: x64 package not created: ${PACKAGE}"
   exit 1
 fi
-echo "Package created: ${PACKAGE}"
+echo "Package created: ${PACKAGE_X64}"
+
+PACKAGE_ARM64=installer/mac/build/Symphony-arm64.pkg
+if [ ! -e ${PACKAGE_ARM64} ]; then
+  echo "BUILD PACKAGE FAILED: arm64 package not created: ${PACKAGE}"
+  exit 1
+fi
+echo "Package created: ${PACKAGE_ARM64}"
 
 # Sign the app
 PKG_VERSION=$(node -e "console.log(require('./package.json').version);")
-echo "Signing Package: ${PACKAGE}"
-SIGNED_PACKAGE=installer/mac/build/Symphony_Signed_${PKG_VERSION}.pkg
-productsign --sign "Developer ID Installer: Symphony Communication Services LLC" $PACKAGE $SIGNED_PACKAGE
-echo "Signing Package complete: ${PACKAGE}"
+echo "Signing Package: ${PACKAGE_X64}"
+SIGNED_PACKAGE_x64=installer/mac/build/Symphony-x64_Signed_${PKG_VERSION}.pkg
+productsign --sign "Developer ID Installer: Symphony Communication Services LLC" $PACKAGE_X64 $SIGNED_PACKAGE_x64
+echo "Signing Package complete: ${PACKAGE_X64}"
+
+echo "Signing Package: ${PACKAGE_ARM64}"
+SIGNED_PACKAGE_arm64=installer/mac/build/Symphony-arm64_Signed_${PKG_VERSION}.pkg
+productsign --sign "Developer ID Installer: Symphony Communication Services LLC" $PACKAGE_ARM64 $SIGNED_PACKAGE_arm64
+echo "Signing Package complete: ${PACKAGE_ARM64}"
 
 # Notarize the app
 # xcrun altool --notarize-app --primary-bundle-id "$pwd" --username "$APPLE_ID" --password "$APPLE_ID_PASSWORD" --file $SIGNED_PACKAGE > /tmp/notarize.txt
-xcrun notarytool submit --apple-id "$APPLE_ID" --password "$APPLE_ID_PASSWORD" --team-id "$TEAM_ID" $SIGNED_PACKAGE --wait > /tmp/notarize.txt
+xcrun notarytool submit --apple-id "$APPLE_ID" --password "$APPLE_ID_PASSWORD" --team-id "$TEAM_ID" $SIGNED_PACKAGE_x64 --wait > /tmp/notarize.txt
+xcrun notarytool submit --apple-id "$APPLE_ID" --password "$APPLE_ID_PASSWORD" --team-id "$TEAM_ID" $SIGNED_PACKAGE_arm64 --wait > /tmp/notarize.txt
 
 cat /tmp/notarize.txt
 REQUEST_ID=$(sed -n '2p' /tmp/notarize.txt)
@@ -152,15 +168,27 @@ markdown-pdf RELEASE_NOTES.md
 # Create targets directory
 mkdir -p targets
 
-# Attach artifacts to build
+# Attach artifacts to build x64
 if [ "${EXPIRY_PERIOD}" != "0" ]; then
-  cp $SIGNED_PACKAGE "targets/Symphony-macOS-${PKG_VERSION}-TTL-${EXPIRY_PERIOD}.pkg"
-  cp installer/mac/install_instructions_mac.pdf "targets/Install-Instructions-macOS-${PKG_VERSION}-TTL-${EXPIRY_PERIOD}.pdf"
-  cp RELEASE_NOTES.pdf "targets/Release-Notes-macOS-${PKG_VERSION}-TTL-${EXPIRY_PERIOD}.pdf"
+  cp $SIGNED_PACKAGE_x64 "targets/Symphony-macOS-x64-${PKG_VERSION}-TTL-${EXPIRY_PERIOD}.pkg"
+  cp installer/mac/install_instructions_mac.pdf "targets/Install-Instructions-macOS-x64-${PKG_VERSION}-TTL-${EXPIRY_PERIOD}.pdf"
+  cp RELEASE_NOTES.pdf "targets/Release-Notes-macOS-x64-${PKG_VERSION}-TTL-${EXPIRY_PERIOD}.pdf"
 else
-  cp $SIGNED_PACKAGE "targets/Symphony-macOS-${PKG_VERSION}.pkg"
-  cp installer/mac/install_instructions_mac.pdf "targets/Install-Instructions-macOS-${PKG_VERSION}.pdf"
-  cp RELEASE_NOTES.pdf "targets/Release-Notes-macOS-${PKG_VERSION}-.pdf"
+  cp $SIGNED_PACKAGE_x64 "targets/Symphony-macOS-x64-${PKG_VERSION}.pkg"
+  cp installer/mac/install_instructions_mac.pdf "targets/Install-Instructions-macOS-x64-${PKG_VERSION}.pdf"
+  cp RELEASE_NOTES.pdf "targets/Release-Notes-macOS-x64-${PKG_VERSION}-.pdf"
 fi
+
+# Attach artifacts to build arm64
+if [ "${EXPIRY_PERIOD}" != "0" ]; then
+  cp $SIGNED_PACKAGE_arm64 "targets/Symphony-macOS-arm64-${PKG_VERSION}-TTL-${EXPIRY_PERIOD}.pkg"
+  cp installer/mac/install_instructions_mac.pdf "targets/Install-Instructions-macOS-arm64-${PKG_VERSION}-TTL-${EXPIRY_PERIOD}.pdf"
+  cp RELEASE_NOTES.pdf "targets/Release-Notes-macOS-arm64-${PKG_VERSION}-TTL-${EXPIRY_PERIOD}.pdf"
+else
+  cp $SIGNED_PACKAGE_arm64 "targets/Symphony-macOS-arm64-${PKG_VERSION}.pkg"
+  cp installer/mac/install_instructions_mac.pdf "targets/Install-Instructions-macOS-arm64-${PKG_VERSION}.pdf"
+  cp RELEASE_NOTES.pdf "targets/Release-Notes-macOS-arm64-${PKG_VERSION}-.pdf"
+fi
+
 
 echo "All done, job successfull :)"
