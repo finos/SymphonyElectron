@@ -27,19 +27,22 @@
     "lint:project": "tslint --project tsconfig.json",
     "lint:spec": "tslint --project tsconfig.spec.json",
     "packed-linux": "npm run prebuild && npm run test && ./node_modules/.bin/electron-builder build --linux",
-    "packed-mac": "npm run unpacked-mac && packagesbuild -v installer/mac/symphony-mac-packager.pkgproj",
+    "packed-mac": "npm run unpacked-mac && npm run build-mac-pkg",
     "prebuild": "run-s compile browserify",
     "postinstall": "electron-builder install-app-deps",
     "start": "run-s compile browserify && cross-env ELECTRON_DEV=true electron .",
     "test": "run-s lint test:unit",
     "test:unit": "cross-env ELECTRON_FORCE_IS_PACKAGED=false ELECTRON_QA=true jest --config jest-config.json --runInBand --detectOpenHandles",
     "unpacked-mac": "npm run prebuild && npm run test && ./node_modules/.bin/electron-builder build --mac",
+    "mac-pkg-x64": "packagesbuild -v installer/mac/symphony-mac-packager.pkgproj",
+    "mac-pkg-arm64": "packagesbuild -v installer/mac/symphony-mac-packager-arm64.pkgproj",
+    "build-mac-pkg": "run-s mac-pkg-x64 mac-pkg-arm64",
     "unpacked-win": "npm run prebuild && npm run test && node_modules\\.bin\\electron-builder build --win --x64"
   },
   "build": {
     "appId": "com.symphony.electron-desktop",
     "compression": "maximum",
-    "artifactName": "${productName}-${version}-${os}.${ext}",
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "asar": true,
     "asarUnpack": "**/*.node",
     "afterPack": "scripts/afterPackHoock.js",
@@ -93,8 +96,13 @@
       "gatekeeperAssess": true,
       "hardenedRuntime": true,
       "target": [
-        "dir",
-        "zip"
+        {
+          "target": "zip",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
       ]
     },
     "win": {
@@ -185,7 +193,7 @@
     "cheerio": "v1.0.0-rc.12",
     "cross-env": "7.0.3",
     "del": "3.0.0",
-    "electron": "34.4.1",
+    "electron": "35.1.4",
     "electron-builder": "^26.0.12",
     "electron-devtools-installer": "^3.2.0",
     "electron-icon-maker": "0.0.5",
