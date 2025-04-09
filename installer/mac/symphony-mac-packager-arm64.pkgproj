@@ -45,7 +45,7 @@
 									<key>GID</key>
 									<integer>80</integer>
 									<key>PATH</key>
-									<string>../../dist/mac/Symphony.app</string>
+									<string>../../dist/mac-arm64/Symphony.app</string>
 									<key>PATH_TYPE</key>
 									<integer>3</integer>
 									<key>PERMISSIONS</key>
@@ -1053,7 +1053,7 @@
 				</dict>
 			</array>
 			<key>NAME</key>
-			<string>Symphony-x64</string>
+			<string>Symphony-arm64</string>
 			<key>PAYLOAD_ONLY</key>
 			<false/>
 			<key>TREAT_MISSING_PRESENTATION_DOCUMENTS_AS_WARNING</key>
