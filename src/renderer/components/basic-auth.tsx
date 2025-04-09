@@ -16,7 +16,7 @@ const BASIC_AUTH_NAMESPACE = 'BasicAuth';
 /**
  * Window that display app version and copyright info
  */
-export default class BasicAuth extends React.Component<object, IState> {
+export default class BasicAuth extends React.Component<{}, IState> {
   private readonly eventHandlers = {
     onChange: (event) => this.change(event),
     onSubmit: (event) => this.submit(event),

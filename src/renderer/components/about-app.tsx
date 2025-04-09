@@ -53,7 +53,7 @@ const KEY_CODE = {
 /**
  * Window that display app version and copyright info
  */
-export default class AboutApp extends React.Component<object, IState> {
+export default class AboutApp extends React.Component<{}, IState> {
   private readonly eventHandlers = {
     onCopy: () => this.copy(),
     onClose: () => this.close(),
