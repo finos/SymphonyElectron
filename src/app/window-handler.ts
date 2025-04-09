@@ -470,18 +470,10 @@ export class WindowHandler {
       exportLogs();
     }, SHORTCUT_KEY_THROTTLE);
     const switchToClient2 = throttle(() => {
-      const clientSwitchType =
-        this.url && this.url.includes('bff')
-          ? ClientSwitchType.CLIENT_2_0
-          : ClientSwitchType.STARTPAGE_CLIENT_2_0;
-      windowHandler.switchClient(clientSwitchType);
+      windowHandler.switchClient(ClientSwitchType.STARTPAGE_CLIENT_2_0);
     }, SHORTCUT_KEY_THROTTLE);
     const switchToDaily = throttle(() => {
-      const clientSwitchType =
-        this.url && this.url.includes('bff')
-          ? ClientSwitchType.CLIENT_2_0_DAILY
-          : ClientSwitchType.STARTPAGE_CLIENT_2_0_DAILY;
-      windowHandler.switchClient(clientSwitchType);
+      windowHandler.switchClient(ClientSwitchType.STARTPAGE_CLIENT_2_0_DAILY);
     }, SHORTCUT_KEY_THROTTLE);
 
     // throttled mini view switch
@@ -2296,7 +2288,7 @@ export class WindowHandler {
   }
 
   /**
-   * Switch between clients 1.5, 2.0 and 2.0 daily
+   * Switch between clients 2.0 and 2.0 daily
    * @param clientSwitch client switch you want to switch to.
    */
   public async switchClient(clientSwitch: ClientSwitchType): Promise<void> {
@@ -2313,17 +2305,8 @@ export class WindowHandler {
         this.url = this.globalConfig.url;
       }
       const parsedUrl = parse(this.url);
-      const csrfToken = await this.mainWebContents?.executeJavaScript(
-        `localStorage.getItem('x-km-csrf-token')`,
-      );
 
       switch (clientSwitch) {
-        case ClientSwitchType.CLIENT_2_0:
-          this.url = `https://${parsedUrl.hostname}/client-bff/index.html?x-km-csrf-token=${csrfToken}`;
-          break;
-        case ClientSwitchType.CLIENT_2_0_DAILY:
-          this.url = `https://${parsedUrl.hostname}/bff-daily/daily/index.html?x-km-csrf-token=${csrfToken}`;
-          break;
         case ClientSwitchType.STARTPAGE_CLIENT_2_0:
           this.url = `https://${parsedUrl.hostname}/apps/client2`;
           break;
@@ -2331,7 +2314,7 @@ export class WindowHandler {
           this.url = `https://${parsedUrl.hostname}/apps/client2/daily`;
           break;
         default:
-          this.url = this.globalConfig.url + `?x-km-csrf-token=${csrfToken}`;
+          this.url = this.globalConfig.url;
       }
       await this.closeScreenSharingIndicator();
       const userAgent = this.getUserAgent(this.mainWebContents);
