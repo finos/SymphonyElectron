@@ -9,7 +9,7 @@ function updateYamlFile(yamlFilePath) {
   doc.files.map((file) => {
     file.url = INSTALLERS_URL + file.url;
   });
-  doc.path = INSTALLERS_URL + doc.path;
+  delete doc.path;
   fs.writeFileSync(yamlFilePath, yaml.dump(doc, { lineWidth: -1 }));
 }
 
