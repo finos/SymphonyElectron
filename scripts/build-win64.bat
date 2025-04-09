@@ -122,8 +122,8 @@ IF %errorlevel% neq 0 (
 	exit /b -1
 )
 
-set SYMPHONY_SYMVER_EXE_PATH=%WORKSPACE%\dist\Symphony-%SYMVER%-win.exe
-echo "Signing Symphony-SYMVER-win.exe file.."
+set SYMPHONY_SYMVER_EXE_PATH=%WORKSPACE%\dist\Symphony-%SYMVER%-win-x64.exe
+echo "Signing Symphony-SYMVER-win-x64.exe file.."
 smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input %SYMPHONY_SYMVER_EXE_PATH% --file-name
 smctl sign verify --input %SYMPHONY_SYMVER_EXE_PATH%
 IF %errorlevel% neq 0 (
@@ -132,7 +132,7 @@ IF %errorlevel% neq 0 (
 )
 
 
-node ..\..\scripts\windows_update_checksum.js "..\..\dist\Symphony-%SYMVER%-win.exe" "..\..\dist\latest.yml"
+node ..\..\scripts\windows_update_checksum.js "..\..\dist\Symphony-%SYMVER%-win-x64.exe" "..\..\dist\latest.yml"
 
 echo "Building new installer with Wix Sharp"
 call "BuildWixSharpInstaller.bat"
