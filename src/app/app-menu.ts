@@ -949,19 +949,13 @@ export class AppMenu {
    * @param channel Targeted C2 channel
    */
   private switchTo(channel: Channels) {
-    const isBFFServedContent =
-      windowHandler.url && windowHandler.url.includes('bff');
     let clientSwitchType;
     switch (channel) {
       case Channels.Daily:
-        clientSwitchType = isBFFServedContent
-          ? ClientSwitchType.CLIENT_2_0_DAILY
-          : ClientSwitchType.STARTPAGE_CLIENT_2_0_DAILY;
+        clientSwitchType = ClientSwitchType.STARTPAGE_CLIENT_2_0_DAILY;
         break;
       case Channels.Stable:
-        clientSwitchType = isBFFServedContent
-          ? ClientSwitchType.CLIENT_2_0
-          : ClientSwitchType.STARTPAGE_CLIENT_2_0;
+        clientSwitchType = ClientSwitchType.STARTPAGE_CLIENT_2_0;
         break;
       default:
         break;
