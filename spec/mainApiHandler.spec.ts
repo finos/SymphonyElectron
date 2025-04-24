@@ -102,7 +102,6 @@ jest.mock('../src/app/window-handler', () => {
       closeAllWindows: jest.fn(),
       closeWindow: jest.fn(),
       createNotificationSettingsWindow: jest.fn(),
-      createScreenPickerWindow: jest.fn(),
       createScreenSharingIndicatorWindow: jest.fn(),
       isOnline: false,
       updateVersionInfo: jest.fn(),
@@ -395,18 +394,6 @@ describe('main api handler', () => {
         windowName: 'notification',
       };
       const expectedValue = ['notification', false];
-      ipcMain.send(apiName.symphonyApi, value);
-      expect(spy).toBeCalledWith(...expectedValue);
-    });
-
-    it('should call `openScreenPickerWindow` correctly', () => {
-      const spy = jest.spyOn(windowHandler, 'createScreenPickerWindow');
-      const value = {
-        cmd: apiCmds.openScreenPickerWindow,
-        sources: [],
-        id: 3,
-      };
-      const expectedValue = [{ send: expect.any(Function) }, [], 3];
       ipcMain.send(apiName.symphonyApi, value);
       expect(spy).toBeCalledWith(...expectedValue);
     });
