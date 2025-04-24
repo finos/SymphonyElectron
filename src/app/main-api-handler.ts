@@ -219,15 +219,6 @@ ipcMain.on(
           }
         }
         break;
-      case apiCmds.openScreenPickerWindow:
-        if (Array.isArray(arg.sources) && typeof arg.id === 'number') {
-          windowHandler.createScreenPickerWindow(
-            event.sender,
-            arg.sources,
-            arg.id,
-          );
-        }
-        break;
       case apiCmds.popupMenu: {
         const browserWin = BrowserWindow.fromWebContents(
           event.sender,
@@ -308,7 +299,6 @@ ipcMain.on(
           appStateHandler.preventDisplaySleep(arg.isInMeeting);
           if (!arg.isInMeeting) {
             displayMediaRequestHandler.closeScreenPickerWindow();
-            windowHandler.closeScreenPickerWindow();
             windowHandler.closeScreenSharingIndicator();
           }
         }
@@ -706,28 +696,6 @@ const logApiCallParams = (arg: any) => {
       logger.info(
         `main-api-handler: - ${apiCmd} - Properties: ${JSON.stringify(
           badgeDataUrlDetails,
-          null,
-          2,
-        )}`,
-      );
-      break;
-    case apiCmds.openScreenPickerWindow:
-      const sources = arg.sources.map((source: any) => {
-        return {
-          name: source.name,
-          id: source.id,
-          thumbnail: 'hidden',
-          display_id: source.display_id,
-          appIcon: source.appIcon,
-        };
-      });
-      const openScreenPickerDetails = {
-        ...arg,
-        sources,
-      };
-      logger.info(
-        `main-api-handler: - ${apiCmd} - Properties: ${JSON.stringify(
-          openScreenPickerDetails,
           null,
           2,
         )}`,
