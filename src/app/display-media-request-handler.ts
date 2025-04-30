@@ -1,10 +1,4 @@
-import {
-  BaseWindow,
-  BrowserWindow,
-  desktopCapturer,
-  ipcMain,
-  session,
-} from 'electron';
+import { BrowserWindow, desktopCapturer, ipcMain, session } from 'electron';
 import { NOTIFICATION_WINDOW_TITLE } from '../common/api-interface';
 import { isDevEnv, isMac, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
@@ -48,7 +42,6 @@ class DisplayMediaRequestHandler {
             width: 580,
             show: false,
             fullscreenable: false,
-            parent: windowHandler.getMainWindow() as BaseWindow,
           },
           { devTools: isDevEnv },
         );
@@ -57,11 +50,7 @@ class DisplayMediaRequestHandler {
           'screen-picker',
           browserWindowOptions,
         );
-
-        this.screenPickerWindow.on('blur', () => {
-          this.screenPickerWindow?.setAlwaysOnTop(true);
-          this.screenPickerWindow?.focus();
-        });
+        windowHandler.moveWindow(this.screenPickerWindow);
 
         this.screenPickerWindow.on('closed', () => {
           this.screenPickerWindow = null;
