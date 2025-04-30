@@ -83,8 +83,12 @@ class DisplayMediaRequestHandler {
         mainWebContents.send('screen-picker-data', updatedSources);
 
         ipcMain.on('screen-source-select', (_event, source) => {
-          if (source) {
-            windowHandler.drawScreenShareIndicatorFrame(source);
+          if (source != null) {
+            windowHandler.closeScreenSharingIndicator();
+            const timeoutValue = 300;
+            setTimeout(() => {
+              windowHandler.drawScreenShareIndicatorFrame(source);
+            }, timeoutValue);
           }
           logger.info('display-media-request-handler: source selected', source);
         });
