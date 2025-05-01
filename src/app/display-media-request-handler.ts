@@ -67,6 +67,15 @@ class DisplayMediaRequestHandler {
           }
         });
 
+        this.screenPickerWindow.on('focus', () => {
+          if (
+            this.screenPickerWindow &&
+            windowExists(this.screenPickerWindow)
+          ) {
+            this.screenPickerWindow.moveTop();
+          }
+        });
+
         this.screenPickerWindow.webContents.once('did-finish-load', () => {
           if (!this.screenPickerWindow) {
             return;
