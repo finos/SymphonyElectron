@@ -73,6 +73,7 @@ class DisplayMediaRequestHandler {
             windowExists(this.screenPickerWindow)
           ) {
             this.screenPickerWindow.moveTop();
+            this.screenPickerWindow.setAlwaysOnTop(true);
           }
         });
 
