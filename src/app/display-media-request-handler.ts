@@ -72,8 +72,8 @@ class DisplayMediaRequestHandler {
             this.screenPickerWindow &&
             windowExists(this.screenPickerWindow)
           ) {
-            this.screenPickerWindow.moveTop();
             this.screenPickerWindow.setAlwaysOnTop(true);
+            this.screenPickerWindow.moveTop();
           }
         });
 
@@ -98,6 +98,13 @@ class DisplayMediaRequestHandler {
             const timeoutValue = 300;
             setTimeout(() => {
               windowHandler.drawScreenShareIndicatorFrame(source);
+              if (
+                this.screenPickerWindow &&
+                windowExists(this.screenPickerWindow)
+              ) {
+                this.screenPickerWindow.setAlwaysOnTop(true);
+                this.screenPickerWindow.moveTop();
+              }
             }, timeoutValue);
           }
           logger.info('display-media-request-handler: source selected', source);
