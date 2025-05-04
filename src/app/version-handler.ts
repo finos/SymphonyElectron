@@ -181,17 +181,9 @@ class VersionHandler {
       logger.info('version-handler: hostname: ' + hostname);
 
       /* Get SFE version */
-      let urlSfeVersion: string;
-      let newUrlSfeVersion: string;
-      urlSfeVersion = mainUrl?.includes('/daily')
-        ? `${protocol}//${hostname}/bff-daily/daily/version.json`
-        : `${protocol}//${hostname}/client-bff/version.json`;
-      newUrlSfeVersion = mainUrl?.includes('/daily')
+      const sfeVersionInfo = mainUrl?.includes('/daily')
         ? `${protocol}//${hostname}/apps/client2/daily/info`
         : `${protocol}//${hostname}/apps/client2/info`;
-      const sfeVersionInfo: string = mainUrl?.includes('client2')
-        ? newUrlSfeVersion
-        : urlSfeVersion;
       this.versionInfo.sfeClientType = '2.0';
       logger.info(
         `version-handler: Trying to get SFE version info for the URL: ${sfeVersionInfo}`,
@@ -207,7 +199,7 @@ class VersionHandler {
         res.on('end', () => {
           try {
             this.sfeVersionInfo = JSON.parse(body);
-            const key = mainUrl?.includes('client2') ? 'artifact' : 'version';
+            const key = 'artifact';
 
             this.versionInfo.sfeVersion = this.sfeVersionInfo[key];
 
