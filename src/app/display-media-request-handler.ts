@@ -1,10 +1,4 @@
-import {
-  BaseWindow,
-  BrowserWindow,
-  desktopCapturer,
-  ipcMain,
-  session,
-} from 'electron';
+import { BrowserWindow, desktopCapturer, ipcMain, session } from 'electron';
 import { NOTIFICATION_WINDOW_TITLE } from '../common/api-interface';
 import { isDevEnv, isMac, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
@@ -48,7 +42,6 @@ class DisplayMediaRequestHandler {
             width: 580,
             show: false,
             fullscreenable: false,
-            parent: windowHandler.getMainWindow() as BaseWindow,
           },
           { devTools: isDevEnv },
         );
@@ -57,11 +50,7 @@ class DisplayMediaRequestHandler {
           'screen-picker',
           browserWindowOptions,
         );
-
-        this.screenPickerWindow.on('blur', () => {
-          this.screenPickerWindow?.setAlwaysOnTop(true);
-          this.screenPickerWindow?.focus();
-        });
+        windowHandler.moveWindow(this.screenPickerWindow);
 
         this.screenPickerWindow.on('closed', () => {
           this.screenPickerWindow = null;
@@ -75,6 +64,16 @@ class DisplayMediaRequestHandler {
               this.screenPickerPlaceholderWindow.close();
               this.screenPickerPlaceholderWindow = null;
             }
+          }
+        });
+
+        this.screenPickerWindow.on('focus', () => {
+          if (
+            this.screenPickerWindow &&
+            windowExists(this.screenPickerWindow)
+          ) {
+            this.screenPickerWindow.setAlwaysOnTop(true);
+            this.screenPickerWindow.moveTop();
           }
         });
 
@@ -94,8 +93,19 @@ class DisplayMediaRequestHandler {
         mainWebContents.send('screen-picker-data', updatedSources);
 
         ipcMain.on('screen-source-select', (_event, source) => {
-          if (source) {
-            windowHandler.drawScreenShareIndicatorFrame(source);
+          if (source != null) {
+            windowHandler.closeScreenSharingIndicator();
+            const timeoutValue = 300;
+            setTimeout(() => {
+              windowHandler.drawScreenShareIndicatorFrame(source);
+              if (
+                this.screenPickerWindow &&
+                windowExists(this.screenPickerWindow)
+              ) {
+                this.screenPickerWindow.setAlwaysOnTop(true);
+                this.screenPickerWindow.moveTop();
+              }
+            }, timeoutValue);
           }
           logger.info('display-media-request-handler: source selected', source);
         });
