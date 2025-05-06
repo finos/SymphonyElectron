@@ -1610,3 +1610,13 @@ export const isValidUrl = (text: string): false | URL => {
     return false;
   }
 };
+
+/**
+ * Checks if the given bounds rectangle is valid by verifying it matches a display and has a work area
+ * @param {Electron.Rectangle} bounds - The bounds rectangle to validate
+ * @returns {boolean} True if the bounds match a display with a valid work area, false otherwise
+ */
+export const isValidBounds = (bounds: Electron.Rectangle): boolean => {
+  const display = screen.getDisplayMatching(bounds);
+  return !!(display && display.workArea);
+};
