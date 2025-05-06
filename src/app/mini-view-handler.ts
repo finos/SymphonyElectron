@@ -5,7 +5,7 @@ import { logger } from '../common/logger';
 import { config } from './config-handler';
 import { mainEvents } from './main-event-handler';
 import { windowHandler } from './window-handler';
-import { windowExists } from './window-utils';
+import { isValidBounds, windowExists } from './window-utils';
 
 // Mini View window size
 export const DEFAULT_MINI_VIEW_WINDOW_WIDTH: number = 600;
@@ -39,7 +39,8 @@ class MiniViewHandler {
       if (
         mainWinPosInMiniView &&
         mainWinPosInMiniView?.width &&
-        mainWinPosInMiniView?.width <= DEFAULT_MINI_VIEW_WINDOW_WIDTH
+        mainWinPosInMiniView?.width <= DEFAULT_MINI_VIEW_WINDOW_WIDTH &&
+        isValidBounds(mainWinPosInMiniView as Electron.Rectangle)
       ) {
         logger.info(
           'mini-view-handler: setting window bounds from user config',
@@ -82,7 +83,8 @@ class MiniViewHandler {
       if (
         mainWinPos &&
         mainWinPos?.width &&
-        mainWinPos?.width > MINI_VIEW_THRESHOLD_WINDOW_WIDTH
+        mainWinPos?.width > MINI_VIEW_THRESHOLD_WINDOW_WIDTH &&
+        isValidBounds(mainWinPos as Electron.Rectangle)
       ) {
         logger.info(
           'mini-view-handler: setting window bounds from user config',

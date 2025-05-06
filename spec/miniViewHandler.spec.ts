@@ -1,3 +1,4 @@
+import { Display, Rectangle } from 'electron';
 import { config } from '../src/app/config-handler';
 import { mainEvents } from '../src/app/main-event-handler';
 import {
@@ -6,6 +7,7 @@ import {
   miniViewHandler,
 } from '../src/app/mini-view-handler';
 import { windowHandler } from '../src/app/window-handler';
+import { screen } from './__mocks__/electron';
 
 jest.mock('../src/app/config-handler', () => ({
   config: {
@@ -34,12 +36,16 @@ jest.mock('../src/app/window-handler', () => ({
 jest.mock('../src/app/window-utils', () => {
   return {
     windowExists: jest.fn(() => true),
+    isValidBounds: jest.fn(() => true),
   };
 });
+
+jest.mock('electron');
 
 describe('MiniViewHandler', () => {
   let mockMainWindow: any;
   let mockMainWebContents: any;
+  let mockDisplay: Partial<Display>;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -54,6 +60,14 @@ describe('MiniViewHandler', () => {
       setSize: jest.fn(),
       setAlwaysOnTop: jest.fn(),
       once: jest.fn(),
+    };
+
+    mockDisplay = {
+      id: 1,
+      bounds: { x: 0, y: 0, width: 1920, height: 1080 },
+      workArea: { x: 0, y: 0, width: 1920, height: 1080 },
+      size: { width: 1920, height: 1080 },
+      workAreaSize: { width: 1920, height: 1080 },
     };
 
     mockMainWebContents = {
@@ -71,22 +85,45 @@ describe('MiniViewHandler', () => {
     );
     (config.getUserConfigFields as jest.Mock).mockReturnValue({});
     (config.updateUserConfig as jest.Mock).mockResolvedValue(undefined);
+    (screen.getDisplayMatching as jest.Mock).mockReturnValue(mockDisplay);
   });
 
   describe('activateMiniView', () => {
+    const validBounds: Rectangle = {
+      x: 10,
+      y: 20,
+      width: 600,
+      height: 600,
+    };
+
+    const invalidBounds = {
+      x: 100,
+      y: 100,
+    };
+
     it('should set correct bounds when mainWinPosInMiniView exists', async () => {
+      (screen.getDisplayMatching as jest.Mock).mockReturnValue(mockDisplay);
       (config.getUserConfigFields as jest.Mock).mockReturnValue({
-        mainWinPosInMiniView: { x: 10, y: 20, width: 500, height: 400 },
+        mainWinPosInMiniView: validBounds,
       });
 
       await miniViewHandler.activateMiniView();
 
-      expect(mockMainWindow.setBounds).toHaveBeenCalledWith({
-        x: 10,
-        y: 20,
-        width: 500,
-        height: 400,
+      expect(mockMainWindow.setBounds).toHaveBeenCalledWith(validBounds);
+    });
+
+    it('should use primary display when saved bounds are invalid', async () => {
+      (screen.getDisplayMatching as jest.Mock).mockReturnValue({});
+      (config.getUserConfigFields as jest.Mock).mockReturnValue({
+        mainWinPosInMiniView: invalidBounds,
       });
+
+      await miniViewHandler.activateMiniView();
+
+      expect(mockMainWindow.setSize).toHaveBeenCalledWith(
+        DEFAULT_MINI_VIEW_WINDOW_WIDTH,
+        600,
+      );
     });
 
     it('should set default width and preserve height when mainWinPosInMiniView does not exist or has width > DEFAULT_MINI_VIEW_WINDOW_WIDTH', async () => {
@@ -149,6 +186,11 @@ describe('MiniViewHandler', () => {
   });
 
   describe('deactivateMiniView', () => {
+    const invalidBounds = {
+      x: 100,
+      y: 100,
+    };
+
     it('should set correct bounds when mainWinPos exists and width > MINI_VIEW_THRESHOLD_WINDOW_WIDTH', () => {
       (config.getUserConfigFields as jest.Mock).mockReturnValue({
         mainWinPos: { x: 10, y: 20, width: 800, height: 400 },
@@ -162,6 +204,20 @@ describe('MiniViewHandler', () => {
         width: 800,
         height: 400,
       });
+    });
+
+    it('should use primary display when saved bounds are invalid', async () => {
+      (screen.getDisplayMatching as jest.Mock).mockReturnValue({});
+      (config.getUserConfigFields as jest.Mock).mockReturnValue({
+        mainWinPosInMiniView: invalidBounds,
+      });
+
+      await miniViewHandler.deactivateMiniView();
+
+      expect(mockMainWindow.setSize).toHaveBeenCalledWith(
+        MINI_VIEW_THRESHOLD_WINDOW_WIDTH,
+        600,
+      );
     });
 
     it('should set default width and preserve height when mainWinPos does not exist or has width <= MINI_VIEW_THRESHOLD_WINDOW_WIDTH', () => {
