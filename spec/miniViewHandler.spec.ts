@@ -52,6 +52,7 @@ describe('MiniViewHandler', () => {
 
     mockMainWindow = {
       setBounds: jest.fn(),
+      getBounds: jest.fn(),
       getSize: jest.fn(() => [800, 600]),
       isFullScreen: jest.fn(() => false),
       isMaximized: jest.fn(() => false),
@@ -86,6 +87,52 @@ describe('MiniViewHandler', () => {
     (config.getUserConfigFields as jest.Mock).mockReturnValue({});
     (config.updateUserConfig as jest.Mock).mockResolvedValue(undefined);
     (screen.getDisplayMatching as jest.Mock).mockReturnValue(mockDisplay);
+  });
+
+  describe('constrainBoundsToCurrentDisplay', () => {
+    it('should constrain bounds within the current display', async () => {
+      const bounds: Rectangle = { x: -100, y: -50, width: 500, height: 400 };
+      (config.getUserConfigFields as jest.Mock).mockReturnValue({
+        mainWinPosInMiniView: bounds,
+      });
+      await miniViewHandler.activateMiniView();
+      expect(mockMainWindow.setBounds).toHaveBeenCalledWith(
+        expect.objectContaining({ x: 0, y: 0 }),
+      );
+    });
+
+    it('should not modify bounds if already within the display', async () => {
+      const bounds: Rectangle = { x: 100, y: 50, width: 500, height: 400 };
+      (config.getUserConfigFields as jest.Mock).mockReturnValue({
+        mainWinPosInMiniView: bounds,
+      });
+      await miniViewHandler.activateMiniView();
+      expect(mockMainWindow.setBounds).toHaveBeenCalledWith(
+        expect.objectContaining(bounds),
+      );
+    });
+
+    it('should handle bounds exceeding display width', async () => {
+      const bounds: Rectangle = { x: 1800, y: 100, width: 500, height: 400 };
+      (config.getUserConfigFields as jest.Mock).mockReturnValue({
+        mainWinPosInMiniView: bounds,
+      });
+      await miniViewHandler.activateMiniView();
+      expect(mockMainWindow.setBounds).toHaveBeenCalledWith(
+        expect.objectContaining({ x: 1420 }),
+      );
+    });
+
+    it('should handle bounds exceeding display height', async () => {
+      const bounds: Rectangle = { x: 100, y: 900, width: 500, height: 400 };
+      (config.getUserConfigFields as jest.Mock).mockReturnValue({
+        mainWinPosInMiniView: bounds,
+      });
+      await miniViewHandler.activateMiniView();
+      expect(mockMainWindow.setBounds).toHaveBeenCalledWith(
+        expect.objectContaining({ y: 680 }),
+      );
+    });
   });
 
   describe('activateMiniView', () => {
@@ -183,6 +230,69 @@ describe('MiniViewHandler', () => {
       expect(mockMainWindow.unmaximize).toHaveBeenCalled();
       expect(mainEvents.publish).toHaveBeenCalledWith('unmaximize');
     });
+
+    it('should constrain bounds to current display when activating mini view with out-of-bounds position - top-left', async () => {
+      const outOfBounds: Rectangle = {
+        x: -100,
+        y: -50,
+        width: 500,
+        height: 400,
+      };
+      (config.getUserConfigFields as jest.Mock).mockReturnValue({
+        mainWinPosInMiniView: outOfBounds,
+      });
+
+      await miniViewHandler.activateMiniView();
+
+      expect(mockMainWindow.setBounds).toHaveBeenCalledWith({
+        x: 0,
+        y: 0,
+        width: 500,
+        height: 400,
+      });
+    });
+
+    it('should constrain bounds to current display when activating mini view with out-of-bounds position - bottom-right', async () => {
+      const outOfBounds: Rectangle = {
+        x: 1800,
+        y: 900,
+        width: 500,
+        height: 400,
+      };
+      (config.getUserConfigFields as jest.Mock).mockReturnValue({
+        mainWinPosInMiniView: outOfBounds,
+      });
+
+      await miniViewHandler.activateMiniView();
+
+      expect(mockMainWindow.setBounds).toHaveBeenCalledWith({
+        x: 1420,
+        y: 680,
+        width: 500,
+        height: 400,
+      });
+    });
+
+    it('should constrain bounds to current display when activating mini view with out-of-bounds position - partially out', async () => {
+      const outOfBounds: Rectangle = {
+        x: -50,
+        y: -25,
+        width: 600,
+        height: 500,
+      };
+      (config.getUserConfigFields as jest.Mock).mockReturnValue({
+        mainWinPosInMiniView: outOfBounds,
+      });
+
+      await miniViewHandler.activateMiniView();
+
+      expect(mockMainWindow.setBounds).toHaveBeenCalledWith({
+        x: 0,
+        y: 0,
+        width: 600,
+        height: 500,
+      });
+    });
   });
 
   describe('deactivateMiniView', () => {
@@ -248,6 +358,69 @@ describe('MiniViewHandler', () => {
         false,
       );
       done();
+    });
+
+    it('should constrain bounds to current display when deactivating mini view with out-of-bounds position - top-left', async () => {
+      const outOfBounds: Rectangle = {
+        x: -100,
+        y: -50,
+        width: 800,
+        height: 600,
+      };
+      (config.getUserConfigFields as jest.Mock).mockReturnValue({
+        mainWinPos: outOfBounds,
+      });
+
+      await miniViewHandler.deactivateMiniView();
+
+      expect(mockMainWindow.setBounds).toHaveBeenCalledWith({
+        x: 0,
+        y: 0,
+        width: 800,
+        height: 600,
+      });
+    });
+
+    it('should constrain bounds to current display when deactivating mini view with out-of-bounds position - bottom-right', async () => {
+      const outOfBounds: Rectangle = {
+        x: 1800,
+        y: 900,
+        width: 800,
+        height: 600,
+      };
+      (config.getUserConfigFields as jest.Mock).mockReturnValue({
+        mainWinPos: outOfBounds,
+      });
+
+      await miniViewHandler.deactivateMiniView();
+
+      expect(mockMainWindow.setBounds).toHaveBeenCalledWith({
+        x: 1120,
+        y: 480,
+        width: 800,
+        height: 600,
+      });
+    });
+
+    it('should constrain bounds to current display when deactivating mini view with out-of-bounds position - partially out', async () => {
+      const outOfBounds: Rectangle = {
+        x: -50,
+        y: -25,
+        width: 900,
+        height: 700,
+      };
+      (config.getUserConfigFields as jest.Mock).mockReturnValue({
+        mainWinPos: outOfBounds,
+      });
+
+      await miniViewHandler.deactivateMiniView();
+
+      expect(mockMainWindow.setBounds).toHaveBeenCalledWith({
+        x: 0,
+        y: 0,
+        width: 900,
+        height: 700,
+      });
     });
   });
 
