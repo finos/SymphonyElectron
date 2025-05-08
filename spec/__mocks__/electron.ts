@@ -276,6 +276,7 @@ export const session = {
 
 export const screen = {
   getAllDisplays: jest.fn(),
+  getDisplayMatching: jest.fn(),
   getPrimaryDisplay: jest.fn(() => {
     return {
       workArea: {
