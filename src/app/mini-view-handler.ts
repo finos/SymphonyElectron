@@ -1,11 +1,11 @@
-import { BrowserWindow } from 'electron';
+import { BrowserWindow, Rectangle, screen } from 'electron';
 
 import { isMac } from '../common/env';
 import { logger } from '../common/logger';
 import { config } from './config-handler';
 import { mainEvents } from './main-event-handler';
 import { windowHandler } from './window-handler';
-import { windowExists } from './window-utils';
+import { isValidBounds, windowExists } from './window-utils';
 
 // Mini View window size
 export const DEFAULT_MINI_VIEW_WINDOW_WIDTH: number = 600;
@@ -39,13 +39,18 @@ class MiniViewHandler {
       if (
         mainWinPosInMiniView &&
         mainWinPosInMiniView?.width &&
-        mainWinPosInMiniView?.width <= DEFAULT_MINI_VIEW_WINDOW_WIDTH
+        mainWinPosInMiniView?.width <= DEFAULT_MINI_VIEW_WINDOW_WIDTH &&
+        isValidBounds(mainWinPosInMiniView as Electron.Rectangle)
       ) {
         logger.info(
           'mini-view-handler: setting window bounds from user config',
           mainWinPosInMiniView,
         );
-        mainWindow.setBounds(mainWinPosInMiniView);
+        const constrainedBounds = this.constrainBoundsToCurrentDisplay(
+          mainWindow,
+          mainWinPosInMiniView as Rectangle,
+        );
+        mainWindow.setBounds(constrainedBounds);
       } else {
         logger.info(
           `mini-view-handler: setting window width to ${DEFAULT_MINI_VIEW_WINDOW_WIDTH}, preserving height`,
@@ -82,13 +87,18 @@ class MiniViewHandler {
       if (
         mainWinPos &&
         mainWinPos?.width &&
-        mainWinPos?.width > MINI_VIEW_THRESHOLD_WINDOW_WIDTH
+        mainWinPos?.width > MINI_VIEW_THRESHOLD_WINDOW_WIDTH &&
+        isValidBounds(mainWinPos as Electron.Rectangle)
       ) {
         logger.info(
           'mini-view-handler: setting window bounds from user config',
           mainWinPos,
         );
-        mainWindow.setBounds(mainWinPos);
+        const constrainedBounds = this.constrainBoundsToCurrentDisplay(
+          mainWindow,
+          mainWinPos as Rectangle,
+        );
+        mainWindow.setBounds(constrainedBounds);
       } else {
         logger.info(
           `mini-view-handler: setting window width to ${MINI_VIEW_THRESHOLD_WINDOW_WIDTH}, preserving height`,
@@ -141,6 +151,45 @@ class MiniViewHandler {
       });
       window.setFullScreen(false);
     });
+  };
+
+  /**
+   * Ensures the window bounds stay within the current display's work area.
+   * This prevents the window from moving to a different display or becoming partially hidden.
+   *
+   * @param {BrowserWindow} window - The Electron window whose bounds need to be constrained
+   * @param {Rectangle} newBounds - The desired new bounds for the window
+   * @returns {Rectangle} The adjusted bounds that keep the window within the current display
+   */
+  private constrainBoundsToCurrentDisplay = (
+    window: BrowserWindow,
+    newBounds: Rectangle,
+  ): Rectangle => {
+    const currentDisplay = screen.getDisplayMatching(window.getBounds());
+    const targetDisplay = screen.getDisplayMatching(newBounds);
+    const workArea = currentDisplay.workArea;
+
+    if (currentDisplay.id !== targetDisplay.id) {
+      return {
+        x: Math.round(workArea.x + (workArea.width - newBounds.width) / 2),
+        y: Math.round(workArea.y + (workArea.height - newBounds.height) / 2),
+        width: Math.min(workArea.width, newBounds.width),
+        height: Math.min(workArea.height, newBounds.height),
+      };
+    }
+
+    return {
+      x: Math.max(
+        workArea.x,
+        Math.min(workArea.x + workArea.width - newBounds.width, newBounds.x),
+      ),
+      y: Math.max(
+        workArea.y,
+        Math.min(workArea.y + workArea.height - newBounds.height, newBounds.y),
+      ),
+      width: Math.min(workArea.width, newBounds.width),
+      height: Math.min(workArea.height, newBounds.height),
+    };
   };
 }
 

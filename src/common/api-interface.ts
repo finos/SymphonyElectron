@@ -59,7 +59,6 @@ export enum apiCmds {
   maximizeMainWindow = 'maximize-main-window',
   unmaximizeMainWindow = 'unmaximize-main-window',
   getCurrentOriginUrl = 'get-current-origin-url',
-  isAeroGlassEnabled = 'is-aero-glass-enabled',
   showScreenSharePermissionDialog = 'show-screen-share-permission-dialog',
   getMediaAccessStatus = 'get-media-access-status',
   setBroadcastMessage = 'set-broadcast-message',
