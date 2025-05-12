@@ -604,6 +604,8 @@ ipcMain.handle(
     switch (arg.cmd) {
       case apiCmds.getCurrentOriginUrl:
         return windowHandler.getMainWindow()?.origin;
+      case apiCmds.isAeroGlassEnabled:
+        return systemPreferences.isAeroGlassEnabled();
       case apiCmds.showScreenSharePermissionDialog: {
         const focusedWindow = BrowserWindow.getFocusedWindow();
         if (focusedWindow && !focusedWindow.isDestroyed()) {
