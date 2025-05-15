@@ -110,7 +110,9 @@ const startApplication = async () => {
   await config.updateUserConfigOnStart();
   setSessionProperties();
   displayMediaRequestHandler.init();
-  await autoUpdate.init();
+  if (!isDevEnv) {
+    await autoUpdate.init();
+  }
   await windowHandler.createApplication();
   logger.info(`main: created application`);
 
