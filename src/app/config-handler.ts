@@ -85,6 +85,7 @@ export interface IConfig {
   sdaInstallerMsiUrlEnabledVisible?: boolean;
   sdaInstallerMsiUrlBetaEnabledVisible?: boolean;
   openfin?: IOpenfin;
+  sdaInstallerMsiUrl?: string;
 }
 
 export interface IGlobalConfig {
@@ -121,6 +122,7 @@ export interface IPodLevelEntitlements {
   };
   autoLaunchPath: string;
   userDataPath: string;
+  sdaInstallerMsiUrl?: string;
 }
 
 export interface IACPFeatureLevelEntitlements {
