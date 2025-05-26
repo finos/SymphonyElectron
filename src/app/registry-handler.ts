@@ -7,6 +7,7 @@ enum RegistryValueType {
 
 const CHANNEL_NEST_LOCATION = '\\SOFTWARE\\Policies\\Symphony\\Update';
 const CHANNEL_KEY = 'channel';
+const REGISTRY_TIMEOUT_MS = 5000; // 5sec
 
 export const retrieveWindowsRegistry = async (): Promise<string> => {
   const Registry = require('winreg');
@@ -42,7 +43,7 @@ export const retrieveWindowsRegistry = async (): Promise<string> => {
     key: CHANNEL_NEST_LOCATION,
   });
 
-  return new Promise((resolve) => {
+  const registryPromise = new Promise<string>((resolve) => {
     regKeyUser.get(CHANNEL_KEY, (error, channel) => {
       if (
         error ||
@@ -64,4 +65,17 @@ export const retrieveWindowsRegistry = async (): Promise<string> => {
       }
     });
   });
+
+  const timeoutPromise = new Promise<string>((resolve) => {
+    setTimeout(() => {
+      logger.warn(
+        `registry-handler: Registry retrieval timed out after ${
+          REGISTRY_TIMEOUT_MS / 1000
+        } seconds.`,
+      );
+      resolve('');
+    }, REGISTRY_TIMEOUT_MS);
+  });
+
+  return Promise.race([registryPromise, timeoutPromise]);
 };
