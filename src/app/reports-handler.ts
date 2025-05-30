@@ -75,10 +75,12 @@ const receivedLogs: ILogs[] = [];
 const writeLogs = async (retrievedLogs: ILogs[]) => {
   for await (const logs of retrievedLogs) {
     for (const logFile of logs.logFiles) {
-      const sanitizedFilename = fileHelper.validateFilename(logFile.filename);
-      if (!sanitizedFilename) {
+      const isValidFileName = fileHelper.validateLogFileName(logFile.filename);
+      if (!isValidFileName) {
         continue;
       }
+
+      const sanitizedFilename = fileHelper.sanitizeFilename(logFile.filename);
       // nosemgrep
       const file = path.join(app.getPath('logs'), sanitizedFilename);
       await writeDataToFile(file, logFile.contents);

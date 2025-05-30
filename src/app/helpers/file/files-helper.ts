@@ -26,19 +26,72 @@ export class FileHelper extends FileHelperBase {
     return (this.files = files);
   };
 
-  public validateFilename = (filename: string): string => {
+  public sanitizeFilename = (filename: string): string => {
     return filename?.replace(/[^a-zA-Z0-9/_\.-]/g, '_');
   };
 
-  public validateFilePath = (path: string) => {
-    const unixPathRegex = /^\/([^\/]+\/)*([^\/]+)$/;
-    const windowsPathRegex = /^[a-zA-Z]:\\([^\\]+\\)*([^\\]+)$/;
+  public validateLogFileName = (filename: string) => {
+    return !RegExp(/[^a-zA-Z0-9/_\.-]/g).test(filename);
+  };
 
-    if (isWindowsOS) {
-      return windowsPathRegex.test(path);
+  public validateFilename = (filename) => {
+    if (!filename || filename.length > 255) {
+      return false;
     }
 
-    return unixPathRegex.test(path);
+    const forbiddenChars = /[<>:"/\\|?*\x00-\x1F]/;
+    if (forbiddenChars.test(filename)) {
+      return false;
+    }
+
+    const reservedNames = /^(con|prn|aux|nul|com\d|lpt\d)(\..*)?$/i;
+    if (reservedNames.test(filename)) {
+      return false;
+    }
+
+    if (filename.endsWith('.') || filename.endsWith(' ')) {
+      return false;
+    }
+
+    if (
+      filename.startsWith(' ') ||
+      filename.startsWith('-') ||
+      filename.startsWith('_') ||
+      filename?.split('.')[0].endsWith(' ')
+    ) {
+      return false;
+    }
+
+    if (/\.\.+/.test(filename)) {
+      return false;
+    }
+
+    return true;
+  };
+
+  public validateFilePath = (inputPath: string) => {
+    if (!isWindowsOS) {
+      return false;
+    }
+    try {
+      const normalizedPath = path.win32.normalize(inputPath);
+      const parsedPath = path.win32.parse(normalizedPath);
+
+      if (parsedPath.root && !/^[a-zA-Z]:\\$/.test(parsedPath.root)) {
+        return false;
+      }
+      if (
+        !RegExp(
+          /^(?:[a-zA-Z]:)?(?:[\/\\]{1,2}(?=[^\/\\])(?:\w[\w\s\-\.]*[\/\\])*)(?:\w[\w\s\-\.]*)$/,
+        ).test(inputPath)
+      ) {
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      return false;
+    }
   };
 
   public unsetFiles = () => {
@@ -61,17 +114,21 @@ export class FileHelper extends FileHelperBase {
     let latestModifiedLogTimestamp = 0;
 
     logFiles?.forEach((file, index) => {
-      const sanitizedLogname = this.validateFilename(file);
+      const isValidFileName = this.validateFilename(file);
+      const sanitizedFilename = this.sanitizeFilename(file);
       const sanitizedFolderPath = path.normalize(folderPath);
+      const isValidFolderPath = this.validateFilePath(sanitizedFolderPath);
+      const isValidLogName = this.validateLogFileName(file);
 
-      if (!sanitizedLogname || !this.validateFilePath(sanitizedFolderPath)) {
-        logger.error(
+      if (!isValidFileName || !isValidFolderPath || !isValidLogName) {
+        logger.info(
           'error',
           'file-helper: Log file has a malicious format to be exported',
         );
         return;
       }
-      const logFilePath = path.join(sanitizedFolderPath, sanitizedLogname);
+
+      const logFilePath = path.join(sanitizedFolderPath, sanitizedFilename);
       const logFileStats = fs.statSync(logFilePath);
       const currentLogModifiedTimestamp = logFileStats.mtime.getTime();
 

@@ -26,20 +26,12 @@ describe('files-helper', () => {
     fsMock.mockRestore();
   });
 
-  it('should clean file names', () => {
-    const validatedFileName = fileHelper.validateFilename(
+  it('should clean file names with proper format', () => {
+    const validatedFileName = fileHelper.sanitizeFilename(
       'console.log("hello world").txt',
     );
 
     expect(validatedFileName).toBe('console.log__hello_world__.txt');
-  });
-
-  it('should clean file names', () => {
-    const validatedPath = fileHelper.validateFilePath(
-      'SELEC*FROM ABC/hello-world/haha',
-    );
-
-    expect(validatedPath).toBe(false);
   });
 
   it('should clean file path', () => {
@@ -48,6 +40,30 @@ describe('files-helper', () => {
     );
 
     expect(validatedPath).toBe(false);
+  });
+
+  it('should validate correct file path', () => {
+    const validatedPath = fileHelper.validateFilePath('C:\\hello-world\\haha');
+
+    expect(validatedPath).toBe(true);
+  });
+
+  it('should validate correct file name', () => {
+    const validatedPath = fileHelper.validateFilename('ble-ble.txt ');
+    const validatedPath2 = fileHelper.validateFilename('AUX.txt');
+    const validatedPath3 = fileHelper.validateFilename('ble-ble.txt');
+
+    expect(validatedPath).toBe(false);
+    expect(validatedPath2).toBe(false);
+    expect(validatedPath3).toBe(true);
+  });
+
+  it('should validate if valid log name', () => {
+    const validatedLog = fileHelper.validateLogFileName(
+      'sda_1747618623788.txt',
+    );
+
+    expect(validatedLog).toBe(true);
   });
 
   it('should return enough logs in folder - old modified', () => {
