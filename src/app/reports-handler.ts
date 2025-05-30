@@ -75,10 +75,12 @@ const receivedLogs: ILogs[] = [];
 const writeLogs = async (retrievedLogs: ILogs[]) => {
   for await (const logs of retrievedLogs) {
     for (const logFile of logs.logFiles) {
-      const sanitizedFilename = fileHelper.validateFilename(logFile.filename);
-      if (!sanitizedFilename) {
+      const isValidFileName = fileHelper.validateLogFileName(logFile.filename);
+      if (!isValidFileName) {
         continue;
       }
+
+      const sanitizedFilename = fileHelper.sanitizeFilename(logFile.filename);
       // nosemgrep
       const file = path.join(app.getPath('logs'), sanitizedFilename);
       await writeDataToFile(file, logFile.contents);
@@ -294,6 +296,10 @@ const removeLastIVLogs: RemoveIVLogs = (logsPath: string) => {
 
   ivLogsList?.forEach((log) => {
     const logPath = `${logsPath}/${log.fileName}`;
+    if (!fs.existsSync(logPath)) {
+      logger.info('reports-handler: log file check, not exist');
+      return;
+    }
 
     try {
       fs.unlinkSync(logPath);
@@ -320,8 +326,8 @@ const extractIVLogs: RetrieveIVLogs = (logsPath: string) => {
   if (ivLogsList && ivLogsList.size < 1) {
     logger.info(`reports-handler: Cannot copy log, logs arent exist`);
   } else {
-    try {
-      ivLogsList?.forEach((log) => {
+    ivLogsList?.forEach((log) => {
+      try {
         logger.info(`reports-handler: Start reading logs, ${log.fileName}`);
         const ivLog = fs.readFileSync(`${ivFolderPath}/${log.fileName}`);
 
@@ -331,10 +337,10 @@ const extractIVLogs: RetrieveIVLogs = (logsPath: string) => {
         } else {
           logger.error(`reports-handler: ${log} cannot be found.`);
         }
-      });
-      fileHelper.unsetFiles();
-    } catch (e) {
-      logger.error(`reports-handler: ${e}`);
-    }
+      } catch (e) {
+        logger.error(`reports-handler: ${e}`);
+      }
+    });
+    fileHelper.unsetFiles();
   }
 };
