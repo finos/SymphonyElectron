@@ -292,7 +292,7 @@ const removeLastIVLogs: RemoveIVLogs = (logsPath: string) => {
     includeOnly: [LogCategory.C9_TRADER, LogCategory.C9_ZUES],
   });
 
-  ivLogsList?.forEach((log) => {
+  ivLogsList.forEach((log) => {
     const logPath = `${logsPath}/${log.fileName}`;
 
     try {
@@ -317,11 +317,11 @@ const extractIVLogs: RetrieveIVLogs = (logsPath: string) => {
   fileHelper.set(fileHelper.createFiles());
   const ivLogsList = fileHelper.getLatestModifiedFiles(ivFolderPath);
 
-  if (ivLogsList && ivLogsList.size < 1) {
+  if (ivLogsList.size < 1) {
     logger.info(`reports-handler: Cannot copy log, logs arent exist`);
   } else {
     try {
-      ivLogsList?.forEach((log) => {
+      ivLogsList.forEach((log) => {
         logger.info(`reports-handler: Start reading logs, ${log.fileName}`);
         const ivLog = fs.readFileSync(`${ivFolderPath}/${log.fileName}`);
 
