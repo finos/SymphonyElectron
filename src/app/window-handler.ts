@@ -1282,11 +1282,7 @@ export class WindowHandler {
         ...userConfig,
         ...filteredConfig,
       };
-      const host = parse(
-        this.url
-          ? this.url
-          : (userConfig as IConfig).url || (globalConfig as IConfig).url,
-      );
+      const host = parse(this.startUrl);
       const aboutInfo = {
         userConfig,
         globalConfig,

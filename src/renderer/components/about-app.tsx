@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
+import { parse } from 'url';
 import { productName } from '../../../package.json';
 import { IConfig } from '../../app/config-handler';
 import { apiCmds, apiName } from '../../common/api-interface';
@@ -11,8 +12,8 @@ import * as SymphonyLogo from '../../renderer/assets/new-symphony-logo.svg';
 const HOSTNAME_REGEX = /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 interface IState {
-  userConfig: object;
-  globalConfig: object;
+  userConfig: IConfig;
+  globalConfig: IConfig;
   cloudConfig: object;
   finalConfig: IConfig;
   appName: string;
@@ -69,8 +70,8 @@ export default class AboutApp extends React.Component<{}, IState> {
     super(props);
     this.closeButtonRef = React.createRef();
     this.state = {
-      userConfig: {},
-      globalConfig: {},
+      userConfig: {} as IConfig,
+      globalConfig: {} as IConfig,
       cloudConfig: {},
       finalConfig: {} as IConfig,
       appName: 'Symphony',
@@ -144,15 +145,13 @@ export default class AboutApp extends React.Component<{}, IState> {
         value: `${formattedSfeVersion} ${client}`,
       },
     ];
-    const finalConfig = this.state.finalConfig?.url
-      ?.replace(/https:\/\//g, '')
-      ?.split('/')[0];
-    const updatedHostname = this.state.updatedHostname
-      ?.replace(/https:\/\//g, '')
-      ?.split('/')[0];
-    const isHostNamechanged =
-      finalConfig && updatedHostname && finalConfig !== updatedHostname;
-    const closeButtonText = isHostNamechanged
+    const userConfigHostName = parse(
+      this.state.userConfig?.url || this.state.globalConfig?.url || '',
+    ).hostname;
+    const isHostNameChanged =
+      this.previousUrl !== this.state.updatedHostname &&
+      userConfigHostName !== this.state.updatedHostname;
+    const closeButtonText = isHostNameChanged
       ? i18n.t('Save and Restart', ABOUT_SYMPHONY_NAMESPACE)()
       : i18n.t('Close', ABOUT_SYMPHONY_NAMESPACE)();
     const cancelText = i18n.t('Cancel', ABOUT_SYMPHONY_NAMESPACE)();
@@ -199,7 +198,7 @@ export default class AboutApp extends React.Component<{}, IState> {
             {this.state.isPodEditing && (
               <button
                 className={
-                  isHostNamechanged
+                  isHostNameChanged
                     ? 'AboutApp-cancel-button-save-restart'
                     : 'AboutApp-cancel-button'
                 }
@@ -213,7 +212,7 @@ export default class AboutApp extends React.Component<{}, IState> {
             )}
             <button
               className={
-                isHostNamechanged && isValidHostname
+                isHostNameChanged && isValidHostname
                   ? 'AboutApp-button-save-restart'
                   : !isValidHostname
                   ? 'AboutApp-button-save-restart-disabled'
@@ -228,7 +227,7 @@ export default class AboutApp extends React.Component<{}, IState> {
             >
               <span
                 className={classNames({
-                  'AboutApp-button-save-restart-text': isHostNamechanged,
+                  'AboutApp-button-save-restart-text': isHostNameChanged,
                 })}
               >
                 {closeButtonText}
@@ -284,16 +283,14 @@ export default class AboutApp extends React.Component<{}, IState> {
    */
   public close(): void {
     const { isValidHostname } = this.state;
-    const finalConfig = this.state.finalConfig?.url
-      .replace(/https:\/\//g, '')
-      ?.split('/')[0];
-    const updatedHostname = this.state.updatedHostname
-      ?.replace(/https:\/\//g, '')
-      ?.split('/')[0];
-    const compareHostName =
-      finalConfig && updatedHostname && finalConfig !== updatedHostname;
+    const userConfigHostName = parse(
+      this.state.userConfig?.url || this.state.globalConfig?.url || '',
+    ).hostname;
+    const isHostNameChanged =
+      this.previousUrl !== this.state.updatedHostname &&
+      userConfigHostName !== this.state.updatedHostname;
 
-    if (isValidHostname && compareHostName) {
+    if (isValidHostname && isHostNameChanged) {
       ipcRenderer.send('user-pod-updated', this.state.updatedHostname);
     }
     ipcRenderer.send('close-about-app');
@@ -346,7 +343,6 @@ export default class AboutApp extends React.Component<{}, IState> {
       const { value } = e.target;
       this.setState({ updatedHostname: value });
       this.handlePodInputBlur(e);
-      this.previousUrl = value;
     }
     if (e.keyCode === KEY_CODE.ESCAPE) {
       this.setState({
@@ -455,6 +451,7 @@ export default class AboutApp extends React.Component<{}, IState> {
           <span
             data-testid={'POD_INFO'}
             className={classNames({ 'invalid-pod': !isValidHostname })}
+            title={this.state.userConfig?.url || this.state.globalConfig?.url}
             onClick={this.eventHandlers.onPodClick}
           >
             {updatedHostname}
