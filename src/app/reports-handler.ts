@@ -126,11 +126,8 @@ export const packageLogs = async (retrievedLogs: ILogs[]): Promise<void> => {
   const timestamp = new Date().getTime();
   const destination = app.getPath('downloads') + destPath + timestamp + '.zip';
 
-  if (isWindowsOS) {
-    removeLastIVLogs(logsPath);
-    extractIVLogs(logsPath);
-  }
-
+  removeLastIVLogs(logsPath);
+  extractIVLogs(logsPath);
   await writeLogs(retrievedLogs);
   generateArchiveForDirectory(
     logsPath,
@@ -318,7 +315,7 @@ const extractIVLogs: RetrieveIVLogs = (logsPath: string) => {
   const ivLogsList = fileHelper.getLatestModifiedFiles(ivFolderPath);
 
   if (ivLogsList.size < 1) {
-    logger.info(`reports-handler: Cannot copy log, logs arent exist`);
+    logger.error(`reports-handler: Cannot copy log, logs arent exist`);
   } else {
     try {
       ivLogsList.forEach((log) => {
