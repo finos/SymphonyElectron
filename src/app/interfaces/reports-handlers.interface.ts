@@ -11,8 +11,7 @@ export enum LogCategory {
 
 export enum LogUtilities {
   ONE_MINUTE = 60000,
-  // Timestamp threshold, in minutes
-  LOG_TIMESTAMP_THRESHOLD = 30,
+  LOG_TIMESTAMP_THRESH_HOLD = 31,
 }
 
 export type RetrieveIVLogs = (logsPath: string) => void;
