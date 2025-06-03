@@ -87,7 +87,10 @@ export class FileHelper extends FileHelperBase {
           modifiedTimestamp: currentLogModifiedTimestamp,
         };
 
-        if (timestampDiffInMinutes <= LogUtilities.LOG_TIMESTAMP_THRESH_HOLD) {
+        if (
+          timestampDiffInMinutes <= LogUtilities.LOG_TIMESTAMP_THRESH_HOLD &&
+          logFileStats.mtime.getTime() > latestModifiedLogTimestamp
+        ) {
           this.files.get().set(`${LogCategory.LATEST}_${index}`, modifiedFile);
           latestModifiedLogTimestamp = logFileStats.mtime.getTime();
         } else if (currentLogModifiedTimestamp > latestModifiedLogTimestamp) {
