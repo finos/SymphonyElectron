@@ -4,7 +4,7 @@ import { Files } from './files';
 export type GetLatestModifiedFiles = (
   folderPath: string,
   options?: IFileOptions,
-) => Map<string, IFile> | undefined;
+) => Map<string, IFile>;
 
 export abstract class FileHelperBase {
   public abstract getLatestModifiedFiles: GetLatestModifiedFiles;

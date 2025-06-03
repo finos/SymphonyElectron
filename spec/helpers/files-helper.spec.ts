@@ -91,7 +91,6 @@ describe('files-helper', () => {
         }
       }
     });
-    jest.spyOn(fs, 'existsSync').mockReturnValue(true);
 
     const files = fileHelper.getLatestModifiedFiles(folderPath);
     const firstModifiedFile: IFile = {
@@ -101,9 +100,9 @@ describe('files-helper', () => {
     };
 
     if (isLinux || isMac) {
-      expect(files?.get(LogCategory.RECENT)).toEqual(undefined);
+      expect(files.get(LogCategory.RECENT)).toEqual(undefined);
     } else {
-      expect(files?.get(LogCategory.RECENT)).toEqual(firstModifiedFile);
+      expect(files.get(LogCategory.RECENT)).toEqual(firstModifiedFile);
     }
   });
 
@@ -154,8 +153,6 @@ describe('files-helper', () => {
       }
     });
 
-    jest.spyOn(fs, 'existsSync').mockReturnValue(true);
-
     const files = fileHelper.getLatestModifiedFiles(folderPath);
     const result = new Map<string, IFile>();
     const firstModifiedFile: IFile = {
@@ -173,11 +170,11 @@ describe('files-helper', () => {
     result.set(LogCategory.LATEST + '_2', secondModifiedFile);
 
     if (isLinux || isMac) {
-      expect(files?.get(LogCategory.LATEST + '_0')).toEqual(undefined);
-      expect(files?.get(LogCategory.LATEST + '_2')).toEqual(undefined);
+      expect(files.get(LogCategory.LATEST + '_0')).toEqual(undefined);
+      expect(files.get(LogCategory.LATEST + '_2')).toEqual(undefined);
     } else {
-      expect(files?.get(LogCategory.LATEST + '_0')).toEqual(firstModifiedFile);
-      expect(files?.get(LogCategory.LATEST + '_2')).toEqual(secondModifiedFile);
+      expect(files.get(LogCategory.LATEST + '_0')).toEqual(firstModifiedFile);
+      expect(files.get(LogCategory.LATEST + '_2')).toEqual(secondModifiedFile);
     }
   });
 });

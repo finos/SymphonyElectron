@@ -52,10 +52,6 @@ export class FileHelper extends FileHelperBase {
       type: '',
     },
   ) => {
-    if (!fs.existsSync(folderPath)) {
-      logger.info('file-helper: IV Folder check, not exist');
-      return undefined;
-    }
     const logFiles = fs.readdirSync(folderPath);
     const now = new Date();
     let latestModifiedLogTimestamp = 0;
