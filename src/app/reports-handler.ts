@@ -1,19 +1,12 @@
 import * as zip from 'adm-zip';
 import { app, BrowserWindow, dialog, shell, WebContents } from 'electron';
 import * as fs from 'fs';
-import { homedir as getHomedir } from 'os';
 import * as path from 'path';
 
 import { ILogs } from '../common/api-interface';
 import { isLinux, isMac, isWindowsOS } from '../common/env';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
-import { fileHelper } from './helpers/file/files-helper';
-import {
-  LogCategory,
-  RemoveIVLogs,
-  RetrieveIVLogs,
-} from './interfaces/reports-handlers.interface';
 
 /**
  * Archives files in the source directory
@@ -72,10 +65,14 @@ let logWebContents: WebContents;
 const logTypes: string[] = [];
 const receivedLogs: ILogs[] = [];
 
-const writeLogs = async (retrievedLogs: ILogs[]) => {
+const validateFilename = (filename: string): string => {
+  return filename?.replace(/[^a-zA-Z0-9/_\.-]/g, '_');
+};
+
+const writeClientLogs = async (retrievedLogs: ILogs[]) => {
   for await (const logs of retrievedLogs) {
     for (const logFile of logs.logFiles) {
-      const sanitizedFilename = fileHelper.validateFilename(logFile.filename);
+      const sanitizedFilename = validateFilename(logFile.filename);
       if (!sanitizedFilename) {
         continue;
       }
@@ -126,12 +123,7 @@ export const packageLogs = async (retrievedLogs: ILogs[]): Promise<void> => {
   const timestamp = new Date().getTime();
   const destination = app.getPath('downloads') + destPath + timestamp + '.zip';
 
-  if (isWindowsOS) {
-    removeLastIVLogs(logsPath);
-    extractIVLogs(logsPath);
-  }
-
-  await writeLogs(retrievedLogs);
+  await writeClientLogs(retrievedLogs);
   generateArchiveForDirectory(
     logsPath,
     destination,
@@ -285,60 +277,4 @@ const writeDataToFile = async (filePath: string, data: string) => {
   }
 
   writeStream.end();
-};
-
-const removeLastIVLogs: RemoveIVLogs = (logsPath: string) => {
-  const ivLogsList = fileHelper.getLatestModifiedFiles(logsPath, {
-    includeOnly: [LogCategory.C9_TRADER, LogCategory.C9_ZUES],
-  });
-
-  ivLogsList?.forEach((log) => {
-    const logPath = `${logsPath}/${log.fileName}`;
-    if (!fs.existsSync(logPath)) {
-      logger.info('reports-handler: log file check, not exist');
-      return;
-    }
-
-    try {
-      fs.unlinkSync(logPath);
-      logger.info(`reports-handler: removed ${log.fileName}`);
-    } catch (e) {
-      logger.error(`reports-handler: Error in removing file - ${e}`);
-    }
-  });
-};
-
-const extractIVLogs: RetrieveIVLogs = (logsPath: string) => {
-  const ivFolderPath = path.join(
-    getHomedir(),
-    'AppData',
-    'Local',
-    'Cloud9_Technologies',
-    'C9Trader',
-    'log',
-  );
-
-  fileHelper.set(fileHelper.createFiles());
-  const ivLogsList = fileHelper.getLatestModifiedFiles(ivFolderPath);
-
-  if (ivLogsList && ivLogsList.size < 1) {
-    logger.info(`reports-handler: Cannot copy log, logs arent exist`);
-  } else {
-    ivLogsList?.forEach((log) => {
-      try {
-        logger.info(`reports-handler: Start reading logs, ${log.fileName}`);
-        const ivLog = fs.readFileSync(`${ivFolderPath}/${log.fileName}`);
-
-        if (ivLog) {
-          logger.info(`reports-handler: Log found start copying content`);
-          fs.writeFileSync(`${logsPath}/${log.fileName}`, ivLog);
-        } else {
-          logger.error(`reports-handler: ${log} cannot be found.`);
-        }
-      } catch (e) {
-        logger.error(`reports-handler: ${e}`);
-      }
-    });
-    fileHelper.unsetFiles();
-  }
 };
