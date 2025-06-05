@@ -459,6 +459,7 @@ ipcMain.on(
           await config.updateUserConfig({
             url: arg.newPodUrl,
           });
+          windowHandler.startUrl = arg.newPodUrl;
         }
         config.writeUserConfig();
         const urlFromCmd = getCommandLineArgs(process.argv, '--url=', false);
