@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import { IntlMessageFormat } from 'intl-messageformat';
 import * as path from 'path';
 
 import { formatString } from './utils';
@@ -26,6 +27,7 @@ class Translation {
       ? Translation.getResource(resource, namespace)[value] || value
       : value;
   }
+
   private static getResource = (
     resource: JSON,
     namespace: string | undefined,
@@ -80,22 +82,28 @@ class Translation {
    * @returns translate and formats string
    */
   public t(value: string, namespace?: string): formatterFunction {
-    return (args?: object): string => {
+    return (args?: Record<string, any>): string => {
+      let translatedString: string;
       if (this.loadedResources && this.loadedResources[this.locale]) {
-        return formatString(
-          Translation.translate(
-            value,
-            this.loadedResources[this.locale],
-            namespace,
-          ),
-          args,
+        translatedString = Translation.translate(
+          value,
+          this.loadedResources[this.locale],
+          namespace,
         );
+      } else {
+        const resource = this.loadResource(this.locale);
+        translatedString =
+          Translation.translate(value, resource, namespace) || value;
       }
-      const resource = this.loadResource(this.locale);
-      return formatString(
-        Translation.translate(value, resource, namespace) || value,
-        args,
-      );
+      if (args && Object.keys(args).length > 0) {
+        try {
+          const msg = new IntlMessageFormat(translatedString, this.locale);
+          return msg.format(args) as string;
+        } catch (error: any) {
+          return formatString(translatedString, args);
+        }
+      }
+      return translatedString;
     };
   }
 
