@@ -240,6 +240,7 @@
     "electron-log": "4.4.8",
     "electron-updater": "6.6.2",
     "filesize": "^10.0.6",
+    "intl-messageformat": "^10.7.16",
     "lazy-brush": "^1.0.1",
     "lodash.debounce": "^4.0.8",
     "react": "16.14.0",

@@ -200,7 +200,7 @@
   "SDA update channel": "SDA update channel",
   "Stable": "Stable",
   "Symphony Messaging": "Symphony Messaging",
-  "Symphony Messaging has {count} unread messages": "Symphony Messaging has {count} unread messages",
+  "Symphony Messaging has {count, plural, =1 {1 unread message} other {# unread messages}}": "Symphony Messaging has {count, plural, =1 {1 unread message} other {# unread messages}}",
   "Latest": "Latest",
   "Daily": "Daily",
   "Beta": "Beta",

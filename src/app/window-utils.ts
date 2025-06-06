@@ -364,7 +364,9 @@ export const setDataUrl = (dataUrl: string, count: number): void => {
   if (mainWindow && dataUrl && count) {
     const img = nativeImage.createFromDataURL(dataUrl);
     // for accessibility screen readers
-    const desc = i18n.t('Symphony Messaging has {count} unread messages')({
+    const desc = i18n.t(
+      'Symphony Messaging has {count, plural, =1 {1 unread message} other {# unread messages}}',
+    )({
       count,
     });
     mainWindow.setOverlayIcon(img, desc);
