@@ -1504,6 +1504,9 @@ export const loadWebContentsView = async (
       onMaximize();
       return;
     }
+    if (mainWindow.isFullScreen()) {
+      return;
+    }
     // Electron fires a resize event on minimize too, which is not needed while resizing browserViews
     if (mainWindow.isMinimized()) {
       return;
