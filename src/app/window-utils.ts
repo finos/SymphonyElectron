@@ -1600,7 +1600,7 @@ export const hideFullscreenWindow = (window: BrowserWindow) => {
       window.hide();
     } else {
       setTimeout(() => {
-        window.hide();
+        window.minimize();
       }, 0);
     }
   });
