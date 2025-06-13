@@ -74,7 +74,7 @@ import {
   getWindowByName,
   handleCertificateProxyVerification,
   handleDownloadManager,
-  hideFullscreenWindow,
+  hideOrMinimizeFullscreenWindow,
   initSysTray,
   injectStyles,
   isSymphonyReachable,
@@ -805,7 +805,7 @@ export class WindowHandler {
       ) {
         event.preventDefault();
         if (this.mainWindow.isFullScreen()) {
-          hideFullscreenWindow(this.mainWindow);
+          hideOrMinimizeFullscreenWindow(this.mainWindow);
         } else {
           this.mainWindow.minimize();
         }
@@ -817,7 +817,7 @@ export class WindowHandler {
         // this is a workaround for an issue with macOS
         // https://github.com/electron/electron/issues/39572
         if (this.mainWindow.isFullScreen()) {
-          hideFullscreenWindow(this.mainWindow);
+          hideOrMinimizeFullscreenWindow(this.mainWindow);
         } else {
           this.mainWindow.hide();
         }
