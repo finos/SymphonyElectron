@@ -1,12 +1,25 @@
 import * as zip from 'adm-zip';
 import { app, BrowserWindow, dialog, shell, WebContents } from 'electron';
 import * as fs from 'fs';
+import { homedir as getHomedir } from 'os';
 import * as path from 'path';
 
 import { ILogs } from '../common/api-interface';
 import { isLinux, isMac, isWindowsOS } from '../common/env';
 import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
+import { FilesFactory } from './helpers/file/files-factory';
+import {
+  copyFileUsingReadWrite,
+  isValidWindowsFileName,
+} from './helpers/file/files-helper';
+import {
+  LogCategory,
+  RemoveIVLogs,
+  RetrieveIVLogs,
+} from './interfaces/reports-handlers.interface';
+
+const IVLogFiles = FilesFactory.create();
 
 /**
  * Archives files in the source directory
@@ -65,24 +78,19 @@ let logWebContents: WebContents;
 const logTypes: string[] = [];
 const receivedLogs: ILogs[] = [];
 
-const validateFilename = (filename: string): string => {
-  return filename?.replace(/[^a-zA-Z0-9/_\.-]/g, '_');
-};
-
-const writeClientLogs = async (retrievedLogs: ILogs[]) => {
+const writeLogs = async (retrievedLogs: ILogs[]) => {
   for await (const logs of retrievedLogs) {
     for (const logFile of logs.logFiles) {
-      const sanitizedFilename = validateFilename(logFile.filename);
-      if (!sanitizedFilename) {
+      const isValidFileName = isValidWindowsFileName(logFile.filename);
+      if (!isValidFileName) {
         continue;
       }
       // nosemgrep
-      const file = path.join(app.getPath('logs'), sanitizedFilename);
+      const file = path.join(app.getPath('logs'), logFile.filename);
       await writeDataToFile(file, logFile.contents);
     }
   }
 };
-
 export const registerLogRetriever = (
   sender: WebContents,
   logName: string,
@@ -123,7 +131,12 @@ export const packageLogs = async (retrievedLogs: ILogs[]): Promise<void> => {
   const timestamp = new Date().getTime();
   const destination = app.getPath('downloads') + destPath + timestamp + '.zip';
 
-  await writeClientLogs(retrievedLogs);
+  if (isWindowsOS) {
+    removeLastIVLogs(logsPath);
+    extractIVLogs();
+  }
+
+  await writeLogs(retrievedLogs);
   generateArchiveForDirectory(
     logsPath,
     destination,
@@ -277,4 +290,68 @@ const writeDataToFile = async (filePath: string, data: string) => {
   }
 
   writeStream.end();
+};
+
+const removeLastIVLogs: RemoveIVLogs = (logsPath: string) => {
+  const ivLogsList = IVLogFiles.retrieveFilesInFolders(logsPath, {
+    includeOnly: [
+      LogCategory.C9_TRADER,
+      LogCategory.C9_ZUES,
+      LogCategory.CLIENT,
+    ],
+  });
+
+  logger.info(
+    `reports-handler: found ${ivLogsList?.length} old log(s) to be removed`,
+  );
+  ivLogsList?.forEach((log) => {
+    const logPath = path.join(logsPath, log);
+    if (!fs.existsSync(logPath)) {
+      logger.info('reports-handler: log file check, not exist');
+      return;
+    }
+
+    try {
+      fs.unlinkSync(logPath);
+      logger.info(`reports-handler: removed ${log}`);
+    } catch (e) {
+      logger.error(`reports-handler: Error in removing file - ${e}`);
+    }
+  });
+};
+
+const extractIVLogs: RetrieveIVLogs = () => {
+  const ivFolderPath = path.join(
+    getHomedir(),
+    'AppData',
+    'Local',
+    'Cloud9_Technologies',
+    'C9Trader',
+    'log',
+  );
+
+  const files = IVLogFiles.getLatestModifiedFiles(ivFolderPath, {
+    includeOnly: [
+      LogCategory.C9_TRADER,
+      LogCategory.C9_ZUES,
+      LogCategory.CLIENT,
+    ],
+  });
+
+  if (files) {
+    logger.info(`reports-handler: starting to extract iv logs`);
+
+    for (const file of files?.values()) {
+      const newLogPath = path.join(
+        getHomedir(),
+        'AppData',
+        'Local',
+        'Symphony',
+        'logs',
+        file.fileName,
+      );
+
+      copyFileUsingReadWrite(file.path ?? '', newLogPath);
+    }
+  }
 };
