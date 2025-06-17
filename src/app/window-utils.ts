@@ -1539,6 +1539,7 @@ export const loadWebContentsView = async (
   // we cannot use resized event rather than 'resize' and avoid debounce usage: Electron doesn't fire this event everytime
   mainWindow.on('resize', onResize);
   mainWindow.on('unmaximize', onResizeHandler);
+  mainWindow.on('restore', onResizeHandler);
 
   if (mainWindow?.isMaximized()) {
     mainEvents.publish('maximize');
