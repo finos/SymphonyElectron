@@ -11,14 +11,14 @@ import * as envMock from '../src/common/env';
 import { logger } from '../src/common/logger';
 import { BrowserWindow, dialog, session, shell } from './__mocks__/electron';
 
-jest.mock('../src/app/stores', () => {
-  const mock = new Map<string, any>();
-  mock.set('value', {
-    linkText: 'test',
-    linkAddress: 'test-abc',
-    enabled: true,
-  });
+const mock = new Map<string, any>();
+mock.set('value', {
+  linkText: 'test',
+  linkAddress: 'test-abc',
+  enabled: true,
+});
 
+jest.mock('../src/app/stores', () => {
   return {
     sdaMenuStore: {
       getHelpMenuSingleton: () => ({ getValue: () => mock.get('value') }),
@@ -130,6 +130,13 @@ jest.mock('../src/app/window-utils', () => {
     zoomIn: jest.fn(),
     zoomOut: jest.fn(),
     reloadWindow: jest.fn(),
+    isValidUrl: jest.fn().mockImplementation((text: string) => {
+      try {
+        return new URL(text);
+      } catch (err) {
+        return false;
+      }
+    }),
   };
 });
 
@@ -389,6 +396,10 @@ describe('app menu', () => {
     });
 
     describe('`buildHelpMenu`', () => {
+      afterEach(() => {
+        jest.clearAllMocks();
+      });
+
       it('should call `buildHelpMenu` correctly', () => {
         const spyFn = 'buildHelpMenu';
         const spy = jest.spyOn(appMenu, spyFn);
@@ -404,16 +415,29 @@ describe('app menu', () => {
         expect(spy).toBeCalledWith(expectedValue);
       });
 
-      it('should call `Helpdesk Portals` correctly', () => {
+      it('should not call `Helpdesk Portals`', () => {
         const spy = jest.spyOn(shell, 'openExternal');
         const menuItem = findMenuItemBuildHelpMenu('test');
         menuItem.click();
-        expect(spy).toBeCalledWith('test-abc');
+        expect(spy).toBeCalledTimes(0);
+      });
+
+      it('should call `Helpdesk Portals` correctly', () => {
+        mock.set('value', {
+          linkText: 'test',
+          linkAddress: 'https://symphony.com',
+          enabled: true,
+        });
+        const spy = jest.spyOn(shell, 'openExternal');
+        const expectedValue = 'https://symphony.com';
+        const menuItem = findMenuItemBuildHelpMenu('test');
+        menuItem.click();
+        expect(spy).toBeCalledWith(expectedValue);
       });
 
       it('should call `Learn More` correctly', () => {
         const spy = jest.spyOn(shell, 'openExternal');
-        const expectedValue = 'https://support.symphony.com';
+        const expectedValue = 'https://symphony.com/en-US';
         const menuItem = findMenuItemBuildHelpMenu('Learn More');
         menuItem.click();
         expect(spy).toBeCalledWith(expectedValue);

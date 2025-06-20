@@ -27,6 +27,7 @@ import {
   windowHandler,
 } from './window-handler';
 import {
+  isValidUrl,
   reloadWindow,
   resetZoomLevel,
   windowExists,
@@ -644,10 +645,7 @@ export class AppMenu {
           label: i18n.t('Symphony Help')(),
         },
         {
-          click: () =>
-            shell.openExternal(
-              this.helpMenuSingleton.getValue()?.linkAddress ?? '',
-            ),
+          click: () => this.onHelpUrlClick(),
           label: this.helpMenuSingleton.getValue()?.linkText,
           visible:
             !!this.helpMenuSingleton.getValue()?.linkAddress &&
@@ -964,4 +962,14 @@ export class AppMenu {
       windowHandler.switchClient(clientSwitchType);
     }
   }
+
+  private onHelpUrlClick = () => {
+    const isValidURL = isValidUrl(
+      this.helpMenuSingleton.getValue()?.linkAddress || '',
+    );
+
+    if (isValidURL) {
+      shell.openExternal(this.helpMenuSingleton.getValue()?.linkAddress ?? '');
+    }
+  };
 }
