@@ -57,7 +57,30 @@ const copyFiles = (
 
     files.forEach((file) => {
       if (!(filterCondition.length < 1) || filterCondition.includes(file)) {
+        if (
+          !isValidWindowsFileName(file) ||
+          !isValidWindowsFilePath(sourceFolder) ||
+          !isValidWindowsFilePath(destinationFolder)
+        ) {
+          const infoFileName = `Invalid File Name - ${file}`;
+          const infoSource = `Invalid Source Folder - ${sourceFolder}`;
+          const infoDestination = `Invalid Destination Folder - ${destinationFolder}`;
+
+          logger.info(
+            `files-helper: ${
+              !isValidWindowsFileName(file)
+                ? infoFileName
+                : !isValidWindowsFilePath(sourceFolder)
+                ? infoSource
+                : infoDestination
+            }`,
+          );
+
+          return;
+        }
+        // nosemgrep
         const sourcePath = path.join(sourceFolder, file);
+        // nosemgrep
         const destinationPath = path.join(destinationFolder, file);
 
         logger.info(

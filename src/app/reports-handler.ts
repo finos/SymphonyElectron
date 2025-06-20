@@ -12,6 +12,7 @@ import { FilesFactory } from './helpers/file/files-factory';
 import {
   copyFileUsingReadWrite,
   isValidWindowsFileName,
+  isValidWindowsFilePath,
 } from './helpers/file/files-helper';
 import {
   LogCategory,
@@ -305,6 +306,19 @@ const removeLastIVLogs: RemoveIVLogs = (logsPath: string) => {
     `reports-handler: found ${ivLogsList?.length} old log(s) to be removed`,
   );
   ivLogsList?.forEach((log) => {
+    if (!isValidWindowsFileName(log) || !isValidWindowsFilePath(logsPath)) {
+      const infoLogName = `Invalid File Name - ${log}`;
+      const infoLogPath = `Invalid Logs Path - ${logsPath}`;
+
+      logger.info(
+        `files-helper: ${
+          !isValidWindowsFileName(log) ? infoLogName : infoLogPath
+        }`,
+      );
+
+      return;
+    }
+    // nosemgrep
     const logPath = path.join(logsPath, log);
     if (!fs.existsSync(logPath)) {
       logger.info('reports-handler: log file check, not exist');
