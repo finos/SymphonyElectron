@@ -309,9 +309,11 @@ export const initSysTray = () => {
   const defaultSysTrayIcon = 'no-status-tray';
   const defaultSysTrayIconExtension = isWindowsOS ? 'ico' : 'png';
   const os = isWindowsOS ? 'windows' : isMac ? 'macOS' : 'linux';
-  const theme = nativeTheme.shouldUseDarkColorsForSystemIntegratedUI
-    ? 'dark'
-    : 'light';
+  const theme =
+    nativeTheme.shouldUseDarkColors &&
+    nativeTheme.shouldUseDarkColorsForSystemIntegratedUI
+      ? 'dark'
+      : 'light';
   logger.info('theme: ', theme, nativeTheme.themeSource);
   const assetsPath = isMac
     ? `renderer/assets/presence-status/${os}`
