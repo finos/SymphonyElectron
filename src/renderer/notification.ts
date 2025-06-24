@@ -673,7 +673,7 @@ class Notification extends NotificationHandler {
       resizable: false,
       show: false,
       frame: false,
-      backgroundColor: '#00000000',
+      transparent: true,
       fullscreenable: false,
       type: 'toolbar',
       acceptFirstMouse: true,
