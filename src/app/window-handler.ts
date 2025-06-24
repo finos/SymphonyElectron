@@ -1933,7 +1933,9 @@ export class WindowHandler {
           modal: false,
           frame: false,
           focusable: true,
-          backgroundColor: '#00000000',
+          transparent: true,
+          backgroundMaterial: 'none',
+          backgroundColor: '#00FFFFFF',
           roundedCorners: true,
           type: 'toolbar',
           skipTaskbar: true,
@@ -2001,16 +2003,6 @@ export class WindowHandler {
     this.screenSharingIndicatorWindow.setVisibleOnAllWorkspaces(true);
     this.screenSharingIndicatorWindow.setSkipTaskbar(true);
     this.screenSharingIndicatorWindow.setAlwaysOnTop(true, 'screen-saver');
-    // workaround until https://github.com/electron/electron/issues/46882 is fixed
-    const screenSharingIndicatorBlurHandler = () => {
-      if (
-        this.screenSharingIndicatorWindow &&
-        windowExists(this.screenSharingIndicatorWindow)
-      ) {
-        this.screenSharingIndicatorWindow?.setMaximizable(false);
-      }
-    };
-    this.mainWindow?.on('blur', screenSharingIndicatorBlurHandler);
     this.screenSharingIndicatorWindow.webContents.once(
       'did-finish-load',
       () => {
@@ -2042,10 +2034,6 @@ export class WindowHandler {
     this.screenSharingIndicatorWindow.once('close', () => {
       this.removeWindow(streamId);
       ipcMain.removeListener('stop-screen-sharing', stopScreenSharing);
-      this.mainWindow?.removeListener(
-        'blur',
-        screenSharingIndicatorBlurHandler,
-      );
     });
 
     ipcMain.once('stop-screen-sharing', stopScreenSharing);
