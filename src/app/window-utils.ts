@@ -322,7 +322,16 @@ export const initSysTray = () => {
   );
   const backgroundImage = nativeImage.createFromPath(defaultSysTrayIconPath);
   const tray = new Tray(backgroundImage);
+  const mainWindow = windowHandler.getMainWindow();
   const contextMenu = Menu.buildFromTemplate([
+    {
+      label: i18n.t('Open Symphony Messaging')(),
+      click: () => {
+        if (mainWindow && windowExists(mainWindow)) {
+          mainWindow.show();
+        }
+      },
+    },
     {
       label: i18n.t('Quit Symphony Messaging')(),
       click: () => app.quit(),
@@ -330,6 +339,12 @@ export const initSysTray = () => {
   ]);
   tray.setContextMenu(contextMenu);
   tray.setToolTip(productDisplayName);
+  tray.on('click', () => {
+    if (mainWindow && windowExists(mainWindow)) {
+      logger.info(`window-utils: tray click, showing main window!`);
+      mainWindow.show();
+    }
+  });
   presenceStatusStore.setCurrentTray(tray);
   return tray;
 };
@@ -1604,7 +1619,7 @@ export const hideOrMinimizeFullscreenWindow = (window: BrowserWindow) => {
       window.hide();
     } else {
       setTimeout(() => {
-        window.minimize();
+        window.hide();
       }, 0);
     }
   });
