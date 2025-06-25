@@ -592,7 +592,7 @@ export class WindowHandler {
       'did-fail-load',
       (_, errorCode: number, errorDescription: string) => {
         logger.error(
-          `window-handler: Fail loading - Error code: ${errorCode}. Error desscription: ${errorDescription}`,
+          `window-handler: Fail loading - Error code: ${errorCode}. Error description: ${errorDescription}`,
         );
       },
     );
