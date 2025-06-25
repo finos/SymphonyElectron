@@ -1618,6 +1618,11 @@ export const isValidUrl = (text: string): false | URL => {
   }
 };
 
+export const isValidHttpUrl = (url: string) => {
+  const pattern = /^https?:\/\/[^\s/$.?#].[^\s]*$/i;
+  return pattern.test(url);
+};
+
 /**
  * Checks if the given bounds rectangle is valid by verifying it matches a display and has a work area
  * @param {Electron.Rectangle} bounds - The bounds rectangle to validate

@@ -27,7 +27,7 @@ import {
   windowHandler,
 } from './window-handler';
 import {
-  isValidUrl,
+  isValidHttpUrl,
   reloadWindow,
   resetZoomLevel,
   windowExists,
@@ -964,12 +964,23 @@ export class AppMenu {
   }
 
   private onHelpUrlClick = () => {
-    const isValidURL = isValidUrl(
+    logger.info('app-menu: Checking if help URL is a valid one');
+    const isValidURL = isValidHttpUrl(
       this.helpMenuSingleton.getValue()?.linkAddress || '',
     );
 
     if (isValidURL) {
+      logger.info(
+        `app-menu: Verification suceed, valid URL, opening ${
+          this.helpMenuSingleton.getValue()?.linkAddress
+        }`,
+      );
       shell.openExternal(this.helpMenuSingleton.getValue()?.linkAddress ?? '');
     }
+    logger.info(
+      `app-menu: Verification failure, invalid URL ${
+        this.helpMenuSingleton.getValue()?.linkAddress
+      }`,
+    );
   };
 }
