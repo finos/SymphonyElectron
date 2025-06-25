@@ -1,10 +1,12 @@
 import {
   ElectronNotificationData,
+  INotificationClientSettings,
   INotificationData,
   NotificationActions,
 } from '../../common/api-interface';
 import { isWindowsOS } from '../../common/env';
 import { notification } from '../../renderer/notification';
+import { menuStore } from '../stores';
 import { windowHandler } from '../window-handler';
 import { ElectronNotification } from './electron-notification';
 
@@ -48,8 +50,13 @@ class NotificationHelper {
       electronToast.show();
       return;
     }
-    options.zoomFactor =
-      windowHandler?.getMainWebContents()?.getZoomFactor() || 1;
+    const clientNotificationSettings = menuStore.get(
+      'clientNotificationSettings',
+    ) as INotificationClientSettings;
+
+    options.zoomFactor = clientNotificationSettings?.allowToastZoom
+      ? windowHandler?.getMainWebContents()?.getZoomFactor() ?? 1
+      : 1;
     notification.showNotification(options, this.notificationCallback);
   }
 

@@ -1,8 +1,10 @@
 import { callNotification } from '../app/notifications/call-notification';
+import { menuStore } from '../app/stores';
 import { windowHandler } from '../app/window-handler';
 import {
   ElectronNotificationData,
   ICallNotificationData,
+  INotificationClientSettings,
   NotificationActions,
 } from '../common/api-interface';
 
@@ -13,8 +15,13 @@ class CallNotificationHelper {
    * @param options {ICallNotificationData}
    */
   public showNotification(options: ICallNotificationData) {
-    options.zoomFactor =
-      windowHandler?.getMainWebContents()?.getZoomFactor() || 1;
+    const clientNotificationSettings = menuStore.get(
+      'clientNotificationSettings',
+    ) as INotificationClientSettings;
+
+    options.zoomFactor = clientNotificationSettings?.allowToastZoom
+      ? windowHandler?.getMainWebContents()?.getZoomFactor() ?? 1
+      : 1;
     callNotification.createCallNotificationWindow(
       options,
       this.notificationCallback,
