@@ -402,17 +402,21 @@ export class AutoUpdate {
 
     // Registry has higher priority
     if (isWindowsOS) {
-      await retrieveWindowsRegistry();
-      const registryAutoUpdate = RegistryStore.getRegistry();
-      const identifiedChannelFromRegistry = [
-        EChannelRegistry.BETA,
-        EChannelRegistry.LATEST,
-      ].includes(registryAutoUpdate.currentChannel)
-        ? registryAutoUpdate.currentChannel
-        : '';
-      if (identifiedChannelFromRegistry) {
-        this.finalAutoUpdateChannel = identifiedChannelFromRegistry;
-        this.channelConfigLocation = ChannelConfigLocation.REGISTRY;
+      try {
+        await retrieveWindowsRegistry();
+        const registryAutoUpdate = RegistryStore.getRegistry();
+        const identifiedChannelFromRegistry = [
+          EChannelRegistry.BETA,
+          EChannelRegistry.LATEST,
+        ].includes(registryAutoUpdate.currentChannel)
+          ? registryAutoUpdate.currentChannel
+          : '';
+        if (identifiedChannelFromRegistry) {
+          this.finalAutoUpdateChannel = identifiedChannelFromRegistry;
+          this.channelConfigLocation = ChannelConfigLocation.REGISTRY;
+        }
+      } catch (error) {
+        logger.error('auto-update-handler: error retrieving registry', error);
       }
     }
   };
