@@ -130,13 +130,10 @@ jest.mock('../src/app/window-utils', () => {
     zoomIn: jest.fn(),
     zoomOut: jest.fn(),
     reloadWindow: jest.fn(),
-    isValidUrl: jest.fn().mockImplementation((text: string) => {
-      try {
-        return new URL(text);
-      } catch (err) {
-        return false;
-      }
-    }),
+    isValidHttpUrl: (url: string) => {
+      const pattern = /^https?:\/\/[^\s/$.?#].[^\s]*$/i;
+      return pattern.test(url);
+    },
   };
 });
 
@@ -433,6 +430,18 @@ describe('app menu', () => {
         const menuItem = findMenuItemBuildHelpMenu('test');
         menuItem.click();
         expect(spy).toBeCalledWith(expectedValue);
+      });
+
+      it('should prevent `Helpdesk Portals` to be called if URL is invalid', () => {
+        mock.set('value', {
+          linkText: 'test',
+          linkAddress: 'ftp://symphony.com',
+          enabled: true,
+        });
+        const spy = jest.spyOn(shell, 'openExternal');
+        const menuItem = findMenuItemBuildHelpMenu('test');
+        menuItem.click();
+        expect(spy).toBeCalledTimes(0);
       });
 
       it('should call `Learn More` correctly', () => {
