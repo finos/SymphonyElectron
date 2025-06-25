@@ -7,7 +7,7 @@ enum RegistryValueType {
 
 const CHANNEL_NEST_LOCATION = '\\SOFTWARE\\Policies\\Symphony\\Update';
 const CHANNEL_KEY = 'channel';
-const REGISTRY_TIMEOUT_MS = 500; // 5ms
+const REGISTRY_TIMEOUT_MS = 500; // 500ms
 
 export const retrieveWindowsRegistry = async (): Promise<string> => {
   const Registry = require('winreg');
