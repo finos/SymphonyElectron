@@ -807,7 +807,7 @@ export class WindowHandler {
         if (this.mainWindow.isFullScreen()) {
           hideOrMinimizeFullscreenWindow(this.mainWindow);
         } else {
-          this.mainWindow.minimize();
+          this.mainWindow.hide();
         }
         return;
       }

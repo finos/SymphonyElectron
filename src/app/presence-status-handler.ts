@@ -9,7 +9,7 @@ import { i18n } from '../common/i18n';
 import { logger } from '../common/logger';
 import { presenceStatusStore } from './stores';
 import { windowHandler } from './window-handler';
-import { initSysTray, showBadgeCount } from './window-utils';
+import { initSysTray, showBadgeCount, windowExists } from './window-utils';
 
 export interface IListItem {
   name: string;
@@ -133,6 +133,7 @@ class PresenceStatus {
     }
     const presenceNamespace = 'PresenceStatus';
     const isMana = !!windowHandler.isMana;
+    const mainWindow = windowHandler.getMainWindow();
     const contextMenu = Menu.buildFromTemplate([
       {
         label: i18n.t('Status')(),
@@ -212,6 +213,14 @@ class PresenceStatus {
       },
       { type: 'separator', visible: isMana },
       {
+        label: i18n.t('Open Symphony Messaging')(),
+        click: () => {
+          if (mainWindow && windowExists(mainWindow)) {
+            mainWindow.show();
+          }
+        },
+      },
+      {
         label: i18n.t('Quit Symphony Messaging')(),
         click: () => app.quit(),
       },
@@ -233,7 +242,16 @@ class PresenceStatus {
       'tray',
     );
     const tray = presenceStatusStore.getCurrentTray();
+    const mainWindow = windowHandler.getMainWindow();
     const contextDefault = Menu.buildFromTemplate([
+      {
+        label: i18n.t('Open Symphony Messaging')(),
+        click: () => {
+          if (mainWindow && windowExists(mainWindow)) {
+            mainWindow.show();
+          }
+        },
+      },
       {
         label: i18n.t('Quit Symphony Messaging')(),
         click: () => app.quit(),
