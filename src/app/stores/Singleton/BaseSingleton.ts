@@ -1,24 +1,21 @@
+import { Key, Value } from '../../interfaces/store.interface';
+
 type DefaulCallback = ([...arg]) => void;
+
 export class BaseSingleton<T> {
-  protected helpCenterKeyword = {
-    value: 'value',
-    subscriber: 0,
-  };
-  protected baseSingletonObject = new Map<string, T>();
+  protected subscriber = 0;
+  protected baseSingletonObject = new Map<Key<T>, Value<T>>();
   protected baseSingletonSubscription = new Map<number, DefaulCallback>();
 
-  public getValue = () => {
-    return this.baseSingletonObject.get(this.helpCenterKeyword.value);
+  public getValue = (key: Key<T>) => {
+    return this.baseSingletonObject.get(key);
   };
 
-  public setValue = (baseSingletonObject: T) => {
-    this.baseSingletonObject.set(
-      this.helpCenterKeyword.value,
-      baseSingletonObject,
-    );
+  public setValue = (key: Key<T>, value: Value<T>) => {
+    this.baseSingletonObject.set(key, value);
 
     Array.from(this.baseSingletonSubscription.values()).forEach((callback) => {
-      callback([baseSingletonObject]);
+      callback([key, value]);
     });
   };
 
@@ -27,13 +24,10 @@ export class BaseSingleton<T> {
   };
 
   public subscribe = (callback: any): number => {
-    this.helpCenterKeyword.subscriber++;
-    this.baseSingletonSubscription.set(
-      this.helpCenterKeyword.subscriber,
-      callback,
-    );
+    this.subscriber++;
+    this.baseSingletonSubscription.set(this.subscriber, callback);
 
-    return this.helpCenterKeyword.subscriber;
+    return this.subscriber;
   };
 
   public unsubscribe = (subscriberId: number): number => {
