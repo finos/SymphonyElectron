@@ -6,8 +6,8 @@ import { logger } from '../../common/logger';
 import { presenceStatus } from '../presence-status-handler';
 import { ICustomBrowserWindow, windowHandler } from '../window-handler';
 import {
+  exitFullscreenAndHideWindow,
   getWindowByName,
-  hideOrMinimizeFullscreenWindow,
   showBadgeCount,
 } from '../window-utils';
 
@@ -60,7 +60,7 @@ export class WindowStore {
         ) {
           if (isMac) {
             if (isFullScreen) {
-              hideOrMinimizeFullscreenWindow(currentWindow);
+              exitFullscreenAndHideWindow(currentWindow);
               // No need to hide minimized windows
             } else if (!isMinimized) {
               currentWindow?.hide();

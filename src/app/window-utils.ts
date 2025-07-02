@@ -1609,7 +1609,7 @@ export const loadWebContentsView = async (
   return mainView.webContents;
 };
 
-export const hideOrMinimizeFullscreenWindow = (window: BrowserWindow) => {
+export const exitFullscreenAndHideWindow = (window: BrowserWindow) => {
   window.once('leave-full-screen', () => {
     if (!window && !windowExists(window)) {
       logger.info('window-utils: window does not exists');
