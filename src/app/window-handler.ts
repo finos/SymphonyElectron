@@ -70,11 +70,11 @@ import {
 import {
   createComponentWindow,
   didVerifyAndRestoreWindow,
+  exitFullscreenAndHideWindow,
   getBounds,
   getWindowByName,
   handleCertificateProxyVerification,
   handleDownloadManager,
-  hideOrMinimizeFullscreenWindow,
   initSysTray,
   injectStyles,
   isSymphonyReachable,
@@ -803,11 +803,21 @@ export class WindowHandler {
         minimizeOnClose === CloudConfigDataTypes.ENABLED &&
         !this.isAutoUpdating
       ) {
+        const hasChildWindow =
+          BrowserWindow.getAllWindows().filter(
+            (window) =>
+              (window as ICustomBrowserWindow).winName !==
+                apiName.notificationWindowName &&
+              (window as ICustomBrowserWindow).winName !==
+                apiName.mainWindowName,
+          ).length > 0;
+        logger.info(`window-handler: has child window?`, hasChildWindow);
+
         event.preventDefault();
         if (this.mainWindow.isFullScreen()) {
-          hideOrMinimizeFullscreenWindow(this.mainWindow);
+          exitFullscreenAndHideWindow(this.mainWindow);
         } else {
-          this.mainWindow.hide();
+          hasChildWindow ? this.mainWindow.minimize() : this.mainWindow.hide();
         }
         return;
       }
@@ -817,7 +827,7 @@ export class WindowHandler {
         // this is a workaround for an issue with macOS
         // https://github.com/electron/electron/issues/39572
         if (this.mainWindow.isFullScreen()) {
-          hideOrMinimizeFullscreenWindow(this.mainWindow);
+          exitFullscreenAndHideWindow(this.mainWindow);
         } else {
           this.mainWindow.hide();
         }
