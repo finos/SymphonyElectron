@@ -41,11 +41,13 @@
 .mac {
   --button-width: 80px;
   --button-with-other: 104px;
+  --container-border-radius: 10px;
 }
 
 .windows {
   --button-width: 72px;
   --button-with-other: 94px;
+  --container-border-radius: 2px;
 }
 
 body {
@@ -59,7 +61,7 @@ body {
   flex-direction: column;
   align-items: flex-start;
   display: flex;
-  border-radius: 8px;
+  border-radius: var(--container-border-radius);
   border: 2px solid var(--yellow-20, #f7ca3b);
 }
 
