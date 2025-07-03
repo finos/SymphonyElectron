@@ -4,7 +4,7 @@ import * as React from 'react';
 import { productName } from '../../../package.json';
 
 import { apiCmds, apiName } from '../../common/api-interface';
-import { isMac } from '../../common/env';
+import { isMac, isWindowsOS } from '../../common/env';
 import { i18n } from '../../common/i18n-preload';
 
 interface IState {
@@ -44,7 +44,12 @@ export default class ScreenSharingIndicator extends React.Component<
     const { id } = this.state;
 
     return (
-      <div className={classNames('ScreenSharingIndicator', { mac: isMac })}>
+      <div
+        className={classNames('ScreenSharingIndicator', {
+          mac: isMac,
+          windows: isWindowsOS,
+        })}
+      >
         <span className='text-label'>{this.getLabelInBold()}</span>
         <span className='buttons'>
           <button
