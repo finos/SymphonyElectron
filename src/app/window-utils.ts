@@ -329,6 +329,10 @@ export const initSysTray = () => {
       click: () => {
         if (mainWindow && windowExists(mainWindow)) {
           mainWindow.show();
+          const presence = presenceStatus.myCurrentPresence;
+          if (presence) {
+            presenceStatus.setMyPresence(presence);
+          }
         }
       },
     },
@@ -343,6 +347,10 @@ export const initSysTray = () => {
     if (mainWindow && windowExists(mainWindow)) {
       logger.info(`window-utils: tray click, showing main window!`);
       mainWindow.show();
+      const presence = presenceStatus.myCurrentPresence;
+      if (presence) {
+        presenceStatus.setMyPresence(presence);
+      }
     }
   });
   presenceStatusStore.setCurrentTray(tray);
@@ -1619,7 +1627,15 @@ export const exitFullscreenAndHideWindow = (window: BrowserWindow) => {
       window.hide();
     } else {
       setTimeout(() => {
-        window.hide();
+        const hasChildWindow =
+          BrowserWindow.getAllWindows().filter(
+            (window) =>
+              (window as ICustomBrowserWindow).winName !==
+                apiName.notificationWindowName &&
+              (window as ICustomBrowserWindow).winName !==
+                apiName.mainWindowName,
+          ).length > 0;
+        hasChildWindow ? window.minimize() : window.hide();
       }, 0);
     }
   });
