@@ -221,6 +221,9 @@ class ProtocolHandler {
         windowHandler.setMainWindowOrigin(navigateURL);
         mainWebContents?.loadURL(navigateURL);
         const mainWindow = windowHandler.getMainWindow();
+        if (!mainWindow?.isVisible()) {
+          mainWindow?.show();
+        }
         if (mainWindow?.isMinimized()) {
           mainWindow.restore();
         } else if (mainWindow?.isFullScreen()) {

@@ -19,6 +19,7 @@ export interface IListItem {
 }
 
 class PresenceStatus {
+  public myCurrentPresence: IPresenceStatus | undefined;
   private NAMESPACE = 'PresenceStatus';
 
   public createThumbarButtons = (): IThumbarButton[] => {
@@ -97,6 +98,7 @@ class PresenceStatus {
   };
 
   public setMyPresence = (myPresence: IPresenceStatus) => {
+    this.myCurrentPresence = myPresence;
     const currentPresence = presenceStatusStore.getPresence();
     const count = presenceStatusStore.getNotificationCount();
     if (
@@ -217,6 +219,10 @@ class PresenceStatus {
         click: () => {
           if (mainWindow && windowExists(mainWindow)) {
             mainWindow.show();
+            const presence = this.myCurrentPresence;
+            if (presence) {
+              this.setMyPresence(presence);
+            }
           }
         },
       },
