@@ -235,6 +235,7 @@ class PresenceStatus {
   };
 
   public onSignOut = () => {
+    this.myCurrentPresence = undefined;
     const offlinePresence: IPresenceStatus = {
       statusCategory: EPresenceStatusCategory.OFFLINE,
       statusGroup: EPresenceStatusGroup.HIDE_PRESENCE,
