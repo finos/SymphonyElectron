@@ -32,6 +32,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
     onExitMiniView: () => this.onExitMiniView(),
     onEnterMiniView: () => this.onEnterMiniView(),
     onDisableContextMenu: (event) => this.disableContextMenu(event),
+    onButtonDoubleClick: (event: React.MouseEvent) => event.stopPropagation(),
   };
   private observer: MutationObserver | undefined;
 
@@ -125,6 +126,7 @@ export default class WindowsTitleBar extends React.Component<{}, IState> {
             onClick={this.eventHandlers.onShowMenu}
             onContextMenu={this.eventHandlers.onDisableContextMenu}
             onMouseDown={this.handleMouseDown}
+            onDoubleClick={this.eventHandlers.onButtonDoubleClick}
           >
             <LineHorizontal3Filled fontSize={'16px'} />
           </button>
