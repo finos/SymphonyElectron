@@ -149,6 +149,9 @@ if (!allowMultiInstance) {
           logger.info(`main: We are on mac, so, showing the existing window`);
           return mainWindow.show();
         }
+        if (!mainWindow.isVisible()) {
+          mainWindow.show();
+        }
         if (mainWindow.isMinimized()) {
           logger.info(`main: our main window is minimised, will restore it!`);
           mainWindow.restore();
