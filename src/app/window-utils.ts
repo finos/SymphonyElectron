@@ -332,9 +332,9 @@ export const initSysTray = () => {
           const presence = presenceStatus.myCurrentPresence;
           if (presence) {
             presenceStatus.setMyPresence(presence);
+            const items = presenceStatus.createThumbarButtons();
+            mainWindow?.setThumbarButtons(items);
           }
-          const items = presenceStatus.createThumbarButtons();
-          mainWindow?.setThumbarButtons(items);
         }
       },
     },
@@ -352,9 +352,9 @@ export const initSysTray = () => {
       const presence = presenceStatus.myCurrentPresence;
       if (presence) {
         presenceStatus.setMyPresence(presence);
+        const items = presenceStatus.createThumbarButtons();
+        mainWindow?.setThumbarButtons(items);
       }
-      const items = presenceStatus.createThumbarButtons();
-      mainWindow?.setThumbarButtons(items);
     }
   });
   presenceStatusStore.setCurrentTray(tray);

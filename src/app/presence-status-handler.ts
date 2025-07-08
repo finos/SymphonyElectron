@@ -222,9 +222,9 @@ class PresenceStatus {
             const presence = this.myCurrentPresence;
             if (presence) {
               this.setMyPresence(presence);
+              const items = presenceStatus.createThumbarButtons();
+              mainWindow?.setThumbarButtons(items);
             }
-            const items = presenceStatus.createThumbarButtons();
-            mainWindow?.setThumbarButtons(items);
           }
         },
       },
