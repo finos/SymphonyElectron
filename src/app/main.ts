@@ -16,6 +16,7 @@ import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
 import { autoLaunchInstance } from './auto-launch-controller';
 import { autoUpdate } from './auto-update-handler';
+import { presenceStatus } from './presence-status-handler';
 import { presenceStatusStore } from './stores';
 
 // Set automatic period substitution to false because of a bug in draft js on the client app
@@ -161,6 +162,12 @@ if (!allowMultiInstance) {
         protocolHandler.processArgv(argv, isAppAlreadyOpen);
         if (mainWebContents && !mainWebContents.isDestroyed()) {
           mainWebContents.focus();
+        }
+        const presence = presenceStatus.myCurrentPresence;
+        if (presence) {
+          presenceStatus.setMyPresence(presence);
+          const items = presenceStatus.createThumbarButtons();
+          mainWindow?.setThumbarButtons(items);
         }
       }
     });
