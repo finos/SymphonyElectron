@@ -26,7 +26,13 @@ import {
   Themes,
   WindowTypes,
 } from '../common/api-interface';
-import { isDevEnv, isLinux, isMac, isWindowsOS } from '../common/env';
+import {
+  isDevEnv,
+  isLinux,
+  isMac,
+  isWindows11,
+  isWindowsOS,
+} from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { ScreenShotAnnotation } from '../common/ipcEvent';
 import { logger } from '../common/logger';
@@ -1693,6 +1699,8 @@ export class WindowHandler {
           resizable: false,
           movable: false,
           fullscreenable: false,
+          roundedCorners: isWindows11 || isMac ? true : false,
+          thickFrame: isWindowsOS ? false : true,
         });
         this.screenPickerPlaceholderWindow.show();
       }
@@ -1955,6 +1963,7 @@ export class WindowHandler {
           titleBarStyle: 'customButtonsOnHover',
           minimizable: false,
           maximizable: false,
+          transparent: isWindows11 ? true : false,
           title: 'Screen Sharing Indicator - Symphony Messaging',
           closable: false,
           useContentSize: true,
