@@ -21,7 +21,13 @@ import { format, parse } from 'url';
 import { productDisplayName } from '../../package.json';
 import { apiName, EPresenceStatusGroup } from '../common/api-interface';
 
-import { isDevEnv, isLinux, isMac, isWindowsOS } from '../common/env';
+import {
+  isDevEnv,
+  isLinux,
+  isMac,
+  isWindows11,
+  isWindowsOS,
+} from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { getDifferenceInDays, getGuid, getRandomTime } from '../common/utils';
@@ -211,6 +217,8 @@ export const createComponentWindow = (
     show: false,
     width: 300,
     ...opts,
+    roundedCorners: isWindows11 || isMac ? true : false,
+    thickFrame: isWindowsOS ? false : true,
     webPreferences: {
       sandbox: IS_SAND_BOXED,
       nodeIntegration: IS_NODE_INTEGRATION_ENABLED,
