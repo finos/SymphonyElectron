@@ -20,7 +20,7 @@ import {
   NOTIFICATION_WINDOW_TITLE,
   NotificationActions,
 } from '../common/api-interface';
-import { isMac, isWindows11 } from '../common/env';
+import { isMac, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
 import NotificationHandler, { ICorner } from './notification-handler';
 
@@ -673,12 +673,11 @@ class Notification extends NotificationHandler {
       resizable: false,
       show: false,
       frame: false,
-      backgroundColor: '#00000000',
       fullscreenable: false,
       type: 'toolbar',
       acceptFirstMouse: true,
       title: NOTIFICATION_WINDOW_TITLE,
-      transparent: isWindows11 ? true : false,
+      transparent: isWindowsOS ? true : false,
       webPreferences: {
         sandbox: IS_SAND_BOXED,
         nodeIntegration: IS_NODE_INTEGRATION_ENABLED,

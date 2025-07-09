@@ -5,7 +5,7 @@ import {
   ICallNotificationData,
   NotificationActions,
 } from '../../common/api-interface';
-import { isDevEnv, isMac, isWindows11 } from '../../common/env';
+import { isDevEnv, isMac, isWindowsOS } from '../../common/env';
 import { logger } from '../../common/logger';
 import { notification } from '../../renderer/notification';
 import {
@@ -237,7 +237,7 @@ class CallNotification {
         autoHideMenuBar: true,
         minimizable: false,
         maximizable: false,
-        transparent: isWindows11 ? true : false,
+        transparent: isWindowsOS ? true : false,
         title: 'Call Notification - Symphony Messaging',
         webPreferences: {
           sandbox: IS_SAND_BOXED,
