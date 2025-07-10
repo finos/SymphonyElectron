@@ -2,7 +2,6 @@ import classNames from 'classnames';
 import { ipcRenderer } from 'electron';
 import * as React from 'react';
 
-import { isMac } from '../../common/env';
 import { i18n } from '../../common/i18n-preload';
 import {
   darkTheme,
@@ -159,7 +158,6 @@ export default class NotificationComp extends React.Component<
       hasMention,
       isFederatedEnabled,
     );
-    customCssClasses.push(isMac ? 'mac' : 'windows');
     containerCssClass += customCssClasses.join(' ');
     return (
       <div
