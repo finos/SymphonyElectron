@@ -1963,7 +1963,7 @@ export class WindowHandler {
           titleBarStyle: 'customButtonsOnHover',
           minimizable: false,
           maximizable: false,
-          transparent: isWindows11 ? true : false,
+          transparent: isWindowsOS ? true : false,
           title: 'Screen Sharing Indicator - Symphony Messaging',
           closable: false,
           useContentSize: true,
