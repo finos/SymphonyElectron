@@ -8,13 +8,20 @@ import {
 } from 'electron';
 
 import { productDisplayName } from '../../package.json';
-import { apiName } from '../common/api-interface';
+import {
+  apiName,
+  IPodSettingsClientSpecificSupportLink,
+} from '../common/api-interface';
 import { isLinux, isMac, isWindowsOS } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { analytics } from './bi/analytics-handler';
 import { CloudConfigDataTypes, config, IConfig } from './config-handler';
 import { restartDialog, titleBarChangeDialog } from './dialog-handler';
+import {
+  IHelpContextMenuActions,
+  IHelpContextMenuState,
+} from './interfaces/menu.interface';
 import { exportCrashDumps, exportLogs } from './reports-handler';
 import {
   registerConsoleMessages,
@@ -42,8 +49,9 @@ import {
   AnalyticsElements,
   MenuActionTypes,
 } from './bi/interface';
+import { ContextMenuItem } from './components/ContextMenuItem';
 import { miniViewHandler } from './mini-view-handler';
-import { sdaMenuStore } from './stores';
+import { menuStore } from './stores';
 
 export const menuSections = {
   about: 'about',
@@ -141,7 +149,22 @@ export class AppMenu {
   private readonly menuItemConfigFields: string[];
   private disableGpu: boolean;
   private enableRendererLogs: boolean;
-  private helpMenuSingleton = sdaMenuStore.getHelpMenuSingleton();
+  private helpMenuData = menuStore.get(
+    'helpCenter',
+  ) as IPodSettingsClientSpecificSupportLink;
+  private contextMenuHelp = new ContextMenuItem<
+    IHelpContextMenuState,
+    IHelpContextMenuActions
+  >(
+    {
+      value: this.helpMenuData,
+      label: this.helpMenuData?.linkText,
+      visible: !!this.helpMenuData?.linkAddress && !!this.helpMenuData?.enabled,
+    },
+    {
+      click: () => this.onHelpUrlClick(this.helpMenuData?.linkAddress),
+    },
+  );
 
   constructor() {
     this.menuList = [];
@@ -645,11 +668,9 @@ export class AppMenu {
           label: i18n.t('Symphony Help')(),
         },
         {
-          click: () => this.onHelpUrlClick(),
-          label: this.helpMenuSingleton.getValue()?.linkText,
-          visible:
-            !!this.helpMenuSingleton.getValue()?.linkAddress &&
-            !!this.helpMenuSingleton.getValue()?.enabled,
+          click: () => this.contextMenuHelp.getActions().click(),
+          label: this.contextMenuHelp.getState().label,
+          visible: this.contextMenuHelp.getState().visible,
         },
         {
           click: () => shell.openExternal(i18n.t('Symphony Url')()),
@@ -963,24 +984,16 @@ export class AppMenu {
     }
   }
 
-  private onHelpUrlClick = () => {
+  private onHelpUrlClick = (linkAddress: string) => {
     logger.info('app-menu: Checking if help URL is a valid one');
-    const isValidURL = isValidHttpUrl(
-      this.helpMenuSingleton.getValue()?.linkAddress || '',
-    );
+    const isValidURL = isValidHttpUrl(linkAddress || '');
 
-    if (isValidURL) {
+    if (linkAddress && isValidURL) {
       logger.info(
-        `app-menu: Verification suceed, valid URL, opening ${
-          this.helpMenuSingleton.getValue()?.linkAddress
-        }`,
+        `app-menu: Verification suceed, valid URL, opening ${linkAddress}`,
       );
-      shell.openExternal(this.helpMenuSingleton.getValue()?.linkAddress ?? '');
+      shell.openExternal(linkAddress);
     }
-    logger.info(
-      `app-menu: Verification failure, invalid URL ${
-        this.helpMenuSingleton.getValue()?.linkAddress
-      }`,
-    );
+    logger.info(`app-menu: Verification failure, invalid URL ${linkAddress}`);
   };
 }
