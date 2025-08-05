@@ -17234,7 +17234,6 @@
             
                  Properties = new[]
                  {
-                     new Property("ALLUSERS", "1"),
                      new Property("IDIR", "empty")
                  }
             
