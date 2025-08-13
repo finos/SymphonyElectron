@@ -218,6 +218,7 @@ class PresenceStatus {
         label: i18n.t('Open Symphony Messaging')(),
         click: () => {
           if (mainWindow && windowExists(mainWindow)) {
+            mainWindow.setSkipTaskbar(false);
             mainWindow.show();
             const presence = this.myCurrentPresence;
             if (presence) {
@@ -257,6 +258,7 @@ class PresenceStatus {
         label: i18n.t('Open Symphony Messaging')(),
         click: () => {
           if (mainWindow && windowExists(mainWindow)) {
+            mainWindow.setSkipTaskbar(false);
             mainWindow.show();
           }
         },
