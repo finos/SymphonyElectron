@@ -151,6 +151,7 @@ if (!allowMultiInstance) {
           return mainWindow.show();
         }
         if (!mainWindow.isVisible()) {
+          mainWindow.setSkipTaskbar(false);
           mainWindow.show();
         }
         if (mainWindow.isMinimized()) {
@@ -219,6 +220,7 @@ app.on('activate', () => {
     return;
   }
   logger.info(`main: activating & showing main window now!`);
+  mainWindow.setSkipTaskbar(false);
   mainWindow.show();
 });
 
