@@ -336,6 +336,7 @@ export const initSysTray = () => {
       label: i18n.t('Open Symphony Messaging')(),
       click: () => {
         if (mainWindow && windowExists(mainWindow)) {
+          mainWindow.setSkipTaskbar(false);
           mainWindow.show();
           const presence = presenceStatus.myCurrentPresence;
           if (presence) {
@@ -356,6 +357,7 @@ export const initSysTray = () => {
   tray.on('click', () => {
     if (mainWindow && windowExists(mainWindow)) {
       logger.info(`window-utils: tray click, showing main window!`);
+      mainWindow.setSkipTaskbar(false);
       mainWindow.show();
       const presence = presenceStatus.myCurrentPresence;
       if (presence) {

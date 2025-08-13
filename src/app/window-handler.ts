@@ -546,6 +546,7 @@ export class WindowHandler {
       );
       mainEvents.publish('maximize');
     }
+    this.mainWindow.setSkipTaskbar(false);
     this.mainWindow.show();
     initSysTray();
     if (isWindowsOS) {
@@ -820,6 +821,7 @@ export class WindowHandler {
         logger.info(`window-handler: has child window?`, hasChildWindow);
 
         event.preventDefault();
+        this.mainWindow.setSkipTaskbar(true);
         if (this.mainWindow.isFullScreen()) {
           exitFullscreenAndHideWindow(this.mainWindow);
         } else {
