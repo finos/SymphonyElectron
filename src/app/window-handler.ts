@@ -821,11 +821,15 @@ export class WindowHandler {
         logger.info(`window-handler: has child window?`, hasChildWindow);
 
         event.preventDefault();
-        this.mainWindow.setSkipTaskbar(true);
         if (this.mainWindow.isFullScreen()) {
           exitFullscreenAndHideWindow(this.mainWindow);
         } else {
-          hasChildWindow ? this.mainWindow.minimize() : this.mainWindow.hide();
+          if (hasChildWindow) {
+            this.mainWindow.minimize();
+          } else {
+            this.mainWindow.setSkipTaskbar(true);
+            this.mainWindow.hide();
+          }
         }
         return;
       }
