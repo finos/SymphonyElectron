@@ -1786,6 +1786,7 @@ export class WindowHandler {
         frame: false,
         fullscreenable: false,
         acceptFirstMouse: true,
+        thickFrame: true,
       },
       {
         sandbox: IS_SAND_BOXED,
