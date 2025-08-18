@@ -21,7 +21,13 @@ import { format, parse } from 'url';
 import { productDisplayName } from '../../package.json';
 import { apiName, EPresenceStatusGroup } from '../common/api-interface';
 
-import { isDevEnv, isLinux, isMac, isWindowsOS } from '../common/env';
+import {
+  isDevEnv,
+  isLinux,
+  isMac,
+  isWindows11,
+  isWindowsOS,
+} from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { logger } from '../common/logger';
 import { getDifferenceInDays, getGuid, getRandomTime } from '../common/utils';
@@ -210,6 +216,8 @@ export const createComponentWindow = (
     resizable: false,
     show: false,
     width: 300,
+    roundedCorners: isWindows11 || isMac ? true : false,
+    thickFrame: isWindowsOS ? false : true,
     ...opts,
     webPreferences: {
       sandbox: IS_SAND_BOXED,
@@ -328,7 +336,14 @@ export const initSysTray = () => {
       label: i18n.t('Open Symphony Messaging')(),
       click: () => {
         if (mainWindow && windowExists(mainWindow)) {
+          mainWindow.setSkipTaskbar(false);
           mainWindow.show();
+          const presence = presenceStatus.myCurrentPresence;
+          if (presence) {
+            presenceStatus.setMyPresence(presence);
+            const items = presenceStatus.createThumbarButtons();
+            mainWindow?.setThumbarButtons(items);
+          }
         }
       },
     },
@@ -342,7 +357,14 @@ export const initSysTray = () => {
   tray.on('click', () => {
     if (mainWindow && windowExists(mainWindow)) {
       logger.info(`window-utils: tray click, showing main window!`);
+      mainWindow.setSkipTaskbar(false);
       mainWindow.show();
+      const presence = presenceStatus.myCurrentPresence;
+      if (presence) {
+        presenceStatus.setMyPresence(presence);
+        const items = presenceStatus.createThumbarButtons();
+        mainWindow?.setThumbarButtons(items);
+      }
     }
   });
   presenceStatusStore.setCurrentTray(tray);
@@ -1401,6 +1423,11 @@ export const loadWebContentsView = async (
 
   mainWindow.contentView.addChildView(titleBarView);
   mainWindow.contentView.addChildView(mainView);
+
+  // Track title bar state and any pending fullscreen timers to avoid race conditions
+  let enterFullScreenTimeout: NodeJS.Timeout | null = null;
+  let isTitleBarAttached = true;
+
   mainWindow.on('enter-full-screen', () => {
     if (
       !titleBarView ||
@@ -1410,11 +1437,22 @@ export const loadWebContentsView = async (
     ) {
       return;
     }
+    if (enterFullScreenTimeout) {
+      clearTimeout(enterFullScreenTimeout);
+      enterFullScreenTimeout = null;
+    }
     // Workaround: Need to delay getting the window bounds
     // to get updated window bounds
-    setTimeout(() => {
+    enterFullScreenTimeout = setTimeout(() => {
+      if (!mainWindow.isFullScreen()) {
+        return;
+      }
       const [width, height] = mainWindow.getSize();
-      mainWindow.contentView.removeChildView(titleBarView);
+      // Remove title bar only if it's currently attached
+      if (isTitleBarAttached) {
+        mainWindow.contentView.removeChildView(titleBarView);
+        isTitleBarAttached = false;
+      }
       if (!mainView || !viewExists(mainView)) {
         return;
       }
@@ -1437,6 +1475,11 @@ export const loadWebContentsView = async (
     ) {
       return;
     }
+    // If there is a pending removal from a prior enter-full-screen, cancel it
+    if (enterFullScreenTimeout) {
+      clearTimeout(enterFullScreenTimeout);
+      enterFullScreenTimeout = null;
+    }
     let width: number;
     let height: number;
     if (mainWindow.isMaximized()) {
@@ -1449,7 +1492,11 @@ export const loadWebContentsView = async (
     } else {
       [width, height] = mainWindow.getSize();
     }
-    mainWindow.contentView.addChildView(titleBarView);
+    // Add title bar only if it's not already attached
+    if (!isTitleBarAttached) {
+      mainWindow.contentView.addChildView(titleBarView);
+      isTitleBarAttached = true;
+    }
     const titleBarViewBounds = titleBarView.getBounds();
     titleBarView.setBounds({
       ...titleBarViewBounds,
@@ -1609,7 +1656,7 @@ export const loadWebContentsView = async (
   return mainView.webContents;
 };
 
-export const hideOrMinimizeFullscreenWindow = (window: BrowserWindow) => {
+export const exitFullscreenAndHideWindow = (window: BrowserWindow) => {
   window.once('leave-full-screen', () => {
     if (!window && !windowExists(window)) {
       logger.info('window-utils: window does not exists');
@@ -1619,7 +1666,15 @@ export const hideOrMinimizeFullscreenWindow = (window: BrowserWindow) => {
       window.hide();
     } else {
       setTimeout(() => {
-        window.hide();
+        const hasChildWindow =
+          BrowserWindow.getAllWindows().filter(
+            (window) =>
+              (window as ICustomBrowserWindow).winName !==
+                apiName.notificationWindowName &&
+              (window as ICustomBrowserWindow).winName !==
+                apiName.mainWindowName,
+          ).length > 0;
+        hasChildWindow ? window.minimize() : window.hide();
       }, 0);
     }
   });

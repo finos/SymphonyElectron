@@ -1,6 +1,6 @@
 import { BrowserWindow, desktopCapturer, ipcMain, session } from 'electron';
 import { NOTIFICATION_WINDOW_TITLE } from '../common/api-interface';
-import { isDevEnv, isLinux, isMac, isWindowsOS } from '../common/env';
+import { isDevEnv, isLinux, isMac, isWindows11, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
 import { windowHandler } from './window-handler';
 import { createComponentWindow, windowExists } from './window-utils';
@@ -138,6 +138,8 @@ class DisplayMediaRequestHandler {
               resizable: false,
               movable: false,
               fullscreenable: false,
+              roundedCorners: isWindows11 || isMac ? true : false,
+              thickFrame: isWindowsOS ? false : true,
             });
             this.screenPickerPlaceholderWindow.show();
             callback({ video: source });

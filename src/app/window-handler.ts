@@ -26,7 +26,13 @@ import {
   Themes,
   WindowTypes,
 } from '../common/api-interface';
-import { isDevEnv, isLinux, isMac, isWindowsOS } from '../common/env';
+import {
+  isDevEnv,
+  isLinux,
+  isMac,
+  isWindows11,
+  isWindowsOS,
+} from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { ScreenShotAnnotation } from '../common/ipcEvent';
 import { logger } from '../common/logger';
@@ -70,11 +76,11 @@ import {
 import {
   createComponentWindow,
   didVerifyAndRestoreWindow,
+  exitFullscreenAndHideWindow,
   getBounds,
   getWindowByName,
   handleCertificateProxyVerification,
   handleDownloadManager,
-  hideOrMinimizeFullscreenWindow,
   initSysTray,
   injectStyles,
   isSymphonyReachable,
@@ -540,6 +546,7 @@ export class WindowHandler {
       );
       mainEvents.publish('maximize');
     }
+    this.mainWindow.setSkipTaskbar(false);
     this.mainWindow.show();
     initSysTray();
     if (isWindowsOS) {
@@ -803,11 +810,26 @@ export class WindowHandler {
         minimizeOnClose === CloudConfigDataTypes.ENABLED &&
         !this.isAutoUpdating
       ) {
+        const hasChildWindow =
+          BrowserWindow.getAllWindows().filter(
+            (window) =>
+              (window as ICustomBrowserWindow).winName !==
+                apiName.notificationWindowName &&
+              (window as ICustomBrowserWindow).winName !==
+                apiName.mainWindowName,
+          ).length > 0;
+        logger.info(`window-handler: has child window?`, hasChildWindow);
+
         event.preventDefault();
         if (this.mainWindow.isFullScreen()) {
-          hideOrMinimizeFullscreenWindow(this.mainWindow);
+          exitFullscreenAndHideWindow(this.mainWindow);
         } else {
-          this.mainWindow.hide();
+          if (hasChildWindow) {
+            this.mainWindow.minimize();
+          } else {
+            this.mainWindow.setSkipTaskbar(true);
+            this.mainWindow.hide();
+          }
         }
         return;
       }
@@ -817,7 +839,7 @@ export class WindowHandler {
         // this is a workaround for an issue with macOS
         // https://github.com/electron/electron/issues/39572
         if (this.mainWindow.isFullScreen()) {
-          hideOrMinimizeFullscreenWindow(this.mainWindow);
+          exitFullscreenAndHideWindow(this.mainWindow);
         } else {
           this.mainWindow.hide();
         }
@@ -1683,6 +1705,8 @@ export class WindowHandler {
           resizable: false,
           movable: false,
           fullscreenable: false,
+          roundedCorners: isWindows11 || isMac ? true : false,
+          thickFrame: isWindowsOS ? false : true,
         });
         this.screenPickerPlaceholderWindow.show();
       }
@@ -1762,6 +1786,7 @@ export class WindowHandler {
         frame: false,
         fullscreenable: false,
         acceptFirstMouse: true,
+        thickFrame: true,
       },
       {
         sandbox: IS_SAND_BOXED,
@@ -1945,6 +1970,7 @@ export class WindowHandler {
           titleBarStyle: 'customButtonsOnHover',
           minimizable: false,
           maximizable: false,
+          transparent: isWindowsOS ? true : false,
           title: 'Screen Sharing Indicator - Symphony Messaging',
           closable: false,
           useContentSize: true,

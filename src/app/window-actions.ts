@@ -216,6 +216,12 @@ export const activate = (
         // Note: On window just focusing will preserve window snapped state
         // Hiding the window and just calling the focus() won't display the window
         if (isWindowsOS) {
+          if (!window.isVisible()) {
+            if (window.winName === apiName.mainWindowName) {
+              window.setSkipTaskbar(false);
+            }
+            return window.show();
+          }
           return window.isMinimized() ? window.restore() : window.focus();
         }
 

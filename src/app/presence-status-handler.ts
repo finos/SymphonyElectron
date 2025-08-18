@@ -19,6 +19,7 @@ export interface IListItem {
 }
 
 class PresenceStatus {
+  public myCurrentPresence: IPresenceStatus | undefined;
   private NAMESPACE = 'PresenceStatus';
 
   public createThumbarButtons = (): IThumbarButton[] => {
@@ -97,6 +98,7 @@ class PresenceStatus {
   };
 
   public setMyPresence = (myPresence: IPresenceStatus) => {
+    this.myCurrentPresence = myPresence;
     const currentPresence = presenceStatusStore.getPresence();
     const count = presenceStatusStore.getNotificationCount();
     if (
@@ -216,7 +218,14 @@ class PresenceStatus {
         label: i18n.t('Open Symphony Messaging')(),
         click: () => {
           if (mainWindow && windowExists(mainWindow)) {
+            mainWindow.setSkipTaskbar(false);
             mainWindow.show();
+            const presence = this.myCurrentPresence;
+            if (presence) {
+              this.setMyPresence(presence);
+              const items = presenceStatus.createThumbarButtons();
+              mainWindow?.setThumbarButtons(items);
+            }
           }
         },
       },
@@ -229,6 +238,7 @@ class PresenceStatus {
   };
 
   public onSignOut = () => {
+    this.myCurrentPresence = undefined;
     const offlinePresence: IPresenceStatus = {
       statusCategory: EPresenceStatusCategory.OFFLINE,
       statusGroup: EPresenceStatusGroup.HIDE_PRESENCE,
@@ -248,6 +258,7 @@ class PresenceStatus {
         label: i18n.t('Open Symphony Messaging')(),
         click: () => {
           if (mainWindow && windowExists(mainWindow)) {
+            mainWindow.setSkipTaskbar(false);
             mainWindow.show();
           }
         },

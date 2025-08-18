@@ -16,6 +16,7 @@ import { ICustomBrowserWindow, windowHandler } from './window-handler';
 
 import { autoLaunchInstance } from './auto-launch-controller';
 import { autoUpdate } from './auto-update-handler';
+import { presenceStatus } from './presence-status-handler';
 import { presenceStatusStore } from './stores';
 
 // Set automatic period substitution to false because of a bug in draft js on the client app
@@ -149,6 +150,10 @@ if (!allowMultiInstance) {
           logger.info(`main: We are on mac, so, showing the existing window`);
           return mainWindow.show();
         }
+        if (!mainWindow.isVisible()) {
+          mainWindow.setSkipTaskbar(false);
+          mainWindow.show();
+        }
         if (mainWindow.isMinimized()) {
           logger.info(`main: our main window is minimised, will restore it!`);
           mainWindow.restore();
@@ -158,6 +163,12 @@ if (!allowMultiInstance) {
         protocolHandler.processArgv(argv, isAppAlreadyOpen);
         if (mainWebContents && !mainWebContents.isDestroyed()) {
           mainWebContents.focus();
+        }
+        const presence = presenceStatus.myCurrentPresence;
+        if (presence) {
+          presenceStatus.setMyPresence(presence);
+          const items = presenceStatus.createThumbarButtons();
+          mainWindow?.setThumbarButtons(items);
         }
       }
     });
@@ -209,6 +220,7 @@ app.on('activate', () => {
     return;
   }
   logger.info(`main: activating & showing main window now!`);
+  mainWindow.setSkipTaskbar(false);
   mainWindow.show();
 });
 

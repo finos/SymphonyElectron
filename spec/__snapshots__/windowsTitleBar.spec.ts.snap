@@ -12,6 +12,7 @@ exports[`windows title bar should render correctly 1`] = `
       className="hamburger-menu-button"
       onClick={[Function]}
       onContextMenu={[Function]}
+      onDoubleClick={[Function]}
       onMouseDown={[Function]}
       title="Menu"
     >
