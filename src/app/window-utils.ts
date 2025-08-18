@@ -216,9 +216,9 @@ export const createComponentWindow = (
     resizable: false,
     show: false,
     width: 300,
-    ...opts,
     roundedCorners: isWindows11 || isMac ? true : false,
     thickFrame: isWindowsOS ? false : true,
+    ...opts,
     webPreferences: {
       sandbox: IS_SAND_BOXED,
       nodeIntegration: IS_NODE_INTEGRATION_ENABLED,
