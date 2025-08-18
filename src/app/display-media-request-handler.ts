@@ -1,6 +1,6 @@
 import { BrowserWindow, desktopCapturer, ipcMain, session } from 'electron';
 import { NOTIFICATION_WINDOW_TITLE } from '../common/api-interface';
-import { isDevEnv, isMac, isWindowsOS } from '../common/env';
+import { isDevEnv, isLinux, isMac, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
 import { windowHandler } from './window-handler';
 import { createComponentWindow, windowExists } from './window-utils';
@@ -116,7 +116,10 @@ class DisplayMediaRequestHandler {
             'display-media-request-handler: source to be shared',
             source,
           );
-          if (!source) {
+          if (isLinux) {
+            // @ts-ignore
+            callback({ video: source });
+          } else if (!source) {
             windowHandler.closeScreenSharingIndicator();
             // @ts-ignore
             callback();
