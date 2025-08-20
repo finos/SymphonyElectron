@@ -4,7 +4,6 @@ import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
   crashReporter,
-  DesktopCapturerSource,
   dialog,
   Event,
   ipcMain,
@@ -200,7 +199,6 @@ export class WindowHandler {
   private mainWindow: ICustomBrowserWindow | null = null;
   private aboutAppWindow: Electron.BrowserWindow | null = null;
   private screenPickerWindow: Electron.BrowserWindow | null = null;
-  private screenPickerPlaceholderWindow: Electron.BrowserWindow | null = null;
   private screenSharingIndicatorWindow: Electron.BrowserWindow | null = null;
   private screenSharingFrameWindow: Electron.BrowserWindow | null = null;
   private basicAuthWindow: Electron.BrowserWindow | null = null;
@@ -1051,12 +1049,6 @@ export class WindowHandler {
         }
         break;
       case 'screen-sharing-indicator':
-        if (
-          this.screenPickerPlaceholderWindow &&
-          windowExists(this.screenPickerPlaceholderWindow)
-        ) {
-          this.screenPickerPlaceholderWindow.close();
-        }
         if (winKey) {
           const browserWindow = this.windows[winKey];
 
@@ -1605,141 +1597,6 @@ export class WindowHandler {
           }
         }
       }
-    }
-  }
-
-  /**
-   * Creates a screen picker window
-   *
-   * @param window
-   * @param sources
-   * @param id
-   */
-  public createScreenPickerWindow(
-    window: WebContents,
-    sources: DesktopCapturerSource[],
-    id: number,
-  ): void {
-    if (this.screenPickerWindow && windowExists(this.screenPickerWindow)) {
-      this.screenPickerWindow.close();
-    }
-
-    const opts: ICustomBrowserWindowConstructorOpts = this.getWindowOpts(
-      {
-        alwaysOnTop: true,
-        autoHideMenuBar: true,
-        frame: false,
-        modal: false,
-        height: isMac ? 519 : 523,
-        width: 580,
-        show: false,
-        fullscreenable: false,
-      },
-      {
-        devTools: isDevEnv,
-      },
-    );
-
-    this.screenPickerWindow = createComponentWindow('screen-picker', opts);
-    this.moveWindow(this.screenPickerWindow);
-    this.screenPickerWindow.webContents.once('did-finish-load', () => {
-      if (!this.screenPickerWindow || !windowExists(this.screenPickerWindow)) {
-        return;
-      }
-
-      this.screenPickerWindow.webContents.setZoomFactor(1);
-      this.screenPickerWindow.webContents.setVisualZoomLevelLimits(1, 1);
-
-      this.screenPickerWindow.webContents.send('screen-picker-data', {
-        sources,
-        id,
-      });
-      this.addWindow(opts.winKey, this.screenPickerWindow);
-    });
-
-    const screenSourceSelect = (_event, source) => {
-      if (source != null) {
-        logger.info(`window-handler: screen-source-select`, source, id);
-
-        this.closeScreenSharingIndicator();
-        const timeoutValue = 300;
-        setTimeout(() => {
-          this.drawScreenShareIndicatorFrame(source);
-          if (isMac) {
-            const windows = BrowserWindow.getAllWindows();
-            windows.map((window: BrowserWindow) => {
-              if (window.getMediaSourceId() === source.id) {
-                window.show();
-              }
-            });
-          }
-        }, timeoutValue);
-      }
-    };
-
-    ipcMain.on('screen-source-select', screenSourceSelect);
-
-    ipcMain.once('screen-source-selected', (_event, source) => {
-      logger.info(`window-handler: screen-source-selected`, source, id);
-      if (source == null) {
-        this.closeScreenSharingIndicator();
-        if (
-          this.screenPickerPlaceholderWindow &&
-          windowExists(this.screenPickerPlaceholderWindow)
-        ) {
-          this.screenPickerPlaceholderWindow.close();
-          this.screenPickerPlaceholderWindow = null;
-        }
-      } else {
-        // SDA-3646 hack for macOS: whenever we try to close the penultimate window (here screensharing screen picker), Electron activates the last Electron window
-        // This behaviour was observed while trying to upgrade from Electron 14 to Electron 17
-        // Here the hack to solve that issue is to create a new invisible BrowserWindow.
-        this.screenPickerPlaceholderWindow = new BrowserWindow({
-          title: 'Screen sharing - Symphony',
-          width: 0,
-          height: 0,
-          transparent: true,
-          frame: false,
-          x: 0,
-          y: 0,
-          resizable: false,
-          movable: false,
-          fullscreenable: false,
-          roundedCorners: isWindows11 || isMac ? true : false,
-          thickFrame: isWindowsOS ? false : true,
-        });
-        this.screenPickerPlaceholderWindow.show();
-      }
-
-      window.send('start-share' + id, source);
-      if (this.screenPickerWindow && windowExists(this.screenPickerWindow)) {
-        // SDA-3635 hack
-        setTimeout(() => this.screenPickerWindow?.close(), 500);
-      }
-    });
-    this.screenPickerWindow.once('closed', () => {
-      ipcMain.removeListener('screen-source-select', screenSourceSelect);
-      this.removeWindow(opts.winKey);
-      this.screenPickerWindow = null;
-      if (isWindowsOS) {
-        if (
-          this.screenPickerPlaceholderWindow &&
-          windowExists(this.screenPickerPlaceholderWindow)
-        ) {
-          this.screenPickerPlaceholderWindow.close();
-          this.screenPickerPlaceholderWindow = null;
-        }
-      }
-    });
-  }
-
-  /**
-   * Closes a screen picker window if it exists
-   *
-   */
-  public closeScreenPickerWindow() {
-    if (this.screenPickerWindow && windowExists(this.screenPickerWindow)) {
-      this.screenPickerWindow.close();
     }
   }
 
