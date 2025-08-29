@@ -1,7 +1,8 @@
-param (
-    [string]$BuildURL,
+param(
+    [string]$BuildURL
 )
 
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $buildNumber = $env:COMPARE_WIN_BUILD_VERSION
 $currentAsarMetaData = "dist/bundle-analytics/asar-size-metadata.json"
 $currentFolderMetaData = "dist/bundle-analytics/folder-size-metadata.json"
@@ -91,7 +92,7 @@ if ($buildNumber) {
         # Export to HTML
         Write-Host "Print result"
         $comparisonAsar | ConvertTo-Html -Title "Compare-asar" -Property Property, Original, Current, Status |
-            Out-File "compare-asar.html"
+            Out-File "$output/compare-asar.html"
     } else {
         Write-Host "!!!!!!File '$currentAsarMetaData' not found. Skipping JSON processing."
     }
@@ -100,11 +101,11 @@ if ($buildNumber) {
         Write-Host "📄 File '$currentFolderMetaData' found. Reading content..."
         $currentFolderMetaDataContent = Get-Content -Path $currentFolderMetaData -Raw | ConvertFrom-Json
         Write-Host "Retrieving comparison data - local asar package"
-        $comparisonFolder = Compare-Metadata $folderMetaData $currentFolderMetaData
+        $comparisonFolder = Compare-Metadata $folderMetaData $currentFolderMetaDataContent
         # Export to HTML
         Write-Host "Print result"
         $comparisonFolder | ConvertTo-Html -Title "Compare-folder" -Property Property, Original, Current, Status |
-            Out-File "compare-folder.html"
+            Out-File "$output/compare-folder.html"
     } else {
         Write-Host "!!!!!!File '$currentFolderMetaData' not found. Skipping JSON processing."
     }

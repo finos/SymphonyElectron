@@ -37,7 +37,7 @@
     "mac-pkg-x64": "packagesbuild -v installer/mac/symphony-mac-packager.pkgproj",
     "mac-pkg-arm64": "packagesbuild -v installer/mac/symphony-mac-packager-arm64.pkgproj",
     "build-mac-pkg": "run-s mac-pkg-x64 mac-pkg-arm64",
-    "unpacked-win": "npm run prebuild && node_modules\\.bin\\electron-builder build --win --x64"
+    "unpacked-win": "npm run prebuild && npm run test && node_modules\\.bin\\electron-builder build --win --x64"
   },
   "build": {
     "appId": "com.symphony.electron-desktop",
