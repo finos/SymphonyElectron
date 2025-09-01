@@ -20,7 +20,6 @@ export enum apiCmds {
   showNotificationSettings = 'show-notification-settings',
   sanitize = 'sanitize',
   bringToFront = 'bring-to-front',
-  openScreenPickerWindow = 'open-screen-picker-window',
   popupMenu = 'popup-menu',
   optimizeMemoryConsumption = 'optimize-memory-consumption',
   optimizeMemoryRegister = 'optimize-memory-register',
