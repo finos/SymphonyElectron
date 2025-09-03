@@ -25,13 +25,7 @@ import {
   Themes,
   WindowTypes,
 } from '../common/api-interface';
-import {
-  isDevEnv,
-  isLinux,
-  isMac,
-  isWindows11,
-  isWindowsOS,
-} from '../common/env';
+import { isDevEnv, isLinux, isMac, isWindowsOS } from '../common/env';
 import { i18n, LocaleType } from '../common/i18n';
 import { ScreenShotAnnotation } from '../common/ipcEvent';
 import { logger } from '../common/logger';
