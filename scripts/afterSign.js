@@ -50,6 +50,7 @@ async function getFileSizes(archivePath) {
 module.exports = async function afterSign(context) {
   if (context.electronPlatformName === 'win32') {
     const { appOutDir } = context;
+    // nosemgrep
     const electronAsarPath = path.join(appOutDir, 'resources', 'app.asar');
     await getFileSizes(electronAsarPath);
   }

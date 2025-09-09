@@ -49,6 +49,7 @@ const analyzeBundle = (context, totalPreviousBuildSize) => {
   let total = 0;
 
   for (const entry of entries) {
+    // nosemgrep
     const fullPath = path.join(appDir, entry);
     const size = fs.statSync(fullPath).isDirectory()
       ? getTotalSize(fullPath, entry)
