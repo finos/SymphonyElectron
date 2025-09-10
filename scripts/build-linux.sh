@@ -1,7 +1,6 @@
 #!/bin/bash
 
-NODE_REQUIRED_VERSION=v20.18.1
-SNYK_ORG=sda
+NODE_REQUIRED_VERSION=v22.14.0
 SNYK_PROJECT_NAME="Symphony Desktop Application"
 
 if ! [ -x "$(command -v git)" ]; then
