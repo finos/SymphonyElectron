@@ -158,7 +158,7 @@
       ]
     },
     "linux": {
-      "executableName": "Symphony-${version}-linux.${ext}",
+      "executableName": "Symphony-linux",
       "category": "Network;InstantMessaging;Chat",
       "target": [
         "deb",
