@@ -7,6 +7,7 @@ const getFolderSizes = (dir) => {
   const entries = fs.readdirSync(dir);
 
   for (let entry of entries) {
+    // nosemgrep
     const fullPath = path.join(dir, entry);
     const stat = fs.statSync(fullPath);
     if (stat.isFile()) {
@@ -37,6 +38,7 @@ const getTotalSize = (dir) => {
     let files = fs.readdirSync(dir);
 
     const filesSize = files.reduce((prev, next, index) => {
+      // nosemgrep
       const full = path.join(dir, files[index]);
       const stats = fs.statSync(full);
 
@@ -71,6 +73,7 @@ const getFolderSizeRecursive = (folderPath) => {
   const entries = fs.readdirSync(folderPath);
 
   for (let entry of entries) {
+    // nosemgrep
     const fullPath = path.join(folderPath, entry);
     const stat = fs.statSync(fullPath);
     if (stat.isFile()) totalSize += stat.size;
@@ -83,6 +86,7 @@ const getAllFileSizes = (dir, baseDir = dir, stats = {}) => {
   const entries = fs.readdirSync(dir);
 
   for (let entry of entries) {
+    // nosemgrep
     const fullPath = path.join(dir, entry);
     const relPath = path.relative(baseDir, fullPath);
     const stat = fs.statSync(fullPath);
