@@ -46,6 +46,7 @@
     "asar": true,
     "asarUnpack": "**/*.node",
     "afterPack": "scripts/afterPackHoock.js",
+    "afterSign": "scripts/afterSign.js",
     "nsis": {
       "perMachine": false,
       "oneClick": true,
