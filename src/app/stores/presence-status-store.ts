@@ -7,7 +7,7 @@ import {
   IStatusBadge,
   ITray,
 } from '../../common/api-interface';
-import { isMac, isWindowsOS } from '../../common/env';
+import { isLinux, isMac, isWindowsOS } from '../../common/env';
 
 // Flags can be read more here https://www.electronjs.org/docs/latest/api/browser-window#winsetthumbarbuttonsbuttons-windows
 
@@ -59,15 +59,16 @@ export class PresenceStatus {
     const theme = nativeTheme.shouldUseDarkColorsForSystemIntegratedUI
       ? 'dark'
       : 'light';
-    const assetsPath = isMac
-      ? `src/renderer/assets/presence-status/${os}`
-      : `src/renderer/assets/presence-status/${os}/${theme}`;
+    const assetsPath =
+      isMac || isLinux
+        ? `src/renderer/assets/presence-status/${os}`
+        : `src/renderer/assets/presence-status/${os}/${theme}`;
     let fileExtension = 'png';
     let iconPlace = '';
     switch (place) {
       case 'tray':
-        iconPlace = isMac ? '-trayTemplate' : '-tray';
-        fileExtension = isWindowsOS ? 'ico' : isMac ? 'png' : 'png';
+        iconPlace = isMac || isLinux ? '-trayTemplate' : '-tray';
+        fileExtension = isWindowsOS ? 'ico' : isMac || isLinux ? 'png' : 'png';
         break;
       case 'thumbnail':
         iconPlace = '-thumbnail';
