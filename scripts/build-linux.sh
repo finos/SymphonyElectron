@@ -15,7 +15,11 @@ if [ -x "$(command -v nvm)" ]; then
 fi
 
 # Source all the profile files to ensure nvm is in path
-source $HOME/.nvm/nvm.sh
+. $HOME/.nvm/nvm.sh
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+nvm --version
+
 
 NODE_CURRENT_VERSION=$(nvm current)
 if [ "$NODE_REQUIRED_VERSION" != "$NODE_CURRENT_VERSION" ]; then
