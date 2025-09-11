@@ -67,7 +67,7 @@ import { miniViewHandler } from './mini-view-handler';
 import { openfinHandler } from './openfin-handler';
 import { presenceStatus } from './presence-status-handler';
 import { appStats } from './stats';
-import { presenceStatusStore, sdaMenuStore } from './stores/index';
+import { menuStore, presenceStatusStore } from './stores/index';
 import { voiceHandler } from './voice-handler';
 
 // Swift search API
@@ -348,6 +348,15 @@ ipcMain.on(
           notificationHelper.showNotification(opts);
         }
         break;
+      case apiCmds.zoomNotification:
+        if (typeof arg.notificationOpts === 'object') {
+          const opts = arg.notificationOpts as INotificationData;
+          menuStore.set('clientNotificationSettings', {
+            allowToastZoom: opts.allowToastZoom,
+          });
+        }
+
+        break;
       case apiCmds.closeNotification:
         if (typeof arg.notificationId === 'number') {
           await notificationHelper.closeNotification(arg.notificationId);
@@ -561,9 +570,8 @@ ipcMain.on(
       case apiCmds.getHelpInfo:
         const helpCenter: IPodSettingsClientSpecificSupportLink =
           arg.menu?.supportPage;
-        const helpMenu = sdaMenuStore.getHelpMenuSingleton();
 
-        helpMenu.setValue(helpCenter);
+        menuStore.set('helpCenter', helpCenter);
         break;
       default:
         break;

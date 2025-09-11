@@ -49,6 +49,7 @@ export enum apiCmds {
   restartApp = 'restart-app',
   setIsMana = 'set-is-mana',
   showNotification = 'show-notification',
+  zoomNotification = 'zoom-notification',
   showCallNotification = 'show-call-notification',
   closeAllWrapperWindows = 'close-all-windows',
   setZoomLevel = 'set-zoom-level',
@@ -312,6 +313,7 @@ export interface INotificationData {
   hasMention?: boolean;
   isFederatedEnabled?: boolean;
   zoomFactor: number;
+  allowToastZoom: boolean;
 }
 
 /**
@@ -479,4 +481,11 @@ export interface IPodSettingsClientSpecificSupportLink {
    * The label for the link that will be displayed to the users.
    */
   linkText: string;
+}
+
+export interface INotificationClientSettings {
+  /**
+   * Enable zooming on Toast Notification
+   */
+  allowToastZoom: boolean;
 }
