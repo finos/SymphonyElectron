@@ -14,14 +14,16 @@ if [ -x "$(command -v nvm)" ]; then
   exit 1
 fi
 
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
 export NVM_DIR="/data/nvm/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \\. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \\. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+. "$NVM_DIR/nvm.sh"
+. "$NVM_DIR/bash_completion"
 
+command -v nvm
 
-# Verify that nvm is installed
-nvm --version
+nvm install 22
+nvm use 22
+node -v
+npm -v
 
 NODE_CURRENT_VERSION=$(nvm current)
 if [ "$NODE_REQUIRED_VERSION" != "$NODE_CURRENT_VERSION" ]; then
