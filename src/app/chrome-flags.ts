@@ -22,6 +22,7 @@ const specialArgs = [
   '--inspect-brk',
   '--inspect',
   '--logPath',
+  '--custom-timezone',
 ];
 
 /**

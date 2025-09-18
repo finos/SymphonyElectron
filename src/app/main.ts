@@ -31,6 +31,68 @@ if (isMac) {
 
 logger.info(`App started with the args ${JSON.stringify(process.argv)}`);
 
+try {
+  const detectedTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const customTimezoneArgs: string | null = getCommandLineArgs(
+    process.argv,
+    '--custom-timezone',
+    false,
+  );
+  const customTimezone =
+    customTimezoneArgs &&
+    customTimezoneArgs.substring(customTimezoneArgs.indexOf('=') + 1);
+
+  logger.info(
+    `main: Environment diagnostics: timeZone=${detectedTimeZone}, customTimeZone=${
+      customTimezone || ''
+    }`,
+  );
+  // Enforce time zone for the Electron/Node environment
+  logger.info(`main: current timezone`, process.env.TZ);
+  const currentTz = process.env.TZ;
+
+  if (customTimezone) {
+    // Highest precedence: explicit custom timezone from CLI
+    process.env.TZ = customTimezone;
+    logger.info(
+      `main: Time zone enforcement: set process.env.TZ from custom arg '--custom-timezone'='${customTimezone}' (was '${
+        currentTz || ''
+      }')`,
+    );
+  } else if (!detectedTimeZone && currentTz) {
+    delete process.env.TZ;
+    logger.info(
+      `main: Time zone enforcement: unset process.env.TZ due to failed detection`,
+    );
+  } else if (detectedTimeZone && currentTz !== detectedTimeZone) {
+    process.env.TZ = detectedTimeZone;
+    logger.info(
+      `main: Time zone enforcement: set process.env.TZ='${detectedTimeZone}' (was '${
+        currentTz || ''
+      }')`,
+    );
+  } else {
+    logger.info(
+      `main: Time zone enforcement: process.env.TZ already aligned ('${
+        currentTz || ''
+      }')`,
+    );
+  }
+  logger.info(`main: post timezone `, process.env.TZ);
+} catch (e) {
+  logger.info(
+    `main: Environment diagnostics: failed to detect system time zone`,
+    e,
+  );
+  // As a safety, if detection throws and TZ is set, clear it so OS drives Chromium time zone
+  if (process.env.TZ) {
+    delete process.env.TZ;
+    logger.info(
+      `main: Time zone enforcement: unset process.env.TZ after detection failure`,
+    );
+  }
+}
+
 const allowMultiInstance: string | boolean =
   getCommandLineArgs(process.argv, '--multiInstance', true) || isDevEnv;
 let isAppAlreadyOpen: boolean = false;
