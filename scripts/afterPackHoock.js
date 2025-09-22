@@ -75,6 +75,7 @@ module.exports = async function afterPack(context) {
   const ext = {
     darwin: '.app',
     win32: '.exe',
+    linux: [''],
   }[context.electronPlatformName];
   const electronBinaryPath = path.join(
     appOutDir,

@@ -44,7 +44,7 @@
     "compression": "maximum",
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "asar": true,
-    "asarUnpack": "**/*.node",
+    "asarUnpack": "**\\*.{node,dll}",
     "afterPack": "scripts/afterPackHoock.js",
     "afterSign": "scripts/afterSign.js",
     "nsis": {
@@ -162,7 +162,8 @@
       "category": "Network;InstantMessaging;Chat",
       "target": [
         "deb",
-        "rpm"
+        "rpm",
+        "AppImage"
       ],
       "icon": "images/linux"
     }
