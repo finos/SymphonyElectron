@@ -140,7 +140,6 @@ class Script
         project.Properties = new[]
         {
             new PublicProperty("APPDIR", ""),
-            new PublicProperty("ALLUSERS", "1"),
             new PublicProperty("ALWAYS_ON_TOP", "DISABLED" ),
             new PublicProperty("AUTO_LAUNCH_PATH", ""),
             new PublicProperty("AUTO_START", "ENABLED"),
@@ -264,22 +263,26 @@ class Script
             if (e.IsInstalling || e.IsUpgrading)
             {
                 // "ALLUSERS" will be set to "2" if installing through UI, so the "MSIINSTALLPERUSER" property can be used so the user can choose install scope
+                e.Session.Log("Checking if 'ALLUSERS' is not 2, headless mode");
                 if (e.Session["ALLUSERS"] != "2")
                 {
                     // If "ALLUSERS" is "1" or "", this is a quiet command line installation, and we need to set the right paths here, since the UI haven't.
 
                     if (e.Session["APPDIR"] != "")
                     {
+                        e.Session.Log("'APPDIR' is not empty or null, proceed to set 'INSTALLDIR'");
                         // If "APPDIR" param was specified, just use that as is
                         e.Session["INSTALLDIR"] = e.Session["APPDIR"];
                     }
-                    else if (e.Session["ALLUSERS"] == "")
+                    else if (string.IsNullOrEmpty(e.Session["ALLUSERS"]) || string.IsNullOrWhiteSpace(e.Session["ALLUSERS"]))
                     {
+                        e.Session.Log("'ALLUSERS' is empty or null, proceed to set 'INSTALLDIR' as CurrentUser");
                         // Install for current user
                         e.Session["INSTALLDIR"] = System.Environment.ExpandEnvironmentVariables(@"%LOCALAPPDATA%\Programs\Symphony\" + e.ProductName);
                     }
                     else
                     {
+                        e.Session.Log("Final Condition, set 'INSTALLDIR' as Admin User by default");
                         // Install for all users
                         e.Session["INSTALLDIR"] = e.Session["PROGRAMSFOLDER"] + @"\Symphony\" + e.ProductName;
                     }
