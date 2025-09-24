@@ -230,8 +230,10 @@ app.on('activate', () => {
  * This event is emitted only on macOS at this moment
  */
 app.on('open-url', (_event, url) => {
-  logger.info(
-    `main: we got a protocol request with url ${url}! processing the request!`,
-  );
+  if (!url.includes('skey') && !url.includes('anticsrf')) {
+    logger.info(
+      `main: we got a protocol request with url ${url}! processing the request!`,
+    );
+  }
   protocolHandler.sendProtocol(url);
 });
