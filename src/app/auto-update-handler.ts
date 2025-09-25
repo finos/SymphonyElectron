@@ -8,7 +8,7 @@ import * as path from 'path';
 import { version } from '../../package.json';
 import { isMac, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
-import { isUrl } from '../common/utils';
+import { formatError, isUrl } from '../common/utils';
 import { whitelistHandler } from '../common/whitelist-handler';
 import { fetchLatestVersion } from './auto-update-utils';
 import { sendAutoUpdateAnalytics } from './bi/auto-update-analytics';
@@ -107,8 +107,8 @@ export class AutoUpdate {
       this.autoUpdater.on('error', (error) => {
         this.autoUpdateTrigger = undefined;
         logger.error(
-          'auto-update-handler: Error occurred while updating. ',
-          error,
+          'auto-update-handler: Error occurred while updating.',
+          formatError(error),
         );
       });
       await this.performForcedAutoUpdate();
@@ -217,13 +217,21 @@ export class AutoUpdate {
   ): Promise<void> => {
     this.autoUpdateTrigger = trigger;
     logger.info('auto-update-handler: Checking for updates', trigger);
-    if (this.autoUpdater) {
-      const opts: GenericServerOptions = await this.getGenericServerOptions();
-      this.autoUpdater.setFeedURL(opts);
-      const updateCheckResult = await this.autoUpdater.checkForUpdates();
-      logger.info('auto-update-handler: ', updateCheckResult);
+    try {
+      if (this.autoUpdater) {
+        const opts: GenericServerOptions = await this.getGenericServerOptions();
+        this.autoUpdater.setFeedURL(opts);
+        const updateCheckResult = await this.autoUpdater.checkForUpdates();
+        logger.info('auto-update-handler: ', updateCheckResult);
+      }
+    } catch (error) {
+      logger.error(
+        'auto-update-handler: Error occurred while checking for updates',
+        formatError(error),
+      );
+    } finally {
+      logger.info('auto-update-handler: After checking auto update');
     }
-    logger.info('auto-update-handler: After checking auto update');
   };
 
   /**
@@ -416,7 +424,10 @@ export class AutoUpdate {
           this.channelConfigLocation = ChannelConfigLocation.REGISTRY;
         }
       } catch (error) {
-        logger.error('auto-update-handler: error retrieving registry', error);
+        logger.error(
+          'auto-update-handler: error retrieving registry',
+          formatError(error),
+        );
       }
     }
   };

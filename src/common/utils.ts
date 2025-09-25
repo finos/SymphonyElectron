@@ -371,3 +371,45 @@ export class DelayedFunctionQueue {
     }
   }
 }
+
+/**
+ * Converts an error into a readable and serializable format.
+ *
+ * - Returns `"Unknown error"` if the input is null or undefined.
+ * - For `Error` instances, includes name, message, stack, and optional `code`/`cause`.
+ * - For objects, returns their own properties if available, otherwise stringifies them.
+ * - For primitives, returns their string representation.
+ *
+ * @param error - The error to format.
+ * @returns A string or an object with error details.
+ */
+export const formatError = (error: any): any => {
+  if (!error) {
+    return 'Unknown error';
+  }
+  if (error instanceof Error) {
+    const { name, message, stack } = error;
+    const code = (error as any).code;
+    const cause = (error as any).cause;
+    return {
+      name,
+      message,
+      stack,
+      ...(code ? { code } : {}),
+      ...(cause ? { cause: String(cause) } : {}),
+    };
+  }
+  if (typeof error === 'object') {
+    try {
+      const ownProps = Object.getOwnPropertyNames(error as object);
+      const details: any = {};
+      for (const key of ownProps) {
+        details[key] = (error as any)[key];
+      }
+      return Object.keys(details).length ? details : String(error);
+    } catch {
+      return String(error);
+    }
+  }
+  return String(error);
+};
