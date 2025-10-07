@@ -220,13 +220,7 @@ export const activate = (
             if (window.winName === apiName.mainWindowName) {
               window.setSkipTaskbar(false);
             }
-            if (window.isHidden()) {
-              return window.show();
-            } else if (window.isMinimized()) {
-              return window.restore();
-            } else {
-              return window.show();
-            }
+            return window.isMinimized() ? window.restore() : window.show();
           }
           return window.isMinimized() ? window.restore() : window.focus();
         }
