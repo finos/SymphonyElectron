@@ -5,7 +5,7 @@ import {
   ICallNotificationData,
   NotificationActions,
 } from '../../common/api-interface';
-import { isDevEnv, isMac, isWindowsOS } from '../../common/env';
+import { isDevEnv, isMac, isTahoe, isWindowsOS } from '../../common/env';
 import { logger } from '../../common/logger';
 import { notification } from '../../renderer/notification';
 import {
@@ -69,10 +69,10 @@ class CallNotification {
       this.callNotificationWindow.notificationData = callNotificationData;
       this.callNotificationWindow.winName = apiName.notificationWindowName;
       this.notificationCallbacks.set(callNotificationData.id, callback);
-      this.callNotificationWindow.webContents.send(
-        'call-notification-data',
-        callNotificationData,
-      );
+      this.callNotificationWindow.webContents.send('call-notification-data', {
+        ...callNotificationData,
+        isTahoe,
+      });
       return;
     }
 
@@ -111,10 +111,10 @@ class CallNotification {
       notification.stack();
       this.callNotificationWindow.webContents.setZoomFactor(1);
       this.callNotificationWindow.webContents.setVisualZoomLevelLimits(1, 1);
-      this.callNotificationWindow.webContents.send(
-        'call-notification-data',
-        callNotificationData,
-      );
+      this.callNotificationWindow.webContents.send('call-notification-data', {
+        ...callNotificationData,
+        isTahoe,
+      });
       this.callNotificationWindow.showInactive();
     });
 
