@@ -312,6 +312,8 @@ export interface INotificationData {
   hasMention?: boolean;
   isFederatedEnabled?: boolean;
   zoomFactor: number;
+  // Flag passed from main process: true if running on latest macOS "Tahoe" (Darwin 25+)
+  isTahoe?: boolean;
 }
 
 /**
@@ -342,6 +344,8 @@ export interface ICallNotificationData {
   zoomFactor: number;
   callerNumber: string;
   callerName?: string;
+  // Flag passed from main process: true if running on latest macOS "Tahoe" (Darwin 25+)
+  isTahoe?: boolean;
 }
 
 export enum NotificationActions {
