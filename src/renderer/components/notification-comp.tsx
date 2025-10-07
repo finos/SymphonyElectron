@@ -34,6 +34,7 @@ interface INotificationState {
   canSendMessage: boolean;
   isFederatedEnabled?: boolean;
   zoomFactor?: number;
+  isTahoe?: boolean;
 }
 
 type mouseEventButton =
@@ -160,6 +161,9 @@ export default class NotificationComp extends React.Component<
       isFederatedEnabled,
     );
     customCssClasses.push(isMac ? 'mac' : 'windows');
+    if (isMac && this.state.isTahoe) {
+      customCssClasses.push('tahoe');
+    }
     containerCssClass += customCssClasses.join(' ');
     return (
       <div

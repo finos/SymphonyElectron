@@ -20,7 +20,7 @@ import {
   NOTIFICATION_WINDOW_TITLE,
   NotificationActions,
 } from '../common/api-interface';
-import { isMac, isWindowsOS } from '../common/env';
+import { isMac, isTahoe, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
 import NotificationHandler, { ICorner } from './notification-handler';
 
@@ -298,6 +298,7 @@ class Notification extends NotificationHandler {
       hasMention,
       isFederatedEnabled,
       zoomFactor: data?.zoomFactor,
+      isTahoe,
     });
     notificationWindow.showInactive();
     if (callNotification.isCallNotificationOpen()) {
