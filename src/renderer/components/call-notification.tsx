@@ -42,6 +42,7 @@ interface ICallNotificationState {
   notificationType?: string;
   callerNumber?: string;
   callerName?: string;
+  isTahoe?: boolean;
 }
 
 type mouseEventButton =
@@ -161,6 +162,9 @@ export default class CallNotification extends React.Component<
     );
     let containerCssClass = `container ${themeClassName} `;
     customCssClasses.push(isMac ? 'mac' : 'windows');
+    if (isMac && this.state.isTahoe) {
+      customCssClasses.push('tahoe');
+    }
     containerCssClass += customCssClasses.join(' ');
 
     const acceptText = acceptButtonText
