@@ -152,7 +152,7 @@ if (!allowMultiInstance) {
         }
         if (!mainWindow.isVisible()) {
           mainWindow.setSkipTaskbar(false);
-          mainWindow.show();
+          mainWindow.isMinimized() ? mainWindow.restore() : mainWindow.show();
         }
         if (mainWindow.isMinimized()) {
           logger.info(`main: our main window is minimised, will restore it!`);
