@@ -331,7 +331,7 @@ export const initSysTray = () => {
       click: () => {
         if (mainWindow && windowExists(mainWindow)) {
           mainWindow.setSkipTaskbar(false);
-          mainWindow.show();
+          mainWindow.isMinimized() ? mainWindow.restore() : mainWindow.show();
           const presence = presenceStatus.myCurrentPresence;
           if (presence) {
             presenceStatus.setMyPresence(presence);
@@ -352,7 +352,7 @@ export const initSysTray = () => {
     if (mainWindow && windowExists(mainWindow)) {
       logger.info(`window-utils: tray click, showing main window!`);
       mainWindow.setSkipTaskbar(false);
-      mainWindow.show();
+      mainWindow.isMinimized() ? mainWindow.restore() : mainWindow.show();
       const presence = presenceStatus.myCurrentPresence;
       if (presence) {
         presenceStatus.setMyPresence(presence);

@@ -219,7 +219,7 @@ class PresenceStatus {
         click: () => {
           if (mainWindow && windowExists(mainWindow)) {
             mainWindow.setSkipTaskbar(false);
-            mainWindow.show();
+            mainWindow.isMinimized() ? mainWindow.restore() : mainWindow.show();
             const presence = this.myCurrentPresence;
             if (presence) {
               this.setMyPresence(presence);
@@ -259,7 +259,7 @@ class PresenceStatus {
         click: () => {
           if (mainWindow && windowExists(mainWindow)) {
             mainWindow.setSkipTaskbar(false);
-            mainWindow.show();
+            mainWindow.isMinimized() ? mainWindow.restore() : mainWindow.show();
           }
         },
       },
