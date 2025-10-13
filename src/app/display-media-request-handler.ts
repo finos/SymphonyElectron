@@ -1,6 +1,6 @@
 import { BrowserWindow, desktopCapturer, ipcMain, session } from 'electron';
 import { NOTIFICATION_WINDOW_TITLE } from '../common/api-interface';
-import { isDevEnv, isMac, isWindows11, isWindowsOS } from '../common/env';
+import { isDevEnv, isMac, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
 import { windowHandler } from './window-handler';
 import { createComponentWindow, windowExists } from './window-utils';
@@ -121,9 +121,13 @@ class DisplayMediaRequestHandler {
             // @ts-ignore
             callback();
           } else {
-            // SDA-3646 hack for macOS: whenever we try to close the penultimate window (here screensharing screen picker), Electron activates the last Electron window
-            // This behaviour was observed while trying to upgrade from Electron 14 to Electron 17
-            // Here the hack to solve that issue is to create a new invisible BrowserWindow.
+            /**
+             * SDA-3646 hack for macOS: whenever we try to close the penultimate window
+             * (here screensharing screen picker), Electron activates the last Electron window.
+             *
+             * This behaviour was observed while trying to upgrade from Electron 14 to Electron 17
+             * Here the hack to solve that issue is to create a new invisible BrowserWindow.
+             */
             this.screenPickerPlaceholderWindow = new BrowserWindow({
               title: 'Screen sharing - Symphony',
               width: 0,
@@ -135,8 +139,6 @@ class DisplayMediaRequestHandler {
               resizable: false,
               movable: false,
               fullscreenable: false,
-              roundedCorners: isWindows11 || isMac ? true : false,
-              thickFrame: isWindowsOS ? false : true,
             });
             this.screenPickerPlaceholderWindow.show();
             callback({ video: source });
