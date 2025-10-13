@@ -314,19 +314,13 @@ export const showBadgeCount = (count: number): void => {
  * Creates sys tray
  */
 export const initSysTray = () => {
-  const defaultSysTrayIcon = 'no-status-tray';
-  const defaultSysTrayIconExtension = isWindowsOS ? 'ico' : 'png';
-  const os = isWindowsOS ? 'windows' : isMac ? 'macOS' : 'linux';
   const theme = nativeTheme.shouldUseDarkColorsForSystemIntegratedUI
     ? 'dark'
     : 'light';
   logger.info('theme: ', theme, nativeTheme.themeSource);
-  const assetsPath = isMac
-    ? `renderer/assets/presence-status/${os}`
-    : `renderer/assets/presence-status/${os}/${theme}`;
-  const defaultSysTrayIconPath = path.join(
-    __dirname,
-    `../${assetsPath}/${defaultSysTrayIcon}.${defaultSysTrayIconExtension}`,
+  const defaultSysTrayIconPath = presenceStatusStore.generateImagePath(
+    EPresenceStatusGroup.HIDE_PRESENCE,
+    'tray',
   );
   const backgroundImage = nativeImage.createFromPath(defaultSysTrayIconPath);
   const tray = new Tray(backgroundImage);
@@ -337,7 +331,7 @@ export const initSysTray = () => {
       click: () => {
         if (mainWindow && windowExists(mainWindow)) {
           mainWindow.setSkipTaskbar(false);
-          mainWindow.show();
+          mainWindow.isMinimized() ? mainWindow.restore() : mainWindow.show();
           const presence = presenceStatus.myCurrentPresence;
           if (presence) {
             presenceStatus.setMyPresence(presence);
@@ -358,7 +352,7 @@ export const initSysTray = () => {
     if (mainWindow && windowExists(mainWindow)) {
       logger.info(`window-utils: tray click, showing main window!`);
       mainWindow.setSkipTaskbar(false);
-      mainWindow.show();
+      mainWindow.isMinimized() ? mainWindow.restore() : mainWindow.show();
       const presence = presenceStatus.myCurrentPresence;
       if (presence) {
         presenceStatus.setMyPresence(presence);
