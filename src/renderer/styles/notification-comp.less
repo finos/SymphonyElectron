@@ -15,10 +15,18 @@
 
 .mac {
   --container-border-radius: 10px;
+  --container-right-padding: 12px;
+  --container-header-max-width: 170px;
+  --close-button-top: -2px;
+  --close-button-right: 0px;
 }
 
 .mac.tahoe {
   --container-border-radius: 16px;
+  --container-right-padding: 19px;
+  --container-header-max-width: 163px;
+  --close-button-top: 2px;
+  --close-button-right: 4px;
 }
 
 .windows {
@@ -87,7 +95,7 @@ body {
     display: flex;
     flex: 1;
     padding-left: 12px;
-    padding-right: 12px;
+    padding-right: var(--container-right-padding);
     padding-top: 12px;
     line-height: 15px;
     overflow: hidden;
@@ -130,7 +138,7 @@ body {
         .notification-header-content {
           display: flex;
           margin-bottom: 8px;
-          max-width: 170px;
+          max-width: var(--container-header-max-width);
           .title {
             font-family: sans-serif;
             font-weight: 600;
@@ -356,8 +364,8 @@ body {
 
 .close-button {
   position: absolute;
-  top: -2;
-  right: 0;
+  top: var(--close-button-top);
+  right: var(--close-button-right);
   width: 16px;
   height: 16px;
   display: none;
