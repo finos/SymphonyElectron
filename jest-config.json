@@ -6,7 +6,7 @@
   },
   "testRegex": "(test|spec)\\.tsx?$",
   "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"],
-  "verbose": true,
+  "verbose": false,
   "collectCoverage": true,
   "coverageReporters": ["text", "html"],
   "coverageDirectory": "dist/coverage",
@@ -30,5 +30,6 @@
     ]
   ],
   "setupFiles": ["./spec/setup/test-setup.js"],
-  "snapshotSerializers": ["enzyme-to-json/serializer"]
+  "snapshotSerializers": ["enzyme-to-json/serializer"],
+  "silent": true
 }
