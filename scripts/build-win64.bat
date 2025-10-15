@@ -49,7 +49,7 @@ echo ==========================================================================
 echo ===  Installing dependencies
 echo ==========================================================================
 
-call npm install
+call npm ci
 
 echo ==========================================================================
 echo ===  Signing screen share indicator and native window handle helper
