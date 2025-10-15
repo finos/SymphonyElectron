@@ -45,10 +45,16 @@ call snyk config set api=%SNYK_API_TOKEN%
 sed -i -e "s/\"buildNumber\"[[:space:]]*\:[[:space:]]*\".*\"/\"buildNumber\": \"%PARENT_BUILD_VERSION%\"/g" package.json
 sed -i -e "s/\"version\"[[:space:]]*\:[[:space:]]\"\(.*\)\"/\"version\": \"\1-%PARENT_BUILD_VERSION%\"/g" package.json
 
-echo "Installing dependencies..."
+echo ==========================================================================
+echo ===  Installing dependencies
+echo ==========================================================================
+
 call npm install
 
-echo "Sign screen-share indicator..."
+echo ==========================================================================
+echo ===  Signing screen share indicator and native window handle helper
+echo ==========================================================================
+
 echo %SS_FOLDER%
 call smctl sign  --fingerprint %DIGICERT_FINGERPRINT% --input %SCREENSHARE_INDICATOR_PATH% --tool signtool --verbose
 smctl sign verify --input node_modules\screen-share-indicator-frame\ScreenShareIndicatorFrame.exe
@@ -69,10 +75,21 @@ IF %errorlevel% neq 0 (
 	exit /b -1
 )
 
-# Run Snyk Security Tests
-echo "Running snyk security tests"
-call snyk test --file=package-lock.json --org=%SNYK_ORG%
-call snyk monitor --file=package-lock.json --org=%SNYK_ORG% --project-name=%SNYK_PROJECT_NAME%
+:: ================================
+:: Snyk test & monitor
+:: ================================
+echo ==========================================================================
+echo ===  Running Snyk Security Tests
+echo ==========================================================================
+
+echo Current branch: %BRANCH_NAME%
+call snyk test --file=package-lock.json --org=%SNYK_ORG% --project-name=%SNYK_PROJECT_NAME% --target-reference="%BRANCH_NAME%"
+call snyk monitor --file=package-lock.json --org=%SNYK_ORG% --project-name%SNYK_PROJECT_NAME% --target-reference="%BRANCH_NAME%"
+
+IF %ERRORLEVEL% NEQ 0 (
+    echo Snyk detected vulnerabilities! Failing the build...
+    exit /b %ERRORLEVEL%
+)
 
 :: Set expiry if required
 IF "%EXPIRY_PERIOD%"=="" (
@@ -82,10 +99,16 @@ IF "%EXPIRY_PERIOD%"=="" (
     call gulp setExpiry --period %EXPIRY_PERIOD%
 )
 
-echo "Running tests, code coverage, linting and building..."
+echo ==========================================================================
+echo ===  Running tests, code coverage, linting and building
+echo ==========================================================================
+
 call npm run unpacked-win
 
-echo "creating 64 bit msi..."
+echo ==========================================================================
+echo ===  Creating 64 bit msi
+echo ==========================================================================
+
 
 call node -e "console.log(require('./package.json').version);" > version.txt
 set /p baseVer=<version.txt
@@ -96,7 +119,11 @@ if NOT DEFINED SYMVER (
 	exit /b -1
 )
 
-echo "creating targets directory for symphony version: " %SYMVER%
+echo ==========================================================================
+echo ===  Creating targets directory for symphony version:  %SYMVER%
+echo ==========================================================================
+
+
 rmdir /q /s targets
 mkdir targets
 set targetsDir="%CD%\targets\"
@@ -114,7 +141,10 @@ set rootDir="%CD%"
 
 cd %installerDir%
 
-echo "Signing Symphony.exe file.."
+echo ==========================================================================
+echo ===  Signing Symphony.exe files
+echo ==========================================================================
+
 smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input %SYMPHONY_EXE_PATH% --file-name
 smctl sign verify --input %SYMPHONY_EXE_PATH%
 IF %errorlevel% neq 0 (
@@ -134,7 +164,10 @@ IF %errorlevel% neq 0 (
 
 node ..\..\scripts\windows_update_checksum.js "..\..\dist\Symphony-%SYMVER%-win-x64.exe" "..\..\dist\latest.yml"
 
-echo "Building new installer with Wix Sharp"
+echo ==========================================================================
+echo ===  Building new installer with Wix Sharp
+echo ==========================================================================
+
 call "BuildWixSharpInstaller.bat"
 
 echo "Signing MSI file.."
@@ -155,9 +188,15 @@ if ERRORLEVEL 1 (
     call npm install -g markdown-pdf
 )
 
+
+echo ==========================================================================
+echo ===  Generate documentation
+echo ==========================================================================
+
 echo "Generating installation instructions"
 call %appdata%\npm\markdown-pdf install_instructions_win.md
 copy install_instructions_win.pdf "%targetsDir%\Install-Instructions-%archiveName%.pdf"
+
 
 echo Generate release notes
 cd %rootDir%
