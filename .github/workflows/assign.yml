@@ -5,4 +5,4 @@ jobs:
   add-reviews:
     runs-on: ubuntu-latest
     steps:
-      - uses: kentaro-m/auto-assign-action@3e986bf9c274729de0d85191da42484917883328
+      - uses: kentaro-m/auto-assign-action@6c329ffd6803dad23db17e9e97ddfb8cf34fee1e
