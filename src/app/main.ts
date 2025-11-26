@@ -1,7 +1,7 @@
 import { app, systemPreferences } from 'electron';
 import * as electronDownloader from 'electron-dl';
 
-import { isDevEnv, isLinux, isMac } from '../common/env';
+import { isDevEnv, isLinux, isMac, isWindowsOS } from '../common/env';
 import { logger } from '../common/logger';
 import { getCommandLineArgs } from '../common/utils';
 import { cleanUpAppCache, createAppCacheFile } from './app-cache-handler';
@@ -91,6 +91,12 @@ try {
       `main: Time zone enforcement: unset process.env.TZ after detection failure`,
     );
   }
+}
+
+// Always ignore TZ on Windows
+if (isWindowsOS && process.env.TZ) {
+  logger.info(`main: deleting invalid TZ='${process.env.TZ}'`);
+  delete process.env.TZ;
 }
 
 const allowMultiInstance: string | boolean =
