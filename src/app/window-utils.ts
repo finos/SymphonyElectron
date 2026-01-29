@@ -1,6 +1,5 @@
 import {
   app,
-  BaseWindow,
   BrowserWindow,
   dialog,
   Menu,
@@ -109,7 +108,7 @@ export const ZOOM_FACTOR_CHANGE = 'zoom-factor-change';
  * @param window {BrowserWindow}
  * @return boolean
  */
-export const windowExists = (window: BrowserWindow | BaseWindow): boolean =>
+export const windowExists = (window: BrowserWindow): boolean =>
   !!window && typeof window.isDestroyed === 'function' && !window.isDestroyed();
 
 /**
