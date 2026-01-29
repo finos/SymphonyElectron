@@ -400,24 +400,10 @@ export class AppMenu {
           'zoomOut',
         ),
         this.buildSeparator(),
-        isWindowsOS
-          ? this.assignRoleOrLabel({
-              role: 'togglefullscreen',
-              label: i18n.t('Toggle Full Screen')(),
-            })
-          : {
-              accelerator: 'CmdOrCtrl+F',
-              label: i18n.t('Toggle Full Screen')(),
-              click: (_menuItem, focusedWindow) => {
-                if (focusedWindow && windowExists(focusedWindow)) {
-                  logger.info(
-                    'app-menu: toggle fullscreen',
-                    !focusedWindow?.isFullScreen(),
-                  );
-                  focusedWindow?.setFullScreen(!focusedWindow?.isFullScreen());
-                }
-              },
-            },
+        this.assignRoleOrLabel({
+          role: 'togglefullscreen',
+          label: i18n.t('Toggle Full Screen')(),
+        }),
       ],
     };
   }
