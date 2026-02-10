@@ -13,8 +13,6 @@ class CallNotificationHelper {
    * @param options {ICallNotificationData}
    */
   public showNotification(options: ICallNotificationData) {
-    options.zoomFactor =
-      windowHandler?.getMainWebContents()?.getZoomFactor() || 1;
     callNotification.createCallNotificationWindow(
       options,
       this.notificationCallback,

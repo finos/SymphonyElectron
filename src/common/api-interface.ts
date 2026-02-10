@@ -311,7 +311,6 @@ export interface INotificationData {
   hasReply?: boolean;
   hasMention?: boolean;
   isFederatedEnabled?: boolean;
-  zoomFactor: number;
   // Flag passed from main process: true if running on latest macOS "Tahoe" (Darwin 25+)
   isTahoe?: boolean;
 }
@@ -341,7 +340,6 @@ export interface ICallNotificationData {
   isFederatedEnabled?: boolean;
   isPhone?: boolean;
   notificationType?: string;
-  zoomFactor: number;
   callerNumber: string;
   callerName?: string;
   // Flag passed from main process: true if running on latest macOS "Tahoe" (Darwin 25+)

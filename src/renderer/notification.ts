@@ -297,7 +297,6 @@ class Notification extends NotificationHandler {
       hasReply,
       hasMention,
       isFederatedEnabled,
-      zoomFactor: data?.zoomFactor,
       isTahoe,
     });
     notificationWindow.showInactive();
