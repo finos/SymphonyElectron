@@ -166,6 +166,7 @@ describe('Call toast notification component', () => {
       callerName: '',
       callerNumber: '123',
       primaryText: '123 [PHONE]',
+      federationCallTypeText: 'SMS & Voice',
     });
 
     let federationTypeText = wrapper.find('[data-testid="FEDERATION_TYPE"]');
@@ -197,6 +198,7 @@ describe('Call toast notification component', () => {
       callerName: 'Helen',
       callerNumber: '123',
       primaryText: 'Helen',
+      federationCallTypeText: 'SMS & Voice',
     });
     let federationTypeText = wrapper.find('[data-testid="FEDERATION_TYPE"]');
     let federationUnknownUserAvatar = wrapper.find(
