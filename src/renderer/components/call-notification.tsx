@@ -43,6 +43,7 @@ interface ICallNotificationState {
   callerNumber?: string;
   callerName?: string;
   isTahoe?: boolean;
+  federationCallTypeText?: string;
 }
 
 type mouseEventButton =
@@ -134,6 +135,7 @@ export default class CallNotification extends React.Component<
       zoomFactor,
       isPhone,
       callerNumber,
+      federationCallTypeText,
     } = this.state;
 
     let themeClassName;
@@ -237,7 +239,7 @@ export default class CallNotification extends React.Component<
                     />
                   )}
                   <div className={`company-name ${themeClassName}`}>
-                    SMS & Voice
+                    {federationCallTypeText}
                   </div>
                 </div>
               </div>

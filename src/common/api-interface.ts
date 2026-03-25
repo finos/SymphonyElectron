@@ -346,6 +346,7 @@ export interface ICallNotificationData {
   callerName?: string;
   // Flag passed from main process: true if running on latest macOS "Tahoe" (Darwin 25+)
   isTahoe?: boolean;
+  federationCallTypeText?: string;
 }
 
 export enum NotificationActions {
