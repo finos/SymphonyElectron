@@ -247,7 +247,7 @@
     "lodash.debounce": "^4.0.8",
     "react": "16.14.0",
     "react-dom": "16.14.0",
-    "rimraf": "^4.3.1",
+    "rimraf": "^6.1.1",
     "save-svg-as-png": "^1.4.17",
     "shell-path": "^3.0.0"
   },
