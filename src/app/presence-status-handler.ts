@@ -127,7 +127,7 @@ class PresenceStatus {
       return;
     }
     if (!tray) {
-      tray = initSysTray();
+      tray = initSysTray() ?? null;
       logger.info('presence-status-handler: create and save Symphony tray');
     } else {
       tray.setImage(backgroundImage);
