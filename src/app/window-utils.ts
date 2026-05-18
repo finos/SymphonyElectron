@@ -323,7 +323,16 @@ export const initSysTray = () => {
     'tray',
   );
   const backgroundImage = nativeImage.createFromPath(defaultSysTrayIconPath);
-  const tray = new Tray(backgroundImage);
+  if (backgroundImage.isEmpty()) {
+    return;
+  }
+  let tray: Tray;
+  try {
+    tray = new Tray(backgroundImage);
+  } catch (error) {
+    logger.error('window-utils: error creating system Tray class', error);
+    return;
+  }
   const mainWindow = windowHandler.getMainWindow();
   const contextMenu = Menu.buildFromTemplate([
     {
