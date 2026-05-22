@@ -253,16 +253,16 @@ export class AutoUpdate {
    * @example https://corporate.symphony.com/macos/general
    */
   public getUpdateUrl = (): string => {
-    const { sdaInstallerMsiUrl } = config.getCloudConfigFields([
-      'sdaInstallerMsiUrl',
-    ]);
-    if (sdaInstallerMsiUrl && isUrl(sdaInstallerMsiUrl)) {
-      logger.info(
-        `auto-update-handler: using cloud config sdaInstallerMsiUrl`,
-        sdaInstallerMsiUrl,
-      );
-      return sdaInstallerMsiUrl;
-    }
+    // const { sdaInstallerMsiUrl } = config.getCloudConfigFields([
+    //   'sdaInstallerMsiUrl',
+    // ]);
+    // if (sdaInstallerMsiUrl && isUrl(sdaInstallerMsiUrl)) {
+    //   logger.info(
+    //     `auto-update-handler: using cloud config sdaInstallerMsiUrl`,
+    //     sdaInstallerMsiUrl,
+    //   );
+    //   return sdaInstallerMsiUrl;
+    // }
 
     const { url: userConfigURL } = config.getUserConfigFields(['url']);
     const { url: globalConfigURL } = config.getGlobalConfigFields(['url']);
