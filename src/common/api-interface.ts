@@ -64,11 +64,6 @@ export enum apiCmds {
   handleSwiftSearchMessageEvents = 'handle-shift-search-message-events',
   onSwiftSearchMessage = 'on-shift-search-message',
   getNativeWindowHandle = 'get-native-window-handle',
-  launchCloud9 = 'launch-cloud9',
-  terminateCloud9 = 'terminate-cloud9',
-  connectCloud9Pipe = 'connect-cloud9-pipe',
-  writeCloud9Pipe = 'write-cloud9-pipe',
-  closeCloud9Pipe = 'close-cloud9-pipe',
   updateAndRestart = 'update-and-restart',
   downloadUpdate = 'download-update',
   checkForUpdates = 'check-for-updates',
@@ -443,18 +438,6 @@ export type NotificationActionCallback = (
 ) => void;
 
 export type ConfigUpdateType = 'restart' | 'reload';
-
-export interface ICloud9Pipe {
-  /**
-   * Ability to write in C9 named pipe
-   */
-  write(data: Uint8Array): void;
-
-  /**
-   * Ability to close named pipe
-   */
-  close(): void;
-}
 
 export type AuthType = 'password' | 'sso';
 

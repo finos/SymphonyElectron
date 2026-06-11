@@ -22,8 +22,6 @@ import { whitelistHandler } from '../common/whitelist-handler';
 import { activityDetection } from './activity-detection';
 import appStateHandler from './app-state-handler';
 import { analytics } from './bi/analytics-handler';
-import { closeC9Pipe, connectC9Pipe, writeC9Pipe } from './c9-pipe-handler';
-import { loadC9Shell, terminateC9Shell } from './c9-shell-handler';
 import { CloudConfigDataTypes, config, ICloudConfig } from './config-handler';
 import { downloadHandler } from './download-handler';
 import { getContentWindowHandle } from './hwnd-handler';
@@ -370,7 +368,6 @@ ipcMain.on(
       case apiCmds.closeAllWrapperWindows:
         windowHandler.closeAllWindows();
         const main = windowHandler.getMainWindow();
-        terminateC9Shell();
 
         main?.setThumbarButtons([]);
         presenceStatus.onSignOut();
@@ -522,21 +519,6 @@ ipcMain.on(
         break;
       case apiCmds.onExitMiniView:
         miniViewHandler.deactivateMiniView();
-        break;
-      case apiCmds.connectCloud9Pipe:
-        connectC9Pipe(event.sender, arg.pipe);
-        break;
-      case apiCmds.writeCloud9Pipe:
-        writeC9Pipe(arg.data);
-        break;
-      case apiCmds.closeCloud9Pipe:
-        closeC9Pipe();
-        break;
-      case apiCmds.launchCloud9:
-        await loadC9Shell(event.sender);
-        break;
-      case apiCmds.terminateCloud9:
-        terminateC9Shell();
         break;
       case apiCmds.updateAndRestart:
         autoUpdate.updateAndRestart();
@@ -724,19 +706,6 @@ const logApiCallParams = (arg: any) => {
       logger.info(
         `main-api-handler: - ${apiCmd} - Properties: ${JSON.stringify(
           ld,
-          null,
-          2,
-        )}`,
-      );
-      break;
-    case apiCmds.writeCloud9Pipe:
-      const compressedData = {
-        ...arg,
-        data: Buffer.from(arg.data).toString('base64'),
-      };
-      logger.info(
-        `main-api-handler: - ${apiCmd} - Properties: ${JSON.stringify(
-          compressedData,
           null,
           2,
         )}`,
