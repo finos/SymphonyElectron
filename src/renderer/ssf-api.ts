@@ -7,7 +7,6 @@ import {
   version,
 } from '../../package.json';
 import { AutoUpdateTrigger } from '../app/auto-update-handler';
-import { IShellStatus } from '../app/c9-shell-handler';
 import { IDownloadItem } from '../app/download-handler';
 import {
   apiCmds,
@@ -16,7 +15,6 @@ import {
   EPresenceStatusCategory,
   IBoundsChange,
   ICallNotificationData,
-  ICloud9Pipe,
   ICPUUsage,
   ILogMsg,
   IMediaPermission,
@@ -62,8 +60,6 @@ export interface ILocalObject {
   showClientBannerCallback?: Array<
     (reason: string, action: ConfigUpdateType, data?: object) => void
   >;
-  c9PipeEventCallback?: (event: string, arg?: any) => void;
-  c9MessageCallback?: (status: IShellStatus) => void;
   updateMyPresenceCallback?: (presence: EPresenceStatusCategory) => void;
   phoneNumberCallback?: (arg: string) => void;
   openfinIntentCallbacks: Map<string, Map<UUID, any>>; // by intent name, then by callback id
@@ -835,89 +831,6 @@ export class SSFApi {
   }
 
   /**
-   * Connects to a Cloud9 pipe
-   *
-   * @param pipe pipe name
-   * @param onData callback that is invoked when data is received over the connection
-   * @param onClose callback that is invoked when the connection is closed by the remote side
-   * @returns Cloud9 pipe instance promise
-   */
-  public connectCloud9Pipe(
-    pipe: string,
-    onData: (data: Uint8Array) => void,
-    onClose: () => void,
-  ): Promise<ICloud9Pipe> {
-    if (
-      typeof pipe === 'string' &&
-      typeof onData === 'function' &&
-      typeof onClose === 'function'
-    ) {
-      if (local.c9PipeEventCallback) {
-        return Promise.reject("Can't connect to pipe, already connected");
-      }
-
-      return new Promise<ICloud9Pipe>((resolve, reject) => {
-        local.c9PipeEventCallback = (event: string, arg?: any) => {
-          switch (event) {
-            case 'connected':
-              const ret = {
-                write: (data: Uint8Array) => {
-                  ipcRenderer.send(apiName.symphonyApi, {
-                    cmd: apiCmds.writeCloud9Pipe,
-                    data,
-                  });
-                },
-                close: () => {
-                  ipcRenderer.send(apiName.symphonyApi, {
-                    cmd: apiCmds.closeCloud9Pipe,
-                  });
-                },
-              };
-              resolve(ret);
-              break;
-            case 'connection-failed':
-              local.c9PipeEventCallback = undefined;
-              reject(arg);
-              break;
-            case 'data':
-              onData(arg);
-              break;
-            case 'close':
-              local.c9PipeEventCallback = undefined;
-              onClose();
-              break;
-          }
-        };
-        ipcRenderer.send(apiName.symphonyApi, {
-          cmd: apiCmds.connectCloud9Pipe,
-          pipe,
-        });
-      });
-    } else {
-      return Promise.reject('Invalid arguments');
-    }
-  }
-
-  /**
-   * Launches the Cloud9 client.
-   */
-  public launchCloud9(callback: (status: IShellStatus) => void): void {
-    local.c9MessageCallback = callback;
-    ipcRenderer.send(apiName.symphonyApi, {
-      cmd: apiCmds.launchCloud9,
-    });
-  }
-
-  /**
-   * Terminates the Cloud9 client.
-   */
-  public terminateCloud9(): void {
-    ipcRenderer.send(apiName.symphonyApi, {
-      cmd: apiCmds.terminateCloud9,
-    });
-  }
-
-  /**
    * Allows JS to install new update and restart SDA
    */
   public updateAndRestart(): void {
@@ -1471,20 +1384,6 @@ local.ipcRenderer.on('display-client-banner', (_event, args) => {
       callback(args.reason, args.action);
     }
   }
-});
-
-/**
- * An event triggered by the main process when a cloud9 pipe event occurs
- */
-local.ipcRenderer.on('c9-pipe-event', (_event, args) => {
-  local.c9PipeEventCallback?.call(null, args.event, args?.arg);
-});
-
-/**
- * An event triggered by the main process when the status of the cloud9 client changes
- */
-local.ipcRenderer.on('c9-status-event', (_event, args) => {
-  local.c9MessageCallback?.call(null, args?.status);
 });
 
 /**

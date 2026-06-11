@@ -1,5 +1,4 @@
 import { activityDetection } from '../src/app/activity-detection';
-import * as c9PipeHandler from '../src/app/c9-pipe-handler';
 import { downloadHandler } from '../src/app/download-handler';
 import '../src/app/main-api-handler';
 import { openfinHandler } from '../src/app/openfin-handler';
@@ -581,17 +580,6 @@ describe('main api handler', () => {
       });
       expect(windows.popout1.getNativeWindowHandle).toBeCalledTimes(1);
       expect(windows.popout2.getNativeWindowHandle).toBeCalledTimes(0);
-    });
-
-    it('should call `connectC9Pipe` correctly', () => {
-      const spy = jest.spyOn(c9PipeHandler, 'connectC9Pipe');
-      const value = {
-        cmd: apiCmds.connectCloud9Pipe,
-        pipe: 'pipe-name',
-      };
-      const expectedValue = [{ send: expect.any(Function) }, 'pipe-name'];
-      ipcMain.send(apiName.symphonyApi, value);
-      expect(spy).toBeCalledWith(...expectedValue);
     });
   });
 
