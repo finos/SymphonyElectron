@@ -41,8 +41,6 @@ import { cleanAppCacheOnCrash } from './app-cache-handler';
 import { AppMenu } from './app-menu';
 import { analytics } from './bi/analytics-handler';
 import { SDAEndReasonTypes, SDAUserSessionActionTypes } from './bi/interface';
-import { closeC9Pipe } from './c9-pipe-handler';
-import { terminateC9Shell } from './c9-shell-handler';
 import { handleChildWindow } from './child-window-handler';
 import {
   CloudConfigDataTypes,
@@ -600,8 +598,6 @@ export class WindowHandler {
       // reset to false when the client reloads
       this.isMana = false;
       logger.info(`window-handler: main window web contents finished loading!`);
-      // Make sure there is no lingering C9 pipe connection
-      closeC9Pipe();
       // early exit if the window has already been destroyed
       if (!this.mainWebContents || this.mainWebContents.isDestroyed()) {
         logger.info(
@@ -2263,7 +2259,6 @@ export class WindowHandler {
     if (shouldRelaunch) {
       app.relaunch();
     }
-    await terminateC9Shell();
     app.exit();
   };
 

@@ -85,9 +85,6 @@ class Script
                             new Files(@"..\..\..\dist\win-unpacked\resources\app.asar.unpacked\node_modules\*.*")
                         )
                     )
-                ),
-                new Dir(@"cloud9",
-                    new Files(@"..\..\..\dist\win-unpacked\cloud9\*.*")
                 )
             ),
 

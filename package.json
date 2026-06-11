@@ -65,7 +65,6 @@
       "!node_modules/@nornagon/cld/deps/cld${/*}",
       "!node_modules/@nornagon/cld/build/deps${/*}",
       "!node_modules/@nornagon/spellchecker/vendor${/*}",
-      "!node_modules/@symphony/symphony-c9-shell/**",
       "!spec/**/*",
       "!**/*.map"
     ],
@@ -121,7 +120,6 @@
         "!**/node_modules/@nornagon/cld/deps/cld${/*}",
         "!**/node_modules/@nornagon/cld/build/deps${/*}",
         "!**/node_modules/@nornagon/spellchecker/vendor${/*}",
-        "!**/node_modules/@symphony/symphony-c9-shell/**",
         "!**/resources/darwin/**/*",
         "!**/*.map",
         "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
@@ -148,13 +146,6 @@
         {
           "from": "node_modules/symphony-native-window-handle-helper/SymphonyNativeWindowHandleHelper.exe",
           "to": "SymphonyNativeWindowHandleHelper.exe"
-        },
-        {
-          "from": "node_modules/@symphony/symphony-c9-shell/shell",
-          "to": "cloud9/shell",
-          "filter": [
-            "**/*"
-          ]
         }
       ]
     },
@@ -252,7 +243,6 @@
     "shell-path": "^3.0.0"
   },
   "optionalDependencies": {
-    "@symphony/symphony-c9-shell": "3.38.0-94.195",
     "screen-share-indicator-frame": "github:finos/ScreenShareIndicatorFrame#v1.6.0",
     "screen-snippet": "github:finos/ScreenSnippet2.git#v2.5.1",
     "symphony-native-window-handle-helper": "github:finos/SymphonyWindowsHwndHelper#v1.1.0",
