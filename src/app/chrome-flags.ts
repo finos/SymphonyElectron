@@ -28,6 +28,24 @@ const specialArgs = [
 ];
 
 /**
+ * Validates an --auth-server-whitelist / --auth-negotiate-delegate-whitelist
+ * value before it is applied as a Chromium switch or NTLM-credential allowlist.
+ */
+export const isSafeAuthWhitelist = (value: unknown): value is string => {
+  if (typeof value !== 'string') {
+    return false;
+  }
+  const entries = value
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter((entry) => entry.length > 0);
+  if (entries.length === 0) {
+    return false;
+  }
+  return entries.every((entry) => entry !== '*');
+};
+
+/**
  * Sets chrome flags
  */
 export const setChromeFlags = () => {
@@ -41,9 +59,6 @@ export const setChromeFlags = () => {
     'disableThrottling',
   ]) as any;
   const configFlags: object = {
-    'auth-negotiate-delegate-whitelist':
-      flagsConfig.customFlags.authNegotiateDelegateWhitelist,
-    'auth-server-whitelist': flagsConfig.customFlags.authServerWhitelist,
     'disable-background-timer-throttling': 'true',
     'disable-d3d11': true,
     'disable-gpu': flagsConfig.disableGpu || null,
@@ -51,6 +66,20 @@ export const setChromeFlags = () => {
     'enable-blink-features': 'RTCInsertableStreams',
     'disable-features': 'ChromeRootStoreUsed',
   };
+  const authNegotiate = flagsConfig.customFlags?.authNegotiateDelegateWhitelist;
+  if (isSafeAuthWhitelist(authNegotiate)) {
+    configFlags['auth-negotiate-delegate-whitelist'] = authNegotiate;
+  } else if (authNegotiate) {
+    logger.warn(
+      `chrome-flags: rejecting unsafe authNegotiateDelegateWhitelist value`,
+    );
+  }
+  const authServer = flagsConfig.customFlags?.authServerWhitelist;
+  if (isSafeAuthWhitelist(authServer)) {
+    configFlags['auth-server-whitelist'] = authServer;
+  } else if (authServer) {
+    logger.warn(`chrome-flags: rejecting unsafe authServerWhitelist value`);
+  }
   if (
     flagsConfig.customFlags.disableThrottling ===
       CloudConfigDataTypes.ENABLED ||
@@ -129,11 +158,14 @@ export const setSessionProperties = () => {
   if (
     defaultSession &&
     customFlags &&
-    customFlags.authServerWhitelist &&
-    customFlags.authServerWhitelist !== ''
+    isSafeAuthWhitelist(customFlags.authServerWhitelist)
   ) {
     defaultSession.allowNTLMCredentialsForDomains(
       customFlags.authServerWhitelist,
+    );
+  } else if (customFlags?.authServerWhitelist) {
+    logger.warn(
+      `chrome-flags: rejecting unsafe NTLM domain allowlist from customFlags`,
     );
   }
 };
