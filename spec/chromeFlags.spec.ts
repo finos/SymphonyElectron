@@ -95,18 +95,19 @@ describe('chrome flags', () => {
     const spy = jest.spyOn(app.commandLine, 'appendSwitch');
     setChromeFlags();
     expect(spy).nthCalledWith(1, 'disable-background-timer-throttling', 'true');
+    expect(spy).nthCalledWith(2, 'disable-d3d11', true);
     expect(spy).nthCalledWith(
-      2,
+      3,
       'enable-blink-features',
       'RTCInsertableStreams',
     );
-    expect(spy).nthCalledWith(3, 'disable-features', 'ChromeRootStoreUsed');
+    expect(spy).nthCalledWith(4, 'disable-features', 'ChromeRootStoreUsed');
     expect(spy).nthCalledWith(
-      4,
+      5,
       'auth-negotiate-delegate-whitelist',
       'whitelist',
     );
-    expect(spy).nthCalledWith(5, 'auth-server-whitelist', 'url');
+    expect(spy).nthCalledWith(6, 'auth-server-whitelist', 'url');
   });
 
   it('should set `disable-renderer-backgrounding` chrome flag correctly when cloud config is ENABLED', () => {
