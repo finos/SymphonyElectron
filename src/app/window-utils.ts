@@ -453,6 +453,49 @@ export const isValidView = (webContents: WebContents): boolean => {
 };
 
 /**
+ * Verifies that the IPC sender frame is either an internal SDA page
+ * (file:// or about:blank) or matches the configured pod origin / whitelist.
+ */
+export const isTrustedSenderFrame = (
+  event: Electron.IpcMainEvent | Electron.IpcMainInvokeEvent,
+): boolean => {
+  if (!checkValidWindow) {
+    return true;
+  }
+  const frameUrl = event.senderFrame?.url;
+  if (!frameUrl) {
+    return false;
+  }
+
+  // Internal SDA pages are loaded from disk and are always trusted.
+  if (frameUrl.startsWith('file://') || frameUrl === 'about:blank') {
+    return true;
+  }
+
+  const mainWindow =
+    windowHandler.getMainWindow() as ICustomBrowserWindow | null;
+  const podUrl = mainWindow?.origin;
+  if (podUrl) {
+    try {
+      if (new URL(frameUrl).origin === new URL(podUrl).origin) {
+        return true;
+      }
+    } catch {
+      // fall through to whitelist check
+    }
+  }
+
+  if (whitelistHandler.isWhitelisted(frameUrl)) {
+    return true;
+  }
+
+  logger.warn(
+    `window-utils: rejecting IPC from untrusted senderFrame ${frameUrl}`,
+  );
+  return false;
+};
+
+/**
  * Updates the locale and rebuilds the entire application menu
  *
  * @param locale {LocaleType}

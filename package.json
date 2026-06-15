@@ -53,7 +53,8 @@
       "allowToChangeInstallationDirectory": false,
       "allowElevation": false,
       "include": "build/installer.nsh",
-      "uninstallDisplayName": "${productName}"
+      "uninstallDisplayName": "${productName}",
+      "publisherName": "Symphony Communication Services LLC"
     },
     "files": [
       "!.git${/*}",

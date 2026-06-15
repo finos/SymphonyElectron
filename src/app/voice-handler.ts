@@ -122,7 +122,7 @@ class VoiceHandler {
       await symCommandRegKey.set(
         '',
         Registry.REG_SZ,
-        `"${appPath}" "%1"`,
+        `"${appPath}" "--" "%1"`,
         errorCallback,
       );
       await symAppRegistrationRegKey.set(

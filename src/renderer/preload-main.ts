@@ -22,6 +22,32 @@ const maxMemoryFetchInterval = 12 * 60 * 60 * 1000;
 const snackBar = new SnackBar();
 const banner = new MessageBanner();
 
+// Trusted pod origin injected by the main process via
+// webPreferences.additionalArguments (see window-handler.ts). Used to gate
+// contextBridge exposure to the configured pod only (H1 #3770918).
+const INITIAL_URL_PREFIX = '--initial-url=';
+const trustedInitialUrl = process.argv
+  .find((arg) => arg.startsWith(INITIAL_URL_PREFIX))
+  ?.slice(INITIAL_URL_PREFIX.length);
+
+const isTrustedOrigin = (): boolean => {
+  // Internal SDA pages (welcome, network-error, etc.) load via file:// and
+  // legitimately need API access.
+  if (window.location.protocol === 'file:') {
+    return true;
+  }
+  if (!trustedInitialUrl) {
+    return false;
+  }
+  try {
+    return (
+      new URL(window.location.href).origin === new URL(trustedInitialUrl).origin
+    );
+  } catch {
+    return false;
+  }
+};
+
 /**
  * creates API exposed from electron.
  */
@@ -29,6 +55,13 @@ const createAPI = () => {
   // iframes (and any other non-top level frames) get no api access
   // http://stackoverflow.com/questions/326069/how-to-identify-if-a-webpage-is-being-loaded-inside-an-iframe-or-directly-into-t/326076
   if (window.self !== window.top) {
+    return;
+  }
+
+  // Only expose APIs when the top-level frame is the configured pod.
+  // Blocks attacker-controlled pages reached via --url= override or
+  // protocol-handler argument injection.
+  if (!isTrustedOrigin()) {
     return;
   }
 

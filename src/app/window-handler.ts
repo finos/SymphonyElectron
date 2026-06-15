@@ -298,6 +298,39 @@ export class WindowHandler {
       this.shouldShowWelcomeScreen = true;
     }
 
+    // Resolve the pod URL BEFORE constructing the BrowserWindow so we can pass
+    // it as a preload additionalArgument. The preload uses this to gate
+    // contextBridge exposure to the configured pod origin only (H1 #3770918).
+    this.url = WindowHandler.getValidUrl(
+      this.userConfig.url ? this.userConfig.url : this.globalConfig.url,
+    );
+    logger.info(`window-handler: setting url ${this.url} from config file!`);
+
+    if (urlFromCmd) {
+      const commandLineUrl = urlFromCmd.substr(6);
+      logger.info(
+        `window-handler: trying to set url ${commandLineUrl} from command line.`,
+      );
+      const { podWhitelist } = config.getConfigFields(['podWhitelist']);
+      // Fail-closed: only accept --url= when an explicit, matching entry
+      // exists in podWhitelist. An empty whitelist no longer permits arbitrary
+      // URL overrides - expect for dev environment.
+      if (
+        (podWhitelist.length > 0 && podWhitelist.includes(commandLineUrl)) ||
+        isDevEnv
+      ) {
+        logger.info(
+          `window-handler: url ${commandLineUrl} from command line is whitelisted; applying override.`,
+        );
+        this.cmdUrl = commandLineUrl;
+        this.url = commandLineUrl;
+      } else {
+        logger.warn(
+          `window-handler: rejecting --url=${commandLineUrl} (podWhitelist empty or non-matching)`,
+        );
+      }
+    }
+
     this.windowOpts = {
       ...this.getWindowOpts(
         {
@@ -314,6 +347,7 @@ export class WindowHandler {
         },
         {
           preload: path.join(__dirname, '../renderer/_preload-main.js'),
+          additionalArguments: ['--initial-url=' + this.url],
         },
       ),
       ...this.opts,
@@ -342,11 +376,6 @@ export class WindowHandler {
     const { isFullScreen, isMaximized } = this.config.mainWinPos
       ? this.config.mainWinPos
       : { isFullScreen: false, isMaximized: false };
-
-    this.url = WindowHandler.getValidUrl(
-      this.userConfig.url ? this.userConfig.url : this.globalConfig.url,
-    );
-    logger.info(`window-handler: setting url ${this.url} from config file!`);
 
     // set window opts with additional config
     this.mainWindow = new BrowserWindow({
@@ -380,40 +409,6 @@ export class WindowHandler {
     );
 
     this.mainWindow.winName = apiName.mainWindowName;
-
-    if (urlFromCmd) {
-      const commandLineUrl = urlFromCmd.substr(6);
-      logger.info(
-        `window-handler: trying to set url ${commandLineUrl} from command line.`,
-      );
-      const { podWhitelist } = config.getConfigFields(['podWhitelist']);
-      logger.info(`window-handler: checking pod whitelist.`);
-      if (podWhitelist.length > 0) {
-        logger.info(
-          `window-handler: pod whitelist is not empty ${podWhitelist}`,
-        );
-        if (podWhitelist.includes(commandLineUrl)) {
-          logger.info(
-            `window-handler: url from command line is whitelisted in the config file.`,
-          );
-          logger.info(
-            `window-handler: setting ${commandLineUrl} from the command line as the main window url.`,
-          );
-          this.cmdUrl = commandLineUrl;
-          this.url = commandLineUrl;
-        } else {
-          logger.info(
-            `window-handler: url ${commandLineUrl} from command line is NOT WHITELISTED in the config file.`,
-          );
-        }
-      } else {
-        logger.info(
-          `window-handler: setting ${commandLineUrl} from the command line as the main window url since pod whitelist is empty.`,
-        );
-        this.cmdUrl = commandLineUrl;
-        this.url = commandLineUrl;
-      }
-    }
 
     // start the application maximized - for automation tests
     const isMaximizedFlag = getCommandLineArgs(

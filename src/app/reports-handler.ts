@@ -18,6 +18,37 @@ import { logger } from '../common/logger';
  * @param retrievedLogs {Array} array of client logs
  * @return {Promise<void>}
  */
+/**
+ * Sanitizes an attacker-influenced filename:
+ *   1. Strips everything outside [A-Za-z0-9_.-] (notably drops `/` and `\`,
+ *      which the previous allow-list permitted and which combined with
+ *      `path.join` enabled directory traversal — H1 #3770918 Chain A).
+ *   2. Runs `path.basename` as belt-and-braces against `..` constructs.
+ */
+const validateFilename = (filename: string): string => {
+  if (!filename) {
+    return '';
+  }
+  const stripped = filename.replace(/[^a-zA-Z0-9_\.-]/g, '_');
+  return path.basename(stripped);
+};
+
+/**
+ * Resolves `filename` inside `baseDir` and confirms the result stays inside
+ * `baseDir`. Returns the resolved path on success, or null on traversal.
+ */
+const resolveInside = (baseDir: string, filename: string): string | null => {
+  const resolvedBase = path.resolve(baseDir);
+  const resolved = path.resolve(path.join(resolvedBase, filename));
+  if (
+    resolved !== resolvedBase &&
+    !resolved.startsWith(resolvedBase + path.sep)
+  ) {
+    return null;
+  }
+  return resolved;
+};
+
 const generateArchiveForDirectory = (
   source: string,
   destination: string,
@@ -46,7 +77,17 @@ const generateArchiveForDirectory = (
 
   for (const logs of retrievedLogs) {
     for (const logFile of logs.logFiles) {
-      const file = path.join(source, logFile.filename);
+      const sanitizedFilename = validateFilename(logFile.filename);
+      if (!sanitizedFilename) {
+        continue;
+      }
+      const file = resolveInside(source, sanitizedFilename);
+      if (!file) {
+        logger.warn(
+          `reports-handler: rejecting out-of-bounds archive filename ${logFile.filename}`,
+        );
+        continue;
+      }
       archive.addLocalFile(file, 'logs');
       filesForCleanup.push(file);
     }
@@ -65,19 +106,21 @@ let logWebContents: WebContents;
 const logTypes: string[] = [];
 const receivedLogs: ILogs[] = [];
 
-const validateFilename = (filename: string): string => {
-  return filename?.replace(/[^a-zA-Z0-9/_\.-]/g, '_');
-};
-
 const writeClientLogs = async (retrievedLogs: ILogs[]) => {
+  const logsDir = app.getPath('logs');
   for await (const logs of retrievedLogs) {
     for (const logFile of logs.logFiles) {
       const sanitizedFilename = validateFilename(logFile.filename);
       if (!sanitizedFilename) {
         continue;
       }
-      // nosemgrep
-      const file = path.join(app.getPath('logs'), sanitizedFilename);
+      const file = resolveInside(logsDir, sanitizedFilename);
+      if (!file) {
+        logger.warn(
+          `reports-handler: rejecting out-of-bounds log filename ${logFile.filename}`,
+        );
+        continue;
+      }
       await writeDataToFile(file, logFile.contents);
     }
   }

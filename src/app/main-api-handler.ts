@@ -44,6 +44,7 @@ import { ICustomBrowserWindow, windowHandler } from './window-handler';
 import {
   downloadManagerAction,
   getWindowByName,
+  isTrustedSenderFrame,
   isValidView,
   isValidWindow,
   sanitize,
@@ -118,12 +119,13 @@ ipcMain.on(
   async (event: Electron.IpcMainEvent, arg: IApiArgs) => {
     if (
       !(
-        isValidWindow(BrowserWindow.fromWebContents(event.sender)) ||
-        isValidView(event.sender)
+        (isValidWindow(BrowserWindow.fromWebContents(event.sender)) ||
+          isValidView(event.sender)) &&
+        isTrustedSenderFrame(event)
       )
     ) {
       logger.error(
-        `main-api-handler: invalid window try to perform action, ignoring action`,
+        `main-api-handler: invalid/untrusted window try to perform action, ignoring action`,
         arg.cmd,
       );
       return;
@@ -558,12 +560,13 @@ ipcMain.handle(
   async (event: Electron.IpcMainInvokeEvent, arg: IApiArgs) => {
     if (
       !(
-        isValidWindow(BrowserWindow.fromWebContents(event.sender)) ||
-        isValidView(event.sender)
+        (isValidWindow(BrowserWindow.fromWebContents(event.sender)) ||
+          isValidView(event.sender)) &&
+        isTrustedSenderFrame(event)
       )
     ) {
       logger.error(
-        `main-api-handler: invalid window try to perform action, ignoring action`,
+        `main-api-handler: invalid/untrusted window try to perform action, ignoring action`,
         arg.cmd,
       );
       return;

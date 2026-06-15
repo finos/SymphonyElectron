@@ -23,6 +23,8 @@ const specialArgs = [
   '--inspect',
   '--logPath',
   '--custom-timezone',
+  '--auth-server-whitelist',
+  '--auth-negotiate-delegate-whitelist',
 ];
 
 /**
@@ -78,14 +80,20 @@ export const setChromeFlags = () => {
     const splittedChromeFlags = chromeFlagsSplitter(chromeFlags);
     cmdArgs = cmdArgs.concat(splittedChromeFlags);
   }
-  cmdArgs.forEach((arg) => {
+  for (const arg of cmdArgs) {
+    // Stop processing at the `--` separator: anything after it is positional
+    // (the symphony:// URI placed by the protocol handler) and must never be
+    // promoted to a Chromium switch (H1 #3770918).
+    if (arg === '--') {
+      break;
+    }
     // We need to check if the argument key matches the one
     // in the special args array and return if it does match
     const argSplit = arg.split('=');
     const argKey = argSplit[0];
     const argValue = argSplit[1] && arg.substring(arg.indexOf('=') + 1);
     if (arg.startsWith(CHROME_FLAG_PREFIX) && specialArgs.includes(argKey)) {
-      return;
+      continue;
     }
 
     // All the chrome flags starts with --
@@ -107,7 +115,7 @@ export const setChromeFlags = () => {
         );
       }
     }
-  });
+  }
 };
 
 /**

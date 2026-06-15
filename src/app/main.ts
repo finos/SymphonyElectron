@@ -134,13 +134,17 @@ handlePerformanceSettings();
 setChromeFlags();
 
 // Electron sets the default protocol
+// The trailing "--" terminator forces Chromium to treat the URI (%1) as a
+// positional argument, so quote-breakout in a malicious URI cannot inject
+// switches into the SDA process (H1 #3770918).
 if (!isDevEnv) {
   const { userDataPath } = config.getConfigFields(['userDataPath']);
   if (userDataPath === '') {
-    app.setAsDefaultProtocolClient('symphony');
+    app.setAsDefaultProtocolClient('symphony', process.execPath, ['--']);
   } else {
     app.setAsDefaultProtocolClient('symphony', process.execPath, [
       '--userDataPath="' + userDataPath + '"',
+      '--',
     ]);
   }
 }
