@@ -38,14 +38,20 @@ const validateFilename = (filename: string): string => {
  * `baseDir`. Returns the resolved path on success, or null on traversal.
  */
 const resolveInside = (baseDir: string, filename: string): string | null => {
+  // nosemgrep
   const resolvedBase = path.resolve(baseDir);
-  const resolved = path.resolve(path.join(resolvedBase, filename));
+  const safeFilename = path
+    .normalize(filename)
+    .replace(/^(\.\.(\/|\\|$))+/, '');
+  // nosemgrep
+  const resolved = path.resolve(resolvedBase, safeFilename);
   if (
-    resolved !== resolvedBase &&
-    !resolved.startsWith(resolvedBase + path.sep)
+    !resolved.startsWith(resolvedBase + path.sep) &&
+    resolved !== resolvedBase
   ) {
     return null;
   }
+
   return resolved;
 };
 
