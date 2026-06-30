@@ -7,7 +7,7 @@ This file lists the maintainers of this repository.
 | GitHub Username | Name | Organization | Email |
 |----------------|------|--------------|-------|
 | @KiranNiranjan | Kiran Niranjan | @SymphonyOSF | *please add email* |
-| @NguyenTranHoangSym | *please add name* |@SymphonyOSF | *please add email* |
+| @NguyenTranHoangSym | Nguyen Tran Hoang Phuoc |@SymphonyOSF | *please add email* |
 | @sbenmoussati | Salah Benmoussati | @SymphonyOSF | *please add email* |
 
 For information about maintainer responsibilities and resources, see the [FINOS Maintainers Cheatsheet](https://community.finos.org/docs/finos-maintainers-cheatsheet).
