@@ -81,6 +81,7 @@ describe('chrome flags', () => {
       'RTCInsertableStreams',
     );
     expect(spy).nthCalledWith(8, 'disable-features', 'ChromeRootStoreUsed');
+    expect(spy).nthCalledWith(9, 'disable-direct-composition', true);
   });
 
   it('should call `setChromeFlags` correctly when `disableGpu` is false', () => {
@@ -129,8 +130,8 @@ describe('chrome flags', () => {
     });
     const spy = jest.spyOn(app.commandLine, 'appendSwitch');
     setChromeFlags();
-    expect(spy).nthCalledWith(9, 'disable-renderer-backgrounding', 'true');
-    expect(spy).not.nthCalledWith(10);
+    expect(spy).nthCalledWith(10, 'disable-renderer-backgrounding', 'true');
+    expect(spy).not.nthCalledWith(11);
   });
 
   it('should set `disable-renderer-backgrounding` chrome flag when any one is ENABLED ', () => {
