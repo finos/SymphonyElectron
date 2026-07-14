@@ -48,6 +48,7 @@ export const setChromeFlags = () => {
     'disable-gpu-compositing': flagsConfig.disableGpu || null,
     'enable-blink-features': 'RTCInsertableStreams',
     'disable-features': 'ChromeRootStoreUsed',
+    'disable-direct-composition': flagsConfig.disableGpu || null,
   };
   if (
     flagsConfig.customFlags.disableThrottling ===
