@@ -221,6 +221,12 @@ IF %errorlevel% neq 0 (
 )
 
 
+IF NOT EXIST "..\..\dist\latest.yml" (
+	IF EXIST "..\..\dist\%PARENT_BUILD_VERSION%.yml" (
+		copy /y "..\..\dist\%PARENT_BUILD_VERSION%.yml" "..\..\dist\latest.yml"
+	)
+)
+
 node ..\..\scripts\windows_update_checksum.js "..\..\dist\Symphony-%SYMVER%-win-x64.exe" "..\..\dist\latest.yml"
 IF %errorlevel% neq 0 (
 	echo "windows_update_checksum failed"
