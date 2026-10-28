@@ -22,8 +22,21 @@ echo %PATH%
 call nvm install %NODE_REQUIRED_VERSION%
 call nvm use %NODE_REQUIRED_VERSION%
 
-call npm config set msvs_version 2017
+set GYP_MSVS_VERSION=2017
 set VCTargetsPath=C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\Common7\IDE\VC\VCTargets
+
+WHERE artifactregistry-auth
+if %ERRORLEVEL% NEQ 0 (
+  echo "artifactregistry-auth does not exist. Installing it from public npm registry"
+  call npm install --registry=https://registry.npmjs.org -g google-artifactregistry-auth
+)
+
+echo "Authenticating with Google Artifact Registry..."
+call artifactregistry-auth
+if %ERRORLEVEL% NEQ 0 (
+  echo "GAR authentication failed!"
+  exit /b %ERRORLEVEL%
+)
 
 WHERE gulp
 if %ERRORLEVEL% NEQ 0 (
@@ -49,7 +62,11 @@ echo ==========================================================================
 echo ===  Installing dependencies
 echo ==========================================================================
 
-call npm install
+call npm install --registry=https://registry.npmjs.org -g google-artifactregistry-auth
+if %ERRORLEVEL% NEQ 0 (
+  echo "npm install failed!"
+  exit /b %ERRORLEVEL%
+)
 
 echo ==========================================================================
 echo ===  Signing screen share indicator and native window handle helper
@@ -58,12 +75,16 @@ echo ==========================================================================
 echo %SS_FOLDER%
 call smctl sign  --fingerprint %DIGICERT_FINGERPRINT% --input %SCREENSHARE_INDICATOR_PATH% --tool signtool --verbose
 smctl sign verify --input node_modules\screen-share-indicator-frame\ScreenShareIndicatorFrame.exe
+IF %errorlevel% neq 0 (
+	echo "Signing screen share indicator failed"
+	exit /b -1
+)
 
 smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input %NATIVE_WINDOW_HANDLE_PATH% --file-name
 smctl sign verify --input %NATIVE_WINDOW_HANDLE_PATH%
 
 IF %errorlevel% neq 0 (
-	echo "Signing failed"
+	echo "Signing native window handle helper failed"
 	exit /b -1
 )
 
@@ -71,7 +92,7 @@ smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input %SCREEN
 smctl sign verify --input %SCREEN_SNIPPET_PATH%
 
 IF %errorlevel% neq 0 (
-	echo "Signing failed"
+	echo "Signing screen snippet failed"
 	exit /b -1
 )
 
@@ -84,12 +105,11 @@ echo ==========================================================================
 
 echo Current branch: %BRANCH_NAME%
 call snyk test --file=package-lock.json --org=%SNYK_ORG% --project-name=%SNYK_PROJECT_NAME% --target-reference="%BRANCH_NAME%"
-call snyk monitor --file=package-lock.json --org=%SNYK_ORG% --project-name%SNYK_PROJECT_NAME% --target-reference="%BRANCH_NAME%"
-
 IF %ERRORLEVEL% NEQ 0 (
     echo Snyk detected vulnerabilities! Failing the build...
     exit /b %ERRORLEVEL%
 )
+call snyk monitor --file=package-lock.json --org=%SNYK_ORG% --project-name=%SNYK_PROJECT_NAME% --target-reference="%BRANCH_NAME%"
 
 :: Set expiry if required
 IF "%EXPIRY_PERIOD%"=="" (
@@ -104,6 +124,10 @@ echo ===  Running tests, code coverage, linting and building
 echo ==========================================================================
 
 call npm run unpacked-win
+IF %errorlevel% neq 0 (
+    echo "npm run unpacked-win failed!"
+    exit /b %ERRORLEVEL%
+)
 
 echo ==========================================================================
 echo ===  Creating 64 bit msi
@@ -148,7 +172,7 @@ echo ==========================================================================
 smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input %SYMPHONY_EXE_PATH% --file-name
 smctl sign verify --input %SYMPHONY_EXE_PATH%
 IF %errorlevel% neq 0 (
-	echo "Signing failed"
+	echo "Signing Symphony.exe failed"
 	exit /b -1
 )
 
@@ -157,18 +181,26 @@ echo "Signing Symphony-SYMVER-win-x64.exe file.."
 smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input %SYMPHONY_SYMVER_EXE_PATH% --file-name
 smctl sign verify --input %SYMPHONY_SYMVER_EXE_PATH%
 IF %errorlevel% neq 0 (
-	echo "Signing failed"
+	echo "Signing Symphony-SYMVER-win-x64.exe failed"
 	exit /b -1
 )
 
 
 node ..\..\scripts\windows_update_checksum.js "..\..\dist\Symphony-%SYMVER%-win-x64.exe" "..\..\dist\latest.yml"
+IF %errorlevel% neq 0 (
+	echo "windows_update_checksum failed"
+	exit /b %ERRORLEVEL%
+)
 
 echo ==========================================================================
 echo ===  Building new installer with Wix Sharp
 echo ==========================================================================
 
 call "BuildWixSharpInstaller.bat"
+IF %errorlevel% neq 0 (
+	echo "BuildWixSharpInstaller failed!"
+	exit /b %ERRORLEVEL%
+)
 
 echo "Signing MSI file.."
 signtool sign /d Symphony /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 /sha1 %DIGICERT_FINGERPRINT% %SYMPHONY_MSI_PATH%
@@ -180,6 +212,10 @@ IF %errorlevel% neq 0 (
 
 echo "Copying New MSI installer to target dir"
 copy "WixSharpInstaller\Symphony.msi" "%targetsDir%\%archiveName%.msi"
+IF %errorlevel% neq 0 (
+	echo "Failed to copy MSI installer"
+	exit /b %ERRORLEVEL%
+)
 
 echo "Setting up markdown to pdf package"
 %SystemRoot%\System32\where.exe /q markdown-pdf
