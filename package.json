@@ -42,7 +42,8 @@
   "build": {
     "publish": {
       "provider": "generic",
-      "url": "https://static.symphony.com/sda/"
+      "url": "https://static.symphony.com/sda/",
+      "channel": "latest"
     },
     "appId": "com.symphony.electron-desktop",
     "compression": "maximum",
