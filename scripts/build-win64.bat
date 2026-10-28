@@ -62,7 +62,7 @@ echo ==========================================================================
 echo ===  Installing dependencies
 echo ==========================================================================
 
-call npm install --registry=https://registry.npmjs.org -g google-artifactregistry-auth
+call npm install
 if %ERRORLEVEL% NEQ 0 (
   echo "npm install failed!"
   exit /b %ERRORLEVEL%
@@ -73,6 +73,15 @@ echo ===  Signing screen share indicator and native window handle helper
 echo ==========================================================================
 
 echo %SS_FOLDER%
+IF NOT EXIST %SCREENSHARE_INDICATOR_PATH% (
+	echo "ScreenShareIndicatorFrame.exe not found, compiling manually..."
+	if exist "node_modules\screen-share-indicator-frame" (
+		pushd node_modules\screen-share-indicator-frame
+		rc.exe /nologo resources.rc
+		cl ScreenShareIndicatorFrame.c resources.res /O2 /MT /nologo
+		popd
+	)
+)
 IF NOT EXIST %SCREENSHARE_INDICATOR_PATH% (
 	echo "Error: File not found: %SCREENSHARE_INDICATOR_PATH%"
 	exit /b -1
@@ -85,6 +94,15 @@ IF %errorlevel% neq 0 (
 )
 
 IF NOT EXIST %NATIVE_WINDOW_HANDLE_PATH% (
+	echo "SymphonyNativeWindowHandleHelper.exe not found, compiling manually..."
+	if exist "node_modules\symphony-native-window-handle-helper" (
+		pushd node_modules\symphony-native-window-handle-helper
+		rc.exe /nologo resources.rc
+		cl SymphonyNativeWindowHandleHelper.c resources.res /O2 /MT /nologo
+		popd
+	)
+)
+IF NOT EXIST %NATIVE_WINDOW_HANDLE_PATH% (
 	echo "Error: File not found: %NATIVE_WINDOW_HANDLE_PATH%"
 	exit /b -1
 )
@@ -96,6 +114,15 @@ IF %errorlevel% neq 0 (
 	exit /b -1
 )
 
+IF NOT EXIST %SCREEN_SNIPPET_PATH% (
+	echo "ScreenSnippet.exe not found, compiling manually..."
+	if exist "node_modules\screen-snippet" (
+		pushd node_modules\screen-snippet
+		rc.exe /nologo resources.rc
+		cl ScreenSnippet.cpp resources.res /O2 /MT /nologo /link /SUBSYSTEM:WINDOWS
+		popd
+	)
+)
 IF NOT EXIST %SCREEN_SNIPPET_PATH% (
 	echo "Error: File not found: %SCREEN_SNIPPET_PATH%"
 	exit /b -1
