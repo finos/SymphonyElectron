@@ -40,7 +40,10 @@
     "unpacked-win": "npm run prebuild && npm run test && node_modules\\.bin\\electron-builder build --win --x64 --publish never"
   },
   "build": {
-    "publish": null,
+    "publish": {
+      "provider": "generic",
+      "url": "https://static.symphony.com/sda/"
+    },
     "appId": "com.symphony.electron-desktop",
     "compression": "maximum",
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
