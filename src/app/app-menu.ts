@@ -399,33 +399,30 @@ export class AppMenu {
           zoomOut,
           'zoomOut',
         ),
-        this.buildSeparator(),
-        this.addToggleFullScreenMenuItem(),
+        ...this.addToggleFullScreenMenuItem(),
       ],
     };
   }
 
   /**
-   * Creates a menu item to toggle full screen with different implementation for windows and macOS due to the difference in how full screen is handled in both OS
-   * @returns Menu item
+   * Creates a menu item to toggle full screen on Windows and Linux.
+   * On macOS, full screen is omitted from the template to allow AppKit
+   * to automatically manage its single native full screen menu item.
+   *
+   * @returns {Electron.MenuItemConstructorOptions[]}
    */
-  private addToggleFullScreenMenuItem(): Electron.MenuItemConstructorOptions {
-    if (isWindowsOS) {
-      return this.assignRoleOrLabel({
+  private addToggleFullScreenMenuItem(): Electron.MenuItemConstructorOptions[] {
+    if (isMac) {
+      return [];
+    }
+
+    return [
+      this.buildSeparator(),
+      this.assignRoleOrLabel({
         role: 'togglefullscreen',
         label: i18n.t('Toggle Full Screen')(),
-      });
-    } else {
-      return {
-        label: i18n.t('Toggle Full Screen')(),
-        accelerator: 'Ctrl+Command+F',
-        click: (_item, focusedWindow) => {
-          if (focusedWindow) {
-            focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
-          }
-        },
-      };
-    }
+      }),
+    ];
   }
 
   /**
