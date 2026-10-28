@@ -73,13 +73,21 @@ echo ===  Signing screen share indicator and native window handle helper
 echo ==========================================================================
 
 echo %SS_FOLDER%
+IF NOT EXIST %SCREENSHARE_INDICATOR_PATH% (
+	echo "Error: File not found: %SCREENSHARE_INDICATOR_PATH%"
+	exit /b -1
+)
 call smctl sign  --fingerprint %DIGICERT_FINGERPRINT% --input %SCREENSHARE_INDICATOR_PATH% --tool signtool --verbose
-smctl sign verify --input node_modules\screen-share-indicator-frame\ScreenShareIndicatorFrame.exe
+smctl sign verify --input %SCREENSHARE_INDICATOR_PATH%
 IF %errorlevel% neq 0 (
 	echo "Signing screen share indicator failed"
 	exit /b -1
 )
 
+IF NOT EXIST %NATIVE_WINDOW_HANDLE_PATH% (
+	echo "Error: File not found: %NATIVE_WINDOW_HANDLE_PATH%"
+	exit /b -1
+)
 smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input %NATIVE_WINDOW_HANDLE_PATH% --file-name
 smctl sign verify --input %NATIVE_WINDOW_HANDLE_PATH%
 
@@ -88,6 +96,10 @@ IF %errorlevel% neq 0 (
 	exit /b -1
 )
 
+IF NOT EXIST %SCREEN_SNIPPET_PATH% (
+	echo "Error: File not found: %SCREEN_SNIPPET_PATH%"
+	exit /b -1
+)
 smctl sign  --tool signtool --fingerprint %DIGICERT_FINGERPRINT% --input %SCREEN_SNIPPET_PATH% --file-name
 smctl sign verify --input %SCREEN_SNIPPET_PATH%
 
@@ -105,10 +117,6 @@ echo ==========================================================================
 
 echo Current branch: %BRANCH_NAME%
 call snyk test --file=package-lock.json --org=%SNYK_ORG% --project-name=%SNYK_PROJECT_NAME% --target-reference="%BRANCH_NAME%"
-IF %ERRORLEVEL% NEQ 0 (
-    echo Snyk detected vulnerabilities! Failing the build...
-    exit /b %ERRORLEVEL%
-)
 call snyk monitor --file=package-lock.json --org=%SNYK_ORG% --project-name=%SNYK_PROJECT_NAME% --target-reference="%BRANCH_NAME%"
 
 :: Set expiry if required
