@@ -76,7 +76,7 @@ class Script
                     new Files(@"..\..\..\dist\win-unpacked\dictionaries\*.*")
                 ),
                 new Dir(@"locales",
-                    new Files(@"..\..\..\node_modules\electron\dist\locales\*.*")
+                    new Files(@"..\..\..\dist\win-unpacked\locales\*.*")
                 ),
                 new Dir(@"resources",
                     new DirFiles(@"..\..\..\dist\win-unpacked\resources\*.*"),
