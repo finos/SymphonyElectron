@@ -2,7 +2,7 @@
   "name": "symphony",
   "productName": "Symphony",
   "productDisplayName": "Symphony Messaging",
-  "version": "26.5.0",
+  "version": "26.10.0",
   "clientVersion": "2.0.1",
   "buildNumber": "0",
   "searchAPIVersion": "1.55.3",
@@ -26,20 +26,25 @@
     "lint": "run-s lint:*",
     "lint:project": "tslint --project tsconfig.json",
     "lint:spec": "tslint --project tsconfig.spec.json",
-    "packed-linux": "npm run prebuild && npm run test && ./node_modules/.bin/electron-builder build --linux",
+    "packed-linux": "npm run prebuild && npm run test && ./node_modules/.bin/electron-builder build --linux --publish never",
     "packed-mac": "npm run unpacked-mac && npm run build-mac-pkg",
     "prebuild": "run-s compile browserify",
     "postinstall": "electron-builder install-app-deps",
     "start": "run-s compile browserify && cross-env ELECTRON_DEV=true electron .",
     "test": "run-s lint test:unit",
     "test:unit": "cross-env ELECTRON_FORCE_IS_PACKAGED=false ELECTRON_QA=true jest --config jest-config.json --runInBand --detectOpenHandles",
-    "unpacked-mac": "npm run prebuild && npm run test && ./node_modules/.bin/electron-builder build --mac",
+    "unpacked-mac": "npm run prebuild && npm run test && ./node_modules/.bin/electron-builder build --mac --publish never",
     "mac-pkg-x64": "packagesbuild -v installer/mac/symphony-mac-packager.pkgproj",
     "mac-pkg-arm64": "packagesbuild -v installer/mac/symphony-mac-packager-arm64.pkgproj",
     "build-mac-pkg": "run-s mac-pkg-x64 mac-pkg-arm64",
-    "unpacked-win": "npm run prebuild && npm run test && node_modules\\.bin\\electron-builder build --win --x64"
+    "unpacked-win": "npm run prebuild && npm run test && node_modules\\.bin\\electron-builder build --win --x64 --publish never"
   },
   "build": {
+    "publish": {
+      "provider": "generic",
+      "url": "https://static.symphony.com/sda/",
+      "channel": "latest"
+    },
     "appId": "com.symphony.electron-desktop",
     "compression": "maximum",
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
@@ -186,7 +191,7 @@
     "cheerio": "v1.0.0-rc.12",
     "cross-env": "7.0.3",
     "del": "3.0.0",
-    "electron": "41.3.0",
+    "electron": "43.8.4",
     "electron-builder": "^26.3.1",
     "electron-devtools-installer": "^3.2.0",
     "electron-icon-maker": "0.0.5",
@@ -224,14 +229,14 @@
     "@fluentui/react-icons": "^2.0.279",
     "@openfin/node-adapter": "^40.102.1",
     "@types/lazy-brush": "^1.0.0",
-    "adm-zip": "^0.5.10",
+    "adm-zip": "^0.6.1",
     "bplist-parser": "^0.3.2",
     "classnames": "2.2.6",
     "cross-spawn": "^7.0.5",
     "electron-dl": "3.5.0",
     "electron-fetch": "1.9.1",
     "electron-log": "4.4.8",
-    "electron-updater": "6.6.2",
+    "electron-updater": "6.8.9",
     "filesize": "^10.0.6",
     "intl-messageformat": "^10.7.16",
     "lazy-brush": "^1.0.1",
@@ -243,9 +248,9 @@
     "shell-path": "^3.0.0"
   },
   "optionalDependencies": {
-    "screen-share-indicator-frame": "github:finos/ScreenShareIndicatorFrame#v1.6.0",
-    "screen-snippet": "github:finos/ScreenSnippet2.git#v2.5.1",
-    "symphony-native-window-handle-helper": "github:finos/SymphonyWindowsHwndHelper#v1.1.0",
+    "screen-share-indicator-frame": "git+https://github.com/finos/ScreenShareIndicatorFrame.git#v1.6.0",
+    "screen-snippet": "git+https://github.com/finos/ScreenSnippet2.git#v2.5.1",
+    "symphony-native-window-handle-helper": "git+https://github.com/finos/SymphonyWindowsHwndHelper.git#v1.1.0",
     "winreg": "1.2.4"
   },
   "ava": {
@@ -261,5 +266,6 @@
     "hooks": {
       "pre-commit": "pretty-quick --staged && npm run lint"
     }
-  }
+  },
+  "packageManager": "npm@10.8.2"
 }
