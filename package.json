@@ -227,7 +227,7 @@
   },
   "dependencies": {
     "@fluentui/react-icons": "^2.0.279",
-    "@openfin/node-adapter": "^40.102.1",
+    "@openfin/node-adapter": "^40.102.10",
     "@types/lazy-brush": "^1.0.0",
     "adm-zip": "^0.6.1",
     "bplist-parser": "^0.3.2",
