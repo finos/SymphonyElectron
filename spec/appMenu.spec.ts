@@ -580,6 +580,18 @@ describe('app menu', () => {
         menuItem.click(item, focusedWindow);
         expect(zoomOut).toBeCalled();
       });
+
+      it('should not include togglefullscreen role in view menu on macOS to avoid duplicate entries', () => {
+        const menuItem = appMenu.buildViewMenu().submenu.find((m) => {
+          return m.role === 'togglefullscreen';
+        });
+        expect(menuItem).toBeUndefined();
+      });
+
+      it('should return empty array for addToggleFullScreenMenuItem on macOS', () => {
+        const items = (appMenu as any).addToggleFullScreenMenuItem();
+        expect(items).toEqual([]);
+      });
     });
   });
 });
