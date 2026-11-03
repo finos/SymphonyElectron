@@ -777,64 +777,7 @@ export class WindowHandler {
 
     // Handle main window close
     this.mainWindow.on('close', (event) => {
-      if (!this.mainWindow || !windowExists(this.mainWindow)) {
-        return;
-      }
-
-      if (this.willQuitApp) {
-        logger.info(`window-handler: app is quitting, destroying all windows!`);
-        if (
-          this.mainWindow &&
-          !this.mainWebContents?.isDestroyed() &&
-          this.mainWebContents?.isDevToolsOpened()
-        ) {
-          this.mainWebContents?.closeDevTools();
-        }
-        return this.destroyAllWindows();
-      }
-
-      const { minimizeOnClose } = config.getConfigFields(['minimizeOnClose']);
-      if (
-        minimizeOnClose === CloudConfigDataTypes.ENABLED &&
-        !this.isAutoUpdating
-      ) {
-        const hasChildWindow =
-          BrowserWindow.getAllWindows().filter(
-            (window) =>
-              (window as ICustomBrowserWindow).winName !==
-                apiName.notificationWindowName &&
-              (window as ICustomBrowserWindow).winName !==
-                apiName.mainWindowName,
-          ).length > 0;
-        logger.info(`window-handler: has child window?`, hasChildWindow);
-
-        event.preventDefault();
-        if (this.mainWindow.isFullScreen()) {
-          exitFullscreenAndHideWindow(this.mainWindow);
-        } else {
-          if (hasChildWindow) {
-            this.mainWindow.minimize();
-          } else {
-            this.mainWindow.setSkipTaskbar(true);
-            this.mainWindow.hide();
-          }
-        }
-        return;
-      }
-
-      if (isMac && !this.isAutoUpdating) {
-        event.preventDefault();
-        // this is a workaround for an issue with macOS
-        // https://github.com/electron/electron/issues/39572
-        if (this.mainWindow.isFullScreen()) {
-          exitFullscreenAndHideWindow(this.mainWindow);
-        } else {
-          this.mainWindow.hide();
-        }
-        return;
-      }
-
-      app.quit();
+      this.handleMainWindowClose(event);
     });
 
     this.mainWindow.once('closed', () => {
@@ -1020,6 +963,61 @@ export class WindowHandler {
    */
   public setIsAutoUpdating(isAutoUpdating: boolean): void {
     this.isAutoUpdating = isAutoUpdating;
+  }
+
+  /**
+   * Handles main window close event
+   *
+   * @param event Event
+   */
+  public handleMainWindowClose(
+    event: Event | { preventDefault: () => void },
+  ): void {
+    if (!this.mainWindow || !windowExists(this.mainWindow)) {
+      return;
+    }
+
+    if (this.willQuitApp) {
+      logger.info(`window-handler: app is quitting, destroying all windows!`);
+      if (
+        this.mainWindow &&
+        !this.mainWebContents?.isDestroyed() &&
+        this.mainWebContents?.isDevToolsOpened()
+      ) {
+        this.mainWebContents?.closeDevTools();
+      }
+      return this.destroyAllWindows();
+    }
+
+    const { minimizeOnClose } = config.getConfigFields(['minimizeOnClose']);
+    if (
+      minimizeOnClose === CloudConfigDataTypes.ENABLED &&
+      !this.isAutoUpdating
+    ) {
+      const hasChildWindow =
+        BrowserWindow.getAllWindows().filter(
+          (window) =>
+            (window as ICustomBrowserWindow).winName !==
+              apiName.notificationWindowName &&
+            (window as ICustomBrowserWindow).winName !== apiName.mainWindowName,
+        ).length > 0;
+      logger.info(`window-handler: has child window?`, hasChildWindow);
+
+      event.preventDefault();
+      if (this.mainWindow.isFullScreen()) {
+        exitFullscreenAndHideWindow(this.mainWindow);
+      } else {
+        if (hasChildWindow) {
+          this.mainWindow.minimize();
+        } else {
+          this.mainWindow.setSkipTaskbar(true);
+          this.mainWindow.hide();
+        }
+      }
+      return;
+    }
+
+    app.quit();
   }
 
   /**
