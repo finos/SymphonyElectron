@@ -68,12 +68,45 @@ echo "Executing using Node Version: ${NODE_VERSION}"
 
 PKG_VERSION=$(node -e "console.log(require('./package.json').version);")
 
+if ! [ -x "$(command -v artifactregistry-auth)" ]; then
+  echo 'artifactregistry-auth does not exist! Installing it from public registry' >&2
+  npm install --registry=https://registry.npmjs.org -g google-artifactregistry-auth
+fi
+
+echo "Authenticating with Google Artifact Registry..."
+artifactregistry-auth
+if [ $? -ne 0 ]; then
+  echo "GAR authentication failed!" >&2
+  exit 1
+fi
+
 # Install app dependencies
 echo "Installing dependencies"
 npm install
+if [ $? -ne 0 ]; then
+  echo "npm install failed!" >&2
+  exit 1
+fi
+
+SCREENSHARE_MAC_PATH="node_modules/screen-share-indicator-frame/SymphonyScreenShareIndicator"
+if [ ! -f "$SCREENSHARE_MAC_PATH" ]; then
+  echo "SymphonyScreenShareIndicator not found, compiling manually..."
+  if [ -d "node_modules/screen-share-indicator-frame" ]; then
+    (cd node_modules/screen-share-indicator-frame && clang SymphonyScreenShareIndicator.m -O2 -oSymphonyScreenShareIndicator -framework Cocoa -mmacosx-version-min=10.8)
+  fi
+fi
+
+if [ ! -f "$SCREENSHARE_MAC_PATH" ]; then
+  echo "Error: $SCREENSHARE_MAC_PATH does not exist!" >&2
+  exit 1
+fi
 
 echo "Signing screen share indicator"
-codesign --force --options runtime -s "Developer ID Application: Symphony Communication Services LLC" node_modules/screen-share-indicator-frame/SymphonyScreenShareIndicator
+codesign --force --options runtime -s "Developer ID Application: Symphony Communication Services LLC" "$SCREENSHARE_MAC_PATH"
+if [ $? -ne 0 ]; then
+  echo "Signing screen share indicator failed!" >&2
+  exit 1
+fi
 
 # Run Snyk Security Tests
 echo "Running snyk security tests"
@@ -103,6 +136,10 @@ fi
 # Build the app
 echo "Running tests, code coverage, linting and building..."
 npm run unpacked-mac
+if [ $? -ne 0 ]; then
+  echo "npm run unpacked-mac failed!" >&2
+  exit 1
+fi
 
 # Create .pkg installer
 echo "Creating x64 .pkg"

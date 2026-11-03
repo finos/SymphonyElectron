@@ -15,7 +15,12 @@ export class ElectronNotification extends Notification {
   private options: INotificationData;
 
   constructor(options: INotificationData, callback) {
-    super(options as NotificationConstructorOptions);
+    const { id, ...notificationOptions } = options;
+    const opts: NotificationConstructorOptions = {
+      ...notificationOptions,
+      ...(id !== undefined ? { id: String(id) } : {}),
+    };
+    super(opts);
     this.callback = callback;
     this.options = options;
 

@@ -58,7 +58,27 @@ function updateHash(
 
 (async () => {
   const installerPath = process.argv[2];
-  const yamlFilePath = process.argv[3];
+  let yamlFilePath = process.argv[3];
+
+  if (!fs.existsSync(yamlFilePath)) {
+    const dir = path.dirname(yamlFilePath);
+    if (fs.existsSync(dir)) {
+      const files = fs
+        .readdirSync(dir)
+        .filter(
+          (f) =>
+            f.endsWith('.yml') &&
+            !['stable.yml', 'beta.yml', 'iv.yml', 'daily.yml'].includes(f),
+        );
+      if (files.length > 0) {
+        console.log(
+          `${yamlFilePath} not found, copying ${files[0]} to ${yamlFilePath}`,
+        );
+        fs.copyFileSync(path.join(dir, files[0]), yamlFilePath);
+      }
+    }
+  }
+
   await updateHash(installerPath, yamlFilePath);
   generateChannelsFiles(yamlFilePath);
 })();
